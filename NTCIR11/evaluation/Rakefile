@@ -1,0 +1,4 @@
+task :f do
+  `ruby ./formatter.rb`
+  `java -jar ./evalsqscr.jar eyword2vec_web600_nounverb.txt`
+end
