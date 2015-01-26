@@ -7,11 +7,6 @@ MAPを計算
 ## 導入
 ```
 rake init
-
-# or
-
-mkdir ./workspace/result
-mkdir ./workspace/tmp
 ```
 
 # ワークフロー
