@@ -123,7 +123,12 @@ end
 
 # ========== $B@_DjItJ,(B ==========
 
-sdr_result_dir = File.expand_path('../../../workspace/result/', __FILE__)
+# 引数: projectのresult path
+if ARGV[0] == nil
+  abort "args error (NOTE: result path set to args)"
+end
+
+sdr_result_dir = ARGV[0]
 out_name = File.expand_path('../result.txt', __FILE__)
 
 priority = 1

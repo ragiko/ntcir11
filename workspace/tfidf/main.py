@@ -14,8 +14,8 @@ from hymlab.text.feature.tfidf import *
 if __name__ == '__main__':
     WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    QUERY_FILE_PATH = WORKSPACE_DIR + "/../NTCIR11/Data/formalrun_query/formalrun_query_text.txt"
-    DOC_DIR_PATH = WORKSPACE_DIR + "/../NTCIR11/Data/slide_asr_noblank"
+    QUERY_FILE_PATH = WORKSPACE_DIR + "/../../NTCIR11/Data/formalrun_query/formalrun_query_text.txt"
+    DOC_DIR_PATH = WORKSPACE_DIR + "/../../NTCIR11/Data/slide_asr_noblank"
 
     QUERY_TFIDF_PATH = WORKSPACE_DIR + "/tmp/query_tfidf"
     DOC_TFIDF_PATH = WORKSPACE_DIR + "/tmp/doc_tfidf"
