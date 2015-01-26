@@ -1,6 +1,7 @@
 require 'systemu'
 
 WORKSPACE_RESULT_PATH = './workspace/result'
+WORKSPACE_TMP_PATH = './workspace/tmp'
 FORMAT_RESULT_PATH = './NTCIR11/evaluation/result.txt'
 MAP_JAR_PATH = './NTCIR11/evaluation/evalsqscr.jar'
 
@@ -48,9 +49,18 @@ task :map do
 end
 
 task :all => [:clean, :main, :format, :map]
+task :clean => [:clean_result, :clean_format, :clean_tmp]
 
-task :clean do
-  # resultファイルを削除
-  FileUtils.rm(Dir.glob(WORKSPACE_RESULT_PATH+'/*'))
+task :clean_result do
+    # main.pyの実行結果を削除
+    FileUtils.rm(Dir.glob(WORKSPACE_RESULT_PATH+'/*'))
+end
+
+task :clean_format do
   FileUtils.rm(FORMAT_RESULT_PATH) if FileTest.exist?(FORMAT_RESULT_PATH)
+end
+
+task :clean_tmp do
+  # tmpファイルを削除
+  FileUtils.rm(Dir.glob(WORKSPACE_TMP_PATH+'/*'))
 end
