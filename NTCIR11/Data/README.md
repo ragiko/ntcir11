@@ -5,6 +5,8 @@ Data for spoken document retrieval
 ## formalrun_query/
 formalrun_query.txtが認識結果のクエリリスト  
 formalrun_query_text.txtが書き起こしのクエリリスト  
+spoken/が認識結果のクエリ1つ1つ  
+text/が書き起こしクエリ1つ1つ  
 
 ## jout/
 Lectureの認識結果

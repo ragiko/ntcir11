@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # word2vec
     input_file = 'corpus.txt'
-    model = Word2Vec(LineSentence(TMP_DIR_PATH + "/" + input_file), size=10, window=5, sg=0, min_count=5, workers=8)
+    model = Word2Vec(LineSentence(TMP_DIR_PATH + "/" + input_file), size=100, window=5, sg=0, min_count=5, workers=8)
     model.save(TMP_DIR_PATH + "/" + input_file + '.model')
     model.save_word2vec_format(TMP_DIR_PATH + "/" + input_file + '.vec')
 
