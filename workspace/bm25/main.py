@@ -1,8 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
+import os, sys
 import hymlab.text as ht
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../helper')
+import helper
 
 def bm25(tf, query_words, idf, avg_length, k=2.0, b=0.75):
     """
@@ -51,6 +53,8 @@ if __name__ == '__main__':
     #         self.assertEquals(bm, (idf[u'猫']*(k+1))/(1+k*((1-b)+b*(d/avg_length))))
 
     # unittest.main()
+
+
 
     WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
     QUERY_FILE_PATH = WORKSPACE_DIR + "/../../NTCIR11/Data/formalrun_query/formalrun_query.txt" # 認識結果
@@ -106,15 +110,5 @@ if __name__ == '__main__':
         res.append(query_res)
 
     # fileのアウトプット
-    for i in range(len(res)):
-        query_res = res[i]
-        query_res = sorted(query_res, key=lambda x: x[1], reverse=True)[0:1000]
-
-        f = open(RESULT_DIR_PATH + "/" + str(i+1).zfill(2) + ".txt", "w")
-        s = ""
-        for doc_id, (doc_text, sim) in enumerate(query_res):
-            s += doc_text.path + " " + str(sim) + "\n"
-
-        f.write(s)
-        f.close()
+    helper.output_result(res, RESULT_DIR_PATH)
 
