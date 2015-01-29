@@ -3,8 +3,11 @@
 
 import os, sys
 import hymlab.text as ht
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../helper')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../config')
 import helper
+import config
 
 def bm25(tf, query_words, idf, avg_length, k=2.0, b=0.75):
     """
@@ -51,39 +54,35 @@ if __name__ == '__main__':
     #         b = 0.75
     #         k = 2.0 
     #         self.assertEquals(bm, (idf[u'猫']*(k+1))/(1+k*((1-b)+b*(d/avg_length))))
-
     # unittest.main()
 
+    conf = config.Config("bm25")
 
+    DOC_TF_PATH = conf.TMP_PATH + "/doc_tf"
+    DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
+    DOC_TMP_PATH = conf.TMP_PATH + "/doc"
 
-    WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
-    QUERY_FILE_PATH = WORKSPACE_DIR + "/../../NTCIR11/Data/formalrun_query/formalrun_query.txt" # 認識結果
-    DOC_DIR_PATH = WORKSPACE_DIR + "/../../NTCIR11/Data/slide_asr_noblank" # 認識結果
-    TMP_DIR_PATH = WORKSPACE_DIR + "/tmp" 
-    RESULT_DIR_PATH = WORKSPACE_DIR + "/result" 
-    DOC_TF_PATH = WORKSPACE_DIR + "/tmp/doc_tf"
-    DOC_IDF_PATH = WORKSPACE_DIR + "/tmp/doc_idf"
-    DOC_TMP_PATH = WORKSPACE_DIR + "/tmp/doc"
+    QUERY_PATH = conf.SPOKEN_QUERY_PATH
+    DOC_PATH = conf.SPOKEN_DOC_PATH
 
     # クエリを読み込み
-    query = ht.file_read(QUERY_FILE_PATH).split("\n")
+    query = ht.file_read(QUERY_PATH).split("\n")
     query.pop()
+
     q_tc = ht.TextCollection(query)
 
     # ドキュメントを読み込み
     doc_tf = None
     if (os.path.exists(DOC_TF_PATH) == False):
-        d_tc = ht.TextCollection(DOC_DIR_PATH)
-        ht.pickle_save(d_tc, DOC_TMP_PATH)
-        doc_tc = d_tc
+        doc_tc = ht.TextCollection(conf.DOC_PATH)
+        ht.pickle_save(doc_tc, DOC_TMP_PATH)
 
-        d_tf = ht.TfIdf(d_tc).tf(False)
-        ht.pickle_save(d_tf, DOC_TF_PATH)
-        doc_tf = d_tf
+        doc_tf = ht.TfIdf(d_tc).tf(False)
+        ht.pickle_save(doc_tf, DOC_TF_PATH)
 
-        d_idf = ht.TfIdf(d_tc).idf()
-        ht.pickle_save(d_idf, DOC_IDF_PATH)
-        doc_idf = d_idf
+        doc_idf = ht.TfIdf(d_tc).idf()
+        ht.pickle_save(doc_idf, DOC_IDF_PATH)
+
     else:
         doc_tc = ht.pickle_load(DOC_TMP_PATH)
         doc_tf = ht.pickle_load(DOC_TF_PATH)
@@ -91,11 +90,6 @@ if __name__ == '__main__':
 
     query_texts = q_tc.list()
     avg_length = doc_tc.ave_doc_length() 
-
-    # todo: tfidfのところが遅いと思う
-    # todo: simを図るところもっと汎用性つけないと苦しい。。。
-    # todo: ntcir用にhelper書いたようがよい
-    # todo: workspaceのよく書くパスを他に書く
 
     # bm25 計算
     res = []
@@ -110,5 +104,4 @@ if __name__ == '__main__':
         res.append(query_res)
 
     # fileのアウトプット
-    helper.output_result(res, RESULT_DIR_PATH)
-
+    helper.output_result(res, conf.RESULT_PATH)

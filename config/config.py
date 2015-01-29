@@ -9,8 +9,8 @@ class Config:
         self.PROJECT_PATH = self.WORKSPACE_PATH + "/" + project_name
 
         # spoken data
-        self.SPORKEN_QUERY_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/formalrun_query/formalrun_query.txt"
-        self.SPORKEN_DOC_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/slide_asr_noblank"
+        self.SPOKEN_QUERY_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/formalrun_query/formalrun_query.txt"
+        self.SPOKEN_DOC_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/slide_asr_noblank"
 
         # write data
         self.WRITE_QUERY_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/formalrun_query/formalrun_query_text.txt"

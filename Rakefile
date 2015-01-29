@@ -40,8 +40,17 @@ task :all_soft => [:clean_result, :clean_format, :main, :format, :map]
 task :clean => [:clean_result, :clean_format, :clean_tmp]
 
 task :init do
-  Dir.glob(WORKSPACE_PATH+'/*') do |path|
+  project_param_abort()
+
+  # project 作成
+  FileUtils.mkdir(WORKSPACE_PATH+'/'+ENV['p']) if !FileTest.exist?(WORKSPACE_PATH+'/'+ENV['p'])
+
+  Dir.glob(WORKSPACE_PATH+'/'+ENV['p']) do |path|
+    # main.py 
+    FileUtils.cp(path+'/../../template/main.py', path+'/main.py') if !FileTest.exist?(path+'/main.py')
+    # tmp/
     FileUtils.mkdir(path+'/tmp') if !FileTest.exist?(path+'/tmp')
+    # result/
     FileUtils.mkdir(path+'/result') if !FileTest.exist?(path+'/result')
   end
 end
