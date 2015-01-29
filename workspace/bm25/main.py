@@ -74,13 +74,13 @@ if __name__ == '__main__':
     # ドキュメントを読み込み
     doc_tf = None
     if (os.path.exists(DOC_TF_PATH) == False):
-        doc_tc = ht.TextCollection(conf.DOC_PATH)
+        doc_tc = ht.TextCollection(DOC_PATH)
         ht.pickle_save(doc_tc, DOC_TMP_PATH)
 
-        doc_tf = ht.TfIdf(d_tc).tf(False)
+        doc_tf = ht.TfIdf(doc_tc).tf(False)
         ht.pickle_save(doc_tf, DOC_TF_PATH)
 
-        doc_idf = ht.TfIdf(d_tc).idf()
+        doc_idf = ht.TfIdf(doc_tc).idf()
         ht.pickle_save(doc_idf, DOC_IDF_PATH)
 
     else:
