@@ -25,6 +25,9 @@ if __name__ == '__main__':
     # コーパス作成
     merge_tc.dump_corpus(TMP_DIR_PATH+"/corpus.txt")
 
+    # TODO: textcollectionのイテレーターのほうが良い
+
+
     # 文章の絶対位置のインデックスを作成
     f = open(TMP_DIR_PATH + "/file_index.txt", "w")
     s = ""
