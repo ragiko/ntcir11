@@ -1,0 +1,129 @@
+
+Systemwalker Service Quality Coordinator ユーザーズガイド - Microsoft(R) Windows(R) 2000/Microsoft(R) Windows Server(TM) 2003/Solaris(TM) オペレーティングシステム/Linux -
+目次
+索引
+第5部 リファレンス> 第17章 リソース構成情報(MiddlewareConf.xml)
+本ファイルは、サーバ内リソース情報収集ポリシー作成コマンド(sqcRPolicy)によって生成されます。このコマンドが本ファイルを生成した後に、内容を編集することで、管理対象を削除することができます。管理対象を削除するには、以降に示すタグ情報単位に削除してください。
+編集する際に、本製品CD-ROM付属のXMLエディタを使用する場合は、以下がポイントになります。
+各タグは、XMLエディタのツリー(View:XML Structure)で確認してください。
+属性を定義する場合は、ツリー上で編集対象のタグを選択し、タグの属性が表示されている箇所(View:XML Data)において定義する属性名(Attribute Name)をダブルクリック、または右クリックメニューの[Edit」から表示される[属性の編集」ウインドウにて属性を定義してください。
+タグ単位に追加をする場合は、[Edit]メニューの[Copy][Paste]や右クリックメニューの[Duplicate]または[Copy][Paste]などを使用すると、簡単に編集できます。
+17.2.1 Workload情報(Workloadタグ) 
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+Workload
+17.2.1.1 Frameタグ 
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+Frame1
+InstanceName
+定義されたFrame名です。
+Frame1
+17.2.1.2 Moduleタグ 
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+Module1
+InstanceName
+定義されたModule名です。
+Module1
+17.2.2 Systemwalker Resource Coordinator情報(TcpNetworkタグ) 
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+TcpNetwork
+17.2.2.1 NetworkInterfaceタグ 
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+Io0
+InstanceName
+Ifconfigコマンドで出力されるInstance名です。
+Io0
+17.2.3 Interstage情報(Interstageタグ) 
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+Interstage
+17.2.3.1 InterstageInstanceタグ 
+17.2.3.1.1 Workunitタグ 
+WorkUnitタグには、WorkUnit名を定義します。
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+WorkUnit_1
+InstanceName
+定義されたWorkUnit名です。
+WorkUnit_1
+EJB_Objectタグ
+EJB_Objectタグには、EJB_Object名を定義します。
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+EJB_Object_1
+InstanceName
+定義されたEJB_Object名です。
+EJB_Object_1
+TD_Objectタグ
+TD_Objectタグには、TD_Object名を定義します。
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+TD_Object_1
+InstanceName
+定義されたTD_Object名です。
+TD_Object_1
+CORBA_Objectタグ
+CORBA_Objectタグには、CORBA_Object名を定義します。
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+CORBA_Object_1
+InstanceName
+定義されたCORBA_Object名です。
+CORBA_Object_1
+17.2.4 Symfoware情報(Symfowareタグ) 
+Symfowareタグには、Symfoware名を定義します。
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+Symfoware
+17.2.4.1 RDB_Systemタグ 
+RDB_Systemタグには、RDB_System名を定義します。
+属性名
+定義内容
+定義例
+DisplayName
+コンソール上に表示する名前を定義します。
+Default_DB
+InstanceName
+定義されたRDB_System名です。
+Default_DB
+目次
+索引
+All Rights Reserved, Copyright(C) 富士通株式会社 & FUJITSU AUSTRALIA LIMITED 2003 - 2005
+17.2 定義方法

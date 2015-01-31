@@ -1,0 +1,34 @@
+
+可変でいくつまでリストの中身が存在しているのかが、叩いてみるまでわからない時に使います。
+####リストの作成
+`````
+list = ["a", "b", "c", "d", "e"]
+print list
+['a', 'b', 'c', 'd', 'e']
+`````
+####特定のデータを取り出す
+`````
+print list[0]
+a
+print list[2]
+c
+`````
+####データが存在しない場合
+`````
+print list[5]
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+IndexError: list index out of range
+`````
+####一番後ろを指定する
+`````
+print list[-1]
+e
+`````
+####後ろから二番目を指定する
+`````
+print list[-2]
+d
+`````
+知っていればなんてことはないですが、知らないと力技になっちゃいますね・・。
+Pythonでリストの最後(一番後ろ)の値を取得する方法 - Qiita

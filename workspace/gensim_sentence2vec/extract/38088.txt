@@ -1,0 +1,5 @@
+
+画像の圧縮と画像対画像の検索 (Image-to-Image retrieval, I2I retrieval) の両方を実現する新しい手法を開発しました。その新規性は、画像に主成分分析 (the Principal Component Analysis) や独立成分分析 (the Independent Component Analysis) を適用することで得られる基底情報に、色情報を併せて利用している点にあります。
+画像圧縮については、実験によると、PCA や ICA による画像圧縮はJPEGのDCTによる圧縮よりも高い性能が得られます。この優位性は、量子化や符号化が行われても保たれます。一方、画像対画像の検索 (I2I retrieval) では評価基準として 適合率 - 再現率 曲線が用いられますが、基底情報に色情報を加味することで高い検索性能が得られます。
+検索率の評価と併せて、基底を符号化して収める画像フォーマット RIM (Retrieval-aware IMage format) の仕様を定めました。さらに、RIMフォーマットの画像どうしを検索できる画像ビューア Wisvi (Waseda Image Searchable VIewer) を開発しました。ベータ版のソースコードは本サイトよりダウンロードすることができます。
+Retrieval-aware IMage format ポータルサイト [Japanese]

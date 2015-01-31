@@ -1,0 +1,2 @@
+std::map、boost::unordered_map、std::vector<std::pair<Key, Value> >のようなコンテナからキーのみを抽出するには、boost::adaptors::map_keysを使用する。
+リスト処理の遅延評価 - boostjp

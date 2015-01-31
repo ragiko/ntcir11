@@ -1,0 +1,204 @@
+C++版のOpenCVを使ってカラーヒストグラムを用いた類似画像検索を実験してみました。バッチ処理などのスクリプトはPythonを使ってますが、PerlでもRubyでも似たような感じでできます。指定した画像と類似した画像を検索するシステムは類似画像検索システムと言います。GoogleやYahoo!のイメージ検索は、クエリにキーワードを入れてキーワードに関連した画像を検索しますが、類似画像検索ではクエリに画像を与えるのが特徴的です。この分野は、Content-Based Image Retrieval (CBIR)と呼ばれており、最新のサーベイ論文(Datta,2008)を読むと1990年代前半とけっこう昔から研究されてます。最新の手法では、色、形状、テクスチャ、特徴点などさまざまな特徴量を用いて類似度を判定するそうですが、今回は、もっとも簡単な「色」を用いた類似画像検索を実験してみます。つまり、指定した画像に色が似ている画像を検索します。
+カラーヒストグラムの計算
+カラーヒストグラムとは、画像中に各色が何ピクセルあるか数えて作成した棒グラフです。画像はカラーヒストグラムで表せます。たとえば、のカラーヒストグラムを描画するととなります。各棒は特定の色が画像中に何ピクセルあるかをカウントした値です。上のヒストグラムで突き出ているのは青色ですね!このヒストグラムの形がお互い似ているほど色が似た画像になります。カラーヒストグラムは、各ビンのY軸の値だけ保存しておけばよいので上の図の場合、64次元ベクトルで表せます。
+画像の減色
+今回対象とするカラー画像は赤成分(R)、緑成分(G)、青成分(B)は各8ビット(256通り)ですので、表示できる色数は256x256x256=16777216通りになります。これは、色数があまりにも多すぎる(ヒストグラムの棒が16777216本、16777216次元ベクトル)のでばっさり切って64色まで減色します。減色はRGBの各成分を4等分して中央の代表値に置き換えることで行います。Rが4通り、Gが4通り、Bが4通りなので表示できる色数は4x4x4=64通りになります。オリジナル画像のRGBは減色後の代表値に置き換えます。たとえば、あるピクセルの輝度がRGB=(58, 150, 238)だったら64色RGB=(32, 160, 224)に置き換えます。
+OpenCVを使って減色によって画像がどう変わるか試してみます。 左がオリジナルの画像で右が64色に減色した画像です。まあ64色あればそこそこ分かりますね!以下、64色減色画像を描画するOpenCVプログラムです。
+#include "cv.h"
+#include "highgui.h"
+#include <cstdio>
+// 64色に減色
+// R:4等分、G:4等分、B:4等分で4x4x4=64色
+uchar decleaseColor(int value) {
+if (value < 64) {
+return 32;
+} else if (value < 128) {
+return 96;
+} else if (value < 196) {
+return 160;
+} else {
+return 224;
+}
+return 0;  // 未到達
+}
+int main(int argc, char **argv) {
+// 画像のロード
+IplImage *img = cvLoadImage("Data/dolphin_image_0001.jpg", CV_LOAD_IMAGE_COLOR);
+if (img == NULL) {
+printf("cannot load image\n");
+return 1;
+}
+// 減色画像のメモリ確保
+IplImage *outImage = cvCreateImage(cvGetSize(img), img->depth, 3);
+// 64色に減色
+for (int y = 0; y < img->height; y++) {
+// y行目のデータの先頭ポインタを取得
+uchar *pin = (uchar *)(img->imageData + y * img->widthStep);
+uchar *pout = (uchar *)(outImage->imageData + y * outImage->widthStep);
+for (int x = 0; x < img->width; x++) {
+int blue = pin[3*x+0];
+int green = pin[3*x+1];
+int red = pin[3*x+2];
+// 64色に減色した画像を作成
+pout[3*x+0] = decleaseColor(blue);
+pout[3*x+1] = decleaseColor(green);
+pout[3*x+2] = decleaseColor(red);
+}
+}
+// ウィンドウを作成
+cvNamedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+cvNamedWindow("Declease Color Image", CV_WINDOW_AUTOSIZE);
+// 画像を描画
+cvShowImage("Original Image", img);
+cvShowImage("Declease Color Image", outImage);
+cvWaitKey(0);
+// 画像をファイルへ出力
+cvSaveImage("original.jpg", img);
+cvSaveImage("color64.jpg", outImage);
+// 後始末
+cvDestroyAllWindows();
+cvReleaseImage(&img);
+cvReleaseImage(&outImage);
+return 0;
+}
+k-Meansというクラスタリングアルゴリズムで減色するサンプルがありました。これは、今回の目的には合わないと思います。画像によって用いる64色(パレット)が異なってしまうからです。これでは、異なる画像間でカラーヒストグラムを比較できなくなってしまいます*1。
+ヒストグラムの計算
+ヒストグラムは各色(64色)が画像中に何ピクセルあるか数えたものです。先ほど、64色に減色したので各色に0から63番まで番号をつけてヒストグラムのビン番号とします。たとえば、ピクセルのRGB値が RGB=(58, 150, 238)だったら減色すると(redNo,greenNo,blueNo)=(0,2,3)になります(下の画像を参照)。この色を0-63までのビン番号に変換するには、
+redNo * 4 * 4 + greenNo * 4 + blueNo
+でできます。このように定義すると、(redNo,greenNo,blueNo) = (0,0,0)の色は0番、(redNo,greenNo,blueNo) = (3,3,3)の色は63番に割り当てられます。先ほどの(redNo,greenNo,blueNo) = (0,2,3)は11番になりますね。下は、オリジナル画像のRGB輝度値からヒストグラムのビン番号を求める関数です。
+/**
+* オリジナル画像のRGBからヒストグラムのビン番号を計算
+* @param[in]  red    赤の輝度(0-255)
+* @param[in]  green  緑の輝度(0-255)
+* @param[in]  blue   青の輝度(0-255)
+* @return ヒストグラムのビン番号(64色カラーインデックス)
+*/
+int rgb2bin(int red, int green, int blue) {
+int redNo = red / 64;
+int greenNo = green / 64;
+int blueNo = blue / 64;
+return 16 * redNo + 4 * greenNo + blueNo;
+}
+次に、画像中の全ピクセルを走査して各色が何ピクセルあるか数えてカラーヒストグラムを作ります。OpenCVで画像をロードし、画像の各ピクセル値にアクセスして、ビン番号に変換してから数え上げています。カラーヒストグラムを作るだけなら先ほどのようにわざわざ減色画像を作る必要はありません。
+/**
+* ヒストグラムを計算
+* @param[in]  filename   画像ファイル名
+* @param[out] histogram  ヒストグラム
+* @return 正常終了で0、異常終了で-1
+*/
+int calcHistogram(char *filename, int histogram[64]) {
+// ヒストグラムを初期化
+for (int i = 0; i < 64; i++) {
+histogram[i] = 0;
+}
+// 画像のロード
+IplImage *img = cvLoadImage(filename, CV_LOAD_IMAGE_COLOR);
+if (img == NULL) {
+cerr << "cannot open image: " << filename << endl;
+return -1;
+}
+// 64色に減色してヒストグラムを計算
+for (int y = 0; y < img->height; y++) {
+// y行目のデータの先頭ポインタを取得
+uchar *pin = (uchar *)(img->imageData + y * img->widthStep);
+for (int x = 0; x < img->width; x++) {
+int blue = pin[3*x+0];
+int green = pin[3*x+1];
+int red = pin[3*x+2];
+// カラー値(0-63)をカウント
+int bin = rgb2bin(red, green, blue);
+histogram[bin] += 1;
+}
+}
+cvReleaseImage(&img);
+return 0;
+}
+この関数を実行するとhistogramには各ビンのピクセル数が格納されます。カラーヒストグラムは64次元ベクトルです。histogram[0]は0番目の色のピクセル数、histogram[63]は63番目の色のピクセル数です。このヒストグラムは、検索時にいちいち再計算していては大変なのでファイルに保存しておきます。各数値を各行に出力した64行のファイルです。
+/**
+* ヒストグラムをファイルに出力
+* @param[in]  filename  出力ファイル名
+* @param[in]  histogram ヒストグラム
+* @return 正常終了で0、異常終了で-1
+*/
+int writeHistogram(char *filename, int histogram[64]) {
+ofstream outFile(filename);
+if (outFile.fail()) {
+cerr << "cannot open file: " << filename << endl;
+return -1;
+}
+for (int i = 0; i < 64; i++) {
+outFile << histogram[i] << endl;
+}
+outFile.close();
+return 0;
+}
+以上の手続きをまとめたメイン関数です。main.cpp
+/**
+* メイン関数 hist.exe [入力画像ファイル名] [出力ヒストグラムファイル名]
+* @param[in]  argc
+* @param[out] argv
+* @return 正常終了で0、異常終了で-1
+*/
+int main(int argc, char **argv) {
+int ret;
+if (argc < 2) {
+cerr << "usage: hist.exe [image file] [hist file]" << endl;
+return -1;
+}
+char *imageFile = argv[1];
+char *histFile = argv[2];
+cout << imageFile << " -> " << histFile;
+// ヒストグラムを計算
+int histogram[64];
+ret = calcHistogram(imageFile, histogram);
+if (ret < 0) {
+cerr << "cannot calc histogram" << endl;
+return -1;
+}
+// ヒストグラムをファイルに出力
+ret = writeHistogram(histFile, histogram);
+if (ret < 0) {
+cerr << "cannot write histogram" << endl;
+return -1;
+}
+cout << " ... OK" << endl;
+return 0;
+}
+コンパイルするとexeファイルができます。(注)OpenCVのインストールとリンカの設定が必要です。EclipseでOpenCV(2009/10/16)参照。
+hist.exe dolphin_image_0001.jpg dolphin_image_0001.hst
+のように使います。dolphin_image_0001.hstはヒストグラムを格納するファイル名です。
+画像データセットを用意
+実験で使う画像データセットを用意します。自分の持っている画像データやFlickrから集めてもよいと思いますが、有名なテストデータがいくつか公開されているのでそれを使います。これらのデータセットは、一般物体認識タスクのデータセットなのですがまあいいかな?もし類似画像検索用のデータをご存知でしたらコメントいただけるとうれしいです。
+Caltech 101
+Caltech 256
+The PASCAL Object Recognition Database Collection
+80 Million Tiny Images
+この実験では、Caltech 101を使いました。131MB、9145画像とデータ規模も手軽です。本当は、150万枚のtinyimagesで試したいけどもっと高度な検索手法を使わないと太刀打ちできないですねー。ダウンロードしたデータを解凍すると101_ObjectCategoriesというフォルダの中に101個のカテゴリフォルダ(102個あるけどBACKGROUND_Googleが余計?)があり、その中に画像がたくさんあります。たとえば、airplanesフォルダ(カテゴリ)には飛行機の写真がたくさん入ってます*2。サイズはそれぞれ異なりますが、大体300x300くらいでしょうか?いろんな画像があって見てるだけで楽しいです。(注)以下、BACKGROUND_GoogleとFacesフォルダは削除しています。フォルダごとに画像ファイルが分散されてるので一括処理しやすいようにcaltech101というフォルダに画像ファイルだけまとめます。また各カテゴリフォルダ内の画像ファイル名はimage_0001.jpgとかついてます。airplanes(飛行機)にもdolphin(イルカ)にも同じファイル名がついてるので区別できなくて面倒です。そこで、下のように変換します。
+airplanes/image_0001.jpg -> caltech101/airplanes_image_0001.jpg
+dolphin/image_0001.jpg   -> caltech101/dolphin_image_0001.jpg
+一括して変換するpythonスクリプトです。
+#coding:utf-8
+import codecs
+import os
+import shutil
+TARGET = "101_ObjectCategories"
+OUTDIR = "caltech101"
+for category in os.listdir(TARGET):
+for file in os.listdir("%s/%s" % (TARGET, category)):
+image_file = "%s/%s/%s" % (TARGET, category, file)    # 101_ObjectCategories/airplanes/image_0001.jpg
+rename_file = "%s/%s_%s" % (OUTDIR, category, file)   # caltech101/airplanes_image_0001.jpg
+print "%s -> %s" % (image_file, rename_file)
+shutil.copyfile(image_file, rename_file)
+これで、9145枚の画像ファイルだけcaltech101フォルダにリネイムコピーされます。これでヒストグラムの抽出処理などやりやすくなります。
+カラーヒストグラムの一括計算
+次は、さっき作ったカラーヒストグラムを求めるhist.exeを使って、画像からヒストグラムを一括計算します。フォルダ処理とかはC++よりPythonの方が楽なのでPythonスクリプトからhist.exeを実行するようにしました。histフォルダを作成してから実行するとcaltech101フォルダの全画像のヒストグラムファイルが作られます。ファイル名は、xxx.jpgならxxx.hstです。うちのマシンは、CPUがCore i7 8コア、メモリが3GBですが、9000枚の画像のヒストグラム変換処理に25分40秒かかりました。
+#coding:utf-8
+import codecs
+import os
+TARGET = "caltech101"
+OUTDIR = "hist"
+for file in os.listdir(TARGET):
+image_file = "%s/%s" % (TARGET, file)          # caltech101/xxx.jpg
+hist_file = "%s/%s.hst" % (OUTDIR, file[:-4])  # hist/xxx.hst
+os.system("hist.exe %s %s" % (image_file, hist_file))
+類似画像検索システムを作ろう - 人工知能に関する断創録

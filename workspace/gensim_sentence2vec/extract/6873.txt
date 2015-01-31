@@ -1,0 +1,12 @@
+目的は並列型計算機に適した連立一次方程式の解法を開発することにあった。その対象となった解法はネスティッド・ダイセクション法であって、それを並行列処理が可能な様に修正し、プログラムを開発することである。
+1。並列型ネスティッド・ダイセクション法に関する理論的考察:まず、並列型ネスティッド・ダイセクション法プログラム開発に先立ち、その手法の並列化のための理論的考察を行った。その結果、ネスティッド・ダイセクション法では互いに影響し合わない節点を順次処理することによりこの解法の目的であるフィル・インの最少化を行っている。これは並列処理が可能であり、よってネスティッド・ダイセクション法は複数個のプロセッサ-を用いた演算が極めて容易であるとの結論を得た。
+2。並列型ネスティッド・ダイセクション法のプログラム開発:トランスピュ-タを利用してネスティッド・ダイセクション法の並列型プログラム開発を行った。ここでは2基のプロセッサ-を使用した。作成したプログラムは1)マスタ-タスク、2)ワ-カ-タスク、3)コンフィギュレ-ションファイルである。並列型計算機を最も有効に利用するために、2基のプロセッサ-に等負荷(同じ量の演算をさせる)を与えるように対象問題を二等分して数値計算を行わせ、効率よい演算が出来ることを確認した。
+3。並列型ネスティッド・ダイセクション法の汎用化:ネスティッド・ダイセクション法は正方形型領域に対する解法として作られたため、任意系への適用が可能にできる様な変更が必要である。並列計算を配慮した場合、プロセッサ-数に等しい小領域に分割した後、各々の小領域に対してネスティッド・ダイセクション法と同じ様な消去順序で消去演算を実行すれば良いとの結論を得た。
+The aim of this investigation is the development of an efficient solver of large sparse set of linear algebraic equations for the parallel computer. Basi-C tool is the nested dissection method, and the method is modified so that it can be effective on a parallel computer.
+(1)Theoretical study on the parallel nested dissection method
+The nested dissection method is originally developed so that the amount of fill-in through the elimination process can be minimized. And, this process necessarily eliminates nodes which are not adjacent each other. This characteristic fits to the parallel computing.
+(2)Development of the parallel nested dissection method
+Two-CPUs were used for the development of the parallel nested dissection method. Developed code consists of 1)the master task, 2)the worker task, and 3)the configuration file. In order to give equal loading to two CPUS, the treated problems are divided into two, each of which is solved using one CPU. For the comparison of the efficiency of the proposed method, the Gauss elimination and also the conventional parallel elimination methods are used. The numerical tests show that the proposed method is the fastest among them.
+(3)The generalization of the parallel nested dissection method
+Proposed method may show good performance if the domain to be solved is subdivided into as many equal-sized subdomains as the number of CPUs being introduced.
+KAKEN - パラレル計算機に適した大規模線形解析法の開発ー並列型ネスティッド・ダイセクション法ー(02555102)

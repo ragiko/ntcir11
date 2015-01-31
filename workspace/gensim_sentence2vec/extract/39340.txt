@@ -1,0 +1,68 @@
+
+他の発表についていくつかメモ
+Infinite SVM: a Dirichlet Process Mixture of Large-margin Kernel Machines
+データをある程度セグメントに分けて、それぞれで識別モデルを構成したほうが性能が上がるよねという話という理解
+これは実務的にもユーザモデルの作成のときに性別で分けて独立にモデルを作成したほうが性能が高いことがあったり、決定木的な方法が割とうまくいくことからも納得できる
+GoDec: Randomized Low-rank & Sparse Matrix Decomposition in Noisy Case
+この話を聴いてSAGEでもバックグラウンドのmは学習で求めてもいいのではという気がした
+Parallel Coordinate Descent for L1-Regularized Loss Minimization
+SGDはデータ点を一つ持ってきてパラメータを最適化する方法で、SCDはパラメータの次元の一つを持ってきてそれについて最適化する手法
+この論文では複数の次元を一気に並列で最適化する場合にどれくらいの次元数を一気に更新していいかの理論値をあたえた
+SGDに比べて収束が早かったり、損失関数によっては解析的に解が求まるため学習率みたいなパラメータを与えなくてもいいというメリットがある
+この話を聴いてて、今までSGDとSCDをごっちゃにしてたことに気付いて恥ずかしかった
+言い訳をするとliblinearを使ってるアルゴリズムの一つである"A dual coordinate descent method for large-scale linear SVM"は双対空間でSCDをしてるので双対だと次元がデータ点に対応するためデータ点を一個持ってきて最適化とか思ってました。学習率とか出てきてない時点で気付けよという話ですが
+[機械学習] NIPS Oral Sessionのリスト
+参考までにOral Sessionの他の論文のリストも挙げておきます(Oral SessionではInvited talkとかもあるけどそれは除外)、accepted paperが300本近くあるなかでOral Sessionは20本しかなく非常に競争率が高いです。
+Over-complete representations on recurrent neural networks can support persistent percepts
+A rational decision making framework for inhibitory control
+A Theory of Multiclass Boosting
+Online Learning: Random Averages, Combinatorial Parameters, and Learnability
+Fast global convergence rates of gradient methods for high-dimensional statistical recovery
+Structured sparsity-inducing norms through submodular functions
+Semi-Supervised Learning with Adversarially Missing Label Information
+MAP estimation in Binary MRFs via Bipartite Multi-cuts
+A Dirty Model for Multi-task Learning
+Linear Complementarity for Regularized Policy Evaluation and Improvement
+The Multidimensional Wisdom of Crowds (今回紹介したやつ)
+Construction of Dependent Dirichlet Processes based on Poisson Processes
+Slice sampling covariance hyperparameters of latent Gaussian models
+Tree-Structured Stick Breaking for Hierarchical Data
+Identifying graph-structured activation patterns in networks
+Phoneme Recognition with Large Hierarchical Reservoirs
+Identifying Patients at Risk of Major Adverse Cardiovascular Events Using Symbolic Mismatch
+On the Convexity of Latent Social Network Inference
+Learning to combine foveal glimpses with a third-order Boltzmann machine
+Humans Learn Using Manifolds, Reluctantly
+[機械学習] Power Iteration Clustering
+岡野原さんのtweetで紹介されていたPower Iteration Clusteringという文章分類の手法に関する論文[1,2]を読んでみた。
+背景
+n個のデータX={x_1,...,x_n}が与えられたときに各データ間の類似度s(x_i,x_j)を成分に持つ類似度行列Aを考える。
+また次数行列としてAのi行目の値を合計したd_{ii} = \sum_j A_{ij}を対角成分にもつ対角行列をDとする。
+このときW:=D^{-1} Aをnormalized affinity matrixと定義する。簡単のためWはフルランクであるとする。
+この行列はすべての要素が1となる固有ベクトルをもち、この時固有値は1となる。実はこれが最大固有値である(行列Aの行和が1となること+Gershgorin circle theorem(en)より導かれる)。また、行列Wの固有値を1=λ_1>=...>=λ_nとすると行列L=I - Wの固有値は0=1-λ_1<=...<=1-λ_nとなり、Wの最大固有値をk個を求めることとLの最小固有値をk個求めることは等価となる。ここでLはグラフラプラシアンマトリックスと呼ばれるスペクトルクラスタリングと呼ばれる手法[4]で用いられている行列である。
+Wが下の図(http://ranger.uta.edu/~chqding/Spectral/spectralA.pdfより引用)のようにクラス内ではXが同じクラス内では類似度が互いに高く、クラス間では類似度が低いというデータとなってる場合、Wの最大固有値のうち自明解を除き、上からk-1個とってきたときに対応する固有ベクトルが(1,1,1,1...,1,0,0,0...)と(0,0,0,0...,0,1,1,1...)のようなクラス所属を表すような値となっている(完全にクラス間の値が0となっている場合の話)。
+上の話をもう少し定式化すると固有ベクトルをe_1,...,e_nとしたときに固有ベクトルの第a成分をk個並べたベクトルs_a = <e_1(a),...,e_k(a)>としたときに、s_aとs_bの距離を
+と定義する。Wがk個のクラスタを持つときにspec(a,b)が小さければa,bが同じクラスに続し,逆も成り立つ[3]。
+Power Iteration
+行列の最大固有ベクトルを求める方法としてべき乗法(Power Iteration)という方法がある。これは適当なベクトルv^0=\sum_i c_i e_iに対してWをt回かけたベクトルが
+となり、最大の固有ベクトルe_1が優越してくることを利用した方法である。
+また、第2固有ベクトルを求める際にはv^0からe_1の成分を除外したものを初期値として同じ反復を繰り返すことにより原理的には求めることができ、以降の固有値も同様に求めることができるが、この方法は数値的に不安定であることが知られている(数値計算の途中で丸め誤差が入り取り除いたはずのe_1の成分が混じってくるため)。
+Power Iteration Clustering
+Power Iteration ClusteringはPower Iterationのv^tの反復途中の値について注目する方法である。今v^tの第a成分と第b成分の差を
+と書く。このときpic(a,b)の値は
+となる。Wがk個のクラスタに分けれるときk+1以降の固有値は速やかに0へ収束するため、
+と近似できる。
+ここでspec(a,b)が0に近いときはpic(a,b)も0に近いことはすぐに分かる。逆についてはe_i(a)-e_i(b)の値が大きくてもお互いにcancel outしてpic(a,b)が0に近くてもspec(a,b)が0に近いとは限らないが[1]ではそのようなことは"uncommon in practice"であると主張している。
+上の議論により、同一クラスのデータについてはpic(a,b)が小さくなるようなクラスタリングを行えばよいことが分かるが、これはvの各成分の値についてK-meansを行えばよい(1次元データのクラスタリングとなる)。
+文章分類への応用[2]
+文章-頻度行列をFとしたとき類似度行列をA=F F^Tとすることによって、文章のクラスタリングを行なうことができる。ここでAの値を明示的に計算するとO(n^2)のメモリが必要となるが、Aとvの行列・ベクトル積が計算できればよいので必要なメモリの量はFの要素数に比例する量で抑えることができる。
+まとめ
+Power Iteration Clusteringは行列のスペクトル分解に基づいたPower Iterationを途中でうち切った値を用いることにより、高速+高精度のクラスタリングを行なうことができる手法である。
+また、参考までにPICを実装してみたものをgithubで公開した。 http://github.com/tsubosaka/PIC
+いくつかのデータについて実験してみたときkが多い(といっても5ぐらい)のときにあまり精度がよくないように思えた。
+参考文献
+[1] Frank Lin, William W. Cohen. Power Iteration Clustering, In Proc ICML 2010 to be appear
+[2] Frank Lin, William W. Cohen. A Very Fast Method for Clustering Big Text Datasets,In Proc ECAI 2010 to be appear
+[3] Marina Meil, Jianbo Shi. A Random Walks View of Spectral Segmentation, In Proc AISTATS 2001
+[4] Ulrike von Luxburg, A tutorial on spectral clustering,Statistics and Computing, pp 396--416, 2007
+『*[機械学習]』の検索結果 - tsubosakaの日記

@@ -1,0 +1,94 @@
+package sample.lucene;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
+public class Main {
+public static void main(String[] args) throws IOException {
+// インデックスの出力先を定義
+Directory indexDir = FSDirectory.open(new File("index"));
+// テキストの解析方法(アナライザー)を定義
+Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_9);
+// 解析方法の設定
+IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyzer);
+// インデックスが既に存在する場合の動作を定義する(OpenMode.CREATE の場合、新規に作成して上書きする)
+config.setOpenMode(OpenMode.CREATE);
+// インデックスを作成するファイル
+File file = new File("MIGRATE.html");
+try (IndexWriter writer = new IndexWriter(indexDir, config);
+BufferedReader br = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
+// Document に、インデックスに保存する各ファイルの情報を設定する
+Document doc = new Document();
+doc.add(new StringField("path", file.getPath(), Store.YES));
+doc.add(new TextField("contents", br));
+// インデックスを書き出す
+writer.addDocument(doc);
+}
+}
+}
+package sample.lucene;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
+public class Main {
+public static void main(String[] args) throws IOException, ParseException {
+// 検索文字列を解析するためのパーサーを生成する
+Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_9);
+// 検索対象のフィールドを第二引数で指定している
+QueryParser parser = new QueryParser(Version.LUCENE_4_9, "contents", analyzer);
+// 検索文字列を解析する
+String searchText = "lucene";
+Query query = parser.parse(searchText);
+// 検索で使用する IndexSearcher を生成する
+Directory indexDir = FSDirectory.open(new File("index"));
+IndexReader indexReader = DirectoryReader.open(indexDir);
+IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+// 検索を実行する(第二引数は、検索結果の最大数)
+TopDocs results = indexSearcher.search(query, 10);
+// 検索の結果、該当した Document を1つずつ取得する
+for (ScoreDoc scoreDoc : results.scoreDocs) {
+Document doc = indexSearcher.doc(scoreDoc.doc);
+// Document の path を取得して出力する
+String path = doc.get("path");
+System.out.println(path);
+}
+}
+}
+Apache Lucene 使い方メモ - Qiita

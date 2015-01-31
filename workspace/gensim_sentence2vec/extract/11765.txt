@@ -1,0 +1,17 @@
+本稿において,我々はパーセプトロンアルゴリズムに基づく,配列や木,グラフ
+などの構造を持ったデータのラベル付け学習アルゴリズムを提案する.
+また,ラベル付けに用いることのできるいくつかのカーネル関数とその効率的な
+計算法を与える.
+提案手法は,完全にカーネル化されており,かつ,点ごとのラベル予測を行うた
+め,任意の数の非観測変数を含む,サイズの大きい素性を用いることができる.
+この点において,提案手法は最大エントロピーマルコフモデルや条件付確率場な
+ど少数の非観測変数をもつ素性しか扱うことのできない既存の手法と大きく異な
+る. 
+We introduce a new perceptron-based discriminative learning algorithm fo
+r labeling structural data such as sequences, trees and graphs.
+Since it is fully kernelized and employs the pointwise label prediction, large features including arbitrary number of hidden variables can be inc
+orporated with polynomial time complexity.
+This is contrasted with existing labelers that can handle only features
+of a small number of hidden variables such as Maximum Entropy Markov Models and Conditional Random Fields.
+We also introduce several kernel functions for labeling sequences, trees and graphs and the efficient algorithms for them.
+研究会 - カーネル法に基づく構造データのラベリング学習アルゴリズム

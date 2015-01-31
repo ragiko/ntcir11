@@ -1,0 +1,53 @@
+
+度数分布表を作る(table, cut, hist)
+離散データの度数分布はtable()関数を使う。同じデータがいくつあるか集計するだけなので、異なった値はすべて別のクラスに分類される。いくつかの値をまとめたいときはcut()関数が必要。
+> dice = sample(1:6,100,replace=T)> dosu = table(dice)			# サイコロの目の度数分布> plot(dosu)				# ヒストグラム> hist(dice+0.01)			# これでも同じ(+0.01は切り捨て誤差抑止の微調整)
+連続データの度数分布はcut()関数を使ってデータをカテゴリーに分け、それをtable()を使ってカテゴリー毎に集計する。離散データの場合も複数のクラスをまとめたい場合はcut関数を利用する。
+> z = cut(rnorm(100), breaks=c(-10,-2:2,10), labels=(1:6))	# 各階級に1から6のラベルが貼られる> z[1:10] [1] 5 4 2 3 2 5 5 4 4 4Levels: 1 2 3 4 5 6> (tb = table(z))		# カテゴリー化されたデータを分類して度数分布を作るz 1  2  3  4  5  6  1 16 37 34 10  2 > plot(tb) 			# ヒストグラム、ただし線グラフ> table(round(rnorm(100),0))	# cutを使わない方法:四捨五入した整数値で分類する-4 -2 -1  0  1  2  3  1  5 25 43 20  5  1 
+hist()関数を使ってヒストグラムを描き、その集計結果を利用することもできる
+z = hist(rnorm(1000), breaks=10)	// 分類クラスの数を指定してヒストグラムを描くz$breaks				// 度数分布の境界値ベクトルz$count					// 度数分布
+条件を満たす配列要素の個数を数える(n, length, which, sum, mean)
+例題 絶対値がa以上になる正規乱数の個数を求める。条件を満たしているならば1、さもなければ0、という判定結果を合計すれば条件を満たす添え字の個数になる。
+普通に考えればfor文。
+a = 3; n = 10000; x = rnorm(n)count = 0for(i int 1:n) if(abs(x[i]) > a) count = count + 1
+同じことをlength()関数を使って表現できる。which( )関数は条件を満たす添え字の集合を作る関数。length() はベクトルの大きさを計算する関数。
+a = 3; n = 10000; length(which(abs(rnorm(n)) > a))length(n[abs(rnorm(n)) > a])		# これでもよいはず
+条件を満たしているならば1、さもなければ0、という判定結果をsum()関数を使って合計すれば、条件を満たす添え字の個数になり、mean()関数を使えば相対度数が計算できる。
+a = 3; n = 10000; mean(abs(rnorm(n)) > a) * n		# sum関数ではうまく行かない??
+例題 円周率推定のモンテカルロ法
+n=10000; mean(runif(n)^2+runif(n)^2<1) * 4
+論理値は TRUE を1とするので、mean()関数を使えば、条件を満たす相対度数が計算出来る。
+おまけ:誤差を計算する場合は
+piMonteCarlo <- function (n) {	zz = runif(n)^2+runif(n)^2 < 1   ### 論理値のベクトル	return(c(mean(zz)*4, sd(zz)*4/sqrt(n)))}piMonteCarlo(100000)	# これで 3.138960000 0.005198843 などと表示される。
+配列の累積和を計算する(cumsum)
+{f[n]}が与えられたとき、F[n] = F[n-1]+f[n]によって累積和ベクトルを計算する
+例題 ランダムウォークのサンプルパスを作る
+m = 1000; rw = sample(c(-1,1),m,replace=T)plot(c(0,cumsum(rw)),type="l")abline(0,0,col="red")m = 1000		## 同じことを for 文を使って実現x = c(0, sample(c(-1,1),1,replace=T))for(i in 2:(m+1)) x[i] = x[i] + x[i-1]plot(x, type="l")
+繰り返し実験(sapply, replicate)
+ある作業を繰り返す場合、for文と同じような働きをする関数として、sapply()関数、replicate関数がある。
+パラメータpを使ってある作業Aを実行し、結果A(p)を得る、という計算を、p=p1,p2,...,pnについて行い、結果A(p1),A(p2),...,A(pn)をベクトルにまとめる、という命令を次のように書く
+sapply(c(p1,p2,...,pn), function(p) {A(p)})
+同一条件で繰り返す場合はreplicate関数が使える。
+replicate(n, A(p))
+例えば
+> sapply(c(1,2,3,4,5), function(x) {x^2})		# c(1,2,3,4,5)^2 と同じ、各要素ごとに2乗
+[1]  1  4  9 16 25
+> sapply(rep(1000,4), function(n) mean(rnorm(n)))	# 正規乱数1000個の平均値を4通り計算する
+[1]  0.02675481 -0.03500802 -0.01315011  0.01796544
+# 次のようにしても同じ
+> replicate(4, mean(rnorm(1000)))	# 正規乱数1000個の平均値を4通り計算する
+例題 表の確率が p のコインを n 回投げて相対度数を計算する、という実験を m回繰り返して、平均値と誤差を見積もり、ヒストグラムを描く
+p = 0.3; n = 100; m = 1000
+xa <- sapply(rep(n, m), function(k) mean(sample(c(1,0),prob=c(p,1-p),k,replace=T)))
+c(mean(xa),sd(xa)/sqrt(m))
+hist(xa, freq=F)
+## xa <- の行は、次のfor文と同じ
+for(i in 1:m) { xa[i] = mean(sample(c(1,0),prob=c(p,1-p),n,replace=T))}
+繰り返し計算:apply
+2次元のデータ配列の各行、あるいは各列に同じ計算をさせるための命令
+apply(df, 2, mean)		# 2次元のデータフレームdfの列ごとに平均値を計算する
+apply(df, 1, max)		# 行毎に最大値を計算する
+apply(df, 2, table)		# 列ごとに度数分布を計算する
+行列計算
+各種関数
+Rのワザ

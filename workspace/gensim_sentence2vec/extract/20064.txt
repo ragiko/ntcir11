@@ -1,0 +1,45 @@
+ベイズネットワークのゲームへの応用(2008/5/2)の続き。というわけでPythonのベイズネットのライブラリであるOpenBayesの使い方をちょっとまとめておきます。ここでは、OpenBayesのチュートリアルにあるSprinklerというベイズネットを作成してみます。この例はいろんなとこでよく見るなぁ。このベイズネットのノードは、
+Cloud (C) : 曇っているか?
+Sprinkler (S) : スプリンクラーで水をまいたか?
+Rain (R) : 雨が降ったか?
+WetGrass (W) : 芝生が濡れているか?
+を表している。各ノードはTrue(1)かFalse(0)の2値を取る。矢印は因果関係を表している。
+CS : 曇っているかによってスプリンクラーを使うか決まる
+CR : 曇っているかによって雨が降るか決まる
+SW : スプリンクラーを使ったかによって芝生が濡れているか決まる
+RW : 雨が降るかによって芝生が濡れているか決まる
+ノードの横にあるのは条件付き確率表(CPT: Conditional Probability Table)といって因果関係の確率を定義している。たとえば、Cloudは親がないので事前確率P(C)になる。Cloudは、0.5の確率でFalse、0.5の確率でTrueになる。Sprinklerは親がいるので条件付き確率P(S|C)になる。CloudがTrueのとき、Sprinklerは、0.9の確率でFalse、0.1の確率でTrueになる。WetGrassは親が2つなのでそのすべての組み合わせに対して条件付き確率P(W|R,S)が決まる。本当は、このCPTはデータから学習するのが一般的だけどここではとりあえず与えられているものとする(後でデータから学習する例を挙げます)。じゃ、このベイズネットをOpenBayesで表現してみる!
+from OpenBayes import BNet, BVertex, DirEdge, JoinTree, MCMCEngine
+# 空のベイズネットを作成
+G = BNet("Water Sprinkler Bayesian Network")
+# ノードを追加
+c,s,r,w = [G.add_v(BVertex(name,True,2)) for name in "c s r w".split()]
+# エッジを追加
+for ep in [(c,r),(c,s),(r,w),(s,w)]:
+G.add_e(DirEdge(len(G.e), *ep))
+# ベイズネットを表示
+print G
+# 分布を初期化(構造を決めた後に実行)
+G.InitDistributions()
+# パラメータを手動で入力
+c.setDistributionParameters([0.5,0.5])
+s.distribution[{"c":0}] = [0.5,0.5]
+s.distribution[{"c":1}] = [0.9,0.1]
+r.distribution[{"c":0}] = [0.8,0.2]
+r.distribution[{"c":1}] = [0.2,0.8]
+w.distribution[{"s":0,"r":0}] = [1.0,0.0]
+w.distribution[{"s":1,"r":0}] = [0.1,0.9]
+w.distribution[{"s":0,"r":1}] = [0.1,0.9]
+w.distribution[{"s":1,"r":1}] = [0.01,0.99]
+# 確率推論
+ie = JoinTree(G)
+#ie = MCMCEngine(G)
+# Sprinkler=True, Cloud=Falseという証拠をセット
+ie.SetObs({"s":1, "c":0})
+# WetGrassの確率を推論
+print ie.Marginalise("w")
+OpenBayesでは、BNetがベイズネットをBVertexがノードをDirEdgeが矢印を表している。パラメータは学習でなく、手動で与えている。事前分布は単にsetDistributionParameters()にリストを渡すだけでよいが、条件付き確率は複雑なのでdistributionに辞書を渡して直接セットしている。ここでは、Falseが0、Trueが1。内部でdistributionがどう配置されているかはけっこう複雑なので下の図にまとめてみた。どういう順番で配置されるかは
+print w.distribution.names_list
+print w.distribution
+で調べられる。上の場合、['w', 'r', 's']と出力される。つまり、リストの外側からw->r->sという入れ子でリスト表現されることになる。基本的に対象ノードが一番外側に来て、親はアルファベット順のようだ。確率推論のアルゴリズムは、厳密計算のJoinTree (JunctionTree)とサンプリング法のMCMCの2つが実装されている。上の例ではJoinTreeを使ってる。証拠のセット(ノードのインスタンシエイト)は、SetObs()に辞書を渡すことでセットする。上の例では、「Sprinklerで水まきした(Sprinkler=True)」「曇っていない(Cloud=False)」という事実がわかっているため証拠としてセットしている。ベイズネットは証拠を積み上げることで確率値(信念)が修正されるのが特徴ですね。最後にWetGrassの確率を推論している。結果は、P(W) = [0.08, 0.92]となった。つまり、芝生が濡れていない確率は0.08、芝生が濡れている確率は0.92。Sprinklerで水まきしたことがわかっているので芝生が濡れている確率の方がずっと高いですね!データからCPTを学習する例はまた今度。
+OpenBayesの使い方(1) - 人工知能に関する断創録

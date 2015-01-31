@@ -1,0 +1,46 @@
+
+QUERY ODBC 
+構文 
+形式 1 
+>>--EXEC SQL---QUERY ODBC---.-COLUMN--.------------------>
++-COLUMNS-+
+>---.--------------------------.--.------------------.--->
++-QUALIFIER qualifier_name-+  +-OWNER owner_name-+
+>--.----------------------.--.------------------------.-->
++-TABLENAME table_name-+  +-COLUMNNAME column_name-+
+>---END-EXEC---<> 
+形式 2 
+>>--EXEC SQL---QUERY ODBC---.-DATATYPE--.---------------->
++-DATATYPES-+
+>---.-------------------------.---END-EXEC---><
++-TYPE--.-datatype_name--.+
++-BIGINT---------+
++-BINARY---------+
++-BIT------------+
++-CHAR-----------+
++-DATE-----------+
++-DECIMAL--------+
++-DOUBLE---------+
++-FLOAT----------+
++-INTEGER--------+
++-LONG VARBINARY-+
++-LONG VARCHAR---+
++-NUMERIC--------+
++-REAL-----------+
++-SMALLINT-------+
++-TIME-----------+
++-TIMESTAMP------+
++-TINYINT--------+
++-VARBINARY------+
++-VARCHAR--------+ 
+形式 3 
+>>--EXEC SQL---QUERY ODBC---.-TABLE--.------------------>
++-TABLES-+
+>---.--------------------------.--.------------------.--->
++-QUALIFIER qualifier_name-+  +-OWNER owner_name-+
+>--.----------------------.--.------------------------.-->
++-TABLENAME table_name-+  +-TYPE tabletype_name----+
+>--END-EXEC--<> 
+パラメータ 
+テーブルの選択に使用する修飾子を指定するホスト変数、識別子、または定数。 すべての ODBC ドライバが修飾子をサポートしているわけではないので、その指定内容は異なります。 たとえば、データソースで複数のデータベースがサポートされている場合は、使用するデータベースを修飾子によって指定できます。 また、ファイルベースのデータソースにアクセスできるドライバの場合は、修飾子を使用して検索対象となる特定のディレクトリを指定できます。
+QUERY ODBC

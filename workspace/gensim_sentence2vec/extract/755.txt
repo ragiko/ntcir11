@@ -1,0 +1,444 @@
+;
+;	君はエントロピーって言葉を知ってるかい?
+;	第1回:熱力学のエントロピー
+@IMG img/Entropy/Entropy01_3Face.png
+@IMG img/Entropy/Entropy02_Face1.png
+@IMG img/Entropy/Entropy03_Face2.png
+@IMG img/Entropy/Entropy04_Face3.png
+@IMG img/Entropy/Entropy05_Concept.png
+@IMG img/Entropy/Entropy06_Low.png
+@IMG img/Entropy/Entropy07_Volta.png
+@IMG img/Entropy/Entropy08_Last.png
+@IMG img/Entropy/Entropy09_Cleaner.png
+@IMG img/Entropy/Entropy10_WhatsS.png
+@IMG img/Entropy/Entropy11_100_0.png
+@IMG img/Entropy/Entropy12_MaxFunc.png
+@IMG img/Entropy/Entropy13_RichPoor.png
+@IMG img/Entropy/Entropy14_Happiness.png
+@IMG img/Entropy/Entropy15_Equality.png
+@IMG img/Entropy/Entropy16_Math.png
+@IMG img/Madoka/Mami_A0.png
+@IMG img/Madoka/Mami_A1.png
+; -- @IMG img/Madoka/Mami_A2.png -- 未使用
+@IMG img/Madoka/Mami_A3.png
+@IMG img/Madoka/Mami_A4.png
+@IMG img/Madoka/Mami_A5.png
+@IMG img/Madoka/Mami_B0.png
+@IMG img/Madoka/Mami_B1.png
+; -- @IMG img/Madoka/Mami_B2.png -- 未使用
+@IMG img/Madoka/Mami_B3.png
+@IMG img/Madoka/Mami_B4.png
+@IMG img/Madoka/Mami_B5.png
+@IMG img/Madoka/Madoka_B1.png
+@IMG img/Madoka/Madoka_B2.png
+@IMG img/Madoka/Madoka_B3.png
+@IMG img/Madoka/Madoka_B4.png
+@IMG img/Madoka/Madoka_B5.png
+@IMG img/Madoka/Madoka_C1.png
+@IMG img/Madoka/Madoka_C2.png
+@IMG img/Madoka/Madoka_C3.png
+@IMG img/Madoka/Madoka_C4.png
+@IMG img/Madoka/Madoka_C5.png
+; @SND snd/amairo.mp3 -- 固定ロード
+@LOAD
+; @BG #FFFFFF solid	-- 不要
+@SETCHAR0 ENTROPY 155 10
+@SETCHAR MAMI 400 25
+; -- @SETCHAR MAMI 500 25
+@SETCHAR MADOKA 80 32
+; -- @SETCHAR MADOKA 0 32
+【ここをクリックしてスタートします】
+; スタティック再生
+; @PLAY amairo 0
+; @VOLUME amairo 0.8
+; ストリーミングロード
+@STREAM snd/01.mami_theme_96k.mp3
+@VOLUME snd/01.mami_theme_96k.mp3 0.5
+* Top
+@CHAR MAMI Mami_A0 soft
+@MOVE MAMI 400 25 99
+こんにちは、巴(ともえ)マミです。
+@CHAR MADOKA Madoka_C1 soft
+@MOVE MADOKA 80 32 99
+えっと、鹿目(かなめ)まどかです。
+@CHAR MAMI Mami_A1 soft
+マミとまどかの特別企画、
+「君はエントロピーって言葉を知ってるかい?」
+全3回シリーズでお届けします。
+@CHAR MADOKA Madoka_B1 soft
+あの、先輩、さっそくなんですけど、
+@CHAR MAMI Mami_B1 soft
+なに、鹿目さん。
+@CHAR MADOKA Madoka_B3 soft
+エントロピーって、知らなくちゃいけないんですか?
+調べてみたんですけど、なんだかとっても難しくて・・・
+もうわけわかんない。
+@CHAR MAMI Mami_B5 soft
+そうね、一人前の魔法少女になるためには、
+やはり知っておいた方がいいと思うの。
+@CHAR MADOKA Madoka_C4 soft
+・・・でも、私なんかでも分かるのかなぁ。
+@CHAR MAMI Mami_A0 soft
+鹿目さん、
+エントロピーが難しいって思うのには、理由があるのよ。
+@CHAR MADOKA Madoka_C3 soft
+え、そうなんですか?
+@CHAR ENTROPY Entropy01_3Face soft
+@MOVE ENTROPY 155 10 99
+@CHAR MAMI Mami_A1
+@MOVE MAMI 500 25
+実はエントロピーには3つの顔があるの。
+1.熱力学のエントロピー、
+2.統計力学のエントロピー、
+3.情報理論のエントロピー。
+@MOVE MADOKA 0 32
+ど、どれも難しそう。
+@CHAR MAMI Mami_B5 soft
+1つ1つは、それほど難しくないの。
+ただ、エントロピーの本当の深い意味は、
+この3つを結びつける共通概念だってところにあるのよ。
+@CHAR MADOKA Madoka_B1 soft
+なんだかとっても大変そうですね、、、
+@CHAR MAMI Mami_B4 soft
+そうね、とにかくエントロピーをたった一言で説明するには無理があって、
+少なくとも3つの言葉が必要になるの。
+@CHAR MADOKA Madoka_B4 soft
+あっ、だから全3回シリーズなんですね。
+@CHAR MAMI Mami_A5 soft
+その通り。
+でも、最初に方向を見失わないように、
+エントロピーの3つの意味を、簡単に説明しておくね。
+@CHAR MADOKA Madoka_B2 soft
+はい、お願いします。
+@CHAR ENTROPY Entropy02_Face1 soft
+@MOVE ENTROPY 175 10 99
+@CHAR MAMI Mami_A0 soft
+1つ目、熱力学のエントロピー。
+「エントロピーとは、エネルギーの質の低下を示す量」
+エネルギーを使えば使うほど、エントロピーが増えてゆくってこと。
+@CHAR MADOKA Madoka_B1 soft
+ええと、、、
+エネルギーって、電池みたいにだんだん減っていくってことで、いいのかな。
+@CHAR MAMI Mami_A5 soft
+そう、だいたい合っているわ。
+@CHAR ENTROPY Entropy03_Face2 soft
+@MOVE ENTROPY 160 10 99
+@CHAR MAMI Mami_A0 soft
+2つ目、統計力学のエントロピー。
+「エントロピーとは、乱雑さの度合い」
+でたらめで、不規則なものほど、エントロピーが大きい。
+@CHAR MADOKA Madoka_B5 soft
+うーん、でたらめ、不規則、
+・・・それって数字で測れるのかなぁ?
+@CHAR MAMI Mami_B1 soft
+そうね、感覚的な乱雑さを、
+どうやって数字に直すのかってところがポイントよ。
+@CHAR ENTROPY Entropy04_Face3 soft
+@MOVE ENTROPY 180 10 99
+@CHAR MAMI Mami_A1 soft
+3つ目、情報理論のエントロピー。
+「エントロピーとは、わからなさ、不確定要素の大きさ」
+物事の結果がわからないほど、エントロピーは大きくなる。
+@CHAR MADOKA Madoka_C5 soft
+あー、もうわけわわかんない。
+今の私は、とっても大きなエントロピー!
+@CHAR MAMI Mami_A5 soft
+うふふ、それ、正解。
+@CHAR MADOKA Madoka_C3 soft
+えー、そうなんですかー。
+@CHAR MAMI Mami_B0 soft
+今、鹿目さんの頭の中には、こうでもない、ああでもない、って、
+たくさんの不確実な選択肢が浮かんでいるでしょ。
+エントロピーは、その選択肢の数に関係しているの。
+@CHAR MADOKA Madoka_B3 soft
+えーと、わからないのがエントロピー?!
+だってことがわかったような・・・
+でも、エネルギーと、乱雑さと、わからなさって、全然違うように思うんですけど。
+@CHAR ENTROPY Entropy05_Concept soft
+@MOVE ENTROPY 165 10 99
+@CHAR MAMI Mami_A0 soft
+そう、一見すると、このエントロピーの3つの顔は、全く違ったものに見える。
+でも、1つ1つたどってみると、確かに3つを結びつける理論の糸があるの。
+エネルギー -> 乱雑さ -> 情報。
+現在では「情報をエネルギーに変換」できるのではないか、とまで言われているわ。
+@CHAR MADOKA Madoka_C2 soft
+情報をエネルギーに・・・
+それって、すごくないですか!
+@CHAR MAMI Mami_B3 soft
+確かに、すごいことね。
+私は、原子力に替わる未来のエネルギーは、きっと情報エネルギーだと信じている。
+でも、ちょっと残念なことに、エントロピーとか、情報エネルギーって、
+言葉ばかりが一人歩きしていて、間違いや誤解も少なくないの。
+@CHAR MADOKA Madoka_B4 soft
+情報エネルギーって、何だか魔法みたいですもんね。
+@CHAR MAMI Mami_B5 soft
+よくできた科学は魔法と区別がつかない。
+魔法のような科学を伝えるのも、魔法少女のお仕事なの。
+@CHAR MADOKA Madoka_B1 soft
+魔法少女って、たいへんなんだ～
+@CHAR MAMI Mami_A4 soft
+そう、はたで見ているほどいいものじゃないわよ、魔法少女なんて・・・
+まず今回は、
+1.熱力学のエントロピー
+を見ておきましょう。
+@CHAR ENTROPY Entropy02_Face1 soft
+@CHAR MADOKA Madoka_C3 soft
+ええと、エネルギーは電池みたいにだんだん減っていく、ってことだっけ。
+@CHAR MAMI Mami_B0 soft
+そういうこと。
+鹿目さんは、「熱力学の法則」って聞いたことがあるかしら?
+@CHAR MADOKA Madoka_B3 soft
+ねつりきがくのほーそく?
+@CHAR ENTROPY Entropy06_Low soft
+@MOVE ENTROPY 155 10 99
+@CHAR MAMI Mami_B5 soft
+熱力学第1法則(エネルギー保存の法則)
+エネルギーの総量は、増えも減りもしない。
+@CHAR MAMI Mami_B1 soft
+熱力学第2法則(エントロピー増大の法則)
+利用可能なエネルギーは、減る一方である。
+@CHAR MADOKA Madoka_C3 soft
+電池のことを考えると、あたりまえに思うんですけど・・・
+@CHAR MADOKA Madoka_C5 soft
+って、あれ、あれれ? ちょっと変だよ。
+だって1番目は「増えも減りもしない」なのに、
+2番目は「減る一方」ってなってるもん。
+@CHAR MAMI Mami_A3 soft
+そう、気がついたかしら。
+エネルギー自体は「増えも減りもしない」。
+なのにエネルギーは「減る一方」である。
+これは矛盾ではないかしら。
+@CHAR MADOKA Madoka_B3 soft
+でも、電池だって、ガソリンだって、だんだん減っていくよね。
+だったら正しいのは2番目の方、なのかな?
+@CHAR MAMI Mami_A4 soft
+よく考えてみましょう。
+例えば電池を使って豆電球を灯したら、
+電池のエネルギーは何処に行くのかしら?
+@CHAR ENTROPY Entropy07_Volta soft
+@MOVE ENTROPY 185 10 99
+@CHAR MADOKA Madoka_B1 soft
+ええと、たぶん、光のエネルギーに変わる。
+@CHAR MAMI Mami_B0 soft
+そう。電池のエネルギーは、
+豆電球から発せられる光のエネルギーと、
+豆電球の温度を上げる熱エネルギーに変化しているわ。
+では次に、光に変わったエネルギーは、何処に行くのかしら?
+@CHAR MADOKA Madoka_C4 soft
+ええと、、、だんだん散らばって、最後には消えちゃう。
+@CHAR MAMI Mami_A0 soft
+そうね。感覚的には「薄く広く散らばって消えてしまう」って感じかな。
+でも、本当は全く消えてしまうわけではないの。
+光が当たった物体や、部屋の壁に吸収されて、熱エネルギーに変化しているわ。
+つまり、光に照らされた物体は、ほんの少しだけ温度が上がるってわけ。
+@CHAR MADOKA Madoka_C2 soft
+じゃあ結局、電池のエネルギーは、最後には熱エネルギーに変わるんですね。
+@CHAR ENTROPY Entropy08_Last soft
+@MOVE ENTROPY 185 10 99
+@CHAR MAMI Mami_A5 soft
+その通り。熱エネルギーは、いわばエネルギーの終着駅みたいなもの。
+@CHAR MAMI Mami_A1 soft
+ガソリンで走った自動車の運動エネルギーは、最後はブレーキの摩擦熱に変わる。
+太陽エネルギーで育った野菜は、食物連鎖を経てあなたの活動を支えて、
+最後には体温となって発散する。
+@CHAR MADOKA Madoka_B3 soft
+どんなエネルギーでも、最後には熱エネルギーになっちゃうんですか?
+@CHAR MAMI Mami_B3 soft
+1つ1つ確かめてみればわかることよ。どんな形態のエネルギーであっても、
+使うたびにだんだん薄く、広く散らばっていって、
+最後には「元通りに戻せない」姿になる。
+熱エネルギー、より正しくは「熱平衡状態」に近づいていくの。
+@CHAR MADOKA Madoka_C3 soft
+エネルギーは消えちゃうわけじゃなくって、
+薄く、広く散らばっていく、ってことなのか・・・
+だったら、散らばったエネルギーをまた集めてくることって、できないのかなぁ。
+ほら、散らかった部屋をお掃除しますよ～、みたいな感じで。
+@CHAR ENTROPY Entropy09_Cleaner soft
+@MOVE ENTROPY 165 10 99
+@CHAR MAMI Mami_B5 soft
+それが、どうしてもできないの。お掃除で集められるエネルギーよりも、
+お掃除のために新たに散らばるエネルギーの方が大きくなってしまう。
+冷蔵庫やクーラーを使えば、散らばった熱エネルギーを集めてこれるけど、
+動かすのにもっと大きな電気エネルギーが必要になでしょう。
+@CHAR MADOKA Madoka_B5 soft
+そっかー。じゃあ、エネルギーは最後には無くなっちゃう・・・
+じゃなくて、バラバラに散らばっちゃうんだね。
+@CHAR MAMI Mami_A3 soft
+残念だけど、これはどうしようもない事実なの。
+どんなにすごい科学技術だって、つきつめればエネルギーを
+どう使うかっていう方法の1つに過ぎないのよ。
+@CHAR MADOKA Madoka_C1 soft
+それがエントロピー増大の法則ってことだったんだね・・・
+・・・って、それとエントロピーはどう関係してるの?
+@CHAR ENTROPY Entropy10_WhatsS soft
+@MOVE ENTROPY 200 10 99
+@CHAR MAMI Mami_A0 soft
+エントロピーっていうのは、エネルギーがどれだけバラバラに
+散らばっているかを表す数字なの。
+つまり、エネルギーの散らばり具合。
+@CHAR MADOKA Madoka_B1 soft
+エネルギーの散らばり具合って、どうやって測るんですか?
+@CHAR MAMI Mami_A1 soft
+調べたいものの「温度」と「出入りした熱量」。
+この2つさえ分かれば、あとは簡単な計算で
+「散らばり具合」を知ることができるの。
+@CHAR MADOKA Madoka_C5 soft
+「温度」と「出入りした熱量」?
+計算って、なんかたいへんそう・・・
+@CHAR MAMI Mami_A5 soft
+簡単よ、割り算するだけ。
+(出入りした熱量) ÷ (温度)
+これを調べたいもの全体で足し合わせた量が、エントロピー変化よ。
+@CHAR MADOKA Madoka_C3 soft
+なんで割り算なんですかー。
+全然イメージ湧かないんですけどー。
+@CHAR ENTROPY Entropy11_100_0 soft
+@MOVE ENTROPY 160 10 99
+@CHAR MAMI Mami_A0 soft
+簡単な例で試してみましょう。
+今ここに、100℃のお湯と、0℃の水があったとするね。
+@CHAR MADOKA Madoka_B5 soft
+うん、それで。
+@CHAR MAMI Mami_B5 soft
+お湯と水を混ぜると、50℃のぬるま湯になるでしょ。
+このとき、混ぜる前と、混ぜた後では、
+「エネルギーの散らばり具合」はどう変わるかしら。
+@CHAR MADOKA Madoka_B1 soft
+ええと、混ぜた後の方が「均一に散らばっている」感じがします。
+@CHAR MAMI Mami_B3 soft
+その感じをはっきりした数字にしたいの。
+まず温度だけれど、全て摂氏ではなくて絶対温度に直してから計算します。
+摂氏0度は、絶対温度273度ってことよ。
+@CHAR MADOKA Madoka_C1 soft
+摂氏温度に、273ずつ足せばいいのね。
+@CHAR MAMI Mami_A1 soft
+そう。それでエントロピー変化を計算すると、
+・お湯 -> ぬるま湯の変化: - 50/(100+273) = -0.134
+・水  -> ぬるま湯の変化: + 50/( 0 +273) = 0.183
+・2つの変化の合計: -0.134 + 0.183 = 0.049
+確かに、(出入りした熱量) ÷ (温度) の合計値はプラスになっているわ。
+@CHAR MADOKA Madoka_B3 soft
+・・・うーん、計算方法はわかったけど、
+何やってるのかわかった気がしない。
+@CHAR ENTROPY Entropy12_MaxFunc soft
+@MOVE ENTROPY 165 10 99
+@CHAR MAMI Mami_B4 soft
+そうねえ・・・ 
+温度が Ta と Tb の、2つのコップの間で熱量Qを受け渡したとき、
+- Q / Ta + Q / Tb という式の値がどう変わるのか、考えてみて。
+@CHAR MADOKA Madoka_C4 soft
+ええと・・・
+分数は分母が大きいほど、値が小さくなるから、
+・・・式の値はプラスになるのかな?
+@CHAR MAMI Mami_A5 soft
+その通り。熱量Qが、分母の大きい方から小さい方に移動したときに、
+式の値がプラスになるわ。
+これって「熱は高温から定温に移動する」という当たり前の事実を、
+数字に置き換えただけ。
+@CHAR MADOKA Madoka_C5 soft
+・・・・・・
+@CHAR MAMI Mami_B5 soft
+分数ってね、「分母を基準にして測る」っていう意味があるの。
+うんと温度が高いコップAにとって、1度の熱量が増減する意味は小さい。
+でも、温度が低いコップBにとっては、同じ1度の変化でも大きな意味がある。
+@CHAR MADOKA Madoka_C3 soft
+それって、同じ100円でも、お金持ちと貧乏とでは重みが違うってことですか?
+@CHAR ENTROPY Entropy13_RichPoor soft
+@MOVE ENTROPY 180 10 99
+@CHAR MAMI Mami_B4 soft
+言い方は悪いけど、つまりそういうことなの。
+お金持ちにとっての100円はたいしたことないけど、
+貧乏にとっての100円には大きな意味があるわ。
+@CHAR MAMI Mami_A3 soft
+そこでちょっと考えてみてほしいの。
+お金持ちと貧乏、2人合わせた「お金の意味」を一番大きくするには、
+どうしたらいいのかって。
+@CHAR MADOKA Madoka_C4 soft
+ええと・・・2人のお金が同じになって、平等になったとき・・・って、
+@CHAR MADOKA Madoka_C2 soft
+あっ、そういうことか!
+@CHAR ENTROPY Entropy14_Happiness soft
+@MOVE ENTROPY 175 10 99
+@CHAR MAMI Mami_A5 soft
+そう、エントロピーっていうのは、エネルギーを分配する
+「平等の度合い」を表す数字だったの。それを計算するのに
+「お金持ちにとっての1度の意味は小さい、貧乏にとっての1度の意味は大きい」
+ってすると、うまい具合に平等が実現できるのよ。
+@CHAR MADOKA Madoka_B2 soft
+エントロピーは平等の度合いってことかー。
+じゃあ、エネルギーは、最後にはみんな平等に分け与えられるってことなんですね。
+@CHAR ENTROPY Entropy15_Equality soft
+@MOVE ENTROPY 160 10 99
+@CHAR MAMI Mami_A1 soft
+そう、分子の立場に立ってみれば、エネルギーを最後まで平等に分配したのが
+エントロピー最大の状態。
+それを幸せと思うか、エネルギーの終着駅だと思うかは、
+物理の問題ではなくて、人それぞれ。
+@CHAR MADOKA Madoka_C1 soft
+エネルギーの平等分配=エントロピー最大。
+なんとなくわかってきました。
+@CHAR ENTROPY Entropy16_Math soft
+@MOVE ENTROPY 215 10 99
+@CHAR MAMI Mami_B3 soft
+単純な例だと、割り算の答を足し合わせただけだけれど、
+これが連続的な変化になると、微分積分という計算テクニックが必要になってくるの。
+教科書にはこんな風に書いてあるわ
+dS = d'Q / T 
+@CHAR MADOKA Madoka_C5 soft
+微分積分ですかぁ。
+あたし、あんまり得意じゃないんだけどな～
+@CHAR MAMI Mami_B1 soft
+一見難しそうだけど、実は「割り算の結果を細かく足し合わせただけ」で、
+意味は変わらないのよ。
+数式は魔法の言葉。数式の呪文が詠唱できれば、
+きっと鹿目さんも一人前の魔法少女になれるわよ。
+@CHAR MADOKA Madoka_B2 soft
+・・・そうなんだ。
+私、やってみようかな。
+@CHAR MAMI Mami_A5 soft
+そう、その意気!
+鹿目さんの決意、いつでも待っているからね。
+@CHAR MAMI Mami_A0 soft
+/
+・・・ということで、第1回「熱力学のエントロピー」
+いかがでしたか?
+@CHAR ENTROPY Entropy06_Low soft
+@MOVE ENTROPY 155 10 99
+@CHAR MAMI Mami_A1 soft
+今回のまとめです。
+熱力学第1法則(エネルギー保存の法則)
+エネルギーの総量は、増えも減りもしない。
+@CHAR MAMI Mami_B5 soft
+熱力学第2法則(エントロピー増大の法則)
+利用可能なエネルギーは、減る一方である。
+@CHAR ENTROPY Entropy10_WhatsS soft
+@MOVE ENTROPY 200 10 99
+@CHAR MADOKA Madoka_C1 soft
+(エントロピー変化) = (出入りした熱量) ÷ (温度) を足し合わせた量。
+/
+「エネルギーの平等分配 = エントロピー最大」
+@CHAR MAMI Mami_A0 soft
+それでは、次回「統計力学のエントロピー」に、
+@CHAR MAMI Mami_A5 soft
+ティロ・フィナーレ!
+@
+/
+* おしまい *
+@
+/
+@
+/
+@
+/
+@
+/
+@
+/
+@
+/
+@
+/
+@
+* 最初に戻ります *
+@GOTO Top
+

@@ -1,0 +1,5 @@
+変分ベイズ法はそれぞれのモデルの構造を、500 MHz Pentium III上でのCPU時間2,3分で正確に推論する。The variational Bayesian method correctly inferred the structure of each model in 2-3 minutes of CPU time on a 500 MHz Pentium III.
+- コンピューター用語辞典
+ベイズ統計学の過去に起こった事が未来にも起こるという推論を事前分布と事後分布の公式に変数を入力するだけで未来の予言が当たる確率の出るソフトを作る。Based on the Bayesian satistic inference that a past event will occur also in the future, software capable of providing a future prediction's probability of proving right only by inputting variables to before-distribution and after-distribution formulae is formed. - 特許庁
+変分ベイズ学習を用いた音声認識におけるBaum-Welchアルゴリズム及びViterbiアルゴリズムでは、繰り返し処理により音響パラメータを求めるため、計算量が膨大となる。To solve the problem that Baum-Welch algorithm and Viterbi algorithm for speech recognition using variation Bayesian learning are large in calculation quantity since acoustic parameters are obtained through repetitive processing. - 特許庁
+変分ベイズの英語・英訳 - 英和辞典・和英辞典 Weblio辞書

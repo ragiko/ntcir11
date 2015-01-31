@@ -1,0 +1,134 @@
+実行可能コンテンツ(block、満たされたaction、いくつかの満たされたactionの集合、のうち1つ)を実行すること。実行中にあるイベントが発生すると、その実行可能コンテンツの実行は中止される。そのとき、適当なイベントハンドラが実行され、これであるform item、次のformの主ループ(mainloop)の繰り返し作業、formの外への回復制御を行う。
+以下にFIAの概念を示す。FIAは初期発話無し、又は別のダイアログから回って来た初期発話で始めることができる。
+//
+// Initialization Phase(初期化)
+//
+foreach (ドキュメント内の出現順に <var> と form item変数)
+変数を宣言し、もしexpr属性があればその値に初期化する。
+さもなくばundefinedにする。
+foreach (field item)
+promptカウンタを宣言し、1にセットする。
+if (initial itemがある)
+promptカウンタを宣言し1にセットする。
+if (ユーザが別のformにいる間に、現在のformの文法と対応する発話によって)
+{
+下記のmainループに入る。ただしセレクトフェーズではなくプロセス
+フェーズからスタートする:なぜなら、すでに処理すべきコレクションを
+持っているからである。
+}
+//
+// Main Loop: 次のform itemを選択し、それを実行する。
+//
+while (true)
+{
+//
+// Select Phase(選択):visitするためのform itemを選択する。
+//
+if ( 直前のmain loopのiterationが<goto nextitem>で終わった。)
+次のフォーム項目を選択する。
+else if (unsatisfied guard conditionのform itemがある。)
+ドキュメント中のそのようなform itemの最初のものを選択する。
+else
+<exit/>を実行する。 -- fullであり、遷移が指定されていない。
+//
+// Collect Phase(収集):選択されたform itemを実行する。
+//
+// そのform itemのpromptをキューに入れる。
+unless (直前のloopのiterationが"<reprompt>がない"というcatchで
+終わった。)
+{
+そのform item用に適切な複数のpromptを選択する。
+次のcollect操作の前に、選択された複数のpromptを再生のために
+キューに入れる。
+現在のform itemのpromptカウンタをインクリメントする。
+}
+// そのform itemのための文法をactivateする。
+if (そのform itemがモーダルである。 )
+現在のform itemに文法があればそれを有効文法集合とする。
+(注:form itemの中には文法を全く持てないものもある。
+例:<block>。)
+else
+現在のform itemの文法と、現在のフォームと、それぞれのスコープ
+中の全ての文法を現在のドキュメントと現在のapplicationルート
+ドキュメントと<subdialog>コールチェインの上位の要素の
+activeな文法セットとする。
+// form itemの実行。
+if (<field>が選択されていれば)
+ユーザからの発話またはイベントを収集。
+else if (<record>が選択されていれば)
+ユーザからの発話(録音されたバイト列をname/valueペアとして)
+またはイベントを収集。
+else if (<object>が選択されていれば)
+objectを実行し、返ってきたECMAScript値をそのobjectの
+form itemの変数にセットする。
+else if (<subdialog>が選択されていれば)
+objectを実行し、返ってきたECMAScript値をそのobjectの
+form itemの変数にセットする。
+else if (<transfer>が選択されていれば)
+transferを実行する。そして、もしwaitがtrueならばform itemの
+変数に、result status indicatorの返り値をセットする。
+else if (<initial>が選択されていれば)
+ユーザからの発話またはイベントを収集。
+else if (<block>が選択されていれば)
+{
+定義された値を、blockのform item変数に代入する。
+blockの実行可能コンテキストを実行する。
+}
+//
+// Process Phase(処理フェーズ):発話やイベントを処理する。
+//
+// あるイベントの処理。
+if (form itemの実行によってイベントが発生した。)
+{
+そのイベントに対する適当なcatchを見つける。
+そのcatchを実行する(そのときFIAから抜ける可能性がある。)
+continue.
+}
+// 発話があった場合に限られる:外部の文法を処理。
+if (発話がform外の文法に合った。)
+{
+if (その文法が<link>要素に属する。)
+FIAを抜け、<link>のgoto、又はthrowを実行する。
+if (その文法がmenuの<choice>要素に属する。)
+FIAを抜け、<choice>のgoto、又はthrowを実行する。
+// その文法が別のform(又はmenu)に属する。
+別のform(又はmenu)のFIAに発話を渡し、そのform(又はmenu)に遷移
+する。
+}
+// このformからある文法に話し掛けたような発話の処理
+// はじめ、発話のslot値を、相当するform item変数にコピーする。
+"just_filled"フラグをすべてクリアする。
+foreach (ユーザ発話の中にあるslot)
+{
+if (そのslotはfield itemに相当する。)
+{
+そのfield itemのform item変数に、そのslot値をコピーする 。
+このfield itemの"just_filled"フラグを立てる。
+}
+}
+// 少しでもfield itemが埋まっているなら、<initial>form item変数を
+セットする。
+if (どのfield item変数もユーザ発話の結果として、セットされている。)
+<initial>form item変数をセットする。
+// 次に、この発話が引き金となるあらゆる<filled>actionを実行する。
+foreach (ドキュメン中にある<filled>action)
+{
+// form item変数を<filled>要求に限定する。
+N = <filled>の"namelist"属性。
+if (Nが"")
+{
+if (その<filled>がform itemの子である。)
+N = form itemのform item変数名
+else if (その<filled>がformの子である。)
+N = そのformにあるすべてのform item変数名。
+}
+// その<filled>は誘発されたか?
+if (あらゆるform item変数が、N="just_filled"な集合にある。
+AND (その<filled>モードは"all"。
+AND Nの中のall変数は埋まっている。)
+OR (その<filled>モードは"any"。
+AND Nの中のany変数は埋まっている。))
+その<filled>actionを実行する。
+}
+}
+Galatea Dialog Studio

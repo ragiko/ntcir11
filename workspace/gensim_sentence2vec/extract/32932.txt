@@ -1,0 +1,159 @@
+イントロダクション
+我々が観測する事のできない状態(潜在変数)が存在し、その隠れた状態に応じて実際に観測される時系列データ(観測変数)が生成されているような状況を考える。このような条件設定が当てはまると考えられる状況として
+観測できない音源が裏側に潜んでおり(潜在変数)、それに応じて実際に観測される音声などの信号(観測変数)が変動する
+観測できない経済状態が裏側に潜んでおり(潜在変数)、それに応じて実際に観測される株価等の経済指標(観測変数)が変動する
+等があげられる。ここで条件として潜在変数は離散的であり、かつ潜在変数の変化(状態遷移)がマルコフ過程である事を仮定する。このような状況・条件を統計的にモデリングするための基本的なモデルが隠れマルコフモデル(Hidden MarKov Model、以下HMM)と呼ばれている統計モデルである。
+ここでは合計\( N \)個の時間的に連続した観測変数系列\( X:=x_{1:N}:=\{x_1,\cdots,x_N\} \)が取得できたとし、その裏側には観測変数系列の各要素\( x_i,i \in \{1,\cdots,N\} \)を生成した潜在変数系列\( Z:=z_{1:N}:=\{z_1,\cdots,z_N\} \)が存在していると考える。この時、\( X \)と\( Z \)の同時分布を
+\[  P(X,Z) = p(z_1) \left\{ \Pi_{k=2}^N p(z_k|z_{k-1}) \right\} \Pi_{m=1}^N p(x_m|z_m) \]
+あるいはモデルパラメーター\( \theta = \{\pi,A,\phi\} \)を陽に書いて
+\[  P(X,Z) = p(z_1|\pi) \left\{ \Pi_{k=2}^N p(z_k|z_{k-1,A}) \right\} \Pi_{m=1}^N p(x_m|z_m,\phi_{z_m}) \]
+と書いた時、これがHMMで表現された観測変数と潜在変数の同時分布関数となる。各モデルパラメーターは
+\( \pi \):潜在変数\( z_0 \)、すなわち初期潜在変数の各状態を取る確率(通常ベクトル)
+\( A \):ある潜在状態\( z_{k-1} \)から次の潜在状態\( z_{k} \)へと遷移する遷移確率(通常行列)
+\( \phi_{z_m} \):ある潜在状態\( z \)から観測変数\( x \)を生成する際に用いられるパラメーター集合(正規分布の場合は平均・分散の組)
+と解釈される。
+このHMMで使用される代表的なアルゴリズムとして
+Baum-Welchアルゴリズム:観測変数系列\( X \)から、EMアルゴリズムでモデルパラメータ\( \theta = \{\pi,A,\phi\} \)を推定
+Viterbiアルゴリズム:観測変数系列\( X \)から計算される尤度関数を最大化する潜在変数系列\( Z \)を動的計画法で求める
+があげられる。
+モデルの詳細・数式変形等についてはビショップの「パターン認識と機械学習 下」(以下PRMLと表記)の第13章系列データを読むと良い。また Machine Learning Advent Calendar 2012の24日に「Supplemental Notes for 隠れマルコフモデル」と称して、上述のビショップよりも丁寧に数式変形したノートをUPする予定・・・予定は未定。
+R言語での使用方法と具体例
+R言語には隠れマルコフモデルを扱うためのRHmmパッケージが存在し、上述の2アルゴリズムも使うことができる。試しに簡単な例として、潜在変数\( z \)は2つの状態だけをとり(ここでは簡便的に\( z=1 \)と\( z=2 \)と書いて潜在変数の状態を区別する)、条件付き確率\( p(x|z) \)を\( z \)の状態に応じて
+\( p(x|z=1) \):正規分布(平均\( mean_1 =0.1 \)、分散\( var_1=0.02 \))
+\( p(x|z=2) \):正規分布(平均\( mean_2=-0.05 \)、分散\( var_2=0.09 \))
+と平均・分散の異なる2つの正規分布とする。
+この条件下で観測変数系列\( X \)として以下のような300個のデータを用意した。
+set.seed(1)
+size <- 100
+# 正規分布の設定
+mean.1 <- 0.1
+var.1 <- 0.02
+mean.2 <- -0.05
+var.2 <- 0.09
+# データの生成
+x.1 <- rnorm(size, mean.1, sqrt(var.1))
+x.2 <- rnorm(size, mean.2, sqrt(var.2))
+x.3 <- rnorm(size, mean.1, sqrt(var.1))
+x <- c(x.1, x.2, x.3)
+この時、潜在変数系列\( Z \)は
+状態1(100データ)⇒状態2(100データ)⇒状態1(100データ)
+というように状態1(\( z=1 \))と状態2(\( z=2 \))の間を推移していることに対応する。
+まずはパラメーター\( \theta=\{\pi,A,\phi\} \)を推計することを考え、その場合にはHMMFit関数(Baum-Welchアルゴリズム)を使用する。
+library("RHmm")
+hmm.fitted <- HMMFit(x, dis = "NORMAL", nStates = 2)
+これで
+観測変数が正規分布(dis=&ldquo;NORMAL&rdquo;)
+潜在状態の総数:2
+という隠れマルコフモデルのパラメーター\( \theta = \{\pi,A,\phi\} \)の推定が完了する。推定結果はHMMという属性にHMMClassのオブジェクトとして格納されている。
+hmm.fitted$HMM
+## 
+## Model:
+## ------
+## 2 states HMM with univariate gaussian distribution
+## 
+## Initial probabilities:
+##        Pi 1 Pi 2
+##   1.634e-13    1
+## 
+## Transition matrix:
+##         State 1  State 2
+## State 1 0.99007 0.009925
+## State 2 0.00547 0.994530
+## 
+## Conditionnal distribution parameters:
+## 
+## Distribution parameters:
+##             mean     var
+## State 1 -0.05033 0.08128
+## State 2  0.10901 0.01803
+ここでの推定された分布パラメーター(Distribution parameters)を観てみると
+## Conditionnal distribution parameters:
+## 
+## Distribution parameters:
+##             mean     var
+## State 1 -0.05033 0.08128
+## State 2  0.10901 0.01803
+となっており、おおよそ設定しておいたパラメータ
+\( p(x|z=1) \):正規分布(平均\( mean_1 =0.1 \)、分散\( var_1=0.02 \))
+\( p(x|z=2) \):正規分布(平均\( mean_2=-0.05 \)、分散\( var_2=0.09 \))
+が推定されているのが分かる(状態の番号付が逆になっている点は本質ではない)。
+次にHMMの応用(例:異常検知・レジーム推定)として重要な量となる観測変数系列(データ)が与えられた条件付の下での潜在状態変数の確率\( \gamma \)を計算する。
+\[ \gamma_t = p(z_t|X) = p(z_t|x_{1:T}) \]
+今回は手動で作成した適当なモデルなので潜在変数系列がどのような状態をとっているのかが自明であるが、当然現実の問題では潜在変数系列\( Z \)の推移は観測することができないので、これを観測変数系列である\( X \)から推定するということである。
+これを計算するにはフォワード\( \alpha \)再帰・バックワード\( \beta \)再帰という、計算量を低減させたアルゴリズムがよく用いられている。この再帰アルゴリズムを使うためにはforwardBackward関数に対してHMMFit関数で計算したオブジェクトを引数として指定し、以下のように書けばよい。
+# フォワードα・バックワードβ再帰による確率計算
+fb <- forwardBackward(hmm.fitted, x)
+このリストのGammaに格納されている値がまさに「観測変数が与えられた条件付の下での潜在状態変数の確率」である
+\[ \gamma_t = p(z_t|X) = p(z_t|x_{1:T}) \]
+に対応している。今回のケースの場合、実際の潜在状態の推移がわかっているのでそれも重ねてPLOTすると
+# 描画用の色を適当に設定
+color.state.1 <- rep("deepskyblue", size)
+color.state.2 <- rep("firebrick1", size)
+color.state <- c(color.state.1, color.state.2, color.state.1)
+# 背景の描画
+barplot(rep(1, 3 * size), col = color.state, border = color.state, space = 0, 
+xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+par(new = TRUE)
+# gammaの時系列プロット
+matplot(fb$Gamma[, 1], type = "l", main = "Probability being in State 2", ylab = "Probability", 
+lwd = 3)
+legend(x = "topright", "State2", fill = 1, bty = "n")
+となる。正答は背景色で表現しており、
+*背景色が水色:状態1にいる箇所
+*背景色が赤色:状態2にいる箇所
+となっている。黒線で示したものが状態2にいる確率(推定値)であり、数式で書くと
+\[ \gamma_t(z_t = 2) = p(z_t = 2|X) \]
+に対応している。この結果からある程度妥当なレベルで状態遷移の推定が行えていることが分かる。
+今回は状態2にいる条件付き確率をPLOTしたが、もし状態1にいる条件付確率をPLOTしたい場合には、コード上で
+fb$Gamma[,1]
+となっている箇所を
+fb$Gamma[,2]
+にすればよい。
+ここでは紹介しきれなかったが、Viterbiアルゴリズムを用いて潜在変数系列の最尤推定を行いたい場合には、その名の通りviterbi関数が用意されているのでこれを用いればよい(正直、応用として私はあまり使わないので割愛)。
+実際のデータに対するフィッティング
+実際のデータを用いた分析例として、ここでは同じくR言語のパッケージであるRFinanceYJパッケージを使い、株価を観測変数系列として分析を行う。具体的には株価(観測変数)はある程度経済の状態、特に対象としている企業の財務・収益状態を反映すると考えられるので、株価を観察することで裏側に潜むある種の"会社の状態"(潜在変数)を推定するという問題である。
+まずは元となるデータの取得&加工を行う。
+library(RFinanceYJ)
+# 株価取得&終値のみに変更
+stock.price <- quoteStockTsData("2432.t", since = "2012-01-04", date.end = "2012-10-31")
+stock.price <- stock.price[, c("date", "close")]
+stock.price$date <- as.Date(stock.price$date)
+# 株価収益率に変換
+stock.return <- with(stock.price, close[-1]/close[-length(close)] - 1)
+次にHMMモデルとして
+会社の状態は3状態をとる(3状態にしたのは完全にアドホック)
+観測データである株価収益率は正規分布に従う
+と仮定し、モデルの推定を行う
+# HMMモデルによる推定
+hmm.fitted <- HMMFit(stock.return, dis = "NORMAL", nStates = 3)
+probabilities <- forwardBackward(hmm.fitted, stock.return)
+ここで推定した会社の状態(3状態)のうち「どの状態が会社にとっての危険な状態」を表しているかを考える。ここでは一般に言われているように「株価がもっとも下落している状態こそ危険な状態(異常状態)にある」と考える。以下のように各潜在状態の分布パラメーターを見てみると
+hmm.fitted$HMM$distribution
+## 
+## Model:
+## 3 states HMM with univariate gaussian distributions
+## 
+## Distribution parameters:
+##              mean       var
+## State 1  0.022474 0.0059197
+## State 2  0.003183 0.0005039
+## State 3 -0.026498 0.0012958
+明らかに状態3の平均値が最もマイナス値になっているので、ここでは状態3を会社にとっての異常状態であると判断しよう。この時、上述の簡単な例で述べたように、観測変数が与えられた条件付の下での潜在状態(会社状態)の確率\( \gamma \)であるを取得する。
+probability.anomaly <- probabilities$Gamma[, 3]
+これをggplot2を使って(結構頑張って美しく!)PLOTと以下のようになる。
+library(scales)
+library(ggplot2)
+library(reshape2)
+df <- cbind(stock.price[-1, ], prob = probability.anomaly)
+df <- as.xts(read.zoo(merge(data.frame(date = seq(min(df$date), max(df$date), 
+1)), df, all.x = TRUE)))
+df <- as.data.frame(na.locf(as.xts(df)))
+df <- cbind(date = as.Date(rownames(df)), df)
+ggplot(data = df, aes(x = date, y = close)) + geom_rect(aes(fill = prob, xmin = date - 
+0.5, xmax = date + 0.5, ymin = 0, ymax = max(close) + 100)) + geom_line(colour = "red", 
+size = 3) + scale_x_date(expand = c(0, 0), labels = date_format("%y/%m/%d")) + 
+scale_y_continuous(expand = c(0, 0))
+赤線が株価そのもののグラフであり、背景色の濃淡で異常状態にいる確率を示しており、淡い背景色であるほど異常状態にいる確率が高いことを示している。
+このように隠れマルコフモデルを使うと観測変数系列である時系列データ(今回は株価)からその時系列を生成している裏側に潜んでいる潜在状態(会社状態)を推定することができ、また異常状態にあると思われる確率を推定することが可能になる。
+(一部上手くワークしていない所もあるけど、それは御愛嬌ということで・・・もう少しアップグレードしたモデルが必要だと思います)
+Anomaly Detection with Hidden Markov Model(HMM)

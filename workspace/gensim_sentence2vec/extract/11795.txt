@@ -1,0 +1,102 @@
+
+ホーム
+7zファイル
+LZMA SDK
+ダウンロード
+FAQ
+サポート
+リンク
+ヘルプ
+command line
+7-Zip
+7-Zipは高圧縮率のファイルアーカイバ(圧縮・展開/圧縮・解凍ソフト)です。
+7-Zip 9.20 (2010-11-18) for Windowsをダウンロード:
+リンク
+タイプ
+Windows
+サイズ
+ダウンロード
+.exe
+32ビット x86
+1 MB
+ダウンロード
+.msi
+64ビット x64
+1 MB
+7-Zip 9.35 beta (2014-12-07) for Windowsをダウンロード:
+リンク
+タイプ
+Windows
+サイズ
+ダウンロード
+.exe
+32ビット x86
+1 MB
+ダウンロード
+.msi
+64ビット x64
+1 MB
+ダウンロードのリンクはSourceForge.JPのダウンロードページにリダイレクトされます。
+ライセンス
+7-Zipはオープンソースソフトウェアです。ほとんどのソースコードはGNU LGPLのライセンスです。unRARのコードは、GNU LGPLとunRAR restrictionsの混在です。ライセンスについては、7-Zip licenseを参照してください。
+7-Zipは企業利用も含め任意のコンピュータで利用可能です。7-Zipのための登録や費用は一切必要ありません。
+7-Zipの主な機能
+LZMAやLZMA2方式を備えた7zファイルにおける高いデータ圧縮率
+対応形式:
+圧縮/解凍(展開): 7z, XZ, BZIP2, GZIP, TAR, ZIP, WIM
+解凍(展開)のみ: ARJ, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, UDF, VHD, WIM, XAR, Z
+ZIP形式とGZIP形式において、7-ZipはPKZipやWinZipより2～10%圧縮率が高い
+7z形式とZIP形式において、強力なAES 256暗号化に対応
+7z形式において自己解凍(展開)に対応
+Windowsのシェルに統合
+強力なファイルマネージャ
+強力なコマンドラインコマンド
+FAR Manager用のプラグイン
+79言語のローカライズに対応
+7-Zipは、Windows 7/Vista/XP/2008/2003/2000/NT/ME/98で動作します。Linux/Unix向けにはコマンドラインバージョンがあります。
+SourceForge.netにある7-Zipのページには、バグリポートや機能リクエストのフォーラムがあります。
+圧縮率
+我々は7-Zipといくつかの圧縮ソフトを比較しました
+ファイルセット:
+Mozilla Firefox 1.0.7 for Windowsと、フルインストール後のGoogle Earth 3.0.0616 for Windows
+圧縮ソフト
+Mozilla Firefox
+Google Earth
+161ファイル15,684,168バイト
+115ファイル23,530,652バイト
+圧縮サイズ
+圧縮率
+圧縮サイズ
+圧縮率
+7-Zip 4.23 (7z形式)
+4621135
+100%
+6109183
+100%
+WinRAR 3.50
+5021556
+109%
+6824892
+112%
+CABARC 5.1
+5131393
+111%
+7434325
+122%
+WinZip 10.0 beta (maximum-PPMd)
+5277118
+114%
+8200708
+134%
+7-Zip 4.23 (zip形式)
+6222627
+135%
+8909446
+146%
+WinZip 10.0 beta (maximum-portable)
+6448666
+140%
+9153898
+150%
+圧縮率の結果はテストに使ったデータに左右されやすいものですが、たいていの場合、7-Zipの7z形式での圧縮は、ZIP形式より30～70%良い結果になります。そして、7-ZipでのZIP圧縮は、ほかの多くのZIP圧縮ソフトより2～10%良い結果になります。
+圧縮・解凍ソフト 7-Zip

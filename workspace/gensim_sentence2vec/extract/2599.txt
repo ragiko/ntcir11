@@ -1,0 +1,25 @@
+Bakeでコード生成¶
+CakePHPのBakeは、あなたがやることを代わりにCakePHPにまかせることができます。BakeはCakePHPの基本的な素材(モデル、ビュー、コントローラ)を作れます。Bakeでは、簡単にフル機能をそなえたアプリケーションを作ることができますがそういったスケルトンクラスについてはここでは話しません。またScaffoldアプリケーションを試してみるのに、bakeを使ってみるのもいいでしょう。
+Bakeのセットアップに関する情報は(特にWindowsユーザーは)Bake screencast
+を参照してください。
+セットアップ環境に依っては、cakeスクリプトに実行権限を設定したり
+./cake bake として、呼び出したりする必要があります。cakeスクリプトはPHP CLI(command line interface)で実行されます。スクリプト実行に問題があれば、PHP CLIがインストールされていることと、適切なモジュール(たとえばMySQLなど)がインストールされていることを確認してください。
+はじめてBakeを実行する時に、まだデータベースの設定ファイルがなければそれを作るように促されます。
+データベース設定ファイルを作ったあと、Bakeを実行すると次のようなオプションが表示されます。
+---------------------------------------------------------------
+App : app
+Path: /path-to/project/app
+---------------------------------------------------------------
+Interactive Bake Shell
+---------------------------------------------------------------
+[D]atabase Configuration
+[M]odel
+[V]iew
+[C]ontroller
+[P]roject
+[F]ixture
+[T]est case
+[Q]uit
+What would you like to Bake? (D/M/V/C/P/F/T/Q)
+>
+Bakeでコード生成 &mdash; CakePHP Cookbook 2.x ドキュメント

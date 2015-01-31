@@ -1,0 +1,78 @@
+関数名
+PERCENTILE_CONT
+構文図
+用途
+PERCENTILE_CONT は、連続分散モデルを想定する逆分散関数です。このファンクションは、
+パーセンタイル値およびソート指定を用い、そのソート指定に従ってそのパーセンタイル
+値に該当する補間された値を戻します。計算では、NULL は無視されます。
+最初のexpr は、パーセンタイル値であるため、0 〜1 の数値で評価します。このexpr は、
+各集計グループ内の定数である必要があります。ORDER BY 句には、Oracle が補間を実行
+できる型である数値または日時値の単一式を指定します。
+PERCENTILE_CONT の結果は、順序付けされた後の値間の直線補間によって計算されます。
+集計グループで、パーセンタイル値(P )および行数(N )を使用すると、ソート指定に従
+って行を順序付けた後の行数を計算します。この行数(RN )は、計算式RN = 
+(1+(P*(N-1))に従って計算されます。集計ファンクションの最終結果は、行番号がCRN =
+CEILING(RN)およびFRN = FLOOR(RN)の行の値間の直線補間によって計算されます。
+最終結果は次のとおりです。
+if (CRN = FRN = RN) then
+(value of expression from row at RN)
+else
+(CRN - RN) * (value of expression for row at FRN) +
+(RN - FRN) * (value of expression for row at CRN)
+end if
+PERCENTILE_CONT ファンクションは、分析ファンクションとしても使用できます。その場
+合、OVER 句には、query_partitioning_clause のみを指定できます。各行に対して、各パー
+ティション内の一連の値から、指定されたパーセンタイルに該当する値を戻します。
+例
+集計の例
+各部門の給与の中央値を計算します。
+SELECT department_id,
+PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC)
+"Median cont",
+PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC)
+"Median disc"
+FROM employees
+GROUP BY department_id;
+DEPARTMENT_ID Median-cont Median-disc
+------------- ----------- -----------
+10     4400     4400
+20     9500    13000
+30     2850     2900
+40     6500     6500
+50     3100     3100
+60     4800     4800
+70    10000    10000
+80     8800     8800
+90    17000    17000
+100     8000     8200
+110    10150    12000
+PERCENTILE_CONT およびPERCENTILE_DISC は,異なる結果を戻す場合があります。
+PERCENTILE_CONT は,直線補間後の結果を計算します。PERCENTILE_DISC は,集計された一
+連の値から値のみを戻します。この例に示すように,パーセンタイル値が0.5 の場合,
+PERCENTILE_CONT は,偶数の要素を持つグループの中間の2 つの値の平均を戻します。そ
+れに対して,PERCENTILE_DISC は,中間の2 つの値の最初の値を戻します。奇数の要素を持
+つ集計グループでは,どちらのファンクションも中間の要素の値を戻します。
+分析の例
+0.5 のパーセンタイル(Percent_Rank )に対応する部門60 の中央値は4800です。部門30
+の給与にパーセンタイル0.5 がないため、2900 (パーセンタイル0.4 )〜2800(パーセン
+タイル0.6 )の範囲で2850 に評価される中央値が補間される必要があります。
+SELECT last_name, salary, department_id,
+PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC)
+OVER (PARTITION BY department_id) "Percentile_Cont",
+PERCENT_RANK()
+OVER (PARTITION BY department_id ORDER BY salary DESC) "Percent_Rank"
+FROM employees WHERE department_id IN (30, 60);
+LAST_NAME     SALARY DEPARTMENT_ID Percentile_Cont Percent_Rank
+------------- ---------- ------------- --------------- ------------
+Raphaely      11000       30       2850       0
+Khoo         3100       30       2850      .2
+Baida        2900       30       2850      .4
+Tobias        2800       30       2850      .6
+Himuro        2600       30       2850      .8
+Colmenares      2500       30       2850       1
+Hunold        9000       60       4800       0
+Ernst        6000       60       4800      .25
+Austin        4800       60       4800      .5
+Pataballa      4800       60       4800      .5
+Lorentz       4200       60       4800       1
+SQL構文検索

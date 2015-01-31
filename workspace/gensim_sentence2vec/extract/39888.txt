@@ -1,0 +1,5 @@
+認識処理部3は、上記音声特徴パラメータと単語HMMとの間の最適経路を求め、最適経路に基づいて音素間の境界と音素毎の尤度、時間長を求める。A recognition processing part 3 obtains an optimal path between the speech characteristic parameter and the word HMM, and obtains borders between phonemes, and likelihood and time length for individual phonemes. - 特許庁
+次フレームでの出力確率計算は、選択音素情報格納部16に格納されている音素のみに対して行うことにより、出力確率計算部10での処理量を削減する。Only the phoneme stored in the selected phoneme information storage part 16 is subjected to output probability calculation in the next frame to reduce the processing volume in an output probability calculation part 10. - 特許庁
+英語の音素索引の見出し語は、音節(例えば一個の仮名)ではなく、子音、母音、アクセントといった音節より細かい音声単位の音素である。A header of English phoneme index is not a syllable (for example, a katakana) but a phoneme of speech unit more minute than a syllable such as a consonant, a vowel and an accent. - 特許庁
+その結果、上記音声認識辞書は、認識語彙と上記第2解析辞書の音素表記および他の音素表記候補との対応付けに基づいて作成される。As a result, the voice recognition dictionary is prepared on the basis of the association of a recognized term with phoneme writing of the second analysis dictionary and with a different phoneme writing candidate. - 特許庁
+「音素の」に関連した英語例文の一覧(5ページ目) - Weblio英語例文検索

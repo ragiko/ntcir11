@@ -1,0 +1,3 @@
+ソフトウェアの要求は,多様な要因によって変更される.本稿では,要求変更の要因の一つである環境要因を分析する手法を提案する.特に,ソフトウェアの要求に影響を与えるステークホルダと,彼らの意思決定に影響を与える要因を抽出し,環境が要求変更に影響を与える構造を明らかにする.本稿の目的は,ステークホルダとステークホルダを取り巻く環境に着目することで,要求変更の予測を行うための手法を提案することである.提案する手法の有効性は,要求変更のシミュレーションによって評価する. 
+Software requirements are changed by various factors. Social factors can be those factors, since the decision of people and organizations is affected by social factors. Our purpose is to propose a framework to predict requirements changes by focusing on the social factors. In this paper, we present our method and evaluate its effectiveness through a simulation of requirements changes.
+研究会 - 要求変更の予測を行うための分析枠組みの提案

@@ -1,0 +1,101 @@
+\documentclass[9pt,twocolumn]{jarticle}
+%\usepackage{multicol}
+%\usepackage[dviout]{graphicx}
+\usepackage[dvips]{graphicx}
+\usepackage{float}
+%\usepackage{fancyhdr} 
+\usepackage[margin=2cm,nohead,nofoot]{geometry}
+%\renewcommand{\headrulewidth}{0pt} 
+%\renewcommand{\footrulewidth}{0.4pt}   
+%\lhead{}  % 左上
+%\chead{}  % 中央上
+%\rhead{}  % 右上
+%\lfoot{Supervisor: Prof. Katunobu Itou}  % 左下
+%\cfoot{}  % 中央下
+%\rfoot{}  % 右下
+%%\pagestyle{fancyplain} 
+\pagestyle{empty} 
+\title{タイトル}
+\author{氏名\\
+法政大学情報科学部ディジタルメディア学科\\
+学生証番号
+}
+\date{}
+\def\@maketitle{%
+\newpage\null
+\begin{center}%
+\let\footnote\thanks
+{\LARGE \@title \par}%
+\vskip 0.5em
+{\large
+\lineskip .5em
+\begin{tabular}[t]{c}%
+\@author
+\end{tabular}\par}%
+\vskip 1em
+{\large \@date}%
+\end{center}%
+\par\vskip 1em
+\ifvoid\@abstractbox\else\centerline{\box\@abstractbox}\vskip1.5em\fi
+}
+\begin{document}
+\thispagestyle{empty}
+\maketitle
+%\footnotetext{Supervisor: Prof. Katunobu Itou}  % 左下
+%\twocolumn[\maketitle]
+%\begin{multicols}{2}
+\begin{center}概要\end{center}
+概要をここに書く。
+\section{最初の章}
+いろいろ書く\cite{kanren}。
+\section{次の章}
+\subsection{サブセクション}
+\begin{itemize}
+\item 箇条書
+\item ふたつめ
+\end{itemize} 
+図\ref{fig:shot}の例
+\begin{figure}[H]
+\begin{center}
+%\includegraphics[scale=0.15]{sample.eps}
+\caption{シーンとショットの例}
+\label{fig:shot}
+\end{center}
+\end{figure} 
+表\ref{tb:jouken}の例。
+\thispagestyle{empty} 
+\begin{table}[H]
+\begin{center}
+\caption{実験条件}
+\begin{tabular}{|c|c|}
+\hline
+\multicolumn{2}{|c|}{ランニングスペクトル}\\ \hline
+フレーム長 & 2048点(42.7ms) \\ \hline
+フレームシフト & 1024(21.3ms) \\ \hline
+FFT長 & 2048点 \\ \hline
+\multicolumn{2}{|c|}{フィルタバンク}\\ \hline
+三角窓長 & メル周波数軸上で200 \\ \hline
+周波数シフト & メル周波数軸上で100 \\ \hline
+フィルタ次数 & 38次元 \\ \hline
+\end{tabular}  
+\label{tb:jouken}
+\end{center}
+\end{table} 
+\begin{equation}
+\def\argmax{\mathop{\mathrm{argmax}}} 
+D_{r}=\frac{正解数}{各ショットごとの入力音数}
+\label{eq:recall}
+\end{equation} 
+\begin{equation}
+\def\argmax{\mathop{\mathrm{argmax}}} 
+D_{p}=\frac{正解数}{各ショットの検出数(誤検出を含む)}
+\label{eq:pre}
+\end{equation} 
+\section{最後の章}
+おしまい。
+\begin{thebibliography}{9}
+\bibitem{kanren} 著者1, 著者2, タイトル, 
+雑誌名, Vol.2005, no.95, pp. 61-68, September 2005.
+\end{thebibliography}
+\end{document}
+

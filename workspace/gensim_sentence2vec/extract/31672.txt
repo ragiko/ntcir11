@@ -1,0 +1,98 @@
+HTML5 Canvas でバケツツールによる塗り潰しを実現するために、スキャンライン・シードフィル (Scan Line Seed Fill) というアルゴリズムを使ってみた。
+アルゴリズムの詳細については、以下のサイトを参考にした。
+参考:ActionScript入門Wiki@rsakane – 塗りつぶしアルゴリズム(スキャンライン – シードフィル編)
+ペイント・ルーチン (1)シード・フィル アルゴリズム
+単純に言えば、水平方向に塗り潰し可能な範囲を探して塗り潰してゆき、それを塗り潰し可能な範囲が無くなるまで上下方向に繰り返していくといったもの。
+JavaScript, Canvas スキャンライン・シードフィル アルゴリズムによる塗り潰しデモ
+塗り潰し処理のコード
+var fillColor = function(startX, startY, imgData, penColor, canvas) {
+var cWidth = canvas.width;
+var cHeight = canvas.height;
+var toImageDataPixelPos = function(x, y) { return ((cWidth * y) + x) * 4; };
+var startPixelPos = toImageDataPixelPos(startX, startY);
+var baseColor = { red : imgData.data[startPixelPos], green : imgData.data[startPixelPos+1], blue : imgData.data[startPixelPos+2], alpha : 1 };
+var setImageDataPixelPos = function(pp, imgD) {
+imgD.data[pp] = penColor.red;
+imgD.data[pp+1] = penColor.green;
+imgD.data[pp+2] = penColor.blue;
+imgD.data[pp+3] = 255 * penColor.alpha;
+return imgD;
+};
+var isMatchColor = function(x, y, imgD, cl) {
+var pp = toImageDataPixelPos(x, y);
+if ((imgD.data[pp] === cl.red) &&
+(imgD.data[pp+1] === cl.green) &&
+(imgD.data[pp+2] === cl.blue)) {
+return true;
+} else {
+return false;
+}
+};
+var paintHorizontal = function(leftX, rightX, y, imgD) {
+for (var x = leftX; x <= rightX; x++) {
+var pp = toImageDataPixelPos(x, y);
+imgD = setImageDataPixelPos(pp, imgD);
+}
+return imgD;
+};
+var scanLine = function(leftX, rightX, y, imgD, buffer) {
+while (leftX <= rightX) {
+for (; leftX <= rightX; leftX++) {
+if (isMatchColor(leftX, y, imgD, baseColor)) {
+break;
+}
+}
+if (rightX < leftX) {
+break;
+}
+for (; leftX <= rightX; leftX++) {
+if (!isMatchColor(leftX, y, imgD, baseColor)) {
+break;
+}
+}
+buffer.push({ x : leftX - 1, y : y});
+}
+};
+var paint = function(x, y, imgD) {
+if (isMatchColor(x, y, imgD, penColor)) {
+return imgD;
+}
+var buffer = [];
+buffer.push({ x : x, y : y });
+while (buffer.length > 0) {
+var point = buffer.pop();
+var leftX = point.x;
+var rightX = point.x;
+/* skip already painted */
+if (isMatchColor(point.x, point.y, imgD, penColor)) {
+continue;
+}
+/* search left point */
+for (; 0 < leftX; leftX--) {
+if (!isMatchColor(leftX - 1, point.y, imgD, baseColor)) {
+break;
+}
+}
+/* search right point */
+for (; rightX < cWidth - 1; rightX++) {
+if (!isMatchColor(rightX + 1, point.y, imgD, baseColor)) {
+break;
+}
+}
+/* paint from leftX to rightX */
+imgD = paintHorizontal(leftX, rightX, point.y, imgD);
+/* search next lines */
+if (point.y + 1 < cHeight) {
+scanLine(leftX, rightX, point.y + 1, imgD, buffer);
+}
+if (point.y - 1 >= 0) {
+scanLine(leftX, rightX, point.y - 1, imgD, buffer);
+}
+}
+return imgD;
+};
+return paint(startX, startY, imgData);
+};
+スクリプトファイル
+scanlineseedfill.js
+JavaScript, Canvas スキャンライン・シードフィル アルゴリズムによる塗り潰し : Serendip - Webデザイン・プログラミング

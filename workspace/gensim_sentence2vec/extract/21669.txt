@@ -1,0 +1,213 @@
+RubyKaigi2010 の最終日である 3 日目は、8/29 (日) の開催です。今回は大ホールと中ホールで行なわれる発表紹介です。
+目次
+日本 Ruby 会議 2010 3 日目 の発表紹介
+目次
+大ホール
+Ruby でクラウドを便利にする方法〜ニフティクラウドの事例〜
+Ruby による分散ストレージシステムの実装
+RWiki と怠惰な私の 10 年間
+Practical Ruby Projects with MongoDB
+Iron Ruby - What's in it for rubyists?
+Ruby 業務システムの広がりとホットスポット島根
+There is No Spoon -- Think Global, Act Regional
+中ホール
+bigdecimal ライブラリと Ruby の数値系の未来
+NArray and scientific computing with Ruby
+yarv2llvm はどうして失敗したのか
+Ruby 用 AOT コンパイラ
+Memory Profiler for Ruby
+るりまサーチの作り方 - Ruby 1.9 で groonga 使って全文検索
+ゲームとバーチャルタイム
+before Rails 時代のプログラマが如何にして after Rails の世界にたどりついたか
+HTML デザインをまったく崩さない、美しいテンプレートエンジンの作り方
+大ホール
+Ruby でクラウドを便利にする方法〜ニフティクラウドの事例〜
+スピーカー 
+Kei Hamanaka、Yuichi Saotome
+時間 
+09:30〜10:00
+概要 
+国内クラウドサービス、ニフティクラウドの紹介
+クラウドと言えば、Amazon EC2 や Google App Engine など海外のサービスが有名ですが、最近では国内でもいくつか登場しはじめました。そのひとつがニフティクラウドです。そのニフティが提供するクラウドを Ruby で便利に扱う方法や、API を使用するコードやライブラリをなどを話して頂けるそうです。
+クラウドならニフティのパブリック型クラウドコンピューティングサービス
+Ruby による分散ストレージシステムの実装
+スピーカー 
+Toshiyuki Terashita
+時間 
+10:00〜10:30
+概要 
+Ruby 製分散ストレージシステム、Castorの紹介
+分散ストレージと言えば、kumofs など様々なものがありますが、今回 Ruby で実装された分散ストレージシステム Castor の発表になります。Castor の開発の経緯や MogileFS 、kumofs などの他の分散ストレージシステムとの違いを中心に話してくださるそうです。Castor は RubyKaigi2010 の時点でオープンソース化を予定しており、ソースは github で公開されるようです。
+RWiki と怠惰な私の 10 年間
+スピーカー 
+Masatoshi SEKI
+時間 
+10:30〜11:00
+概要 
+RWiki とその 10 年間について
+RWiki は Ruby 製の Wiki であり、また dRuby の最初の実用的なアプリケーションでもあります。
+発表者の咳さんは RWiki、dRuby 両方の作者です。Rubyist Hotlinks 【第 13 回】 関将俊さんにも登場されています。また、咳さんは、RubyKaigi に発表者として皆勤賞で、「幸福の王子本」でおなじみの『dRubyによる分散・Webプログラミング』の作者です。
+RWiki は大きな特徴としてオンメモリであることがあげられます。実行中は 1 つのプロセスにオブジェクトやデータベース等の全てを配置します。
+RWiki は 2000 年の 8 月 31 日に ruby-list で告知され、RubyKaigi の数日後に 10 周年を迎えます。その 10 年間に起きた様々な問題点やその解決について話されるようで、咳さんが運営する RWiki は現時点で 1GB ものプロセスサイズになっているとのことなのでその辺りの貴重なお話も聞けることでしょう。
+Practical Ruby Projects with MongoDB
+スピーカー 
+Alex Sharp
+時間 
+11:00〜12:00
+概要 
+非リレーショナルデータベース、MongoDB について
+MongoDB はドキュメント指向のデータベースのひとつです。ここ最近では「NoSQL」という言葉を見かけることが増えましたが、これは「No SQL」ではなく「Not Only SQL」の意味で、MySQL などの RDB 以外のデータベースを使おうという意味です。最近では RDB の変わりにMongoDBを使うところも増えており (Production Deployments - MongoDB)、foursquare や bit.ly などで使用されています。
+これからもますます注目されることが予想される MongoDB ですので、聞いておいて損はない発表でしょう。
+Iron Ruby - What's in it for rubyists?
+スピーカー 
+Shay Friedman
+時間 
+13:30〜14:30
+概要 
+IronRuby が開く新しい世界
+『IronRuby Unleashed』という書籍も出されている Shay Friedman さんのセッションになります。
+このセッションでは .NET Framework 上で動作する IronRuby
+についての紹介や Silverlight と動かすにはどのようにするのか、と言った話をしていただけるようです。今年の 4 月に IronRuby 1.0 がリリースされた IronRuby がどのように活用されるのか。どのような可能性を見せてくれるのか、興味がわいてきますね!
+Ruby 業務システムの広がりとホットスポット島根
+スピーカー 
+Hiroshi Yoshioka
+時間 
+15:00〜15:30
+概要 
+Rubyのふるさと島根での活用事例
+Ruby の生みの親、まつもとゆきひろさんが島根県在住という縁で、島根県では、県をあげて Ruby の活用に力を入れています。島根県のホームページは Ruby 製 OSS の島根県 CMS として公開されていたり、この夏には島根県 : Ruby 合宿 2010 として学生向け講座が開かれるなど活動が活発です。RubyKaigi 後の 9/6 からは RubyWorld Conference が松江市で開かれます。
+発表される吉岡さんは、島根県情報産業協会の副会長をされています。2008 年のオープンソースカンファレンス島根では、松江市の業務システムを Ruby で開発した経験を発表されました (発表の動画) 。RubyKaigi2010 では、Ruby や Ruby on Rails を利用した基幹業務システムの開発、長期間メンテナンスするシステムの構築方法について発表されるそうです。
+There is No Spoon -- Think Global, Act Regional
+スピーカー 
+Shintaro Kakutani
+時間 
+15:30〜16:00
+概要 
+RubyKaigi 運営委員長から、Regional RubyKaigi を通した「Ruby コミュニティ」について
+RubyKaigi2010 運営委員長の角谷さんの発表です。るびまでは、Hotlinks やスはスペックのスでおなじみですね。
+Rubyist Hotlinks 【第 14 回】 角谷信太郎さん
+スはスペックのス 【第 1 回】 RSpec の概要と、RSpec on Rails (モデル編)
+スはスペックのス 【第 2 回】 RSpec on Rails (コントローラとビュー編)
+2008 年につくばで行われた RubyKaigi2008 の閉会後の RejectKaigi にて、地域 Ruby 会議 (Regional RubyKaigi) の構想が発表されました。その後、全国で 17 回もの地域 Ruby 会議が開催されました。
+今回の角谷さんの発表は、今後の地域 Ruby 会議のありかた、RubyKaigi との関わりかたについての考えを発表されるそうです。Ruby の技術的な側面だけでなく、「コミュニティ」の活動について考える発表になりそうです。
+ちなみに、タイトルの "There is No Spoon" は、映画 Matrix からの引用だと思われます。角谷さんがこれまで発表された、RubyKaigi2009 の「Take the Red Pill」、札幌 Ruby 会議 02 の「Welcome to The Desert of The Real」の Matrix シリーズを復習すると、より深く楽しめるかもしれません!
+中ホール
+bigdecimal ライブラリと Ruby の数値系の未来
+スピーカー 
+Kenta Murata
+時間 
+09:30〜10:00
+概要 
+BigDecimal の今後について
+発表者は、昨年 Ruby コミッタの仲間入りをした村田 賢太さんです。村田さんといえば、札幌の Ruby コミュニティである Ruby 札幌のメンバーの一人としても活躍されております。昨年には Ruby 札幌のメンバーによって書かれた『Ruby 逆引きレシピ』にも、様々なレシピを提供されています。
+今回は、村田さんがメンテナとして活躍されている Ruby の標準添付ライブラリである bigdecimal について、お話しされます。bigdecimal は、Ruby on Rails の ActiveRecord にも使用されています。
+しかし、問題点も色々指摘され、bigdecimal に代わるライブラリとして Decimal というライブラリなどが開発されています。
+そんな、bigdecimal の今後や、Ruby の数値計算ライブラリの未来について語ってくれます。
+NArray and scientific computing with Ruby
+スピーカー 
+Masahiro Tanaka
+時間 
+10:00〜10:30
+概要 
+科学分野における Ruby
+NArray の作者である田中昌宏さんによる、NArray の解説と科学分野における Ruby についてのお話です。
+NArray とは、多次元数値配列クラスのライブラリです。NArray を使用することで、大規模な多次元数値配列の計算を高速かつ簡単に扱うことができます。
+このような、マニアックな話が聞けるのも RubyKaigi の魅力ですね。
+yarv2llvm はどうして失敗したのか
+スピーカー 
+Hideki Miura
+時間 
+10:30〜11:00
+概要 
+yarv2llvm の失敗点と次にむけて
+yarv2llvm は、Ruby 1.9 から Ruby の VM として採用された YARV のバイトコードを LLVM で動作するように変換するものです。
+今回は、yarv2llvm の作者である Miura Hideki さんが yarv2llvm で変換できない Ruby プログラムとそれをどう解決したかということと、現在開発中の次世代トランスレータ ytl を紹介されます。
+YARV については、るびまで笹田さんによる解説が連載されていましたね。
+YARV Maniacs 【第 1 回】 『Ruby ソースコード完全解説』不完全解説
+YARV Maniacs 【第 2 回】 VM ってなんだろう
+YARV Maniacs 【第 3 回】 命令ディスパッチの高速化
+YARV Maniacs 【第 4 回】 命令セット (1) YARV 命令セットの初歩の初歩
+YARV Maniacs 【第 5 回】 命令セット (2) リテラル・変数・定数
+YARV Maniacs 【第 6 回】 YARV 命令セット (3) メソッドディスパッチ
+YARV Maniacs 【第 7 回】 YARV 命令セット (4) 分岐
+YARV Maniacs 【第 8 回】 命令列のシリアライズ
+YARV Maniacs 【第 9 回】 特化命令
+また、miura さんは自身の blog にて yarv2llvm の解説を行なっていますので、当日までに予習をするのもいいですね。
+Inside yarv2llvm (その1) - miura1729の日記
+Inside yarv2llvm (その2) - miura1729の日記
+Inside yarv2llvm (その3) - miura1729の日記
+Inside yarv2llvm (その4) - miura1729の日記
+Inside yarv2llvm (その5) - miura1729の日記
+Ruby 用 AOT コンパイラ
+スピーカー 
+Satoshi Shiba
+時間 
+11:00〜11:30
+概要 
+Ruby 用 AOT コンパイラについて
+東京大学笹田研究室の学生の芝 哲史さんによる Ruby 用 AOT コンパイラについての発表です。
+AOT コンパイラとは、ahead-of-time (AOT) コンパイル方式を実装したコンパイラのことです。AOT コンパイラにより、実行時にスクリプトを機械語に変換するのではなく、実行前にスクリプトを機械語に変換することで、Ruby プログラムの高速化が期待できます。
+Ruby の高速化についての研究の中身が聞けるなんて楽しみですね。
+Memory Profiler for Ruby
+スピーカー 
+Tetus Soh
+時間 
+11:30〜12:00
+概要 
+Ruby 1.9 向けメモリプロファイラについて
+一つ前に発表する芝さんと同じく東京大学笹田研究室の学生である Tetsu Soh さんによる Ruby のメモリプロファイラについての発表です。
+プロファイラとは、プログラミングの解析に使われ、どのメソッドがよく呼びだされているかや、どのメソッドに時間がかかっているかを調べるときに使われます。(性能解析)
+Ruby も標準添付ライブラリとして profile が提供されていますね。また、ruby-prof というプロファイラも存在しています。
+Soh さんの開発されているプロファイラは、プログラムでのメモリ使用量の調査に特化したもののようです。どのような特徴を持っているか期待して待っていましょう。
+るりまサーチの作り方 - Ruby 1.9 で groonga 使って全文検索
+スピーカー 
+Kouhei Sutou
+時間 
+13:30〜14:00
+概要 
+るりまサーチとるりまサーチの作り方
+るりまサーチは、Ruby リファレンスマニュアル刷新計画の成果物である Ruby のリファレンスマニュアルを高速に検索する Web アプリケーションです。るりまサーチは Ruby 1.9.1 (MRI) で作成されており、全文検索エンジンとデータストアとして groonga、groonga の Ruby バインディングである rroonga が使われています。
+るりまサーチ: Ruby で groonga 使ってリファレンスマニュアルを全文検索 - ククログ (2010-04-27)
+スピーカーは、株式会社クリアコードの代表取締役を務める須藤功平さんです。須藤さんは、RSS Parser、Rabbit、rcairo、Ruby-GNOME2、ActiveLdap、ActiveSambaLdap、Test::Unit、rroonga、Ruby/Subversion、RWiki、Ruby などの開発に関わり、非常に多様な活動で Ruby に貢献されています。
+rcairo、ActiveLdap については、るびまに紹介記事があります。
+cairo: 2 次元画像描画ライブラリ
+ActiveLdap を使ってみよう(前編)
+ActiveLdap を使ってみよう(後編)
+また、OOエンジニアの輪! 〜 第 39 回 須藤 功平さんの巻 〜や、野次馬として参加されている Rubyist Hotlinks を見ると、その人となりも伺い知ることができます。
+Rubyist Hotlinks 【第 13 回】 関将俊さん
+Rubyist Hotlinks 【第 14 回】 角谷信太郎さん
+Rubyist Hotlinks 【第 18 回】 立石孝彰さん
+「続けることが大事」、尊敬する人は「続ける人」という須藤さん。RubyKaigi2006 の LT、RubyKaigi2007 の発表、RubyKaigi2009 の発表に続いて、今年の発表も楽しみです。
+ゲームとバーチャルタイム
+スピーカー 
+Tom Lieber
+時間 
+14:00〜14:30
+概要 
+プログラマが意識することなく複雑な同期処理を実現するための「時間」の扱い方について
+スピーカーの Tom Lieber さんは、iPhone の Ocarina や iPad の Magic Piano で知られる SonicMule に所属する開発者です。彼の Web サイトやアップロードされているビデオを見ると、グラフィカルなプログラムを扱っていることが伺えます。そこで得られた知見を披露してくれるのではないでしょうか。
+before Rails 時代のプログラマが如何にして after Rails の世界にたどりついたか
+スピーカー 
+SHIBATA Hiroshi
+時間 
+15:00〜15:30
+概要 
+after rails 時代の Ruby プログラマの羅針盤
+tDiary のメインコミッタである hsbt さんのセッションです。Ruby on Rails 登場前と登場後で Ruby でのアプリケーション開発を取り巻く環境は大きく変わってきました。そんな中で、Ruby on Rails 登場以前から培われてきた知識や情報を今後どのように活かしていくのか?といった話をご自身の経験から紹介していただけます。
+HTML デザインをまったく崩さない、美しいテンプレートエンジンの作り方
+スピーカー 
+Makoto Kuwata
+時間 
+15:30〜16:00
+概要 
+テンプレートエンジンの決定版
+昨年は Erubis 徹底解説というセッションでお話をしていただき、また Tenjin というテンプレートエンジンの開発者でもある桑田さんのセッションです。
+桑田さんといえば、るびまにも沢山の記事を書かれていますね。
+Erubis の Preprocessing 機能を使って Ruby on Rails の View 層を高速化する
+cgi.rb がイケてない 12 の理由
+Ragel 入門: 簡単な使い方から JSON パーサまで
+テンプレートシステム入門 (1) 歴史編
+テンプレートシステム入門 (2) 基礎編
+エラー発生箇所を自動的にエディタで開く EditorKicker
+今年のセッションでは、現在のテンプレートエンジンが抱えている問題点に対する答えについて考察していただけます。今までのテンプレートエンジンなどの豊富な開発経験を元にした深い話が聞けるのでしょうか。実に興味深いですね!
+Rubyist Magazine - 第 3 日目の発表紹介

@@ -1,0 +1,433 @@
+
+パッケージ 
+クラス 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし
+概要:  内部クラス | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+org.apache.regexp
+クラス  RE
+java.lang.Object
+|
++--org.apache.regexp.RE
+public class REextends java.lang.Object
+RE は効率的で軽量な正規表現の評価及びマッチングを行うクラスです。
+正規表現は、高度な文字列のマッチングを可能にするパターンの表現です。
+文字列をマッチさせることに加えて、マッチした部分を取り出すこともできます。
+この機能は、特にテキストの解析に便利です。
+正規表現パターンの構文の詳細を以下説明します。
+正規表現をコンパイルするために (RE) を用います。REを用いると、下記のように、
+パターンを記述した文字列から簡単に RE マッチャーオブジェクトを生成することができます。
+RE r = new RE("a*b");
+これを行うことにより、RE.match メソッドで文字列のマッチングを実行することができます。次の例
+boolean matched = r.match("aaaab");
+では、パターン "a*b" が "aaaab" にマッチすると、boolean 型の true
+が返却されます。
+もし、aの数に興味がある場合、最初の例の正規表現を "(a*)b" 
+と変更します。
+この正規表現をコンパイルして"xaaaab"にマッチさせたとき、次のような結果になります。
+RE r = new RE("(a*)b");                  // 正規表現をコンパイル
+boolean matched = r.match("xaaaab");     // "xaaaab" にマッチ
+String wholeExpr = r.getParen(0);        // wholeExpr は 'aaaab'
+String insideParens = r.getParen(1);     // Parens は 'aaaa'
+int startWholeExpr = r.getParenStart(0);   // startWholeExpr は 1
+int endWholeExpr = r.getParenEnd(0);       // endWholeExpr は 6
+int lenWholeExpr = r.getParenLength(0);    // lenWholeExpr は 5
+int startInside = r.getParenStart(1);      // startInside は  1
+int endInside = r.getParenEnd(1);          // endInside は 5
+int lenInside = r.getParenLength(1);       // lenInside は 4
+また、正規表現の中にある、丸括弧の中の正規表現にマッチした中身を参照することもできます。
+これを、バックリファレンスと呼びます。正規表現内の最初のバックリファレンスは\1、2番目は\2...という感じで表されます。例えば、次の正規表現
+([0-9]+)=\1
+は、n=n (例えば、0=0,2=2)で表される任意の文字列にマッチします。
+(訳注:jakarta-regexp-1.1では\10以上は使えません)
+REで受理される完全正規表現の構文は、下記の通りです。
+エスケープ文字
+Unicode文字          与えられた Unicode 文字にマッチ
+\                    ('*'のような)メタキャラクタを表現する時に使用
+\\                   一つの '\'(バックスラッシュ)文字にマッチ
+\0nnn                与えられた8進数のコードに対応する文字にマッチ(訳注: 実際には存在しない?)
+\xhh                 8ビットで与えられた2桁の16進数のコードに対応する文字にマッチ
+\\uhhhh               16ビットで与えられた4桁の16進数のコードに対応する文字にマッチ
+\t                   TAB にマッチ
+\n                   改行にマッチ
+\r                   復帰にマッチ
+\f                   改頁にマッチ
+標準POSIX文字クラス
+[:alnum:]            英数字
+[:alpha:]            英字
+[:blank:]            空白,TAB
+[:cntrl:]            制御文字
+[:digit:]            数字
+[:graph:]            印刷もしくは表示可能な文字(空白は印刷可能であるが表示できない。`a' は両方可能) 
+[:lower:]            小文字アルファベット
+[:print:]            印刷可能文字 (制御文字でない文字)
+[:punct:]            句読点文字(アルファベット、数字、制御文字、空白文字以外の文字). 
+[:space:]            空白 (例えば、スペース、TAB、改行). 
+[:upper:]            大文字アルファベット 
+[:xdigit:]           16進数の数字
+POSIX 非標準スタイルの文字クラス
+[:javastart:]        Java 識別子の始まり
+[:javapart:]         Java 識別子の部分
+定義済みクラス
+.                    改行以外の任意の文字にマッチ
+\w                   "word"にマッチ (英数字と "_")
+\W                   wordでない文字にマッチ
+\s                   空白にマッチ
+\S                   空白以外にマッチ
+\d                   数字にマッチ
+\D                   数字以外にマッチ
+境界マッチャー
+^                    行の先頭のみにマッチ
+$                    行の終わりにのみマッチ
+\b                   単語の境界のみにマッチ
+\B                   単語の境界で無い場所にマッチ
+欲張りな繰り返し
+A*                   Aに0回以上マッチ(欲張り)
+A+                   Aに1回以上マッチ(欲張り)
+A?                   Aに0or1回マッチ(欲張り)
+A{n}                 Aにn回マッチ(欲張り)
+A{n,}                Aに少なくともn回マッチ(欲張り)
+A{n,m}               Aにn回以上、m回以下マッチ(欲張り)
+非欲張りな繰り返し
+A*?                  Aに0回以上マッチ(非欲張り)
+A+?                  Aに1回以上マッチ(非欲張り)
+A??                  Aに0or1回マッチ(非欲張り)
+バックリファレンス
+\1                   1つ目の丸括弧の部分正規表現を参照
+\2                   2つ目の丸括弧の部分正規表現を参照
+\3                   3つ目の丸括弧の部分正規表現を参照
+\4                   4つ目の丸括弧の部分正規表現を参照
+\5                   5つ目の丸括弧の部分正規表現を参照
+\6                   6つ目の丸括弧の部分正規表現を参照
+\7                   7つ目の丸括弧の部分正規表現を参照
+\8                   8つ目の丸括弧の部分正規表現を参照
+\9                   9つ目の丸括弧の部分正規表現を参照
+全ての繰り返し制御文字 (+, *, ?, {m,n}) は、デフォルトでは欲張り
+です。欲張りとは、マッチングが失敗するまで可能な限りたくさんの要素にマッチすることを意味します。
+もし、繰り返し制御文字を非欲張りにしたい場合は、繰り返し制御文字の後に?を加えます。
+非欲張りの繰り返し制御文字を加えることによって、出来るだけ少ない要素とマッチするようになります。ただし、繰り返し制御文字 {m,n} は、非欲張りをサポートしません。
+REは、RECompiler クラスによりコンパイルされた正規表現プログラムを実行します。
+しかし、RE マッチャークラスは、効率上の理由で、
+実際には正規表現をコンパイルする部分を含んでいません。
+もし、一つ以上のコンパイル済み正規表現を使いたいなら、下記のように、
+コンパイルされた正規表現をコマンドラインから取得し、指定することができます。
+// Pre-compiled regular expression "a*b"
+char[] re1Instructions =
+{
+0x007c, 0x0000, 0x001a, 0x007c, 0x0000, 0x000d, 0x0041,
+0x0001, 0x0004, 0x0061, 0x007c, 0x0000, 0x0003, 0x0047,
+0x0000, 0xfff6, 0x007c, 0x0000, 0x0003, 0x004e, 0x0000,
+0x0003, 0x0041, 0x0001, 0x0004, 0x0062, 0x0045, 0x0000,
+0x0000,
+};
+REProgram re1 = new REProgram(re1Instructions);
+このようにプリコンパイルされた 正規表現 re1 から、
+正規表現マッチャー(RE)オブジェクトを生成することができます。
+コンパイル済正規表現プログラムを用いることにより、実行時に正規表現のコンパイルのオーバヘッドを避けることができます。
+もし、動的な正規表現を必要とすれば、一つの RECompiler オブジェクトを各マッチングで再利用することができます。
+同様に、与えられたマッチャーオブジェクトにより、いつでも正規表現プログラムを変更することができます。
+しかしながら、RE と RECompiler はスレッドセーフではありません。
+(スレッドセーフが要求されることは、滅多にないからです)。そのため、
+各スレッドで独立したコンパイラもしくはマッチャーオブジェクトを生成する必要があります。
+(でなければ、自分自身で排他制御を行う必要があります)
+問題点:
+org.apache.regexp.RE は、現在、全ての POSIX 標準の正規表現と互換性がある訳ではありません。
+org.apache.regexp.RE は、POSIX と同等なクラス ([.foo.] 構文)をサポートしていません。(I18N/locale 問題)
+org.apache.regexp.RE は、ネストされた POSIX 文字をサポートしていません。(明らかにサポートするべきですが、完全にはできていません)
+org.apache.regexpcom.weusours.util.re POSIX 文字の照合概念([.foo.] 構文)をサポートしていません。(I18N/locale 問題)
+別のマッチングスタイルと異なりますか(simple, POSIX, Perl etc?)
+キャラクタイテレータをサポートすべきでしょうか(後方 RE マッチングのため!)?
+{m,n} の非欲張り型をサポートすべきでしょうか(誰か関心が無いか)?
+バックリファレンスが含まれるとき、欲張りマッチングの為に全ての可能性が考慮に入れられるとは限りません(POSIXがそのようにすべきと提案しているように)。
+POSIXの正規表現"(ac*)c*d[ac]*\1"が"acdacaa"にマッチする時、
+\1は"a"にマッチするようになるべきです。この正規表現パッケージは、
+これに当てはまりません。実際には、Perl もこの拡張を行っていません。
+これについて、実際にこのことについて誰かが説明するまで、
+その修正が良いと確証できません。もし、これが修正されれば、
+REText.txt のtest #137を更新する必要があります。
+バージョン: $Id: RE.html,v 1.2 2003/03/02 22:59:55 tora Exp $
+作成者: Jonathan Locke
+関連項目: recompile, 
+RECompiler
+フィールドの概要
+static int
+MATCH_CASEINDEPENDENT
+マッチングがアルファベットの大文字と小文字を区別しないことを示すフラグです。
+static int
+MATCH_MULTILINE
+改行は、BOL/EOL (^ and $)とマッチ
+static int
+MATCH_NORMAL
+アルファベットの大文字と小文字を区別することを明示的に示すフラグです。
+static int
+MATCH_SINGLELINE
+全ての入力と一つのテキストとします。
+static int
+REPLACE_ALL
+正規表現にマッチした位置全てを、substメソッドで置換することを示すビットフラグ
+static int
+REPLACE_FIRSTONLY
+正規表現にマッチした位置で、substメソッドが最初の一つだけ置換することを指定するビットフラグ
+コンストラクタの概要
+RE()
+初期化せずに、正規表現マッチャーを生成します。
+RE(REProgram program)
+(バイトコードの)プログラムデータから、
+コンパイル済みの正規表現マッチャーを生成します。
+RE(REProgram program,
+int matchFlags)
+(バイトコードの)プログラムデータから、コンパイル済みの正規表現マッチャーを生成します。
+RE(java.lang.String pattern)
+Stringからの正規表現マッチャーのコンストラクタです。
+RE(java.lang.String pattern,
+int matchFlags)
+Stringからの正規表現マッチャーのコンストラクタです。
+メソッドの概要
+int
+getMatchFlags()
+現在のマッチの動作を決めるフラグを返します。.
+java.lang.String
+getParen(int which)
+マッチに成功した時に、丸括弧内の部分正規表現にマッチした内容を取り出します。
+int
+getParenCount()
+マッチが成功した後で、丸括弧に入れられた部分正規表現の数を返します。
+int
+getParenEnd(int which)
+与えられた丸括弧にマッチした最後の位置を返します。
+int
+getParenLength(int which)
+与えられた丸括弧にマッチした文字列の長さを返します。
+int
+getParenStart(int which)
+与えられた丸括弧のレベルにおける始まりの位置を返します。
+REProgram
+getProgram()
+マッチャーオブジェクトで使用されている現在の正規表現プログラムを返します。
+java.lang.String[]
+grep(java.lang.Object[] search)
+正規表現にマッチした文字列を文字列の配列として返します。
+boolean
+match(CharacterIterator search,
+int i)
+開始位置が与えられた文字列に対して、現在の正規表現プログラムをマッチさせます。
+boolean
+match(java.lang.String search)
+文字列に対して、現在の正規表現プログラムをマッチさせます。
+boolean
+match(java.lang.String search,
+int i)
+開始位置が与えられた文字列に対して、現在の正規表現プログラムを
+マッチさせます。
+void
+setMatchFlags(int matchFlags)
+RE のマッチングの動作を変更するフラグをセットします。
+void
+setProgram(REProgram program)
+このマッチャーオブジェクトによって使われる正規表現プログラムをセットします。
+static java.lang.String
+simplePatternToFullRegularExpression(java.lang.String pattern)
+単純正規表現を完全正規表現
+に変換します。
+java.lang.String[]
+split(java.lang.String s)
+正規表現を境界として、文字列を分割し、文字列の配列に格納します。
+java.lang.String
+subst(java.lang.String substituteIn,
+java.lang.String substitution)
+正規表現にマッチした文字列を別の文字列に置換します。
+java.lang.String
+subst(java.lang.String substituteIn,
+java.lang.String substitution,
+int flags)
+正規表現にマッチした文字列を別の文字列に置換します。
+クラス java.lang.Object から継承したメソッド
+equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait
+フィールドの詳細
+MATCH_NORMAL
+public static final int MATCH_NORMAL
+アルファベットの大文字と小文字を区別することを明示的に示すフラグです。
+MATCH_CASEINDEPENDENT
+public static final int MATCH_CASEINDEPENDENT
+マッチングがアルファベットの大文字と小文字を区別しないことを示すフラグです。
+MATCH_MULTILINE
+public static final int MATCH_MULTILINE
+改行は、BOL/EOL (^ and $)とマッチ
+MATCH_SINGLELINE
+public static final int MATCH_SINGLELINE
+全ての入力と一つのテキストとします。つまり、改行は "." にマッチします。
+REPLACE_ALL
+public static final int REPLACE_ALL
+正規表現にマッチした位置全てを、substメソッドで置換することを示すビットフラグ
+REPLACE_FIRSTONLY
+public static final int REPLACE_FIRSTONLY
+正規表現にマッチした位置で、substメソッドが最初の一つだけ置換することを指定するビットフラグ
+コンストラクタの詳細
+RE
+public RE(java.lang.String pattern)
+throws RESyntaxException
+Stringからの正規表現マッチャーのコンストラクタです。コンパイルは、
+新しいRECompilerのインスタンスが用いられます。
+もし、沢山の正規表現をコンパイルしたいのなら、一つの RECompiler
+オブジェクトを代わりに使う方が良いかもしれません。
+パラメータ: pattern - コンパイルされる正規表現のパターン例外: RESyntaxException - 正規表現が不正な構文を含んでいる場合に発生します。
+RE
+public RE(java.lang.String pattern,
+int matchFlags)
+throws RESyntaxException
+Stringからの正規表現マッチャーのコンストラクタです。コンパイルは、
+新しいRECompilerのインスタンスが用いられます。
+もし、沢山の正規表現をコンパイルしたいのなら、一つの RECompiler
+オブジェクトを代わりに使う方が良いかもしれません。
+パラメータ: pattern - コンパイルされる正規表現のパターン例外: RESyntaxException - 正規表現が不正な構文を含んでいる場合に発生します。関連項目: RECompiler, 
+recompile
+RE
+public RE(REProgram program,
+int matchFlags)
+(バイトコードの)プログラムデータから、コンパイル済みの正規表現マッチャーを生成します。
+マッチングの動作を変えるために、特別なフラグを用いることができます。
+パラメータ: program - コンパイル済み正規表現プログラム (RECompiler* 、recompile を見よ)matchFlags - RE の動作を決める一つ以上のフラグ (RE.MATCH_*):
+MATCH_NORMAL              // 通常(アルファベットの大文字と小文字を区別する)マッチング
+MATCH_CASEINDEPENDENT     // アルファベットの大文字と小文字を区別しない(Case folded comparisons)
+MATCH_MULTILINE           // 改行をBOL/EOLとしてマッチ(Newline matches as BOL/EOL)
+関連項目: RECompiler, 
+REProgram, 
+recompile
+RE
+public RE(REProgram program)
+(バイトコードの)プログラムデータから、
+コンパイル済みの正規表現マッチャーを生成します。
+パラメータ: program - コンパイル済み正規表現プログラム関連項目: RECompiler, 
+recompile
+RE
+public RE()
+初期化せずに、正規表現マッチャーを生成します。
+これを使うことは希だと思いますが、取り敢えずサポートしています。
+メソッドの詳細
+simplePatternToFullRegularExpression
+public static java.lang.String simplePatternToFullRegularExpression(java.lang.String pattern)
+単純正規表現を完全正規表現
+に変換します。
+パラメータ: pattern - 変換するパターン戻り値: 完全正規表現
+setMatchFlags
+public void setMatchFlags(int matchFlags)
+RE のマッチングの動作を変更するフラグをセットします。
+パラメータ: matchFlags - RE の動作を決める一つ以上のフラグ (RE.MATCH_*):
+MATCH_NORMAL              // 通常(アルファベットの大文字と小文字を区別する)マッチング
+MATCH_CASEINDEPENDENT     // アルファベットの大文字と小文字を区別しない
+MATCH_MULTILINE           // 改行をBOL/EOLとしてマッチ
+getMatchFlags
+public int getMatchFlags()
+現在のマッチの動作を決めるフラグを返します。.
+戻り値: 現在のマッチの動作を決めるフラグ (RE.MATCH_*).
+MATCH_NORMAL              // 通常(アルファベットの大文字と小文字を区別する)マッチング
+MATCH_CASEINDEPENDENT     // アルファベットの大文字と小文字を区別しない
+MATCH_MULTILINE           // 改行をBOL/EOLとしてマッチ
+関連項目: setMatchFlags(int)
+setProgram
+public void setProgram(REProgram program)
+このマッチャーオブジェクトによって使われる正規表現プログラムをセットします。
+パラメータ: program - RECompiler によってコンパイルされた正規表現プログラム関連項目: RECompiler, 
+REProgram, 
+recompile
+getProgram
+public REProgram getProgram()
+マッチャーオブジェクトで使用されている現在の正規表現プログラムを返します。
+戻り値: 正規表現プログラム関連項目: setProgram(org.apache.regexp.REProgram)
+getParenCount
+public int getParenCount()
+マッチが成功した後で、丸括弧に入れられた部分正規表現の数を返します。
+戻り値: 丸括弧に入れられた部分正規表現の利用できる数
+getParen
+public java.lang.String getParen(int which)
+マッチに成功した時に、丸括弧内の部分正規表現にマッチした内容を取り出します。
+パラメータ: which - 部分正規表現のネストレベル戻り値: 文字列
+getParenStart
+public final int getParenStart(int which)
+与えられた丸括弧のレベルにおける始まりの位置を返します。
+パラメータ: 部分正規表現のネストレベル -  戻り値: 文字列の位置
+getParenEnd
+public final int getParenEnd(int which)
+与えられた丸括弧にマッチした最後の位置を返します。
+パラメータ: which - 部分正規表現のネストレベル戻り値: 文字列の位置
+getParenLength
+public final int getParenLength(int which)
+与えられた丸括弧にマッチした文字列の長さを返します。
+パラメータ: which - 部分正規表現のネストレベル戻り値: 丸括弧内の部分正規表現にマッチした文字数を返します。
+match
+public boolean match(java.lang.String search,
+int i)
+開始位置が与えられた文字列に対して、現在の正規表現プログラムを
+マッチさせます。
+パラメータ: search - マッチさせる文字列i - 開始位置戻り値: 文字列がマッチすると、true を返します。
+match
+public boolean match(CharacterIterator search,
+int i)
+開始位置が与えられた文字列に対して、現在の正規表現プログラムをマッチさせます。
+パラメータ: search - マッチさせる文字列i - 開始位置戻り値: 文字列がマッチすると、true が返します。
+match
+public boolean match(java.lang.String search)
+文字列に対して、現在の正規表現プログラムをマッチさせます。
+パラメータ: search - マッチさせるテキスト戻り値: 文字列がマッチすると、true を返します。
+split
+public java.lang.String[] split(java.lang.String s)
+正規表現を境界として、文字列を分割し、文字列の配列に格納します。
+このメソッドは、Perl の split と同じ様に動作します。
+例えば、境界としたい正規表現"[ab]+"に対し、分割したい文字列と
+"xyzzyababbayyzabbbab123" が与えられたとき、"[xyzzy, yyz, 123]"
+という文字列の配列になります。
+パラメータ: s - この正規表現で分割したい文字列戻り値: 文字列の配列
+subst
+public java.lang.String subst(java.lang.String substituteIn,
+java.lang.String substitution)
+正規表現にマッチした文字列を別の文字列に置換します。
+このメソッドは、Perl の置換と同じ様に動作します。
+例えば、"a*b" という正規表現に対し、置換したい文字列を
+"aaaabfooaaabgarplyaaabwackyb"、置換先の文字列"-"とすると、
+置換の結果として、"-foo-garply-wacky-" を返却します。
+パラメータ: substituteIn - 置換させたい文字列substitution - 正規表現によるマッチを置換したい文字列戻り値: 置換させたい文字列は、0以上の正規表現のマッチにより、
+置換したい文字列に置き換えられます。
+(もし、この正規表現がどの位置にもマッチしなかった場合、
+もとの文字列は、そのまま返されます)
+subst
+public java.lang.String subst(java.lang.String substituteIn,
+java.lang.String substitution,
+int flags)
+正規表現にマッチした文字列を別の文字列に置換します。
+このメソッドは、Perl の置換と同じ様に動作します。
+例えば、"a*b" という正規表現に対し、置換したい文字列を
+"aaaabfooaaabgarplyaaabwackyb"、置換先の文字列"-"とすると、
+置換の結果として、"-foo-garply-wacky-" を返却します。
+パラメータ: substituteIn - 置換させたい文字列substitution - 正規表現によるマッチを置換したい文字列戻り値: 置換させたい文字列は、0以上の正規表現のマッチにより、
+置換したい文字列に置き換えられます。
+(もし、この正規表現がどの位置にもマッチしなかった場合、もとの文字列は、
+そのまま返されます)
+grep
+public java.lang.String[] grep(java.lang.Object[] search)
+正規表現にマッチした文字列を文字列の配列として返します。
+このメソッドは、Perl の grep のように動作します。
+正規表現"a*b"と、文字列のオブジェクト配列[foo, aab, zzz, aaaab]
+が与えられたとき、[aaa, aaaab]という文字列の配列を返します。
+パラメータ: search - 探索したいオブジェクトの配列戻り値: この正規表現にマッチした文字列の値を、
+文字列の配列として返します。
+パッケージ 
+クラス 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし
+概要:  内部クラス | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+Copyright &copy; 2001 Apache Software Foundation. All Rights Reserved.[訳注:これは、おかもとたかしが翻訳しました。日本語訳に対するコメントがあれば、report@jajakarta.orgに送って下さい。]
+Jakarta-Regexp 1.2 API: クラス  RE

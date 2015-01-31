@@ -1,0 +1,29 @@
+コンパイル・パラメータPLSQL_WARNINGSを設定すると、次の操作を実行できます。
+すべての警告、1つ以上の警告カテゴリまたは特定の警告の有効化および無効化
+特定の警告のエラーとしての処理(その条件が修正されるまで、PL/SQLユニットはコンパイルできません)
+PLSQL_WARNINGSの値は、次のものに対して設定できます。
+Oracle Databaseインスタンス
+ALTER SYSTEM文を使用します。この文の詳細は、『Oracle Database SQL言語リファレンス』を参照してください。
+セッション
+ALTER SESSION文を使用します。この文の詳細は、『Oracle Database SQL言語リファレンス』を参照してください。
+ストアドPL/SQLユニット
+「ALTER文」のALTER文をcompiler_parameters_clauseとともに使用します。PL/SQLユニットおよびコンパイラ・パラメータの詳細は、「PL/SQLユニットおよびコンパイル・パラメータ」を参照してください。
+前述のいずれかのALTER文で、PLSQL_WARNINGSの値を次の構文で設定します。
+PLSQL_WARNINGS = 'value_clause' [, 'value_clause' ] ...
+value_clauseの構文は、『Oracle Databaseリファレンス』を参照してください。
+例11-1に、PLSQL_WARNINGSの値を設定するALTER文をいくつか示します。
+例11-1 PLSQL_WARNINGSコンパイル・パラメータの値の設定
+セッションで、すべての警告を有効にします(開発時に特にお薦めします)。
+ALTER SESSION SET PLSQL_WARNINGS='ENABLE:ALL';
+セッションで、PERFORMANCE警告を有効にします。
+ALTER SESSION SET PLSQL_WARNINGS='ENABLE:PERFORMANCE';
+プロシージャloc_varで、PERFORMANCE警告を有効にし、設定を再利用します。
+ALTER PROCEDURE loc_var
+COMPILE PLSQL_WARNINGS='ENABLE:PERFORMANCE'
+REUSE SETTINGS;
+セッションで、SEVERE警告を有効にし、PERFORMANCE警告を無効にして、PLW-06002警告をエラーとして処理します。
+ALTER SESSION
+SET PLSQL_WARNINGS='ENABLE:SEVERE', 'DISABLE:PERFORMANCE', 'ERROR:06002';
+セッションで、すべての警告を無効にします。
+ALTER SESSION SET PLSQL_WARNINGS='DISABLE:ALL';
+PL/SQLのエラー処理

@@ -1,0 +1,31 @@
+このトピックでは、Data Protection API (DPAPI) を使用して、パスワード、接続文字列、PIN などの機密データを WindowsPhone アプリケーション内で暗号化および復号化する方法について説明します。機密データを電話の分離ストレージ内に保存するとセキュリティを確保できません。復号化キーが同じ電話上に存在していると、どれほどキーを隠しても、データを暗号化する効果が得られません。DPAPI は、ユーザー資格情報と電話資格情報を使用してデータを暗号化および復号化することで、暗号化キーを明示的に生成したり保管したりする問題を解決します。Protect および Unprotect メソッドを通じて DPAPI にアクセスするための ProtectedData クラスを使用することができます。データの暗号化には Protect メソッドを使用し、複合化には Unprotect メソッドを使用します。WindowsPhone デバイスでアプリケーションを最初に実行する際に復号キーが作成されます。各アプリケーションはそれぞれ独自の復号化キーを持つことになります。Protect や Unprotect を呼び出すと、復号化キーが黙示的に使用され、すべてのデータの機密性が各アプリケーション内に維持されます。キーは、アプリケーションが更新されても同じままです。暗号化する大量のデータがあり、そのデータが Windows Phone のローカル データベースに保存されている場合、個別のデータを暗号化するのではなく、データベース全体を暗号化します。データベース全体を暗号化するには、Password パラメーターを使用します。詳細については、「Windows Phone のローカル データベース接続文字列」を参照してください。
+この手順では、アプリケーションを作成し、Protect メソッドを使用して PIN を暗号化し、分離ストレージに保管し、その後 Unprotect メソッドを使用して復号化します。Protect メソッドは、暗号化するデータとエントロピー情報をパラメーターとして取ります。エントロピー情報とは、暗号をより複雑化するために指定できる追加のバイト アレイです。複雑さを高める必要がなければ null に設定します。このトピックでは null に設定されています。Protect メソッドを使用するときにエントロピー値を指定する場合は、Unprotect メソッドを使用してデータを複合化するときにも同じ値を使用する必要があります。Unprotect メソッドは、Protect メソッドを使用して暗号化されたデータと、データ暗号化の際に使用されたエントロピー情報をパラメーターとして取ります。Protect メソッドと Unprotect メソッドで使用されるデータ パラメーターとエントロピー パラメーターは、byte[] 型でなければなりません。アプリケーションの準備
+Visual Studio2010 Express for WindowsPhone で、[ファイル] メニューの [新しいプロジェクト] をクリックして新しいプロジェクトを作成します。[新しいプロジェクト] ウィンドウが表示されます。Visual C# のテンプレートを展開してから、Silverlight for Windows Phone のテンプレートを選択します。Windows Phone アプリケーション テンプレートを選択します。[名前] ボックスに選択した名前を入力します。[OK] をクリックします。[新しい Windows Phone アプリケーション] ウィンドウが表示されます。[対象の Windows Phone OS バージョン] メニューで、[Windows Phone 7.1] が選択されていることを確認します。[OK] をクリックします。新しいプロジェクトが作成され、Visual Studio のデザイナー ウィンドウに MainPage.xaml が表示されます。MainPage.xaml で、LayoutRoot という名前のグリッドを次のコードで置き換えます。このコードにより、PIN を入力するための TextBox コントロールと、PIN を保存および取得するための 2 つのボタンが作成されます。
+<!--LayoutRoot is the root grid where all page content is placed-->
+<Grid x:Name="LayoutRoot" Background="Transparent">
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto"/>
+<RowDefinition Height="*"/>
+</Grid.RowDefinitions>
+<!--TitlePanel contains the name of the application and page title-->
+<StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+<TextBlock x:Name="ApplicationTitle" Text="Encryption Example" Style="{StaticResource PhoneTextNormalStyle}"/>
+<TextBlock x:Name="PageTitle" Text="app login page" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+</StackPanel>
+<!--ContentPanel - place additional content here-->
+<Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+<Grid.RowDefinitions>
+<RowDefinition Height="auto" />
+<RowDefinition />
+<RowDefinition Height="auto" />
+<RowDefinition />
+<RowDefinition />
+<RowDefinition />
+</Grid.RowDefinitions>
+<TextBlock Grid.Row="0" Text="Pin" Margin="10" />
+<TextBox x:Name="TBPin" Height="75" Width="300" HorizontalAlignment="Left" Margin="83,22,0,44" Grid.Row="1" />
+<Button x:Name="BtnStore" Content="Store" Grid.Row="1" Click="BtnStore_Click" Margin="-6,123,6,58" Grid.RowSpan="3" />
+<Button x:Name="BtnRetrieve" Content="Retrieve" Grid.Row="3" Click="BtnRetrieve_Click" Margin="-6,111,6,72" Grid.RowSpan="2" />
+</Grid>
+</Grid>
+方法: Windows Phone アプリケーションでデータを暗号化する

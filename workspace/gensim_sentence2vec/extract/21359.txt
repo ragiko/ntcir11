@@ -1,0 +1,25 @@
+browserify
+node-styleのコードをbrowserでも動く
+ようにしてくれるツール
+// Node.js style code!
+var http = require('http');!
+var callback = function(err, res){!
+console.log(res);!
+};!
+http.get('http://www.google.com' callback);
+※requireやtransformerが注目されてますが本質的には
+nodeのコードをbrowserでも動くようにするためのもの。
+browserify
+node-styleのコードをbrowserでも動く
+ようにしてくれるツール
+// Node.js style code!
+var http = require('http');!
+var callback = function(err, res){!
+console.log(res);!
+};!
+http.get('http://www.google.com' callback);
+※依存解決やtransformerが注目されてますが本質的には
+nodeのコードをbrowserでも動くようにするためのもの。Node.jsとbrowser両方で
+動作するハイブリッドなライブラリ/
+アプリが作れる
+client/server両方をテストするハイブリッド時代のCI - SSSSLIDE

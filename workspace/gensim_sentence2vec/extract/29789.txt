@@ -1,0 +1,11 @@
+「count(*)」と「count(列名)」の違いは、分かっていますか?
+前者はnullもカウント、後者はnullをカウントしません。
+後者でいいのですね?
+select
+count(case when FLAGS=1 then 1 else null end) as FLG1,
+count(case when FLAGS=2 then 1 else null end) as FLG2
+from TABLE_A
+where USERID=1
+and COLUMN_A is not null
+;
+二つのcount()を一文で - MySQL - 教えて!goo

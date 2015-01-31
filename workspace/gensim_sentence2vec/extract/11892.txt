@@ -1,0 +1,26 @@
+15.1 What is Regression?
+Regression is most often used by scientists and engineers to visualize and plot the curve that best describes the shape and behavior of their data. 
+Regression procedures find an association between independent and dependent variables that, when graphed on a Cartesian coordinate system, produces a straight line, plane or curve. This is also commonly known as curve fitting. 
+The independent variables are the known, or predictor, variables. These are most often your X-axis values. When the independent variables are varied, they result in corresponding values for the dependent, or response, variables, most often assigned to the Y-axis. 
+Regression finds the equation that most closely describes, or fits, the actual data, using the values of one or more independent variables to predict the value of a dependent variable. The resulting equation can then be plotted over the original data to produce a curve that fits the data. 
+About the Regression Wizard
+About the Curve Fitter
+Opening .FIT Files
+Using the Regression Wizard
+Setting Nonlinear Regression Report Options
+Running a Regression From a Notebook
+Creating New Regression Equations
+Viewing and Editing Code
+Saving Regression Equation Changes
+Variable Options
+Equation Options
+Watching The Fit Progress
+Interpreting Fit Results
+Saving Regression Results
+Graphing Regression Equations
+Confidence and Prediction Bands
+Interpreting Regression Reports
+Regression Equation Libraries and Notebooks
+Curve Fitting Date And Time Data
+Regression Results Messages
+HULINKS | SigmaPlot ユーザーガイド | 15.1 回帰分析 (Regression) とは?

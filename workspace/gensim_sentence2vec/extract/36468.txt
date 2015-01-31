@@ -1,0 +1,94 @@
+NSLinguisticTaggerを用いると、自然言語のテキストを品詞(名詞、動詞、代名詞)や「個人名」「地名」といった属性で区分(トークンに分解)することができます。日本語の形態素解析も可能です。
+使い方は非常にシンプルで、基本的な手順は
+スキームを引数に渡してNSLinguisticTaggerオブジェクトを生成
+処理対象テキストをセット
+トークン分解開始
+の3ステップです。
+// スキーム
+NSArray *schemes = @[NSLinguisticTagSchemeLexicalClass];
+// NSLinguisticTaggerオブジェクトを生成
+NSLinguisticTagger *tagger = [[NSLinguisticTagger alloc] initWithTagSchemes:schemes
+options:0];
+// 処理対象テキスト
+NSString *targetText = self.textView.text;
+[tagger setString:targetText];
+// トークンへの分解開始
+[tagger enumerateTagsInRange:NSMakeRange(0, targetText.length)
+scheme:NSLinguisticTagSchemeLexicalClass
+options:0
+usingBlock:
+^(NSString *tag, NSRange tokenRange, NSRange sentenceRange, BOOL *stop) {
+NSString *subStr = [targetText substringWithRange:tokenRange];
+NSLog(@"%@ : %@", subStr, tag);
+}];
+スキームとは、トークン分解をどのような属性に基づいて行うかを指定するもので、上記サンプルで使用しているNSLinguisticTagSchemeLexicalClassは品詞(「名詞」「動詞」etc)によってテキストを分解するスキームです。
+enumerateTagsInRange:scheme:options:usingBlock:メソッドをコールするとトークン分解が開始され、トークンが見つかるごとに引数 usingBlock に渡されたBloksの処理が実行されます。
+品詞で区分する
+名詞、動詞といった品詞でテキストを区分するには、スキームとしてNSLinguisticTagSchemeLexicalClassを使用します。
+enumerateTagsInRange:scheme:options:usingBlock:メソッドで取得できるタグの種類には、次のようなものがあります。(主なものを抜粋)
+NSLinguisticTagNoun:名詞
+NSLinguisticTagVerb:動詞
+NSLinguisticTagAdjective:形容詞
+NSLinguisticTagPronoun:代名詞
+NSLinguisticTagAdverb:副詞
+NSLinguisticTagConjunction:接続詞
+NSLinguisticTagPreposition:前置詞
+NSLinguisticTagParticle:助詞
+NSLinguisticTagDeterminer:限定詞
+たとえば、品詞で区分して色分けする場合、この NSLinguisticTagger で取得できるタグに応じて色を決定するメソッドを実装しておき、
+- (UIColor *)colorForAtteributeForLinguisticTag:(NSString *)linguisticTag {
+// 名詞
+if ([linguisticTag isEqualToString:NSLinguisticTagNoun]) {
+return [UIColor redColor];
+}
+// 動詞
+else if ([linguisticTag isEqualToString:NSLinguisticTagVerb]) {
+return [UIColor blueColor];
+}
+// 形容詞
+else if ([linguisticTag isEqualToString:NSLinguisticTagAdjective]) {
+return [UIColor magentaColor];
+}
+// 代名詞
+else if ([linguisticTag isEqualToString:NSLinguisticTagPronoun]) {
+return [UIColor orangeColor];
+}
+return [UIColor whiteColor];
+}
+// スキーム
+NSArray *schemes = @[NSLinguisticTagSchemeLexicalClass];
+// NSLinguisticTaggerオブジェクトを生成
+NSLinguisticTagger *tagger = [[NSLinguisticTagger alloc] initWithTagSchemes:schemes
+options:0];
+// 処理対象テキスト
+NSString *targetText = self.textView.text;
+[tagger setString:targetText];
+// テキストに色をつけるためにNSMutableAttributedStringを生成
+NSMutableAttributedString *formatted;
+formatted = [[NSMutableAttributedString alloc] initWithString:targetText];
+// トークンのタグを取得開始
+[tagger enumerateTagsInRange:NSMakeRange(0, targetText.length)
+scheme:NSLinguisticTagSchemeLexicalClass
+options:0
+usingBlock:
+^(NSString *tag, NSRange tokenRange, NSRange sentenceRange, BOOL *stop) {
+// タグに応じた色分け
+UIColor *color = [self colorForAtteributeForLinguisticTag:tag];
+[formatted addAttribute:NSForegroundColorAttributeName
+value:color
+range:tokenRange];
+}];
+// 色分けされたテキストを表示
+self.textView.attributedText = formatted;
+地名、個人名、組織名で区分する
+スキームとしてNSLinguisticTagSchemeNameTypeを使用します。他は品詞による区分の場合と同じ手順でOKです。
+スキーム種別
+上で使用した NSLinguisticTagSchemeLexicalClass, NSLinguisticTagSchemeNameType 以外に、次のようなスキームが用意されています。
+NSLinguisticTagSchemeTokenType:「単語」「区切り文字」「ホワイトスペース」「その他」で分解する
+NSLinguisticTagSchemeLemma:各単語の原形をタグとして取得する
+NSLinguisticTagSchemeLanguage:言語名("ja", "en",...)をタグとして取得する
+NSLinguisticTagSchemeScript:書き文字種別("Jpan", "Latn",...)をタグとして取得する
+NSLinguisticTagSchemeNameTypeOrLexicalClass:NSLinguisticTagSchemeLexicalClassまたはNSLinguisticTagSchemeNameTypeにある属性で分解する
+言語ごとの対応スキームを確認する
+availableTagSchemesForLanguage:メソッドを使用すると、引数に指定した言語で利用できるスキームの配列(NSArray型)を取得することができます。
+iPhone - 自然言語のテキストを属性で区分する - Qiita

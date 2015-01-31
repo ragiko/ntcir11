@@ -1,0 +1,80 @@
+Windowsユーザである友人からアサギマダラの写真4枚がメールに添付されて送られてきた.「送ろうとしたメッセージは単一メッセージとしてサイズが大き過ぎるので,送信者がこのメッセージを 13 パートに分割して送信しました」と書かれているだけである.
+1個のメールの大きさは約1MBであるから,全部で13MB弱である.WindowsのOutlook Expressなら自動的に繋ぎあわせて一個のメールに復元してくれることを知っていたので,Windows XPに切り替えて,メッセージと4枚の写真であることを確認できた.Outlook Express以外のメールソフトで受信した場合,どのようにして再結合しているのかインターネットで調べると,再結合できるのはOutlook Expressだけであり,結合の仕方が分からず困っている人が意外に多いことを知った.
+Macの場合,購入時に付いているMailというソフトには再結合の機能はない.そこで,理屈に基づいて再結合に挑戦してみた.
+Mac OSX環境下,受信したファイルの一つをテキストエディターで開いてみると,1個のファイルは,1行76文字(半角英数字)で構成された文字列が約13,000行続いている.この種のファイルが13個,受信箱に列んでいるわけである.
+最初のファイルの先頭には,普段は見えないヘッダ(送信者や受信者の名前や,送信日時,どのサーバーを経由してきたか,使っているメールソフトは何かなど),次いで送信者からのメッセージ,さらに一見文字化けした様に見える半角文字列が延々と続くが,これが画像データの本体である.
+二番目以降のファイルはヘッダと文字化された画像データである.すべてのファイルからヘッダ部分を機械的に削除し,順番につなぎ合わせれば目的のファイルを再現することができる.
+1番目のファイル ｜ヘッダ｜メッセージ｜画像データ(文字)｜
+2番目のファイル ｜ヘッダ｜画像データ(文字)｜
+3番目のファイル ｜ヘッダ｜画像データ(文字)｜
+・
+・
+n番目のファイル ｜ヘッダ｜画像データ(文字)｜ 以下同じ構造
+Return-Path: <YYYYYYYY@mb.infoweb.ne.jp>
+Delivered-To: abcdefgh@s3.kcn-tv.ne.jp
+Received: (qmail 8340 invoked from network); 26 Oct 2012 17:31:19 +0900
+20行省略
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2900.5931
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.6157
+From: "XXXXXXXXXX" <YYYYYYYY@mb.infoweb.ne.jp>
+16行省略
+Content-Transfer-Encoding: 7bit
+様
+メッセージ 省略
+------=_NextPart_000_0016_01CDB39F.8C025EF0
+Content-Type: image/jpeg;
+name="12-036.JPG"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+filename="12-036.JPG"
+/9j/4W+eRXhpZgAASUkqAAgAAAAKAA8BAgAKAAAAhgAAABABAgAIAAAAkAAAABIBAwABAAAAAQAA
+ABoBBQABAAAAmAAAABsBBQABAAAAoAAAACgBAwABAAAAAgAAADIBAgAUAAAAqAAAABMCAwABAAAA
+AgAAAGmHBAABAAAAjAEAAKXEBwDQAAAAvAAAAB4eAABQYW5hc29uaWMARE1DLVRaMwBIAAAAAQAA
+AEgAAAABAAAAMjAxMjoxMDoyNiAxNDowNDowNgBQcmludElNADAyNTAAAA4AAQAWABYAAgAAAAAA
+AwBkAAAABwAAAAAACAAAAAAACQAAAAAACgAAAAAACwCsAAAADAAAAAAADQAAAAAADgDEAAAAAAEF
+AAAAAQEBAAAAEAGAAAAACREAABAnAAALDwAAECcAAJcFAAAQJwAAsAgAABAnAAABHAAAECcAAF4C
+AAAQJwAAiwAAABAnAADLAwAAECcAAOUbAAAQJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAIgCaggUAAQAAACoDAACdggUAAQAAADIDAAAiiAMAAQAAAAIAAAAniAMAAQAAAKAA
+AAAAkAcABAAAADAyMjEDkAIAFAAAADoDAAAEkAIAFAAAAE4DAAABkQcABAAAAAECAwACkQUAAQAA
+AGIDAAAEkgoAAQAAAGoDAAAFkgUAAQAAAHIDAAAHkgMAAQAAAAUAAAAIkgMAAQAAAAAAAAAJkgMA
+AQAAABgAAAAKkgUAAQAAAHoDAAB8kgcAdhoAAIIDAAAAoAcABAAAADAxMDABoAMAAQAAAAEAAAAC
+oAQAAQAAAAAMAAADoAQAAQAAAAAJAAAFoAQAAQAAAAAeAAAXogMAAQAAAAIAAAAAowcAAQAAAAMA
+AAABowcAAQAAAAEAAAABpAMAAQAAAAAAAAACpAMAAQAAAAAAAAADpAMAAQAAAAAAAAAEpAUAAQAA
+APgdAAAFpAMAAQAAABgBAAAGpAMAAQAAAAAAAAAHpAMAAQAAAAEAAAAIpAMAAQAAAAAAAAAJpAMA
+AQAAAAAAAAAKpAMAAQAAAAAAAAAAAAAACgAAAOIEAAAxAAAACgAAADIwMTI6MTA6MjYgMTQ6MDQ6
+MDYAMjAxMjoxMDoyNiAxNDowNDowNgAEAAAAAQAAAAAAAABkAAAAWAEAAGQAAADMAQAACgAAAFBh
+bmFzb25pYwAAAC4AAQADAAEAAAACAAAAAgAHAAQAAAAAAQAJAwADAAEAAAABAAAABwADAAEAAAAF
+AAAADwABAAIAAAAQEAAAGgADAAEAAAACAAAAHAADAAEAAAACAAAAHwADAAEAAAAiAAAAIAADAAEA
+AAACAAAAIQAHAAgYAAC4BQAAIgADAAEAAAAAAAAAIwADAAEAAAAAAAAAJAADAAEAAAAAAAAAJQAH
+以下13,000行省略
+処理手順
+1)デスクトップにasagi(今回使用した名前)というフォルダを作る.
+2)メールソフトを使って,13個のファイルを,ファイル番号順にa01, a02, a03 ------a13のようなファイル名で別名保存する.
+3)それぞれのファイルをテキストエディタで開き,ヘッダ部分(先頭から最初の空行まで)を削除し,同じ名前で保存しなおす.
+そのファイルをどうするかは,UNIX (Linux) の教育を受けていないと分からないかもしれない.
+Mac OS Xは,UNIX OSであるからコマンドを使って処理する.
+4)ターミナルソフトを起動,コマンド入力画面が現れる.
+5)以下,cd, ls, cat等のunixコマンドを利用して処理する.
+ターミナルの表示と処理
+Last login: Sat Oct 27 08:29:14 on console 
+khmini:~ KH$ cd desktop    保存ファイルを入れているフォルダ (asagi) のあるデスクトップへ移動する
+khmini:desktop KH$ cd asagi  asagiフォルダへ移動 
+khmini:asagi KH$ ls       保存ファイルの確認
+a01.eml
+a02.eml
+a03.eml
+a04.eml
+a05.eml
+a06.eml
+a07.eml
+a08.eml
+a09.eml
+a10.eml
+a11.eml
+a12.eml
+a13.eml
+khmini:asagi KH$ cat a1.eml a2.eml a3.eml a4.eml a5.eml 
+a6.eml a7.eml a8.eml a9.eml a10.eml a11.eml a12.eml a13.eml >> all.eml
+khmini:asagi KH$ 
+分割メールの再結合 - Harano Kazunobu Web Site

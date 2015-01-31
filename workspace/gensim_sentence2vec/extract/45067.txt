@@ -1,0 +1,15 @@
+用法
+输入栅格数据集可以是任意有效的栅格数据集。
+将创建两个输出:IEEE 浮点格式 32 位带符号二进制文件(扩展名为 .flt)和 ASCII 头文件(扩展名为 .hdr)。这两个文件将使用相同的输出浮点型栅格文件名。
+ASCII 文件由包含一系列关键字的文件头信息组成。文件的格式一般为:
+NCOLS xxx
+NROWS xxx
+XLLCORNER xxx
+YLLCORNER xxx
+CELLSIZE xxx
+NODATA_VALUE xxx
+BYTEORDER <MSBFIRST | LSBFIRST>关键字的定义如下:NCOLS 和 NROWS 是由二进制文件所定义的栅格的列数和行数。XLLCORNER 和 YLLCORNER 是左下角栅格像元的左下角坐标。栅格转浮点型不支持使用 XLLCENTER 和 YLLCENTER。CELLSIZE 是栅格像元的大小。NODATA_VALUE 是用于表示 NoData 像元的值。BYTEORDER 表示多字节二进制数如何存储在生成二进制文件的系统上。在基于 Intel 的系统中,字节顺序是 LSBFIRST(也称为大字节)。在其他大多数计算机架构(除 Alpha 外的所有 UNIX 系统以及配有 Motorola CPU 的老式 Macintosh),字节顺序是 MSBFIRST(也称为小字节)。
+输入栅格中的 NoData 像元值在输出的浮点型文件中被转换为 NODATA_VALUE。此值通常留给那些真值未知的像元专用。
+默认情况下,输入栅格中的 NoData 值在输出的浮点型文件中被替换为 -9999。如果要使用其他值表示 NoData,可以遵循类似于下面的步骤:对原始栅格运行 ArcGIS Spatial Analyst 扩展模块设为空函数工具。将输出一个包含二进制值的栅格,其中 1 在原始栅格中对应 NoData,0 则表示其他任意值。运行 ArcGIS Spatial Analyst 扩展模块条件函数工具,将设为空函数的运算结果指定为输入条件栅格,将分配了 NoData 值的新值指定为输入条件为 true 时所取的值,将原始栅格指定为输入条件为 false 时所取的栅格,并将条件表达式指定为值 = 1。使用栅格转浮点型工具将条件函数输出栅格转换为浮点二进制文件将 ASCII 头文件中的 NODATA_VALUE 的值转换为将 NoData 转换后的值。
+此工具只将左下角像元的左下角作为原点写入。浮点型转栅格工具也支持将左下角像元的中心作为原点。
+ArcGIS Help 10.1 - 栅格转浮点型 (转换)

@@ -1,0 +1,17 @@
+7.1.4.3.1. 設定をする¶
+まずは、データベースを指定するためにgroonga-httpdの設定ファイルを編集する必要があります。次のように/etc/groonga/httpd/groonga-httpd.confを編集して groonga_database ディレクティブを有効にしてます。
+# Match this to the file owner of groonga database files if groonga-httpd is
+# run as root.
+#user groonga;
+...
+http {
+...
+# Don't change the location; currently only /d/ is supported.
+location /d/ {
+groonga on; # <= This means to turn on groonga-httpd.
+# Specify an actual database and enable this.
+groonga_database /var/lib/groonga/db/db;
+}
+...
+}
+7.1.4. groonga-httpd &mdash; Groonga v4.0.8ドキュメント

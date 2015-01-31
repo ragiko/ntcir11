@@ -1,0 +1,122 @@
+
+Java で配列の要素を単純交換法(バブルソート)によって並べ替える方法をご紹介します。
+バブルソート( bubble sort ) とは、ソートのアルゴリズムの一つです。
+隣り合う要素の大小を比較しながら整列させますが、計算が遅いことが難点です。
+アルゴリズムが単純なこと
+安定した内部ソートであること
+実装が容易なこと
+などの理由から学習用に利用されることが多いです。
+※基本交換法、隣接交換法とも言われ、単に交換法と言う場合もあります。
+それではサンプルソースを見ながら説明していきます。
+サンプルソース
+/**
+* 指定された int 配列を、単純交換法(バブルソート)によって並べ替えを実施し、配列を返します。
+*
+* @param values 基となる int 配列
+* @return 単純交換法(バブルソート)による並べ替え後の int 配列
+*/
+public static int[] bubbleSort(final int[] values) {
+int[] vals = values;
+if ( vals == null || vals.length == 0 ) return vals;
+int temp=null;
+// 単純交換法による並べ替え
+for ( int i = 0; i < vals.length - 1; i++ ) {
+for ( int j = vals.length - 1; j > i; j-- ) {
+if ( vals[j - 1] > vals[j] ) {
+temp = vals[j - 1];
+vals[j - 1] = vals[j];
+vals[j] = temp;
+}
+}
+}
+return vals;
+}
+/**
+* 指定された int 配列の最大値を返します。</p>
+*
+* @param values 基となる int 配列
+* @return 10 進数の引数で表される整数値。 引数が null の場合は -1 を返します。
+*/
+public static int bubbleSortMax(final int[] values) {
+if ( values == null || values.length == 0 ) return -1;
+int[] vals = bubbleSort(values);
+// 最大値を返す
+return vals[vals.length - 1];
+}
+/**
+* 指定された int 配列の最小値を返します。
+*
+* @param values 基となる int 配列
+* @return 10 進数の引数で表される整数値。 引数が null の場合は -1 を返します。
+*/
+public static int bubbleSortMin(final int[] values) {
+if ( values == null || values.length == 0 ) return -1;
+int[] vals = bubbleSort(values);
+// 最小値を返す
+return vals[0];
+}
+bubbleSort
+引数が null もしくは、要素数が 0 の場合は、そのまま引数を返しています。
+if ( vals == null || vals.length == 0 ) return vals;
+全ての要素に関して、隣接する要素と比較し、順序が逆であれば入れ替えています。
+これを要素数 -1 回繰り返すことでソートを行なっています。
+for ( int i = 0; i < vals.length - 1; i++ ) {
+for ( int j = vals.length - 1; j > i; j-- ) {
+if ( vals[j - 1] > vals[j] ) {
+temp = vals[j - 1];
+vals[j - 1] = vals[j];
+vals[j] = temp;
+}
+}
+}
+bubbleSortMax
+バブルソートにより配列内の最大値を取得します。
+bubbleSortMin
+バブルソートにより配列内の最小値を取得します。
+テスト
+それではテストを実施してみましょう。
+SortUtils というクラスを作って、static メソッドとして実装しています。
+以下のようなテストコードを作りました。
+public static void main(String[] args) {
+int values[] = {1,10,1,13,111,2250,1234,567,0,21,-33121,-40};
+int x[] = SortUtils.bubbleSort(values);
+String ot = "";
+String sepa = "";
+for ( int i = 0; i < x.length; i++ ) {
+ot += sepa + x[i];
+sepa = ", ";
+}
+System.out.println("####### バブルソート 配列 要素有り #########");
+System.out.println("ソート: " + ot);
+System.out.println("最大値(x): " + SortUtils.bubbleSortMax(values));
+System.out.println("最小値(x): " + SortUtils.bubbleSortMin(values));
+int y[] = {};
+System.out.println("####### バブルソート 配列 要素無し #########");
+System.out.println("最大値(y): " + SortUtils.bubbleSortMax(y));
+System.out.println("最小値(y): " + SortUtils.bubbleSortMin(y));
+int z[] = null;
+System.out.println("####### バブルソート 配列 null #########");
+System.out.println("最大値(z): " + SortUtils.bubbleSortMax(z));
+System.out.println("最小値(z): " + SortUtils.bubbleSortMin(z));
+}
+テスト結果
+それでは結果を見てみましょう。
+バブルソート 配列 要素有り
+####### バブルソート 配列 要素有り #########
+ソート: -33121, -40, 0, 1, 1, 10, 13, 21, 111, 567, 1234, 2250
+最大値(x): 2250
+最小値(x): -33121
+配列内が正常にソートされていますね。最大値と最少値も問題なく取得できました。
+バブルソート 配列 要素無し
+####### バブルソート 配列 要素無し #########
+最大値(y): -1
+最小値(y): -1
+配列の要素がありませんので、最大値・最小値に -1 が返されています。
+バブルソート 配列 null
+####### バブルソート 配列 null #########
+最大値(z): -1
+最小値(z): -1
+配列の要素がありませんので、最大値・最小値に -1 が返されています。
+いかがでしたでしょうか?ソートのアルゴリズムが少しでもご理解いただければ幸いです。
+他にも、ここでは紹介しきれないほど様々なソートのアルゴリズムが存在していますので、興味のある方は調べてみてください。
+Java 配列の要素を並び替える - 単純交換法(バブルソート) | ホームページ制作のサカエン(墨田区)

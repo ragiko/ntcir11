@@ -1,0 +1,10 @@
+サンプルプログラムの入力テキストには以下のものを使っています.(progreport)
+programing report 123.4
+Linux vine 4567 knoppix filter
+java c 567 awk
+hogehoge foofoo
+int(x)  &dagger;
+xの整数部分を取り出す.
+$ awk 'BEGIN{print int(-3.9), int(4.5)}'
+-3 4
+組み込み関数など - [物理のかぎしっぽ]

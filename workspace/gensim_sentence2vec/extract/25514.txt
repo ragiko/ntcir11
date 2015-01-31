@@ -1,0 +1,105 @@
+
+R は計算をメインに行う統計解析用だが、文字列の切り出しや置換などの文字列処理を行う関数も用意されている。文字列の分割や正規表現を用いたパターンマッチングなども行える。
+文字列マッチング : match charmatch pmatch grep regexpr
+文字列切り出し : substr substring
+文字列置換 : sub gsub chartr
+文字列結合 : paste
+文字列分割 : strsplit
+文字列マッチング関数
+文字列のパターンマッチは grep と regexpr を利用する。一方、完全一致による文字列マッチングを行う場合は match または charmatch を利用する。
+パターンマッチ grep regexpr
+grep はマッチしたかどうかを返すのに対して、regexpr はマッチした位置やマッチした長さなどを返す。grep と regexpr のパターンには正規表現を用いることができる。
+files <- c("NM20001.gb", "NN30012.gb", "NM20111.fa", "NM20121.fa")
+#「.gb」で終わる要素を検索
+grep("\\.gb$", files)      # files ベクトルの 1 と 2 の要素が .gb で終わっている
+## [1] 1 2
+#「.sam」で終わる要素を検索
+grep("\\.sam$", files)     # files ベクトルには .sam で終わっている要素はない
+## integer(0)
+seq <- c("GATGC", "ATATA", "CGCGC")
+#ATGの位置を検索
+regexpr("ATG", seq)
+## [1]  2 -1 -1               #マッチした位置
+attr(,"match.length")      
+## [1]  3 -1 -1               #マッチした文字列の長さ
+attr(,"useBytes")
+## [1] TRUE                   #マッチは1バイトずつで行う
+#regexpr("日本語", str, useBytes=F)  #全角文字は文字ごとにマッチングさせる
+#GCの位置を検索
+regexpr("GC", seq)
+## [1]  4 -1  2
+attr(,"match.length")
+## [1]  2 -1  2
+attr(,"useBytes")
+## [1] TRUE
+文字列一致 match charmatch
+match 関数は文字列の完全一致によるマッチを行う。第 1 引数にはパターンを指定し、第 2 引数には対象文字列を指定する。なお、パターンは複数指定できる。charmatch は部分文字列の完全一致によるマッチを行う。使い方は match と同じく、パターンと対象文字列を指定して行う。
+seqA <- c("ATG", "GC", "AT", "GCGC")
+seqB <- c("CGCA", "GC", "AT", "AT", "ATA")
+#seqAのうち「GC」と完全マッチする要素
+match("GC", seqA)  #matchの場合は最初から最後まで同じであればマッチする
+## [1] 2
+grep("GC", seqA)   #grepの場合はGCが含まれていればマッチする
+## [1] 2 4
+grep("^GC$", seqA) #grepの正規表現を利用してmatchと同じ機能を実現
+## [1] 2
+#seqAで示すパターンのうち、seqBのどの要素がそれに完全一致するか
+match(seqA, seqB)
+## [1] NA  2  3 NA
+# seqA[1]の「ATG」 にマッチするseqBの要素はない
+# seqA[2]の「GC」  にマッチするseqBの要素は2番目にある
+# seqA[3]の「AT」  にマッチするseqBの要素は3番目にある(2個目以降は無視される)
+# seqA[4]の「GCGC」にマッチするseqBの要素はない
+#seqAで示すパターンのうち、seqBのどの要素がそれに部分一致する
+charmatch(seqA, seqB)
+## [1] NA  2  0 NA
+# seqA[1]の「ATG」 にマッチするseqBの要素はない
+# seqA[2]の「GC」  にマッチするseqBの要素は2番目にありる
+# seqA[3]の「AT」  にマッチするseqBの要素は複数ある(複数の場合は「0」を返す)
+# seqA[4]の「GCGC」にマッチするseqBの要素はない
+文字列の切り出し
+文字列から一部だけ切り出すとき substr と substring を利用する。両者はほぼ同様に扱えて、第 1 引数には対象文字列、第 2 引数には切出しの開始位置、第 3 引数には切出しの終了位置を指定する。( 1 文字目の位置は、他のプログラミング言語では「0」であるのに対して、R は「1」である。) 
+dna <- c("AAGCT", "TTAAA", "CCTAT")
+substr(dna, 2, 3)
+## [1] "AG" "TA" "CT"
+substring(dna, 2, 3)
+## [1] "AG" "TA" "CT"
+文字列置換
+文字列の置換を行う関数は sub、gsub、chartr などがある。gsub は条件に合ったものをすべて置換するのに対して、sub は条件に合ったもののうち最初の 1 だけを置換する。また、chartr は一文字ずつの置換を行う関数である。例えば、文字列中の A、C、G、T をすべて小文字に書き換えたり、その相補塩基を書き換えたりするときに利用する。
+dna <- c("AAGCAT", "TAATAA", "CCTAT")
+sub("TA", "ta", dna)
+## [1] "AAGCAT" "taATAA" "CCtaT" 
+gsub("TA", "ta", dna)
+## [1] "AAGCAT" "taAtaA" "CCtaT"
+# dna =~ tr/ACGT/TGCA/ 
+chartr("ACGT", "TGCA", dna)
+## [1] "TTCGTA" "ATTATT" "GGATA" 
+文字列の結合と分割
+文字列の結合は paste、文字列の分割は strsplit を利用する。strsplit には正規表現を用いることができる。
+paste は結合させたい文字列(ベクトル)を代入し、結合文字を sep あるいは collapse で指定して、文字列の結合を行う。結合文字を入れない場合は sep = "" のように空文字を指定する。
+rna <- c("ACAACACGATGT" , "CACANCGATC" , "NNCTCGCTAGC")
+tail <- c("AAAAAA")
+paste(rna , tail , sep = "_")
+## [1] "ACAACACGATGT_AAAAAA" "CACANCGATC_AAAAAA"   "NNCTCGCTAGC_AAAAAA"
+paste(rna , tail , sep = "-", collappse = "_")
+## [1] "ACAACACGATGT-AAAAAA-_" "CACANCGATC-AAAAAA-_"   "NNCTCGCTAGC-AAAAAA-_"
+x <- c("AAA", "BBB", "CCC")
+y <- c("XXX", "YYY")
+paste(x, y, sep = "-")
+## [1] "AAA-XXX" "BBB-YYY" "CCC-XXX"
+paste(x, y, sep = "-", collapse = "=")
+## [1] "AAA-XXX=BBB-YYY=CCC-XXX"
+strsplit は、1 番目の引数に対象文字列を、2 番目の引数に区切り文字を指定して、文字列の切断を行う。切断された文字列はリスト型で返す。
+rna <- c("ACCCGTACGTATCGATC" , "CTTCAAACTGTCAAC" , "ACCACGATGTAGT")
+strsplit(rna , "GT[GC]")
+##
+##[[1]]
+## [1] "ACCCGTACGTATCGATC"
+##
+##[[2]]
+## [1] "CTTCAAACT" "AAC"
+##
+##[[3]]
+## [1] "ACCACGATGTAGT"
+その他の文字列操作関数
+文字列 | Rを利用して文字列のマッチング,結合,分割,置換を行う関数

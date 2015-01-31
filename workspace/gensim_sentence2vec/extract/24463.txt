@@ -1,0 +1,192 @@
+
+[Contact] [Biography] [Project] [Committees] [Publications] [Machines] [Links]
+Contact
+柴村英智 <shibamura ATisit.or.jp>
+〒814-0001 福岡県福岡市早良区百道浜2-1-22
+(公財)九州先端科学技術研究所
+システムアーキテクチャ研究室/次世代スーパーコンピュータ開発支援室研究員
+TEL: 092-834-1135/FAX: 092-834-1136
+http://www.researchgate.net/profile/Hidetomo_Shibamura
+[Top]
+Biography
+平成2年詫間電波工業高等専門学校情報工学科卒業
+平成4年九州工業大学情報工学部知能情報工学科卒業
+平成6年同大学大学院情報工学研究科修士課程修了
+同年同大学マイクロ化総合技術センター助手
+平成10年熊本大学工学部数理情報システム工学科助手
+平成18年より(公財)九州先端科学技術研究所研究員
+博士(工学)
+HPC,リコンフィギャラブルシステム、計算機アーキテクチャ等の研究に従事
+情報処理学会(IPSJ),電子情報通信学会(IEICE),IEEE,ACM 各会員
+関連研究会: HPC,ARC,CPSY,RECONF,VLD
+Hidetomo Shibamura received his B.E. and M.E. degrees in computer science and systems engineering from Kyushu Institute of Technology in 1992 and 1994. He was a research associate at the Center for Microelectronic Systems, Kyushu Institute of Technology from 1994 to 1998, and was a research associate of computer science at Kumamoto University from 1998 to 2006, where he received D. Eng. degree in computer science in 2006. He is a researcher at Institute of Systems, Information Technologies and Nanotechnologies since 2006. His research interests include high-performance computing, computer architecture, and VLSI system design. He is a member of IPSJ, IEICE, ACM, IEEE and the IEEE Computer Society.
+[Top]
+Project
+アプリケーション、システムソフトウェア、アーキテクチャのco-designによる次世代汎用スーパーコンピュータ実現のための調査研究 [研究協力機関、研究代表者:東京大学 石川裕]
+文部科学省 「将来のHPCIシステムのあり方の調査研究」
+研究期間2012年7月～2014年3月(平成23年度～平成25年度)
+省メモリ技術と動的最適化技術によるスケーラブル通信ライブラリの開発 [研究分担者、代表者:九州大学 南里豪志]
+独立行政法人科学技術振興機構 戦略的創造研究推進事業 チーム型研究(JST CREST)
+研究期間 2011年度～2015年度(平成23年度～平成27年度)
+ペタスケール・システムインターコネクト技術の開発(PSI (Petascale System Interconnect) プロジェクト ) [研究代表者:九州大学 村上和彰]
+文部科学省 次世代IT基盤構築のための研究開発「将来のスーパーコンピューティングのための要素技術の研究開発」
+研究期間 2005年～2008年3月(平成17年度～平成20年度)
+細粒度セル方式リコンフィギャラブルシステム技術に関する研究[研究分担者、代表者:熊本大学 末吉敏則]
+独立行政法人日本学術振興会 科学研究費助成事業 基盤研究(B)
+研究期間 2005年度～2007年度(平成17年度～平成19年度)
+やわらかいハードウェアと遠隔再構成技術の研究開発[研究分担者、代表者:熊本大学 末吉敏則]
+独立行政法人日本学術振興会 科学研究費助成事業 基盤研究(B)
+研究期間 2002年度～2004年度(平成14年度～平成16年度)
+リコンフィギャラブル・コンピューティング向け次世代FPGAの研究開発 [研究分担者、代表者:熊本大学 末吉敏則]
+独立行政法人日本学術振興会 科学研究費助成事業 基盤研究(B)
+研究期間 1999年度～2001年度(平成11年度～平成13年度)
+大規模回路システムのラピッドプロトタイピング技術[研究分担者、代表者:熊本大学 末吉敏則]
+独立行政法人日本学術振興会 科学研究費助成事業 基盤研究(B)
+研究期間 1997年度～1998年度(平成9年度～平成10年度)
+書換え可能なLSIによるリコンフィギャラブル・プロセッサの研究 [研究分担者、代表者:熊本大学 末吉敏則]
+独立行政法人日本学術振興会 科学研究費助成事業 基盤研究(C)
+研究期間 1997年度～1998年度(平成9年度～平成10年度)
+超並列計算機の相互結合網に関する研究 [研究代表者:九州工業大学 柴村英智]
+独立行政法人日本学術振興会 科学研究費助成事業 奨励研究(A)
+研究期間 1996年度(平成8年度)
+Committees
+ハイパフォーマンスコンピューティングと計算科学シンポジウム(HPCS)・委員:2012年4月～,プログラム委員会副委員長:2012年4月
+情報処理学会・ハイパフォーマンスコンピューテング研究会(HPC)・運営委員:2012年4月～
+情報処理学会・九州支部・評議員:2012年4月～2014年3月
+IEEE Computer Society Fukuoka Chapter (CS)/Treasurer:2007年1月～2008年12月
+情報処理学会・九州支部・幹事:2004年4月～2006年 3月
+電子情報通信学会・VLSI設計技術研究専門委員会(VLD)・専門委員:2003年5月～2009年5月
+並列/分散/協調処理に関するサマー・ワークショップ(SWoPP)・実行委員:2000年～2003年
+情報処理学会・計算機アーキテクチャ研究会(ARC)・研究連絡委員:1996年4月～1998年3月
+[Top]
+Publications
+with Review
+Hidetomo Shibamura: Active packet pacing as a congestion avoidance technique toward extreme scale interconnect, International Supercomputing Conference 2014 (ISC’14), Poster at HPC in Asia Poster Session(21a), June 2014, Leipzig, Germany.
+Hidetomo Shibamura:A Congestion Avoidance Technique Using Aggressive Packet Pacing toward Exascale Interconnect, International Supercomputing Conference 2013 (ISC’13), Poster at HPC in Asia Poster Session (17a), June 17 2013, Leipzig, Germany.
+Hideki Miwa, Ryutaro Susukita, Hidetomo Shibamura, Tomoya Hirao, Jun Maki, Makoto Yoshida, Takayuki Kando, Yuichiro Ajima, Ikuo Miyoshi, Toshiyuki Shimizu, Yuji Oinaga, Hisashige Ando, Yuichi Inadomi, Koji Inoue, Mutsumi Aoyagi, and Kazuaki Murakami: NSIM: An Interconnection Network Simulator for Extreme-Scale Parallel Computers, IEICE Trans. Inf. & Syst., Vol. E94-D, No.12, pp.2298-2308, Dec. 2011. (DOI: 10.1587/transinf.E94.D.2298)
+柴村英智, 三輪英樹, 薄田 竜太郎, 平尾智也, 安島雄一郎, 三吉郁夫, 清水俊幸, 石畑宏明, 井上弘士,パケットペーシングによる全対全通信の最適化とシミュレーション評価,情報処理学会論文誌コンピューティングシステム(ACS),Vol.4,No.3,pp.56-65,2011年5月.
+井上弘士,安藤壽茂,薄田竜太郎,山村周史,柴村英智,三輪英樹,本田宏明,稲富雄一,眞木淳,平尾智也,青柳睦,村上和彰,石附茂,小松秀実,安島雄一郎,三吉郁夫,清水俊幸,黒川原佳:大規模スーパコンピュータ向けシステム性能評価環境の構築,情報処理学会論文誌コンピューティングシステム(ACS),Vol.4,No.1,pp.1-23,2011年2月.
+柴村英智,三輪英樹,薄田竜太郎,平尾智也,安島雄一郎,三吉郁夫,清水俊幸,石畑宏明,井上弘士:パケットペーシングによる全対全通信の最適化とシミュレーション評価,2011年ハイパフォーマンスコンピューティングと計算科学シンポジウム(HPCS-2011),pp.42-50,2011年1月.
+R. Susukita, H. Ando, M. Aoyagi, H. Honda, Y. Inadomi, K. Inoue, S. Ishizuki, Y. Kimura, H. Komatsu, M. Kurokawa, K. Murakami, H. Shibamura, S. Yamamura, and Y. Yu: Performance Prediction of Large-scale Parallel System and Application using Macro-level Simulation, International Conference for High Performance Computing, Networking, Storage and Analysis (SC’08), 2008.
+柴村英智, 飯田全広, 久我守弘, 末吉敏則, EXPRESS-1:プロセッサ混載FPGAを用いた動的セルフリコンフィギャラブルシステム, 電子情報通信学会論文誌, Vol.J89-D, No.6,pp.1120-1129,2006.
+Hidetomo Shibamura, Takeru Kisanuki, Isao Sakamoto, Masahiro Iida, Morihiro Kuga, and Toshinori Sueyoshi: An Implementation of Video Streaming Processing on a Dynamically Self-Reconfigurable System, Proc. of The 20th Commemorative International Technical Conference on Circuits/Systems, Computers and Communications (ITC-CSCC 2005), Vol.1, pp.399-400, July 2005.
+Isao Sakamoto, Takanori Susaki, Hidetomo Shibamura, Masahiro Iida, Morihiro Kuga , and Toshinori Sueyoshi: Development of a Run-Time Reconfigurable System using Partially Reconfigurable FPGA, Proc. of The 20th Commemorative International Technical Conference on Circuits/Systems, Computers and Communications (ITC-CSCC 2005), Vol.2, pp.599-600, July 2005.
+Hidetomo Shibamura, Masayuki Fukuyama, Daisuke Uchida, Seiji Ikeda, Morihiro Kuga, and Toshinori Sueyoshi: EXPRESS-1: A Dynamically Reconfigurable Platform using Embedded Processor FPGA, Proc. on 2004 IEEE International Conference on Field-Programmable Technology (FPT 2004), pp.209-216, Dec., 2004. (DOI: 10.1109/FPT.2004.1393270)
+Kazuo Nagata, Kagayaki Tashiro, Hidetomo Shibamura, Morihiro Kuga, and Toshinori Sueyoshi: FPGA Remote-Reconfiguration and Remote Logic Analyzer, The 2004 International Technical Conference on Circuits/Systems, Computers and Communications (ITC-CSCC 2004), 5D3L-5, July, 2004.
+Hidetomo Shibamura, Noriyasu Hashiguchi, Daisuke Uchida, Morihiro Kuga, and Toshinori Sueyoshi: A Reconfigurable Computing System using ARM Embedded Processor, 第2回 情報科学技術フォーラム Forum on Information Technology (FIT 2003) 情報技術レターズ LC-002, pp.49-51,2003年9月.
+Morihiro Kuga, Minori Harada, Yasuo Ishii, Yosuke Kujuro, Hidetomo Shibamura, and Toshinori Sueyoshi: Teaching Materials for System Level Design Education, The 2003 International Technical Conference on Circuits/Systems, Computers and Communications (ITC-CSCC 2003), Vol.3, pp.1642-1645, July 9, 2003.
+Toshinori Sueyoshi,Morihiro Kuga,andHidetomo Shibamura: KITE Microprocessor and CAE for Computer Science, Systems and Computers in Japan,Vol.33,No.8,pp.64-74,July 2002.(DOI: 10.1002/scj.10038)
+YuLu Yang, Hideharu Amano,Hidetomo Shibamura, and Toshinori Sueyoshi:Recursive Diagonal Torus (RDT): An Interconnection Network for the Massively Parallel Computers,Systems and Computers in Japan,Vol.27,No.9,pp.43-54,July 1996.(DOI: 10.1002/scj.4690270905)
+末吉敏則,久我守弘,柴村英智:KITEマイクロプロセッサによる計算機工学教育支援システム,電子情報通信学会論文誌,Vol.J84-D-I,No.6,pp.917-926,2001年6月.
+楊愚魯,天野英晴,柴村英智,末吉敏則:超並列計算機に向き結合網:RDT,電子情報通信学会論文誌 D-I,Vol. J78-D-I,No. 2,pp. 118-128,1995年2月.
+Hidetomo Shibamura, Morihiro Kuga, and Toshinori Sueyoshi: INSIGHT: An Interconnection Network Simulator for Massively Parallel Computers, IEEE Region 10′s Ninth Annual International Conference (IEEE TENCON ’94), Vol. 1 of 2, pp. 77-81, Aug. 1994. (DOI: 10.1109/TENCON.1994.369332)
+柴村英智,久我守弘,末吉敏則:超並列計算機のための相互結合網シミュレータ,情報処理学会論文誌,Vol.35,No.4,pp.589-599,1994年4月.
+YuLu Yang, Hideharu Amano, Hidetomo Shibamura, and Toshinori Sueyoshi: Recursive Diagonal Torus: An interconnection network for massively parallel computers, Proc. of the 5th IEEE Symposium on Parallel and Distributed Processing, pp. 591-594, Dec. 1993. (DOI: 10.1109/SPDP.1993.395481)
+Hidetomo Shibamura, Kouichiro Tanaka, Bernady O. Apduhan, Toshinori Sueyoshi, and Itsujiro Arita: Design and Implementation of an Educational Microprocessor Using Field Programmable Gate Array, Proc. of Joint Technical Conference on Circuits/Systems, Computers and Communications (JTC-CSCC ’92) E4-2, pp. 760-765, Jul. 1992.
+[Top]
+w/o Review
+薄田竜太郎,森江善之,南里豪志,柴村英智:RDMA評価のための大規模インターコネクトシミュレータ「NSIM-ACE」,情報処理学会研究報告(HOKKE-22),Vol.2014-HPC-147,No.31,pp.1-6,2014年12月.
+Hidetomo Shibamura, NSIM-ACE: Network Simulator for Global Memory Access, JST/CREST International Symposium on Post Petascale System Software(ISP2S2),Poster session,Dec.2014.
+阿部祐希,稗田拓路,稲富雄一,柴村英智,眞木淳,小林泰三,深沢圭一郎,井上弘士:大規模インターコネクトを対象とした消費電力解析環境NsimPowerの構築,情報処理学会研究報告(SWoPP新潟2014),Vol.2014-HPC-145,No.9,pp.1-6,2014年7月.
+柴村英智:シミュレーションによる大規模並列プログラムへのパケットペーシングの適用と有効性の検証,学際大規模情報基盤共同利用・共同研究拠点 第6回シンポジウム,14-IS01,2014年7月.(http://jhpcn-kyoten.itc.u-tokyo.ac.jp/sympo/)
+柴村英智:FX10におけるパケットペーシングならびにその活用技術の有効性調査,先駆的科学計算に関するフォーラム2014 (Forum on Advanced Scientific Computing 2014) ～先端的計算科学研究プロジェクト成果報告～,2014年4月.
+柴村英智:FX10におけるパケットペーシングを用いたアプリケーションの通信性能評価,情報処理学会研究報告,Vol.2013-HPC-141,No.14,pp.1-7,2013年10月.
+柴村英智,三輪英樹,三吉郁夫,井上弘士:パケットペーシングを用いた集団通信に対するロード/ネットワークインバランスの影響,情報処理学会研究報告(SWoPP鳥取2012),Vol.2012-HPC-135,No.2,pp.1-8,2012年8月.
+吉田匡兵,柴村英智,井上弘士,村上和彰,全対全通信向けパケットペーシングにおける送信間隔の導出手法,情報処理学会第74回全国大会,1K-6,2012年3月.
+柴村英智,薄田竜太郎,三輪英樹,三吉郁夫,井上弘士:パケットペーシングを用いた集団通信アルゴリズムのシミュレーション評価,情報処理学会研究報告(SWoPP鹿児島2011),Vol.2011-HPC-130,No.50,pp.1-9,2011年7月.
+柴村英智,次世代のスーパーコンピュータに向けたパケットペーシング技術,第70回 ISIT 定期交流会,2011年2月.(http://www2.isit.or.jp/kouryuu/kouryuu-70.html)
+柴村英智,薄田竜太郎,平尾智也,吉田真,神戸隆行,三輪英樹,三吉郁夫,井上弘士,村上和彰:クラウド環境によるOpenNSIMインターコネクトシミュレーションサービス,情報処理学会研究報告(HOKKE-18),Vol.2010-ARC-192,2010-HPC-128,No.15,pp.1-9,2010年10月.
+柴村英智,三輪英樹,薄田竜太郎,平尾智也,安島雄一郎,三吉郁夫,清水俊幸,石畑宏明,井上弘士:パケットペーシングを用いた最適全対全通信アルゴリズムのシミュレーション評価,情報処理学会研究報告(SWoPP金沢2010),Vol.2010-HPC-126,No.14,pp.1-9,2010年8月.
+三輪英樹,薄田竜太郎,柴村英智,平尾智也,眞木淳,稲富雄一,井上弘士,安島雄一郎,三吉郁夫,清水俊幸,安藤壽茂:NSIM:将来の大規模相互結合網を対象とした通信シミュレータの開発,情報処理学会研究報告,Vol.2010-HPC-125,No.5,pp.1-9,2010年6月.
+柴村英智:次世代スーパーコンピュータに向けたアプリケーションの性能評価技術,文部科学省大学院教育改革支援プログラム「大学連合による計算科学の最先端人材育成」ミニシンポジウム「次世代スーパーコンピュータと計算科学の人材育成」,2009年2月.
+K. Inoue, H. Shibamura, R. Susukita, Y. Inadomi, H. Honda, Y. Yunqing, and M. Aoyagi: PSI-SIM: System Performance Evaluation Environment for Next-Generation Supercomputers, International Conference for High Performance Computing, Networking, Storage and Analysis (SC’07) BoF Session – Petascale System Interconnect Project -,2007.
+柴村英智:次世代スーパーコンピュータの設計開発を支援するシステム性能評価環境PSI-SIM,NGArch (Next Generation Architecture) Forum 2007,2007年7月25日.
+柴村英智,薄田竜太郎,本田宏明,稲富雄一,于雲青,井上弘士,青柳睦:PSI-NSIM:大規模並列システムの性能解析に向けた並列相互結合網シミュレータ,電子情報通信学会技術研究報告CPSY2007-32,Vol.107,No.276,pp.45-50,2007.
+柴村英智,薄田竜太郎,本田宏明,稲富雄一,于雲青,井上弘士,青柳睦:次世代スーパーコンピュータの設計開発に向けたシステム性能評価環境PSI-SIM,情報処理学会研究報告2007-HPC-111(SWoPP旭川2007),pp.267-272,2007.
+柴村英智:「速い・易い・巧い」を提供する次世代スーパーコンピュータの性能予測技術の開発,NGArch (Next Generation Architecture) Forum 2006,2006年7月19日.
+三股佳史,永田和生,斉藤豪,原田英雄,柴村英智,久我守弘,末吉敏則:FPGA遠隔再構成環境におけるBuilt-In Self Test機構,情処九州支部研究会報告,Vol.C-5-2,No.084,2006年3月.
+坂本伊佐雄,須崎貴憲,柴村英智,飯田全広,久我守弘,末吉敏則:CPU混載部分再構成型FPGAを用いた動的再構成システムの開発,第13回FPGA/PLD Design Conference ユーザプレゼンテーション論文集,pp.9-16,2006年1月.
+斉藤豪,永田和生,原田英雄,柴村英智,久我守弘,末吉敏則:リモート・ロジックアナライザの実装と評価,VLD2005-102 CPSY2005-58 RECONF2005-91,pp.31-36,2006年1月
+末吉敏則,久我守弘,柴村英智:Super KITEとシステムレベル設計教材,第13 回FPGA/PLD Design Conference IPフリーマーケットin EDSFair2006投稿IPカタログ,pp.33-34,2006年1月.
+末吉敏則,久我守弘,柴村英智,坂本伊左雄,須崎貴憲,永田和生,斉藤豪:リコンフィギャラブルシステムと遠隔再構成技術,Electronic Design and Solution Fair 2005 ユニバーシティ・プラザ 大学研究室による研究発表 資料集,pp.43-52,2006年1月.
+須崎貴憲,坂本伊左雄,柴村英智,飯田全広,久我守弘,末吉敏則:動的リコンフィギャラブルシステムにおける再構成管理機構の開発,電子情報通信学会技術研究報告RECONF2005-72,pp.1-6,2005年12月.
+邊輪一人,岡嶋知宏,柴村英智,飯田全広,久我守弘,末吉敏則:リコンフィギャラブルクラスタコンピューティングに向けたFPGAボードの開発,電子情報通信学会技術研究報告RECONF2005-76,pp.25-30,2005年12月.
+木佐貫健,坂本伊左雄,柴村英智,飯田全広,久我守弘,末吉敏則:機能分割実装による実行時再構成型MPEG-2デコーダの実現可能性,電子情報通信学会技術研究報告RECONF2005-38,Vol.105,No.287,pp.49-54,2005年9 月.
+坂本伊左雄,須崎貴憲,柴村英智,飯田全広,久我守弘,末吉敏則:プロセッサ混載FPGAにおける部分再構成制御機構の開発,電子情報通信学会技術研究報告RECONF2005-37,Vol.105,No.287,pp.43-48,2005年9月.
+永田和生,原田英雄,柴村英智,久我守弘,末吉 敏則:リモート・ロジックアナライザIPおよびプローブ自動接続プログラムの実装と評価,DAシンポジウム講演論文集,Vol.2005,No.8,pp.73-78,2005年8月
+池田征司,永田和生,柴村英智,久我守弘,末吉敏則:リモート・ロジックアナライザIPにおける組込みメモリ利用技術,第12回 FPGA/PLD Design Conference ユーザプレゼンテーション論文集,pp.41-48,2005年1 月.
+須崎貴憲,坂本伊左雄,永田和夫,柴村英智,久我守弘,末吉敏則:FPGA遠隔再構成環境におけるユーザインタフェースの開発,平成16年度 (第57回)電気関係学会九州支部連合大会講演論文集,09-1A-07,2004年9月.
+坂本伊左雄,須崎貴憲,永田和夫,柴村英智,久我守弘,末吉敏則:FPGA遠隔再構成環境におけるコンフィギュレーションの開発,平成16年度(第57回)電気関係学会九州支部連合大会講演論文集,09-1A-08,2004年9月.
+池田征司,永田和生,柴村英智,久我守弘,末吉敏則:リモート・ロジックアナライザIPのFPGA実装と評価,電子情報通信学会 第5回リコンフィギャラブルシステム研究会論文集,Vol.104,No.476,pp.65-70,2004年12月.
+菰田康造,邊輪一人,柴村英智,久我守弘,末吉敏則:組み込みJava環境の高速化に向けたバイトコード解析,平成16年度(第57回)電気関係学会九州支部連合大会講演論文集,09-1A-02,2004年9月.
+内田大輔,福山真幸,池田征司,柴村英智,久我守弘,末吉敏則:動的再構成システムのための機能ローディング機構の開発,電子情報通信学会 第4回リコンフィギャラブルシステム研究会論文集,pp.167-172,2004年9月.
+坂口陽亮,岡嶋知宏,中野光臣,柴村英智,久我守弘,末吉敏則:リコンフィギャラブルハードウェアを用いたクラスタコンピューティングの高速化,電子情報通信学会 第4回リコンフィギャラブルシステム研究会論文集,pp.55-60,2004 年9月.
+久我守弘, 山崎博之, 玉利純子, 柴村英智, 飯田全広, 末吉敏則 : システムレベル設計に向けたFPGA応用教材, DAシンポジウム2004 論文集, pp.43-48, 2004年7月.
+柴村英智:C/C++ベース開発環境によるリコンフィギャラブルシステム向けアプリケーションの開発 −CPU混載FPGAを用いた動的リコンフィギャラブルシステムへの適用−,第11回 FPGA/PLD Design Conference予稿集,pp.15-28,2004年1月.
+柴村英智,橋口賀保,内田大輔,福山真幸,久我守弘,末吉敏則:ARM 混載FPGAを用いた動的リコンフィギャラブルシステムの開発,第11回 FPGA/PLD Design Conferenceユーザプレゼンテーション論文集,pp.71-78,2004年1月.
+原田実,山崎博之,柴村英智,久我守弘,末吉敏則:システムレベル設計に向けたFPGA応用教材の開発,VLD/CPSY/RECONF, SLDM合同研究会,2004 年1月.
+永田和生,田代輝,身次茂,柴村英智,久我守弘,末吉敏則:FPGA遠隔再構成技術とリモート・ロジックアナライザ,VLD/CPSY/RECONF, SLDM合同研究会,2004年1月.
+久重路洋介,橋口賀保,福山真幸,柴村英智,久我守弘,末吉敏則:SystemCによるJPEG200エンコーダの設計とFPGA実装,電子情報通信学会 第2 回リコンフィギャラブルシステム研究会プログラム,2003年11月.
+永田和生,柴村英智,久我守弘,末吉敏則:インタプリタ型言語Perlを用いたクラスタコンピューティング環境,平成15年度電気関係学会九州支部連合大会(第56回連合大会)講演論文集,08-1P-01,2003年9月.
+山崎博之,原田実,柴村英智,久我守弘,末吉敏則:教育用マイクロプロセッサ向けソフトウェア統合開発環境の構築,平成15年度電気関係学会九州支部連合大会(第56回連合大会)講演論文集,09-1P-06,2003年9月.
+池田征司,大塚亮,林祐亮,柴村英智,久我守弘,末吉敏則:システムレベル記述言語を用いたシステム設計事例,平成15年度電気関係学会九州支部連合大会(第56回連合大会)講演論文集,09-1P-09,2003年9月.
+橋口賀保,福山真幸,久重路洋介,内田大輔,柴村英智,久我守弘,末吉敏則:プロセッサ搭載FPGAを用いた動的リコンフィギャラブル・システムの開発,電子情報通信学会 第1回リコンフィギャラブルシステム研究会論文集,pp.235-242,2003年9月.
+池田祐介,阿部晋也,緒方綾二,柴村英智,飯田全広,久我守弘,末吉敏則:次世代リコンフィギャラブル・ロジック向けクラスタリングツールの開発,電子情報通信学会 第1回リコンフィギャラブルシステム研究会論文集,pp.185-192,2003年9月.
+末吉敏則,柴村英智:FPGA遠隔再構成技術によるリモート・ロジックアナライザの開発, 2003年(第3回)全九州半導体技術フォーラム国際会議ポスターセッション資料集 2003年3月.
+末吉敏則,久我守弘,柴村英智,原田実,石井裕夫,武田直樹,久重路洋介:システムレベル設計教育向けFPGA教材と遠隔再構成技術応用,Electronic Design and Solution Fair 2003 ユニバーシティ・プラザ 大学研究室による研究発表 資料集,pp.47-56,2003年1月.
+久我守弘,原田実,石井裕夫,久重路洋介,柴村英智,末吉敏則:システムレベル設計教育向け支援教材の開発,FPGA/PLD Design Conferenceユーザプレゼンテーション論文集,pp.107-114,2003年1月.
+柴村英智:ARM組み込みプロセッサを用いた動的再構成処理によるJava アプリケーションの高速化,FPGA/PLD Design Conference論文集,pp.30-43,2003年1月.
+原田実,久我守弘,柴村英智,末吉敏則:システムレベル設計教育向け支援教材の開発,第6回システムLSIワークショップポスターセッション,2002年11月.
+柴村英智,土黒功司,早稲田龍司,久我守弘,末吉敏則:ソフトコアプロセッサによるFPGAマルチプロセッサの実行可能性,平成14年度電気関係学会九州支部連合大会(第55回連合大会)講演論文集,1121,p.591,2002年9月.
+原田実,久我守弘,柴村英智,末吉敏則:システムレベル設計教育に向けた支援教材の開発,平成14年度電気関係学会九州支部連合大会(第55回連合大会)講演論文集,1128,p.598,2002年9月.
+柴村英智,土黒功司,早稲田龍司,久我守弘,末吉敏則:ソフトコアプロセッサを用いたFPGAマルチプロセッサの実行可能性について,2002年電子情報通信学会基礎・境界ソサイエティ大会講演論文集,SA-1-5,2002年9月.
+末吉敏則,久我守弘,柴村英智,久重路洋介,武田直樹,原田実,石井裕夫,益田陽司:システムレベル記述に基づくFPGA設計教材とFPGA応用,Electronic Design and Solution Fair 2002 ユニバーシティ・プラザ 大学研究室による研究発表 資料集,pp.41-48,2002年1月.
+柴村英智,土黒功司,早稲田龍司,久我守弘,末吉敏則:ソフトコアプロセッサを用いるFPGAマルチプロセッサの設計事例,FPGA/PLD Design Conferenceユーザプレゼンテーション論文集,pp.99-106,2002年1月24-25 日.
+久我守弘,久重路洋介,石井裕夫,益田陽司,柴村英智,末吉敏則:システムレベル記述言語による教育用マイクロプロセッサ設計事例,FPGA/PLD Design Conferenceユーザプレゼンテーション論文集,pp.25-32,2002年1月24-25日.
+末吉敏則,久我守弘,柴村英智,久重路洋介,武田直樹,原田実,石井裕夫,益田陽司:システムレベル記述に基づくFPGA設計教材とFPGA応用,Electronic Design and Solution Fair 2002 ユニバーシティ・プラザ 大学研究室による研究発表 資料集,pp.41-48,2002年1月24-25日.
+武田直樹,柴村英智,久我守弘,末吉敏則:遠隔操作によるデバイス再構成に向けた環境構築 −再構成用APIの設計と実装−,平成13年度電気関係学会九州支部連合大会(第54回連合大会)講演論文集,607,p.281,2001年10 月5日.
+土黒功司,當摩佳重,柴村英智,久我守弘,末吉敏則:遠隔操作によるデバイス再構成に向けた環境構築 −FPGA搭載PCIボードを用いた評価環境−,平成13年度電気関係学会九州支部連合大会(第54回連合大会)講演論文集,608,p.282,2001年10月5日.
+武田直樹,土黒功司,當摩佳重,柴村英智,久我守弘,末吉敏則:遠隔操作によるFPGA/PLDデバイス再構成の実現,DAシンポジウム2001論文集,pp.73-78,2001年7月.
+末吉敏則,久我守弘,柴村英智,木庭秀樹:LSIシステム設計教育用 KITE\&DLX-FPGAボードとWeb教材,EDA TechnoFair 2000 ユニバーシティ・プラザ 大学研究室による研究発表 資料集,pp.17-24,2000年1月27-28日.
+柴村英智,久我守弘,末吉敏則:相互結合網シミュレータINSIGHTの並列化について,電子情報通信学会技術研究報告 CPSY94-32 (SWoPP’94),pp.41-48,1994年7月.
+柴村英智,久我守弘,末吉敏則:相互結合網シミュレータINSIGHTによる超並列マシン向き相互結合網の性能評価,情報処理学会研究報告 93-ARC-102,pp.65-72,1993年10月.
+楊愚魯,天野英晴,柴村英智,末吉敏則:超並列向き結合網Recursive Diagonal Torusの諸特性,電子情報通信学会技術研究報告 CPSY93-26 (SWoPP’93),pp.105-112,1993年8月.
+柴村英智,久我守弘,末吉敏則:超並列計算機のための相互結合網シミュレータ,並列処理シンポジウムJSPP’93論文集,pp.159-166,1993年5月.
+柴村英智,久我守弘,末吉敏則:超並列計算機のためのネットワークシミュレータの開発,情報処理学会研究報告 92-ARC-97-16,pp.121-128,1992年 12月4日.
+柴村英智,久我守弘,末吉敏則:超並列計算機のためのネットワークシミュレータ,平成4年電気関係学会九州支部連合大会講演論文集 1009,p.567,1992年10月.
+田中康一郎,柴村英智,久我守弘,末吉敏則:書換え可能なLSIを用いた教育用マイクロプロセッサKITEの実装,平成4年電気関係学会九州支部連合大会講演論文集 1011,p.569,1992年10月.
+末吉敏則,田中康一郎,柴村英智:KITE: 書換え可能なLSIを用いた教育用マイクロプロセッサ,情報処理学会第45回全国大会講演論文集(6) 6K-05,pp.67-68,1992年10月.
+末吉敏則,田中康一郎,柴村英智:再構成可能な論理LSIを用いた教育用マイクロプロセッサ:KITE,電子情報通信学会技術研究報告 ICD92-87,CPSY92-47,情報処理学会研究報告 92-ARC-96-15,pp.101-108,1992年10 月.
+田中康一郎,柴村英智,末吉敏則,有田五次郎:書換え可能なLSIを用いた教育用マイクロプロセッサの設計詳細,情報処理学会第43回全国大会講演論文集(6) 2Q-12,pp.43-44,1991年10月.
+柴村英智,今井慈郎,宮武明義,田嶋眞一,國井洋臣:マイクロプログラミング教育システムにおけるマイクロプログラム・アセンブラの開発について,平成元年度電気関係学会四国支部連合大会論文集 12-13,pp.371-372,1988年10月.
+[Top]
+受賞
+柴村英智,パケットペーシングを用いた最適全対全通信アルゴリズムのシミュレーション評価(2010-HPC-126),情報処理学会 2011年度(平成23年度)山下記念研究賞,山下記念研究賞選定委員会(2012年).
+柴村英智,橋口賀保,内田大輔,福山真幸,久我守弘,末吉敏則:ARM 混載FPGAを用いた動的リコンフィギャラブルシステムの開発,第11回FPGA/PLD Design Conferenceユーザプレゼンテーション優秀論文賞,第11回FPGA/PLD Design Conference実行委員会(2004年).
+末吉敏則,身次茂,久我守弘,柴村英智,武田直樹,土黒功司:FPGA遠隔再構成技術によるリモート・ロジックアナライザ,2002年第4回IPデザインアワード開発助成部門開発奨励賞,LSI IPデザイン・アワード運営委員会(2002年).
+久我守弘,久重路洋介,石井裕夫,益田陽司,柴村英智,末吉敏則:システムレベル記述言語による教育用マイクロプロセッサ設計事例,FPGA/PLD Design Conference優秀論文賞,日本エレクトロニクスショー協会(2002年).
+末吉敏則,久我守弘,柴村英智:設計教育用マイクロプロセッサKITEとその教材,2000年第2回IPデザインアワード IP優秀賞,IPアワード運営委員会(2000年).
+資料・出版
+柴村英智:あの～,スパコンって何ですか?,科学夜話 Cafepedia 第二十九夜,2010年5月.
+相互結合網シミュレータの並列化とメンテナンスシステム,文部省重点領域研究「超並列原理に基づく情報処理基本体系」第6回シンポジウム予稿集,pp. 4-25-4-32,1995年3月.
+相互結合網シミュレータとメンテナンスシステム,文部省重点領域研究「超並列原理に基づく情報処理基本体系」第5回シンポジウム予稿集,pp. 4-30-4-36,1994年10月.
+相互結合網の性能評価,文部省重点領域研究「超並列原理に基づく情報処理基本体系」第4回シンポジウム予稿集,pp. 4-86-4-95,1994年3月.
+相互結合網の性能評価,文部省重点領域研究「超並列原理に基づく情報処理基本体系」第3回シンポジウム予稿集,pp. 294-303,1993年9月.
+柴村英智,今井慈郎,宮武明義:特集:C言語ライブラリ活用百科 – Cコンパイラ標準ライブラリ比較 -,技術評論社 Software Design 2月号,pp.2-15,1991年2月.
+[Top]
+Machines (Current)
+Lenovo T440s (Core i7-4600U@2.10GHz 11.51GFLOPS, Mem: 12GB)
+GIANT Escape R3 (2015)
+GIANT Propel Advanced 1 (2015)
+SUZUKI RGV250T (VJ23A, 250cc64hp, Color: Lucky strike, Chamber:M-max, Caliper: AP racing 4410, Foot rest: Battle step (reversed), etc., 6MT)
+BMW R1150GS Adventure (1130cc, 85hp, 6MT)
+Eunos Roadster NA8C ser.1 (BP-ZE, 1839cc 130hp, 5MT)
+HONDA Torneo EuroR (GH-CL1, 2156cc 220hp, 5MT)
+Links
+OpenNSIM portal site:https://ngarch.isit.or.jp/taas/opennsim/
+[swopp-announce:170454] インターコネクト・シミュレーシ ョンサービスをWeb上で提供開始:http://aml.hpcc.jp/swopp-announce/msg03261.html
+インターコネクトシミュレータ「NSIM」のご紹介(サイエンティフィック・システム研究会 内):http://www.ssken.gr.jp/MAINSITE/download/wg_report/multicore/nsim/
+NGarch portal site:http://ngarch.isit.or.jp/
+TaaS portal site:https://ngarch.isit.or.jp/taas/index.html
+[Top]
+Hidetomo Shibamura(柴村英智) | システムアーキテクチャ研究室 ISIT

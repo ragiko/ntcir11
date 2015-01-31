@@ -1,0 +1,47 @@
+configureでどんなことを設定できるか
+前回は、ソースコード配布パッケージに入っているconfigureスクリプトを使って、Makefileを生成するということを解説しました。Makefileはパッケージには含まれず、自動的に環境の違いを吸収した上で生成することで、さまざまな環境でビルドできるようになっています。configureスクリプトの役割の1つは、「ほかの環境に移植しやすくする」ということがあるのです。
+もう1つの役割は、ビルド時にユーザーが設定を変更できるようにすることです。こういった設定は、Makefileやソースコードに埋め込むものです。環境の差異による設定も、これらのファイルに記述するわけですから、configureスクリプトで同時に済ませるのは合理的です。また、設定と環境の差異が密接に関係していることもあります。例えば外部のライブラリに依存している機能を組み込むかどうかの設定です。
+configureスクリプトで設定する主な項目としては、インストールディレクトリ、コンパイラやそのオプション、機能や追加オプションのオン・オフ、ソフトウェア実行時の設定のデフォルト値の4つが挙げられます。
+このうち、3つ目と4つ目はソフトウェアごとに異なりますが、1つ目と2つ目は大体どのソフトウェアでも同じです。今回はこの共通の設定について解説します。
+インストールディレクトリを変更する
+configure実行時に、設定内容を指定する方法としては、コマンドラインの引数(オプション)と、環境変数があります。どんなことができるのかということは、--helpを引数にして実行すると現れるヘルプで確認できます。GNU Helloのconfigureスクリプトでは、図1に示すようなことを設定できます。
+$ ./configure --help
+`configure' configures GNU Hello 2.7 to adapt to many kinds of systems.
+Usage: ./configure [OPTION]... [VAR=VALUE]...
+To assign environment variables (e.g., CC, CFLAGS...), specify them as
+VAR=VALUE.  See below for descriptions of some of the useful variables.
+Defaults for the options are specified in brackets.
+Configuration:
+-h, --help              display this help and exit
+--help=short        display options specific to this package
+--help=recursive    display the short help of all the included packages
+-V, --version           display version information and exit
+-q, --quiet, --silent   do not print `checking ...' messages
+--cache-file=FILE   cache test results in FILE [disabled]
+(省略)
+Some influential environment variables:
+CC          C compiler command
+CFLAGS      C compiler flags
+LDFLAGS     linker flags, e.g. -L<lib dir> if you have libraries in a
+nonstandard directory <lib dir>
+LIBS        libraries to pass to the linker, e.g. -l<library>
+CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
+you have headers in a nonstandard directory <include dir>
+CPP         C preprocessor
+Use these variables to override the choices made by `configure' or to help
+it to find libraries and programs with nonstandard names/locations.
+Report bugs to <bug-hello@gnu.org>.
+GNU Hello home page: <http://www.gnu.org/software/hello/>.
+General help using GNU software: <http://www.gnu.org/gethelp/>.
+たくさんの引数がありますが、ソフトウェア固有のものと、どのソフトウェアのconfigureスクリプトでも共通に使えるものの大きく2つに分けられます。configureは開発者が記述するものではなく、ツールを使って自動で生成するスクリプトです。そのため、どのソフトウェアにも共通の引数があるのです。ソフトウェア固有の引数だけを表示するには--help=shortを使います。普段はこちらのヘルプを参照するのがよいでしょう。
+まずは、GNU Helloのインストールディレクトリを設定してみます。これには--prefixを使います。インストール先を指定する引数はほかにもありますが(後述)、どのソフトウェアでも使える共通の引数です。
+次のように「--prefix=ディレクトリ名」とします。この例では、/opt/hello-2.7ディレクトリにインストールしています。
+ちゃんとhelloコマンドをインストールできています。
+このように、インストールするファイルは--prefixで指定したディレクトリの直下ではなく、binなどのサブディレクトリにインストールされます。このサブディレクトリのレイアウトは、UNIXの標準的なレイアウトに従っています。もし--prefixに/usrを指定すれば、OSの標準的なディレクトリにインストールすることになるわけです。もちろんこのように指定すると、OSが本来備えているファイルを上書きしてしまうので、やめましょう。
+--prefixを指定しないでconfigureを実行すると、/usr/localを指定したことになります。このようなデフォルト値もヘルプに書いてありますのでよく確認しましょう。
+一般に、/usr/localというディレクトリはOS標準外のソフトウェアをインストールする場所となっています。ここにインストールしても良いのですが、先ほどの例の/opt/hello-2.7のように、ソフトウェアごと、バージョンごとのディレクトリにインストールしておくのも1つの手です。こうしておけばバージョンの切り替えや、一括削除が簡単になります。
+インストール先の標準のレイアウトを変更することもできます。例えば--bindirを使えば実行ファイルのインストール先のみを変えることができます。ただ、レイアウトまで変更しなくてはならないケースはほとんどないでしょう。
+実行ファイル以外のディレクトリ
+GNU Helloのインストールディレクトリに「share」というディレクトリがありました。このディレクトリにはプロセッサのアーキテクチャによらないファイルが入ります。実行ファイルはプロセッサのアーキテクチャごとに異なるファイルになるものですが、shareにあるファイルはアーキテクチャを超えて共有できるファイルが入っています。OS標準のディレクトリであれば/usr/shareになります。
+GNU Helloの場合、ここに翻訳データやマニュアルが入っています。GNU Helloはただ「Hello, world!」と表示するだけのソフトウェアではないのです。実は多言語化されたものです。次のように環境変数LANGを各国のロケールに変えることで、さまざまな国の言葉で「Hello, world!」を表示できます。以下は日本語とフランス語でHello, worldを表示した例です。ここで使っているenvコマンドは、そのときだけ環境変数を変更するコマンドです。
+仕事で使える魔法のLAMP(12):configureの設定を変更してみる - @IT

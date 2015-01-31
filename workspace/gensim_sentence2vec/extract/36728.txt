@@ -1,0 +1,46 @@
+
+jQueryアプリケーションを複数ページに対応する 
+先ほども述べたように、jQuery Mobileでは1つの.htmlファイルで複数のページを表現するのが一般的である。さっそく、先ほどのサンプルを複数ページに対応させてみよう。 
+<div id="basic" data-role="page" data-title="jQuery Mobile入門">
+<div data-role="header">
+<h1>jQuery Mobile入門</h1>
+</div>
+<div data-role="content">
+<p>こんにちは、jQuery Mobile!</p>
+</div>
+<div data-role="footer">
+Copyright 1998-2012, WINGS Project
+</div>
+</div>
+<div id="ui-elm" data-role="page" data-title="jQuery MobileのUI要素">
+<div data-role="header">
+<h1>jQuery MobileのUI要素</h1>
+</div>
+<div data-role="content">
+<p>jQuery Mobileにはリストビューやボタンなどの部品があります。</p>
+</div>
+<div data-role="footer">
+Copyright 1998-2012, WINGS Project
+</div>
+</div>
+<div id="app" data-role="page" data-title="応用アプリケーション">
+<div id="app" data-role="header">
+<h1>応用アプリ</h1>
+</div>
+<div data-role="content">
+<p>応用アプリとしてTwitter連携アプリを作成してみましょう。</p>
+</div>
+<div data-role="footer">
+Copyright 1998-2012, WINGS Project
+</div>
+</div>
+先ほども述べたように、複数ページに対応するには「data-role属性がpageである要素」をページの数だけ列挙するだけなので、特に難しいことはない。ただし、以下のような注意点もあるので留意しておきたい。 
+(1)ページは常に並列の関係にあること 
+ページ同士は常に並列でなければならない。例えば、ページの中に入れ子にページを配置することはできない。 
+(2)ページには一意なid値が必須 
+後からページを識別できるように、それぞれの要素にはid属性を明記しておく必要がある。さもないと、後からjQuery Mobileがページを遷移する際に、対象のページを特定できないためだ。 
+(3)ページ・タイトルはdata-title属性で定義する 
+jQuery Mobileでは、ページを遷移する際に、<title>要素で指定されたタイトルを、ページのdata-title属性で上書きする。ただし、その性質上、最初のページ表示ではdata-title属性の値は反映されないので(ほかのページから遷移されるときには反映される)、先頭ページと<title>要素の値は一致させておくのが望ましいだろう。 
+ページ内リンクを設置する 
+もっとも、実際にアクセスしてみれば分かるように、この時点ではデフォルトで先頭ページ(=最初の<div>要素)が表示されるだけで、あまり意味がない(2ページ目以降は無視される)。 
+jQuery Mobileページの基本構造を理解しよう − @IT

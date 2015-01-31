@@ -1,0 +1,7 @@
+音声ファイル読み込み&視覚化  &dagger;
+まず、Praatを開く。
+Praat Objects ウインドウで、「Open」>「Read from file...」>解析したいファイルを指定
+Praat Objects ウインドウで、右の「View & Edit」を選択 > 波形画面が表示される
+「View」>「Zoom in」(もしくはCtrl+I)で拡大、「View」>「Zoom out」(もしくはCtrl+O)で縮小、ある程度拡大されれば自動的にスペクトログラム、ピッチの推定値(青線)を表示してくれます
+「Formant」>「Show formants」でフォルマントの推定値(赤線)も表示します
+Praat - Miyazawa’s Pukiwiki 公開版

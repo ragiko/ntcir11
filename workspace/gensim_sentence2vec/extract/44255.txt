@@ -1,0 +1,45 @@
+
+第1回【「一般的」をgenerally/generalと訳すか】
+定訳は必ずしもgenerally/generalではない
+「日本人はなぜみんな、「一般的に」をgenerallyと訳すのか」
+これは、私が今から15年前に日英特許翻訳の仕事を始めた頃、英国人特許翻訳者に指摘されて、衝撃を受けた言葉です。学校では、「一般的」=generally/generalと習ったはずですし、辞書にもそう書いてあります。私たち日本人にとって、generallyは「一般的に」の定訳ともいえます。また、ネイティブが書いた英文技術文書に「一般的」の意味でgenerallyやgeneralが使われていることも事実です。generallyやgeneralを使うこと自体には問題はないはずです。
+ですが、私はその時以来、generally(一般的に)を使うのをやめることにしました。general(一般的な)についても、ほとんど使わなくなりました。それまでは「一般的に」や「一般的な」とくれば自動的にgenerallyやgeneralと訳していたのですが、少し立ち止まって、より分かりやすい表現はないか、と考えるようになったのです。
+定訳をも避ける理由
+英国人テクニカルライターの言葉をきっかけにして、私はgenerally(一般的に)を使うのをやめたのですが、その理由は次のとおりです。
+まず、generallyが自分にとって使いにくいと感じられる単語だからです。深く考えれば考えるほど、generallyが具体的に何を意味するのか、そもそも「一般的」とは何なのか、分からなくなってしまったのです。自分でもよく分からなかったり、具体的にイメージしにくかったりする単語を使うことは、テクニカルライターとしては避けたいものです。オックスフォード新英英辞典によると、generallyは
+1. in most cases; usually 
+2. in general terms; without regard to particulars or exceptions  
+3. by or to most people; widely
+と定義されています。つまり、usuallyの意味もあれば、without regard to exceptions(これはusuallyを言い換えたともいえますが)、そしてto most peopleやwidelyといった意味もあります。広くぼんやりとした定義のため、具体的にイメージしにくいのかもしれません。この辺りを、文脈に応じて、generallyではない他の単語を使ってもう少し訳し込めないかと思ったわけです。
+また、和文技術文書では、かみ砕いた言い回しよりもかっこいい言葉が好まれ、様々な場面で「一般的に」というかっこいい言葉が使われる傾向があります。このことも、「一般的に」=generallyと自動的に訳せない原因の一つだと思います。「通常は」「ほとんどの場合」「大体は」「一般大衆にとっては」「たびたび」のように具体的に書くよりも、「一般的に」と書くほうがなんとなくかっこいいからでしょうか、和文技術文書には必要以上に多くの場面で「一般的に」という言葉が使われていると思うのです。あらゆる文脈の「一般的に」をgenerallyと訳すと、分かりにくい上、意味がずれてしまうことがあります。文脈に応じて、generally以外の単語を使うほうが、はるかに分かりやすい場合があります。
+generallyやgeneralを他の表現に変える
+以上の理由から、「一般的」の英訳にgenerallyやgeneralを使うのは、それ以外の表現がどうしても見つからない場合に限定することに決めました。そして、他の表現に変える工夫をした結果、実際の翻訳で私が使うのは、general-purpose something、例えばgeneral-purpose computer (汎用コンピュータ)、といった場合だけとなりました。generallyにおいては、全く使わなくなりました。
+例えば次のように、generallyやgeneralを、よりイメージしやすい、より簡単な表現に変える工夫をしています。
+(1)この概念は一般的に認められている
+訳例:This concept has generally been accepted.
+解説:generally been accepted =「general public(一般大衆)に受け入れられている」を意味する正しい表現。generallyの典型的な使い方で、分かりやすいので問題ないが、より簡単な表現にリライトすることも可能。
+リライト例:This concept has widely been accepted.
+解説:widelyを使うと、よりイメージしやすい。
+(2)電気自動車とは一般的に、内燃機関の代わりに電気モータとモータ制御部を使うものである
+訳例:Electric vehicles generally use electric motors and motor controllers instead of internal combustion engines.
+解説:この表現でも正しいが、よりイメージしやすい表現にリライトしたい。
+リライト例:Electric vehicles typically use electric motors and motor controllers instead of internal combustion engines.
+解説:generallyはtypicallyに置き換えられることが多い。
+typical = having the distinctive qualities of a particular type of person or thing, characteristic of a particular person or thing, representative as a symbol(オックスフォード新英英辞典)
+(3)カメラのブレが、写真を不鮮明にする一般的な原因となっている
+訳例:Camera movement is a general cause for unsharp photos.
+解説:「一般的」をgeneralに直訳した例。間違ってはいないが、なんとなく分かりにくい。よりイメージしやすい表現にリライトしたい。
+リライト例1:Camera movement is a typical cause for unsharp photos.
+リライト例2:Camera movement frequently causes unsharp photos.
+解説:generalをtypicalに置き換える、またはfrequentlyを使ってより具体的に書き換える。frequentlyの他にはoftenやtypicallyなど。
+(4)一般的な洗剤はこの作業には使用しないでください
+訳例:Never use general cleaners for this task.
+解説:「一般的」をgeneralに直訳した例。general cleanersというのが、いまいちよく分からない。もう少し訳し込みたい。
+リライト例:Never use general-purpose cleaners for this task.
+解説:general-purposeのように言葉を補うことで、「汎用」「一般用途向け」「多目的」を意味する具体的な表現となる。
+正確・明確に書くために—文脈に応じた表現を考える
+日英翻訳でgenerally(一般的に)を使わないのは私個人のやり方で、他の翻訳者や技術者に勧める方法というわけではありません。技術英語の世界でも正しいとされる定訳をも避ける、極端な方法かもしれません。ですが、使いにくいと感じる単語を避け、より具体的な表現がないかを常に考える姿勢は、非ネイティブライターとして、間違いを避けてより分かりやすく書くために大切だと思います。
+【「一般的」をgenerally/generalと訳すか】のPOINT
+非ネイティブライターとして正確で明確に書くために、イメージしにくい単語や使いにくいと感じる単語を避け、簡単で、自信を持って使える表現を選ぶ。言葉の置き換えを避け、文脈に応じた表現を考えることがスキルアップにつながる。
+「一般的」= generally/generalを、私個人はほとんど使わない。generallyは、文脈に応じてwidely, typically, frequentlyなどに置き換えられることがある。generalは、文脈に応じてtypicalなどに置き換えられることや、general-purposeなど適宜言葉を補うと具体的に表現できることがある。
+第1回【「一般的」をgenerally/generalと訳すか】 | オンライン連載 | 特許英語・論文英語を専門とする翻訳と教育の会社 ユー・イングリッシュ

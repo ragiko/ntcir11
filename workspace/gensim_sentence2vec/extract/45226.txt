@@ -1,0 +1,67 @@
+どうも、佐野です。今回は UIAlertView の拡張カテゴリを作って、delegate ではなく Block でコールバック処理を記述するための拡張カテゴリの作り方を紹介します。
+iOS4 から Objective-C では Blocks という独自のクロージャ機能が搭載されました。これによってアニメーションの記述やコールバック処理などグッと直観的・効率的に記述できるようになったのですが、残念ながら UIKit によって提供されているクラスの多くはまだ Blocks に最適化された作りになっていません。UIAlertView もそのひとつです。
+UIAlertView は、その delegate を実装することでユーザアクションに対する処理を記述する訳ですが、どうも使い勝手が悪い。例えば、同じで画面内で2通りの UIAlertView を表示するような UIViewController を作る場合、その実装はこんな風になるでしょう:
+@implementation MyViewController
+...
+// 1個目のアラートの表示処理
+- (IBAction)action1:(id)sender {
+// アラート生成
+UIAlertView *a1 = [[[UIAlertView alloc] initWithTitle:@"Alert1"
+message:@"..."
+delegate:self
+cancelButtonTitle:@"キャンセル"
+otherButtonTitles:@"OK", nil] autorelease];
+// 識別のためのタグを設定
+a1.tag = 1; 
+// 表示
+[a1 show];
+}
+// 2個目のアラートの表示処理
+- (IBAction)action2:(id)sender {
+// アラート生成
+UIAlertView *a2 = [[[UIAlertView alloc] initWithTitle:@"Alert2"
+message:@"..."
+delegate:self
+cancelButtonTitle:@"キャンセル"
+otherButtonTitles:@"OK", nil] autorelease];
+// 識別のためのタグを設定
+a2.tag = 2;
+// 表示
+[a2 show];
+}
+...
+// アラートのdelegateメソッド
+// alertViewのtag属性によってアラート1,2を識別し、処理を分岐する
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+// 1個目のアラートに対する処理
+if(alertView.tag == 1) {
+if(buttonIndex == 0) {
+... // [キャンセル]処理
+} else {
+... // [OK]処理
+}
+}
+// 2個目のアラートに対する処理
+else if(alertView.tag == 2) {
+....
+}
+}
+// コールバックブロックを生成
+void (^alertCallback1)(NSUInteger) = ^(NSUInteger buttonIndex) {
+if(buttonIndex == 0) {
+... // [キャンセル]処理
+} else {
+... // [OK]処理
+}
+};
+// コールバックを渡してアラートを生成
+UIAlertView *a1 = [[[UIAlertView alloc]
+initWithTitle:@"Alert1"
+message:@"..." 
+callback: alertCallback1 //  コールバックブロックを引数に!
+cancelButtonTitle:@"キャンセル"
+otherButtonTitles:@"OK", nil] autorelease];
+// 表示
+[a1 show];
+UIAlertView の delegate 束縛を解放しよう - mixi Engineers' Blog

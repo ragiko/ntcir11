@@ -1,0 +1,15 @@
+Windows XP の初期設定で実装されている検索コンパニオンのアニメーションをやめ、従来のシンプルな検索画面を表示させるには、レジストリを操作します。
+スタートメニューの「ファイル名を指定して実行」をクリックします。
+「regedit」と入力して [OK] をクリックします。
+レジストリ エディタで下記のキーを捜します。
+HKEY_CURRENT_USER
+Software
+Microsoft
+Windows
+CurrentVersion
+Explorer
+CabinetState
+画面右側で右クリックし、[新規] - [文字列値] をクリックします。
+新しく作った値の名前を「Use Search Asst」に変更します。
+名前を変えた「Use Search Asst」をダブルクリックし、値のデータを「no」にして [OK] をクリックします。
+WindowsXP の検索コンパニオンを、従来の検索画面にしたい

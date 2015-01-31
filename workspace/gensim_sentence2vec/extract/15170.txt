@@ -1,0 +1,54 @@
+独立成分分析(どくりつせいぶんぶんせき、英: Independent component analysis, ICA)は、多変量の信号を複数の加法的な成分に分離するための計算手法である。各成分は、ガウス的でない信号で相互に統計的独立なものを想定する。これはブラインド信号分離の特殊な場合である。
+概要[編集]
+独立性の仮定が正しいなら、混合信号のブラインドICA分離は非常に良い結果となる。混合信号でなくとも、分析のためにこれを行う場合もある。典型的なICAの応用として、室内で録音された複数の人間の会話から特定の人物の声を抜き出す音源分離がある。一般に遅延や反響がないと仮定することで問題が単純化される。考慮すべき重要な点として、N個の信号源があるとき、個々を分離するには少なくともN個の観測装置(マイクロフォンなど)が必要となる。
+この統計的手法は、予測される成分の統計的独立性を最大化するようにその独立成分(ファクター、潜在変数、信号源など)を見つける。中心極限定理によると、非ガウス性(Non-Gaussianity)は成分の独立性を測る手法の1つである。非ガウス性は例えば、尖度やネゲントロピーの近似で測ることができる。相互情報量も信号間の独立性の尺度となる。
+ICAの典型的アルゴリズムでは、複雑さを削減するために前段階として、中心化(centering)、白色化(whitening)、次元削減(圧縮)(dimensionality reduction)などを行う。白色化と次元削減は主成分分析や特異値分解(Singular value decomposition)などによってなされる。ICAのアルゴリズムとしては、Infomax、FastICA、JADE など様々なものがある。
+ICA はブラインド信号分離で重要であり、具体的な応用がいくつもある。
+数学的定義[編集]
+線形独立成分分析はノイズのない場合とノイズのある場合に分けられ、ノイズのない ICA はノイズのある ICA の特別な場合である。非線形 ICA はそれらとは別と考えられる。
+一般的定義[編集]
+データは確率変数ベクトル  と成分の確率変数ベクトル  で表される。すべきことは、線形な統計的変換  を使って、観測データ  を独立成分  に変換することである(独立性は関数  によって表される)。
+生成的モデル[編集]
+線形ノイズなしICA[編集]
+観測された確率変数ベクトル  の成分  は独立成分 ,  の次のような総和として生成される。
+となり、観測された確率変数ベクトル  が基本ベクトル  で表される。
+基本ベクトル  は混合行列 (mixing matrix)  の列を形成し、生成式は  と表され、このとき  である。
+モデルと  からなる確率変数ベクトル  の標本があるとき、混合行列  と信号源  を予測する作業が行われる。これは、 ベクトルを順応的に計算し、計算された  の非ガウス性を最大化するか、相互情報量を最小化するコスト関数を設定することでなされる。場合によっては信号源の確率分布についての事前の知識をコスト関数に利用する。
+信号源  は観測された信号群  に混合行列の逆行列  (分離行列; demixing matrix / separating matrix)をかけることで求められる。ここで、混合行列は正方行列と想定されている。
+線形ノイズありICA[編集]
+平均がゼロとなる無相関のガウス雑音  を仮定すると、ICAモデルは  という形式になる。
+非線形ICA[編集]
+信号源の混合は線形でなければならないわけではない。パラメータ  の非線形混合関数  による非線形ICAモデルは  となる。
+同定可能性[編集]
+独立成分分析の同定可能性には以下の要素が必要である。
+信号源のうち高々1つだけ()がガウス雑音である。
+混合信号の観測数  と予測される信号源の数  について、 でなければならない。
+混合行列  の行列の階数は最大でなければならない。
+参考文献[編集]
+「入門 独立成分分析」,村田昇,東京電機大学出版局,ISBN:4-501-53750-7, (2004).
+「詳解 独立成分分析—信号解析の新しい世界」, Aapo Hyvärien, Juha Karhunen, 東京電機大学出版局, ISBN: 978-4501538606、(2005).
+関連項目[編集]
+主成分分析
+因子分析
+画像処理
+信号処理
+ブラインド信号分離 (BSS)
+ブラインド逆畳み込み積分
+非負行列因子分解 (NMF)
+射影追跡法
+カクテルパーティー効果
+外部リンク[編集]
+What is independent component analysis? by Aapo Hyvärinen
+Nonlinear ICA, Unsupervised Learning, Redundancy Reduction by Jürgen Schmidhuber
+A Brief Introduction to Independent Component Analysis by JV Stone, 2005 (7 pages).
+A. Hyvärinen, J. Karhunen, E. Oja (2001). Independent Component Analysis という書籍の Introductory chapter
+FastICA as a package for Matlab, in R language, C++, and Python
+ICALAB Toolboxes - Matlab 用。理化学研究所が開発。
+High Performance Signal Analysis Toolkit - FastICA や Infomax の C++ による実装。
+Free software for ICA by JV Stone.
+ICA toolbox - Matlab 用。DTUが開発。
+Demonstration of the cocktail party problem
+EEGLAB Toolbox - Matlab による脳波の独立成分分析ツール。UCSDが開発。
+FMRLAB Toolbox - Matlab によるfMRIの独立成分分析ツール。UCSDが開発。
+Discussion of ICA used in a biomedical shape-representation context
+独立成分分析 - Wikipedia

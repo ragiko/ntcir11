@@ -1,0 +1,53 @@
+
+java.lang.System.out#printfで使われている技術が可変長引数であることを紹介した。今回は、可変長引数を使うとどのようなことができるのか紹介し、その背景にあるものに迫っていく。
+可変長引数 - 使用例
+まず、可変長引数を使ったプログラムをみてみよう。リスト1のようなソースコードを用意する。リスト1を実行した様子をプロンプト1に示す。リスト1は、可変長引数を使ったdoTestというクラスメソッドを作成し、引数が4つの場合と、引数が11の場合で実行するものである。プロンプト1に示すように、不特定数に対して動作していることがわかる。
+リスト1 VariableLengthArgumentTest.java
+public class VariableLengthArgumentTest {
+public static void main(String[] anyArguments) {
+doTest("a", "b", "c", "d");
+doTest("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k");
+}
+public static void doTest(String ... anyStrings) {
+System.out.printf("It got %d.\n", anyStrings.length);
+for (int count = 0; count < anyStrings.length; count++) {
+System.out.printf("argument %d is %s\n", 
+1 + count, anyStrings[count]);
+}
+}
+}
+% java VariableLengthArgumentTest a b c d
+It got 4.
+argument 1 is a
+argument 2 is b
+argument 3 is c
+argument 4 is d
+It got 11.
+argument 1 is a
+argument 2 is b
+argument 3 is c
+argument 4 is d
+argument 5 is e
+argument 6 is f
+argument 7 is g
+argument 8 is h
+argument 9 is i
+argument 10 is j
+argument 11 is k
+%
+引数の記述方法は「String ... anyStrings」である。これは、Stringオブジェクトを不特定数で引数としてとることを宣言している。次に「anyStrings.length)」、これは可変引数が結局いくつになったかを表す。該当引数が4つなら4になり、11つなら11になる。そして、引数1つ1つを指定するには「anyStrings[count]」を使っている。括弧の中の数字が、不特定数の何番目かを表している。1つ目なら0だ。
+コンパイル時に引数の個数を特定しているのではないかと思う場合は、リスト2のようにソースコードを変更してみるとよい。これであれば、doTestクラスメソッドに渡される引数は、プログラム実行時に引数として渡されるものになるから、動的に処理していることがわかるはずだ。
+リスト2 VariableLengthArgumentTest.java
+public class VariableLengthArgumentTest {
+public static void main(String[] anyArguments) {
+doTest(anyArguments);
+}
+public static void doTest(String ... anyStrings) {
+System.out.printf("It got %d.\n", anyStrings.length);
+for (int count = 0; count < anyStrings.length; count++) {
+System.out.printf("argument %d is %s\n", 
+1 + count, anyStrings[count]);
+}
+}
+}
+ライトニングJava (9) 可変長引数(3) - 配列で実現される可変長引数 | マイナビニュース

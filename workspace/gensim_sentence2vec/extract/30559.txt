@@ -1,0 +1,288 @@
+
+ここに示した方法は、ほとんど一夜漬け勉強した内容で初心者向けと言える。
+当然ながら解析の設定などはさらに細かく設定できるので、必要ならば参考書・説明書などを調べることを勧める。
+筆者は Windows XP の環境で系統樹作成を行ったが,他の Windows でも本質的な差はないと思われる。
+なお Mac PC で解析を行う場合には,主として MrModeltest の使い方に大きな違いがあるため,
+ソフトの説明文を参照していただきたい。
+重要 2005年05月17日付けで,MrBayes の最新版が更新された。
+今回登場した ver. 3.1 は MrBayes 3 の初の正規版となる。
+MrBayes 3.1 では複数の解析(通常は 2 本)を同時に行うことにより、
+得られる樹形などの収束の程度を定量することができるようになった。
+これは解析時間が余分にかかるものの、解析のクオリティを検証できる点で有意義であり、
+この機能の利用が推奨される。
+また、今回のバージョンからマニュアル(英文)が付くようになったので、これを参照にするとよい。
+このマニュアルを元にした、MrBayes 3.1 の標準的な使用法については、
+MrBayes 3.1.1 を用いた系統解析に記した。
+このページ中にも、MrBayes 3.1 でこれまでと同様の解析を行うための方法を補足した。
+これまでに気づいた変更点としては、解析のプログラム中の mcmcp コマンド中に "nruns=1" を挿入する点
+(これを指定しない場合、2 本の解析が同時に走る設定になっている。詳細は今後の更新を待っていただきたい)、
+およびタンパク質データのアミノ酸略号に "X" を用いることができるようになった他は
+本解説に修正が必要な箇所はないと思われる。
+なお,雑記にもコメントを載せたので,
+こちらも参照頂きたい。
+必要なプログラムのダウンロード
+以下のプログラムをダウンロードしてインストールする。(PAUP* を除き、全て無料でダウンロードできる)
+ClustalX(アラインメント、NEXUS ファイルの作成に必要):
+ClustalX Help
+http://www-igbmc.u-strasbg.fr/BioInfo/ClustalX/Top.html
+GeneDoc(アラインメントのエディタ、特にアミノ酸配列の編集に必要):
+GeneDoc HomePage
+http://www.psc.edu/biomed/genedoc/
+MrModeltest(進化モデルの推定に用いる。ここでは ver. 2.1 を使用):
+Johan Nylander, Dept. Systematic Zoology, Uppsala
+http://www.ebc.uu.se/systzoo/staff/nylander.html
+PAUP*(系統解析用のプログラム。ここでは進化モデルの推定に用いる。
+進化モデルの推定を行わない場合は不要。有料):
+PAUP* 4.0
+http://paup.csit.fsu.edu/
+MrBayes(Bayes 法による系統樹の作成プログラム。ここでは ver. 3.0b4 を使用):
+MrBayes: Home
+http://morphbank.ebc.uu.se/mrbayes/
+TreeView(作成した系統樹を表示するためのプログラム):
+TreeView
+http://taxonomy.zoology.gla.ac.uk/rod/treeview.html
+データファイルの作成
+作業用のフォルダを作成する(後々便利なので)。ここでは "Bayes" フォルダとする。
+ClustalX などでアラインメントを作成し、NEXUS 形式で保存する。(ここでは AAAAA.nxs とする。
+ファイル名を入力することがあるので、シンプルな名称の方が便利である。またハイフン "-" などがファイル名に入っていると、
+MrBayes がファイルを読み込めないため注意)
+注:OTU(operational taxonomic unit,操作上の分類単位)の名称は、全て半角で英数字とアンダーバー "_" 
+しか使わないようにすること。特にハイフン "-" は ClustalX では使えるが、MrBayes で使えないので要注意。
+さらに、アミノ酸配列の場合、アミノ酸が不明の座位を "X" で表記する慣習がある。
+ところが MrBayes 3.0b4 ではこれをフォローしておらず、
+"X" を "?" に置換する必要がある。これには GeneDoc を用いるのが便利である。
+(なお,この問題は MrBayes 3.1 においては修正されている)
+まず、GeneDoc を開き、File  Import と選択する。Import Type のウインドウが開くので、Input Device として "File" を、
+Type of File として "Clustal(ALN) を選択し、Import をクリックしてファイル(AAAAA.bay)を読み込む。Done を選んで Import を終了する
+次に、Edit  Replace と選び、Find の欄に "X" を、Replace の欄に "?" を入力して、OK をクリックするとほぼ全ての "X" が "?" に置換される。
+ただし何故かアラインメントの最後のカラムのみ置換が出来ないので、ここに "X" の文字がある場合は(普通はない)マニュアルで置換する必要がある。
+Edit  Residue Edit Mode と選ぶと、マウス/カーソルで選んだ部分に上書きで任意の文字を入力できるので、これを用いてアミノ酸を置換すればよい。
+置換が終了したら、File  Export と選択、Export Dialog が出たら、Select Sequences で "Select All" を、Select Export Device で "File" を、
+Type of File で "Clustal(ALN)" を選んで Export する。
+メモ帳などのテキストエディタを用いて、ファイルのトップにあるデータ定義の部分を MrBayes 
+で読み込める形式に編集する。
+ClustalX で作成した NEXUS ファイルの出だしは以下のようになっている。
+DNA 配列(塩基配列配)の場合
+#NEXUS
+BEGIN DATA;
+dimensions ntax=32 nchar=1392;
+format missing=?
+symbols="ABCDEFGHIKLMNPQRSTUVWXYZ"
+interleave datatype=DNA gap= -;
+matrix
+Chloromonas_rosae_UTEX1337     ATTTGGGATCCGCACTTTGGCCAACCAGCAGTTGAAGCATTTACACGTGG
+Chloromonas_serbinowi          ATCTGGGATCCTCATTTTGGTCAACCTGCTGTAGAAGCGTTTACACGTGG
+(以下略)
+この内 format の部分(青字)は MrBayes の形式に合わないため、編集する必要がある。
+具体的にはsymbols=の部分が不要である点と、
+interleaveをinterleave=yesと変更する必要がある点が重要である。
+これらを修正すると、以下のようになる。
+#NEXUS
+BEGIN DATA;
+dimensions ntax=32 nchar=1392;
+format datatype=DNA missing=? interleave=yes gap= -;
+matrix
+Chloromonas_rosae_UTEX1337     ATTTGGGATCCGCACTTTGGCCAACCAGCAGTTGAAGCATTTACACGTGG
+Chloromonas_serbinowi          ATCTGGGATCCTCATTTTGGTCAACCTGCTGTAGAAGCGTTTACACGTGG
+(以下略)
+タンパク質配列(アミノ酸配列)の場合
+#NEXUS
+BEGIN DATA;
+dimensions ntax=32 nchar=376;
+format missing=?
+symbols="ABCDEFGHIKLMNPQRSTUVWXYZ"
+interleave datatype=PROTEIN gap= -;
+matrix
+Cg_elongatum   AGFKAGVKDYRLTYYTPDYVVRDTDVLAAFRMTPQPGVPPEECGAAVAAE
+Cg_euchlorum   AGFKAGVKDYRLTYYTPDYVVRDTDVLAAFRMTPQPGVPPEECGAAVAAE
+(以下略)
+この内 format の部分(青字)は MrBayes の形式に合わないため、編集する必要がある。
+具体的にはsymbols=の部分が不要である点と、
+interleaveをinterleave=yesと変更する必要がある点が重要である。
+これらを修正すると、以下のようになる。
+#NEXUS
+BEGIN DATA;
+dimensions ntax=32 nchar=376;
+format datatype=PROTEIN missing=? interleave=yes gap= -;
+matrix
+Cg_elongatum   AGFKAGVKDYRLTYYTPDYVVRDTDVLAAFRMTPQPGVPPEECGAAVAAE
+Cg_euchlorum   AGFKAGVKDYRLTYYTPDYVVRDTDVLAAFRMTPQPGVPPEECGAAVAAE
+(以下略)
+こうして編集したファイルを別名で保存する(AAAAA.bay)。
+進化モデルの選択
+タンパク質をコードしていない塩基配列の場合
+(MrModeltest と PAUP* が必要。これを用いない場合については後述)
+MrModeltest というプログラムを用いて,進化モデルを推定する。
+まず,MrModeltest のフォルダから、Bayes フォルダに MrModelblock と mrmodeltest2.exe をコピーする
+(このフォルダ上で解析を進めるのに便利なため。後で削除する)。
+PAUP* を開いて、AAAAA.bay を読み込む。
+MrModelblock を読み込む。
+これにより同じフォルダに mrmodel.scores と mrmodelfit.log の二つのファイルが作られる。
+前者が解析結果で、後者が解析のログである。
+プログラムアクセサリコマンドプロンプト から DOS window を開き、
+cd *****/*****/Bayes などとして、作業用のフォルダ(ここでは "Bayes")に移動。
+mrmodeltest2  MrMod.out と入力。
+これにより、MrModeltest が mrmodel.scores を解釈して、結果を MrMod.out に出力する。
+MrMod.out をメモ帳などで開くと、hLRT という規準と、AIC という規準に基づいて選択されたモデルと、
+MrBayes 用の構文が出ている。この hLRT(または AIC)の構文の部分に注目。
+[!
+MrBayes settings for the best-fit model (******) selected by hLRT in MrModeltest 2.1
+]
+BEGIN MRBAYES;
+Prset ****************************;
+Lset  ********************;
+END;
+最初の[*******]の部分は、構文の情報に関するメモで、削除しても良い。この中に選ばれたモデルと、規準が記されている。
+BEGIN 〜 END; がプログラムの構文で、********の部分はモデルによって変わってくる。
+というわけで以上の構文を、上記のデータファイル(AAAAA.bay)の末尾にコピーし、別の名前で保存する(AAAAAhLRT.bay)。
+PAUP* が利用できない場合、モデルの検証を行うことは出来ない。
+モデルの選択は解析結果に大きく影響するため、検証を省くことには問題があるが、系統樹を描くことは出来る。
+ここでは恣意的に GTR+I+G というモデルを用いた解析方法を紹介しておく。
+データファイル(AAAAA.bay)を開き、末尾に以下の構文をコピーし、別名で保存する(AAAAAGIG.bay)。
+BEGIN MRBAYES;
+Prset statefreqpr=dirichlet(1,1,1,1);
+Lset  nst=6  rates=invgamma;
+END;
+タンパク質をコードしている塩基配列の場合
+解析する塩基配列がタンパク質をコードしている場合,
+第 1,第 2,第 3 コドンごとに進化速度を区別するモデルを用いるのが良いと考えられる。
+よって,ここでは General Time Reversible(GTR)モデルと,site-specific rates model を併せたモデルを用いる
+(気になる場合は,「タンパク質をコードしていない塩基配列の場合」と同様のモデル推定から後述の予備試行まで行い,
+Test.p に表示される尤度(LnL)を比較しても良いかもしれない。この場合,
+より尤度が大きいモデル(負の値で表示されるので,絶対値が小さいモデル)を用いる。
+なお,2 通りの試行を行う場合は,別々のフォルダで解析を行うか,「予備試行用のプログラムの編集」の段階で,
+出力ファイルの名称を変更した(例えば Test1 と Test2)2 通りのプログラムを用意しておかないと,
+1 つのファイルに結果が上書きされてしまうので注意)。
+以下の構文を,上記のデータファイル(AAAAA.bay)の末尾にコピーし,別の名前で保存する(AAAAAGSS.bay)。
+BEGIN MRBAYES;
+charset 1st_pos = 1-.\3;
+charset 2nd_pos = 2-.\3;
+charset 3rd_pos = 3-.\3;
+partition by_codon = 3:1st_pos,2nd_pos,3rd_pos;
+set partition = by_codon;
+lset nst=6;
+prset ratepr=variable;
+END;
+編集する場合の参考に、簡単な解説を加えたものも示しておく。
+BEGIN MRBAYES;
+charset 1st_pos = 1-.\3;[ここから,]
+charset 2nd_pos = 2-.\3;
+charset 3rd_pos = 3-.\3;
+partition by_codon = 3:1st_pos,2nd_pos,3rd_pos;
+set partition = by_codon;[ここまでがコドンの仕分けの定義]
+lset nst=6;[nst=6 で GTR モデルを選択]
+prset ratepr=variable;[ratepr=variable で上記の仕分けに基づき,
+site-specific rates モデルを選択]
+END;
+タンパク質のアミノ酸配列の場合
+アミノ酸置換のモデルが複数存在するので,その中から選択する。
+ここでは WAG というモデルを用いる(他に BLOSUM や JTT などのモデルも必要に応じて用いること)。
+以下の構文を,上記のデータファイル(AAAAA.bay)の末尾にコピーし,別の名前で保存する(AAAAAWAG.bay)。
+BEGIN MRBAYES;
+lset rates=gamma;
+prset aamodelpr=fixed(wag);
+END;
+編集する場合の参考に、簡単な解説を加えたものも示しておく。
+BEGIN MRBAYES;
+lset rates=gamma;[rates=gamma で gamma 分布を指定]
+prset aamodelpr=fixed(wag);[aamodelpr=fixed(wag) で WAG モデルを選択。
+この () 内を変更すれば他のモデルも利用可能なので,詳しくは MrBayes の説明書を参照。
+例えば BLOSUM モデルであれば "blossum"、JTT モデルであれば "jones" を () 内に入れる]
+END;
+予備試行用のプログラム(TestMrB.nex とする)の編集
+解析の試行回数(世代数)を決定するため、初めに予備的な解析を行う必要がある、
+ここでは世代数=10,000 回の場合のプログラムを示す。
+以下の構文を必要に応じて編集する(下記をコピーしても良い)。
+MrBayes 3.1 で同様の解析を行いたい場合、次行に示すように、
+4 行目の "mcmcp" のコマンド中に "nruns=1" を挿入する必要がある
+"mcmcp ngen=10000 printfreq=1000 samplefreq=100 nruns=1"
+begin mrbayes;
+log start filename=Test.out replace;
+set autoclose = yes;
+mcmcp ngen=10000 printfreq=1000 samplefreq=100
+nchains=4 savebrlens=yes filename=Test;
+mcmc;
+plot filename=Test.p;
+[sumt filename=Test.t burnin=20 contype=halfcompat;]
+log stop;
+end;
+編集する場合の参考に、簡単な解説を加えたものも示しておく。
+begin mrbayes;
+log start filename=Test.out replace;[filename= でログファイルの名称の定義]
+set autoclose = yes;
+mcmcp ngen=10000 printfreq=1000 samplefreq=100[ngen= で世代数の指定]
+nchains=4 savebrlens=yes filename=Test;[nchains= で Monte Carlo 試行のチェイン数の指定。
+filename= で出力ファイルの名称の定義]
+mcmc;
+plot filename=Test.p;[パラメータのグラフを表示させるための構文。
+filename= でデータの読み込み先を指定しているのでで指定したファイル名を記述すること。
+パラメータを特に指定していないので、世代ごとの尤度のグラフが表示されるようになっている]
+[sumt filename=Test.t burnin=20 contype=halfcompat;][系統樹情報を整理するための構文。
+filename= にはやはりで指定したファイル名を記述。ただし予備試行では必要ないため,
+[ ] で挟み,プログラムが無視するようにしてある。なお、[ ] 内は日本語禁止]
+log stop;
+end;
+こうして編集したファイルを TestMrB.nex などとして保存する。
+予備試行の実行と、パラメータの決定
+MrBayes_V3.0_win のフォルダから、Bayes フォルダに MrBayes3_0b4.exe をコピーする
+(このフォルダ上で解析を進めるのに便利なため。後で削除する)。
+MrBayes3_0b4.exe をダブルクリックして起動させる。
+execute AAAAAhLRT.bay(あるいは AAAAAGSS.bay など)としてデータファイルを読み込む
+(execute は簡単に exe でも良い)。
+exe TestMrB.nex として予備試行を開始する。この設定では 1,000 世代ごとに経過が表示される。
+解析時間は世代数にほぼ比例するので、これで終了時間が推定できる。
+10,000 世代の試行が終了すると、解析終了までの時間、系統樹など様々な情報が表示されるが、
+これはログファイル(Test.out)に保存されている。
+解析の結果、Test.p、Test.t、Test.out の 3 個のファイルが作成されるが、
+用いるのは Test.p および Test.out の 2 つ。
+Test.out をメモ帳などで実行し、中ほどにある Chain completed in ** seconds という記述を確認する
+("Chain completed" で検索すれば見付かる)。これは 10,000 世代の解析に ** 秒を要したということ(例えば 59 秒)。
+実際の解析は一晩(例えば 14 時間 ≒ 50,000 秒)程度かけるのが適当なので、
+50,000 秒を予備試行に要した秒数で割り、これを 10,000 倍した数値を本解析の世代数とする
+(実際にはきりの良い数字に直すこと)。
+予備試行に要した時間が 59 秒だとすると、50,000 ÷ 59 × 10,000 = 8,474,576(世代)が目安となり、
+きりの良い 8,000,000 世代を本解析の世代数に用いる(ここでは 100 世代ごとに樹形をサンプリングしているので、
+実際に得られる樹形の数は 80,000 樹形となる)。
+また、本解析に用いる世代数は 1,000,000 世代を超えていることを一つの目安とすればよい。
+タンパク質のアミノ酸配列の解析の場合,一晩では 1,000,000 世代が終わらない事もあるので,
+その場合は覚悟を決めて,数日間の解析にかけるか,世代数を妥協する。
+burnin の樹形数を決める。これは初めの方の世代の樹形は、まだ尤度が不十分であり、
+サンプリングから外すための処理である。この数は全体の樹形数の 10 % が目安で、従って世代数の 1,000 分の一に相当する
+(世代数が 8,000,000 ならば burnin の数は 8,000 樹形)。
+なおこの値は目安で、これが十分であるかどうかはチェックする必要がある。
+burnin の樹形数が十分であることを、各世代の尤度を見ることで確認する。
+世代ごとの尤度は、Test.p に保存されており、これをメモ帳などで開く。
+一番左のカラム(Gen)が世代数で、ここでは 100 世代ごとに示されている。次のカラムが各世代の尤度(LnL)で、
+この値を比較する(残りのカラムは無視)。
+具体的にはカラムの下部(10,000 世代以下)で値の変動が 0.2〜0.3 % 以内に収まっていればよいのではなかろうか。
+細かく言うと、burnin の値の 100 倍(つまり世代数)で値が収束していれば良いので、
+10,000 世代以下で収束していれば十分であることがわかる。
+ただし、burnin の数は解析の後でも修正できるため、10,000 世代以内に収束していなかったとしても、
+必ずしも大きな問題ではない。
+また、Test.out の中ほどに、世代を横軸にとった尤度のグラフが表示されているので、
+これも目安としてみておくと良い。
+ここまでチェックして、burnin の数に問題がなければ、その値を次で用いる。
+問題があった場合は、世代数も含めて再検討するとよいだろう。
+本解析用のプログラム(AnalyMrB.nex とする)の編集
+TestMrB.nex を元に編集する。これを メモ帳などで開いて、AnalyMrB.nex と改名する。
+以下の 3 つが主要な変更点である(プログラム構文中の青字の部分)。コマンドの解説も一部つけておく。
+作成するファイル名については全ての "Test" を "Analy" に置換する。
+世代数と burnin の樹形数は、上で決定した値を入力する。
+本解析では樹形を描かせるため,sumt *********** の部分の [ ] を外し,有効な構文にする。
+begin mrbayes;
+log start filename=Test.out replace;
+set autoclose = yes;
+mcmcp ngen=10000 printfreq=1000 samplefreq=100
+[samplefreq= で何世代ごとに樹形などの情報をサンプリングするかを定義。
+burnin 数は世代数ではなく樹形数なので、これを変更する場合は要注意]
+nchains=4 savebrlens=yes filename=Test;
+mcmc;
+plot filename=Test.p;
+[sumt filename=Test.t
+burnin=20 contype=halfcompat;]
+[burnin= でサンプリングしない最初の樹形数を定義。上述。contype= で合意樹の作成法を定義。
+ここでは halfcompat で、50% 多数合意樹を指定している]
+log stop;
+end;
+以上の変更を保存する。
+Bayes 法による系統解析−MrBayes 3.0b4

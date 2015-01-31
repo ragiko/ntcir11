@@ -1,0 +1,1339 @@
+
+Bx : 非効率な浮動小数点数のコンストラクタを呼び出しています。
+valueOfスタティックメソッドを代わりに使用してください。
+(DM_FP_NUMBER_CTOR)
+new Double(double)を呼び出すと、常に新たなオブジェクトが生成されます。これに対し、Double.valueOf(double)は、コンパイラ、クラスライブラリ、JVMによってキャッシュすることが可能です。キャッシュを使用することによって、余計なオブジェクトの生成を防ぎ、コードの実行効率を改善できます。
+バージョン5.0より前のJava実行環境との互換性が不要であれば、オートボクシングか、Double、FloatのvalueOf()メソッドを代わりに使用してください。
+Bx : 非効率なNumberのコンストラクタが呼び出されています。
+代わりに valueOf スタティックメソッドを使用してください。
+(DM_NUMBER_CTOR)
+new Integer(int)の呼び出しは、常に新たなオブジェクトが生成します。これに対してInteger.valueOf(int)は、コンパイラ、クラスライブラリ、JVMによってキャッシュすることが可能です。キャッシュを使用することによって、余計なオブジェクトの生成を防ぎ、コードの実行効率を改善できます。
+-128から127までの値は、キャッシュされるので、valueOfを使用すると、コンストラクタを利用するよりも約3.5倍高速になります。この範囲外の場合にはパフォーマンスの差はありません。
+バージョン5.0より前のJava実行環境との互換性が不要であれば、オートボクシングか、Long、Integer、Short、Character、ByteのvalueOf()メソッドを代わりに使用してください。
+CD : クラス間の循環依存関係。
+(CD_CIRCULAR_DEPENDENCY)
+このクラスは、他のクラスと循環依存関係にあります。このため、それぞれクラスのコンパイルの際に別のクラスがコンパイル済である必要があり、全体のコンパイルが難しいものになっています。インターフェースを用いて強い依存関係を断ち切る事を検討してください。
+CI : finalクラスでのprotectedフィールド宣言。
+(CI_CONFUSED_INHERITANCE)
+このクラスはfinal宣言されていますが、protectedなフィールドが宣言されています。このクラスは継承できないのですから、protectedフィールドを宣言すると誤解を招きます。アクセス修飾はprivateかpublic(訳注:かパッケージプライベート)に変更して、正しくフィールドが利用されるようにすべきです。
+CN : クラスは、Cloneable を実装していますが、clone メソッドを定義していないか使用していません。
+(CN_IDIOM)
+クラスはCloneableを実装していますが、cloneメソッドを定義していないか使用していません。
+CN : clone()メソッドがsuper.clone()を呼び出していません。
+(CN_IDIOM_NO_SUPER_CALL)
+このクラスはclone()を定義していますが、super.clone()を呼び出しておらず、finalでもありません。
+もしもクラス("B")が("A")を継承しており、サブクラスBがsuper.clone()を呼び出さないと、Bのclone()メソッドはAのインスタンスを返してしまいます。これはclone()メソッドの規約を満たしていません。
+全てのclone()メソッドがsuper.clone()を呼び出すようになっていれば、Object.clone()が呼び出される事が保証され、正しい型のオブジェクトが返送されます。
+CN : Cloneable インターフェースを実装していないクラスで clone() メソッドを宣言しています。
+(CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE)
+このクラスでは clone() メソッドを宣言していますが、Cloneable インターフェースを実装していません。このような状況が許される場合(たとえば、サブクラスのクローン動作を制御したい場合など)もありますが、これが本当に意図されたものであるかどうか、確認してください。
+Co : 抽象クラスで共変な compareTo() メソッドを宣言しています。
+(CO_ABSTRACT_SELF)
+このクラスは、引数がjava.lang.ObjectでないcompareTo()メソッドを定義しています。
+ComparableインターフェースのcompareTo()メソッドを正しく実装するには、compareTo()メソッドの引数の型は、java.lang.Objectでなければなりません。
+Co : compareTo()またはcompare()メソッドがInteger.MIN_VALUEを返します。 
+(CO_COMPARETO_RESULTS_MIN_VALUE)
+ある状況下において、compareToやcompareメソッドは常にInteger.MIN_VALUEを返します。これは例外的に悪い習慣です。compareToの返り値にとって重要な唯一のことは、返り値の符号です。しかし、返り値の符号を無視することを期待して、compareToの返り値を無視する人がいます。返り値がint型最小値であるケースを除き、Integer.MIN_VALUEよりも単に-1を返すだけです。
+Co : 共変な compareTo() メソッドが定義されています。
+(CO_SELF_NO_OBJECT)
+このクラスは、引数がjava.lang.ObjectでないcompareTo()メソッドを定義しています。
+ComparableインターフェースのcompareTo()メソッドを正しく実装するには、compareTo()メソッドの引数の型は、java.lang.Objectでなければなりません。
+DB : 両条件でのコードが同一。
+(DB_DUPLICATE_BRANCHES)
+このメソッドに記述された複数の条件分岐で、同じコードが書かれています。コーディングミスでないかどうか確認してください。
+DB : switch文の中に同じコードがあります。
+(DB_DUPLICATE_SWITCH_CLAUSES)
+このメソッドの中にあるswitch文には、同じコードがあります。単なるコードの重複かもしれませんが、コーディングミスの可能性もあります。
+DC : フィールドのダブルチェックをおこなっている可能性があります。
+(DC_DOUBLECHECK)
+メソッド内にダブルチェックロッキングイディオムがあります。このイディオムはJavaのメモリーモデルでは正しく機能しません。詳細についてはhttp://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.htmlを参照してください。
+DE : メソッドで例外を処理していない可能性があります。
+(DE_MIGHT_DROP)
+このメソッドは例外を握りつぶしている可能性があります。一般に、例外が発生したら何らかの形で処理するか、呼び出し元にスローすべきです。
+DE : メソッドで例外を無視している可能性があります。
+(DE_MIGHT_IGNORE)
+このメソッドは例外を無視している可能性があります。一般に、例外が発生したら何らかの形で処理するか、呼び出し元にスローすべきです。
+DL : Boolean オブジェクトに対する同期はデッドロックを引き起こします。
+(DL_SYNCHRONIZATION_ON_BOOLEAN)
+Boolean クラスのようなボクシングされたプリミティブ値に対して同期化を行っています。
+private static Boolean inited = Boolean.FALSE;
+...
+synchronized(inited) { 
+if (!inited) {
+init();
+inited = Boolean.TRUE;
+}
+}
+...
+このようなコードは、Boolean オブジェクトが2つのみ存在する場合は正常に終了します。しかし、関連性のない他のコードが同じオブジェクトに対して同期するため、応答性の低下やデッドロックの原因となります。
+DL : ボクシングされたプリミティブ値に対する同期はデッドロックを引き起こします。
+(DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE)
+Integer クラスのようなボクシングされたプリミティブ値に対して同期化を行っています。
+private static Integer count = 0;
+...
+synchronized(count) { 
+count++;
+}
+...
+Integer オブジェクトはキャッシュされて共有されるため、このようなコードは関連性のない他のコードが同じオブジェクトに対して同期してしまいます。これは、応答性の低下やデッドロックの原因となります。
+DL : 正規化された文字列に対する同期はデッドロックを引き起こします。
+(DL_SYNCHRONIZATION_ON_SHARED_CONSTANT)
+このコードでは、正規化された String オブジェクトに対して同期を行っています。
+private static String LOCK = "LOCK";
+...
+synchronized(LOCK) { ...}
+...
+文字列定数は正規化され、JVM によって読み込まれたすべてのクラスの間で共有されます。このため、あるコードで文字列定数に対してロックを行っていると、同じ文字列定数でロックを行う他のコードでロック待ちが発生してしまいます。これは、非常に奇妙で解析困難なブロックとデッドロックに関する振る舞いです。
+http://www.javalobby.org/java/forums/t96352.html および http://jira.codehaus.org/browse/JETTY-352 を参照してください。
+DL : ボクシングされたプリミティブ値に対する同期が行われています。
+(DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE)
+このコードでは、Integer クラスのような一見共有されていないように見えるボクシングされたプリミティブ値に対して同期を行っています。
+private static final Integer fileLock = new Integer(1);
+...
+synchronized(fileLock) { 
+.. do something ..
+}
+...
+このコードは、 fileLock を以下のように宣言した方がよいでしょう。
+private static final Object fileLock = new Object();
+最初のコードには、ひとまず問題はありません。しかし、将来におけるリファクタリングによって、混乱を招くおそれがあります。たとえば、IntelliJ の "Remove Boxing" リファクタリング機能を使うと、これを JVM の中で共有される正規化された Integer オブジェクトを利用するように置き換えてしまい、非常に分かりにくい振る舞いとデッドロックの危険性につながってしまいます。
+DLS : ローカル変数への意味の無い代入。
+(DLS_DEAD_LOCAL_STORE)
+ローカル変数への代入が行なわれていますが、これ以降この値が読み出されることはありません。計算された値が結局は使用されないので、大抵の場合は間違いです。
+ただし、Sun の提供する javac コンパイラはしばしばこのようなローカル変数に対する無意味な代入を行うコードを生成します。FindBugs はバイトコード解析に基づくツールなので、このようなコンパイラが生成したコードと本来のコードを見分けることが難しく、誤って検出してしまうことがある点に注意してください。
+DLS : return 文の中で無意味な代入を行っています。
+(DLS_DEAD_LOCAL_STORE_IN_RETURN)
+return 文の中でローカル変数に対して代入を行っています。この代入操作によって、ローカル変数の値が変化します。これが正当な操作であるのかどうか、確認してください。
+DLS : ローカル変数への無意味な null の代入。
+(DLS_DEAD_LOCAL_STORE_OF_NULL)
+このコードはローカル変数に null を代入していますが、この変数はその後読み出されていません。恐らく null を代入することで、ガーベージコレクタにヒントを与えることを意図したと思われますが、Java SE 6.0 からは、このような記述は不要です。
+DLS : クラス定数の無意味な代入。
+(DLS_DEAD_STORE_OF_CLASS_LITERAL)
+この操作ではクラス定数を変数へ代入していますが、一度も利用していません。
+この振る舞いは Java 1.4 と Java 5 で異なります。
+Java 1.4 およびそれ以前のバージョンでは、Foo.class への参照を行うと、Foo クラスのスタティックイニシャライザが実行されていない場合、強制的に実行されます。しかし Java 5 以降のバージョンでは、スタティックイニシャライザは実行されません。
+より詳細な情報と具体例、そして Java 5 においてクラスの初期化を強制的に行う方法については、Sun によるJava SE の互換性に関する記事を参照してください。
+DLS : フィールドを隠蔽するローカル変数への使われない格納が行われています。
+(DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD)
+この命令は、ローカル変数に値を割り当てていますが、その変数は処理において一度も読み込みも使用もされません。通常、このような命令は、コンピュータによって割り当てられ、値が一度も使われないため、エラーを示唆します。ローカル変数として同じ名前を持つフィールドが存在します。そのローカル変数に代わりとして、値を割り当てる処理を行うということを意図していますか?
+DLS : インクリメントの上書き。
+(DLS_OVERWRITTEN_INCREMENT)
+このコードはインクリメント操作(すなわちi++)の後、ただちに内容を上書きしています。例えば、i = i++は、インクリメントされた値を元の値で上書きします。
+Dm : メソッドで非効率なBooleanのコンストラクタを呼んでいます。
+その代わりにBoolean.valueOf(...) を使うべきです。
+(DM_BOOLEAN_CTOR)
+java.lang.Booleanのインスタンスを新規に生成するのはメモリの浪費です。Booleanクラスはイミュータブルなので、TRUEとFALSEの2つのオブジェクトがあれば十分です。 Boolean.valueOf()(あるいは、Java 5以上ならばオートボクシング)を替わりに使ってください。
+Dm : Localeを引数にとるメソッドの使用を検討してください。
+(DM_CONVERT_CASE)
+文字列がプラットホームのデフォルトエンコーディングで、大文字、小文字に変換されています。これらは国際文字に対して行なわれると間違った結果を招くことがあります。かわりに
+を使用してください。
+Dm : System.exit(...)を呼び出しています。
+(DM_EXIT)
+System.exit は、VM全体を終了させてしまいます。これは、本当に必要な場面に限って
+使用すべきです。このようなコードは、再利用性を損なう事があります。かわりにRuntimeException
+をスローする事を検討してください。
+Dm : デフォルトのエンコーディングへの依存。
+(DM_DEFAULT_ENCODING)
+byte型からString型(またはその逆)への変換を行うメソッドの呼び出しを見つけたとき、またはプラットフォームのデフォルトのエンコーディングが最適だと想定されるだろうメソッドの呼び出しを見つけたときに出力されます。このような処理はアプリケーションの振る舞いが、プラットフォーム間で異なるという事態を引き起こします。代替のAPIを用い、charset名やCharsetオブジェクトを明確に指定してください。
+Dm : 明示的にガベージコレクションを呼び出しています。
+ベンチマークのコード以外で記述されるのはきわめて疑わしいです。
+(DM_GC)
+明示的にガベージコレクションを呼び出しています。ベンチマークで使用されるケースを除けば、これは大変疑わしいコードです。
+過去において、close()やfinalize()メソッドでのガベージコレクションを明示的に呼び出すことが、パフォーマンスのブラックホールに陥れるケースがありました。ガベージコレクションは高くつく場合があります。数百、数千のガベージコレクション呼び出しは、システムのパフォーマンスを極めて落とす事になります。
+Dm : Conditionオブジェクトに対するwait()呼び出し。
+(DM_MONITOR_WAIT_ON_CONDITION)
+このメソッドはjava.util.concurrent.locks.Condition objectのwait()を呼び出しています。Conditionオブジェクトで待ち合わせる場合はConditionインターフェースに用意されたawait()のどれかを使用すべきです。
+Dm : クラスオブジェクトを得るためだけにインスタンス生成が行なわれています。
+(DM_NEW_FOR_GETCLASS)
+このメソッドは、getClass()を呼び出すためだけに、インスタンスを生成しています。あるクラスのクラスオブジェクトを得るには、.classプロパティを利用する方が簡単です。
+Dm : 整数の乱数値を得たいのであれば、nextDoubleではなくnextIntメソッドを使用してください。
+(DM_NEXTINT_VIA_NEXTDOUBLE)
+java.util.Random のインスタンス rに対して 0 から n-1 の乱数を得たいのであれば、(int)(r.nextDouble() * n)のかわりにr.nextInt(n)を使うことができます。
+Dm : 危険なrunFinalizersOnExitメソッドの呼び出し。
+(DM_RUN_FINALIZERS_ON_EXIT)
+System.runFinalizersOnExit、Runtime.runFinalizersOnExitをどんな理由があろうと呼び出してはならない。これらは、 最も危険なJavaクラスライブラリのメソッドである。 -- Joshua Bloch
+Dm : メソッドで非効率な new String(String) コンストラクタを呼び出しています。
+(DM_STRING_CTOR)
+java.lang.String(String) コンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと元の String オブジェクトは機能的に同じです。String 文字列を直接利用するようにしてください。
+Dm : メソッドは非効率な String.equals("") 呼び出しを行っています。
+String.length() == 0 を替わりに使用してください。
+(DM_STRING_EMPTY_EQUALS)
+eauals() メソッドを使って空文字列との比較を行っています。これよりも、length() メソッドを使って長さ0かどうか調べる方が高速です。また、このようにすることでクラスファイルから無駄な文字列を削除することが出来ます。
+Dm : StringのtoString()メソッドが呼び出されています。
+(DM_STRING_TOSTRING)
+String.toString()を明示的に呼び出すのは冗長です。
+元のStringをそのまま使用してください。
+Dm : メソッドで非効率な new String() コンストラクタを呼び出しています。
+(DM_STRING_VOID_CTOR)
+java.lang.Stringの引数無しコンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと、空文字列""の間には機能的に違いがありません。Javaは、同一内容の文字列定数のインスタンスを1つにまとめます。従って単に空文字列を直接使用すべきです。
+Dm : 実行する内容を指定せずにThreadオブジェクトを生成しています。
+(DM_USELESS_THREAD)
+このメソッドは、Theadインスタンスを生成していますが、Runnableオブジェクトも渡していなければ、runメソッドをオーバーライドした継承クラスも生成していません。このスレッドは無駄です。
+Dm : デフォルトのretentionレベルのアノテーションの有無をリフレクションで確認することはできません。
+(DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION)
+アノテーションが@Retentionアノテーションによって、デフォルトの「ソースのみ」設定以外に変更されていない場合、アノテーションはクラスファイルに格納されません。このような場合は、リフレクション(例えばisAnnotationPresentメソッドを用いて)でアノテーションを参照することはできません。
+Dm : URLのequals()、hashCode()は、ブロックされます。
+(DMI_BLOCKING_METHODS_ON_URL)
+URLのquals()とhashCode()は、ドメイン名の解決を行うので、パフォーマンスが大きく損われる可能性があります。詳細はhttp://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.htmlを参照してください。
+替わりにjava.net.URIを使用することを検討してください。
+Dm : URLのMapやSetはパフォーマンスを悪化させます。
+(DMI_COLLECTION_OF_URLS)
+このフィールドあるいはメソッドは、URLのMap、Setを使用しているか、URLのMap、Set自身です。URLのequals()とhashCode()は、ドメイン名の解決を行うため、パフォーマンスが大きく損われる可能性があります。詳細については、http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.htmlを参照してください。
+替わりにjava.net.URIを使用することを検討してください。
+Dm : ハードコードされた定数パスワードがデータベースアクセスに使用されています。
+(DMI_CONSTANT_DB_PASSWORD)
+このコードは、ハードコードされた定数パスワードによってデータベースコネクションを生成しています。ソースコードやコンパイルされたバイトコードへアクセスできる人間ならば、簡単にパスワードを知ることができてしまいます。
+Dm : データベースのパスワードが設定されていません。
+(DMI_EMPTY_DB_PASSWORD)
+このコードは、空白または空のパスワードによってデータベースコネクションを生成しています。これはデータベースがパスワードによって守られていないことを示しています。
+Dm : Runnableが期待されるところにThreadを渡しています。
+(DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED)
+引数にRunnableを期待しているメソッドに対してThreadオブジェクトが渡されています。通常はこのような書き方はしません。ロジック上の間違いを示すか、予期しない挙動を招く可能性があります。
+Dm : サポートされていないメソッドを呼び出しています。
+(DMI_UNSUPPORTED_METHOD)
+ここでのメソッド呼び出しはすべて UnsupportedOperationException がスローされます。
+DMI : メソッド引数の順序が逆です。
+(DMI_ARGUMENTS_WRONG_ORDER)
+このメソッド呼び出しの引数は、誤った順序のように思われます。例えばPreconditions.checkNotNull("message", message)の呼び出しは、逆の引数になっています。チェックされるべきは、最初の引数です。
+DMI : 不正な月定数。
+(DMI_BAD_MONTH)
+このコードは月の定数として0から11の範囲を超えた値を使用しています。
+DMI : 正確に表現されていないdouble値でBigDecimalオブジェクトが構成されています。
+(DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE)
+このコードは10進数にうまく変換されないdouble値からBigDecimalオブジェクトを生成しています。例えば、Javaで new BigDecimal(0.1) と記述すると、0.1(拡大縮小しない値としての1、基準としての1)と完全に等しいBigDecimalオブジェクトが生成されると想定するかもしれませんが、これは実際のところ0.1000000000000000055511151231257827021181583404541015625と等しいです。恐らく、BigDecimal.valueOf(double d) methodを生成するためにdouble値をString型で表現する"BigDecimal.valueOf(double d)"を使いたかったのでしょう。(例:BigDecimal.valueOf(0.1) からは (0.1)を得られる)
+DMI : hasNextメソッドの中でnextメソッドを呼び出し。
+(DMI_CALLING_NEXT_FROM_HASNEXT)
+hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるものではなく、next()メソッドがイテレータの状態を変えるはずなので、このコードは恐らくほとんどの場合間違っています。
+DMI : 意味を成さないメソッド呼び出し
+(DMI_DOH)
+この部分的なメソッド呼び出しは、検査から明らかにされるべき理由のため、意味をなしていません。
+DMI : Entryセットへの要素の追加は、Entryオブジェクトの再利用のため、失敗する可能性があります。
+(DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS)
+entrySet()メソッドは、繰り返しの間ただ1つのEntryオブジェクトが再利用されたり、繰り返されたりする、元となるMapのviewを返すことができます。Java1.6では、IdentityHashMap と EnumMap の両方がそのような性質を持っています。そのようなMapを繰り返すとき、Entryオブジェクトの値は、次の繰り返しに進むまでの間のみ有効です。例えば、addALLメソッドにこのようなentrySetを渡そうとすると、根本的に誤った処理が行われるでしょう。
+DMI : 絶対パスのハードコード。
+(DMI_HARDCODED_ABSOLUTE_FILENAME)
+このコードはハードコードされた絶対パスでFileオブジェクトを生成しています。
+(例:new File("/home/dannyc/workspace/j2ee/src/share/com/sun/enterprise/deployment");)
+DMI : 配列に対して toString() メソッドを呼び出しています。
+(DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY)
+このコードは、配列に対して toString() メソッドを呼び出しています。配列に対する toString() メソッドの呼び出しは、C@16f0472 のようにまったく意味のない結果をもたらします。配列をその内容を表す可読文字列に変換するには、Arrays.toString() メソッドの利用を検討してください。また、Programming Puzzlers の chapter 3、puzzle 12 も参照してみてください。
+DMI : 配列に対するtoStringメソッド呼び出し。
+(DMI_INVOKING_TOSTRING_ON_ARRAY)
+このコードは配列に対してtoStringを呼び出しています。これは"[C@16f0472"のような、あまり意味の無い結果を返します。かわりにArrays.toStringを使って配列の中身が分かるような文字列表現を得ることを検討してください。プログラミングパズルの第3章、パズル12を参照してください。
+DMI : Double.longBitsToDoubleがintに対して呼び出されています。
+(DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT)
+Double.longBitsToDoubleメソッドが呼び出されていますが、引数には32bit intが渡されています。これはほぼ間違いなく意図されたものではなく、期待した結果は得られないでしょう。
+DMI : 直列化できないオブジェクトのObjectOutputへの書き込み。
+(DMI_NONSERIALIZABLE_OBJECT_WRITTEN)
+このコードは直列化できないオブジェクトをObjectOutput.writeObjectメソッドに渡しているようです。このオブジェクトが実際に直列化できないのであれば結果はエラーとなります。
+DMI : substring(0)の呼び出しは元と同じ値を返します。
+(DMI_USELESS_SUBSTRING)
+このコードはsubstring(0)を呼び出していますが、これは元のStringと同じものを返します。
+DP : クラスローダはdoPrivilegedブロックの中でのみ作成可能です。
+(DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED)
+このコードはクラスローダを生成していますが、これはセキュリティマネージャを必要とします。このコード自体がセキュリティ許可を得る予定でも、セキュリティ許可を持たないコードから呼び出されるのであれば、クラスローダの生成は、doPrivilegedブロックの中で行う必要があります。
+DP : クラスローダはdoPrivilegedブロックの中でのみ作成可能です。
+(DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED)
+このコードはクラスローダを生成していますが、これはセキュリティマネージャを必要とします。このコード自体がセキュリティ許可を得る予定でも、セキュリティ許可を持たないコードから呼び出されるのであれば、クラスローダの生成は、doPrivilegedブロックの中で行う必要があります。
+DP : クラスローダはdoPrivilegedブロックの中でのみ作成可能です。
+(DP_DO_INSIDE_DO_PRIVILEDGED)
+このコードはクラスローダを生成していますが、これはセキュリティマネージャを必要とします。このコード自体がセキュリティ許可を得る予定でも、セキュリティ許可を持たないコードから呼び出されるのであれば、クラスローダの生成は、doPrivilegedブロックの中で行う必要があります。
+DP : doPrivilegedブロックの中で呼び出さなければならないメソッドが呼び出されています。
+(DP_DO_INSIDE_DO_PRIVILEGED)
+このコードはセキュリティの許可チェックが必要なメソッドを呼び出しています。もしもこのコードにセキュリティ許可が与えられていても、セキュリティ許可を持たないコードから呼び出されるのであれば、doPrivilegedブロックの中から呼び出す必要があります。
+EC : 配列オブジェクトと非配列オブジェクトのequals()による比較。
+(EC_ARRAY_AND_NONARRAY)
+このメソッドの中で、配列オブジェクトと配列でないと思われるオブジェクトを.equals(Object o)で比較しています。双方のオブジェクトの型が異なるのであれば、比較の結果は常に偽となります。大抵は何かの間違いです。仮に配列同志の比較だとしても、配列オブジェクトのequalsによる比較は両者が同じものであるかを判定するだけです。配列の内容が等しいかどうかまで調べたいのであれば、java.util.Arrays.equals(Object[], Object[])を使用してください。
+EC : 配列オブジェクトのequals呼び出しは、==と等価です。
+(EC_BAD_ARRAY_COMPARE)
+このメソッドは配列オブジェクトの.equals(Object o)メソッドを呼び出しています。配列はequalsメソッドをオーバーライドできないため、これは参照の比較しか行ないません。配列の内容を比較するならjava.util.Array.equals(Object[], Object[])を用いなければなりません。
+EC : equals()の引数にnullを渡しています。
+(EC_NULL_ARG)
+このメソッドは、equals(Object)にnullを渡しています。正しいequals()の実装では、これは常にfalseを返します。
+EC : 関係の無いクラスとインターフェースをequals()で比較しています。
+(EC_UNRELATED_CLASS_AND_INTERFACE)
+このメソッドでは、2つの参照をequals(Object)によって比較しています。片方はクラス、もう片方はインターフェースですが、このクラスおよび非抽象などのようなサブクラスも、このインターフェースを実装していません。このため、比較しようとしている2つのオブジェクトは実行時において同じクラスのインスタンスとはなりません(調査外となってしまったアプリケーションクラスや、実行時において動的にローディングされるクラスが当てはまる可能性は除きます)。equals() の規約によると、異なる型のオブジェクトを比較結果は不等とならなければなりません。このため、実行時におけるこの比較結果は常にfalseになるものと思われます。
+EC : 異なる型のインターフェースを equals() で比較しています。
+(EC_UNRELATED_INTERFACES)
+このメソッドでは、 equals(Object) によって無関係なインターフェースの2つの
+インスタンス間を比較しようとしています。ここで無関係であるとは、互いが互いのサブインターフェースではなく、両方のインターフェースを実装する既知の非抽象クラスが存在しないことをいいます。
+このため、比較しようとしている2つのオブジェクトは実行時において同じクラスのインスタンスとはなりません(調査外となってしまったアプリケーションクラスや、実行時において動的にローディングされるクラスが当てはまる可能性は除きます)。equals() の規約によると、異なる型のオブジェクトを比較結果は不等とならなければなりません。このため、実行時におけるこの比較結果は常にfalseになるものと思われます。
+EC : 異なる型のオブジェクトを比較するのに equals() を使用しています。
+(EC_UNRELATED_TYPES)
+このメソッドでは、共通のサブクラスを持たない、異なる型のオブジェクト参照を equals(Object) によって比較しています。このため、比較しようとしている2つのオブジェクトは実行時において同じクラスのインスタンスとはなりません(調査外となってしまったアプリケーションクラスや、実行時において動的にローディングされるクラスが当てはまる可能性は除きます)。
+equals() の規約によると、異なる型のオブジェクトを比較結果は不等とならなければなりません。このため、実行時におけるこの比較結果は常にfalseになるものと思われます。
+EC : 異なる型のポインタを比較しています。
+(EC_UNRELATED_TYPES_USING_POINTER_EQUALITY)
+このメソッドでは、異なる型に見える2つの参照を等式で比較しています。この比較の結果は、実行時においては常に false となります。
+EI : メソッドはミュータブルなオブジェクトの参照を返すことにより内部表現を暴露しています。
+(EI_EXPOSE_REP)
+オブジェクトのフィールドに格納されたミュータブルなオブジェクトの参照を返すと、オブジェクトの内部表現を暴露してしまいます。このオブジェクトが信頼されていないコードによってアクセスされると、ミュータブルオブジェクトの予測しない変更が発生してしまいます。それがセキュリティやその他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。多くの場面では、防御的コピーを行って、オブジェクトの複製を返すのが良いやり方です。
+EI2 : ミュータブルオブジェクトへの参照を自らに格納してしまうことにより内部表現を暴露してしまう可能性があります。
+(EI_EXPOSE_REP2)
+このコードは、外部の変更可能オブジェクトの参照を自身の内部表現として格納しています。このオブジェクトが信頼されていないコードによってアクセスされると、ミュータブルオブジェクトの予測しない変更が発生してしまいます。それがセキュリティやその他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。多くの場面では、防御的コピーを行って、オブジェクトの複製を返すのが良いやり方です。
+Eq : 抽象クラスで共変な equals() メソッドを宣言しています。
+(EQ_ABSTRACT_SELF)
+このクラスには、引数がObjectでないequals()メソッドが定義されています。
+java.lang.Objectのequals()メソッドを正しくオーバーライドするには、equals()メソッドの引数は、java.lang.Objectでなければなりません。
+Eq : equlas() メソッドが常に false を返しています。
+(EQ_ALWAYS_FALSE)
+このクラスでは、常に false を返す equlas() メソッドを宣言しています。これは、あるオブジェクトがそれ自身に対して等価ではないことを示しており、このクラスを利用した場合、有効な Map や Set を生成することができません。根本的な問題として、これは equals() メソッドの要求である反射性を満たしていないことになります。
+これに似たことを表す動作として、オブジェクトの自己同一性があります。つまり、あるオブジェクトはそれ自身と等価であるということです。これは、Object クラスから継承された振る舞いです。もし、別のスーパークラスから継承された equals() メソッドをオーバーライドする必要がある場合、以下のようなコードを利用すると良いでしょう。
+public boolean equals(Object o) { return this == o; }
+Eq : equlas() メソッドが常に true を返しています。
+(EQ_ALWAYS_TRUE)
+このクラスでは、常に true を返す equals() メソッドを宣言しています。これは創意に富んでいますが、あまり良い方法とはいえません。加えて、equals() メソッドが対称性を持っていないことを示しています。
+Eq : compareTo(...)を宣言し、Object.equals()を使用しています。
+(EQ_COMPARETO_USE_OBJECT_EQUALS)
+このクラスは、compareTo(...)を宣言していますがequals()をjava.lang.Objectから継承しています。一般にcompareToが0を返す条件は、equalsがtrueを返す条件と一致する必要があります。これを守らないと複雑で予測不可能な問題が、例えばPriorityQueueで発生するでしょう。Java 5では、PriorityQueue.remove()は、compareTo()を使用していますがJava 6では、equals()を使用しています。
+ComparableインターフェースのcompareToメソッドのJavaDocを以下に引用します。
+必須というわけではありませんが、(x.compareTo(y)==0) == (x.equals(y))であることが強く推奨されます。一般に、Comparable インターフェースを実装しているクラスで、この条件に違反するクラスはすべて、明確にこの事実を示す必要があります。「注:このクラスは equals と一貫性のない自然順序付けを持ちます」などと明示することをお勧めします。
+Eq : Class オブジェクトではなくクラス名称を比較しています。
+(EQ_COMPARING_CLASS_NAMES)
+このメソッドでは、クラス名称を比較することで、2つのオブジェクトが同じクラスであるかどうかをチェックしています。しかし、異なるクラスローダによってロードされたクラスでは、クラス名称が同じであるにもかかわらず、異なるクラスであるという現象も発生し得ます。単純に Class オブジェクトが同じであるかどうかによって比較してください。
+Eq : スーパークラスで宣言された equlas() メソッドをオーバーライドしていないクラスです。
+(EQ_DOESNT_OVERRIDE_EQUALS)
+このクラスでは、equlas() メソッドを宣言しているクラスを継承し、フィールドを追加しているにもかかわらず、自身の equals() メソッドを宣言しています。そのため、このクラスのインスタンスに対する等価性の検証では、サブクラス側の同一性と追加されたフィールドが無視されてしまいっています。これが、何を意図したものであるのかと、equlas() メソッドをオーバーライドする必要がないかどうかを確認してください。equals() メソッドをオーバーライドする必要がないにせよ、サブクラスに対してその事実を示すために、単純に super.equals(o) を返すように equlas() メソッドをオーバーライドすることを検討してください。
+Eq : タイプセーフenumに共変な equals() メソッドが定義されています。
+(EQ_DONT_DEFINE_EQUALS_FOR_ENUM)
+このクラスはタイプセーフenumを定義しており、同値性定義は、参照の一致によって決定しています。タイプセーフenumで共変なequals()メソッドを定義するのは、非常に悪い習慣です。なぜなら2つの異なる列挙定数が、通常のequals()では異なる値と判定されるのに、共変のequals()メソッドでは同値と判定されるかもしれないからです。
+Eq : サブクラスにおける equlas() メソッドが失敗してしまいます。
+(EQ_GETCLASS_AND_CLASS_CONSTANT)
+このクラスは、サブクラスによる継承によって破壊される可能性のある equlas() メソッドを宣言しています。このメソッドでは、クラス定数と引数で渡された Class オブジェクトを比較しています(たとえば、Foo クラスにおいて、Foo.class == o.getClass() のような判定を行っています)。これは、this.getClass() == o.getClass() のような判定に変更する方がよいでしょう。
+Eq : equals(Object) メソッドをオーバーライドしない equlas() メソッドがあります。
+(EQ_OTHER_NO_OBJECT)
+このクラスは equals() メソッドを宣言していますが、ベースクラスである java.lang.Object で宣言された通常の equals(Object) メソッドをオーバーライドしていません。その代わりに、スーパークラスの equals(Object) メソッドを継承しています。このクラスは、boolean equals(Object) メソッドを宣言すべきです。
+Eq : Object.equals(Object) メソッドをオーバーライドしない equlas() メソッドがあります。
+(EQ_OTHER_USE_OBJECT)
+このクラスは equals() メソッドを宣言していますが、ベースクラスである java.lang.Object で宣言された通常の equals(Object) メソッドをオーバーライドしていません。このクラスは、boolean equals(Object) メソッドを宣言すべきです。
+Eq : スーパークラスの equals() メソッドをオーバーライドする equals() メソッドが対称性を満たしていない可能性があります。
+(EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC)
+このクラスはスーパークラスの equals() メソッドをオーバーライドしています。両方の equals() メソッドをは2つのオブジェクトの比較に instanceof 演算子を利用しています。しかし、equlas() メソッドは対称性(a.equals(b) == b.equals(a) を満たしていること)を有していなければならないため、これは危険をはらんでいます。
+もし B が A のサブタイプであって、A の equals() メソッドの中で引数が A のインスタンスであることをチェックし、B の equals() メソッドの中で引数が B のインスタンスであることをチェックしているのならば、これらのメソッドによって定義される等価性の関係が対称性を満たしていない可能性があります。
+Eq : 共変な equals() メソッドを定義しています。
+(EQ_SELF_NO_OBJECT)
+このクラスには、引数がObjectでないequals()メソッドが定義されています。
+java.lang.Objectのequals()メソッドを正しくオーバーライドするには、equals()メソッドの引数は、java.lang.Objectでなければなりません。
+Eq : 共変な equals() メソッドが定義されていますが、Object.equals(Object) が、そのまま継承されています。
+(EQ_SELF_USE_OBJECT)
+このクラスには、引数がObjectでないequals()メソッドが定義されていますが、Objectクラスのequals(Object)も継承しています。
+このクラスは、おそらく共変でないequals()を定義すべきです。
+(すなわち、メソッドシグニチャを次のようにすべきです boolean equals(java.lang.Object)。
+Eq : 通常ではない equals() メソッドです。
+(EQ_UNUSUAL)
+このクラスの equals() メソッドでは、this オブジェクトと引数の型の互換性をチェックするために、現在知られているいかなるパターンの処理も行っていません。このコードにはなんの不具合もないのかもしれませんが、レビューする価値があります。
+ES : 文字列引数の ==、!=による比較。
+(ES_COMPARING_PARAMETER_STRING_WITH_EQ)
+このコードはjava.lang.Stringのパラメータを==、!=を使用して比較しています。これは呼び出し元が文字列定数か、internされた文字列しか渡せないことを意味しており、非常に脆いものになっています。このようにしても実行効率上のメリットはほとんどありません。equals(Object)を代わりに使用することを検討してください。
+ES : 文字列を == や != を用いて比較しています。
+(ES_COMPARING_STRINGS_WITH_EQ)
+このコードはjava.lang.Stringのオブジェクトは==もしくは!=を使って参照の比較を行っています。双方のオブジェクトがソースコード上で定数となっている文字列であるか、String.intern()で得られた文字列でなければ、同じ内容でも別のオブジェクトとなる可能性があります。替わりに equals(Object)メソッドの利用を検討してください。
+ESync : 空のsynchronizedブロック。
+(ESync_EMPTY_SYNC)
+このコードは、以下のような空のsynchronizedブロックを含んでいます。
+synchronized() {}
+空のsynchronizedブロックは難解で、考えられているほど利用は容易ではありません。また大抵の場合は、すこし不格好なコードになっても空のsynchronizedブロックを使用しない方が、より優れたコードになります。
+FE : 浮動小数の同値比較。
+(FE_FLOATING_POINT_EQUALITY)
+2つの浮動小数の値が同値であるか比較されています。浮動小数は桁丸めが行なわれるためfloat、doubleの値は誤差を含む場合があります。勘定系の処理のように正確な値が必要な場合には、BigDecimalのような固定小数を使用する事を検討してください。誤差があっても良いケースならば、値の差がある範囲ならば同値であると判断する事を検討してください。これは例えば次のようにします。
+if ( Math.abs(x - y) < .0000001 ).
+詳しくはJava言語仕様4.2.4.を参照してください。
+FE : NaNとの無効な比較。
+(FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER)
+このコードは浮動小数点数がNaN(Not A Number)と比較されています(例:if (x == Double.NaN))。しかしNaNの定義上、全てのとり得る値はNaN自身も含めてNanとは等しくなりません。このためx == Double.NaNは常にfalseとなります。値xはNot A Numberであるかどうかを調べるにはDouble.isNaN(x) (もしもxがfloatならばFloat.isNaN(x)を代わりに使用してください。
+FI : 空の finalizer は削除されるべきです。
+(FI_EMPTY)
+空のfinalize()メソッドは無駄です。削除するべきです。
+FI : finalizer を明示的に呼び出しています。
+(FI_EXPLICIT_INVOCATION)
+このメソッド内でfinalize()の明示的な呼び出しが行われています。ファイナライザはVMによって一度だけ呼び出されることを意図しているため、このコードは良くありません。
+参照によってつながった複数のオブジェクトがファイナライズ可能になると、それぞれのオブジェクトのfinalize()がVMから呼び出されますが、もしかすると別々のスレッドによって複数のfinalize()が同時に呼び出されるかもしれません。このため、あるクラスXの finalize() の中から、Xから参照されている別のオブジェクトのfinalize()を呼び出すのは、とりわけ間違ったやり方です。なぜなら、そのオブジェクトはすでに別のスレッドによってファイナライズされているかもしれないからです。
+FI : ファイナライザがフィールドに null を設定しています。
+(FI_FINALIZER_NULLS_FIELDS)
+このファイナライザでは、フィールドに null を設定しています。これは通常ガーベジコレクションの助けとはならないため、エラーです。そして、いずれにせよガーベジコレクションによってオブジェクトは破棄されます。
+FI : ファイナライザがフィールドに null を設定する動作しかしていません。
+(FI_FINALIZER_ONLY_NULLS_FIELDS)
+このファイナライザでは、フィールドに null を設定する以外になにもしていません。これはまったく無意味であり、オブジェクトがガーベジコレクトされ、ファイナライズされ、さらにもう一度ガーベジコレクトされることを要求しています。このような finalize() メソッドは削除すべきです。
+FI : finalizerにスーパークラスのfinalizerの呼び出しの記述がありません。
+(FI_MISSING_SUPER_CALL)
+このfinalize()メソッドは、親クラスのfinalize()を呼び出していません。このため親クラスで定義されたファイナライズ処理が行われません。super.finalize()を呼び出すように変更してください。
+FI : finalizerはスーパークラスの finalizer を無視しています。
+(FI_NULLIFY_SUPER)
+finalize()メソッドが空なので、親クラスのファイナライザを無視することになり、親クラスで定義されたファイナライザの処理が呼び出されなくなってしまいます。そのような意図がないのであれば、このメソッドを削除してください。
+FI : finalizer は public ではなく protected であるべきです。
+(FI_PUBLIC_SHOULD_BE_PROTECTED)
+このクラスの finalize() メソッドは public になっていますが、protected であるべきです。
+FI : この finalizer はスーパークラスの finalizer を呼び出す以外になにもしていません。
+(FI_USELESS)
+このfinalize()メソッドは、親クラスのfinalize()を呼び出しているだけで、無駄です。削除してください。
+FL : このメソッドは float の精度で演算を行っています。
+(FL_MATH_USING_FLOAT_PRECISION)
+このメソッドは float の精度で演算を行っています。floatの精度は非常に誤差の多いものです。例えば16777216.0f + 1.0f は、16777216.0fとなります。替わりに double 型の利用を検討してください。
+FS : 書式の記号列は、\nより%nを使うべきです。
+(VA_FORMAT_STRING_USES_NEWLINE)
+この書式の記号列は改行コード(\n)を含んでいます。書式の記号列では、一般的にプラットフォームで特定の行セパレータを生成する「%n」の使用が好まれます。
+FS : printfのformatが求められる場合にMessageFormatが提供されています。
+(VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED)
+Javaのprintfフォーマットと引数のリストを期待するメソッドが呼び出されています。しかし、format stringはformat指定子(例: %s)を含んでいませんが、メッセージのformatの要素(例: {0})は含んでいます。これは、printf-styleのformat string が求められているときに、MessageFormatのstringを供給しているようです。実行時には、全ての引数が無視され、format stringがフォーマットなしに提供されたものとして返されるでしょう。
+GC : 型パラメータとメソッド引数の型に互換性がありません。
+(GC_UNRELATED_TYPES)
+このジェネリックメソッドの引数型は、コンテナの型パラメータの型と異なるものです。このため、コンテナが引数の型のオブジェクトを保持していることは考えにくいです。
+HE : クラスで equals() を定義していますが hashCode() は定義していません。
+(HE_EQUALS_NO_HASHCODE)
+このクラスはequals(Object)をオーバーライドしていますが、hashCode()をオーバーライドしていません。このため、このクラスは同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性があります。
+HE : クラスで equals() を定義していますが、Object.hashCode() はそのまま使っています。
+(HE_EQUALS_USE_HASHCODE)
+このクラスはequals(Object)をオーバーライドしていますが、hashCode()をオーバーライドしていないので、java.lang.ObjectのhashCode()の実装をそのまま利用しています(これは、VMがObjectに割り当てた一意のハッシュコードを返します)。このため、同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性が非常に高いです。
+もしもこのクラスのインスタンスがHashMap/HashTableに挿入されることがあり得ないと考えるのであれば、推奨されるhashCodeの実装は次のようになります。
+public int hashCode() {
+assert false : "hashCodeが呼び出されることは想定されていません。";
+return 42; // 適当な値
+}
+HE : クラスで hashCode() を定義していますが、equals() は定義していません。
+(HE_HASHCODE_NO_EQUALS)
+このクラスはhashCode()メソッドを定義していますが、equals()メソッドを定義していません。このため、同値のオブジェクトは同じハッシュコードを返すべきという規約を破る可能性があります。
+HE : クラスで hashCode() を定義していますが、 Object.equals() はそのまま使っています。
+(HE_HASHCODE_USE_OBJECT_EQUALS)
+このクラスはhashCode()メソッドを定義していますが、equals()メソッドはjava.lang.Objectのもの(参照が同一かどうかで同値性を判定します)をそのまま利用しています。これは、同値であると判定されたオブジェクトが同じハッシュコードを返さなければならないという規約は満たしますが、恐らくhashCode()メソッドのオーバーライドは意図されたものでは無いと思われます(hashCode()のオーバーライドは、単なる参照が同一という同値性よりも複雑な基準がある事を意味します)。
+もしもこのクラスのインスタンスがHashMap/HashTableに挿入されることがあり得ないと考えるのであれば、推奨されるhashCodeの実装は次のようになります。
+public int hashCode() {
+assert false : "hashCodeが呼び出されることは想定されていません。";
+return 42; // 適当な値
+}
+HE : クラスは、equals()を継承し、Object.hashCode()をそのまま使用しています。
+(HE_INHERITS_EQUALS_USE_HASHCODE)
+このクラスはequals(Object)を親の抽象クラスから継承しhashCode()
+は、java.lang.Objectクラスのものをそのまま使用しています(これは、VMによってアサイン
+された任意の値を返送します)。このクラスは「等しいオブジェクトが、同値のハッシュコードを返さなければならない」
+という規約を満たすのが非常に困難になっています。
+もしも hashCode を定義する必要がない、あるいはこのオブジェクトをHashMap/Hashtableに格納する可能性がないと考えるのであれは、hashCode()メソッドをUnsupportedOperationExceptionを
+スローするように実装してください。
+HE : hashCode()を持たないクラスをハッシュデータ構造で使用しています。
+(HE_USE_OF_UNHASHABLE_CLASS)
+このクラスは equals(Object) を定義していますが hashCode() を定義していません。このため、同値のオブジェクトが等しいhashCode()を返さなければいけないという規約を満たしていません。しかも、このインスタンスは実際にハッシュデータ構造に利用されています。早急にこのクラスを修正してください。
+HRS : HTTP クッキーが信頼できない入力から生成されています。
+(HRS_REQUEST_PARAMETER_TO_COOKIE)
+このコードでは、信頼できない HTTP パラメータを利用して HTTP クッキーを生成しています。このクッキーが HTTP レスポンスへ追加された場合、HTTP レスポンス・スプリッティングの脆弱性が生じてしまいます。HTTP レスポンス・スプリッティングの詳細については、http://en.wikipedia.org/wiki/HTTP_response_splitting をご覧ください。
+FindBugs は HTTP レスポンス・スプリッティングのもっとも明白な事例しか検出しません。
+もし FindBugs が一つでも事例を発見した場合、FindBugs がレポートしないより多くの脆弱性を抱えている可能性が非常に高いです。
+HTTP レスポンス・スプリッティングについて心配があるのならば、FindBugs プロジェクトのスポンサーである Fortify Software が提供するような商用静的解析ツールの導入を真剣に検討すべきです。もしあなたのソフトウェアがオープンソースであるならなば、Fortify は JOR (Java Open Review) の一環としてあなたのコードを無償で調査します。
+HRS : HTTP レスポンス・スプリッティングの脆弱性があります。
+(HRS_REQUEST_PARAMETER_TO_HTTP_HEADER)
+このコードでは、HTTP ヘッダに対して HTTP パラメータを直接書き込んでいます。これは HTTP レスポンス・スプリッティングの脆弱性につながります。HTTP レスポンス・スプリッティングの詳細については、http://en.wikipedia.org/wiki/HTTP_response_splitting をご覧ください。
+FindBugs は HTTP レスポンス・スプリッティングのもっとも明白な事例しか検出しません。
+もし FindBugs が一つでも事例を発見した場合、FindBugs がレポートしないより多くの脆弱性を抱えている可能性が非常に高いです。
+HTTP レスポンス・スプリッティングについて心配があるのならば、FindBugs プロジェクトのスポンサーである Fortify Software が提供するような商用静的解析ツールの導入を真剣に検討すべきです。もしあなたのソフトウェアがオープンソースであるならなば、Fortify は JOR (Java Open Review) の一環としてあなたのコードを無償で調査します。
+HSC : 複数のクラスに巨大な文字列定数が重複して存在しています。
+(HSC_HUGE_SHARED_STRING_CONSTANT)
+複数のクラスに巨大な文字列定数が重複して存在しています。これはもしかすると、finalフィールドが持つ文字列定数が、利用者側にクラスファイルに埋め込まれるJavaの特性によるものかもしれません。詳細、回避方法については、JDK bug 6447475を参照してください。これによってJDKのサイズを1MByte減らすことができました。
+IA : 呼び出されているメソッドは、継承されたものなのか外部のものなのか、あいまいです。
+(IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD)
+内部クラスの中で呼び出しているメソッドは、継承元クラスのメソッド、エンクロージングクラスのメソッドのどちらとも解釈できます。Javaの仕様上は継承元クラスのメソッドを呼び出しますが、この動作はプログラマの意図とは異なるかもしれません。もしも継承元クラスのメソッドを呼び出したいのであれば、superを付けることで(例:super.foo(17))、このコードを読む人とFindBugsに、エンクロージングクラスのメソッドではなく、継承元のメソッドを呼びたいという意図を明確にすることができます。
+IC : 初期化がループしています。
+(IC_INIT_CIRCULARITY)
+2つのクラスのスタティックイニシャライザの中で相互のクラスを参照しているため、循環参照となっています。このため、様々な予測出来ない挙動が起こる可能性があります。
+IC : 親クラスが初期化の際に子クラスを使用しています。
+(IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION)
+あるクラスの初期化の間に子クラスを使用しています。子クラスはまだこの段階では初期化されていません。たとえば以下ようなの例では、foo は null となってしまいます。
+public class CircularClassInitialization {
+static class InnerClassSingleton extends CircularClassInitialization {
+static InnerClassSingleton singleton = new InnerClassSingleton();
+}
+static CircularClassInitialization foo = InnerClassSingleton.singleton;
+}
+ICAST : int値の 0 から 31 ビットの範囲ををこえるビットシフト。
+(ICAST_BAD_SHIFT_AMOUNT)
+このコードは int 値が定数値分シフトされていますが、シフトビット数が 0 から 31 の範囲をこえています。実際のシフト量は指定量の下位 5 bit(訳注:つまり32で割った余り)が使用されますが、恐らく意図とは違うものであり、少なくとも混乱を招きます。
+ICAST : int の除算結果を double または float へキャストしています。
+(ICAST_IDIV_CAST_TO_DOUBLE)
+このコードは int の除算結果を double または float にキャストしています。整数の除算結果は 0 に近い方の整数へ切り捨てが行われます。除算結果を double へキャストしているのは、精度が維持されると考えていたことを示唆しています。恐らくコードの意図は除算の前にdoubleへのキャストを行なうことだったと考えられます。以下に例を示します。
+int x = 2;
+int y = 5;
+// 間違い: 結果は0.0となる
+double value1 =  x / y;
+// 正しい: 結果は0.4となる
+double value2 =  x / (double) y;
+ICAST : int を double へキャストした後、Math.ceil へ渡しています。
+(ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL)
+このコードは int を double に変換した後に、値を最も近い次の整数値に丸める Math.ceil() メソッドに引き渡しています。整数から double への変換に際して、小数点以下の桁は登場しないため、この処理には意味がありません。Math.ceil() に渡している値を、その後 double 型の演算で使用するためかもしれません。
+ICAST : int を float へキャストした後、Math.round に渡しています。
+(ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND)
+このコードは int を float に変換した後に、Math.round() メソッドに渡して丸め処理を行っています。int から floatへの変換に際して、小数点以下の桁は登場しないため、この処理には意味がありません。恐らくMath.round() に渡している値を、その後 float 型の演算で使用するためかもしれません。
+ICAST : int の乗算結果を long にキャストしています。
+(ICAST_INTEGER_MULTIPLY_CAST_TO_LONG)
+このコードは int の乗算を計算してから結果を long に変換しています。
+long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; } 
+long 型を用いて乗算することで、オーバーフローしてしまう可能性を避けることができます。例えば、以下のように修正します。
+long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; } 
+あるいは、以下のようにしてもよいでしょう。
+static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
+long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
+ICAST : int型の値がlong型に変換され、絶対時間として用いられています。
+(ICAST_INT_2_LONG_AS_INSTANT)
+このコードは32ビットの int 型の値を 64ビットの long 型の値に変換し、その値を絶対時間を必要とするメソッドのパラメータとして渡しています。絶対時間とは、"the epoch"の名前で知られる基準時間1970/01/01, 00:00:00から経過したミリ秒数のことです。例えば、以下のメソッドでは、epoc time から経過した秒数をDate型に変換しようとして、失敗しています。 
+Date getDate(int seconds) { return new Date(seconds * 1000); }
+乗算は32ビットの計算をして、64ビットの値へと変換している。32ビットの値が64ビットへと変換されて絶対時間を表す値として使われると、1969/12か1970/01の日付しか表せなくなります。
+上記のメソッドの正しい実行形式は、以下の通りです。
+// 2037年以降の日付だと失敗するパターン
+Date getDate(int seconds) { return new Date(seconds * 1000L); }
+// よりよい例:全ての日付において有効なパターン
+Date getDate(long seconds) { return new Date(seconds * 1000); }
+ICAST : 符号無し右シフト結果を short/byte へキャストしています。
+(ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT)
+このコードは符号無し右シフトを行なった後、結果をshortあるいはbyteにキャストしています。これは(シフト量によりますが)上位ビットを捨ててしまうので、符号無しでも符号ありでも一緒のはずです。
+IJU : run メソッドの中で JUnit のアサーションを行っています。
+(IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD)
+runメソッドの中でJUnitのアサーションが実行されています。JUnitのアサーションは失敗すると、例外をスローします。テストメソッドを実行したスレッド以外のスレッドでこの例外がスローされると、スレッドの実行が終了するだけでテストの失敗とはなりません。
+IJU : TestCaseが間違ったsuiteメソッドを宣言しています。
+(IJU_BAD_SUITE_METHOD)
+このクラスはJUnitのTestCaseクラスでsuite()メソッドを定義しています。しかし、suite()メソッドは、
+public static junit.framework.Test suite()
+あるいは 
+public static junit.framework.TestSuite suite()
+と宣言する必要があります。
+IJU : テストを持たないTestCase。
+(IJU_NO_TESTS)
+このクラスはJUnitのTestCaseクラスですが、テストメソッドが実装されていません。
+IJU : TestCase は setUp() メソッドを実装していますが、super.setUp() を呼び出していません。
+(IJU_SETUP_NO_SUPER)
+このクラスは、Junit の TestCase で、setUp() メソッドを実装しています。setUp() メソッドは、super.setUp() 呼び出さなければなりませんが、ここでは呼び出していません。
+IJU : TestCase が 非static な suite() メソッドを実装しています。
+(IJU_SUITE_NOT_STATIC)
+このクラスは、JUnit の TestCase で、suite() メソッドを宣言しています。suite メソッドはスタティックなメソッドとしなければなりませんが、ここではスタティックメソッドになっていません。
+IJU : TestCase は tearDown() メソッドを実装していますが、super.tearDown() を呼び出していません。
+(IJU_TEARDOWN_NO_SUPER)
+このクラスは Junit の TestCase で、tearDown() メソッドを宣言しています。tearDown() メソッドは、super.tearDown() を呼び出さなければなりませんが、ここでは呼び出していません。
+IL : コンテナへの自分自身の格納。
+(IL_CONTAINER_ADDED_TO_ITSELF)
+コンテナへ自身のオブジェクトを格納しています。その結果 hashCode() メソッドの呼び出しでStackOverflowException がスローされてしまいます。
+IL : 明かな無限ループです。
+(IL_INFINITE_LOOP)
+このループは例外をスローする以外に終了することができません。
+IL : 明らかな無限再帰ループです。
+(IL_INFINITE_RECURSIVE_LOOP)
+このメソッドは無条件に自分自身を呼び出しています。これは無限再帰ループでありスタックオーバーフローを招くと考えられます。
+IM : オーバーフローの可能性がある平均値計算。
+(IM_AVERAGE_COMPUTATION_COULD_OVERFLOW)
+このコードは2つの整数の平均値を計算するのに、除算あるいは符号付き右ビットシフトを使用し、得られた結果を配列の添字に使用しています。もしも平均値計算の元となる値が非常に大きい値だと、オーバーフローして負となり、負の数の平均値計算となるかもしれません。結果が負になることを想定していないのであれば、代わりに符号無し右ビットシフトを使用することを検討してください。つまり(low+high)/2の代わりに(low+high) >>> 1を使用します。
+このバグは昔の二分探索、マージソートで多く見られます。Martin Buchholz がJDKの中に、このバグを発見、修正しています。またJoshua Blochがより一般化したバグパターンの話として紹介しています。
+IM : この奇数判定は、負の数では正しく動作しません。
+(IM_BAD_CHECK_FOR_ODD)
+ここで使用されている x % 2 == 1 という式は奇数であるかどうかを判定していると思われますが、これは負の数に対しては正しく動作しないことに注意してください(例:(-5) % 2 == -1)。かわりに x & 1 == 1 か x % 2 != 0を使用することを検討してください。
+IM : 整数の剰余結果へ整数乗算を実行しています。
+(IM_MULTIPLYING_RESULT_OF_IREM)
+このコードは整数の剰余結果に整数定数を掛け合わせています。演算子の優先順位を誤解していませんか? たとえば、i % 60 * 1000 は、i % (60 * 1000) ではなく (i % 60) * 1000 となります。
+IMA : エンクロージングクラスの private フィールドにアクセスしています。
+(IMA_INEFFICIENT_MEMBER_ACCESS)
+この内部クラスのメソッドは、エンクロージングクラスの private フィールドに読み書きするかメソッドを呼び出しています。これを実現するため、コンパイラはフィールドにアクセスするための特別なメソッドを生成するため、コードの実行効率が犠牲になります。アクセス制限を緩めれば、コンパイラは通常のフィールドアクセス用コードを生成できます。
+IMSE : IllegalMonitorStateException の疑わしいキャッチ。
+(IMSE_DONT_CATCH_IMSE)
+IllegalMonitorStateExceptionは一般にはコーディングの問題(ロックを獲得せずにwait()、notify()を呼び出した場合)によって発生するもので、キャッチすべきではありません。
+INT : 負にはならない値を、負の定数と比較しています。
+(INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE)
+このコードは、負にならないことが確実な値を、負の定数と比較しています。
+INT : 符号付きbyteの間違った比較。
+(INT_BAD_COMPARISON_WITH_SIGNED_BYTE)
+byteは符号付きであり取り得る値は、-128 to 127の範囲です。byteをこの範囲外の値と比較するのは、無意味で恐らく間違いです。byte型のbを符号無しの0..255に変換したいのであれば、0xff & bとします。
+INT : int型変数とlong型定数の危険な比較をしています。
+(INT_BAD_COMPARISON_WITH_INT_VALUE)
+このコードはint型として表現できる範囲外であるlong型定数と、int型変数を比較しています。この比較は無意味なものであり、正しくない可能性が高いです。
+INT : 整数を1で割った剰余の計算。
+(INT_BAD_REM_BY_1)
+任意の整数値expに対し、式 exp % 1 は常に0を返します。(exp & 1) あるいは (exp % 2) の間違いではないですか?
+INT : 無意味な整数比較。
+(INT_VACUOUS_COMPARISON)
+この整数比較は常に同じ結果になります(例:x 
+任意の整数値expに対し、式 exp % 1 は常に0を返します。(exp & 1) あるいは (exp % 2) の間違いではないですか?
+INT : 整数の値への無意味なビットマスク処理。
+(INT_VACUOUS_BIT_OPERATION)
+これは何も役立っていない整数のビット処理(and, or, or exclusive or)です (例: v & 0xffffffff)
+IO : ObjectOutputStream に対して成功の見込みのない追加処理をしようとしています。
+(IO_APPENDING_TO_OBJECT_OUTPUT_STREAM)
+このコードでは、ファイルを追加モードでオープンし、その結果を ObjectOutputStream でラップしています。しかし、このようなファイルへ格納する ObjectOutputStream に対しては、追加出力することができません。ObjectOutputStream に対して追加出力したい場合、ObjectOutputStream をオープンしたままに保つ必要があります。
+ファイルを追加モードでオープンし、ObjectOutputStream での出力が有効となる唯一のシチュエーションは、オープンしようとしているファイルがランダムアクセスモードによるアクセス中で、追加を開始しようとする位置にシークされている場合です。
+IP : パラメータへの変更内容は、上書きではなく単に捨てられます。
+(IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN)
+引数で渡された値が無視され、ここで内容が上書きされています。パラメータの内容を書き変えれば、呼び出し元に変更が伝わるとプログラマが誤解している可能性があります。
+IS : フィールドが同時並行アクセスに対して無防備です。
+(IS_FIELD_NOT_GUARDED)
+このフィールドにはnet.jcip.annotations.GuardedByアノテーションが付けられていますが、そのアクセスのされ方は、アノテーションが定めたルールを破っているようです。
+IS : 同期の取り方に統一性がありません。
+(IS_INCONSISTENT_SYNC)
+このクラスのフィールドは、同期化の観点から、一貫したアクセスが行われていないようです。このバグレポートは、次のようなバグパターンを示します。
+クラス内でのアクセス時に、ロックされたアクセスとロックされないアクセスが混在しており、
+最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、
+書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない
+このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。
+このディテクタには、判断を誤る要因が幾つかあります。たとえば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事はできません。たとえディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定できたとしても、依然としてコードが正しい可能性は残ります。
+IS : 同期化が考慮されていません。
+(IS2_INCONSISTENT_SYNC)
+このクラスのフィールドは、同期化の観点から、一貫したアクセスが行われていないようです。このバグレポートは、次のようなバグパターンを示します。
+クラス内でのアクセス時に、ロックされたアクセスとロックされないアクセスが混在しており、
+最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、
+書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない
+このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。
+ディテクタにこのコードの意図を伝えるため「非同期アクセス」のラベルをつける事ができます。
+このディテクタには、判断を誤る要因がいくつかあります。たとえば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事は出来ません。たとえディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定できたとしても、依然としてコードが正しい可能性は残ります。
+ここの記述は"IS2"バージョンのパターンディテクタを参考にしています。これは、ロック・非ロックアクセスの検出に関して"IS"バージョンよりも正確です。
+ISC : staticメソッドしか提供していないクラスのインスタンスを無駄に生成しています。
+(ISC_INSTANTIATE_STATIC_CLASS)
+staticメソッドしか提供していないクラスのインスタンスの生成が行なわれています。このインスタンス生成は無駄です。クラス名を使用して直接メソッドを呼び出してください。
+It : イテレータの next() メソッドが NoSuchElementException をスローできません。
+(IT_NO_SUCH_ELEMENT)
+このクラスはjava.util.Iteratorを実装していますが、next()メソッドがjava.util.NoSuchElementExceptionをスローできないようになっています。next()メソッドは、それ以上要素を返すことができない場合にNoSuchElementExceptionをスローしなければなりません。
+ITA : このメソッドは、toArray() に長さ 0 の配列を渡しています。
+(ITA_INEFFICIENT_TO_ARRAY)
+このメソッドでは、Collection クラスの toArray() メソッドに長さ 0 の配列を引数に渡しています。
+myCollection.toArray(new Foo[myCollection.size()])
+とする方が、効率の良いやり方です。もしも引数のサイズが、Collectionの中身を格納するのに十分な大きさであれば、そのまま、その配列に格納されて返送されます。さもなければリフレクションによって、新たに配列を生成しなければなりません。
+J2EE : HttpSession へ直列化できないオブジェクトを格納しています。
+(J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION)
+このコードは直列化できないオブジェクトをHttpSessionに格納しているようです。このセッションがコンテナによって非活性化されて移動されると、正しく動作しない可能性があります。
+JCIP : イミュータブルクラスのフィールドはfinal宣言すべきです。
+(JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS)
+このクラスにはnet.jcip.annotations.Immutableアノテーションが付けられており、全てのフィールドはfinal宣言しなければなりません。
+JLM : java.util.concurrent の Lock による同期がおこなわれます。
+(JLM_JSR166_LOCK_MONITORENTER)
+このメソッドは、java.util.concurrent.locks.Lockオブジェクトで同期化を行っています。lock()とunlock()を替わりに使用すべきです。
+JLM : util.concurrentの抽象オブジェクトに対して、Monitorオブジェクトのwaitメソッドを使用しています。
+(JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT)
+このメソッドはawait()やsignal()、signalAll()メソッド(util.concurrentパッケージの Conditionオブジェクトのようなものです)を持つオブジェクトに対して、wait() や notify()、notifyAll()()を呼び出しています。これは恐らく望んでいる処理ではありません。仮にこの処理を望むのであれば、他の開発者が困惑するので、設計変更を考慮するべきです。
+JLM : 同期がutil.concurrentインスタンスに対して実行される。
+(JLM_JSR166_UTILCONCURRENT_MONITORENTER)
+このメソッドは、java.util.concurrentクラス(またはそのサブクラス)のインスタンスであるオブジェクトに対して、同期を実行しています。このクラスのインスタンスは、Javaキーワードのsynchronizedによって提供される同期に対して直行する、独自の同期制御メカニズムを持っています。例えば、AtomicBooleanの同期は、他のスレッドがAtomicBooleanの変更を行うのを妨げません。
+このようなコードは正しいのですが、レビューや注意書きを注意深く行わなければなりません。また、将来このコードをメンテナンスする人が困惑するかもしれません。
+LG : OpenJDKの弱い参照による潜在的に失われるloggerの変更。
+(LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE)
+OpenJDKには潜在的な非下位互換性があります。特にjava.util.logging.Loggerの振る舞いが変わりました。強い参照を用いる代わりに、内部的に弱い参照を用いています。これは合理的な変化ですが、不幸にもあるコードは以前の振る舞いに依存しています。依存している振る舞いは、loggerの設定を変えようとすると、単にloggerの参照を落とすことです。これは、GCがの構成がメモリを自由に再利用できることを意味し、ロガーの構成が失われることを意味しています。例えば、以下の例を考えてみましょう。
+public static void initLogging() throws Exception {
+Logger logger = Logger.getLogger("edu.umd.cs");
+logger.addHandler(new FileHandler()); // loggerの構成を変更する呼び出し
+logger.setUseParentHandlers(false); // 再度loggerの構成を変更する呼び出し
+}
+loggerの参照は、メソッドの終わりで失われます(メソッドをエスケープするわけではありません)そのため、initLoggingの呼び出しの直後に、GCが実行されると、loggerの構成が失われます(Loggerが弱い参照しか持っていないためです)
+public static void main(String[] args) throws Exception {
+initLogging(); // loggerにファイルハンドラーを加える
+System.gc(); // loggerの構成が失われる
+Logger.getLogger("edu.umd.cs").info("Some message"); // これは期待した動作をせず、ログに記録されない
+}
+Ulf Ochsenfahrt and Eric Fellheimer
+LI : スタティックフィールドの不正な遅延初期化がおこなわれています。
+(LI_LAZY_INIT_STATIC)
+このメソッドは、volatile でないスタティックフィールドを、同期化せずに遅延初期化しています。コンパイラや、プロセッサは、命令の並べ替えを行うかもしれないので、もしもメソッドが複数のスレッドから同時に呼び出されるのであれば、別のスレッドがこのフィールドにアクセスした際に、中途半端に初期化されたインスタンスが見えてしまう危険があります。フィールドをvolatileにする事で、この問題を解決する事が出来ます。詳細は、Javaメモリモデルを参照してください。
+LI : 遅延初期化とスタティックフィールド更新の方法が誤っています。
+(LI_LAZY_INIT_UPDATE_STATIC)
+このメソッドは、同期化されていないスタティックフィールドに対する遅延初期化を行っています。このフィールドがセットされたオブジェクトはすぐにアクセスされるようになります。つまり、フィールドの設定とともに直ちに他のスレッドからアクセスできるようになるということです。このメソッドにおけるさらなるフィールドアクセスがオブジェクトの初期化を行うためのものであったとしたら、初期化が完全に終了するまでの間、フォールドに対する他のスレッドからのアクセスを完全に防がなければ、マルチスレッディングに関する非常に重大なバグとなります。
+MF : 親クラスで宣言されたフィールドと同名のフィールドを定義しています。
+(MF_CLASS_MASKS_FIELD)
+このクラスは、親クラスが宣言しているフィールドと同名のフィールドを宣言しています。これは混乱を招きやすく、間違えて意図しないフィールドを更新したり参照したりするプログラミングミスにつながります。
+MF : フィールドと同名のローカル変数を宣言しています。
+(MF_METHOD_MASKS_FIELD)
+このメソッドは、このクラスもしくは親クラスが持つフィールドと同名のローカル変数を宣言しています。
+これにより、フィールドが初期化されなかったり、未初期化のフィールドの値を読みこんだりする恐れがあります。
+ML : フィールドに対する同期化の試みが無効です。
+(ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD)
+このメソッドでは、同時に更新される可能性のあるフィールドに対して同期化によるガードを行おうとしています。しかし、フィールドに対するガードは、フィールドそのものではなくフィールドが参照するオブジェクトに対してロックを取得するものです。これは、あなたが求める相互排他を提供せず、参照されたオブジェクトのロックを他のスレッドが(他の目的で)取得してしまうことがあります。このパターンの事例は以下のようになります。
+private Long myNtfSeqNbrCounter = new Long(0);
+private Long getNotificationSequenceNumber() {
+Long result = null;
+synchronized(myNtfSeqNbrCounter) {
+result = new Long(myNtfSeqNbrCounter.longValue() + 1);
+myNtfSeqNbrCounter = new Long(result.longValue());
+}
+return result;
+}
+ML : メソッドは更新されるフィールドを使って同期しています。
+(ML_SYNC_ON_UPDATED_FIELD)
+このメソッドは、変更可能なフィールドが参照しているオブジェクトを同期化しています。この場合、異なるスレッドが、別々のオブジェクトに対して同期を行ってしまう可能性があるため、このコードの意図はうまく実現されないと思われます。
+MS : ミュータブルなオブジェクトをstaticフィールドに格納する事で、内部の状態を外部に晒す危険があります。
+(EI_EXPOSE_STATIC_REP2)
+このコードは、外部から変更可能なオブジェクトをstaticフィールドに格納しています。ミュータブルオブジェクトの意図しない変更が、セキュリティや重要な情報を危機に晒す可能性があるなら、違うやり方を検討してください。防御的コピーによって複製されたオブジェクトを格納するのは、一つの良いアイデアです。
+MS : フィールドは final ではないため、悪意を持ったコードから保護する事ができません。
+(MS_CANNOT_BE_FINAL)
+変更可能なstaticフィールドは、悪意を持ったコードから書き換えられたり、誤って別のパッケージのクラスから書き換えられたりすることがあります。残念ながら、このようなフィールドを簡単に保護する事はできません。
+MS : public static なメソッドで配列を戻り値として返すと、内部表現を暴露してしまう可能性があります。
+(MS_EXPOSE_REP)
+public static なメソッドが、クラスの static フィールドに保持した配列を返しています。このメソッドを呼び出して得られた配列への参照を通じて、クラスの static フィールドを変更できてしまいます。修正方法の一つとして、防御的コピーを行って配列の複製を返すことが挙げられます。
+MS : フィールドは final かつパッケージプライベートにすべきです。
+(MS_FINAL_PKGPROTECT)
+変更可能なstaticフィールドは、悪意を持ったコードから書き換えられたり、誤って別のパッケージのクラスから書き換えられたりすることがあります。このような脆弱性を防ぐために、フィールドをパッケージプライベートとするか、final 宣言して(あるいは、この両方を行って)ください。
+MS : このフィールドはミュータブルな配列です。
+(MS_MUTABLE_ARRAY)
+final 宣言された static フィールドが配列の参照を保持しています。このフィールドは悪意を持ったコードや誤った別のパッケージのクラスからアクセスされ、配列の中身を自由に書き換えられてしまいます。
+MS : このフィールドはミュータブルな Hashtable です。
+(MS_MUTABLE_HASHTABLE)
+final 宣言された static フィールドが Hashtable の参照を保持しています。このフィールドは悪意を持ったコードや誤った別のパッケージのクラスからアクセスされ、中身を自由に書き換えられてしまいます。
+MS : フィールドはインターフェースから取り出してパッケージプライベートにすべきです。
+(MS_OOI_PKGPROTECT)
+インターフェースに宣言された final static フィールドが、配列 や Hashtable のようなミュータブルオブジェクトを参照しています。このオブジェクトは、悪意を持ったコードから書き換えられたり、間違って別のパッケージから書き換えられたりしてしまいます。このフィールドをクラスに移してパッケージプライベートにすることで、この問題を解決してください。
+MS : フィールドはパッケージプライベートにすべきです。
+(MS_PKGPROTECT)
+変更可能な static フィールドは、悪意を持ったコードから書き換えられたり、間違って書き換えられたりしてしまう可能性があります。フィールドをパッケージプライベートにすることで、この脆弱性を回避することができます。
+MS : フィールドは final ではありませんが、final に変更すべきです。
+(MS_SHOULD_BE_FINAL)
+変更可能なstaticフィールドは、悪意を持ったコードから書き換えられたり、誤って別のパッケージのクラスから書き換えられたりすることがあります。フィールドを final とすることで、この脆弱性を回避することができます。
+MSF : ミュータブルなフィールドをもつサーブレットです。
+(MSF_MUTABLE_SERVLET_FIELD)
+一般的に、Web サーバはサーブレットやJSPクラスのインスタンスを一つしか生成しません(つまり、これらのクラスをシングルトンとして扱います)。そして、複数の同時に発生するリクエストに対処するため、複数のスレッドがこれらのインスタンスのメソッドを実行します。そして、ミュータブルなインスタンスフィールドを持つことは、一般的にリソース競合を発生させます。
+MTIA : Servletクラスを継承しているクラスでのインスタンスフィールドの使用。
+(MTIA_SUSPECT_SERVLET_INSTANCE_FIELD)
+このクラスはServletクラスを継承しており、インスタンスフィールドを使用しています。サーブレットクラスのインスタンスは複数のリクエストに対して1つしか生成されません。このためインスタンスフィールドは複数のスレッドから同時にアクセスされることになるので、このクラスでのインスタンスフィールドの使用は控えるべきであり、また恐らく使い方が間違っています。ローカル変数のみを使用するように変更することを検討してください。
+MTIA : Struts Actionの継承クラスでのインスタンスフィールドの使用。
+(MTIA_SUSPECT_STRUTS_INSTANCE_FIELD)
+このクラスはStruts Actionクラスを継承しており、インスタンスフィールドを使用しています。Struts Actionクラスのインスタンスは複数のリクエストに対して1つしか生成されません。このためインスタンスフィールドは複数のスレッドから同時にアクセスされることになるので、このクラスでのインスタンスフィールドの使用は控えるべきであり、また恐らく使い方が間違っています。ローカル変数のみを使用するように変更することを検討してください。
+MWN : 組合せが間違った notify() があります。
+(MWN_MISMATCHED_NOTIFY)
+このメソッドは、ロックを獲得せずにObject.notify()あるいはObject.notifyAll()を呼び出しています。ロックを獲得せずにnotify()やnotifyAll()を呼び出すと、IllegalMonitorStateExceptionが発生します。
+MWN : 組合せが間違った wait() があります。
+(MWN_MISMATCHED_WAIT)
+このメソッドは、ロックを獲得せずにObject.wait()を呼び出しています。ロックを獲得せずにwait()を呼び出すと、IllegalMonitorStateExceptionが発生します。
+Nm : クラスは、equal() メソッドを宣言していますが、equals() メソッドの誤りではありませんか?。
+(NM_BAD_EQUAL)
+このクラスは equal(Object) という名称のメソッドを宣言しています。このメソッドは、java.lang.Object クラスの equals(Object) を(そのように意図したのかもしれませんが)オーバーライドしません。
+Nm : クラス名は大文字で始めるべきです。
+(NM_CLASS_NAMING_CONVENTION)
+クラス名には名詞を採用し、構成単語の最初の文字を大文字として、残りを小文字とすべきです。クラス名は単純明解であるよう心がけてください。頭文字や略語の使用は避けてください(ただし一般に広く用いられているURLやHTMLといったものは構いません)。
+Nm : 例外クラスのような名前の非例外クラスです。
+(NM_CLASS_NOT_EXCEPTION)
+このクラスはExceptionクラス継承していないのに、クラス名が"Exception"で終了しています。これは利用者を混乱へと導きます。
+Nm : まぎらわしいメソッド名です。
+(NM_CONFUSING)
+これらのメソッド名は、大文字小文字が違うだけです。
+Nm : フィールド名は、小文字で始めるべきです。
+(NM_FIELD_NAMING_CONVENTION)
+finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、残りを小文字とすべきです。
+Nm : 後のバージョンの Java で予約されたキーワードを識別子として利用しています。
+(NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER)
+この識別子は、後のバージョンの Java においてキーワードとして予約されているものです。したがって、このコードを後のバージョンの Java でコンパイルするには、修正する必要があります。
+Nm : 後のバージョンの Java で予約されたキーワードを識別子として利用しています。
+(NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER)
+この識別子は、後のバージョンの Java においてキーワードとして利用されています。このコードおよびこのAPIを参照するすべてのコードは、後のバージョンの Java でコンパイルするために修正する必要があります。
+Nm : クラスで hashcode() メソッドを宣言しています。
+これは hashCode() メソッドの誤りではありませんか?。
+(NM_LCASE_HASHCODE)
+このクラスは hashcode() という名称のメソッドを宣言しています。このメソッドは、java.lang.Object クラスの hashCode() メソッドを(そのように意図したのかもしれませんが)オーバーライドしません。
+Nm : クラスで tostring() メソッドを宣言しています。
+これは toString() メソッドの誤りではありませんか?。
+(NM_LCASE_TOSTRING)
+このクラスは tostring() という名称のメソッドを宣言しています。このメソッドは、java.lang.Object クラスの toString() メソッドを(そのように意図したのかもしれませんが)オーバーライドしません。
+Nm : 明らかなメソッドとコンストラクタの誤りです。
+(NM_METHOD_CONSTRUCTOR_CONFUSION)
+このメソッドは宣言されたクラスと同じ名称になっています。これはコンストラクタとして宣言しようとしたものだと思われます。そうであれば、void 戻り値の宣言を取り除いてください。もしも間違ってメソッドとして宣言してしまい、後から間違いに気付いて正しいコンストラクタを宣言し、後方互換性のために残されたメソッドなのであれば、メソッドの方を deprecate 宣言にしてください。
+Nm : メソッド名は、小文字で始めるべきです。
+(NM_METHOD_NAMING_CONVENTION)
+メソッド名には動詞を採用し、メソッド名の最初の文字以外の構成単語の最初の文字を大文字として、残りを小文字とすべきです。
+Nm : クラス名称は実装するインターフェースの名称と同じにすべきではありません。
+(NM_SAME_SIMPLE_NAME_AS_INTERFACE)
+このクラスまたはインターフェースの名称は、パッケージ名が異なることを除いて継承または実装されたインターフェースの名称と同じです(たとえば、alpha.Foo が beta.Foo を継承しているような状況です)。
+これは、参照関係を知るために import 文を見なければならなかったり、スーパークラスに存在するメソッドを誤ってオーバーライドしてしまったりと、非常に混乱を招いてしまいます。
+Nm : クラス名称はスーパークラスの名称と同じにすべきではありません。
+(NM_SAME_SIMPLE_NAME_AS_SUPERCLASS)
+このクラスの名称は、パッケージ名が異なることを除いてスーパークラスの名称と同じです(たとえば、alpha.Foo が beta.Foo を継承しているような状況です)。
+これは、参照関係を知るために import 文を見なければならなかったり、スーパークラスに存在するメソッドを誤ってオーバーライドしてしまったりと、非常に混乱を招いてしまいます。
+Nm : 大変まぎらわしい命名のメソッドです。
+(NM_VERY_CONFUSING)
+これらのメソッド名は、大文字小文字のみが異なる名称です。これらのメソッドは大文字小文字が同じだったとすると、片方のメソッドがもう一方のメソッドをオーバーライドしてしまうため、大変まぎらわしいものとなります。
+Nm : 意図的と思われますが、大変まぎらわしい命名のメソッドです。
+(NM_VERY_CONFUSING_INTENTIONAL)
+これらのメソッドは、大文字小文字のみが異なる名称です。これらのメソッドは大文字小文字が一致していれば、一方が他方をオーバーライドしていたはずで、非常にまぎらわしい命名になっています。他のメソッドの存在から、これらのメソッドの存在は意図的なものと見うけられますが、混乱を招くことには変わりありません。もしもAPIの固定化によってメソッド名が変更できないのであれば別ですが、そうでないのであれば、どちらかを削除すべきです。
+Nm : パッケージ名のみ異なる引数クラスがあるため、スーパークラスのメソッドを正しくオーバーライドしていません。
+(NM_WRONG_PACKAGE)
+スーパークラス側メソッドの引数型と、サブクラス側メソッドの引数型が正しく一致していないために、サブクラスのメソッドがスーパークラスにある似たようなメソッドをオーバーライドしていません。たとえば、以下のような状況です。
+import alpha.Foo;
+public class A {
+public int f(Foo x) { return 17; }
+}
+----
+import beta.Foo;
+public class B extends A {
+public int f(Foo x) { return 42; }
+}
+B クラスで宣言される f(Foo) メソッドは、A クラスの f(Foo) メソッドをオーバーライドしていません。これは、引数である Foo が異なるパッケージであるためです。
+Nm : パッケージ名のみ異なる引数クラスがあるため、スーパークラスのメソッドを正しくオーバーライドしていません。
+(NM_WRONG_PACKAGE_INTENTIONAL)
+スーパークラス側メソッドの引数型と、サブクラス側メソッドの引数型が正しく一致していないために、サブクラスのメソッドがスーパークラスにある似たようなメソッドをオーバーライドしていません。たとえば、以下のような状況です。
+import alpha.Foo;
+public class A {
+public int f(Foo x) { return 17; }
+}
+----
+import beta.Foo;
+public class B extends A {
+public int f(Foo x) { return 42; }
+public int f(alpha.Foo x) { return 27; }
+}
+B クラスで宣言される f(Foo) メソッドは、A クラスの f(Foo) メソッドをオーバーライドしていません。これは、引数である Foo が異なるパッケージであるためです。
+このケースでは、サブクラスがスーパークラスとおなじシグネチャをもつメソッドを宣言しているため、理解することは可能ですが、非常に混乱を招きます。シグネチャが異なっていながら似ているメソッドを削除するか deprecated にすることを強く検討すべきです。
+NN : 裸の notify() メソッドがあります。
+(NN_NAKED_NOTIFY)
+オブジェクトの状態を変更せずにnotify()もしくはnotifyAll()メソッドを呼び出しています。一般にはこれらのメソッドは、別のスレッドが待ち合わせている条件が成立したことを通知するために用いられます。条件の待ち合わせを行うためには、両方のスレッドから参照可能なヒープオブジェクトを使用しなければなりません。
+このバグ報告は、必ずしもプログラミングエラーを意味しません。オブジェクトの状態変更がメソッド内部で行われ、そこから更に notify() / notifyall() メソッドを持ったメソッドを呼び出しているかもしれないからです。
+No : notifyAll() ではなく notify() を使用しています。
+(NO_NOTIFY_NOT_NOTIFYALL)
+このメソッドはnotifyAll() メソッドではなく notify() メソッドを呼び出しています。Javaのモニタは、しばしばいくつかの条件を同時に待ち合わせるために使用されますが、notify() メソッドを使って待機スレッドを起こすと、別の条件を待っているスレッドを起こすだけになるかもしれません。
+NP : null ポインタに対してアクセスしています。
+(NP_ALWAYS_NULL)
+null に設定された参照に対するアクセスが行われています。コードが実行されればNullPointerExceptionが発生するでしょう。
+NP : メソッドの例外処理経路において、null ポインタに対してアクセスしています。
+(NP_ALWAYS_NULL_EXCEPTION)
+例外処理の中で null ポインタに対するアクセスが行われています。コードが実行されれば、NullPointerException が発生するでしょう。現在の FindBugs は、実行され得ない例外処理経路を考慮しません。このため、この警告は誤って報告されるかもしれません。
+また、FindBugs は switch-case の default も例外経路と見なしますが、default は実行され得ない場合がしばしばありますので、注意してください。
+NP : メソッドで引数の null チェックが行われていません。
+(NP_ARGUMENT_MIGHT_BE_NULL)
+このメソッドの引数は、nullチェックが必要と認識されていますが、チェックを行わずに引数が利用されています。
+NP : Boolean 型を返すメソッドが null を返しています。
+(NP_BOOLEAN_RETURN_NULL)
+Boolean.TRUE、Boolean.FALSE、null のいずれかを返すメソッドはトラブルの元となります。
+このメソッドは、boolean 型を返すメソッドとしても呼び出されることがあります。この場合、コンパイラは Boolean 型に対してオートアンボクシングを行います。もしも戻り値が null である場合、NullPointerException が発生してしまいます。
+NP : clone() メソッドが null を返す可能性があります。
+(NP_CLONE_COULD_RETURN_NULL)
+このclone() メソッドは、条件によっては null を返す場合があるようです。しかし clone() メソッドはnullを返してはいけません。もしもこのような条件が発生し得ないと確信できるのであれば、AssertionError をスローすることを検討してください。
+NP : 常にnullの値に対するcloseの呼び出し。
+(NP_CLOSING_NULL)
+常にnullである値に対してclose()が呼び出されています。この命令文が実行された場合、null pointer exceptionが引き起こされます。しかしこの場合の大きなリスクは、閉じられなければいけないものが、閉じられずに放置されることです。
+NP : null チェックを行わずに readLine() メソッドの結果を参照しようとしています。
+(NP_DEREFERENCE_OF_READLINE_VALUE)
+null チェックが行われずに readLine() メソッドの結果を参照しています。読み出すべきテキストがこれ以上存在しない場合、readLine() メソッドは null を返すため、これを参照すると NullPointerException が発生してしまいます。
+NP : equals() メソッドが引数の null チェックを行っていません。
+(NP_DOES_NOT_HANDLE_NULL)
+この equals(Object) メソッドは引数にnullが渡された場合のチェックが行なわれていないため、java.lang.Object.equals() で定義された規約を満たしていません。すべての equals() メソッドは引数に null が渡された場合に false を返さなければなりません。
+NP : equals() メソッドが引数の null チェックを行っていません。
+(NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT)
+この equals(Object) メソッドは引数にnullが渡された場合のチェックが行なわれていないため、java.lang.Object.equals() で定義された規約を満たしていません。すべての equals() メソッドは引数に null が渡された場合に false を返さなければなりません。
+NP : null ポインタに対するアクセスを行っています。
+(NP_GUARANTEED_DEREF)
+この文または分岐が実行されると、この値は必ず null となります。そしてこの値はその後必ず利用されています(RuntimeExceptionのスローを含むフォワードパスを通る場合を除きます)。
+NP : この値は null であり、例外処理経路で必ず利用されています。
+(NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH)
+例外経路で、この文または分岐が実行されると、この値は必ず null となります。そしてこの値は必ず利用されています(RuntimeExceptionのスローを含むフォワードパスを通る場合を除きます)。
+NP : readLine() の結果をそのまま利用しています。
+(NP_IMMEDIATE_DEREFERENCE_OF_READLINE)
+readLine() の結果をそのまま利用しています。readLine() は読み込むべきデータが無くなると null を返すので、そのまま利用すると NullPointerException をスローします。
+NP : null とわかっている値を利用しています。
+(NP_LOAD_OF_KNOWN_NULL_VALUE)
+参照されている変数は、すでに null であることのチェックが行なわれており、この地点ではnullであることが分かっています。文法としては正しいのですが、これはプログラミング上の誤りかもしれません(おそらく違う変数を参照したかったか、前のチェックは null であることではなく非 null であることを意図していたのではないかと思われます)。
+NP : メソッド呼び出しで非 null 引数に null を渡しています。
+(NP_NONNULL_PARAM_VIOLATION)
+このメソッドではnullをメソッドに渡しています。しかし、この引数は @NonNull と宣言されているか、解析の結果から常に利用されると判定されたため、null が許されません。
+NP : このメソッドは null を返す可能性があるにもかかわらず、@NonNull 宣言されています。
+(NP_NONNULL_RETURN_VIOLATION)
+null を返す可能性があるにもかかわらず、このメソッド(あるいは、親クラスの該当メソッド)は @NonNull 宣言されています。
+NP : null とわかっている値を instanceof で型チェックしています。
+(NP_NULL_INSTANCEOF)
+この instanceof は常にfalseを返します。なぜならこの値は null であることが明らかだからです。このコードは安全ではありますが、なんらかの論理の間違い、誤解を示唆しています。
+NP : null ポインタを利用している可能性があります。
+(NP_NULL_ON_SOME_PATH)
+この参照変数を通したアクセスは、実行時に参照変数が null となる可能性があります。これは、実行時にNullPointerExceptionを発生させる可能性があります。
+NP : 例外処理において null ポインタを利用している可能性があります。
+(NP_NULL_ON_SOME_PATH_EXCEPTION)
+幾つかの例外処理の中で、null となる参照を通してアクセスが行われています。これは、実行時にNullPointerException を発生させる可能性があります。現在の FindBugs は、実行され得ない例外処理系を考慮しません。このため、この警告は誤って報告されるかもしれません。
+また、FindBugs は switch-case の default も例外処理見なしますが、しばしば default は実行され得ない場合がありますので、注意してください。
+NP : null となっている可能性のあるメソッドの戻り値を利用しています。
+(NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE)
+いくつかの例外パスの中で null となる参照が、ここで利用されています。これは実行時にNullPointerException を招きます。この値は null を返す可能性のあるメソッドの戻り値を使用しているため、null となるかもしれません。
+NP : 到達しないコードパス上に null ポインタの可能性があります。
+(NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE)
+このコード分岐は、もし実行されればNullPointerException の発生要因となる null 値への参照を含んでいます。
+もちろん、問題はこのコード分岐が実行できず、NullPointerException が発生し得ないということかもしれません。しかし、 FindBugs の能力では、その判断をすることはできません。
+この値が null とはならないというテストが既に行われているならば、これは明確なる可能性にすぎません。
+NP : メソッド内で無条件に利用される引数へ null を渡しています。
+(NP_NULL_PARAM_DEREF)
+メソッドに null を渡していますが、この引数はメソッドの中で無条件に利用されるようです。
+NP : メソッド内で無条件に利用される引数へ null を渡しています。
+(NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS)
+引数を無条件に利用するメソッドに null となりうる値を渡しています。これは NullPointerException の発生を招く可能性があります。
+NP : 無条件に引数を利用する非仮想メソッドに null を渡しています。
+(NP_NULL_PARAM_DEREF_NONVIRTUAL)
+引数を無条件に利用するメソッドに null となりうる値を渡しています。これは NullPointerException の発生を招きます。
+NP : null であってはならないパラメータが Nullable であるとアノテートされています。
+(NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE)
+このパラメータは、常に null ではないことを前提として利用されています。しかし、これに反して Nullable としてアノテートされています。パラメータの使い方かアノテーションのどちらかが誤っています。
+NP : NonNullアノテーションのついたフィールドにnullを格納しています。
+(NP_STORE_INTO_NONNULL_FIELD)
+NonNullアノテーションが付けられたフィールドに、nullになるかもしれない値が代入されています。
+NP : 同じフィールドに対して同期と null チェックが行われています。
+(NP_SYNC_AND_NULL_CHECK_FIELD)
+このフィールドは同期の対象となっているため、null となるようには見えません。
+もしこれが null で同期の対象となった場合は NullPointerException がスローされ、チェックは無意味なものとなります。別なフィールドによって同期を行う方がよいでしょう。
+NP : toString メソッドが null を返す可能性があります。
+(NP_TOSTRING_COULD_RETURN_NULL)
+この toString メソッドは、ある条件下で、null を返すようです。寛大に評価すれば、これは仕様を満たしていると言えますが、おそらくはこのやり方は間違いで、他のコードが正しく動作しなくなるでしょう。null の替わりに空文字列かその他の適切な文字列を返すようにしてください。
+NP : 書き込まれていないフィールドの読み出し。
+(NP_UNWRITTEN_FIELD)
+このプログラムの中で、まだ書き込まれていないと考えられるフィールドの読み出しを行なっています。これは NullPointerException のスローを招きます。
+NP : 書き込まれないpublic/protectedのフィールドの読み出し。
+(NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD)
+このプログラムはnon-nullの値が書かれたことがないと思われるpublicやprotectedのフィールドから参照先の値を取得しようとしています。フィールドが解析では分からないメカニズムによって初期化されていない限り、参照先の値の取得はnull pointer exceptionを引き起こすことになります。
+NS : 潜在的な非短絡論理の危険な使用。
+(NS_DANGEROUS_NON_SHORT_CIRCUIT)
+このコードは、短絡論理(&& や ||)の代わりに非短絡論理(& や |)を使用しています。更に、左側の値によっては右側の評価を(例外のスローや高コストの演算といった副作用があるために)避けたいケースがあるようです。
+非短絡論理では、たとえ左側だけで結果が決定してしまう場合であっても、両側の式が評価されます。これは効率が悪く、左側がガード条件になっている場合には、右側の評価でエラーが発生するかもしれません。
+詳細はJava言語仕様を参照してください。
+NS : 非短絡論理の疑わしい使用。
+(NS_NON_SHORT_CIRCUIT)
+非短絡的演算子(&あるいは|)を、短絡的演算子(&&あるいは||)と間違えて使用しているようです。非短絡的演算子は、両側の式を必ず評価します。非短絡的演算子を短絡的演算子のかわりに使うと、効率が悪いだけでなく、もしも演算子の左側の式が右側の式にアクセスするためのガード条件になっている場合には、エラーになります。
+詳細については、Java言語仕様を参照してください。
+OBL : このメソッドはストリームやリソースのクリーンナップに失敗します。
+(OBL_UNSATISFIED_OBLIGATION)
+このメソッドは、ストリームやデータベースオブジェクト、その他明示的なクリーンナップ(クローズやディスポーズ)操作を必要とするリソースのクリーンナップに失敗します。
+一般的に、あるメソッドがストリープやリソースをオープンしたら、そのメソッドが終了する前に確実にストリームやリソースがクリーンナップされるよう、try/catchブロックを使用すべきです。
+このバグ・パターンは、本質的に OS_OPEN_STREAM や ODR_OPEN_DATABASE_RESOURCE と同じですが、異なる(願わくばより良い)静的解析手法に基づいています。私たちはこのバグ・パターンの実用性に関するフィードバックを待っています。フィードバックを送信するには、以下のどちらかを利用してください。
+メール : findbugs@cs.umd.edu
+バグレポート : http://findbugs.sourceforge.net/reportingBugs.html
+とりわけ、このバグ・パターンの誤検知抑制アルゴリズムがまだ十分に調整されていないため、誤検知に関するレポートは非常に助かります。
+この解析手法の詳細については、Weimer と Necula による Finding and Preventing Run-Time Error Handling Mistakes を参照してください。
+OBL : チェックされた例外について、メソッドがストリームやリソースの開放に失敗する可能性があります。
+(OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE)
+このメソッドは、明確なクリーンアップ処理を必要とするストリーム、データベース、そのほかのリソースの解放(クローズ、廃棄)に失敗する可能性があります。
+一般的にはメソッドがストリームや他のリソースを開くと、メソッドは終了する前にストリームやリソースの解放を保障するために、try/finallyブロックを使うべきです。
+このバグパターンは本質的にはOS_OPEN_STREAMや ODR_OPEN_DATABASE_RESOURCEのパターンと同じですが、異なる(そして喜ばしいことによりよい)静的解析技術を基礎にしています。このバグパターンの有効性についてフィードバックを得ることを開発者一同楽しみにしています。フィードバックを以下に送ってください。
+メール : findbugs@cs.umd.edu
+バグレポート : http://findbugs.sourceforge.net/reportingBugs.html
+とりわけ、このバグ・パターンの誤検知抑制アルゴリズムがまだ十分に調整されていないため、誤検知に関するレポートは非常に助かります。
+この解析手法の詳細については、Weimer と Necula による Finding and Preventing Run-Time Error Handling Mistakes を参照してください。
+ODR : メソッドは、データベースリソースの解放に失敗するかもしれません。
+(ODR_OPEN_DATABASE_RESOURCE)
+このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする実行パスの中にクローズを行わないパスがあります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信できなくなる恐れがあります。
+ODR : メソッドは、例外が起きた時にデータベースリソースの解放に失敗するかもしれません。
+(ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH)
+このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする例外処理パスの中でクローズを行わないパスがあります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信できなくなる恐れがあります。
+OS : メソッドでストリームのクローズに失敗する可能性があります。
+(OS_OPEN_STREAM)
+このメソッドは入出力ストリームを生成していますが、そのインスタンスはフィールドに保持されず、close() が実行されるかもしれない別のメソッドに引き渡してもおらず、あるいはそのまま戻り値として返送されてもいません。そして、このメソッドを起点とする実行パス上では、ストリームのクローズ処理が行われないパスがあります。これは入出力ディスクリプタのリークにつながる恐れがあります。一般にはfinally ブロックを使ってリソースをクローズするのが良いやり方です。
+OS : 例外発生時にストリームのクローズに失敗するかもしれません。
+(OS_OPEN_STREAM_EXCEPTION_PATH)
+このメソッドで入出力ストリームオブジェクトが生成されていますが、フィールドへの格納も他のメソッドへの引き渡しも、戻り値としての返送も行なわれていません。そして、このメソッドを起点とする例外パスの中にクローズが行なわれないパスがあります。これはファイルディスクリプタのリークを招きます。確実にクローズが行なわれるよう finally ブロックを使用するのが良い考えです。
+PS : 同期化とセマフォの公開インターフェースへの暴露。
+(PS_PUBLIC_SEMAPHORES)
+このクラスは、自身のオブジェクト(this)に対する wait()、notify()、notifyAll() 呼び出しによって、同期化を行なっています。利用者は、自分が作成したクラスの中でさらにこのクラスのインスタンスを同期化のために使用してしまうかもしれません。これにより、2つのクラスが同じオブジェクトを使って同期化を行なってしまうので、マルチスレッド処理が正しく行なわれなくなる可能性があります。外部からアクセスできるオブジェクトを使って同期化、セマフォメソッド呼び出しを行なうべきではありません。private メンバフィールドを利用して同期化を行なうことを検討してください。
+PZ : 繰り返し中にentryオブジェクトを再利用しないでください。
+(PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS)
+entrySet()メソッドはIteratorやMap.Entryの基礎となるMapのviewを返すことができます。この賢い考えはいくつかのMapの実行にも使われていますが、たちの悪いコーディングミスを引き起こす可能性があります。もしmap mがentrySetに対してこのような繰り返しを返すと、c.addAll(m.entrySet())は誤った処理を行う可能性が高いです。OpenJDK1.7において、すべてのMapの実行はこれを防ぐように書き直されています。
+PZLA : 戻り値として null よりもむしろ長さ 0 の配列を返すことを検討すべきです。
+(PZLA_PREFER_ZERO_LENGTH_ARRAYS)
+結果が空を表すためには、多くの場合、null を返すよりもサイズ 0 の配列を返す方が良い設計です。これにより、利用者側のコードで null との明示的な比較を行わなくてもすむようになります。
+これに対して、「返すべき値が無いことを示す」たねに null を用いるのは、恐らく適切です。例えば、File.listFiles()は、ディレクトリにファイルが無い時はサイズ 0 の配列を、指定されたパスがディレクトリでなければ null を返します。
+QBA : boolean 式での boolean 直定数の代入。
+(QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT)
+このメソッドでは、if もしくは while の条件式の中で boolean 直定数(true あるいは false)を boolean 変数に代入しています。恐らく == でbooleanの比較すべきところを、 = と間違えてしまったものと思われます。
+QF : forループにおける複雑で難解なインクリメント。
+(QF_QUESTIONABLE_FOR_LOOP)
+このforループでのインクリメントは正しい変数に対して行なわれていますか? 別の変数が初期化され、チェックされているようです。
+RC : 疑わしい参照の比較です。
+(RC_REF_COMPARISON)
+このメソッドでは、2つの参照が == あるいは != 演算子で比較されています。しかし、一般には equals() メソッドを使う方が正しいやり方です。java.lang.Integer や java.lang.Float などがこのようなクラスの例で、参照の比較を使うべきではありません。
+RC : 定数と参照値の疑わしい比較。
+(RC_REF_COMPARISON_BAD_PRACTICE)
+このメソッドは、定数と参照値を == や != を使用して比較しています。通常このような型のインスタンスの比較を行う正しい方法は、equals()メソッドを使用します。同じ値を持つ異なるインスタンスを生成するのは可能ですが、異なるオブジェクトであるため、 == で比較することはできません。一般的に参照値によって比較するべきでないクラスには、java.lang.Integer, java.lang.Float などの例があります。
+RC : Boolean値の疑わしい参照比較。
+(RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN)
+このメソッドは == や != 演算子を使って2つのBoolean値を比較しています。通常、Booleanには(Boolean.TRUE と Boolean.FALSE)の2つの値しか存在しませんが、new Boolean(b)コンストラクタを使って、他のBooleanオブジェクトを生成することが可能です。このようなオブジェクトは避けるのがベストですが、もしそれらが存在した場合、 == や != を使って同一性を確認すると、.equals(...)を使って得られる結果と異なる結果が出てくるかもしれません。
+RCN : 非null参照を無駄にnullと比較しています。
+(RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE)
+このメソッドで非nullと分かっている参照をnullと分かっている参照と比較しています。
+RCN : 2つのnull参照を無駄に比較しています。
+(RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES)
+このメソッドでnullであることが明らかな2つの参照を無駄に比較しています。
+RCN : null でないことが明らかな参照の無駄な null チェック。
+(RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE)
+このメソッドは null でないことが分かっている参照を無駄に null チェックしています。
+RCN : null であることが明らかな参照の無駄な null チェック。
+(RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE)
+このメソッドは null であることが分かっている参照を無駄に null チェックしています。
+RCN : すでに利用されている参照を null チェックしています。
+(RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE)
+ここでは、参照が null チェックされていますが、この参照が null になることはあり得ません。この参照は以前に利用されているためです。もしも null なら前の段階で NullPointerException が発生しているはずです。そもそも、ここのコードと前の参照を利用してるコードとは、参照が null であるかどうかという点で矛盾しているのです。チェック自体が余計か、前の参照利用が間違っています。
+RE : 正規表現の文法ミス。
+(RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION)
+このコードで使用されている正規表現は文法が間違っています。この文はPatternSyntaxExceptionのスローを招くでしょう。
+RE : File.separatorが正規表現で使用されています。
+(RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION)
+正規表現が必要とされる場所で、File.separatorが使用されています。これはWindowsプラットフォームでは正しく動作しません。File.separatorがバックスラッシュとなるためです。これは正規表現のエスケープキャラクタです。回避方法として、File.separatorChar=='\\' & "\\\\" : File.separatorを、File.separatorの替わりに使用する方法があります。
+RE : "."は正規表現です。
+(RE_POSSIBLE_UNINTENDED_PATTERN)
+Stringの正規表現を受け取るメソッドに"."が渡されています。これは意図通りですか?
+例えば、s.replaceAll(".", "/")は、全ての文字を"/"に置き換えた文字列を返します。
+REC : 例外が発生しないのにキャッチしようとしています。
+(REC_CATCH_EXCEPTION)
+この try-catch ブロックは try 節の中で例外をスローしないのに例外のキャッチ節があり、RuntimException のキャッチ節がありません。これは同じ内容のキャッチ節を書くのが面倒でtry { ... } catch (Exception e) { something }と記述してしまい、間違ってRuntimeExceptionまでキャッチしてしまうというバグパターンです。
+RI : 親クラスが実装しているインターフェースをもう一度実装宣言しています。
+(RI_REDUNDANT_INTERFACES)
+このクラスで実装を宣言しているインターフェースは、親クラスでも実装が宣言されています。一度実装が宣言されたインターフェースは、全サブクラスで自動的に実装されることになるため、この記述は冗長です。このクラスが作成された後に継承関係が変更された可能性があります。実装するべきインターフェースについて再度検討する必要があります。
+RpC : 条件判定が繰り返されています。
+(RpC_REPEATED_CONDITIONAL_TEST)
+このコードに含まれる条件判定は2回、すなわち最初の式の判定ののち、ただちに次の判定が実行されます。
+たとえば、x == 0 || x == 0 のような例ですが、これは恐らく x == 0 || y == 0 のように、2つ目の式が他の何かを意図したものだったのではないでしょうか。
+RR : メソッドは InputStream.read() の戻り値を無視しています。
+(RR_NOT_CHECKED)
+このメソッドは、java.io.InputStream.read() の戻り値を無視しています。戻り値を無視すると、実際に何バイトのデータが読み込まれたのかわかりません。一般には、指定された長さ分完全に読み込んでしまうケースが多いために問題が顕在化せず、ごくたまに発生するやっかいなバグとなります。
+RR : このメソッドで、InputStream.skip()の戻り値を無視しています。
+(SR_NOT_CHECKED)
+このメソッドは、データの読み込みをスキップするメソッドjava.io.InputStream.skip() の戻り値を無視しています。
+戻り値をチェックしないと、実際には呼び出し元が要求したバイト数よりも少ないバイト数しかスキップしなかった場合に、何バイトスキップしたのか分らなくなります。
+これは潜在的なバグとなります。なぜなら、大抵の場合、要求通りのスキップが行なわれるので、まれにしか現象が起きないからです。
+これに対し、バッファストリームの場合、skip()はバッファ内部のデータをスキップするだけなので、頻繁に現象が起きることになります。
+RS : クラスの readObject() メソッドは同期化されています。
+(RS_READOBJECT_SYNC)
+この直列化可能クラスは同期化された readObject() を定義していますが、そもそもオブジェクトが直列化復元される場合、ただ1つのスレッドによって行われる事になっています。このため、readObject() を同期化する必要はありません。もしも readObject() メソッド自体が、他のオブジェクトへの他のスレッドからのアクセスを引き起こしているなら、それは非常に疑わしいコーディングです。
+Ru : スレッドの中で run を実行しています。
+(本当は startを代わりに呼び出すべきではないのですか?)。
+(RU_INVOKE_RUN)
+このメソッドは、オブジェクトのrun()メソッドを明示的に呼び出しています。一般にRunnableを実装したクラスは、新しいスレッドがrun()メソッドを呼び出す事を期待しており、この場合、Thread.start()を呼び出すのが正しいやり方です。
+RV : 0から1の乱数値は整数では0に丸められます。
+(RV_01_TO_INT)
+0から1の乱数値が生成されていますが、整数0に丸められます。恐らく丸めの前に何らかの値を掛けたかった、あるいはRandom.nextInt(n)メソッドを使用したかったのではありませんか?
+RV : 不適切な符号付き32-bit整数のハッシュコードの絶対値計算。
+(RV_ABSOLUTE_VALUE_OF_HASHCODE)
+このコードは符号付き整数のハッシュコードを得た後、絶対値を計算しています。もしもハッシュコードがInteger.MIN_VALUEだと、絶対値は負になります(なぜならMath.abs(Integer.MIN_VALUE) == Integer.MIN_VALUEだからです)。
+RV : 不適切な符号付き32-bit整数の乱数の絶対値計算。
+(RV_ABSOLUTE_VALUE_OF_RANDOM_INT)
+このコードは符号付き整数の乱数を得た後、絶対値を計算しています。もしも生成された乱数がInteger.MIN_VALUEだと、絶対値は負になります(なぜならMath.abs(Integer.MIN_VALUE) == Integer.MIN_VALUEだからです)。
+RV : String.indexOf() メソッドの結果が正であるかどうかをチェックしています。
+(RV_CHECK_FOR_POSITIVE_INDEXOF)
+このメソッドは String.indexOf() メソッドを呼び出して、結果が正であるかどうかを調べています。通常は結果が負であるかどうかをチェックするはずです。正であることでチェックしているため、部分文字列が先頭に見つかったケースを見逃がしてしまします。
+RV : このコードは、compareToメソッドによって返却される特定の値をチェックしています。
+(RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE)
+このメソッドは、compareToやcompareメソッドを呼び出し、返り値が1や-1のような特定の値でないかをチェックしています。これらのメソッドを呼び出すときは0ではない特定の値全てを調べるのではなく、返り値の符号を調べるべきです。多くのcompareToやcompareメソッドは-1,0か1を返すのみですが、他の値を返すパターンもあります。
+RV : readLine() の結果を null チェック後に破棄しています。
+(RV_DONT_JUST_NULL_CHECK_READLINE)
+readLine() の結果が null でないことをチェックした後に単に破棄されています。ほとんどの場合、null チェックを行った後には、その値を使用するはずです。もう一度 readLine() を呼び出すと次の行が返るので、元の行の内容は取り出せません。
+RV : 生成された例外がスローされずに破棄されてしまっています。
+(RV_EXCEPTION_NOT_THROWN)
+このコードでは、例外(またはエラー)オブジェクトを生成していますが、それに対して何の処理も行っていません。たとえば、以下のようなコードです。
+if (x < 0)
+new IllegalArgumentException("x must be nonnegative");
+プログラマの意図は、おそらく生成した例外をスローしたかったのでしょう。
+if (x < 0)
+throw new IllegalArgumentException("x must be nonnegative");
+RV : compareTo()/compare()メソッドの結果を無効化しています。
+(RV_NEGATING_RESULT_OF_COMPARETO)
+このコードはcompareToやcompareメソッドの返り値を無効にしています。もし返り値がInteger.MIN_VALUEであれば、返り値を無効にすることは結果の符号を無効にすることにならにため、これは、疑わしい、あるいは悪いプログラミングの習慣です。結果を無効にするよりも、オペランドの順番を逆にすることによって、同じ意図の結果を得ることができます。
+RV : ハッシュコードの剰余は負になる場合があります。
+(RV_REM_OF_HASHCODE)
+このコードはハッシュコードを計算した後、剰余を計算しています。ハッシュコードは負になる場合があるため、この結果は負になるかもしれません。
+計算結果が負にならないと思っているのであれば、コードを修正する必要があります。序数が2のn乗であることが明らかならば、かわりにビットANDを使用することができます(x.hashCode()%nの代わりにx.hashCode()&(n-1)を使用します)。これは恐らく剰余計算よりも高速です。それ以外のケースでは剰余に対して絶対値を算出してください(Math.abs(x.hashCode()%n)。
+RV : 符号付き32bit整数の乱数の剰余計算。
+(RV_REM_OF_RANDOM_INT)
+このコードは符号付き整数の乱数を生成し、他の値で割って剰余を求めています。乱数は負になるかもしれないので、この結果は負になるかもしれません。これが想定された動作であることを確認し、替りにRandom.nextInt(int)を使用する事を検討してください。
+RV : メソッドにおいて戻り値を無視しています。
+(RV_RETURN_VALUE_IGNORED)
+このメソッドの戻り値をチェックするべきです。このようなコードを書いてしまった原因の1つとして、イミュータブルなオブジェクトのメソッド呼び出しが、そのオブジェクトの状態を変化させると誤解しているケースが考えられます。例えば、
+String dateString = getHeaderField(name);
+dateString.trim();
+プログラマは trim() メソッドが dateString によって参照される Strig オブジェクトを更新すると考えているようです。しかし、String オブジェクトはイミュータブルであるため、 trim() メソッドは新しい String オブジェクトを返し、ここではそれが無視されてしまっているのです。このコードは、以下のように修正しなければなりません。 
+String dateString = getHeaderField(name);
+dateString = dateString.trim();
+RV : メソッドが例外的な戻り値を無視してしまっています。
+(RV_RETURN_VALUE_IGNORED_BAD_PRACTICE)
+このメソッドはチェックされない戻り値を返しています。戻り値は機能の非正常または予測できない実行結果を表すこともあるため、確認すべきです。たとえば、File.delete() メソッドはファイルを正しく削除できなかった場合に(例外をスローするのではなく) false を返します。
+もし、この結果をチェックしなかったならば、戻り値が非定型値を示すことで予期しない振る舞いをすることに気づかないでしょう。
+RV : 戻り値を無視しているメソッド呼び出しです。
+(RV_RETURN_VALUE_IGNORED2)
+このメソッドの戻り値を無視すべきではありません。この警告が出力される原因として、イミュータブルなオブジェクトのメソッドを呼び出して、それによりオブジェクトの状態が変化すると考えているケースが挙げられます。たとえば、以下のようなコードです。
+String dateString = getHeaderField(name);
+dateString.trim();
+このプログラマは、trim() メソッドが dateString が参照している String の状態を変えると考えているように思われます。しかし String はイミュータブルであり、trim() メソッドは新しいStringオブジェクトを返すので、これでは戻されたオブジェクトが捨てられてしまいます。このコードは、以下のように修正すべきです。
+String dateString = getHeaderField(name);
+dateString = dateString.trim();
+RV : putIfAbsentの返り値が無視されています。putIfAbsentへ渡された値が拒否されました。
+(RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED)
+putIfAbsentメソッドは、与えられたキー(putIfAbsentが成功したときの最初の値)に紐づいている単一の値を保証するために、典型的に使われるものです。もし返り値を無視して、渡された値への参照を保持したら、マップのキーと紐づいた値ではない値を保持し続けるリスクを抱えることになります。使用する値が問題となったり、マップに保持されていない値を使用することが問題となったりすると、プログラムは正常に作動しません。
+RV : メソッドは戻り値を無視しています。
+(RV_RETURN_VALUE_IGNORED_INFERRED)
+このコードはメソッドを呼び出し、返り値を無視しています。返り値はメソッドが呼び出されている型と同じ型であり、私たちの解析によると返り値が重要なように思われます(例:String.toLowerCase()の返り値を無視することに類似)
+メソッド本体の単純な解析からだけで、返り値の無視は悪い考えだと想像しています。返り値の無視が重要か、許容可能なものかに関してFindBugsに指示するためには、@CheckReturnValueの注釈を用いることができます。
+戻り値の無視がOKかNGかを決めるために、これを詳細に調べてみてください。
+SA : フィールドへの二重代入。
+(SA_FIELD_DOUBLE_ASSIGNMENT)
+このメソッドでフィールドへの二重代入が行われています。
+int x,y;
+public void foo() {
+x = x = 17;
+}
+フィールドに2回代入するのは無意味です。恐らく論理の誤りかタイプミスでしょう。
+SA : フィールドの自己代入があります。
+(SA_FIELD_SELF_ASSIGNMENT)
+このメソッドは、フィールドの自己代入があります。例えば、以下のようなコードです。
+int x;
+public void foo() {
+x = x;
+}
+この例のような代入は無意味です。ロジックの誤りや、タイプミスかもしれません。
+SA : フィールドとそれ自身との自己比較。
+(SA_FIELD_SELF_COMPARISON)
+メソッド内でフィールドをそれ自身と比較しています。これはタイプミスか論理の誤りと思われます。比較対象が正しいかどうか確認してください。
+SA : フィールドを含んだ、無意味な自己演算(例:x & x)。
+(SA_FIELD_SELF_COMPUTATION)
+メソッド内でフィールドと、同じフィールド参照との間で演算を行っています(例:x&x or x-x)。この演算の特性上、意味があるとは思えず、タイプミスあるいは論理の誤りと考えられます。演算内容について、もう一度確認してください。
+SA : ローカル変数への二重代入。
+(SA_LOCAL_DOUBLE_ASSIGNMENT)
+このメソッドでローカル変数への二重代入が行われています。
+public void foo() {
+int x,y;
+x = x = 17;
+}
+変数に2回代入するのは無意味です。恐らく論理の誤りかタイプミスでしょう。
+SA : ローカル変数の自己代入があります。
+(SA_LOCAL_SELF_ASSIGNMENT)
+このメソッドは、ローカル変数の自己代入があります。例えば、以下のようなコードです。
+public void foo() {
+int x = 3;
+x = x;
+}
+この例のような代入は、無意味です。ロジックの誤りや、タイプミスかもしれません。
+SA :フィールドへの割当よりローカル変数への自己割当を行っている箇所があります。
+(SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD)
+このメソッドは、ローカル変数の自己代入があります。また割当が同じであることが明らかな、同一の名前を持つフィールドがあります。
+int foo;
+public void setFoo(int foo) {
+foo = foo;
+}
+SA : 変数とそれ自身との自己比較。
+(SA_LOCAL_SELF_COMPARISON)
+メソッド内で変数をそれ自身と比較しています。これはタイプミスか論理の誤りと思われます。比較対象が正しいかどうか確認してください。
+SA : 変数を含んだ、無意味な自己演算(例:x & x)。
+(SA_LOCAL_SELF_COMPUTATION)
+メソッド内で変数と、同じ変数参照との間で演算を行っています(例:x&x or x-x)。この演算の特性上、意味があるとは思えず、タイプミスあるいは論理の誤りと考えられます。演算内容について、もう一度確認してください。
+SBSC : このメソッド内で、+を使ってループ内で文字列を連結しています。
+(SBSC_USE_STRINGBUFFER_CONCATENATION)
+このメソッドの中で、ループ内でStringの連結を繰り返しているようです。このためStringBuffer/StringBuilderへの変換、連結、そしてStringへの再変換という処理が何度も繰り返されます。文字列が毎回コピーし直されて長くなっていくため、繰り返し回数の二乗の処理コストが必要となる場合があります。
+明示的にStringBufferあるいはStringBuilder(J2SE 1.5から導入されます)を用いる事で、パフォーマンスを改善する事が出来ます。
+例)
+// 悪い例
+String s = "";
+for (int i = 0; i < field.length; ++i) {
+s = s + field[i];
+}
+// 良い例
+StringBuffer buf = new StringBuffer();
+for (int i = 0; i < field.length; ++i) {
+buf.append(field[i]);
+}
+String s = buf.toString();
+SC : コンストラクタが Thread.start() を実行しています。
+(SC_START_IN_CTOR)
+コンストラクタがスレッドを開始しています。継承が可能なクラスでは、この設計は間違いと思われます。なぜなら、サブクラスのコンストラクタが実行される前に、スレッドが開始してしまうためです。
+Se : 直列化可能なクラスのインスタンスフィールドが、非transientで、非直列化可能です。
+(SE_BAD_FIELD)
+この直列化可能クラスは、transientでもなく、直列化可能でもなく、java.lang.Objectでもないインスタンスフィールドを持っています。また、Externalizable インターフェースも実装していませんし、readObject() も writeObject() メソッドも定義していません。このフィールドに実際に非直列化可能クラスのインスタンスを保持している場合、このクラスのオブジェクトは、直列化復元を正しく行えません。
+Se : 直列化可能でないクラスが、直列化可能なインナークラスを持っています。
+(SE_BAD_FIELD_INNER_CLASS)
+この直列化可能クラスは、直列化可能でないクラスのインナークラスとなっています。これを直列化すると、一緒にouterクラスのインスタンスも直列化しようとして、実行時にエラーとなるでしょう。
+可能であれば、インナークラスをstaticとしてください。outerクラスを直列化可能とすることでも問題を解決できますが、この場合インナークラスの直列化にあたってouterクラスも直列化されることに注意してください。おそらくこれはプログラマの意図とは異なるでしょう。
+Se : 直列化できない値が、直列化可能と宣言されたクラスのインスタンスフィールドに格納されています。
+(SE_BAD_FIELD_STORE)
+直列化できない値が、直列化可能と宣言されたクラスの transient でないフィールドに格納されています。
+Se : Serializable を実装していないコンパレータです。
+(SE_COMPARATOR_SHOULD_BE_SERIALIZABLE)
+このクラスは Comparator インターフェースを実装していますが、Serializable インターフェースも実装すべきかどうか検討すべきです。もしもTreeMap のような順序付きコレクションでこのコンパレータを使用すると、コンパレータが直列化可能である場合にのみ、TreeMap は直列化されます。大抵のコンパレータはまったく状態を持っていないか、持っていたとしてもわずかなので、直列化可能とするのは簡単であり、良い防御的プログラミングであると言えます。
+Se : 直列化可能なインナークラス。
+(SE_INNER_CLASS)
+この直列化可能なクラスはインナークラスです。このクラスのインスタンスを直列化しようとすると、関連する outer クラスのインスタンスも一緒に直列化されます。outer クラスが直列化可能なので、問題はありませんが、予想外に大量のデータが直列化される可能性があります。可能であれば、インナークラスをstatic としてください。
+Se : 直列化のためには、メソッドを private 宣言しなければなりません。
+(SE_METHOD_MUST_BE_PRIVATE)
+このクラスは Serializable インターフェースを実装しており、直列化、非直列化を行うためのメソッドを宣言しています。しかしメソッドが private 宣言されていないので無視されてしまいます。
+Se : このクラスは Serializable を実装していますが、親クラスが引数無しコンストラクタを定義していません。
+(SE_NO_SUITABLE_CONSTRUCTOR)
+このクラスは Serializable インターフェースを実装していますが、親クラスは実装していません。このクラスのオブジェクトを非直列化する場合、親クラスのフィールドの初期化は、親クラスの引数無しコンストラクタで行う必要があります。ところが、親クラスが引数無しコンストラクタを持たないので、直列化、非直列化処理は実行時に失敗します。
+Se : クラスは Externalizable を実装していますが、引数無しコンストラクタを定義していません。
+(SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION)
+このクラスは Externalizable インターフェースを実装していますが、引数無しのコンストラクタを定義していません。Externalizable オブジェクトが非直列化される際、まず引数無しコンストラクタを呼んでインスタンスを生成する必要があります。このクラスには引数無しコンストラクタがないため、実行時に直列化、非直列化処理に失敗します。
+Se : serialVersionUID が final ではありません。
+(SE_NONFINAL_SERIALVERSIONID)
+このクラスは serialVersionUID フィールドを定義しますが、finalではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、finalとすべきです。
+Se : serialVersionUID が long ではありません。
+(SE_NONLONG_SERIALVERSIONID)
+このクラスは serialVersionUID フィールドを定義していますがlongではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、longとすべきです。
+Se : serialVersionUID が static ではありません。
+(SE_NONSTATIC_SERIALVERSIONID)
+このクラスは serialVersionUID フィールドを定義していますが、staticではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、staticとすべきです。
+Se : プライベートな readResolve() メソッドはサブクラスで継承できません。
+(SE_PRIVATE_READ_RESOLVE_NOT_INHERITED)
+このクラスはプライベートな readResolve() メソッドを宣言しています。そのため、このメソッドはサブクラスで継承できません。
+これが意図したものであるならば問題ありませんが、何を意図したものか確認するために、レビューすべきでしょう。
+Se : readResolve() メソッドはスタティックメソッドとして宣言してはいけません。
+(SE_READ_RESOLVE_IS_STATIC)
+シリアライゼーション機構が認識するためには、readResolve() メソッドはスタティックメソッドして宣言してはいけません。
+Se : readResolveメソッドの戻り値の型は、Objectでなければなりません。
+(SE_READ_RESOLVE_MUST_RETURN_OBJECT)
+直列化機構から正しく認識されるためには、readResolveメソッドの戻り値の型はObjectでなければなりません。
+Se : 非直列化の際に設定されない transient フィールドがあります。
+(SE_TRANSIENT_FIELD_NOT_RESTORED)
+このクラスには、クラス内の様々な場所で更新されるフィールドを持っており、このフィールドは、このクラスの状態の一部と考えられます。しかしこのフィールドは transient と宣言されているのに、 readObject/readResolve メソッドで値が設定されません。このためこのクラスのすべてのインスタンスで、このフィールドはデフォルト値を開始値として持つことになります。
+Se : transientフィールドを持つクラスが直列化可能になっていません。
+(SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS)
+transientフィールドを持つクラスが直列化可能になっていません。このためtransientと宣言しても何の効果もありません。これは、直列化可能クラスを修正する段階で間違えたか、直列化機構に対して誤解していることが原因と思われます。
+SF : switchのフォールスルーによって、代入が無駄になっています。
+(SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH)
+直前のcaseで値が格納されていますが、switchのフォールスルーによって、単に上書きされます。恐らくbreak、returnを直前のcaseに入れ忘れたものと思われます。
+SF : switch文で例外がスローされたことにより保存された値が無視されます。
+(SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW)
+switch文で例外がスローされたことにより、失敗に終わり、前のswitch文に格納された変数がここでは無視されています。前のswitch文のケースの最後に、breakやreturnを書き忘れているようです。
+SF : breakしないcaseが、switch文の中にあります。
+(SF_SWITCH_FALLTHROUGH)
+このメソッド内のswitch文の中には、breakしていないcaseがあります。この場合、制御は次のcaseにフォールスルーします。大抵の場合caseはbreakかreturnで終了する必要があります。
+SF : デフォルトケースの実装されていないswitch文
+(SF_SWITCH_NO_DEFAULT)
+このメソッドはデフォルトケースのないswitch文を含んでいます。通常、デフォルトケースの実装が必要です。
+SI : すべての static final フィールドが割り当てられる前に、スタティックイニシャライザがインスタンス生成をおこなっています。
+(SI_INSTANCE_BEFORE_FINALS_ASSIGNED)
+すべてのstatic finalフィールドの値が代入される前に、クラスのスタティックイニシャライザがインスタンス生成を行っています。
+SIC : static な内部クラスになるべきではないのですか?。
+(SIC_INNER_SHOULD_BE_STATIC)
+このクラスは非 static 内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、static内部クラスとすべきです。
+SIC : 名前付きstatic 内部クラスにリファクタリング可能と思われます。
+(SIC_INNER_SHOULD_BE_STATIC_ANON)
+このクラスは非 static 内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、static内部クラスとすべきです。匿名内部クラスは static にできません。そのため、これを実現するには名前を持った static 内部クラスに変更するように、リファクタリングする必要があります。
+SIC : static内部クラスにリファクタリング可能です。
+(SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS)
+このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、static内部クラスとすべきです。非static内部クラスの生成時には、エンクロージングクラスのインスタンスが必要となります。このため、内部クラスのコンストラクタに、エンクロージングクラスのインスタンスを渡すようにリファクタリングする必要があるかもしれません。
+SIC : Staticではない内部クラスとthread localの致命的包含。
+(SIC_THREADLOCAL_DEADLY_EMBRACE)
+このクラスは内部クラスですが、恐らくstaticな内部クラスであるべきです。内部クラスと外部のクラス中のthread localの間に致命的な包含を持つという深刻な危険があるためです。内部クラスがstaticでないために、外部クラスへの参照を保持しています。もしthread localが内部クラスのinstanceへの参照を含んでいた場合、内部と外部のinstanceは参照もできるし、GCには不適格なものになってしまいます。
+SIO : instanceof演算子で型チェックをする必要はありません。
+(SIO_SUPERFLUOUS_INSTANCEOF)
+静的に型チェックが可能なのにinstanceof演算子を使用して型チェックを行なっています。
+SKIPPED : クラスが大きすぎて解析できません。
+(SKIPPED_CLASS_TOO_BIG)
+このクラスは大きすぎて有効に取り扱うことができません。また、エラーが発生したために完全に解析されませんでした。
+SnVI : クラスは直列化可能です。
+しかし serialVersionUID を宣言していません。
+(SE_NO_SERIALVERSIONID)
+このクラスは Serializable インターフェースを実装しています。しかし、serialVersionUID フィールドを定義していません。クラス参照を追加する程度の簡単な変更でも、合成フィールドを追加することになり、これは、暗黙的に生成される serialVersionUID の値を変えてしまいます(例えば、String.classへの参照を追加すると、class$java$lang$Stringというスタティックフィールドが生成されます)。また、複数のJavaコンパイラの間では、このクラス参照、インナークラス参照に対して生成される、合成フィールドの命名規則が異なる場合があります。異なるバージョン間での相互運用性を保証するため、serialVersionUID を明示的に定義することを検討してください。
+SP : メソッドはフィールドのスピンロックを利用しています。
+(SP_SPIN_ON_FIELD)
+このメソッドは、フィールドの値をループの終了条件としていますが、仕様上、コンパイラはフィールドの読み出しをループの外に出しても良い事になっています。このためループは無限ループとなる可能性があります。フィールド読みだしを正しく同期化(wait/notify)する事が必要です。
+SQL : PreparedStatement のパラメータに添字 0 を指定しています。
+(SQL_BAD_PREPARED_STATEMENT_ACCESS)
+PreparedStatement の setXXX メソッドで、添字に0を指定しています。添字は 1 から開始するので、これは常に間違いです。
+SQL : ResultSet の添字 0 にアクセスしようとしています。
+(SQL_BAD_RESULTSET_ACCESS)
+ResultSetの getXXX、updateXXX メソッド呼び出しで添字に 0 を指定しています。ResultSetの添字は 1 から開始するので、これは常に間違いです。
+SQL : SQL の Statement オブジェクトの execute メソッドに定数でない文字列が渡されています。
+(SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE)
+このメソッドは SQL の Statement の execute メソッドに動的に生成された文字列を渡しているようです。替りに PreparedStatement の使用を検討してください。この方が効率的で、SQLインジェクションによる攻撃に対してより安全です。
+SQL : PreparedStatement が定数でない String から生成されています。
+(SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING)
+このコードは SQL の PreparedStatement を定数でない String から生成しています。内容をチェックしないと汚染されたユーザ入力が文字列に含まれてしまい、SQL インジェクションによって予期しない、望ましくない動作を招くかもしれません。
+SS : 読まれないフィールドがあります。
+このフィールドは static になるべきではないのですか?。
+(SS_SHOULD_BE_STATIC)
+このクラスは、staticでないfinalフィールドがあり、コンパイル時に決定される、静的な値に初期化されています。このフィールドをstaticとすることを検討してください。
+ST : 非スタティックメソッドからのスタティックフィールドへの書き込み。
+(ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD)
+この非スタティックメソッドはスタティックフィールドに書き込みを行なっています。これは複数のインスタンスが同時に操作された時に正しく動作させるのが困難で、良くないやり方です。
+STCAL : スタティックな Calendar に対する呼び出しです。
+(STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE)
+JavaDoc には記述されていませんが、Calendar クラスはマルチスレッド環境において本質的にアンセーフです。
+スタティックフィールドから取得された Calendar インスタンスに対するメソッドコールを検出しました。これはスレッドアンセーフであることを疑うべきコードです。
+これに関するさらなる情報については、Sun Bug #6231579 や Sun Bug #6178997 をご覧ください。
+STCAL : スタティックな DateFormat に対する呼び出しです。
+(STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE)
+JavaDoc に記述されているように、DateFormat クラスはマルチスレッド環境において本質的にアンセーフです。
+スタティックフィールドから取得された DateFormat インスタンスに対するメソッドコールを検出しました。これはスレッドアンセーフであることを疑うべきコードです。
+これに関するさらなる情報については、Sun Bug #6231579
+や Sun Bug #6178997 をご覧ください。
+STCAL : Calendar クラスをスタティックに使用しています。
+(STCAL_STATIC_CALENDAR_INSTANCE)
+JavaDoc には記述されていませんが、Calendar クラスはマルチスレッド環境において本質的にアンセーフです。
+適切な排他を行わずに、1つのインスタンスをスレッドをまたがって共有すること、アプリケーションの動作が不安定になってしまいます。このような状況では、Java5 以降の環境よりも、JDK 1.4 以前の環境の方が、sun.util.calendar.BaseCalendar.getCalendarDateFromFixedDate() において ArrayIndexOutOfBoundsException や IndexOutOfBoundsExceptions がしばしばランダムに発生します。
+また、シリアライゼーションに関する問題も発生するでしょう。インスタンスフィールドを利用することをお勧めします。
+より詳細な情報については、Sun Bug #6231579
+や Sun Bug #6178997 を参照してください。
+STCAL : DateFormat クラスをスタティックに使用しています。
+(STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE)
+JavaDoc に記述されているように、DateFormat クラスはマルチスレッド環境において本質的にアンセーフです。
+適切な排他を行わずに、1つのインスタンスをスレッドをまたがって共有すると、アプリケーションの動作が不安定になってしまいます。このような状況では、シリアライゼーションに関する問題も発生しますので、インスタンスフィールドを利用することをお勧めします。
+より詳細な情報については、Sun Bug #6231579
+や Sun Bug #6178997 を参照してください。
+STI : interrupted() を呼び出すために、無駄なcurrentThread() 呼び出しを行なっています。
+(STI_INTERRUPTED_ON_CURRENTTHREAD)
+このメソッドは、interrupted() メソッドを呼び出すためだけに Thread.currentThread() を呼び出しています。interrupted() メソッドは static メソッドなので、単に Thread.interrupted() とする方が単純明解です。
+STI : スタティックメソッド Thread.interrupted() がスレッドインスタンスに対して呼び出されています。
+(STI_INTERRUPTED_ON_UNKNOWNTHREAD)
+このメソッドは Thread.interrupted() が、自スレッドではないと思われるスレッドに対して呼び出されています。この interrupted() メソッドはスタティックメソッドであり、常に自スレッドに対して呼び出されるため、コード作成者の意図とは異なるスレッドに対して呼び出されることになります。
+SW : ある種のSwingのメソッドは、awtイベントディスパッチスレッドから呼び出す必要があります。
+(SW_SWING_METHODS_INVOKED_IN_SWING_THREAD)
+(From JDC Tech Tip): に解説されている通り、Swingのメソッド、show、setVisible、packが呼び出されると、フレームのピアが生成されます。これにともない、システムは、イベントディスパッチスレッドを生成します。これが問題を引き起す事があります。なぜなら、イベントディパッチスレッドは、packとvalidateメソッドの実行中にもリスナを呼び出す事が可能だからです。これは、2つのスレッドが同時にSwingコンポーネントにアクセスする事態を招き、デッドロックや、その他のスレッドに関する問題を引き起す危険があります。packの呼び出しは、コンポーネントを実体化します。その途上で、リスナの呼び出しが、イベントディスパッチスレッドによって行なわれるかもしれません。
+SWL : ロックを保持したまま Thread.sleep() を呼び出しています。
+(SWL_SLEEP_WITH_LOCK_HELD)
+このメソッドはロックを保持したまま Thread.sleep() を呼び出しています。これはパフォーマンスとスケーラビリティを極度に悪化させ、あるいはデッドロックを引き起こします。なぜなら、他の複数のスレッドがロックの獲得のために待っているかもしれないからです。これよりも、wait() を呼び出してロックを待ち合わせる方が良い方法です。これによってロックが開放され、他のスレッドが実行できるようになります。
+TEST : テスト。
+(TESTING)
+このバグパターンは、未完成のバグディテクタでテストのために使用されます。
+TEST : 未知のバグパターンです。
+(UNKNOWN)
+警告が見つかりましたが、FindBugs はこのバグパターンに対応する詳細説明を見つけることができませんでした。これは FindBugs 自身のバグか設定ミス、またはプラグインを利用している場合、プラグインが正しくロードされていない可能性があります。
+TLW : 2つのロックを持ったまま wait しています。
+(TLW_TWO_LOCK_WAIT)
+2つ以上のロックを獲得した状態でモニタの上で待ち合わせを行うと、デッドロックする場合があります。wait()メソッドは、呼び出されたオブジェクトのロックのみを解放するだけで、その他のロックは解放しません。これは必ずしもバグとは限りませんが、詳しく検討すべきです。
+TQ : アノテートされた値が、そのアノテーションの必要とされないところで使用されています。
+(TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED)
+アノテーションによってアノテートされた値が、アノテーションを利用すべきでない場所で利用されています。
+より具体的な例としては、when=ALWAYS というパラメータを持つアノテーションでアノテートされた値は、when=NEVER というパラメータを持つアノテーションの影響範囲と重複してしまっています。
+たとえば、@NonNegative というアノテーションが @Negative(when=When.NEVER) というアノテーションのエイリアスだとしましょう。以下のようなコードでは、return 文が @NonNegative アノテートされているにもかかわらず、引数は @Negative アノテートされてしまっています。
+TQ : 実際の利用とは矛盾したアノテーションが指定されています。
+(TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK)
+この値は常に型限定子が指定されているものとして利用されています。しかし、どこでこの値に型限定子が必要であるのかが不明であることを示す明示的なアノテーションが存在します。
+使い方かアノテーションのどちらかが誤っています。
+TQ : 実際の利用とは矛盾したアノテーションが指定されています。
+(TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK)
+この値は常に型限定子が指定されていないものとして利用されています。しかし、この値は型限定子の利用禁止がどこで行われているのかわからないことを示す明示的なアノテーションが存在します。
+使い方かアノテーションのどちらかが誤っています。
+TQ : アノテーションを持たない値が、アノテーションが必要とするところで利用されています。
+(TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK)
+アノテーションを持たない値が、アノテーションを必要とする部分で利用されています。
+たとえば、以下のようなメソッドを考えてください。
+public @Untainted Object mustReturnUntainted(Object unknown) {
+return unknown;
+}
+mustReturnUntainted メソッドは、@Untainted アノテートされた値を返さなければなりません。しかし、そのアノテーションを持つ値は返されていません。
+TQ : アノテーションを持つ値が、そのアノテーションを利用しないところで利用されています。
+(TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK)
+何らかのアノテーションを保持する値が、そのアノテーションを利用しない場所で利用されています。
+TQ : アノテーションを持たない値が、アノテートされた値が前提とするコードで利用されています。
+(TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED)
+アノテーションを持たない値が、アノテーションを持つ値を必要とする箇所で利用されようとしています。
+より具体的な例としては、when=NEVER というパラメータのアノテーションを保持する値が、when=ALWAYS というパラメータのアノテーションが必要とされる箇所で利用されています。
+UCF : 利用されないフロー制御ステートメントがあります。
+(UCF_USELESS_CONTROL_FLOW)
+このメソッドには、無駄なフロー制御ステートメントがあります。分岐を通ったかどうかにかかわらず、制御の流れは変わりません。例えば以下のような空のifブロックを記述してしまった事が原因です。
+if (argv.length == 1) {
+// TODO: handle this case
+}
+UCF : 次の行へ移るだけの不要な制御フロー。
+(UCF_USELESS_CONTROL_FLOW_NEXT_LINE)
+このメソッド内には、制御フローを全く変えないか、単に次の行に移るだけの分岐が存在します。これは、不注意で以下のような空のif文を作成してしまった場合に起き得ます。
+if (argv.length == 1);
+System.out.println("Hello, " + argv[0]);
+UG : get メソッドは同期化(synchronized)されていませんが、set メソッド同期化されています。
+(UG_SYNC_SET_UNSYNC_GET)
+このクラスには似た名前の get メソッドと set メソッドがあり、set メソッドは同期化されていますが、get メソッドは同期化されていません。このため、getメソッドの呼び出しによって必ずしも最新のオブジェクトの内容が見えるとは限らず、実行時に正しくない挙動を招く場合があります。get メソッドも同期化するべきです。
+UI : クラスが継承されている場合、getResource の呼び出しは安全ではありません。
+(UI_INHERITANCE_UNSAFE_GETRESOURCE)
+this.getClass().getResource(...) の呼び出しは、別のパッケージに継承クラスがある場合には、予期しない結果をもたらす可能性があります。
+UL : メソッドのすべてのパスにおいてロックが解放されません。
+(UL_UNRELEASED_LOCK)
+このメソッドは、JSR-166 (java.util.concurrent) によるロックを獲得していますが、このメソッドを起点とした実行パスには、ロックが解放されないパスがあります。一般には、このロックを使うための正しいイディオムは次のようになります。
+Lock l = ...;
+l.lock();
+try {
+// do something
+} finally {
+l.unlock();
+}
+UL : メソッドのすべての例外パスにおいてロックが解放されません。
+(UL_UNRELEASED_LOCK_EXCEPTION_PATH)
+このメソッドは、JSR-166 (java.util.concurrent) によるロックを獲得していますが、このメソッドを起点とした例外処理パスに、解放されないパスがあります。一般には、このロックを使うための正しいイディオムは次のようになります。
+Lock l = ...;
+l.lock();
+try {
+// do something
+} finally {
+l.unlock();
+}
+UM : 定数に対するMathクラスのstaticメソッド呼び出し。
+(UM_UNNECESSARY_MATH)
+このメソッド内でjava.lang.Mathのstaticメソッドを定数に対して呼び出しています。この結果は予め計算しておく事が可能であり、その方が高速で場合によってはより正確です。以下のメソッド呼び出しが検出されます。
+メソッドパラメータ
+FindBugs version2.0.2 バグパターン詳細

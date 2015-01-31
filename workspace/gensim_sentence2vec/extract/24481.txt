@@ -1,0 +1,20 @@
+
+WorkItemStore.Query
+メソッドのいずれか、または Query オブジェクトを使用して、バグ、タスク、その他の種類の作業項目、および作業項目間のリンクを照会できます。
+これらのクエリでは、Transact-SQL に似た作業項目クエリ言語 (WIQL: Work Item Query Language) を使用します。  
+// Connect to the work item store
+TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(
+new Uri("http://server:8080/tfs/DefaultCollection"));
+WorkItemStore workItemStore = (WorkItemStore)tpc.GetService(typeof(WorkItemStore)); 
+// Run a query.
+WorkItemCollection queryResults = workItemStore.Query(
+"Select [State], [Title] " +
+"From WorkItems " +
+"Where [Work Item Type] = 'User Story' " +
+"Order By [State] Asc, [Changed Date] Desc");
+// Run a saved query.
+QueryHierarchy queryRoot = workItemStore.Projects[0].QueryHierarchy;
+QueryFolder folder = (QueryFolder) queryRoot["Shared Queries"];
+QueryDefinition query = (QueryDefinition)folder["Active Bugs"];
+queryResults = workItemStore.Query(query.QueryText);
+バグ、タスク、およびその他の作業項目の照会

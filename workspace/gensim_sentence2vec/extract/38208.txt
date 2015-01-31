@@ -1,0 +1,11 @@
+Excel2007以降
+作業列(D列)を設ける場合 
+D1=IF(COUNTIF(Sheet2!B$1:B$7,A1),"",ROW(A1)) 
+フィルダウン 
+C1=IFERROR(INDEX(A$1:A$7,SMALL(D$1:D$7,ROW(A1))),"") 
+フィルダウン 
+作業列を設けない場合 
+C1=IFERROR(INDEX(A$1:A$7,SMALL(INDEX(COUNTIF(Sheet2!B$1:B$7,A$1:A$7)*10^5+ROW($A$1:$A$7),),ROW(A1))),"") 
+フィルダウン
+【追記】添付図のB列はSheet2にあるものとしてください。
+シート1のA列とシート2のB列にそれぞれ数値が入っています。この2つの列... - Yahoo!知恵袋

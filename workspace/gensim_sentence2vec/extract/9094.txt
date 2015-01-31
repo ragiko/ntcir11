@@ -1,0 +1,353 @@
+
+triangulate_object_model_3dtriangulate_object_model_3dTriangulateObjectModel3dtriangulate_object_model_3dTriangulateObjectModel3dTriangulateObjectModel3d (オペレーター)
+関数名
+triangulate_object_model_3dtriangulate_object_model_3dTriangulateObjectModel3dtriangulate_object_model_3dTriangulateObjectModel3dTriangulateObjectModel3d — 3 次元オブジェクトモデルの三角メッシュを作成する。
+書式
+説明
+オペレーター triangulate_object_model_3dtriangulate_object_model_3dTriangulateObjectModel3dtriangulate_object_model_3dTriangulateObjectModel3dTriangulateObjectModel3d は、3 次元オブジェクトモデルに関して三角メッシュから成る表面を生成し、結果として生成された表面を
+TriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DtriangulatedObjectModel3D に返します。現在、このオペレーターが提供する三角メッシュ手法には、'polygon_triangulation'"polygon_triangulation""polygon_triangulation""polygon_triangulation""polygon_triangulation""polygon_triangulation"、
+'greedy'"greedy""greedy""greedy""greedy""greedy"、および 'implicit'"implicit""implicit""implicit""implicit""implicit" の 3 種類があり、MethodMethodMethodMethodMethodmethod
+で選択することができます。'polygon_triangulation'"polygon_triangulation""polygon_triangulation""polygon_triangulation""polygon_triangulation""polygon_triangulation" は、3 次元オブジェクトモデルの多角形を三角形の面に変換するための単純な方法です。一方、他の 2 つの方法はより高度なアルゴリズムで、未知の表面トポロジを用いて、純粋な 3 次元点データから三角形面を計算します。
+'greedy'"greedy""greedy""greedy""greedy""greedy" と 'implicit'"implicit""implicit""implicit""implicit""implicit" アルゴリズムの詳細な比較については、以下の「三角メッシュ方法の比較」を参照してください。
+ポリゴン三角メッシュ法
+MethodMethodMethodMethodMethodmethod に 'polygon_triangulation'"polygon_triangulation""polygon_triangulation""polygon_triangulation""polygon_triangulation""polygon_triangulation" を選択すると、
+ObjectModel3DObjectModel3DObjectModel3DObjectModel3DObjectModel3DobjectModel3D 内のすべてのポリゴンが三角形に分割されます。この方法では一般パラメーターはサポートされていません。利用できるポリゴンがない場合、例外が発生します。ObjectModel3DObjectModel3DObjectModel3DObjectModel3DObjectModel3DobjectModel3D と同じ表面を表す三角形メッシュが TriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DtriangulatedObjectModel3D に返されます。
+Greedy三角メッシュ法
+MethodMethodMethodMethodMethodmethod に 'greedy'"greedy""greedy""greedy""greedy""greedy" を選択すると、Greedy
+三角メッシュ法と呼ばれるアルゴリズムが使用されます。このアルゴリズムは、法線ベクトルを含む 3 次元点データを必要とします。アルゴリズムによって作成される表面は、与えられた3次元点を通りつつ、かつその表面の法線は指定された許容範囲内で対応する点の法線に一致していなければなりません。表面は三角形面で表され、三角形面は近傍点のトリプレットから作成されます。どのトリプレットが表面三角形に適しているかを決定するため、アルゴリズムは各点のペアごとに以下のような局所的な近傍テスト(表面近傍基準(SNC)と呼ぶ)を適用します。
+点 P が表面上にあり、表面の方向(法線)と同じ N を持つ場合、法線 N' を持つ点 P' は、次の基準が満たされる場合、同じ表面上にあるとみなされます。
+2 つの点の間の距離が r より小さいあるいは等しい。
+すなわち、
+dist(P,P')<=r
+2 つの法線の方向がほぼ同じである。すなわち、角度
+angle(N,N')<=alpha
+または、法線が厳密に一致する必要がない場合は、-
+angle(N,-N')<=alpha
+ベクトル dP=P'-P が N に対してほぼ 
+直行である。すなわち、角度
+|90°-angle(N,dP)|<=beta
+P' が基準 3 を満たさないが、[P,N] によって
+定義される平面からの距離が d 以内である場合も、
+同様に、同じ平面上にあるとみなされます。
+上記基準は、4 つのパラメーター、
+r('greedy_radius_type'"greedy_radius_type""greedy_radius_type""greedy_radius_type""greedy_radius_type""greedy_radius_type" と 
+'greedy_radius_value'"greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value" を参照)、alpha
+('greedy_neigh_orient_tol'"greedy_neigh_orient_tol""greedy_neigh_orient_tol""greedy_neigh_orient_tol""greedy_neigh_orient_tol""greedy_neigh_orient_tol" を参照)、beta
+('greedy_neigh_latitude_tol'"greedy_neigh_latitude_tol""greedy_neigh_latitude_tol""greedy_neigh_latitude_tol""greedy_neigh_latitude_tol""greedy_neigh_latitude_tol" を参照)、および d
+('greedy_neigh_vertical_tol'"greedy_neigh_vertical_tol""greedy_neigh_vertical_tol""greedy_neigh_vertical_tol""greedy_neigh_vertical_tol""greedy_neigh_vertical_tol" を参照)によって制御されますが、これらは以下のような意味を持ちます。
+パラメーター alpha は、基本的に、生成される表面の湾曲を制御します。alpha の値が小さい場合、生成される表面は局所的に平らになります。
+alpha の値を大きくすると、より湾曲した表面部分の生成が可能になります。
+他の 3 つのパラメーターは、有効な SNC 近傍を定義する球の一部を定義します。球は、半径 r を持ち、中心が 
+P にあり、平面 [P,N] はその球の赤道を通る面として表されます。この球内にある点だけが考慮されます(第 1 の SNC 基準)。さらに、それらの点は、赤道に対して 
+[-beta; beta] 以内の緯度にある必要があります 
+(第 3 の SNC 基準)。ただし、距離パラメーター d で赤道面の上下に定義された薄い層内に含まれる場合(第 4 の SNC 基準)も、それらの点は近傍とみなされます。対照的に、球の両極部分にある点(beta より高い緯度にあり、赤道面からの距離が d を超える点)は近傍とみなされません。
+パラメーター r は、大きすぎる三角形が作成されるのを防ぐ目的で設定します。これは、点群が複数の不連続な表面部分や、閉じられるべきではない穴を表している場合、特に重要です。
+beta によって定義される緯度範囲により、ノイズや湾曲が原因で [P,N] から外れてしまった近傍も考慮されます。同様に、パラメーター d は、赤道面のすぐ「上」または「下」の近傍に対して許容するために設定されますが、これは基本的にデータノイズの原因にもなりえます。
+上記のパラメーターに対して適切な値を選択するための指針を以下に示します。
+結果として生じた表面三角メッシュに、不連続な部分が多すぎたり
+多くの穴がある場合、それは、r が小さすぎるために、
+穴を閉じるのに十分な大きさの三角形の生成が妨げられていることを
+示している可能性があります。r の値を大きく
+してみてください。
+法線データにノイズが多い(つまり、隣接する法線が互いに 
+大きく外れている)場合は、alpha の値を
+大きくします。
+ノイズの多い法線の原因は、一般的に、点データと法線データの
+両方を提供するセンサー、または点データから法線を計算する
+法線推定が不正確なために引き起こされます。
+点データが非常に湾曲した表面を表す場合、つまり点データが 
+小さなよじれ、細かな波形状、鋭い折れ曲がりなど非常に細かい
+構造を示す場合は、alpha または 
+beta、あるいはその両方の値を
+大きくして、湾曲したデータの生成が容易に行われるようにします。
+対照的に、データは比較的平面的だが、外れ値(つまり、表面に
+隣接しているが、方向が完全に異なっており、ほぼ
+確実に表面に属していない点)が多く含まれる場合は、
+alpha の値を小さくしてそれらの点が
+表面の生成から除外されるようにします。
+点データに非常にノイズが多く、単一層の表面というより複数の層
+の表面のようなデータが含まれている場合は、beta または 
+d、あるいはその両方の値を大きくして、
+P の近傍が最適な平面 [P,N] から
+離れている場合でも、それらの近傍が検出されるようにします。
+対照的に、データにはむしろノイズがないが、2 つの表面が互いに 
+近接していて平行に近い場合は(例えば、薄い板状の物体の前面
+と背面を表す表面など)、beta と 
+d の値を小さくして表面の干渉を回避します。
+Greedy三角メッシュアルゴリズムは、SNC 規則を満たしている
+3 つの隣接する点から作成された 1 つの三角形で単一の表面が定義されるところから始まります。
+次に、その表面境界上の任意の点から SNC 規則を満たす点が存在する限り、新しい三角形を次々に作成します。
+現在の表面からSNC規則を満たす点が存在しない場合、3 次元オブジェクトモデル内の他の未処理の点に対して新たな表面が定義されます。SNC
+規則は、基本的に、点の周囲の小さな局所近傍内でのみ定義されるため、生成される表面には、穴や反転などの位相アーチファクトが広範囲に含まれます。後者(反転)は、三角形が次々に生成されていく過程で、面の方向が反転した場合(つまり、表面がその成長途中にどこかで
+反転されたとき)に発生します。これらの不自然な結果はそれぞれ、
+穴埋め処理と反転解決処理という特別な後処理ステップで処理されます。
+最後に、最終的な表面境界上に発生した不自然な結果をさらに除去するために、メッシュモフォロジが実行されます。メッシュモフォロジでは、複数のメッシュ収縮処理のあとに複数のメッシュ膨張処理が実行されます。収縮処理のたびに、表面境界に構成されているすべての三角形が削除され、表面境界が収縮していきます。次に、膨張処理により、表面境界から構築可能な三角形が再度表面に付加され、境界が膨張します。この操作は、膨張処理を行う前に収縮処理によって削除された三角形に対してのみ行うことができます。したがって、表面の元の境界(メッシュ収縮処理実行前に存在した境界)に到達すると、膨張はそれ以上進むことができません。つまり、行われた収縮サイクル数よりも多くの膨張サイクルを行うことはできません。メッシュ収縮およびその後のメッシュ膨張の適用は、領域情報に対するオープニング処理に似ています。これにより、少ない三角形により構成される小さな表面部分を削除することができます。
+アルゴリズムの個々のステップを以下にまとめます。
+SNC基準を満たすすべての点の三角メッシュ作成
+穴埋め処理('greedy_hole_filling'"greedy_hole_filling""greedy_hole_filling""greedy_hole_filling""greedy_hole_filling""greedy_hole_filling" を参照)
+反転解決処理('greedy_fix_flips'"greedy_fix_flips""greedy_fix_flips""greedy_fix_flips""greedy_fix_flips""greedy_fix_flips" を参照)
+メッシュモフォロジ('greedy_mesh_erosion'"greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion"、
+'greedy_mesh_dilation'"greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation"、および 
+'greedy_remove_small_surfaces'"greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces" を参照)
+GenParamNameGenParamNameGenParamNameGenParamNameGenParamNamegenParamName を以下のいずれかの値に設定すると、
+GenParamValueGenParamValueGenParamValueGenParamValueGenParamValuegenParamValue を使用して、Greedy三角メッシュ固有の追加パラメーターを設定することができます。
+'greedy_kNN'"greedy_kNN""greedy_kNN""greedy_kNN""greedy_kNN""greedy_kNN"
+近傍の大きさ k を指定します。
+表面境界点のSNC 基準を満たす点を検索する際、アルゴリズムは、
+k 最近傍のみを考慮します。
+推奨値: 20, 30, 40 
+(default)、50、60
+'greedy_radius_type'"greedy_radius_type""greedy_radius_type""greedy_radius_type""greedy_radius_type""greedy_radius_type":
+'fixed'"fixed""fixed""fixed""fixed""fixed" に設定した場合、'greedy_radius_value'"greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value" は、
+SNC 半径 r をメートル単位で指定します。
+'z_factor'"z_factor""z_factor""z_factor""z_factor""z_factor" に設定した場合は、r は、
+点 P ごとに、点の Z 座標に 'greedy_radius_value'"greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value" で
+指定された値を乗算して計算されます。この r の表現は、
+点の密度が、センサーからの距離と相関している
+データに適しています。
+一般的に、深度センサーや TOF カメラを使用する場合がこれに該当 
+します。
+'auto'"auto""auto""auto""auto""auto" に設定した場合は、アルゴリズムは、'fixed'"fixed""fixed""fixed""fixed""fixed"
+または 'z_factor'"z_factor""z_factor""z_factor""z_factor""z_factor" 半径を使用するかどうかを内部的に
+決定し、値を推定します。そして、推定された値に
+'greedy_radius_value'"greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value" で指定された値が乗算されます。
+このようにして、推定された半径の倍率を指定します。
+List of values: 'auto'"auto""auto""auto""auto""auto" (default),
+'fixed'"fixed""fixed""fixed""fixed""fixed"、'z_factor'"z_factor""z_factor""z_factor""z_factor""z_factor"
+'greedy_radius_value'"greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value""greedy_radius_value":
+'greedy_radius_type'"greedy_radius_type""greedy_radius_type""greedy_radius_type""greedy_radius_type""greedy_radius_type" を参照してください。
+推奨値: 0.01, 0.05, 0.5,
+0.66、1.0、1.5、
+2.0、3.0、4.0
+'greedy_neigh_orient_tol'"greedy_neigh_orient_tol""greedy_neigh_orient_tol""greedy_neigh_orient_tol""greedy_neigh_orient_tol""greedy_neigh_orient_tol":
+SNC パラメーター alpha を度単位で設定します。
+alpha は、前述の
+SNC 規則で説明したように、表面の湾曲を制御します。
+推奨値: 10, 20, 30
+(default)、40
+'greedy_neigh_orient_consistent'"greedy_neigh_orient_consistent""greedy_neigh_orient_consistent""greedy_neigh_orient_consistent""greedy_neigh_orient_consistent""greedy_neigh_orient_consistent":
+2 つの隣接する点の法線の方向を強制的に同じにします(つまり、
+2 つの点は反対方向を示しません)。有効に設定した場合、このパラメーター
+は、alpha に関する 2 番目の SNC 基準を
+無効にします。つまり、
+angle(N,N')>alpha 
+の場合は、
+angle(N,-N')<=alpha 
+であっても、この基準は満たされません。
+値のリスト: 'true'"true""true""true""true""true"、'false'"false""false""false""false""false"
+(default)
+'greedy_neigh_latitude_tol'"greedy_neigh_latitude_tol""greedy_neigh_latitude_tol""greedy_neigh_latitude_tol""greedy_neigh_latitude_tol""greedy_neigh_latitude_tol":
+SNC パラメーター beta を度単位で設定します。
+beta は、前述の
+SNC 規則で説明したように、表面近傍の緯度範囲を制御します。
+推奨値: 10, 20, 30
+(default)、40
+'greedy_neigh_vertical_tol'"greedy_neigh_vertical_tol""greedy_neigh_vertical_tol""greedy_neigh_vertical_tol""greedy_neigh_vertical_tol""greedy_neigh_vertical_tol":
+SNC パラメーター d を半径 r の
+要素として設定します。
+推奨値: 0.01, 0.1
+(default)、0.2、0.3
+'greedy_hole_filling'"greedy_hole_filling""greedy_hole_filling""greedy_hole_filling""greedy_hole_filling""greedy_hole_filling":
+穴埋め処理で考慮する必要がある表面境界の長さを(点頂点の数で)
+設定します。'false'"false""false""false""false""false" を指定した場合、穴埋め処理ステップは無効に
+なります。
+推奨値: 'false'"false""false""false""false""false",
+20、40 (default)、
+60
+'greedy_fix_flips'"greedy_fix_flips""greedy_fix_flips""greedy_fix_flips""greedy_fix_flips""greedy_fix_flips":
+アルゴリズムの反転解決処理ステップを有効/無効にします。
+List of values: 'true'"true""true""true""true""true" (default),
+'false'"false""false""false""false""false"
+'greedy_prefetch_neighbors'"greedy_prefetch_neighbors""greedy_prefetch_neighbors""greedy_prefetch_neighbors""greedy_prefetch_neighbors""greedy_prefetch_neighbors":
+すべての点の k 最近傍リストの事前取得を有効/無効にします。
+この事前取得によってアルゴリズムの速度は改善しますが、メモリ要件
+(O(k*n)、ここで k は 
+'greedy_kNN'"greedy_kNN""greedy_kNN""greedy_kNN""greedy_kNN""greedy_kNN" によって指定される数、
+n は ObjectModel3DObjectModel3DObjectModel3DObjectModel3DObjectModel3DobjectModel3D 内の点の数)は増加します。
+データが非常に大きい場合、このように大量のメモリの事前割り当ては
+行えない可能性があり、メモリエラーメッセージが表示される結果に
+なります。その場合は、事前取得を無効にする必要があります。
+List of values: 'true'"true""true""true""true""true" (default),
+'false'"false""false""false""false""false"
+'greedy_mesh_erosion'"greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion":
+最終的なメッシュに適用される収縮サイクル数を指定します。
+推奨値: 0 (default)、
+1、2、3
+'greedy_mesh_dilation'"greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation":
+膨張サイクル数を指定します。メッシュ膨張はメッシュ収縮後に適用
+されます。'greedy_mesh_dilation'"greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation""greedy_mesh_dilation" に 
+'greedy_mesh_erosion'"greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion" より大きい値が設定された場合、
+その値は、'greedy_mesh_erosion'"greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion""greedy_mesh_erosion" の値まで、
+内部的に減らされます。
+推奨値: 0 (default)、
+1、2、3
+'greedy_remove_small_surfaces'"greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces":
+小さい表面部分を削除するための基準を制御します。
+'false'"false""false""false""false""false" に設定すると、小さい表面の削除は無効になります。
+0.0 から 1.0 の値に設定すると、
+'greedy_remove_small_surfaces'"greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces"
+xnum_triangles より少ない数の三角形により構成される
+表面はすべて削除されます。ここで、num_triangles は、
+アルゴリズムによって生成された三角形の合計数です。
+1 より大きい値に設定した場合は、
+'greedy_remove_small_surfaces'"greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces""greedy_remove_small_surfaces" より少ない数の三角形により
+構成された表面がすべて削除されます。
+推奨値: 'false'"false""false""false""false""false" (default)、
+0.01、0.05、0.1、
+10、100、1000、
+10000
+'greedy_timeout'"greedy_timeout""greedy_timeout""greedy_timeout""greedy_timeout""greedy_timeout":
+タイムアウトを使用すると、定義した時間(秒)経過した後に
+オペレーターを中断することができます。これは、最大サイクル時間
+を保証する必要がある場合に非常に有効です。この中断における
+精度は約 10 ms です。0 未満の値を渡すことはできません。
+'greedy_timeout'"greedy_timeout""greedy_timeout""greedy_timeout""greedy_timeout""greedy_timeout" を 'false'"false""false""false""false""false" に設定すると、
+タイムアウトが無効になります(これが初期設定になります)。
+一時的な精度はいくつかのモデルサイズ、パソコンの処理速度、
+set_systemset_systemSetSystemset_systemSetSystemSetSystemで設定する'timer_mode'"timer_mode""timer_mode""timer_mode""timer_mode""timer_mode"に依存します。
+推奨値: 'false'"false""false""false""false""false" (default)、
+0.1、0.5、1、
+10、100
+'greedy_suppress_timeout_error'"greedy_suppress_timeout_error""greedy_suppress_timeout_error""greedy_suppress_timeout_error""greedy_suppress_timeout_error""greedy_suppress_timeout_error":
+デフォルトでは、タイムアウトが発生すると、オペレーターはタイム
+アウトエラーコードを返します。'greedy_suppress_timeout_error'"greedy_suppress_timeout_error""greedy_suppress_timeout_error""greedy_suppress_timeout_error""greedy_suppress_timeout_error""greedy_suppress_timeout_error" を
+'true'"true""true""true""true""true" に設定すると、オペレーターはエラーを返さず、三角メッシュの
+中間結果が TriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DtriangulatedObjectModel3D に返されます。
+エラーを抑制した場合、タイムアウトの発生は、('verbose'"verbose""verbose""verbose""verbose""verbose"
+モードで)InformationInformationInformationInformationInformationinformation に返される値のリストを照会し、
+'timeout_occured'"timeout_occured""timeout_occured""timeout_occured""timeout_occured""timeout_occured"の値を取得することで確認
+することができます。
+List of values: 'false'"false""false""false""false""false" (default),
+'true'"true""true""true""true""true"
+'information'"information""information""information""information""information":
+InformationInformationInformationInformationInformationinformation で出力される中間結果を指定します。
+デフォルト
+('information'"information""information""information""information""information"='num_triangles'"num_triangles""num_triangles""num_triangles""num_triangles""num_triangles")では、
+生成された三角形の数が出力されます。
+'information'"information""information""information""information""information"='verbose'"verbose""verbose""verbose""verbose""verbose" の
+場合は、名前と値のペアの情報のリストが返されます。以下の
+情報が出力可能です。
+名前                        値                                 説明
+-------------------------  ---------------------------------  ---------------------------------------------------
+num_triangles              <三角形の数>                         生成された三角形面の数を出力します。
+specified_radius_type      auto | fixed | z_factor | none     ユーザーによって指定された半径のタイプを出力します。
+specified_radius_value     <指定された半径の値>                   ユーザーによって指定された半径の値を出力します。
+used_radius_type           fixed | z_factor | sampling        内部的に使用される半径タイプを出力します。ユーザーが 
+'specified_radius_type'"specified_radius_type""specified_radius_type""specified_radius_type""specified_radius_type""specified_radius_type" に 'auto'"auto""auto""auto""auto""auto" を指定した場合、
+このフィールドは、内部的に選択された半径タイプを出力します。								     
+ObjectModel3DObjectModel3DObjectModel3DObjectModel3DObjectModel3DobjectModel3D が 3 次元プリミティブの場合、ユーザー指定の半									
+径値が サブサンプリングステップとして内部的に使用され、
+'used_radius_type'"used_radius_type""used_radius_type""used_radius_type""used_radius_type""used_radius_type" は 'sampling'"sampling""sampling""sampling""sampling""sampling" を出力します。
+used_radius_value          <使用される半径の値>                   内部的に使用される半径の値を出力します。
+'used_radius_type'"used_radius_type""used_radius_type""used_radius_type""used_radius_type""used_radius_type"='fixed'"fixed""fixed""fixed""fixed""fixed" の場合、近傍半径の絶対値が
+メートル単位で出力されます。
+'used_radius_type'"used_radius_type""used_radius_type""used_radius_type""used_radius_type""used_radius_type"='z_factor'"z_factor""z_factor""z_factor""z_factor""z_factor" の場合は、増倍率が出力
+されます。増倍率は、近傍中心点の Z 座標から近傍半径を計算するために
+使用されます。
+'used_radius_type'"used_radius_type""used_radius_type""used_radius_type""used_radius_type""used_radius_type"='sampling'"sampling""sampling""sampling""sampling""sampling"の場合、サブサンプリング
+ファクターが出力されます。これは、特に円柱や球で 3 次元プリミティブの三角形
+分割を生成するために使用されます。
+neigh_orient_tol           <alpha>                            三角形メッシュに使用された表面湾曲パラメーター 'alpha'"alpha""alpha""alpha""alpha""alpha"を度単位で
+出力します。
+neigh_latitude_tol         <beta>                             表面近傍を選択するために使用された角度の許容範囲 'beta'"beta""beta""beta""beta""beta"を度単位で
+出力します。
+neigh_vertical_tol         <d>                                使用される半径の倍率として近傍パラメーター 'd'"d""d""d""d""d" を出力します。
+fix_flips                  true | false                       反転解決処理が有効になっているかどうかを出力します。
+hole_filling               false | <穴の境界の最大長>            穴埋め処理が無効になっている場合は 'false'"false""false""false""false""false"、そうでない場合は、
+指定された穴の境界の最大長(点の数)を出力します。
+timeout                    false | <タイムアウト>                 タイムアウトが無効になっている場合は 'false'"false""false""false""false""false"、そうでない場合は、
+指定されたタイムアウト(秒)を出力します。
+timeout_occured            yes | no                           タイムアウトが発生したかどうかを出力します。
+List of values: 'num_triangles'"num_triangles""num_triangles""num_triangles""num_triangles""num_triangles" (default),
+'verbose'"verbose""verbose""verbose""verbose""verbose"
+陰関数三角メッシュ法
+MethodMethodMethodMethodMethodmethod に 'implicit'"implicit""implicit""implicit""implicit""implicit" を選択すると、ポアソンソルバー(参考文献を参照)に基づく陰関数三角メッシュアルゴリズムが使用されます。
+このアルゴリズムは、隙間のない表面、つまり完全に閉じた表面を構築します。
+Implicit三角メッシュ法では、法線を含む 3 次元点データが必要です。また、3 次元法線は、再構築される面で構成される立体に対して、厳密に内側または外側を指している必要があります。'greedy'"greedy""greedy""greedy""greedy""greedy" アルゴリズムと異なり、'implicit'"implicit""implicit""implicit""implicit""implicit" アルゴリズムは入力 3 次元点を通る表面の構築を行いません。代わりに、元の 3 次元データを近似する表面を構築し、構築された表面上に新しい 3 次元点のセットを作成します。
+最初に、アルゴリズムは、適応型八分木構造内で点データを組織化します。与えられたモデルの3次元点群データを囲む境界ボックスの立体が各次元の寸法の中央で分割され、8 個の小立体、すなわち、
+八分木ボクセルが生成されます。
+このうち、十分な点データが含まれているボクセルは、さらに 8 個のサブボクセルに分割されます。点をほとんど含まないボクセルは、それ以上分割されません。この分割は、生成されるボクセルに点がまったくまたはほとんど含まれなくなるまで、密な 3 次元点データを含むボクセルに対して再帰的に繰り返されます。最小のボクセルが生成されたときのボクセル分割の再帰レベルを 
+八分木の深度と呼びます。
+次のステップで、ObjectModel3DObjectModel3DObjectModel3DObjectModel3DObjectModel3DobjectModel3D の点はオブジェクトの表面上にあり、その点の法線はそのオブジェクトの内側に向いているという前提に基づいて、表面の
+陰指標関数と呼ばれる値を推定します(参考文献を参照)。この前提は、法線方向が相互に一貫性を持っている必要があることを示しています。陰関数は、厳密に物体の内側にあるボクセルコーナーでは値 1 を持ち、厳密に物体の外側にあるボクセルコーナーに対しては値 0 を持ちます。しかし、データにはノイズが含まれるため、オブジェクトの境界に近いボクセルコーナーに対しても同様に0か1かの二値を割り当てることはできません。したがって、それらは 0 から 1 の間の値を持ちます。
+指標関数によって定義される陰関数表面では、表面上にある各点は指標値 0.5 を持ちます。陰関数アルゴリズムでは、標準的なマーチング
+キューブ法を使用して、陰関数表面と八分木ボクセルの辺との交点を計算します。これらの交点から構成される新しい 3 次元点のセットが TriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DtriangulatedObjectModel3D に結果として返されます。結果として、TriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DTriangulatedObjectModel3DtriangulatedObjectModel3D に再構築される表面細部の 
+分解能は、八分木の分解能(つまり、八分木の深度)によって決まります。
+GenParamNameGenParamNameGenParamNameGenParamNameGenParamNamegenParamName を以下のいずれかの値に設定すると、GenParamValueGenParamValueGenParamValueGenParamValueGenParamValuegenParamValue
+を使用して、陰関数三角メッシュ法固有の追加パラメーターを設定することができます。
+'implicit_octree_depth'"implicit_octree_depth""implicit_octree_depth""implicit_octree_depth""implicit_octree_depth""implicit_octree_depth":
+八分木の深度を設定します。八分木の深度は、表面生成の分解能を制御
+します。深度の値が大きいほど、表面の分解能は高くなります。八分木
+の深度を大きくすると、実行時間、および八分木に要するメモリに対す
+る影響が急激に増加します。そのため、深度は 12 までに
+制限されています。
+推奨値: 5, 6  (default),
+8,
+10, 11, 12 
+Restriction: 5 <= 
+'implicit_octree_depth'"implicit_octree_depth""implicit_octree_depth""implicit_octree_depth""implicit_octree_depth""implicit_octree_depth"
+<= 12
+'implicit_solver_depth'"implicit_solver_depth""implicit_solver_depth""implicit_solver_depth""implicit_solver_depth""implicit_solver_depth":
+指定した八分木深度まで陰関数を準備し、残りの計算を元のアルゴリズムが
+引き継ぐような、代替アルゴリズムを有効にします。
+代替アルゴリズムは、元のアルゴリズムに比べて必要とするメモリが少なくて
+すみますが、動作は多少遅くなります。
+推奨値: 2, 4, 6  (default),
+8,
+10, 11, 12 
+Restriction: 'implicit_solver_depth'"implicit_solver_depth""implicit_solver_depth""implicit_solver_depth""implicit_solver_depth""implicit_solver_depth"
+<= 'implicit_octree_depth'"implicit_octree_depth""implicit_octree_depth""implicit_octree_depth""implicit_octree_depth""implicit_octree_depth"
+'implicit_min_num_samples'"implicit_min_num_samples""implicit_min_num_samples""implicit_min_num_samples""implicit_min_num_samples""implicit_min_num_samples":
+八分木のボクセルノードごとに必要なサンプル点の最小数を設定します。
+ボクセル内の点の数がこの値より少ない場合、ボクセルはそれ以上分割
+されません。ノイズのないデータの場合、この値は低く(1 ～ 5 程度)
+設定することができます。ノイズが多いデータの場合は、この値を高く
+(10 ～ 20 程度)設定して、ノイズが多いデータが単一のボクセルノード
+内に蓄積され、ノイズが平滑化されるようにする必要があります。
+推奨値: 1 (default)、5、
+10、15、20、
+30
+'information'"information""information""information""information""information":
+InformationInformationInformationInformationInformationinformation で出力される中間結果を指定します。
+デフォルト
+('information'"information""information""information""information""information"='num_triangles'"num_triangles""num_triangles""num_triangles""num_triangles""num_triangles")では、生成された
+三角形の数を出力します。'information'"information""information""information""information""information"='verbose'"verbose""verbose""verbose""verbose""verbose" の
+場合は、名前と値のペアの情報のリストが返されます。現在、以下の
+情報を出力することが可能です。
+名前                     値                            説明
+----------------------  ----------------------------  -------------------------------------------------
+num_triangles           <三角形の数>                    生成された三角形面の数を出力します。
+num_points              <点の数>                       生成された点の数を出力します。
+List of values: 'num_triangles'"num_triangles""num_triangles""num_triangles""num_triangles""num_triangles" (default),
+'verbose'"verbose""verbose""verbose""verbose""verbose"
+三角形分割方法の比較
+ここでは、サポートされている 2 種類の三角形分割方法を簡単に比較します。
+プロパティ                 Greedy三角メッシュ法                陰関数三角メッシュ法
+----------------------  ------------------------------  ----------------------------------------------
+必要なデータ:              3 次元法線を含む 3 次元点           3 次元法線を含む 3 次元点。法線は常に
+内側を向いていなければならない
+結果として生じる表面:        開いた表面。入力点を三角形で           閉じた表面(隙間なし)。入力点を
+分割する                          近似する
+結果として生じる点データ:      入力点データが保持される              新しい点データが生成される
+ノイズ処理:                中程度の点および法線のノイズが適切に    点と法線のノイズが暗黙的に処理
+処理される                         される。中～高程度のノイズレベルは許容
+される
+三角メッシュ分解能:          明示的。表面近傍パラメーターに          暗黙的。八分木 深度とノードあたりの
+よって制御される                     サンプル点の最小数によって制御される
+時間の複雑性:             O(N*k*log(N))                    O(N*D^3)
+メモリの複雑性:            O(N*k)。近傍の事前取得あり           O(D^3)
+O(N)。近傍の事前取得なし
+各値の意味は次のとおり。
+N: 点の数
+k: 近傍の大きさ
+D: 八分木の深度
+どちらのアルゴリズムでも、ObjectModel3DObjectModel3DObjectModel3DObjectModel3DObjectModel3DobjectModel3D 内の点の数、ノイズ、データ固有の構造に依存して、結果や、実行時の時間およびメモリの複雑性がさまざまに異なります。Greedyアルゴリズムは、処理速度が速いのに加え、必要とするメモリが少なく、詳細な表面情報を非常に小さなデータセット(最大 500.000 点ほど)に対して再構築します。アルゴリズムは基本的にデータの点ごとに計算されなければならないため、処理時間を点の数から分離することはできず、むしろ500,000点よりも多くの時間を消費してしまいます。大きな点セットがこの方法で三角パッチ化される必要がある場合、まずsample_object_model_3dsample_object_model_3dSampleObjectModel3dsample_object_model_3dSampleObjectModel3dSampleObjectModel3dでデータをサンプリングすることをお奨めします。
+対照的に、陰関数アルゴリズムは、上述のように、すべての点を基本となる八分木内で組織化します。したがって、返される細部、処理速度、メモリ消費は八分木の深度によって決まります。表面のより高いレベルは、非比例的により高い時間とメモリ消費でのみ達成できるが、八分木は大きな点セットをより効果的に扱える平均を提案します。八分木を用いることで、陰的アルゴリズムのパフォーマンスは、八分木の深さと計算される点の数に依存します。さらなる陰的アルゴリズムの不利な点は、隣接点normalに厳密な一貫性を求める点です。この要求は、通常の評価方法では満たすことが難しいです。
+これ以上 3 次元オブジェクトモデルが必要ない、あるいは上書きする場合、まずオペレーター 
+clear_object_model_3dclear_object_model_3dClearObjectModel3dclear_object_model_3dClearObjectModel3dClearObjectModel3d を呼び出してメモリを解放してください。
+パラレル化情報
+マルチスレッドタイプ: リエントラント(非排他なオペレーターと並列に動作)
+マルチスレッドスコープ: グローバル(他のスレッドから呼び出される可能性あり)
+内部データレベルで自動的に並列演算処理を実施
+パラメーター
+triangulate_object_model_3d [HALCONオペレーターリファレンス / Version 11.0.3]

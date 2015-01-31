@@ -1,0 +1,64 @@
+
+オープンソースのコンピュータビジョン用ライブラリ OpenCV を利用して、WEBカメラ の映像からリアルタイムに人の顔を認識してみます。もちろん原理的に、与えられた写真(静止画)から、写っている顔を抽出するといった用途にも応用できます。
+もっとも OpenCV は、WEBカメラからの入力 や ウィンドウへの出力 も自前で備えているので、そのまま コンソールアプリ として活用されることが多いですが、今回はまともな ウィンドウアプリ として活用できるように、きちんと FIreMonkeyへ融合させてみます。
+サンプルプログラム  Delphi XE5 用 ・FaceDetect_Timer_XE5.zip  (高速) ・FaceDetect_SampleBufferReady_XE5.zip   Delphi XE4 用 ・FaceDetect_Timer_XE4.zip (高速) ・FaceDetect_SampleBufferReady_XE4.zip
+まず、以下のプロジェクトから、OpenCV の DLL とヘッダ移植ユニット を入手して下さい。
+・Laex /Delphi-OpenCV  - Delphi-OpenCV-master.zip
+OpenCV は様々な機能を有するライブラリなので、解凍すると沢山のファイルが出てきますが、とりあえず今回の顔認識に必要なのは以下のファイルだけです。
+・Delphi-OpenCV-master  + Bin   + FaceDetectXML    - haarcascade_frontalface_alt.xml    - haarcascade_frontalface_alt_tree.xml    - haarcascade_frontalface_alt2.xml    - haarcascade_frontalface_default.xml   - msvcp100d.dll   - msvcr100d.dll   - opencv_core246d.dll   - opencv_core246.dll   - opencv_highgui246d.dll   - opencv_highgui246.dll   - opencv_imgproc246d.dll   - opencv_imgproc246.dll   - opencv_objdetect246d.dll   - opencv_objdetect246.dll  + include   + core    - Core.types_c.pas    - core_c.pas   + objdetect    - haar.pas    - objdetect.pas   - uLibName.pas
+ユニットファイル(*.pas) はすべてプロジェクトに含めて下さい。DLL (ファイル名の末尾に "d" の付くファイルはデバッグ用) は、Windows の System フォルダ内へ含めるか、実行ファイル(*.exe) の出力先フォルダ内へ含めて下さい。環境変数やパスの設定は何も必要ありません。ちなみに XMLファイル は、顔認識に必要な機械学習データなので、実行時に読み込みます。 WEBカメラからの動画読み込み
+現在のアクティブなWEBカメラのインスタンスは TCaptureDeviceManager から手に入ります。インスタンスは TCaptureDeviceManagerで管理されているので、使い終わっても解放する必要はありません。
+Camera :TVideoCaptureDevice;
+Camera := TCaptureDeviceManager.Current.DefaultVideoCaptureDevice;
+そこでSampleBufferToBitmap メソッドを用いれば、直近に撮影されたフレーム画像を TBitmap へ転写できます。そのタイミングには、OnSampleBufferReadyイベント を用いるとよいでしょう。
+procedure TForm1.OnFrame;
+begin
+Camera.SampleBufferToBitmap( {転写先TBitmap}, False );
+end; 
+procedure TForm1.SampleBufferReady( Sender_:TObject; const ATime_:TMediaTime );
+begin
+TThread.Synchronize( TThread.CurrentThread, OnFrame );
+end; 
+Camera.OnSampleBufferReady := SampleBufferReady;
+ちなみに、OnSampleBufferReadyイベント は独自のスレッド上から発生するので、GUIコンポーネントを更新する際には、TThread.Synchronizeメソッド を用いてメインスレッドに実行させます。 OpenCV の画像データ と TBitmap との相互変換
+OpenCV では IplImage という構造体を用いて画像を管理しているため、TBitmap を直接処理することはできませんが、単なるピクセル情報の配列なので、簡単に高速に相互転写することが可能です。
+Image :PIplImage;
+Image := cvCreateImage( cvSize( {縦ピクセル数}, {横ピクセル数} ), IPL_DEPTH_8U, 4 );
+Image.Origin := IPL_ORIGIN_BL;
+BD :TBitmapData;
+with {転写元TBitmap} do
+begin
+Map( TMapAccess.maRead, BD );
+with Image^ do Move( BD.Data^, ImageData^, ImageSize );
+Unmap( BD );
+end;
+cvReleaseImage( Image );
+IplImage は、cvCreateImage関数 を用いることで生成し、ポインタを取得することができます。そして使い終わったら、cvReleaseImage関数 で解放してあげます。
+顔認識には、Haar-like特徴量 による判定を行います。
+手順としては、cvLoad関数 を用いて分類器(CvHaarClassifierCascade構造体 )のインスタンスを取得後、cvHaarDetectObjects関数 に画像と分類器を渡して解析させます。分類器の生成には、前述の機械学習データファイル(haarcascade_frontalface～.xml ) が必要です。
+検出された顔の位置のリストは、CvSeq構造体 という動的配列として返ってきます。
+ちなみに、一時的な作業用メモリ領域として、CvMemStorage構造体 の確保が必要です。
+Cascade:pCvHaarClassifierCascade;
+Storage :pCvMemStorage;
+Cascade := cvLoad( pCVChar( @{機械学習ファイル名.xml:AnsiString} ) );
+Storage := cvCreateMemStorage( 0 );
+Faces :pCvSeq;
+cvClearMemStorage( _Storage );
+Faces := cvHaarDetectObjects(
+{認識対象画像:IplImage},
+Cascade,
+Storage,
+{ScaleFactor:Double},
+{MinNeighbors:Integer},
+CV_HAAR_DO_CANNY_PRUNING,
+{MinSize:cvSize},
+{MaxSize:cvSize} );
+cvReleaseHaarClassifierCascade( Cascade );  //使い終わったら解放
+cvReleaseMemStorage( Storage );  //使い終わったら解放
+cvHaarDetectObjects は、パラメータにより 認識精度 や 解析速度 が左右されます。詳しくは以下のドキュメントを参照のこと。
+・HaarDetectObjects @ カスケード型分類器 — opencv 2.2 (r4295) documentation
+・Rapid Object Detection using a Boosted Cascade of Simple Features TTimer を使った方が高速?
+私も最初は、Delphi での WEBカメラ制御 のセオリ通りに、TVideoCaptureDevice.OnSampleBufferReadyイベント を用いて、WEBカメラ画像の取得と顔認識処理を行っていたのですが、顔認識の処理が結構思い重いらしく、非常にカクカクして使いものになりませんでした。
+そこで試しに TTimer を貼り付けて、OnTimerイベント 内で処理をしてみたところ、嘘のように高速化して、かなりスムーズに映像が流れるようになったのです。おそらく、OnSampleBufferReadyイベント 内で重い処理をすると、カメラの制御に支障を来すのかもしれません。 関連記事
+・Delphiフォームを用いたOpenCV利用サンプル @ ネタキリラボコメント
+LUXIDEA institute :: リアルタイムに顔認識

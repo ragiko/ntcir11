@@ -1,0 +1,9 @@
+
+上甲 昌郎1), 
+河原 吉伸2), 
+矢入 健久3)
+1) 東京大学大学院工学系研究科航空宇宙工学専攻(現在は日本アイ・ビー・エム株式会社に勤務. ) 
+2) 大阪大学産業科学研究所 
+3) 東京大学先端科学技術センター
+In this paper, we present an algorithm for learning non-linear dynamical systems which works by aligning local linear models, based on a probabilistic formulation of subspace identification. This is achieved by the fusion of the recent works in the fields of machine learning and system control. Because the procedure for constructing a state sequence in subspace identification can be interpreted as the Canonical Correlation Analysis(CCA) between past and future observation sequences, we can derive a latent variable representation for this problem. Therefore, as in a similar manner to the recent works on learning a mixture of probabilistic models, we obtain a framework for constructing a state space by aligning local linear coordinates. This leads to a prominent algorithm for learning non-linear dynamical systems. Finally, we apply our method to motion capture data and telemetry data, and then show how our algorithm works well.
+局所線形モデルのアライメントによる非線形動的システムの学習法

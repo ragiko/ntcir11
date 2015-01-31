@@ -1,0 +1,213 @@
+ここでは、構造体として宣言したホスト変数の使用方法について、以下を説明します。
+構造体ホスト変数の使用方法
+標識変数の使用方法
+構造体型として宣言したホスト変数を構造体ホスト変数と呼びます。
+構造体ホスト変数を宣言すると、各メンバがデータベースの各列に対応するように扱われるので、複数列のデータを行単位で操作することができます。また、複数行の一括挿入もできます。ポインタ変数と組み合わせて利用することにより、アプリケーションが簡潔化され、保守性が向上します。
+なお、標識変数を使用する場合は、構造体型の標識変数を宣言する必要があります。
+構造体型ホスト変数を使用する場合は、以下の点に注意してください。
+INSERT文のVALUES句に指定する場合は、挿入列リストの数と構造体のメンバの個数は同じでなければなりません。また、構造体のメンバの順序は、挿入列リストに指定されている列の順序に対応します。
+INSERT文の挿入列リストが省略された場合は、構造体のメンバが表のすべての列に対応している必要があります。
+単一行SELECT文のINTO句に指定する場合は、選択リストの数と構造体のメンバの個数は同じでなければなりません。また、構造体のメンバの順序は、選択リストに指定されている列の順序に対応します。
+FETCH文のINTO句に指定する場合は、カーソル宣言で指定した問合せ指定の選択リストの数と構造体のメンバの個数は同じでなければなりません。また、構造体のメンバの順序は、選択リストに指定されている列の順序に対応します。
+選択リストに*が指定された場合は、FROM句で指定した順に各表の各列のすべてに対応したメンバを定義する必要があります。
+EXECUTE文の結果USING句に指定する場合は、被準備文である動的単一行SELECT文の相手指定の個数と構造体のメンバの個数は同じでなければなりません。また、構造体のメンバの順序は、被準備文の相手指定の順序に対応します。
+EXECUTE文のパラメタUSING句に指定する場合は、被準備文の動的パラメタ指定の個数と構造体のメンバの個数は同じでなければなりません。また、構造体のメンバの順序は、被準備文の動的パラメタの順序に対応します。
+それぞれの列に対応するメンバの型は、列の型に対して指定可能でなければなりません。
+構造体のメンバを指定する場合は、メンバの型で宣言されたホスト変数と同様に使用することができます。
+構造体を定義する場合に、メンバとして構造体を指定することはできません。
+構造体ホスト変数の使用方法
+データを構造体ホスト変数で取得する例
+対話式に情報を入力し、データベースを更新します。
+#include  <stdio.h>
+#include  <string.h>
+EXEC SQL BEGIN DECLARE SECTION
+char    SQLSTATE[6];
+char    SQLMSG[256];
+:
+struct {                                              …… (1)
+long    num;
+char    name[21];
+char    atta[41];
+short   year;
+} data;
+short    number;
+:
+EXEC SQL END DECLARE SECTION;
+short main()
+{
+:
+/* データの取得 */
+EXEC SQL SELECT * INTO :data                            …… (2)
+FROM SCH01.TBL01
+WHERE NUMBER = :number;
+return 1;
+}
+(1) 構造体型のホスト変数を宣言します。
+(2) 該当するデータを取得します。
+ポインタ宣言した構造体変数を使用する例
+main関数で取得した10件分のデータ領域に、サブ関数でデータ設定し処理を戻します。main関数では、取得したデータを表示します。
+short get_10_data( void * );
+short set_10_data( void * );
+EXEC SQL BEGIN DECLARE SECTION;
+struct  _tbl {                                         …… (1)
+short    number;
+SQL TYPE IS BLOB(10K)    image1;
+SQL TYPE IS BLOB(10K)    image2;
+};
+EXEC SQL END DECLARE SECTION;
+EXEC SQL BEGIN DECLARE SECTION;
+char    SQLSTATE[6];
+char    SQLMSG[256];
+EXEC SQL END DECLARE SECTION;
+short main()
+{
+:
+struct  _tbl *buff;
+:
+buff = (struct _tbl *)malloc( sizeof( struct _tbl ) );     …… (2)
+:
+get_10_dat( (void *)buff );                              …… (3)
+:
+set_10_dat( (void *)buff );                              …… (4)
+:
+return 1;
+}
+short get_10_data( void *data0 )
+{
+EXEC SQL BEGIN DECLARE SECTION;
+struct  _tbl *outdata;                                 …… (5)
+EXEC SQL END DECLARE SECTION;
+:
+outdata = (struct  _tbl *)data0;                        …… (6)
+EXEC SQL SELECT DATANO,IMAGE1,IMAGE2 INTO :outdata        …… (7)
+FROM SCH01.TBL01;
+:
+return 0;
+}
+short get_10_data( void *data0 )
+{
+EXEC SQL BEGIN DECLARE SECTION;
+struct  _tbl *indata;                                  …… (8)
+EXEC SQL END DECLARE SECTION;
+:
+indata = (struct  _tbl *)data0;                        …… (9)
+EXEC SQL UPDATE SCH01.TBL01 SET IMAGE = :indata->image1   …… (10)
+WHERE DATANO = :indata->datano;
+:
+return 0;
+}
+(1) 構造体の型を宣言します。
+(2) 領域を取得します。
+(3) データ領域をデータ取得関数のパラメタに設定し、関数を呼びます。
+(4) データ領域をデータ設定関数のパラメタに設定し、関数を呼びます。
+(5) 構造体型のホスト変数を定義します。
+(6) ホスト変数に領域のアドレスを設定します。
+(7) データを取得します。
+(8) 構造体型のホスト変数を定義します。
+(9) ホスト変数に領域のアドレスを設定します。
+(10) データを取得します。
+標識変数の使用方法
+構造体ホスト変数を使用する場合、標識変数は以下のようになります。
+構造体標識変数
+short型のメンバを持ち、構造体として宣言した変数を、標識変数として指定します。
+メンバはすべてshort型でなければなりません。
+メンバの数はホスト変数のメンバの数と同じでなければなりません。
+標識変数のメンバの順序は、ホスト変数のメンバの順序に対応します。
+:
+EXEC SQL BEGIN DECLARE SECTION;
+char     SQLSTATE[6];
+char     SQLMSG[256];
+struct {
+long     col1;                                                  (1)
+char     col2[21];                                              (2)
+char     col3[41];                                              (3)
+short    col4;                                                  (4)
+} data;
+struct {
+short     ind1;                                                 (5)
+short     ind2;                                                 (6)
+short     ind3;                                                 (7)
+short     ind4;                                                 (8)
+} indi;
+EXEC SQL END DECLARE SECTION;
+:
+EXEC SQL SELECT COL01, COL02, COL03, COL04
+INTO :data :indi
+FROM SCH01.TBL01
+WHERE DATANO = 1;
+:
+(1)のメンバに対応する標識変数は(5)になります。
+同様に(2)−(6)、(3)−(7)、(4)−(8)が対応します。
+配列指定の標識変数
+short型の配列指定の変数1つをメンバとする構造体型の変数を標識変数とし、配列の要素数はホスト変数のメンバ数と同じとします。
+メンバはshort型でなければなりません。
+メンバの配列数はホスト変数のメンバの数と同じでなければなりません。
+標識変数の配列の順序は、ホスト変数のメンバの順序に対応します。
+:
+EXEC SQL BEGIN DECLARE SECTION;
+char     SQLSTATE[6];
+char     SQLMSG[256];
+struct {
+long     col1;                                                  (1)
+char     col2[21];                                              (2)
+char     col3[41];                                              (3)
+short    col4;                                                  (4)
+} data;
+struct {
+short    ind[4];                                                (5)
+} indi;
+EXEC SQL END DECLARE SECTION;
+:
+EXEC SQL SELECT COL01, COL02, COL03, COL04
+INTO :data :indi
+FROM SCH01.TBL01
+WHERE DATANO = 1;
+:
+(1)のメンバに対応する標識変数は(5)のindi.ind[0]です。
+同様に(2)−indi.ind[1]、(3)−indi.ind[2]、(4)−indi.ind[3]が対応します。
+複数行の一括挿入
+配列指定された構造体型のホスト変数を使用することで、複数行のデータを一括挿入することができます。
+配列指定は構造体型のホスト変数のみに指定できます。
+メンバには配列指定することができません。
+配列指定された構造体型ホスト変数は、INSERT文のVALUES句にのみ指定できます。
+配列指定の構造体型ホスト変数を使用する場合は、挿入する行数をINSERT文のFOR句に指定します。
+複数行の一括挿入を行う場合は、標識変数を指定することはできません。
+EXEC SQL BEGIN DECLARE SECTION;
+char     SQLSTATE[6];
+char     SQLMSG[256];
+struct {
+short    col1;
+short    col2;
+VARCHAR  col3[10];
+VARCHAR  col4[10];
+} data[5];
+short rowcount;
+EXEC SQL END DECLARE SECTION;
+:
+data[0].col1 = 1;
+data[0].col2 = 100;
+strcpy( data[0].col3.sqlvar, "KANAGAWA" );
+data[0].col3.sqllen = strlen( data[0].col3.sqlvar );
+strcpy( data[0].col4.sqlvar, "ODAWARA" );
+data[0].col4.sqllen = strlen( data[0].col4.sqlvar );
+data[1].col1 = 2;
+data[1].col2 = 200;
+strcpy( data[1].col3.sqlvar, "SIZUOKA" );
+data[1].col3.sqllen = strlen( data[1].col3.sqlvar );
+strcpy( data[1].col4.sqlvar, "MISHIMA" );
+data[1].col4.sqllen = strlen( data[1].col4.sqlvar );
+:
+data[4].col1 = 1;
+data[4].col2 = 100;
+strcpy( data[4].col3.sqlvar, "KANAGAWA" );
+data[4].col3.sqllen = strlen( data[4].col3.sqlvar );
+strcpy( data[4].col4.sqlvar, "YOKOHAMA" );
+data[4].col4.sqllen = strlen( data[4].col4.sqlvar );
+rowcount = 4;
+EXEC SQL INSERT INTO SCH1.TBL1( COL01, COL02, COL03, COL04 )
+VALUES( :data ) FOR :rowcount;
+:
+目次
+索引
+All Rights Reserved, Copyright(C) 富士通株式会社 2006
+3.1.9 構造体として宣言したホスト変数の使用方法

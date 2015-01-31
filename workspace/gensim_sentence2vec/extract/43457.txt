@@ -1,0 +1,144 @@
+今回はイージング(線形補間)プリローダーについて解説します。前回(プリローダー1 AS3 Project with Preloader)では、FDのテンプレートを使ってプリローダーを実装しましたが、回線速度によってはローディングバーがすぐに100%になってしまったり、モーションがカクカクしてしまうという問題がありました。
+swfがキャッシュされている場合やローカル環境での再生では、ほぼローディングバーが見えないという環境の方も多いと思います。昨今はローディング時のモーションも重要なコンテンツという風潮が強いので、しっかり見せるためには修正が必要になります。(個人的にデザイナとしても、ローディングバーからしっかり演出したいと思いますし。)
+そこで、ローディングバーのモーションにイージング処理を入れましょうというのが、今回のテーマです。イージングについての記事はこちらにありますのでご参照ください。それでは、コードを見ながら説明を行います。
+※今回紹介したイージング処理は、簡略化したものになります。実案件ベースでは、もう少し複雑なものを使っています。
+01 : インスタンスメンバの宣言
+今回のポイントとなるイージング処理は、下記3つのメンバを使って行います。percentが実際のパーセントで、これを追いかけるように表示用パーセントであるcurrentを操作します。そしてイージングの速度を管理する摩擦係数frictionを宣言。実装が完成したら、frictionの値を変更して、最も気持ちのいいモーションを探るわけです。
+class Preloader内
+private var percent:Number = 0;//実際の読み込みパーセント
+private var current:int = 0 ;//表示用パーセント
+private var friction:Number = 0.04;//摩擦係数
+02 : プログレスイベントについて
+前回の記事ではプログレスイベントハンドラ内でローディングバー/テキストフィールドの更新を行っていましたが、今回はエンターフレームイベントハンドラで行います。イージングの処理はエンターフレームで行われるためです。よって、プログレスイベントのリスン/リムーブも、イベントハンドラも必要ありません。(説明のためコメントアウトで残しておきましたが、可読性が上がるので実際は削除した方が良いでしょう)
+03 : イージング処理
+ポイントとしては、80行目のイージング処理になります。Math.ceilメソッドに注目しましょう。通常行っているイージングの公式「+= (目標 – 現在の値) * 摩擦係数」をMath.ceilメソッドを使って切り上げすることにより、最低でも1を加算するようになっています。試してみると分かりますが、Math.ceilメソッドを使わないとローディングバーが最大までいかないといった状況が発生します。
+checkFrameメソッド内
+//イージング(線形補間)の処理
+if (current < percent)
+{
+//イージングの公式を適用します。(Math.ceilメソッドを使って値を切り上げています)
+current += Math.ceil((percent - current) * friction) ;
+}
+/*
+* 表示用パーセントが十分大きく(99以上)なり、かつ「現在のフレーム == トータルフレーム」になったら
+* currentに100を代入。ローディングバーをマックスにしたら、loadingFinishedメソッドを実行。
+* ポイントとしてはreturnステートメントを最後に入れておくこと。
+*/
+if (current >= 99 && currentFrame == totalFrames)
+{
+current = 100;
+bar.scaleX = 1;
+tf.text = "complete!";
+loadingFinished();
+return;
+}
+Preloader 
+package
+{
+import caurina.transitions.Equations;
+import caurina.transitions.Tweener;
+import flash.display.DisplayObject;
+import flash.display.MovieClip;
+import flash.display.StageAlign;
+import flash.display.StageScaleMode;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
+import flash.text.TextField;
+import flash.utils.getDefinitionByName;
+/**
+* ...
+* @author kickbase
+*/
+[SWF(width = "640", height = "480", frameRate = "30", backgroundColor = "#ffffff")]
+public class Preloader extends MovieClip
+{
+private var percent:Number = 0;//実際の読み込みパーセント
+private var current:int = 0 ;//表示用パーセント
+private var friction:Number = 0.04;//摩擦係数
+private var barBG:Square = new Square(640, 0xFF0000, 1);//ローディングバーの背景
+private var bar:Square = new Square(640, 0x0, 1);//ローディングバー
+private var tf:TextFieldEX = new TextFieldEX();//初期設定済みのテキストフィールド
+public function Preloader()
+{
+if (stage) {
+stage.scaleMode = StageScaleMode.NO_SCALE;
+stage.align = StageAlign.TOP_LEFT;
+}
+addEventListener(Event.ENTER_FRAME, checkFrame);
+//ポイント! プログレスイベントは使用しません
+//loaderInfo.addEventListener(ProgressEvent.PROGRESS, progress);
+loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioError);
+barBG.y = stage.stageHeight / 2 ;
+addChild(barBG);
+bar.y = stage.stageHeight / 2 ;
+bar.scaleX = 0;//スケールXを0にしてバーの幅を0にしておく
+addChild(bar);
+tf.x = 2;
+tf.y = stage.stageHeight / 2 + 6;
+addChild(tf);
+}
+private function ioError(e:IOErrorEvent):void
+{
+trace(e.text);
+}
+/*
+* ポイント! プログレスイベントハンドラは使用しません
+private function progress(e:ProgressEvent):void
+{
+// TODO update loader ( 02 : ロード状況を監視します )
+}
+*/
+//エンターフレームイベントハンドラでプログレスバーの更新を行います
+private function checkFrame(e:Event):void
+{
+//実際の読み込みパーセントを取得します
+percent = 100 * loaderInfo.bytesLoaded / loaderInfo.bytesTotal;
+//イージング(線形補間)の処理
+if (current < percent)
+{
+//イージングの公式を適用します。(Math.ceilメソッドを使って値を切り上げています)
+current += Math.ceil((percent - current) * friction) ;
+}
+/*
+* 表示用パーセントが十分大きく(99以上)なり、かつ「現在のフレーム == トータルフレーム」になったら
+* currentに100を代入。ローディングバーをマックスにしたら、loadingFinishedメソッドを実行。
+* ポイントとしてはreturnステートメントを最後に入れておくこと。
+*/
+if (current >= 99 && currentFrame == totalFrames)
+{
+current = 100;
+bar.scaleX = 1;
+tf.text = "complete!";
+loadingFinished();
+return;
+}
+bar.scaleX = current / 100;
+tf.text = "loading... " + current + "%";//テキストフィールドに反映させます
+}
+private function loadingFinished():void
+{
+removeEventListener(Event.ENTER_FRAME, checkFrame);
+//ポイント! プログレスイベントはリスンしないため、当然リスナ解除も必要ありません
+//loaderInfo.removeEventListener(ProgressEvent.PROGRESS, progress);
+loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, ioError);
+// TODO hide loader ( 03 : ローディングバーを消去する演出を加えます )
+removeChild(barBG);//ローディングバーの背景を表示リストから削除
+barBG = null;
+removeChild(bar);//ローディングバーを表示リストから削除
+bar = null;
+removeChild(tf);//テキストフィールドを表示リストから削除
+tf = null;
+startup();
+}
+//Mainクラスを表示リストに加えます。
+private function startup():void
+{
+var mainClass:Class = getDefinitionByName("Main") as Class;
+if (parent == stage) stage.addChildAt(new mainClass() as DisplayObject, 0);
+else addChildAt(new mainClass() as DisplayObject, 0);
+}
+}
+}
+サンプルのダウンロード
+プリローダー2 イージング(線形補間)の実装 –  DS LAB.

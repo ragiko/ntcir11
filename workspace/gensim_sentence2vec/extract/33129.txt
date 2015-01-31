@@ -1,0 +1,171 @@
+すべての文書対について、それぞれの文書のベクトル(表の1行)の間のなす角度を求め、それの近さが文書の類似性であるとする。
+なす角はcosineを用いて測り、それは2つのベクトル間の内積として求める。但し各ベクトルはあらかじめ長さを1に正規化しておかなければならない。
+プログラム: かなりいい加減に書いたので、間違っているかもしれない。
+結果:
+もとの文書 ⇒ OS.lzh 比較対照の文書をlzhでまとめてある
+それぞれの文書中での各単語の出現回数 ⇒ 100204_wordappearance.txt
+各単語が、どの文書に出現しているかのリスト ⇒ 100204_wordinfile.txt
+単語出現頻度ベクトル(単語ごとのTF*IDFを並べたベクトルを、文書ごとに作ったもの) ⇒ 100204_vectors.txt、 それをExcelに移したもの100204_vectors.xls と Excelを印刷したもの100204_vectors.pdf
+2つずつ対にしたベクトル間のcosine値(=長さを正規化した内積)をソートしたもの ⇒ 100204_sorted_cosines.txt
+それぞれの数値の確認は、サンプルs2.txtとs4.txtを例にして行っている。⇒ s2-vs-s4.txt
+また、cosine値を見ると分かるとおり、s17.txtとs18.txtが、cosine値では1.0(同一)になっている。
+元のファイルの内容は、
+カーネルとは、OSの基本モジュールである。(a)割り込み処理とシステムサービス及びプロセスのそれぞれの実行を管理する「プロセスディスパッチャ」を統合した基本機能として実現する。OSの基本機能のうち、プロセス管理機能の中核は、このカーネル機能として実現する。
+と
+カーネルとはOSの基本モジュールである。(a)割り込み処理と、システムサービス及びプロセスのそれぞれの実行を管理する「プロセスディスパッチャ」とを統合した基本機能として実現する。OSの基本機能のうち、プロセス管理機能の中核は、このカーネルの機能として実現する。
+であり、微妙に異なるが、Cosine値は1となった。
+プログラム (2010-03-01バージョン):
+#!/usr/bin/env python
+# coding: utf-8
+import sys
+import glob
+import pycha
+import codecs
+import re
+import math
+import array
+sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
+#コマンドライン引数の解析
+argvs = sys.argv
+argc = len(argvs)
+if (argc != 2):
+print 'Usage: python %s filename' % argvs[0]
+quit()
+files = glob.glob(argvs[1])
+print 'Processing the fils %s ' % files
+r = re.compile(r'([^-]+)-*')
+table = []     # tableはファイルごとの(fname, words)のリスト
+for fname in files:
+words = []   # wordsは語のリスト
+# ファイル読出し
+fd = open(fname, "r")
+txt = fd.read()
+# chasenの呼出し
+out = pycha.pycha(txt)
+#for go in out:
+#  for u in go:
+#    print u
+sonota1 = ''
+sonota2 = ''
+for go in out:
+gokan = go[0]
+if len(go)>=2:
+yomi = go[1]
+if len(go)>=3:
+genkei = go[2]
+if len(go)>=4:
+m = r.match(go[3])
+if m:
+hinshi = m.group()[:len(m.group())-1]
+if len(go)>=5:
+sonota1 = go[4]
+if len(go)>=6:
+sonota2 = go[5]
+#print gokan
+if hinshi=='名詞' or hinshi=='動詞' or hinshi=='形容詞':
+words.append([hinshi, gokan, genkei])
+words.sort()
+table.append([fname, words])
+#for u in table:
+#  print '=%s========' % u[0]
+#  for v in u[1]:
+#    print 'hinshi ' + v[0] + '  gokan ' + v[1] + '  genkei ' + v[2]
+#################################
+## TF (それぞれの文書中での各単語の出現回数)
+filewordlist = []   # [fname, wordlist]のリスト
+for u in table:
+wordlist = {}  # それぞれのファイルでの[gokan, 出現回数]の辞書
+for v in u[1]:
+if v[2] in wordlist:
+wordlist[v[2]] = wordlist[v[2]]+1
+else:
+wordlist[v[2]] = 1
+filewordlist.append([u[0], wordlist])
+print u'それぞれの文書中での各単語の出現回数'
+for u in filewordlist:
+print u'===== ファイル %s ======' % u[0]
+for k, v in sorted(u[1].items()):
+print k, v
+print
+print
+################################
+## IDF (文書数/単語ごとに、それの1つでも出現する文書の数)
+#
+##fileごとのwordlistをマージして、全単語のリストを作る
+allwordlist = {}    # [語,出現したファイル]の辞書
+for u in filewordlist:     # u[1]はwordlist、つまり[gokan, 出現回数]の辞書
+for k, v in u[1].items():
+if k in allwordlist:
+allwordlist[k].append(u[0])
+else:
+allwordlist[k] = [u[0]]
+print '文書数/単語ごとに、それの1つでも出現する文書の数'
+print len(filewordlist)
+for k, v in allwordlist.items():
+print k, len(v), v
+idf = {}
+numberofdocuments = len(filewordlist)
+for k, v in allwordlist.items():
+idf[k] = math.log10( float(numberofdocuments)/float(len(v)) )
+print 'idf'
+for k, v in idf.items():
+print k, '%3.2f' % v
+print
+s = 0
+for k, v in idf.items():
+s = s + v
+if s == 0:
+# IDF値がすべて0 ⇒ まったく同じ?
+print 'すべての単語についてdf=Nだった。すべての文書がまったく同一? 先へ進めないので中止する。'
+quit()
+##############
+# 文書i、単語jに対して
+# tf(i,j) * idf(j) を求める
+veclist = []
+for doc in filewordlist:
+vec = []
+for k, v in idf.items():
+if k in doc[1]:
+vec.append(doc[1][k]*v)
+#      print doc[0],k,doc[1][k], '%3.2f' % v
+else:
+vec.append(0)
+# ここでvecが完成したので長さ1に正規化(後のため)してからveclistにappend
+s = 0.0
+print doc[0],
+for x in vec:
+print '%3.2f' % x,
+s = s + (x*x)
+ss = math.sqrt(s)
+print "length", ss
+vec2 = []
+for x in vec:
+vec2.append(x/ss)
+veclist.append([doc[0], vec2])
+print u'各文書のベクトル'
+print '     ',
+for k, v in idf.items():     # タイトル行(単語内容)
+print k,
+print
+for u in veclist:
+print u[0],
+for v in u[1]:
+print '%3.2f' % v,
+print
+################
+# すべての文書ペアについてCosine の計算。 長さ1に正規化した後、内積で計算
+coslist = []
+for i in range(0, len(veclist)):
+for j in range(i+1, len(veclist)):
+title = [veclist[i][0], veclist[j][0]]
+innerproduct = 0.0
+for p in range(0, len(veclist[i][1])):
+innerproduct = innerproduct + veclist[i][1][p]*veclist[j][1][p]
+coslist.append([title, innerproduct])
+##############
+# 最後に結果をCosineの大きい順にsortする
+coslist.sort(lambda x, y: cmp(y[1],x[1]))
+print u'Cosine値'
+for u in coslist:
+print u[0][0], u[0][1], '%5.4f' % u[1]
+ノート/テキストマイニング/剽窃1 - 東邦大学理学部情報科学科 山内のサイト

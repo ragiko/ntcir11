@@ -1,0 +1,139 @@
+
+英文法を中心にみる英文解釈研究(その1)−統語的等位関係の詳細な考察と、統語論と情報構造のパラレリズム、及びテクストにおける具体と抽象の読解論 
+はじめに:
+外山(1992)では、私達が英語を読み違える際には、英語の等位構造の把握ミスが原因となることが多いが、そういうことは日本の英語教育ではあまりきちんと教えられていない、と述べられている。確かに、多くの参考書や文法書を見てみても、所謂「共通関係」というものはおまけで扱われている程度のものが多く、骨太の受験専用参考書である『英文法解説』や『ロイヤル英文法』ですら、例文は割と豊富なものの、包括的記述は試みられていない。そこで、今回はこの等位構文(共通関係)の全般的な考察を行いたい。まず、1.では、具体的事例を参照しながら、学習者にとって統語的等位構造のどのような部分が難点になるのかを考察し、これまで一般の文法書などで不十分であった点をまとめて取り扱う。2−1.においては、統語レベルにおける等位構文が、一文一文の枠を超えた情報構造に投影されるという現象を検討し、2−2.においては、テクスト構成における等位構造が具体と抽象を鮮明に映し出すという観点からマクロ的読解の基盤をどこに置くべきかを考察する。
+1.統語レベルにおける等位構造
+1−1.等位構造における諸問題①—統語機能への意識の低さ
+まず、学習者英語が等位構文を取り違える際に、いかなることが原因となっているのかを考えてみたい。外山(1992)ではこのような構造が「日本語に少ないこともあって日本人を惑わせる」としているが、これはさらに詳細に見ればどういうことなのだろうか。等位構文の分析ミスには、まずもって統語機能に対する意識の低さを露呈している部分があると思われる。このあたりを、具体例を踏まえて見ていくことにする。
+(1) He appeared to be destitute alike of the ambition which urged, and of the 
+passionate energy of mind which enabled me to excel.
+E.A.Poe William Wilson
+(2) However as social animals we certainly do have a rather more detailed interest in and appreciation of motives as cause.
+Henry Plotkin Evolution in Mind
+(3) This they declared unpropitious and that imperative, this an omen of good and that an omen of evil.
+H.G Wells A Short History of the World
+(5) When circumstances have led us to change our habits of life — as when the university has succeeded school, or professional life the university — we get in to many fresh ways, and leave many old ones.
+(入試問題)
+これらのような例文における等位構造が学習者を挫かせる場合(事実、予備校でこれらの英文を和訳させてみると、見事に構造を取り違う)、それは一つには文法的習熟度が低いということが言えるだろう。例えば(1)の例文の場合、urgeが他動詞であるという知識を持っているだけでも、後方の何らかの要素に繋がっていくということは容易にわかる。さらに、urge O to infinitiveという構文の知識があれば、たとえ文章の意味がそこまで理解できていなくとも構造的に間違えるということは生じえない。(2)の例文にしても、前置詞は目的語を取る、という高校レベルの文法知識があれば、ofだけでなくinもmotiveに繋がっていかざるを得ない、ということは読み取れるのである。同様のことが残りの例文に関しても言えよう。(4)はthat imperativeなどというものだけで文を構成できないという知識から、they declaredが省略されていることが理解できるし、(5)にしても、名詞+名詞という構造は原則的に英語においては例外的なものなのであって、その結果、既出の何らかのものが省略されているという思いに至ることが可能である。つまり、一般的に等位構文と言われているものの中でも、実際のところは高校英文法の知識の「応用」で解決できる部分も存在するのである。言い換えれば、ここで記載したような例文の構造を学習者が取り違える場合、それは辞書を頼りにした日本語への逐語訳のみで英語を読もうとし、統語構造が持つ機能に視点が置かれてないからであると言える。
+1−2.等位構造における諸問題②—意味判断の要素
+上では統語機能に対する意識の低さから生じる等位構文把握ミスの例を見た。しかし、等位構文は、文法の物理的な観点から常に容易に判断できるわけではない。次のようなものがその例である。
+(5)・・・, for although we were all incarcerated in a Dutch colonial gaol for murderers and desperate criminals, so relative had our concept of freedom become, that we rushed up to him and congratulated him on his liberation without a trace on our part, or a suspicion on his, of the irony implicit in it.
+Laurense van del Post A Bar of Shadow
+(6) Second, the learning of language structure, that is, the grammar and syntax that characterize every language, occurs without the child, and subsequently when the child grows into an adult, without the adult having any idea at all what it is they have learned. 
+Henry Plotkin Evolution in Mind
+(7) If a machine can think for itself on some level, perhaps even learn from and improve upon its performance through experience, it can be a far more useful tool.
+(出典未詳)
+これらの英文の場合、等位構文を正確に判断するためには、必然的に意味に対する意識が不可欠になってくる(といっても、それは特にレベルの高い思想や、専門知識の理解が必要ということではなく、語句の自然な繋がりや、文脈との整合、不整合の問題であるが)。(6)の場合、コンマの存在が文法的なマークとはなっているけれども、例えば、(1)のurgeの例とは違い、traceという名詞がその後ろにある何かしらの表現と義務的(統語規則的)に関係しなければならない、ということはない。また、(7)も同様に、the child havingという繋がりがなければ文の文法構造が破綻するわけではない。(8)に至っては、learn fromと improve uponが結ばれていると考えた方が、構造的には均衡が保たれているような感じすらする。こういった点でこれらの文の構造を正確に把握するためには、先程よりも意味に重点をおいた分析が必要なわけである。予備校などで見ていても、こうなるともうだいたいの生徒はお手上げになってしまう。普通、「文章を読む」という感覚では、例えば、新出の情報としてtraceという語が登場した場合、「一体何のtraceか」という疑問が生じてくる筈であるが、形式的、機械的な暗記にのみ頼り、物理的な構文分析にばかり終始すると、そこに意識はいかない。
+この点で、1−1で扱ったような例文が読めないのは、辞書で調べた単語の意味だけで読もうとする逐語読みから脱することができないためであるのに対し、ここ1−2で扱った類の英文で躓くのはさらに構文の表層的な意味だけを捉えることを超えて、文意まで含めた分析に到達していないためであると思われる。等位構造の把握ミスを論じる場合、主にこの二つ、すなわち、文法機能の軽視からくるミスと、文意を考えないところからくるミスがその原因となっていると考えられる。もちろん、等位構造に限らず、リーディングにおいては文法機能と文脈判断が常に駆使されている筈なのだが、ここで、特に等位構造が問題となる理由として、やはり外山(1992)の言うとおり英語と日本語の構造の違いが大きな要因として左右していると思われる。すなわち、例えば(1)のような文においては、I ate an apple.というような文を理解する際には分かっているつもりでいた、他動詞の本当の知識を問われるのであり、(5)のような文においては、A of Bときたら何でも「BのA」とだけする機械的置き換え法以上の、文の流れに沿って語の意味を考える力が問われるのである。どちらも日本語ではあり得ない構造を押し出したものであるだけに、表層的な文法意識や日本語につられた思考の流れでは失敗してしまう。等位構造は、英文法や英語的思考を理解しているかどうかの一つのテスト的要素を担うと言える。
+1−3.体系的整理と補完
+1−3−1.体系的整理
+1−2で得られた結論の裏を返せば、等位構造が正確に判断できるということは、英語的思考の流れにかなり慣れてきているという証拠になる。一定のレベル以上に達した学習者であれば、英語の取りうる基本的な等位構造を体系的にまとめ、それに対応する実例を示してやることで、徹底した文法知識全体の定着を図ると同時に、英語の読解力そのものの飛躍を期待できるのではないか。このように考えてくると、やはり2、3ページしか割かれていない、従来の学習文法書の「共通関係」の説明は不十分と言わざるを得ない。そこで、まずは、等位構造の基本型というべきものを整理し、上の1−1、1−2で用いた例文で、その基本型がどのように応用されていくかを考察してみたい。Quirk et al(1972)では、等位構文と省略構文を一括してチャプタ−に整理し、かなり詳細に各構文の特徴を扱っている。これを参考に、S, Aux, V, O, C, Adv, Adjなどの記号を用いて、主要な等位構造をまとめてみると、
+①	主語の省略:S Aux1 VP1 and (S) Aux2 VP2
+②	助動詞の省略:S Aux VP1 and S (Aux) VP2,S Aux VP1 and(S Aux) VP2
+③	述語の第一部の省略:S1 Aux V O1 and S2 (Aux V) O2,S Aux V O1 and (S Aux V) O2,S1 Aux V C Adv1 and S2 (Aux V C) Adv2,S Aux V C Adv1 and (S Aux V C) Adv2,S1 Aux V O Adv1 and S (Aux V O) Adv2,S Aux V O Adv1 and (S Aux V O) Adv2
+④	叙述全体の省略:S1 Aux1 VP and S2 Aux2 (VP),S Aux1 VP and (S) aux (VP),S1 Aux1 (VP), and S2 Aux2, VP
+⑤	直接目的語の省略:S1 Aux1 V1 (O), and S2 Aux2 V2, O,S V1 (O) and (S) V2 O,主格補語の省略:S1 Aux1 V1 (C), and S2 Aux2 V2, C,S Aux1 V1, and (S) Aux2 V2, C,S1 Aux1 V1 C and S2 Aux2 V2,S Aux1 V1 C and Aux2 V2
+⑥	副詞の省略:S1 Aux1 V1 (Adv), and S2 Aux2 V2, Adv,S Aux1 V1 (Adv) and (S) Aux2 V2, Adv,S1 Aux1 V1 Adv and S2 Aux2 V2 (Adv),S Aux1 V1 Adv and (S) Aux2 V2 (Adv)
+⑦	前置詞の補語(目的語):S1 Aux1 V1 P1 (NP), and S2 Aux2 V2 P2, (NP),S Aux1 V1 P1 (NP), and (S) Aux2 V2 P2, NP
+⑧	名詞句の核の省略:Adj1 (N) and Adj2 N,N PP1 and (N) PP2,N1 P1 Adj1 (N2) and (N1) P1 Adj2 N2,N1 P1 Adj1 (N2) and (N1 P1) Adj2 N2, Adj1 N and Adj2 (N)
+⑨	名詞句における前置修飾語の省略:Adj N1 and (Adj) N2
+⑩	名詞句における後置修飾語の省略:N1(PP) and N2 PP,N1(Infinite-clause) and N2 Infinite-clause,N1 (Relative-clause) and N2 relative-clause
+のようになる。基本的に①〜⑨はclause単位の等位構造、⑩、⑪は名詞句内における等位構造である。さらに重要なのは、⑪が特に曖昧性を強く残すということである。このため1−2のレベルのものは⑪の型を取る場合も多い。先程の(1)の例文は例えば⑤の型にあてはまる。(2)は③と⑧の変形と⑩が融合したもので、S Aux V Adj N1 P (N) and (S Aux V Adj) N2 P1 Nという構造である。図示すると次のようになる。
+(2)'
+rather more detailed(Adj) interest (N1) in (P1) and appreciation(N2) of (P2) motives(N)
+(3)は③のS Aux V O1 and (S Aux V) O2の型が第5文型で実行されS Aux V O1 C1 and (S Aux V) O2 C2となり、さらに目的語のfrontingが生じて、 O1 S Aux V C1 and (S Aux V) O2 C2となっている。(4)は③のS1 Aux V O1 and S2 (Aux V) Oの型そのままである。この基本型を使用すると、1−2で取り扱った例文も表すことができる。例えば(5)の例文は⑪で、N1 PP1 (PP), or N2 PP2, (PP)という構造である。図示すれば、
+(5)'
+a trace(N1) on our part(PP1), or a suspicion(N2) on his(PP2), [of the irony(PP)] 
+というような構成になるわけである。(6)にしても、④の動詞省略構文が動名詞化したと考えればよい。S'を動名詞の意味上のS、V'を動名詞とすると、S'1(V') and [Adv-C] S'2 V'という形である。(7)は少し複雑だが、V1 P1 (N1) and V2 P2 N2 P3 N1'となる。
+(7)'
+learn(V1) from(P1)(N) and improve(V1) upon(P2) its performance(N2) through(P3) experience(N1')
+上で統語的均衡が悪いと言ったのは、文の叙述要素である動詞句の目的語と副詞要素である前置詞句の目的語を並置しているからであるが、無理はない構文だろう。いずれにせよ、物理的な観点からのみ判断すれば、(5)はN1 PP1 or N2 PP2 PPとも表示できる(コンマがあるのでやや強引だが)し、(6)もNP1 and [Adv-C] NP2 Partとも言えるし、(7)はV1 PP1 (N) and V2 PP2 Nとも表示できてしまうため、そこは文脈と意味に訴えて適切な解答を取捨選択するしかない。しかし、このように形式的に整理することで、学習者はどこで意味要素を考慮すればいいかが判ってくる筈である。つまり、どこまでグラマーに固執し、どこから想像力(と言えば語弊があるかもしれないが)に頼るべきかの一つの指標を得られるのである。
+1−3−2.補完
+これまでの記述で一般的な等位構造はほぼ網羅できた筈であるが、さらに、等位構文を扱う際に含めなければならない重要な要素がある。等位構文というものを実現する要素は、他ならぬ等位接続詞であるが、andやbut、orなどの接続詞はさすがに中学生レベルで学習するものなので、等位構文に際して、敢えて詳細に扱う必要はないものと思われる。しかし、こういった基本的な接続詞以外に、等位構造を可能にする文法要素がある。これらは、擬似等位接続詞と呼ばれるもので、実際の英文には割合頻繁に登場するにもかかわらず、重要視されておらず、多くの文法書でも数行の説明が見られるだけである。例えば、次のような英文は認知度が低く、受験生にとっては難しい。
+(8) There is general apathy to if not positive distrust of science itself as a search for truth.
+(入試問題)
+この英文を和訳させた場合、かなりの生徒がif not positiveというのが一塊だと思ってしまい、正確に構造を把握できないのである。しかし、これは、most if not all of them(彼らの全てではないにしてもほとんど)と同様に、等位接続詞的機能に近い機能を有し、結果として(13)ではN1 P1 (N), if not N2 P2, Nという(2)に近い形、つまり、
+(8)'
+There is general apathy(N1) to (P1) if not positive distrust (N2) of (P2) science(N)
+として捉えることができるのである。このような擬似等位接続詞にはif (not)以外に、though、rather than、as well asなどが含まれる。例えば、
+(9) Darwin judged them to be closely related, which we now know through detailed chemical as well as other measures is correct,・・・
+Henry Plotkin Evolution in Mind
+などもその一つである。さらに、こういった本来従属節を形成するはずのものが等位構造に近い機能を有するということは従属節全体が等位構造的機能を潜在的に秘めているということの証拠でもあると言える。
+(10) But even of treatises on the really limited, although always assumed as the unlimited, Universe of Stars, ・・・
+E.A.Poe Eureka
+などは、従属接続詞althoughが等位構造を作り出している一例と言える。このことから、従属節全体が等位接続詞機能を有する可能性についての示唆も行えば万全であろう。
+1−4.実践的応用
+ここまで、等位構文が学習者にとっていかなる問題要素を孕んでいるかを考察し、加えて、代表的な等位構文の型を列挙し、その応用過程を見てきたわけであるが、このようにして整理してみると、かなり複雑難解に見える英文であっても、上記で扱った要素が絡みついて出来上がっているに過ぎず、十分に処理可能な範囲にあることが判る。次の例文(11)は夏合宿でもお見せしたものだが、「下線部の構造がどうしても取れない」という意見を聞いた。
+(11) There is scarce any one so floating and superficial in his understanding, who hath not some reverenced Propositions, which are to him the principles on which he bottoms his reasonings; and by which he judgeth of truth and falsehood, right and wrong; which some, wanting skill and leisure, and others the inclination, and some being taught, that they ought not, to examine; there are few to be found, who are not exposed by their ignorance, laziness, education, or precipitancy, to take them upon trust.
+John Locke An Essay concerning Human Understanding
+しかし、これも外見ほどは難しくない。ここまで整理してきた内容を上手く活用すれば、そこまで苦労することなくほど解くことができるのではないか。前半の、some, wanting skill and leisure, others the inclinationの部分は③のS1 Aux V O1 and S2 (Aux V) Oの構造が分詞構文化しているに過ぎない。つまり、
+(10)'  some(S1), wanting(Aux V) skill and leisure(O1), others(S2) (wanting(Aux V)) the inclination(O)
+となっているわけである。これは1−1のレベル、すなわち統語機能的なレベルで解決のつく問題で、上で整理した代表的等位構造の型にさえ習熟していれば問題ない。この先からは1−2のレベルの意味的推測の要素が介入してくるが、例文(5)で重要であったような基本的な意味要素の推測さえ怠らなければ、統語上の処理でかなりの部分まで解決可能である。というのも、前述の通り、skill and leisureやthe inclinationといった新出情報が登場してきた場合、その内容を求めるのが正しい読み方であり、その意識を怠ることなく注意深くグラマーを追っていくと、ought not, toという助動詞を二分割するような不自然なコンマにぶつかるからである。結果として、
+(10)" 
+some, wanting skill and leisure, 
+and others the inclination,              to examine which・・・
+and some being taught, that they ought not, 
+という基の構造を復元するのは然程難しいことではあるまい。つまり、不定詞節to examineがskill and leisureとthe inclinationに対し、それぞれ『コントロール』とbe inclined toからの『項の受け継ぎ』の役割を担うと同時に、助動詞ought toの一部としても機能し、全体として非常に無駄のない構成になっているのである。もちろん、分詞構文である以上は主節と何らかの関係があるわけで、その点で、主節であるthere are few・・・以下の内容をヒントにすることも可能である。いずれにしても、外山(1992)、多田(1991)的に言うと、これもax+bx+cx=(a+b+c)xの構造に過ぎない。 
+2.パラグラフレベルにおける等位構造
+2−1.文内構造とテクストの情報構造のパラレリズム
+さて、これまで、主に統語的な視点から、つまりIntra-sententialな視点から英語の等位構造について考察してきたわけだが、この等位構造は一文一文のレベルを超えて、英語の情報構造にも大きくその支配域を持つというのが筆者の考え方である。確かに、文章レベルにおいては統語レベルほどの制約には縛られないため、完全なパラレリズムを文内構造と文間構造に求めるのは不可能であろうが、かなりのレベルまで類似点を追求することができる場合もあるのではないか。1で整理した統語レベルの等位構造を用いて、それがテクスト構成に応用される例を具体的に見ていくことにする。
+2−1−1.パラグラフを支配する等位構造
+まず、以下の例文(11)に目を通して欲しい。
+(11)' ①The story of man's investigation of his place in the world has been one of successive reductions in his perceived status. ②In the physical world, we have learned that the Earth is not the centre of the solar system, or of our galaxy of stars, or of the whole universe, but is rather an insignificant planet orbiting an unspectacular star in the backwoods of a typical galaxy, one among hundreds of millions of such galaxies scattered across space. ③In the biological world, the process of removing man from the centre of the stage has not yet gone quite so far. ④After a long debate it has now become broadly accepted that man is just one animal species, subject to the same evolutionary pressures and processes as other species, but even those who accept and understand the evidence for evolution still find it hard to get away from the idea that man is somehow special, a pinnacle of evolutionary achievement.
+Gribbin, John & Sherfas, Jeremy The First Chimpanzee
+この例文(11)は、普遍、個別の概念を用いて、パラグラフをまず、二分割することができる。第一文は抽象度が高く、個別の事例を述べたものではない一方、第二文以降はそれぞれ、物理学の世界、生物学の世界で個別的に何が起こってきたかを述べた部分である。よって、とりあえず、第一文をXとし、第二文以降をYとして分類する。そこから、さらにYに目を向けてみると、当然ながらYも情報の種類から二分割できる。ただし、ポイントとなるのは、第一文と第二文以降を分割した要素と、第二文以降を二分割する要素は同じではないということだ。というのも、第一文とそれ以降を分割したのは、普遍、個別、という情報の〈質〉の差であるが、第二文以降は情報の質自体は同格で、種類によって分類されるものであるからである。よって、第二文以降はY=a+bという記号で表すことができる。さらに、XとYの関係を考えてみよう。XとYは上述の通り、それぞれ普遍的な内容と、個別的な内容を扱ったものだが、全く無関係な普遍と個別ではない。Xの内容はその抽象性ゆえに、Yにおけるaにもbにも適用できる内容なのである。とすれば、XとはYにおける二つの具体要素から帰納的に導かれた共通項であるとして捉えることができる。よって、Xa+Xb=X(a+b)の構造が、このパラグラフの情報全体を間違いなく支配していると言ってよい。第一文を①、第二文を②、第三文を③、第四文を④とおくと、①②+(①)③④というように、間違いなく③④の前に①の内容が「省略」されていると言うことができる。つまり、
+(11)'
+X(①) 〈②In the Physical World〉and 〈③④In the Biological World〉
+というわけである。このように言えるのは、もしここでYにおける事例がb(③④)しか語られなかったとしても、Xに対応する内容が省かれることはまずないと思われるからである。これは、1で整理した文内の等位構造に極めて類似しているとは言えないだろうか。ここでは長すぎて引用できないが、当然、数パラグラフに渡ってこの構造が展開されることもままある。ここから言えることは、一文一文の統語レベルにおける等位構造を正確に把握できるからこそ、さらに自由度の高い、制約から解放されたテクストにおける等位構造の論旨を追えるのであり、一文の統語レベルで圧倒されている状態で、パラグラフ全体の精密な解釈が可能ということはあり得ない、ということである。
+2−1−2.情報構造と文内構造の相互作用
+さらに、次は、文の統語的構造と内容構造の相互関係について見てみよう。
+(12) ①Hypothesized causal mechanisms lead to predictions of the 'What will happen if?' variety, and such predictions are then empirically tested, the results of those tests being used further to shape and sharpen our causal explanations. ②And so the process of science rolls on through the continual interplay of ideas and theories and their empirical testing by observation and experiment.
+Henry Plotkin The Imagined World Made Real
+この英文は「科学の構造」について説明したものである。引用の前の箇所では「科学の過程では、因果関係の観点から構築されるメカニズムに訴えなければならない」という内容のことが述べられており、Hypothesized causal mechanismsはそれを受けたものである。さて、ここで第一文に目を向けてみると、やはり、二つの動きがあることに気づく筈である。この文全体は「因果構造の仮説の提唱経験的検証仮説の修正」という流れになっているわけだが、「真理の探究」という科学の常識に照らし合わせれば、この後に、「修正された仮説さらなる検証再び修正」と続いていくことは容易に読み取れる。つまり、これは一つの循環構造で、「仮説構築」と「仮説検証」という二つの構成素がそれを支配しているわけである。このように第一文の内容構成を理解した上で、第二文に目を向ければ、まず、continual interplayという言葉が第一文で読み取った循環構造とリンクするはずである。つまり、「継続的な相互作用」とは先程の構成で考えれば「仮説構築」と「仮説検証」との相互作用ではないか、という推測がここでつくわけである。こういった推測ゆえに、of以下に続いていくような統語的等値構造をより正確に把握することができる。ここでは第一文で情報として示唆されていた循環構造とその支柱となる二大要素が、それぞれ第二文の語彙要素(the continual interplay)と統語的等位構造(of ideas and theories and their empirical testing by observation and experiment)と結びつき、第一文の内容と第二文の統語構造が以下のような相互作用を生じさせているのである。
+Hypothesizing−empirical test—Hypothesizing—・・・・
+hypothesizing             【the continual interplay】            empirical test                        
+ideas and theories                                  observation and experiment
+このように見てくると、一文の統語レベルとパラグラフの内容レベルを無闇やたらと分けて考えるのはあまり賢明とは思われない。英語の文章の一部分だけに下線部を引いて、そこを訳させるような入試問題などは、時に、枝葉末節に捉われ、本来のコミュニケーションの目的を忘れている、と批判されることもよくあるようだが、その批判がいかに無意味かをこの例は示している。なるほど、確かに語句の意味や珍しい構文を知っているかどうかのみを評価するような問題もあることはある。しかしながら、そういった悪問はむしろ少数である。この例文(12)のような文章においては、第一文の内容の把握が、第二文の内容理解はもちろん、統語レベルの分析にまで大きく影響を与えてくるのであり、その意味で、ある一文の統語理解の不出来が、テクスト全体の内容理解の如何を十分に曝け出し得るのである。ここから見るに、一文一文の正確な分析なしに、全体内容の理解はあり得ず、また、全体への理解が深まるに連れて、個別の部分に対する考察がより精確になっていくのであり、まさに例文(12)よろしくの、部分と全体の「継続的な相互作用」なのである。「一文は読めても・・・」的な批判は、その内に「一文を読めてない」要素を必然的に秘める、根本からしてのパラドックスであり、「そんな細かい部分なんて・・・」的な主張は、些末と精緻を取り違えた誤診なのではないだろうか。
+2−2.パラグラフの具体と抽象と読解論
+太古の昔、人類は三匹の魚と三頭の牛、三個の石などの具体物の間に共通性を見出し、そこから3という普遍の概念を抽き出すことによって、自然淘汰に勝ち残った。数学だけではない、抽象概念は人間(特に西洋の思考)のあらゆる知的活動を支える根幹である。かつて、ヘラクリトスは同じ川を二回渡れるか、という問題に頭を抱えたというが、これは「物」という言葉の「静」のイメージが、言語が始るとともに開始される抽象化の過程に盲目的にさせたからであろう。あらゆる物は動的であり、あるものが同一であるか否かの問題は、それゆえ、我々が時空間におけるいかなる境界部分をもって、その物を定義するかに依存するのである。抽象概念は我々に、この流動的な世界を分類する手段を手渡した。英語の等位構造にもこの根幹の思考が反映されていると言ったとして、過言の咎は受けまい。そして、それは文のレベルを超え、やはりテクストのレベルにも適用されるのである。日本人学習者が英語の文章を読む際に苦労を覚えるのは、この抽象、具体の区別に悩まされるからではないか。
+ご存知の通り、英語のパラグラフ構成のお手本は、トピック、サポート、コンクルージョンというものである。トピックとは筆者が何を論じようとしているかを端的に表す部分であり、サポートはそれに具体的な事例、証拠、理由などを与え、説得力のあるものにする。そして、コンクルージョンはさらにトピックの内容を強める形で補われる。近年、英語教育の世界で人気を博してきたパラグラフ・リーディングとはこの概念を用いたものであるが、一般的にトピックというものは、テクストにおける配置とは逆説的に、既にサポートで述べるような具体的事例を基盤に、筆者が導き出した普遍の項である(ゆえに、X(a+b)という構成がパラグラフに頻繁に見受けられるのも当然のことと言えるかもしれない)。つまり、我々がトピックを理解しようとする際には、そのトピックが斬新なものであればあるほど、必然的にその下に配置されているであろうサポートに目を向けることが重要となってくる。所謂「パラグラフ・リーディング」は、この点が甘い。トピックだけに目を向けることで文内容の全体を読み込めるのは、既にそこで述べられているような文章に対する背景知識をかなり豊富に持っている場合のみである。このため、トピック・センテンスに対する狂信的な傾倒のツケが、背景知識至上主義という形で、再び無知な受験生や英語学習者を混乱に陥れる結果になってしまうのである。
+最新情報の入手手段としての英語の価値にハイライトを当てた場合、この背景知識とトピック・センテンスの二人三脚はあまり有益とは思われない。というのも、トピック・センテンスだけを読んで全体のあらましが掴めてしまうようなものは既に読者の背景知識のレベルから見れば、「陳腐」に分類されてしまうということになり、仮にそこまで日本語で背景知識を貯蓄できたとしても、今度は何の為の英語かが判然としなくなってしまう。さらに言えば、小説などのように奇抜がものを言うマテリアルや、評論であってもまさにアップ・トゥ・デイトな内容のものに際しては、大きく読解力を削られることになろう。
+ゆえに、リーディングにおいては、著者の抽象概念の流れを、提示された具体事項から読み取っていく能力、つまり、論の展開にそって、Xa+Xb=X(a+b)の過程を辿る能力が重要となる。結果として導き出された論に対する賛否は別問題である。このため、1と2−1で見てきたような、統語レベルの等位構造と、それがパラグラフレベルと相互作用する過程に習熟しておくことは何よりも不可欠なことと言えるだろう。誤解を避けるために言っておくが、私はパラグラフ・リーディングや内容スキーマの存在価値を認めるのに吝かになっているわけではない。それらは、語学の要素として、やはり同様に意義深いものである。しかしながら、実際に、「読む」とは何かを考慮した場合、基盤としては少し安定性に欠けるのである。この点でやはり、制限を受けるが故に、最も揺るぐことのない(いかに奇抜な作家であっても、文法に酷い破格が見られるような作品は少ない)統語構造を徹底した基礎とすることが、リーディングの第一条件として受け入れられなければならないものであると私は確信している。
+3.終わりに
+英語学習者の弱点である等位構造を捉え直すという仮面の下に、その実、一つの文法に的を絞りながら、一文一文の理解がリーディングの全体にいかに有機的に結びついていくかを示すという目論みがあったことは、最早、明白なことと思う。残念なのは、抽象、具体の概念を説き解く具体例を示すに及ばなかったことである。これは次回の課題としたい。
+【参考文献】
+江川泰一郎(1994)『英文法解説』金子書房
+斎藤兆史(2003)『英語達人塾』中公新書
+佐々木高政(1980)『英文解釈考』金子書房
+澤井繁雄(2001)『誰がこの国の英語をダメにしたか』NHK生活人新書
+—(2002)『英文読解完全マニュアル』ちくま新書
+朱牟多夏雄(1958)『英文をいかに読むか』文建書房
+多田幸蔵(1999)『解釈のきめ手・英文研究法』洛陽社
+多田正行(1992)『思考訓練の場としての英文解釈(1)』育文社
+外山滋比古(1983)『英語辞書の使い方』岩波ジュニア文庫
+−(1992)『英語の発想・日本語の発想』NHKブックス
+行方昭夫(2003)『英語のセンスを磨く』岩波書店
+—(2003)「英文解釈練習」『英語青年』5月号 研究社
+馬場彰(2003)「統語論研究と英文解釈」『英語青年』7月号 研究社
+R・クワーク&S・グリーンバウム/池上嘉彦訳(1977)『現代英語文法〈大学編〉』紀伊国屋書店
+綿貫陽他(1994)『教師のためのロイヤル英文法』旺文社
+綿貫陽他(1997)『ロイヤル英文法』旺文社
+Cerece-Muracia, Mariaanne et al(1983) The Grammar Book Heile&Heinle Publishers
+Greenbaum, S (1991) An Introduction to English Grammar
+Huddleton, Rodney et al(2002) The Cambridge Grammar of the English Language Cambridge Press
+Grimshaw, Jane(1990) Argument Structure The MIT Press
+Oshima, Alice & Hogue, Ann(1998) Writing Academic English, Third Edition
+Quirk. R et al(1972) A Grammar of Contemporary English Longman
+− (1985) A Comprehensive Grammar of English Language Longman
+【引用に使用した文献】
+Gribbin, John & Sherfas, Jeremy(2000) The First Chimpanzee Penguin Books
+Locke, John(1979)((1690)) An Essay Concerning Human Understanding  Oxford University Press
+Plotkin, Henry(1998) Evolution in Mind  Penguin Books
+−(2003) The Imagined World Made Real  Penguin Books
+Poe, E.A(1997)((1889)) Eureka Prometheus Books
+−(2003) The Fall of the House of Usher and Other Writings Penguin Classics
+Van der Post Laurens(1966) The Seed and the Sowers Penguin Books
+Wells, H.G(2000)((1922)) A Short History of the World  Penguin Classics
+ミニ卒論はこちら
+戻る
+

@@ -1,0 +1,52 @@
+
+日本語連続音声認識エンジン"Julius"をAndroidで動作させるの連載3回目、最終回をお届けします。
+第一回 と 第二回 で、Juliusを用いたAndroidでオフライン音声認識を行うアプリのJNIライブラリが生成できました。最終回の今回は、JNIを利用するJava側の実装について解説します。動作イメージは以下のようになります。
+今回も少し?濃いですが、出てくるのはJavaコードだけなので大丈夫!タブンね?
+では、始めましょう!
+AndroidでJulius用に音声を録音する 
+Androidで音声を録音するためには、 MediaRecorder を用いる方法と AudioRecord を用いる方法の二種類が存在します。マイクから入力された音声を録音してファイル出力するだけならば、高レベルなAPIを提供するMediaRecorderを用いるほうが簡単です。出力ファイルのopen/closeやマイクから入力されたバイトデータのことなど、細かいことを気にしなくても使えますので。
+ただし今回のアプリでは、まさにその「細かいこと」を気にしなければなりません。なぜなら、Juliusが理解できる音声ファイルは形式が厳密に定められた下記の2種類しかなく、そのサンプリングレートもコンフィグファイルで明示的に指定しなければならないからです。
+-- The Juliusbook より--
+サポートするファイル形式 
+読み込み可能なファイル形式は,デフォルトでは以下のとおり.
+.wavファイル:Microsoft WAVE形式 WAVファイル(16bit, 無圧縮PCM, monoral のみ)
+ヘッダ無しRAWファイル:データ形式は signed short (16bit),Big Endian, monoral
+そこで今回は、細かい条件を設定できるAudioRecordを用い、16bit・monoral・BigEndianのヘッダ無しRAWファイルとして音声ファイルを生成します。
+なお MediaRecorder でも、MediaRecorder.OutputFormatとMediaRecorder.AudioEncoderをに"DEFAULT"を指定することで無圧縮PCMのwave形式ファイルを生成できるようです。ただこの使い方は公式にはUndocumentedのため、今回は利用を見送りました。
+JuliusActivity
+では、具体的なソースコードに入りましょう。今回は全ての処理をActivityに押し込めてしまいました。
+onCreate
+onCreateでは、AudioRecordの初期化とイベントリスナーの設定を行ないます。
+public class JuliusActivity extends Activity {
+private static final int SAMPLING_RATE = 22050;
+private int bufSize = 0;
+private boolean isRecording = false;
+...
+@Override
+public void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_julius);
+resultText = (TextView) findViewById(R.id.result_text);
+// AudioRecordを初期化する
+bufSize = AudioRecord.getMinBufferSize(SAMPLING_RATE,
+AudioFormat.CHANNEL_CONFIGURATION_MONO,
+AudioFormat.ENCODING_PCM_16BIT) * 2;
+audioRec = new AudioRecord(MediaRecorder.AudioSource.MIC,
+SAMPLING_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+AudioFormat.ENCODING_PCM_16BIT, bufSize);
+// ラジオボタンを選択したときのイベントリスナーを設定する
+radioGroup = (RadioGroup) findViewById(R.id.radiogroup);
+radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+@Override
+public void onCheckedChanged(RadioGroup group, int checkedId) {
+new JuliusInitializer(JuliusActivity.this).execute(checkedId);
+}
+});
+// ボタンをタップしたときのイベントリスナーを設定する
+button = (Button) findViewById(R.id.speech_button);
+button.setEnabled(false);
+button.setOnClickListener(onClickListener);
+}
+...
+}
+日本語連続音声認識エンジン"Julius"をAndroidで動作させる 3 | Tech-Sketch

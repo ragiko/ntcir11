@@ -1,0 +1,43 @@
+純粋な配列を操作できる関数
+$.inArray(needle, array)
+$.each(array, callback(index, value))
+$.map(array, callback(value, index))
+$.grep(array, callback(value, index) [, invert])
+$.merge(first, second)
+コールバック関数に渡される引数の順序が統一されていないことに注意。
+純粋な配列は操作できない関数
+$.unique(array)
+勘違いすると厄介です。詳しくは後述。
+関数の解説
+$.inArray(needle, array)
+公式リファレンス
+引数needleが引数arrayの何番目にあるのか整数値で返します。配列に含まれない場合は-1を返します。論理値やNaNは返さないので注意。
+$.each(array, callback(index, value))
+公式リファレンス
+配列の各要素に対して指定した関数を実行できる。for文やArray.prototype.forEachの代替として使用出来る。
+コールバックに渡される引数の順番が$.gerpや$.map、Array.prototype.forEachと逆なので注意。
+// ECMA5から使えるforEachメソッドとはvalueとindexの引数の順番が逆
+[1, 2, 3].forEach(function (value, index, context) {
+// loop 
+});
+引数arrayにはjQuery要素などオブジェクトも渡せるのでfor-in文としても使用可能。
+(これはArray.prototype.forEachを使用した際も同じ事がいえますが)関数オーバーヘッドがあるのでパフォーマンスを求められる際はfor文が無難。そしてループを抜ける方法がbreak文ではなくreturn文で抜けることができるが、以下の点に注意。
+var array = [1, 2, 3],
+length = array.length;
+(function () {
+var i;
+for (i = 0; i < length; i += i)
+if (i === 2) {
+return; // 無名関数まで抜けることができる。
+// break; ループだけ抜ける場合はコレ。
+}
+});
+}()); 
+(function () {
+$.each([1, 2, 3], function (i, value) {
+if (i === 2) {
+return; // $.eachまでしか抜けられない。
+}
+});
+}());
+JavaScript - 配列を操作するjQueryのユーティリティ関数まとめ - Qiita

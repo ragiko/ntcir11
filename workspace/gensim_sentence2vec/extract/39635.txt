@@ -1,0 +1,5 @@
+<span class="ruby"><span class="rb" style="speak:none">発音できない文字列</span><span class="rp" style="speak:none">(</span><span class="rt">読み方</span><span class="rp" style="speak:none">)</span></span>
+また、音声ルビテンプレートの目的には沿いませんが、第3無名引数を「補助表示」にすれば、読み方が、視覚式ユーザーエージェントでは画面表示はされるものの、音声読み上げ式ユーザーエージェントの発音の強制をしないようにできます。これは本文が外語である場合に有用です。音声読み上げ式ユーザーエージェントにはその言語での正確な発音をさせつつ、視覚式ユーザーエージェントでの閲覧者のために補助として読み仮名を付けたい場合です。
+記述
+HTML
+Template:音声ルビ - Wikipedia

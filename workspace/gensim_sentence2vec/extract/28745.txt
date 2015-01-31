@@ -1,0 +1,72 @@
+[ENGLISH] [NTCIR ホーム] [NTCIR データ Home]
+NTCIR-10 SpokenDoc-2(音声ドキュメント検索)
+NTCIR-10 SpokenDoc-2テストコレクションは、講演音声を対象とした音声ドキュメント検索 (SDR) の評価に使用することができます。このテストコレクションには、以下のデータが含まれます。
+Spoken Term Detection (STD)大タスク用 検索語 100件
+Spoken Term Detection (STD)中タスク用 検索語 100件 + 存在しないSpoken Term Detection
+(iSTD)タスク用 ダミー検索語 100件
+音声コンテンツ検索(SCR)講演検索タスク用 検索トピック 120件
+音声コンテンツ検索(SCR)会話検索タスク用 検索トピック 120件
+STD中タスク(検索語100件) に対するゴールド・スタンダード
+STD大タスク(検索語100件) に対するゴールド・スタンダード
+SCR講演検索タスク(検索トピック120件) に対するゴールド・スタンダード(適合性判定データ)
+SCR会話検索タスク(検索トピック120件) に対するゴールド・スタンダード(適合性判定データ)
+STDタスク、iSTDタスク用採点ツール
+SCRタスク用採点ツール
+文書データはNIIから配布いたしません。利用者は、別途入手する必要があります。
+- 入手方法はこちら
+Collection
+Task
+Target
+タスクデータ
+質問
+判定
+言語
+#
+NTCIR-10 SpokenDoc-2
+STD large-size
+CSJ
+Japanese
+検索語 100件
+IPU (inter pausal unit) lists in which the query term appeared.
+(Automatically determined from the manual transcription)
+STD moderate-size,
+iSTD 
+SDPWS
+検索語 100件 + ダミー検索語 100件
+SCR lecture
+retrieval
+CSJ
+検索トピック 120件
+Relevance judgment at lecture level.
+SCR passage
+retrieval
+SDPWS
+検索トピック 120件
+Two-leval relevance judgment for arbitrary-length passages in the documents,
+including supporting passages.
+「音声データ」
+このテストコレクションでは、2つの音声データセットを使用しています。STD大タスクとSCR講義検索タスクは、その文書データとして日本語話し言葉コーパス(CSJ)を使用します。他のタスク(STD中タスク、iSTDタスク、およびSCR講演検索タスク)では、音声ドキュメント処理ワークショップ(SDPWS)のコーパスを使用しています。
+「日本語話し言葉コーパス(CSJ)」
+このテストコレクションで使用する文書データは、国立国語研究所が提供している『日本語話し言葉コーパス(The Corpus of Spontaneous Japanese (CSJ))』のサブセットです。 利用者は各自、データを購入する必要があります。
+詳細は、『日本語話し言葉コーパス』のウェブサイトをご覧ください。
+『日本語話し言葉コーパス』は、講演音声、モノローグ音声などの数種類の自発音声データを、人手による書き起こしデータとともに収録しています。このテストコレクションで文書データとして使用するのは、このうち、学会での講演および、与えられた論題に対する模擬講演の、2種類の講演音声で、総計2,702講演、時間にして約600時間です。
+「音声ドキュメント処理ワークショップのコーパス(SDPWS)」
+これは、第1回〜第6回音声ドキュメント処理ワークショップの録音とその人手による書き起こしデータで構成されています。
+情報処理学会SLP研究会(SIG-SLP)音声・音響クラウドワーキンググループから、研究目的で入手できます。
+「参照用自動音声認識データ」
+NTCIR-10 SpokenDoc-2評価のために使用されたこの文書データは、情報処理学会SLP研究会(SIG-SLP)音声・音響クラウドワーキンググループからも利用できます。
+4種類の自動音声認識データが用意されています。テキスト表現は、ラティスおよびコンフュージョン・ネットワーク表現に加え、二つのバックグラウンドASRシステムに依拠した単語または音節配列のN-bestリストです。  
+Word-based transcriptions obtained by using a word-based ASR
+system. In other words, a word n-gram model is used for the language
+model of the ASR system. With the textual representation, it also
+provides the vocabulary list used in the ASR.
+Syllable-based transcription obtained by using a syllable-based
+ASR system. The syllable n-gram model is used for the language model,
+where the vocabulary is the all Japanese syllables.
+こららのトランスクリプションの取得には2種類の異なる言語モデルが用いられています。1つは講義テキストにマッチしたものでもう1つは不一致な新聞記事です。
+したがって、4つのトランスクリプションがそれぞれのテストコレクションに用意されています:
+word-based with high WER, word-based with low WER, syllable-based with high WER, and syllable-based with low WER
+検索語 (for STD task)
+検索語リストとして、CSJ(大型タスク)用のリストとSDPWSためのリスト(適度なサイズのタスクとISTDタスク)の2つを提供します。
+各検索語は、1つまたは複数の単語から構成されています。検索語の長さは、3から14モーラ(大型タスク)と3から18モーラ(iSTDタスク)の範囲内です。検索語リストのフォーマットは、以下の通りです。
+

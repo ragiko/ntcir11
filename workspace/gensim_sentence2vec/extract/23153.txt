@@ -1,0 +1,46 @@
+2014/3/7前後から急増した接続問題について  &dagger;
+*今現在(2014/3/18)では新たなスレッドのアップデートは特に無く、この問題に関しては終息したように思われます。
+3/14 06:20 解決(、あるいは解決への第一歩)か?:  &dagger;
+原因の1つが特定され、対策が取られた模様です。まだファイアウォールに関するエラーが出るのかどうか、確かめて欲しいとの事です。
+(http://forums.na.leagueoflegends.com/board/showthread.php?p=45788252#45788252)
+補足:文中に出てくる"Level3"とは、USAの同名のプロバイダーの事かもしれません。
+老婆心:今回の騒動中に無料期間のあるVPNツールを導入した方は、無料期間経過後に自動解約される契約になっているかどうかをちゃんと自分の目で確かめた方がいいでしょう。契約内容によってはそのまま有料版に移行するケースもある模様です。
+RiotSuperfoxman
+ネットワーク・オペレーション・センター 技術者
+やあ皆!
+さて、192.64.171.0/24のゲームサーバーにたどり着けないプレイヤー達の何人かと共に調査した後、我々は192.64.171.0/24のルートがLevel3から何らかの理由で消えていた事を発見した。我々はなぜこのような事が起きたのかについての確認作業をまだ続けている。level3にたどり着けなかったプレイヤー達は"Request time out"(「要求はタイムアウトしました」)を彼らのtrace route(ネットワークルート)上で拙速に受けていたはずだが、それは今や解決したはずだ。今や投稿の大部分が、ファイアウォールのエラーを受ける事無くゲームに接続出来るために、昨晩からポジティブになった。
+この修正の前に問題を抱えている事の主張を先立って投稿していた人は、今それが自分にとって解決したかどうか、我々に教えてくれないか?
+もしいまだにファイアウォールの問題を抱えている場合は、どうかログを投稿して欲しい、我々はそれらの調査を続けるだろう。
+君の時計機能を同調させる事も、助けになるかもしれない。
+Windowsで時計を同調させる
+[推奨] 時計をコマンド・プロンプトを通じて同調させる。Windowsの全てのバージョンで有効だ。
+[Windowsキー] + Rキーを押す。
+"cmd"と打ち込む。
+Okを押す。
+"net start w32time"と打ち込む。
+これは、もし有効化されていなかった場合に、時間の同調サービスを始めさせようとするものだ。
+Enterキーを押す。
+"w32tm /resync"と打ち込む。
+これは君の時計を再同調させるだろう。もしこれが失敗したなら、時間と、そして日付をも、手動で入力する必要があるかもしれない。
+Enterキーを押す。
+感謝する!
+RiotSuperfoxman
+NOC Technician
+Hey everyone!
+So after investigating the issues with some players not being able to reach the 192.64.171.0/24 game servers we found that the the route 192.64.171.0/24 has disappeared from Level3 for some reasons. We are still confirming why that happened. Players who were unable to reach level3 would have seen "Request time out" early in their trace routes, which should now be resolved. As of now, the majority of the posts since last night have been positive with being able to connect to games without receiving the firewall error.
+Anyone who previously posted that stated they were having issues before the fix can you let us know if fixed for you now? 
+If you are still having the firewall issues please post your logs and we will continue to investigate them. 
+It may also help to sync your time clock.
+Syncing the Clock in Windows
+[Recommended] Syncing the clock via the command prompt. Works on all versions of Windows.
+Press [Windows Key] + R
+Type cmd
+Press Ok
+Type net start w32time
+This will start the time sync service if it is currently not active 
+Press Enter
+Type w32tm /resync
+This will resync your clock. If it fails you may manually have to set your time AND date. 
+Press Enter
+Thanks!
+LoLJPWiki - 小ネタ・小技/既知の不具合/2014年3月7日前後のファイアーウォールの絡む(?)接続問題について

@@ -1,0 +1,57 @@
+
+WordPress移行時にURLをSQLで直接一括置換はダメ! 「Search and Replace for WordPress Databases Script」を使おう
+2014年8月14日				BY
+cmutoh			
+| 
+コメントをどうぞ				
+こんにちは。武藤です。
+最近WordPressの記事を書くことも増えてきて、WordPressと大分仲良くなってきました。
+URLの一括置換は危険
+本日はWordPressの移行方法についてのお話です。
+WordPressは、DBの中にホスト名やIPを含んだURLが散在しています。私も最初はSQLで一括置換すればOK!と思っていましたが、こちらの
+WordPressでサーバ移行時にデータベース上のドメインを書き換える方法
+という記事を見てその方法だと危険ということを知りました。
+DB内にシリアライズされた情報がデータがあって、整合性が合わなくなる様子。
+(具体的にいうと、wp_optionsテーブルなどでurlの長さなどのデータを持っている)
+特にテーマやプラグインのデータが壊れる可能性があります。
+移行するには、「Search and Replace for WordPress Databases Script」というツールを使います。
+CodexのMoving WordPress に書いてある公式な方法です。
+こちらのツール、新しいバージョンも出て画面も前と結構変わってます。v3.0.0を使ってみたので、その記録です。
+1. バックアップ
+移行ではなくホスト名の変更の場合は、必ず作業を始める前に下記バックアップをとりましょう。
+WordPressフォルダ
+データベース
+2. wp-config.phpファイルでデータベースの接続情報を編集
+必要に応じて移行先のwp-config.phpのデータベース接続情報(xxxxxの部分)を変更します。
+define('DB_NAME', 'xxxxx');
+define('DB_USER', 'xxxxx');
+define('DB_PASSWORD', 'xxxxx');
+define('DB_HOST', 'xxxxx');
+3. 置換ツールのダウンロード
+Search and Replace for WordPress Databases Script をダウンロードします。
+今回は最新のV.3.0.0 BETAになりますので、下のダウンロードボタンをクリックします。
+Search-Replace-DB-master.zipというファイルがダウンロードされるので、解凍します。
+4. アップロード
+解凍したフォルダを、WordPressフォルダ直下にアップロードします。
+これで、下記のURLにアクセスすると、Search And Replaceの画面が開きます。
+http://[hostname]/Search-Replace-DB-master/
+5. replaceとwithを入力
+なんの文字列を(replace)、何で置換するか(with)を入力します。
+ここで気をつけたいのは、replaceにhttp(s)や/(スラッシュ)を付与しないということです。
+重要です!!!!!
+※Search and ReplaceのHPにはreplaceに何を書くか詳しく書かれていないため、私の私見となります。私が試した限りでは、http(s)やスラッシュが含まれていないURLもDB内に存在したため、httpなどがないURLの方がDry Runで多くヒットしました。つまり、httpなどを含めた文字列で置換すると、漏れが出てしまうと考えています。
+良い例: www.example.com/test
+悪い例: http://www.example.com/test/
+6. Dry Run: お試し。もし実行したらこうなります
+「Dry Run」をクリックすると、実際にはSQLは実行されず、もし実行したらこれだけ変更されるよ、という想定を表示してくれます。
+7. Live Run: 本番実行
+Dry Runで変更される箇所を確認したら、いよいよ本番実行です。
+「Live Run」をクリック。
+コンファームが表示されます。心の準備ができたらOKを押します。
+SQLが実行され、置換が完了します。
+8. Delete: 置換ツールのフォルダを消す
+最後に必ず置換ツールのフォルダは消しておきましょう。
+もしそのままにして外部からアクセスされたら、一括置換される恐れがあり大変危険です。
+以上となります。
+簡単ですね。URLが直書きでDB内に散在しているというWordPressの作りはどうかと思っていましたが、このようなツールがあるととても助かります。
+WordPress移行時にURLをSQLで直接一括置換はダメ! 「Search and Replace for WordPress Databases Script」を使おう | infoScoop開発者ブログ

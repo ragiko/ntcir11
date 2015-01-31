@@ -1,0 +1,28 @@
+
+まず、$x^2+4xy+3y^2+x+5y−2$ を $x$ の式とみて、降べきの順に整理する。
+\begin{align}
+x^2+(4y+1)x+3y^2+5y-2
+\end{align}
+次に、$x$ を含まない項について因数分解する。
+\begin{align}
+x^2+(4y+1)x+(3y-1)(y+2)
+\end{align}
+1次式の積の公式の逆利用のときと同じように、下のような表を描き、隙間を埋めていく。
+\begin{array}{c||c|}
+&x&y+2\\\hline{x}&x^2&\\\hline3y-1&&(3y-1)(y+2)\\\hline
+\end{array}
+より
+\begin{array}{c||c|}
+\bigcirc&x&y+2\\\hline{x}&x^2&(y+2)x\\\hline3y-1&(3y-1)x&(3y-1)(y+2)\\\hline
+\end{array}
+と表を作れるから
+\[(x+y+2)(x+3y-1)\]
+と因数分解できる。
+STEP1
+因数分解する式
+\[\boldsymbol{x^2}+4xy\boldsymbol{+3y^2}+x+5y\boldsymbol{-2}\]
+の、$x^2$の項($x^2$)、$y^2$の項($3y^2$)、定数項($−2$)を下図のように、$3\times 3$の表に書き込む
+\begin{array}{c||c|}
+&&&\\\hline&\boldsymbol{x^2}&&\\\hline&&\boldsymbol{3y^2}&\\\hline&&&\boldsymbol{-2}\\\hline
+\end{array}
+2文字2次式の因数分解 | 数学I | フリー教材開発コミュニティ FTEXT

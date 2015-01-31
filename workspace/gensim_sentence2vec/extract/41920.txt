@@ -1,0 +1,77 @@
+
+動機[編集]
+概周期函数にはいくつかの同値でない定義が存在する。第一の定義はハラルト・ボーアによって与えられた。彼の興味は、初めは有限ディリクレ級数に注がれていた。実際、リーマンゼータ函数 ζ(s) に関する級数を有限にするために打ち切ることで、次の型の項の有限和が得られる。
+ただし s は実部 σ と虚部 it の和 (σ + it) として書かれている。σ を固定し、複素平面内の単一の縦軸にのみ注意することで、上の表現を書き換えた次のものを考えることが出来る。
+このような項の「有限」和を取る事で、領域 σ < 1 への解析接続の困難さを避けることが出来る。ここで「振動数」 log n はすべて通約できない(それらは整数 n が乗法独立である限り、有理数上で線形独立である。したがってそれらの素因数分解に帰着される)。
+独立な振動数の三角多項式のタイプを考えるための、この初めの動機をもって、様々なノルムについての基礎函数の集合の閉包を議論するために解析学が利用された。
+その他のノルムを使った理論は、エイブラム・サモイロヴィッチ・ベシコヴィッチ(英語版)、ヴィアチェスラフ・ステパノフ(英語版)、ヘルマン・ワイル、ジョン・フォン・ノイマン、アラン・チューリング、サロモン・ボホナー(英語版)やその他の研究者によって1920年代および1930年代に発展された。
+一様あるいはボーアあるいはボホナー概周期函数[編集]
+Bohr (1925a) は、(R 上の有界函数 f に対する)一様ノルム
+に関する三角多項式の閉包として、一様概周期函数(uniformly almost-periodic function)を定義した。言い換えると、ある函数 f が一様概周期的であるとは、すべての ε > 0 に対し、一様ノルムに関して f からの距離が ε よりも小さいような正弦波と余弦波の有限な線形結合が存在することを言う。ボーアは、任意の ε > 0 に対し、この定義は ε 概周期の相対稠密集合(英語版)の存在と同値であることを証明した。すなわち、変数 t についての平行移動 T(ε) = T によって
+が得られる。Bochner (1927) による代わりの定義は、ボーアのものと同値で、次のように比較的簡単に述べることが出来る:
+函数 f が概周期的であるとは、f の平行移動のすべての列 {ƒ(t + Tn)} が、(−∞, +∞) 内の t に関する一様収束部分列を持つことを言う。
+ボーアの概周期函数は、本質的には実数のボーアコンパクト化(英語版)に関する連続函数と同じである。
+ステパノフの概周期函数[編集]
+p ≥ 1 に対するステパノフの概周期函数の空間 Sp は、V.V. Stepanov (1925) によって導入された。この空間はボーアの概周期函数の空間を含むものであり、任意の固定された正の値 r に対するノルム
+の下での三角多項式の閉包である。r の値が異なる場合でも、ノルムは同じ位相を与えるので、同じ概周期函数の空間が導かれる(ただしこの空間上のノルムは r の選び方に依存する)。
+ワイルの概周期函数[編集]
+p ≥ 1 に対するワイルの概周期函数の空間 Wp は、Weyl (1927) によって導入された。この空間はステパノフの概周期函数の空間 Sp を含むものであり、セミノルム
+の下での三角多項式の閉包である。注意:コンパクトな台を持つ任意の有界函数のように、||ƒ||W,p = 0 を満たす非ゼロの函数 ƒ が存在する。したがってバナッハ空間を得るためには、それらの函数を除外する必要がある。
+ベシコヴィッチの概周期函数[編集]
+ベシコヴィッチの概周期函数の空間 Bp は、Besicovitch (1926) によって導入された。この空間はセミノルム
+の下での三角多項式である。注意:コンパクトな台を持つ任意の有界函数のように、||ƒ||B,p = 0 となる非ゼロの函数 ƒ が存在する。したがってバナッハ空間を得るためには、それらの函数を除く必要がある。
+B2 内のベシコヴィッチの概周期函数は、(必ずしも収束しない)展開
+を持つ。ただし Σ an2 は有限で λn は実数である。逆に、このような級数はすべてあるベシコヴィッチの周期函数の展開である(一意ではない)。
+p ≥ 1 に対するベシコヴィッチの概周期函数の空間 Bp は、ワイルの概周期函数の空間 Wp を含む。「null」函数からなる部分空間を除けば、この空間は実数のボーアのコンパクト化上の Lp 函数の空間と一致する。
+局所コンパクトアーベル群上の概周期函数[編集]
+理論の発展と抽象的手法(ピーター=ワイルの定理(英語版)、ポントリャーギン双対およびバナッハ環)の発見に伴い、一般論を構築することが可能となった。局所コンパクトアーベル群 G との関連において概周期性の一般のアイデアは、G による平行移動が相対コンパクト集合を形成するような L∞(G) 内の函数 F に対するものへと変わった。また同値であるが、概周期函数の空間は G の指標の有限線型結合のノルム閉包である。G がコンパクトであるなら、概周期函数は連続函数と等しい。
+G のボーアコンパクト化(英語版)は、G の双対群のあり得るすべての不連続指標からなるコンパクトアーベル群で、G を稠密部分群として含むコンパクト群である。G 上の一様概周期函数の空間は、G のボーアコンパクト化上のすべての連続函数の空間と一致する。より一般に、ボーアコンパクト化は任意の位相群 G に対して定義でき、そのボーアコンパクト化上の連続あるいは Lp 函数の空間は G 上の概周期函数と見なされる。局所コンパクトな連結群 G に対し、G からそのボーアコンパクト化への写像が単射であるための必要十分条件は、G があるコンパクト群の中心拡大であること、あるいは同値であるが、コンパクト群と有限次元ベクトル空間との積であることである。
+音響および音楽合成における準周期信号[編集]
+音声処理、音響信号処理および音楽合成において、準周期信号あるいは準調和信号としばしば呼ばれるものは、実質的には微視的に周期的であるが、必ずしもそうではない波形のことを言う。これは Wikipedia の記事準周期函数において説明されているものとは異なり、周期が実質的には近接する周期と同等であるが、はるか先の時間における周期とは必ずしも同等ではないという意味で、むしろ概周期函数に類似の概念である。これは、(初期の響波の後に)すべての部分波あるいは倍音が調和的となる(すなわち、すべての倍音は元の音の基本周波数の整数倍の周波数である)ような音楽のケースに現れる。
+信号  が周期  で全周期的(fully periodic)であるなら、その信号は
+あるいは
+を満たす。このフーリエ級数表現は、
+あるいは
+となる。但し  は基本周波数であり、フーリエ係数は次のようになる:
+但し  は任意の時間:.
+基本周波数  およびフーリエ係数 、、 あるいは  は定数である。すなわちそれらは時間の関数ではない。調和周波数は、基本周波数の整数倍である。
+が準周期的(quasiperiodic)であるなら、
+あるいは
+が成立する。但し
+である。今、フーリエ級数表現は
+あるいは
+または
+となる。但し  は起こり得る「時間変動的」な基本周波数であり、フーリエ係数は
+となる。また各部分波に対する瞬時周波数(instantaneous frequency)は、
+となる。この準周期的な場合において、基本周波数 、調和周波数  およびフーリエ係数 、、 あるいは  は必ずしも定数ではなく、ゆっくりと変動する時間についての関数である。換言すると、これらの時間関数は、準周期的であるように考えられるため、 に対する基本周波数よりもはるかに小さく帯域制限される。
+部分周波数  はほとんど調和的であるが、必ずしも完全にそうであるとは限らない。 の時間微分  はそのような部分波をそれらの正確な整数調和値  から離調する効果を持つ。急速に変化する  は、その部分波に対する瞬時周波数が整数調和値から著しく離調されることを意味し、この場合  は準周期的ではないと考えられる。
+関連項目[編集]
+準周期函数
+周期函数
+準周期タイリング(英語版)
+フーリエ級数
+アディティブ・シンセシス
+倍音列
+コンピュータ音楽(英語版)
+注釈[編集]
+参考文献[編集]
+Amerio, Luigi; Prouse, Giovanni (1971), Almost-periodic functions and functional equations, The University Series in Higher Mathematics, New York–Cincinnati–Toronto–London–Melbourne: Van Nostrand Reinhold, pp. viii+184 .
+Besicovitch, A.S. (1926), On generalized almost periodic functions, Proc. London Math. Soc. 2 (25): 495-512, doi:10.1112/plms/s2-25.1.495 
+Besicovitch, A.S. (1932), Almost periodic functions, Cambridge Univ. Press 
+Bochner, S. (1927), Beitrage zur Theorie der fastperiodischen Funktionen, Mathematische Annalen 96: 119-147, doi:10.1007/BF01209156, http://gdz.sub.uni-goettingen.de/dms/load/img/?PPN=GDZPPN002270994&IDDOC=27928 2014年12月3日閲覧。 
+Bochner, S.; Neumann, J. von (1935), Almost Periodic Function in a Group II (PDF), Trans. Amer. Math. Soc. 37 (1): 21–50, doi:10.2307/1989694, http://www.ams.org/tran/1935-037-01/S0002-9947-1935-1501777-9/S0002-9947-1935-1501777-9.pdf 2014年12月3日閲覧。 
+Bohr, Harald (1925a), Zur theorie der fast periodischen funktionen, Acta Mathematica (Kluwer Academic Publishers) 45 (1): 29-127, doi:10.1007/BF02395468 
+Bohr, Harald (1925b), Zur Theorie der Fastperiodischen Funktionen, Acta Mathematica (Kluwer Academic Publishers) 46 (1-2): 101-214, doi:10.1007/BF02543859 
+Bohr, Harald (1947), Almost-periodic functions (reprint ed.), Chelsea Pub Co. 
+Bredikhina, E.A. (2001), 概周期函数, in Hazewinkel, Michiel, Encyclopaedia of Mathematics, Springer, ISBN 978-1556080104, http://eom.springer.de/A/a011970.htm 
+Bredikhina, E.A. (2001), Besicovitch almost periodic functions, in Hazewinkel, Michiel, Encyclopaedia of Mathematics, Springer, ISBN 978-1556080104, http://eom.springer.de/b/b015820.htm 
+Bredikhina, E.A. (2001), Bohr almost periodic functions, in Hazewinkel, Michiel, Encyclopaedia of Mathematics, Springer, ISBN 978-1556080104, http://eom.springer.de/b/b016770.htm 
+Bredikhina, E.A. (2001), Stepanov almost periodic functions, in Hazewinkel, Michiel, Encyclopaedia of Mathematics, Springer, ISBN 978-1556080104, http://eom.springer.de/s/s087720.htm 
+Bredikhina, E.A. (2001), Weyl almost periodic functions, in Hazewinkel, Michiel, Encyclopaedia of Mathematics, Springer, ISBN 978-1556080104, http://eom.springer.de/w/w097680.htm 
+Neumann, J. von (1934), Almost Periodic Functions in a Group I (PDF), Trans. Amer. Math. Soc. 36 (3): 445-492, doi:10.1090/S0002-9947-1934-1501752-3, http://www.ams.org/journals/tran/1934-036-03/S0002-9947-1934-1501752-3/S0002-9947-1934-1501752-3.pdf 2014年12月3日閲覧。 
+W. Stepanoff(=V.V. Stepanov) (1925), Sur quelques generalisations des fonctions presque periodiques, C.R. Acad. Sci. Paris 181: 90–92 
+W. Stepanoff(=V.V. Stepanov) (1926), Ueber einige Verallgemeinerungen der fastperiodischen Funktionen (PDF), Mathematische Annalen 45 (1): 473–498, doi:10.1007/BF01206623, http://www.digizeitschriften.de/download/PPN235181684_0095/log32.pdf 2014年12月3日閲覧。 
+Weyl, H. (1927), Integralgleichungen und fastperiodische Funktionen, Mathematische Annalen 97: 338–356, http://gdz.sub.uni-goettingen.de/dms/load/img/?PPN=PPN235181684_0097&DMDID=DMDLOG_0018 2014年12月3日閲覧。 
+外部リンク[編集]
+Almost periodic function (equivalent definition) - PlanetMath(英語)
+概周期函数 - Wikipedia

@@ -1,0 +1,13 @@
+
+var info : LoaderInfo = stage.loaderInfo;
+stage.addEventListener(Event.ENTER_FRAME,EnterFrameFunc);
+function EnterFrameFunc(event){
+trace("読込数 : " + info.bytesLoaded);
+trace("総数 : " + info.bytesTotal);
+trace("パーセント : " + Math.floor(info.bytesLoaded / info.bytesTotal * 100));
+if(info.bytesLoaded == info.bytesTotal){
+trace("ロード完了");
+stage.removeEventListener(Event.ENTER_FRAME,EnterFrameFunc);
+}
+}
+FlashゲームPG講座 For AS3.0【ファイルの読み込みについて】

@@ -1,0 +1,80 @@
+このようにラベリングによってひと固まりになっているものが抽出され、その単位で他の処理を実行することができます。
+また、ラベリングに関しては英語ですが以下のWikipediaの項目が参考になります。
+Connected-component labeling(Wikipedia) 
+OpenCVでラベリング
+OpenCVでラベリングを試みたところ、OpenCVには標準でラベリングをするクラスが用意されていません。
+【OpenCV】輪郭処理(cvFindContours)を使ったラベリング処理 があるようですが、本記事ではライブラリを利用する方向で検討しました。
+ざっくり調べてみたところ、OpenCVからラベリングが出来そうなものとして以下のものがあるようです。
+cvBloblib
+cvBlob
+labeling.h
+上記のうち、cvBloblibとcvBlobは、Windows上のVC++から利用するにはビルドなどが難しそうだったので、ヘッダファイルだけで利用可能でライセンス上利用しやすそうなlabeling.hを利用してみました。
+Labeling.hをつかう。
+利用環境
+というわけで以下の環境下でLabeling.hを利用してみました。
+Microsoft Visual C++ 2010 Express
+OpenCV 2.4.2
+Labeling.hの入手
+labeling.h からLabeling.hをダウンロードします。
+サンプル
+OpenCVを用いて画像ファイルを読み込んで、グレイスケール化、二値化、ラベリング、その結果を画面表示をするサンプルを用意しました。
+// LabelingSample.cpp 
+#include "Labeling.h"
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#ifdef _DEBUG
+#pragma comment(lib,"opencv_highgui242d.lib")
+#pragma comment(lib,"opencv_imgproc242d.lib")
+#pragma comment(lib,"opencv_core242d.lib")
+#else
+#pragma comment(lib,"opencv_highgui242.lib")
+#pragma comment(lib,"opencv_imgproc242.lib")
+#pragma comment(lib,"opencv_core242.lib")
+#endif
+// 適当な色を出す用
+cv::RNG rnd(1192);
+cv::Scalar randomColor()
+{
+return cv::Scalar(rnd.next() & 0xFF, rnd.next() & 0xFF, rnd.next() & 0xFF);
+}
+int main(int argc, char* argv[])
+{
+// 入力画像を読み込み
+cv::Mat image = cv::imread(".\\input.png");
+// グレイスケール化(3チャンネル1チャンネル化)
+cv::Mat grayimg;
+cv::cvtColor(image, grayimg, CV_BGR2GRAY);
+// 二値化
+// 大津の手法を利用するので閾値適当
+// CV_THRESH_BINARY_INVは必須。
+cv::Mat binimg;
+cv::threshold(grayimg, binimg, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
+// Labelingの結果を受け取る
+cv::Mat label(image.size(), CV_16SC1);
+// ラベリングを実施 2値化した画像に対して実行する。
+LabelingBS	labeling;
+labeling.Exec(binimg.data, (short *)label.data, image.cols, image.rows, false, 0);	
+// ラベリング結果を出力する、真っ白な状態で初期化
+cv::Mat outimg(image.size(), CV_8UC3, cv::Scalar(255, 255, 255));
+// ラベルされた領域をひとつずつ描画
+for( int i = 0; i < labeling.GetNumOfRegions(); i++)
+{
+// ラベリング結果でイロイロする。
+// ラベリング結果の領域を抽出する。
+cv::Mat labelarea;
+cv::compare(label, i + 1, labelarea, CV_CMP_EQ);
+// 抽出した領域にランダムな色を設定して出力画像に追加。
+cv::Mat color(image.size(), CV_8UC3, randomColor());
+color.copyTo(outimg, labelarea);
+}
+// 入力画像とラベリング結果の画像を画面表示
+imshow("image", image);
+imshow("label", outimg);
+cv::waitKey();
+cv::hconcat(image, outimg, outimg);
+// ラベルされた出力画像を保存
+cv::imwrite("labeled.png", outimg);
+return 0;
+}
+OpenCVからLabeling.hを使ってラベリング | Tech-Sketch

@@ -1,0 +1,34 @@
+正規表現の文字列末尾を表す $ と \z の違い。
+$ は行末 = \n にもヒットするのでセキュリティ上よろしくないんだって。
+\z(小文字)を使うのがいいんだって。(\Z(大文字)だと行末にもヒットするので注意。)
+参考
+文字列の末尾(\Z, \z) - 位置の指定 - Java正規表現の使い方
+正規表現メモ
+いまいちな例preg_match('/abc$/', $str); よい例preg_match('/abc\z/', $str);
+ここだと \Z(大文字)は$と同じと書いている。\zは記述なし。
+言語によって違うのかな?
+phpで試してみた。
+試したソース<?php
+echo '<pre><font size="+1">';
+$str = "1234 abc\n";
+echo 'ORIGINAL STRING : 1234 abc\n<hr>preg_match';
+echo '<hr>/abc/<br> ';
+preg_match('/abc/', $str, $res);
+echo '       '.$res[0];
+echo '<hr>/abc$/<br> ';
+preg_match('/abc$/', $str, $res);
+echo '       '.$res[0];
+echo '<hr>/abc\Z/<br> ';
+preg_match('/abc\Z/', $str, $res);
+echo '       '.$res[0];
+echo '<hr>/abc\z/<br> ';
+preg_match('/abc\z/', $str, $res);
+echo '       '.$res[0];
+echo '<hr>/abc/s<br> ';
+preg_match('/abc/s', $str, $res);
+echo '       '.$res[0];
+echo '<hr>preg_match_all <hr>/abc/s<br> ';
+preg_match_all('/abc/s', $str, $res);
+echo '       '.$res[0][0];
+結果
+[php][正規表現] 行末には $ ではなく \z を使おう : レスペス・トランクィル

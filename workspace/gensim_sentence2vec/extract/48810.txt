@@ -1,0 +1,63 @@
+次の多次元連想配列ですべての['price']をunset()したいのですが、その方法をご存知であれば是非ご教授ください。foreach()で回せるのでしょうか。
+<?php
+$fruitsAndVegitables = array(
+'fruits' => array(
+'apple' => array(
+'price' => 100,
+'count' => 2,
+),
+'banana' => array(
+'price' => 80,
+'count' => 3,
+),
+'lemon' => array(
+'price' => 30,
+'count' => 33,
+),
+),
+'vegitables' => array(
+'tomato' => array(
+'price' => 23980,
+'count' => 1,
+),
+'poteto' => array(
+'price' => 230,
+'count' => 232332,
+),
+),
+);
+また、array_merge()のアルゴリズムを自分で書くとしたらどのように書けば良いかを知りたいです。
+もしくはarray_merge()の処理の中身はphpマニュアルのどこかしらに記載されていたりするものなのでしょうか。
+よろしくお願いします。
+次の多次元連想配列ですべての['price']をunset()したいのですが、その方法をご存知であれば是非ご教授ください。foreach()で回せるのでしょうか。
+<?php
+$fruitsAndVegitables = array(
+'fruits' => array(
+'apple' => array(
+'price' => 100,
+'count' => 2,
+),
+'banana' => array(
+'price' => 80,
+'count' => 3,
+),
+'lemon' => array(
+'price' => 30,
+'count' => 33,
+),
+),
+'vegitables' => array(
+'tomato' => array(
+'price' => 23980,
+'count' => 1,
+),
+'poteto' => array(
+'price' => 230,
+'count' => 232332,
+),
+),
+);
+また、array_merge()のアルゴリズムを自分で書くとしたらどのように書けば良いかを知りたいです。
+もしくはarray_merge()の処理の中身はphpマニュアルのどこかしらに記載されていたりするものなのでしょうか。
+よろしくお願いします。
+[質問]PHPの基本的な操作とアルゴリズムについて - Qiita

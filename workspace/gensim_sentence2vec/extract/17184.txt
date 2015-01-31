@@ -1,0 +1,27 @@
+
+従来のグラフ可視化の計算では,Kamada & Kawai (1989)によるバネモデルが広く用いられてきた.
+例えばgraphvizなどのアプリケーションで使われている.しかしながらこの手法では,ノード間の
+最短パスをあらかじめ求める必要性があり,大規模なネットワークデータでは莫大な計算量と物理
+メモリを要求し計算が不可能になる.
+Fruchterman & Raingold (1991)は,エネルギー関数をノードの接続情報(エッジ)とノード間の
+反発力に分けて考えることによって上記の問題を解決した.しかしながらノード間の計算には未だ
+莫大な計算量が必要であるため,Tree-codeを使ったFADEなどが提案されている.
+我々の研究ではこのFruchterman & Raingold の手法を元に,階層的独立固有時間刻み法による
+高速化手法や,さらに並列処理ボードを用いた計算の高速化に関して研究を行っている.
+並列処理による高速化
+Asia Pacific - Red
+Europe/Middle East/Central Asia/Africa - Green
+North America - Blue
+Latin American and Caribbean - Yellow
+RFC1918 IP Addresses - Cyan
+Unknown - Gray
+左図は、左がLGL法によるClassC のIPネットワークの可視化図。
+tracerootコマンドで得られた13万ノードのネットワークを、LGL法を用いて可視化したものであり、
+計算時間にはおよそ5時間ほど要する。
+一方右図は我々の手法(独立固有時間刻み法)を用いて計算を行った手法。
+近似手法と異なり、圧倒的に精度良く計算が行われているのが分かる。
+なお、我々の手法ではMDGRAPE3 PCI-Xを用いておよそ5時間強であった。
+近似手法にも限界があり、このような性質のネットワークには、少なくともLGL法は不向きであり、
+我々のような並列処理を有効に利用した手法を行う必要がある。
+T. Matsubayashi, and T. Yamada: "A Force-directed Graph Drawing based on the Hierarchical Individual Timestep Method", International Journal of Electronics, Circuits and Systems, 1, 2, 17, 116-121 (2007)
+可視化の研究

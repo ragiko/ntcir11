@@ -1,0 +1,444 @@
+Xamarin.Forms の画面遷移は NavigationPage による構築が基本らしく、NavigationPage.SetHasNavigationBar
+のメソッドでナビバーの表示有無を制御できるようです
+なので、NavigationPage を利用して Xamarin で Prism 風のパラメータつき画面遷移を行う実装を試してみました
+ソリューション全体はこんな感じ
+Prism.Xamarin という PCL プロジェクトを追加しました
+いつもは Presenter を加えてみたりしてますが、今回は ViewModel を軸に画面遷移をする Prism オリジナルに近づけています
+/// <summary>
+/// ViewModel 基底クラス
+/// </summary>
+public class ViewModelBase : BindableBase, INavigationAware
+{
+#region INavigationAware
+/// <summary>
+/// 画面に遷移したときの処理
+/// </summary>
+/// <param name="navigationParameter">遷移パラメータ</param>
+/// <param name="navigationMode">遷移モード</param>
+/// <param name="viewModelState">画面状態データ</param>
+public virtual void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+{
+}
+/// <summary>
+/// 画面から遷移するときの処理
+/// </summary>
+/// <param name="viewModelState">画面状態データ</param>
+/// <param name="suspending">中断フラグ</param>
+public virtual void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
+{
+}
+#endregion //INavigationAware
+}
+そのため ViewModelBase は OnNavigateTo と OnNavigateFrom メソッドを override できるようにしています
+INavigationAware はこの OnNavigateTo と OnNavigateFrom メソッドが定義されているインタフェースです
+/// <summary>
+/// 遷移種別
+/// </summary>
+public enum NavigationMode
+{
+/// <summary>
+/// 新規遷移
+/// </summary>
+Pushed,
+/// <summary>
+/// 戻り遷移
+/// </summary>
+Poped,
+/// <summary>
+/// トップに戻る遷移
+/// </summary>
+PopedToRoot,
+}
+NavigationMode は しかたがないので NavigationPage の遷移の種類に合わせてます
+GoForward がないのが残念・・・
+一番大事な NavigationService はこんな感じ
+/// <summary>
+/// 画面遷移サービス
+/// </summary>
+public class NavigationService : INavigationService
+{
+#region Privates
+/// <summary>
+/// デフォルトの Page 生成メソッド
+/// </summary>
+private static Func<Type, object> defaultPageFactory = type => Activator.CreateInstance(type);
+#endregion //Privates
+/// <summary>
+///  画面遷移用ルート画面
+/// </summary>
+public static NavigationPage RootPage { get; private set; }
+/// <summary>
+/// コンストラクタ
+/// </summary>
+public NavigationService()
+{
+RootPage = new NavigationPage();
+}
+/// <summary>
+/// デフォルトの Page 生成メソッドを設定します
+/// </summary>
+/// <param name="defaultPageFactory">デフォルトの Page 生成メソッド</param>
+public static void SetPageFactiory(Func<Type, object> defaultPageFactory)
+{
+NavigationService.defaultPageFactory = defaultPageFactory;
+}
+/// <summary>
+/// 画面遷移用ルート画面を設定します
+/// </summary>
+/// <param name="rootPage">画面遷移用ルート画面</param>
+public static void SetRootPage(NavigationPage rootPage)
+{
+RootPage = rootPage;
+if (rootPage.CurrentPage == null)
+{
+return;
+}
+NavigationService.PrepareNavigation(rootPage.CurrentPage, null, NavigationMode.Pushed, null);
+}
+/// <summary>
+/// 画面遷移の前処理をします
+/// </summary>
+/// <param name="page">遷移先画面</param>
+/// <param name="parameter">遷移パラメータ</param>
+/// <param name="mode">遷移種別</param>
+/// <param name="viewState">画面状態情報</param>
+private static void PrepareNavigation(Page page, object parameter, NavigationMode mode,
+Dictionary<string, object> viewState)
+{
+var vm = page.BindingContext as INavigationAware;
+if (vm != null)
+{
+// 遷移時の処理
+vm.OnNavigatedTo(parameter, NavigationMode.Pushed, null);
+}
+EventHandler onDisappearing = null;
+onDisappearing = new EventHandler(
+(sender, e) =>
+{
+// 画面を離れる際の処理
+page.Disappearing -= onDisappearing;
+if (vm == null)
+{
+return;
+}
+//TODO:中断状態の判定
+vm.OnNavigatedFrom(null, false);
+});
+page.Disappearing += onDisappearing;
+}
+/// <summary>
+/// 画面遷移します
+/// </summary>
+/// <param name="pageType">遷移先クラスの型</param>
+/// <param name="parameter">遷移パラメータ</param>
+/// <returns>遷移に成功した場合 <code>true</code>、それ以外は<code>false</code></returns>
+public async Task<bool> NavigateAsync(Type pageType, object parameter = null)
+{
+var page = NavigationService.defaultPageFactory(pageType) as Page;
+if (page == null)
+{
+return false;
+}
+//TODO:画面状態情報の復元
+NavigationService.PrepareNavigation(page, parameter, NavigationMode.Pushed, null);
+await NavigationService.RootPage.PushAsync(page);
+return true;
+}
+/// <summary>
+/// 戻る遷移
+/// </summary>
+public async Task GoBack()
+{
+await NavigationService.RootPage.PopAsync();
+//TODO:遷移パラメータと画面状態情報の復元
+NavigationService.PrepareNavigation(RootPage.CurrentPage, null, NavigationMode.Poped, null);
+}
+/// <summary>
+/// ホームへ戻る遷移
+/// </summary>
+public async Task GoHome()
+{
+await NavigationService.RootPage.PopToRootAsync();
+//TODO:遷移パラメータと画面状態情報の復元
+NavigationService.PrepareNavigation(RootPage.CurrentPage, null, NavigationMode.PopedToRoot, null);
+}
+/// <summary>
+/// 戻る遷移可能フラグ
+/// </summary>
+/// <returns>戻り遷移可能な場合 <code>true</code>、それ以外は<code>false</code></returns>
+public bool CanGoBack()
+{
+throw new NotImplementedException();
+}
+/// <summary>
+/// 遷移履歴を削除します
+/// </summary>
+public void ClearHistory()
+{
+throw new NotImplementedException();
+}
+/// <summary>
+/// 遷移履歴を復元します
+/// </summary>
+public void RestoreSavedNavigation()
+{
+throw new NotImplementedException();
+}
+/// <summary>
+/// 中断します
+/// </summary>
+public void Suspending()
+{
+throw new NotImplementedException();
+}
+}
+セッション情報を保持する機能がないのでいろいろ歯抜けですが、とりあえず NavigationPage を生かして遷移パラメータつきの遷移を行う実装をしてみました
+これに合わせて App クラスも大改造
+/// <summary>
+/// 共通 アプリケーションクラス
+/// </summary>
+public class App
+{
+/// <summary>
+/// アプリケーションクラス参照
+/// </summary>
+public static readonly App Current;
+/// <summary>
+/// アプリ内で管理するモジュールのコンテナ
+/// </summary>
+public static readonly UnityContainer Container = new UnityContainer();
+/// <summary>
+/// コンストラクタ
+/// </summary>
+static App()
+{
+Current = new App();
+}
+/// <summary>
+/// コンストラクタ
+/// </summary>
+private App() : base()
+{
+// Prism.Mvvm.Xamarin アセンブリを読み込み可能にするおまじない
+var autoWired = ViewModelLocator.AutoWireViewModelProperty.DefaultValue;
+}
+/// <summary>
+/// アプリケーション起動処理
+/// </summary>
+public void OnLaunchApplication()
+{
+// ViewModel をインスタンス化するデフォルトメソッドを指定します
+ViewModelLocationProvider.SetDefaultViewModelFactory((type) => Container.Resolve(type));
+// 画面遷移サービスの生成方法を注入します
+Container.RegisterType<INavigationService, NavigationService>(new ContainerControlledLifetimeManager());
+// Page クラスの生成に UnityContainer を使います
+NavigationService.SetPageFactiory(type => Container.Resolve(type));
+NavigationService.SetRootPage(new NavigationPage(new FirstPage()));
+}
+/// <summary>
+/// メイン画面を取得します
+/// </summary>
+/// <returns>メイン画面</returns>
+public static Page GetMainPage()
+{
+return NavigationService.RootPage;
+}
+}
+デフォルトだと static 参照で GetMainPage しか利用されない App クラスですが、Current プロパティを追加してシングルトン化しています
+各プラットフォームの起動処理箇所(iOS なら Main.cs、WinPhone なら App.xaml.cs とか)で OnLaunchApplication メソッドを呼ぶようにして初期化しています
+あとはふんだんに UnityContainer を活用して拡張性を向上させてます
+こんな感じでパラメータ渡しの画面遷移ができるはずなので、FirstPage  SecondPage の簡単な View/ViewModel を追加して試してみました
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+xmlns:prismmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Mvvm.Xamarin"
+prismmvvm:ViewModelLocator.AutoWireViewModel="true"
+x:Class="PrismXamarin.Views.FirstPage">
+<StackLayout VerticalOptions="Center" Spacing="20">
+<Label Text="{Binding Title}" HorizontalOptions="Center" />
+<Button Text="{Binding ButtonLabel}" Command="{Binding GoForwardCommand}"/>
+</StackLayout>
+</ContentPage>
+FirstPage の View はこんな感じで ViewModelLocator で自動 ViewModel バインドしてます
+/// <summary>
+/// 最初の画面の ViewModel
+/// </summary>
+public class FirstPageViewModel : ViewModelBase
+{
+/// <summary>
+/// 画面遷移サービス
+/// </summary>
+private INavigationService navigationService;
+#region Title プロパティ
+/// <summary>
+/// Title
+/// </summary>
+private string title = string.Empty;
+/// <summary>
+/// Title の取得と設定
+/// </summary>
+public string Title
+{
+get { return this.title; }
+set { this.SetProperty<string>(ref this.title, value); }
+}
+#endregion //title プロパティ
+#region ButtonLabel プロパティ
+/// <summary>
+/// ButtonLabel
+/// </summary>
+private string buttonLabel = string.Empty;
+/// <summary>
+/// ButtonLabel の取得と設定
+/// </summary>
+public string ButtonLabel
+{
+get { return this.buttonLabel; }
+set { this.SetProperty<string>(ref this.buttonLabel, value); }
+}
+#endregion //ButtonLabel プロパティ
+#region GoForwardCommand
+/// <summary>
+/// 進むコマンド
+/// </summary>
+private ICommand goForwardCommand;
+/// <summary>
+/// 進むコマンド
+/// </summary>
+public ICommand GoForwardCommand
+{
+get { return this.goForwardCommand ?? (this.goForwardCommand = DelegateCommand.FromAsyncHandler(this.GoForward)); }
+}
+/// <summary>
+/// 進む遷移
+/// </summary>
+private async Task GoForward()
+{
+await this.navigationService.NavigateAsync(typeof(SecondPage), "From FirstPage");
+}
+#endregion //GoForwardCommand
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="navigationService">画面遷移サービス</param>
+[InjectionConstructor]
+public FirstPageViewModel(INavigationService navigationService)
+{
+this.navigationService = navigationService;
+this.title = "First Page";
+this.buttonLabel = "To Second Page";
+}
+}
+ViewModel はこう
+いろいろ書いてますが UnityContainer で解決した NavigationService.NavigateAsync で "From FirstPage" のパラメータを渡しています
+async メソッドをコマンドで呼び出す場合は DelegateCommand.FromAsyncHandler が便利ですね
+お次にこの遷移を受ける SecondPage
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+xmlns:prismmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Mvvm.Xamarin"
+prismmvvm:ViewModelLocator.AutoWireViewModel="true"
+x:Class="PrismXamarin.Views.SecondPage">
+<StackLayout VerticalOptions="Center" Spacing="20">
+<Label Text="{Binding Title}" HorizontalOptions="Center" />
+<Button Text="{Binding ButtonLabel}" Command="{Binding GoBackCommand}"/>
+</StackLayout>
+</ContentPage>
+あんまり FirstPage と変わりません
+/// <summary>
+/// 2番目の画面
+/// </summary>
+public class SecondPageViewModel : ViewModelBase
+{
+/// <summary>
+/// 画面遷移サービス
+/// </summary>
+private INavigationService navigationService;
+#region Title プロパティ
+/// <summary>
+/// Title
+/// </summary>
+private string title = string.Empty;
+/// <summary>
+/// Title の取得と設定
+/// </summary>
+public string Title
+{
+get { return this.title; }
+set { this.SetProperty<string>(ref this.title, value); }
+}
+#endregion //Title プロパティ
+#region ButtonLabel プロパティ
+/// <summary>
+/// ButtonLabel
+/// </summary>
+private string buttonLabel = string.Empty;
+/// <summary>
+/// ButtonLabel の取得と設定
+/// </summary>
+public string ButtonLabel
+{
+get { return this.buttonLabel; }
+set { this.SetProperty<string>(ref this.buttonLabel, value); }
+}
+#endregion //ButtonLabel プロパティ
+#region GoBackCommand
+/// <summary>
+/// 戻るコマンド
+/// </summary>
+private ICommand goBackCommand;
+/// <summary>
+/// 戻るコマンド
+/// </summary>
+public ICommand GoBackCommand
+{
+get { return this.goBackCommand ?? (this.goBackCommand = DelegateCommand.FromAsyncHandler(this.GoBack)); }
+}
+/// <summary>
+/// 戻る遷移
+/// </summary>
+private async Task GoBack()
+{
+await this.navigationService.GoBack();
+}
+#endregion //GoBackCommand
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="navigationService">画面遷移サービス</param>
+[InjectionConstructor]
+public SecondPageViewModel(INavigationService navigationService)
+{
+this.navigationService = navigationService;
+this.title = "Second Page";
+this.buttonLabel = "Back First Page";
+}
+/// <summary>
+/// 画面に遷移したときの処理
+/// </summary>
+/// <param name="navigationParameter">遷移パラメータ</param>
+/// <param name="navigationMode">遷移モード</param>
+/// <param name="viewModelState">画面状態データ</param>
+public override void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+{
+base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
+this.Title = string.Format("{0} {1}", this.title, navigationParameter.ToString());
+}
+/// <summary>
+/// 画面から遷移するときの処理
+/// </summary>
+/// <param name="viewModelState">画面状態データ</param>
+/// <param name="suspending">中断フラグ</param>
+public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
+{
+base.OnNavigatedFrom(viewModelState, suspending);
+}
+}
+ViewModel では OnNavigateTo で渡された遷移パラメータを文字列化して Title に連結しています
+ここまで起動処理部分以外は Xamarin.Forms のコードのみです
+実行すると
+FirstPage がちゃんと表示されましたね
+To Second Page ボタンをタップすると
+Second Page From First Page のタイトルが表示されました
+ちゃんと ViewModel に遷移パラメータが渡されていますね!
+Xamarin.Forms で Prism 風のパラメータつき画面遷移をつくる - しっぽを追いかけて

@@ -1,0 +1,5 @@
+境界指定手段33は、この音声素片に含まれる母音の音素のうち始点から終点までの途中の時点に境界を指定する。A boundary specifying means 33 specifies a boundary at a point of time halfway between a start and an end among phonemes of vowels included in the elementary speech unit. - 特許庁
+音素や音節の列と単語との間の対応によって2つの有向グラフ間には写像関係が構成される。Mapping relation is constituted between the two directed graphs by correspondence between the column of the phoneme and the syllable and the word. - 特許庁
+音響モデル格納部3には、長音化の可能性を表す特別な2つの音素「i/e」,「u/o」のHMMを追加している。In an acoustics model storage section 3, an HMM of two special phonemes "i/e" and "u/o" indicating the possibility of being prolonged. - 特許庁
+記憶装置12は、音素数が相違する2以上の音声素片を含む複数の音声素片の各々について素片データDVを記憶する。A storage device 12 stores therein segment data DV of each of multiple speech segments that include two or more speech segments each having a different number of phonemes. - 特許庁
+「音素の」に関連した英語例文の一覧(6ページ目) - Weblio英語例文検索

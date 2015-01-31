@@ -1,0 +1,31 @@
+
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM PlatformStandard Ed. 6
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要: 入れ子 | フィールド | コンストラクタ | メソッド
+詳細: フィールド | コンストラクタ | メソッド
+javax.xml.stream
+インタフェース XMLStreamReader
+すべてのスーパーインタフェース: XMLStreamConstants
+既知の実装クラスの一覧: StreamReaderDelegate
+public interface XMLStreamReaderextends XMLStreamConstants
+XMLStreamReader インタフェースを使用すると、XML の順方向の読み取り専用アクセスを行うことができます。これは、XML データの最下位レベルでのもっとも効率的な読み取り方法となるように設計されています。
+XMLStreamReader は next() と hasNext() を使用して XML を繰り返し処理していくように設計されています。データには、getEventType()、getNamespaceURI()、getLocalName()、getText() などのメソッドを使用してアクセス可能です。
+next() メソッドを使用すると、リーダーは次の解析イベントを読み取ります。next() メソッドは、読み取ったイベントの型を識別する整数値を返します。  イベント型は、getEventType() を使用して判別できます。  イベントの解析は、XML 宣言、DTD、開始タグ、文字データ、空白文字、終了タグ、コメント、または処理命令として定義されます。属性イベントまたは名前空間イベントが、クエリー処理の結果としてドキュメントのルートレベルで見つかる場合もあります。
+XML 1.0 準拠の XML プロセッサは、宣言済みの解析対象外エンティティーの識別子、表記法宣言、およびそれらに関連付けられた識別子をアプリケーションに渡します。これらの情報は、このインタフェースのプロパティー API を通じて提供されます。javax.xml.stream.notations と javax.xml.stream.entities の 2 つのプロパティーによって、これらの情報にアクセスできます。現在のイベントが DTD であれば、List l = (List) getProperty("javax.xml.stream.notations"); の呼び出しによって表記法のリストが返されます。List l = (List) getProperty("javax.xml.stream.entities"); の呼び出しによって、エンティティー宣言のリストが返されます。これらのプロパティーには、DTD イベントの間のみアクセスできます。また、情報が無効な場合は null が返されるように定義されています。
+次の表に、どのメソッドがどのような状態で有効かについて示します。無効な状態で呼び出されたメソッドは java.lang.IllegalStateException をスローします。
+状態ごとの有効なメソッド
+イベント型
+有効なメソッド
+getProperty()、hasNext()、require()、close()、getNamespaceURI()、isStartElement()、isEndElement()、isCharacters()、isWhiteSpace()、getNamespaceContext()、getEventType(),getLocation()、hasText()、hasName()
+XMLStreamReader (Java Platform SE 6)

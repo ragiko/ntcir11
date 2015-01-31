@@ -1,0 +1,38 @@
+
+データモデル を作成したら、次はデータベースからデー
+タを取り出す必要があります。このドキュメントでは、モデルから利用できるデー
+タベース抽象化 API と、オブジェクトを生成、取得、更新する方法について説明し
+ます。モデルの照合オプションの詳細は
+データモデルリファレンス を参照してください。
+このリファレンスでは、以下のような Poll アプリケーションを参考に話を進めま
+す:
+class Blog(models.Model):
+name = models.CharField(max_length=100)
+tagline = models.TextField()
+def __unicode__(self):
+return self.name
+class Author(models.Model):
+name = models.CharField(max_length=50)
+email = models.EmailField()
+def __unicode__(self):
+return self.name
+class Entry(models.Model):
+blog = models.ForeignKey(Blog)
+headline = models.CharField(max_length=255)
+body_text = models.TextField()
+pub_date = models.DateTimeField()
+authors = models.ManyToManyField(Author)
+def __unicode__(self):
+return self.headline
+オブジェクトの生成¶
+Django では、データベーステーブル上のデータを Python オブジェクトで表現する
+ために、モデルクラスがデータベーステーブルを表現し、クラスのインスタンスが
+テーブル上のレコードを表現するという直感的なシステムを使っています。
+オブジェクトを生成するには、キーワード引数を使ってモデルクラスのインスタン
+スを生成し、 save() メソッドを呼び出してデータベースに保存します。
+モデルクラスは Python パス上のどこからでも import でき、期待通りに動作しま
+す (わざわざこのような説明をするのは、以前のバージョンの Django ではモデル
+の import 方法がかなり風変わりだったからです)。
+モデルが mysite/blog/models.py というファイルで定義されているとすると、
+オブジェクトの作成は以下の例のようになります:
+クエリを生成する &mdash; Django v1.0 documentation

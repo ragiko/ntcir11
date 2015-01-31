@@ -1,0 +1,70 @@
+この例は、確定的な周期信号のパワーを測定する方法を示します。時間は連続ですが、周期的で確定的な信号は離散のパワー スペクトルを生成します。
+信号の平均パワーを測定する方法の 2 つの例を示します。例では正弦波を使用し、1 オームの負荷インピーダンスであると仮定します。
+信号分類通常、信号は、パワー信号、エネルギー信号、その他の信号の 3 つのカテゴリに分類されます。正弦波から生成される確定的な信号は、エネルギーが無限で平均パワーが有限のパワー信号の例です。ランダム信号の平均パワーも有限で、パワー信号に分類されます。過渡信号は、ゼロ振幅で開始および終了するエネルギー信号の例です。その他の信号には、パワー信号またはエネルギー信号の特徴がありません。単一正弦波の理論的なパワー最初の例では、1 V のピーク振幅と 128Hz の周波数成分をもつ正弦波信号の平均パワーを推定します。Fs = 1024;
+t  = 0:1/Fs:1-(1/Fs);
+A  = 1;   % Vpeak
+F1 = 128; % Hz
+x  = A*sin(2*pi*t*F1);
+時間領域で信号の一部を見てみましょう。idx = 1:128;
+plot(t(idx),x(idx)); grid; ylabel('Amplitude'); xlabel('Time (sec)');
+axis tight;
+各複素正弦波の理論的な平均パワー (平均二乗) は A^2/4 で、この例では 0.25 または -6.02dB です。したがって、正の周波数と負の周波数のパワーを考慮すると、平均パワーは (A^2/4)*2 になります。power_theoretical = (A^2/4)*2
+power_theoretical =
+0.5000
+dB 単位で、正の周波数のみに含まれるパワーは次のとおりです。10*log10(power_theoretical/2)
+ans =
+-6.0206
+単一正弦波のパワーの測定信号の平均パワーを測定するには、ピリオドグラムを呼び出して 'power' オプションを指定します。periodogram(x, hamming(length(x)), [], Fs, 'centered', 'power');
+v = axis; axis([v(1) v(2) -10 -5.5]); % Zoom in Y.
+set(gcf,'Color',[1 1 1])
+プロットの拡大部分からわかるように、各複素正弦波の平均パワーは約 -6dB です。PSD を使用した単一正弦波のパワーの推定PSD 曲線の下の面積を積分しても、信号の平均パワーを計算できます。figure
+periodogram(x, hamming(length(x)), [], Fs, 'centered', 'psd');
+set(gcf, 'Color', [1 1 1])
+このプロットでは、スペクトル プロットのピークの高さは、パワー スペクトルのプロット時と異なることに注意してください。その理由は、パワー スペクトル密度 (PSD) の測定時に、曲線の下の面積 (平均パワーの測定値) が重要であるためです。これは、四角形近似を使用する関数 bandpower を呼び出して、曲線の下の面積を積分し、平均パワーを計算することで検証できます。[Pxx_hamming, F] = periodogram(x, hamming(length(x)), [], Fs, 'psd');
+power_freqdomain = bandpower(Pxx_hamming, F, 'psd')
+power_freqdomain =
+0.5000
+パーセルの定理によると、正弦波の合計平均パワーは、時間領域で算出された場合と周波数領域で算出された場合で等しくなければならないため、時間領域の信号を合計して信号の推定合計平均パワーを検証できます。power_timedomain = sum(abs(x).^2)/length(x)
+power_timedomain =
+0.5000
+複数正弦波の理論的なパワー2 番目の例では、複数の周波数成分のエネルギーを含んでいる信号の合計平均パワーを推定します。ここでの周波数は、DC、100Hz、および 200Hzとします。Fs = 1024;
+t  = 0:1/Fs:1-(1/Fs);
+Ao = 1.5; % Vpeak @ DC
+A1 = 4;   % Vpeak
+A2 = 3;   % Vpeak
+F1 = 100; % Hz
+F2 = 200; % Hz
+x  = Ao + A1*sin(2*pi*t*F1) + A2*sin(2*pi*t*F2);
+% Let's look at a portion of our signal.
+idx = 1:128;
+plot(t(idx),x(idx)); grid; ylabel('Amplitude'); xlabel('Time (sec)');
+set(gcf, 'Color', [1 1 1])
+前の例と同様に、各複素正弦波の論理的平均パワーは A^2/4 です。信号の DC 平均パワーは、一定で、Ao^2 で求められるため、ピーク パワーと等しくなります。正の周波数および負の周波数のパワーを考慮すると、信号の合計平均パワー (各高調波成分の平均パワーの合計) は Ao^2 + (A1^2/4)*2 + (A2^2/4)*2 になります。power_theoretical = Ao^2 + (A1^2/4)*2 + (A2^2/4)*2
+power_theoretical =
+14.7500
+dB 単位で各固有周波数成分の平均パワーを計算すると、理論上の結果と以下の平均二乗スペクトル プロットが一致します。[10*log10(Ao^2)  10*log10(A1^2/4)  10*log10(A2^2/4)]
+ans =
+3.5218    6.0206    3.5218
+複数正弦波のパワーの測定信号の平均パワーを測定するには、関数 periodogram を再度使用し、信号のパワー スペクトルを計算してプロットします。periodogram(x, hamming(length(x)), [], Fs, 'centered', 'power');
+v = axis; axis([v(1) v(2) 0 7]); % Zoom in Y
+set(gcf, 'Color', [1 1 1])
+PSD を使用した複数正弦波のパワーの推定最初の例と同様に、取得した PSD 曲線の下の面積を積分し、信号の合計平均パワーを推定します。periodogram(x, hamming(length(x)), [], Fs, 'centered', 'psd');
+set(gcf, 'Color', [1 1 1])
+特定の周波数成分におけるスペクトル密度プロットのピークの高さは、最初の例で示した理由で、パワー スペクトルのプロットと一致しない場合があります。[Pxx, F] = periodogram(x, hamming(length(x)), [], Fs, 'centered', 'psd');
+power_freqdomain = bandpower(Pxx, F, 'psd')
+power_freqdomain =
+14.7500
+また、信号の推定平均パワーを検証するには、パーセルの定理を呼び出し、時間領域で信号を合計します。power_timedomain = sum(abs(x).^2)/length(x)
+power_timedomain =
+14.7500
+パワー スペクトル、パワー スペクトル密度および ENBW の関係パワー スペクトル プロットとパワー スペクトル密度プロットのピークの高さの違いが一定の比率であることが見て取れます。Pxx = periodogram(x, hamming(length(x)), [], Fs, 'centered', 'psd');
+Sxx = periodogram(x, hamming(length(x)), [], Fs, 'centered', 'power');
+plot(F, Sxx ./ Pxx), grid on, axis tight; xlabel('Frequency (Hz)');
+title('Ratio between Power Spectrum and Power Spectral Density');
+ratio = mean(Sxx ./ Pxx)
+ratio =
+1.3638
+この比は、ウィンドウの両側等価ノイズ帯域幅 (ENBW) に関連しています。ウィンドウの ENBW と対応するサンプルレートを呼び出すことで、この比を直接計算することができます。bw = enbw(hamming(length(x)), Fs)
+bw =
+1.3638
+確定的周期信号のパワーの測定 - MATLAB & Simulink Example - MathWorks 日本

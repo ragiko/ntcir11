@@ -1,0 +1,352 @@
+総合研究大学院大学 複合科学研究科  情報学専攻 卒 博士(情報学) 
+自然言語処理やwebマイニングに関する研究内容とwebシステムの開発と運用について書いています。
+シリコンバレーベンチャーみたいに深い技術の事業化をしたいと思っています。
+ご興味ある方はご連絡ください。updatenews @ hr.sub.jp
+欧米で発売間近! 最新Chrome OS搭載機をひと足先に触ってきた!!
+web上でOSを実現するという考えは、
+そんなに新しくは無いですがそんなに古くも無いです。
+WebOS Operating system services for wide area applications
+Amin Vahdat , Paul Eastham  ,  Chad Yoshokawa  ,  Eshwar Belani  , Thomas Anderson   , David Culler,    University of California, Berkeley
+Michael Dahlin,  University of Texas, Austin
+Berkeley CS Tech Report 1997 Technical Report
+With analogy to these systems, this paper argues that it is time to provide a common set of services for wide area applications, in effect to make wide area resources as easy to use as those on a LAN. The past few years has seen a dramatic increase in the number and variety of services that are available over the Internet, 
+1997年で、ですよ。
+beyond simple documents to a wide variety of on-line services, such as search engines, real-time news, weather forecasts, interactive games and chat rooms, airplane reservations and ticketing, to name just a few.
+This replication is managed by hand on both the server and the client side. users are forced to do manual polling between essentially equivalent services. This situation will only get worse; it is currently predicted that the number of Internet userswill increase by an order of magnitude to over 100 million in less than 5 years [Testimony Before the U.S. House of Representatives Committee on Science. 1995].
+To address these problems, we have built WebOS , 
+a framework for supporting applications that are geographically distributed, highly available, incrementally scalable, and dynamically reconfiguring. WebOS includes mechanisms for resource discovery, a global namespace, remote process execution, resource management, authentication and security. We use WebOS to demonstrate the synergy of these services in simplifying the development of wide area distributed applications and in providingmore efficient global resource utilization.
+2 WebOS Overview
+Resource Discovery
+In WebOS, resource discovery includes mapping a service name to multiple servers, an algorithm for balancing load among available servers, and maintaining enough state to performfail-over if a server becomes unavailable.
+Wide Area File System
+To support replication and wide-scale sharing, WebOS provides a cache coherent wide area file system.
+Security and Authentication
+To support applications operating across organizational boundaries,
+Process Control
+In WebOS, executing a process on a remote node should be as simple as the corresponding local operation.
+....................................
+....................................
+8 Rent-A-Server
+This section describes the design, implementation, and performance of Rent-A-Server, an application demonstrating the power of using a unified system interface to wide area resources and of moving a service out across the Internet.
+8.1 Motivation
+Rent-A-Server allows sites to deal with peak loads that are much higher than their average loads by renting hardware to deal with peaks.
+The benefits for Rent-A-Server can be summarized as follows: 
+Geographic Locality
+Dynamic Reconfiguration
+Transparent End-to-End Availability
+Secure Coherent Data Access
+Safe Remote Execution
+しかしながら、ほとんどの研究で、Operating Systemというものを既存のOSのままに捉えています。
+無論、ChromeOSは、そもそもOSなんて必要ないという考えに立脚しているのですが
+こういう感じのwebOSが開発されています
+XML Webサービスのための分散型オペレーティング・システム
+大木薫 新城靖 佐藤聡 板野肯三 馬渕充啓 筑波大学
+情報処理学会研究報告. [システムソフトウェアとオペレーティング・システム] 2007(10),
+XML Webサービスは、webサービスとも呼ばれ、XML形式のデータ交換を行うことでソフトウェア コンポーネントをネットワークを通じで利用可能にするものである。現在公開されている代表的なwebサービスとしては、
+amazon web service ,
+Google SOAP search API,
+Yahoo! search Developer Network
+などがある。
+本分散OSは、Webサービスのためのファイルとパイプを提供する。また、利用者との対話、およびスクリプトの実行を行うシェルを提供する。これにより、Webサービスのサーバの連携が容易になる。
+3.2 分散OSに対する要求要件
+(1) 集中型OSにおけるファイルと同等の仕組み
+(2) サービスの起動方法の標準的な仕組み
+(3) インターネットのような開かれた環境でも利用可能なアクセス制御の仕組み。
+(4) 利用者と対話を行う仕組み
+4 XML Webサービスを連携させるための分散OS
+(1)グローバル・ファイルのサーバ : Webサービスのサーバであり、ファイル、およびディレクトリのサービスを提供する。
+(2)グローバル・パイプのサーバ : Webサービスのサーバであり、ファイルと互換性のあるパイプのサービスを提供する。
+(3)シェル:利用者との対話、およびスクリプトの実行を行う。
+(4)コンソール
+4.1 ケーパビリティによるアクセス制御
+ケーパビリティは次のような要素を持つ
+(1)オブジェクトへの参照
+(2)オブジェクトに対するアクセス権
+(3)偽造や改竄を防ぐための乱数や電子署名
+Machのように、カーネルでケーパビリティを保護すれば(3)の必要は無い。
+.........................
+6 実装
+本分散OSで提供するwebサービスのエンジンにはApache Axisを用いた。
+Axisが動作するアプリケーションサーバとして、Apache Tomcatを用いた。
+現在、ファイル、パイプ、および一部のグローバルアプリケーションが動作しており、シェルを実装している。
+Moving the OS to the Web
+George Lawton ,  (freelance technology writer)
+IEEE Computer Society Volume 41 Issue 3,  2008 
+driving the web os
+The Web OS-which functions much like a traditional operating system, although it doesnt include drivers for computer hardware is becoming a subject of increasing interest. One contributing factor is Internet technologies' increasing bandwidth, which enables the faster movement of applications and data via the Internet to and from Web OSs.
+Advent of Web apps
+A key driving force behind the development of Web OSs has been the rise of Web-based applications.
+ADVANTAGES
+A Web OS runs on any Internet enabled computer or device. This is important for mobile workers or
+people who don't have their own computers  and must work out of Internet cafes, libraries, or schools. Also, Web OS users can work, log out, and then log in later from a different computer.
+With a Web OS, users can store, find, and otherwise manage files and services, such as calendars and email, from a Web desktop. And storing applications, files, and services on an OS providers servers, rather than on the users computer, makes them harder for a PC or laptop thief to use.
+Web OS users dont have to back up or archive work because the providers remote server handles these functions.
+ところで、実は 十分に理解して無い人が多いのではないかと思います。
+電子書籍とは、
+電子書籍概論 
+湯浅俊彦 夙川学院短期大学
+国立国会図書館調査研究報告会 2009
+「電子書籍」はほかにも「eブック」「e-book」「電子ブック」「電子本」などさまざまな名称がある。
+定義することはきわめて難しい。
+つまり、ここには収録されていない「電子書籍」群が多数存在しているということである。
+..................
+電子書籍とは、
+電子的な保存、流通、閲覧、されるコンテンツであり
+強いて言えば旧来の「書籍」に収録されるべきコンテンツを収録したもの
+※この意味で、音声、動画などは「電子書籍」だとは言えそうに無い。
+「電子書籍」はある意味でバズワードであり、これが電子書籍だと言い張れば言い張れなくもないコンテンツは多いと思います。
+だから、独自のプラットフォームを作る力があればそういうことはできるのです。
+ますます乱立していく国内の電子書籍の配信プラットフォーム
+EPUBの多国語対応に向けた取組と事例報告
+秋元良仁  凸版印刷株式会社 
+情報知識学会誌  Vol.20, No.4  2010
+2 EPUB策定の経緯
+1990 年代後半,米国Microsoft 社は電子書籍ビジネス参入にあたり,電子書籍用フォーマットOpen eBook 構想を提案した.この提案に対し,出版社や印刷会社,ソフトウェア・ハードウェアメーカー等約40 社が賛同し,1998年10 月にOpen eBook Initiative が発足した.
+..................................
+その後,OEBPS はコンテンツの内容を記述
+するOPS(Open Publication Structure)[OPS2.0.1(Open Publication Structure2.0.1)]
+とメタデータを記述するOPF (Open Packaging Format)[OPF2.0.1(Open Packaging Format2.0.1)]
+に分割され,それらをOCF 形式でパッケージングするフォーマットとして2007年9月,EPUB2.0 が策定された.
+3.1 EPUBの特徴
+EPUB は次に示すいくつかの特徴を持つ.
+1)フリーかつオープンなフォーマットである
+2)Re-flowableなコンテンツである
+3)メタデータを持つ
+4)拡張性が高い(適合性が高い)
+EPUBの電子書籍をPCで読むソフトウェアは、
+こだわりが無いなら
+Adobe Digital Editions で、いいでしょう
+sigil 
+EPUBを作るソフトウェアも多くあります。
+epubでファイルを作れば、iBooks Storeで、iPhone/iPod などで読ませることが出来ます。
+しかしAppleの審査がやたらと厳しいことで有名です。
+しかし、実際は、電子書籍と言っても形式はpdfで十分なのかもしれません
+androidではAdobe Reader、iphoneではibooksで読めます。
+....................
+公開する方法は、
+Kindle Direct Publishing: Self-publish to Amazon's Kindle Store
+米国の銀行口座、住所があればKindle Storeでいいと思います。
+本当は、 Google ebookstore が
+おそらく一番簡単だと思います。しかし、現在は日本では未対応です。
+最新の Google eブックは、お住まいの地域では現在ご購入いただけません...
+Google では、世界中の出版社と提携して、人気作家の最新作を eブックでご購入いただけるように取り組んでいます。現在は、コンテンツに著作権がない数百万冊の Google eブックを無料で閲覧し、ご使用のデバイスで手軽に読むことができます。
+Google Books なら既に日本語でも自分の文書を公開できますが
+Google Books Google ブックスで世界中の図書館や出版社のたくさんの書籍を検索してプレビュー。新作との出会いと過去の名作の発掘。
+Google を使って無料で書籍の販売を促進 
+Google を利用して書籍を広く宣伝し、認知度と売上を向上させましょう。 
+閲覧は無料で、直接的に収益は得られません。
+どうやって販売を促進するのかというと、[購入リンク]によってのようです。
+実際に試してみましたが、
+Google Booksでは、
+ファイルのアップロードから一覧に表示されるまでに時間(10時間ぐらい?)がかかり、
+また、著作物の著作権の確認の受領にずいぶん時間(2〜3日?)がかかり、
+また、Google Booksに実際に表示されるまでずいぶん時間がかかり....
+こういうメールが来ます。
+From
+Google Books Support books-support-jp@google.com 
+Re: [#xxxxxxxxx] 著作権の確認
+いつもお世話になっております。Google ブック パートナー プログラムにお申し込みいただいた書籍について、必要な情報をご提供いただきありがとうございました。 お客様の書籍は、パートナー プログラム アカウントの [書籍] タブでご覧いただけます。 登録する書籍のコピーまたは PDF をまだお送りいただいていない場合は、下記 URL で手順をご確認ください。
+http://books.google.com/support/partner/bin/answer.py?answer=106169
+書籍の送付方法やプログラムに関してご質問がございましたら、books-support@google.com までお気軽にお問い合わせください。
+またご不明な点がありましたら、お気軽にお問い合わせください。
+Googleブックスチーム
+---
+本当は、手っ取り早くコンテンツを有料化して売る方法はいくらでもあります.......
+Android電子書籍Webサービス
+Feed.nu Blog to android app generator
+あけましておめでとうございます!電子書籍の本命はやっぱりメルマガだよ。
+だから、私は本命はメルマガだと言っているのだ。だって読者は全然減らない。なぜなら定期購読モデルだから。今後対応プラットフォームをどんどん増やして行く。だってテキストデータだからどんなプラットフォームでも読めるんだ。なんでわざわざ独自のアプリとかにするのかね?ルビとかそんなもんふらなくてもいいし、装丁なんかどーだっていいじゃないか。音楽?映像?本の本質はなんだ?テキストだろ。。。
+まず、Androidの音声認識を使うには、
+<uses-permission android:name="android.permission.INTERNET" />
+が必要です。
+つまり、これは、オンラインでgoogleの音声認識APIを呼んでいるのです。
+電波が入らない場所では使えないのです。
+音声認識をするためには
+どうも、このようにインテントを必ず作らなければならないようなのですが
+Intent intent = new Intent(  RecognizerIntent.ACTION_RECOGNIZE_SPEECH); 
+intent.putExtra(  RecognizerIntent.EXTRA_LANGUAGE_MODEL,  RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+intent.putExtra(   RecognizerIntent.EXTRA_PROMPT,  "VoiceRecognition");
+startActivityForResult(intent, REQUEST_CODE);
+このインテントは音声認識すると終了しますので
+その結果をこうやって得ます。
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+if (requestCode == REQUEST_CODE ) {
+String  result = data.getStringExtra(RecognizerIntent.EXTRA_RESULTS);
+}
+super.onActivityResult(requestCode, resultCode, data);
+}
+必ず作らなければならないようなのですが
+インテントを通さない音声認識の方法があるのでしょうか?
+マイクの入力を常にチェックしておいて音声があったらインテントを立ち上げればよいでしょうか
+こうして認識した言葉を翻訳して読み上げたいと思って....
+(翻訳機能実装編)このjavascriptの結果を.....
+ということをやらなくても、
+javascriptでタイムラインを翻訳したり音声読み上げ 
+と、直に翻訳読み上げをやったので
+これをandroidで読ませれば....
+<audio src="http://translate.google.com/translate_tts?q=文章" controls> 未サポート mp3 </audio>
+このようにして再生できます。
+translate_ttsの結果はmp3なのでandroidブラウザでも出力できます
+アプリ内で新たにURLを開くには
+Uri uri = Uri.parse(   URL   );
+Intent in = new Intent(Intent.ACTION_VIEW,uri);
+startActivity(in); 
+こうすることが一番簡単だと思います。
+これをAndroidマーケットに出しました
+Voice Recognition Translator
+あれは自動採譜という技術なのです。
+普通は、基本周波数さえ特定できれば、音階も推定できますが....
+多重音解析と自動採譜
+亀岡弘和   NTTコミュニケーション科学基礎研究所
+嵯峨山茂樹 東京大学大学院
+情報処理 Vol.50 No.8  2009
+自動採譜とは文字通り,音楽の音響信号波形から人間の代わりにコンピュータを使って楽譜を書き起こさせるプロセスをいう.それでは楽譜とは何か.楽譜というと,一般のイメージでは図-1 のような西洋音楽の記譜法による五線譜を思い浮かべるかもしれないが,たとえば,ギターの演奏では五線譜以外にタブ譜が,尺八の演奏では尺八譜が用いられたりするように,西洋式の五線譜に限らず演奏内容を描写する十分な情報を持った記号表現であればすべて楽譜なのである.そして,演奏するのは何も人間だけとは限らない
+自動採譜の難しさ
+それでは,どのようにすれば自動採譜技術は実現できるのか.残念ながらその答えは今なお完全には分かっていない.
+多重音解析と音の群化
+しかし興味深いことに,我々人間は,多数の音が混じり合った音響信号から,個々の音を難なく聴き分けることができる
+この逆問題を,人間がどのようなアプローチにより解いているのかについては未解明な点が多い.両耳に入ってくる2 つの波形の微妙な違いに基づいて知覚される波源位置の情報は,音を聴き分けるための手がかりの1 つに違いないが,我々はモノラル録音された音響信号からですら個々の音を聴き分けられる能力を持っている.このことは,
+人間には空間的手がかり以外の手がかりに基づくなんらかの音の群化 6 メカニズムが備わっていることを示唆し,この困難な逆問題を人間がどうにかして解いているという事実は,音を聴き分ける原理を追究することへの動機となっている.
+6 人間は,物体を見たときに,どこまでをひとまとまりなのかを捉え,物体の輪郭を把握することができるのと同じように,音を聞いたときにも,どこまでをひとまとまりなのかを捉え,音の「輪郭」を把握することができる.このように,音の「輪郭」を把握することを「音の群化」といい,このように形成されたひとまとまりの音の「塊」のことを「音脈」という.
+基本周波数推定(周波数方向の群化)
+音の群化の問題と多重音の基本周波数 推定の問題との間には,きわめて密接な関係がある.
+多重音から基本周波数を推定する手法は膨大にあるので,より詳しい動向については他の著書を参照されたい
+[de Cheveigne, A. : Multiple F0 Estimation, in Computational Auditory Scene Analysis : Principles, Algorithms and Applications, D. -L. Wang, G. J. Brown Eds., IEEE Press / Wisely (2006)]
+計算論的聴覚情景分析(時間方向の群化)
+我々人間でも,数十ミリ秒程度の混合信号から個々の音を聴き分けるのは必ずしも容易ではなく,容易に聴き分けるためにはある程度の信号の長さが必要になる.前節で考えていた問題は,周波数方向の群化と呼ぶものに相当し,人間はそれだけでなく音の時間的な連なりを形成する時間方向の群化も同時に行っているとされる.
+スパース表現(記憶に基づく群化)
+ところで我々は,ユニゾン(同一音高またはオクターブ違い)で弾かれたピアノとヴァイオリンの音を聴き分けることができる場合がある.一定の時間連続して一方の音の調波成分が完全に他方の音の調波成分と重なってしまうこの状況では,前後の時刻から調波成分の重なり具合を推論することが難しいため,これまで述べてきた群化メカニズムとは別の何らかのメカニズムが存在している可能性が示唆される
+メロディリズムのタップを併用するVoice-to-MIDI 変換手法の音高変換精度評価
+伊藤直樹 西本一志 北陸先端科学技術大学院大学
+インタラクション2010
+Voice-to-MIDI
+VtoM を使うと,ユーザは,マイクに向かって頭に浮かんだメロディや記憶しているフレーズを歌うだけで音符を入力できるので,特に絶対音感や相対音感を持たないユーザや楽器演奏技術の無いユーザにとって有用な入力方法である.しかしながら,従来のVtoM システムには多くの課題があった.
+VtoM システムの処理は,一般に
+. 歌唱区間の検知
+. 1 音毎の区間検知
+. その区間のピッチ採集
+. そのピッチ情報からの区間音高推定
+という手順で行われる.この各処理ステージで得られた結果は,いずれも連鎖的に次の処理の結果に影響を与える.したがって初期の処理ステージでの誤りは,それ以降のステージでのさらなる誤りを引き起こし,最終的に得られる変換結果をきわめて精度の悪いものとしてしまう.
+ところが,歌唱区間や1 音毎の区間を計算機処理によって検知することは容易ではない.このため,多くの既存VtoM システムでは,すべての音を「タ」という音で明確に区切って発声して歌う「タタタ歌唱」のような,特殊な歌唱方法が求められる.これにより一定の水準の処理結果が得られるようになる.しかしながら,たとえば初めに歌詞を作ってからメロディを作曲する「歌詞先作曲」の場合,歌詞の持つイントネーションなどがメロディに大きく影響するため,歌詞をそのまま歌唱することが不可欠である.このような場合,歌唱スタイルを制限せず,任意のスタイルの歌唱によってMIDI シーケンスデータを入力す
+そこで,我々はタップ併用型Voice-to-MIDI(以下TVM と略す)手法を既に提案した.これは,計算機が苦手とするが人にとっては容易な区間区切り作業を人が担当し,計算機は得意だが人が苦手とするピッチ抽出を計算機が担当する,人と計算機の協調型システムであると言える.参考文献に入っている製品
+YAMAHA 株式会社: XGworks ST;
+http://www.yamahasynth.com/jp/products/music_production_software/ma_65w/
+株式会社INTERNET: SingerSongWriter Lite5;
+http://www.ssw.co.jp/products/ssw/win/sswlt60w/index.html
+MakeMusic Inc.: Finale2010,
+http://www.e-frontier.co.jp/
+株式会社河合楽器製作所: Band Producer 2,
+http://www.kawai.co.jp/
+音声認識ではHMMが、
+音高の推定には櫛形フィルタが用いられることが多いです。
+櫛形フィルタと確率モデルに基づいた音高認識
+梶山晋弘  立命館大学大学院
+山下洋一  立命館大学
+情報処理学会研究報告 音楽情報科学 2002(14)
+2 手法
+本研究では、音声認識で広く用いられている統計的手法を用いて楽曲の音高認識を試みる。
+HMMによって各音高の特徴をモデル化し、音高のあらゆる連鎖(W)を考え、P(Y|W)を最大にするWを求める。
+ここで、Yは入力パターン時系列(Y)である
+3 櫛形フィルタ
+楽器音のスペクトルは基音と倍音からなる。倍音の周波数は基音のほぼ整数倍となる。
+本研究では、この性質と国際標準による12平均律音階(110Hz〜1661.2Hz魔出を用いる)
+に基づき48個の櫛形フィルタCFi(i=1...48)を作成した。
+4 特徴量の抽出
+作成した48個のフィルタを用いて、楽器音のスペクトルをそれぞれフィルタリングする。
+フィルタCFiの出力強度をoiとし、O={o1,o2,...,o48}を音高の特徴量とする。
+..........................
+6 おわりに
+単一楽器による演奏の認識では音高はほぼ正確に認識されたが一部ではオクターブ違いも見られた。
+同一楽器によるデュオ演奏の認識と異楽器によるデュオ演奏の認識では音高はほぼ正確に認識されていたがオクターブ違いが単一楽器による演奏よりも多くの箇所で見られた。
+Twitterは560文字制限!? 同じ文字数に込められる情報量の違い
+それぞれ、日本語と英語、中国語と英語の比較ですが、内容はほぼ同じ。英語に比べて、日本語や中国語のような表意文字には一文字にたくさんの意味を込められる、したがって同じ140文字の制限でもその中で語られる内容量は大きく異なる、ということです。「日本語では余裕をもって書けた内容が、英語だと文字数を気にしないと書けない… というのは、自分の英作文能力のせいだけではないはず!!」 英語でTweetしたことのある日本のTwitterユーザーなら、だれもが実感として感じていることなのではないでしょうか。
+日本語では 
+表語文字は、漢字
+表音文字は、仮名
+ですが、
+日本語では アルファベット に相当する記号は存在しません。
+日本語の情報量の上限の推定
+森信介 山地治 京都大学
+情報処理学会論文誌 Vol38 No11 1997
+確率的言語モデルの良否は、文字予測における曖昧性を表す情報量(エントロピー)で測られる。
+Brown(An Estimate of an Upper Bound for the Entropy of English)らは約6億文字のコーパスから推定されたトークン単位のtri-gramモデルで約600万文字のコーパスの情報量を計算した結果として、文字あたり1.75ビットの上限を報告している。
+2.方法
+我々が用いた、自然言語の情報量の上限の推定の方法は、
+有る情報源が与えられたとき、その出力を予測するモデルを作成し、そのモデルによる情報源のクロスエントロピーがその情報源の情報量の上限を与えるという事実に基づいている。
+2.1 情報量 クロスエントロピー
+ある有限のアルファベットXの定常確率過程をX={..., X-2 , X-1 , X0 , X1 , X2 ,... }
+とし、PをXの確率分布とすると、Xの情報量は次の式で定義される。
+H(P)=-EP log P( X0 | X-1 , X-2 , ... )
+3.1 n-gramモデル
+過去に観測された記号列に基づいて次の記号を予測するためのモデルの一つとして、マルコフモデルがある。
+これは、過去に観測された記号列を直前の記号列で分類し、次の記号を予測するというモデルである。
+直前の記号列の長さがkのとき、k重マルコフモデルと呼ぶ。
+マルコフモデルによる記号列 s1s2 .....sn
+の出現確率は、次の式で与えられる。
+3.2 形態素n-gramモデル
+前節で説明したn-gramモデルの記号を形態素と考えることで、自然言語の文を形態素の連接とみなすモデルが構成できる。
+この場合に問題となるのは、記号に対応する形態素(既知形態素)の選択である。
+ただし、どのような形態素の集合を選択したとしても、テストコーパスに出現する可能性のあるすべての形態素が学習コーパスに出現することは望めない。
+未知形態素に対応する特別な記号は、かならずしも唯一である必要はなく、品詞などの情報を用いて区別される複数の記号であってもよい。
+5. おわりに
+コーパスの9割から推定した形態素16-gramモデルを用いて、残りのコーパスの文字あたりの情報量を計算した結果、日本語の情報量の上限(クロスエントロピー)として4.3033ビットという値を得た。また、学習コーパスの変化を調べた結果、モデルの次数を上げることによる減少量は微少であるが、学習コーパスを大きくすることによる減少量は形態素2-gramモデルでもかなりあるということが分かった。
+日本語と英語のエントロピー計算
+横井右門 愛知学泉大学
+経営研究 16(3)  2003
+日本語のエントロピーの計算例は前川の貴重な計算例があるだけである。
+その計算結果は1次、2次、3次、および5次エントロピーがそれぞれ7.84 , 6.15 , 4.82 , 3.29 である。
+これを孤証に終わらせたくなく、別のデータで計算するのが第一の目的である。
+データは英語から日本語への翻訳、日本語から英語の翻訳がある13対の作品である。
+次の13対のテキスト・データである。選んだ理由は現段階で磁気媒体化されているからである。
+The Hunt for Red October   970567 byte
+The Day of the Jackal 771683 byte
+The Shepherd 64002 byte
+Man on Fire 547679 byte
+A Catskill Eagle 404989 byte
+A Space Odyssey 368733 byte
+Atlantis Found  1011208 byte 
+Prince Caspian 252542 byte
+Harry Potter and the Sorcerer's Stone 441674 byte
+キッチン 45587 byte
+ムーンライト・シャドウ 48348 byte
+N・P 162125 byte
+ぐりとぐら 3177 byte
+「ここでは、日本語の1文字は英語のアルファベット2.5文字に相当する。このことは、カーヴァーの村上春樹訳とあわせて考えれば『翻訳は一般に長くなる』という通説を支持することになる。
+本来、日本語の1文字は英語のアルファベット2文字に相当すべきである、という仮説を立てたとすると、英語から日本語では、英語のアルファベット2文字が日本語の1文字になるべきところが1.2になっている。
+一方、日本語から英語では2ではなく2.5になっている。すなわち、20ないし25%の増加である。」
+ただこの13対についていえば単純に英語のほうが日本語より長いと言える。「翻訳は一般に長くなる」という「通説」はこの13対については、支持するのは難しい。
+3. エントロピー
+前川によればエントロピーの定義は次のとおりである。
+言語がn個の記号(番号1からnで区別する)で表現され、それぞれの出現確率がP(n)であるときつぎの式で定義される。
+.........................
+7.結論
+原作が英語で日本語に翻訳された1番から9番までのうち「カスピアン王子のつのぶえ」を例外として、残りの8対は日本語第1エントロピーは英語の第1次エントロピーとほぼ同じ値になり、全体のエントロピー疑似曲線は最初は日本語のほうが英語より情報にあり、英語で第4次から第8次、日本語では第2次から第4次の間で交差し、日本語のエントロピーが英語のそれよりも下方になる。しかし、ほぼ接近した値である。
+日本語文章における順方向と逆方向の文字遷移情報量の差異
+中川正樹 朱碧蘭 東京農工大学
+情報処理学会研究報告. 自然言語処理研究会報告 2007(113), 2007
+自然言語の情報量については、情報理論に対する最初期の論文[Prediction and Entropy of Printed English]から多く扱われてきている。
+日本語に対しても、
+文字列に対して効率的にn-gram統計を得る手法の提案、
+文字認識後処理のために文字連接の有無の可能性を見る初期の研究
+形態素の確率モデル
+文字列の確率モデル
+それらを融合したモデルが提案されてきた。
+............
+現在では多様な日本語コーパスが利用可能になり、むしろこうした分野の発表は少なくなり、一方で、実利用が進んでいる。
+2.1 順方向と逆方向の情報量
+文字列中における任意の2-gramの1文字目をSi、2文字目をSjとして、Si からSjへの遷移が持つ情報量は、単位をbitとして、次式で表わされる。
+I(Sj|Si)=-log2P(Sj|Si)
+文字列を順方向に走査したときにSiからSjへの遷移が持つ平均情報量(エントロピー)をHF、逆方向に走査したときにSjからSiへの遷移が持つ平均情報量をHBとすると
+2.2 累加情報量
+ここでは、情報量の加算を、それぞれ
+P(Sj|Si)またはP(Si|Sj)の高い方からm位までに限定する。これを加算限定m位までの累加情報量と呼ぶことにする。
+2.3 正規化累加情報量
+加算限定mが文字種数より小さい間はこれら確率値の総和は1にはならない。
+そこで、加算対象の確率の総和が1になるように正規化して、累加情報量を検討する。
+.......................
+図3、図4から、日本語のテキストにおいて加算限定mが小さいときには順方向と逆方向で情報量に顕著な差異を示し、累加情報量、正規化累加情報量ともに逆方向のほうが順方向より大きい情報量を持つことが分かる。
+中国語と英語のテキストでは、加算限定mと関係なく、順方向と逆方向で情報量に顕著な差異を認めなかった。
+4. おわりに
+本稿では、自然言語における文字遷移の情報量として順方向と逆方向を考え、それぞれについて前後2文字の文字遷移の情報量を遷移確率上位の有限個だけ加算した場合、日本語では逆方向のほうが順方向より大きい情報量を持つことを示した。
+研究開発:2011年06月 - livedoor Blog(ブログ)

@@ -1,0 +1,28 @@
+      call MPI_Send(buffer, count, datatype, dest,
+&              tag, comm, ierror)
+引数        データ型          入力or出力  内容
+------------------------------------------------------------
+buffer      任意              入力        送信するデータ(の先頭アドレス)
+count       整数              入力        データの個数
+datatype    MPIデータ型       入力        データ型
+dest        整数              入力        送信先プロセスのランク
+tag         整数              入力        タグ(メッセージ識別番号)
+comm        MPIコミュニケータ 入力        コミュニケータ
+ierror      整数              出力        エラーコード
+bufferの位置からcount個のメッセージに、識別番号tagをつけて、destプロセスへ送信する。送信するプロセスのみが、このMPI_Sendをコールする。受信するプロセスは、MPI_Recvをコールする。MPI_Sendはブロッキング通信であるため、一度コールすると、送受信が正常に完了するまで次の作業には進めない。
+例1:
+全プロセスのxの値をプロセス0に送信して、その総和を求めたいときは次のようにすればよい。なお、これはMPI_Reduceと同じ操作である(MPI_Reduceの方が高速)。MPI_Recvの項も参照。
+allocate(ista(MPI_STATUS_SIZE))
+call MPI_Comm_rank(MPI_COMM_WORLD, myrank, ierr)
+call MPI_Comm_size(MPI_COMM_SIZE, n, ierr)
+if(myrank.ne.0) then
+MPI_Send(x, 1, MPI_REAL8, 0, myrank, MPI_COMM_WORLD, ierr)
+else
+ans=x
+do i=1,n-1
+MPI_Recv(x, 1, MPI_REAL8, i, i, MPI_COMM_WORLD, ista, ierr)
+ans=ans+x
+enddo
+write(*,*) ans
+endif
+4. 1対1通信

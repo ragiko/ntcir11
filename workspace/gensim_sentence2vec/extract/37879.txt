@@ -1,0 +1,19 @@
+
+構文
+Math.sin(x)
+引数
+x
+数値(数値に変換出来る値)
+詳細
+sin メソッドは、引数のサインを表す -1 から 1 までの数値を返します。
+sin は Math オブジェクトの静的なメソッドなので、自ら生成した Math オブジェクトのメソッドとしてではなく、常に、Math.sin() として使用するようにしてください。
+例
+例:Math.sin の使用
+以下の関数は、変数 x のサインを返します。:
+function getSine(x) {
+return Math.sin(x);
+}
+getSine に Math.PI/2 を渡した場合、このメソッドは、1 を返します。
+関連情報
+acos、 asin、 atan、 atan2、 cos、 tan
+Math.sin() - JavaScript | MDN

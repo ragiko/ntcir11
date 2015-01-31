@@ -1,0 +1,114 @@
+
+変数の使用の単純化
+withの使用の禁止 
+strictモードではwith文が使えなくなります。代替の手段としては、オブジェクトに短い名前の変数を割り当てて、その変数を用いて対応するプロパティにアクセスすることができます。
+eval内で宣言された変数のスコープ
+非strictモードでは、eval("var x ;")の様に、eval関数内で定義された変数のスコープは、evalが含まれるスコープ(関数、またはグローバルスコープ)まで広がりますが、strictモードでは、eval内で定義された変数を周囲のスコープに広げません。
+単純名の削除の禁止
+strict モードでは delete name を構文エラーにします
+evalおよびargumentsの単純化
+strictモードでは「eval」「arguments」という名前がキーワードとして扱われるため、これらのキーワードに対して言語構文でのバインドや代入を不可にします。
+例えば、var eval = 1; のような記述は構文エラーになります。
+strictモードでは、関数でのarguments オブジェクトは、関数が呼び出された当初の引数を保持します。
+非strictのモードでは第一引数 arg を持つ関数において arg に値を設定すると arguments[0] にも設定され、また逆も同様です (引数が提供されない場合や arguments[0] が削除された場合を除きます)。
+strictモードでは、arguments[i] は対応する名前付き引数の値を追跡せず、また名前付き引数も対応するarguments[i] の値を追跡しません。
+strictモードでは、arguments.callee をサポートしません。代替として arguments.callee が参照する関数に名前を付けて呼び出すようにしましょう。
+JavaScriptのセキュア化
+非strictモードでは、thisとして関数に渡された値は、それがオブジェクトであれ、または数値や文字列であったとしても、関数内ではthisはオブジェクト(ラッパーオブジェクト)として扱われます。
+つまり、thisとして文字列を指定した場合は、関数内ではthisがStringオブジェクトになり、数値ならばNumberオブジェクトになります。
+一方、strictモードでは、thisとして関数に渡された値は、オブジェクトに閉じ込められることなく、そのまま関数に渡されます。
+function foo() {
+window.console.log(typeof this);
+}
+function bar() {
+"use strict";
+window.console.log(typeof this);
+}
+foo.call(123); //object
+bar.call(123); //number
+strictモードでは、ECMAScriptの一般的な実装である拡張を通してJavaScriptのスタックを渡り歩くことができません具体的には以下を指します。
+strictモードでは、関数またはargumentsオブジェクトのcallerプロパティを使用できません。
+strictモードでは、関数のargumentsプロパティを使用できません。(argumentsキーワードは使用できる)
+将来のECMAScriptへの準備
+将来のECMAScriptでは新たな構文を導入する予定であるため、ECMAScript5のstrictモードでは移行を容易にする制限事項を適用します。将来の変更点の基礎がstrictモードで禁止されていると、変更が容易になります
+strict モードでは、いくつかの識別子を予約語にします。その対象は implements、interface、let、package、private、protected、public、static、yieldです。strict モードでは、これらを変数や引数の名前として使用できません。
+strict モードでは、スクリプトのトップレベルまたは関数内(のトップレベル)にないfunction文を禁止します。
+非strictモードでは、function文はどこにでも置くことが許されます。しかし、これはES5の仕様に(ES3でさえも)含まれていない、ブラウザにより意味が異なり互換性がない拡張です。
+"use strict";
+if (true) {
+function foo() {}  //!!! syntax error
+foo();
+}
+ただし、上記のような「関数宣言」ではなく、関数式(無名関数)に関してはどこで使用しても問題無いようです。
+"use strict";
+if (true) {
+var foo = function() {
+console.log("foo");  //foo
+};
+foo();
+(function() {
+console.log("bar");  //bar
+}());
+}
+strictモード準拠のコードの非strictモードでの挙動(互換性)
+strictモードはES5で採択された比較的新しいものなので、まだまだstrictモードに対応していないブラウザなどもあります。そういったブラウザでは、strictモード準拠のコードも、非strictモードで動作することになります。
+strictモードでは、strictモードであることを宣言する"use strict"文以外には、新たな構文などはありません。
+また、この”use strict”文は、非strictモード下では、単なる無意味な文字列でしかないため、無視されるだけでコードの動作には何も影響を与えません。
+つまり、非strictモード側から見たら、strictモード準拠のコードは新しいものは何もなく、従来のコードと変わりありません。
+また、strictモードでは、非strictモードで許容されていた曖昧な実装を厳密に処理するようになります。
+本来使うべきではない機能を使えなくする
+エラーにすべきコードをエラーとして処理する
+これらのことから、strictモードを一言でまとめると「JavaScriptの正しいコーディングのみを許可するモード」であると言えるでしょう。つまり、
+strictモード準拠のコードは非strict環境下でも正しく動作する。
+strictモード非準拠(つまり従来のJavaScriptコード)はstrictモードでの動作保証はされない。
+ということになりますね。
+言い切ってしまうのはどうかと思いますが、基本的な考え方としてはこれでOKだと思います。
+また、strictモードではいくつかの構文や機能が使用できなくなりますが、基本的にこれらは別のアプローチで代替することが出来るはずです。非strictのコードをstrictなコードに置き換える際はこれらの代替手段を用いる必要があります。
+strictモードの使い方
+strict モードはスクリプト全体または個別の関数に適用できます。以下にそれぞれのケースでの使い方を簡単に説明します。
+スクリプト全体への適用
+スクリプト全体で strict モードを呼び出すには、他のいかなる文よりも前に “use strict”; (または ‘use strict';) という文をそのまま追加します。
+"use strict";
+var message = "this code is Strict Mode!";
+ただ、こちらのやり方には重大な落とし穴がありますので注意が必要です。詳細は次項で説明します。
+関数に対しての適用
+同様に、関数で strict モードを呼び出すには、関数本体で他のいかなる文よりも前に “use strict”; (または ‘use strict';) という文をそのまま追加します。
+//この関数はstrictモードで動作
+function strict() {
+"use strict";
+var message = "this function is Strict Mode!";
+return message;
+}
+//この関数は非strictモードで動作
+function noStrict() {
+var message = "this function is Not Strict Mode!";
+return message;
+}
+関数単位でstrictモードを適用する場合に意識しておかなければならないことは、“use strict”宣言は、関数スコープにつき1つのみということです。
+例えば、次のコード例では関数「inner」は関数「outer」の内側で定義されています。この時、outer 内で既に”use strict”が宣言されている場合は、inner での”use strict”宣言は不要です。
+ちなみに、JSLintでこのコードをチェックすると、inner関数内の”use strict”宣言部分で「Unnecessary ‘use strict’」という警告が表示されます。
+function outer() {
+"use strict";
+function inner() {
+"use strict";  //ERROR: Unnecessary 'use strict'.
+window.console.log("hoge");
+}
+inner();
+}
+「スクリプト全体への適用」の落とし穴
+上記2つの方法を比べると、一見スクリプト全体にstrictモードを適用した方が”use strict”宣言が1度で済むので良いと思うかもしれません。(私がそうでした) しかし、この方法には注意すべき重大な落とし穴があります。
+それは、スクリプトをむやみに連結できない、ということです。
+連結する最初のスクリプトの先頭に”use strict”;宣言がある場合、その後に連結された全てのスクリプトは(たとえそれがstrictモード非準拠のコードであっても)全てstrictモードで動作してしまいます。
+strictモード非準拠のコードをstrictモードで動作させると思わぬところでエラーが発生する可能性があります。
+「スクリプト全体への適用」をする場合、連結するすべてのスクリプトがstrict、または非strictなコードに統一されていれば問題はありません。strictと非strictの混在が問題となります。
+JavaScriptでは、プロジェクトの規模が大きくなればなるほど、外部ライブラリやプラグインなどを取り込む(=連結する)ことも多くなると思います。
+しかし、それらの外部ファイルがすべてstrictモード準拠のコードであるとは限りません。スクリプト全体へstrictモードを適用し、これらの外部ファイルを連結すると、その結果外部ファイルはstrictモードで動作することになりますが、外部ファイルがstrictモード準拠でなかった場合エラー、もしくは予期せぬ振る舞いをする可能性があります。
+こういったことを回避するために、少なくとも現状ではstrictモードは関数単位で適用するようにした方が良いでしょう。
+ちなみに、JSLintのデフォルト設定下では、”use strict”文は関数の先頭に記述することが強制されます。これも上記のような理由からではないかと思います。
+strictモード対応ブラウザ
+各主要ブラウザのstrictモードへの対応状況は以下と通りです。
+現時点で、ほぼ全ての主要ブラウザの最新バージョンではstrictモードがサポートされていることが分かります。
+ブラウザ
+strictモード対応バージョン
+IE
+“use strict”(厳格モード)を使うべきか?｜もっこりJavaScript｜ANALOGIC(アナロジック)

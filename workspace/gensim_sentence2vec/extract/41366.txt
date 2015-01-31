@@ -1,0 +1,193 @@
+UART処理
+802.15.4 MAC API を使用する場合の UART の使用方法を以下に記述します。
+UARTの概要についてはこちらを参照ください。
+UART処理は、UARTペリフェラルへの入力と出力、割り込み処理、FIFOキューによる処理となっています。主要処理は、以下のソースコードに含まれており、そのまま利用できます。必要に応じて uart.c を書き換えることが有ります(パリティの設定など)。
+このソースコードは UART0, UART1 を同時に扱えるようになっています。
+UART処理用のソースコード
+※ 各サンプルにも添付されていますが、必要な機能を追加している場合が有り、若干の差異が有る場合が有ります。(vfPutcマクロの追加、Cbpによるボーレート微調整の追加)
+※ 本ソースコードは現状のまま、およびコメントに記載されたライセンス条件に基づき提示されます。添付コードによる動作の保証や、機能などの解説、改造方法の提示等はサポートでは行えません。ご了承ください。また、TWEシリーズ以外への流用はご遠慮ください。
+uart.c : UARTペリフェラルへの入出力処理、割り込み処理
+serial.c : UART用のFIFOキューインタフェース
+ByteQueue.c : uint8 型の FIFOキュー
+fprintf.c : 出力用の printf 処理
+基本的な使用方法
+# include "serial.h"
+# include "fprintf.h"
+// UARTのポートの指定
+#define UART_PORT E_AHI_UART_0
+// ボーレートの設定(DivとCbpによる)
+//#define UARTBAUD (0x80000000 | 104             ) //   9600bps
+//#define UARTBAUD (0x80000000 |  52             ) //  19200bps
+//#define UARTBAUD (0x80000000 |  26             ) //  38400bps
+//#define UARTBAUD (0x80000000 |  23 | (11 vSerialInit(void) {
+static uint8 au8SerialTxBuffer[96]; // 送信FIFOバッファサイズ(必要に応じで調整する)
+static uint8 au8SerialRxBuffer[32]; // 受信FIFOバッファサイズ(必要に応じで調整する)
+sUartPort.pu8SerialRxQueueBuffer = au8SerialRxBuffer;
+sUartPort.pu8SerialTxQueueBuffer = au8SerialTxBuffer;
+sUartPort.u32BaudRate = UART_BAUD;
+sUartPort.u16AHI_UART_RTS_LOW = 0xffff;
+sUartPort.u16AHI_UART_RTS_HIGH = 0xffff;
+sUartPort.u16SerialRxQueueSize = sizeof(au8SerialRxBuffer);
+sUartPort.u16SerialTxQueueSize = sizeof(au8SerialTxBuffer);
+sUartPort.u8SerialPort = UART_PORT;
+sUartPort.u8RX_FIFO_LEVEL = E_AHI_UART_FIFO_LEVEL_1;
+SERIAL_vInit(&sUartPort);
+sUartStream.bPutChar = SERIAL_bTxChar;
+sUartStream.u8Device = UART_PORT;
+}
+// 出力
+vfPrintf(&sUartStream, "\r\nHELLO WORLD!");
+// 入力(イベント処理ループ内でキューをチェックする)
+void vMain() {
+while(1) {
+// メインループ内
+vProcessEventQueues();
+vHandleSerialInput();
+vAHI_CpuDoze();
+}
+}
+void vHandleSerialInput(void)
+{
+// handle UART command
+while (!SERIAL_bRxQueueEmpty(sUartPort.u8SerialPort)) {
+// FIFOキューから1バイトずつ取り出して処理する。
+int16 i16Char;
+i16Char = SERIAL_i16RxChar(sUartPort.u8SerialPort);
+vfPutc(&sUartStream, '[');
+vfPutc(&sUartStream, i16Char);
+vfPutc(&sUartStream, ']');
+switch(i16Char) {
+case 'h': case 'H':
+vfPrintf(&sUartStream, "\r\nHELP MESSAGE HERE!");
+break;
+default:
+vfPrintf(&sUartStream, "\r\nUnknown Character[%c]", i16Char);
+break;
+}
+}
+// 出力待ち
+//   au8SerialTxBuffer[] のサイズを超えると出力が欠損します。
+//   これを防ぐためには、UART 出力完了待ちを行います。
+// UART wait
+#define WAIT_UART_OUTPUT(P) \
+while ((!SERIAL_bTxQueueEmpty(P)) || \
+((u8AHI_UartReadLineStatus(P) & E_AHI_UART_LS_THRE) == 0) || \
+((u8AHI_UartReadLineStatus(P) & E_AHI_UART_LS_TEMT) == 0))
+...
+vfPrintf(&sUartStream, "\r\nLONG LONG LONG LONG LONG LONG MESSAGE HERE.");
+WAIT_UART_OUTPUT(sUartStream.u8Device);
+vfPrintf(&sUartStream, "\r\nLONG LONG LONG LONG LONG LONG MESSAGE HERE.");
+WAIT_UART_OUTPUT(sUartStream.u8Device);
+より詳細な設定
+UARTのより細かい設定を行いたい場合(パリティの変更、フロー制御など)は、uart.c を参考にしてください。vAHI_UartSetRTSCTS(), vAHI_UartSetControl() 以外は設定を変える必要はありません。
+※ 他のコードを編集した場合、動作については予測が出来ない場合も有ります。
+///// uart.c
+// 
+PUBLIC void UART_vInit(uint8 u8UARTNum,
+void (*pfRxFn)(uint8,uint8),
+void (*pfTxRdy)(uint8),
+uint32 u32BaudRate,
+uint8 u8RX_FIFO_LEVEL)
+{
+asUARTS[u8UARTNum].pfRxFn = pfRxFn;
+asUARTS[u8UARTNum].pfTxRdy = pfTxRdy;
+asUARTS[u8UARTNum].u8RX_FIFO_LEVEL = u8RX_FIFO_LEVEL;
+/* Enable UART 0 */
+vAHI_UartEnable(u8UARTNum);
+vAHI_UartReset(u8UARTNum, TRUE, TRUE);
+vAHI_UartReset(u8UARTNum, FALSE, FALSE);
+if (u8UARTNum == E_AHI_UART_0){
+asUARTS[u8UARTNum].u32StartAddress = UART0_START_ADR;
+vAHI_Uart0RegisterCallback(UART_vHandleUartInterrupt);
+}
+else{
+asUARTS[u8UARTNum].u32StartAddress = UART1_START_ADR;
+vAHI_Uart1RegisterCallback(UART_vHandleUartInterrupt);
+}
+if (u32BaudRate &0x80000000) {
+/* MSB を設定した時は divisor と cpb による設定を行う */
+u32BaudRate &= 0x7FFFFFF;
+vAHI_UartSetBaudDivisor(u8UARTNum, u32BaudRate & 0xFFFF);
+vAHI_UartSetClocksPerBit(u8UARTNum, (u32BaudRate >> 16) & 0xFF);
+} else {
+/* 数値によるボーレート設定 */
+UART_vSetBaudRate(u8UARTNum,u32BaudRate);
+}
+// ハードフローの設定
+//vAHI_UartSetRTSCTS(u8UARTNum, FALSE);
+// パリティの設定
+vAHI_UartSetControl(u8UARTNum,
+UART_PARITY_TYPE,
+UART_PARITY_ENABLE,
+UART_BITLEN,
+UART_STOPBITS,
+FALSE); /* [I SP001222_P1 279] */
+vAHI_UartSetInterrupt(u8UARTNum, FALSE, FALSE, FALSE, TRUE,
+asUARTS[u8UARTNum].u8RX_FIFO_LEVEL);    // No TX ints!
+}
+UART0/1両方使う場合
+UARTポートを2ヶ使用する場合は、以下を参考にしてください。
+データ領域を2ポート分用意して各々初期化する
+入力処理は各ポート毎FIFOキューの確認を行う
+出力処理は、tsFILE* をvfPrintf() に渡すことで、tsFILE*に関連付けられたポートに出力される
+// UARTのポートの指定
+#define UART_PORT0 E_AHI_UART_0
+#define UART_PORT1 E_AHI_UART_1
+// ボーレートの設定(DivとCbpによる)
+#define UARTBAUD0 (0x80000000 |  52             ) //  19200bps
+#define UARTBAUD1 (0x80000000 |  26             ) //  38400bps
+// FIFOキューや出力用の定義
+tsFILE sUartStream0, sUartStream1;
+tsSerialPortSetup sUartPort0, sUartPort1;
+// 初期化関数
+void vSerialInit(void) {
+/* Create the debug port transmit and receive queues */
+static uint8 au8SerialTxBuffer0[96]; // 送信FIFOバッファサイズ(必要に応じで調整する)
+static uint8 au8SerialRxBuffer0[32]; // 受信FIFOバッファサイズ(必要に応じで調整する)
+static uint8 au8SerialTxBuffer1[96]; // 送信FIFOバッファサイズ(必要に応じで調整する)
+static uint8 au8SerialRxBuffer1[32]; // 受信FIFOバッファサイズ(必要に応じで調整する)
+/* Initialise the serial port to be used for debug output */
+sUartPort0.pu8SerialRxQueueBuffer = au8SerialRxBuffer0;
+sUartPort0.pu8SerialTxQueueBuffer = au8SerialTxBuffer0;
+sUartPort0.u32BaudRate = UART_BAUD0;
+sUartPort0.u16AHI_UART_RTS_LOW = 0xffff;
+sUartPort0.u16AHI_UART_RTS_HIGH = 0xffff;
+sUartPort0.u16SerialRxQueueSize = sizeof(au8SerialRxBuffer0);
+sUartPort0.u16SerialTxQueueSize = sizeof(au8SerialTxBuffer0);
+sUartPort0.u8SerialPort = UART_PORT0;
+sUartPort0.u8RX_FIFO_LEVEL = E_AHI_UART_FIFO_LEVEL_1;
+SERIAL_vInit(&sUartPort0);
+sUartStream0.bPutChar = SERIAL_bTxChar;
+sUartStream0.u8Device = UART_PORT0;
+/* Initialise the serial port to be used for debug output */
+sUartPort1.pu8SerialRxQueueBuffer = au8SerialRxBuffer1;
+sUartPort1.pu8SerialTxQueueBuffer = au8SerialTxBuffer1;
+sUartPort1.u32BaudRate = UART_BAUD1;
+sUartPort1.u16AHI_UART_RTS_LOW = 0xffff;
+sUartPort1.u16AHI_UART_RTS_HIGH = 0xffff;
+sUartPort1.u16SerialRxQueueSize = sizeof(au8SerialRxBuffer1);
+sUartPort1.u16SerialTxQueueSize = sizeof(au8SerialTxBuffer1);
+sUartPort1.u8SerialPort = UART_PORT1;
+sUartPort1.u8RX_FIFO_LEVEL = E_AHI_UART_FIFO_LEVEL_1;
+SERIAL_vInit(&sUartPort1);
+sUartStream1.bPutChar = SERIAL_bTxChar;
+sUartStream1.u8Device = UART_PORT1;
+}
+...
+while (!SERIAL_bRxQueueEmpty(sUartPort0.u8SerialPort)) {
+// UART1のFIFOキューから1バイトずつ取り出して処理する。
+int16 i16Char;
+i16Char = SERIAL_i16RxChar(sUartPort0.u8SerialPort);
+// 処理:UART1に出力。UART0には何も出力しない
+vfPrintf(&sUartStream1, "[%c]", i16Char);
+}
+}
+while (!SERIAL_bRxQueueEmpty(sUartPort1.u8SerialPort)) {
+// UART1のFIFOキューから1バイトずつ取り出して処理する。
+int16 i16Char;
+i16Char = SERIAL_i16RxChar(sUartPort1.u8SerialPort);
+// 処理:UART1に出力。
+vfPrintf(&sUartStream1, "", i16Char);
+}
+}
+プログラミング情報 -- TOCOS-WIRELESS.COM

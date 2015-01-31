@@ -1,0 +1,184 @@
+
+7セグメント表示器は、今回はアノードコモンのものを使いました。
+回路図
+回路図の作成には、水魚堂ホームページで公開されているBSch3Vを使いました。
+BSch3Vのプロジェクトファイルとかはこちらです。
+なお、7セグメントLEDの各セグメントへ流れる際にそのセグメントのLEDをいくつ光らせるかで、
+マイコンの出力ポートからの電流が2つや6つに分散します。
+ですが、今回はトランジスタを用いた電流の増幅をしていないため、
+1を表示するときは比較的明るく(セグメントで光らせるLEDが2つ)
+8を表示するときは比較的暗い(セグメントで光らせるLEDが7つ)
+なことになっています。
+ソースコード
+/***********************************
+デジタル時計 Ver. 1.1 (2012/03/03 09:03)
+参考:
+AVR タイマー実験
+http://www9.plala.or.jp/fsson/NewHP_elc/AVR/Avr_Tmr0_OVF.html
+ユアネーム・7セグ・12セグフォント大全集
+http://www.yourname.jp/soft/digitalfonts-20090306.shtml
+************************************/
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#define BTN_TH 20
+#define F_CPU 1000000	/* CPUクロック周波数[Hz] */
+#define PITCH 100	/* 割り込み周波数[Hz] */
+#define PRESC 64	/* プリスケーラ値 (分周比) */
+#define INTRCOUNT (0x10000 - ((F_CPU / PRESC) / PITCH))
+unsigned int led_seg[4] = {0xff, 0xff, 0xff, 0xff};
+unsigned char hour = 0, min = 0, sec = 0, cnt = 0, on_dp = 1;
+ISR (SIG_OVERFLOW1)
+{
+TCNT1 = INTRCOUNT;	/* タイマ1の初期値設定 */
+cnt++;
+if (cnt > 99) {
+cnt = 0;
+on_dp = !on_dp;
+sec++;
+if (sec > 59) {
+sec = 0;
+min++;
+if (min > 59) {
+min = 0;
+hour++;
+if (hour > 23)
+hour = 0;
+}
+}
+}
+}
+void timer1_init(void)
+{
+TCCR1A = 0;	/* TCCR1A タイマモード */
+TCCR1B = 3;	/* プリスケーラ (64分周) */
+TIFR1 |= (1 << TOV1);	/* オーバーフローフラグをクリア */
+TIMSK1 |= (1 << TOIE1);	/* オーバーフロー割り込み許可 */
+}
+const unsigned int to_num_pattern[10] = {
+0xff - 0xfc,
+0xff - 0x60,
+0xff - 0xda,
+0xff - 0xf2,
+0xff - 0x66,
+0xff - 0xb6,
+0xff - 0xbe,
+0xff - 0xe0,
+0xff - 0xfe,
+0xff - 0xf6};
+void scan(void)
+{
+static unsigned char line = 0;
+PORTD = led_seg[line];
+DDRB = 1 << line;
+line = (line + 1) % 4;
+}
+void display(unsigned long num)
+{
+led_seg[3] = to_num_pattern[(num / 1000) % 10];
+led_seg[2] = to_num_pattern[(num / 100) % 10];
+if (on_dp)
+led_seg[2] &= 0xfe;
+led_seg[1] = to_num_pattern[(num / 10) % 10];
+led_seg[0] = to_num_pattern[num % 10];
+}
+int main(){
+unsigned char btn_cnt[4] = {0};
+/* ポートのデータ方向(入力/出力)設定 */
+DDRB = 0x00;
+DDRC = 0x00;
+DDRD = 0xff;
+/* ポートの初期値設定 */
+PORTB = 0xff;
+PORTC = 0xff;
+PORTD = 0x00;
+timer1_init();
+sec = 0;
+min = 0;
+hour = 0;
+cnt = 0;
+TCNT1 = INTRCOUNT;	/* タイマ1の初期値設定 */
+sei();
+while (1) {
+scan();
+/* M-- についてのチェック */
+if ((PINC & 0x01) == 0) {
+if (btn_cnt[0] > BTN_TH) {
+btn_cnt[0] = 0;
+cnt = 0;
+sec = 0;
+min--;
+if (min == 255)
+min = 59;
+} else {
+btn_cnt[0]++;
+}
+} else {
+btn_cnt[0] = 0;
+}
+/* M++ についてのチェック */
+if ((PINC & 0x02) == 0) {
+if (btn_cnt[1] > BTN_TH) {
+btn_cnt[1] = 0;
+cnt = 0;
+sec = 0;
+min++;
+if (min > 59)
+min = 0;
+} else {
+btn_cnt[1]++;
+}
+} else {
+btn_cnt[1] = 0;
+}
+/* H-- についてのチェック */
+if ((PINC & 0x04) == 0) {
+if (btn_cnt[2] > BTN_TH) {
+btn_cnt[2] = 0;
+cnt = 0;
+sec = 0;
+hour--;
+if (hour == 255)
+hour = 23;
+} else {
+btn_cnt[2]++;
+}
+} else {
+btn_cnt[2] = 0;
+}
+/* H++ についてのチェック */
+if ((PINC & 0x08) == 0) {
+if (btn_cnt[3] > BTN_TH) {
+btn_cnt[3] = 0;
+cnt = 0;
+sec = 0;
+hour++;
+if (hour > 23)
+hour = 0;
+} else {
+btn_cnt[3]++;
+}
+} else {
+btn_cnt[3] = 0;
+}
+display((unsigned long)(hour * 100 + min));
+}
+}
+7セグメントLEDがアノードコモンタイプなので、to_num_pattern配列では
+0xffから目的のパターンの差分をとっています。
+完成写真
+こんな感じで出来上がりました。
+左から2つ目のセグメントのDPを時表示と分表示の区切りに使っています。
+そして、このDPで1秒おきに明滅を繰り返すことで秒を表現しています。
+(あと、「時計らしさ」も表現しています。)
+また、回路図作成の際に問題点としていた
+各セグメントで光らせるLEDの数に応じた明るさの変化については
+実際に見てみるとそれほど気になるものではありませんでした。
+また、時刻のずれについては、
+電池の出力電圧が2.9Vほどへ落ちた時点でも
+2時間ほど使用し続けた際に1分のずれも起こりませんでした。
+(まだまだ、実際に使ってみないと分からないですが。)
+今後の方針
+あとは、ブレッドボード上に実装したものを、
+ユニバーサル基盤上に実装します。
+参考文献
+AVRマイコンと7セグメント表示器でデジタル時計 - へにゃぺんて@日々勉強のまとめ

@@ -1,0 +1,32 @@
+tableの諸要素(thやtdなど)の幅をwidthで指定した際、IEなどで表示すると、上手く幅指定が出来ていない場合があります。そういった場合の対処法についてご紹介します。
+HTML
+<table class="sampleTable">
+<tr>
+<th width="150">サンプルテキスト</th>
+<td width="200">サンプルテキストサンプルテキスト</td>
+<td>サンプルテキスト</td>
+</tr>
+<tr>
+<th>サンプルテキスト</th>
+<td>サンプルテキストサンプルテキスト</td>
+<td>サンプルテキスト</td>
+</tr>
+</table>
+CSS
+.sampleTable {
+border-collapse: collapse;
+}
+.sampleTable th,
+.sampleTable td {
+border: 1px solid #CCCCCC;
+padding: 5px 10px;
+table-layout: fixed;
+text-align: left;
+}
+.sampleTable th {
+background-color: #FFFFFF;
+}
+サンプルページ
+上記のソースのように、table-layoutプロパティにfixedを指定することで、tableの列幅を固定レイアウト化し、幅を自由に設定することが出来ます。fixedを指定してセルごとの幅を指定しない場合には、全体の横幅からそれぞれ均等に、セルへと幅が振り分けられることになります。
+もしtableの諸要素にwidthを指定しても幅が変わらない場合は、こちらの対処法を試してみてください。
+tableでwidthを指定しても幅が固定されない場合の対処法 | クロノドライブ

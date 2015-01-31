@@ -1,0 +1,111 @@
+Oracle® Fusion Middleware Oracle Application Development Frameworkスキン・エディタ・ユーザーズ・ガイド 11gリリース2(11.1.2.3.0) B66161-03
+11.1 ADFスキンのCSSファイルにおけるURLの参照
+通常、ADFスキンのCSSファイルでは、ファイルの外部リソースを参照するためにURLを使用します。たとえば、エラー・メッセージとともにレンダリングするためにアプリケーションが使用するイメージがこれに該当します。URLは、ADFスキンのCSSファイルから様々なフォーマットで参照できます。サポートされているフォーマットは次のとおりです。
+絶対
+リソースの完全なURLを指定します。たとえば、次のようなフォーマットのURLです。
+http://www.mycompany.com/WebApp/Skin/skin1/img/errorIcon.gif
+相対
+URLの先頭が/ではなく、プロトコルが示されていない場合は、相対URLを指定できます。相対URLは、ADFスキンのCSSファイルの場所に基づきます。たとえば、ADFスキンのCSSファイル・ディレクトリがWebApp/Skin/skin1/であり、指定されたURLがimg/errorIcon.gifの場合、最終的なURLは/WebApp/Skin/mySkin/img/errorIcon.gifとなります。
+コンテキスト相対
+このURLのフォーマットは、Webアプリケーションのコンテキスト・ルートに対して相対的に解釈されます。コンテキスト相対ルートの先頭は/になります。たとえば、Webアプリケーションのコンテキスト相対ルートが次のとおりであるとします。
+/WebApp
+このとき、次のURLを指定したとします。
+/img/errorIcon.gif
+最終的なURLは次のようになります。
+/WebApp/img/errorIcon.gif
+サーバー相対
+サーバー相対URLは、Webサーバーに対して相対的に解釈されます。これがコンテキスト相対URLと異なるのは、同じWebサーバー上にある別のアプリケーション内のリソースを参照できることです。URLの先頭は//を使用して指定します。たとえば、次のフォーマットでURLを作成します。
+//WebApp/Skin/mySkin/img/errorIcon.gif
+Javaアーカイブ(JAR)ファイルをパッケージとして作成し、ADFスキンとその関連ファイルを配布する場合は、使用するURLのフォーマットが重要になることがあります。詳細は、第10章の「ADFスキンのADFライブラリJARへのパッケージ化」を参照してください。
+11.2 ADFスキニング・フレームワークおよびサポートされているレンダー・キット
+ADFスキニング・フレームワークは、次のレンダー・キットについて、ADFスキンの作成をサポートします。
+org.apache.myfaces.trinidad.desktop
+org.apache.myfaces.trinidad.pda
+ADFスキン・エディタおよびJDeveloperのビジュアル・エディタを使用して次のレンダー・キットにADFスキンを作成できます。
+org.apache.myfaces.trinidad.desktop
+ADFスキン・エディタまたはJDeveloperでソース・エディタを使用して、次のレンダー・キットにADFスキンを作成できます。
+org.apache.myfaces.trinidad.pda
+ADF Facesコンポーネントでは、コンポーネントの機能はコンポーネント・クラスに、コンポーネントの表示はレンダラに委任されます。デフォルトでは、ADF Facesのすべてのタグが、関連付けられたコンポーネント・クラスとHTMLレンダラを結合し、HTMLレンダー・キットの一部になっています。ADF Facesには、デスクトップおよびPDAの両方に表示できるように、HTMLレンダー・キットが含まれています。ADF Facesレンダラはカスタマイズできません。ただし、ADFスキンを使用してコンポーネントの表示方法をカスタマイズすることはできます。
+11.4 Oracle ADFで提供されるADFスキン
+Oracle ADFでは、様々なADFスキンが提供されており、これらを拡張して、新規ADFスキンを作成できます。新規ADFスキンを作成する場合は、第4.4項「ADFスキン・ファイルの作成」で説明しているように、ADFスキンのFusion Simpleファミリの最新バージョン(fusionFx-simple-vN.N)を拡張することをお薦めします。ADFスキンのFusion Simpleファミリは次のバージョンで使用可能です。
+fusionFx-simple-v1
+fusionFx-simple-v1.1
+fusionFx-simple-v1.2
+fusionFx-simple-v2
+fusionFx-simple-v2.1
+拡張元として使用可能なADFスキンは、第4.2項「ADFスキン・アプリケーションおよびADFスキン・プロジェクトの作成」で説明しているように、ADFスキン・プロジェクトを使用するOracle ADFのリリースによって異なります。結果として、ここで説明したいずれのADFスキンも拡張元にできません。
+次のリストで、Oracle ADFで提供される各ADFスキン間の違いについて説明します。
+simple : 最低限の書式設定のみが含まれています。
+blafplus-medium : 適度な数のスタイル設定が提供されます。このスタイルは、simpleスキンを拡張します。
+blafplus-rich: このスキンは、blafplus-mediumスキンを拡張します。blafplus-mediumスキンよりも多くのスタイルを提供します。たとえば、blafplus-richスキンのグラフィックには角丸があります。
+fusion: ADF Facesコンポーネントのデフォルトのスタイルを定義します。このスキンは、非常に多くのスタイルを提供します。このスキンは、simpleスキンを拡張します。
+fusion-11.1.1.3.0: より明瞭なタブのレンダリングを行う特定のコンポーネントに階層構造を作成するように、fusionスキンを変更します。これらのコンポーネントは、panelTabbed、navigationPane (属性hint="tabs")とdecorativeBoxです。またこのスキンでは、公開されたpanelAccordionコンポーネント・ペインに表示されるテキストを読みやすくするために、このペインのための、より目立たない背景イメージを定義しています。
+fusionFx-v1: このスキンは、fusion-11.1.1.3.0スキンから拡張されます。fusionFx-v1スキンを拡張するADFスキンを作成する場合は、次の値を使用してスキンをtrinidad-skins.xmlファイルに登録します。
+<skin>
+<id>yourSkin.desktop</id>
+<family>yourSkinFamily</family>        
+<extends>fusionFx-v1.desktop</extends>
+...
+</skin>
+アプリケーションでfusionFx-v1スキンを使用するには、trinidad-config.xmlファイルで次の値を使用します。
+<skin-family>fusionFx</skin-family>
+fusionFx-v1スキンには、数多くの問題に対応するためのデザインの改善と変更が含まれています。具体的には、これによって次のものが追加されます。
+特定のブラウザでインライン・ポップアップが表示されたときに、基礎となるフレームのコンテンツが表示されないようにするため、背景色を.AFMaskingFrameグローバル・スタイル・セレクタにします。
+inputComboboxListOfValuesコンポーネントのための、ブールADFスキン・プロパティ-tr-stretch-dropdown-table。このプロパティは、表の列のコンテンツを表示するためにリスト内の表をストレッチするか、または表の幅をinputComboboxListOfValuesコンポーネント内の入力フィールドの幅に制限するかどうかを指定します。
+inlineFrameコンポーネントは、フレームのコンテンツのロードが完了したことをブラウザが判別するまで、ロード・インジケータとして機能するイメージを表示します。
+作成するADFスキンにこの機能を実装できます。af|inlineFrameセレクタにある擬似クラスのbusyとflowを使用すると、このことを行うことができます。inlineFrameコンポーネントが親コンポーネントによってストレッチされない(inlineFrameコンポーネントがフローである)場合にのみ、inlineFrameコンポーネントによってIFrame要素が生成されます。af|inlineFrame:busy:flowを使用して、ロード・インジケータを参照する背景イメージ・スタイルを定義します。親コンポーネントによってinlineFrameコンポーネントがストレッチされる場合、生成されるコンテンツはより複雑になります。この複雑性により、af|inlineFrame::status-iconを使用してコンテンツ・イメージのURLを定義でき、af|inlineFrame::status-icon-styleを使用して、オプションで追加の背景イメージを定義できます。また、これにより、他のコンポーネント・セレクタが使用するイメージを再利用することもできます。たとえば、carouselコンポーネントのaf|carousel::status-iconセレクタとaf|carousel::status-icon-styleセレクタです。スキニング別名を使用して、これらのイメージを再利用します。
+次のグローバル・セレクタも、ADFスキンにこの機能を実装している場合に使用できるものとして導入されています。
+.AFBackgroundImageStatus:alias: af|inlineFrame::busy:flowで使用される背景イメージを参照するために使用します。
+.AFStatusIcon:alias: af|carousel::status-iconとaf|inlineFrame::status-iconを参照するために使用します。
+.AFStatusIconStyle:alias: af|carousel::status-icon-styleとaf|inlineFrame::status-icon-styleを参照するために使用します。
+リソース・キー(af_inlineFrame.LABEL_FETCHING)は、inlineFrameコンポーネントのロード・アイコンに表示する文字列を定義します。
+fusionFx-v1.1: このスキンはfusionFx-v1スキンから拡張されます。これにより、af:tableコンポーネントでQuery-By-Example (QBE)フィルタをクリアする機能にサポートが追加されます。
+fusionFx-v1.1スキンを拡張するADFスキンを作成する場合は、スキンをtrinidad-skins.xmlファイルに登録します。このことを行うには、trinidad-skins.xmlファイルで次の値を使用します。
+<skin>
+<id>yourSkin.desktop</id>
+<family>yourSkinFamily</family>
+<extends>fusionFx-v1.1.desktop</extends>    
+&hellip;
+</skin>
+アプリケーションでfusionFx-v1.1スキンを使用するには、trinidad-config.xmlファイルで次の値を使用します。
+<skin-family>fusionFx</skin-family>
+<skin-version>v1.1<skin-version>
+fusionFx-v1.2: このスキンは、fusionFx-v1.1スキンから拡張されます。アプリケーションがタッチ・スクリーン・デバイスでレンダリングされる際の最適化を含め、多数のユーザー・インタフェースの拡張が含まれています。
+fusionFx-v1.2スキンを拡張するには、trinidad-skins.xmlファイルで次の値を使用します。
+<skin>
+<id>yourSkin.desktop</id>
+<family>yourSkinFamily</family>
+<extends>fusionFx-v1.2.desktop</extends>
+...
+</skin>
+アプリケーションでfusionFx-v1.2スキンを使用するには、trinidad-config.xmlファイルで次の値を使用します。
+<skin-family>fusionFx</skin-family>  <skin-version>v1.2<skin-version>
+fusionFx-v2: このスキンは、fusionFx-v1.1スキンから拡張されます。これにより、より明瞭なタブのレンダリングを行う特定のコンポーネントに階層構造が作成されます。これらのコンポーネントは、panelTabbed、navigationPane (属性hint="tabs")とdecorativeBoxです。またこのスキンでは、公開されたpanelAccordionコンポーネント・ペインに表示されるテキストを読みやすくするために、このペインのための、より目立たない背景イメージを定義しています。
+fusionFx-v2スキンを拡張するADFスキンを作成する場合は、スキンをtrinidad-skins.xmlファイルに登録します。このことを行うには、trinidad-skins.xmlファイルで次の値を使用します。
+<skin>
+<id>yourSkin.desktop</id>
+<family>yourSkinFamily</family>        
+<extends>fusionFx-v2.desktop</extends>        
+...
+</skin>
+アプリケーションでfusionFx-v2スキンを使用するには、trinidad-config.xmlファイルで次の値を使用します。
+<skin-family>fusionFx</skin-family>
+<skin-version>v2</skin-version>
+fusionFx-v2.1: このスキンは、fusionFx-v2スキンから拡張されます。アプリケーションがタッチ・スクリーン・デバイスでレンダリングされる際の最適化を含め、多数のユーザー・インタフェースの拡張が含まれています。
+fusionFx-v2.1スキンを拡張するには、trinidad-skins.xmlファイルで次の値を使用します。
+<skin>
+<id>yourSkin.desktop</id>
+<family>yourSkinFamily</family>
+<extends>fusionFx-v2.1.desktop</extends>
+...
+</skin>
+アプリケーションでfusionFx-v2.1スキンを使用するには、trinidad-config.xmlファイルで次の値を使用します。
+<skin-family>fusionFx</skin-family>
+<skin-version>v2.1<skin-version>
+fusionFx-simple-vN.N: fusionFx-simpleスキンはfusionスキンと同じですが、カラー・パレットが簡略化されています。これにより、fusionFx-simpleスキンを拡張するADFスキンの色スキームの変更が、fusionスキンを拡張するスキンの色スキームの変更よりも容易になります。fusionFx-simpleスキンを拡張するADFスキンで少数の色別名を変更することにより、色スキームを大幅に変更できます。さらに、「イメージ」ウィンドウを使用して、fusionFx-simpleスキンを拡張するときにADFスキンの色スキームを変更できます。「イメージ」ウィンドウの詳細は、第6.3項「「イメージ」ウィンドウの使用」を参照してください。
+プロジェクタ・スキン: ADF Facesではプロジェクタ・スキンを提供しており、これは、Oracle Technology Network(OTN) Webサイトからダウンロードできます。これらのスキンは、プロジェクタを使用してデモを行う場合のアプリケーションのスタイルを定義します。各プロジェクタ・スキンでは、卓上プロジェクタ(特に古いモデルのプロジェクタ)を使用して表示した場合にアプリケーションが適切にレンダリングされるように、親スキンの複数の要素を変更します。これらのスキンは、プロジェクタと同じ場所にいる人を対象としている場合に役立ちます。これらは、Web会議を介して、オンラインでアプリケーションを表示する場合には適していない場合があります。ADF Facesでは、次のプロジェクタ・スキンが提供されています。
+fusion-projector: このスキンは、プロジェクタでアプリケーションが適切にレンダリングされるように、fusionスキンの複数の要素を変更します。
+fusionFx-v2-projector: このスキンは、プロジェクタでアプリケーションが適切にレンダリングされるように、fusionFx-v2スキンの複数の要素を変更します。
+fusion-11.1.1.3.0-projector: このスキンは、プロジェクタでアプリケーションが適切にレンダリングされるように、fusion-11.1.1.3.0スキンの複数の要素を変更します。
+前述のすべてのADFスキンをWebアプリケーションに適用できます。詳細は、第10.4項「WebアプリケーションへのADFスキンの適用」を参照してください。ADFスキン間の継承関係を示すダイアグラムは、第1.5項「Oracle ADFで提供されるADFスキンの継承関係」を参照してください。
+高度なトピック

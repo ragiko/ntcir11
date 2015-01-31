@@ -1,0 +1,801 @@
+
+JXU7000E
+INSUFFICIENT MEMORY
+メモリ不足が発生しました。
+(S):コネクション切断後,処理を終了します。
+(P):メモリ回復後,再度システムを実行してください。
+JXU7001E
+LOGICAL ERROR OCCURRED CODE=Uaaa,
+bbb［,c…c］
+内部処理実行中に異常が発生しました。
+aaa:保守コード
+bbb:詳細コード
+c…c:保守情報
+(S):コネクション切断後,処理を終了します。
+(P):保守員に連絡してください。
+JXU7002E
+SYSTEM CALL ERROR,FUNC=a…a,
+ERRCODE=bbb ｛NAME=c…c｜SIZE=d…d｜
+［e…e］｝
+a…aで示すシステムコールでエラーが発生しました。
+a…a:エラーの発生したシステムコール
+bbb:エラーコード
+c…c:ファイル名称,またはサービス名
+d…d:確保しようとした領域サイズ
+e…e:保守情報
+(S):コネクション切断後,処理を終了します。
+(P):エラーコードの値と該当する関数の記載されたリファレンスマニュアルを参照してエラー要因を取り除き,再度実行してください。
+FUNC=getservebynameの場合
+servicesファイルのサービス名とHiRDB Dataextractorの環境変数情報設定ファイル(hirdbxt.ini)のサービス名が一致しているかどうかを確認してください。
+FUNC=connect,errno=239または10061の場合(反映側がWindows版の場合)
+サービスが未起動でないか確認してください。
+FUNC=LoadLibraryEx,errno=1114,NAME=%PDDIR%\bin\pdsingle.dllの場合(反映側がWindows版の場合)
+反映側HiRDBがセットアップ識別子付きでインストールされている場合,hirdbxt.iniに次の環境変数が指定されているか確認してください。
+・PDDIR
+・PDCONFPATH
+・PDUXPLDIR
+FUNC=CodeCnvOpen,ERRCODE=-4の場合
+バージョン07-03以前に作成された文字コード変換用マッピングテーブルを使用していた場合,文字コード変換用マッピングテーブルを再作成してください。
+JXU7003E
+ROW LENGTH EXCEEDS 4294967295
+1行の長さが4ギガバイトを超えたため,処理を続行することができません。
+(S):処理を終了します。
+(P):処理対象になる表の行長を見直し,再度実行してください。
+処理対象になる表に,BLOB,BINARY,SGMLTEXT,またはXMLの列が含まれている場合は,環境変数XTLOBBUFSIZEが指定されているかどうかを見直し,再度実行してください。
+JXU7005I
+END OF a…a RETURN CODE IS bb
+HiRDB Dataextractorがリターンコードbbで処理を終了しました。
+a…a:プログラム名
+PXTCNTL:データ反映側のHiRDB Dataextractor(TCP/IP)
+PXTOSIL:データ反映側のHiRDB Dataextractor(OSI)
+xtrep:データ抽出側のHiRDB Dataextractor(HiRDB抽出)
+xtrepO:データ抽出側のHiRDB Dataextractor(ORACLE抽出)
+xtrepS:データ抽出側のHiRDB Dataextractor(SQL Server抽出)
+bb:リターンコード
+0:正常終了しました。
+4:次の事象が発生しましたが処理を続行しました。
+オーバフローまたは切り捨ての可能性があります。
+文字の切り捨ての可能性があります。
+HiRDBのデータベース作成ユティリティでエラーが発生しました。
+8:パラメタエラー
+12:処理が続行できないエラーが発生しました。
+16:プロセスが異常終了,または内部矛盾を検知しました。
+(S):処理を終了します。
+(P):次のどちらかの処置をしてください。
+リターンコードが4のとき
+JXU7208Iが出力されている場合はオーバフローまたは切り捨てが発生しています。切り捨てたデータを反映しない場合は,環境変数XTERRLEVELに1を指定して再度実行してください。
+HiRDBのデータベース作成ユティリティでエラーが発生した場合は,反映側のエラーログファイルに出力されたメッセージを基にエラーを取り除き再度実行してください。
+リターンコードが12のとき
+エラーログファイルまたは標準出力に出力されたメッセージを基にエラーを取り除き再度実行してください。
+リターンコードが16のとき
+保守員に連絡してください。
+JXU7006E
+a…a TERMINATED BY SIGNAL, NO=b…b
+プログラムがシグナルにより中断しました。
+a…a:プログラム名
+PXTCNTL:HiRDB Dataextractorの入口プログラム
+PXTLOAD:PXTCNTLが起動するプログラム
+PDLOAD:HiRDBデータベース作成ユティリティ
+PXTMOCT:OSIデーモンプログラム
+b…b:中断の原因となったシグナル番号
+(S):処理を終了します。
+(P):このメッセージ以外に出力されているメッセージがあれば原因を調査し,再度実行してください。
+このメッセージ以外に出力されているメッセージがなければ保守員に連絡してください。
+JXU7007I
+HiRDB Dataextractor SYSTEM STARTED 
+｛PID=a…a｜SYSLOG=b…b｝
+HiRDB Dataextractorを開始しました。
+a…a:HiRDB DataextractorのプロセスID
+b…b:HiRDB Dataextractorのエラーログファイル
+(S):処理を開始します。
+JXU7008I
+HiRDB Dataextractor SYSTEM 
+TERMINATED PID=a…a
+HiRDB Dataextractorを終了させました。
+a…a:HiRDB DataextractorのプロセスID
+(S):処理を終了します。
+JXU7009I
+HiRDB Dataextractor LOAD PROCESS
+a STARTED PARTNER JOB NAME=b…b
+HiRDB Dataextractorがデータ反映処理を開始しました。
+a:次のどちらかを表示します。
+M:制御プロセス
+F:入力ファイル作成プロセス
+b…b:該当するプロセスとコネクトしたXDM/XTのジョブ名
+(S):反映処理を開始します。
+JXU7010E
+a…a ERROR OCCURRED,CODE=bb
+他プログラムでエラーが発生しました。
+a…a:プログラム名
+PXTCNTL:データの反映側のHiRDB Dataextractor
+SHELL SCRIPT:ユーザ指定のシェルスクリプト
+bb:エラーコード
+a…aがPXTCNTLの場合
+4:HiRDBデータベース作成ユティリティでエラーが発生しました。
+12:HiRDB Dataextractor,HiRDB,またはユーザ指定のシェルコマンドとのアクセス時,処理が続行できないエラーが発生しました。
+16:HiRDB Dataextractorが異常終了しました。
+a…aがSHELL SCRIPTの場合
+ユーザ指定のシェルスクリプトが返却するexitのステータス
+(S):次のどれかの処理をします。
+a…aがPXTCNTLの場合
+エラーコードが4の場合
+処理を続行します。
+エラーコードが4以外の場合
+処理を終了します。
+a…aがSHELL SCRIPTの場合
+処理を終了します。
+(P):次のどれかの処置をしてください。
+a…aがPXTCNTLの場合
+エラーコードが4の場合
+a…aで示されるプログラムの実行結果リストに問題がないか確認してください。
+エラーコードが4以外の場合
+a…aで示されるプログラムの実行結果リストを基にエラー要因を取り除き,再度ジョブを実行してください。
+a…aがSHELL SCRIPTの場合
+ユーザ指定のシェルスクリプトの実行結果に問題がないか確認してください。
+JXU7011I
+a…a ROWS EXTRACT ［SUCCESSFULLY］
+a…a行抽出しました。
+a…a:抽出行数
+SUCCESSFULLY:出力行数最終結果時を表します。
+(S):処理を続行します。
+JXU7012I
+｛FILE｜DIRECTORY｝CREATED NAME=a…a 
+［COUNT=b…b］
+ファイルまたはディレクトリの作成処理を終了しました。
+a…a:ファイル名またはディレクトリ名
+b…b:データ件数
+(S):処理を続行します。
+JXU7013E
+｛FILE｜DIRECTORY｝EXIST NAME=a…a
+指定されたファイルまたはディレクトリはすでに存在します。
+a…a:ファイル名またはディレクトリ名
+(S):処理を終了します。
+(P):次のどちらかを行い,再度実行してください。
+作成するファイル名またはディレクトリ名の指定を変更します。
+ファイルの上書きをしてもよい指定に変更します。
+JXU7014I
+EXEC a…a IS b…b
+a…aを実行します。
+a…a:実行した事象
+pdload ARG:pdloadを実行します。
+SHELL SCRIPT:シェルスクリプトを実行します。
+b…b:次のどちらかを表示します。
+a…aがpdload ARGの場合
+pdload実行時のオプション
+a…aがSHELL SCRIPTの場合
+シェルスクリプトファイルの絶対パス名
+(S):a…aの終了を待ちます。
+JXU7017E
+THIS FUNCTION IS NOT SUPPORT,KIND=a…a b…b
+接続先とのバージョンの組み合わせでサポートされていない機能が実行されました。なお,このメッセージのあとに,保守情報がダンプ形式で出力されます。
+接続先:XDM/XTまたはHiRDB Dataextractor
+a…a:保守情報
+b…b:保守情報(ダンプ形式)
+(S):処理を終了します。
+(P):接続先とのバージョンの組み合わせでサポートされていない機能を実行していないか確認してください。該当しない場合は保守員に連絡してください。
+JXU7018I
+FILE CREATED COUNT=aa SUCCESSFULLY
+ファイルの作成処理が完了しました。
+aa:データ件数
+(S):処理を続行します。
+JXU7019I
+INVALID ADDRESS MODE,
+HiRDB Dataextractor a…a b…b=c…c
+HiRDB Dataextractorが,アドレッシングモードの異なるプログラムにアクセスしました。
+a…a:HiRDB Dataextractorのアドレッシングモード
+32bit:32ビットモード
+64bit:64ビットモード
+b…b:接続相手プログラム
+HiRDB
+c…c:接続相手プログラムのアドレッシングモード
+32bit:32ビットモード
+64bit:64ビットモード
+(S):処理を終了します。
+(P):接続する相手プログラムとのアドレッシングモードを合わせて,再度実行してください。
+JXU7020E
+MODULE TRACE FILE CREATED NAME=a…a
+モジュールトレースファイルを出力しました。
+a…a:モジュールトレースファイル名
+(S):処理を終了します。
+JXU7021E
+NOT EXEC a…a
+処理が実行できませんでした。
+a…a:実行しようとした処理名
+MODULE TRACE:モジュールトレース取得処理
+(S):処理を続行します。
+JXU7022E
+CORE FILE IN a…a
+coreファイル格納ディレクトリはa…aです。
+a…a:coreファイル格納ディレクトリ名
+(S):処理を続行します。
+JXU7023I
+SYSTEM CALL INFORMATION,FUNC=a…a,CODE=bbb ［c…c］
+a…aで示すシステムコールの保守情報を出力します。
+a…a:システムコール
+bbb:終了コード
+c…c:保守情報
+(S):処理を続行します。
+(P):次の情報が出力された場合は,Windowsのサービス(HiRDB Dataextractor)が正常に終了していますので対処は不要です。また,次の情報以外が出力された場合は,終了コードの値と該当する関数が記載されたWindows APIのリファレンスマニュアルを参照して要因を取り除き,Windowsのサービス(HiRDB Dataextractor)を再起動してください。
+FUNC=WaitForSingleObject(),CODE=6
+FUNC=SetServiceStatus(),CODE=6
+FUNC=FreeLibrary(),CODE=126
+JXU7100E
+COMMUNICATION ERROR OCCURRED
+CODE=(aaa,bbbb)［PARTNER=d…d］
+［HOSTNAME=e…e］
+相手システムとの間で通信障害が発生しました。
+aaa:処理コード
+2:setsockoptソケットライブラリ
+6:受信処理中
+7:送信処理中
+bbbb:エラーコード
+TCP/IPのとき:ソケットライブラリのerrno
+OSIのとき:TLI関数のt_errno
+d…d:JOBIDまたはプロセスID
+XDM/XT時:JOBID
+HiRDB Dataextractor時:PXTCNTLのプロセスID
+e…e:通信相手のホスト名称
+相手システムがHiRDB Dataextractor時にだけ出力します。
+PARTNERとHOSTNAMEはOSIのときにだけ出力します。
+(S):コネクション切断後,処理を終了します。
+(P):エラー要因を取り除き,再度実行してください。
+TCP/IPのとき
+マニュアル「日立CSMA/CDネットワークCD105(TCP/IP)」によって,処理コードに該当するソケットライブラリの要因コードを参照してください。ネットワーク障害が考えられる場合は,障害要因を取り除いて再度実行してください。
+上記以外の場合,保守員に連絡してください。
+OSIのとき
+PARTNERにプロセスIDが表示された場合
+HOSTNAMEの示すホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+PARTNERにプロセスIDが表示されない場合
+HiRDBのシステムマネジャの存在するホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+JXU7101E
+a…a CANNOT CONNECT
+［PARTNER=d…d］ ［HOSTNAME=e…e］
+相手システムとの接続に失敗しました。
+a…a:ロード名称
+PXTCNTL:TCP/IP使用時のロード名称
+PXTOSIL:OSI使用時のロード名称
+d…d:JOBIDまたはプロセスID
+XDM/XT時:JOBID
+HiRDB Dataextractor時:PXTCNTLのプロセスID
+e…e:通信相手のホスト名称
+相手システムがHiRDB Dataextractor時にだけ出力します。
+PARTNERとHOSTNAMEはOSIのときにだけ出力します。
+(S):コネクション切断後,処理を終了します。
+(P):エラー要因を取り除き,再度実行してください。
+TCP/IPのとき
+ポート番号の設定が誤っていないかどうかを見直してください。
+相手システムのHiRDB Dataextractorとのバージョンの組み合わせを見直してください。
+環境変数XTPCHKTIMEの指定値を見直してください。
+OSIのとき
+PARTNERにプロセスIDが表示された場合
+HOSTNAMEの示すホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+PARTNERにプロセスIDが表示されない場合
+HiRDBのシステムマネジャの存在するホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+環境変数XTPCHKTIMEの指定値を見直してください。
+JXU7102E
+CONNECTION CLOSED｛CODE= (aaa,bbbb)
+｜FUNC=c…c CODE=d…d｝［PARTNER=e…e］ 
+［HOSTNAME=f…f］
+相手システムとのコネクションが障害によって切断されました。
+aaa:処理コード(保守コード)
+6:受信処理中
+7:送信処理中
+bbbb:エラーコード(保守コード)
+TCP/IPのとき:ソケットライブラリのerrno
+OSIのとき:TLI関数のt_errno
+c…c:エラーの発生したTLI関数名(保守コード)
+d…d:エラーコード(保守コード)
+TLI関数のt_errno
+e…e:JOBIDまたはプロセスID
+XDM/XT時:JOBID
+HiRDB Dataextractor時:PXTCNTLのプロセスID
+f…f:通信相手のホスト名称
+相手システムがHiRDB Dataextractor時にだけ出力します。
+PARTNERとHOSTNAMEはOSIのときにだけ出力します。
+(S):処理を終了します。
+(P):XDM/XT側,またはHiRDB Dataextractorで障害が発生したと考えられます。その障害を取り除き,再度実行してください。
+PARTNERにプロセスIDが表示された場合
+HOSTNAMEの示すホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+PARTNERにプロセスIDが表示されない場合
+HiRDBのシステムマネジャの存在するホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+JXU7103E
+CANNOT CONNECT WITH a…a,(b…b) 
+［PARTNER=c…c］
+データ格納先ホスト上のHiRDB Dataextractorとの接続に失敗しました。
+a…a:データ格納先ホスト名称
+b…b:データ格納先ホストのIPアドレス
+xxx.xxx.xxx.xxxの形式(xxx:10進数)
+c…c:JOBIDまたはプロセスID
+XDM/XT時:JOBID
+HiRDB Dataextractor時:PXTCNTLのプロセスID
+PARTNERはOSIのときにだけ出力します。
+(S):処理を終了します。
+(P):エラー要因を取り除き,再度実行してください。
+TCP/IPのとき
+ポート番号の設定が誤っていないか見直してください。
+HiRDB Dataextractorの実行時にホスト名ではなくFQDNを指定した場合は,a…aではなくb…bで接続に失敗したホストを判断してください。
+OSIのとき
+PARTNERにプロセスIDが表示された場合
+HOSTNAMEの示すホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+PARTNERにプロセスIDが表示されない場合
+HiRDBのシステムマネジャの存在するホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+JXU7104E
+COMMUNICATION ERROR OCCURED, 
+LOADNAME=a…a HOSTNAME=b…b
+［PARTNER=c…c］
+ほかのHiRDB Dataextractorとの通信でエラーが発生しました。
+a…a:通信を行っている相手側のHiRDB Dataextractorのロード名称
+b…b:a…aの存在するホスト名称
+c…c:JOBIDまたはプロセスID
+XDM/XT時:JOBID
+HiRDB Dataextractor時:PXTCNTLのプロセスID
+PARTNERはOSIのときにだけ出力します。
+(S):処理を終了します。
+(P):このメッセージよりも先に出力されたメッセージ,および相手側のロードが出力したメッセージの指示に従ってください。
+OSIのときで,PARTNERにプロセスIDが表示された場合
+HOSTNAMEの示すホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+PARTNERにプロセスIDが表示されない場合
+HiRDBのシステムマネジャの存在するホスト中のHiRDB Dataextractorのエラーファイルの内容に従い対応してください。該当するエラーファイルは,このメッセージの先頭に表示されたプロセスIDが存在するファイルです。
+JXU7106I
+OSI COMMUNICATION PROGRAM IS NOT ACTIVE
+OSI通信に必要なプログラムが稼働していないため,再試行します。
+(S):処理を続行します。
+(P):OSI通信に必要なプログラム(XNF)を起動してください。
+JXU7200E
+ERROR OCCURRED DURING 
+DATABASE ACCESS STATUS=aaa 
+OPERATION CODE=b…b ［c…c］
+HiRDB,ORACLE,またはSQL Serverアクセス時に,処理が続行できないエラーが発生しました。このメッセージに続いてHiRDB,ORACLE,またはSQL Serverのメッセージを出力する場合があります。
+aaa:HiRDB SQLCODEまたはORACLE,SQL Serverのエラーコード
+b…b:オペレーションコード(内部情報)
+c…c:HiRDB,ORACLE,またはSQL Serverのメッセージ
+(S):コネクション切断後,処理を終了します。
+(P):
+HiRDBの場合
+HiRDB SQLCODE,またはHiRDBのメッセージを基にエラー要因を取り除き再度実行してください。HiRDB SQLCODE,またはHiRDBのメッセージについては,マニュアル「HiRDB Version 8 メッセージ」を参照してください。
+ORACLEの場合
+ORACLEのエラーコードまたはメッセージを基にエラー原因を取り除き再実行してください。SQL解析エラーの場合,列名記述ファイル,表式記述ファイル,または排他情報ファイルの指定値を見直してください。ORACLEのエラーコードまたはメッセージについてはORACLEのマニュアルを参照してください。
+SQL Serverの場合
+SQL Serverのエラーコードまたはメッセージを基にエラー原因を取り除き再実行してください。SQL解析エラーの場合,列名記述ファイル,表式記述ファイルの指定値を見直してください。SQL ServerのエラーコードまたはメッセージについてはSQL Serverのマニュアルを参照してください。
+JXU7201E
+ERROR OCCURRED DURING ENVIRONMENT 
+SET FUNCTION=a…a ［CODE=bbb］
+HiRDB Dataextractorの動作環境設定中,処理が続行できないエラーが発生しました。
+a…a:環境設定関数名(内部情報),環境変数名,またはセクション名
+PDUSERの場合は,あらかじめユーザIDとパスワードを設定しておく必要があります。
+bbb:環境設定関数の戻り値(内部情報)
+(S):コネクション切断後,処理を終了します。
+(P):HiRDB,およびHiRDB Dataextractorの環境(変数)を見直して,再実行してください。または,HiRDBが起動されているか確認してください。
+FUNCTION=SECTION NUMBERの場合
+HiRDB Dataextractorの環境変数情報設定ファイル(hirdbxt.ini)内のセクション数がオーバしています。修正して再度実行してください。
+FUNCTION=pdi_utl_sh_prologの場合
+HiRDBを起動したあと,再度実行してください。
+HiRDBが起動しているときは,「表2-7 HiRDB Dataextractorを使用するために必要な環境変数」のHiRDBの環境変数(PD〜)が正しく指定されているかを確認し,再度実行してください。
+JXU7203E
+a…a IS NOT DEFINED IN ENVIRONMENT 
+FILE
+HiRDB Dataextractorの環境変数情報設定ファイル中に誤った指定があります。
+a…a:環境変数名
+(S):コネクション切断後,処理を終了します。
+(P):HiRDB Dataextractorの環境変数,またはHiRDBの環境変数を見直して,再度実行してください。
+JXU7204E
+TIMEOUT OCCURRED DURING a…a
+処理実行中にタイムアウトが発生しました。
+a…a:次のどれかを表示します。
+INPUT FILE I/O:入力ファイルへの書き込み処理
+RECEIVE DATA:相手システムからのメッセージ受信処理
+SEND DATA:相手システムへのメッセージ送信処理
+(S):処理を終了します。
+(P):エラーログファイルまたはHiRDBデータベース作成ユティリティのエラーファイルのメッセージを基にエラーを取り除き再度実行してください。
+処理種別がINPUT FILE I/Oの場合
+格納表に排他が掛かっている場合
+格納表に排他を掛けている処理の終了後,再度実行してください。
+また,同一の表に同時に反映処理が実行されないように,ジョブスケジュールを見直してください。
+排他が掛かっていない場合
+入力ファイルの書き込み監視時間(環境変数XTWRTWTIME)を設定して,再度実行してください。すでに設定している場合は,設定値を大きくして,再度実行してください。
+処理種別が,RECEIVE DATAまたはSEND DATAの場合
+通信回線に問題がないか見直してください。通信回線の問題でなければ,通信関数の応答監視時間(環境変数XTTCPWTIME,またはXTOSIWTIME)の指定値を大きくして,再度実行してください。
+JXU7205E
+VALUE OF a…a PARAMETER IS INVALID
+パラメタ値が不正です。
+a…a:パラメタ名称
+(S):処理を終了します。
+(P):エラー要因を取り除き,再度実行してください。
+JXU7206E
+SPECIFIED TABLE a…a.b…b IS NOT 
+DEFINED IN c…c DICTIONARY
+指定した表a…a.b…bはディクショナリに定義されていません。
+a…a:抽出側または反映側の認可識別子
+b…b:抽出側または反映側の表識別子
+c…c:データベース種別
+(S):処理を終了します。
+(P):表名を直すか,表を定義したあとに再度実行してください。
+JXU7207E
+SPECIFIED LOAD COLUMN NUMBER IS 
+NOT EQUAL EXTRACT COLUMN NUMBER 
+IN TABLE a…a.b…b
+反映する表の列数が抽出する表の列数と一致していません。
+a…a:反映側の認可識別子
+b…b:反映側の表識別子
+(S):処理を終了します。
+(P):表名を直すか,HiRDBの定義を修正したあとに再度実行してください。
+JXU7208E
+DATA CONVERT ERROR CODE=aa COUNT=bb
+データの切り捨て,またはオーバフローが発生しました。
+aa:エラーコード
+01:データの切り捨てが発生しました。
+02:オーバフローが発生しました。
+bb:エラー発生行数
+(S):処理を終了します。
+(P):反映側の列長を直すか,環境変数XTLOBBUFSIZEの値を大きくしたあとに再度実行してください。
+JXU7208I
+DATA CONVERT ERROR CODE=aa
+データの切り捨て,またはオーバフローが発生しました。
+aa:エラーコード
+01:文字の切り捨てが発生しました。
+02:オーバフローが発生しました。
+(S):処理を続行します。
+JXU7209E
+ERROR OCCURRED DURING DATA PUT 
+CODE=aa COUNT=b…b ［SIZE=c…c］
+抽出データの書き込みに失敗しました。
+aa:エラーコード
+01:出力ファイルサイズが不正のため書き込むことができません。
+02:出力するファイルがなくなったため書き込むことができません。
+b…b:データ件数
+c…c:1行のデータ長
+(S):処理を終了します。
+(P):次のどれかの処置をしてください。
+エラーコードが01の場合
+環境変数XTFILESIZEの値を大きくしたあと,再度実行してください。
+エラーコードが02の場合
+次のどれかの処置をして,再度実行してください。
+環境変数XTFILESIZEの値を大きくする
+出力ファイルを格納するディレクトリの空き容量を増やす
+−oオプションにファイル名称を追加する
+JXU7210I
+DIFFERENCE MAY BE INCLUDE IN a…a.
+b…b.c…c
+データの切り捨て,オーバフロー,丸め誤差が発生する可能性があります。
+a…a:抽出または反映側の認可識別子
+b…b:抽出または反映側の表識別子
+c…c:抽出,反映列名または列名記述領域(SQLCNDA)のSQLNAMECに設定される値(列名記述領域の詳細は,マニュアル「HiRDB Version 8 SQLリファレンス」を参照してください)
+(S):処理を続行します。
+JXU7211E
+DATA TYPE OF ｛a…a.b…b.c…c｜ROW｜#n…n｝ 
+CANNOT CONVERT
+データ属性が不正のため変換できません。
+a…a:反映側の認可識別子
+b…b:反映側の表識別子
+c…c:反映側の列名
+n…n:抽出フィールド通番
+(S):処理を終了します。
+(P):表名を修正するか,またはHiRDBの定義を修正したあとに再度実行してください。
+列名記述ファイルにROWを指定し格納列に可変長データがあった場合,ROW指定を解除するか,反映側を固定長データで定義し直し,再度実行してください。
+列名記述ファイルにROWを指定し反映情報ファイルを指定した場合,ROW指定を解除するか,反映情報ファイルを指定しないで再度実行してください。
+文字集合列を抽出・反映する場合は,文字集合,属性,および長さを同じにして再度実行してください。
+JXU7212E
+DATA LENGTH OF ｛a…a.b…b.c…c｜ROW｝ 
+CANNOT CONVERT
+データ長,精度,尺度が不正のため変換できません。
+a…a:抽出側または反映側の認可識別子
+b…b:抽出側または反映側の表識別子
+c…c:抽出側または反映側の列名
+ROW:列名記述ファイルにROWを指定し,抽出側と反映側の列合計長が不一致の場合
+(S):処理を終了します。
+(P):表名を修正するか,またはHiRDBの定義を修正したあとに再度実行してください。
+文字集合列を抽出・反映する場合は,文字集合,属性,および長さを同じにして再度実行してください。
+環境変数XTDATALOCALEにutf-16BE,またはutf-16LEを指定して抽出・反映する場合は,列の長さを偶数バイトにして再度実行してください。
+JXU7213E
+SPECIFIED RDAREA a…a IS INVALID BECAUSE
+TABLE b…b.c…c IS NOT FOUND IN RDAREA
+指定したRDエリアa…aは,表が格納されているRDエリアではありません。
+a…a:反映側のRDエリア名
+b…b:反映側の認可識別子
+c…c:反映側の表識別子
+(S):処理を終了します。
+(P):表名またはRDエリア名を修正するか,あるいはHiRDBへ定義したあとに再度実行してください。
+JXU7214E
+PARTITIONING OF SPECIFIED TABLE a…a.b…b IS
+NOT SUPPORTED
+指定した表の分割方法はサポート対象外です。
+a…a:反映側の認可識別子
+b…b:反映側の表識別子
+(S):処理を終了します。
+(P):表名を修正し,再度実行してください。
+JXU7215E
+DATA TYPE OF ｛a…a.b…b.c…c｜#n…n｝ NOT 
+SUPPORT
+サポートされていない属性変換の組み合わせです。
+a…a:抽出側または反映側の認可識別子
+b…b:抽出側または反映側の表識別子
+c…c:抽出側または反映側の列名
+n…n:抽出フィールド通番
+(S):処理を終了します。
+(P):表名を修正するか,またはHiRDBの定義を修正したあとに再度実行してください。
+JXU7216E
+NULL DATA CANNOT BE SPECIFIED IN 
+a…a.b…b.c…c
+ナル値情報ファイルに設定した列が非ナル値制約です。
+a…a:抽出側または反映側の認可識別子
+b…b:抽出側または反映側の格納表識別子
+c…c:抽出側または反映側の列名
+(S):処理を終了します。
+(P):ナル値情報ファイルまたはHiRDBの定義を修正したあとに,再度実行してください。
+JXU7217E
+ARRAY NUMBER INVALID IN 
+a…a.b…b.c…c
+抽出側と反映側の,繰返し列の要素数の組み合わせが不正です。
+a…a:反映側の認可識別子
+b…b:反映側の表識別子
+c…c:反映側の列名
+(S):処理を終了します。
+(P):抽出側の列と反映側の列に定義した要素数を見直し,修正したあとに再度実行してください。
+JXU7218E
+DATA VALUE OF a…a.b…b.c…c CANNOT CONVERT
+ERROR CODE=dd COUNT=e…e
+データの値が不正なため変換できません。
+a…a:抽出側の認可識別子
+b…b:抽出側の表識別子
+c…c:抽出側の列名
+dd:エラーコード
+e…e:エラー発生行数
+01:DATEデータ型の指定値が紀元前である。
+02:数値データ型の値がオーバフローした。
+(S):処理を終了します。
+(P):反映側の属性を変換可能なものに変更するか,抽出条件を指定して不正なデータを抽出対象外としたあとに再度実行してください。
+JXU7219I
+DATA CONVERT INFORMATION FROM=a…a TO b…b,UNDEF CODE=c…c,ERROR COUNT=d…d［,e…e］
+文字コード変換情報(ユーザデータ)を出力します。
+a…a:変換前の文字コード
+b…b:変換後の文字コード
+c…c:未定義コード検出時に設定する値(XTUNDEF,XTDATAUNDEFの16進数値)
+d…d:文字コード変換エラー時の打ち切り行数
+e…e:UCS-4検知時の打ち切り行数
+(S):処理を続行します。
+JXU7220E
+a…a IS INVALID IN b…b LINE=c…c
+b…bファイルに記述されているc…c行目のa…aの指定が不正です。
+a…a:指定内容
+b…b:ファイル名
+c…c:行数
+(S):処理を終了します。
+(P):ファイル中の指定内容を修正し,再度実行してください。
+JXU7221E
+FES OR BES IS NOT FOUND IN a…a
+ホストa…a上のHiRDBユニットにフロントエンドサーバまたはバックエンドサーバが存在しません。
+a…a:データ反映先ホスト名称
+(S):処理を終了します。
+(P):フロントエンドサーバまたはバックエンドサーバが存在するデータ反映先ホストと接続するようにクライアント側の設定を見直す,または環境変数情報設定ファイルに指定しているHiRDBの環境変数が,該当するサーバのユニットに対応しているか見直して,再度実行してください。
+JXU7222E
+｛ENVIRONMENT FILE NAME IN /etc/
+inetd.conf｜INPUT DATA FILE NAME｝ 
+NOT SET UP
+ENVIRONMENT FILE NAME IN /etc/inetd.confが表示されている場合
+コンフィギュレーションファイル/etc/inetd.confにHiRDB Dataextractorの環境変数情報設定ファイル名が指定されていません。
+(S):処理を終了します。
+(P):コンフィギュレーションファイル/etc/inetd.confのフィールド名server program argumentsの設定内容を見直して,再度実行してください。
+INPUT DATA FILE NAMEが表示されている場合
+pdloadに渡す入力データファイルが指定されていません。
+(S):処理を終了します。
+(P):次のどちらかの処置をしてください。
+HiRDB間のデータ抽出・反映の場合
+xtrepコマンドの−oオプション,または−Oオプションを指定して,再度実行してください。
+XDM/XTと連携している場合
+JXUMCTL制御文のTRANSFER文を指定して,再度実行してください。
+JXU7223E
+TABLE NAME a…a.b…b IS INVALID 
+ERROR CODE=c…c
+指定した表名が不正です。
+a…a:反映側の認可識別子
+b…b:反映側の表識別子
+c…c:エラーコード
+004:指定した表がビュー属性の表です。
+005:指定した表がFIX属性の表です。
+環境変数XTNLDFLTに2を指定した場合は,FIX表への反映はできません。
+(S):処理を終了します。
+(P):表名を修正するか,またはHiRDBの定義を修正したあとに再度実行してください。
+エラーコードが005の場合,環境変数XTNLDFLTの指定を変更して,再度実行してください。
+JXU7224E
+a…a NOT FOUND
+a…aが存在しません。
+a…a:絶対パス名
+(S):コネクション切断後,処理を終了します。
+(P):a…aに示す絶対パスのファイルまたはディレクトリの有無を確認し,エラー要因を取り除いてから,再度実行してください。
+a…aが$PDDIR※/lib/libscomon.sl,$PDDIR※/client/lib/libzclt.sl,$PDDIR※/lib/libssol.soまたは$PDDIR※/client/lib/libzclt.soの場合
+HiRDB Dataextractorの環境変数情報設定ファイル中のPDDIRに設定したディレクトリパスを修正し,再度実行してください。
+HiRDBのインストールが正しく実行されていない可能性があります。HiRDBを再インストールし,再度実行してください。
+注※ $PDDIRの部分は,HiRDB Dataextractorの環境変数情報設定ファイル中でPDDIRに指定したディレクトリパスが表示される。
+JXU7230I
+DATA CONVERT ERROR CODE=aa(b…b,c…c−d…d,e…e)〔f…f〕
+文字コード変換処理中にエラーが発生しました。
+このメッセージは,変換エラー検知数が環境変数XTUNDEFまたはXTUTF8UCS4CHKで指定した打ち切り件数に満たないときに,出力されます。
+aa:エラーコード
+01:データの切り捨てが発生した。
+02:未定義コードを検知した。
+03:列のデータが2バイトコード,または3バイトコードの途中で終わっている。
+05:文字コードがUTF-8のデータ中に4バイト以上の文字コード(UCS-4)を検知した。
+04:その他のコード変換エラー
+b…b:次のどちらかを表示します。
+列番号〔〔添え字〕〕:抽出対象列の先頭からの通番
+保守情報
+c…c:エラーを検知した列の開始位置(行の先頭からのオフセット)
+d…d:エラーを検知した列の終了位置(行の先頭からのオフセット)
+e…e:エラーを検知したデータの行の先頭からのオフセット
+f…f:行データ(ダンプ形式)
+変換前のデータを出力します。
+1行の変換で複数メッセージを出力する場合は,最後のメッセージの次に出力します。なお,行データはメッセージログファイルには出力されません。
+(S):
+エラーコードが01,02,03,04の場合:
+処理を続行します。
+エラーコードが05の場合:
+環境変数XTUTF8UCS4CHKの指定に従い処理を続行します。
+(P):
+エラーコードが01の場合:
+反映側の列長を修正したあと,再度実行してください。
+エラーコードが02の場合:
+外字領域の文字コードの場合,ユーザマッピングテーブルを作成して再度実行してください。
+外字領域の文字コードでない場合,抽出データを修正して再度実行してください。
+エラーコードが03,04の場合:
+抽出データを修正して,再度実行してください。
+エラーコードが05の場合:
+オフセット情報は列中の最初に検知した文字であるため,列全体を見直してください。
+環境変数XTUTF8UCS4CHKで行のスキップを指定した場合,必要なデータであればユーザ自身で反映側のデータベースにデータを登録してください。
+環境変数XTUTF8UCS4CHKで行のスキップを指定しなかった場合,抽出データを修正して再度実行してください。
+JXU7230E
+DATA CONVERT ERROR CODE=aa(b…b,c…c−d…d,e…e)〔f…f〕
+文字コード変換処理中にエラーが発生しました。
+このメッセージは,変換エラー検知数が環境変数XTUNDEFまたはXTUTF8UCS4CHKで指定した打ち切り件数に達したときに,出力されます。
+aa:エラーコード
+01:データの切り捨てが発生した。
+02:未定義コードを検知した。
+03:列のデータが2バイトコード,または3バイトコードの途中で終わっている。
+05:文字コードがUTF-8のデータ中に4バイト以上の文字コード(UCS-4)を検知した。
+04:その他のコード変換エラー
+b…b:次のどちらかを表示します。
+列番号〔〔添え字〕〕:抽出対象列の先頭からの通番
+保守情報
+c…c:エラーを検知した列の開始位置(行の先頭からのオフセット)
+d…d:エラーを検知した列の終了位置(行の先頭からのオフセット)
+e…e:エラーを検知したデータの行の先頭からのオフセット
+f…f:行データ(ダンプ形式)
+変換前のデータを出力します。
+1行の変換で複数メッセージを出力する場合は,最後のメッセージの次に出力します。なお,行データはメッセージログファイルには出力されません。
+(S):処理を終了します。
+(P):
+エラーコードが01の場合:
+反映側の列長を修正したあと,再度実行してください。
+エラーコードが02の場合:
+外字領域の文字コードの場合,ユーザマッピングテーブルを作成して再度実行してください。
+外字領域の文字コードでない場合,抽出データを修正して再度実行してください。
+エラーコードが03,04の場合:
+抽出データを修正して再度実行してください。
+エラーコードが05の場合:
+オフセット情報は列中の最初に検知した文字であるため,列全体を見直してください。
+環境変数XTUTF8UCS4CHKで行のスキップを指定した場合,必要なデータであればユーザ自身で反映側のデータベースにデータを登録してください。
+環境変数XTUTF8UCS4CHKで行のスキップを指定しなかった場合,抽出データを修正して再度実行してください。
+JXU7300E
+ERROR EXIST IN COMMAND LINE USAGE 
+: a…a
+コマンドラインの指定に誤りがあります。
+a…a:コマンド指定方法
+xtrep:HiRDB抽出コマンド
+xtrepO:ORACLE抽出コマンド
+xtrepS:SQL Server抽出コマンド
+(S):処理を終了します。
+(P):コマンドラインに正しい指定で入力してください。
+JXU7301E
+LITERAL LENGTH OF PARAMETER IN 
+a…a OPTION EXCEEDS b…b
+a…aオプションの指定値の長さがb…bを超えています。
+a…a:オプション名
+EXTRACT TABLE:抽出表名
+EXTRACT FILE NAME:表式記述ファイル名
+FILE NAME:環境変数XTTMPDIRと,−o,−O,または−qオプション指定値を合わせた名称
+DIRECTORY NAME:環境変数XTTMPDIRと−bオプション指定値を合わせた名称
+b…b:制限文字数
+(S):処理を終了します。
+(P):指定値の文字数をbb以下にして,再度実行してください。
+a…aがFILE NAMEの場合
+環境変数XTTMPDIRと,−o,−O,または−qオプション指定値の合計けた数をbb以下にして,再度実行してください。
+a…aがDIRECTORY NAMEの場合
+環境変数XTTMPDIRと−bオプション指定値の合計けた数をbb以下にして,再度実行してください。
+JXU7302E
+PARAMETER a…a IN b…b OPTION IS 
+INCORRECT
+b…bオプションの指定値a…aが不正です。
+a…a:指定値
+b…b:オプション名
+EXTRACT TABLE:抽出表名
+(S):処理を終了します。
+(P):指定値を修正して,再度実行してください。
+JXU7303E
+PARAMETER a…a IN b…b OPTION IS 
+OUT OF VALUE RANGE
+b…bオプションに指定した指定値a…aの範囲が不正です。
+a…a:指定値
+b…b:オプション名
+(S):処理を終了します。
+(P):指定値を修正して,再度実行してください。
+JXU7305E
+a…a OPTION MISSING
+a…aオプションが必要ですが指定されていません。
+a…a:オプション名
+(S):処理を終了します。
+(P):a…aオプションを指定して,再度実行してください。
+JXU7306E
+a…a OPTION CANNOT BE SPECIFIED 
+WITH b…b OPTION
+a…aとb…bは同時に指定できません。
+a…a:オプション名または環境変数名
+b…b:オプション名または環境変数名
+(S):処理を終了します。
+(P):a…aまたはb…bのどちらかだけを指定して,再度実行してください。
+JXU7307E
+a…a OPTION CANNOT BE SPECIFIED 
+WITHOUT b…b OPTION
+a…aオプションはb…bオプションの指定なしに指定できません。
+a…a:オプション名または環境変数名
+b…b:オプション名または環境変数名
+(S):処理を終了します。
+(P):b…bオプションを指定するか,またはa…aオプションを省略して,再度実行してください。
+JXU7308E
+DUPLICATE PARAMETER a…a IN b…b 
+OPTION
+b…bオプションに指定した指定値a…aが重複して指定されています。
+a…a:指定値
+b…bが−o,または−Oオプションの場合は,環境変数XTTMPDIRと−o,−Oオプション指定値を合わせた名称が出力されます。
+b…b:オプション名
+(S):処理を終了します。
+(P):指定値a…aが重複しないように修正し,再度実行してください。
+JXU7309E
+a…a〔OPTION〕CONFLICTS WITH b…b 〔OPTION〕
+オプション間,指定値間,またはオプションと指定値間の組み合わせが不正です。
+a…a:オプション名,または指定値
+b…b:オプション名,または指定値
+(S):処理を終了します。
+(P):オプション,または指定値を見直して再度実行してください。
+JXU7311E
+INVALID OPTION SPECIFIED,OPTION NAME=a…a
+指定できないコマンドオプションを検知しました。
+a…a:コマンドオプション
+(S):処理を終了します。
+(P):エラーの要因を取り除いたあと,再度実行してください。
+JXU7312E
+DEFINITION FORMAT ERROR,FILE=a…a,LINE=b…b
+変換定義ファイルの定義フォーマットが不正です。
+a…a:変換定義ファイル名
+b…b:行番号
+(S):処理を終了します。
+(P):変換定義ファイル内の行番号の示す行の定義内容を修正したあと,再度実行してください。
+JXU7313E
+INVALID CHARACTER CODE,FILE=a…a,LINE=b…b,KIND=c…c,REASON=d…d
+文字コードが不正です。
+a…a:変換定義ファイル名
+b…b:行番号
+c…c:種別
+before:変換元文字コード
+afer:変換先文字コード
+d…d:不正理由
+(S):処理を終了します。
+(P):変換定義ファイル内の行番号の示す行に定義した文字コードを不正理由に従って修正したあと,再度実行してください。
+JXU7314E
+OPTION VALUEISINVALID,OPTION NAMEa…a
+コマンドオプションに指定された値が不正です。
+a…a:コマンドオプション
+(S):処理を終了します。
+(P):エラーの要因を取り除いたあと,再度実行してください。
+JXU7315E
+FIELE ACCESS ERROR WAS OCCURRED,OPERATION=a…a,FILE=b…b,ERRNO=c…c
+ファイル操作でエラーを検知しました。
+a…a:操作種別
+b…b:ファイル名
+c…c:エラー番号
+(S):処理を終了します。
+(P):エラー番号をerrno.hまたはユーザが使うOSのマニュアルを参照して,エラーの要因を取り除いたあと,再度実行してください。
+JXU7316E
+INVALID COMMAND ARGUMENT
+コマンドの引数の指定に誤りがあります。
+(S):処理を終了します。
+(P):エラーの要因を取り除いたあと,再度実行してください。
+メッセージの詳細

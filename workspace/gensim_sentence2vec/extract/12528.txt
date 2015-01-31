@@ -1,0 +1,139 @@
+
+- Tips 01 -
+1.動的にVCLコンポーネントを(配列で)作成する
+BCBでプログラムをしていると、VCLオブジェクトを動的に(配列で)作成したくなるものです。
+ここではその問題の一つの解を示します。
+<ヘッダー部>
+TButton *buttons[10];
+<ユニット部>
+void OnCreate か何か(TObject *Sender)
+{
+for ( int i = 0; i <= 9; i++ )   {
+buttons[i] = new TButton(this);
+buttons[i]->Top = i * 20;
+buttons[i]->Caption = "Buttons"
++ IntToStr(i);
+buttons[i]->Parent = this;
+}
+}
+void OnDestroy や OnClose など(TObject *Sender)
+{
+for ( int i = 0; i <= 9; i++ )  delete buttons[i];
+}
+この方法で注意!
+動的に作成されたVCLオブジェクトは必ず
+ParentプロパティでFormやPanelオブジェクト
+を指定してください。
+2.動的に(配列で)作成されたVCLコンポーネントにイベントを定義する
+上の「1.動的にVCLコンポーネントを(配列で)作成する」のように動的に作成された
+コンポーネントのイベントを定義させる方法です。「1.動的に...」に対して追加分だけを示します。
+<ヘッダー部>
+//追加
+void __fastcall buttonsClick(TObject *Sender);
+<ユニット部>
+void __fastcall OnCreate(TObject *Sender)
+{
+for ( int i = 0; i <= 9; i++ )   {
+//追加
+buttons[i]->Tag = i;
+buttons[i]->OnClick = buttonsClick;
+}
+}
+void __fastcall TForm1::buttonsClick(TObject *Sender)
+{
+int i = dynamic_cast<TComponent*>(Sender)->Tag;
+switch ( i ) {      //要素番号によって処理を振り分けることもできます
+case 0 :
+case 1 :
+case 2 :
+case 3 :
+......
+}
+}
+3.最小化・最小化からの復元の際にイベントを定義する
+アプリケーション起動時に、前回終了時のフォームのサイズに復元したりすることがあります。
+そんなときに困るのが最小化・最大化の状態で終了されるときです。
+そのためにその際のイベントが定義したくなります。まず最小化の方法を示します。
+<ヘッダー部>
+void __fastcall AppMinimize(TObject *Sender);
+void __fastcall AppRestore(TObject *Sender);
+<ユニット部>
+void OnCreate(TObject *Sender)
+{
+Application->OnMinimize = AppMinimize;
+Application->OnRestore = AppRestore;
+}
+void __fastcall TForm1::AppMinimize(TObject *Sender)
+{
+//ここに最小化の際のイベントを記述します
+}
+void __fastcall TForm1::AppRestore(TObject *Sender)
+{
+//ここに最小化から復元する際のイベントを記述する
+}
+4.最大化・最大化からの復元の際にイベントを定義する
+最大化のイベント定義は、最小化の時のように一筋縄では行かないところがあるようです。
+メッセージを受け取って処理しなければなりませんので初心者は理解がしづらいかもしれません。
+(Msg.CmdType & 0xfff0) の部分は、タイトルバーをダブルクリックされて最大化したときの
+イベントを受け取るためです。MicrosoftのWin32ヘルプを参考にしてください。
+<ヘッダー部>
+protected:
+virtual void __fastcall WMSysCommand(TWMSysCommand&
+Msg);
+BEGIN_MESSAGE_MAP    //メッセージをとらえます
+MESSAGE_HANDLER(WM_SYSCOMMAND,
+TWMSysCommand, WMSysCommand)
+END_MESSAGE_MAP(TForm)
+<ユニット部>
+void __fastcall TForm1::WMSysCommand(TWMSysCommand& Msg)
+{
+if ((Msg.CmdType & 0xfff0) == SC_MAXIMIZE) {
+//最大化時の際のイベントを記述します
+} else if (Msg.CmdType == SC_RESTORE) {
+//最大化から元に戻る際のイベントを記述します
+}
+TForm::Dispatch(&Msg);
+}
+5.タスクバーのキャプションを変える
+タスクバーに登録してあるキャプション(タイトル)を変更する方法は実に簡単ですが、
+ヘルプをうまく探さないと分からないわけで、結構面倒です。おそらくこれは
+初心者にはあまりなじみ深くないApplicationオブジェクトを操作しなければならないからでしょう。
+Application->Title = "キャプション";
+実際これだけですみます。
+6.重たい処理の時にカーソルを砂時計にする
+ファイルの保存・読み込みの時や文字列の検索などの重たい処理の際に、
+カーソルを砂時計にしたりすることで良質のアプリケーションを作ることができます。
+TCursor SaveCursor = Screen->Cursor;
+Screen->Cursor = crHourGlass;       //砂時計カーソルを表示する
+try
+{
+// 時間のかかる処理を実行する
+}
+__finally
+{
+Screen->Cursor = SaveCursor;    //
+必ず通常のカーソルに戻る
+}
+7.透明色を指定してビットマップを表示する
+透過にはくり抜きなどの様々な方法がありますが、C++
+Builder 4 ではTBitmapオブジェクトで、
+Transparent
+TransparentColor
+の指定が可能なので、こちらを使うべきです。
+ただし注意として、被合成画像と合成画像のBitmapのパレットは、
+等しいかまたは2画像間で使用する色すべてを含んでいなくてはなりません。
+たとえば、
+背景で使うビットマップが、     あか、きいろ、あお
+キャラクタで使うビットマップが、  あか、くろ
+ならば、背景画像とキャラクタ画像のパレットは両方とも、
+少なくとも、あか、きいろ、あお、くろ
+の色を含んだパレットを持っていなくてはなりません。
+持っていない場合、うまく透過されない場合があります。
+下にとりあえず一般的なビットマップの表示方法を示します。
+Graphics::Gitmap *b = new Graphics::TBitmap();
+b->Transparent = true;
+b->TransparentColor = TColor(0xFFFFFF);
+b->LoadFromFile("test.bmp");
+Form1->Canvas->Draw(0,0,b);
+delete b;
+Tips01

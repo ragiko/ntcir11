@@ -1,0 +1,153 @@
+
+CSSLintのRulesの超訳
+訳注
+これは超訳です。
+CSSLintは「なんでこんなルールなんだ…」とイラっとすることが多いですけど、それぞれにそれなりに理由があります。まぁ勿論無視するべきなルールとかもあります。例えば見出し要素の再定義禁止とかはHTML5に対するCSSなら無理な話です。そんなわけでどんな理由なのかを簡単に訳しました。無視するかどうかは自分で決めましょう!
+この訳はCSSLintと同じライセンスで提供されます。
+Possible Errors
+Beware of box model size
+枠線とパディングはwidthやheight等に含まれないので、同時に指定すると多分君が思ってもみない結果になるよ。だから警告するんだ!
+Rule ID: box-model
+Require properties appropriate for display
+もちろんあるセレクタに対してどんなCSSプロパティを一緒に指定してもOKだ。けど、幾つかのプロパティ同士は同時に指定しても無意味なことがあるんだよ。次の奴らがそうさ!
+display: inlineに対してwidthやheight、margin(とその派生)、float
+display: inline-block対してfloat
+display: blockに対してvertical-align
+display: table-*に対してmargin(とその派生)やfloat
+コイツらを削除すればサイズも減るし、パフォーマンスも上がると思うぜ!
+Rule ID: display-property-grouping
+Disallow duplicate properties
+まぁわざと同じプロパティを重ねて指定することはあるよね。続けて書くならまぁ勘弁してやるよ。
+.foo {
+background: #fff;
+background: rgba(255, 255, 255, 0.5);
+}
+だけど、次の例みたいに離して書いたら…勘弁することはできないな…。
+.foo {
+background: #fff;
+color: #000;
+background: rgba(255, 255, 255, 0.5);
+}
+Rule ID: duplicate-properties
+Disallow empty rules
+次みたいなプロパティを何も書いてないルールがあったとするぜ。
+.foo {
+}
+まぁ消し忘れとかそういうのもあるよな。でもちゃんと削除してサイズを抑えてやろうぜ。ブラウザも余計なルールを見に行かなくて済むしね!
+Rule ID: empty-rules
+Require use of known properties
+typoはよくする方?このルールはCSSプロパティとして名前がおかしい奴を警告するんだ。ただしベンダー拡張プリフィックス付きのは無視する。どの仕様書にも載ってねーからな!
+Rule ID: known-properties
+Avoid un-anchored hovers
+このルールは:hoverが<a>と一緒に使われてるかチェックして、そうじゃなかったらエラーだ、エラー!アンカーと一緒に使われていない:hoverがあると、IE7でパフォーマンスが落ちる。IE8ではちょっとマシだけど。
+Rule ID: non-link-hover
+Compatibility
+各種ブラウザでの互換性チェックのルールだ。
+Disallow adjoining classes
+IE6以前では.foo.barのようにクラス名を続けて書く絞り込みに対応してないんだ。最後の一個、つまり.barしか見てくれない。だから思っているよりも多くの要素にマッチしてしまうセレクタになっちまう。
+Rule ID: adjoining-classes
+Disallow box-sizing
+box-sizingプロパティーを使うと警告するんだけど、それは君がわざとやってるってことを思い出させるためなんだ。IE6と7を無視することになるよ?良いの?ってこと。
+Rule ID: box-sizing
+Require compatible vendor prefixes
+CSS3のプロパティの多くはベンダー拡張プリフィックス付きで多くのブラウザが対応しているよね?-moz-とか-webkit-とか-o-、そして-ms-だ。だからこういうのを使うときは必ず全部まとめて指定しろよ!
+Rule ID: compatible-vendor-prefixes
+Require all gradient definitions
+CSSグラデーションはまだ標準に則った実装がない。だから必ずベンダー拡張プリフィックスを付けたやつを並べてくれよ!
+Rule ID: gradients
+Disallow negative text-indent
+マイナス方向にtext-indentするのはよく使われてるんだけど、アラビア語みたいに右から左に読む言語だとまずいことになる。もしRTLな言語をサポートする必要があるなら別の方法を利用したほうがいいよ。
+Rule ID: text-indent
+Require standard property with vendor prefix
+ベンダー拡張プリフィックスが付いたプロパティを使うときは、必ず続けて標準のプロパティも書いとけよ!
+.foo {
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+Rule ID: vendor-prefix
+Require fallback colors
+なるべく多くのブラウザーできちんと色が表示されて欲しいはず。なので以下のようなケースで警告する。フォールバックのことを忘れないようにね:
+colorプロパティーでrgba()やhsl()、hsla()を使ってるのに、古いフォーマットも併記されてない
+backgroundプロパティーでrgba()やhsl()、hsla()を使ってるのに、古いフォーマットも併記されてない
+background-colorプロパティーでrgba()やhsl()、hsla()を使ってるのに、古いフォーマットも併記されてない
+Rule ID: fallback-colors
+Disallow star hack
+もうスターハックなんて使うなよ。消せ!
+Rule ID: star-property-hack
+Disallow underscore hack
+アンダースコアハックもかよ!消せ!
+Rule ID: underscore-property-hack
+Bulletproof font face
+Webフォント使いたいよね?でも単に標準に従って書くとIE8で404エラーになっちまう。それをなんとかするBulletproof @Font-Face Syntaxってのがあるので是非これを使ってくれ。
+Rule ID: bulletproof-font-face
+Performance
+CSSのパフォーマンスに関するルールだぜ。サイズのこととCSSの適用における速度の両方ある。
+Don't use too many web fonts
+Webフォントは良く使われるようになったよな。でも結構なサイズだったりするし、ダウンロード中にブラウザのレンダリングが止まっちまう。だから5つ以上使っている場合は警告するぞ。
+Rule ID: font-faces
+Disallow @import
+@importは使っちゃぁダメだ。並列ダウンロード出来ないブラウザがあるからな!詳しいことはdon't use @importに書いてあるよ。
+Rule ID: import
+Disallow selectors that look like regular expressions
+CSS3では属性セレクタで正規表現に似たやつが使えるようになった。~=とかそういうやつだ。でも、こいつは遅い!複雑になればなるほど遅くなるので気を付けろよ!
+Rule ID: regex-selectors
+Disallow universal selector
+全称セレクタ(*)は全要素にマッチするんだけど、実はセレクタの最後の方で使うと遅くなるんだ。次の例みたいに使うとヤバイね。
+.foo * {
+background: #fff;
+color: #000;
+background: rgba(255, 255, 255, 0.5);
+}
+この場合ブラウザはまず全ての要素を取り出して、そこから親に.fooを持つものを探すんだ。まぁ単純に全称セレクタは使わないって決めちゃったほうがいいと思うぜ。
+Rule ID: universal-selector
+Disallow units for zero values
+CSSのサイズを抑える手段で一番簡単なものは値が0の時に単位を省略することだ。0pxと0はまったく一緒に解釈されるからな。
+Rule ID: zero-units
+Disallow overqualified elements
+li.activeとか書く必要はないだろ?削除してもだいたい動くと思うぜ、多分だけどな。CSSのサイズも抑えられるし、セレクタを適用する時のパフォーマンスも向上するはずだ。
+Rule ID: overqualified-elements
+Require shorthand properties
+まとめとけ。marginやpaddingはまとめとけ。
+Rule ID: shorthand
+Disallow duplicate background images
+少しでも転送量を減らすのがパフォーマンスにおける君たちの使命だ。そのためには、URLはCSSで一回だけ使うのが望ましい。もし同じURLを複数回使っちゃうと、ファイルサイズが増える。同じ背景画像を参照するのなら、クラスを上手く使って、うまく節約してやるとベストだ。
+Rule ID: duplicate-background-images
+Maintainability & Duplication
+可読性とかメンテナンス性にまつわるルールかな?
+Disallow too many floats
+floatはレイアウトのために多用されてるけど、必要以上に使ってしまっていることがよくある。10回以上使ってたら…警告だ!ま、グリッド・システムでも使うといいね。グリッド・システムについてはGrids improve site performanceを読むのが良いと思うよ。
+Rule ID: floats
+Don't use too many font-size declarations
+大抵ののWebサイトはフォント・サイズも含めてフォントに関する指定は僅かなもののはずだ。10回も指定する必要があるわけないだろ!
+Rule ID: font-sizes
+Disallow IDs in selectors
+IDによるセレクタは使わない方がいいはずだ。アイツらはHTMLと密接に関わるものだし、そもそも再利用できないしな。クラスに置き換えてHTMLも書き換えてしまえ。それにIDを使うと継承絡みでセレクタが煩雑になるきらいがあるのも見逃せない。詳しいことはDon't user IDs in CSS selectors?を読んでくれ。
+Rule ID: ids
+Disallow !important
+継承絡みで問題が起こりやすいのは!importantもそうだ。だから使うなよ!絶対使うなよ!
+Rule ID: important
+Accessibility
+アクセシビリティーの問題は引き起こしたら致命的。
+Disallow outline:none
+CSSのoutlineプロパティーは要素の周りに線を引くやつだってのは知ってるよね。borderプロパティーと違ってレイアウトとかサイズが変わらない。そんなこともあって、ブラウザーはこいつをアクティブであることを示すために使うことがあるんだ。例えばIEやFirefoxでは選択した要素が点線で囲まれる。
+まぁけっこう醜いので消したくなる気持ちはわかるんだけど、アクセシなんとかがアレでアレなので……。
+どうしても消したい場合は、別の手段でoutlineプロパティーの代わりになる何かを表示してくれたら警告はかんべんしといてやるよ:
+a:focus {
+border: 1px solid red;
+outline: none;
+}
+Rule ID: outline-none
+OOCSS
+OOCSSの主義からパクッたものもあるぞ。
+Disallow qualified headings
+見出し要素はセレクタの先頭に書くべきだな。そうすりゃどこでも再利用可能だし、パフォーマンス的にもメリットがある。例えばこんな感じに書いたりしたらアウトだ。
+.foo h1 {
+font-size: 110%;
+}
+ま、サイト全体で見出しの統一感を出した方がいいのは当たり前だよな。
+Rule ID: qualified-headings
+Heading should only be defined once
+見出し要素を何度も設定する必要はないよな?なんでそんな事するの?
+Rule ID: unique-headings
+The author
+CSSLintのRulesの超訳 | Roughdraft.io

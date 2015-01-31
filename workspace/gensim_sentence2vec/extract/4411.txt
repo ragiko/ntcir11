@@ -1,0 +1,51 @@
+この記事は公開されてから1年以上経過しています。情報が古い可能性がありますので、ご注意ください。
+すでにGitとgithubアカウント(以降メインアカウントとする)を設定済みという前提で別のgithubアカウント(以降サブアカウントとする)を設定したいという場合があります。例えば仕事用のgithubアカウントとは別にプライベート用のアカウントに接続したい、案件毎に接続先を変える必要があるなどでしょうか。
+すでに色々なブログで書かれていますが、具体的な手順を社内のあるメンバーに共有する必要があったので設定の手順をメモとして残しておきたいと思います。
+github以外に接続する場合でも基本的には同じ手順になります。
+まだgithubの設定を行っていないという方はこちらの「Set up git」の手順を進めてください。SSH Keyの生成はこちら「Generating SSH Keys」です。
+また、そもそもGitって何?という方はこちら「サルでもわかるGit入門」をどうぞ。
+この記事の解説はCUIを利用できることが前提となっています。
+1,サブアカウント用の鍵を作る
+それでは、設定を進めましょう。
+.sshディレクトリに移動し中身を確認しておきます。すでにメインアカウントが設定されている場合はid_rsa(秘密鍵)とid_rsa.pub(公開鍵)というファイルがあるはずです。
+$ cd ~/.ssh/
+$ ls
+# id_rsa.pub id_rsa
+2,鍵の生成
+$ ssh-keygenコマンドを使ってサブアカウント用の秘密鍵と公開鍵を作りましょう。
+コマンドのオプション-fでファイル名を指定してファイルが上書きされないよう注意しましょう。Passphrase(パスフレーズ)は必要に応じて入力してください。
+$ ssh-keygen -t rsa -C "your_email@youremail.com" -f [file name]
+# Creates a new ssh key using the provided email
+# Generating public/private rsa key pair.
+# Enter file in which to save the key (/c/Users/you/.ssh/[file name]): [Press enter]
+# Enter passphrase (empty for no passphrase): [Type a passphrase]
+# Enter same passphrase again: [Type passphrase again]
+鍵の生成が終わったら$ lsで鍵があるか確認しておきましょう。
+仮にgithub_private_rsaという名前で作ったことにします。
+$ ls
+# id_rsa.pub id_rsa github_private_rsa.pub github_private_rsa
+3,公開鍵をクリップボードにコピーする
+まずは生成した公開鍵をクリップボードにコピーしましょう。
+$ pbcopy 
+Windowsの場合はclipコマンドでコピーできます。
+$ clip 
+もちろん、他の方法でコピーしていただいても構いません。
+4,公開鍵をgithubに登録する
+生成した公開鍵をgithubに登録します。
+githubのアカウントセッティングにアクセスし、SSH Keysを開きます。
+ここに登録済みの公開鍵が表示されます。
+今回は登録するだけなのでAdd SSH Keyをクリックして新しい公開鍵を入力します。
+5,コンフィグファイルでHostの指定をする
+最後にSSH configでHost情報を設定しましょう。
+$ vi ~/.ssh/config
+configファイルに以下のようにHost情報を記述します。
+Host github-private
+User git
+Port 22
+HostName github.com
+IdentityFile ~/.ssh/github-private_rsa
+TCPKeepAlive yes
+IdentitiesOnly yes
+それぞれの意味については以下の通りです。
+Host
+【メモ】githubの複数アカウントにSSH接続するための設定手順 ｜ Developers.IO

@@ -1,0 +1,50 @@
+
+【コーパス言語学 - 主なコーパス】 
+【コーパス言語学】メニューへ
+(1) Brown University Standard Corpus of Present-day American English [BUC]
+米国Brown大学で1964年に完成した言語研究のための初めてのコンピューターによるコーパス.100万語を越えるアメリカ英語の書き言葉を収集したもので,15の分野から集められたそれぞれ約2000語からなる500のテキストで構成されている.完成から27年経過しているので,現代アメリカ英語のコーパスというには,若干古くなってるのは否定できないが,統語分析のデータとしての価値は失っていない.cf. Kucera & Francis (1982).
+このコーパスの頒布はNorwegian Computing Centre for the HumanitiesのICAME (International Computer Archive of Modern English) が行っており, 非営利的な研究が目的であればだれでも入手可能.
+(2) The Lancaster-Oslo/Bergen Corpus of British English [LOB]
+Brown Corpusと同様の方法で集められたイギリス英語のコーパス.英国Lancaster大学のGeoffrey Leechを中心に構築が開始されたが,作業が遅れ,ノルウエーのOslo大学のStig JohanssonとBergenのNorwegian Computing Centre for the HumanitiesのJostein Hauge, Knut Hoflandの協力を得て,1978年に完成.cf. Hofland & Johansson (1982), Johansson & Hofland (1989), Johansson & Hofland (1989b)
+(3) London-Lund Corpus of Spoken English [LLC]
+英国語法調査 (Survey of English Usage) で収集され,詳しい音表記を用いて文字化されたイギリス英語の話し言葉の100のテクストのうち87を,1975年からLund大学において,J. Svartvikが中心になり,コンピュータ処理可能にしたコーパス.音表記は簡略化されている.向かい合った会話,電話の会話,討論,インタビュー,ディベート,講演などから,5000語ずつ抽出し,総語数は 435,000語.この一部はSvartvik & Quirk (eds.)(1980) となって出版されている.残りの13のテクストもコンピュータ処理が完了し,supplement として入手可能となっている.ロンドン−ルンドコーパスとLOB Corpusを活用すれば,イギリス英語の話し言葉と書き言葉を比較することが可能.
+(4) Lancaster/IBM Spoken English Corpus
+イントネーション自動付与プログラム開発のためのデータベースとして使用することを目的に,Lancaster大学が,英国IBM Research Centreの協力を得て,作成した 52,835語からなるイギリス英語の話し言葉のコーパス.主にBBCから収集した11のカテゴリー (A: Commentary, B: News broadcast, C: Lecture-type I, D: Lecture-type II, E: Religious broadcast, F: Magazine-style reporting, G: Fiction, H: Poetry, J: Dialogue, K: Propaganda, M: Miscellaneous) に分類される53のテクストから構成されている.コーパスサイズは小規模だが,音声認識,音声合成の研究データに適している.コーパスは文字化したもの,文法記号を付与したもの2種類,音声表記化したものが用意されている.
+(5) Melbourne-Surrey Corpus [MSC]
+オーストラリアの新聞,The Ageの1980年9月1日から1981年1月30日までの社説のから無作為に93日分を抽出した10万語からなるコーパス.このコーパスが構築されたのは,Nixon (1972) が,the committee has/have decidedに見られる数の一致を調査するために,The Timesの社説から手作業で集めた10万語からなるイギリス英語との比較をするのが目的であった.SEARCH-STRINGという検索プログラムを開発し,上級の英語学習者の授業でも使用されている.
+(6) Kolhapur Corpus of Indian English [KCIE]
+インドのShivaji大学が,Brown Corpus,LOB Corpusをモデルに作成した100万語からなるインド英語のコーパス.テクストは1978年に出版されたものから集められている.
+(7) Polytechnic of Wales Corpus
+University of Wales Collegeが,児童言語の統語的,意味的研究のために,6歳から12歳の児童120名から収集した話し言葉の11,396行からなるコーパスで,手作業で統語分析され,各行に分析樹がつけられている.分析にはRobin FawcettがHallidayの体系文法に改良を加えたものが用いられた.
+(8) Bank of English [BOE]
+1980年にJohn Sinclairを編集主幹として始まったCobuild Projectは25%を出資した English Department at the University of BirminghamとCollins Publisher (現在の HarperCollins) との合弁事業である.この事業は,英語が現在どのように使用されているかを知るために現代英語を研究する,英語を外国語として学んでいる学習者のための参考書にこれらの研究成果を提示する,といった2つの主な目的を持っている.書き言葉600万語と話し言葉130万語からなる 730 万語のコーパスが用意され〔1982年以降に構築が始まったReserve Corpusに対してMain Corpusと呼ばれる; cf. Fox (1993: 183-84), Sinclair (1991: 169), Renouf (1987)〕,このコーパスを使った最初の出版物として刊行されたのがCollins Cobuild English Language Dictionaryである.
+その後もコーパスの整備は続けられ,1990年以降はBank of Englishと呼ばれている.1994年には当初の目標であった2億語が達成され,2001年10月現在では4億1500万語のシステムが稼働している。今後は周期的にデータの更新が行なわれてゆく予定という.
+コーパスを構成するデータの選択については,辞書・教材作成といった使用目的に合うよう特に注意が払われている.詳しくはRenouf (1987: 2-4) にゆずるが,英国を始め海外でどのようなものが多く読まれているのかを学校の読書リストや書店のベストセラーリストによって調べたり,世界中のBritish Council Libraryにどのようなタイトルが継続的に人気があるのかを問い合わせたという (&rarr; 4.2.2).解析用のtagも整備されつつあり,現在は品詞tag,話し言葉における話者の転換や音声を転記する際の規約や書き言葉におけるオリジナルテクストの文字表記・レイアウト再現のためのコード(the Cobuild text marked-up codes)が付されるに至っている.今後は意味tagを付与する方向にあるという.cf. COBUILD: Collins Birmingham University International Language Database
+(9) The Helsinki Corpus of English Texts: Diachronic and Dialectal
+Helsinki大学が,現在構築中のコーパスで,通時的 (diachronic) コーパスと方言の (dialectal) コーパスから構成されている.
+a. 通時的コーパス
+i) basic corpus: テクストの分類,収集を組織的に行った統計的コーパス.英語の統語的,語彙的変化を研究する目的で,8世紀の古英語から18世紀前半の近代英語までの約千年に及ぶ範囲から収集された1,500,000語からなっており,各テクストの長さは5,000語から10,000語の幅で,散文を中心に抽出されている.時期別の語数分布は,古英語395,600語,中英語596,900語,近代英語529,400語である.
+ii) supplementary corpus: 研究者が各自の学問的関心に基づき,個人が収集したテクストを総合したもので,内容,データサイズは統一されていないが,入力形式,コーディングは basic corpus に合わせられている.
+b. 方言コーパス
+イギリスのDevon, Somerset, Suffox, Cambridgeshire, Yorkshire地方の方言の話し手からインタビュー方式で採集し,文字化しコンピュータ処理したコーパス.50万語を集める目標で,1987年の時点で15万語が収集された.
+(10) Leuven Drama Corpus [LEU]
+Leuven大学のDirk Geensらによって,1971年から着手された現代イギリス英語で書かれた戯曲のコーパス.現代英語の話し言葉の統語的,語彙的研究を目的に,1966年から1972年に書かれた戯曲で,翻訳もの,古語を含む歴史ものを除外し,方言,韻文を最小限に抑えて抽出された61作品から,一作家につき最低一場を選び作成されたもので,総計10,000の文からなる.統語分析プログラムによりコーパスの分析が1975年に終わり,その結果は Geens (1975),Geens et al. (1975) に発表されている.
+(11) Longman Corpus Network
+Longman Corpus Net WorkはLongman社が辞書編集プロジェクトのために用意したコーパスの総称.メインコーパスであるLongman Lancaster Corpusは約3千万語からなっており,英国・米国その他のさまざまな英語で書かれた 2 千を越える書籍,定期刊行物,未刊行文書より 4 万語単位で抽出されたものを集めたもので,文学・新聞などからバスの時刻表まで,あらゆるタイプの書き言葉を含んでいる.Spoken CorpusはBritish National Corpus〔Oxford University Press, Longman, Chambers, Lancaster University, Oxford University Computing Service及びBritish Libraryなどの共同プロジェクト.UK Department of Trade and Industry及びScience and Engineering Research Councilからの基金による〕の一部としてLongmanが開発したもの.2千人の話し言葉から1千万語を集めたもので,自然で無意識な話し言葉を集めた初めての大規模なコーパス.Longman Learners' Corpus (of students' writing) は,学生の書いた英語を集めた唯一のコーパス.75カ国の学生から Longmanに送られてきたエッセイや試験を含んでおり,さまざまなレベルの学生学生が抱えている英語学習上の問題点を把握することができる.
+(12) MicroConcord: Corpus Collection A/B
+Oxford University Pressが1993年に同社の教師・学習者向けのコンコーダンスプログラムMicroConcordとともに刊行した教師・学生向けのコーパスコレクション.Collection Aはそれぞれ20万語からなる home news, foreign news, business news, the arts, sportなど5つの分野をカバーする新聞の英語を集めたコーパス (合計100万語).Collection Bはそれぞれ20万語からなる Science, Applied science, Belief & Religion, Arts, Social Scienceなど5つの分野をカバーする学術関係の英語を集めたコーパス(合計100万語).
+(13) Oxford Text Archive
+人文学研究のための多言語テクストアーカイブ.辞書関係では,例えば
+Oxford Advanced Learners' English Dictionary
+Collins English Dictionary
+English Pronouncing Dictionary (Daniel Jones)
+Oxford Dictionary of Current Idiomatic English
+などが入手可能.
+(14) British National Corpus World Edition [BNC2, BNC World Edition]
+British National CorpusはOxford University Press, Longman, Chambers-Harrap, Oxford University Computing Ser-vices, Lancaster University及びBritish LibraryがDTI (Department of Trade and Industry) とSERC (Science and Engineering Research Council) からの基金を得て,3年間の協力のの末に商品化したもの.話し言葉と書き言葉を含む現代英国英語の中から精選された4124のテクストより抽出した1億語からなる〔話し言葉は約10%〕.コーパスコード付与のためのTEI (the Text Encoding  Initiative)ガイドラインにしたがって,UCREL (the Unit for Computer Research on the English Language at the Lancaster University) で開発されたCLAWS (the Constitu-ent-Likelihood Automatic Word-Tagging System) 統計パーサーを使い,SGML (Standard Generalized Markup Lan-guage) で記述することによって,品詞タグが自動的に付与されている.
+初回リリースは,学術ライセンスのもとでヨーロッパ連合 (EU) においてのみ利用できるというものであったが,2000年10月にはBNC World Editionがリリースされ,EU以外の国でも利用できるようになった。4054のテクストからなり (SGML形式で約1.5GB),旧版同様約1億語の規模。個人用ライセンスは£50〔5年間有効〕。
+(15) Corpus of Spoken Professional American English
+大学における会議及びホワイトハウスにおける記者会見の記録,それぞれ100万語からなる。
+(16) Santa Barbara Corpus of Spoken American English
+University of California, Santa Barbara Center for the Study of Discourse (Director John W. Du Bois (UCSB), Associate Editors: Wallace L. Chafe (UCSB), Charlese Meyer (UMass, Boston), and Sandra A. Thompson (UCSB)) によって作成されたアメリカ英語による話し言葉のコーパス。The International Corpus of English (Charles W. Meyer, Director) の一部でもある。
+コーパス言語学:主なコーパス

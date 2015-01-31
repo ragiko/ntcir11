@@ -1,0 +1,27 @@
+
+<?xml version="1.0" encoding="utf-8" ?> 
+<appointments>
+<appointment>
+<starttime>2009-06-01T15:00:00</starttime>
+<endtime>2009-06-01T16:15:00</endtime>
+<subject>This is a Test-Appointment</subject>
+<location>At your Desk</location>
+<body>Here is the Bodytext</body>
+</appointment>
+<appointment>
+<starttime>2009-06-01T17:00:00</starttime>
+<endtime>2009-06-01T17:15:00</endtime>
+<subject>This is a second Test-Appointment</subject>
+<location>At your Desk</location>
+<body>Here is the Bodytext</body>
+</appointment>
+<appointment>
+<starttime>2009-06-01T17:00:00</starttime>
+<endtime>2009-06-01T18:15:00</endtime>
+<subject>This is a third Test-Appointment</subject>
+<location>At your Desk</location>
+<body>Here is the Bodytext</body>
+</appointment>
+</appointments>
+CreateAppointmentsFromXml メソッドは、Microsoft COM 実装の XML ドキュメント オブジェクト モデル (DOM) を使用して、xml が示す XML データの読み込みと処理を行います。CreateAppointmentsFromXml はまず、xml が示すのが XML データの有効なソースかどうかをチェックします。有効な場合は、XML ドキュメント DOMDocument にデータを読み込みます。有効でない場合は、CreateAppointmentsFromXml は例外をスローします。XML DOM の詳細については、「DOM」を参照してください。XML データで appointment タグで区切られた予定の子ノードのそれぞれについて、CreateAppointmentsFromXml は個別のタグを検索し、DOM によりデータを抽出して、AppointmentItem オブジェクトの対応するプロパティ (Start、End、Subject、Location、および Body) にデータを割り当てます。そして CreateAppointmentsFromXml は、既定の予定表に予定を保存します。CreateAppointmentsFromXml は、System.Collections.Generic 名前空間の List(T) クラスの Add メソッドを使用して、これらの AppointmentItem オブジェクトを集約します。XML データのすべての予定の処理が完了すると、AppointmentItem オブジェクトを配列で返します。 Microsoft Visual Studio を使用してこのサンプル コードをテストする場合、初めに Microsoft Outlook 14.0 オブジェクト ライブラリ コンポーネントへの参照を追加し、Microsoft.Office.Interop.Outlook 名前空間をインポートするときに Outlook 変数を指定する必要があります。Imports ステートメントまたは using ステートメントは、サンプル コード内の関数の直前ではなく、パブリックな Class 宣言の前に記述する必要があります。以下のコード行は、Visual Basic および C# でインポートと割り当てを行う例を示しています。
+[方法] 予定の XML データを Outlook の予定オブジェクトにインポートする

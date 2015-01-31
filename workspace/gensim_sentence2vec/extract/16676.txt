@@ -1,0 +1,131 @@
+[R][統計解析][データマイニング] R言語プログラミング: クラスター分析 - 階層的クラスタリング   
+第2回データマイニング+WEB勉強会@東京の「はじめてでもわかる R言語によるクラスター分析」の内容に関する、ソースコードも以下に記載します。
+※記載しているソースは、R Console上や EclipseでR-Scriptとして、貼り付けそのまま実行可能です。(Rのインストール・環境設定はこちらで、RをEclipseで実行するための方法はこちら) 
+講義の全体内容・構成は次をご覧下さい。
+・R勉強会: 第2回データマイニング+WEB 勉強会@東京 (Tokyo.Webmining) を開催しました - 「はじめてでもわかる R言語によるクラスター分析-
+・Slideshare:はじめてでもわかる R言語によるクラスター分析
+クラスター分析と評価
+エントロピー(Entropy)と純度(Purity)の算出関数
+#関数:エントロピー(Entropy)算出, ct:クロス集計表
+calcEntropy <- function(ct){
+-sum( (apply(ct,1,sum)/sum(ct))
+* apply(ct,1,calcEntropy0))/log(ncol(ct))
+}
+calcEntropy0<-function(pv){
+p1<-pv/sum(pv)
+p2<-p1[p1 !=0]
+sum(p2*log(p2))
+}
+#関数:純度 (Purity)算出
+calcPurity <-function(ct){
+sum(apply(ct,1,max))/sum(ct)
+}
+クラスター分析の実行と評価
+x <- iris[,1:4] #解析データ:iris 1-4列のデータ
+d <- dist(x) #距離行列の作成
+hc <- hclust(d); #Clusterを求める。完全連結法"complete"(Default)
+op <- par(mfrow=c(1,1))
+plot(hc) #デンドログラムの表示
+result <- cutree(hc,3) #クラスタリング結果:3つのクラスターに分割
+answer <- iris[,5]     #クラスタリング正解:品種(iris 5列目)
+ctbl <- table(answer, result) #正解と結果のクロス表を作成
+ctbl #クロス表の表示
+calcEntropy(ctbl) #エントロピー(Entropy)の算出
+calcPurity(ctbl)  #純度 (Purity)の算出
+実行結果
+> > ctbl #クロス表の表示
+result
+1  2  3
+setosa     50  0  0
+versicolor  0 23 27
+virginica   0 49  1
+> > calcEntropy(ctbl) #エントロピー(Entropy)の算出
+[1] 0.2390843
+> calcPurity(ctbl)  #純度 (Purity)の算出
+[1] 0.84
+クラスター比較
+#階層的クラスタリング手法
+x  <- iris[1:10,1:4] #解析データ:iris 1-4列のデータ 10行分(見やすさのため限定)
+d  <- dist(x) #初期距離行列の作成:ユークリッド距離
+d2 <- dist(x)^2 #ユークリッド平方距離
+hc.aver <- hclust(d,"average") #群平均法
+hc.sngl <- hclust(d,"single") #単連結法
+hc.comp <- hclust(d) #完全連結法(Default):"complete"指定と同じ
+hc.ward <- hclust(d2,"ward") #ウォード法
+hc.cntr <- hclust(d2,"centroid") #重心法
+hc.medi <- hclust(d2,"median") #メディアン法
+op <- par(mfrow=c(2,3)) #Graphic parameter設定:2行3列画面表示
+plot(hc.aver, main="群平均法") 
+plot(hc.sngl, main="単連結法")
+plot(hc.comp, main="完全連結法")
+plot(hc.ward, main="ウォード法")
+plot(hc.cntr, main="重心法")
+plot(hc.medi, main="メディアン法")
+par(op)#作業前のGraphic Parameterに戻す
+実行結果
+エントロピー・純度 比較
+指定数のクラスタ算出・評価 関数
+#関数:クラスタリング手法 methでの、clsnum数のクラスタ を算出
+calchclust <- function(x, clsnum, meth="complete"){
+#methデフォルトは完全連結法("complete")
+d2 <- dist(x)^2 #ユークリッド平方距離
+switch(meth, #初期距離行列の設定			
+"ward"		= d <- d2,  #ウォード法  の場合:ユークリッド平方距離
+"centroid"    = d <- d2,  #重心法    の場合:ユークリッド平方距離
+"median"	= d <- d2,  #メディアン法 の場合:ユークリッド平方距離
+d <- dist(x) #デフォルト: ユークリッド距離
+)
+hc <- hclust(d, method = meth) #meth手法でのクラスタリング
+return(cutree(hc,k=clsnum))    #クラスターを clsnum個に分割し返す
+}
+#関数:クラスターの評価(Entropy, Purity)
+evalhclust <- function(result, answer){
+ct <- table(answer, result) #クロス表の作成
+cat("Entropy: ", calcEntropy(ct), "\n") #エントロピー
+cat("Purity : ", calcPurity(ct), "\n")  #純度
+}
+エントロピー・純度 比較。
+x <- iris[,1:4] #解析データ:iris 1-4列のデータ
+#各手法でのクラスタリング
+hcc.aver <- calchclust(x,clsnum=3,meth="average") #群平均法
+hcc.sngl <- calchclust(x,clsnum=3,meth="single") #単連結法
+hcc.comp <- calchclust(x,clsnum=3) #完全連結法(Default):"Complete"指定と同じ
+hcc.ward <- calchclust(x,clsnum=3,meth="ward") #ウォード法
+hcc.cntr <- calchclust(x,clsnum=3,meth="centroid") #重心法
+hcc.medi <- calchclust(x,clsnum=3,meth="median") #メディアン法
+#評価
+ans <- iris[,5] #
+evalhclust(hcc.aver,ans) #群平均法
+evalhclust(hcc.sngl,ans) #単連結法
+evalhclust(hcc.comp,ans) #完全連結法(Default):"Complete"指定と同じ
+evalhclust(hcc.ward,ans) #ウォード法
+evalhclust(hcc.cntr,ans) #重心法
+evalhclust(hcc.medi,ans) #メディアン法
+実行結果
+> #評価
+> ans <- iris[,5] #クラスタリング正解:品種(iris5列目)
+> evalhclust(hcc.aver,ans) #群平均法
+Entropy:  0.1799098 
+Purity :  0.9066667 
+> evalhclust(hcc.sngl,ans) #単連結法
+Entropy:  0.05095645 
+Purity :  0.9866667 
+> evalhclust(hcc.comp,ans) #完全連結法(Default):"Complete"指定と同じ
+Entropy:  0.2390843 
+Purity :  0.84 
+> evalhclust(hcc.ward,ans) #ウォード法
+Entropy:  0.2150906 
+Purity :  0.8933333 
+> evalhclust(hcc.cntr,ans) #重心法
+Entropy:  0.1799098 
+Purity :  0.9066667 
+> evalhclust(hcc.medi,ans) #メディアン法
+Entropy:  0.1738730 
+Purity :  0.9133333 
+関連
+・はじめてでもわかる R言語によるクラスター分析
+・Slideshare:はじめてでもわかる R言語によるクラスター分析
+Google Group
+・Google グループ
+推薦文献:
+R言語プログラミング: クラスター分析 - 階層的クラスタリング - hamadakoichi blog

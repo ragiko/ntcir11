@@ -1,0 +1,116 @@
+
+以下のデータ x は、ノイズに埋もれた 2 種類の異なる振幅と位相をもつ周波数成分からなるとします。fs = 100;                                % Sample frequency (Hz)
+t = 0:1/fs:10-1/fs;                      % 10 sec sample
+x = (1.3)*sin(2*pi*15*t) ...             % 15 Hz component
++ (1.7)*sin(2*pi*40*(t-2)) ...         % 40 Hz component
++ 2.5*gallery('normaldata',size(t),4); % Gaussian noise;
+fft を使用して、DFT y とそのべき乗を計算します。m = length(x);          % Window length
+n = pow2(nextpow2(m));  % Transform length
+y = fft(x,n);           % DFT
+f = (0:n-1)*(fs/n);     % Frequency range
+power = y.*conj(y)/n;   % Power of the DFT
+関数 nextpow2 は、ウィンドウの長さ (関数 ceil(log2(m))) 以上の最小の 2 のべき乗となる指数を探し、関数 pow2 はべき乗を計算します。変換の長さに 2 のべき乗を使用することで、FFT アルゴリズムを最適化しますが、n = m を使用した場合との計算時間の違いははほとんどありません。DFT を可視化するには、abs(y), abs(y).^2, log(abs(y)) のプロットが一般的です。周波数に対するべき乗のプロットは、"ピリオドグラム" と呼ばれます。plot(f,power)
+xlabel('Frequency (Hz)')
+ylabel('Power')
+title('{\bf Periodogram}')
+周波数範囲の前半 (0 からナイキスト周波数 fs/2 まで) は、残りの半分がその鏡映となるため、データの周波数成分を識別するのに十分です。さまざまな用途において、0 を中心とするピリオドグラムが一般的です。関数 fftshift は、0 を中心とするピリオドグラムを生成するために関数 fft の出力を循環シフトで再配列します。y0 = fftshift(y);          % Rearrange y values
+f0 = (-n/2:n/2-1)*(fs/n);  % 0-centered frequency range
+power0 = y0.*conj(y0)/n;   % 0-centered power
+plot(f0,power0)
+xlabel('Frequency (Hz)')
+ylabel('Power')
+title('{\bf 0-Centered Periodogram}')
+この再配列は、DFT の定義の周期性を使用します。MATLAB の関数 angle と unwrap を使用して、DFT の位相プロットを作成します。phase = unwrap(angle(y0));
+plot(f0,phase*180/pi)
+xlabel('Frequency (Hz)')
+ylabel('Phase (Degrees)')
+grid on
+周波数成分は、隣接する値の位相のランダム性によって大部分は隠されます。プロットの上昇トレンドは関数 unwrap によるもので、この場合は位相に 
+が引かれるよりも圧倒的に足される方が多くなります。鯨の鳴き声のスペクトル解析
+この例では、オーディオ データのスペクトル解析を実行する方法を示します。
+ドキュメンテーションのファイルの例 bluewhale.au は、カリフォルニア沿岸沖で水中マイクによって記録された太平洋のシロナガスクジラの鳴き声のオーディオ データです。このファイルは、Cornell University Bioacoustics Research Program で保管されている動物の鳴き声の収集から入手したものです。シロナガスクジラの鳴き声は非常に低いため、人間はほとんど聞き取れません。データの時間スケールは、音程を上げて鳴き声がよりはっきりと聞こえるように 10 倍に圧縮されています。以下は、データを読み込み、プロットします。whaleFile = fullfile(matlabroot,'examples','matlab','bluewhale.au');
+[x,fs] = audioread(whaleFile);
+plot(x)
+xlabel('Sample Number')
+ylabel('Amplitude')
+title('{\bf Blue Whale Call}')
+A 音声 "震え音" の後に B 音声 "うめき声" が続きます。関数 sound(x,fs) を使用して、データを再生できます。B の鳴き声の方が簡単に解析できます。上記のプロットを使用して、B 音声の最初の鳴き声の始まりと終わりのインデックスをおおまかに決めます。データを 10 倍にスピードアップしているため時間を修正します。bCall = x(2.45e4:3.10e4);
+tb = 10*(0:1/fs:(length(bCall)-1)/fs); % Time base
+plot(tb,bCall)
+xlim([0 tb(end)])
+xlabel('Time (seconds)')
+ylabel('Amplitude')
+title('{\bf Blue Whale B Call}')
+関数 fft を使用して、信号の DFT を計算します。データを 10 倍にスピードアップしているため周波数範囲を修正します。m = length(bCall);      % Window length
+n = pow2(nextpow2(m));  % Transform length
+y = fft(bCall,n);       % DFT of signal
+f = (0:n-1)*(fs/n)/10;  % Frequency range
+p = y.*conj(y)/n;       % Power of the DFT
+ピリオドグラムの前半をナイキスト周波数までプロットします。plot(f(1:floor(n/2)),p(1:floor(n/2)))
+xlabel('Frequency (Hz)')
+ylabel('Power')
+set(gca,'XTick',[0 50 100 150 200]);
+title('{\bf Component Frequencies of a Blue Whale B Call}')
+B 音声の鳴き声は、17Hz 程度の基本周波数と 2 番目の高周波が強調された高周波群から構成されています。FFT を使ったデータ内挿この例では、スペクトル解析以外の用法で FFT を使用する方法を示します。一定間隔で区切られたデータを内挿する三角多項式の係数を推定します。このデータの内挿法は、[1] で説明されています。高速 DFT アルゴリズムは、数人が独自に発見し、多くの人々が開発に貢献しています。John Tukey と John Cooley の 1965 年の研究論文 [2] は、最近の FFT の使用の始まりであると一般的に評価されています。ただし、Gauss の死後に発行された 1866 年 (日付は 1805 年であった) の研究論文 [3] では、近代の FFT アルゴリズムの基礎をなす「分割するテクニック」が使用されていました。Gauss は小惑星の個々の位置を観測して、正確な小惑星の軌道を計算する問題に興味をもっていました。彼の研究論文は、小惑星パラスの 12 点の位置データを使って、12 個の係数で三角多項式を内挿しようとしていました。手書きの 12 x 12 の線形方程式を解く代わりに、Gauss は処理を簡単にする方法を考えました。彼は簡単に解くことができる 3 つの問題へ方程式を分割し、必要な結果を得るためにその解を再結合する方法を発見しました。この解法は、FFT アルゴリズムを使用してデータの DFT を計算する方法と同じです。 以下は、Gauss の研究論文にあるデータです。asc = 0:30:330;
+dec = [408 89 -66 10 338 807 1238 1511 1583 1462 1183 804];
+plot(asc,dec,'ro','Linewidth',2)
+xlim([0 360])
+xlabel('Ascension (Degrees)')
+ylabel('Declination (Minutes)')
+title('{\bf Position of the Asteroid Pallas}')
+grid on
+Gauss は、以下の三角多項式を内挿しようとしました。
+関数 fft を使用して、Gauss と同じ計算を実行します。d = fft(dec);
+m = length(dec);
+M = floor((m+1)/2);
+a0 = d(1)/m;
+an = 2*real(d(2:M))/m;
+a6 = d(M+1)/m;
+bn = -2*imag(d(2:M))/m;
+データと内挿データをプロットします。hold on
+x = 0:0.01:360;
+n = 1:length(an);
+y = a0 + an*cos(2*pi*n'*x/360) ...
++ bn*sin(2*pi*n'*x/360) ...
++ a6*cos(2*pi*6*x/360);
+plot(x,y,'Linewidth',2)
+legend('Data','DFT Interpolant','Location','NW')
+参照-  [1] Briggs, W. and V.E. Henson. The
+DFT: An Owner's Manual for the Discrete Fourier Transform.
+Philadelphia: SIAM, 1995.[2] Cooley, J.W. and J.W. Tukey. An
+Algorithm for the Machine Calculation of Complex Fourier Series. Mathematics
+of Computation. Vol. 19. 1965, pp. 297–301.[3] Gauss, C. F. Theoria interpolationis
+methodo nova tractata. Carl Friedrich Gauss Werke.
+Band 3. Göttingen: Königlichen Gesellschaft der Wissenschaften,
+1866.[4] Heideman M., D. Johnson, and C. Burrus.
+Gauss and the History of the Fast Fourier Transform. Arch.
+Hist. Exact Sciences. Vol. 34. 1985, pp. 265–277.[5] Goldstine, H. H. A History
+of Numerical Analysis from the 16th through the 19th Century.
+Berlin: Springer-Verlag, 1977.
+多次元 FFTはじめに回折パターンはじめにこの節は、1 次元 DFT (「離散フーリエ変換 (DFT)」を参照) の一般化について記述します。2 次元の m 行 n 列の配列 X の DFT は、m 行 n 列の配列 Y になります。Yp+1,q+1=∑j=0m−1∑k=0n−1ωmjpωnkqXj+1,k+1ωm と ωn は 1 の根となる複素数です。ωm=e−2πi/mωn=e−2πi/n上記の表記では、i が虚数部、p と j が 0 から m–1 までのインデックス、q と k が 0 から n–1 までのインデックスです。インデックス p+1 と j+1 は 1 から m まであり、インデックス q+1 と k+1 は 1 から n までです。これは、MATLAB の配列と対応した範囲に一致します。MATLAB の関数 fft2 は、高速フーリエ変換アルゴリズムを使用して 2 次元の DFT を計算します。Y = fft2(X) は、Y = fft(fft(X).').' と等価です。すなわち、X の各列 の 1 次元 DFT を計算し、その結果の各行に 1 次元 DFT を行います。2 次元 DFT の逆変換は、関数 ifft2 によって計算されます。MATLAB の関数 fftn は、fft2 を N 次元配列へ一般化します。Y = fftn(X) は以下と等価です。Y = X;
+for p = 1:length(size(X))
+Y = fft(Y,[],p);
+endすなわち、X の各次元に沿って、同じ場所に 1 次元 DFT を計算します。N 次元 DFT の逆変換は、関数 ifftn によって計算されます。回折パターン小さな口径をもつ光マスク上に平面波が入射すると、回折パターンが生成されるという光学理論の予測は、マスクのフーリエ変換によって説明されています。たとえば、[1] を参照してください。半径 R の円形開口 A をもつ光マスク M を記述する論理配列を作成します。n = 2^10;
+M = zeros(n);
+I = 1:n;
+x = I-n/2;
+y = n/2-I;
+[X,Y] = meshgrid(x,y);
+R = 10;
+A = (X.^2 + Y.^2 <= R^2);
+M(A) = 1;
+imagesc(M)
+axis image
+title('{\bf Circular Aperture}')
+関数 fft2 を使用して、光マスクの 2 次元 DFT を計算し、関数 fftshift を使用して、0 の周波数成分が中心になるように出力を再配列します。D1 = fft2(M);
+D2 = fftshift(D1);
+imagesc(abs(D2))
+axis image
+title('{\bf Diffraction Pattern}')
+対数によって、振幅が小さい領域の DFT が明確になります。D3 = log2(D2);
+imagesc(abs(D3))
+axis image
+title('{\bf Enhanced Diffraction Pattern}')
+非常に小さい振幅は、数値的な丸めに影響を受けます。放射形対称の不完全さは、基盤目配列化したデータの影響によるものです。参照-  [1] Fowles, G. R. Introduction
+to Modern Optics. New York: Dover, 1989.
+高速フーリエ変換 (FFT) - MATLAB & Simulink - MathWorks 日本

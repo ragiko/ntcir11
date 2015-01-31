@@ -1,0 +1,238 @@
+
+こんにちは、夜のマルチバイト、せーのです。今日は先日の第20回北海道情報セキュリティ勉強会レポート前半に引き続き、いよいよ本丸である後編、様々な文字コードによる脆弱性とその対策状況についてご紹介致します。ひとまず休憩明けから、ということで休憩中に振る舞われたケーキをどうぞ。
+さて、ではいきましょう。
+半端な先行バイトによるXSS
+マルチバイト文字の1バイト目だけが独立して存在する状態になると次の文字がマルチバイト文字の2バイト目移行の文字として食われる状態になります。攻撃者はダブルクォーテーション(")を食わせてイベントハンドラを注入して攻撃します。
+サンプル状況
+解説
+テキストボックスが2つあるformがあります。ソースとしてはこういう感じです。
+<?php session_start(); header('Content-Type: text/html; charset=Shift_JIS'); 
+$p1 = @$_GET['p1']; $p2 = @$_GET['p2']; ?> 
+<body> 
+<form> PHP Version:<?php echo htmlspecialchars(phpversion(), ENT_NOQUOTES, 'Shift_JIS') ; ?><BR> 
+<input name=p1 value="<?php echo htmlspecialchars($p1, ENT_QUOTES, 'Shift_JIS'); ?>"><BR> 
+<input name=p2 value="<?php echo htmlspecialchars($p2, ENT_QUOTES, 'Shift_JIS'); ?>"><BR> 
+<input type="submit" value="更新"> 
+</form> 
+</body>
+もちろんエスケープ処理はできています。ですがこのp1に[f0]というバイトコードを入れ、p2にJavaScriptコードを入れて最後に[//]で閉じると通ってしまいます。
+これはShift_JISへの変換に起きる現象です。p1に入力した[F0]と後ろの方の["][22]の部分が「2バイト文字」と解釈されて消えてしまいます。そうするとp1のvalueの値はその次、つまり2つ目のボックスのvalue=" の"までということになります。そうなるとそれ以降の文字列がp1の「属性値」となり、ここにイベントハンドラを書いておくとそのイベントがそのまま実行されて脆弱性となるわけです。
+対策状況
+PHP5.3.1以前のバージョン+古いブラウザで発生。2010年3月対策済。
+UTF-8非最短形式によるパストラバーサル
+リクエストとしてファイル名を読んでUTF-8でデコード、予め用意してあるディレクトリパスと連結して読み出し、というJavaの処理です。ここにUTF-8の非最短形式を含むファイル名を入れるとデコードをすり抜けてしまいます。
+サンプル状況
+String msg = ""; 
+String pathname = ""; 
+try { 
+String path = request.getParameter("path"); 
+File f = new File(path); 
+// パス名からファイル名を取り出す(PHPのbasename()) 
+String filebody = f.getName(); 
+// UTF-8としてデコード 
+filebody = new String( filebody.getBytes("ISO-8859-1"), "UTF-8"); 
+// ディレクトリを連結 
+pathname = "c:/home/data/" + filebody; 
+// 以下ファイル読み出し 
+FileReader fr = new FileReader(pathname); 
+BufferedReader br = new BufferedReader(fr); 
+...
+このようなソースのサーブレットに対して[..%C0%AF..%C0%AFboot.ini]というリクエストを投げるとC://boot.iniの中身が返ってきます。
+解説
+ポイントは[%C0%AF]という文字コードです。こちらはスラッシュを表す非最短形式となります。9行目にてUTF-8へのデコード処理が走っていますので、本来スラッシュはここでエスケープされるのですが、非最短形式のためISO-8859-1である、と判断されたこの文字列は「スラッシュがないのでファイル名として妥当」としてチェックを通り抜けます。そしてUTF-8としてデコードするとスラッシュが復活し、C://home/data/../../boot.ini、つまりルートフォルダにアクセスされてしまうということです。
+対策状況
+Java SE6 Update10以前で発生。2008年12月対策済。
+※徳丸先生によると、ランタイムはソースコードに影響があるため上げたくない人が多く、このバージョンのWebサーバーもまだ現役で動いている可能性があるとのこと。先のShellShockの際にもbashにパッチを当てたくない、という人が多くいたそうです。
+5C問題によるSQLインジェクション
+Shift_JISの2バイト目に0x5Cが来る文字に起因して起こる問題です。該当する文字は「ソ」「表」「能」「欺」「申」「暴」「十」等。
+サンプル状況
+<?php header('Content-Type: text/html; charset=Shift_JIS'); 
+$key = @$_GET['name']; 
+if (! mb_check_encoding($key, 'Shift_JIS')) { die('文字エンコーディングが不正です'); } 
+// MySQLに接続(PDO) 
+$dbh = new PDO('mysql:host=localhost;dbname=books', 'phpcon', 'pass1'); 
+// Shift_JISを指定 
+$dbh->query("SET NAMES sjis"); 
+// プレースホルダによるSQLインジェクション対策 
+$sth = $dbh->prepare("SELECT * FROM books WHERE author=?"); 
+$sth->setFetchMode(PDO::FETCH_NUM); 
+// バインドとクエリ実行 
+$sth->execute(array($key)); 
+?>  
+nameという名前のクエリをエンコーディングチェックをかけてDBのパラメータに指定しています。SQLはプレースホルダを使用しレイトバインディングになっています。一見対策が出来ているように見えますが、クエリに[ソ' or 1=1#]と入れることによってbooksの中身が全て見えてしまいます。当然1=1の後に SHOW VARIABLES等を入れればシステム変数が全て表示されます。
+解説
+PHP5.3.5までのPHPは内部エンコーディングをLatin-1として扱っていました。そうすると「ソ[835C]」は「NBH[83]」と「¥[5C]」として解釈されます。それがPDOに渡りますが、PDOではクエリ全体にクオートをかけることでエスケープ処理がなされます。この際クォーテーションについてはバックスラッシュをつけることでエスケープされます。結果としてクエリは「NBH」「¥」「¥」「¥」「'」となります。これがMySQL内でShift_JISに解釈されると「¥」「¥」は「¥」がエスケープされたものだ、と解釈します。そうすると最初につけたクォーテーションがエスケープされない形となり、それより後の文字列がSQL文そのものとして機能し始めます。
+ややこしいですね。徳丸先生が図にしてくれています。
+対策状況
+PHP5.3.7よりPDOによるDB接続時にcharsetを指定できるので適切な文字コードを指定する。2011年8月対策済。
+$dbh = new PDO('mysql:host=xxx;dbname=xxx;charset=utf8', USERNAME, PASSWORD); 
+UTF-7によるXSS
+charsetを"EUCJP"と指定することによって起こります。ブラウザの認識差がポイントです。
+サンプル状況
+<?php session_start(); header('Content-Type: text/html; charset=EUCJP'); 
+$p = @$_GET['p']; 
+if (! mb_check_encoding($p, 'EUCJP')) { die('Invalid character encoding'); } ?> 
+<body> 
+<?php echo htmlspecialchars($p, ENT_NOQUOTES, 'EUCJP'); ?> 
+</body>
+EUCJPとして指定している文字コードでエスケープ処理を施した上でpというクエリ文字を表示しています。ここでpに[+ADw-script+AD4-alert(document.cookie)+ADw-/script+AD4]という文字列を入れるとJavaScriptのアラートが起こります。
+解説
+古いIEは[EUCJP]を文字コードだとして認識してくれません。正しくは[EUC-JP]だからです。でも他のブラウザでは[EUCJP]でも[EUC-JP]の事だ、として認識してくれます。この認識差が脆弱性を産みます。
+PHP自体は[EUCJP]を[EUC-JP]としてエスケープ処理をしますが、入っているクエリ文字はEUC-JP的には問題ありませんのでスルーします。ですがこの文字はUTF-7独特の文字であり、IEに表示された際には自動エンコーディングにより「この文字列はUTF-7だな」として解釈されます。そうすると[+ADw-]は[]と解釈されるのでクエリ文字は「<script>alert(document.cookie)</script>
+」となり、JavaScriptとして動き出します。
+対策状況
+IEをWindows Updateすることによって解決。2010年12月対策済。
+U+00A5によるSQLインジェクション
+DBの接続とブラウザの表示の文字エンコーディングの差によって起こる問題です。「U+」はUnicodeの、という意味。
+サンプル状況
+Class.forName("com.mysql.jdbc.Driver"); 
+Connection con = DriverManager.getConnection( "jdbc:mysql://localhost/books?user=phpcon&passwo rd=pass1"); 
+String sql = "SELECT * FROM books where author=?"; 
+// プレースホルダ利用によるSQLインジェクション対策 
+PreparedStatement stmt = con.prepareStatement(sql); 
+// ? の場所に値を埋め込む(バインド) 
+stmt.setString(1, key); ResultSet rs = stmt.executeQuery(); // クエリの実行
+Javaにてプレースホルダを利用してバインドしているソースです。ここに[¥'or 1%3d1%23]という文字列で検索すると全文検索が走ります。
+解説
+DBとのコネクタが古い(MySQL Connector/J 5.1.7以前)と、Javaの内部エンコーディングはUnicodeとなりますが、MySQLとの接続はShift_JISとなります。Unicodeとしてクエリの[']の前にエスケープとしてバックスラッシュ[\]が入ります。クエリの最初の文字[¥]はUnicodeでは「円記号[00A5]」ですがバックスラッシュ[\]は「バックスラッシュ[005C]」と区別されています。この状態でソース上に動的プレースホルダとして生成されるので、コード上は
+¥\' or 1=1#
+として送られます。これがMySQLに送信される時にShift_JISに変換されます。コードポイント上Shift_JISでは[00A5]も[005C]も[5C]つまり[¥]として解釈されます。そうするとDB上で動くSQLのクエリは
+¥¥' or 1=1#
+となり、or以降の文がSQLとして効いてきます。その結果全文検索が起こることになります。
+対策状況
+脆弱性が発生する条件として「MySQL Connector/J 5.1.7以前のJDBCを使う」「MySQLとの接続にShift_JISかEUC-JPを使う」「静的プレースホルダではなく動的プレースホルダやエスケープのみで流す」というのが揃った時にこの脆弱性が出てきますので、新しいJDBCを使い、接続時にUTF-8を使用し、なるべく静的プレースホルダを使うようにするとOKです。2009年7月対策済。
+U+00A5によるXSS
+同じく内部エンコーディングがUTF-8なのですが、今度はinputとoutputがそれぞれバラバラの際に起こる問題です。
+サンプル状況
+// PHPでもU+00A5がバックスラッシュに変換されるパターンはないか 
+<?php 
+header('Content-Type: text/html; charset=Shift_JIS'); 
+$p = @$_GET['p']; 
+// JSエスケープ &rarr; '&rarr;' "&rarr; " 
+$p1 = preg_replace('/(?=['"])/u' , '', $p); 
+$p2 = htmlspecialchars($p1, ENT_QUOTES, 'UTF-8'); 
+?> 
+<html>
+<head> 
+<script type="text/javascript"> 
+function foo($a) { 
+document.getElementById("foo").innerText= $a; 
+} 
+</script>
+</head> 
+<body onload="foo('<?php echo $p2; ?>')"> 
+p=<span id="foo"></span> 
+</body>
+</html>
+idがfooの中身を取り出しそのままエスケープしてonloadに載せているだけのPHPソース。PHP上ではまずJavaScriptとしてのエスケープ処理を施し、その後UTF-8にてエスケープ処理をして戻しています。ここに[¥');alert(document.cookie);//']という文字列を入れるとJavaScriptが作動します。
+解説
+実はこの脆弱性のポイントはPHPのmb_stringの設定にあります。
+[mbstring] 
+mbstring.internal_encoding = UTF-8  
+mbstring.http_input = auto  
+mbstring.http_output = cp932 
+mbstring.encoding_translation = On 
+mbstring.detect_order = SJIS-win,UTF-8,eucJP-win
+このような設定になっていた場合、文字エンコーディングとしては input:文字列内容から自動解釈、内部エンコーディング:utf-8、output:cp932、という風に変化していきます。[cp932]というのはMicrosoftのコードページでShift_JISを表します。
+入ってきた文字列はその内容からUnicodeと判断されます。それがUTF-8としてエスケープされるので[']の前にバックスラッシュ[\]が入ります。上に書いたようにUnicodeとしては[¥]と[\]は文字コードとして区別されますが、アウトプット時にcp932に変換された時に両方とも[5C]として解釈されるため表示内容は
+onload="foo('¥¥');alert(document.cookie);//'"
+となり、JavaScriptが実行されます。
+対策状況
+mb_stringの設定を一定なもの、文字集合が変化しない文字エンコーディングに揃えることが大事です。理想は全て[utf-8]、上の設定では最悪inputも[cp932]であればこの脆弱性は起こりませんでした。
+またPHP5.3.3より以前のPHPですと「¥[00A5]」が変換されると「¥」に変換されるのですが、それより新しいPHPですとこの脆弱性が出てきます。2014年11月現在、正しい設定をするか古いPHPにする以外に対策方法はありません。
+SQL Serverの文字集合問題
+Microsoft製のDB「SQL Server」に対してASP.netにて接続、パラメータをJSON形式でセットした際に条件が揃うと起こる問題です。SQL Serverのデータ型の解釈を知らないと陥りやすい脆弱性です。
+サンプル状況
+SQL Serverに以下のようなテーブルを用意します。
+CREATE TABLE chat1 
+( id int IDENTITY (1, 1) NOT NULL , 
+ctime datetime NOT NULL, 
+body varchar (150) NOT NULL, 
+json varchar (200) NOT NULL )
+こちらのテーブルに対してこのようなソースで投稿するスクリプトをC#で書きます。所謂1行掲示板です。
+sqlUrl = "Server=labo1; database=tokumaru;user id=sa;password=xxxxx&rdquo; 
+dbcon = New SqlConnection(sqlUrl) 
+'DBコネクション作成 
+dbcon.Open() 
+'DB接続 
+sqlStr = "insert into chat1 values(sysdatetime(), @body, @json)" 
+dbcmd = New SqlCommand(sqlStr, dbcon) 
+body = Request("body") 
+e_body = Regex.Replace(body, "([<>'""])", "$1") 
+e_body = Regex.Replace(e_body, "[rn]", "") 
+' JSON組み立て 
+json = "{""ctime"":""" _ & DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") _ & """, ""body"":""" & e_body & ""&ldquo;}" 
+' パラメータ 
+dbcmd.Parameters.Add(New SqlParameter("@body", body)) 
+dbcmd.Parameters.Add(New SqlParameter("@json", json)) 
+dbResult = dbcmd.ExecuteNonQuery()
+登録したデータをHTML側からJavaScriptで取り出し、eval関数でJSONの評価をした上で表示します。
+<html>
+<head>
+<script src="jquery-1.4.3.min.js"></script> 
+<script> 
+function load() { 
+var requester = new XMLHttpRequest(); 
+requester.open('GET', 'json.aspx', true); 
+requester.onreadystatechange = function() { 
+if (requester.readyState == 4) { 
+onloaded(requester); 
+} 
+}; 
+requester.send(null); 
+} 
+function onloaded(requester) { 
+res = requester.responseText; 
+obj = eval("(" + res + ")"); 
+$('#result').text(obj.ctime + ":" + obj.body); 
+} 
+</script>
+</head>
+<body> 
+<input type="button" onclick="load();" value="hoge"/> 
+<div id="result"></div>
+</body>
+表示部分のサーバー側ソースはこのようになります。
+sqlUrl = "Server=labo1; database=tokumaru;user id=sa;password=xxxx" 
+dbcon = New SqlConnection(sqlUrl) 
+'DBコネクション作成 
+dbcon.Open() 
+'DB接続 
+sqlStr = "select top 1 * from chat1 order by id desc" 
+dbcmd = New SqlCommand(sqlStr, dbcon) 
+'SQL文実行 
+dataRead = dbcmd.ExecuteReader() 
+dataRead.Read() 
+Response.AddHeader("Cache-Control", "no-cache") 
+Response.AddHeader("Content-Type", "application/json") 
+'ラベルに表示 
+Response.write(dataRead("json")) ' エスケープ済みなのでそのまま表示
+このような掲示板に[¥"});alert(/xss/)//]という文字列を入力して投稿するとJavaScriptが走ります。各ポイントでエスケープ処理やプレースホルダを使用しているのにどうしてでしょう。
+解説
+この脆弱性にはまずSQL Serverのデータ型の特徴を理解しておく必要があります。投稿したデータは[body]にそのまま、[json]にJSON形式に変換したものが入りますが、こちらのカラムのデータ型は共に[varchar]型になっています。SQL Serverのvarchar型はCP932、つまりShift_JISとして解釈されます。Unicodeとして格納するには[nvarchar]型のカラムに格納する必要があります。つまりvarchar型のカラムにinsertする際にunicodeからShift_JISへの変換が起こります。上で起きているような5C問題がここでも発生するわけですね。
+対策状況
+いくつかポイントがあります。「いずれかを実施する」のではなく「全て実施する」ようにすると脆弱性を回避することができます。
+JSONの組み立ては表示(出力)直前に行う
+DB格納前に組み立てるのは危険です。
+英数字以外の文字はUnicode形式でエスケープする
+所謂「過剰エスケープ」というやつです。徳丸先生は余り好きではないそうです。
+文字集合の変更をしない
+この脆弱性の発端はunicodeの文字列をcp932であるvarchar型に入れるところにあります。従ってnvarchar型を適切に使用しましょう。
+JSONの解釈にeval関数を使わない
+jqueryを使用するのであればgetJSON()関数等独自のJSON評価形式がありますのでそちらを使いましょう。ちなみにJSONPは実質eval関数なので他の対策を考える必要があります。
+まとめ
+とりあえず間違いない方法
+いかがでしたでしょうか。文字コードの脆弱性はプラットフォーム側で整備が進み、安全性が強化されています。ですので最新のソフトウェアを使用することで大抵の脆弱性は回避できます。本来はアプリ側で文字エンコーディングのエスケープ処理等を施さなくても脆弱性が露見しないことが理想です。
+ですが文字集合の問題は残ります。現在では全てをunocodeで揃えておくのが安心かと思います。
+他には、文字エンコーディングの妥当性をチェックすることが大事です。Javaや.netは内部エンコーディングがUTF-16になるので必ず文字エンコーディングが変わります(文字集合と文字エンコーディングの違いは前半を御覧ください)。PHPは変わりません。言語毎の特徴を把握しておくことが大事です。
+例えばPHPではhtmlSpecialchars()を使用する際には第3引数(文字エンコーディングの指定)を必ず行いましょう。strpos()関数はマルチバイト対応しておりませんので全角カナをチェックするような関数を作った場合「ラリルレロ」の「ラリ」が「宴」という文字にマッチし、全角カナのチェックを通ってしまいます。こういう時にはmb_strpos()関数を使用して確実に文字エンコーディングを指定しましょう。
+DBを使用するプログラムの場合にはDBの文字エンコーディングの指定をチェックし、静的プレースホルダを使用するようにしましょう。
+最後にHTTPレスポンスには「ブラウザが認識できる形式で文字エンコーディングを指定する」ことが大事です。Shift_JIS,EUC-JP,UTF-8等正しい表記を心がけましょう。
+簡単にできるテスト
+最後に文字コードによる脆弱性があるかどうか簡単にチェックできる方法をご紹介します。
+これらの文字が確実に表示されるかをチェックしてみてください。
+¥(U+00A5) - バックスラッシュに変換されないか
+骶(U+9AB6) - JIS X 2028にない文字
+[吉]の上の部分が「土」になっている文字(つちよし、U+20BB7) - BMP外の文字 UTF-8では4バイトになる
+徳丸先生の講義は本当にためになりますね。こちらを気をつけながらプログラミングしていきたいと思います。
+第20回北海道情報セキュリティ勉強会レポート – 文字コードの脆弱性はこの4年間でどの程度対策されたか?〜後半【徳丸先生】#secpolo ｜ Developers.IO

@@ -1,0 +1,5 @@
+ 
+Servlet 2.3 データソース
+Identity Manager 6.0 のリリース時点では、WEB-INF/web.xml ファイルの配備記述子は Servlet 2.3 を参照します。このため、WebSphere Application Server Version 4 Data Source では Identity Manager Web アプリケーションを使用できなくなりました。
+Identity Manager の WebSphere データソースを設定するには、次の手順を使用します。
+付録 C  Identity Manager のデータソースの設定

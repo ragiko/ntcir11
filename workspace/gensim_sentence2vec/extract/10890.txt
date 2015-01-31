@@ -1,0 +1,80 @@
+昨日の続き。
+mvnコマンドで作成された、
+flume-ng-dist-1.1.0-incubating-SNAPSHOT-dist.tar.gz
+をLinux環境で展開し、
+できたディレクトリに移動します。
+このディレクトリが基本的にFlumeNGを動かすHomeディレクトリになるので、
+覚えておいてください。
+先に起動方法について説明してしまいます。
+以下のコマンドが基本形です。
+./bin/flume-ng <node | avro-client> --conf <設定ディレクトリ> [-d 一時ディレクトリ] <オプション>
+起動には以下2つのモードがあります。
+①Flume nodeを起動する
+これはイメージとしては、
+転送されてきたログを受信する役割を持ちます。
+オプションとして、以下を指定する必要があります。
+-f <ファイル名> &rArr; 設定定義ファイルを指定する。
+この後紹介するプロパティファイルを指定します。
+-n <ホスト名> &rArr; FlumeNGが起動するホスト名を指定する。
+指定したホスト名で名前解決できなければいけません。
+実行時のコマンドはこんな感じ。
+./bin/flume-ng node --conf ./conf -f ./conf/flume.properties -n centos57
+②Flume Avro-Clientを起動する。
+これはイメージとしては、
+APLからログを取得し、ログを転送する役割を持ちます。
+オプションとして、以下を指定する必要があります。
+-H <ホスト名> &rArr; ログ転送を待ち受けているFlumeNGが起動しているホストを指定します。
+-p <ポート番号> &rArr; ログ転送を待ち受けているFlumeNGがbindしているポートを指定します。
+-F <ファイル名> &rArr;(任意)転送するログデータが書き込まれたファイル名。
+指定したファイルを1行ずつ転送します。
+指定がない場合は、標準入力に与えられたデータを転送します。
+実行時のコマンドはこんな感じ。
+./bin/flume-ng avro-client --conf ./conf -H centos57 -p 41414 -F /etc/hosts
+ちなみに、
+./bin/flume-ng help
+で実行コマンドのヘルプが出るのですが、
+明らかにドキュメントと食い違っています。
+このhelp通りにすると動かないので、ドキュメントを信じてください。(笑)
+※どこかで書きましたが、
+FlumeNGはまだ正式なリリースではなく、
+アルファ版的な位置づけです。実装中です。
+②avro-clientはそのまま動かせばよいとして、
+①nodeのほうは設定ファイル(ここではflume.properties)を記述する必要があります。
+では、設定ファイルの記述ルールについて、説明します。
+設定では当然、いろんな機能を指定できるのですが、
+動かすことが今日のゴールなので、
+ドキュメントどおりの設定に対し、必要最小限の変更を行って動かします。
+※時間があれば各機能について説明がかければと思っています。
+待てない方はドキュメントに書いてあるとおり、
+JavaDocを読んでください。
+まず、Source/Channel/Sinkの名前を決めます。
+<ホスト名>.sources = <Source名(任意)>  <ホスト名>.channels = <Channel名(任意)>  <ホスト名>.sinks = <Sink名(任意)>次に、Sourceの設定を行います。
+<ホスト名>.sources.<Source名>.type = <Sourceタイプ>
+<ホスト名>.sources.<Source名>.<Sourceタイプのオプション> = <Sourceのオプション設定>   ...
+Source同様に、ChannelやSinkも設定します。
+ドキュメントでは、
+ホスト名 &rArr; host1
+Source名 &rArr; avro-source1
+...
+としているので、
+環境に依存するホスト名を今回のホスト名centos57に修正して、以下のとおりになります。
+centos57.sources = avro-source1centos57.channels = ch1centos57.sinks = log-sink1
+centos57.sources.avro-source1.type = avrocentos57.sources.avro-source1.bind = 0.0.0.0centos57.sources.avro-source1.port = 41414centos57.sources.avro-source1.channels = ch1
+centos57.channels.ch1.type = memory
+centos57.sinks.log-sink1.type = loggercentos57.sinks.log-sink1.channel = ch1
+これにより、以下の挙動となります。
+Source:centos57(任意のIPアドレス)の41414ポートでListen
+&darr;
+Channel:受信したログをメモリ上に蓄積
+&darr;
+Sink:メモリ上のログをロガー設定に従い出力
+(デフォルトでは、標準出力に転送されたイベントそのまま出力となります。)
+これで前述の起動コマンドでそれぞれ動かしてあげれば、
+コンソール上に転送されたログを見ることができます!
+※bodyの部分が文字化け(?)していて何かいてあるかわからないです。。。。
+おそらくString型ではなくByte型そのままではないかと思います。
+停止は気合(Ctrl + c)でエラー出しながらとめてください。
+以上です。
+参考になれば。
+逆に間違えている箇所があればコメントいただけると幸いです。
+t_otodaのブログ

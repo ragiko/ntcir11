@@ -1,0 +1,18 @@
+主成分分析 (principal components analysis)  &dagger;
+高次元のデータを,データの分散が最大になるように,低次元のデータに変換する方法.教師なしの次元削減の手法として最も一般的.
+p次元のデータベクトル \(\mathbf{x}_i\) を\(n\)個集めて,
+\(n\times p\)のデータ行列 \(X\) を生成.
+平均ベクトルは \(\mathbf{\bar{x}}_i=(1/n)\sum_i^n \mathbf{x}_i\).
+\(\mathbf{1}_n\) を長さが \(n\) の1ベクトルとして,\(\tilde{X}=X - \mathbf{1}_n \mathbf{\bar{x}}^\top\).
+共分散行列は \(S=\frac{1}{n}\tilde{X}^\top\tilde{X}\).
+共分散行列を次式のように分解する.
+\[S=A \Lambda A^\top\]
+\(\Lambda\) は,\(S\) の固有値 \(\lambda_1\ge\lambda_2\ge\cdots\ge\lambda_p\) を対角要素とする対角行列.
+\(A=[\mathbf{a}_1,\mathbf{a}_2,\ldots,\mathbf{a}_p]\) は固有値 \(\lambda_1\ge\lambda_2\ge\cdots\ge\lambda_p\) に対応する固有ベクトル.\(A\) は正規直交行列になる.
+\(\mathbf{a}_i\) を第i主成分 (i-th principal component)といい,データの分散をi番目に最大化する成分を表す.
+\(A_k=[\mathbf{a}_1,\mathbf{a}_2,\ldots,\mathbf{a}_k]\) (ただし,\(k\le p\))なる行列を作ると,\(A_k^\top\mathbf{x}\) で\(k\)次元空間へ次元削減できる.
+i番目の主成分方向への分散の大きさは固有値 \(\lambda_i\) で表され,\(\lambda_i/\sum_j^p \lambda_j\) を寄与率(contribution ratio)とよぶ.この寄与率を \(1,\ldots,i\)番目までについての総和をとったものを累積寄与率という.これは,元のデータの分散のうち,\(i\)番目までの主成分が保存している分散の情報を表す.よって,累積寄与率は,縮約する次元の数を決める基準に利用できる.
+逆に,分散が小さくまとまった部分空間を求めたいときは,固有値の小さな方から成分を選ぶ.これを,minor component analysis (MCA) という.
+自然言語処理分野では,latent semantic analysis とも呼ばれる.文書を語ベクトルで表し,主成分分析で次元削減すると,共起している意味の近い語を抽象的に表す圧縮された要素で構成された文書ベクトルが得られるという考え.
+-- しましま
+主成分分析 - 機械学習の「朱鷺の杜Wiki」

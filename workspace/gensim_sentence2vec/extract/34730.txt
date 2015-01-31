@@ -1,0 +1,11 @@
+
+Microsoft.Office.Tools.Word.Controls
+名前空間には、Office ソリューションの Document ホスト項目で使用できる一連の Windows フォーム コントロールが含まれています。
+これらの各クラスは、System.Windows.Forms 名前空間の基本クラスを拡張して、Microsoft Office Word ドキュメントに特有の機能を追加しています。  たとえば、Microsoft.Office.Tools.Word.Controls.Button クラスは System.Windows.Forms.Button クラスの機能を拡張しています。  
+適切なメソッドを使用すると、この名前空間のコントロールを実行時に追加および削除できます。
+たとえば、AddButton メソッドを使用すると、Microsoft.Office.Tools.Word.Controls.Button を実行時にドキュメントに追加できます。  詳細については、「実行時の Office ドキュメントへのコントロールの追加」を参照してください。  
+Word のドキュメント レベルのプロジェクトでは、デザイン時にコントロールをツールボックスから直接ドキュメントにドラッグして、この名前空間のコントロールを Word 文書に追加することもできます。
+詳細については、「方法 : Office ドキュメントに Windows フォーム コントロールを追加する」を参照してください。  
+Word 文書に追加される Windows フォーム コントロールと、Windows フォームに追加される Windows フォーム コントロールには相違点があります。
+詳細については、「Office ドキュメントでの Windows フォーム コントロールの制限事項」を参照してください。  
+Microsoft.Office.Tools.Word.Controls 名前空間 ()

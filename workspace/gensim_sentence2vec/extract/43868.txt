@@ -1,0 +1,8 @@
+Generally speaking, spoken monologue sentences are longer and more complex than spoken
+dialogue sentences. To achieve high parsing performance for spoken monologue, it could
+prove effective to simplify the structure by dividing a sentence into suitable language units.
+This paper proposes a method for dependency parsing of Japanese monologue based on
+sentence segmentation. In this method, dependency parsing is executed in two stages: a
+clause level and a sentence level. An experiment using a spoken monologue corpus shows the
+method to be effective for efficient dependency parsing of Japanese monologue sentences.
+NAGOYA Repository: 節境界に基づく独話文係り受け解析の効率化

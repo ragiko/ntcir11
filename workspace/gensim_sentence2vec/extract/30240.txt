@@ -1,0 +1,125 @@
+行列は、行と列を()で囲んで表現しますが、このドキュメント内では以下のように表現するようにします。
+| 3, 2, 1 |
+| 4, 9, 7 |
+| 6, 8, 5 |
+各行を'|'で囲ったベクトルで表現する形になります(上の例は 3 x 3の行列を表しています)。
+また、行ベクトルは通常どおり(3,2,1)のように表現しますが、列ベクトルは縦長になるため、転置行列の記号Tを使って(3,2,1)Tと表現する場合があります。
+あらかじめ、御了承ください。
+1) 任意の比率での拡大・縮小処理
+パターンを任意の比率で縮小するような場合は、パターン上のピクセルを選んで単純にプロットするのではなく、周りのピクセルの色を合成させてプロットすることで画質を向上させることができます。簡単な例をあげると、あるパターンを縦横半分に縮小するのであれば、パターンの左上から 2 x 2 の範囲のピクセルを取って RGB ごとに平均をとり、再び色コードに合成してプロットすると、ピクセルの損失をある程度防ぐことができます。これにより、先程例として挙げた格子模様の縮小では、結果としてグレーで塗り潰された四角形が描かれることになります。
+逆にパターン拡大する場合は多少コーディングに工夫が必要ですが、拡大時に生ずる隙間をパターン隣りどうしのピクセルを使って色合成しながら埋めていくことで対応できます。
+上記処理を行なうためのサンプル・プログラムを以下に示します。
+/*
+GPattern::redPut : 任意の比率による縮小処理
+GPSet& pset : 描画用関数オブジェクト
+Coord<int> c : 描画開始位置
+const Coord<int>& rate : 比率
+iterator_base& x, y : 描画方向
+*/
+void GPattern::redPut( GPSet& pset, Coord<int> c, const Coord<int>& rate, iterator_base& x, iterator_base& y )
+{
+if ( rate.x <= 0 || rate.y <= 0 ) return;
+unsigned int red, green, blue; // 合成した色コード
+for ( y.set( 0, size.y / rate.y + ( ( size.y % rate.y != 0 ) ? 1 : 0 ) ) ; y.valid() ; y.next() ) {
+if ( c.y >= pset.size().y ) break;
+if ( c.y < 0 ) {
+++( c.y );
+continue;
+}
+Coord<int> gc( c );
+for ( x.set( 0, size.x / rate.x + ( ( size.x % rate.x != 0 ) ? 1 : 0 ) ) ; x.valid() ; x.next() ) {
+if ( gc.x >= pset.size().x ) break;
+if ( gc.x < 0 ) {
+++( gc.x );
+continue;
+}
+/* 合成色を計算 */
+red = green = blue = 0;
+unsigned int cnt = 0;
+for ( int py = y.value() * rate.y ; py < ( y.value() + 1 ) * rate.y ; ++py ) {
+if ( py >= size.y ) break;
+for ( int px = x.value() * rate.x ; px < ( x.value() + 1 ) * rate.x ; ++px ) {
+if ( px >= size.x ) break;
+vector<RGB>::const_iterator it = pattern.begin() + size.x * py + px;
+red += it->r();
+green += it->g();
+blue += it->b();
+++cnt;
+}
+}
+if ( cnt > 0 ) {
+pset.col = RGB( red / cnt, green / cnt, blue / cnt );
+pset( gc );
+}
+++( gc.x );
+}
+++( c.y );
+}
+}
+/*
+GPattern::magPut : 任意の比率による拡大処理
+GPSet& pset : 描画用関数オブジェクト
+Coord<int> c : 描画開始位置
+const Coord<int>& rate : 比率
+iterator_base& x, y : 描画方向
+*/
+void GPattern::magPut( GPSet& pset, Coord<int> c, const Coord<int>& rate, iterator_base& x, iterator_base& y )
+{
+if ( rate.x <= 0 || rate.y <= 0 ) return;
+RGB vertex[2][2]; // 四点の色成分
+RGB rCol, lCol;
+for ( y.set( 0, size.y - 1 ) ; y.valid() ; y.next() ) {
+if ( c.y >= pset.size().y ) break;
+Coord<int> gc( c );
+for ( x.set( 0, size.x - 1 ) ; x.valid() ; x.next() ) {
+if ( gc.x >= pset.size().x ) break;
+/* 4点の色成分を取得する */
+for ( int py = 0 ; py < 2 ; ++py ) {
+if ( y.value() + py >= size.y ) break;
+for ( int px = 0 ; px < 2 ; ++px ) {
+if ( x.value() + px >= size.x ) break;
+vector<RGB>::const_iterator it = pattern.begin() + ( y.value() + py ) * size.x + x.value() + px;
+vertex[px][py] = RGB( it->r(), it->g(), it->b() );
+}
+}
+/* 右端・下端のパターンがない場合は左端・上端と同じ色にする */
+if ( x.value() + 1 >= size.x ) {
+vertex[1][0] = vertex[0][0];
+vertex[1][1] = vertex[0][1];
+}
+if ( y.value() + 1 >= size.y ) {
+vertex[0][1] = vertex[0][0];
+vertex[1][1] = vertex[1][0];
+}
+for ( int gy = 0 ; gy < rate.y ; ++gy ) {
+if ( c.y + gy < 0 ) continue;
+/* 左右の色成分を決定 */
+lCol = RGB( ( (double)( vertex[0][0].r() * ( rate.y - gy ) + vertex[0][1].r() * gy ) ) / (double)rate.y,
+( (double)( vertex[0][0].g() * ( rate.y - gy ) + vertex[0][1].g() * gy ) ) / (double)rate.y,
+( (double)( vertex[0][0].b() * ( rate.y - gy ) + vertex[0][1].b() * gy ) ) / (double)rate.y );
+rCol = RGB( ( (double)( vertex[1][0].r() * ( rate.y - gy ) + vertex[1][1].r() * gy ) ) / (double)rate.y,
+( (double)( vertex[1][0].g() * ( rate.y - gy ) + vertex[1][1].g() * gy ) ) / (double)rate.y,
+( (double)( vertex[1][0].b() * ( rate.y - gy ) + vertex[1][1].b() * gy ) ) / (double)rate.y );
+for ( int gx = 0 ; gx < rate.x ; ++gx ) {
+if ( gc.x + gx < 0 ) continue;
+/* 各ピクセルの色成分の計算 */
+pset.col = RGB( ( (double)( lCol.r() * ( rate.x - gx ) + rCol.r() * gx ) ) / (double)rate.x,
+( (double)( lCol.g() * ( rate.x - gx ) + rCol.g() * gx ) ) / (double)rate.x,
+( (double)( lCol.b() * ( rate.x - gx ) + rCol.b() * gx ) ) / (double)rate.x );
+pset( Coord<int>( gc.x + gx, gc.y + gy ) );
+}
+}
+gc.x += rate.x;
+}
+c.y += rate.y;
+}
+}
+縮小の方法はいたって簡単で、縮小率分のピクセル数だけ色成分(RGB)毎の和を取って、それを再び色コードに戻してからプロットするだけです。例えば、縦 1/3、横 1/5 に縮小する場合は、5 x 3 のピクセルの色を合成することになります。端数分に対しても正しく処理ができるよう、加算処理したピクセルの数は毎回カウントしてその数で除算するようにしています。
+拡大の場合は少し複雑で、隣り合った四点のピクセルを拡大率の大きさのグラデーション・ボックスに引き延ばしてプロットしていくことで処理を行っています。処理の流れは次のようになります。
+パターン上の描画位置(LU)と、その右側(RU)・下側(LD)・右下(RD)にあるピクセルの、計四つの色コードを抽出する。
+LU と LD、RU と RD を両端とした Y 軸方向のグラデーション・ラインを想定し、X軸方向のライン両端の色成分を計算する。
+計算した両端の色成分を元に、X軸方向のグラデーション・ラインを想定し、各ピクセルを描画する。
+上記 2〜3 の操作を繰り返し、LU, RU, LD, RD を各頂点とするグラデーション・ボックスを描く。
+処理の例を以下に示します。
+5 x 5に拡大する場合
+グラフィック・パターンの扱い (5) サンプル補間

@@ -1,0 +1,6 @@
+本論文では実時間システム開発にオブジェクト指向開発技術を適用する基礎とするために,形式計算モデルであるπ計算に基づきリアルタイムオブジェクト指向言語の振舞いを定式化する.π計算に離散時間の振舞いを拡張し,単純なリアルタイムオブジェクト指向言語00LRTの振舞いを記述する.実時間システムは一般に時間制約を持つ複数のオブジェクトの並行動作によって実現される.
+00LRTによって実時間システムの特性を直接的に記述し,時間拡張されたπ計算によってその振舞いを厳密に定義することで,システムの動作の解析や検証を形式的に行うための枠組みを与える.
+In this paper, we aim at providing a foundational framework of the object- oriented technique
+for system development with timing constraints. We formalize timed behavior of objects
+via the behavior of π-calculus extended with time. It is common to model a real-time system by composing concurrent objects with timing constraints. To capture the features of real-time objects, we define a simple programming language OOLRT to give the operational semantics by translating a program of OOLRT into a term of our timed π-calculus. By this translation, we obtain an abstract behavioral model for real-time objects to analyze and verify the behavioral properties of real-time systems.
+NAGOYA Repository: 時間付きπ計算によるリアルタイムオブジェクト指向言語の形式的記述

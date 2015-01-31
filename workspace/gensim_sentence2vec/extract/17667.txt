@@ -1,0 +1,3 @@
+本研究では、テキスト音声合成の韻律制御のために、継続時間長と基本周波数の相関を調べた。自然な発話には、基本周波数の変化と同時に継続時間長の変化が見られ、基本周波数と継続時間長に相関がある。この相関を調べることは、テキスト音声合成の韻律制御で自然性の高い音声合成を可能にする。本研究では、男女一人ずつの話者に対して、音節単位での継続時間長と基本周波数の相関を調べる。言語情報により、継続時間長と基本周波数の分布に特徴を見ることができた。この分布を基に、音節の継続時間長に対する基本周波数の変化の傾向を調べた。その結果、呼気の前後の音節に、継続時間長と基本周波数の相関を表す傾向が見られた。
+We investigate correlations between duration and fundamental frequency F_0 of syllables for prosodic control of text-to-speech synthesis. In natural speech, the duration of syllable seems to change with F_0. Therefore, analisis of the correlations between them make the synthesized speech more natural. We make separately distribution maps between duration and F_0 according to linguistic features. Some maps show the strong correlation between duration and F_0.
+

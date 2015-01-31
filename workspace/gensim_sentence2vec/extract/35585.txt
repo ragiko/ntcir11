@@ -1,0 +1,10 @@
+
+§1Dictionary 
+System.Collections.Generic.Dictionaryクラスはキーによってコレクション内の要素にアクセスできるコレクションで、ハッシュテーブルや連想配列と呼ばれるものに相当します。
+コレクション内の要素数を動的に増減できる点はListと同じですが、Dictionaryは常にキーと値の対(ペア)を格納します。 格納した値にアクセスする場合は、インデックスの代わりにキーを指定します。 このコレクションではキー(名前)から目的の値を引くことができるため、Dictionary(辞書)という名前が付いています。 Dictionaryでは、任意の型(厳密にはGetHashCodeメソッドが一意なハッシュ値を返すオブジェクト)をキーとして指定することができます。
+DictionaryクラスはSystem.Collections.Hashtableに相当するジェネリックコレクションですが、ただ単にジェネリックなHashtableというわけではなく、Hashtableと比べるとより高度な操作が可能になっています。
+§2基本操作
+早速、Dictionaryクラスを使った基本的な操作について見ていきます。
+§2.1Dictionaryの作成・要素の取得と設定
+Dictionaryを使う場合には、まずキーの型と値の型を決める必要があります。 Dictionaryを作成する際には、キー・値の順で型パラメータを指定します。 例えば、キーの型がstring/String、値の型がint/IntegerのDictionaryであれば、
+ジェネリックコレクション その2 Dictionary (System.Collections.Generic) - Programming/.NET Framework/コレクション - 総武ソフトウェア推進所

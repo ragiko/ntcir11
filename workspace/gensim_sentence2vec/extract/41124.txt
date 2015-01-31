@@ -1,0 +1,354 @@
+
+B: ええと、月は「9月」とかですよね、月名?
+A: SeptemberとかSepとかだな。スクリプトを実行している環境のロケール設定に依存するということになっている。
+ロケールってのは、Linuxな人なら多分よく知ってると思う。Windowsなら…「コントロールパネル」の「地域と言語」の設定にあたるかな。
+B: ふうん。日本語Windowsなのに長月とかにならないんですね。
+A: エクスプローラのファイルの更新日時が長月とか神無月とか表示されたら鬱陶しいと思うが…。まあいい。
+datetime.datetime.strftime()に与えるフォーマット文字列のうち、上の書式に合致しない文字はそのまま変換されずに出力される。
+だから、:とか/とかの文字を間に挟んでおけば、読みやすい出力が得られる。残念ながらUnicode型の文字列を渡せないみたいなんで、u'%m月%d日'とかいった文字列は渡せない。
+B: ここでも英語圏優遇が。
+A: まあ、pythonの文字列処理は強力なんで、どうしても日本語にしたかったらdatetime.datetime.strftime()の出力を加工すればいいと思うが。
+サンプルプログラムに戻って、42行目ではスクリプト名と実行日時を組み合わせたファイル名を生成して、データ保存用ファイルをopenしている。
+こうしておけば、少なくともきちんとPCの時刻を合わせていれば、間違えてデータ保存用ファイルを上書きしてしまうことはない。
+44行目では、データ保存用ファイルの冒頭にまた現在日時を出力しているが、ここではファイル名に使うことができない/や:を使って読みやすい文字列を得ている。
+B: なるほど。
+A: あともう一つ触れておきたいのは43行目。
+ここでは変数sbjnameに保存された被験者名(被験者ID)をファイルに出力しようとしているが、何も考えずに出力しようとすると以下のようなエラーが出ることがある。
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-2:
+ordinal not in range(128)
+B: 何ですかこれ? UnicodeEncodeErrorってんだからUnicodeと関係あるのかな。
+A: うむ。sbjnameに日本語の文字を含んでいたりすると、出力するときにこういうエラーが出ることがあるんだ。
+pythonは文字コードを特に指定しなければASCIIコードで出力しようとする癖があって、日本語の文字列をうまく出力できない。英語なら何も問題はないのだが。
+B: むむっ、またまた英語優遇が。ずるい!
+A: 落ち着け。2008年にリリースされたpython 3.x系ではこの問題は解決されているんだが、まだまだpython 2.x系も現役で、このコーナーで使っている多くのモジュールはpython 2.x系でなければ動かない。
+B: え、もう次のバージョンがpythonが出てるんですか?!
+A: ああ。だけど、python 2.x系が使えなくなるのはずっと将来のことになると思われるので、ここではpython 2.x系で解説している。
+とにかく、python 2.x系でUnicode文字列を出力するには、文字コードを指定する必要がある。そこで出てくるのがencode()というメソッドだ。
+43行目では、sbjname.encode('shift-jis')として、Shift-JISコードで文字列を出力している。このようにしてやれば、pythonは正しく文字列をファイルに出力できる。
+Linuxな人でEUC-JPの方が良いとかいう場合は'euc-jp'とすればいい。
+B: うーん、面倒くさいなあ。
+A: python 2.xでの文字コードの扱いは厄介なんだよ。正直なところ私もあまり自信はないんだが、単に被験者名やら条件名やらをテキストファイルに出力したいだけならこの程度の知識で十分だ。
+B: はあ。
+A: そうそう、最後にひとつだけ補足しておくと、ファイルを開く時点で文字コードを指定する方法もある。codecsというモジュールをimportし、open()の代わりにcodecs.open()を使えばいい。
+codecs.open()では、3番目の引数に文字コードを指定する。後は普通のopenでファイルを開いた時と同じようにwrite()してclose()してやればよい。
+#エラーになる
+>>> fp = open('test.txt','w')
+>>> fp.write(u'日本語')
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-2: ordin
+al not in range(128)
+#codecsを使うとエラーにならない
+>>> import codecs
+>>> fp = codecs.open('test.txt','w','shift-jis') #文字コードを指定
+>>> fp.write(u'日本語')
+>>> fp.close()
+B: いちいちencode()とかするよりこっちの方が簡単そうですね。
+A: まあ、好みの方法を使えばいい。というわけで、そろそろ次の話題に行くかな。
+ジョイスティックからの入力
+A: さて、最後はジョイスティックからの入力だ。
+私が知る限り、特にVisionEggにはジョイスティックを扱うメソッドはないので、VisionEggが依存しているpygameの機能を使う。
+pygameにはpygame.joystickというそのものズバリのクラスがあって、こいつを使えば簡単にジョイスティックを制御できる。
+103行目からがその処理なのだが…って、よく見るとすでにimport済みのsysとかpygame.localsとかをimportしているな。
+コピペのときに削るのを忘れてた。
+B: またちゃんとチェックせずに例題に使っちゃったりして…
+A: ほっとけ。とにかく手順としてはこういう感じになる。
+pygame.joystickをimport (103行目)
+pygame.joystick.init()でジョイスティックを初期化 (107行目)
+pygame.joystick.get_count()で接続されているジョイスティック数を確認 (108行目)
+pygame.joystick.Joystick(n)でn番目のジョイスティックを制御するためのインスタンスを得る (112行目)
+init()でn番目のジョイスティック初期化 (113行目)
+pygame.event.get()でイベントを確認し、pygame.locals.JOYAXISMOTION、pygame.locals.JOYBUTTONDOWN等のイベントが発生したらget_axis()、get_button()を用いてジョイスティックの状態を読み出し、適切な処理を行う (196-226行目)
+B: n番目のジョイスティックって…、
+ああそうか、対戦型のゲームとかだと1台のPCに何個もジョイスティックが刺さってる場合がありますもんね。なるほどなるほど。
+A: そう。このサンプルプログラムでは0番目のジョイスティックのみを使うことを想定しているが、
+複数の被験者が同時に参加する実験をすることがあれば、必要な数だけジョイスティックを初期化する必要がある。
+B: 複数人で参加する実験ってどんなのだろ。
+A: いろいろ考えてみると面白そうだな。ジョイスティックの状態の読み取りについて補足しておくと、
+ジョイスティックのレバーがアナログ式であろうと、ON/OFFの2段階しかなかろうと、get_axis()の戻り値は-1.0から1.0の実数となる。
+なので、197行目から208行目のように、適当な閾値(±0.8とか)を決めて、それを超えているかどうかでレバーを倒しているか否かを判断する必要がある。
+B: あの、ひとつ聞きたいんですが。
+A: ん? 何?
+B: サンプルプログラムを実行したら最初に出てくる説明画面、ジョイスティックじゃなくてゲームパッドだと思うんですけど、pygameでは同じ扱いなんですか?
+A: あー。正直なところ、今まで試した範囲ではジョイスティックだろうがジョイパッドだろうがこの方法で制御できるんで、きちんと調べたことはないな。
+専用のデバイスドライバが必要なモデルでもない限り、レバーやボタンの形に関係なく全部この方法で制御できると思う。
+B: いや、そんな難しい話を聞きたかったんじゃなくて、単に画面に出てくるアレをジョイスティックって言われると気持ち悪いなあってだけなんですが…
+A: さて、例題12-1から一気に説明したんでそろそろ疲れてきたな。まだマウスの読み取りとか説明してない小ネタがあるんだけど、例題12はこれでおひらきということにしようかな。
+例題12-1も12-3も実験本体にかかわる解説はしていないのでちょっと難しいかもしれないが、練習問題だと思って動作を理解してみてほしい。
+ちなみにコメントアウト234行目などのコメントを解除すると、ボタンやレバーを押したときに音が鳴るようになっている。キーボードとジョイスティックの違いはあるけれども一応例題2-2の練習問題の解答例になっているかな。
+そんなわけで、次回は…。なにやろうかなあ。予告しても全然その通りに進まないし、ぼちぼち考えます。ではでは。
+B: お疲れさまー。
+行番号なしのソースファイルをダウンロード 12-2.py
+実行に必要な画像ファイル inst_vg.png
+1 #!/usr/bin/env python
+2 # -*- coding: shift-jis -*-
+3 
+4 ########################################
+5 # 被験者名を得る
+6 import Tkinter
+7 import tkFont
+8 import ImageTk
+9 import Image
+10 
+11 
+12 import os
+13 import sys
+14 
+15 def setparam():
+16     class ParamWindow(Tkinter.Frame):
+17         def __init__(self,master=None):
+18             Tkinter.Frame.__init__(self,master)
+19             r = 0
+20             self.instimage = ImageTk.PhotoImage(Image.open('inst_vg.png'))
+21             Tkinter.Label(self,image=self.instimage).grid(row=r, columnspan=3)
+22             r += 1
+23             Tkinter.Label(self, text=u"名前を入力してOKをクリックしてください:", font=tkFont.Font(size=14)).grid(row=r, column=0)
+24             self.SbjNameEntry = Tkinter.StringVar()
+25             Tkinter.Entry(self, textvariable=self.SbjNameEntry, font=tkFont.Font(size=14)).grid(row=r, column=1)
+26             okButton = Tkinter.Button(self, text="OK", font=tkFont.Font(size=14), command=self.quitfunc)
+27             okButton.bind("<Return>", self.quitfunc)
+28             okButton.grid(row=r, column=2)
+29         def quitfunc(self):
+30             self.sbjname = self.SbjNameEntry.get()
+31             self.winfo_toplevel().destroy()
+32             self.quit()
+33             
+34     w = ParamWindow()
+35     w.pack()
+36     w.mainloop()
+37     return (w.sbjname)
+38 
+39 sbjname = setparam()
+40 base, ext= os.path.splitext(os.path.basename(sys.argv[0]))
+41 
+42 fDataFile = open(base+'_'+datetime.datetime.now().strftime("%m%d%H%M")+'.txt', 'w')
+43 fDataFile.write('# 被験者:%s\n'%sbjname.encode('shift-jis'))
+44 fDataFile.write('# %s\n'%datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+45 
+46 
+47 ############################
+48 #  VisionEggの初期化
+49 ############################
+50 
+51 import VisionEgg
+52 
+53 from VisionEgg.Core import *
+54 from VisionEgg.FlowControl import Presentation
+55 from VisionEgg.Text import *
+56 from VisionEgg.MoreStimuli import *
+57 from VisionEgg.WrappedText import *
+58 from pygame.locals import *
+59 
+60 
+61 from random import *
+62 
+63 VisionEgg.start_default_logging(); VisionEgg.watch_exceptions()
+64 VisionEgg.config.VISIONEGG_GUI_INIT = 0
+65 VisionEgg.config.VISIONEGG_FULLSCREEN = 0
+66 VisionEgg.config.VISIONEGG_SCREEN_W = 1024
+67 VisionEgg.config.VISIONEGG_SCREEN_H = 768
+68 
+69 
+70 screen = get_default_screen()
+71 SX = screen.size[0]
+72 SY = screen.size[1]
+73 
+74 stimPos = [(SX/2-200,SY/2-100),(SX/2-300,SY/2),(SX/2-100,SY/2),(SX/2-200,SY/2+100),
+75            (SX/2+200,SY/2-100),(SX/2+100,SY/2),(SX/2+300,SY/2),(SX/2+200,SY/2+100)]
+76 stimName = [u'下',u'左',u'右',u'上',u'1',u'2',u'3',u'4']
+77 
+78 stimlist = []
+79 labellist = []
+80 for i in range(len(stimPos)):
+81     stimlist.append(Target2D(size =(50,50),position=stimPos[i]))
+82 for i in range(len(stimName)):
+83     labellist.append(Text(text=stimName[i],position=stimPos[i],color=(0,0,0),
+84                      font_name=r'C:\Windows\Fonts\MSGOTHIC.TTC',
+85                      anchor='center'))
+86 
+87 viewport = Viewport(screen=screen,stimuli=stimlist+labellist)
+88 
+89 conditionlist = []
+90 for p in range(8): #positionが8種類
+91     for i in range(6): #1つのpositionにつき7回繰り返す
+92         conditionlist.append([p,0])
+93 
+94 shuffle(conditionlist)
+95 for i in range(8): #warningは8回出現
+96     conditionlist[i][1]=1
+97 shuffle(conditionlist)
+98 
+99 ############################
+100 #  joystickの準備
+101 ############################
+102 
+103 from pygame.joystick import *
+104 from pygame.locals import *
+105 import sys
+106 
+107 pygame.joystick.init()
+108 if pygame.joystick.get_count()<1:
+109     print "No Joystick. Abort."
+110     sys.exit(-1)
+111     
+112 js = pygame.joystick.Joystick(0)
+113 js.init()
+114 
+115 ############################
+116 #  pygame.mixerの準備
+117 ############################
+118 
+119 pygame.mixer.init()
+120 correctSound = pygame.mixer.Sound('correct.wav')
+121 errorSound = pygame.mixer.Sound('error.wav')
+122 
+123 
+124 ######################################
+125 #  メッセージ
+126 
+127 messagelist = []
+128 messagelist.append(VisionEgg.Text.Text(text=u"",
+129     anchor='center',position=(SX/2,SY/2),font_name=r'C:\Windows\Fonts\MSGOTHIC.TTC',font_size=32))
+130 messagelist.append(VisionEgg.Text.Text(text=u"",
+131     anchor='center',position=(SX/2,SY/2-32*3),font_name=r'C:\Windows\Fonts\MSGOTHIC.TTC',font_size=32))
+132 
+133 messageview = Viewport( screen=screen, stimuli=messagelist )
+134 
+135 def drawmessage(screen=screen, messageview=messageview, messagelist=messagelist, idx=[0]):
+136     for i in range(len(messagelist)):
+137         messagelist[i].parameters.on = False
+138     for i in idx:
+139         messagelist[i].parameters.on = True
+140     screen.clear()
+141     messageview.draw()
+142     VisionEgg.Core.swap_buffers()
+143 
+144 ######################################
+145 #  タイムアウト付きジョイスティックボタン待ち関数
+146 
+147 def waitJoyButtonLoopWithTimeout(timeout=1.0):
+148     wf = True
+149     flgEscape = False
+150     t = VisionEgg.time_func()
+151     while wf:
+152         if VisionEgg.time_func()-t > timeout:
+153             wf = False
+154         for event in pygame.event.get():
+155             if event.type==JOYBUTTONDOWN:
+156                 flgEscape = True
+157                 wf = False
+158     return flgEscape
+159 
+160 
+161 ############################
+162 #  実験本体
+163 ############################
+164 
+165 
+166 results = []
+167 ITIbase = 2.0
+168 StimDur = 1.0
+169 
+170 messagelist[0].parameters.text = u"準備が出来たらボタンを押してください。"
+171 drawmessage(idx=[0])
+172 waitJoyButtonLoopWithTimeout(3600)
+173 
+174 for tn in range(len(conditionlist)):
+175     trialStartTime = VisionEgg.time_func()
+176     t = 0
+177     ITI = ITIbase + (randint(0,3) * 0.5)
+178     flgButton = False
+179     while t <= ITI+StimDur:
+180         t = VisionEgg.time_func()-trialStartTime
+181         if t <ITI:
+182             for p in range(len(stimPos)):
+183                 stimlist[p].parameters.color = (1.0,1.0,1.0)
+184         else:
+185             for p in range(len(stimPos)):
+186                 if conditionlist[tn][0]==p:
+187                     if conditionlist[tn][1]==1:
+188                         stimlist[p].parameters.color = (1.0,1.0,0.0)
+189                     else:
+190                         stimlist[p].parameters.color = (1.0,0.0,0.0)                        
+191                 else:
+192                     stimlist[p].parameters.color = (1.0,1.0,1.0)
+193         
+194         for e in pygame.event.get():
+195             if (not flgButton) and t >= ITI:
+196                 if e.type == JOYAXISMOTION or e.type == JOYBUTTONDOWN:
+197                     if js.get_axis(0) < -0.8: #十字キーの左
+198                         response = 1
+199                         flgButton = True
+200                     elif js.get_axis(0) > 0.8: #十字キーの右
+201                         response = 2
+202                         flgButton = True
+203                     elif js.get_axis(1) < -0.8: #十字キーの上
+204                         response = 3
+205                         flgButton = True
+206                     elif js.get_axis(1) > 0.8: #十字キーの下
+207                         response = 0
+208                         flgButton = True
+209                     elif js.get_button(0):
+210                         response = 4
+211                         flgButton = True
+212                     elif js.get_button(1):
+213                         response = 5
+214                         flgButton = True
+215                     elif js.get_button(2):
+216                         response = 6
+217                         flgButton = True
+218                     elif js.get_button(3):
+219                         response = 7
+220                         flgButton = True
+221                     else:
+222                         for bn in [4,5,6,7]:
+223                             if js.get_button(bn):
+224                                 response = 8
+225                                 flgButton = True
+226                                 break
+227                     if flgButton:
+228                         if conditionlist[tn][1] == 1:
+229                             if response == 8:
+230                                 correctAnswer = 1
+231                                 #correctSound.play()
+232                             else:
+233                                 correctAnswer = 0
+234                                 #errorSound.play()
+235                         else:
+236                             if response == conditionlist[tn][0]:
+237                                 correctAnswer = 1
+238                                 #correctSound.play()
+239                             else:
+240                                 correctAnswer = 0
+241                                 #errorSound.play()
+242                         #while pygame.mixer.get_busy():
+243                         #    pass
+244                         rt = t-ITI
+245                         results.append([tn+1,conditionlist[tn][0],conditionlist[tn][1],response,correctAnswer,rt])
+246         
+247         screen.clear()
+248         viewport.draw()
+249         swap_buffers()
+250         
+251     if not flgButton: #ボタンが押されていなければ反応時間(ITI+StimDur)で記録
+252         results.append([tn,conditionlist[tn][0],conditionlist[tn][1],-1,0,ITI+StimDur])
+253 
+254 correctTrials = 0
+255 rtsum = 0
+256 
+257 for r in results:
+258     correctTrials += r[4] #正答率の計算のため
+259     rtsum += r[5] #平均反応時間の計算のため
+260     fDataFile.write('%d,%d,%d,%d,%d,%f\n'%tuple(r))
+261 fDataFile.close()
+262 
+263 correctRatio = 100*correctTrials/len(results)
+264 meanRT = (1000*rtsum)/len(results)
+265 messagelist[0].parameters.text=u"平均反応時間 " + str(int(meanRT)) + u"ミリ秒/正答率 " + str(int(correctRatio)) + u"%"
+266 messagelist[1].parameters.text=u"ご協力ありがとうございました。"
+267 
+268 drawmessage(idx=[0,1])
+269 waitJoyButtonLoopWithTimeout(5)
+Pythonで心理実験 - 例題12-3

@@ -1,0 +1,35 @@
+Pythonの文字列は 「'」(シングルクォーテーション)と「"」(ダブルクォーテーション)の両方で表現出来ます。
+# -*- coding: utf-8 -*- 
+print 'python-izm'
+print "python-izm"
+--実行結果--
+python-izm
+python-izm
+クォート記号3つで複数行に分けて書く事も出来ます。
+# -*- coding: utf-8 -*- 
+test_str =  """
+test_1
+test_2
+"""
+print test_str
+--実行結果--
+test_1
+test_2
+文字列の連結は「 + 」(プラス)を使います。
+# -*- coding: utf-8 -*- 
+test_str = "python"
+test_str = test_str + "-"
+test_str = test_str + "izm"
+print test_str
+--実行結果--
+python-izm
+文字列への追加も可能です。
+# -*- coding: utf-8 -*- 
+test_str = "012"
+test_str += "345"
+test_str += "678"
+test_str += "9"
+print test_str
+--実行結果--
+0123456789
+文字列 - Python入門から応用までの学習サイト

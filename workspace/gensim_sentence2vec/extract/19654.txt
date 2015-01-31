@@ -1,0 +1,49 @@
+aPartHide
+デモ
+非表示にするアイテムの数は設定が可能で、デモでは七つのアイテムを配置したリスト要素の初期状態では3アイテムだけ表示し、「more」をクリックするとすべてのアイテムが表示されます。
+また、全アイテムを表示した状態で、「less」をクリックすると3アイテムのみ表示されます。
+aPartHideの実装
+HTML
+リスト要素をdiv要素で内包し、表示・非表示用のdiv要素を配置します。
+<div id="box1" class="demo">
+<h3>Demo</h3>
+<ul>
+<li>Demo list item 1</li>
+<li>Another list item</li>
+<li>Third list item</li>
+<li>3 + 1 = item 4</li>
+<li>Five fingers, five item</li>
+<li>Six, part of 666</li>
+<li>Seven eleven, tasty</li>
+</ul>
+<div class="showhide"></div>
+</div>
+JavaScript
+「jquery.js」と当スクリプトを外部ファイルとし、下記のスクリプトを記述します。
+$(document).ready(function(){
+$("#box1").aPartHide();
+});
+スクリプトではオプションも用意されており、細かい設定をすることもできます。
+$("#box3").aPartHide({ 
+showHTML: 'more ...',
+hideHTML: 'less ...',
+hidingTriggerLength: 5,
+hideToLength: 3,
+listElement: 'ul',
+listItems: 'li',
+listControlElement: '.showhide',
+showSpeed: 'fast',
+hideSpeed: 'fast',
+controlElementShowClass: 'showHTML',
+controlElementHideClass: 'hideHTML',
+onHide: function() {},
+onShow: function() {}
+});
+aPartHideの対応ブラウザ
+対応ブラウザは、下記の通りです。
+Internet Explorer 6 and 7
+Firefox 3.5+
+Safari 4+
+Google Chrome
+Opera 9.6
+[JS]リスト要素の一部をアニメーションで表示・非表示させるスクリプト -aPartHide | コリス

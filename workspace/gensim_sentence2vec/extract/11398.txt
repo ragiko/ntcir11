@@ -1,0 +1,1036 @@
+機械的な作業になりがちな Model や ViewModel のコーディングの改善策として T4 テンプレートを利用したコード自動生成の方法があります
+Model からマルチバイト文字をエスケープして Json 文字列にシリアライズする - しっぽを追いかけて で紹介しているようなイメージで Model や ViewModel のクラスごとに .tt ファイルを作成し、そこに必要なプロパティの情報を記述してコードを自動生成してもよいのですが、この場合でも下記の不便な点がありました
+tt ファイル内のプロパティ定義は C# で書けるにも関わらずインテリセンスがきかない
+自動生成なのにクラスごとに tt ファイルが増えるため、目的のファイルを探す負荷が増える
+クラスをプラットフォーム間で共有するとプラットフォーム固有機能が使いにくい
+そのため、これらを改善した仕組みとして下記のようなコードの自動生成を試してみました
+ポイントは プロパティの構成などの定義を PCL プロジェクトに記載し、本アプリのプロジェクトからこの PCL の dll を参照して T4 テンプレートでコード自動生成するという点です
+基本的なアイデアはかずきさんのブログ記事
+宣言的にクラスを宣言しT4 Templateでコードを生成する - かずきのBlog@hatena
+で紹介されている仕組みを参考にさせていただきました
+プロパティ情報の定義をクラス属性で行うことと、Model、ViewModel、そして Model の永続化(保存)を行うという Windows Runtime 固有機能を持つ Repository を対象に自動生成しているという部分が異なります
+ソリューションソース全体については内部で Prism ベータ版を利用しているので、ご紹介は Prism リリース版が出てからにさせていただいて、今回はコードのコアな部分のみご紹介したいと思います
+まずは PCL プロジェクト
+/// <summary>
+/// クラス定義情報
+/// </summary>
+public class ClassDefinition
+{
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="name">クラス名称</param>
+/// <param name="baseType">基底クラスの型</param>
+/// <param name="description">クラスの説明</param>
+/// <param name="propertyAttributes">プロパティ属性</param>
+/// <param name="attributes">付帯属性</param>
+public ClassDefinition(string name, Type baseType, string description, PropertyAttribute[] propertyAttributes,
+params string[] attributes)
+{
+this.Name = name;
+this.BaseBaseTypeName = baseType.Name;
+this.Description = description;
+this.PropertyAttributes = propertyAttributes;
+this.Attributes = attributes;
+}
+/// <summary>
+/// クラス名称
+/// </summary>
+public string Name { get; set; }
+/// <summary>
+/// 基底クラスの型
+/// </summary>
+public string BaseBaseTypeName { get; set; }
+/// <summary>
+/// クラスの説明
+/// </summary>
+public string Description { get; set; }
+/// <summary>
+/// プロパティ属性
+/// </summary>
+public PropertyAttribute[] PropertyAttributes { get; set; }
+/// <summary>
+/// 付帯属性
+/// </summary>
+public string[] Attributes { get; set; }
+}
+/// <summary>
+/// 説明文属性
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+public class DescriptionAttribute : Attribute
+{
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="description">説明文</param>
+public DescriptionAttribute(string description)
+{
+this.Description = description;
+}
+/// <summary>
+/// プロパティ名称
+/// </summary>
+public string Description { get; set; }
+}
+/// <summary>
+/// 付帯属性属性
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+public class ClassAttributeAttribute : Attribute
+{
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="attribute">説明文</param>
+public ClassAttributeAttribute(string attribute)
+{
+this.Attribute = attribute;
+}
+/// <summary>
+/// プロパティ名称
+/// </summary>
+public string Attribute { get; set; }
+}
+これは Model や ViewModel などのクラス情報の定義用のいれものです
+/// <summary>
+/// プロパティ自動生成設定属性
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+public class PropertyAttribute : Attribute
+{
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="name">プロパティ名称</param>
+/// <param name="type">プロパティの型</param>
+/// <param name="displayName">プロパティの説明</param>
+/// <param name="attributes">付帯属性</param>
+public PropertyAttribute(string name, Type type, string displayName, params string[] attributes)
+{
+var textInfo = System.Globalization.CultureInfo.CurrentCulture.TextInfo;
+this.Name = textInfo.ToUpper(name.ToCharArray().FirstOrDefault<char>()) + name.Substring(1);
+this.FieldName = textInfo.ToLower(name.ToCharArray().FirstOrDefault<char>()) + name.Substring(1);
+this.TypeName = GetTypeName(type);
+this.IsCollection = !type.IsArray && type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICollection));
+this.DisplayName = displayName;
+this.Attributes = attributes;
+}
+/// <summary>
+/// プリミティブ型の表記置換表
+/// </summary>
+private static readonly Dictionary<string, string> Primitives = new Dictionary<string, string>()
+{
+{typeof(object).Name, "object"},
+{typeof(bool).Name, "bool"},
+{typeof(byte).Name, "byte"},
+{typeof(sbyte).Name, "sbyte"},
+{typeof(char).Name, "char"},
+{typeof(string).Name, "string"},
+{typeof(int).Name, "int"},
+{typeof(uint).Name, "uint"},
+{typeof(short).Name, "short"},
+{typeof(ushort).Name, "ushort"},
+{typeof(long).Name, "long"},
+{typeof(ulong).Name, "ulong"},
+{typeof(double).Name, "double"},
+{typeof(float).Name, "float"},
+{typeof(decimal).Name, "decimal"},
+};
+/// <summary>
+/// 型の名前を文字列化する
+/// </summary>
+/// <param name="type">変換対象の型</param>
+/// <returns>型の名前</returns>
+private static string GetTypeName(Type type)
+{
+var name = type.Name;
+var typeInfo = type.GetTypeInfo();
+if (type == typeof(string) || typeInfo.IsPrimitive)
+{
+return Primitives[name];
+}
+if (typeInfo.IsArray)
+{
+return string.Format("{0}{1}", GetTypeName(type.GetElementType()), string.Concat(Enumerable.Repeat("[]", type.GetArrayRank()).ToArray()));
+}
+if (!typeInfo.IsGenericType)
+{
+return name;
+}
+if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
+{
+return string.Format("{0}?", type.GenericTypeArguments.Select(GetTypeName).FirstOrDefault());
+}
+return string.Format("{0}<{1}>", name.Substring(0, name.IndexOf('`')), string.Join(",", type.GenericTypeArguments.Select(GetTypeName)));
+}
+/// <summary>
+/// プロパティ名称
+/// </summary>
+public string Name { get; set; }
+/// <summary>
+/// プロパティメンバ変数名称
+/// </summary>
+public string FieldName { get; set; }
+/// <summary>
+/// プロパティの型
+/// </summary>
+public string TypeName { get; set; }
+/// <summary>
+/// コレクション型フラグ
+/// </summary>
+public bool IsCollection { get; set; }
+/// <summary>
+/// プロパティの日本語名
+/// </summary>
+public string DisplayName { get; set; }
+/// <summary>
+/// 付帯属性
+/// </summary>
+public string[] Attributes { get; set; }
+}
+さらに各クラスに生成するプロパティ情報の定義用のいれもの・・・プリミティブ型は Pascal 表記ではなく小文字表記にするための置換処理があるのがミソです
+これらクラス情報、プロパティ情報のいれものクラスを利用して、モデル構成の定義は下記のような感じで記載します
+/// <summary>
+/// Model 自動生成定義クラス
+/// </summary>
+public static class ModelDefinition
+{
+/// <summary>
+/// Model の自動生成定義を取得する
+/// </summary>
+/// <returns>Model の自動生成定義</returns>
+public static IEnumerable<ClassDefinition> GetDefinitions()
+{
+var types = typeof(ModelDefinition).GetTypeInfo().Assembly.DefinedTypes.Where(
+ti => ti.IsClass
+& !ti.IsAbstract
+&& !ti.IsValueType
+&& ti.GetCustomAttributes<PropertyAttribute>().Any()
+&& !ti.IsSubclassOf(typeof(ViewModelBase)));
+return types.Select(
+t => new ClassDefinition(
+t.Name,
+t.BaseType,
+t.GetCustomAttributes<DescriptionAttribute>().Any() ? t.GetCustomAttributes<DescriptionAttribute>().First().Description : string.Empty,
+t.GetCustomAttributes<PropertyAttribute>().ToArray(),
+t.GetCustomAttributes<ClassAttributeAttribute>().Any() ? t.GetCustomAttributes<ClassAttributeAttribute>().Select<ClassAttributeAttribute, string>(a => a.Attribute).ToArray() : null));
+}
+/// <summary>
+/// 永続化リポジトリの自動生成定義を取得する
+/// </summary>
+/// <returns>Model の自動生成定義</returns>
+public static IEnumerable<RepositoryDefinition> GetRepositoryDefinitions()
+{
+var types = typeof(ModelDefinition).GetTypeInfo().Assembly.DefinedTypes.Where(
+ti => ti.IsClass
+& !ti.IsAbstract
+&& !ti.IsValueType
+&& ti.GetCustomAttributes<RepositoryAttribute>().Any()
+&& !ti.IsSubclassOf(typeof(ViewModelBase)));
+return types.Select(
+t => new RepositoryDefinition(
+t.Name,
+t.GetCustomAttributes<DescriptionAttribute>().Any() ? t.GetCustomAttributes<DescriptionAttribute>().First().Description : t.Name,
+t.GetCustomAttributes<RepositoryAttribute>().FirstOrDefault()));
+}
+}
+[Description("アプリケーション設定情報")]
+[ClassAttribute("[XmlRoot(\"app-setting\")]")]
+[Property("isFirstRun", typeof(bool), "初回起動フラグ", "[XmlAttribute(\"first-run\")]")]
+[Property("items", typeof(List<Photo>), "写真情報", "[XmlElement(\"photo\")]")]
+[Repository(@"app-settings.xml", false, @"ms-appx:///Assets/Data/default-app-settings.xml")]
+class ApplicationSettings
+{
+}
+[Description("写真情報の Model")]
+[Property("uniqueId", typeof(string), "ID", "[XmlAttribute(\"id\")]")]
+[Property("imageUri", typeof(string), "画像Uri", "[XmlAttribute(\"image\")]")]
+[Property("title", typeof(string), "タイトル", "[XmlAttribute(\"title\")]")]
+[Property("owner", typeof(string), "撮影者", "[XmlAttribute(\"owner\")]")]
+class Photo
+{
+}
+ModelDefinition はコード自動生成のため T4 テンプレート内から Model のクラス情報やプロパティ情報を取得するためのメソッドを持っています
+自動生成する Model は ApplicationSettings や Photo クラスのように内部公開でクラス属性で必要な情報を記載するのでインテリセンスもきいてコードの記述量も少ないです
+ApplicationSettings には Repository というクラス属性が付与されています
+/// <summary>
+/// 永続化リポジトリ定義情報
+/// </summary>
+public class RepositoryDefinition
+{
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="modelName">モデルクラス名</param>
+/// <param name="modelDescription">モデル説明文</param>
+/// <param name="attribute">リポジトリ自動生成属性定義</param>
+public RepositoryDefinition(string modelName, string modelDescription, RepositoryAttribute attribute)
+{
+this.ModelName = modelName;
+this.ModelDescription = modelDescription;
+this.FileName = attribute.FileName;
+this.IsRoming = attribute.IsRoming;
+this.DefaultFileName = attribute.DefaultFileName;
+}
+/// <summary>
+/// モデルクラス名
+/// </summary>
+public string ModelName { get; set; }
+/// <summary>
+/// モデル説明文
+/// </summary>
+public string ModelDescription { get; set; }
+/// <summary>
+/// ストレージファイル名
+/// </summary>
+public string FileName { get; set; }
+/// <summary>
+/// ローミング領域保存フラグ
+/// </summary>
+public bool IsRoming { get; set; }
+/// <summary>
+/// デフォルト設定ストレージファイル名
+/// </summary>
+public string DefaultFileName { get; set; }
+}
+これは永続化リポジトリも一緒に生成するための上記のようなクラス属性です
+このようなコードを PCL プロジェクトで記載し、ビルド後にできる dll ファイルを Windows ストアアプリの InfrastructureAssemblies フォルダに追加し、下記のような T4 テンプレートを作ります
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Runtime" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<#@ assembly name="$(ProjectDir)..\GenerateDefineSample\InfrastructureAssemblies\GenerateDefineSample.GenerateDefine.dll" #>
+<#@ import namespace="GenerateDefineSample.GenerateDefine" #>
+<#@ output extension=".generated.cs" #>
+//<auto-generated>
+#region License
+//-----------------------------------------------------------------------
+// <copyright>
+//     Copyright matatabi-ux 2014.
+// </copyright>
+//-----------------------------------------------------------------------
+#endregion
+namespace GenerateDefineSample.Models
+{
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+using Microsoft.Practices.Prism.Mvvm;
+<#
+foreach (var m in ModelDefinition.GetDefinitions())
+{
+#>
+<# if (!string.IsNullOrEmpty(m.Description)) { #>
+/// <summary>
+/// <#= m.Description #> のインタフェース
+/// </summary>
+<# } #>
+public partial interface I<#= m.Name #>
+{<# if (m.PropertyAttributes != null) {
+foreach(var property in m.PropertyAttributes) { #>
+<# if (!string.IsNullOrEmpty(property.DisplayName)) { #>
+/// <summary>
+/// <#= property.DisplayName #>
+/// </summary>
+<# } #>
+<#= property.TypeName #> <#=property.Name #> { get; set; }
+<#      }
+}
+#>    }<# if (!string.IsNullOrEmpty(m.Description)) { #>
+/// <summary>
+/// <#= m.Description #>
+/// </summary>
+<# } #>
+<# if (m.Attributes != null) { foreach(var attribute in m.Attributes) {#>
+<#= attribute #>
+<# } } #>
+public partial class <#= m.Name #> : I<#= m.Name #>
+{
+#region マルチスレッド排他制御用
+/// <summary>
+/// 排他制御フラグ
+/// </summary>
+private static bool isSynchronize = false;
+/// <summary>
+/// 排他制御フラグ
+/// </summary>
+[XmlIgnore]
+public static bool IsSynchronize
+{
+get { return isSynchronize; }
+set { isSynchronize = value; }
+}
+/// <summary>
+/// 排他制御オブジェクト
+/// </summary>
+public static readonly Mutex LockObject = new Mutex();
+#endregion //マルチスレッド排他制御用
+<# if (m.PropertyAttributes != null) {
+foreach(var property in m.PropertyAttributes) { #>
+#region <#= property.Name #>:<#= property.DisplayName #> プロパティ
+<# if (!string.IsNullOrEmpty(property.DisplayName)) { #>
+/// <summary>
+/// <#= property.DisplayName #>
+/// </summary>
+<# } #>
+private <#= property.TypeName #> <#= property.FieldName #><# if ( property.IsCollection ) { #> = new <#= property.TypeName #>()<# } #>; 
+<# if (!string.IsNullOrEmpty(property.DisplayName)) { #>
+/// <summary>
+/// <#= property.DisplayName #> の取得および設定
+/// </summary>
+<# } #>
+<# if (property.Attributes != null) { foreach(var attribute in property.Attributes) {#>
+<#= attribute #>
+<# } } #>
+public <#= property.TypeName #> <#=property.Name #>
+{
+get { return this.<#= property.FieldName #>; }
+set 
+{
+try
+{
+if (isSynchronize)
+{
+LockObject.WaitOne();
+}
+this.<#= property.FieldName #> = value;
+}
+finally
+{
+if (isSynchronize)
+{
+LockObject.ReleaseMutex();
+}
+}
+}
+}
+#endregion //<#= property.Name #>:<#= property.DisplayName #> プロパティ
+<#      }
+} #>
+}
+<#
+}
+#>
+}
+これをカスタムツール実行すると Model.generated.cs のコードが自動生成されます
+/// <summary>
+/// アプリケーション設定情報 のインタフェース
+/// </summary>
+public partial interface IApplicationSettings
+{
+/// <summary>
+/// 写真情報
+/// </summary>
+List<Photo> Items { get; set; }
+/// <summary>
+/// 初回起動フラグ
+/// </summary>
+bool IsFirstRun { get; set; }
+}
+/// <summary>
+/// アプリケーション設定情報
+/// </summary>
+[XmlRoot("app-setting")]
+public partial class ApplicationSettings : IApplicationSettings
+{
+#region マルチスレッド排他制御用
+/// <summary>
+/// 排他制御フラグ
+/// </summary>
+private static bool isSynchronize = false;
+/// <summary>
+/// 排他制御フラグ
+/// </summary>
+[XmlIgnore]
+public static bool IsSynchronize
+{
+get { return isSynchronize; }
+set { isSynchronize = value; }
+}
+/// <summary>
+/// 排他制御オブジェクト
+/// </summary>
+public static readonly Mutex LockObject = new Mutex();
+#endregion //マルチスレッド排他制御用
+#region Items:写真情報 プロパティ
+/// <summary>
+/// 写真情報
+/// </summary>
+private List<Photo> items = new List<Photo>(); 
+/// <summary>
+/// 写真情報 の取得および設定
+/// </summary>
+[XmlElement("photo")]
+public List<Photo> Items
+{
+get { return this.items; }
+set 
+{
+try
+{
+if (isSynchronize)
+{
+LockObject.WaitOne();
+}
+this.items = value;
+}
+finally
+{
+if (isSynchronize)
+{
+LockObject.ReleaseMutex();
+}
+}
+}
+}
+#endregion //Items:写真情報 プロパティ
+#region IsFirstRun:初回起動フラグ プロパティ
+/// <summary>
+/// 初回起動フラグ
+/// </summary>
+private bool isFirstRun; 
+/// <summary>
+/// 初回起動フラグ の取得および設定
+/// </summary>
+[XmlAttribute("first-run")]
+public bool IsFirstRun
+{
+get { return this.isFirstRun; }
+set 
+{
+try
+{
+if (isSynchronize)
+{
+LockObject.WaitOne();
+}
+this.isFirstRun = value;
+}
+finally
+{
+if (isSynchronize)
+{
+LockObject.ReleaseMutex();
+}
+}
+}
+}
+#endregion //IsFirstRun:初回起動フラグ プロパティ
+}
+/// <summary>
+/// 写真情報の Model のインタフェース
+/// </summary>
+public partial interface IPhoto
+{
+/// <summary>
+/// 画像Uri
+/// </summary>
+string ImageUri { get; set; }
+/// <summary>
+/// ID
+/// </summary>
+string UniqueId { get; set; }
+/// <summary>
+/// タイトル
+/// </summary>
+string Title { get; set; }
+/// <summary>
+/// 撮影者
+/// </summary>
+string Owner { get; set; }
+}
+/// <summary>
+/// 写真情報の Model
+/// </summary>
+public partial class Photo : IPhoto
+{
+#region マルチスレッド排他制御用
+/// <summary>
+/// 排他制御フラグ
+/// </summary>
+private static bool isSynchronize = false;
+/// <summary>
+/// 排他制御フラグ
+/// </summary>
+[XmlIgnore]
+public static bool IsSynchronize
+{
+get { return isSynchronize; }
+set { isSynchronize = value; }
+}
+/// <summary>
+/// 排他制御オブジェクト
+/// </summary>
+public static readonly Mutex LockObject = new Mutex();
+#endregion //マルチスレッド排他制御用
+#region ImageUri:画像Uri プロパティ
+/// <summary>
+/// 画像Uri
+/// </summary>
+private string imageUri; 
+/// <summary>
+/// 画像Uri の取得および設定
+/// </summary>
+[XmlAttribute("image")]
+public string ImageUri
+{
+get { return this.imageUri; }
+set 
+{
+try
+{
+if (isSynchronize)
+{
+LockObject.WaitOne();
+}
+this.imageUri = value;
+}
+finally
+{
+if (isSynchronize)
+{
+LockObject.ReleaseMutex();
+}
+}
+}
+}
+#endregion //ImageUri:画像Uri プロパティ
+#region UniqueId:ID プロパティ
+/// <summary>
+/// ID
+/// </summary>
+private string uniqueId; 
+/// <summary>
+/// ID の取得および設定
+/// </summary>
+[XmlAttribute("id")]
+public string UniqueId
+{
+get { return this.uniqueId; }
+set 
+{
+try
+{
+if (isSynchronize)
+{
+LockObject.WaitOne();
+}
+this.uniqueId = value;
+}
+finally
+{
+if (isSynchronize)
+{
+LockObject.ReleaseMutex();
+}
+}
+}
+}
+#endregion //UniqueId:ID プロパティ
+#region Title:タイトル プロパティ
+/// <summary>
+/// タイトル
+/// </summary>
+private string title; 
+/// <summary>
+/// タイトル の取得および設定
+/// </summary>
+[XmlAttribute("title")]
+public string Title
+{
+get { return this.title; }
+set 
+{
+try
+{
+if (isSynchronize)
+{
+LockObject.WaitOne();
+}
+this.title = value;
+}
+finally
+{
+if (isSynchronize)
+{
+LockObject.ReleaseMutex();
+}
+}
+}
+}
+#endregion //Title:タイトル プロパティ
+#region Owner:撮影者 プロパティ
+/// <summary>
+/// 撮影者
+/// </summary>
+private string owner; 
+/// <summary>
+/// 撮影者 の取得および設定
+/// </summary>
+[XmlAttribute("owner")]
+public string Owner
+{
+get { return this.owner; }
+set 
+{
+try
+{
+if (isSynchronize)
+{
+LockObject.WaitOne();
+}
+this.owner = value;
+}
+finally
+{
+if (isSynchronize)
+{
+LockObject.ReleaseMutex();
+}
+}
+}
+}
+#endregion //Owner:撮影者 プロパティ
+}
+自動生成で追加されるファイルは 1つですが中には複数のクラスが記述されるので、大量の Model を作ってもソリューションエクスプローラからファイルを探す負荷が上がりません
+ViewModel についても上記のようにすれば同様に自動生成できるというわけです
+さらに次のような Repository.tt を作成します
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Runtime" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<#@ assembly name="$(ProjectDir)..\GenerateDefineSample.Shared\InfrastructureAssemblies\GenerateDefineSample.GenerateDefine.dll" #>
+<#@ import namespace="GenerateDefineSample.GenerateDefine" #>
+<#@ output extension=".generated.cs" #>
+//<auto-generated>
+#region License
+//-----------------------------------------------------------------------
+// <copyright>
+//     Copyright matatabi-ux 2014.
+// </copyright>
+//-----------------------------------------------------------------------
+#endregion
+namespace GenerateDefineSample.Models
+{
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
+using Microsoft.Practices.Prism.Mvvm;
+using Windows.Storage;
+<#
+foreach (var r in ModelDefinition.GetRepositoryDefinitions())
+{
+#>
+/// <summary>
+/// <#= r.ModelDescription #> リポジトリのインタフェース
+/// </summary>
+public partial interface I<#= r.ModelName #>Repository
+{
+/// <summary>
+/// <#= r.ModelDescription #>
+/// </summary>
+<#= r.ModelName #> Data { get; }
+/// <summary>
+/// <#= r.ModelDescription #> を読み込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+Task<bool> LoadAsync();
+/// <summary>
+/// <#= r.ModelDescription #> を書き込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+Task<bool> SaveAsync();
+}
+/// <summary>
+/// <#= r.ModelDescription #> リポジトリ
+/// </summary>
+public partial class <#= r.ModelName #>Repository : I<#= r.ModelName #>Repository
+{
+#region Privates
+<# if (r.IsRoming) { #>
+/// <summary>
+/// データの参照先フォルダ
+/// </summary>
+private static readonly IStorageFolder StoreFolder = ApplicationData.Current.RomingFolder;
+<# } else { #>
+/// <summary>
+/// データの参照先フォルダ
+/// </summary>
+private static readonly IStorageFolder StoreFolder = ApplicationData.Current.LocalFolder;
+<# } #>
+/// <summary>
+/// <#= r.ModelDescription #> のファイル名
+/// </summary>
+private static readonly string FileName = @"<#= r.FileName #>";
+<# if (!string.IsNullOrEmpty(r.DefaultFileName)) { #>
+/// <summary>
+/// <#= r.ModelDescription #> のデフォルト設定ファイル名
+/// </summary>
+private static readonly string DefaultFilePath = @"<#= r.DefaultFileName #>";<# } #>
+#endregion //Privates
+/// <summary>
+/// コンストラクタ
+/// </summary>
+static <#= r.ModelName #>Repository()
+{
+}
+/// <summary>
+/// コンストラクタ
+/// </summary>
+public <#= r.ModelName #>Repository()
+{
+}
+/// <summary>
+/// <#= r.ModelDescription #>
+/// </summary>
+public <#= r.ModelName #> Data { get; private set; }
+/// <summary>
+/// <#= r.ModelDescription #> を読み込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+public async virtual Task<bool> LoadAsync()
+{
+try
+{
+var file = await StoreFolder.GetFileAsync(FileName);
+using (var stream = await file.OpenSequentialReadAsync())
+{
+var serializer = new XmlSerializer(typeof(<#= r.ModelName #>));
+this.Data = serializer.Deserialize(stream.AsStreamForRead()) as <#= r.ModelName #>;
+ApplicationSettings.IsSynchronize = true;
+}
+return true;
+}
+catch (FileNotFoundException)
+{
+<# if (!string.IsNullOrEmpty(r.DefaultFileName)) { #>
+Debug.WriteLine(string.Format("{0} がないのでデフォルトの設定情報を読み込みます。", FileName));
+<# } else { #>
+Debug.WriteLine(string.Format("{0} がないのでデフォルトの設定情報を生成します。", FileName));
+this.Data = new <#= r.ModelName #>();<# } #>
+}
+catch (Exception ex)
+{
+Debug.WriteLine(ex.ToString());
+}
+<# if (!string.IsNullOrEmpty(r.DefaultFileName)) { #>
+// 読み込みに失敗した場合はデフォルト値を読み込む
+try
+{
+var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(DefaultFilePath, UriKind.Absolute));
+using (var stream = await file.OpenSequentialReadAsync())
+{
+var serializer = new XmlSerializer(typeof(<#= r.ModelName #>));
+this.Data = serializer.Deserialize(stream.AsStreamForRead()) as <#= r.ModelName #>;
+ApplicationSettings.IsSynchronize = true;
+}
+await this.SaveAsync();
+return true;
+}
+catch (Exception ex)
+{
+Debug.WriteLine(ex.ToString());
+}<# } #>
+return false;
+}
+/// <summary>
+/// <#= r.ModelDescription #> を書き込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+public async virtual Task<bool> SaveAsync()
+{
+try
+{
+<#= r.ModelName #>.LockObject.WaitOne();
+var file = await StoreFolder.CreateFileAsync(FileName, CreationCollisionOption.ReplaceExisting);
+using (var stream = await file.OpenStreamForWriteAsync())
+{
+var writer = XmlWriter.Create(
+stream,
+new XmlWriterSettings()
+{
+Encoding = Encoding.UTF8,
+Indent = false,
+NewLineChars = string.Empty,
+});
+var serializer = new XmlSerializer(typeof(<#= r.ModelName #>));
+serializer.Serialize(writer, this.Data);
+}
+return true;
+}
+catch (Exception ex)
+{
+Debug.WriteLine(ex.ToString());
+}
+finally
+{
+<#= r.ModelName #>.LockObject.ReleaseMutex();
+}
+return false;
+}
+}
+<#
+}
+#>
+}
+この tt をカスタムツールで実行すると・・・
+/// <summary>
+/// アプリケーション設定情報 リポジトリのインタフェース
+/// </summary>
+public partial interface IApplicationSettingsRepository
+{
+/// <summary>
+/// アプリケーション設定情報
+/// </summary>
+ApplicationSettings Data { get; }
+/// <summary>
+/// アプリケーション設定情報 を読み込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+Task<bool> LoadAsync();
+/// <summary>
+/// アプリケーション設定情報 を書き込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+Task<bool> SaveAsync();
+}
+/// <summary>
+/// アプリケーション設定情報 リポジトリ
+/// </summary>
+public partial class ApplicationSettingsRepository : IApplicationSettingsRepository
+{
+#region Privates
+/// <summary>
+/// データの参照先フォルダ
+/// </summary>
+private static readonly IStorageFolder StoreFolder = ApplicationData.Current.LocalFolder;
+/// <summary>
+/// アプリケーション設定情報 のファイル名
+/// </summary>
+private static readonly string FileName = @"app-settings.xml";
+/// <summary>
+/// アプリケーション設定情報 のデフォルト設定ファイル名
+/// </summary>
+private static readonly string DefaultFilePath = @"ms-appx:///Assets/Data/default-app-settings.xml";
+#endregion //Privates
+/// <summary>
+/// コンストラクタ
+/// </summary>
+static ApplicationSettingsRepository()
+{
+}
+/// <summary>
+/// コンストラクタ
+/// </summary>
+public ApplicationSettingsRepository()
+{
+}
+/// <summary>
+/// アプリケーション設定情報
+/// </summary>
+public ApplicationSettings Data { get; private set; }
+/// <summary>
+/// アプリケーション設定情報 を読み込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+public async virtual Task<bool> LoadAsync()
+{
+try
+{
+var file = await StoreFolder.GetFileAsync(FileName);
+using (var stream = await file.OpenSequentialReadAsync())
+{
+var serializer = new XmlSerializer(typeof(ApplicationSettings));
+this.Data = serializer.Deserialize(stream.AsStreamForRead()) as ApplicationSettings;
+ApplicationSettings.IsSynchronize = true;
+}
+return true;
+}
+catch (FileNotFoundException)
+{
+Debug.WriteLine(string.Format("{0} がないのでデフォルトの設定情報を読み込みます。", FileName));
+}
+catch (Exception ex)
+{
+Debug.WriteLine(ex.ToString());
+}
+// 読み込みに失敗した場合はデフォルト値を読み込む
+try
+{
+var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(DefaultFilePath, UriKind.Absolute));
+using (var stream = await file.OpenSequentialReadAsync())
+{
+var serializer = new XmlSerializer(typeof(ApplicationSettings));
+this.Data = serializer.Deserialize(stream.AsStreamForRead()) as ApplicationSettings;
+ApplicationSettings.IsSynchronize = true;
+}
+await this.SaveAsync();
+return true;
+}
+catch (Exception ex)
+{
+Debug.WriteLine(ex.ToString());
+}
+return false;
+}
+/// <summary>
+/// アプリケーション設定情報 を書き込む
+/// </summary>
+/// <returns>成功した場合は true, 失敗した場合は false</returns>
+public async virtual Task<bool> SaveAsync()
+{
+try
+{
+ApplicationSettings.LockObject.WaitOne();
+var file = await StoreFolder.CreateFileAsync(FileName, CreationCollisionOption.ReplaceExisting);
+using (var stream = await file.OpenStreamForWriteAsync())
+{
+var writer = XmlWriter.Create(
+stream,
+new XmlWriterSettings()
+{
+Encoding = Encoding.UTF8,
+Indent = false,
+NewLineChars = string.Empty,
+});
+var serializer = new XmlSerializer(typeof(ApplicationSettings));
+serializer.Serialize(writer, this.Data);
+}
+return true;
+}
+catch (Exception ex)
+{
+Debug.WriteLine(ex.ToString());
+}
+finally
+{
+ApplicationSettings.LockObject.ReleaseMutex();
+}
+return false;
+}
+}
+Windows Runtime プラットフォーム固有機能であるアプリデータへの読み書き用リポジトリクラスも自動生成できました
+これを応用してプラットフォーム(iOS や Android)ごとに T4 テンプレートファイルを作りさえすれば、固有 API を含んだクラスを自動生成できるというわけです
+すなわち、Xamarin や JavaScript の Web アプリなど、クロスプラットフォーム開発での開発生産性向上に貢献できる可能性がありますよね
+ViewModel の T4 テンプレートに各プラットフォームごとのデータバインディングの仕組みを埋め込めば・・・いろいろと夢が広がります!
+プロパティ構成を PCL プロジェクトに外出ししたコード自動生成 - しっぽを追いかけて

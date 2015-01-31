@@ -1,0 +1,56 @@
+頻度分布やバイグラムの練習
+下記のページから「2009年1月20日,オバマ氏の大統領就任演説」のテキストを取得し,ファイル obama_inaugural_transcript.txt として保存する。
+http://gaikoku.info/english/column/obama_inaugural_transcript.htm
+>>> import nltk
+>>> f = open('obama_inaugural_transcript.txt')
+>>> raw = f.read()
+>>> tokens = nltk.word_tokenize(raw)   #テキストをトークンに分割
+>>> raw    #元のテキスト
+'I stand here today humbled by the task before us, grateful for the trust you've bestowed, mindful of the sacrifices borne by our ancestors.\n\n I thank President Bush for his service to our nation ............................
+>>> tokens   #トークンへの分割後
+['I','stand','here','today','humbled','by','the','task','before','us',',','grateful','for','the','trust','you',"'ve",'bestowed',',','mindful','of','the','sacrifices','borne','by','our','ancestors','.','I','thank','President','Bush','for','his','service','to','our','nation',
+............................
+>>> len(tokens)    #単語数(ただし,大文字・小文字を区別している)
+2648
+>>> len(set(tokens))   #異なり語数(ただし,大文字・小文字を区別している)
+974全ての単語を小文字化した上で,異なり語数を調べる。
+>>> tokens_l = [w.lower() for w in tokens] 
+>>> len(set(tokens_l))
+938
+#単語の出現頻度分布(Frequency Distribution)
+>>> fd = nltk.FreqDist(tokens_l)
+#頻度分布のプロット(上位50件)
+>>> fd.plot(50)次にバイグラムを取得してみる。
+#バイグラムを作る。
+>>> bigrams = nltk.bigrams(tokens_l)
+#バイグラムの頻度分布を得る。
+>>> fd = nltk.FreqDist(bigrams)
+#頻度付きで共起の結果を得る。(上位10個)
+>>> fd.items()[:10]
+[(('of','our'),18),((',','and'),16),((',','but'),13),((',','we'),13),((',','the'),12),(('(','applause.'),11),(('applause.',')'),11),(('we','will'),10),(('on','the'),9),(('to','the'),9)]
+条件付き頻度分布(ConditionalFrequencyDistribution)を用いてbigramを扱う
+参考にしたのは「入門自然言語処理」の2.2節である。
+条件付き頻度分布を得る。ここでは (of, *) という形式に注目した。
+>>> cfd = nltk.ConditionalFreqDist(bigrams)
+#バイグラム(of,*)において*に該当する単語を頻度順で出力する。
+>>> list(cfd['of'])
+['our','the','a','crisis','every','peace','this','us','america','america.','americans','an','birth','charity','christians','citizenship.','civil','confidence','control.','day','dissent','each','freedom','generations.','greed','happiness.','history','humility','law','life','man','months','patriots','peace.','poor','progress','prosperity','protecting','purpose','remaking','responsibility','riches','scripture','service','short-cuts','some','standing','things','those','time.','tribe','violence','who','winter','workers']
+#上記の結果を頻度付きで出力
+>>> cfd['of'].items()
+[('our',18),('the',4),('a',3),('crisis',2),('every',2),('peace',2),('this',2),('us',2),('america',1),('america.',1),('americans',1),('an',1),('birth',1),('charity',1),('christians',1),('citizenship.',1),('civil',1),('confidence',1),('control.',1),('day',1),('dissent',1),('each',1),('freedom',1),('generations.',1),('greed',1),('happiness.',1),('history',1),('humility',1),('law',1),('life',1),('man',1),('months',1),('patriots',1),('peace.',1),('poor',1),('progress',1),('prosperity',1),('protecting',1),('purpose',1),('remaking',1),('responsibility',1),('riches',1),('scripture',1),('service',1),('short-cuts',1),('some',1),('standing',1),('things',1),('those',1),('time.',1),('tribe',1),('violence',1),('who',1),('winter',1),('workers',1)]データが多すぎるため,(of,*) のみを扱うよう,新たなリストを作る。
+>>> for w in bigrams:
+if w[0] == 'of':
+bigrams_of.append(w)
+>>> print bigrams_of
+[('of','the'),('of','prosperity'),('of','peace.'),('of','the'),('of','those'),('of','our'),('of','americans'),('of','crisis'),
+................]
+>>> cfd = nltk.ConditionalFreqDist(bigrams_of)
+>>> list(cfd['of'])
+['our','the','a','crisis','every','peace','this','us','america','america.','americans','an','birth','charity','christians','citizenship.','civil','confidence','control.','day','dissent','each','freedom','generations.','greed','happiness.','history','humility','law','life','man','months','patriots','peace.','poor','progress','prosperity','protecting','purpose','remaking','responsibility','riches','scripture','service','short-cuts','some','standing','things','those','time.','tribe','violence','who','winter','workers']・・・と,こんな面倒なことをしなくてもplotの引数conditionsを指定すれば良かった。
+plot() の説明は http://nltk.googlecode.com/svn/trunk/doc/api/nltk.probability.ConditionalFreqDist-class.html#plot を参照。
+>>> cfd = nltk.ConditionalFreqDist(bigrams)
+>>> cfd.plot(conditions=['of'])(of, *) のプロットは省略。2つの単語に関するバイグラム(you,*),(we,*)をプロットする場合,次のように引数 conditions に複数の単語を与える。
+>>> cfd.plot(conditions=['you','we'])演説の特性だろうか,"you ..." という呼びかけよりも "we" を用い,かつ "we will ..." と未来志向の言葉遣いをしており,その出現頻度は 10 である。
+>>> cfd['we'].items()
+[('will',10),('are',6),('can',5),('have',4),("'ll",2),('must',2),('remain',2),('say',2),(',',1),('ask',1),('carried',1),('come',1),('consider',1),('consume',1),('continue',1),('did',1),('do',1),('face',1),('falter',1),('gather',1),('honor',1),('intend',1),('know',1),('look',1),('meet',1),('might',1),('please.',1),('pledge',1),('refused',1),('reject',1),('remember',1),('restore',1),('seek',1),('understand',1),('use',1),('waver',1),('were',1)]
+nltk を用いたバイグラムの処理 - (主に)プログラミングのメモ

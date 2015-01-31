@@ -1,0 +1,53 @@
+
+スマホ実機でリアルタイムにデザイン確認したい
+スマホのデザイン確認を実機で確認しようとすると、Photoshopで画像を書き出してFTPでアップしたりスマホに画像を送信するなど手間がかかりました。
+リアルタイムで確認できるようになれば、その手間が減るということで
+アプリのダウンロード
+PC版ダウンロード
+Mac App Store - Skala Preview
+※OS 10.7以上
+iPhone版ダウンロード
+Skala View on the App Store on iTunes
+Android版ダウンロード
+Skala View - Google Play の Android アプリ
+※すべて公式サイトからダウンロードできます。
+Skala Preview, a Mac app by Bjango
+設定方法
+PC・スマホ共にインストールが完了したら、両方のアプリを起動させてPCとスマホを同期させ、お使いのPhotoshopと接続できるように設定します。
+PCとスマホを同期させる
+スマホのメニューバーの左下に同期できるPCの一覧が表示されるのでお使いのPCを選択してください。
+Photoshopでリモート接続できるように設定する
+「編集」から「リモート接続」を選択
+「リモート接続を有効にする」の項目にチェックを入れて、「サービス名」と「パスワード」の設定をする。
+Skalaで先程設定したPhotoshopの登録して同期させる。
+「Setting」から「Photoshop Setting」を選択し、
+事前に登録したPhotoshopの「サービス名」と「パスワード」を入力する。
+#スマホ実機でリアルタイムにデザイン確認したい
+スマホのデザイン確認を実機で確認しようとすると、Photoshopで画像を書き出してFTPでアップしたりスマホに画像を送信するなど手間がかかりました。
+リアルタイムで確認できるようになれば、その手間が減るということで
+#アプリのダウンロード
+###PC版ダウンロード
+[Mac App Store - Skala Preview](https://itunes.apple.com/jp/app/skala-preview/id498875079?mt=12 "Mac App Store - Skala Preview")
+※OS 10.7以上
+###iPhone版ダウンロード
+[Skala View on the App Store on iTunes](https://itunes.apple.com/us/app/skala-view/id498876303?mt=8 "Skala View on the App Store on iTunes")
+###Android版ダウンロード
+[Skala View - Google Play の Android アプリ](https://play.google.com/store/apps/details?id=com.bjango.skalaview "Skala View - Google Play の Android アプリ")
+※すべて公式サイトからダウンロードできます。
+[Skala Preview, a Mac app by Bjango](http://bjango.com/mac/skalapreview/ "Skala Preview, a Mac app by Bjango")
+#設定方法
+PC・スマホ共にインストールが完了したら、両方のアプリを起動させてPCとスマホを同期させ、お使いのPhotoshopと接続できるように設定します。
+##PCとスマホを同期させる
+スマホのメニューバーの左下に同期できるPCの一覧が表示されるのでお使いのPCを選択してください。
+![IMG_7151.PNG](https://qiita-image-store.s3.amazonaws.com/999/49056/f3784224-33e9-0ece-c3bf-6c519d0c701b.png)
+##Photoshopで<strong>リモート接続</strong>できるように設定する
+####「編集」から「リモート接続」を選択
+![スクリーンショット 2014-07-25 12.16.56.png](https://qiita-image-store.s3.amazonaws.com/999/49056/97960b67-5c49-9fc8-89b4-665b7742045f.png)
+####「リモート接続を有効にする」の項目にチェックを入れて、「サービス名」と「パスワード」の設定をする。
+![スクリーンショット 2014-07-25 12.18.02.png](https://qiita-image-store.s3.amazonaws.com/999/49056/576e9760-b76b-6b1a-4ffe-08d84b65e4f1.png)
+##Skalaで先程設定したPhotoshopの登録して同期させる。
+####「Setting」から「Photoshop Setting」を選択し、
+![スクリーンショット 2014-07-25 12.23.28.png](https://qiita-image-store.s3.amazonaws.com/999/49056/4d2cfc09-898d-b38e-c3ee-b8efeea06bb7.png)
+####事前に登録したPhotoshopの「サービス名」と「パスワード」を入力する。
+![スクリーンショット 2014-07-25 12.24.27.png](https://qiita-image-store.s3.amazonaws.com/999/49056/0f05b3b6-d01c-2c5e-ce07-245dfa60723e.png)
+【Photoshop】スマホ実機でリアルタイムにデザイン確認する方法 - Qiita

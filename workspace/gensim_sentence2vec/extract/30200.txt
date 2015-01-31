@@ -1,0 +1,58 @@
+additionalForeignKeyMapの仕様 @additionalForeignKeyMap.dfprop
+map:{
+; [FK-name] = map:{
+; localTableName = [local-table-name]
+; foreignTableName = [foreign-table-name]
+; localColumnName = [local-column-name for FK]
+; foreignColumnName = [foreign-column-name for PK (or UQ)]
+; fixedCondition = [fixed-condition for "on" clause of join]
+; fixedSuffix = [fixed-suffix]
+; fixedInline = [true or false]
+; fixedReferrer = [true or false]
+; fixedOnlyJoin = [true or false]
+; suppressJoin = [true or false]
+; suppressSubQuery = [true or false]
+}
+; ...
+}
+以下、(*)の付いたプロパティは必須です。
+FK-name (*)
+FKの名前を指定します。mapのキーになっていて、ユニークである必要があります。
+習慣的に、実際にDBに存在するFK制約を含めてもユニークな名前(かつ、大文字で "FK_" で始まるもの)を付けることをお奨めします。
+localTableName (*)
+FK制約を設定するテーブル名を指定します。
+値候補テーブルの名前 (自動生成対象になっていること) or $$ALL$$
+デフォルトなし
+補足
+大文字小文字の区別なし (但し実体と合わせることを推奨)
+$$ALL$$ と指定すると、全てのテーブルの localColumnName
+と同じ名前のカラムに対して一括設定します。FKカラムの名前が統一的な場合に有効です。@since 0.9.7.1
+foreignTableName (*)
+FKの参照先テーブル名を指定します。
+値候補テーブルの名前 (自動生成対象になっていること)
+デフォルトなし
+補足
+大文字小文字の区別なし (但し実体と合わせることを推奨)
+localColumnName
+FKとして扱うカラム名を指定します。
+値候補カラムの名前 (自動生成対象になっていること)
+デフォルト参照先テーブルのPKカラム名
+補足
+大文字小文字の区別なし (但し実体と合わせることを推奨)
+参照元テーブルのFKカラム名と参照先テーブルのPKカラム名と同一の場合は省略可能
+fixedOnlyJoin が true のときは省略可能 @since 1.0.5M
+複合FKの場合は、"/" (スラッシュ)区切りで複数のカラムを指定 (foreignColumnNameの順番と合わせること)
+foreignColumnName
+FKの参照先として扱うカラム名を指定します。
+値候補カラムの名前 (自動生成対象になっていること)
+デフォルト参照元テーブルのFKカラム名
+補足
+大文字小文字の区別なし (但し実体と合わせることを推奨)
+参照元テーブルのFKカラム名と参照先テーブルのPKカラム名と同一の場合は省略可能
+fixedOnlyJoin が true のときは省略可能 @since 1.0.5M
+複合FKの場合は、"/" (スラッシュ)区切りで複数のカラムを指定 (localColumnNameの順番と合わせること)
+文字列と数値の間であれば、localColumnName とデータ型の違うカラムを foreignColumnName
+として指定することができます(@since 0.9.9.0C)。
+推奨されませんが、DBの構造上どうにもならない場合に有効です。ただし、正常に動作するかどうかは DBMS の暗黙の型変換の仕様次第となります。
+また、この場合は TwoEdgedSword 認定となるため、ケースバイケース(DBFlute の他の機能との相性など)で利用できないことがあります。 
+additionalForeignKeyMap | DBFlute

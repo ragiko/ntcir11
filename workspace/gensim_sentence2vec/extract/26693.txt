@@ -1,0 +1,358 @@
+
+ソースコード
+はじめに
+試しにhapmap1.pedとhapmap1.mapを読み込む
+ファイルが壊れてないかチェックできる
+plink.logが毎回生成される  
+plink --file hapmap1
+バイナリファイルをつくる
+バイナリPEDファイルを作成する(こっちのほうが計算が早い)
+hapmap1.log, hapmap1.bed, hapmap1.bim, hapmap1.famというファイルができる  
+plink --file hapmap1 --make-bed --out hapmap1
+もしジェノタイプ頻度が95%以上のもののみに焦点を当てたい場合は以下のようにする
+plink --file hapmap1 --make-bed --mind 0.05 --out highgeno
+バイナリファイルで作業する
+バイナリファイルを使う場合は、--bfileとする
+plink --bfile hapmap1
+統計量を要約する:欠損率を調べる
+欠損データがどのくらいあるか調べる
+plink --bfile hapmap1 --missing --out miss_stat
+89人のうち、ジェノタイプ頻度が低い事から削除された人はいない (MIND > 0.1, つまりしきい値を90%以上としたとき)
+個人の欠損情報はmiss_stat.imissに記述する
+遺伝子座の欠損情報はmiss_stat.lmissに記述する
+とplink.logには記述される
+実際に、miss_stat.lmissの中身を見てみる
+more miss_stat.lmiss
+CHR         SNP   N_MISS   N_GENO   F_MISS
+1   rs6681049        0       89        0
+1   rs4074137        0       89        0
+1   rs7540009        0       89        0
+1   rs1891905        0       89        0
+1   rs9729550        0       89        0
+1   rs3813196        0       89        0
+1   rs6704013        2       89  0.02247
+1    rs307347       12       89   0.1348
+1   rs9439440        2       89  0.02247
+...
+染色体番号(CHR)、SNPのID(SNP)、そのSNPを持ってない人の数(N_MISS)、その比率(F_MISS)の順番に記述されている
+同様に、miss_stat.imissの中身を見てみる
+more miss_stat.imiss
+FID  IID MISS_PHENO   N_MISS   N_GENO   F_MISS
+HCB181    1          N      671    83534 0.008033
+HCB182    1          N     1156    83534  0.01384
+HCB183    1          N      498    83534 0.005962
+HCB184    1          N      412    83534 0.004932
+HCB185    1          N      329    83534 0.003939
+HCB186    1          N     1233    83534  0.01476
+HCB187    1          N      258    83534 0.003089
+...
+個人ID(FID)、 人種のID(IID)、Missing phenotype?(Y/N)(MISS_PHENO)、Number of missing SNPs(N_MISS)、Number of non-obligatory missing genotype(N_GENO)、同定できなかった遺伝子型の比率(F_MISS)の順番に記述されている
+染色体毎に欠損を調べたい場合は以下のようにする(上から第1染色体、第2染色体の順)
+plink --bfile hapmap1 --chr 1 --out res1 --missing
+plink --bfile hapmap1 --chr 2 --out res2 --missing
+統計量を要約する:アレル頻度
+上記と同様に、今度はジェノタイプ毎では無く、アレル毎に欠損を調べる
+plink --bfile hapmap1 --freq --out freq_stat
+カテゴリーで層別化した上で(すなわち人種差を考慮して)解析を行う場合は、--withinオプションを付ける
+plink --bfile hapmap1 --freq --within pop.phe --out freq_stat
+生成されたfrq.statの中身を見てみる
+more freq_stat.frq.strat
+CHR        SNP     CLST   A1   A2      MAF    MAC  NCHROBS
+1   rs6681049        1    1    2   0.2333     21       90
+1   rs6681049        2    1    2   0.1932     17       88
+1   rs4074137        1    1    2      0.1      9       90
+1   rs4074137        2    1    2  0.05682      5       88
+1   rs7540009        1    0    2        0      0       90
+1   rs7540009        2    0    2        0      0       88
+1   rs1891905        1    1    2   0.4111     37       90
+1   rs1891905        2    1    2   0.3977     35       88
+1   rs9729550        1    1    2   0.1444     13       90
+1   rs9729550        2    1    2   0.1136     10       88
+1   rs3813196        1    1    2  0.02222      2       90
+1   rs3813196        2    1    2  0.03409      3       88
+...  
+染色体番号(CHR)、SNPID(SNP)、1:中国人 / 2:日本人(CLST)、アレル1のコード(A1)、アレル2のコード(A2)、マイナーアレル頻度(MAF)、?(MAC)、?(MCHROBS)の順に記述されている
+ここで、rs1891905のSNPにのみ興味がある場合は、--snpオプションでそのSNPだけ解析できる
+plink --bfile hapmap1 --snp rs1891905 --freq --within pop.phe --out snp1_frq_stat
+基本的な関連解析
+各SNP毎に関連解析を行う
+plink --bfile hapmap1 --assoc --out as1
+as1.assocというファイルが出力される
+CHR         SNP         BP   A1      F_A      F_U   A2        CHISQ            P           OR
+1   rs6681049          1    1   0.1591   0.2667    2        3.067      0.07991       0.5203
+1   rs4074137          2    1  0.07955  0.07778    2     0.001919       0.9651        1.025
+1   rs7540009          3    0        0        0    2           NA           NA           NA
+1   rs1891905          4    1   0.4091      0.4    2      0.01527       0.9017        1.038
+1   rs9729550          5    1   0.1705  0.08889    2        2.631       0.1048        2.106
+1   rs3813196          6    1  0.03409  0.02222    2       0.2296       0.6318        1.553
+1   rs6704013          7    0        0        0    2           NA           NA           NA
+1    rs307347          8    0        0        0    2           NA           NA           NA
+1   rs9439440          9    0        0        0    2           NA           NA           NA
+1   rs3128342         10    1        0  0.01111    2        0.961       0.3269            0
+1  rs12044597         11    1      0.5   0.4889    2      0.02198       0.8822        1.045
+1  rs10907185         12    1   0.3068   0.2667    2       0.3509       0.5536        1.217
+1  rs11260616         13    1   0.2326      0.2    2       0.2754       0.5998        1.212
+1    rs745910         14    1   0.1395   0.1932    2       0.9013       0.3424       0.6773
+... 
+染色体番号(CHR)、SNPID(SNP)、?(BP)、アレル1のコード(A1)、患者群におけるこの多型の頻度(F_A)、健常群におけるこの多型の頻度(F_U)、アレル2のコード(A2)、X^2統計量(CHISQ)、X^2検定のp値(P)、オッズ比(OR)の順に記述されている
+X^2統計量が大きい順にソートして先頭だけを見てみる
+sort --key=8 -nr as1.assoc | head
+13   rs9585021      64274    1    0.625   0.2841    2        20.62    5.586e-06          4.2
+2   rs2222162      10602    1   0.2841   0.6222    2        20.51    5.918e-06       0.2409
+9  rs10810856      46335    1   0.2955  0.04444    2        20.01    7.723e-06        9.016
+2   rs4675607      13220    1   0.1628   0.4778    2        19.93     8.05e-06       0.2125
+2   rs4673349      13218    1   0.1818      0.5    2        19.83    8.485e-06       0.2222
+2   rs1375352      13219    1   0.1818      0.5    2        19.83    8.485e-06       0.2222
+21    rs219746      81525    1      0.5   0.1889    2        19.12    1.228e-05        4.294
+1   rs4078404       6200    2      0.5      0.2    1        17.64    2.667e-05            4
+14   rs1152431      66892    2   0.2727   0.5795    1        16.94    3.862e-05       0.2721
+14   rs4899962      66836    2   0.3023   0.6111    1        16.88    3.983e-05       0.2758
+...  
+ここで、今回あらかじめ疾患原因のSNPと考えているrs2222162は実際に2番目に有意なSNPである事がわかる
+ソートしてさらに多重検定補正まで行いたい場合は、--adjustオプションをつける
+plink --bfile hapmap1 --assoc --adjust --out as2
+as2.assoc.adjustedというファイルが生成される
+more as2.assoc.adjusted
+CHR         SNP      UNADJ         GC       BONF       HOLM   SIDAK_SS   SIDAK_SD     FDR_BH     FDR_BY
+13   rs9585021  5.586e-06  4.994e-05     0.3839     0.3839     0.3188     0.3188    0.09719          1
+2   rs2222162  5.918e-06  5.232e-05     0.4068     0.4067     0.3342     0.3342    0.09719          1
+9  rs10810856  7.723e-06  6.483e-05     0.5308     0.5308     0.4118     0.4118    0.09719          1
+2   rs4675607   8.05e-06  6.703e-05     0.5533     0.5533     0.4249     0.4249    0.09719          1
+2   rs4673349  8.485e-06  6.994e-05     0.5832     0.5831     0.4419     0.4419    0.09719          1
+2   rs1375352  8.485e-06  6.994e-05     0.5832     0.5831     0.4419     0.4419    0.09719          1
+21    rs219746  1.228e-05  9.422e-05     0.8442     0.8441     0.5701     0.5701     0.1206          1
+1   rs4078404  2.667e-05   0.000176          1          1     0.8401       0.84     0.2291          1
+14   rs1152431  3.862e-05  0.0002374          1          1     0.9297     0.9297     0.2737          1
+14   rs4899962  3.983e-05  0.0002433          1          1     0.9353     0.9352     0.2737          1
+8   rs2470048  4.487e-05  0.0002679          1          1     0.9542     0.9542     0.2804          1
+... 
+染色体番号(CHR)、SNPID(SNP)、補正なしのただのp-value(UNADJ)、Genomic control補正のしきい値(GC)、Bonferroni法によるしきい値(BONF)、Holm検定によるしきい値(HOLM)、Sidak single-step法によるしきい値(SIDAK_SS)、Sidak step-down法によるしきい値(SIDAK_SD)、BH法によるq-value(FDR_BH)、BY法によるq-value(FDR_BY)の順に記述されている
+この時、生成されたログファイル、as2.logには以下のような事が書かれている
+more as2.log
+...
+Genomic inflation factor (based on median chi-squared) is 1.25377
+Mean chi-squared statistic is 1.14392
+...  
+これは、Genomic Control(GC)について言及している(以下が詳しい)。
+Devlin, B et.al.,
+東京大学医科学研究所 研究発表会2008
+簡単に説明すると、GCは集団構造化補正と呼ばれるもので、
+今回のように母集団(ヒト)の中にさらにサブの集団(中国人/日本人)が含まれており、
+そこからケース(患者)vs. コントロール(健常人)を選定するという状況では、
+両人種を1:1の比率で各々ケース、コントロールに割り当てる事ができて無い場合もあり、
+結果として、そういったデータ構造から
+不当に検定を有意にしてしまい偽陽性を増加させてしまう可能性があるので、
+p-valueの補正が必要...という事らしい。
+具体的には、p-valueをX^2値に変換して、補正を加えて、
+再びp-valueに戻すという事を行う。
+この偽陽性の増加率というものが1.25であまり大きくないから今回は問題ないとのこと。
+ここでは、中国人・日本人というサブの集団が既にある事がわかっているので、
+この構造を考慮して増加率を再度計算すると
+plink --bfile hapmap1 --pheno pop.phe --assoc --adjust --out as3
+今度は、
+...
+Genomic inflation factor (based on median chi-squared) is 1.78854
+Mean chi-squared statistic is 1.56707
+...  
+1.7と少し大きくなる
+遺伝子型モデル・その他関連モデル
+2×3分割表のアレル頻度の検定以外にも、
+遺伝子型モデル(GENO)、優性モデル(DOM)、劣性モデル(REC)、
+Cochran-Armitage傾向検定(TREND)も行える
+--modelオプションをつけるとできる
+rs2222162だけでみたい場合はこんな感じ、
+ただし、GENO、DOM、RECには--cell 0というオプションが必要
+plink --bfile hapmap1 --model --snp rs2222162 --out mod1
+plink --bfile hapmap1 --model --cell 0 --snp rs2222162 --out mod2
+mod1.model / mod2.modelというファイルが出力される
+more mod1.model
+more mod2.model
+CHR         SNP   A1   A2     TEST            AFF          UNAFF        CHISQ   DF            P
+2   rs2222162    1    2     GENO        3/19/22        17/22/6        19.15    2    6.932e-05
+2   rs2222162    1    2    TREND          25/63          56/34        19.15    1    1.207e-05
+2   rs2222162    1    2  ALLELIC          25/63          56/34        20.51    1    5.918e-06
+2   rs2222162    1    2      DOM          22/22           39/6        13.87    1    0.0001958
+2   rs2222162    1    2      REC           3/41          17/28        12.24    1    0.0004679  
+層別化
+これまでの解析では、人種差を無視して解析していたが、
+実際は二つの人種が混じっている
+また日本人のほうがなりやすい疾患である事もわかっている
+このような場合は、全ゲノムデータでクラスタリングをする
+--clusterオプションを使う
+plink --bfile hapmap1 --cluster --mc 2 --ppc 0.05 --out str1
+IBSクラスタリングという手法を行う。
+ペアワイズidentity-by-state(IBS)距離というのを用いているらしい
+結果はstr1.cluster1というファイルで見れる
+more str1.cluster1
+SOL-0  HCB181_1 JPT260_1
+SOL-1  HCB182_1 HCB225_1
+SOL-2  HCB183_1 HCB194_1
+SOL-3  HCB184_1 HCB202_1
+SOL-4  HCB185_1 HCB217_1
+SOL-5  HCB186_1 HCB201_1
+SOL-6  HCB187_1 HCB189_1
+SOL-7  HCB188_1 HCB206_1
+SOL-8  HCB190_1 HCB224_1
+SOL-9  HCB191_1 HCB220_1
+SOL-10     HCB192_1 HCB200_1
+SOL-11     HCB193_1 HCB195_1
+SOL-12     HCB196_1 JPT253_1
+SOL-13     HCB197_1 HCB214_1
+SOL-14     HCB198_1 HCB210_1
+SOL-15     HCB199_1 HCB221_1
+SOL-16     HCB203_1 HCB222_1
+SOL-17     HCB204_1 JPT255_1
+SOL-18     HCB205_1 HCB208_1
+SOL-19     HCB207_1 HCB223_1
+SOL-20     HCB209_1 HCB211_1
+SOL-21     HCB212_1 HCB213_1
+SOL-22     HCB215_1 HCB216_1
+SOL-23     HCB218_1 HCB219_1
+SOL-24     JPT226_1 JPT244_1
+SOL-25     JPT227_1 JPT240_1
+SOL-26     JPT228_1 JPT252_1
+SOL-27     JPT229_1 JPT243_1
+SOL-28     JPT230_1 JPT246_1
+SOL-29     JPT231_1 JPT236_1
+SOL-30     JPT232_1 JPT247_1
+SOL-31     JPT233_1 JPT248_1
+SOL-32     JPT234_1 JPT267_1
+SOL-33     JPT235_1 JPT251_1
+SOL-34     JPT237_1 JPT250_1
+SOL-35     JPT238_1 JPT242_1
+SOL-36     JPT239_1 JPT263_1
+SOL-37     JPT241_1 JPT261_1
+SOL-38     JPT245_1 JPT262_1
+SOL-39     JPT249_1 JPT258_1
+SOL-40     JPT254_1 JPT264_1
+SOL-41     JPT256_1 JPT265_1
+SOL-42     JPT257_1
+SOL-43     JPT259_1 JPT269_1
+SOL-44     JPT266_1 JPT268_1  
+クラスター数は45あった
+関連解析、クラスターの説明
+IBS実行後、マッチングを考慮した関連解析を行う事ができる
+--withinオプションを使う
+Cochran-Mantel-Haenszel(CMH)関連統計量というものが計算される
+--adjustオプションでCMH統計量でソートされた結果が取得できる
+plink --bfile hapmap1 --mh --within str1.cluster2 --adjust --out aacl
+出力されたaacl.cmh.adjustedというファイルはこんな感じ
+more aacl.cmh.adjusted
+CHR         SNP      UNADJ         GC       BONF       HOLM   SIDAK_SS   SIDAK_SD     FDR_BH     FDR_BY
+13   rs9585021  1.906e-06  4.418e-06     0.1274     0.1274     0.1196     0.1196     0.1274          1
+21   rs3017432  2.209e-05  4.332e-05          1          1     0.7716     0.7716     0.7384          1
+2   rs2222162  4.468e-05  8.353e-05          1          1     0.9496     0.9495     0.8734          1
+17   rs3829612  7.177e-05  0.0001299          1          1     0.9918     0.9918     0.8734          1
+2   rs1375352  9.617e-05  0.0001707          1          1     0.9984     0.9984     0.8734          1
+2   rs4673349  9.617e-05  0.0001707          1          1     0.9984     0.9984     0.8734          1
+15   rs4887466  0.0001215  0.0002123          1          1     0.9997     0.9997     0.8734          1
+12  rs12823722    0.00026  0.0004317          1          1          1          1     0.8734          1
+9   rs2025330    0.00026  0.0004317          1          1          1          1     0.8734          1
+19    rs330876  0.0002898  0.0004776          1          1          1          1     0.8734          1
+6   rs9464779  0.0003466  0.0005644          1          1          1          1     0.8734          1
+2    rs896019  0.0003466  0.0005644          1          1          1          1     0.8734          1
+...  
+rs2222162は有意にはなってない
+上の例だと、クラスター数を指定しなかったが、
+--ppcオプションはしきい値を設定できるので、そこで調節できる
+--ccオプションをつけると少なくともクラスター内に
+ケースとコントロールが1ずつ入るようにクラスタリングする
+plink --bfile hapmap1 --cluster --cc --ppc 0.01 --out version2
+出力されたversion2.cluster1を見てみる
+more version2.cluster1
+今度はクラスター数が5になっている事がわかる
+先ほどと同様に--withinプションをつけると、
+このクラスタリングの結果を用いた、CMH統計量を計算する
+plink --bfile hapmap1 --mh --within version2.cluster2 --adjust --out aac2
+出力されたaac2.cmh.adjustedを見てみる
+more aac2.cmh.adjusted
+今度はrs2222162がBonferroni補正を行っても、有意になる事がわかった
+もっと直接クラスター数を指定する場合は、--Kオプションを使う
+plink --bfile hapmap1 --cluster --K 2 --out version3
+個人レベルでどの人がどのクラスターにいるのかまで指定した書き方はこんな感じ
+plink --bfile hapmap1 --mh --within pop.phe --adjust --out aac3
+まとめると、
+IBSクラスタリングはうまくいっているようである
+層別化で、偽陽性が減り検出力が上がる
+どのクラスタリング手法が良いかは知らないが、クラスター数2とかだとどの手法でも大体同じ結果になると思う
+最後に解析結果をRで可視化する
+plink --bfile hapmap1 --cluster --matrix --out ibd_view
+Rを起動後に以下のコマンドを実行する
+m <- as.matrix(read.table("ibd_view.mibs"))
+mds <- cmdscale(as.dist(1-m))
+k <- c(rep("green",45), rep("blue",44))
+png(file="mds.png")
+plot(mds, pch=20, col=k)
+dev.off()
+--mds-plotオプションを付けるとこの画像は自動的に出力される
+plink --bfile hapmap1 --cluster --matrix --mds-plot --out ibd_view
+量的形質関連解析
+qt.pheファイルを読み込んで、量的形質の関連解析を行う
+plink --bfile hapmap1 --assoc --adjust --pheno qt.phe --out quant1
+出力されたquant1.qassocを見てみる
+more quant1.qassoc
+CHR         SNP         BP    NMISS       BETA         SE         R2        T            P
+1   rs6681049          1       89    -0.2266     0.3626   0.004469  -0.6249       0.5336
+1   rs4074137          2       89    -0.2949     0.6005   0.002765  -0.4911       0.6246
+1   rs7540009          3       89         NA         NA         NA       NA           NA
+1   rs1891905          4       89    -0.1053     0.3165   0.001272  -0.3328       0.7401
+1   rs9729550          5       89     0.5402     0.4616     0.0155     1.17       0.2451
+1   rs3813196          6       89     0.8053      1.025    0.00705   0.7859        0.434
+1   rs6704013          7       87         NA         NA         NA       NA           NA
+1    rs307347          8       77         NA         NA         NA       NA           NA
+1   rs9439440          9       87         NA         NA         NA       NA           NA
+1   rs3128342         10       88     -2.903      2.236    0.01921   -1.298       0.1978
+1  rs12044597         11       89    0.01658     0.3776  2.217e-05  0.04392       0.9651
+...  
+染色体番号(CHR)、SNPID(SNP)、Number of non-missing individuals(NMISS)、回帰係数(BETA)、標準誤差(SE)、相関係数^2(R2)、T統計量(T)、p-value(P)の順に記述されている
+quant1.qassoc.adjustも見てみる
+more quant1.qassoc.adjusted
+CHR         SNP      UNADJ         GC       BONF       HOLM   SIDAK_SS   SIDAK_SD     FDR_BH     FDR_BY
+2   rs2222162  5.273e-09  6.224e-08  0.0003624  0.0003624  0.0003623  0.0003623  0.0003624   0.004245
+21    rs219746  1.095e-06  6.815e-06    0.07529    0.07529    0.07252    0.07252    0.03764      0.441
+7   rs1922519   1.63e-05  7.167e-05          1          1     0.6739     0.6739     0.2527          1
+2   rs2969348  2.886e-05  0.0001176          1          1     0.8624     0.8624     0.2527          1
+3   rs6773558  3.581e-05  0.0001419          1          1     0.9146     0.9146     0.2527          1
+10   rs3862003  3.716e-05  0.0001465          1          1     0.9222     0.9222     0.2527          1
+8    rs660416  4.114e-05    0.00016          1          1     0.9408     0.9408     0.2527          1
+14   rs2526935  4.236e-05  0.0001641          1          1     0.9456     0.9456     0.2527          1
+6   rs7774115  4.588e-05  0.0001759          1          1     0.9573     0.9573     0.2527          1
+19   rs4090553  5.812e-05  0.0002158          1          1     0.9816     0.9816     0.2527          1
+8  rs10081534  5.842e-05  0.0002168          1          1      0.982      0.982     0.2527          1
+...  
+こんな感じ。ただし、上で行っていた"クラスターを考慮した検定"は行っていない
+--withinオプションをつけると先ほどと同様にできる
+層別化や共変動の導入の替わりに、--permオプションをつける事で、
+クラスター内における並び替え(permutation)を行う
+(結構この計算は重い、30分くらい?)
+plink --bfile hapmap1 --assoc --pheno qt.phe --perm --within str1.cluster2 --out quant2
+出力されたquant2.qassoc.permを見てみる
+more quant2.qassoc.perm
+CHR         SNP         EMP1           NP
+1   rs6681049       0.4468           46
+1   rs4074137        0.875            7 
+1   rs7540009            1            6
+1   rs1891905        0.625           23
+1   rs9729550       0.0404          890
+1   rs3813196        0.381           62
+1   rs6704013            1            6
+1    rs307347            1            6
+1   rs9439440            1            6
+1   rs3128342       0.4565           45
+1  rs12044597            1            6
+...  
+染色体番号(CHR)、SNPID(SNP)、経験的p-value(EMP1)、並び替え数(NP)の順に記述されている
+--mpermで並び替え数を制限できる
+plink --bfile hapmap1 --assoc --pheno qt.phe --mperm 1000 --within str1.cluster2 --out quant3
+--gxeオプションで、二つのサブの集団間で量的形質が異なるか検定が行える
+--covarオプションで、共変量を導入できる
+plink --bfile hapmap1 --pheno qt.phe --gxe --covar pop.phe --snp rs2222162 --out quant3
+興味があるSNPの抽出
+他のソフトウェアでも使えるように、バイナリPEDファイルを普通のPEDファイルにしたい場合は、
+--recodeオプションをつける。
+幾つか種類があるが--recodeADを使うと、その後Rで解析したりする時に便利
+plink --bfile hapmap1 --snp rs2222162 --recodeAD --out rec_snp1
+--to と--fromで領域指定もできる
+--window 100と--snpを併記うると100kbでそのSNP周辺まで見てくれる
+Rを起動して回帰分析を行う
+GWAS研究で利用されるソフトウェア"PLINK"のチュートリアルを大雑把に要約したもの

@@ -1,0 +1,14 @@
+リモート デスクトップの接続 7.0 クライアントの Windows XP SP3、Windows Vista SP1 は、Windows Vista の SP2 のリモート デスクトップ サービス (RDS) を更新します。
+http://support.microsoft.com/kb/969084
+・Windows XP 用の更新プログラム (KB969084)
+・Windows Vista 用の更新プログラム (KB969084)
+・Windows Vista for x64-based Systems 用の更新プログラム (KB969084)
+インストール後にバージョン情報を確認。「ネットワークレベル認証はサポートされていません。」と表示されている場合は設定を行う必要あり。
+Windows XP Service Pack 3 での資格情報のセキュリティ サポート プロバイダー (CredSSP) の説明
+http://support.microsoft.com/kb/951608/
+1.regedit起動 
+2.HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa の Security Packagesの値を修正(元々の値はそのままで tspkg を追加記述)
+3.HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders の SecurityProvidersの値を修正(元々の値はそのままで credssp.dll を追加記述)
+4.再起動
+設定後に再度バージョン情報を確認。「ネットワークレベル認証はサポートされています。」と表示されていれば完了。
+リモートデスクトップ接続 ネットワークレベル認証 Windows XP Vista - 山口屋〜活動日誌〜

@@ -1,0 +1,32 @@
+
+TESVTranslator            [ユーティリティ] ID:29148  Author:McGuffin 2014-08-23 17:51  Version:1.3.4
+RATE: =1838 G=57 [DOWNLOAD SITE]
+TAG: [Tool] [日本語化対応] [翻訳]
+日本語化ツールのデファクトスタンダードであるSkyrim Strings Localizerより多機能な翻訳ツール。
+esp・esm以外にStrings・MCMのTranslate・PapyrusPexに対応
+標準で日本語UIに対応している。
+([Options]->[Set Options and Languages]からInterface:としてJapaneseを選択。)
+SSLで翻訳不可能でCKを使う必要があった部分も翻訳できる場合有。
+豊富な機能を使いこなさなくても、原文を表示させたまま訳文の推敲が出来るだけでも便利。
+初回起動時に翻訳元言語と翻訳先言語のStringsファイルを指定してキャッシュを作成すると、ある程度自動的に翻訳することが出来る。(初回起動時に適切にキャッシュ作成しなかった場合は、Espを読み込ませる前に[Options]->[Set Options and Languages]で初回起動時と同じようにキャッシュ作成できる。)
+_English.Stringsファイルの中身が日本語だというのは開発者(フランス人)の想定外なので、あらかじめ本当に英語の_English.Stringsファイル群と本当に日本語の_Japanese.Strings群をSkyrimのインストールフォルダ以外の同一フォルダにコピーして用意しておくといい。
+完全一致に関してはSkyrim Strings Localizerでも英語のStringsファイルを指定してProcessした後に、白い行だけEraseTextして日本語Stringsファイルを指定してReprocessで自動的に翻訳出来るが、TESVTranslatorは一度キャッシュ作成すれば単にEspファイルをLoadするだけで済む。
+また完全に一致しない原文でもヒューリスティック翻訳という機能もあるし、各行をダブルクリックして開く[Search and Edit]フォームでは、Stringsファイルから入力した単語の用例が対訳式に検索できる。
+翻訳データ単体の配布はXMLファイル形式でエクスポート/インポートになり、Skyrim Strings LocalizerのSSLXLTNファイルとは互換性がないが、翻訳済みのESPと英語版ESPを比較して翻訳を取り込む機能はある。
+使い方
+①起動する前に新しいフォルダを作り、Skyrim、dawnguard、hearthfires、dragonbornのStrings、ilstrings、dlstringsのそれぞれのenglishとjapanese、合計24個のファイルを入れる。
+②TESVTranslatorを起動
+③オプションオプションと言語の設定 から翻訳先言語をjapaneseにする
+④\Skyrim\Data\Stringsの右側の\steam\steamapps\common\skyrim\Data\strings\となっている所をクリックし①で作成したフォルダを指定する
+⑤下の方のBuild Cache の右側にチェックが入っていることを確認しOKを押す(キャッシュが作成される)
+⑥オプション > Utf8 > "強制的にUtf8で書き出す" にチェックを入れる (さもないと文字化けします)
+⑦後は翻訳したいespファイルを開けば、本家+DLCに含まれている単語は自動的に翻訳される
+⑧ファイルを出力して終了
+こちらの記事にて、画像付きで解説されています。
+http://barom777.blog.fc2.com/blog-ent…
+http://ch.nicovideo.jp/zion-rokusho/b…
+※翻訳中のespファイルを保存して作業を再開するときなど、日本語が含まれているespファイルを開くときは事前に オプション > Utf8 > "強制的にUtf8で開く" をチェックしないと文字化けします。
+TesVtranslator.exeと同じフォルダにあるcodepage.txt内をJapanese=utf8,English=utf8に書き換えれば文字化けしなくなります。
+※翻訳用xmlファイルを作成する場合の注意点
+必ず、未翻訳のespを読み込んで英語原文・日本語訳文が両方表示された状態でxmlを作成して下さい、翻訳済みのespを読み込んでxmlを作成しても(変更部分がないと判断されるため)中身がカラの物になってしまいます
+TESVTranslator 日本語化対応 ユーティリティ - Skyrim Mod データベース MOD紹介・まとめサイト

@@ -1,0 +1,265 @@
+より賢くサイズ調整するテキストエリアに改良する過程
+iPad
+前回からの続き。
+その後使ってみて、テキストエリアの高さが行数によって自動調整されると、素晴らしく便利なことは分かった。特にソフトウェアキーボードを活用するiPad環境では必携の機能になりそう。
+半角¥nは、半角＼nに置き換える必要あり。
+javascript:(function(){
+var els = document.getElementsByTagName('textarea');
+for (i = 0; i < els.length; i++){
+els[i].style.height = 'auto';
+els[i].style.overflow = 'auto';
+els[i].addEventListener('input', _resize, false);
+els[i].addEventListener('focus', _resize, false);
+}
+function _resize(){
+this.setAttribute('rows', this.value.split('\n').length+25);
+}
+})();
+上記のコードは、文字が入力されるごとに、テキストエリアの改行コード数えて、rows属性に 改行数+25 を設定して、高さ調整している。これでも最初のうちは感動して使っていたのだが、すぐにいくつかの不満が出てきた。
+長くなったテキストエリアに喜んで、ずっと下の方(編集したい部分)をタッチする。すると、ソフトウェアキーボードが表示される時に、毎回テキストエリアの先頭に戻ってしまうのだ。編集したい箇所は遥か下の方なのに。困った...。
+せっかく1本指スクロールで快適になっても、これでは煩わしい。
+但し、文字カーソルはタッチした位置に設定されているので、何か入力すればその位置までスクロールして再び見える位置になるのだけど。
+でも、入力位置が見えない状態で最初の一文字を入力するのは、不安だし、毎回だとストレスになる。どうにかしたい。
+また、改行数に頼った高さ調整は不完全で、長い文がテキストエリアの右端で折り返されて行数が増えた場合は、当然だが自動調整してくれない。
+特に、「記事を書く」ページで開いた時はテキストエリアの幅が狭いので、改行数+25 の調整では足りなくて結局2本指でスクロールする羽目になってしまうのだ。困った...。
+かと言って 改行数×2+1 で調整すると、「下書き編集」ページでは無駄に下の空白が長くなってしまう。どうにかしたい。
+入力モードの時に最適な位置を表示する
+想像する理想は、iPadデフォルトアプリの「メモ」のような挙動。
+無駄なスクロールを排除する
+まずはテキストエリアをタッチして、入力モードにした瞬間の位置を動かさないように出来ないものか、やってみた。
+半角¥nは、半角＼nに置き換える必要あり。
+javascript:(function(){
+var scrollTop;
+var els = document.getElementsByTagName('textarea');
+for (var i = 0; i < els.length; i++){
+els[i].style.height = 'auto';
+els[i].style.overflow = 'auto';
+els[i].addEventListener('input', resize, false);
+els[i].addEventListener('focus', resize, false);
+els[i].addEventListener('focus', scroll, false);
+els[i].addEventListener('mousedown', savePoint, false);
+}
+function resize(){
+this.setAttribute('rows', this.value.split('\n').length+25);
+}
+function scroll(){
+window.scrollTo(0, scrollTop);
+}
+function savePoint(){
+scrollTop = document.body.scrollTop;
+}
+})();
+調べてみると、focusイベントよりmousedownイベントの方が先に発生することが分かった。
+mousedownでタッチした瞬間のスクロール座標を記録して、
+focusでそのスクロール座標を再設定することで無駄なスクロールを抑えた。
+これで無駄なスクロールはなくなり、タッチした位置はその場に固定されるようになった!
+ソフトウェアキーボードに隠れないようにスクロールさせる
+満足するのはまだ早い...。現状では画面の下半分でタッチして入力モードにした場合、間違いなくソフトウェアキーボードに隠れて、見えなくなってしまうのだ。
+これを解消するためには、その分を考慮してスクロールする量を調整してあげれば良いのだが、果たしてどれだけ調整するべきなのか?
+ここにスクリーンショットを撮影して、入力モード時の座標をピクセル単位で調べてみた。
+event.pageYでmousedownした際のページ座標が取得できる。ページ座標は、webページを表示する領域から始まるので、Sfariのブックマークバー直下の表示領域が基点。
+一方、ページ座標window.event.pageY - スクロール量document.body.scrollTop を計算することで、iPadの画面1024×768ピクセルで考えた時のmousedownした座標が求められる。
+iPadを横にした入力モードでは、190ピクセルの高さより下の位置ではキーボードに隠れてしまうのだ。(上図参考)
+よって、window.event.pageY - document.body.scrollTop - 190ピクセルさらに上にスクロールさせれば、キーボードに隠れた位置がちょうど表示されるようになるはず!
+半角¥nは、半角＼nに置き換える必要あり。
+javascript:(function(){
+var scrollTop, offsetH;
+var els = document.getElementsByTagName('textarea');
+for (var i = 0; i < els.length; i++){
+els[i].style.height = 'auto';
+els[i].style.overflow = 'auto';
+els[i].addEventListener('input', resize, false);
+els[i].addEventListener('focus', resize, false);
+els[i].addEventListener('focus', scroll, false);
+els[i].addEventListener('mousedown', savePoint, false);
+}
+function resize(){
+this.setAttribute('rows', this.value.split('\n').length+25);
+}
+function scroll(){
+window.scrollTo(0, scrollTop+offsetH);
+}
+function savePoint(e){
+scrollTop = document.body.scrollTop;
+offsetH = e.pageY-scrollTop-190;
+offsetH = (offsetH>0) ? offsetH : 0;
+}
+})();
+これで、文字カーソルの位置がキーボードの下に隠れることはなくなった!
+ジャストフィットな高さ調節
+改行コードに頼った高さ調節には限界があると分かった。こうなったら、段落ごとに文字数を数えて右端で折り返される部分を予想してみるか?なんて思い始める。しかし、そんなことしても最近のプロポーショナルなフォントの前では、所詮ごまかしに過ぎないことが分かっていた。
+そんなことを考えながら、しばらく悩んで調べていたら、テキストエリアの高さ調節をする全く別の手段があることに気づいた。
+pxt | <textarea>の高さを自動調整するスクリプト。
+テキストエリアの自動リサイズ再び
+素晴らしい!(感謝です!)
+テキストエリアにはscrollHeighとoffsetHeightの高さがあって、
+scrollHeigh:テキストエリア内に表示されるテキスト全体の高さ。
+offsetHeight:テキストエリアそのものの高さ。
+テキストエリアのスタイルシート設定で、textarea.style.height = textarea.scrollHeigh とすれば、右端の折り返しまで考慮したジャストフィットな高さになるのだ!
+但し、テキストエリアが十分長くて下部に余白スペースがあっても、scrollHeigh = offsetHeight となる。
+つまり、文字を削除して下部に余白スペースができても、scrollHeighを合わせるだけでは短くなる方向には調整できないのである。ちょっと工夫が必要。
+javascript:(function(){
+var scrollTop, offsetH;
+var els = document.getElementsByTagName('textarea');
+for (var i = 0; i < els.length; i++){
+els[i].style.height = 'auto';
+els[i].style.overflow = 'auto';
+els[i].addEventListener('input', fit, false);
+els[i].addEventListener('focus', fit, false);
+els[i].addEventListener('focus', scroll, false);
+els[i].addEventListener('mousedown', savePoint, false);
+}
+function fit(){
+while(this.scrollHeight <= this.offsetHeight){
+this.style.height = this.offsetHeight-20 + "px";
+}
+this.style.height = this.scrollHeight + "px";
+}
+function scroll(){
+window.scrollTo(0, scrollTop+offsetH);
+}
+function savePoint(e){
+scrollTop = document.body.scrollTop;
+offsetH = e.pageY-scrollTop-190;
+offsetH = (offsetH>0) ? offsetH : 0;
+}
+})();
+scrollHeigh と offsetHeight に差がない時は、差異が発生するまで、1行分程度の高さ20pxを差し引いて、短くなくなる方向に設定している。
+その後、scrollHeightに合わせて、ジャストフィット。
+以上で、iPadのテキストエリアはかなり賢く行動してくれるようになった!
+キー入力毎にテキストエリアの高さを弄るので、キー入力に対するレスポンスは若干悪くなる。
+特に、back deleteキーのリピート動作で感じるかも。それ以外は、ほとんど気にならないと思った。
+不具合修正等
+一行目を入力している時、無限ループに陥ってしまう不具合を修正した。
+ブックマークレットを実行したら即、テキストエリアが拡大するように変更した。
+javascript:(function(){
+var ROW_HEIGHT = 22.24;
+var scrollTop, offsetH;
+var els = document.getElementsByTagName('textarea');
+for (var i = 0; i < els.length; i++){
+els[i].style.height = 'auto';
+els[i].style.overflow = 'auto';
+els[i].style.height = els[i].scrollHeight + "px";
+els[i].addEventListener('input', fit, false);
+els[i].addEventListener('focus', scroll, false);
+els[i].addEventListener('mousedown', savePoint, false);
+}
+function fit(){
+while(this.scrollHeight <= this.offsetHeight && this.offsetHeight > ROW_HEIGHT){
+this.style.height = this.offsetHeight-ROW_HEIGHT + "px";
+}
+this.style.height = this.scrollHeight + "px";
+}
+function scroll(){
+window.scrollTo(0, scrollTop+offsetH);
+}
+function savePoint(e){
+scrollTop = document.body.scrollTop;
+offsetH = e.pageY-scrollTop-190;
+offsetH = (offsetH>0) ? offsetH : 0;
+}
+})();
+JavaScript高速化
+さらに多少なりとも高速化を目指して、Closure Compiler Serviceでコンパイルしてみた。
+人が読み易いJavaScriptから、コンピュータにとって読み易いJavaScriptに変換されるようだ。
+javascript:(function() {
+function f() {
+for(;this.scrollHeight <= this.offsetHeight && this.offsetHeight > e;) {
+this.style.height = this.offsetHeight - e + "px"
+}
+this.style.height = this.scrollHeight + "px"
+}
+function g() {
+window.scrollTo(0, d + c)
+}
+function h(a) {
+d = document.body.scrollTop;
+c = a.pageY - d - 190;
+c = c > 0 ? c : 0
+}
+for(var e = 22.24, d, c, b = document.getElementsByTagName("textarea"), a = 0;a < b.length;a++) {
+b[a].style.height = "auto", b[a].style.overflow = "auto", b[a].style.height = b[a].scrollHeight + "px", b[a].addEventListener("input", f, !1), b[a].addEventListener("focus", g, !1), b[a].addEventListener("mousedown", h, !1)
+}
+})();
+改行を省くと...
+javascript:(function(){function f(){for(;this.scrollHeight<=this.offsetHeight&&this.offsetHeight>e;)this.style.height=this.offsetHeight-e+"px";this.style.height=this.scrollHeight+"px"}function g(){window.scrollTo(0,d+c)}function h(a){d=document.body.scrollTop;c=a.pageY-d-190;c=c>0?c:0}for(var e=22.24,d,c,b=document.getElementsByTagName("textarea"),a=0;a<b.length;a++)b[a].style.height="auto",b[a].style.overflow="auto",b[a].style.height=b[a].scrollHeight+"px",b[a].addEventListener("input",f,!1),b[a].addEventListener("focus",
+g,!1),b[a].addEventListener("mousedown",h,!1)})();
+気持ち反応が早くなったような、なっていないような...。
+処理方法を見直して高速化
+そもそも1文字入力毎にfit()処理をしているから、反応が怠くなるのだ。
+そんなに頻繁にfit()する必要はないわけで、returnキーを押した時だけ処理するようにしてみた。
+キーコードを取得するため、処理のタイミングを'input'から'keyup'に変更した。
+また、テキストエリアの高さが1行になってしまうのも見苦しいので、最低でも2行分の高さは確保するようにしてみた。
+javascript:(function(){
+var ROW_HEIGHT = 22.24;
+var scrollTop, offsetH;
+var els = document.getElementsByTagName('textarea');
+for (var i = 0; i < els.length; i++){
+els[i].style.height = 'auto';
+els[i].style.overflow = 'auto';
+els[i].style.height = els[i].scrollHeight + "px";
+els[i].addEventListener('keyup', fit, false);
+els[i].addEventListener('focus', scroll, false);
+els[i].addEventListener('mousedown', savePoint, false);
+}
+function fit(e){
+if (e.keyCode!=13) return;
+while(this.scrollHeight <= this.offsetHeight && this.offsetHeight > ROW_HEIGHT){
+this.style.height = this.offsetHeight - ROW_HEIGHT + "px";
+}
+this.style.height = (this.scrollHeight<ROW_HEIGHT*2) ? "auto" : this.scrollHeight + ROW_HEIGHT + "px";
+}
+function scroll(){
+window.scrollTo(0, scrollTop+offsetH);
+}
+function savePoint(e){
+scrollTop = document.body.scrollTop;
+offsetH = e.pageY-scrollTop-190;
+offsetH = (offsetH>0) ? offsetH : 0;
+}
+})();
+かなり反応が良くなった!
+暫く、これで使ってみる。
+ペースト・アンドゥー対応
+returnキーのみの反応だと、ある程度長いテキストをペーストしても、テキストエリアのサイズは変化せずそのままになってしまう...。
+結果、次の入力先を見失って、テキストエリアを拡大したいが為に、無駄にreturnキーを入力して、削除してを繰り返すことになる。
+そんな無駄な操作を繰り返さない為に、さらにもうちょっと工夫してみた。
+ついでに、テキスト未入力時の初期値を'auto'からROW_HEIGHT*2に変更した。
+javascript:(function(){
+var ROW_HEIGHT = 22.24;
+var scrollTop, offsetH, keyCode = 13;
+var els = document.getElementsByTagName('textarea');
+for (var i = 0; i < els.length; i++){
+els[i].style.overflow = 'auto';
+els[i].style.height = ROW_HEIGHT*2;
+els[i].style.height = els[i].scrollHeight + "px";
+els[i].addEventListener('keydown', saveKeyCode, false);
+els[i].addEventListener('input', fit, false);
+els[i].addEventListener('focus', scroll, false);
+els[i].addEventListener('mousedown', savePoint, false);
+}
+function saveKeyCode(e){
+keyCode = e.keyCode;
+}
+function fit(e){
+if (keyCode==13 || keyCode==86) {  /*return:13、command-v:86*/
+while(this.scrollHeight <= this.offsetHeight && this.offsetHeight > ROW_HEIGHT){
+this.style.height = this.offsetHeight - ROW_HEIGHT + "px";
+}
+this.style.height = (this.scrollHeight<ROW_HEIGHT*2) ? "auto" : this.scrollHeight + ROW_HEIGHT + "px";
+}
+keyCode = 13;
+}
+function scroll(){
+window.scrollTo(0, scrollTop+offsetH);
+}
+function savePoint(e){
+scrollTop = document.body.scrollTop;
+offsetH = e.pageY-scrollTop-190;
+offsetH = (offsetH>0) ? offsetH : 0;
+}
+})();
+これでキー入力を伴わないテキスト変化(ペースト・アンドゥー等)にも対応して、サイズ調整されるようになった!
+ツイートする
+Permalink | コメント(5) | トラックバック(0)   
+より賢くサイズ調整するテキストエリアに改良する過程 - ザリガニが見ていた...。

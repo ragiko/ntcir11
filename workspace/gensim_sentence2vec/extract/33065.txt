@@ -1,0 +1,13 @@
+レスポンスオブジェクトは LWP::UserAgent の request() から返されます:
+# ...
+$response = $ua->request($request)
+if ($response->is_success) {
+print $response->content;
+}
+else {
+print STDERR $response->status_line, "\n";
+}
+説明¶
+The HTTP::Response class encapsulates HTTP style responses. A response consists of a response line, some headers, and a content body. Note that the LWP library uses HTTP style responses even for non-HTTP protocol schemes. Instances of this class are usually created and returned by the request() method of an LWP::UserAgent object.
+HTTP::Response クラスは HTTP 形式のレスポンスをカプセル化します。 レスポンスはレスポンス行、いくつかのヘッダ、そして内容の本体(content body)で 構成されます。 LWP ライブラリは HTTP プロトコルでないスキームにも、HTTP 形式のレスポンスを 使っていることに注意してください。 このクラスのインタンスは通常 LWP::UserAgent の request() メソッドで 作成されてかえされます。
+HTTP::Response - HTTP 形式のレスポンスメッセージ - perldoc.jp

@@ -1,0 +1,281 @@
+SPICEとはナイスな回路シミュレータです.
+細かい説明は他のサイトを見てもらえれば分かると思います.
+電子回路の電流や電圧の解析,
+また回路の過渡解析による素子の遅延時間の解析などが可能です.
+使用するSPICEのバージョン等で変わると思いますが,以下にメモ程度のものを書いておきます.
+半分は実体験,半分はマニュアルより.
+怪しい所があったらメールでご指摘お願いします.
+変数の値の継承 (.OPTION PARHIER)(2010/05/09)
+.OPTION PARHIER=
+でサブサーキットなどへの変数の値の継承方法を変えられます (デフォルトは GLOBAL).
+例えば
+.PARAM DefPwid=1u
+.SUBCKT Inv a y DefPwid=2u DefNwid=1u
+Mp1  pMosMod L=1.2u W=DefPwid
+Mn1  nMosMod L=1.2u W=DefNwid
+.ENDS
+xInv0 a y0 Inv
+xInv1 a y1 Inv DefPwid=5u
+.measure tran Wid0 param='lv2(xInv0.Mp1)'
+.measure tran Wid1 param='lv2(xInv1.Mp1)'
+とある場合,
+.OPTION PARHIER=GLOBAL では
+Wid0 = 1u
+Wid1 = 1u
+となり,.OPTION PARHIER=LOCAL では
+Wid0 = 2u
+Wid1 = 5u
+となります.
+優先順は,
+PARHIER=GLOBAL                          PARHIER=LOCAL
+Analysis sweep parameters           Analysis sweep parameters
+.PARAM statement (library)        .SUBCKT call (instance)
+.SUBCKT call (instance)                  .SUBCKT definition (symbol)
+.SUBCKT definition (symbol)       .PARAM statement (library)
+だそうです.
+.DATA data(2009/06/12)
+.DATA data
+...
+.ENDDATA
+.DC DATA = data
+これは通りません.
+.DC DATA = data
+が構文エラーと認識されるようです.
+DATA 名を「dataxx」とでもすれば回避できますが.
+数のフォーマット(2008/02/14)
+0.0001m
+は 1e-7 として認識されますが,
+1e-4m
+は 1e-4 としか認識されないそうです.
+混ぜるな危険.
+データドリヴンな PWL(2006/10/09)
+とりあえず,
+.TRAN DATA = hoge
+であって,
+.TRAN SWEEP DATA = hoge
+ではない.
+今週中に追記…と書いたがもはや遠い昔のことなので忘れてしまいました.
+AUTOSTOP で高速化(2006/10/09)
+.OPTIONS AUTOSTOP
+とやると,過渡解析で .MEASURE が全て終わると解析を止めてくれます.
+これでシミュレーション時間に大きなばらつきのある SWEEP DATA とか .ALTER もましに.
+SWEEP DATAする際の変数の初期化について(2005/11/17)
+これいつのまにか記事消しちゃってたみたいですね….
+.DATA で用いる変数は別に前もって .PARAM で宣言する必要はないです.
+もししたとしても,初期化の値は使用されず,.DATA で指定した値から SWEEP が始まります
+…とかそういうことを書いていたはず.
+使用できる最小の数は?(2005/10/26)
+1e-32等の数を使った場合,結果が想定通りでないことがありました.
+Perlで計算した結果は合っていて,同じ式を使っているはずなのに…….
+出力を見るとどうやらある程度小さい数が0にされている様子.
+で,困った時のマニュアル参照.
+.option EPSMIN=x 
+でxに1e-40等を適当に設定してやれば,小さい数も安心.
+EPS は epsilon の略でしょうか.
+# 追記
+# 指定できるのは1e-99までで,1e-100以下の精度は扱えない(エラーになる)ようです.
+ついで.
+反対(でもないな)に,大きい数(というか指数)でオーバフローが起こる場合,
+.option EXPMAX=x 
+を使う.
+デフォルトは350…らしい.
+こっちはEPSでなくEXPなので注意.
+組込み関数のオーバロードはできない(2005/09/12)
+**error** too few arguments in function call  64       
+cal_hogehoge(a,b) + cal__hogehoge2(a,max(b),b)
+のようなものが出るから何のエラーかと思ってうーんうーん悩んだ結果,
+max(x,y)という組込み関数をオーバロードできないせいと発覚.
+ユーザ定義関数とは違って(参照: 関数のオーバロードはできない),(2005/09/12)
+ネットリストのどの位置でmax(x)と宣言しようが上記のエラーが出ます.
+つまり,組込み関数と同じ名前の関数は定義しない方がよいのでしょう.
+以下,組込み関数の名前.
+sin cos tan asin acon atan sinh cosh tanh
+abs sqrt log log10 exp db int nint sgn sign
+pow pwr min max val lv lx v i
+x**y [cond] ? x:y  >= == != && ||
+各関数の詳細はマニュアルを参照のこと.
+関数のオーバロードはできない(2005/09/12)
+関数のオーバロードとは一般にオブジェクト指向型の言語で
+「1つのクラスに仮引数の型か数が異なる同名のメソッド(というかファンクション)を複数宣言すること」
+ですが,ここでは単に
+「仮引数の数が異なる同名のメソッドを複数宣言すること」
+を意味します(SPICEには型はないですからね).
+例えば,パラメータによって変化するキャパシタンスを計算するのに
+.PARAM
++cal_C(A,B,C) = 'hogehoge'
++cal_C(A,B,C,D) = 'hogehoge'
+と,パラメータ数の異なる関数cal_Cを宣言したとしましょう.
+この場合,
+CLoad OUT GND cl
+.PARAM cl = 'cal_C(p,q,r,s)'
+とするとどうなるでしょうか?
+これは通ります.
+しかし,
+CLoad OUT GND cl
+.PARAM cl = 'cal_C(p,q,r)'
+とするとどうなるでしょうか?
+hspice job concludedにはなりますが,結果は想定外のものになるはずです.
+出力には以下のようなものがでます.
+**warning** in element=  0:cload            defined in subckt 0               
+capacitance =   0.134     >= 0.1 farad, please verify it.
+キャパシタンスが物凄く大きくなってしまっています.
+warningですがerrorではないので困りますね.
+ということで,SPICEで関数のオーバロードをしようと思っても,
+同じ変数の二重定義と同様,後の方が有効になるようです.変数の優先順・変数の二重定義(2005/04)
+これを回避するには,
+.PARAM
++cal_C_3(A,B,C) = 'hogehoge'
++cal_C_4(A,B,C,D) = 'hogehoge'
+のように関数名を分けるしかなさそうです.
+.OPTIONSの詳細(2005/07/08)
+とりあえず使用頻度の高そうなものについてのみですが,そのうち追加していくかも.
+私の訳し方が変なので意味が解りにくいところがあると思いますが.
+BRIEF<=x>: 次の.OPTION BRIEF = 0か,.ENDまでデータファイルのプリントバックを抑止
+(ライブラリなどを読んだ場合,その内容が出力に出ないようにする)
+さらにLIST, NODE, OPTSの.OPTIONを解除し,NOMODを設定する
+また,.OPTION NXXも.OPTION BRIEFと同じ効果.
+INGOLD: .MEASURE とかの出力フォーマット
+=0エンジニアリングフォーマット (1e3 = K など)
+=1Gフォーマット (いわゆる "%G")
+=2Eフォーマット (いわゆる "%E")
+LIST: 入力データの要約と,その要素など実効サイズを表示
+MEASDGT=x: .MEASURE の有効数字を x 桁にする (デフォルトは 4,最大 10)
+NUMDGT=x: .MEASURE 以外の出力の有効数字を x 桁にする (デフォルトは 4,最大 10)
+NODE: (各ノードに対して?)ノードに接続されている素子の参照テーブルを表示
+NOMOD:モデルパラメータの出力抑止
+NOPAGE:改ページ?抑止
+OPTS: 現在の.OPTIONの設定を出力
+POST=[0|1|2|3|ASCII|BINARY]: シミュレーション結果のグラフ用出力 (.tr0 とかのファイルに吐かれる)
+=0出力しない
+=1(or BINARY)バイナリ形式で出力
+=2(or ASCII)アスキー形式で出力
+=3New wave binary形式で出力
+自分で .PRINT とかする場合は 0 で良いです,というか 0 にしとかないと毎回無駄なファイルが増える.
+PROBE: .PROBE, .PRINT, .PLOT, .GRAPHで指定されている変数のみを出力するよう制限
+(HSPICEのデフォルトでは上記に加えて全ての電圧と供給電流も出力されるらしい)
+.DATAで.TEMPを代用する(2005/05/08)
+.DATAで推移させる最初の変数名が
+temp
+で始まり16文字以下(正規表現で言うと/^temp.{0,12}$/i)なら,それは
+.TEMP
+と同じ効力を持つ.
+つまり,
+.TRAN 1ps 2ns SWEEP DATA = data_t
+.DATA data_t
+temp1_35t5dxp0
+-50
+0
+50
+.ENDDATA
+のように書くと
+.TRAN 1ps 2ns
+.TEMP -50 0 50
+と同じになる.
+仕様か.
+ただ,例えば上の場合で,
+.MEAS TRAN
+とすると
+.TEMP
+だと出力ファイル(拡張子 mt*)が3つできるのに対し,
+.DATA data_t
+だと出力ファイルが1つにまとまるので,結構便利かもしれない.
+注意してほしいのは,「.DATAで推移させる最初の変数名が」なので,例えばdata_tが
+.DATA data_t
+temp1_35t5dxp0	x
+-50	1
+0	2
+50	3
+.ENDDATA
+だとtempは変化するが,
+.DATA data_t
+x	temp1_35t5dxp0
+1	-50
+2	0
+3	50
+.ENDDATA
+だとtempは変化しない.
+また,変数名が17文字以上だと何故か温度は変化しない.
+.OPTIONS行に指定しておくと便利なもの(2005/04)
+.OPTIONS行に
+.OPTIONS BRIEF NOPAGE NOMOD PROBE POST=0
+あたりを指定すると出力が軽くなる.
+追記(2005/07/08): .OPTIONSの説明を加えました.OPTIONSの詳細
+自分も「おまじない」としか理解していなかったので…
+.PARAM MyFunc(a, b) = 'FUNCTION'のように自作関数を設定する際の注意点(2005/04)
+他の変数に代入する時には
+.PARAM x = 'MyFunc(a,b)' $ コンマの後に半角スペース無し …… hspice job concluded
+.PARAM x = 'MyFunc(a, b)' $ コンマの後に半角スペース有り …… hspice job concluded
+.PARAM x = MyFunc(a,b) $ コンマの後に半角スペース無し …… hspice job concluded
+.PARAM x = MyFunc(a, b) $ コンマの後に半角スペース有り …… hspice job aborted
+のようになるため,クォートした方が無難.
+多分バグ.
+ちなみに上のabortedのとき,出力には
+**error**  parsing a parameter and could not find the =
+>error   ***difficulty in reading input 
+と出る.
+フィールドセパレータは
+1個以上の空白 " "
+1個のカンマ ","
+1個の等号 "="
+括弧 "(" or ")"
+だから,
+.PARAM x = MyFunc a  = … b = 〜
+みたいなのを求めてるのかも.
+.IF節は文法にない(Star-HSPICEのみ?)(2005/04)
+下記参考のStar-HSPICE manualにはなかった.
+余程書きたいなら
+.IF (……)
+〜
+[.ELSEIF (……)
+〜]
+[.ELSE
+〜]
+.ENDIF
+とすると書けるは書ける
+(条件式を()で囲まないとsyntax errorになる
+英語のマニュアルには()無しで書いてあったのだが,それだとabortedになった).
+が,条件式が満たされても内部文が解釈されないので使えない.
+ということで.IF節は.DATAと.ALTERで代用して下さい.
+変数の優先順・変数の二重定義(2005/04)
+未定義のパラメータも参照できる.
+つまり,
+.PARAM Third = Second
+.PARAM Second = First
+.PARAM First = 1
+のような書き方が可能.
+また,同じ変数の二重定義は後の方が優先される.
+.PARAM DupPARAM = 10
+.PARAM DupPARAM = 1
+ならDupPARAM = 1となる.
+追記: 関数の二重定義も後の方が優先される.
+ノード名に使える文字・使えない文字(2005/04)
+英数字以外でノード名に使ってもいい文字は,
++ - * / $ # [ ] ! < > _ % { }
+のみ.
+ちなみに{}は[]に変換されるそうです.
+英数字以外でノード名に使ってはいけない文字は,
+( , = '  (空白)
+と,
+.
+ピリオドは
+<subcircuitName>.<nodeName>
+のように使うのでノード名には使えません(追記: 使えるのかも?でもややこしいから避けるべき).
+.DATAと.PARAMの関係(2005/04)
+.TRAN 1ps 2ns SWEEP DATA = data_v
+.PARAM vdd = 0.5
+.DATA data_v
+vdd
+0.6
+0.8
+1.0
+1.2
+.ENDDATA
+のように記述した場合,
+最初のvdd2 = 0.5ではシミュレートされません.
+試行されるのは,
+vdd = 0.6,vdd = 0.8,vdd = 1.0,vdd = 1.2
+の4回です.
+ついでに言うと,上の場合,
+.PARAM vdd = 0.5
+はなくても自動的に変数vddが認識されるようです.
+タイトル未定: SPICE

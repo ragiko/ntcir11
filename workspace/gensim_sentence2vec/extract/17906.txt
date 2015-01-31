@@ -1,0 +1,31 @@
+JSONとRDF/Turtleのマッピングが何とかものになりそうなので、簡単なデモを用意し試してみることにする。細かいことに目をつぶれば、相互変換はJavascriptでも可能だ。Ajax的にやれば、RDF/Turtleのデータを取り込んでJavascriptで処理したり、JSONデータをRDFトリプルとして操作することも可能だろう。
+まず、3回目の型付きノードで取り上げた例を使って変換してみる。上のtextareaのJSONのデータを、「JSON  Turtle」ボタンを使ってRDF/Turtleに変換し、下のtextareaに書き込む。生成したRDF/Turtleは、グラフ図を描いたり、きちんとトリプルが得られているかをパーサーで確認することもできる。
+逆に、下のtextareaにRDF/Turtleがあれば、「Turtle  JSON」で逆を行うことも可能だ(生成したJSONデータのダンプ表示には、川崎さんのJKL.Dumperを利用させて頂きました)。
+JSON:
+{
+"Student": {
+"studentid": "10108068",
+"name": "John Barleycorn"
+}
+}
+JSON  Turtle
+Turtle  JSON
+RDF/Turtle:
+上下に変換を繰り返すと、多少改行やインデントの書式は変わるものの、いちおう同じデータ構造を保って相互に変換ができていることが分かる。
+せっかくだから、もう一つだけサンプルを見ておこう。こちらはFOAFのデータを、Person要素を省いて記述したもの。2人の知人がいることを、knowsプロパティの値を配列にすることで表現している。こちらは名前空間宣言がどうしても必要なので、2回目の時に導入した@prefixという特別なプロパティを最初に置いた。
+JSON:
+{
+"@prefix": "<http://xmlns.com/foaf/0.1/>",
+"name": "Masanide Kanzaki",
+"nick": "masaka",
+"mbox": "<mailto:webmaster@kanzaki.com>",
+"knows": [
+{"nick": "danbri", "mbox": "<mailto:danbri@w3.org>"},
+{"nick": "libby", "mbox_sha1sum": "289d4d44325d0b0218edc856c8c3904fa3fd2875"} ]
+}
+JSON  Turtle
+Turtle  JSON
+RDF/Turtle:
+JSONの配列データが、RDF/Turtleではプロパティ反復のモデルに変換されている。
+変換を行うjavascriptは、まだ作り込みが甘いところもあり、Turtleのコレクションモデルにもきちんと対応していないが、JSONとRDF/Turtleのデータが相互に往き来可能ということは示せるんじゃなかろうか。適当にJSONデータを入れて試してみると、RDF/Turtleがどんなものかも、ある程度感じがつかめるのではないかと思ったりしている。
+ちょっとしたメモ - JSONではじめるRDF/Turtle(5) - 相互変換のデモ

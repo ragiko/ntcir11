@@ -1,0 +1,252 @@
+【はじめに】
+只今、Googleのお姉さんを2重音声にして遊んでいます。
+このページはGoogle TTS(Text-To-Speech) APIをJavaScriptで利用する方法を中心に紹介しているページです。
+このページはGoogle ChromeあるいはQuickTimeをインストールしたSafari, Operaの最新版を使って閲覧してください。
+Internet ExplorerとFire Foxに関しても不細工ではありますが一応音声合成はできるようになりました。
+但し、IEでは音声合成実行後にWindowが閉じてくれないバグがあります。(現在IE10の新機能で悪影響がありIEでは利用不可にしています)
+また、FireFoxではもしかすると404エラーが発生して子ウインドウが開いても、アドレスバー内でエンターキーを1回入力しないとダメかも。
+下の方には、プラグイン不要のJavaScript Direct Digital Synthesizer方式の独自音声合成API μ-iVoiceに関しての記述やリンクがあります。
+【Google翻訳に実装されている音声合成の機能について】
+【Google翻訳の音声合成が凄い件】
+以前から、ウェブサイト上で音声合成を利用したアナウンスが簡単に実現できないかといろいろ試行錯誤を重ねてきました。
+そんなとき、2011年04月23日にGoogle翻訳に音声合成機能が備わっていることに気が付きました。
+リンク先のページの左側のテキストボックスの上の言語を『日本語』に切り替えてボックス内に表示されたスピーカーマークをクリックすると、
+なかなかいい感じで女性の声が聞こえるんです。
+日本語の場合は、『?』やスペース、句読点を加えて、少し記述の仕方に工夫しないと『なまり』がでてしまっておかしな結果に聞こえてしまいますが、
+英語や他の言語ではなかなかに凄いと感じました。
+驚いたぁ!
+(音声合成って知らない間に随分レベルアップしていたんですねぇ!)
+これはなんとか音声合成の機能だけを切り出してJavaScriptで使ってみたいものだと感じました。
+【Google翻訳の表示例】
+【iSpeech API】
+そこで、2011年05月03日にソースを読んだり、そこで判明したキーワードで検索をしたりと、いろいろ調べてみた結果、
+Google翻訳の音声合成機能は『www.ispeech.orgのiSpeech API』を使っているらしいことがわかりました。
+早速、iSpeechの方の登録を行って情報収集を開始してみました。
+『www.ispeech.orgのiSpeech API』はテキスト情報を指定言語の発音で読み上げる『Text-To-Speech(TTS)』と、
+音声認識『Automated Voice Recognition』で構成されており、インターネット接続可能でAudioの再生・録音の可能なデバイスであれば
+プラットフォームにとらわれずに利用できるように設計されています。
+しかし、残念な事に、このiSpeechサービスは開発段階では無料なのですが、
+利用するユーザーは有料となるサービスらしいとわかりました。
+iSpeechの利用は諦めることにしました。
+【Weston Router】
+でもなんとか音声合成の動作原理を理解しようと、検索を開始したところ、
+2011年5月5日に海外のブログ『Weston Ruter』にGoogle翻訳のソース解析をした人がおり、
+その利用方法が公開されていることを知りました。
+音声合成サービスのURLは『http://translate.google.com/translate_tts』であること。
+(少し前までGoogle翻訳サービス・トップのJavaScript中にこのURLが記述されていました)
+このURLに『?』(半角)を付けて、『言語』と『音声合成を行うテキスト(文章)』を2つのパラメータとして与えます。
+2つのパラメータ間には『&』(半角)を入れて連結します。
+言語を指定するパラメータ名は『tl』、テキストを指定するパラメータ名は『q』です。
+【文字コード】  ie=文字コード 実際に使用されているのかどうかは不明 ie=UTF-8
+【言語の指定】 tl=言語コード 日本語:ja 英語:en スペイン語:es イタリア語:it フランス語:fr ドイツ語:de ロシア語:ru
+中国語:zh-CN 韓国語:ko オランダ語:nl ギリシャ語:el ポルトガル語:pt ポーランド語:pl
+(言語が実際にサポートされているのかどうかは未チェックなので入力してみて下さい。)
+【テキスト指定】q=テキスト
+100文字以内の短文の入力が可能です。
+他の言語が入力された場合にはHello.+World!のように
+単語間に半角スペースの代わりに『+』[半角プラス]を挿入する仕様になっています。
+日本語では、前述したように語尾を少し釣りあげて発音させるために『?』(全角)を使います。
+また読み上げに少し間を持たせるために、句読点やスペース(全角)を使って調整しています。
+ブラウザによる直接利用例
+この場合は、Googleのサーバーを直接呼んで利用しているのでクロスドメインの制約の問題もありません。
+InternetExplorer, FireFox, Chrome, Safari, Operaでの動作を確認できました。
+テキストの部分を書き換えれば自由に音声合成を行うことができます。
+【日本語】 http://translate.google.com/translate_tts?tl=ja&q=こんにちは?あなたは、どんな趣味をお持ちですか?
+【英 語】 http://translate.google.com/translate_tts?tl=en&q=Hello.+Everybody.+How+are+you?+I+am+fine.
+どうやら、このURLのサービスからはtranslate_tts.mp3というmp3形式のデータファイルが返送されてくるようです。
+キーボードでCTRL+Sを使えばmp3形式ファイルとして保存することができます。
+【Google Chromeでのプロトコル調査方法】
+例えば、Google Chromeなら【Google Chromeの設定】⇒【ツール(L)】⇒【JavaScriptコンソール(J)】でデバッガーを起動することができます。
+Google翻訳サービスを使いながら、【Network】タブを観察すればプロトコルはすぐにわかります。
+下の例のように、audio/mpegタイプのデータを受信していることがわかります。
+FireFoxの場合は、メニューからWeb開発⇒Webコンソールで概要を調べることができます。
+これらを使えばわかりますが、現在はtranslate_ttsだけでなく、gen204とも通信している様子がわかると思います。
+どうやらGoogle翻訳サービスでは100文字以上の長文でも音声合成を行うために工夫されているようです。
+現状の例:translate_tts?ie=UTF-8&q=<メッセージ>&tl=<言語コード>&total=1&idx=0&textlen=<文字数>&prev=input
+実際のサービスではmpegの再生はFlash Playerで行っているようです。
+しかし、Flash Playerにはクロスドメインの制約があるので使うことはできません。
+<object type="application/x-shockwave-flash" data="//ssl.gstatic.com/translate/sound_player2.swf" width="18" height="18" id="tts">
+<param value="//ssl.gstatic.com/translate/sound_player2.swf" name="movie"/>
+<param value="sound_name_cb=_TTSSoundFile" name="flashvars"/>
+<param value="transparent" name="wmode"/>
+<param value="always" name="allowScriptAccess"/>
+</object>
+【Google TTSのJavaScriptサンプルコード】
+最新のサンプルコードをhttp://www.neo-tech-lab.co.uk/GoogleTTS/Sample.zipに用意しました。各自のサイトに置いて実験してみてください。
+最新サンプルコードではブラウザはGoogle Chromeだけでなく、QuickTime 7がインストールされていれば、InternetExplorer, Safari, Operaでも利用可能になりました。
+(Chrome, Safari, Operaではダブル音声で遊んでいます。)
+複数のブラウザを使う場合には、QuickTimeのインストールは対象ブラウザごとに行う必要があるようです。
+FireFoxだけ動作確認が行えませんでした。
+サンプルは、Sample_Ja.htmとGoogleTTSx.htmで構成されています。
+Sample_Ja.htm内で指定したテキストをパラメータとしてGoogleTTSx.htmに引き渡し、iframe内で起動します。
+喋らせる言語とメッセージは親フレームからGoogleTTSx.htmを呼び出す際に、URLの後ろに『?』を付けてパラメータとして渡しています。
+JavaScriptですので、ブラウザで『ソースを表示』すれば、コードを読むことができます。使うのはすごく簡単です。
+しかし、他のブラウザにはクロスドメインの制約が付きまといます。
+クロスドメインの制約を回避するために、2重のiframeを使ってリファラを消し、GoogleTTSにはローカルからのアクセスであるように振舞っています。
+この方法はオーソドックスなクロスドメイン・アクセスの方法として知られている方法のひとつです。
+クロスドメイン・アクセスはセキュリティー問題があるとかで制限されているようですが、
+実際には多くのアクセス抜け道(セキュリティーホールとも言う)が残されており、意味をなしていません。
+サーバー所有者にとって商業的に有利な制約になっているだけで、多くの人々には不便を強いる結果になっているだけだと思います。
+実際、サーバー側で一旦受信してファイルに音声合成結果(mpeg)を記録してから再生させる方法もある。
+でもこの方法は大きなタイムラグを生じてしまう。
+【図1】上記サンプルコードでのGoogleTTSの利用方法
+修正日2012年12月19日23:21頃記載
+【親フレームのJavaScript】『Sample_Ja.htm』
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<title>【Google翻訳Text-To-Speech(TTS)の使い方】私設研究所Neo-Tech-Lab.com</title>
+<script type="text/javascript">
+//【指定言語】tl= 日本語:ja 英語:en スペイン語:es イタリア語:it フランス語:fr ドイツ語:de ロシア語:ru
+//                オランダ語:nl ギリシャ語:el ポルトガル語:pt ポーランド語:pl 中国語:zh-CN 韓国語:ko
+//【メッセージ】q=
+function init() {
+var language = "ja";
+var message = "こんにちは。いつも、しせつ研究所ネオテックラボをご利用いただきありがとうございます。私はGoogleテキストツースピーチの日本語女性アナウンサーです。よろしくね";
+var number = (new Date().getTime()).toString(); //【イメージ・リフレッシュ用】
+var base = document.getElementById("GoogleTTS");
+var Obj = document.createElement('iframe');
+Obj.setAttribute('border','0');
+Obj.style.width = '300px';
+Obj.style.height = '1px';
+Obj.src = "GoogleTTSx.htm?tl=" + language + "&q=" + message + "&dummy=" + number;
+base.appendChild(Obj);
+}
+</script>
+</head>
+<body onload="init();">
+<header>
+<font face="MS Pゴシック" size="3">
+<H3>【Google翻訳Text-To-Speech API】</H3>
+<div id="GoogleTTS" name="GoogleTTS" style="visibility:hidden;"></div>
+</font>
+</header>
+</body>
+</html>
+【子フレームのJavaScript】『GoogleTTSx.htm』
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>【私設研究所Neo-Tech-Lab.com】【パラメータを基にGoogle Text-To-Speech APIを呼びます】</title>
+<script type="text/javascript">
+//*****************************************************
+//【変数定義】
+//*****************************************************
+var NTL_GoogleTTS = {
+"Browser":   "Unknown", //【ブラウザの種類】Chrome, FireFox, MS_IE, Opera, Safari, Unknown
+"Count":             0,
+"URL":              "",
+"Timer":  new Object(),
+"Language":         "",
+"Message":          ""
+}
+function InitializeByParam() { 
+//【decodeURIComponentでlocation.hrefを日本語文字列に変換する】
+var data = decodeURIComponent(location.href).split("?")[1]; //【区切り記号?以降のパラメータを取得する】
+if(data==undefined) {
+data = "tl=ja&q=エラーが発生しました。パラメータが指定されていません。";
+} else {
+if(data.indexOf("=")<0) { //旧形式のパラメータ
+var oldparam = data.split('&');
+data = "tl=" + oldparam[0] + "&q=" + oldparam[1];
+}
+}
+var param = data.split('&'); // 『&』で区切られたパラメータを取得する
+var arg = new Object();
+for(var i = 0; param[i]; i++) {
+var elements = param[i].split('=');
+arg[elements[0]] = elements[1];
+}
+NTL_GoogleTTS.Language = arg["tl"]; //【1つ目のパラメータは言語】
+NTL_GoogleTTS.Message  = arg["q"];  //【2つ目のパラメータはテキスト】
+var Number = (new Date().getTime()).toString(); //【イメージ・リフレッシュ用】
+NTL_GoogleTTS.URL = "http://translate.google.com/translate_tts"
++ "?tl=" + NTL_GoogleTTS.Language + "&q=" + NTL_GoogleTTS.Message + "&dummy=" + Number;
+NTL_GoogleTTS.Count = 0;
+NTL_GoogleTTS.Browser = NTL_CheckYourBrowser(); //【ブラウザが何か調べる】
+var br = NTL_GoogleTTS.Browser;
+if(br=="MS_IE") {
+NTL_GoogleTTS.Timer = setTimeout("GoogleTTS_ChildPage()", 50);
+return;
+}
+if(br=="FireFox") {
+GoogleTTS_Object();
+NTL_GoogleTTS.URL = "http://translate.google.com/translate_tts"
++ "?tl=" + NTL_GoogleTTS.Language + "&q=" + NTL_GoogleTTS.Message;
+GoogleTTS_Object();
+NTL_GoogleTTS.Timer = setTimeout("GoogleTTS_ChildPage()", 50);
+return;
+}
+if((br=="Chrome")||(br=="Opera")||(br=="Safari")) {
+GoogleTTS_Common(); //【これは未だ存在しないファイルなので404エラーとなる可能性大】
+GoogleTTS_Common(); //【2度目には存在している】
+return;
+}
+}
+//*******************************************************
+//【iframeを使って指定URLに送信】
+//*******************************************************
+function GoogleTTS_Common() {
+var base=document.getElementById("Voice");
+var obj=document.createElement("iframe");
+obj.setAttribute("border", "0");
+obj.setAttribute("frameborder", "0");
+obj.style.width = 390;
+obj.style.height = 39;
+obj.setAttribute("type","audio/mpeg");
+obj.src = NTL_GoogleTTS.URL;
+base.appendChild(obj);
+}
+function GoogleTTS_Object() { 
+var base=document.getElementById("Voice");
+var obj=document.createElement("audio");
+obj.type = "audio/mpeg";
+obj.width = 390;
+obj.height = 39;
+obj.setAttribute("autoplay","true");
+obj.setAttribute("controls","true");
+obj.src = NTL_GoogleTTS.URL;
+base.appendChild(obj);
+}
+//*******************************************************
+//【新規ウィンドウを指定URLで開く】
+//*******************************************************
+function GoogleTTS_ChildPage() { 
+clearTimeout(NTL_GoogleTTS.Timer);
+if(NTL_GoogleTTS.Count==0) {
+NTL_GoogleTTS.TTS = window.open(NTL_GoogleTTS.URL, "_media", "height=39,width=139,top=100,left=1080"); 
+NTL_GoogleTTS.Timer = setTimeout("GoogleTTS_ChildPage()", 25000); //【20秒後にclose】
+NTL_GoogleTTS.Count++;
+} else {
+NTL_GoogleTTS.TTS.close();
+}
+}
+//*****************************************************
+//【ブラウザの種類を判別】反転順序は重要。変更不可。
+//*****************************************************
+function NTL_CheckYourBrowser() {
+var userAgent = window.navigator.userAgent.toLowerCase(); //【小文字に変換】
+if(userAgent.indexOf('chrome') != -1)  { return "Chrome";  }
+if(userAgent.indexOf('apple') != -1)   { return "Safari";  }
+if(userAgent.indexOf('firefox') != -1) { return "FireFox"; }
+if(userAgent.indexOf('msie') != -1)    { return "MS_IE";   }
+if(userAgent.indexOf('opera') != -1)   { return "Opera";   }
+return "Unknown";
+}
+//*****************************************************
+//【初期化】
+//*****************************************************
+window.onload = function() {
+InitializeByParam();
+}
+</script>
+</head>
+<body> 
+<div id="Voice" name="Voice"></div>
+</body>
+</html>
+【Google翻訳Text-To-Speech(TTS)の使い方】私設研究所Neo-Tech-Lab.com

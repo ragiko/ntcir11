@@ -1,0 +1,6 @@
+
+UPDATE Employees
+SET LastName = @LastName, FirstName = @FirstName, BirthDate = @BirthDate
+WHERE (EmployeeID = @EmployeeID)
+このステートメントを実行する場合は、すべてのパラメーター (@LastName、@FirstName、@BirthDate、および @EmployeeID) に値を設定する必要があります。  そのためには、パラメーター オブジェクトを使用します。  コマンド オブジェクトは、一連の型のオブジェクト SqlParameter、OleDbParameter、OdbcParameter、または OracleParameter が含まれたパラメーターのコレクション (たとえば、Parameters) をサポートします。  コレクション内には、渡す必要のある各パラメーターについて 1 つのパラメーター オブジェクトがあります。  また、ストアド プロシージャを呼び出す場合は、プロシージャの戻り値を取得するために追加のパラメーターが必要な場合もあります。  
+方法 : コマンド オブジェクトのパラメーターを設定および取得する

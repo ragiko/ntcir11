@@ -1,0 +1,29 @@
+密度 f(x) = 0.6φ(x)+0.4ψ(x)  &dagger;
+φを平均-1,分散1の正規分布に従う確率変数,ψを平均2,分散1の正規分布に従う確率変数として
+f(x) = 0.6φ(x)+0.4ψ(x)
+となる密度関数 truedensity() を定義する.
+truedensity <- function (x) {
+0.6/sqrt(2*pi)*exp(-(x+1)^2/2) + 0.4/sqrt(2*pi)*exp(-(x-2)^2/2)
+}
+> curve(truedensity, xlim=c(-6,6), ylim=c(0,0.3), col=2)
+f(x) に従う乱数を生成する関数  &dagger;
+次に, f(x) に従う乱数を生成する関数を定義する.
+generator_tmp <- function(n) {
+data1 <- rnorm(n)-1         # φ(x) に従う乱数
+data2 <- rnorm(n)+2         # ψ(x) に従う乱数
+data3 <- (runif(n) <= 0.6)  # 確率0.6でdata1を採択し,
+data1*data3+data2*(1-data3) # 確率0.4でdata2を採択するための手続
+}
+上と同じ動作をする関数で,最適化された関数を以下に挙げる(速度は約2倍,メモリ使用量は約3/4).
+generator <- function(n) { 
+(rnorm(n)-1)+3*(runif(n) > 0.6) 
+} 
+> data <- generator(1000)
+【参考】φを N1(μ1, σ1^2) に従う確率変数,ψを N2(μ2, σ2^2) に従う確率変数として
+f(x) = p*φ(x) + (1-p)*ψ(x)
+に従う乱数を生成する関数 rmixnorm4() を定義すると以下のようになる.
+rmixnorm4 <- function(n, p1, N1, N2) {  
+n1 <- sum(runif(n) < p1)  
+c(rnorm(n1, mean=N1[1], sd=N1[2]), rnorm(n-n1, mean=N2[1], sd=N2[2])) 
+}  
+ヒストグラムと密度の推定 - RjpWiki

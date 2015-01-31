@@ -1,0 +1,213 @@
+
+Next: 14 基数ソート(LSD radix sort)
+Up: sort
+Previous: 12.4 部分ソート(partial sort)
+13 分布数えソート(最高速のソート)
+最高速のソートとは大きく出たなと思われるでしょうが、
+分布数えソート(計数ソート、counting sort)は、
+クイックソートですら足元に及ばないほど高速です。
+おそらく、広く知られたソートアルゴリズムの中ではこれが最高速のソートでしょう。
+その計算量のオーダは \(O(N)\) という驚異的なものです(\(N\) は要素数)。
+しかも分布数えソートは安定なソートなのです。
+なら、これで決定じゃない?ほかのソートアルゴリズムなんていらないんじゃない?
+と言いたくなりますが、世の中そんなに甘くはないわけで、
+分布数えソートにはいろいろ制限があります。
+まず第一に、ソートするキーの定義域が比較的小さな整数区間である必要があります。
+区間の幅が \(2^{20}\) のように大きい場合はソート困難です。
+さらに、昇順・降順を簡単には切り替えられません。
+昇順用のプログラムと降順用のプログラムが別々に必要です。
+また、必要メモリのオーダも \(O(N)\) です。
+実際には追加的にさらにメモリが必要です。
+そして記述にはランダムアクセスイテレータが必要になります。
+それでは、分布数えソートのアルゴリズムを説明しましょう。
+まず、ソートするキーの値が 0 から M の整数だとしましょう。
+ソートする要素を1つ1つ数えてどの値の要素が何個あるかというヒストグラムを計算します。これには M+1 のサイズの配列が必要です。
+次にキーの値が k の要素までに、
+値 0 から数えて要素が何個あるかという累積ヒストグラムを計算します。
+勘のいい人もう分かったと思いますが、
+累積ヒストグラムで値 k が値 0 から数えて何個めであるか分かったということは、
+ソートしたとき、値 k の要素を何番目に並べればいいかが分かったのと同義です。
+あとは累積ヒストグラムにあわせてソート対象の配列を並べ替えてやるだけです。
+同じ値が複数ある場合はその値の並べ方に自由度がありますが、
+元の配列上でより後ろにあった要素をソート後でも後ろにくるように並べれば、
+安定なソートになるわけです。
+3,1,4,1,5,9,2,6,5,3,5,8,9 という系列を例に図示すると以下の様になります。
+縦軸にキーの値、横軸に個数を表示しています。
+横軸の目盛りはスペースの関係で16進数で表示していますが、
+A = 10, B = 11, ... , D = 13 を表していると考えてください。
+ヒストグラム
+k
+0|
+1|11
+2|2
+3|33
+4|4
+5|555
+6|6
+7|
+8|8
+9|99
+-+-------------> h[k]
+0123456789ABCD
+累積ヒストグラム
+k
+0|
+1|11
+2|112
+3|11233
+4|112334
+5|112334555
+6|1123345556
+7|1123345556
+8|11233455568
+9|1123345556899
+-+-------------> H[k]
+0123456789ABCD
+ご覧の通り、グラフそのものがソート結果になっています。
+ソートしたとき値 k の要素をどこに並べればいいかというと、
+H[k-1]+1 番目から H[k] 番目に並べればいいことが分かります。
+H[k-1] == H[k] のときは元の系列に値 k の要素は存在しません。
+値 0 のときだけは特別で、1 番目から H[0] 番目に並べます。
+H[0] == 0 なら元の系列に値 0 の要素は存在しません。ところで、
+系列の 1 番目の位置は配列の添字で考えると 0 番目なので、
+ずれを修正するのを忘れないでください。
+リスト25 に
+C++ による分布数えソートのリストを示します。
+このページの最後に Java での実装例も示します。
+リスト25: 昇順分布数えソート(dist_sort.cpp)
+#ifndef dist_sort_cpp
+#define dist_sort_cpp
+#include <iterator>
+#include <vector>
+template <int M, class RAI, class G>
+void dist_sort(RAI a0, RAI aN, G get_key)
+{
+typedef typename std::iterator_traits<RAI>::value_type val_t;
+typedef typename std::iterator_traits<RAI>::difference_type dif_t;
+const dif_t N = aN - a0;
+const RAI& a = a0;
+if (N < 2) return;
+std::vector<dif_t> h(M + 1, 0); // ヒストグラム用配列(0で初期化)
+std::vector<val_t> b(N); // 並べ替え用一時退避配列
+const typename std::vector<val_t>::iterator b0 = b.begin();
+const typename std::vector<val_t>::iterator bN = b.end();
+typename std::vector<val_t>::iterator bi = b0;
+for (RAI ai = a0; ai < aN; ++ai, ++bi) {
+const val_t& x = *ai;
+++h[get_key(x)]; // ヒストグラムの計算
+*bi = x;
+}
+for (int k = 1; k <= M; k++) h[k] += h[k - 1]; // 累積ヒストグラムの計算
+for (bi = bN; bi > b0;) { // 並べ替え。安定化のため後ろからアクセス
+const val_t& x = *(--bi);
+const dif_t j = --h[get_key(x)];
+a[j] = x;
+}
+}
+#endif // dist_sort_cpp
+リスト26: 降順分布数えソート(dist_sort_desc.cpp)
+#ifndef dist_sort_desc_cpp
+#define dist_sort_desc_cpp
+#include <iterator>
+#include <vector>
+template <int M, class RAI, class G>
+void dist_sort_desc(RAI a0, RAI aN, G get_key)
+{
+typedef typename std::iterator_traits<RAI>::value_type val_t;
+typedef typename std::iterator_traits<RAI>::difference_type dif_t;
+const dif_t N = aN - a0;
+const RAI& a = a0;
+if (N < 2) return;
+std::vector<dif_t> h(M + 1, 0);
+std::vector<val_t> b(N);
+const typename std::vector<val_t>::iterator b0 = b.begin();
+const typename std::vector<val_t>::iterator bN = b.end();
+typename std::vector<val_t>::iterator bi = b0;
+for (RAI ai = a0; ai < aN; ++ai, ++bi) {
+const val_t& x = *ai;
+++h[get_key(x)];
+*bi = x;
+}
+for (int k = M; k > 0; k--) h[k - 1] += h[k]; // 降順用に変更
+for (bi = bN; bi > b0;) {
+const val_t& x = *(--bi);
+const dif_t j = --h[get_key(x)];
+a[j] = x;
+}
+}
+#endif // dist_sort_desc_cpp
+分布数えソートには、要素からキーを取り出すキーゲッター(get_key)
+を与えてやる必要があります。省略することはできません。dist_sort()
+の使い方を以下に示します。
+リスト27: 分布数えソートの使い方
+#include <iostream>
+#include <functional>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include "dist_sort.cpp" // ここで、実際のソート関数を読み込む
+typedef int key_type;
+// ソートする要素の構造体
+struct val_t
+{
+key_type key;
+double data; // キー以外のデータも含むとする
+};
+inline std::ostream& operator<<(std::ostream& os, const val_t& x)
+{
+os << "(" << x.key << ", " << x.data << ")";
+return os;
+}
+// 構造体 val_t 用のキーゲッター
+struct get_key_t : public std::unary_function<val_t,key_type>
+{
+key_type operator()(const val_t& x) const { return x.key; }
+};
+int main()
+{
+using namespace std;
+static const int N = 10;
+vector<val_t> a(N);
+srand(time(NULL));
+for (int i = 0; i < N; i++) {
+a[i].key = (rand() >> 8) % 10;
+a[i].data = i;
+}
+for (int i = 0; i < N; i++) cout << " " << a[i];
+cout << endl;
+dist_sort<9>(a.begin(), a.end(), get_key_t());
+for (int i = 0; i < N; i++) cout << " " << a[i];
+cout << endl;
+return 0;
+}
+dist_sort<9>() とあるのは、
+ソートするキーが 0 から 9 までの値をとることを意味します。
+もしキーが 0 から 100 までの値をとるなら、
+dist_sort<100>(a.begin(), a.end(), get_key_t())
+のように呼び出します。
+C++言語が分からない人に向けて Java によるアルゴリズムの説明も加えました。
+ただし、これはアルゴリズムを説明するためのコードですので汎用性は全くありません。
+速度に関するチューンもされていません。
+利用にあたっては自分でカスタマイズ・チューンニングするようにしてください。
+昇順分布数えソート(DistSort.java)
+class DistSort {
+public static void sort(int M, int[] a) { sort(M, a, 0, a.length); }
+public static void sort(int M, int[] a, int i0, int iN) {
+int N = iN - i0;
+if (N < 2) return;
+int[] h = new int[M + 1]; // ヒストグラム用配列
+int[] b = new int[N]; // 並べ替え用一時退避配列
+for (int i = i0; i < iN; i++) {
+int x = a[i];
+++h[x]; // ヒストグラムの計算
+b[i - i0] = x;
+}
+for (int k = 1; k <= M; k++) h[k] += h[k - 1]; // 累積ヒストグラムの計算
+for (int i = N; i > 0;) { // 並べ替え。安定化のため後ろからアクセス
+int x = b[--i];
+int j = --h[x];
+a[i0 + j] = x;
+}
+}
+}
+13 分布数えソート(最高速のソート)

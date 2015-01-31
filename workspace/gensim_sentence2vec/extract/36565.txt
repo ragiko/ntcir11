@@ -1,0 +1,34 @@
+
+ドッキング結果の精度の調査方法 
+計算対象となるタンパク質−リガンド複合体の X 線構造解析データの選択
+計算対象として PDBbind2007 データベース [8] 内のタンパク質−リガンド複合体の X 線構造解析データより解像度が 2.5 Å 以下で、結合定数 Ka, pKa (もしくは解離定数 Kd, pKd) データが存在するもの 1300 構造を選択し用いています。
+各ソフトウエアの比較方法
+Ginalski 氏らは主として以下の 3つの観点から各ソフトウエアを比較しています。 
+ソフトウエアが予測したドッキング構造は X 線構造解析の結果をどの程度再現するのか?
+各ソフトが算出するスコア値が、実験で得られている結合親和性 (pKa) をどの程度再現するか?
+各ドッキングソフトウエアは多数のリガンド結合構造を発生するが、発生した構造の RMSD 値とスコア値は相関するのか?
+比較結果
+1. ソフトウエアが予測したドッキング構造はX線構造解析の結果をどの程度再現するのか? 
+この問いに関して、Ginalski 氏らは次のように述べています。
+−引用− 
+On the basis of those results, we can order programs in the following way: GOLD ~ eHiTS > Surflex > Glide > LigandFit > FlexX > AutoDock. The best programs have the average RMSD top score around 2.7 A, and it increases to nearly 4.5 A for the weakest FlexX. As expected, better results were observed for best pose conformations (Fig. 4). For those poses, the mean RMSD value was even below 2 A for GOLD, eHiTS, and Surflex. … Moreover, the percentage of pairs for which top score conformation is below 2 A shows that even for the best programs the success rate is below 60%, and in some cases even below 40%. 
+一般的な性能比較を行うため、Top スコアを与えたドッキング構造の何% がRMDS 2.0 Å 以下であるかを調査したところ、eHiTS と GOLD が共に 50～60% となりトップ性能を示しめしました(最も低いソフトでは 40%以下)。eHiTS のドッキングによる予測構造と X 線構造解析の RMSD の平均値は 2.7 Å 程度であって最も値の悪いソフトの 4.5 Å を大きく上回りました。 
+2. 各ソフトが算出するスコア値が、実験で得られている結合親和性 (pKa) をどの程度再現するか? 
+この問いに関して Ginalski らは次のように述べています 
+−引用− composed of functions implemented in eHiTS and in Surflex, which gave Pearson correlation 0.38 and 0.33, respectively. Moreover, for eHiTS scoring function very high-Spearman correlation was obtained… 
+計算されたスコア値と実験で得られた結合親和性を評価する相関係数として、Pearson correlation が用いられた場合 eHiTS の相関係数は 0.38 と最高値であり、Ginalski らはこの点において eHiTS は Best Program と述べています。 
+3. 各ドッキングソフトウエアは多数のリガンド結合構造を発生するが、発生した構造の RMSD 値とスコア値は相関するのか?
+Ginalski 氏らは次のように述べています 
+−引用− AutoDock achieved the highest 0.32 correlation, although performing only moderately in the previous two pose prediction and score prediction tests. The best correlations were obtained in the redocking case (0.38 for detailed results for each case; see Supporting Information), confirming that after expanding sampling time AutoDock performance improves considerably. The second program was not surprisingly eHiTS, with averaged correlation close to 0.3, proving that with the increased value of that score, better conformations are usually produced. 
+この相関に関しては AutoDock が 0.32 となって一番良く、続いて eHiTS 0.3 と 2番目続くとのことです。
+結論
+「in Silico のドッキングの結果は信用できるのか?」との最初の問いに関して Ginalski 氏らは次のように述べています。 
+−引用− Thus, can we trust docking programs? The answer must be given individually for two aspects of docking programs. In terms of pose prediction, we can say that GOLD and eHiTS performance is accurate enough but still there is ground for improvement. Nevertheless, 60% docking accuracy is a reasonable number. 
+ここでは「eHiTS と GOLD が 60% 程度のリガンド構造予測精度をもつ、という観点から信頼がおける」としています。さらに結合親和性の予測に関しては次のように述べています。 
+−引用− In the case of scoring functions, the answer must be negative, as virtually no correlations could be observed between the docking score and in vitro binding affinities. …(中略)…The future direction should be either to use statistical approach based on increasing number of X-ray protein-ligand complexes, as can be determined from the results obtained by eHiTS scoring functions, or to develop completely new approaches in terms of predicting in vivo activity of the ligand. 
+「結合親和性を高精度で予測可能であるスコア関数を有するソフトは無かった」とする一方で、eHiTS にて使用されている多数のタンパク質−リガンド構造から統計的な処理により作成されるスコア値算出方法が [1]、今後の結合親和性の予測の方向性の1つであろうと述べています。 
+まとめ
+総説:Can we trust docking results? Evaluation of seven commonly used programs on PDBbind database Ginalski 氏ら J.Comp.Chem. の概要を述べました。 
+ドッキング構造予測精度、結合親和性予測精度、構造とスコア値の相関の 3点の観点から 7つのソフトの中で eHiTS と GOLD が最も信頼が置けるドッキングソフトであると示されました。 
+References
+HULINKS | サポート | eHiTS | Can We Trust Docking Results?

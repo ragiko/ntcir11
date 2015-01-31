@@ -1,0 +1,149 @@
+「モデル化とシミュレーション」
+新教科「情報」現職教員等講習会資料
+平成13年8月3日(水)
+gbb60166@gmail.com
+目的
+物理現象や経済現象等の自然や社会に存在する様々な現象を分析し,数学的なモデルで表現すると共に,コンピュータを活用してデータ解析やシミュレーションを行ったり,コンピュータグラフィックスやグラフ等で視覚化して表現する知識と技術を習得し,実際に活用する能力と態度を身に付ける。
+内容
+教科「情報」におけるモデル化とは論理的モデルである。つまり模型を作ることではなく,様々な現象の本質的な部分だけを抜き出し,数式等で記述することに他ならない。こうしてモデル化をすることによって現象を扱いやすくし,シミュレーションを行い易くすることが出来る。しかし,このためには深い経験と知識・アイデアが必要とされるだけでなく,なによりセンスが必要とされる。
+本講座では『平成13年度新教科「情報」現職教員等講習会テキスト(2)』で取り上げられている演習問題や課題を解説し,実際に出来上がったファイルを元にシミュレーションを行ってみる。
+さらに演習では Excel を使い,テキストの課題を受講者に解いてもらう。
+簡単な駐車場モデルとシミュレーション(テキスト140ページ)
+図1
+図2
+Private Sub
+CommandButton1_Click()
+Application.Calculation
+= xlCalculationManual
+Range("H2:H101").Select
+Selection.ClearContents
+Range("A1").Select
+For i = 2 To 101
+Cells(i, 7) = Int(6 * Rnd +
+1)
+Cells(i, 17) = Cells(i, 7)
+Next i
+For i = 2 To 101
+Select Case Cells(i, 7) '乱数部分を見て何号車が
+'移動しようとしているか確認
+Case
+1  '1号車のとき =================================
+Cells(i + 1, 1) = Not Cells(i, 1)
+Cells(i
++ 1, 2) = Cells(i, 2)
+Cells(i + 1, 3) = Cells(i, 3)
+:
+:
+中略
+:
+:
+Application.Calculation
+= xlCalculationAutomatic
+MsgBox "駐車位置を固定した場合,邪魔な車を動かした回数は " & Range("H1") &
+"回" _
+& vbCrLf & vbCrLf
+& _
+"奥から止めた場合,邪魔な車を動かした回数は
+" & Range("R1") & "回" _
+& vbCrLf & vbCrLf
+& _
+"奥から止めた場合÷駐車位置を固定した場合="
+& Format(Range("R1") / Range("H1"), "0.0%"),
+vbInformation
+End Sub
+モンテカルロ法(テキスト147ページ、159ページ)
+図3
+図4
+上の図を見て「なぜランダムにゴマをまくのか」に対する回答を考えよ。
+鉄人レース(テキスト167ページ)
+図5
+Excelにはこのような計算をするためのアドイン「ソルバー」が用意されている。もし組み込んであれば「ツール(T)」「ソルバー(V)」が見つかるであろう。見つからない場合は追加インストールしてほしい。ここではソルバーの使い方を紹介する。
+雑誌媒体用の広告問題(これは「Excel
+97 オフィシャルマニュアル」に掲載されている例題です。)
+広告費用は1200万円/最低でも800万人の目に触れさせる/雑誌媒体は
+Pub1〜Pub6の6種類
+どの雑誌にも最低6回は掲載する/1雑誌に総費用の3分の1以上を投入してはいけない
+Pub3とPub4に対する広告費用の合計は750万円を越えてはいけない
+各雑誌の広告料・読者数は以下のとおり
+図6
+図7(ソルバー:パラメーター設定)
+表計算上での待ち行列計算(テキスト164ページ)
+図7
+入力されている数式
+B5:    =ROUND(($D$1-$B$1)*RAND()+$B$1,0)+B4
+C5:    =ROUND(($D$2-$B$2)*RAND()+$B$2,0)
+D5:    =IF(E4-B5<=0,B5,E4)
+E5:    =D5+C5
+F5:    =IF(D5-B5<=0,0,D5-B5)
+G5:    =E5-B5
+H5:    =COUNTIF($D$4:D4,">"&B5)
+置き傘の問題(テキスト168ページ)
+図8
+Private Sub
+CommandButton1_Click()
+Application.ScreenUpdating
+= False
+Range("B6:B65").Select
+Selection.FormulaR1C1 =
+"=round(RAND(),2)"
+Selection.Copy
+Selection.PasteSpecial
+Paste:=xlValues, Operation:=xlNone, _
+SkipBlanks:=False, Transpose:=False
+Range("C6:C65").Select
+Selection.FormulaR1C1 =
+"=VLOOKUP(RC[-1],R1C7:R5C8,2,TRUE)"
+Application.Calculate
+Selection.Copy
+Selection.PasteSpecial
+Paste:=xlValues, Operation:=xlNone, _
+SkipBlanks:=False, Transpose:=False
+Application.CutCopyMode =
+False
+Application.Calculation
+= xlCalculationManual
+For i = 6 To 65
+Select Case Cells(i,
+3).Value
+Case "雨のち晴れ"
+If
+Cells(i - 1, 4) <> 0 Then
+Cells(i, 4) = Cells(i - 1, 4) - 1
+Cells(i, 5) = Cells(i - 1, 5) + 1
+Else
+Cells(i,
+4) = Cells(i - 1, 4)
+Cells(i, 5) = Cells(i - 1, 5)
+End
+If
+Case "晴れのち雨"
+If
+Cells(i - 1, 5) <> 0 Then
+Cells(i, 4) = Cells(i - 1, 4) + 1
+Cells(i, 5) = Cells(i - 1, 5) - 1
+Else
+Cells(i, 4) = Cells(i - 1, 4)
+Cells(i, 5) = Cells(i - 1, 5)
+End
+If
+Case Else '"一日中晴れ""一日中雨"のときは何もする必要がない
+Cells(i, 4) = Cells(i - 1, 4)
+Cells(i, 5) = Cells(i - 1, 5)
+End Select
+Next i
+Range("A1").Select
+Range("F6:F65").ClearContents
+For i = 6 To 65
+If Cells(i, 3) = "晴れのち雨" And _
+Cells(i, 5) = 0 And Cells(i - 1, 5) = 0 Then
+Cells(i, 6) = 1
+End If
+Next i
+Application.ScreenUpdating
+= True
+Application.Calculation
+= xlCalculationAutomatic
+'''''MsgBox
+"計算完了!"
+End Sub
+モデル化とシミュレーション

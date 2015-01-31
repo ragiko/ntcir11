@@ -1,0 +1,29 @@
+前回の記事につづいて、自動ラップマシーンを作っていきたいと思います。
+音声の距離ですが、単純に文字としての距離と実際に発音した時に似てるという感覚は異なるかなぁと思い色々調査してみました。音声の類似度計算にSoundexやMetaphoneなどというアルゴリズムがあるとのこと。
+文字列の類似度を測る(2) 発音に着目する｜Colorless Green Ideas
+そんなアルゴリズムが実装されているpythonパッケージもあるとのこと。
+Fuzzy 1.0 : Python Package Index早速実装して、下記英文の中から"ryota"の発音と似た単語を表示するコードを書いてみました。
+入力テキスト:
+Ars Electronica Linz GmbH is an Austrian cultural, educational and scientific institute active in the field of new media art, founded in 1979. It is based at the Ars Electronica Center, which houses the Museum of the Future, in the city of Linz. Ars Electronicas activities focus on the interlinkages between art, technology and society. It runs an annual festival, and manages a multidisciplinary media arts R&D facility known as the Futurelab. It also confers the Prix Ars Electronica awards.
+コード:
+import fuzzy
+import levenshtein_distance as ld
+import re
+def calcWordSimirality(word1, word2):
+nys1 = fuzzy.nysiis(word1)
+nys2 = fuzzy.nysiis(word2)
+return ld.levenshtein_distance(nys1, nys2)
+def calcTextSimirality(text, word):
+textWithOnlyWord = re.sub(r'[^0-9a-zA-Z ]', "", text)
+textWords = textWithOnlyWord.split(" ")
+scores = {}
+for i in range(len(textWords)):
+score = calcWordSimirality(word, textWords[i])
+scores[textWords[i]] = score
+return scores
+def display_distance(scores):
+for k, v in sorted(scores.items(), key=lambda x:x[1]):
+print k, v
+単語間の距離ではいまいち似てるのか判断つきませんね。。
+次回はテキスト間の距離を計算できるようにしてみます。Your CosmosでやっていたようにTwitterから適当に拾ってきたツイートを機械学習にかけてラップの掛け合いをできるようにすることを目標に頑張ります。
+音声の類似度計算手法 ~pythonによる数値処理入門~ - 人工知能とメディアアート

@@ -1,0 +1,13 @@
+サイトの画像が Google の画像検索結果に表示されないようにするには、画像をブロックするサーバーのルートに robots.txt ファイルを追加します。
+たとえば、www.yoursite.com/images/dogs.jpg のサイトに表示されるイメージ dogs.jpg を Google のインデックスから除外するには、robots.txt ファイルに次の行を追加します。 
+User-agent: Googlebot-Image
+Disallow: /images/dogs.jpg 
+Google が次にサイトをクロールすると、このディレクティブが確認され、検索結果に画像が表示されなくなります。
+サイトにあるすべての画像をインデックスから除外するには、次の robots.txt ファイルをサーバーのルートに配置します。
+User-agent: Googlebot-Image
+Disallow: / 
+Google ではアスタリスク(*)に対応することで、標準の robots.txt ファイルがより柔軟にサポートされるようになっています。これにより、任意の文字列に一致するよう、除外パターンで「*」を使用することができます。また、末尾に「$」を付けて、名前の終わりを示すことができます。特定の種類のすべてのファイルをインデックスから除外する(例: .gif ファイルのみを除外し、.jpg ファイルは除外しない)場合、robots.txt のエントリを次のように記述します。
+User-agent: Googlebot-Image
+Disallow: /*.gif$
+Googlebot-Image を User-agent に指定することで、Google 画像検索から画像が除外されます。また、画像が Google の画像検索インデックスから完全に除外されるため、モバイル画像検索内での表示用に画像がトリミングされることもなくなります。Google ウェブ検索や Google 画像検索など、すべての Google 検索から画像を除外するには、User-agent に Googlebot を指定します。
+画像結果に画像が表示されないようにする - ウェブマスター ツール ヘルプ

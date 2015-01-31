@@ -1,0 +1,42 @@
+
+8 Oracle Databaseからの切断
+JDeveloperでのデータベースからの切断は簡単な操作ですが、Javaアプリケーションでは単独のプロセスではありません。アプリケーションでは、ResultSet、StatementおよびConnectionオブジェクトを使用した後、それらをすべて明示的にクローズする必要があります。Connectionオブジェクトをクローズすると、データベースから切断されます。closeメソッドによって、メモリーがクリーンアップされ、データベース・カーソルが解放されます。そのため、ResultSetおよびStatementオブジェクトを明示的にクローズしないと、重大なメモリー・リークが発生する場合があり、データベース内のカーソルを使い果たすことがあります。その後、接続をクローズする必要があります。
+この章は次の項で構成されています。
+オープンしたすべてのオブジェクトをクローズするメソッドの作成
+アプリケーションでのオープンしたオブジェクトのクローズ
+オープンしたすべてのオブジェクトをクローズするメソッドの作成
+次の手順では、closeAllメソッドをDataHandlerクラスに追加します。
+アプリケーション・ナビゲータでDataHandler.javaをダブルクリックして、Javaソース・エディタで開きます。
+DataHandlerクラスの最後で、次のようにcloseAllメソッドを宣言します。
+public void closeAll() {
+} 
+メソッド本体で、次のようにResultSetオブジェクトがオープンしているかどうかを確認します。
+if ( rset != null ) {
+オープンしている場合は、次のようにクローズして例外を処理します。
+try { rset.close(); } catch ( Exception ex ) {} 
+rset = null;
+} 
+Statementオブジェクトに同じ操作を繰り返します。
+if ( stmt != null ) {
+try { stmt.close(); } catch ( Exception ex ) {} 
+stmt = null;
+}
+最後に、Connectionオブジェクトをクローズします。
+if ( conn != null ) {
+try { conn.close(); } catch ( Exception ex ) {} 
+conn = null;
+}
+アプリケーションでのオープンしたオブジェクトのクローズ
+ResultSet、StatementおよびConnectionオブジェクトは、使い終わった後クローズする必要があります。DataHandlerクラスでは、挿入、更新および削除メソッドでは、戻る前にこれらのオブジェクトをクローズする必要があります。問合せメソッドでは、employees.jspページが問合せによって返された行の処理を終了するまで、これらのオブジェクトをクローズできないことに注意してください。
+次の手順では、DataHandler.javaファイルでcloseAllメソッドへの適切なコールを追加します。
+Javaソース・エディタでDataHandler.javaを開きます。
+addEmployeeメソッドの最後で、catchブロックの閉じカッコの後に、finallyブロックでのcloseAllメソッドへのコールを追加します。
+finally {
+closeAll();
+}
+同じコールをaddEmployeeSP、deleteEmployeeById、findEmployeeById、updateEmployeeおよびauthenticateUserメソッドに追加します。
+ビジュアル・エディタでemployees.jspファイルを開きます。Employees表内のスクリプトレットを検索し、ダブルクリックして「スクリプトレットの挿入」ダイアログ・ボックスを開きます。
+次の文をwhileループの後に追加します。
+empsbean.closeAll();
+作業内容を保存し、アプリケーションをコンパイルおよび実行して、すべて正しく動作することを確認します。
+Oracle Databaseからの切断

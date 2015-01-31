@@ -1,0 +1,107 @@
+
+AccuracyとPrecisionは相関関係になり、PresicionとRecallは逆相関の関係になるのが一般的です。PresicionとRecallともに予測が正しい事の指標ですが、数式で表すと分母が予測ベースか事実ベースかが異なります。どっちだっけという判断が非常に難しいです。
+True Positive,False Positive,False Negative,True Negativeの覚え方ですが、True/Falseは正しく予測できたか、Positive/Negativeは予測が正負のどちらに判断されたかを示す内容です。False Positive,False Negativeが結果と予測が一致していないので駄目な予測ということになります。正/負という言葉が入ると少しややこしい感じがしますね。上の表では正を1、負を-1と置き換えました。
+Cross-Validation
+10秒で設定可能なlibsvmで機械学習を行う - Yuta.Kikuchiの日記 
+以前にlibsvmにてK-Fold-Cross-Validationを行いました。記事を書いた時は自分で学習データ,評価データを分割してK回学習/評価を行っていましたが、実はsvm-trainコマンドにはvオプションでK-Foldを指定でき、平均Accuracyを表示してくれるようです。libsvmと同じようなツールでsvm-lightというものがありますが、xオプションを指定するとLeave-One-Out-Cross-Validationが実現できるようです。
+libsvmを用いて再度news20-binaryをsvmの線形予測を行ってみます。news20-binaryはデータ量が多く学習に時間がかかりそうだったので半分のデータを利用しました。今回はCross-Validationをvオプションで行う事とPrecision,Recall,F値を求めます。通常のlibsvmではこれらを計算できないのでsleepy_yoshiさんが作られているpatchを当てます。LibSVMのcross validationオプションでprecision/recallを出力する - 睡眠不足?!  注しなければいけないことはCross-Validationを実行するとmodelは作成されません。K-Foldを5と指定し、Cross Validation Accuracy = 84.21%を得る事ができました。
+$ wget wget http://sleepyheads.jp/software/svm-train.patch
+$ patch < svm-train.patch
+$ gmake clean
+$ gmake
+$ wget http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/news20.binary.bz2
+$ bzip2 -d news20.binary.bz2
+$ cat news20.binary
++1 103:0.250000 279:0.250000 291:0.250000 5757:0.250000 16311:0.250000 16314:0.250000 30408:0.250000 85418:0.250000
+-1 40:0.041065 75:0.041065 89:0.041065 97:0.041065 103:0.041065 108:0.041065 114:0.041065 149:0.041065 170:0.041065 171:0.041065 174:0.041065
+$ grep '^\-1' news20.binary | head -n 5000 > train.txt
+$ grep '^\+1' news20.binary | head -n 5000 >> train.txt
+$ svm-train -v 5 train.txt
+Cross Validation Accuracy = 84.21%
+Positive (+1) class:
+precision = 0.7466
+recall = 0.922868
+F1 value = 0.825428
+Negative (-1) class:
+precision = 0.9376
+recall = 0.787238
+F1 value = 0.855865svmlightでも同じようなことをやってみます。libsvmとsvmlightの入力データ形式は互換性があるようです。まずはinstallするところから進めます。libsvmと同様にsvmlightも圧縮ファイルを解凍してgmakeするだけでsvm_learn,svm_classifyコマンドが生成されます。上で利用したtrain.txtとpredict.txtをそれぞれ用意してAccuracy/Preciseion/Recallの値を見てみます。svm_learnに少し時間がかかりましたが、Accuracy: 69.25% Precision:91.67% Recall:42.35%となりました。
+$ wget http://download.joachims.org/svm_light/current/svm_light.tar.gz
+$ tar -xzf svm_light.tar.gz
+$ gmake
+$ grep '^\-1' news20.binary | tail -n 4000 > predict.txt
+$ grep '^\+1' news20.binary | tail -n 4000 >> predict.txt
+$ svm_learn -x 1 train.txt model
+$ svm_classify predict.txt model output
+(略)
+Leave-one-out estimate of the error: error=1.89%
+Leave-one-out estimate of the recall: recall=98.28%
+Leave-one-out estimate of the precision: precision=97.95%
+Actual leave-one-outs computed:  561 (rho=1.00)
+Runtime for leave-one-out in cpu-seconds: 2652.56
+$ svm_classify predict.txt model output
+Reading model...OK. (4120 support vectors read)
+Classifying test examples..100..200..300..400..500..600..700..800..900..1000..1100..1200..1300..1400..1500..1600..1700..1800..1900..2000..2100..2200..2300..2400..2500..2600..2700..2800..2900..3000..3100..3200..3300..3400..3500..3600..3700..3800..3900..4000..4100..4200..4300..4400..4500..4600..4700..4800..4900..5000..5100..5200..5300..5400..5500..5600..5700..5800..5900..6000..6100..6200..6300..6400..6500..6600..6700..6800..6900..7000..7100..7200..7300..7400..7500..7600..7700..7800..7900..8000..done
+Runtime (without IO) in cpu-seconds: 0.15
+Accuracy on test set: 69.25% (5540 correct, 2460 incorrect, 8000 total)
+Precision/recall on test set: 91.67%/42.35%
+ROC曲線、AUC
+ROC曲線は2値分類問題を解く場合に利用するもので、TruePositiveとFalsePositiveの割合をplotし、分類器の精度評価を行う目的で利用します。通常は縦軸にTruePositive、横軸にFalsePositiveを定義します。精度が高いことを証明するために理想の曲線としては横軸の値が小さい段階で縦軸の値が高く示し、そこから水平に伸びて行く状態です。縦軸には 横軸にはをplotします。AUCとはROC曲線より下に示される面積であるのでROCが縦軸に高く引っ張られているほど面積も大きくなります。ランダムの場合ROC曲線が[0,0],[1,1]への直線となり、AUCは1*1/2 = 0.5となります。
+LIBSVM Tools  ROC Curve for Binary SVMという項目にlibsvm向けのMatlabとPython用のコマンドスクリプトが用意されています。これを利用してROC曲線を描きAUCを算出してみます。残念ながら手元にはMatlabが無いのでPythonで試してみます。 http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/roc/plotroc.py このplotroc.pyを取得します。この実行にはlibsvmを解凍した時に生成されるpythonディレクトリ以下のsvm.py、svmutil.pyというファイルを必要とします。python scriptを通してもlibsvmのオプションは基本的にそのまま利用できます。
+$ wget http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/roc/plotroc.py
+$ python plotroc.py
+$ python plotroc.py -v 5 train.txt上を一度実行したのですが、実行環境のmemory不足で以下のようなエラーがでました。解決方法は現在調査中ですがスマートな対応はできないかもしれないです。ここではtrain.txtのデータ量を半分にする事で再度plotをしました。今度は正常に画像が出力され、AUC=0.7222という値を得る事ができました。ランダムが0.5なのでそれよりは良い結果を得る事ができました。
+optimization finished, #iter = 3973
+nu = 0.993250
+obj = -7945.807458, rho = 0.999930
+nSV = 7946, nBSV = 7946
+Total nSV = 7946
+Accuracy = 48.65% (973/2000) (classification)
+Traceback (most recent call last):
+File "plotroc.py", line 219, in <module>
+main()
+File "plotroc.py", line 216, in main
+plot_roc(deci, train_y, output_file, output_title)
+File "plotroc.py", line 167, in plot_roc
+g = gnuplot(output)
+File "plotroc.py", line 63, in __init__
+self.__dict__['iface'] = popen(cmdline,'w')
+OSError: [Errno 12] Cannot allocate memory
+Exception AttributeError: "gnuplot instance has no attribute 'iface'" in  ignored
+-----データ量を半分にしてplot
+$ head -n 2500 train.txt > train2.txt
+$ tail -n 2500 train.txt >> train2.txt
+$ mv train2.txt train.txt 
+$ python plotroc.py -v 5 train.txtplotされた座標のデータを取得したい場合はplotroc.pyに対して以下の行を追加する事でできます。またAUCも画像で出力するのではなく標準でも出力するように修正しました。
+$ diff -u plotroc.py plotroc2.py
+--- plotroc.py	2010-11-11 18:45:28.000000000 +0900
++++ plotroc2.py	2012-09-09 17:58:31.000000000 +0900
+@@ -150,6 +150,7 @@
+tp+=1
+else:
+fp+=1
++		print fp/neg,tp/pos
+xy_arr.append([fp/neg,tp/pos])
+#area under curve
+@@ -159,6 +160,7 @@
+if x != prev_x:
+aoc += (x - prev_x) * y
+prev_x = x
++	print "AUC = %0.4f" % aoc 
+#begin gnuplot
+if title == None:
+0.996 1.0
+0.9964 1.0
+0.9968 1.0
+0.9972 1.0
+0.9976 1.0
+0.998 1.0
+0.9984 1.0
+0.9988 1.0
+0.9992 1.0
+0.9996 1.0
+1.0 1.0
+AUC = 0.7222
+ここで気づいたのですが、libsvmはデフォルトでRBFを選択しているのでtオプションで線形を選択して再度実行してみます。結果的にはAUCが0.9973という恐ろしい値を得る事ができました。やり方が間違っていないか逆に心配です。
+$ python plotroc.py -t 0 -v 5 -h 0 train.txt
+そろそろ本気で機械学習の評価方法について学習するよ - Web就活日記

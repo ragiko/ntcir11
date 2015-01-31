@@ -1,0 +1,51 @@
+
+9.4 gauche.collection - コレクションフレームワーク
+Module: gauche.collection
+このモジュールは、様々なコレクションに対して繰り返し処理を行う総称関数を提供します。
+Schemeの規格はmapやfor-eachなどの繰り返し手続きを定義しており、
+またSRFI-1(srfi-1 - リストライブラリ参照)は更に数多くの繰り返し手続きを提供しますが、
+それらはリストに対してしか動作しません。
+このモジュールはオブジェクトシステムのメソッドディスパッチを利用して、
+これらの手続きをベクタやハッシュテーブルのような一般のコレクションタイプに対しても
+効率良く動作するように拡張します。また、ユーザ定義のクラスにこれらの操作を実装するための
+簡単な方法も提供します。今のところ、次のような総称関数が提供されています。
+マッピング
+fold, fold2, fold3,
+map, map-to, map-accum, for-each
+選択と探索
+find, find-min, find-max, find-min&max,
+filter, filter-to,
+remove, remove-to, partition, partition-to
+group-collection
+変換
+coerce-to
+その他
+size-of, lazy-size-of
+基礎的なイテレータ構築メソッド
+call-with-iterator, call-with-builder,
+with-iterator, with-builder, call-with-iterators.
+これらの操作は、コレクションとそのサブクラスである
+シーケンスに対して動作します。コレクションは、その要素を全て
+訪れる方法が用意されているようなオブジェクトの集合です。
+シーケンスは、要素間に全順序関係が定義されておりインデックスで要素を取り出すことが
+できるようなコレクションです。
+次にあげるGaucheの組み込みオブジェクトはシーケンスあるいはコレクションとして動作します。
+<list>
+シーケンス
+<vector>
+シーケンス
+<string>
+文字のシーケンス
+<hash-table>
+コレクション。各要素はキーと値のペア。
+<s8vector>, <u8vector>, &hellip; <f64vector>
+シーケンス。メソッドはsrfi-4モジュール内で定義されます。
+srfi-4 - 単一型のベクタ参照。
+gauche.sequence - シーケンスフレームワークも参照してください。シーケンス特有のメソッドが
+追加されます。
+オブジェクトの集合を返すようなメソッド、すなわち
+map、filter、removeおよびpartitionは、
+リストを返します。対応する&ldquo;-to&rdquo;がつくメソッド
+(map-to、filter-to、remove-to、partition-to)
+はコレクションクラスも引数に取り、そのクラスのコレクションを返します。
+Gauche ユーザリファレンス: 9.4 gauche.collection - コレクションフレームワーク

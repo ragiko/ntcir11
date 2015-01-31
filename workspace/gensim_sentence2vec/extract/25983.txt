@@ -1,0 +1,261 @@
+ 
+リファレンス・ガイド
+OracleInstance
+説明
+以下の表に、このプロバイダーの CIM クラス、パラメーター、プロパティー、例外、および依存関係の詳細を示します。
+表 45. CIM クラス
+CIM 名
+ROOT&yen;CIMV2: OracleInstance
+MOF ファイル名
+OracleInstance.mof
+説明
+OracleInstance クラスによって、システム・グローバル域 (SGA) および Oracle のバックグラウンド・プロセスで構成される Oracle インスタンスに関連付けられているプロパティーが使用可能になります。
+注:このプロバイダーにはパラメーターはありません。
+表 46. プロパティー
+プロパティー
+型
+説明
+ActiveTransactionsPercentage+
+String
+インスタンスの init.ora ファイル内の TRANSACTION パラメーターのパーセントで表されたアクティブ・トランザクションの総数。
+AvgRedoEntrySize+
+String
+REDO エントリーの数で割った REDO の合計サイズ (バイト単位)。
+BlockChangesPerTransaction+
+String
+各トランザクションによって実行される DML (データ操作言語) の作業量。
+BlockGetRate+
+String
+アプリケーション・システムによってデータベースが参照される率。
+BufferCacheCGets+
+String
+指定された時間に渡って、整合したブロック読み取り要求が行われた回数。
+BufferCacheDBGets+
+String
+指定された時間に渡って現行のブロックが要求された回数。
+BufferCacheHitPercentage
+String
+インスタンスの存続期間中の、要求の合計数に対するバッファー・キャッシュのヒット数のパーセント。このパーセントによって、要求されたブロックが (ディスクにアクセスせずに) バッファー・キャッシュ内で検出される回数が計算されます。バッファー・キャッシュは SGA の一部で、ここには Oracle データ・ブロックのコピーが保持されています。インスタンスに接続されるユーザー・プロセスはすべて、バッファー・キャッシュへのアクセスを共用します。
+BufferCachePhysReads+
+String
+ディスクから読み取られたデータ・ブロックの総数。この数は、物理的な直接読み取りの合計、およびバッファー・キャッシュに入れられたすべての読み取りの和です。
+BufferCachePhysReadsDir+
+String
+バッファー・キャッシュをバイパスして、ディスクから直接読み取られた数。
+BufferCachePhysReadsDirLob+
+String
+バッファー・キャッシュをバイパスして、ディスクから直接 LOB 読み取りされた数。
+BufferCacheSessLogReads+
+String
+「DB ブロック取得数」と「整合取得数」の和。
+BufferWaitsPercentage+
+String
+論理読み取りに対するバッファー・ビジー待ちのパーセント。これは、ユーザー・プロセスがバッファーを獲得しようとしたが、このバッファーが非互換モードで保持されていたために待機しなければならなかったことを示しています。
+Calls+
+String
+インスタンスに対して実行されている作業率 (再帰呼び出し数とユーザー呼び出し数の和)。呼び出しでは、記述、構文解析、オープン、フェッチ、クローズ、実行のいずれかを行います。
+CallsPerTransaction+
+String
+トランザクションごとに行われたクライアント要求数。
+ChangedBlockPercentage+
+String
+ユーザーによってアクセスおよび更新されたブロックのパーセント。このパーセントは、実行された照会とデータベース・アプリケーション内の DML との間のバランスになります。
+ClusterKeyRatio+
+String
+クラスター・キー・スキャンに対するクラスター・キー・スキャン・ブロックの取得数の比率。この比率が 1 より大きい場合、クラスター・キーの行は複数のデータ・ブロックに保管されています。
+CompletedBackgroundCheckpoints+
+String
+データベース書き込み機能 (DBWR) のチェックポイントが完了した回数。
+ConsistentChangePercentage+
+String
+整合取得数に対する整合変更数のパーセント。
+ContinuedRowPercentage+
+String
+2 ブロック以上に渡って続いている取り出された行 (チェーン行と呼ぶ) のパーセント。このパーセントは、長い列、またはチェーニングが避けられない 2 ブロック以上の行 (スパン行) を持つアプリケーション以外では、0 に近い値である必要があります。インスタンスに対して定義されているロックの最大数のパーセントで表された、データ操作言語 (DML) のロックの現在数の比率です。
+init.ora ファイル内の DML_LOCKS パラメーターで設定されるインスタンスの限度は、すべてのユーザーがすべての表に対して一度に設定できるロックの最大数を意味します。この限度に達すると、処理が停止し、Oracle エラーが発生します。
+DatabaseStatus
+String
+データベースの現行の状況。
+DBWRCheckpoints+
+String
+サーバーによって要求されたデータベース書き込み機能 (DBWR) のチェックポイント数。
+Deadlocks+
+String
+インスタンスが始動した後に検出されたデッドロックの数。
+DictionaryCacheHitPercentage+
+String
+パーセントで表された、すべての要求数に対するディクショナリー・キャッシュ・ヒットの比率。ヒット率が 70% より低い場合は、init.ora のパラメーター SHARED_POOL_SIZE の値を大きくしてください。ディクショナリー・キャッシュは、データベースとその構造、およびそのユーザーに関するデータを含むデータベース表とビューのコレクションです。ディクショナリー・キャッシュは行キャッシュとも呼ばれます。バッファー (ここにはデータの全ブロックが保管されています) としてではなく、行としてデータを保持するためです。
+EnqueueTimeouts+
+String
+完了前にタイムアウトになったエンキュー (表および行) のロックの総数。
+FalsePingPercentage+
+String
+モニターされているソースに対する間違った ping のパーセント。
+FreelistWaitsRatio+
+String
+データ要求の総数に対するフリー・リスト待機数の比率。
+InstanceID
+String
+インスタンス登録に使用され、INSTANCE_NUMBER 初期設定パラメーターに対応するインスタンスの番号。
+InstanceName*
+String
+Oracle データベース・インスタンスの名前。このインスタンス名は、データベース初期設定パラメーター・ファイル内の INSTANCE_NAME パラメーターによって識別され、そのインスタンスの Oracle システム ID (SID) に対応します。
+InstanceRole
+String
+1 次または 2 次のいずれかのインスタンス役割を指定します。1 次のインスタンス役割とは、最初にデータベースをマウントするインスタンスのことです。
+2 次のインスタンス役割とは、2 番目にデータベースをマウントするインスタンスのことです。
+2 次のインスタンス役割では、1 次のインスタンスが失敗またはシャットダウンされた場合に 1 次のインスタンス役割が引き継がれます。失敗したインスタンスでは、アクティブ状況に戻ると、2 次のインスタンス役割が引き継がれます。V$INSTANCE 動的パフォーマンス・ビューには、すべてのインスタンス役割が表示されます。
+KeepCacheCGets+
+String
+保持キャッシュの整合取得の統計
+KeepCacheDBGets+
+String
+取得された保持キャッシュのデータベース・ブロックの統計。
+KeepCacheHitPercentage+
+String
+インスタンスの存続期間中の、総要求数に対する保持バッファー・プールのキャッシュ・ヒット数のパーセント。
+KeepCachePhysReads+
+String
+保持キャッシュの物理読み取りの統計。
+LibraryCacheHitPercentage+
+String
+インスタンスの存続期間中に再ロードされた (2 回以上解析された)、ライブラリー・キャッシュ内のエントリーのパーセント。再ロードをできるだけゼロに近づけるようにしてください。ライブラリー・キャッシュは、実行可能形式の SQL カーソル、PL/SQL プログラム、および Java クラスを保管します。
+LibraryCachePins+
+String
+ライブラリー・キャッシュ内のオブジェクトに対して PIN が要求された回数。
+LibraryCachePinHits+
+String
+ライブラリー・オブジェクトのメタデータの断片のすべてがメモリー内で検出された回数。
+LibraryCacheReloads+
+String
+オブジェクト・ハンドルの作成後に実行され、ディスクからそのオブジェクトのロードが要求される最初の PIN に続くオブジェクト PIN の数。
+Logins
+String
+ログインを許可するか (ALLOWED)、または制限するか (RESTRICTED) を指定します。
+LongScans+
+String
+長形式表に起因する表の完全スキャンのパーセント。
+NamedUsersMax+
+String
+データベースに対する名前付きユーザーの最大許容数。
+Parallel
+String
+Oracle Application Cluster を並列モードで実行するかどうかを指定します。並列モードの場合は YES が表示され、並列モードでない場合は NO が表示されます。
+PGAComponentArea+
+String
+自動作業域以外の、プログラム・グローバル域メモリーのコンシューマーによって消費されるメモリー量。
+PGAMultipassExecutions+
+String
+マルチパス・メモリー・サイズで実行される作業域の総数。
+PGAOptimalPercentage+
+String
+最適なメモリー・サイズで実行される作業域のパーセント。
+PGAWorkAreaMaxSize
+String
+自動モードで実行されるメモリー作業域の最大サイズ。
+PGAWorkAreaPercentage+
+String
+データベースの他のコンポーネントが割り振られた後、作業域で使用できるプログラム・グローバル域メモリーのパーセント。
+ProcessPercentage+
+String
+最大数のパーセントで表された、インスタンスに対して実行されている Oracle プロセスの現在の総数。最大数は、インスタンスの init.ora ファイルの PROCESS パラメーターで設定します。
+PXProcessLimitPercentage+
+String
+初期設定パラメーター 'parallel_max_servers' で設定されている制限に対する、最も多い場合の並列実行サーバー数のパーセント。
+RecursiveCalls+
+String
+インスタンスに対する再帰呼び出し数。再帰呼び出しは、ある SQL ステートメントによってさらに別の SQL ステートメントの実行が要求された場合に発生します。
+RecursiveToUserCallsRatio+
+String
+ユーザー呼び出しに対する再帰呼び出しの比率。この比率が変化している場合は、アプリケーションが変更されている可能性があるか、または共用バッファー・プールのサイズを大きくする必要がある場合があります。データベース上のデータ定義言語 (DDL) の負荷について注目すべき変化がある場合も、この比率に影響が出ることがあります。
+RecycleCacheCGets+
+String
+リサイクル・キャッシュの整合取得の統計。
+RecycleCacheDBGets+
+String
+取得されたリサイクル・キャッシュのデータベース・ブロックの統計。
+RecycleCacheHitPercentage+
+String
+インスタンスの存続期間中の、要求の総数に対するリサイクル・バッファー・プールのキャッシュ・ヒットのパーセント。
+RecycleCachePhysReads+
+String
+リサイクル・キャッシュの物理読み取りの統計。
+RedoAllocationLatchPercentage+
+String
+REDO 割り振りラッチの取得数に対する失敗数のパーセント。
+RedoCopyLatchPercentage+
+String
+REDO コピー・ラッチの取得数に対する失敗数のパーセント。
+RedoLogsNotArchived+
+String
+アーカイブされていない REDO ログ・ファイルの数。
+RedoLogSpaceWaits+
+String
+アクティブ・ログ・ファイルが満杯であるため、ディスク・スペースが
+REDO ログ・エントリーに割り振られるまで Oracle が待機する必要があった回数。
+RedoSmallCopyPercentage+
+String
+REDO エントリーの総数に対する REDO スモール・コピーの総数のパーセント。
+RollbackWaitsPercentage+
+String
+指定された時間内の、指定されたデータ・ブロック上でのロールバック・セグメント・ヘッダーの待機数のパーセント。
+RowCacheGets+
+String
+すべてのデータ・ディクショナリー・キャッシュに対する、データ・オブジェクト情報の要求の総数。
+RowCacheFixed+
+String
+すべてのデータ・ディクショナリー・キャッシュに対する、キャッシュ内の修正されたエントリーの総数。
+RowCacheMisses+
+String
+すべてのデータ・ディクショナリー・キャッシュに対する、キャッシュ・ミスとなったデータ要求の総数。
+RowCacheUsage+
+String
+すべてのデータ・ディクショナリー・キャッシュに対して有効なデータが含まれているキャッシュ・エントリーの総数。
+RowSourcePercentage+
+String
+全表スキャンで取り出された全行数のパーセント。
+SessionPercentage+
+String
+セッションの最大許容数に対する現行セッションのパーセント。
+SessionsCurrent+
+String
+並行ユーザー・セッションの現行数。
+SessionsHighwater+
+String
+インスタンスの始動後の、最も多かったときの並行ユーザー・セッション数。
+SessionsMax+
+String
+インスタンスに許可される並行ユーザー・セッションの最大数。
+SessionsWarning+
+String
+インスタンスに対する並行ユーザー・セッションの警告限度。
+ShortScans+
+String
+短形式表に起因する全表スキャンのパーセント。
+ShutdownPending
+String
+データベースがシャットダウン保留の状態にあるかどうかを指定します。シャットダウン保留の状態にある場合は YES が表示され、シャットダウン保留の状態にない場合は NO が表示されます。
+SortOverflowPercentage+
+String
+一時セグメントを使用しているソートのパーセント。
+StartupTime
+String
+インスタンスが開始された時刻。
+Status
+String
+インスタンスの現行状況。STARTED (開始済み)、MOUNTED (マウント済み)、または OPEN (オープン) のいずれか。
+STARTED: 開始後、ただしマウント前
+MOUNTED: 開始後、マウント後、あるいはデータベースのクローズ後
+OPEN: 始動後またはデータベースのオープン後
+UserCalls+
+String
+インスタンスの下で実行されているクライアント側アプリケーションからのログイン要求、構文解析要求、または実行要求が識別されます。
+UserRollbackPercentage+
+String
+ユーザーが手動で ROLLBACK ステートメントを発行した回数、またはユーザーがトランザクションを実行しようとしてエラーが発生した回数のパーセント。
+Version
+String
+RDBMS のバージョン番号。
+注:* は、CIM のキー・プロパティーを表します。+ は、ストリングとして表される CIM の数値プロパティーを表します。この値は、Javascript の Number オブジェクトを使用して、リソース・モデル内で数値にキャストする必要があります。
+[ ページのトップ | 前ページ | 次ページ | 目次 | 索引 ] 
+OracleInstance

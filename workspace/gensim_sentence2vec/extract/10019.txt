@@ -1,0 +1,48 @@
+上記のサンプルでは、「上記の入力内容を、以下の各行の先頭・末尾に追加」ボタンを押すたびに、全行の先頭と末尾に指定の文字列(デフォルトでは二重カギ括弧記号)が挿入されます。
+HTMLソースとJavaScriptソースは以下の通りです。
+HTMLソース:
+行頭に追加する文字列:<input type="text" size="30" id="sampleAddHead1" value="『" />
+行末に追加する文字列:<input type="text" size="30" id="sampleAddFoot1" value="』" />
+<input type="button" value="上記の入力内容を、以下の各行の先頭・末尾に追加" onclick="AddStringToEachLine();" />
+文字列リスト:<textarea cols="30" rows="6" id="sampleTargetLines1">リンゴ
+みかん
+バナナ</textarea>
+最初にinput要素で入力欄を2つ(行頭用と行末用)作り、次にinput要素でボタンを作り、最後にtextarea要素で結果表示欄を作っています。textarea要素にはダミーの文字列を3行ほど記述しています。なお、入力欄の装飾に関する記述は省略しています。
+スクリプトから利用するため、ユーザが入力するためのinput要素には(行頭用として)「sampleAddHead1」と(行末用として)「sampleAddFoot1」というid名を、表示結果のtextarea要素には「sampleTargetLines」というid名を、それぞれ加えています。
+ボタンがクリックされると、この後で作成する関数「AddStringToEachLine」が実行されます。
+JavaScriptソース:
+function AddStringToEachLine() {
+// ユーザの入力を得る
+var UserStringHead = document.getElementById('sampleAddHead1').value;
+var UserStringFoot = document.getElementById('sampleAddFoot1').value;
+// textareaの内容を改行で分割して配列に格納
+var nowArray = document.getElementById('sampleTargetLines1').value.split("\n");
+// 各行を対象にして処理
+var retString = "";
+for( var i=0 ; i < nowArray.length ; i++ ) {
+if( !(i == nowArray.length-1 && nowArray[i].length == 0) ) {
+// 「最後の空行」以外なら処理を行う
+retString += UserStringHead + nowArray[i] + UserStringFoot + "\n";
+}
+}
+// 表示
+document.getElementById('sampleTargetLines1').value = retString;
+}
+この例では、「textarea要素内に入力された文字列」を1行ずつ配列に格納して、その配列に対して1項目ずつ「行頭と行末に指定文字列を追加する」処理を施しています。
+上記のソースでは、具体的には以下のような処理をしています。
+id名「sampleAddHead1」の要素のvalueプロパティの値を、変数「UserStringHead」に格納。
+id名「sampleAddFoot1」の要素のvalueプロパティの値を、変数「UserStringFoot」に格納。
+id名「sampleTargetLines」の要素のvalueプロパティの値を、改行「\n」で区切って分割し、配列「nowArray」へ格納。
+配列内をループして、各行に対して処理(変数「sampleAddHead1」の中身を各行頭に追加し、変数「sampleAddFoot1」の中身を各行末に追加)。処理後の配列をすべて結合した文字列を、変数「retString」に格納。その際、
+最後の行が空行だった場合は、最後の行に対しては何も処理しない。
+最後の行以外や、最後の行でも空行ではない場合は、「現在の文字列」に変数「sampleUserInput」の内容を追加。(※元通り1項目1行で表示させるために、改行「\n」も付加。)
+id名「sampleTargetLines」の要素のvalueプロパティの値に、変数「retString」の中身を代入。
+以上です。
+『最後の行が空行だった場合は、最後の行に対しては何も処理しない』という点に関しては、別途記事「すべての行頭に任意の文字列を追加する」や「すべての行末に任意の文字列を追加する」で説明しましたので、ここでは繰り返しません。
+テキストエリア内の各行頭に、指定した文字列を追加する (正規表現版)
+さて、textarea要素に入力された内容はプロパティ1つで一括取得が可能なので、replaceメソッドと正規表現を使うことでも同様の処理が実現できます。
+1行の末尾には必ず「改行」があります。そして、「改行の直後」が「行の先頭」でもあります。
+つまり、正規表現を使って、この「改行文字」を「末尾用の文字列+改行文字+先頭用の文字列」に置き換えることで、各行の先頭と末尾に任意の文字列を追加できます。
+ただ、この方法だと最初と最後に1行だけ余計な文字列を追加してしまいますから、若干の工夫が必要です。
+動作サンプルは以下の通りです。(動作は先ほどの配列版と同じです。)
+すべての行頭・行末に任意の文字列を追加する方法 - JavaScript TIPSふぁくとりー

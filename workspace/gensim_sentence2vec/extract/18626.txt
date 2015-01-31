@@ -1,0 +1,3 @@
+メモリの最適化データベースを Microsoft SQL Server 2014 sp_xtp_bind_db_resource_poolプロシージャを使用してリソース ガバナーを使用するように構成することを想定しています。Master データベースに対してDBCC CHECKDBおよびDBCC CHECKCATALOGを実行すると、次のエラーが表示されます。
+8992 のメッセージ、レベル 16、状態 1、行 1カタログの Msg 3851、1 の状態を確認します。 無効な行が (クラス 108、depid = 8、depsubid = = 0) では、システム テーブルの sys.syssingleobjrefs が見つかりました (クラス = 108)。8992 のメッセージ、レベル 16、状態 1、行 1カタログの Msg 3851、1 の状態を確認します。 無効な行が (クラス 108、depid = 11、depsubid = = 0) では、システム テーブルの sys.syssingleobjrefs が見つかりました (クラス = 108)。
+2014 の SQL Server では、リソース プールにメモリの最適化データベースをバインドするした後に master データベースをチェックすることでエラーを修正:

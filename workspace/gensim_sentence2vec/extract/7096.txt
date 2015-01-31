@@ -1,0 +1,5 @@
+混成冗長システムにおいては、より高い障害許容力を達成するために受動的および能動的冗長の両方が使われる。In hybrid redundancy systems, both passive and active redundancy is used to achieve even higher fault tolerance.
+- コンピューター用語辞典
+マスタルータと冗長化のために設けられたバックアップルータとが、各種の状態遷移に対して動的な設定内容を常に一致させることのできる通信システム、バックアップルータ、その冗長化処理プログラムおよびその冗長化処理方法を得ること。To provide a communication system, a backup router, a redundant processing program thereof, and a redundant processing method thereof whereby a master router and the backup router for redundancy can always match dynamic setting contents with each other against various state transitions. - 特許庁
+このとき、冗長性を付加することによって無線ネットワーク3上のデータ伝送量が増大するにもかかわらず、サーバ1が、クライアント2のパケット損失状況に応じて冗長性を動的に制御する。At this time, a server 1 dynamically controls the redundancy according to packet loss status of a client 2, even though the data transmission amount of the radio network 3 is increased by adding the redundancy. - 特許庁
+「動的冗長」に関連した英語例文の一覧 - Weblio英語例文検索

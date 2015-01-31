@@ -1,0 +1,179 @@
+
+1. Introduction
+新しいアイテムの推薦を考えるためにコンテンツベースの推薦を扱う.
+テレビ番組・映画の推薦をメタデータとあらすじまたはプロットを用いて行う
+本論文のContributionはメタデータの比較を行ったこと.
+classicalなアプローチのように最も高い性能をもつキーワードセットを得ようとしたのではなく,
+人手で抽出したキーワードと自動で抽出したキーワードを比較し,
+提案手法が人手で抽出したものより推薦に適していることを示した.
+さらにそれ以上キーワードを加えても推薦の精度を高めることが出来ないことも示した.
+2. Related Works
+3. Content-Based Recommendation
+2つのデータセットと、2つの推薦手法に対してメタデータの選択方法を比較する
+第一の方法は最近傍法.
+コンテンツベースの最近傍法は協調フィルタリングのそれとは違いratingではなくアイテムのcontentを用いる.
+I: set of n items
+U: set of m users
+R: ratings assigned by the users to each item
+v_i: the vector representing item i
+多くのケースではアイテムを見たかどうかしか分からない.
+その場合は0または1をRに割り当てる
+最近傍法ではアイテムと消費したアイテムとの平均距離を計算するが
+その代わりにアイテムと消費したアイテムの平均アイテムとの距離を計算することも出来る.
+アイテムはキーワードやその他のメタデータの分布をもつ.
+そしてユーザの分布を評価したアイテムの重み付き平均分布として定義する.
+式(2)
+アイテムとユーザとの距離はピアソンの相関係数を用いて計算する.
+これをprofile based recommendationと呼ぶ
+4. Keyword Extraction
+データセットには短いテキストデータが付加されており,
+それらを全て使うこともできるし,一部だけ使うことも出来る.
+キーワード抽出の方法はキーワードをランキング付しTopのn個を取得する方法である.
+ここでは2つの手法を比較する.
+1つ目はTF-IDFによるものである.
+2つ目はその語がどれだけ文章を特徴付けたかを決定することを試みる.詳細は[13]を参照.
+基本的な考え方はそれぞれの語はその語が出現した文書の語集合の分布により代表されるというもの.
+この分布を共起分布と定義する.
+語の共起分布が文書の語集合の分布と類似していれば,語はその文書における良いキーワードになる.
+しかし文書の分布を用いる代わりに,その分布のsmoothed variant(正規化変量?)を用いる.
+4.1 Distribution of Co-occurring Terms
+T = {t1, t2, … }: 語彙集合 
+C = {d1, d2, … }: 文書集合
+n(d, t): 文書dに語tが出現する回数
+n(t) = sum_d n(d,t) : 全体における語tの出現回数
+N(d) = sum_t n(d,t) : 文書dにおける語の出現回数の和
+TとCにおいて, マルコフ連鎖を考える
+TCのtransition probabilitiesはQ(d|t)
+CTのtransition probabilitiesはq(t|d)
+term distribution p(t)が与えられた時マルコフ連鎖によりdocument distributionP_p(d)を以下のように求める.
+P(d)は文書における語の発生する確率を与えるので,
+p_P(t)は文書における語の発生分布の重みつき平均となる.
+ここで特定の語zからの退化分布 p_z(t) = p(t|z) =δ_{t, z} 1( if t=z and 0 otherwise)
+これより語の平均共起分布を求める
+ここから文書と語の共起分布を求める
+4.1.1 Co-occurrence based keyword extraction
+共起分布を踏まえた類似性を以下の用に定義する
+([13]ではこれが一番性能がよかった)
+4.2 Topic Modeling
+LDAを用いる.
+top n をトピックとして素性に用いる
+5. Experimental Result
+Datasets
+BBC audience research data
+1408の番組
+2166ユーザ
+それぞれのユーザは平均20番組を評価している
+それぞれの番組には手動でキーワード,ラベル,あらすじがついている
+あらすじは数語から数文まで様々な長さになっており、ここをキーワード抽出に用いる.
+このデータセットはある時間によって75%が放送後,25%を放送前に分けることができる.
+これを訓練データとテストデータとして分けるのに用いる.
+これにより、実験は完全に新しいアイテムに対して行われることになる.
+訓練データが18428, テストデータが5418である
+Movie Lens
+plotはIMDBから持ってくる.
+多くのplotは短く、フォーマットに則ってないため,200文字以上のものに限定した。
+結果として704 movieと4805 userを取得した。
+これを訓練セット75%、テストセット25%に分ける
+これらの間でアイテムの重複はない
+訓練セットには295,575 ratings
+テストセットには66,386 ratings
+5.2 Evaluation
+評価指標として ROC curveとtop 10のprecision prec@10を用いる
+5.2.1 Optimal number of keywords
+キーワードをいくつ用いるか
+5.2.2 Comparison of meta-data
+どのメタデータを用いるか
+## 1. Introduction
+新しいアイテムの推薦を考えるためにコンテンツベースの推薦を扱う.
+テレビ番組・映画の推薦をメタデータとあらすじまたはプロットを用いて行う
+本論文のContributionはメタデータの比較を行ったこと.
+classicalなアプローチのように最も高い性能をもつキーワードセットを得ようとしたのではなく,
+人手で抽出したキーワードと自動で抽出したキーワードを比較し,
+提案手法が人手で抽出したものより推薦に適していることを示した.
+さらにそれ以上キーワードを加えても推薦の精度を高めることが出来ないことも示した.
+## 2. Related Works
+## 3. Content-Based Recommendation
+2つのデータセットと、2つの推薦手法に対してメタデータの選択方法を比較する
+第一の方法は最近傍法.
+コンテンツベースの最近傍法は協調フィルタリングのそれとは違いratingではなくアイテムのcontentを用いる.
+I: set of n items
+U: set of m users
+R: ratings assigned by the users to each item
+v_i: the vector representing item i
+多くのケースではアイテムを見たかどうかしか分からない.
+その場合は0または1をRに割り当てる
+最近傍法ではアイテムと消費したアイテムとの平均距離を計算するが
+その代わりにアイテムと消費したアイテムの平均アイテムとの距離を計算することも出来る.
+アイテムはキーワードやその他のメタデータの分布をもつ.
+そしてユーザの分布を評価したアイテムの重み付き平均分布として定義する.
+式(2)
+アイテムとユーザとの距離はピアソンの相関係数を用いて計算する.
+これをprofile based recommendationと呼ぶ
+## 4. Keyword Extraction
+データセットには短いテキストデータが付加されており,
+それらを全て使うこともできるし,一部だけ使うことも出来る.
+キーワード抽出の方法はキーワードをランキング付しTopのn個を取得する方法である.
+ここでは2つの手法を比較する.
+1つ目はTF-IDFによるものである.
+2つ目はその語がどれだけ文章を特徴付けたかを決定することを試みる.詳細は[13]を参照.
+基本的な考え方はそれぞれの語はその語が出現した文書の語集合の分布により代表されるというもの.
+この分布を共起分布と定義する.
+語の共起分布が文書の語集合の分布と類似していれば,語はその文書における良いキーワードになる.
+しかし文書の分布を用いる代わりに,その分布のsmoothed variant(正規化変量?)を用いる.
+## 4.1 Distribution of Co-occurring Terms
+T = {t1, t2, … }: 語彙集合 
+C = {d1, d2, … }: 文書集合
+n(d, t): 文書dに語tが出現する回数
+n(t) = sum_d n(d,t) : 全体における語tの出現回数
+N(d) = sum_t n(d,t) : 文書dにおける語の出現回数の和
+![kobito.1380097919.953760.png](https://qiita-image-store.s3.amazonaws.com/0/2238/5d1d798f-f4f6-7537-617a-3915a0f86fad.png "kobito.1380097919.953760.png")
+![kobito.1380097947.556839.png](https://qiita-image-store.s3.amazonaws.com/0/2238/483294b0-67f6-aceb-c062-f7a903556e08.png "kobito.1380097947.556839.png")
+TとCにおいて, マルコフ連鎖を考える
+TCのtransition probabilitiesはQ(d|t)
+CTのtransition probabilitiesはq(t|d)
+term distribution p(t)が与えられた時マルコフ連鎖によりdocument distributionP_p(d)を以下のように求める.
+![kobito.1380097980.367761.png](https://qiita-image-store.s3.amazonaws.com/0/2238/c8a0f1a2-421a-1a1d-14a6-31370641da40.png "kobito.1380097980.367761.png")
+P(d)は文書における語の発生する確率を与えるので,
+p_P(t)は文書における語の発生分布の重みつき平均となる.
+![kobito.1380098007.977283.png](https://qiita-image-store.s3.amazonaws.com/0/2238/104980cc-51ac-67c4-9c91-cf21c0528ae2.png "kobito.1380098007.977283.png")
+ここで特定の語zからの退化分布 p_z(t) = p(t|z) =δ_{t, z} 1( if t=z and 0 otherwise)
+これより語の平均共起分布を求める
+![kobito.1380098036.618542.png](https://qiita-image-store.s3.amazonaws.com/0/2238/2b56a204-ca9e-b67c-fb86-73c6378d5461.png "kobito.1380098036.618542.png")
+ここから文書と語の共起分布を求める
+![kobito.1380098075.711244.png](https://qiita-image-store.s3.amazonaws.com/0/2238/017a502c-6ba9-54c6-7605-20c72f831074.png "kobito.1380098075.711244.png")
+## 4.1.1 Co-occurrence based keyword extraction
+共起分布を踏まえた類似性を以下の用に定義する
+([13]ではこれが一番性能がよかった)
+![kobito.1380098109.240028.png](https://qiita-image-store.s3.amazonaws.com/0/2238/2699e0dd-a70d-5d3d-1b6f-c3477e5236fb.png "kobito.1380098109.240028.png")
+## 4.2 Topic Modeling
+LDAを用いる.
+top n をトピックとして素性に用いる
+## 5. Experimental Result
+## Datasets
+### BBC audience research data
+1408の番組
+2166ユーザ
+それぞれのユーザは平均20番組を評価している
+それぞれの番組には手動でキーワード,ラベル,あらすじがついている
+あらすじは数語から数文まで様々な長さになっており、ここをキーワード抽出に用いる.
+このデータセットはある時間によって75%が放送後,25%を放送前に分けることができる.
+これを訓練データとテストデータとして分けるのに用いる.
+これにより、実験は完全に新しいアイテムに対して行われることになる.
+訓練データが18428, テストデータが5418である
+### Movie Lens
+plotはIMDBから持ってくる.
+多くのplotは短く、フォーマットに則ってないため,200文字以上のものに限定した。
+結果として704 movieと4805 userを取得した。
+これを訓練セット75%、テストセット25%に分ける
+これらの間でアイテムの重複はない
+訓練セットには295,575 ratings
+テストセットには66,386 ratings
+## 5.2 Evaluation
+評価指標として ROC curveとtop 10のprecision prec@10を用いる
+## 5.2.1 Optimal number of keywords
+キーワードをいくつ用いるか
+![kobito.1380103274.553658.png](https://qiita-image-store.s3.amazonaws.com/0/2238/8ea080a6-9bd5-285b-f228-61da51fea5e2.png "kobito.1380103274.553658.png")
+## 5.2.2 Comparison of meta-data
+どのメタデータを用いるか
+![kobito.1380102980.459442.png](https://qiita-image-store.s3.amazonaws.com/0/2238/2fb29391-4d9e-3786-a05f-e38a373876ad.png "kobito.1380102980.459442.png")
+推薦システム - Selecting Keywords for Content Based Recommendation - CIKM(2010) - Qiita

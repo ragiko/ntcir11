@@ -1,0 +1,455 @@
+
+❝アリスタイクモスがアルコンの座に在りし時、ドラコンは法を打ち立てり。❞&mdash; アリストテレス
+飛び込む
+この本のほとんどの章はサンプルコードを中心に話をしている。しかしXMLというのは、コードというよりは、データに関するものだ。XMLの一般的な用例として、ブログやフォーラム、その他の頻繁に更新されるウェブサイトの最新記事をリストアップするのに使われる「フィード」がある。有名なブログ用ソフトウェアのほとんどは、フィードを生成して、新しい記事やスレッドや投稿が公開されるたびにフィードの内容を更新する機能を備えている。皆さんがそのブログのフィードを「購読」すれば、そのブログの更新を追うことができ、Google Readerのような専用の「フィードアグリゲータ」を使うことで多数のブログを追いかけることもできる。
+さて、ここに私たちがこの章で扱っていくXMLデータがある。このデータはフィード &mdash; 具体的に言うとAtomフィードというものだ。
+[feed.xmlをダウンロードする]
+<?xml version='1.0' encoding='utf-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'>
+<title>dive into mark</title>
+<subtitle>currently between addictions</subtitle>
+<id>tag:diveintomark.org,2001-07-29:/</id>
+<updated>2009-03-27T21:56:07Z</updated>
+<link rel='alternate' type='text/html' href='http://diveintomark.org/'/>
+<link rel='self' type='application/atom+xml' href='http://diveintomark.org/feed/'/>
+<entry>
+<author>
+<name>Mark</name>
+<uri>http://diveintomark.org/</uri>
+</author>
+<title>Dive into history, 2009 edition</title>
+<link rel='alternate' type='text/html'
+href='http://diveintomark.org/archives/2009/03/27/dive-into-history-2009-edition'/>
+<id>tag:diveintomark.org,2009-03-27:/archives/20090327172042</id>
+<updated>2009-03-27T21:56:07Z</updated>
+<published>2009-03-27T17:20:42Z</published>
+<category scheme='http://diveintomark.org' term='diveintopython'/>
+<category scheme='http://diveintomark.org' term='docbook'/>
+<category scheme='http://diveintomark.org' term='html'/>
+<summary type='html'>Putting an entire chapter on one page sounds
+bloated, but consider this &mdash; my longest chapter so far
+would be 75 printed pages, and it loads in under 5 seconds&hellip;
+On dialup.</summary>
+</entry>
+<entry>
+<author>
+<name>Mark</name>
+<uri>http://diveintomark.org/</uri>
+</author>
+<title>Accessibility is a harsh mistress</title>
+<link rel='alternate' type='text/html'
+href='http://diveintomark.org/archives/2009/03/21/accessibility-is-a-harsh-mistress'/>
+<id>tag:diveintomark.org,2009-03-21:/archives/20090321200928</id>
+<updated>2009-03-22T01:05:37Z</updated>
+<published>2009-03-21T20:09:28Z</published>
+<category scheme='http://diveintomark.org' term='accessibility'/>
+<summary type='html'>The accessibility orthodoxy does not permit people to
+question the value of features that are rarely useful and rarely used.</summary>
+</entry>
+<entry>
+<author>
+<name>Mark</name>
+</author>
+<title>A gentle introduction to video encoding, part 1: container formats</title>
+<link rel='alternate' type='text/html'
+href='http://diveintomark.org/archives/2008/12/18/give-part-1-container-formats'/>
+<id>tag:diveintomark.org,2008-12-18:/archives/20081218155422</id>
+<updated>2009-01-11T19:39:22Z</updated>
+<published>2008-12-18T15:54:22Z</published>
+<category scheme='http://diveintomark.org' term='asf'/>
+<category scheme='http://diveintomark.org' term='avi'/>
+<category scheme='http://diveintomark.org' term='encoding'/>
+<category scheme='http://diveintomark.org' term='flv'/>
+<category scheme='http://diveintomark.org' term='GIVE'/>
+<category scheme='http://diveintomark.org' term='mp4'/>
+<category scheme='http://diveintomark.org' term='ogg'/>
+<category scheme='http://diveintomark.org' term='video'/>
+<summary type='html'>These notes will eventually become part of a
+tech talk on video encoding.</summary>
+</entry>
+</feed>
+⁂
+5分間短期集中XML入門コース
+すでにXMLについて知っているのであれば、この節は飛ばしてもかまわない。
+XMLは、階層構造をもつデータを記述するための汎用的な手法だ。XML文書 (document) は1つ以上の要素 (element)を含んでおり、これらの要素は開始タグと終了タグによって区切られる。以下は、(退屈だが)完全なXML文書だ:
+<foo>   ①
+</foo>  ②
+foo要素の開始タグだ。
+そして、こちらはfoo要素の開始タグに対応する終了タグだ。文章や数学やコードにおいて括弧を釣り合わせるのと同じように、すべての開始タグは対応する終了タグによって閉じられなければならない。
+要素はどんな深さにまでネストされていても良い。foo要素の内部にあるbar要素は、fooの子 (child) ないし下位要素 (subelement) と呼ばれる。
+<foo>
+<bar></bar>
+</foo>
+あらゆるXML文書において、一番初めの要素はルート要素 (root element) と呼ばれる。XMLはルート要素を1つだけ持つことができる。以下は2つのルート要素を持っているので、XML文書ではない。
+<foo></foo>
+<bar></bar>
+要素は属性 (attributes) を持つことができる。属性というのは名前と値のペアだ。属性は、開始タグのなかで、空白で区切られて列挙される。同じ属性名を1つの要素の中で繰り返し使うことは許されず、属性値はクォート文字で囲む必要がある。クォートは、シングルクォートとダブルクォートのどちらでもかまわない。
+<foo lang='en'>                          ①
+<bar id='papayawhip' lang="fr"></bar>  ②
+</foo>
+foo要素は、langという名前の1つの属性を持っている。このlang属性の値はenだ。
+bar要素は、idおよびlangという名前の2つの属性を持っている。lang属性の値はfrになっているが、これがfoo要素のlang属性と衝突することは絶対にない。個々の要素の属性は、その要素に固有のものだからだ。
+要素が2つ以上の属性を持っているとき、それらの属性の並び順は意味を持たない。要素の属性というのは、Pythonの辞書のような順序づけされていないキーと値の集合だととらえられる。なお、個々の要素の上に定義できる属性の数に制限はない。
+要素はテキスト内容 (text content) を持つことができる。
+<foo lang='en'>
+<bar lang='fr'>PapayaWhip</bar>
+</foo>
+テキストも子も持たない要素は空要素 (empty element) だ。
+<foo></foo>
+空要素を書くための省略表現がある。/を開始タグに付けることで、終了タグを完全に省略することができるのだ。先ほどのXML文書は、代わりに次のように書くことができる:
+<foo/>
+Pythonの関数を異なるモジュールに定義できるのと同様に、XML要素も異なる名前空間 (namespace)に定義することができる。名前空間は普通はURLのような見た目をしている。デフォルトの名前空間を定義するには、xmlns宣言を使用する。名前空間の宣言は属性に似ているが、異なる目的を持っている。
+<feed xmlns='http://www.w3.org/2005/Atom'>  ①
+<title>dive into mark</title>             ②
+</feed>
+feed要素は、http://www.w3.org/2005/Atom名前空間の中にある。
+title要素も、http://www.w3.org/2005/Atom名前空間の中にある。名前空間の宣言は、それが定義された要素に加えて、すべての子要素にも影響する。
+xmlns:prefix宣言を使うと、宣言した名前空間を接頭辞 (prefix)に関連づけることができる。その場合、その名前空間にある各要素は、明示的に接頭辞を付けて宣言しなければならなくなる。
+<atom:feed xmlns:atom='http://www.w3.org/2005/Atom'>  ①
+<atom:title>dive into mark</atom:title>             ②
+</atom:feed>
+feed要素は、http://www.w3.org/2005/Atom名前空間の中にある。
+title要素も、http://www.w3.org/2005/Atom名前空間の中にある。
+XMLパーサにとっては、先に示した2つのXML文書は同一だ。名前空間 + 要素名 = XMLの同一性なのだ。接頭辞は名前空間を参照するためだけに存在しているので、接頭辞の名前 (atom:) 自体は意味を持たない。名前空間が一致し、要素名が一致し、属性の有無と値が一致し、各々の要素のテキスト内容が一致していれば、XML文書は同一だ。
+最後に、XML文書の最初の行(つまりルート要素の前)には文字コード情報を入れることができる(文書をパースするのに必要な情報を、まさにその文書の中に埋め込んで大丈夫なのかと思った人は、XML仕様書のセクションFにこのジレンマを解決する方法が詳細に説明されているので、そちらを参照してほしい)。
+<?xml version='1.0' encoding='utf-8'?>
+さて、あなたは危険に足を踏み入れるには十分なくらいXMLのことを知ったのだ!
+⁂
+Atomフィードの構造
+ウェブログのことを思い浮かべてみよう。いや、実際には頻繁に更新されるコンテンツを持ったウェブサイトなら何でもいい。このようなサイトとしては例えば、CNN.comがある。このサイトは、タイトル (“CNN.com”) と、サブタイトル (“Breaking News, U.S., World, Weather, Entertainment & Video News”)、最終更新日 (“updated 12:43 p.m.EDT, Sat May 16, 2009”) と、異なる時間に投稿された記事のリストを持っている。それぞれの記事もまた、タイトルと、最初に投稿された日時(公開後に訂正されたり誤字が修正された場合は最終更新日時も)と、固有のURLを持っている。
+Atom形式は、このすべての情報を標準形式で記録するように設計されている。私のブログとCNN.comは、デザイン・対象領域・読者の点で大きく異なっているが、両者とも同じような基本構造を持っている。CNN.comはタイトルを持ち、私のブログもタイトルを持つ。CNN.comは記事を公開し、私も記事を公開する。
+トップレベルにあるのはルート要素だ。この要素(http://www.w3.org/2005/Atom名前空間のfeed要素)はどのAtomフィードでも同じだ。
+<feed xmlns='http://www.w3.org/2005/Atom'  ①
+xml:lang='en'>                       ②
+http://www.w3.org/2005/AtomはAtomの名前空間だ。
+どんな要素にもxml:lang属性を加えることができる。この属性は、その要素とその子要素の言語を宣言する。この例では、xml:lang属性はルート要素で一度だけ宣言されているので、フィード全体が英語で書かれていることがわかる。
+Atomフィードの中にはフィード自身に関する情報もいくつか存在している。これらは、ルートレベルのfeed要素の子供として宣言されている。
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'>
+<title>dive into mark</title>                                             ①
+<subtitle>currently between addictions</subtitle>                         ②
+<id>tag:diveintomark.org,2001-07-29:/</id>                                ③
+<updated>2009-03-27T21:56:07Z</updated>                                   ④
+<link rel='alternate' type='text/html' href='http://diveintomark.org/'/>  ⑤
+フィードのタイトルはdive into markだ。
+フィードのサブタイトルはcurrently between addictionsだ。
+どのフィードにも識別子をつける必要があるが、この識別子はネット上においてユニークでなければならない。これの作り方についてはRFC 4151を見てほしい。
+このフィードが最後に更新されたのは2009年3月27日の21:56 GMTだ。通常、これは最新記事の最終変更日時と等しい。
+面白くなるのはここからだ。このlink要素はテキスト内容を持っていないが、3つの属性rel, type, hrefを持っている。relの値はこのリンクの種類を伝えている。rel='alternate'というのは、これがこのフィードの代替表現へのリンクだということを意味している。type='text/html'属性は、これがHTMLページへのリンクだということを意味している。そして、リンクのターゲットはhref属性で与えられている。
+私たちは、これが “dive into mark“ という名前のサイトのフィードであり、そのサイトはhttp://diveintomark.org/で利用でき、そのサイトの最終更新日は2009年3月27日だということを知ったのだ。
+☞一部のXML文書では要素の順序が意味を持つことがあるが、Atomフィードでは要素の順序は意味を持たない。
+フィード自体に関するメタデータの後は、最新記事のリストになっている。一つ一つの記事は次のように表されている:
+<entry>
+<author>                                                                 ①
+<name>Mark</name>
+<uri>http://diveintomark.org/</uri>
+</author>
+<title>Dive into history, 2009 edition</title>                           ②
+<link rel='alternate' type='text/html'                                   ③
+href='http://diveintomark.org/archives/2009/03/27/dive-into-history-2009-edition'/>
+<id>tag:diveintomark.org,2009-03-27:/archives/20090327172042</id>        ④
+<updated>2009-03-27T21:56:07Z</updated>                                  ⑤
+<published>2009-03-27T17:20:42Z</published>
+<category scheme='http://diveintomark.org' term='diveintopython'/>       ⑥
+<category scheme='http://diveintomark.org' term='docbook'/>
+<category scheme='http://diveintomark.org' term='html'/>
+<summary type='html'>Putting an entire chapter on one page sounds        ⑦
+bloated, but consider this &mdash; my longest chapter so far
+would be 75 printed pages, and it loads in under 5 seconds&hellip;
+On dialup.</summary>
+</entry>                                                                   ⑧
+author要素は、誰がこの記事を書いたのかを伝えている。そいつはMarkという名前で、http://diveintomark.org/に行けばぶらついている彼に会うことができる(このURLはフィードのメタデータにある代替リンクと同じだが、かならずしも同じである必要はない。実際、多くのウェブログは、自分のウェブサイトを持つ執筆者が何人か集まって書いている)。
+title要素は記事のタイトル “Dive into history, 2009 edition” を表している。
+フィードレベルの代替リンクと同様に、このlink要素は記事のHTML版のアドレスを示している。
+フィードと同様に、エントリには固有の識別子が必要だ。
+エントリは2つの日付を持っている: 初めて公開された日時(published)と、最終更新日時(updated)だ。
+エントリは任意の数のカテゴリを持つことができる。この記事はdiveintopython、docbook、htmlに分類されている。
+summary要素は記事の短い要約を与える(ここには示されていないが、フィードに記事の全文を含めたい場合のためのcontent要素も存在する)。このsummary要素にはAtom特有のtype='html'属性が含まれており、これはこの要約がプレーンテキストではなくHTMLで書かれていることを示している。この属性は見落とすべきではない。なぜなら、この要約には、HTML特有の実体参照(&mdash;と&hellip;)が含まれているからだ。これらの記号は、そのままの形ではなく、“&mdash;” と “&hellip;&hellip;” に変換した上で表示しなくてはならない。
+最後に、entry要素の終了タグがこの記事のメタデータの終わりを伝えている。
+⁂
+XMLをパースする
+PythonでXML文書をパースする方法は何種類かある。これまで伝統的に用いられてきたDOMパーサとSAXパーサも使えるが、ここではElementTreeと呼ばれる別のライブラリに注目したい。
+[feed.xmlをダウンロードする]
+>>> import xml.etree.ElementTree as etree    ①
+>>> tree = etree.parse('examples/feed.xml')  ②
+>>> root = tree.getroot()                    ③
+>>> root                                     ④
+<Element {http://www.w3.org/2005/Atom}feed at cd1eb0>
+ElementTreeライブラリはPython標準ライブラリの一部であり、xml.etree.ElementTreeに含まれている。
+ElementTreeライブラリのメインのエントリポイントはparse()関数であり、この関数はファイル名、もしくはファイルライクオブジェクトを引数に取る。この関数は文書全体を一度にパースするが、メモリが限られている場合は、XML文書をインクリメンタルにパースする方法も用意されている。
+parse()関数は文書全体を表すオブジェクトを返す。このオブジェクトはルート要素ではない。ルート要素の参照を取得するには、getroot()メソッドを呼び出せばいい。
+期待の通り、ルート要素はhttp://www.w3.org/2005/Atom名前空間にあるfeed要素だ。このオブジェクトの文字列表現は重要なポイントを強調している。すなわち、XML要素というのは名前空間とタグ名(ローカル名とも呼ばれる)の組み合わせだということだ。この文書のすべてのタグはAtomの名前空間の中にあるので、ルート要素は{http://www.w3.org/2005/Atom}feedと表現される。
+☞ElementTreeはXML要素を{namespace}localnameと表現する。この形式は、ElementTree APIの様々な場所で見たり使ったりすることになる。
+要素はリスト
+ElementTree APIでは、要素はリストのように振る舞う。そのリストのアイテムは、その要素の子供になっている。
+# 前の例から続く
+>>> root.tag                        ①
+'{http://www.w3.org/2005/Atom}feed'
+>>> len(root)                       ②
+8
+>>> for child in root:              ③
+...   print(child)                  ④
+... 
+<Element {http://www.w3.org/2005/Atom}title at e2b5d0>
+<Element {http://www.w3.org/2005/Atom}subtitle at e2b4e0>
+<Element {http://www.w3.org/2005/Atom}id at e2b6c0>
+<Element {http://www.w3.org/2005/Atom}updated at e2b6f0>
+<Element {http://www.w3.org/2005/Atom}link at e2b4b0>
+<Element {http://www.w3.org/2005/Atom}entry at e2b720>
+<Element {http://www.w3.org/2005/Atom}entry at e2b510>
+<Element {http://www.w3.org/2005/Atom}entry at e2b750>
+前の例から続けよう。ルート要素は{http://www.w3.org/2005/Atom}feedだ。
+ルート要素の「長さ」は子要素の数だ。
+要素自体をイテレータとして使って、すべての子要素を取得することもできる。
+この出力から分かるように、実際に8つの子要素がある。最初の5つにはフィードのメタデータがすべて入っており (title, subtitle, id, updated, link)、その後に3つのentry要素が続いている。
+もうお分かりかもしれないが、子要素のリストは直接の子供だけを含んでいるということを明確に指摘しておきたい。各々のentry要素はさらに子要素を持っているが、それらはこのリストには含まれていない。それらは各々のentryの子供のリストには含まれるだろうが、feedの子供のリストには含まれないのだ。ネストされている要素を、たとえどれだけ深くネストされていても、見つけ出す方法は存在する。のちほど、そのような方法を2つお見せする。
+属性は辞書
+XMLは要素だけで成り立っているわけではない。個々の要素には、それぞれ属性をつけることができるからだ。特定の要素への参照を取得すれば、その要素の属性をPythonの辞書として簡単に取得することができる。
+# 前の例から続く
+>>> root.attrib                           ①
+{'{http://www.w3.org/XML/1998/namespace}lang': 'en'}
+>>> root[4]                               ②
+<Element {http://www.w3.org/2005/Atom}link at e181b0>
+>>> root[4].attrib                        ③
+{'href': 'http://diveintomark.org/',
+'type': 'text/html',
+'rel': 'alternate'}
+>>> root[3]                               ④
+<Element {http://www.w3.org/2005/Atom}updated at e2b4e0>
+>>> root[3].attrib                        ⑤
+{}
+attribプロパティは、この要素の属性の辞書だ。元々のマークアップは<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'>であった。xml:接頭辞は、すべてのXML文書が宣言なしに使用できる組み込みの名前空間を参照している。
+5番目の子(インデックスが0から始まるリストの[4])はlink要素だ。
+link要素は3つの属性を持っている:href、type、relだ。
+4番目の子(インデックスが0から始まるリストの[3])はupdated要素だ。
+updated要素は属性を持っていないので、.attribは単なる空の辞書だ。
+⁂
+XML文書の中からノードを検索する
+ここまでは、XML文章を「トップダウン」方式で扱ってきた。ルート要素から始めて、その子要素を取得して、という過程を文書全体で繰り返していくというわけだ。しかし、XMLの多くの用途では、特定の要素を検索することが必要になる。ElementTreeは、もちろんそれを行うことができる。
+>>> import xml.etree.ElementTree as etree
+>>> tree = etree.parse('examples/feed.xml')
+>>> root = tree.getroot()
+>>> root.findall('{http://www.w3.org/2005/Atom}entry')    ①
+[<Element {http://www.w3.org/2005/Atom}entry at e2b4e0>,
+<Element {http://www.w3.org/2005/Atom}entry at e2b510>,
+<Element {http://www.w3.org/2005/Atom}entry at e2b540>]
+>>> root.tag
+'{http://www.w3.org/2005/Atom}feed'
+>>> root.findall('{http://www.w3.org/2005/Atom}feed')     ②
+[]
+>>> root.findall('{http://www.w3.org/2005/Atom}author')   ③
+[]
+findall()メソッドは、指定されたクエリにマッチする子要素を見つけ出す(クエリの形式はすぐ後で説明する)。
+すべての要素(ルート要素だけでなく子要素も)がfindall()メソッドを持っている。このメソッドはクエリにマッチするすべての要素を子要素の中から見つけ出す。しかし、どうして結果が一つも得られないのだろうか? わかりにくいかもしれないが、このクエリは要素の子供だけを検索するのだ。ルート要素feedは、feedという名前の子を持っていないので、このクエリは空のリストを返す。
+この結果も意外かもしれない。この文書にはauthor要素が含まれているはずだからだ。実際、この文書の中にauthor要素は3つ存在する(それぞれのentryにある)。しかし、これらのauthor要素はルート要素の直接の子供ではなく、「孫」(文字通り、子要素の子要素)にあたる。すべてのネストレベルのauthor要素を探したいのであれば、もちろんそれは可能だが、クエリの形式は少し違ったものになる。
+>>> tree.findall('{http://www.w3.org/2005/Atom}entry')    ①
+[<Element {http://www.w3.org/2005/Atom}entry at e2b4e0>,
+<Element {http://www.w3.org/2005/Atom}entry at e2b510>,
+<Element {http://www.w3.org/2005/Atom}entry at e2b540>]
+>>> tree.findall('{http://www.w3.org/2005/Atom}author')   ②
+[]
+便宜上、(etree.parse()関数から返される)treeオブジェクトには、ルート要素のメソッドがいくつかそのまま移植されている。このメソッドを実行すると、tree.getroot().findall()を呼び出したときとまったく同じ結果がえられる。
+意外かもしれないが、このクエリはこの文書のauthor要素を探し出さない。なぜだろう? なぜならこれはtree.getroot().findall('{http://www.w3.org/2005/Atom}author')のショートカットに過ぎず、「ルート要素の子供のauthor要素を探す」ことを意味しているからだ。author要素はルート要素の子供でななく、entry要素の子供だ。従って、このクエリはマッチする要素を一つも返さない。
+最初にマッチした要素を返すfind()メソッドもある。このメソッドは、マッチするのは1つだけだと考えられる場合や、複数のマッチがあったとしても、その1つ目にしか興味がないときに便利だ。
+>>> entries = tree.findall('{http://www.w3.org/2005/Atom}entry')           ①
+>>> len(entries)
+3
+>>> title_element = entries[0].find('{http://www.w3.org/2005/Atom}title')  ②
+>>> title_element.text
+'Dive into history, 2009 edition'
+>>> foo_element = entries[0].find('{http://www.w3.org/2005/Atom}foo')      ③
+>>> foo_element
+>>> type(foo_element)
+<class 'NoneType'>
+これは前の例で見ている。これはすべてのatom:entry要素を見つけ出す。
+find()メソッドはElementTreeのクエリを引数に取り、最初にマッチする要素を返す。
+このエントリにfooという要素は存在しないので、これはNoneを返す。
+☞find()メソッドには、いつかあなたを噛むであろう「ワナ」が存在する。ブール値のコンテクストにおいて、ElementTreeの要素オブジェクトは子要素を含んでいないときに(つまりlen(element)が0のときに)Falseと評価されるのだ。したがって、if element.find('...')は、find()メソッドがマッチする要素を見つけたかどうかをテストしているのではなく、マッチした要素が子要素を持つかどうかをテストしているのだ! find()メソッドが要素を返したかどうかテストしたいなら、if element.find('...') is not Noneを使おう。
+子孫要素(つまり、子供・孫・任意のネストレベルの要素)を検索する方法は実際に存在する。
+>>> all_links = tree.findall('//{http://www.w3.org/2005/Atom}link')  ①
+>>> all_links
+[<Element {http://www.w3.org/2005/Atom}link at e181b0>,
+<Element {http://www.w3.org/2005/Atom}link at e2b570>,
+<Element {http://www.w3.org/2005/Atom}link at e2b480>,
+<Element {http://www.w3.org/2005/Atom}link at e2b5a0>]
+>>> all_links[0].attrib                                              ②
+{'href': 'http://diveintomark.org/',
+'type': 'text/html',
+'rel': 'alternate'}
+>>> all_links[1].attrib                                              ③
+{'href': 'http://diveintomark.org/archives/2009/03/27/dive-into-history-2009-edition',
+'type': 'text/html',
+'rel': 'alternate'}
+>>> all_links[2].attrib
+{'href': 'http://diveintomark.org/archives/2009/03/21/accessibility-is-a-harsh-mistress',
+'type': 'text/html',
+'rel': 'alternate'}
+>>> all_links[3].attrib
+{'href': 'http://diveintomark.org/archives/2008/12/18/give-part-1-container-formats',
+'type': 'text/html',
+'rel': 'alternate'}
+このクエリ//{http://www.w3.org/2005/Atom}linkは先ほどの例と非常に似ているが、クエリの先頭に2つのスラッシュが付いている。これら2つのスラッシュは、「直接の子供だけを探さないでほしい。ネストレベルに関係なく、すべての要素を探したいのだ」ということを意味している。したがって、結果は1つだけではなく、4つのlink要素のリストになる。
+1つ目の結果はルート要素の直接の子だ。この属性から分かるとおり、これはフィードが表しているウェブサイトのHTML版を指すフィードレベルの代替リンクだ。
+他の3つはそれぞれエントリレベルの代替リンクだ。各々のentryは単一のlink子要素を持っており、クエリの先頭に2つのスラッシュによって、このクエリはこれらすべてを探し出す。
+総じてみると、ElementTreeのfindall()メソッドは強力な機能だと言えるが、クエリ言語には少し分かりづらい部分がある。この点については公式に「XPath式を限定的にサポートする」と説明されている。XPathはW3C標準のXML用クエリ言語だ。ElementTreeのクエリ言語は基本的な検索には十分なくらいXPathに似ているが、すでにXPathを知っている人にとっては、十分に煩わしい程度の違いもある。今度は、XPathを完全にサポートするようにElementTree APIを拡張した、サードパーティ製のXMLライブラリを見てみよう。
+⁂
+lxmlを使ってさらに踏み込む
+lxmlは広く使われているlibxml2パーサの上に構築されたオープンソースのサードパーティ製ライブラリだ。このライブラリは、100%の互換性を持たせる形でElementTree APIを実装しており、さらにそこへXPath 1.0のフルサポートと細かな改良を付け加えている。Windowsにはインストーラが用意されている。Linuxユーザは、できるだけ各ディストリビューションに付属しているyumやapt-getなどのツールを使って、リポジトリからコンパイル済バイナリを取得するようにしてほしい。さもないと、lxmlを手動でインストールすることになる。
+>>> from lxml import etree                   ①
+>>> tree = etree.parse('examples/feed.xml')  ②
+>>> root = tree.getroot()                    ③
+>>> root.findall('{http://www.w3.org/2005/Atom}entry')  ④
+[<Element {http://www.w3.org/2005/Atom}entry at e2b4e0>,
+<Element {http://www.w3.org/2005/Atom}entry at e2b510>,
+<Element {http://www.w3.org/2005/Atom}entry at e2b540>]
+インポートすれば、あとは組み込みのElementTreeライブラリと同じAPIが使える。
+parse()関数:ElementTreeと同じ。
+getroot()メソッド:これも同じ。
+findall()メソッド:まったく同じ。
+巨大なXML文書を扱う場合、lxmlの処理は組み込みのElementTreeライブラリよりもはるかに高速だ。ElementTreeのAPIだけを使っていて、かつ利用できるライブラリの中で最も速い実装を使いたいのであれば、まずはlxmlをインポートしてみて、エラーが出るようなら組み込みのElementTreeにフォールバックするといい。
+try:
+from lxml import etree
+except ImportError:
+import xml.etree.ElementTree as etree
+しかしlxmlはElementTreeより高速なだけではない。lxmlのfindall()メソッドはもっと複雑な式をサポートしている。
+>>> import lxml.etree                                                                   ①
+>>> tree = lxml.etree.parse('examples/feed.xml')
+>>> tree.findall('//{http://www.w3.org/2005/Atom}*[@href]')                             ②
+[<Element {http://www.w3.org/2005/Atom}link at eeb8a0>,
+<Element {http://www.w3.org/2005/Atom}link at eeb990>,
+<Element {http://www.w3.org/2005/Atom}link at eeb960>,
+<Element {http://www.w3.org/2005/Atom}link at eeb9c0>]
+>>> tree.findall("//{http://www.w3.org/2005/Atom}*[@href='http://diveintomark.org/']")  ③
+[<Element {http://www.w3.org/2005/Atom}link at eeb930>]
+>>> NS = '{http://www.w3.org/2005/Atom}'
+>>> tree.findall('//{NS}author[{NS}uri]'.format(NS=NS))                                 ④
+[<Element {http://www.w3.org/2005/Atom}author at eeba80>,
+<Element {http://www.w3.org/2005/Atom}author at eebba0>]
+この例では、(from lxml import etreeとする代わりに)import lxml.etreeすることで、以下の機能がlxml特有のものだということを強調している。
+このクエリは、XML文書全体を対象として、href属性を持つAtom名前空間の要素をすべて探し出す。クエリの先頭にある//は、「(ルート要素の子供だけではなく)あらゆる要素を探索する」ことを意味する。{http://www.w3.org/2005/Atom}は、「Atomの名前空間の要素だけ」を意味する。*は「どんなローカル名を持つ要素でもいい」ことを意味する。そして、[@href]は「href属性を持っている」ことを意味する。
+このクエリは、http://diveintomark.org/を値とするhref属性を持つAtom要素を全て探し出す。
+ちょっとした文字列フォーマットを施した上で(これをしないと、合成したクエリはばかばかしいほど長くなってしまう)、このクエリは、Atomのuri要素を子要素として持つAtomのauthor要素を検索する。これは、1つ目と2つ目のentry要素の中にある2つのauthor要素だけを返す。最後のentryにあるauthorはnameだけを含んでおり、uriは含んでいないからだ。
+これだけでは満足できないだろうか? lxmlはあらゆるXPath 1.0式をサポートしているのだが、ここでXPathの構文に深入りするつもりはない。真面目に書こうとすれば、それだけで一冊の本になってしまうからだ! しかし、lxmlがどのようにXPathをサポートしているのかは示しておこう。
+>>> import lxml.etree
+>>> tree = lxml.etree.parse('examples/feed.xml')
+>>> NSMAP = {'atom': 'http://www.w3.org/2005/Atom'}                    ①
+>>> entries = tree.xpath("//atom:category[@term='accessibility']/..",  ②
+...     namespaces=NSMAP)
+>>> entries                                                            ③
+[<Element {http://www.w3.org/2005/Atom}entry at e2b630>]
+>>> entry = entries[0]
+>>> entry.xpath('./atom:title/text()', namespaces=NSMAP)               ④
+['Accessibility is a harsh mistress']
+名前空間の付いた要素の上でXPathのクエリを実行するには、名前空間の接頭辞のマッピングを定義する必要がある。これは単なるPythonの辞書だ。
+これがXPathのクエリだ。このXPath式は、accessibilityという値を持つterm属性を含んだ(Atomの名前空間の)category要素を探し出す。しかし、実際に返されるのはcategory要素のリストではない。クエリ文字列の一番最後を見てほしい。/..という部分に気づいただろうか? これは「見つけたcategory要素の親要素を返してくれ」という意味だ。つまり、このXPathクエリを実行すると、<category term='accessibility'>という子要素を持つすべての要素が返されるのだ。
+xpath()関数はElementTreeオブジェクトのリストを返す。この文書には、term属性の値がaccessibilityであるcategory要素は1つだけ存在する。
+XPath式は常に要素のリストを返すわけではない。厳密に言えば、パースしたXML文書のDOMに含まれているのは要素ではなく、ノードだからだ。ノードの種類に応じて、ノードの内容は要素であったり、属性であったり、テキスト内容であったりする。XPathクエリを実行することで得られるのはノードのリストなのだ。実際、このクエリはテキストノードのリストを返しており、その中身は現在の要素の子 (./) のtitle要素 (atom:title) のテキスト内容 (text()) になっている。
+⁂
+XMLを生成する
+Pythonがサポートするのは、既存のXML文書をパースすることだけに留まらない。XML文書をゼロから作成することもできるのだ。
+>>> import xml.etree.ElementTree as etree
+>>> new_feed = etree.Element('{http://www.w3.org/2005/Atom}feed',     ①
+...     attrib={'{http://www.w3.org/XML/1998/namespace}lang': 'en'})  ②
+>>> print(etree.tostring(new_feed))                                   ③
+<ns0:feed xmlns:ns0='http://www.w3.org/2005/Atom' xml:lang='en'/>
+新しい要素を作るには、Elementクラスをインスタンス化すればいい。最初の引数として要素名(名前区間 + ローカル名)を渡そう。この文はAtomの名前区間にあるfeed要素を作成するが、これが私たちの新しい文書のルート要素になる。
+新しく作成した要素に属性を追加するには、属性名と属性値の辞書をattrib引数で渡せばいい。属性名はElementTreeの標準形式{namespace}localnameで書かなければいけないことに注意しよう。
+ElementTreeのtostring()関数を使えば、任意の要素(とその子供)をいつでもシリアライズできる。
+このシリアライズ結果は意外だっただろうか? ElementTreeが名前空間付きのXML要素をシリアライズする方法は、技術的には正確だが最適なものではない。この章のはじめに載せたXML文書のサンプルでは、「デフォルトの名前空間」(xmlns='http://www.w3.org/2005/Atom') を定義していた。このようにデフォルトの名前空間を定義することは、Atomフィードのようにすべての要素が同じ名前空間にある文書にとっては有用だ。なぜなら、名前区間を一度だけ定義すれば、各々の要素はローカル名 (<feed>、<link>、<entry>) だけで宣言することができるからだ。他の名前空間の要素を宣言するのでなければ、接頭辞をつける必要はまったく無いのだ。
+XMLパーサは、デフォルト名前空間をもつXML文書と、接頭辞のついたXML文書の違いを「理解しない」。次のシリアライズのDOMは:
+<ns0:feed xmlns:ns0='http://www.w3.org/2005/Atom' xml:lang='en'/>
+次のシリアライズのDOMと同一だ:
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'/>
+実用上問題となる違いは、2番目のシリアライズの方が何文字か短いということだけだ。サンプルフィード中の開始タグと終了タグすべてにns0:接頭辞を付けると、開始タグごとに4文字 &times; 79タグ + 名前空間の宣言に使う4文字で、合計320文字になる。UTF-8エンコーディングを使うとすると、この余分な文字だけで320バイトになる(gzip圧縮すると増分は21バイトになるが、それでも21バイトは21バイトだ)。だから何なのかと思うかもしれないが、Atomフィードのように、更新されるたびに何千回もダウンロードされるようなものについては、数バイト減らすだけでもすぐに大きな差につながりうるのだ。
+組み込みのElementTreeでは、名前空間のついた要素のシリアライズを細かく制御することはできないが、lxmlを使えばそれができる。
+>>> import lxml.etree
+>>> NSMAP = {None: 'http://www.w3.org/2005/Atom'}                     ①
+>>> new_feed = lxml.etree.Element('feed', nsmap=NSMAP)                ②
+>>> print(lxml.etree.tounicode(new_feed))                             ③
+<feed xmlns='http://www.w3.org/2005/Atom'/>
+>>> new_feed.set('{http://www.w3.org/XML/1998/namespace}lang', 'en')  ④
+>>> print(lxml.etree.tounicode(new_feed))
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'/>
+準備として、名前空間のマッピングを辞書として定義する。辞書の値は名前空間で、辞書のキーは使用したい接頭辞だ。接頭辞としてNoneを使うと、結果的にデフォルト名前区間を定義することになる。
+要素を作成するときにnsmap引数(この引数はlxmlにしかない)を渡せば、lxmlは定義した接頭辞を考慮してくれる。
+予想通り、このシリアライズはAtomの名前空間をデフォルトの名前空間として定義しており、名前空間の接頭辞を使わずにfeed要素を宣言している。
+おっと、xml:lang属性を追加するのを忘れていた。set()メソッドを使えば任意の要素にいつでも属性を追加できる。このメソッドは2つの引数をとる: ElementTreeの標準形式での属性名と、属性の値だ(このメソッドはlxml固有のものではない。この例でlxmlに特有な部分は、シリアライズ出力の名前空間の接頭辞を制御するためのnsmap引数だけだ)。
+1つのXML文書には1つの要素しか宣言できないのだろうか? もちろんそんなはずはない。子要素も簡単に作成できる。
+>>> title = lxml.etree.SubElement(new_feed, 'title',          ①
+...     attrib={'type':'html'})                               ②
+>>> print(lxml.etree.tounicode(new_feed))                     ③
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'><title type='html'/></feed>
+>>> title.text = 'dive into &hellip;'                         ④
+>>> print(lxml.etree.tounicode(new_feed))                     ⑤
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'><title type='html'>dive into &hellip;</title></feed>
+>>> print(lxml.etree.tounicode(new_feed, pretty_print=True))  ⑥
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'>
+<title type='html'>dive into&hellip;</title>
+</feed>
+既存の要素の子要素を作るには、SubElementクラスをインスタンス化すればいい。要求される引数は親要素(この場合はnew_feed)と新しい要素の名前だけだ。この子要素は、親要素の名前空間のマッピングを継承するので、名前空間や接頭語を再び宣言する必要はない。
+属性の辞書を渡すこともできる。キーは属性名で、値は属性値だ。
+予想通り、新しいtitle要素はAtomの名前空間の中に作られ、feed要素の子として挿入されている。title要素はテキスト内容や自身の子供を持たないので、lxmlはこれを(/>ショートカットを使った)空要素としてシリアライズする。
+要素のテキスト内容を設定するには、単にその要素の.textプロパティを設定すればいい。
+ここでtitle要素はテキスト内容と共にシリアライズされている。小なり記号やアンパサンドを含んだテキスト内容は、シリアライズ時にエスケープされる必要がある。lxmlはこのエスケープを自動的に処理してくれる。
+シリアライズ処理に“pretty printing”を適用することもできる。これは、終了タグの後ろや、子要素を持つがテキスト内容を持たない要素の開始タグの後ろに改行を挿入する。専門用語で言えば、lxmlは「意味のない空白 (insignificant whitespace)」を加えることによって、結果をより読みやすいものにするのだ。
+☞XMLを生成するための別のサードパーティ製ライブラリであるxmlwitchを調べてみるのもよいだろう。このライブラリはXMLの生成コードをより読みやすくするために、with文を広く活用している。
+⁂
+壊れたXMLをパースする
+XMLの仕様によれば、仕様に準拠したXMLパーサは「厳格なエラー処理」を行わなくてはならないものとされている。つまり、XML文書の中に何か一つでも整形式性エラーが見つかれば、すぐさま処理を停止して例外を送出しなくてはならないのだ。整形式性エラーとは、開始タグと終了タグのミスマッチや、未定義の実体、不正なUnicode文字列といったものであり、他にも数々の難解な規則が存在している。これはHTMLのようなほかの一般的なデータ形式とはまったく対照的だ &mdash; ブラウザは、HTMLタグを閉じ忘れたり、属性値の中でアンパサンド (&) をエスケープし忘れても、ウェブページのレンダリングを中断することはない(HTMLにエラー処理が定義されていないというのは良くある誤解だ。HTMLのエラー処理は実は非常に明確に定義されているのだが、「エラーが見つかりしだい処理を停止する」よりも著しく複雑なのだ)。
+一部の人々(私もその一人)は、XMLが厳格なエラー処理を採用したのは間違いだったと考えている。誤解しないでほしいが、エラー処理の規則を単純なものにする利点が分からないわけではない。しかし、実際問題として、「整形式性」の概念は思ったよりも扱いにくいものであり、とりわけ、ウェブ上で公開され、HTTPを通して送信される(Atomフィード)のようなXML文書についてはそれが言える。厳格なエラー処理は1997年に標準化されており、XMLは規格としては既に成熟していると言えるが、調査は一貫として、Web上で公開されている少なからぬ割合のAtomフィードに整形式エラーが存在していることを示している。
+したがって、私は理論的にも実用的にもXMLはエラーがあろうともパースされるべきだと考えている。つまり、整形式性エラーを見つけたとしても、即座に処理を停止しないのだ。もしこの考え方に共感を覚えるなら、lxmlを使えばこの方式でパースすることができる。
+ここに壊れたXML文書の断片がある。整形式性エラーの部分をハイライトしてある。
+<?xml version='1.0' encoding='utf-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'>
+<title>dive into &hellip;</title>
+...
+</feed>
+&hellip;という実体参照は、XMLでは定義されていないので(HTMLでは定義されている)、これはエラーになる。この壊れたフィードをデフォルトの設定でパースしようとすると、lxmlは未定義の実体を喉につまらせて窒息してしまう。
+>>> import lxml.etree
+>>> tree = lxml.etree.parse('examples/feed-broken.xml')
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+File "lxml.etree.pyx", line 2693, in lxml.etree.parse (src/lxml/lxml.etree.c:52591)
+File "parser.pxi", line 1478, in lxml.etree._parseDocument (src/lxml/lxml.etree.c:75665)
+File "parser.pxi", line 1507, in lxml.etree._parseDocumentFromURL (src/lxml/lxml.etree.c:75993)
+File "parser.pxi", line 1407, in lxml.etree._parseDocFromFile (src/lxml/lxml.etree.c:75002)
+File "parser.pxi", line 965, in lxml.etree._BaseParser._parseDocFromFile (src/lxml/lxml.etree.c:72023)
+File "parser.pxi", line 539, in lxml.etree._ParserContext._handleParseResultDoc (src/lxml/lxml.etree.c:67830)
+File "parser.pxi", line 625, in lxml.etree._handleParseResult (src/lxml/lxml.etree.c:68877)
+File "parser.pxi", line 565, in lxml.etree._raiseParseError (src/lxml/lxml.etree.c:68125)
+lxml.etree.XMLSyntaxError: Entity 'hellip' not defined, line 3, column 28
+整形式性のエラーを無視して、この破損したXML文書を読み込むには、カスタムのXMLパーサを作る必要がある。
+>>> parser = lxml.etree.XMLParser(recover=True)                  ①
+>>> tree = lxml.etree.parse('examples/feed-broken.xml', parser)  ②
+>>> parser.error_log                                             ③
+examples/feed-broken.xml:3:28:FATAL:PARSER:ERR_UNDECLARED_ENTITY: Entity 'hellip' not defined
+>>> tree.findall('{http://www.w3.org/2005/Atom}title')
+[<Element {http://www.w3.org/2005/Atom}title at ead510>]
+>>> title = tree.findall('{http://www.w3.org/2005/Atom}title')[0]
+>>> title.text                                                   ④
+'dive into '
+>>> print(lxml.etree.tounicode(tree.getroot()))                  ⑤
+<feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'>
+<title>dive into </title>
+.
+. [rest of serialization snipped for brevity]
+.
+カスタムのパーサを作るには、lxml.etree.XMLParserクラスをインスタンス化すればいい。このクラスは様々な名前付き引数を取ることができる。ここで興味があるのはrecover引数だ。この引数をTrueに設定すると、XMLパーサは整形式性のエラーから「回復する」ために最善を尽くすようになる。
+カスタムパーサを使ってXML文書をパースするには、2番目の引数としてparserオブジェクトをparse()関数に渡せばいい。lxmlは未定義の&hellip;実体に関する例外を送出していないことに注意しよう。
+パーサは遭遇した整形式性エラーのログを記録する(実は、パーサがエラーから回復するように設定されていない場合も、エラーはログに記録されている)。
+未定義の&hellip;実体をどう扱えばよいのか分からないので、パーサは端的にこの部分を無視する。title要素のテキスト内容は'dive into 'になる。
+シリアライズ結果から分かるように、&hellip;実体は取り込まれていない。パースの時点で無視されたのだ。
+重要なので繰り返し言っておくが、XMLパーサの「回復」処理には相互運用性の保証はない。別のパーサはHTMLの&hellip;を認識することにして、これを&hellip;で置き換えるかもしれない。これは「より良い」のだろうか? おそらくそうだ。これは「より正しい」のだろうか? いや違う、これらは両方とも等しく誤りなのだ。(XMLの仕様に従った)正しい振る舞いは即座に処理を停止した上で例外を送出することだ。もしそうしないことに決めたのなら、それは自分の責任で行わなければならない。
+⁂
+もっと知りたい人のために
+Wikipedia.orgのXML
+ElementTree XML API
+Elements and Element Trees
+XPath Support in ElementTree
+ElementTree iterparse Function
+lxml
+Parsing XML and HTML with lxml
+XPath and XSLT with lxml
+xmlwitch
+☜ ☞
+&copy; 2001&ndash; Mark Pilgrim&copy; 2011- Fukada, Fujimoto(日本語版)
+XML - Dive Into Python 3 日本語版

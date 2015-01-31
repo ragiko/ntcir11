@@ -1,0 +1,318 @@
+データバインディングでは、ここまで説明してきた単一項目のデータバインディングの他に、コレクションをバインディングすることができます。コレクションのデータバインディングは、IEnumerableを実装したコレクションなら、どれでも対象になります。その中でも、INotifyCollectionChangedインターフェースを実装したコレクションは、追加・削除などの変更操作をデータバインディングのターゲットと同期をとることが出来ます。
+INotifyCollectionChangedインターフェースの実装は大変な作業なので、デフォルトでObservableCollectionという実装クラスが提供されています。特に理由がなければ、WPFでコレクションのデータバインディングを行う場合はObservableCollectionを使います。
+NameとAgeプロパティを持つPersonクラスのコレクションをListBoxにデータバインディングする例を以下に示します。DataContextにPersonクラスのコレクションをMainWindowクラスのコンストラクタで設定します。
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+namespace CollectionBindingSample01
+{
+/// <summary>
+/// MainWindow.xaml の相互作用ロジック
+/// </summary>
+public partial class MainWindow : Window
+{
+private ObservableCollection<Person> people;
+public MainWindow()
+{
+InitializeComponent();
+// DataContextにPersonのコレクションを設定する
+this.people = new ObservableCollection<Person>(Enumerable.Range(1, 100)
+.Select(x => new Person
+{
+Name = "tanaka" + x,
+Age = (30 + x) % 50
+}));
+this.DataContext = people;
+}
+}
+}
+XAMLでは、DataContextのコレクションをItemsSourceにBindingして、ItemTemplateで整形して出力します。
+<Window x:Class="CollectionBindingSample01.MainWindow"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+Title="MainWindow" Height="350" Width="525">
+<Grid>
+<ListBox
+ItemsSource="{Binding}">
+<ListBox.ItemTemplate>
+<DataTemplate>
+<StackPanel>
+<TextBlock Text="{Binding Name}" />
+<TextBlock Text="{Binding Age}" />
+</StackPanel>
+</DataTemplate>
+</ListBox.ItemTemplate>
+</ListBox>
+</Grid>
+</Window>
+表示は以下のようになります。
+コレクションのデータバインディングは、基本的に、このようにItemsSourceプロパティにバインドして、ItemTemplateで見た目を整える形になります。詳しくは、ListBoxやDataGridの解説の箇所を参照してください。
+コレクションの変更通知
+このサンプルプログラムは、ObservableCollectionを使用しているので、コレクションに追加や削除などを行うと、画面の表示も更新されます。先程のサンプルプログラムに、Menuを追加して、そこに追加とクリアのMenuItemを追加します。そして、イベントハンドラに以下のようなコードを記述します。
+private void MenuItemAdd_Click(object sender, RoutedEventArgs e)
+{
+// コレクションに要素を追加する。
+this.people.Insert(0, new Person { Name = "追加したtanaka", Age = 100 });
+}
+private void MenuItemClear_Click(object sender, RoutedEventArgs e)
+{
+// 全削除
+this.people.Clear();
+}
+コレクションへの要素の追加と、コレクションから全要素の削除処理を行っています。サンプルプログラムを起動して追加メニューをクリックすると以下のようにコレクションに要素が追加され、それにあわせて表示も更新されます。
+クリアメニューをクリックすると、peopleコレクションの中身がクリアされ、それにあわせて表示もクリアされます。
+CollectionView
+コレクションのデータバインディングを行うと、内部的には、直接コレクションがバインドされるのではなく、間にCollectionViewというものが暗黙的に生成されます。これをデフォルトのCollectionViewといいます。このデフォルトのCollectionViewを取得するにはCollectionViewSourceクラスのGetDefaultViewメソッドを呼んで取得します。
+CollectionViewは、コレクション本体を操作することなく、要素の並び替えやフィルター、グルーピングなどを行うことが出来るコレクションに対するビューの役割を担います。Filter処理を行うには、CollectionViewのFilterプロパティにPredicate型のデリゲートを渡します。年齢が偶数の人のみを表示するコード例を以下に示します。
+var collectionView = CollectionViewSource.GetDefaultView(this.people);
+collectionView.Filter = x =>
+{
+// 年齢が偶数の人だけにフィルタリング
+var person = (Person)x;
+return person.Age % 2 == 0;
+};
+ソート処理を行うには、SortDescritptionsプロパティにSortDescriptionを追加することでソートができます。SortDescriptionは、ソートのキーになるプロパティ名と、昇順・降順を表すListSortDirection列挙体を渡します。Ageプロパティをキーにして昇順にソートするコード例を以下に示します。
+var collectionView = CollectionViewSource.GetDefaultView(this.people);
+// Ageプロパティで昇順にソートする
+collectionView.SortDescriptions.Add(new SortDescription("Age", ListSortDirection.Ascending));
+グルーピングを行うには、GroupDescriptionsプロパティにPropertyGroupDescriptionを追加することでグルーピングが出来ます。PropertyGroupDescriptionには、グルーピングするプロパティ名と、必要に応じてプロパティ値を変換するためのIValueConverterを指定出来ます。Ageプロパティの10の位の値をもとにグルーピングを行うコード例を以下に示します。
+class AgeConverter : IValueConverter
+{
+public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+{
+return (int)value / 10;
+}
+public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+{
+throw new NotImplementedException();
+}
+}
+// --------------------------------------------------------------------------------------
+var collectionView = CollectionViewSource.GetDefaultView(this.people);
+// Ageプロパティの10の位の値でグルーピングする
+collectionView.GroupDescriptions.Add(new PropertyGroupDescription("Age", new AgeConverter()));
+グルーピングした結果を表示するには、ListBoxコントロールなどのGroupStyleプロパティにGroupStyleを設定する必要があります。GroupStyleのHeaderTemplateにDataTemplateを指定することで、グループ単位のヘッダー要素を指定出来ます。コード例を以下に示します。
+<ListBox.GroupStyle>
+<GroupStyle>
+<GroupStyle.HeaderTemplate>
+<DataTemplate>
+<TextBlock Text="{Binding Name, StringFormat={}{0}0代}" />
+</DataTemplate>
+</GroupStyle.HeaderTemplate>
+</GroupStyle>
+</ListBox.GroupStyle>
+GroupStyleのHeaderTemplateでは、Nameプロパティでグルーピングするときにつかわれた値(今回の例では、10代なら1、20代なら2)が取得できます。そして、BindingのStringFormatプロパティを使ってデータバインディングの値の書式が指定できるため、X0代と表示するようにしています。
+実行してグルーピング処理を走らせた結果の画面を以下に示します。
+CollectionViewSource
+ここまで、デフォルトのCollectionViewを使ってきましたが、CollectionViewを明示的に作成することもできます。CollectionViewを作成するには、CollectionViewSourceクラスを使用します。CollectionViewSourceクラスのSourceプロパティにコレクションを設定すると、その型に応じて自動的にCollectionViewが内部で生成されます。CollectionViewの取得はCollectionViewSourceクラスのViewプロパティで行えます。CollectionViewSourceは、通常以下のようにXAMLのResourcesに定義します。Resourcesに定義したCollectionViewSourceは、BindingのSourceに指定して使います。
+<Window x:Class="CollectionBindingSample03.MainWindow"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+Title="MainWindow" Height="350" Width="525">
+<Window.Resources>
+<CollectionViewSource
+x:Key="Source"
+Source="{Binding}" />
+</Window.Resources>
+<Grid>
+<DataGrid ItemsSource="{Binding Source={StaticResource Source}}" />
+</Grid>
+</Window>
+CollectionViewSourceには、CollectionViewと同様にソート、フィルタ、グルーピング機能があります。CollectionViewSourceでは、宣言的にこれらの機能を定義することが出来ます。
+年齢の降順でソートして、年齢ごとにグルーピングする場合の定義は以下のようになります。
+<CollectionViewSource
+x:Key="Source"
+Source="{Binding}" >
+<CollectionViewSource.GroupDescriptions>
+<PropertyGroupDescription PropertyName="Age"/>
+</CollectionViewSource.GroupDescriptions>
+<CollectionViewSource.SortDescriptions>
+<ComponentModel:SortDescription Direction="Descending" PropertyName="Age"/>
+</CollectionViewSource.SortDescriptions>
+</CollectionViewSource>
+フィルタは、この例では示していませんが、Filterイベントを定義することで実現できます。
+リアルタイムソート・フィルター・グルーピング
+CollectionViewとCollectionViewSourceを使ったフィルタ・ソート・グルーピングは、適用した直後のコレクションの状態を元にして処理が行われます。フィルタ・ソート・グルーピングを行った後に、コレクションが変更されたらグルーピングなどの状態は更新されません。コレクションの変更に追随して、フィルタ・ソート・グルーピングも更新されるようにするには、CollectionViewSourceクラスで以下のプロパティにTrueを設定します。
+IsLiveFilteringRequested:リアルタイムにフィルタリングをサポートしているCollectionViewの場合はリアルタイムにフィルタリングを行う。
+IsLiveSortingRequested:リアルタイムにソートをサポートしているCollectionViewの場合はリアルタイムにソートを行う。
+IsLiveGroupingRequested:リアルタイムにグルーピングをサポートしているCollectionViewの場合はリアルタイムにグルーピングを行う。
+上記のプロパティでリアルタイムの情報更新を有効にしたうえで、LiveFilteringProperties、LiveSortingProperties、LiveGroupingPropertiesで、フィルタ・ソート・グルーピングを有効にするプロパティ名を指定します。Ageプロパティでリアルタイム機能を有効にする場合のXAMLを以下に示します。
+<CollectionViewSource
+x:Key="Source"
+Source="{Binding}" 
+IsLiveFilteringRequested="True" 
+IsLiveGroupingRequested="True" 
+IsLiveSortingRequested="True" >
+<CollectionViewSource.LiveSortingProperties>
+<System:String>Age</System:String>
+</CollectionViewSource.LiveSortingProperties>
+<CollectionViewSource.LiveGroupingProperties>
+<System:String>Age</System:String>
+</CollectionViewSource.LiveGroupingProperties>
+<CollectionViewSource.LiveFilteringProperties>
+<System:String>Age</System:String>
+</CollectionViewSource.LiveFilteringProperties>
+</CollectionViewSource>
+これに、通常のソート機能・グルーピング機能などを追加します。今回の例ではAgeプロパティのみがリアルタイムに反映されます。
+<CollectionViewSource.GroupDescriptions>
+<PropertyGroupDescription PropertyName="Age"/>
+</CollectionViewSource.GroupDescriptions>
+<CollectionViewSource.SortDescriptions>
+<ComponentModel:SortDescription Direction="Descending" PropertyName="Age"/>
+</CollectionViewSource.SortDescriptions>
+現在の選択項目をバインディングする方法
+CollectionViewは、現在の選択項目を管理しているので、同じCollectionViewをバインドしているもの同士では、選択項目を同期することが可能です。選択項目を同期するには、Selectorコントロール(ListBoxなどの親クラス)のIsSynchronizedWithCurrentItemをTrueにする必要があります。選択中の項目をバインドするには、/を使ってコレクションとバインドします。たとえば、Categoriesというコレクションにバインドしていて、それの選択中の項目のNameプロパティをバインドするためにはCategories/NameのようにバインディングのPathを指定します。この/を使ったバインディングは、親子だけでなく孫やその先までコレクションがある限り指定できます。例えば、Peopleコレクションの選択中の項目のChildrenプロパティ(これもコレクション)の選択中の項目のNameプロパティはPeople/Children/Nameのように指定できます。
+例として以下のようなPersonクラスをバインドしたケースを示します。
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+namespace CollectionBindingSample04
+{
+public class Person : INotifyPropertyChanged
+{
+public event PropertyChangedEventHandler PropertyChanged;
+private void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+{
+field = value;
+var h = this.PropertyChanged;
+if (h != null) { h(this, new PropertyChangedEventArgs(propertyName)); }
+}
+private string name;
+public string Name
+{
+get { return this.name; }
+set { this.SetProperty(ref this.name, value); }
+}
+private int age;
+public int Age
+{
+get { return this.age; }
+set { this.SetProperty(ref this.age, value); }
+}
+}
+}
+このクラスのコレクションを持ったDataContextに格納するクラスを以下に示します。
+using System.Collections.ObjectModel;
+namespace CollectionBindingSample04
+{
+public class MainWindowViewModel
+{
+private ObservableCollection<Person> people;
+public ObservableCollection<Person> People
+{
+get { return people; }
+set { people = value; }
+}
+}
+}
+MainWindowのコンストラクタでDataContextに設定します。
+public MainWindow()
+{
+InitializeComponent();
+this.DataContext = new MainWindowViewModel
+{
+People = new ObservableCollection<Person>(
+Enumerable.Range(1, 100)
+.Select(x => new Person
+{
+Name = "tanaka" + x,
+Age = (30 + x) % 50
+}))
+};
+}
+このMainWindowViewModelクラスのPeopleをDataGridにバインドします。バインド時に、IsSynchronizedWithCurrentItemをTrueに設定して、選択項目の同期を有効にします。
+<!-- 選択項目を同期するように設定してバインドする -->
+<DataGrid IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding People}"/>
+選択項目をバインドするためにPeople/NameのようにPathを指定してデータバインディングを行います。
+<!-- 現在選択中の項目をバインドする -->
+<Label Content="名前"/>
+<TextBox TextWrapping="Wrap" Text="{Binding People/Name}"/>
+<Label Content="年齢"/>
+<TextBox TextWrapping="Wrap" Text="{Binding People/Age}"/>
+実行すると選択項目がTextBoxに表示されることが確認できます。
+別スレッドからのコレクションの操作
+データバインディングしたコレクションは、通常UIスレッドから操作する必要がありますが、WPFでは、BindingOperations. EnableCollectionSynchronizationメソッドを呼び出すことで、コレクションをUIスレッド以外から操作できるようになります。EnableCollectionSynchronizationメソッドは、第一引数にコレクションを渡して、第二引数にコレクションを操作するときに使用するロックオブジェクトを指定します。使用例を以下に示します。
+public partial class MainWindow : Window
+{
+private Timer timer;
+private ObservableCollection<Person> people;
+public MainWindow()
+{
+InitializeComponent();
+// コレクションをDataContextに設定する
+this.people = new ObservableCollection<Person>();
+this.DataContext = this.people;
+// コレクションの操作をロックするように設定
+BindingOperations.EnableCollectionSynchronization(this.people, new object());
+// 別スレッドからコレクションを操作する
+this.timer = new Timer(1000);
+this.timer.Elapsed += (_, __) =>
+this.people.Add(new Person { Name = "tanaka " + this.people.Count });
+this.timer.Start();
+}
+}
+XAMLを以下に示します。
+<Window x:Class="CollectionBindingSample05.MainWindow"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+Title="MainWindow" Height="350" Width="525">
+<Grid>
+<DataGrid ItemsSource="{Binding}" />
+</Grid>
+</Window>
+BindingOperations.EnableCollectionSynchronizationの行をコメントアウトすると、例外が出てアプリケーションが終了することが確認できます。バックグラウンドスレッドでコレクション操作をするときは、自分でUIスレッドで操作をするようにするか、ここで紹介した、BindingOperations.EnableCollectionSynchronizationメソッドを使用しましょう。
+過去記事
+WPF4.5入門 その1 「はじめに」
+WPF4.5入門 その2 「WPFとは」
+WPF4.5入門 その3 「Hello world」
+WPF4.5入門 その4 「Mainメソッドはどこにいった？」
+WPF4.5入門 その5 「全てC#でHello world」
+WPF4.5入門 その6 「WPFを構成するものを考えてみる」
+WPF4.5入門 その7 「XAMLのオブジェクト要素と名前空間」
+WPF4.5入門 その8 「オブジェクト要素のプロパティ」
+WPF4.5入門 その9 「コレクション構文」
+WPF4.5入門 その10 「コンテンツ構文」
+WPF4.5入門 その11 「マークアップ拡張」
+WPF4.5入門 その12 「その他のXAMLの機能」
+WPF4.5入門 その13 「簡単なレイアウトを行うコントロール」
+WPF4.5入門 その14 「レイアウトコントロールのCanvasとStackPanel」
+WPF4.5入門 その15 「レイアウトコントロールのDockPanelとWrapPanel」
+WPF4.5入門 その16 「ViewBoxコントロール」
+WPF4.5入門 その17 「ScrollViewerコントロール」
+WPF4.5入門 その18 「Gridコントロール part 1」
+WPF4.5入門 その19 「Gridコントロール part 2」
+WPF4.5入門 その20 「レイアウトに影響を与えるプロパティ」
+WPF4.5入門 その21 「WPFのコンセプトと重要な機能つまみ食い」
+WPF4.5入門 その22 「Buttonコントロール」
+WPF4.5入門 その23 「DataGridコントロール その1」
+WPF4.5入門 その24 「DataGridコントロール その2」
+WPF4.5入門 その25 「TreeViewコントロール その1」
+WPF4.5入門 その26 「TreeViewコントロール その2」
+WPF4.5入門 その28 「Calendarコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その29 「ContextMenuコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その30「Menuコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その31 「ToolBarコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その32 「CheckBoxコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その33 「ComboBoxコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その34 「ListBoxコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その35 「RadioButtonコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その36 「Sliderコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その37 「TabControl」 - かずきのBlog@hatena
+WPF4.5入門 その38 「ファイルダイアログ」 - かずきのBlog@hatena
+WPF4.5入門 その39 「情報を表示するコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その40 「Popup、ToolTip、TextBox、Image、MediaElementコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その41 「DispatcherObject」 - かずきのBlog@hatena
+WPF4.5入門 その42 「WPFのプロパティシステム」 - かずきのBlog@hatena
+WPF4.5入門 その43 「読み取り専用の依存関係プロパティ」 - かずきのBlog@hatena
+拡張されたプロパティメタデータ - かずきのBlog@hatena
+WPF4.5入門 その45 「添付プロパティ」 - かずきのBlog@hatena
+WPF4.5入門 その46 「WPFのイベントシステム」 - かずきのBlog@hatena
+WPF4.5入門 その47 「コンテンツモデル」 - かずきのBlog@hatena
+WPF4.5入門 その48 「WPFのアニメーション その１」 - かずきのBlog@hatena
+WPF4.5入門 その49 「WPFのアニメーション その２」 - かずきのBlog@hatena
+WPF4.5入門 その50 「Style」 - かずきのBlog@hatena
+WPF4.5入門 その51 「リソース」 - かずきのBlog@hatena
+WPF4.5入門 その52 「コントロールテンプレート」 - かずきのBlog@hatena
+WPF4.5入門 その53 「ユーザーコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その54 「カスタムコントロール」 - かずきのBlog@hatena
+WPF4.5入門 その55 「Binding その1」 - かずきのBlog@hatena
+WPF4.5入門 その56「コレクションのバインディング」 - かずきのBlog@hatena

@@ -1,0 +1,59 @@
+
+はじめに
+本記事は和田卓人さん(@t_wada)が書かれた有名なRSpec入門記事、「RSpec の入門とその一歩先へ、第3イテレーション」をRSpec 3バージョンとして書き直したものです。
+詳しくは第1イテレーションに書いた説明を参照してください。
+各イテレーション(RSpec 3バージョン)へのリンク
+第1イテレーション
+第2イテレーション
+第3イテレーション(本記事)
+ソースコードのURL
+https://github.com/JunichiIto/rspec3-for-beginners/tree/3rd
+本記事のライセンスについて
+本記事は クリエイティブ・コモンズ 表示 - 継承 4.0 国際 ライセンスで提供されています。
+備考
+本文やサンプルコードは極力オリジナルバージョンを踏襲します。
+記述が古くなっている箇所は新しい記述方法に書き直します。
+新しい記述方法や和田さんのオリジナル記事に書かれていない情報には 【注目!】 の印を付けて説明しています。
+第1イテレーション、第2イテレーションですでに説明した 【注目!】 情報(shouldがexpect(...).toに変わった点等)は本記事では説明しません。
+前回終了時点のコードと実行結果
+この「RSpec 入門とその一歩先へ」シリーズでは、メッセージフィルタを RSpec を使って開発することで、 RSpec の機能と TDD を同時に学ぶことを狙いとしています。
+前回終了時点のコードと実行結果をまず記します。
+message_filter.rb
+class MessageFilter
+def initialize(*words)
+@words = words
+end
+def detect?(text)
+@words.any?{|w| text.include?(w) }
+end
+end
+require_relative 'message_filter'
+describe MessageFilter do
+shared_examples 'MessageFilter with argument "foo"' do
+it { is_expected.to be_detect('hello from foo') }
+it { is_expected.not_to be_detect('hello, world!') }
+end
+context 'with argument "foo"' do
+subject { MessageFilter.new('foo') }
+it_behaves_like 'MessageFilter with argument "foo"'
+end
+context 'with argument "foo","bar"' do
+subject { MessageFilter.new('foo', 'bar') }
+it { is_expected.to be_detect('hello from bar') }
+it_behaves_like 'MessageFilter with argument "foo"'
+end
+end
+$ bundle exec rspec -fd message_filter_spec.rb
+MessageFilter
+with argument "foo"
+behaves like MessageFilter with argument "foo"
+should be detect "hello from foo"
+should not be detect "hello, world!"
+with argument "foo","bar"
+should be detect "hello from bar"
+behaves like MessageFilter with argument "foo"
+should be detect "hello from foo"
+should not be detect "hello, world!"
+Finished in 0.00466 seconds (files took 0.09372 seconds to load)
+5 examples, 0 failures
+RSpec の入門とその一歩先へ、第3イテレーション ～RSpec 3バージョン～ - Qiita

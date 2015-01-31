@@ -1,0 +1,2 @@
+  Alerts URL: http://services.alerts.live-ppe.com/axis/services/Subscription  メソッド名: UserSignUp  パラメータ:   header - ヘッダー オブジェクト  ID - ID オブジェクト  name - 文字列、2 バイト文字で最大 100 文字  feedURL - 文字列、2 バイト文字で最大 256 文字
+ユーザー サインアップ要求

@@ -1,0 +1,37 @@
+
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM PlatformStandard Ed. 6
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要: 入れ子 | フィールド | コンストラクタ | メソッド
+詳細: フィールド | コンストラクタ | メソッド
+java.util.regex
+クラス Pattern
+java.lang.Object
+java.util.regex.Pattern
+すべての実装されたインタフェース: Serializable
+public final class Patternextends Objectimplements Serializable
+コンパイル済みの正規表現です。
+正規表現は、文字列として指定し、このクラスのインスタンスにコンパイルする必要があります。結果として得られるパターンは、Matcher オブジェクトを作成するために使用されます。 このオブジェクトは、任意の 文字シーケンス とこの正規表現をマッチできます。マッチを実行したときの状態はすべて正規表現エンジンに格納されます。 このため、複数の正規表現エンジンが同じパターンを共有できます。
+標準的な呼び出しシーケンスは、次のようになります。
+Pattern p = Pattern.compile("a*b");
+Matcher m = p.matcher("aaaaab");
+boolean b = m.matches();
+このクラスに定義した matches メソッドを使用すれば、正規表現は一度使用するだけで済みます。このメソッドを 1 回呼び出すだけで、表現がコンパイルされ、入力シーケンスとのマッチが行われます。次の文は、前述の 3 つの文と等価です。
+boolean b = Pattern.matches("a*b", "aaaaab");
+ただし、マッチを繰り返す場合は、コンパイル済みのパターンを再利用できないため、効率が低下します。
+このクラスのインスタンスは不変であるため、複数のスレッドで並行して使用できます。Matcher クラスのインスタンスは、複数スレッドでの並行使用に対応していません。
+正規表現構文の要約 
+構文
+Matches
+文字
+Pattern (Java Platform SE 6)

@@ -1,0 +1,84 @@
+    
+iOS 7から追加されたバックグラウンドで通信やコンテンツの更新ができるBackground Fetch。このアプリのUX向上に役立つといわれるBackground Fetchの概要や実装方法について、ヤフー平松亮介さんに寄稿をいただきました。 
+by 馬場美由紀 (CodeIQ中の人)
+Background FetchでアプリのUXを向上させる
+iOS 7からBackground FetchというAPIが新たに追加されました。
+アプリが起動されていない場合にも、バックグラウンドで通信やコンテンツの更新ができるAPIで、アプリのUX向上に役立つと考えられます。
+すでにSmartNewsやPinterestでも導入されており、iOS 7対応のアプリをつくる上では知っておかなくてはならない機能です。
+SmartNews の iOS 7 対応
+Behind the Pins: Building Pinterest 3.0 for iOS
+この記事では、Background Fetchの概要や実装方法について紹介します。
+アプリのバックグラウンド処理
+バックグラウンド処理とはユーザーが操作中でないアプリに処理をさせることを意味し、これを実現するにはMultitasking APIを利用する必要があります。
+iOS 6まではAudioやLocation Serviceなど限られたシーンでのみ使えるものでしたが、iOS 7からは汎用的な3つのAPIが追加されています。そのAPIの中の1つがBackground Fetchです。
+Background Fetchの概要
+ニュースアプリを例にすると、これまでは「アプリの起動」「コンテンツ更新」「表示」という順序で処理を行っていました。
+しかし、このコンテンツ更新の部分はユーザーにとってはただの遅延であり、ストレスを与えてしまいます。
+そこでBackground Fetchを実装しておくと、ユーザーがアプリを起動していない時でも、OSが定期的にバックグラウンドでアプリを起こし、コンテンツを更新しておいてくれます。そのためユーザーはアプリ起動直後に、待ち時間なしに最新のコンテンツを楽しむことができます。
+発生頻度はOS側に委託されており、ユーザーの行動パターンから予測され、最適な間隔で処理が呼ばれるとされています。
+例えば上の図のようにユーザがアプリを使っていた場合、OSは「ニュースアプリは朝に使う」「チャットアプリは夜に使う」と学習し、そのタイミングに合わせてBackground Fetchを呼び出します。
+Background Fetchを実装する
+アプリへの実装方法について説明します。まず、XcodeのCapabilitiesを開き、Background Modeのfetchにチェックをいれます。
+続いて、AppDelegateの中に以下のように記述します。
+objc
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+// Background Fetchが呼ばれる「最短の間隔」をセット
+// 必ずしもこの間隔で呼ばれるのではないので注意
+// "UIApplicationBackgroundFetchIntervalMinimum" はOSが設定する最短時間を意味する
+[[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:
+UIApplicationBackgroundFetchIntervalMinimum];
+return YES;
+}
+application:didFinishLaunchingWithOptionsの中でsetMinimumBackgroundFetchIntervalを呼びます。これはBackground Fetchの最短間隔をセットするメソッドです。
+UIApplicationBackgroundFetchIntervalMinimum(OSの定める最短間隔)
+UIApplicationBackgroundFetchIntervalNever(Fetchは呼ばれない)
+とが用意されており、BackgroundFetchの有効or無効を切り替えるためのメソッドして使います。また、上記の値の他に任意のNSTimerIntervelを指定することも可能です。
+以上の準備が完了したら、次はBackground Fetchの発生時に実行したい処理を実装しましょう。application:performFetchWithCompletionHandlerの中にコンテンツ更新などの処理を書き、最後にcompletionHandlerを呼んでデータ更新の成功/失敗をOSに伝えます。
+objc
+// Background Fetch用の処理メソッド
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+// Backgroundで行いたい処理を記述(コンテンツの更新処理など)
+// 完了時に呼ぶ
+completionHandler(UIBackgroundFetchResultNewData);
+}
+completionHandlerの引数には以下のいずれかを渡します。
+typedef enum : NSUInteger {
+UIBackgroundFetchResultNewData,  // 新しいコンテンツの更新に成功
+UIBackgroundFetchResultNoData,   // 新しいコンテンツはなかった
+UIBackgroundFetchResultFailed    // 通信エラーなどによりコンテンツ更新に失敗
+} UIBackgroundFetchResult; 
+BackgroundFetchResultをOSに伝えることにより、Background Fetchの発生タイミングがより最適化されます。また、AppSwitcher(ホームボタンをダブルタップした際の画面)のsnapshotも更新されます。
+Background Fetchをデバッグする
+デバッグは以下のいずれかの方法で行います。
+XcodeのDebug > Simulate Background Fetch を実行
+Edit Scheme > Options > Background Fetch にチェック
+Background Fetchを使う際の注意事項
+端末の状態によっては動作しない
+AppSwitcherでユーザーがアプリのプロセスを落とした場合、Background Fetchは呼ばれません。また、設定の「一般 > Appのバックグラウンド更新」をOFFにしている場合も同様です。Background Fetchを実装しているが呼ばれない場合、まずはここを確認しましょう。
+iOS 6/iOS 7の両対応
+Background FetchはiOS 7からのAPIですので、iOS 6では使えません。両対応させたい場合には、実行時のOSのバージョンやrespondsToSelectorを使って出し分けが必要です。
+勝手にログアウトされてしまう問題
+キーチェーンにアクセスできないロック時にもBackground Fetchが発生してしまうため、ログインを要するサービスでは不具合を発生させてしまうことがあります。その場合はapplicationProtectedDataDidBecomeAvailable:をフックにして処理の出し分けを行いましょう。
+詳しくはリンク先を参照ください。
+Gilt: iOS7でbackground fetchを利用するとログアウトしてしまうバグへの対応
+以上の通り、OSのバージョンやユーザー設定に左右されるBackground Fetchは便利ではありますが必殺の技ではありません。
+あくまで”向上”させる機能であると考えて設計を行うのが良さそうです。
+参考資料
+本記事についてのスライド、サンプルコードは以下をご覧ください。
+アプリのバックグラウンド処理 | SlideShare
+サンプルコード | GitHub
+その他にもYahoo! JAPAN Tech BlogではiOS 7勉強会に関する様々な資料を公開しています。ぜひご覧ください。
+iOS6から導入されたAuto Layout問題に挑戦してみない?
+ヤフー山口恭兵さんからのiOSの問題が出題中です。iOSならお任せ!というエンジニアの皆さん、ぜひ挑戦してみてくださいね。
+Autolayoutを設定して画面のサイズ・向きの変化に対応できるレイアウトを作成する問題です。
+締切4月14日(月)AM10:00まで
+問題挑戦はこちらから
+CodeIQコード銀行にあなたのコードを預けてみませんか?
+CodeIQコード銀行ではあなたのコードを財産と考えます。
+お預かりいただいたコードは、CodeIQコード銀行がしっかり評価し、フィードバックいたします。
+当コード銀行にお預けいただいたコードは、企業がみてスカウトをかける可能性があります。
+転職したい方や将来転職することを考えている方で、今の自分のスキルレベルを知りたい方はぜひ挑戦してみてください。
+企業からスカウトがきたら困る人は挑戦しないでください。
+興味を持った方はこちらからチャレンジを!
+iOS 7対応アプリを作るなら知っておきたい「UXを向上させるBackground Fetchの使い方」 #ios7yahoo｜CodeIQ MAGAZINE

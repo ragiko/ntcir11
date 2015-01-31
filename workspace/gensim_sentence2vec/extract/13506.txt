@@ -1,0 +1,46 @@
+						fortran での質問です。
+標準入力(キーボード)から数値を1つずつ入力、i回目に入力した数値は行ベクトルlistのi番目の成分となり、0が入力された時点で入力は終了、0はlistに代入されず、要素数がi-1の行ベクトルlistができる、という感じのプログラムを作りたいとします。
+こんな感じです。
+プログラム①
+implicit none
+integer, dimension(100) :: list
+integer i,flag
+real a
+flag=1
+i=1
+do while (flag/=0)
+read(*,*) a
+if (a==0) then
+write(*,*) list
+flag=0
+else 
+list(i)=a
+i=i+1
+end if
+end do
+end
+上記のプログラムではlistに十分な大きさとして要素数100を与えていますが、このままだとlistに入力する回数が100回に満たなかった場合、listの残りの成分にめちゃくちゃな数値(エラー?)が勝手に入ってしまいます。あくまで、入力した回数分の成分しか持たない配列を作りたいのです。そこで、もう一つの配列list2を用意して、allocate文を使って以下のようにプログラムを改変しました。
+プログラム②
+implicit none
+integer, dimension(100) :: list
+integer, allocatable, dimension(:) :: list2
+integer i,flag
+real a
+flag=1
+i=1
+do while (flag/=0)
+read(*,*) a
+if (a==0) then
+flag=0
+else 
+list(i)=a
+i=i+1
+end if
+end do
+allocate(list2(i-1))
+list2(:)=list(1:i-1)
+write(*,*) list2
+end
+これで、当初の目的は果たされるのですが、いささか面倒です。最初からlistを要素数可変の配列にして、一つの配列だけを使って目的をもっと簡単に達成することはできないのでしょうか?(write文はlistの中身を確かめるために組み込んであるものであり、出力させることが最終目標ではありません。よって、プログラム①でwrite文でlistのi-1コ目までを出力させて…は、当方の望む回答ではありません。)
+補足ごめんなさい。aはintegerじゃないと変ですね。integer aです。
+fortran での質問です。標準入力(キーボード)から... - Yahoo!知恵袋

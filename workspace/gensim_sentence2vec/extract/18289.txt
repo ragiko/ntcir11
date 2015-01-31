@@ -1,0 +1,47 @@
+FeedManager を実装していて、どうにも FeedBlog と FeedBlogPost の取り扱いがメンドウになってきたので、両者に共通の基底クラスを作ることにした。ついでに、これらをクラスクラスタとしてまとめることにした。
+クラスクラスタとは
+荻原(2.0)本から引用する。
+(「詳解 Objective-C 2.0」p.245 より)
+クラスクラスタ (class cluster) とは、同じインタフェースを持ち、同じ機能を提供する複数のクラスの集合体です。インタフェースを表す抽象クラスのみを公開し、これをそのクラスクラスタのパブリッククラス (public class) と呼びます。個々の具体的なクラスはパブリッククラスのインタフェースによって抽象化され、クラスタの内部に隠蔽されます。
+Cocoa (Foundation フレームワーク)で提供されている具体的なクラスタには、NSString や NSArray などがある。
+公式ドキュメントにも独立した項目として解説されているが(→「Cocoa Core Competencies: Class Cluster」等)、言語および実行環境として特別なサポートの仕組みが提供されているわけではない。設計上の慣習 (convention) と見るべき。デザインパターンよりはもっと広い概念だ。
+ずい分、昔のことだけど、C++ で可変 (mutable) オブジェクトとして生成したものを、不変 (immutable) オブジェクトとして返すなんてコードを書いていた。あれもクラスクラスタの一種だと言える。
+実例: Feed クラス
+MacBloggerGlass のモデルクラスは、これまで FeedBlog と FeedBlogPost として作ってきた。前者は Google アカウントごとのブログの一覧を表し、GData ライブラリのクラス、GDataFeedBlog に対応する。後者は、ブログごとの記事のフィードを表現するもので、GData ライブラリでは GDataFeedBlogPost に対応する。FeedBlog は環境設定パネルでブログの一覧を表示するために使い、FeedBlogPost はメインウィンドウで記事の一覧とその内容表示に使っている。
+GData ライブラリのフィードを表現するクラスたちには共通の基底クラス (GDataFeedBase) があり、ほとんどの機能はこのクラス(あるいはさらにその基底クラス)で定義されていて、GDataFeedBlog と GDataFeedBlogPost の違いはわずかなものだ。当然、そのラッパーと言うべき FeedBlog と FeedBlogPost にも大きな差はなかった。
+以下に、Feed クラスタの公開クラス Feed のインタフェース部を示す。
+@interface Feed : NSObject {
+NSMutableArray *entries;
+NSMutableDictionary *pairOfLinks;
+GDataFeedBase *gDataFeed;
+}
+@property (readwrite, retain) NSMutableArray *entries;
+@property (readonly) NSMutableDictionary *pairOfLinks;
+// class factories
++ (Feed *)feedWithGDataFeedBlog:(GDataFeedBlog *)gfeed;
++ (Feed *)feedWithGDataFeedBlogPost:(GDataFeedBlogPost *)gfeed;
++ (Feed *)feedWithXMLText:(NSString *)xmltext feedClass:(Class)classOfGData;
+// initializer
+- (id)initWithGDataFeed:(GDataFeedBase *)gfeed; // desiginated initializer
+// element manipulation
+// subclass must be override the following 2 methods.
++ (Class)classForEntries;
++ (Entry *)entryWithGDataEntry:(GDataEntryBase *)gentry;
+// for KVC compliance (required)
+- (void)insertObject:(Entry *)entry inEntriesAtIndex:(NSUInteger)index;
+- (void)removeObjectFromEntriesAtIndex:(NSUInteger)index;
+- (void)replaceObjectInEntriesAtIndex:(NSUInteger)index withObject:(Entry *)entry;
+// for KVC compliance (optional)
+- (int)countOfEntries;
+- (Entry *)objectInEntriesAtIndex:(NSUInteger)index;
+// utilities
+- (NSString *)XMLText;
+- (NSUInteger)findEntry:(NSString *)identifier;
+// for subclasses
+- (void)setGDataFeed:(GDataFeedBase *)gfeed;
+@end
+継承関係にあるクラス群をクラスクラスタとして機能させるには、状況に合わせて具体的な派生クラスを生成するためのファクトリーメソッドが必要になる。上記の例では 3 つのファクトリーメソッドを Feed クラスのクラスメソッドとして定義している。対応する GDataFeedBase オブジェクトを指定して生成するものが 2 つと、もう 1 つは XML テキスト(フィードの生データ)から生成するものだ。XML から GDataFeedBase オブジェクトを作り、それに対応する Feed クラスを生成することを想定している。このため、どの GDataFeedBase クラスを作るかを引数でわたすようになっている。
+また、Feed クラスが要素として抱えるオブジェクトの方も同様の理由でクラスクラスタとしている(Entry)。ただ、こちらの方は Feed よりもさらに派生クラスの差異が目立たないため、ほとんど Entry 単独のクラスのようになってしまった。まあ、クラスクラスタ化してしまえば、後から派生クラスを基底クラスにまとめたとしても(あるいは派生クラスを増やしたとしても)、それを使う側のコードに影響はほとんどない。派生クラスが不要だと思えば、削除してしまえば良い。
+実はこのコード、まだ実装が完了していないので、動くかどうかは未確認。正確には、Feed クラスタの実装は完了しているが、それを使う FeedManager の方がまだできていない。明日にはできると思うのだけど……。
+参考文献
+lifeLOG + REPOsitory: クラスクラスタの導入 - オフライン機能の実現 #4 (MacBloggerGlass)

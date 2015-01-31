@@ -1,0 +1,68 @@
+
+JOINは複数のテーブルを連結させるために用意されたキーワードです。単純にテーブルを連結させる以外にも、LEFT JOIN ONやUSINGなどの便利なキーワードがあるので、いろいろ試してみましょう。
+リレーションによる関係付け
+テーブルの作成とデータの挿入
+ここでは、購入履歴テーブル(テーブル名=purchase)、商品テーブル(テーブル名=goods)、顧客テーブル(テーブル名=customer)を作成し、それを使って説明していきます。CREATE TABLEとINSERTを使って、テーブルの作成とデータの挿入をしておきましょう。
+テーブルを作成する際の手順は、CREATE TABLEに続き、作成するテーブル名を指定します。次に、カッコ内にフィールドの定義を列挙していきます。フィールドの定義はフィールド名とデータ型、それに制約などを必要なだけ宣言します。
+CREATE TABLE構文
+CREATE TABLE テーブル名 (
+# 作成定義と制約
+フィールド名 データ型 オプション,
+フィールド名 データ型 オプション,
+...
+);
+INSERTは、テーブルに新しいレコードを挿入します。新しいレコードを挿入するには、VALUESとSETの2種類があります。VALUESの場合は値をテーブルを構成する全フィールドに対応するように順番に指定し、SETはフィールド名と値のペアで必要な分だけ指定していきます。
+INSERT構文
+INSERT INTO テーブル名 VALUES ( 値, 値, ...), ...
+INSERT INTO テーブル名 SET フィールド名=値, フィールド名=値, ... 
+以上の構文を使って、3つのテーブルを定義し、データを挿入します。
+# 購入履歴テーブルの作成
+CREATE TABLE purchase (
+id_p int unsigned NOT NULL auto_increment,
+id_c int unsigned NOT NULL,
+id_g int unsigned NOT NULL,
+quantity tinyint unsigned,
+PRIMARY KEY (id_p)
+);
+# データの挿入
+INSERT purchase SET id_c=3, id_g=2, quantity=1;
+INSERT purchase SET id_c=1, id_g=1, quantity=3;
+INSERT purchase SET id_c=4, id_g=1, quantity=2;
+INSERT purchase SET id_c=2, id_g=4, quantity=1; 
+INSERT purchase SET id_c=4, id_g=2, quantity=1;
+INSERT purchase SET id_c=2, id_g=1, quantity=1; 
+# 顧客テーブルの作成
+CREATE TABLE customer (
+id_c int unsigned NOT NULL auto_increment,
+fullname varchar(40) NOT NULL, 
+age tinyint unsigned NOT NULL ,
+sex tinyint unsigned NOT NULL,
+email varchar(50), 
+PRIMARY KEY (id_c)
+);
+# データの挿入
+INSERT customer SET fullname='エラ・フィッツジェラルド',age='48',sex='2',email='ella@exsample.jp';
+INSERT customer SET fullname='トミー・ゲレロ',age='34',sex='1',email='tommy@exsample.jp';
+INSERT customer SET fullname='マディ・ウォーターズ',age='55',sex='1',email='muddy@exsample.jp';
+INSERT customer SET fullname='エディ・ロバーツ',age='28',sex='1';
+INSERT customer SET fullname='マーサ・リーブス',age='38',sex='2',email='martha@exsample.jp';
+INSERT customer SET fullname='スライ・ストーン',age='34',sex='1';
+# 商品テーブルの作成
+CREATE TABLE goods (
+id_g tinyint(3) unsigned NOT NULL auto_increment,
+name varchar(30),
+price decimal(9,0),
+PRIMARY KEY (id_g)
+);
+# データの挿入
+INSERT goods SET name='Afro-American-Arctic',price='2300';
+INSERT goods SET name='Ready To Die',price='1800';
+INSERT goods SET name='Fresh',price='2300';
+INSERT goods SET name='Things Fall Apart',price='1600';
+上記のクエリで作成されるテーブルは次のようになります。
+購入履歴(purchase)テーブル
+購入ID (id_p)
+顧客ID (id_c)
+商品ID (id_g)
+数量 (quantity)
+SELECT構文:JOINを使ってテーブルを結合する | Smart

@@ -1,0 +1,5 @@
+
+public UnsupportedCallbackException(Callback callback)
+詳細メッセージを指定しないで UnsupportedCallbackException を構築します。
+パラメータ:callback - 認識されない Callback
+UnsupportedCallbackException (Java Platform SE 6)

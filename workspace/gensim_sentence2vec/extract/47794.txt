@@ -1,0 +1,20 @@
+
+RSR の特徴を3点で示せば,単語の右から数え始め(右利き),形態的に鈍感で,音節の重さにこだわる(音節構造に敏感)ということである.GSR の正反対ということがわかるだろう.中英語以降の英語の強勢規則は,(1) 左利きか右利きか,(2) 形態構造と音節構造のどちらを重視するか,という2点を巡って,不安定な様相を呈する.結果としてみれば,近代英語にかけて RSR が勢力を強めていったのだが,RSR が GSR を置き換えたと言い切るのは必ずしも正しくない.RSR が GSR を包み込んだといおうか,包摂したといおうか,奇妙なかたちで両者の大部分がが合一することになったのである.
+両強勢規則は性質を比べると確かに正反対なのだが,実際の語に適用された結果だけ見比べると,多くの場合,効果は同じである.単音節の writ, write などはどちらの強勢規則に照らしても強勢位置はその音節に落ちるより仕方がないし,2音節の wr&iacute;ter, wr&iacute;tten, bel&iacute;eve にしても同様だ.3音節の cr&aacute;ftily, s&oacute;rrier にしても結果としては同じ音節に強勢が落ちる.つまり,GSR と RSR は,かなりの程度,同じ効果を引き起こすのである.
+もちろん,両者が競合するケースは残る.例えば接頭辞の付加された軽い2音節語は,GSR では強勢が第2音節に落ちることになるが,RSR では第1音節に強勢が落ちることになる (ex. beg&iacute;n but not *b&eacute;gin) .また,/-VCC/ の重い接尾辞をもつ語は,GSR では強勢は接尾辞に落ち得ないが,RSR ではそこに強勢が落ちることになる (ex. s&iacute;nging but not *sing&iacute;ng) .このようなケースでは,両強勢規則の競合の結果として,不安定な variation が存在することになった.さらにこの不安定な variation は様々なマイナー強勢規則を生み出す契機となり,英語の強勢を巡る状況は現在に至るまで複雑さを増し続けているのである.
+GSR と RSR の競合の歴史については,Lass (Vol. 2, pp. 85--90) と Lass (Vol. 3, pp. 125--28) が参照に便利である.
+・ Lass, Roger. "Phonology and Morphology." The Cambridge History of the English Language. Vol. 2. Cambridge: CUP, 1992. 23--154.
+・ Lass, Roger. "Phonology and Morphology." The Cambridge History of the English Language. Vol. 3. Cambridge: CUP, 1999. 56--186.
+[
+固定リンク 
+|
+印刷用ページ
+|
+コメント
+]
+#1473. Germanic Stress Rule [stress][gsr][rsr]
+現代英語にまで続いていると考えられる強勢規則の1つ Germanic Stress Rule (GSR) については,相反するもう1つの強勢規則 Romance Stress Rule (RSR) との対比で,「#200. アクセントの位置の戦い --- ゲルマン系かロマンス系か」 ([2009-11-13-1]) ,「#718. 英語の強勢パターンは中英語期に変質したか」 ([2011-04-15-1]) ,「#861. 現代英語の語強勢の位置に関する3種類の類推基盤」 ([2011-09-05-1]) で取り上げてきた.今回は,もう少し詳しく GSR について見てみよう.
+GSR はゲルマン語を特徴づける強勢規則で,端的にいうと「語幹の第1音節に強勢がおかれる」という原則である (##182,857,187) .古英語ではこの規則はほぼ完全に機能しており,かつ唯一のものだったが,中英語あるいは初期近代英語以降は,台頭してきた RSR と競合し,脅かされながら現在に至っている.GSR を Lass (126) に従って定式化すると次の通り.
+(i) Starting at the left-hand word-edge, ignore any prefixes (except those specified as stressable), and assign stress to the first syllable of the lexical root, regardless of weight.
+(ii) Construct a (maximally trisyllabic) foot to the right:
+rsr / hellog〜英語史ブログ

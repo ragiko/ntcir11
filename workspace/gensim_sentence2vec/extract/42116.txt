@@ -1,0 +1,29 @@
+
+Django は変転の激しいニュースルーム環境で開発された経緯から、よくある
+Web 開発タスクを迅速かつ簡単化するように設計されました。ここでは Django に
+よるデータベース中心の Web アプリケーション開発をざっと見てみましょう。
+このドキュメントの目的は、 Django の技術的な仕様について述べ、どのように動
+作するかを理解してもらうことにあり、チュートリアルやリファレンス用ではあり
+ません。とはいえ、チュートリアルもリファレンスも用意していますよ!
+プロジェクトを作成する準備ができたら、
+チュートリアルをはじめる か、
+より詳細なドキュメントに読み進んで みてください。
+モデルの設計¶
+Django はデータベースなしでも使えます。とはいえ、 Django にはオブジェクト-
+リレーショナルマッパが付属していて、 Python コードでデータベースのレイアウ
+ト記述できるようになっています。
+Django の データ-モデルシンタクス はモデルを表現
+するための色々な方法を提供しています。この API には、この 2 年データベース
+スキーマ問題を解決してきた実績があります。簡単な例を示しましょう:
+class Reporter(models.Model):
+full_name = models.CharField(max_length=70)
+def __unicode__(self):
+return self.full_name
+class Article(models.Model):
+pub_date = models.DateTimeField()
+headline = models.CharField(max_length=200)
+content = models.TextField()
+reporter = models.ForeignKey(Reporter)
+def __unicode__(self):
+return self.headline
+Django の概要 &mdash; Django v1.0 documentation

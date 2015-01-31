@@ -1,0 +1,35 @@
+天地左右の中央に配置したい要素のサイズが幅も高さもピクセルで指定されていれば、marginやpaddingで簡単に配置できますが、サイズ指定にパーセントを使用した要素だと表示サイズに依存されてサイズが分かりません。
+そんなパーセントで指定されたピクセルでの正確なサイズが不明な要素を天地左右の中央に配置するスタイルシートのテクニックを紹介します。
+デモページ:幅780pxで表示
+HTML
+HTMLはシンプルで、中央に配置するdiv要素だけです。
+<body>
+<div>Percentage sized and still centered.</div>
+</body>
+CSS
+ぱっと思いつく方法としてはパーセントをネガティブマージンで使えばいいのでは、となるところですが、ネガティブマージンを使用すると左右の中央はできますが、天地の中央がうまくいきません。
+ここではネガティブマージンではなく、transformにネガティブな値を指定して実現しています。
+body {
+background: #900;
+}
+div {
+position: absolute;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+width: 40%;
+height: 50%;
+padding: 20px;  
+background: red;
+color: white;
+text-align: center;
+box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+}
+ちなみに、ネガティブマージンだと、こんな感じに。
+※これは天地の中央はうまくいきません。
+/*
+This doesn't work
+margin-left: -25%;
+margin-top: -25%;
+*/
+[CSS]パーセントで指定された正確なサイズが不明な要素を天地左右の中央に配置するスタイルシートのテクニック | コリス

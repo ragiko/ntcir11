@@ -1,0 +1,35 @@
+適合性(英語: relevance)とは、情報科学および情報検索において、検索結果の文書または文書群が利用者の必要としていた情報とどれだけ合致しているかを指す用語である。適合度とも。
+種類[編集]
+適合性は、一般に「話題 (topical)」適合性または「アバウトネス (aboutness)」を意味する。すなわち、検索結果の「話題」がクエリまたは必要な情報の「話題」とどれだけ合致するか、である。より広義にはまた、必要とする情報に関して検索結果がどれだけ「良い」かを指すと解釈することもできる。後者の定義は「利用者 (user)」適合性と呼ぶこともあり、「話題」適合性だけでなく、結果の適時性・権威性・新鮮性なども含む。
+歴史[編集]
+適切な情報を探すという問題についての言及は、少なくとも17世紀の学術雑誌の出版のころにまで遡る。
+適合性についての正式な研究は20世紀、後に計量書誌学と呼ばれる分野の研究として始まった。1930年代から1940年代にかけて、S. C. Bradford が主題に対する論文の適合性を表すため "relevant" という語を使った(ブラッドフォードの法則(英語版))。1950年代には最初の情報検索システムが生まれ、検索結果に無関係な論文が含まれる点が重大な懸念として指摘されている。1958年、B. C. Vickery は科学情報に関する国際会議での講演で適合性の概念を明確に述べている[1]。
+1958年以降、情報学者は適合性の定義について議論を続けてきた。特に、「主題への適合性」または「話題適合性」と「利用者適合性」の区別が議論されてきた。
+評価[編集]
+1960年代初めのクランフィールド実験(英語版)以降、情報検索コミュニティは話題適合性を測定する試験集とベンチマークを中心とするようになり、TRECの評価においてそれが最高潮に達し、今も情報検索研究の主要な評価フレームワークとなっている。
+ある情報検索システムの検索結果が話題適合している度合いを評価するため、検索結果の適合度を定量化しなければならない。クランフィールド実験の評価では、それぞれの検索結果に「適合レベル (relevance level)」を割り当てる「適合性アセスメント (relevance assessment)」というプロセスを経るのが一般的である。適合レベルは、2値の場合(適合している、または適合していない)や等級付けする場合(レベルを何段階かに分ける)がある。検索結果群に適合レベルを割り当てたら、情報検索の性能評価を行い、検索システムの出力の品質を査定することができる。
+情報検索コミュニティでは、話題適合性だけでなく、利用者適合性を考慮した利用者の観点での研究も中心としている。それらの研究は、マンマシンインタフェースの観点に焦点を当てたものが多い。
+クラスタリングと適合性[編集]
+C. J. van Rijsbergen が1979年に提唱したクラスタ仮説は、互いに類似している2つの文書は検索において似たような適合性を示すという仮説である。埋め込み類似性空間において、クラスタ仮説は大域的にも局所的にも解釈できる[2]。大域的解釈では、文書間の類似性から導出される潜在的な共通する話題の集合が存在すると仮定する。それらの大域クラスタ群またはその代表群は2つの文書の適合性を関連付けるのに使うことができる(例えば、同じクラスタに属する2つの文書は同じ要求に共に適合するはずである)。このような考え方に基づく手法として以下のものがある。
+クラスタに基づく情報検索[3][4]
+クラスタに基づく文書拡張。例えば、潜在意味解析またはその言語モデリング相当物[5]。クラスタが、孤立したものであれ、組み合わせであれ、可能な適合文書の集合を首尾よくモデル化できると保証することは重要である。
+Ellen Voorhees が発展させた例がよく知られているが[6]、第二の解釈は文書間の局所的関連性に着目する。局所的解釈は文書の集まりにおいてクラスタの数や大きさをモデル化する必要がなく、複数のスケールでの適合性を考えることが可能である。このような考え方に基づく手法として以下のものがある。
+複数クラスタ検索[6][4]
+活性化拡散手法[7]と適合性伝播手法[8]
+局所的文書拡張[9]
+スコア規則化[10]
+局所的手法では、文書類似度の正確で適切な定式化が必要である。
+認識論的課題[編集]
+利用者は検索結果の適合性を正しく評価できるだろうか。それとも専門家の方が正しく評価できるだろうか。情報検索の適合性に関する最近の研究では、あるシステムの出力の利用者による評価を使えば「適合する」出力を増やすことができると暗黙に仮定している。もう1つの戦略として、学術雑誌のインパクトファクターを使って出力をランク付けする方法があり、こちらは専門家の評価による適合性をベースとしていることになる。他にも、検索結果の多様性を考慮するという戦略などもある。しかし、この際に重要なのは、適合性が基本的に心理学の課題ではなく認識論の課題だという点である。人々の心理はある種の認識論的影響を反映している。
+脚注・出典[編集]
+^ Mizzaro, S. (1997). Relevance: The Whole History. Journal of the American Society for Information Science. 48, 810‐832.
+^ F. Diaz, Autocorrelation and Regularization of Query-Based Retrieval Scores. PhD thesis, University of Massachusetts Amherst, Amherst, MA, February 2008, Chapter 3.
+^ W. B. Croft, A model of cluster searching based on classification, Information Systems, vol. 5, pp. 189–195, 1980.
+^ a b A. Griffiths, H. C. Luckhurst, and P. Willett, Using interdocument similarity information in document retrieval systems, Journal of the American Society for Information Science, vol. 37, no. 1, pp. 3–11, 1986.
+^ X. Liu and W. B. Croft, Cluster-based retrieval using language models, in SIGIR 04: Proceedings of the 27th annual international conference on Research and development in information retrieval, (New York, NY, USA), pp. 186–193, ACM Press, 2004.
+^ a b E. M. Voorhees, The cluster hypothesis revisited, in SIGIR 85: Proceedings of the 8th annual international ACM SIGIR conference on Research and development in information retrieval, (New York, NY, USA), pp. 188–196, ACM Press, 1985.
+^ S. Preece, A spreading activation network model for information retrieval. PhD thesis, University of Illinois, Urbana-Champaign, 1981.
+^ T. Qin, T.-Y. Liu, X.-D. Zhang, Z. Chen, and W.-Y. Ma, A study of relevance propagation for web search, in SIGIR 05: Proceedings of the 28th annual international ACM SIGIR conference on Research and development in information retrieval, (New York, NY, USA), pp. 408–415, ACM Press, 2005.
+^ A. Singhal and F. Pereira, Document expansion for speech retrieval, in SIGIR 99: Proceedings of the 22nd annual international ACM SIGIR conference on Research and development in information retrieval, (New York, NY, USA), pp. 34–41, ACM Press, 1999.
+^ F. Diaz, Regularizing query-based retrieval scores, Information Retrieval, vol. 10, pp. 531–562, December 2007.
+適合性 (情報検索) - Wikipedia

@@ -1,0 +1,292 @@
+
+元ネタ: マークアッパー的 Haml入門21の手引き
+Slim 版書いた: マークアッパー的 Slim 入門21の手引き | e2esound.com業務日誌
+Jade は, JavaScript 製のテンプレートエンジンで HTML を効率的に生成するための記法です。Haml の影響を受けています。関係としては, Haml > Jade > Slim といったように影響を受けているため, それぞれ似通った機能を持っています。
+Haml と Slim の同様の記事があるのでどうせなら Jade もあれば比較できるのかな? ということで書いてみます。
+Jade は実務で使用したことがないので誤りがある可能性があります。一通りドキュメントは確認していますが誤りがあればご指摘いただけるとありがたい。
+※ ターミナルでコマンド実行を記述する場合$ command のように頭に $ をつけて記述しています。
+目次
+Jade を使えるようにする
+Jade を HTML に変換する
+基本の記法
+テキストの扱い
+入れ子(ネスト)も可能
+一行で出力したい場合
+タグ間の空白/改行をコントロール
+属性をつける
+id と class をつける
+コメントアウト
+IE条件分岐コメントアウト
+Jade ファイルのみのコメント
+DOCTYPE 宣言
+pre, textarea の記述
+エスケープ&改行空白保持
+変数を使う
+変数を使った条件分岐
+スイッチ
+連番をふる
+Less を使う
+外部ファイルをインクルードする
+すべてダブルクオートで出力する
+Jade を使えるようにする
+Mac であれば アプリケーション>ユーティリティ>ターミナル を立ちあげて,  次のコマンドを入力してください。今回はコマンドラインから実行するために npm を使ってインストールします。
+$ npm install -g jade 
+問題なく処理が終われば Jade がインストールされています。
+Jade ファイルを HTML に変換する
+まずは Jade のファイルを HTML に変換する方法を確認しましょう。
+デスクトップに test.jade というファイルを作成します。Jade で作成するファイルの拡張子は .jade です。ターミナルを起動し, まずデスクトップへ移動します。
+$ cd ~/Desktop
+test.jade の内容を記述します。
+!!!
+html 
+head
+title test.jade 
+body
+h1 Jade Sample
+ファイルが用意できたら次のコマンドを実行しましょう。
+$ jade test.jade 
+実行結果:
+rendered test.html 
+実行結果のように, test.jade と同一階層(今回は Desktop) に test.html が生成されました。生成されたファイル test.html は次のように変換されます。
+<!DOCTYPE html><html> <head><title>test.jade </title></head><body><h1>Jade Sample</h1></body></html>
+jade コマンドでは, デフォルトで圧縮(改行等を除いた)したファイルを出力します。このままでは見づらいかと思います。その場合には次のようにコマンドを入力します。
+$ jade -P test.jade 
+-P オプションを使うことで改行された html ファイルが出力されます。test.html は次のようになりました。-P の「P」は大文字であることに気をつけてください。もしコマンドを実行しても何も反応がない場合,小文字になっている可能性があります。
+<!DOCTYPE html>
+<html> 
+<head>
+<title>test.jade </title>
+</head>
+<body>
+<h1>Jade Sample</h1>
+</body>
+</html>
+HTML から Jade に変換するツールもあるようです。
+HTML 2 Jade – a converter for HTML
+基本の記法
+Jade のタグの書き方は簡単です。<, >, /> を HTML のタグから取り除き, 閉じタグを書かないことを意識してください。インデントは好みで問題ありません。Jade のドキュメントでは半角スペース4つとしているようなので, 今回はそのようにしています。Jade の中にそのまま HTML を記述することもできます。
+Jade の記述
+p aaa
+<p>bbb</p>
+出力される HTML
+<p>aaa</p><p>bbb</p>
+テキストの扱い
+Jade を使うにあたって Haml と大きく異なる点は, Slim と同じく, 「テキストの扱い」です。Jade は HTML のタグに相当する文字列に明示的な記号 (Haml の場合 %) を与えないため, テキスト部分を明示的に書く必要があります。大切なのは | の扱いです。
+Jade の場合, | を行頭にしたテキストはすべて非 HTML タグのテキストとして変換されます。具体例で見て行きましょう。
+出力したい HTML
+<p>aaa</p>
+Jade の記述1: HTML タグの記述の後に半角スペース,  続けてテキストを書く
+p aaa
+Jade の記述2: HTML タグから改行し,  | のあとにテキストを書く
+p
+| aaa
+複数行にわたってテキストを書く場合には注意が必要です。Slim とは異なり, すべての行頭に | が必要です。
+Jade の記述
+p
+| aaa 
+| bbb
+出力される HTML
+<p>
+aaa 
+bbb
+</p>
+やはり | をすべての行に書くのは大変です。もっと簡単に書く方法があります。HTML タグの直後に . を追加する方法です。
+Jade の記述
+p.
+abc
+def 
+hik
+出力される HTML (-P オプション)
+<p>abc
+def 
+hik</p>
+入れ子(ネスト)も可能
+Jade の記述
+div
+| abcdef
+p
+span
+| foo
+出力される HTML (-P オプション)
+<div>abcdef
+<p><span>foo</span></p>
+</div>
+一行で出力したい場合
+※できない
+Slim と同じくできませんでした。
+マークアッパー的 Slim 入門21の手引き | e2esound.com業務日誌
+タグ間の空白/改行をコントロール
+※できない
+元記事 と同様の動作をするものはありませんでした。また, Slim のように タグを追加するような機能 も見当たりません。
+属性を付ける
+src, href, name, title といった属性を表示する方法です。Jade の場合, () を使います。属性を続けて書く場合には, ,をつける必要があります。
+a(href="foo/abc.html", title="abc_def")
+| これはリンクです。
+a(href="foo/abc.html", 
+title="abc_def")
+| これはリンクです。
+a(href="foo/abc.html"
+title="abc_def")
+| これはリンクです。改行する場合は属性間のカンマなしでも大丈夫。
+出力される HTML
+<a href="foo/abc.html" title="abc_def">これはリンクです。</a><a href="foo/abc.html" title="abc_def">これはリンクです。</a><a href="foo/abc.html" title="abc_def">これはリンクです。改行する場合は属性間のカンマなしでも大丈夫。</a>
+id と class をつける
+CSS と同様の方法で id, class をつけることができます。タグを省略した場合には,  div タグになります。
+Jade の記述
+div#aaa abc
+#bbb abc
+p.ccc abc
+p(class="ddd") abc 
+出力される HTML
+<div id="aaa">abc</div>
+<div id="bbb">abc</div>
+<p class="ccc">abc</p>
+<p class="ddd">abc</p> 
+コメントアウト
+HTML のコメントアウトは // で書けます。
+Jade の記述
+// 
+この部分は
+コメントです。
+// 1行コメントです。
+出力される HTML (-P オプション)
+<!-- 
+この部分は
+コメントです。-->
+<!-- 1行コメントです。-->
+IE 条件分岐コメントアウト
+IE 限定でアレコレするための設定にはこれです。
+Jade の記述
+// if lt IE 9
+script src="html5.js"
+出力される HTML (-P オプション)
+<!--[if lt IE 9]>
+<script>src="html5.js"</script><![endif]-->
+Jade ファイルのみのコメント
+HTML には出力されないコメントの書き方です。//- と書きます。HTML コメントアウトの後に - をつけると覚えるといいでしょう。
+//- Jade のコメントです。
+DOCTYPE 宣言
+Jade のドキュメントタイプの宣言は Haml と Slim の両方の方法をあわせ持っています。ドキュメントタイプは !!! または doctype に続けて書きます。具体的で見てみましょう。詳細はドキュメントの Doctypes にあります。
+Jade の記述
+!!!            //- 未指定だと HTML5
+!!! 5          //- HTML5
+doctype        //- 未指定だと HTML5
+doctype 5      //- HTML5
+!!! strict     //- XHTML strict
+doctype strict //- XHTML strict
+出力される HTML (-P オプション)
+<!DOCTYPE html><!DOCTYPE html><!DOCTYPE html><!DOCTYPE 5 ><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+pre, textarea の記述
+そのままテキストをかけば改行されます。
+Jade の記述
+textarea
+| abc
+| def 
+出力される HTML
+<textarea>
+abc
+def 
+</textarea>
+エスケープ&改行空白保持
+元記事 と同様の結果を得るには, Slim と大体同じように次のような書き方になるようです。
+Jade の記述
+pre
+code
+= "<div>test1</div>\n<div>test2</div>"
+出力される HTML (-P オプション)
+<pre><code><div>test1</div>
+<div>test2</div></code></pre>
+= を使って文字列を出力しています。= はすべての出力をエスケープして出力してくれるので, このような結果が得られます。なお, エスケープしない場合には != を使います。
+変数を使う
+すでに出て来ましたが - の後には JavaScript のコードを書くことができます。Jade では = でエスケープ出力, != で非エスケープ出力, #{...} で変数出力ができます。
+Jade の記述
+- var foo = "baz"
+div(title="foo", class="abc#{foo}")
+| 属性や文章に baz を埋め込むこともできます。
+= foo
+p= foo
+出力される HTML
+<div title="foo" class="abcbaz">属性や文章に baz を埋め込むこともできます。baz
+</div>
+<p>baz</p>
+エスケープする場合とエスケープしない場合も確認してみましょう。前半は = を使ってエスケープ出力, 後半は != を使って非エスケープ出力です。
+Jade の記述
+- var str = '<script href="sample.js"></script>'
+= str 
+!= str
+出力される HTML (-P オプション)
+<script href="sample.js"></script><script href="sample.js"></script>
+変数を使った条件分岐
+if, else で表示する内容を変更できます。- の後に JavaScript の条件分岐を記述します。
+Jade の記述
+- var aaa = 333
+- if (aaa > 22)
+strong test1
+- else
+em test2
+出力される HTML
+<strong>test1</strong>
+スイッチ/ケース
+複数の候補に対して条件分岐する場合には, case を変えれば対応できます。
+Jade の記述
+div
+- var target = "b"
+case target 
+when "a"
+| aaa
+when "b"
+| bbb
+when 5
+| ccc
+出力される HTML (-P オプション)
+<div>bbb
+</div>
+連番をふる
+同じことをしようと考えれば, for を使って書きだすのかな? と思います。3から7までの連番を出力します。
+Jade の記述
+- for (var i = 3; i <= 7; i += 1)
+p(id="ee_#{i}") test#{i + 10}
+出力される HTML
+<p id="ee_3">test13</p>
+<p id="ee_4">test14</p>
+<p id="ee_5">test15</p>
+<p id="ee_6">test16</p>
+<p id="ee_7">test17</p>
+Less を使う
+Jade のファイルの中で Less を使うことができます。npm で Less をインストールしている必要があります。
+Jade の記述
+body
+:less
+@wid: 300px;
+@col: red;
+div#ggg {
+width: @wid;
+height: @wid/3;
+color: @col;
+text-align: justify;
+span.add {
+display: block;
+}
+}
+出力される HTML (-P オプション)
+<body><style type="text/css">div#ggg {
+width: 300px;
+height: 100px;
+color: #ff0000;
+text-align: justify;
+}
+div#ggg span.add {
+display: block;
+}
+</style>
+</body> 
+Less 以外にも, Markdown や Stylus を書き込むことも可能です。
+外部ファイルをインクルードする
+Jade はこのインクルード処理が簡単にできます。include を使って読み込むファイルを指定するだけです。sample.jade をインクルードする場合には次のように書きます。
+include sample
+すべてダブルクォートで出力する
+※できない
+そういったオプションは見当たりませんでした。
+おわり
+元記事になぞって 21 の tips を書いてみるシリーズでした。
+マークアッパー的 Jade 入門 21 の手引き | e2esound.com業務日誌

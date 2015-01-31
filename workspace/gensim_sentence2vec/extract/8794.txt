@@ -1,0 +1,35 @@
+  先月の記事では、序章として英訳を上達させる、つまりnativeらしい英語を身につけるにはどうしたら良いか、またそのための最も有用なツールであるインターネット検索(Google)をいかに活用していくか、といったことについてお話させていただきました。
+今月からは、本編として、英訳のときに気を付けるべきいくつかの事項について、個別に説明していきます。第1章となる今回のトピックは、意外に意識されていない、日本語と英語の語順の違いです。
+まず、以下の2つの例文を読んでみてください。
+(例1)In particular, a sustained-release nasal formulation is known to have many advantages, such as easiness of implementation and management as compared with immediate-release formulation, its greater convenience of use, and minimal serious adverse drug reactions. 
+(例2)If the adverse event is suspected, serious, and unexpected, the investigator must complete, in addition to the Adverse Event page in the case report form, a Suspected Unexpected Serious Adverse Reaction Reporting Form (hereinafter, SUSAR report) at the time the suspected, serious, and unexpected adverse event is suspected, within 1 working day in any case. 
+これらの例は日本語を英訳したものですが、時として、こうした修飾・被修飾関係の分りにくい訳文となることがあります。
+英語は、文型のハッキリとした言語であり、本来、長くとも構文的にはシンプルなものです。もし、訳文が入り組んだものとなっている場合、訳を日本語の表記順のままに行なっている可能性が考えられます。
+例2は、治験実施計画書に見られる次の文章を意図的に字面訳してみたものです。
+原文は、"因果関係の否定できない予期せぬ重篤な副作用がみられた場合、試験責任医師は、症例報告書の「有害事象」のページに加え、予期せぬ重篤な有害事象が疑われた時点でsuspected unexpected serious adverse reaction reporting form(以下、SUSAR reportと略す)を1業務日以内に完成させること。"というものでした。
+英語には、5文型に集約される厳格な表記順が存在し、S、V、O、Cの文要素とそれらを意味的に補完する修飾語句との区別が構造的にわかるようになっています。
+一方、日本語の表記順というものは、ルールがあるような、ないような、曖昧模糊としたものです。つまり、配置の自由度が高いのです。
+日本語は、助詞により区切られる意味の単位=フレーズから成っており、動詞が最後にくることを除き、文のどの位置にあっても、文そのものの成立を妨げるものではありません(勿論、誤解を招きやすいことは別の話しですが)。
+対応策としては、表記順のままに訳すのではなく、助詞または句読点を区切りとするフレーズに区分し、英語文型に再配置するようにします、次のように。
+(因果関係の否定できない)//(予期せぬ重篤な副作用がみられた場合)、
+(試験責任医師は)、
+(症例報告書の「有害事象」のページに加え)、
+(予期せぬ重篤な有害事象が疑われた時点で)
+(SUSAR reportを)
+(1業務日以内に)
+(完成させること。)
+これらを英語の5文型に当てはめます。
+主語S:(試験責任医師は)、 
+動詞V:(完成させること。)
+目的語O:(SUSAR reportを)
+目的語O:(症例報告書の // 「有害事象」の // ページに加え)、〔SUSAR reportと同列〕
+動詞"完成させる"の条件、あるいは目的語"report/ページ"の修飾語:(因果関係の否定できない)//(予期せぬ重篤な副作用がみられた場合)、
+動詞"完成させる"時期の補完:(予期せぬ重篤な有害事象が // 疑われた時点で)
+動詞"完成させる"時期:(1業務日以内に)
+では、その結果をふたつお示しします。ひとつは、原文に忠実、もひとつは、文内容の重要性=目的語を"SUSAR report/症例報告書"でなく"予期せぬ重篤な副作用"と翻案した場合です。
+(例3)The investigator will complete the SUSAR Report as well as the Adverse Event Form in the case report form within 1 working day (from the receipt of adverse reaction information) if any unexpected serious adverse reaction occurs for which a causal relationship to the study drug cannot be ruled out. 
+(例4)The investigator will record any unexpected serious adverse reactions for which a causal relationship to the study drug cannot be ruled out in the Adverse Event Form of the case report form and complete the SUSAR Report within 1 working day of receiving the necessary supportive information.
+これで構文的に分りやすくなったと思います。
+翻訳だから原稿を大切にしたいという気持ちは分ります。しかし、とらわれすぎるとnative表現からは離れることになります。翻訳とは、その意味するところを最も的確に表現する他言語に置き換えることであり、辞書ベースの単語置換と学校文法のみにて字面訳することではありません。
+日本語と英語の表記順には違いあることを理解いただき、表出順のままに訳さないことをお奨めします。
+第2回:日本語と英語の語順 - たくみの匠

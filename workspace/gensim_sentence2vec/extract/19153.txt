@@ -1,0 +1,533 @@
+
+VHDLの構造化プログラミング手法
+−コンポーネントを用いたタイマー回路の設計−
+ver.2 (2007.5.7)
+信州大学工学部  井澤裕司
+1.はじめに 
+本章では,「
+VHDL
+」 の「
+構造化プログラミング手法
+」 として,「
+コンポーネント
+」 を用いた
+回路記述方法について,解説します.
+「
+回路規模
+」 が大きくなると,「
+VHDLのソースコード
+」 が肥大化し,「
+全体の構造
+」 が把握し難く,
+「
+拡張性
+」 ,「
+汎用性
+」 に欠ける記述となってしまいます.
+これを避けるため,目的とする回路の機能や構造を分析して,単純ながら 「
+汎用性
+」 のある 「
+部品
+」 を,
+「
+コンポーネント
+」 として定義し,
+これを「
+階層的
+」 に組み合わせる「
+構造化プログラミング
+」 が用いられます.
+本授業の目的である 「
+CPUの設計
+」 にも,この 「
+構造化プログラミング
+」を用いていますので,
+使いこなせるよう,しっかり学習して下さい.
+2.タイマーの回路構成 
+ここでは,例として 2つの 「
+7セグメントLED
+」を用いた「
+タイマー回路
+」を設計します.
+具体的には,「
+カウンタ
+」を用いて「
+24MHzのクロック
+」を分周し,ほぼ「
+1Hzのクロック
+」を生成します.
+次に,このクロックを2つの 「
+10進カウンタ
+」 に入力して 「
+00
+」から「
+99
+」 までの 「
+2桁の数字
+」 を,
+2つの「
+7セグメントLED
+」に表示する回路を設計します.
+なお,今回は「
+分周カウンタ
+」 と2つの 「
+10進カウンタ
+」 をまとめて,1つの「
+部品
+」すなわち,
+「
+コンポーネント
+」 として記述します.
+また,「
+0000
+」から「
+1001
+」 までの 「
+2進化10進符号
+」を入力とし,「
+7セグメントLED
+」を制御する
+「
+デコーダ回路
+」も,
+「
+コンポーネント
+」 として記述します.
+以下に,設計する 「
+タイマー回路
+」 の回路構成を示します.
+3. コンポーネントの仕様
+この回路は,「
+2種類のコンポーネント
+」から構成されています.
+(1) 
+カウンタ ( counter )
+コンポーネント名
+counter
+入 力
+クロック CLK
+出 力
+① 2進化10進符号(上位) CNT_TMP_H  ("0000"〜"1001")
+② 2進化10進符号(下位) CNT_TMP_L  ("0000"〜"1001")
+ここで,「
+2進化10進符号 」 とは,「
+10進数
+」の 「
+0〜9
+」 を 「
+2進数
+」 の 
+「
+"0000"
+」 〜 「
+"1001"
+」 で表したものです.
+(2) 
+デコーダ ( decoder )
+コンポーネント名
+decoder
+入 力
+2進化10進符号 CNT_TMP_X  ("0000"〜"1001")
+出 力
+7セグメントLED駆動信号 LED_X  ("abcdefg1")
+なお,「
+7セグメントLED 」 には,「
+a
+」 から 「
+g
+」 まで,計7つの 「
+セグメント
+」 があり,
+これを 「
+7 bit
+」 の信号「
+LED_X
+」 で,駆動します.
+ここで「
+X
+」は,「
+H
+」もしくは「
+L
+」を表しています.
+なお,信号の「
+a
+」が上位(MSB)であり,「
+負論理
+」,すなわち ,「
+レベル L(0)
+」 が 「
+オン
+」,
+「
+レベル H(1)
+」 が 「
+オフ
+」になっています.
+4. VHDLの記述法
+上で述べた 「
+コンポーネントの仕様 」 に従って,具体的な「
+VHDL
+」 を記述します.
+はじめに,「 
+counter
+」 ,次に 「
+decoder
+」 の 「
+VHDL
+」を記述します.
+最後に,「
+timer
+」 本体を記述し,その中で上記回路を「
+コンポーネント
+」 として呼び出します.
+「 
+コンポーネント
+」 を呼び出す場合は,
+本体の先頭に,例えば 「
+component counter
+」 〜 「
+end component;
+」のような記述が必要となります.
+これらは「 
+counter
+」 本体の「
+entity counter is
+」 〜 「
+end counter;
+」をコピーして編集すればよいでしょう.
+「 
+timer
+」 本体で,1つの「
+counter
+」 と2つの「
+decoder
+」を,それぞれ「
+C1
+」,「
+C2
+」,「
+C3
+」のように定義し,
+「
+入出力信号
+」と「
+signal文
+」で定義した「
+内部信号
+」を用いて,それらの接続関係を記述します.
+なお,「
+counter
+」 や 「
+decoder
+」 の 「
+VHDL
+」を「
+別ファイル
+」に分けて記述することもできます.
+その場合は,ファイルを同じ「
+プロジェクトフォルダ
+」 の中に保存して,「
+プロジェクト管理のコマンド
+」 を用い,
+「
+同じプロジェクト
+」 として登録する必要があります.
+例えば 「
+QuartusⅡ
+」の場合は,メニューの「
+Project
+」 , 「
+Add/Remove Files in Project
+」の
+のコマンドを使用します.
+timer.vhd
+-- timer.vhd 
+-- Y.Izawa
+-- H19.5.1
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+entity counter is
+port (
+CLK
+:
+in
+std_logic;
+CNT_L
+:
+out
+std_logic_vector(3 downto 0);
+CNT_H
+:
+out
+std_logic_vector(3 downto 0)
+);
+end counter;
+architecture
+RTL 
+of
+counter 
+is
+signal
+C_TIMER
+:
+std_logic_vector (23 downto 0);
+signal
+C_TMP_L
+:
+std_logic_vector (3 downto 0);
+signal
+C_TMP_H
+:
+std_logic_vector (3 downto 0);
+begin
+process(CLK)
+begin
+if 
+(CLK'event 
+and
+CLK = '1') 
+then
+if C_TIMER = "111111111111111111111111" then
+C_TIMER <= "000000000000000000000000";
+if C_TMP_L = "1001" then
+C_TMP_L <= "0000";
+if C_TMP_H = "1001" then
+C_TMP_H <= "0000";
+else
+C_TMP_H <= C_TMP_H + 1;
+end if;
+else
+C_TMP_L <= C_TMP_L + 1;
+end if;
+else
+C_TIMER <= C_TIMER + 1;
+end if;
+end if;
+end process;
+CNT_L <= C_TMP_L;
+CNT_H <= C_TMP_H;
+end RTL;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+entity decoder is
+port (
+CNT
+:
+in
+std_logic_vector(3 downto 0);
+LED
+:
+out
+std_logic_vector(7 downto 0)
+);
+end decoder;
+architecture RTL of decoder is
+begin
+process(CNT)
+begin
+case CNT is
+when "0000" => LED <= "00000011";
+-- 0
+when "0001" => LED <= "10011111";
+-- 1
+when "0010" => LED <= "00100101";
+-- 2
+when "0011" => LED <= "00001101";
+-- 3
+when "0100" => LED <= "10011001";
+-- 4
+when "0101" => LED <= "01001001";
+-- 5
+when "0110" => LED <= "01000001";
+-- 6
+when "0111" => LED <= "00011111";
+-- 7
+when "1000" => LED <= "00000001";
+-- 8
+when "1001" => LED <= "00001001";
+-- 9
+when others => LED <= "11111111";
+end
+case;
+end process;
+end RTL;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+entity timer is
+port
+(
+CLK
+:
+in
+std_logic;
+LED_L
+:
+out
+std_logic_vector(7 downto 0);
+LED_H
+:
+out
+std_logic_vector(7 downto 0)
+);
+end timer;
+architecture RTL of timer is
+component counter
+port
+(
+CLK
+:
+in
+std_logic;
+CNT_L
+:
+out
+std_logic_vector(3 downto 0);
+CNT_H
+:
+out
+std_logic_vector(3 downto 0)
+);
+end component;
+component decoder
+port
+(
+CNT
+:
+in
+std_logic_vector(3 downto 0);
+LED
+:
+out
+std_logic_vector(7 downto 0)
+);
+end component;
+signal
+CNT_TMP_L
+:
+std_logic_vector(3 downto 0);
+signal
+CNT_TMP_H
+:
+std_logic_vector(3 downto 0);
+begin
+C1
+:
+counter
+port
+map
+(CLK, CNT_TMP_L, CNT_TMP_H);
+C2
+:
+decoder
+port
+map
+(CNT_TMP_L, LED_L);
+C3
+:
+decoder
+port
+map
+(CNT_TMP_H, LED_H);
+end RTL;
+5. FPGAへの実装
+最後に,設計した回路を下のような「
+FPGAの評価ボード
+」 へ実装して,動作の確認を行います.
+このボードは「
+CQ出版社
+」 の「
+FLEX10KE評価キット
+」 という機種で,
+約「
+1700
+」 の「
+ロジック・エレメント
+」 が使用できます.
+「
+QuartusⅡ
+」 のメニュー 「
+Assignments
+」 から,使用する「
+FPGAデバイス
+」 を選択します.
+「
+Family
+」 には 「
+FLEX10KE
+」, 「
+Device
+」 には 「
+EPF10K30EQC208-3
+」 を設定して下さい.
+次に,メニューの 「
+Assignments
+」 から 「
+Pins
+」 を選択して,「
+入出力ピンの設定
+」 を行います.
+上で示した「
+タイマー回路
+」 の「
+回路構成
+」 を参照して,
+使用する「
+ピン番号
+」 を入力します.
+なお,「
+茶色の数字
+」が「
+ピン番号
+」 を表しています.
+これらの詳細については,「
+VHDL開発ツール(QuartusⅡ)の使用法
+」 の第7章
+「
+FPGAデバイスの設定と入出力ピンの配置
+」 を参照して下さい.
+想定した「
+タイマーの動作
+」 は確認できましたでしょうか?
+もし,「
+誤動作
+」 しているようであれば,「
+ピン番号
+」等を,チェックして下さい.
+それでも,「
+誤動作
+」の原因がつかめない場合は,一旦「
+シミュレーション
+」に戻ることをお勧めします.
+その場合は,「
+カウンタの周期
+」を短くするよう,「
+VHDL
+」を書き換える必要がありますので,
+注意が必要です.
+6. まとめ
+本章では,「
+VHDL
+」 の「
+構造化プログラミング手法
+」 として,「
+コンポーネント
+」 を用いた
+回路記述方法を紹介しました.
+「
+CPUの設計
+」 にも,この 「
+構造化プログラミング
+」を用いていますので,
+使いこなせるよう,努力して下さい.
+「
+疑問点
+」 や「
+不明な点
+」 ,「
+解りにくい箇所
+」 がありましたら,メール等でご連絡いただければ幸いです.
+VHDL(component)

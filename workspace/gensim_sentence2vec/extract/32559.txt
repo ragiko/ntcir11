@@ -1,0 +1,88 @@
+
+先日書いた「Ustreamってどこまで耐えられるの?」に間違いがあることがわかったので、訂正です。
+(via http://twitter.com/viperbjpn/status/9403298384)
+geekなページにustのCDNがakamaiってかいてあるけど、見ながらwiresharkしてたら、ustream.flash.internapcdn.net ってのがかえってきてます・・・・ internapのサービスのようですね・・・・ http://ow.ly/i/xJt
+私の観測出来る範囲からは実際の構成や契約に関しての詳細がわからず全ては推測なのですが、恐らく私が先日書いた文章は間違いであると思います。
+UstreamはAkamaiの顧客であるとは思いますが、全てのストリーミングをAkamaiサービスで実現しているわけではなさそうです。
+そのため、私の以下の発言は虚偽であることがわかりました。
+さて、では肝心のUstream.tvのネットワーク構成はどうなっているのでしょうか?私の個人的な推測ではありますが、Ustream.tvのネットワーク構成は一言で説明できます。
+「Akamai。以上」 
+一言で言い表せません。。。
+申し訳ありませんでした。。。
+もう一度、dig結果を見てみます。
+> dig ustream.tv
+; <<>> DiG 9.4.3-P1 <<>> ustream.tv
+;; global options:  printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 52276
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+;; QUESTION SECTION:
+;ustream.tv.			IN	A
+;; ANSWER SECTION:
+ustream.tv.		3350	IN	A	216.52.240.133
+;; AUTHORITY SECTION:
+ustream.tv.		172799	IN	NS	ns1-156.akam.net.
+ustream.tv.		172799	IN	NS	eur7.akam.net.
+ustream.tv.		172799	IN	NS	usw1.akam.net.
+ustream.tv.		172799	IN	NS	usw7.akam.net.
+ustream.tv.		172799	IN	NS	asia9.akam.net.
+;; ADDITIONAL SECTION:
+eur7.akam.net.		89999	IN	A	62.41.78.200
+usw1.akam.net.		89999	IN	A	96.17.144.195
+usw7.akam.net.		89999	IN	A	69.22.138.201
+asia9.akam.net.		89999	IN	A	220.73.220.2
+ns1-156.akam.net.	89999	IN	A	193.108.91.156
+;; Query time: 5 msec
+;; SERVER: 192.168.89.1#53(192.168.89.1)
+;; WHEN: Mon Feb 22 10:22:14 2010
+;; MSG SIZE  rcvd: 44
+で、さらにARIN Database Searchを「216.52.240.133」で行うと、以下のように表示されます。
+http://ws.arin.net/whois/?queryinput=216.52.240.133
+Internap Network Services Corporation PNAP-8-98 (NET-216-52-0-0-1) 
+216.52.0.0 - 216.52.255.255
+Ustream.tv INAP-LAX-USTREAMTV-15765 (NET-216-52-240-128-1) 
+216.52.240.128 - 216.52.240.191
+さらに、次のように「INAP-LAX-USTREAMTV-15765」で検索すると以下のように表示されます。
+CustName:   Ustream.tv
+Address:    460 S. California Ave, Ste 303
+City:       Palo Alto
+StateProv:  CA
+PostalCode: 94306
+Country:    US
+RegDate:    2007-08-09
+Updated:    2007-08-09
+NetRange:   216.52.240.128 - 216.52.240.191 
+CIDR:       216.52.240.128/26 
+NetName:    INAP-LAX-USTREAMTV-15765
+NetHandle:  NET-216-52-240-128-1
+Parent:     NET-216-52-0-0-1
+NetType:    Reassigned
+Comment:    
+RegDate:    2007-08-09
+Updated:    2007-08-09
+RTechHandle: INO3-ARIN
+RTechName:   InterNap Network Operations Center 
+RTechPhone:  +1-877-843-4662
+RTechEmail:  noc@internap.com 
+OrgAbuseHandle: IAC3-ARIN
+OrgAbuseName:   Internap Abuse Contact 
+OrgAbusePhone:  +1-206-256-9500
+OrgAbuseEmail:  abuse@internap.com
+OrgTechHandle: INO3-ARIN
+OrgTechName:   InterNap Network Operations Center 
+OrgTechPhone:  +1-877-843-4662
+OrgTechEmail:  noc@internap.com
+Internapと書いてあります。
+先日、あと一歩深く調べておくべきであったと反省しています。
+Internapはデータセンター事業を行うとともに、Flashビデオストリーミングを行えるCDNサービスも提供しています。
+http://www.internap.com/
+反省
+CDNの使い分けというか、CDS(Contents Delivery Service)間の連携や複数サービスをハイブリッドに使う方法などに関して勉強しないとなぁと思った今日この頃です。
+あー、やっぱり色々勉強が足りてない。。。
+いつも、半分嘘な内容をブログでまき散らしてしまってすみません。。。
+間違いを書いておいて、こうやって言うのは恐れ多い気がするのですが、ブログで書いて公開して間違いを指摘して頂けるのって次の勉強の種になったり、調査方法や知識を自分の中で増やす良いキッカケにはなっています。
+ありがとうございます。
+追記
+wiresharkを見ていると、Limelight Networksも使っているようです。
+番組毎にCDNを切り替えているようなので、もしかしたら他にも色々とCDN事業者を使っているかも知れません。
+Geekなぺーじ:間違い訂正:Ustreamのネットワーク構成

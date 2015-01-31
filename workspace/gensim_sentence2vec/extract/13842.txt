@@ -1,0 +1,9 @@
+目的  &dagger;
+このページでは、音声認識技術として
+Microsoft Speech SDK 5.1 を扱う C++ プログラムの書き方について
+説明することを目的としている。
+Microsoft Speech SDK 5.1 は、
+Microsoft Speech APIを介して使用可能な音声認識エンジンである。
+これを使うと音声認識に関する詳しい知識を持たなくても、
+簡単に音声認識を行える。
+FrontPage - Ownway.Info(Speech)

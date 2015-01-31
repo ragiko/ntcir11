@@ -1,0 +1,3 @@
+センサネットワークでは,センサノードの処理能力,電力容量,通信資源などが限られる一方で,収集されたデータには高い信頼性が求めらる.また,ネットワークには長期運用のために省電力化が求められる.こうした要求を満たすために必要なキーワードが協調と融合である.本稿では,無線分散ネットワークとしてのセンサネットワークについて,協調と融合により信頼性の高い通信を実現する相関を利用した符号化・復号と分散ノード間協力通信を紹介する.
+In wireless distributed sensor networks, high reliability of collected data and long-term operation of the network are required while distributed sensor nodes have limited computational power, energy, communication resources and so on. Cooperation and fusion are one of the key techniques for these requirements. Some applications of cooperation and fusion such as distributed coding and joint decoding for correlated sources and distributed cooperative transmission which enable reliable data transfer are introduced in this report.
+

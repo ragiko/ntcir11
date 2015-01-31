@@ -1,0 +1,55 @@
+普通の機械学習は,訓練データをモデルに食わせてパラメタを学習します.学習済みのモデルは,もう一度モデル組み直しをしない限り変化しません.これに対してオンライン学習器は,毎試行毎に得られたサンプルとその判定結果を用いてモデルを更新します.そのため環境の変化に追従することができるという特徴があります.
+PassiveAggressive
+Gmailの優先トレイで使っているということでも有名なこのアルゴリズム,基本的には単なる線形識別器です.というより,だいたいのオンライン学習器は線形で,非線形のモデルはあまりみかけません.正確な理由は私自身もよくわかってないですが,オンライン学習器の場合,逐次学習のため高速処理が求められがちというのと,環境変化に適応してパラメタが変化するという意味で,無理やり非線形モデルにする必然性がそんなに高くない,といったあたりが理由なのかなと思っています*1.
+モデル
+数式的には,割とシンプルで以下のとおりです.を素性ベクトル,を識別変数(今回の例だと,1または-1の2値になります).そしてが時刻における重みベクトルです.
+式をすべて並べてみるとちょっとごちゃっとしてしまいますが,基本的には一番上の式にあるように,時刻の重みベクトルをを用いて学習して,次の重みを決定しているだけです.線形識別器ですので,この重みベクトルが学習できればモデルの学習が完了するというわけです.の中身をみると,第2式のようになっています.分母のは単なる正規化項なので,実際は分子だけをみてあげれば十分です.この分子は第3式にあるように,正解だったら何もせず,間違いのときは当該サンプルを正解にするように識別直線を移動する,という損失関数です.つまり,PAは基本的に線形分離可能なデータを想定したモデルだといえます*2.
+ソフトマージンの導入による拡張
+とはいえ,完璧に線形分離可能なデータなんて,実際にはほとんど存在しないものなので,実用上はもう少し柔軟な仕組みにする必要があります.このPAも,SVMみたいな形でソフトマージンを用いた拡張を行うことができます.定数の与え方によって,以下の2種類のモデルがあります.
+どちらもの与え方が違うだけで,しようとしていることは同じです.このあたりの詳しい説明は,echizen_tmさんの説明がわかりやすいので,そちらを参照いただければと思います.また数式的な部分をきちんと追うのであれば,jetbeadさんのまとめがわかりやすいです*3.
+実装
+さて,ようやく実装に移ります.といっても,モデル式自体は非常にシンプルで,全部で27行しかありません.
+#!/usr/bin/env python
+#-*-coding:utf-8-*-
+import numpy as np
+class PassiveAggressive:
+def __init__(self, feat_dim):
+self.t = 0
+self.w = np.ones(feat_dim)
+def _get_eta(self, l, feats):
+return l/np.dot(feats, feats)
+def train(self, y_vec, feats_vec):
+for i in range(len(y_vec)):
+self.update(y_vec[i], feats_vec[i,])
+def predict(self, feats):
+return np.dot(self.w, feats)
+def update(self, y, feats):
+l = max([0, 1-y*np.dot(self.w, feats)])
+eta = self._get_eta(l, feats)
+self.w += eta*y*feats
+self.t += 1
+return 1 if l == 0 else 0
+PA-ⅠとPA-Ⅱ,いずれもこのクラスを継承して損失関数部分をちょっと変えただけです.その分初期化時にCを与えてあげる必要が出てきます*4.
+#!/usr/bin/env python
+#-*-coding:utf-8-*-
+import numpy as np
+from passive_aggressive import PassiveAggressive
+class PassiveAggressive1(PassiveAggressive):
+def __init__(self, feat_dim, c=0.1):
+self.c = c
+PassiveAggressive.__init__(self, feat_dim)
+def _get_eta(self, l, feats):
+return min(self.c, l/np.dot(feats, feats))
+#!/usr/bin/env python
+#-*-coding:utf-8-*-
+import numpy as np
+from passive_aggressive import PassiveAggressive
+class PassiveAggressive2(PassiveAggressive):
+def __init__(self, feat_dim, c=0.1):
+self.c = c
+PassiveAggressive.__init__(self, feat_dim)
+def _get_eta(self, l, feats):
+return l/(np.dot(feats, feats)+1/(2*self.c))
+検証
+ということで,実際にモデル性能を確認してみましょう.使用したデータは,libsvmのテストデータから,a1aの訓練データとテストデータを持ってきて使いました*5.データの素性ベクトルはは123個の要素を持ちます.訓練データには30956個,テストデータには1605個のサンプルがあります*6.まずは訓練データを用いて,オンライン学習をさせていった結果がこちらです.割とすぐに収束してしまい,そんなに動きがありません.PAとPA-ⅠはどちらもAccuracyが60%程度,その一方でPA-Ⅱは40%台とだいぶ低いです.もっと差がつくかと思っていたのですが,かなり意外な結果です.ぐぬぬ...気を取り直して,オンライン学習で求めたモデルを元に,テストデータで(今度はオンライン学習ではなく単なる線形識別器として)識別をしてみましょう.結果は以下のとおり,今度はPA-ⅠとPA-Ⅱの両方が,ほぼ同じ精度で80%越えの識別率を出しました.これに対して,PAのAccuracyは70%程度と大きく差がつきました.このあたりは,ソフトマージン化することで汎化性能を高めたモデルの方が,ベースのモデルよりも新規データでの予測率が高いという,ごく当たり前の結果なのかなぁと思います.とはいえ元のオンライン学習でPA-Ⅱの結果がだいぶ悪いのはよくわからないですが...
+実装して理解するオンライン学習器(1) - PassiveAggresive - About connecting the dots.

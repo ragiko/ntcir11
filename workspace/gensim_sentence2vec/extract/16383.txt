@@ -1,0 +1,366 @@
+
+Shigeki Sagayama's Publication List: Technical Reports
+学会研究報告 (Technical Reports)
+(発表時期逆順。2000年1月現在)
+[Kawamoto2000SLP07] 
+川本 真一, 中井 満, 下平 博, 嵯峨山 茂樹, ``音声対話システムにおける擬
+人化エージェントの挙動の数理的モデル,'' 情報処理学会研究報告 音声言語
+情報処理研究会, 2000-SLP-32-13, pp. 63-68, Jul 2000.
+[Sagayama2000PRMU06] 
+嵯峨山 茂樹, 中井 満, 下平 博, ``ストロークHMMに基づくオンライン手書き
+文字認識方式,'' 信学技報, PRMU2000-35, pp. 1-8, Jun 2000.
+[Nakai2000PRMU06] 
+中井 満, 嵯峨山 茂樹, 秋良 直人, 小場 久雄, 下平 博, ``ストロークHMMに
+よるオンライン手書き文字認識の性能評価,'' 信学技報, PRMU2000-36,
+pp.9-16, Jun 2000.
+[Katou2000SP06] 
+加藤 裕, 赤江 俊彦, 中井 満, 下平 博, 嵯峨山 茂樹, ``ヤコビ行列を用い
+た雑音環境への適応法の拡張,'' 信学技報,
+SP2000-15, pp. 39-46, Jun 2000.
+[Kawahara2000SLP05] 
+河原 達也, 李 晃伸, 小林 哲則, 武田 一哉, 峯松 信明, 嵯峨山 茂樹, 伊藤 
+克亘, 伊藤 彰則 , 山本 幹雄 , 山田 篤 , 宇津呂 武仁 , 鹿野 清宏, ``日
+本語ディクテーション基本ソフトウェア(99年度版)の性能評価,'' FJK2000,
+Jun 2000.
+[Kawakami2000MUS02] 
+川上隆, 中井満, 下平博, 嵯峨山茂樹,
+``隠れマルコフモデルを用いた旋律への自動和声付け,''
+平成11年情報処理学会音楽情報科学研究会,
+99-MUS-34, pp.59-66, Feb. 2000.
+[Nakai99PRMU12]
+中井浩一, 中井満, 下平博, 嵯峨山茂樹,
+``Support Vectore Machine による時系列パターンの認識,''
+電子情報通信学会技術研究報告, PRMU 99-165-176 pp. 15-20, Dec.1999. 
+[Matsuda99SP12] 
+松田繁樹, 中井満, 下平博, 嵯峨山茂樹,
+``状態遷移に順序関係を持つ非同期遷移型HMM,''
+電子情報通信学会技術研究報告, SP99-98 pp.31-36, Dec. 1999. 
+[Saito99MUS12] 
+齋藤直樹, 中井満, 下平博, 嵯峨山茂樹,
+``隠れマルコフモデルによる音楽演奏からの音符列の推定,''
+平成11年情報処理学会音楽情報科学研究会, 99-MUS-33, pp.27-32, Dec. 1999. 
+[Matsuda99SLP07]
+松田繁樹, 中井満, 下平博, 嵯峨山茂樹,
+"特徴量間で状態遷移が非同期なHMM," 情報処理学会研究報告 99-SLP-27-4,
+July 1999.
+[Noda97SP01] 
+野田喜昭, 松永昭一, 嵯峨山茂樹, ``単語グラフを用いた大語彙連続音声認識
+における近似演算手法の検討,'' 電子情報通信学会技術研究報告, SP96-102,
+1997.
+(音声研究会)
+[Yamada96SP12] 
+山田智一, 松永昭一, 嵯峨山茂樹, ``効率的な仮説のマージ機能を持つ LR パー
+ザ制御による音声認識'' 電子情報通信学会技術研究報告, SP96-85,
+Dec. 1996.
+(音声研究会、言語理解とコミュニケーション研究会)
+[Yamaguchi96SP12] 
+山口 義和, 高橋 淳一, 高橋 敏, 嵯峨山茂樹, ``Taylor展開による音響モデ
+ルの適応,'' 電子情報通信学会技術研究報告, SP96-78,
+Dec. 1996.
+(音声研究会、言語理解とコミュニケーション研究会)
+[Kitai96SIGSLP01] 
+北井幹雄, 山田智一, 塚田元, 嵯峨山茂樹, ``音声認識合成による応用構築の
+容易な電話対話システム,'' 情報処理学会 研究報告 (音声言語情報処理研究
+会) SLP12-14, Jul. 1996.
+[TakahashiJ95SP12] 
+高橋 淳一, 嵯峨山 茂樹, ``識別誤り最小化を用いた少量データのための効果
+的なHMM学習法,'' 電子情報通信学会技術研究報告, SP95-103, pp. 69--76,
+Dec. 1995.
+[TakahashiS95SP12] 
+高橋 敏, 嵯峨山 茂樹, ``学習移動ベクトル間に相関を持つ音響モデルの共有
+構造,'' 電子情報通信学会技術研究報告, SP95-102, pp. 61--68, Dec.
+1995.
+Satoshi Takahashi, Shigeki Sagayama, ``Teid Structure for Acoustic
+Models Based on Transfer Vector Correlations,'' IEICE technical
+Report, SP95-102, pp. 61--68, Dec 1995.
+[Homma95SP10] 
+本間 茂, 高橋淳一, 嵯峨山 茂樹, ``バッチディクテーションのための繰り返
+し教師なし話者適応,'' 電子情報通信学会研究技術報告, SP95-70,
+pp. 33--40, Oct. 1995.
+[Arai95SIGSLP07] 
+荒井 和博, 吉岡 理, 管村 昇, 嵯峨山 茂樹, ``マルチモーダルインタフェー
+スを持つ住所入力システムの評価実験,'' 情報処理学会研究報告, 95-SLP-7,
+Vol. 95, No. 73, pp. 107--112, Jul. 1995.
+Kazuhiro Arai, Shigeki Sagayama, ``,'' IPS Technical Report, Vol. 95,
+No. 73, pp. 107--112, July 1995.
+[Sagayama95SIGSLP07] 
+嵯峨山 茂樹, ``音声認識によるマルチモーダルインタラクションへの視点,'' 
+情報処理学会研究報告, 95-SLP-7, Vol. 95, No. 73, pp. 101--102,
+Jul. 1995.
+Shigeki Sagayama, ``,'' IPS Technical Report, Vol. 95, No. 73,
+pp. 101--102, July 1995.
+[Arai95SIGSLP02] 
+荒井 和博, 吉岡 理, 嵯峨山 茂樹, 山田 智一, 野田 喜昭, 井本 貴之, 管村 
+昇, ``音声認識機能を持つ住所入力システム,'' 情報処理学会 研究技術報告,
+SIG-SLP94-5, pp. 69--76, Feb. 1995.
+[Yamada95SIGSLP02] 
+山田 智一, 野田 喜昭, 井本 貴之, 嵯峨山 茂樹, ``実時間動作を考慮した音
+声認識サーバとその応用,'' 情報処理学会 研究技術報告, SIG-SLP94-5,
+pp. 39--46, Feb. 1995.
+[Takahashi94SP12b] 
+高橋 淳一, 嵯峨山 茂樹, ``最大事後確率推定と移動ベクトル場平滑化の組合
+せによる逐次話者・回線適応,'' 電子情報通信学会研究技術報告, SP94-74,
+pp. 33--40, Dec. 1994.
+[Takahashi94SP12a] 
+高橋 敏, 嵯峨山 茂樹, ``4階層共有構造の音素HMM,''電子情報通信学会研究
+技術報告, SP94-73, pp. 25--32, Dec. 1994.
+Satoshi Takahashi, Shigeki Sagayama, ``Phoneme HMM with Four-Level
+Tied-Structure,'' SP94-73, pp. 25--32, Dec 1994.
+[Noda94SP06] 
+野田 喜昭, 嵯峨山 茂樹, ``前向き尤度を用いたA*ビーム探索によるHMM-LR音
+声認識,'' 電子情報通信学会研究技術報告, SP94-23, pp. 1--7, Jun. 1994.
+Yoshiaki Noda, Shigekisagayama, ``An A* Beam Search Algorithm
+Utilizing Forward Likelihood for HMM-LR Speech Recognition,''
+Technical Report of IEICE, SP94-23, pp. 1--7, June 1994.
+[Sagayama94IPS05] 
+嵯峨山 茂樹, ``なぜ音声認識は使われないか・どうすれば使われるか?'' 情
+報処理学会研究報告, 94-SLP-1, Vol. 94, No. 40, pp. 23-30, May
+1994.
+Shigeki Sagayama, ``Why Is Speech Recognition Not Widely Used ? How
+Can It be Used More Often ?,'' IPS Technical Report, Vol. 94, No. 40,
+pp. 23-30, 1994.
+[Miyazawa93] 
+宮沢康永, 鷹見淳一, 松永昭一, 嵯峨山茂樹, ``全音素エルゴディック隠れマ
+ルコフ網を用いた教師なし話者適応方式,'' 電子情報通信学会研究技術報告,
+SP93-134, 1994.
+[Kosaka93SP12] 
+小坂 哲夫, 松永 昭一, 嵯峨山 茂樹, ``話者適応のための木構造話者クラス
+タリング,'' 電子情報通信学会研究技術報告, SP93-110, pp. 49-54,
+Dec. 1993.
+[Takami93SP08] 
+鷹見 淳一, 嵯峨山 茂樹, ``隠れマルコフ網のための話者適応法,'' 電子情報
+通信学会研究技術報告, SP93-50, pp. 9--16,
+Aug. 1993.
+[Isotani93SP06] 
+磯谷 亮輔, 嵯峨山 茂樹, ``自立語と付属語の連鎖統計モデルを用いた音声認
+識のための候補選択,'' 電子情報通信学会研究技術報告, SP93-33, pp.73-78
+Jun. 1993.
+R. Isotani, S. Sagayama, ``Phrase Disambiguation for Speech
+recognition Using Content-Word $N$-grams and Particle $N$-grams,''
+IEICE Tech. Rep., SP93-33, pp. 73-78, Jun 1993.
+[Yato93SP06] 
+谷戸 文廣, 竹澤 寿幸, 嵯峨山 茂樹, 鷹見 淳一, Harald Singer, 浦谷 則好, 
+森元 逞, 榑松 明, ``自動翻訳電話国際共同実験,'' 電子情報通信学会研究技
+術報告, SP93-23, pp.73-80 (1993.06).
+F. Yato, T. Takezawa, S. Sagayama, J. Takami, H. Singer, N. Uratani,
+T. Morimoto, A. Kurematsu, ``International Joint Experiment toward
+Interpreting Telephony,'' IEICE Tech. Rep., SP93-23, pp. 73-80, Jun.
+1993.
+[Murakami93SIG02] 
+村上 仁一, 山本 寛樹, 嵯峨山 茂樹, ``Ergodic HMMによる確率つきネットワー
+ク文法の獲得の可能性について,'' 人工知能学会研究会資料,
+SIG-SLUD-9204-3, Mar. 1993.
+[Yamaguchi93IEICE01] 
+山口 耕市, 嵯峨山 茂樹, ``ニューラルネットワークによる学習可能な探索手
+法を用いた連続音声認識,'' 電子情報通信学会技術報告, SP92-123,
+pp. 1--7, Jan. 1993.
+Kouichi Yamaguchi and Shigeki Sagayama, ``A Trainable Search Strategy
+for Continuous Speech Recognition Using a Neural Network,'' IEICE,
+SP92-123, pp. 1--7, (1993.1).
+[Nagai93SP01] 
+永井 明人, 山口 耕市, 鷹見 淳一, 大倉 計美, 小坂 哲夫, 福沢圭一, 加藤 
+喜永, Harald Singer, 村上 仁一, 杉山 雅英, 嵯峨山 茂樹, 保坂順子, 森元 
+逞, 北 研二, 服部 浩明, 小森 康弘, 沢井 秀文, 花沢 利行, 中村 哲, 甲斐 
+充彦, 南 泰浩, 川端 豪, 鹿野 清宏, 榑松 明, ``ATRにおける連続音声認識
+システム`ATREUS'の諸方式と性能,'' 電子情報通信学会技術報告, SP92-122,
+pp. 51--58, Jan. 1993.
+[Willems92SP12] 
+エドワード・ウィレムス, 小坂 哲夫, 鷹見 淳一, 嵯峨山 茂樹, ``音声認識
+のための隠れマルコフ網の動的話者適応法,'' 電子情報通信学会技術報告,
+SP92-102, pp. 57--64, Dec. 1992.
+E. Willems, T. Kosaka, J. Takami and S. Sagayama, ``A Dynamic Approach
+to Speaker Adaptation of Hidden Markov Networks for Speech
+Recognition,'' IECIE Technical Report, SP92-102, pp. 57--64,
+Dec. 1992.
+[Singer92SP10] 
+Harald Singer, 嵯峨山 茂樹, ``行列パーザとそのHMM音声認識への応用,'' 
+電子情報通信学会技術報告, SP92-76, pp. 21-26, Oct. 1992.
+H. Singer, S.Sagayama, ``Matrix Parser and its Application to
+HMM-based Speech Recognition,'' IEICE Technical Report, SP92-76,
+pp. 21-26, (1992.10).
+[Miyazawa92SP10] 
+宮沢 康永, 大倉 計美, 嵯峨山 茂樹, ``全音素エルゴディック HMM による教
+師なし話者適応,'' 電子情報通信学会技術研究報告, SP92-75, pp. 15--20,
+Oct. 1992.
+Y. Miyazawa, K. Ohkura and S. Sagayama, ``Unsupervised Speaker
+Adaptation Using All-phoneme Ergodic HMM,'' IEICE Technical Report,
+SP92-75, pp. 15--20, Oct 1992.
+[Kita92SP] 
+北研二, 森元逞, 大倉計美, 嵯峨山茂樹, ``統計的言語情報を用いたHMM-LR文
+章発声音声認識の評価,''電子情報通信学会技術研究報告, SP92-53, 1992.
+[Kosaka92SP09] 
+小坂 哲夫, 鷹見 淳一, 嵯峨山 茂樹, ``話者混合SSSによる不特定話者音声認
+識と話者適応,'' 電子情報通信学会技術研究報告, SP92-52 (HI44-3),
+pp. 17--24, Sep. 1992.
+T. Kosaka, J. Takami and S. Sagayama, ``Speaker-Independent Speech
+Recognition and Speaker Adaptation Using Speaker-Mixture SSS
+algorithm,'' IEICE Technical Report, SP92-52 (HI44-3), pp. 17--24, Sep
+1992.
+[Kita92LUC07] 
+北 研二, 森元 逞, 嵯峨山 茂樹, ``到達可能性照合機構を用いた2段階予測型
+LRパーザと音声認識への応用,'' 電子情報通信学会言語理解とコミュニケーショ
+ン研究会, pp. 1-7, Jul. 1992.
+[Nagai92SP06] 
+永井 明人, 鷹見 淳一, 嵯峨山 茂樹, ``逐次状態分割法(SSS)と音素コンテキ
+スト依存LRパーザを統合したSSS-LR連続音声認識システム,'' 電子情報通信学
+会技術報告, SP92--33, pp. --, Jun. 1992.
+[Ohkura92IEICE06] 
+大倉 計美, 杉山 雅英, 嵯峨山 茂樹, ``混合連続分布HMMを用いた移動ベクト
+ル場平滑化話者適応方式,'' 電子情報通信学会技術報告, SP92--16,
+pp. 23--28, (1992.6).
+Kazumi Ohkura, Masahide Sugiyama and Sigeki Sagayama, ``Speaker
+Adaptation Based on Transfer Vector Field Smoothing Model with
+Continuous Mixture Density HMMs,'' IEICE, SP92--16, pp. 23--28,
+Jun. 1992.
+[Hattori92SP06] 
+服部 浩明, 嵯峨山 茂樹, ``移動ベクトル場平滑化による話者適応の原理とア
+ルゴリズム,'' 電子情報通信学会技術報告, SP92-15, pp. 15--22, (1992.6).
+[Tamoto92SIG04] 
+田本 真詞, 村上 仁一, 嵯峨山 茂樹, ``HMMを利用した言語獲得の可能性につ
+いて,'' 人工知能学会研究会資料 (第 1 回言語・音声理解と対話処理研究会),
+SIG-SLUD-9201-6, Apr. 1992.
+[Sagayama92kakenhi2] 
+嵯峨山 茂樹, ``音声認識のための確率モデル, ニューラルネットワーク, 話
+者適応, 韻律情報の利用等に関する研究,'' 文部省科研費「マルコフモデル・
+ニューラルネットワークを包含する新しい音声認識手法の総合的研究」報告書,
+Feb. 1992.
+Shigeki Sagayama, ``Researches of Probabilistic Models, Neural
+Networks, Speaker Adaptation, and Prosody for Speech Recognition,''
+{\it The Final Report of New Speech Recognition Paradigms Including
+Markov Models and Neural Networks}, Science Research Fund from the
+Ministry of Education and Culture, Feb.  1992.
+[Rainton92SP01] 
+David Rainton, Shigeki Sagayama, "Minimum Error Classification
+Training of HMMs - Implementation Details and Experimental Results,"
+IECIE Technical Report, SP91-107, pp. 390-46, Jan.
+1992.
+[Kita91SP09] 
+北 研二, 森元 逞, 大倉 計美, 嵯峨山 茂樹, ``統計的言語情報を用いた
+HMM-LR文章発声音声認識の評価,'' 電子情報通信学会技術報告, HI44-4,
+pp. 25-32, Sep. 1991.
+[Murakami91SP12] 
+村上 仁一, 嵯峨山 茂樹, ``自由発話音声認識における音響的, 言語的な問題
+点の考察,'' 電子情報通信学会技術報告, SP91-100, pp. 71-78,
+Dec. 1991.
+[Takami91SP] 
+鷹見淳一, 嵯峨山茂樹, "音素コンテキストと時間に関する逐次状態分割によ
+る隠れマルコフ網の自動生成,"電子情報通信学会技術報告, SP91-88, 1991.
+[Rainton91SP09] 
+David Rainton, Shigeki Sagayama, ``Class Specific Observation Vector
+Orthogonalisation and Its Interpretation as a Form of Continuous
+Mixture HMM,'' 電子情報通信学会技術報告, SP91-56, pp. 7--14,
+Sep. 1991.
+[Singer91SP09] 
+Harald Singer, 嵯峨山 茂樹, ``ピッチとスペクトルの相関を用いたHMM音素
+認識,'' 電子情報通信学会技術報告, SP91-57, pp. 15-20, Sep. 1991.
+Harald Singer, Shigeki Sagayama, ``Use of Correlation between Pitch
+and Spectral Parameters for HMM Phoneme Recognition,'' IEICE Technical
+Report, SP91-57, pp. 15-20, Sep. 1991.
+[Murakami91SP09] 
+村上 仁一, 荒木 哲郎, 池原 悟, 嵯峨山 茂樹, ``音声におけるアクセント情
+報の持つ情報量の考察,'' 電子情報通信学会技術報告, SP91-50, pp. 13-19,
+Sep. 1991.
+[Sagayama91Korea] 
+Shigeki Sagayama, Tsuyoshi Morimoto, Akira Kurematsu, ``Speech
+Recognition toward an Interpreting Telephone,'' 信学技報, SP91-29, pp. 
+7-12 (1991.6); Proceddings of Korea-Japan Joint Workshop on Speech
+Recognition and Speech Synthesis (Seoul), pp. 22-27, 1991.
+[Komori91SP06] 
+小森 康弘, 嵯峨山 茂樹, Alexander Waibel, ``ニューラル・ファジー学習に
+よるTDNN-LR連続音声認識システムの性能向上,'' 電子情報通信学会技術報告,
+SP91-24, pp. 49-56, Jun. 1991.
+[Nagai91SP06] 
+永井 明人, 嵯峨山 茂樹, 北 研二, ``HMM-LR連続音声認識における音素環境
+依存型パーザの実現アルゴリズム,'' 電子情報通信学会技術報告, SP91-23,
+pp. 41-48, Jun. 1991.
+[Takami91SP06] 
+鷹見 淳一, 嵯峨山 茂樹, ``単一ガウス分布HMMの音素環境木構造に基づく平
+滑化による頑健な音素認識,'' 電子情報通信学会技術報告, SP91-19,
+pp. 9-16, Jun. 1991.
+[Abe91SP2] 
+阿部 匡伸, 嵯峨山 茂樹, ``音素セグメントを単位とする声質変換,'' 電子情
+報通信学会技術報告, SP90-88, pp. 25-32,
+Feb. 1991.
+[Shimodaira90SP12] 
+下平 博, 嵯峨山 茂樹, 木村 正行, ``ピッチパタン連続整合による連続音声
+のセグメンテーション,'' 電子情報通信学会技術報告, SP90-72, pp. 33-40,
+Dec. 1990.
+Hiroshi Shimodaira, Shigeki Sagayama, Masayuki Kimura, ``Phrase
+Segmentation of Continuous Speech by Pitch Contour DP Matching,''
+IEICE Technical Report, SP90-72, pp.33--40, Dec 1990.
+[Sagayama90SP12] 
+嵯峨山 茂樹, ``行列演算によるHMM音声認識アルゴリズムの表現について,'' 
+電子情報通信学会技術報告, SP90-65, pp. 63-70, Dec. 1990.
+[Takahashi90SP06] 
+高橋 敏, 松永 昭一, 嵯峨山 茂樹, ``ピッチパタン情報を考慮した単語音声
+認識,'' 電子情報通信学会技術報告, SP90-17, pp. 65-72,
+Jun. 1990.
+Satoshi Takahashi, Sho-ichi Matsunaga, Shigeki Sagayama, ``Isolated
+Word Recognition Using Pitch Pattern Information,'' IEICEJ Technical
+Report, SP90-17, pp. 65--72, Jun 1990.
+[Takami90SP06] 
+鷹見 淳一, 嵯峨山 茂樹, ``対判定型TDNNによる音素認識,'' 電子情報通信学
+会技術報告, SP90-10, pp. 9-16, Jun. 1990.
+[Dantsuji89SP12] 
+壇辻 正剛, 嵯峨山 茂樹, ``音素環境クラスタリングと弁別素性の音響的側面
+に関する一検討,'' 電子情報通信学会技術報告, SP89-79, pp. 25--32,
+Dec. 1989.
+[Sagayama89SP12] 
+嵯峨山 茂樹, 本間 茂, ``音素認識における音素環境クラスタリングの効果,'' 
+電子情報通信学会技術報告, SP89-78, pp. 17--24, Dec. 1989.
+[Sagayama89SP06] 
+嵯峨山 茂樹, 鈴木 義武, 浅川 吉章, ``1989年音響・音声・信号処理国際会
+議(ICASSP89)報告,'' 電子情報通信学会技術報告, SP89-52, pp. 49--52,
+Sep. 1989.
+[Matsunaga89SP06] 
+松永 昭一, 嵯峨山 茂樹, ``双方向網探索による文節音声認識と時間軸離散化
+の効果,'' 電子情報通信学会技術報告, SP89-16, pp. 29--34, Jun. 1989.
+[Sagayama87SP12] 
+嵯峨山 茂樹, ``音素環境クラスタリングの原理とアルゴリズム,'' 電子情報
+通信学会技術報告, SP87-86, pp. 1--8,
+Dec. 1987.
+[Matsunaga87SP06] 
+松永 昭一, 嵯峨山 茂樹, ``係り受け規則により候補を限定した文節音声の認
+識,'' 電子情報通信学会技術報告, SP87-29, pp. 57--62,
+Jun. 1987.
+[Sagayama83SP1] 
+嵯峨山 茂樹, 小暮 潔, ``音声合成のためのテキスト解析の検討,'' 日本音響
+学会音声研究会資料, S82-78, pp. 617--624, Jan. 1983.
+[Sagayama82SP5] 
+嵯峨山 茂樹, 板倉 文忠, ``CSM・LSPに関する理論と諸性質,'' 日本音響学会
+音声研究会資料, S82-14, pp. 105--112, May 1982.
+[Sato82SP4] 
+佐藤 大和, 匂坂 芳典, 小暮 潔, 嵯峨山 茂樹, ``日本語テキスト音声変換の
+検討,'' 日本音響学会音声研究会資料, S82-08, pp. 57--64, Apr. 1982.
+[Sagayama81SP4] 
+嵯峨山 茂樹, ``直交多項式理論から見たLPCとCSMの対称性,'' 日本音響学会
+音声研究会資料, S81-02, pp. 9--16, Apr. 1981.
+[Sagayama80SSD10] 
+嵯峨山 茂樹, 管村 昇, 板倉 文忠, 大和田 允彦, 小池 恒彦, ``LSP音声合成
+用LSI,'' 電子通信学会技術報告, SSD80-54, pp. 17--24
+Oct. 1980.
+[Sagayama80SP10] 
+嵯峨山 茂樹, 管村 昇, 板倉 文忠, 小池 恒彦, ``音声合成器のLSI化とその
+応用,'' 日本音響学会音声研究会資料, S80-46, pp. 363--370 Oct. 1980.
+[Sagayama80SP] 
+管村 昇, 嵯峨山 茂樹, 板倉 文忠, ``LSP音声合成の品質評価,'' 日本音響学
+会音声研究会資料, S80-29, pp. 229--234,
+Jul. 1980.
+[Sagayama80SP] 
+嵯峨山 茂樹, 太刀川 信一, 板倉 文忠, ``複合正弦波音声合成方式の検討と
+合成器の試作,'' 日本音響学会音声研究会資料, SP80-12, pp. 93--100,
+1980.
+[Sagayama79SP] 
+嵯峨山 茂樹, 板倉 文忠, ``複合正弦波による音声合成,'' 日本音響学会音声
+研究会資料, SP79-39, pp. 293--300, 1979.
+[Sagayama79SP06] 
+嵯峨山 茂樹, 板倉 文忠, ``複合正弦波モデルによる音声の分析,'' 日本音響
+学会音声研究会資料, SP79-06, pp. 41--48, 1979.
+[Sagayama77EA] 
+嵯峨山 茂樹, 古井 貞煕, ``極零モデルによる音声スペクトルの最尤推定,'' 
+電子通信学会技術報告, EA76-56, pp. 29--36, 1977.
+[Sagayama76PRL] 
+嵯峨山 茂樹, 古井 貞煕, 斎藤 收三, ``極零モデルによる音声スペクトルの
+推定,'' 電子通信学会技術報告, PRL75-81, pp. 13--20,
+1976.
+Shigeki Sagayama's Publication List: Technical Reports

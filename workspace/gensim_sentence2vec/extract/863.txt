@@ -1,0 +1,467 @@
+ツリー構造を自在に操作する(追加・修正・削除・並べ替え)
+Ruby on Rails
+以前の日記 - ツリー構造をマウスで並べ替える - では、並べ替えは出来るようになったが、追加・修正・削除についてはちゃんと実装できていなかった...。今更なのだが、一通りの操作が出来るように機能を追加してみた。Railsのバージョンも違うことだし、過去を思い出しながら、もう一度やり直し。
+ツリー構造をデスクトップアプリケーションのように完成されたレベルで実装するのは(自分としては)非常に手間のかかることなので、Ext JS等の洗練されたGUIを提供してくれるライブラリを利用する方が賢明かもしれない。
+環境
+MacBook OSX 10.5.6
+Rails 2.1.2
+基本のscaffold
+rails _2.1.2_ test_tree
+cd test_tree
+script/generate scaffold tree name:string position:integer parent_id:integer
+rake db:migrate
+script/server
+"http://localhost:3000/trees"へアクセスしてみると...
+acts_as_treeの設定
+acts_as_treeのインストール
+script/plugin install acts_as_tree
+ツリー構造を操作するのに便利な、以下のメソッドが利用可能になる。
+children、parent、root、ancestors、siblings、self_and_siblings
+コンソールで実験してみた。
+$ script/console
+Loading development environment (Rails 2.1.2)
+>> root = Tree.create(:name => 'root')
+=> #<Tree id: 1, name: "root", position: nil, parent_id: nil>
+>> child1 = root.children.create(:name => 'child1')
+=> #<Tree id: 2, name: "child1", position: nil, parent_id: 1>
+>> sub_child1 = child1.children.create(:name => 'sub_child1')
+=> #<Tree id: 3, name: "sub_child1", position: nil, parent_id: 2>
+>> sub_child2 = child1.children.create(:name => 'sub_child2')
+=> #<Tree id: 4, name: "sub_child2", position: nil, parent_id: 2>
+>> child1.children.map(&:name)
+=> ["sub_child1", "sub_child2"]
+>> sub_child1.parent.name
+=> "child1"
+>> sub_child1.root.name
+=> "root"
+>> sub_child1.ancestors.map(&:name)
+=> ["child1", "root"]
+>> sub_child1.siblings.map(&:name)
+=> ["sub_child2"]
+>> sub_child1.self_and_siblings.map(&:name)
+=> ["sub_child1", "sub_child2"]
+acts_as_treeなTreeモデルにする。
+# app/models/tree.rb
+class Tree < ActiveRecord::Base
+acts_as_tree :order=>'position'
+end
+サンプルとして以下のようなツリー構造をデータベースに設定しておいた。
+# ---------- db/migrate/20090507025853_create_trees.rb ----------
+class CreateTrees < ActiveRecord::Migration
+def self.up
+create_table :trees do |t|
+t.string :name
+t.integer :position
+t.integer :parent_id
+t.timestamps
+end
+# root
+#   |--child
+#         |--sub_child
+#         |--sub_child
+root        = Tree.create(:name => 'root')
+child_1     = root.children.create(:name => 'child_1')
+sub_child_1 = child_1.children.create(:name => 'sub_child_1')
+sub_child_2 = child_1.children.create(:name => 'sub_child_2')
+end
+def self.down
+drop_table :trees
+end
+end
+データベースを最初から作り直す
+rake db:migrate:reset
+ツリー表示
+ツリー構造を表現するための追記
+# ---------- app/controllers/tree_controller.rb ----------
+class TreesController < ApplicationController
+# GET /trees
+# GET /trees.xml
+def index
+##@trees = Tree.find(:all)
+@trees = Tree.all :conditions=>{:parent_id=>nil}, :order=>:position
+respond_to do |format|
+format.html # index.html.erb
+format.xml  { render :xml => @trees }
+end
+end
+...(中略)...
+<%# ---------- app/views/trees/index.html.erb ---------- %>
+<h1>Listing trees</h1>
+<%= list_trees(@trees) %>
+# ---------- app/helpers/application_helper.rb ----------
+module ApplicationHelper
+def list_trees(items)
+if items.size > 0
+html = "<ul>"
+items.each do |item|
+html << "<li>"
+html << h(item.name)
+if item.children.size > 0
+html << list_trees(item.children)
+end
+html << "</li>"
+end
+html << "</ul>"
+end
+end
+end
+ツリー構造をマウスで並べ替え
+javascriptを取り込んで有効にする。
+<%# ---------- app/views/layouts/trees.html.erb ---------- %>
+...(中略)...
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<title>Trees: <%= controller.action_name %></title>
+<%= stylesheet_link_tag 'scaffold' %>
+<%= javascript_include_tag :defaults %><%#----------追記 %>
+</head>
+...(中略)...
+sortable_elementで、マウスによるドラッグを可能にする。
+div#infoは、操作時の情報(paramsの内容など)を表示する目的。
+<%# ---------- app/views/trees/index.html.erb ---------- %>
+<h1>Listing trees</h1>
+<%= list_trees(@trees) %>
+<div id="info"></div>
+<%= sortable_element 'tree_', 
+:update=>'info', 
+:url=>{:action=>'sort'}, 
+:tree=>true %>
+ツリー構造にid属性を設定した。
+ulタグのid="tree_" 以下が、マウスによるドラッグ可能なツリー構造になる。
+liタグのid="item_id番号"によって、変更後のツリー構造全体がハッシュとしてparamsで取得できる。
+# ---------- app/helpers/application_helper.rb ----------
+module ApplicationHelper
+def list_trees(items)
+if items.size > 0
+html = "<ul id='tree_#{items.first.parent_id}'>"
+items.each do |item|
+html << "<li id='item_#{item.id}'>"
+html << h(item.name)
+if item.children.size > 0
+html << list_trees(item.children)
+end
+html << "</li>"
+end
+html << "</ul>"
+end
+end
+end
+paramsの内容をdiv#infoに描画して、
+save_treeで変更されたツリー構造を保存する。
+# ---------- app/controllers/tree_controller.rb ----------
+class TreesController < ApplicationController
+...(中略)...
+def sort
+# 再描画の必要がなければ、render :nothing => true
+# paramsの内容を確認したいため、render :text => params.inspect
+# sortable_elementが送信するparamsの内訳を正確に表示するには、renderを最初に実行する必要あり
+render :text => params.inspect
+save_tree(params[:tree_], nil)
+end
+private
+# ツリー構造("tree_" => )は、以下のハッシュが再帰的に繰り返されて、表現される
+#   {ポジション番号=>{id=>番号, 子ポジション番号=>{id=>番号, 孫ポジション番号=>{id=>番号, ...} } } }
+#   子を持たない世代(ポジション番号=>{id=>番号})まで繰り返される
+# 例:
+#   root(1)
+#     |--child(2)
+#          |--sub_child(3)
+#          |--sub_child(4)
+#                   |--sub_sub_child(5)
+#   "tree_" => {"0"=>{"id"=>"1", "0"=>{"id"=>"2", "0"=>{"id"=>"3"}, "1"=>{"id"=>"4", "0"=>{"id"=>5}}}}}
+#
+# ツリー構造全体を保存する
+def save_tree(tree, parent)
+tree.each do |order, hash|
+id = hash.delete(:id)
+item = Tree.find(id)
+item.update_attributes(:position=>order, :parent_id=>parent)
+save_tree(hash, id) unless hash.empty?
+end    
+end
+end
+追加・削除を可能にする
+アイテムを追加する時、sortable_elementを再設定する必要があるため、sortable_element_treeとしてヘルパーに定義した。
+<%# app/views/trees/index.rhtml %>
+<h1>Listing trees</h1>
+<%= list_trees(@trees) %>
+<div id="info"></div>
+<div id="sortable_script">
+<%= sortable_element_tree %>
+</div>
+アイテムを追加する時、liタグ生成に利用するため、list_treesからliタグ生成部分だけ取り出して、tree_liとして定義した。
+# ---------- app/helpers/application_helper.rb ----------
+module ApplicationHelper
+# indexアクションで、ulタグを生成する
+def list_trees(items)
+if items.size > 0
+html = "<ul id='tree_#{items.first.parent_id}'>"
+items.each do |item|
+html << tree_li(item)
+end
+html << "</ul>"
+end
+end
+# indexアクションで、liタグを生成する(list_treesから呼び出される)
+# insertアクションで、新規追加アイテムのliタグの生成にも利用する
+def tree_li(item)
+html = "<li id='item_#{item.id}'>"
+# アイテム名称
+html << h(item.name)
+# 子追加、削除、並べ替えのリンク設定
+html << "&nbsp;"
+html << link_to_remote("子追加", {:url=>{:action=>'insert', :id=>item}}, :class=>'action')
+html << "&nbsp;"
+html << link_to_remote("削除", {:url=>{:action=>'delete', :id=>item}, :confirm=>'Are you sure?'}, :class=>'action')
+if item.children.size > 0
+html << list_trees(item.children)
+else
+html << "<ul id='tree_#{item.id}'></ul>"
+end
+html << "</li>"
+end
+# indexアクションで、ツリー構造をドラッグ可能にする
+# insertアクションで、新規追加アイテムもドラッグ可能にする
+def sortable_element_tree
+sortable_element('tree_', 
+:update=>'info', 
+:url=>{:action=>'sort'}, 
+:tree=>true)
+end
+end
+追加(insert)、削除(delete)のアクションを定義した。
+# ---------- app/controllers/tree_controller.rb ----------
+class TreesController < ApplicationController
+...(中略)...
+def insert
+@tree = Tree.find(params[:id]).children.create(:name=>'untitled')
+if @tree
+render :update do |page|
+page.insert_html(:top, "tree_#{params[:id]}", tree_li(@tree))
+page.visual_effect(:highlight, "item_#{@tree.id}", :duration=>0.6)
+page.replace_html(:info, "Tree was successfully created.")
+# 新規追加したアイテムをドラッグ可能にするため、書き換え
+page.replace_html('sortable_script', sortable_element_tree)
+end
+else
+render :update do |page|
+page.replace_html(:info, "Tree failed to insert child.")
+end
+end
+end
+def delete
+Tree.find(params[:id]).destroy
+render :update do |page|
+page.visual_effect(:highlight, "item_#{params[:id]}", :duration=>0.6)
+page.delay(0.8) do
+page.visual_effect(:drop_out, "item_#{params[:id]}")
+end
+page.delay(1.6) do
+page.remove("item_#{params[:id]}")
+page.replace_html(:info, "Tree was successfully deleted.")
+end
+end
+end
+...(中略)...
+end
+子なしアイテムの子レベルへのドラッグ対応
+sub_child_1を、sub_child_2の子レベルへ、ドラッグ可能にするために、すべてのアイテムに空のliタグを追加した。
+# ---------- app/helpers/application_helper.rb ----------
+module ApplicationHelper
+# indexアクションで、ulタグを生成する
+def list_trees(items)
+if items.size > 0
+html = "<ul id='tree_#{items.first.parent_id}'>"
+html << "<li></li>"
+items.each do |item|
+html << tree_li(item)
+end
+html << "</ul>"
+end
+end
+# indexアクションで、liタグを生成する(list_treesから呼び出される)
+# insertアクションで、新規追加アイテムのliタグの生成にも利用する
+def tree_li(item)
+html = "<li id='item_#{item.id}'>"
+# アイテム名称
+html << h(item.name)
+# 子追加、削除、並べ替えのリンク設定
+html << "&nbsp;"
+html << link_to_remote("子追加", {:url=>{:action=>'insert', :id=>item}}, :class=>'action')
+html << "&nbsp;"
+html << link_to_remote("削除", {:url=>{:action=>'delete', :id=>item}, :confirm=>'Are you sure?'}, :class=>'action')
+if item.children.size > 0
+html << list_trees(item.children)
+else
+html << "<ul id='tree_#{item.id}'><li></li></ul>"
+end
+html << "</li>"
+end
+...(中略)...
+end
+in_place_editorでアイテム名称を変更する
+super_inplace_controlsのインストール
+in_place_editorもプラグイン扱いになったのだ。
+これは、名前にsuperが付いて、かなり高機能!
+script/plugin install http://super-inplace-controls.googlecode.com/svn/trunk/super_inplace_controls
+# ---------- app/controllers/tree_controller.rb ----------
+class TreesController < ApplicationController
+in_place_edit_for :tree, :name
+...(中略)...
+# ---------- app/helpers/application_helper.rb ----------
+module ApplicationHelper
+...(中略)...
+# indexアクションで、liタグを生成する(list_treesから呼び出される)
+# insertアクションで、新規追加アイテムのliタグの生成にも利用する
+def tree_li(item)
+html = "<li id='item_#{item.id}'>"
+# アイテム名称
+##html << h(item.name)
+html << in_place_text_field(:tree, :name, :object=>item)
+# 子追加、削除のリンク設定
+html << "&nbsp;"
+html << link_to_remote("子追加", {:url=>{:action=>'insert', :id=>item}}, :class=>'action')
+html << "&nbsp;"
+html << link_to_remote("削除", {:url=>{:action=>'delete', :id=>item}, :confirm=>'Are you sure?'}, :class=>'action')
+# ドラッグ可能な取っ手を設定
+html << content_tag(:span, "", :class=>'handle')
+if item.children.size > 0
+html << list_trees(item.children)
+else
+html << "<ul id='tree_#{item.id}'><li></li></ul>"
+end
+html << "</li>"
+end
+# indexアクションで、ツリー構造をドラッグ可能にする
+# insertアクションで、新規追加アイテムもドラッグ可能にする
+def sortable_element_tree
+sortable_element('tree_', 
+:update=>'info', 
+:url=>{:action=>'sort'}, 
+:handle=>'handle', 
+:tree=>true)
+end
+end
+スタイルを調整して、多少の見易さを目指す。
+/* ---------- public/stylesheets/tree.css ---------- */
+ul#tree_,
+#tree_ ul {
+list-style-type: none;
+list-style-position: inside;
+padding: 0px;
+margin: 0 0 0 2em;
+}
+#tree_ li {
+text-decoration: underline;
+padding: 0 0px 6px 0px;
+margin: 0;
+}
+a.action,
+a.toggle_show, 
+a.toggle_hide {
+text-decoration: none;
+font-size: 66%;
+color: #000;
+background-color: #ccc;
+}
+.handle {
+text-decoration: none;
+font-size: 100%;
+cursor: move;
+}
+.handle:hover,
+a.toggle_show:hover,
+a.toggle_hide:hover,
+a.action:hover {
+color: #fff;
+background-color: #000;
+}
+.inplace_span {
+text-decoration: none;
+font-size: 100%;
+color: #eee;
+background-color: #444;
+}
+form.in_place_editor_form,
+form.in_place_editor_form * {
+display: inline;
+}
+<%# ---------- app/views/layouts/trees.html.erb ---------- %>
+...(中略)...
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<title>Trees: <%= controller.action_name %></title>
+<%= stylesheet_link_tag 'tree', 'scaffold' %><%#----------追記('tree', ) %>
+<%= javascript_include_tag :defaults %>
+</head>
+...(中略)...
+さらに、1アイテム1行で表示するように、super_inplace_controlsの1行をコメントアウトしてしまった...。
+# ---------- vendor/plugins/super_inplace_controls/lib/super_inplace_controls.rb ----------
+def form_for_inplace_display(object_name, method_name, input_type, object, opts)
+...(中略)...
+#retval << content_tag(:br) #279行目をコメントアウト
+end
+サーバーを再起動(control-Cで一旦中止してからscript/server)してから、"http://localhost:3000/trees"へアクセスしてみると...
+ツリーの表示、非表示に対応する
+先頭に、折り畳みマーク(≫)または展開マーク(∨)のリンクを表示する。
+最初は、ルートと子の存在しないアイテムのみ表示するようにした。
+# ---------- app/helpers/application_helper.rb ----------
+module ApplicationHelper
+# indexアクションで、ulタグを生成する
+def list_trees(items)
+if items.size > 0
+parent_id = items.first.parent_id
+html = "<ul id='tree_#{parent_id}' style=#{parent_id && 'display:none'}>"
+html << "<li></li>"
+items.each do |item|
+html << tree_li(item)
+end
+html << "</ul>"
+end
+end
+# indexアクションで、liタグを生成する(list_treesから呼び出される)
+# insertアクションで、新規追加アイテムのliタグの生成にも利用する
+def tree_li(item)
+html = "<li id='item_#{item.id}'>"
+# ≫折り畳み、∨展開マーク
+if item.children.size > 0
+child_exist_is_none = 'display:none'
+else
+child_empty_is_none = 'display:none'
+end
+html << link_to_function("&nbsp;∨&nbsp;", 
+visual_effect(:slide_up, "tree_#{item.id}", :duration=>0.2) + 
+"Element.toggle('show_#{item.id}');
+Element.toggle('hide_#{item.id}')", 
+:class=>"toggle_show", :id=>"show_#{item.id}", :style=>child_exist_is_none)
+html << link_to_function("&nbsp;≫&nbsp;", 
+visual_effect(:slide_down, "tree_#{item.id}", :duration=>0.2) + 
+"Element.toggle('show_#{item.id}');
+Element.toggle('hide_#{item.id}')", 
+:class=>"toggle_hide", :id=>"hide_#{item.id}", :style=>child_empty_is_none)
+# アイテム名称
+#html << h(item.name)
+html << "&nbsp;"
+html << in_place_text_field(:tree, :name, :object=>item)
+# 子追加、削除のリンク
+html << "&nbsp;"
+html << link_to_remote("子追加", {:url=>{:action=>'insert', :id=>item}}, :class=>'action')
+html << "&nbsp;"
+html << link_to_remote("削除", {:url=>{:action=>'delete', :id=>item}, :confirm=>'Are you sure?'}, :class=>'action')
+# ドラッグ可能な取っ手
+html << "&nbsp;"
+html << content_tag(:span, "", :class=>'handle')
+# 子の存在を確認して、存在していたらlist_treesを再帰呼出し
+if item.children.size > 0
+html << list_trees(item.children)
+else
+html << "<ul id='tree_#{item.id}'><li></li></ul>"
+end
+html << "</li>"
+end
+...(中略)...
+end
+まだ完全じゃないけど、ひとまず、目的の機能だけは実装できた!
+ツイートする
+Permalink | コメント(0) | トラックバック(0) | 12:00   
+ツリー構造を自在に操作する(追加・修正・削除・並べ替え) - ザリガニが見ていた...。

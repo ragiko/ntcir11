@@ -1,0 +1,137 @@
+閲覧総計:2872  (本日:1  昨日:4)
+配列変数の便利なハンドリング手法である「連想配列」。
+ASP.NETでの「連想配列(Dictionary)」の使用方法を確認したのでメモしておく。 10/09/26
+参考にしたページはこちら
+「ハッシュテーブル(連想配列)を使うには?(Dictionaryクラス編)」 06/03/31
+http://www.atmarkit.co.jp/fdotnet/dotnettips/429dictionary/dictionary.html
+開発環境:VWD2008 VB
+稼働環境:Win Server2003 .NET3.5
+【稼働画面】
+【Dictionary.aspx】
+<%@ Page Language="VB" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<script runat="server">
+Dim dict As New Dictionary(Of String, String)
+Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs)
+'''''''''''''''''''''''''''''''''''''''
+' 要素の追加その1
+dict("japan") = "日本"
+dict("america") = "アメリカ"
+dict("2010/09/26") = "日替桜460円"
+' 要素の追加その2
+dict.Add("china", "中国")
+dict.Add("india", "インド")
+'''''''''''''''''''''''''''''''''''''''
+' 値の取得その1
+Dim val As String = dict("japan")
+'Console.WriteLine(val) ' 出力:日本
+Label1.Text = val ' 出力:日本
+' Dim sss As String = dict("russia") ' 例外発生
+' 値の取得その2
+Dim value As String = ""
+If dict.TryGetValue("america", value) Then
+'Console.WriteLine(value) ' 出力:アメリカ
+Label2.Text = value ' 出力:アメリカ
+End If
+'''''''''''''''''''''''''''''''''''''''
+' キーと値の列挙
+For Each key As String In dict.Keys
+'Console.WriteLine("{0} : {1}", key, dict(key))
+Label3.Text &= String.Format("{0} : {1}", key, dict(key)) & "<br />"
+Next
+' 出力例:
+' japan : 日本
+' america : アメリカ
+' china : 中国
+' india : インド
+' 値の列挙
+For Each v As String In dict.Values
+'Console.WriteLine(v)
+Label4.Text &= v & "<br />"
+Next
+' 出力例:
+' 日本
+' アメリカ
+' 中国
+' インド
+'''''''''''''''''''''''''''''''''''''''
+' キーの存在チェック
+If Not dict.ContainsKey("france") Then
+' 存在しない場合
+dict("france") = "フランス" 'フランスを追加
+End If
+' 値の存在チェック
+'Console.WriteLine(dict.ContainsValue("日本")) ' 出力:True
+Label5.Text = dict.ContainsValue("日本")
+'Label5.Text = dict.ContainsKey("2010/09/26")
+'''''''''''''''''''''''''''''''''''''''
+' 項目(キーと値)の列挙
+For Each kvp As KeyValuePair(Of String, String) In dict
+'Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value)
+Label6.Text &= String.Format("{0} : {1}", kvp.Key, kvp.Value) & "<br />"
+Next
+' 出力例:
+' japan : 日本
+' america : アメリカ
+' china : 中国
+' india : インド
+' france : フランス
+'''''''''''''''''''''''''''''''''''''''
+' ソート済みのディクショナリの利用
+Dim sdict As New SortedDictionary(Of String, String)(dict)
+For Each kvp As KeyValuePair(Of String, String) In sdict
+'Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value)
+Label7.Text &= String.Format("{0} : {1}", kvp.Key, kvp.Value) & "<br />"
+Next
+' 出力例:
+' america : アメリカ
+' china : 中国
+' france : フランス
+' india : インド
+' japan : 日本
+End Sub
+</script>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<title></title>
+</head>
+<body>
+<form id="form1" runat="server">
+<div>
+連想配列(Dictionary)の使用法の確認  10/09/26<br />
+<br />
+<b>値の取得その1</b><br />
+<asp:Label ID="Label1" runat="server"></asp:Label>
+<br />
+<br />
+<b>値の取得その2</b><br />
+<asp:Label ID="Label2" runat="server"></asp:Label>
+<br />
+<br />
+<b>キーの列挙</b><br />
+<asp:Label ID="Label3" runat="server"></asp:Label>
+<br />
+<br />
+<b>値の列挙</b><br />
+<asp:Label ID="Label4" runat="server"></asp:Label>
+<br />
+<br />
+<b>値の存在チェック</b><br />
+<asp:Label ID="Label5" runat="server"></asp:Label>
+<br />
+<br />
+<b>項目(キーと値)の列挙</b><br />
+<asp:Label ID="Label6" runat="server"></asp:Label>
+<br />
+<br />
+<b>ソート済みのディクショナリの利用</b><br />
+<asp:Label ID="Label7" runat="server"></asp:Label>
+<br />
+</div>
+</form>
+</body>
+</html>
+【参考にしたページ】
+「ハッシュテーブル(連想配列)を使うには?(Dictionaryクラス編)」 06/03/31
+http://www.atmarkit.co.jp/fdotnet/dotnettips/429dictionary/dictionary.html
+連想配列(Dictionary)の使用法 - PukiWiki

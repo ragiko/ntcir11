@@ -1,0 +1,8 @@
+当時「い」-「ゐ」等の音韻的区別は失われていたと考えられる。It is considered that the distinction in phoneme, such as between 'い' and 'ゐ,' had been lost at that time.
+- Wikipedia日英京都関連文書対訳コーパス
+これらは、音韻ラティスと音韻辞書を探索し、可能な語を生成するという非常にCPU集約的なタスクを実行する。These carry out very CPU-intensive tasks which search the phoneme lattice and the phonetic lexicon, generating possible words.
+- コンピューター用語辞典
+上記音声合成装置(100,900)は,テキスト本文に含まれる全てのキーワードの音韻の候補を,当該キーワード以外の音韻の候補よりも優先的に,当該キーワードの出現順で,コーパスから選択するキーワード優先音韻選択部(107,907)を備えることを特徴としている。The device (100, 900) for speech synthesis is equipped with a keyword-priority phoneme selection section (107, 109) which selects candidates for phonemes of all keywords included in a text body from a corpus in the appearance order of the keywords preferentially to candidates for phonemes of elements other than the keywords. - 特許庁
+さらに、モジュール化により各モジュール内で識別する音韻的クラス数を少なくすることにより、音韻的クラスの特徴を表現する情報が絞られるため、認識精度が向上する。Further, the number of phonemic classes discriminated in respective modules is decreased by constitution and then information representing the features of the phonemic classes is narrowed down, so the recognition precision is improved. - 特許庁
+音韻種類判定部201において、着目している音韻の種類が、母音であるか、子音であるか、子音と判定された場合には、閉鎖長を時間的に前方に伴う子音かどうかを判定する。A phoneme kind decision part 201 decides which of a vowel and a consnant the kind of a noticed phoneme is and further the device whether the consonant has closure time temporally in front when it is decided as the consonant. - 特許庁
+「音韻的な」に関連した英語例文の一覧 - Weblio英語例文検索

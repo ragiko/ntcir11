@@ -1,0 +1,128 @@
+改行については、<BR>または<P>を用います。<BR>の扱いが通常の改行と同じ扱いになります。ただし、Browserによっては <BR> を複数連続で記述しても一つとしてみなしてしまうものもあります。<P>は、文章の節ごとを区切るのに使用されますが、現在では  <DIV>を用いることが一般的になっています。
+HTML でページを作成する場合、.html や .htm 、.shtml(これは特別) 
+といった拡張子が標準で使用されます。また、Web Browser で URL を http://www.example.com/sample/                  のように指定したときに参照されるファイルは実際には http://www.example.com/sample/index.html となります。これは、Web サーバー側でデフォルトとして参照されるファイルが index.html になっているからです(Web 
+サーバーの設定で変更可能)。
+漢字コードの取り扱いにも注意が必要です。ブラウザーに正しく漢字コードを認識させるために、HTMLを記述する際に<META>タグを使用して 
+HTMLを記述する際にどの漢字コードを使用しているか指定する必要があります。記述は<HEAD>タグ内に以下のようにします。
+<META HTTP-EQuiv="Content-Type" Content="text/html; 
+charset=Shift_JIS">
+この <META>タグの charaset の部分に使用している漢字コードを指定します。
+3.CGI の構造
+CGIとは、Common Gateway Interface の略です。HTTPサーバーが、 Web Browserから受け取ったデータを解析したり結果を返したりするために 
+CGIが使用されます。 CGIのプログラミングは、標準入力から受け取ったデータを「解析」「分析」「無視」などなど思いのままの操作を行い、その結果をMIMEの 
+HTMLフォーマット(Content-type: text/html)で標準出力に出力ようなプログラムを作成すれば実現できます。
+実際の動きをステップごとに説明します。
+Web Browserに、ユーザーから受け取りたい情報をテキストエリアやボタンで表示。この際、HTML の <FORM> タグを使用してテキスト入力エリアやボタン、メニューといった部品を配置します。
+ユーザーは、Web Browser 上に表示されたテキストエリアやボタンによって情報を入力します。
+ユーザーからの情報は、  <FORM>タグで指定した 
+CGI に、 Web サーバーによって渡されます(このとき、Web サーバーは標準出力にデータを出力)。
+Web サーバーからのユーザー情報を CGI が解析しその結果を Web サーバーに返します(このとき、Web サーバーは標準入力から 
+MIME形式で結果を受けとります)。
+Web Browser は Web サーバーからのデータを表示します。
+4.CGIを作る上での注意
+CGI を作る場合、開発言語は特に限定されません。標準入力からデーターを受け取って、標準出力に HTML データを出力できる仕組みが作れるものなら何でも構いません。Shellスクリプト、Perlスクリプト、C 
+言語で作られた実行可能プログラム などなどあらゆる物が利用できます。
+実は、広く一般的な方法は標準入出力を使うのですが、QUERY_STRING という変数にデータを格納し、CGI がその変数を参照することでデータを受け取ることが出来る仕組みもあります。この違いは、HTML 
+で書かれた <FORM> の METHOD パラメータによって判断されます。
+METHODの値が GET の場合、QUERY_STRING という Web サーバーが持つ環境変数にデータがセットされます。
+METHODの値が POST の場合、標準入出力を使用してデータがやり取りされます。このとき、CONTENT_LENGTH 
+という Web サーバーが持つ環境変数にデータのサイズがセットされます。
+<FORM> によって得られたユーザー情報は、ある条件に基づいた形式で構成されています。それは、<FORM> の部品であるテクストエリアやボタン、メニュー、入力フィールドにつけられた名前とそれに与えられたユーザーからの値というグループデータで構成されます。さらに、部品がたくさんあってもすべてまとまったグループデータ(<FORM> 
+</FORM> で囲まれた部分に指定された部品はすべて同じグループデータ)として構成されます。
+部品名=値&部品名=値&部品名=値&部品名=値&部品名=値
+<FORM> によって渡された「部品名=値」を& で区切った文字列を QUERY STRING と呼びます。
+部品名は、<FORM> </FORM> で囲まれた中にあるテキストエリアやボタン、入力フィールドといった部品につけられた名前を意味します。たとえば、名前を入力してもらうために入力フィールドタグである <INPUT> を使用した場合、<INPUT TYPE="text" NAME="UserName"> のように記述します。このとき、 NAME パラメータに記述された UserName が部品名となります。
+値は、 
+Web Browser に表示された入力フィールドにユーザーが入力した文字になります。ボタンやチェックボックスの場合、VALUE パラメータで指定された値になります。 
+さらに、値の形式は encode された状態で CGI に渡されます。これは、URL で扱えない文字を Web Browser が扱えないからです。(URL 
+の一部と誤認してしまう恐れもあるため) そのため、CGI でデータをはじめに受け取った場合、 データの値部分を decode する作業が必要になります。
+encode のフォーマット
+特殊記号を除く ASCII 文字([A-Z][a-z])はそのまま。
+スペースは、+ 記号に変換される。
+それ以外は、% を付けた 16進数に変換される。
+5.実際の画面と HTML および CGI
+それでは、実際の例を元に表示画面を使って説明します。
+まず、以下のような HTML の場合: 
+<HTML><HEAD><META HTTP-EQuiv="Content-Type" Content="text/html; charset=Shift_JIS"><TITLE>CGI Sample</TITLE></HEAD>
+<BODY BGCOLOR=#FFFFFF TEXT=#000000>
+<CENTER>
+<FONT SIZE=+2> <I><B><FONT COLOR=#007744>CGI Sample</FONT></b></I></FONT>
+<BR>
+<BR>
+<TABLE WIDTH=80%%>
+<TR>
+<TD COLSPAN=2> 
+<FORM METHOD="post" ACTION="/cgi-bin/sample.cgi">
+<p><FONT COLOR=#0000BB>名前:</FONT> 
+<INPUT TYPE="text" NAME="UserName">
+<BR>
+</p>
+<p> <font color="#0000BB">性別</font>: 
+<input type="checkbox" name="Gender" value="male">
+男      
+<input type="checkbox" name="Gender" value="female">
+女</p>
+<p><FONT COLOR=#0000BB>説明:</FONT><BR>
+<TEXTAREA NAME="Contents" ROWS=10 COLS=50></TEXTAREA>
+<BR>
+</p>
+<CENTER>
+<INPUT TYPE="submit" VALUE="登録">
+<INPUT TYPE="reset" VALUE="クリア">
+</CENTER>
+</FORM>
+</TD>
+</TR>
+</TABLE>
+</CENTER>
+<P>
+<CENTER>
+</CENTER>
+</BODY>
+</HTML>
+実際の Web Bowserの表示では次のようになります。
+HTML の <FORM>タグの中で、ACTION 
+パラメータによって指定されている CGI (sample.cgi) によってユーザーが入力した情報を解析します。
+CGI である sample.cgi を Perl で書いた場合の例:
+#!/usr/bin/perl
+# HTML HEADER
+print "Content-type: text/html\n\n";
+print "<HTML>\n";
+print "<HEAD>\n";
+print "<META HTTP-EQuiv=\"Content-Type\" Content=\"text/html; charset=Shift_JIS\">";
+print "<TITLE>CGI Sample (Answer)</TITLE>\n";
+print "</HEAD>\n";
+print "\n";
+print "<BODY BGCOLOR=#FFFFFF TEXT=#000000>\n";
+print "\n";
+print "<CENTER>\n";
+print "<FONT SIZE=+2>\n";
+print "<I><B><FONT COLOR=#007744>CGI Sample (Answer)</FONT></I></B>\n";
+print "</FONT><BR>\n";
+print "<BR>\n";
+read(STDIN,$buffer,$ENV{'CONTENT_LENGTH'});
+@pairs=split(/&/,$buffer);
+foreach $pair(@pairs) {
+($name,$value)=split(/=/,$pair);
+$value=~tr/+/ /;
+$value=~s/%([a-fA-F0-9][a-fA-F0-9])/pack("C",hex($1))/eg;
+printf ("NAME: %s,  VALUE: %s<BR>\n", $name, $value);
+}
+print "\n";
+print "</BODY>\n";
+print "</HTML>\n";
+この CGI では、データを解析し、その結果を Web Browser が表示できる形で Web サーバーに返します。MIME 形式にしなくてはならないので最初の行でその旨を指定しています。データを解析している部分では、データの部品名と値を分割し、値部分は  decode 処理を行っています。
+この結果は、Web Browserには次のように表示されます。
+6.Web サーバー:Apahce のインストール方法と設定
+6.1 ソースコードの入手方法
+apache のソースコード一式があればそれだけで Web サーバーは構築できます。 apache の最新のソースコードを http://www.apache.org/ またはそのミラーサイトなどから取り寄せておきます。 
+apache のソースコードを取り寄せることができたら、 それを適当なディレクトリで展開しておきます。 
+$ gzip -dc apache_1.3.6.tar.gz | tar xvf -
+このようにすると apache_1.3.6 というディレクトリが作られて、 その配下に apache のソースコードが展開されるます。 
+6.2 コンパイル前のコンフィグレーション
+apache をコンパイルするためのコンフィグレーションは、どういったモジュールを組み込むかを選択するだけです。 ただしデフォルトで、通常利用に必要と思われるモジュールは組み込まれるように設定されているため、モジュールを減らしてサーバーを軽くしたいなどの変更がなければこの節は読む必要はありません。 組み込むモジュールの選択は、 apache_1.3.6/src の下に Configuration というファイルを作成することで行います。 テンプレートとなる Configuration.tmpl を元に適宜修正を加え簡単に作成することができます。 
+モジュールの選択は、「Module configuration」とある部分の以降で行います。必要なモジュールについては 
+「Module モジュール名 オブジェクト名」という記述を残し、 不要なモジュールについては記述を削除するか 
+「#」でコメントアウトします。 各モジュールの機能については apache のソースコードに 同梱されている apache_1.3.6/htdocs/manual/mod 以下のドキュメントを参照してください。 
+6.2.1 ログに関するモジュール
+HTML と CGI の仕組み

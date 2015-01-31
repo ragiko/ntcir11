@@ -1,0 +1,125 @@
+前回の末尾で予告したとおり、今回は、context メソッドの使い方について説明します。
+context メソッドによるエグザンプルグループの階層化
+エグザンプルグループの階層化について書くのは、この連載で2度目です。ユーザー認証のテスト(4) -- YAGNIの回では describe メソッドを入れ子にして使用する例を示した後、describe メソッドに複数の引数を渡すという別の書き方を紹介しました。
+今回紹介するのは、もう少し複雑なパターンです。次のテストコードをご覧ください、
+describe Customer, '#a_method' do
+context 'A' do
+before do
+# ...
+end
+specify '...' do
+# ...
+end
+specify '...' do
+# ...
+end
+# ...
+end
+context 'B' do
+before do
+# ...
+end
+specify '...' do
+# ...
+end
+specify '...' do
+# ...
+end
+# ...
+end
+end
+全体として Customer#a_method メソッドについての仕様を記述しています。context メソッドによって、エグザンプルグループがさらに2つに分類されており、それぞれの冒頭に before ブロックが置かれています。
+context は、文脈(context)によってサブグループを作るためのメソッドです。「文脈」は「前提条件」と言い換えることもできます。before ブロックに記述された条件が成立する場合には、続く specify ブロック群で記述された仕様が成立する、ということです。
+常に before ブロックが必要というわけではありません。let で定義するヘルパーメソッドの中身を変えたり、エグザンプルの中身を変えたりしても、文脈や前提条件を表現できます。
+実を言えば、context メソッドは describe メソッドの単なる別名(alias)に過ぎません。クラスやメソッドごとにエグザンプルを分類する場合には describe を使用し、前提条件によってエグザンプルを分類する場合には context を使用することをお勧めします。
+ReceptionDesk#sign_in のテストを書き換える
+では、この新しい記述法を用いて ReceptionDesk#sign_in のテストを書き換えてみましょう。まずは、書き換え前のコードを示します:
+require 'spec_helper'
+describe ReceptionDesk, '#sign_in' do
+let(:customer) { create(:customer, username: 'taro', password: 'correct_password') }
+specify 'ユーザー名とパスワードに該当するCustomerオブジェクトを返す' do
+result = ReceptionDesk.new(customer.username, 'correct_password').sign_in
+expect(result).to eq(customer)
+end
+specify '該当するユーザー名が存在しない場合はnilを返す' do
+result = ReceptionDesk.new('hanako', 'any_string').sign_in
+expect(result).to be_nil
+end
+specify 'パスワードが一致しない場合はnilを返す' do
+result = ReceptionDesk.new(customer.username, 'wrong_password').sign_in
+expect(result).to be_nil
+end
+specify 'パスワード未設定のユーザーを拒絶する' do
+customer.update_column(:password_digest, nil)
+result = ReceptionDesk.new(customer.username, '').sign_in
+expect(result).to be_nil
+end
+specify 'ログインに成功すると、RewardManager#grant_login_pointsが呼ばれる' do
+expect_any_instance_of(RewardManager).to receive(:grant_login_points)
+ReceptionDesk.new(customer.username, 'correct_password').sign_in
+end
+specify 'ログインに失敗すると、RewardManager#grant_login_pointsは呼ばれない' do
+expect_any_instance_of(RewardManager).not_to receive(:grant_login_points)
+ReceptionDesk.new(customer.username, 'wrong_password').sign_in
+end
+end
+そして、書き換え後:
+require 'spec_helper'
+describe ReceptionDesk, '#sign_in' do
+context 'ユーザー名とパスワードが一致する場合' do
+let(:customer) { create(:customer, username: 'taro', password: 'correct_password') }
+specify '該当するCustomerオブジェクトを返す' do
+result = ReceptionDesk.new(customer.username, 'correct_password').sign_in
+expect(result).to eq(customer)
+end
+specify 'RewardManager#grant_login_pointsが呼ばれる' do
+expect_any_instance_of(RewardManager).to receive(:grant_login_points)
+ReceptionDesk.new(customer.username, 'correct_password').sign_in
+end
+end
+context '該当するユーザー名が存在しない場合' do
+specify 'nilを返す' do
+result = ReceptionDesk.new('hanako', 'any_string').sign_in
+expect(result).to be_nil
+end
+specify 'RewardManager#grant_login_pointsは呼ばれない' do
+expect_any_instance_of(RewardManager).not_to receive(:grant_login_points)
+ReceptionDesk.new('hanako', 'any_string').sign_in
+end
+end
+context 'パスワードが一致しない場合' do
+specify 'nilを返す' do
+result = ReceptionDesk.new(customer.username, 'wrong_password').sign_in
+expect(result).to be_nil
+end
+specify 'RewardManager#grant_login_pointsは呼ばれない' do
+expect_any_instance_of(RewardManager).not_to receive(:grant_login_points)
+ReceptionDesk.new(customer.username, 'wrong_password').sign_in
+end
+end
+context 'パスワード未設定の場合' do
+before { customer.update_column(:password_digest, nil) }
+specify 'nilを返す' do
+result = ReceptionDesk.new(customer.username, '').sign_in
+expect(result).to be_nil
+end
+specify 'RewardManager#grant_login_pointsは呼ばれない' do
+expect_any_instance_of(RewardManager).not_to receive(:grant_login_points)
+ReceptionDesk.new(customer.username, 'wrong_password').sign_in
+end
+end
+end
+元のコードよりも少し長くなりましたが、文脈による仕様の違いが明確になりました。
+エグザンプルの簡略化
+さて、先ほどの各エグザンプルの説明文と中身のコードを見比べると、ちょっと冗長な印象を受けないでしょうか。例えば、
+specify 'nilを返す' do
+result = ReceptionDesk.new('hanako', 'any_string').sign_in
+expect(result).to be_nil
+end
+とありますが、説明文がなくてもコードを読めば、どういう仕様で何をテストしようとしているか分かりますね。
+読者の中には異論のある方がいらっしゃるかもしれませんが、筆者の場合は、この種のエグザンプルに関しては説明文を省きます。
+specify do
+result = ReceptionDesk.new('hanako', 'any_string').sign_in
+expect(result).to be_nil
+end
+ポイントシステム(7) -- context - RSpec/Capybara入門 - Ruby on Rails with OIAX

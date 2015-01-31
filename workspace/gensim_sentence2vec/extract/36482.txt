@@ -1,0 +1,23 @@
+投稿者:谷内江@トロント大学
+相当雑な思いつきを投稿させて下さい。
+夜中ラボからの帰り道、第一回の投稿「酵母ゲノムの合成と大規模遺伝子操作」をもとに (1) リニアな二重鎖DNAの末端修復組換えの効率が高いことと (2) 沢山のDNA分子が一斉にuptakeされる形質転換の特性について考えてみました。
+(1) のリニアな二重鎖DNAの末端修復組換え効率が相当高いのは、Gibsonらのin-yeast assembly [1,2] にみてとれます。またHO遺伝子 [3] やSceI制限酵素 [4] によってターゲットのDNAを一旦切断しておくとリニアなDNAカセットの形質転換効率が高いことからもわかります。なぜ酵母はこのような高い末端修復組換え効率を持っているのか考えてみて、一瞬、HO遺伝子によるmating typeのスイッチングが効率良く起こらなくてはいけないためかと思いましたが、これはとても視野が狭いものと思い直しました。
+これはおそらく減数分裂期の組換えのためだと思います。Spo11は酵母を含めた真核生物では幅広く保存されていて、減数分裂初期特異的に発現し二重鎖DNAを切断し (DSB, double-strand break)、ここを起点に減数分裂期の組換えが起こります [5]。2008年にLars Steinmetzのグループが異なる二つの酵母株を掛け合わせて減数分裂させてマイクロアレイによってゲノム上に起こるcrossover型とnon-crossover型の組換え頻度(組換えホットスポット、コールドスポット)を解析しました [6]。この結果はその前年にMichael Lichtenらによって発表されたSpo11によるDSBのゲノム上の分布 [7] ときれいに一致しました。
+(2) の形質転換時にuptakeされるDNA分子の数についてですが、これは一体どれくらいでしょうか?(ありえなさそうですが)一細胞あたり数百-数千分子となるととても面白いことが考えられると思うのです。
+守屋さんがご存知かと思いますが、Spo11を一倍体で高発現させるとどうなるのでしょうか?一倍体でDSBが起こると組換えによる修復の余地がなくてsickにならないのでしょうか?
+以下「形質転換時にuptakeされるDNA分子の数が非常に多い」「一倍体でのSpo11の高発現がsicknessを示す」という前提で、以下のような思考実験をしてみました。
+1. 組換えホットスポットを10個選びます
+2. それぞれの組換えホットスポットを狙って挿入されるような10個のDNAカセット(セレクションマーカー遺伝子なし)を準備します
+3. ターゲットゲノムを精製し、ソニケーションして断片化します
+4. 3の断片化ゲノムプールから選んだ10個のホットスポット周辺のDNA断片をpull-downによって除きます
+5. 2と4を混合して形質転換にかけ、Spo11を”理想的なタイミングで一時的にだけ”発現させ、その後通常の培地でインキュベートします
+セレクションがなくても高い確率で10個のカセットが挿入された株が得られないでしょうか?
+あくまで、「形質転換時に単一細胞あたり取込まれるDNA分子の数が非常に多い」「一倍体でのSpo11の高発現はゲノムをずたずたにして修復の余地もない」という前提ですが、要はSpo11によってゲノムDNAを切断し、そこを狙った末端修復組換えを利用しようというものです。ただしSpo11は狙った部分以外も切断してしまうので4を同時に加えて狙った以外のSpo11切断を補修できるようにします。3の断片化ゲノムプールを加えると準備したDNAカセット以外の元々のゲノム由来のDNA断片で修復されてしまう可能性があるので、ターゲット領域に対応するDNAは除いておこうというものです。
+ご意見頂ければと思います。
+[1] Gibson DG et al. (2010) Creation of a bacterial cell controlled by a chemically synthesized genome. Science 329, 52-56
+[2] Gibson DG. (2009) Synthesis of DNA fragments in yeast by one-step assembly of overlapping oligonucleotides. Nucleic Acids Res 37, 6984-6990
+[3] Cross FR, Pecani K (2011) Efficient and rapid exact gene replacement without selection. Yeast 28, 167-179 [4] Noskov VN et al. (2010) Tandem repeat coupled with endonuclease cleavage (TREC): a seamless modification tool for genome engineering in yeast. Nucleic Acids Res 38, 2570-2576
+ [5] http://www.yeastgenome.org/cgi-bin/locus.fpl?locus=SPO11
+[6] Mancera E et al. (2008) High-resolution mapping of meiotic crossovers and non-crossovers in yeast. Nature 454, 479-485
+[7] Buhler C et al. (2007) Mapping meiotic single-strand DNA reveals a new landscape of DNA double-strand breaks in Saccharomyces cerevisiae. PLoS Biol 5, e324
+第四回 高効率に複数遺伝子をゲノムに挿入する | 酵母コロキアム

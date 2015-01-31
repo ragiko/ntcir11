@@ -1,0 +1,299 @@
+この章では、データ圧縮法の一つであるハフマン符号化(Huffman coding)について説明します。
+画像に限らず、たいていのデータ列というものは、程度の差はあるものの「冗長さ(規則性)」というものを持っています。データ圧縮とはこのような「冗長さ」を減らす処理であり、データ列の持つ規則性の傾向によって、効果的な方法も変わります。
+ランレングス法では、要素の並び方に対する規則性に着目してデータを圧縮していましたが、これは局所的な冗長さに対するものであり、データ列全体に対する冗長さとしては、他に要素の出現頻度というものがあります。ハフマン符号化は、データの出現頻度に対する規則性に着目してデータ圧縮を行う手法の一つです。
+1) 接頭符号
+通常、各ピクセルの色コードは固定長のビット列が割り当てられています。例えばTrue colorの場合、各成分はどれも8ビット長で表わされることになります。しかし色の成分が全て均等に使用されるわけではなく、その出現頻度にはばらつきがあるため、よく使用される成分に短いビット列、あまり使用されない成分に長いビット列をそれぞれ割り当てることを考えることにします。
+このような可変長の符号を使用する場合、区切りをどのように表現するかが大きな問題となります。すぐに思いつくのが終端符号の導入ですが、終端符号を含むビット列は符号として扱えなくなるため、圧縮効果に対して悪影響を及ぼします。例えば、終端符号を1ビットの'0'で表わした場合、符号としては"1","11","111", ...のようなビット'1'だけからなるビット列しか扱えなくなり、よほど使用頻度にばらつきがない限り、ほとんど圧縮できない(逆にサイズが大きくなってしまう)ことになります。だからといって、終端符号を長くすると、それだけで大きな無駄になってしまいます。
+ここで利用できるのが、電話番号の割り当て方法です。電話番号は10進の可変長符号ですが、番号を最後までダイアルすれば、末尾を明示しなくても電話は自動的に繋がります。これは、どの電話番号も他の電話番号の先頭部分に重複しないように番号が割り当てられているためであり、例えば"0123456"という電話番号がある場合、その末尾にさらに数字をつなげた"01234567"などの番号は使用しないようにしています。このように構成された可変長符号を接頭符号(Prefix code)といいます。
+一般的に、n進の接頭符号系はn分木の形で表わすことができ、根から葉までたどる道筋で一つの接頭符号を表現することになります。2進の場合は2分木で表現できるので、適当に2分木を描いて、葉の位置にデータを一つずつ割り当てると、接頭符号系ができあがります。あるデータに対する接頭符号は、根から辿る道筋から、左の枝を通ったら'0'、右の枝なら'1'と読むことで得ることができます。
+以下に、2分木で表現した接頭符号系の例を示します。
+データ番号接頭符号
+10
+210
+3110
+41110
+51111
+どのデータ番号に割り当てられた符号も、他の番号の先頭部分と重複していないことが、上の例からもわかると思います。
+2) ハフマン符号化
+あるデータが、データ列全体中に占める割合は
+データを表わす符号のビット数 X そのデータの出現回数
+で表わせます。上記例の接頭符号系において、データ番号1-5の出現回数をそれぞれ50,25,15,5,5回とした場合、変換前のデータの大きさが8ビットならば
+変換前 : 8 X ( 50 + 25 + 15 + 5 + 5 ) = 800 Bits
+変換後 : 1 * 50 + 2 * 25 + 3 * 15 + 4 * ( 5 + 5 ) = 185 Bits
+となり、185 / 800 X 100 = 23.125 %まで圧縮されたことになりますが、出現回数がそれぞれ5,5,15,25,50回だった場合、
+変換後 : 1 * 5 + 2 * 5 + 3 * 15 + 4 * ( 25 + 50 ) = 360 Bits
+で360 / 800 X 100 = 45%にまで変換後のデータ列は大きくなってしまいます。
+このように、ただ2分木の葉にデータを適当に並べただけでは最適な圧縮効果が望めないため、圧縮後のデータサイズを最小にするためのアルゴリズムを考える必要があります。
+D.Huffmanは、上記条件を満たす接頭符号系を生成するためのアルゴリズムを考案しました。そのアルゴリズムは以下のようになります。
+各データの出現頻度を数える。
+出現頻度が0のデータを除外する。
+残ったデータに対して木の節を用意し、そこにデータとその出現頻度を格納する。
+この時点で、節を一つだけ持つ木が集まってできた森が生成される。
+出現頻度が最小となる二つの節を抽出し、新たな節につなげる。新たな節には、つなげた節の出現頻度の総和を格納する。
+この操作によって、森の中の木の数は一つ減る。
+以下、全ての節が一つの木に束ねられるまで、4の操作を繰り返す。
+ハフマン木作成の例
+12
+34
+56
+パレット番号出現頻度接頭符号
+P12501
+P2600000
+P3511
+P470001
+P5300001
+P612001
+このアルゴリズムは、考案者の名をとってハフマン符号化(Huffman coding)と呼ばれます。以下に、このアルゴリズムを用いたハフマン木作成のサンプルを示します。
+ハフマン符号化サンプル
+#define PALET_MAX 256                          /* パレットコードの最大数 */
+#define HUFFMAN_TREE_MAX ( PALET_MAX * 2 - 1 ) /* ハフマン木の節の最大数 */
+#define RED( color ) ( ( ( color ) >> 16 ) & 0xFF )
+#define GREEN( color ) ( ( ( color ) >> 8 ) & 0xFF )
+#define BLUE( color ) ( ( color ) & 0xFF )
+/* ハフマン木構造体 */
+typedef struct Huffman_Tree {
+unsigned char rgb;
+unsigned int count;
+struct Huffman_Tree *left;
+struct Huffman_Tree *right;
+} Huffman_Tree;
+/* 各パレットの出現頻度をカウントする */
+void count_palet( x0, y0, x1, y1, r, g, b )
+int x0, y0, x1, y1;
+unsigned int *r, *g, *b;
+{
+int x, y;
+int color;
+/* 出現頻度の初期化 */
+for ( x = 0 ; x < PALET_MAX ; x++ )
+r[x] = g[x] = b[x] = 0;
+for ( y = y0 ; y < y1 ; y++ ) {
+for ( x = x0 ; x < x1 ; x++ ) {
+point( x, y, color );
+( r[ RED( color ) ] )++;
+( g[ GREEN( color ) ] )++;
+( b[ BLUE( color ) ] )++;
+}
+}
+}
+/* 新たなハフマン木の節を頻度順に並べながら挿入する */
+Huffman_Tree * add_and_sort( tree, s, e )
+Huffman_Tree *tree, *s, **e;
+{
+Huffman_Tree *p;
+for ( p = *e - 1 ; p->count > tree->count && p >= s ; p-- )
+*( p + 1 ) = *p;
+*( p + 1 ) = *tree;
+( *e )++;
+return( p + 1 );
+}
+/* ハフマン木の作成ルーチン */
+Huffman_Tree * make_huffman_tree( rgb_count, tree_start )
+unsigned int *rgb_count;
+Huffman_Tree *tree_start;
+{
+int palet;
+Huffman_Tree tree;
+Huffman_Tree *root_tree; /* ハフマン木の根 */
+Huffman_Tree *tree_end; /* ハフマン木配列の末尾 */
+/* 頻度順に並べ替えつつ,森を作成 */
+root_tree = tree_end = tree_start;
+for ( palet = 0 ; palet < PALET_MAX ; palet++ ) {
+if ( rgb_count[palet] > 0 ) {
+tree.rgb = palet;
+tree.count = rgb_count[palet];
+tree.left = NULL;
+tree.right = NULL;
+root_tree = add_and_sort( &tree, tree_start, &tree_end );
+}
+}
+/* 先頭二つの木を新たな節で束ねる */
+while ( tree_start + 1 < tree_end ) {
+tree.count = tree_start->count + ( tree_start + 1 )->count;
+tree.left = tree_start++;
+tree.right = tree_start++;
+root_tree = add_and_sort( &tree, tree_start, &tree_end );
+}
+return( root_tree );
+}
+void huffman_main( x0, y0, x1, y1 )
+{
+Huffman_Tree *tree;
+unsigned int *rgb[3];
+int i;
+for ( i = 0 ; i < 3 ; i++ )
+if ( ( rgb[i] = (unsigned int *)malloc( PALET_MAX * sizeof( unsigned int ) ) ) == NULL ) goto error_exit;
+if ( ( tree = (Huffman_Tree *)malloc( HUFFMAN_TREE_MAX * sizeof( Huffman_Tree ) ) ) == NULL ) goto error_exit;
+count_palet( x0, y0, x1, y1, rgb[0], rgb[1], rgb[2] );
+for ( i = 0 ; i < 3 ; i++ )
+root_tree = make_huffman_tree( rgb[i], tree );
+error_exit:
+for ( i = 0 ; i 
+サンプルのプログラムは、パレット毎の頻度をカウントするルーチン(count_palet)とハフマン木を作成するルーチン(make_huffman_tree)の二つに分けられます。これら二つのルーチンは、メインルーチンとなるhuffman_mainで呼び出されています。
+符号化はRGBそれぞれの成分に対して行っています。これは色コード全体を使ってハフマン木を作成すると、自然画の場合は一致する色コードが少なくなり過ぎて圧縮率が悪くなると判断したためです。
+頻度をカウントしてから、ハフマン木の元となる森を作成しますが、サンプルでは木を追加する際、頻度順に木をソートしていきます。以前紹介したソートルーチンの「単純挿入法」を応用したものですが、配列の末尾から順に追加するデータと頻度の比較を行い、追加するデータの方が小さい場合は配列のデータを一つ後ろにずらす操作を、追加するデータの方が大きくなるまで繰り返します。
+次に配列の先頭にある二つの木を新たな節を使って束ねる操作を、全ての木が一つに束ねられるまで繰り返していきます。新たな節は、森を作成する時に利用したソートルーチンを使い、配列中の適切な場所に追加していきます。
+ハフマン符号化による圧縮効率は、データの(ここではパレットコードの)使用頻度のばらつきによって左右されます。ハフマン符号化のような可変長符号化の場合、この圧縮効率は、情報理論の中の「エントロピー(平均情報量)」という概念を使って表わすことができるそうです。
+データxが配列中で出現する確率をPxとしたとき、エントロピーは以下の式で計算することができます。
+Σ ( -Px X log2Px )
+これで得られる数値は、一つのデータあたり平均で何ビットに収まるかを表わす理論限界値となります。上で示したハフマン木の例の場合、
+データPx- Px X log2Px
+P10.2400.494
+P20.05770.237
+P30.4900.504
+P40.06730.262
+P50.02880.147
+P60.1150.359
+で、エントロピーは 0.494 + 0.237 + 0.504 + 0.262 + 0.147 + 0.359 = 2.003となり、理論的には平均2ビット程度まで圧縮できることになります。対して、実際の平均ビット数は
+{ ( 2 x 25 ) + ( 6 x 5 ) + ( 51 x 1 ) + ( 7 x 4 ) + ( 3 x 5 ) + ( 12 x 3 ) } / 104 = 2.019
+で、理論値にほぼ一致することがわかります。
+3) 符号表の表現
+ハフマン符号化により圧縮したデータを復元するとき、圧縮前のデータとその符号との対応表が必要になります。この対応表の大きさによっては、かえってデータサイズを増加させてしまうため、なるべく小さなサイズで表現できるような工夫が必要になります。
+一番簡単な対応表としては、各パレットコードに対応する符号を単純に配列上に並べる方法ですが、ハフマン符号は最長で「データの種類 - 1」になるため(ハフマン木が完全に退化して線形リストと同じ状態となり、且つ全てのデータが使用されていた場合に最長のハフマン符号を持つデータが現れます)、256通りの値を持ちうるパレットコードの場合は255 Bitsが最長となります。この場合、一つの符号に32 Bytesものエリアが必要となり、符号表は8 KBもの大きさになります。
+しかし、たいていの場合は、最大の符号長は10数ビット程度に収まるため、符号の長さを適当なビット数に制限することで、配列の大きさを小さくすることができます。例えば、符号長を4 Bytes( = 32 Bits)にすれば、符号表は1 KBにまで小さくすることができます。もし、この符号長を超える符号が現れた場合、処理をあきらめるか、制限を可変にして最大符号長をより大きくするという手があります。またハフマン木は二分木であり、これの平衡性を回復させることにより木の高さを低くして、符号長を短くすることができます。平衡性を回復させると、圧縮効率は下がってしまいますが、接頭符号の形は保たれるため、符号自体は問題なく使うことができます。二分木の平衡性を回復させる方法として以前、2分検索/木検索の章でAVL平衡木として紹介していますので、詳細はそちらをご覧下さい。
+ハフマン符号表作成ルーチンのサンプル(1)
+#define HUFFMAN_SIGN_SIZE 5                          /* ハフマン符号の長さを格納するビット列のビット数 */
+#define HUFFMAN_SIGN_MASK 0x1F                       /* ハフマン符号の長さを格納するビット列のマスク */
+#define HUFFMAN_ARRAY_MAX ( 32 - HUFFMAN_SIGN_SIZE ) /* ハフマン符号の取り得る最大長 */
+/* ハフマン符号を配列表に収める                */
+/* 配列表はあらかじめ'0'で初期化する必要がある */
+/* 先頭 27 bits ... 符号語                     */
+/* 末尾  5 bits ... 符号長                     */
+int encode_huffman_array( tree, huffman_sign, huffman_array, level )
+Huffman_Tree *tree;               /* ハフマン木の節へのポインタ */
+unsigned long int huffman_sign;   /* ハフマン符号ビット列 */
+unsigned long int *huffman_array; /* ハフマン符号用配列表 */
+unsigned long int level;          /* ハフマン符号長 */
+{
+if ( level > HUFFMAN_ARRAY_MAX ) return( 0 );
+if ( tree->right != NULL )
+if ( encode_huffman_array( tree->right, huffman_sign * 2 + 1, huffman_array, level + 1 ) == 0 )
+return( 0 );
+if ( tree->left != NULL )
+if ( encode_huffman_array( tree->left, huffman_sign * 2, huffman_array, level + 1 ) == 0 )
+return( 0 );
+if ( tree->left == NULL && tree->right == NULL )
+huffman_array[ tree->rgb ] = ( huffman_sign << HUFFMAN_SIGN_SIZE ) | level;
+return( 1 );
+}
+/* ハフマン符号を元にハフマン木を作成する */
+void make_tree_from_huffman_sign( s, e, sign, level, palet )
+Huffman_Tree *s, **e;
+long int sign, level, palet;
+{
+for ( level-- ; level >= 0 ; level-- ) {
+/* 符号ビット = 1 : 右向き */
+if ( ( ( sign >> level ) & 1 ) > 0 ) {
+if ( s->right == NULL ) {
+( *e )->left = ( *e )->right = NULL;
+s->right = ( *e )++;
+}
+s = s->right;
+/* 符号ビット = 0 : 左向き */
+} else {
+if ( s->left == NULL ) {
+( *e )->left = ( *e )->right = NULL;
+s->left = ( *e )++;
+}
+s = s->left;
+}
+}
+s->rgb = palet;
+}
+/* 配列表からハフマン木を作成する */
+int decode_huffman_array( root_tree, huffman_array )
+Huffman_Tree *root_tree;
+unsigned long int *huffman_array;
+{
+long int sign, level, palet;
+Huffman_Tree *tree_end; /* ハフマン木配列の末尾 */
+root_tree->left = root_tree->right = NULL; /* 根の節を初期化 */
+tree_end = root_tree + 1;
+for ( palet = 0 ; palet < PALET_MAX ; palet++ ) {
+if ( huffman_array[palet] > 0 ) {
+level = huffman_array[palet] & HUFFMAN_SIGN_MASK;
+sign = huffman_array[palet] >> HUFFMAN_SIGN_SIZE;
+make_tree_from_huffman_sign( root_tree, &tree_end, sign, level, palet );
+}
+}
+return( 1 );
+}
+上記サンプル・プログラムでは、ハフマン符号一つに対して4 Bytes( = 32 Bits)割り当て、うち先頭の27 Bitsを符号そのものに、末尾の5 Bitsを符号長を格納するためのエリアにしています。よって、符号長は最大32 - 5 = 27 Bitsまで取ることができることになります。
+encode_huffman_arrayは、ハフマン木からハフマン符号を取り出して、配列表に格納するための関数です。はじめに符号長が最大長を超えていないかを確認し、もし超えていたらすぐに0を返すようにしています。つまりここでは、符号長が制限を越えたら処理をあきらめているわけですが、どのようなデータ列にも対応したい場合は、ここで符号長を拡張したり、木の平衡性を回復させる処理を加える必要があります。
+次の処理では、着目している節の右(左)側につながった節が葉でない場合、符号列と符号長を更新してから、その節を新たな引数にして自分自身を呼び出しています。符号列とその長さの更新については、符号列の場合2倍( = 左側へ1ビットシフト)した後、右側の節に対しては1を加えて末尾のビットを1とし、左側に対しては何もせずに末尾のビットを0にします。符号長の場合はは長さが1 Bit分増えるだけなので、1を加えるだけで更新完了です。
+もし葉であったのならば、その色コードをインデックスとする配列の要素に、できあがった符号列と符号長を代入します。
+decode_huffman_arrayはハフマン符号配列からハフマン木を再構築するための関数です。配列の先頭から順に符号列と符号長を読み込んでいき、それを元にハフマン木を再構築します。ハフマン木の再構築にはmake_tree_from_huffman_signを使い、符号列の先頭から順にビットを読んで、1ならば右の、0ならば左のリンクポインタをたどります。もしリンクがとぎれている場合は、新たな節を追加してつないでいき、符号列の全てのビットを読み終えたら、最後にたどり着いた節に色コードを代入して処理を終了します。
+decode_huffman_arrayでは、値が0である場合、ハフマン符号ではないとみなして処理をスキップするようにしています。よって、これらの関数を使う前に、配列表の要素は全て0に初期化しておく必要があります。
+ハフマン木を木構造そのままの形で保持する方法もあります。この場合は各節について、色コードと左右の枝の節番号を残しておけばいいので、一要素あたり「色コードのサイズ + 節番号のサイズ X 2」の大きさが必要となります。ここで、ハフマン木の節の総個数は「データの種類 X 2 - 1」個になるため(何故そうなるかは、数学的帰納法で考えるとわかりやすいと思います。データが一つの時は明らか。N個のデータに2N - 1個の節が使われているとき、さらに一つのデータを加えると、データを格納する葉とつなぐための節の計二つが加えられるため、節の総計は2N + 1 = 2(N + 1) - 1になります)、256種類ある色コードの場合は511個の節を使うことになり、節番号を格納するエリアとして9 Bits必要になります。そのため、必要な容量は511 X ( 8 + 9 X 2 ) = 13286 Bitsで、約1.6K Bytesとなります。
+さらに、左右の枝が葉であった場合、節番号がそのまま色コードを示すようにすると、色コードを格納するためのエリアが不要になるだけでなく、節番号0から255までのエリアも全く不要になるため、必要な容量は255 X 9 X 2 = 4590 Bitsで、約600 Bytes弱にまで小さくすることができます。
+ハフマン符号表作成ルーチンのサンプル(2)
+typedef struct Huffman_Tree_Table {
+unsigned int left;
+unsigned int right;
+} Huffman_Tree_Table;
+/* ハフマン符号を木構造のまま配列表に収める */
+int encode_huffman_tree_table( tree, huffman_tree_table, index )
+Huffman_Tree *tree;
+Huffman_Tree_Table *huffman_tree_table;
+int index;
+{
+Huffman_Tree_Table *current_table;
+current_table = &huffman_tree_table[index];
+/* 右側につながる節が葉だった場合,色コードをセット */
+if ( ( tree->right )->right == NULL && ( tree->right )->left == NULL )
+current_table->right = ( tree->right )->rgb;
+/* そうでなかったら,新たな要素を配列表に追加してその節番号をセット */
+else {
+current_table->right = index + PALET_MAX + 1;
+index = encode_huffman_tree_table( tree->right, huffman_tree_table, index + 1 );
+}
+/* 左側につながる節が葉だった場合,色コードをセット */
+if ( ( tree->left )->right == NULL && ( tree->left )->left == NULL )
+current_table->left = ( tree->left )->rgb;
+/* そうでなかったら,新たな要素を配列表に追加してその節番号をセット */
+else {
+current_table->left = index + PALET_MAX + 1;
+index = encode_huffman_tree_table( tree->left, huffman_tree_table, index + 1 );
+}
+return( index );
+}
+/* 木構造の配列表からハフマン木を再構築する */
+Huffman_Tree * decode_huffman_tree_table( tree, huffman_tree_table, index )
+Huffman_Tree *tree;
+Huffman_Tree_Table *huffman_tree_table;
+int index;
+{
+Huffman_Tree *current_tree;
+int next_index;
+current_tree = tree;
+/* 右側の節に新たな節を追加 */
+current_tree->right = ++tree;
+next_index = ( huffman_tree_table[index] ).right;
+/* 配列表の右側の節番号が色コードだった場合,右側の節に色コードを代入 */
+if ( next_index < PALET_MAX ) {
+tree->rgb = (unsigned char) next_index;
+tree->left = tree->right = NULL;
+/* そうでなかったら,右側の節に対して同様の処理を続ける */
+} else
+tree = decode_huffman_tree_table( tree, huffman_tree_table, next_index - PALET_MAX );
+/* 左側の節に新たな節を追加 */
+current_tree->left = ++tree;
+next_index = ( huffman_tree_table[index] ).left;
+/* 配列表の左側の節番号が色コードだった場合,左側の節に色コードを代入 */
+if ( next_index < PALET_MAX ) {
+tree->rgb = (unsigned char) next_index;
+tree->left = tree->right = NULL;
+/* そうでなかったら,左側の節に対して同様の処理を続ける */
+} else
+tree = decode_huffman_tree_table( tree, huffman_tree_table, next_index - PALET_MAX );
+return( tree );
+}
+ハフマン木を符号表にする関数はencode_huffman_tree_tableです。左右にぶら下がった節に着目して、それが葉である場合はその色コードを配列表の要素に節番号として登録し、そうでなければ新たな要素を配列表に追加して、追加した要素のインデックスに「色コードの最大値 + 1」を加えたもの(つまり、9ビットめを立てた状態になります)を、節番号として登録します。なお、新たな要素を追加するために自分自身を呼び出しているため、処理は再帰的に繰り返されることになります。
+符号表からハフマン木を再構築する関数はdecode_huffman_tree_tableです。こちらは新しい節を追加してから、配列表のリンク・ポインタをチェックし、色コードならば追加した節を葉として処理し、そうでなければ次の節を処理するために自分自身を呼び出します。
+今回は、ハフマン木とその符号表の作成方法について紹介しましたが、次の章ではこの続きとして「ハフマン木の正規化」と「動的ハフマン圧縮」を紹介したいと思います。今回のハフマン圧縮法は「静的ハフマン圧縮」と呼ばれ、はじめにハフマン木を作成してからデータの変換を行う手法になるのですが、「動的ハフマン圧縮」ではデータの処理とハフマン木の更新を並行して行うため、符号表が不要になります。
+<参考文献>
+Oh!X 1993年12月号 X68000マシン後プログラミング 「ハフマン符号化」
+Oh!X 1991年3月号 マシン語カクテル in Z80's Bar 「限りある資源をハフマンで」
+前に戻る
+タイトルに戻る
+画像圧縮アルゴリズム (3)ハフマン符号化 - 静的ハフマン圧縮

@@ -1,0 +1,5 @@
+スペクトル包絡情報量子化装置、スペクトル包絡情報復号装置、スペクトル包絡情報量子化方法及びスペクトル包絡情報復号方法SPECTRUM ENVELOPE INFORMATION QUANTIZATION DEVICE, SPECTRUM ENVELOPE INFORMATION DECODING DEVICE, SPECTRUM ENVELOPE INFORMATION QUANTIZATIZATION METHOD, AND SPECTRUM ENVELOPE INFORMATION DECODING METHOD - 特許庁
+マトリックス生成部103がスペクトル包絡情報からスペクトル包絡曲面を生成し、スペクトル包絡量子化部104がスペクトル包絡曲面を量子化する。A matrix generation part 103 generates a spectrum envelope curved surface from a spectrum envelope information, and a spectrum envelope quantization part 104 quantizes the spectrum envelope curved surface. - 特許庁
+そして、スペクトル包絡補正部20が、接続部分の周波数特性をスペクトル包絡によって補正する。A spectral envelope correcting part 20 corrects the frequency characteristic of a connection portion by the spectral envelopes. - 特許庁
+スペクトル包絡生成部23は、特徴パラメータ補正部21で補正された補正後の特徴パラメータに従って、スペクトル包絡を生成する。A spectrum envelope generation part 23 generates a spectrum envelope according to the feature parameter having been corrected by the feature parameter correction part 21. - 特許庁
+「"スペクトル包絡"」に関連した英語例文の一覧 - Weblio英語例文検索

@@ -1,0 +1,47 @@
+
+動的トークン $ISALIST は、実行時に展開され、このプラットフォームで実行可能なネイティブの命令セットを反映します。この様子はユーティリティー isalist(1) によって表されます。このトークンは、フィルタ、実行パス定義、および依存関係に対して使用できます。このトークンは複数のオブジェクトに拡張できるので、依存関係と使用する場合も管理できます。dlopen(3C) で取得された依存関係は、RTLD_FIRST モードでこのトークンを使用できます。このトークンを使用する明示的な依存関係は、最初に見つかった適切な依存関係を読み込みます。
+注 - このトークンは廃止されたため、Oracle Solaris の今後のリリースで削除される可能性があります。命令セットの拡張を処理するために推奨されるテクニックについては、「機能固有の共有オブジェクト」を参照してください。
+$ISALIST トークンに組み込まれたストリング名はすべて、複数の文字列に効率良く複製されます。各文字列には、使用可能な命令セットの 1 つが割り当てられます。
+次の例では、命令セット固有の「フィルティー」libfoo.so.1 にアクセスするように補助フィルタ libbar.so.1 を設計する方法を示します。$ LD_OPTIONS='-f /opt/ISV/lib/$ISALIST/libbar.so.1' \
+cc -o libfoo.so.1 -G -K pic -h libfoo.so.1 -R. foo.c
+$ elfdump -d libfoo.so.1 | egrep 'SONAME|AUXILIARY'
+[2]  SONAME            0x1                 libfoo.so.1
+[3]  AUXILIARY         0x96                /opt/ISV/lib/$ISALIST/libbar.so.1
+あるいは、代わりに「実行パス」を使用することができます。$ LD_OPTIONS='-f libbar.so.1' \
+cc -o libfoo.so.1 -G -K pic -h libfoo.so.1 -R'/opt/ISV/lib/$ISALIST' foo.c
+$ elfdump -d libfoo.so.1 | egrep 'RUNPATH|AUXILIARY'
+[3]  AUXILIARY         0x96                libbar.so.1
+[4]  RUNPATH           0xa2                /opt/ISV/lib/$ISALIST
+どちらの場合でも、実行時リンカーはプラットフォームで使用可能な命令リストを使用して、複数の検索パスを構成します。たとえば、次のアプリケーションは libfoo.so.1 に依存関係があり、SUNW,Ultra-2 上で実行されます。$ ldd -ls prog
+....
+find object=libbar.so.1; required by ./libfoo.so.1
+search path=/opt/ISV/lib/$ISALIST  (RPATH from file ./libfoo.so.1)
+trying path=/opt/ISV/lib/sparcv9+vis/libbar.so.1
+trying path=/opt/ISV/lib/sparcv9/libbar.so.1
+trying path=/opt/ISV/lib/sparcv8plus+vis/libbar.so.1
+trying path=/opt/ISV/lib/sparcv8plus/libbar.so.1
+trying path=/opt/ISV/lib/sparcv8/libbar.so.1
+trying path=/opt/ISV/lib/sparcv8-fsmuld/libbar.so.1
+trying path=/opt/ISV/lib/sparcv7/libbar.so.1
+trying path=/opt/ISV/lib/sparc/libbar.so.1
+また、同じ依存関係を持つアプリケーションは、MMX 設計の Pentium Pro で実行されます。$ ldd -ls prog
+....
+find object=libbar.so.1; required by ./libfoo.so.1
+search path=/opt/ISV/lib/$ISALIST  (RPATH from file ./libfoo.so.1)
+trying path=/opt/ISV/lib/pentium_pro+mmx/libbar.so.1
+trying path=/opt/ISV/lib/pentium_pro/libbar.so.1
+trying path=/opt/ISV/lib/pentium+mmx/libbar.so.1
+trying path=/opt/ISV/lib/pentium/libbar.so.1
+trying path=/opt/ISV/lib/i486/libbar.so.1
+trying path=/opt/ISV/lib/i386/libbar.so.1
+trying path=/opt/ISV/lib/i86/libbar.so.1
+「フィルティー」検索の縮小
+フィルタ内で $ISALIST を使用すると、1 つまたは複数の「フィルティー」が、フィルタ内で定義されたインタフェースの実装を提供できます。
+フィルタ内でどのようなインタフェースを定義しても、目的のインタフェースを探すために、可能性のある「フィルティー」すべてを徹底的に検索する結果になり得ます。性能が重要となる機能を提供するために「フィルティー」を使用する場合には、徹底的な「フィルティー」の検索は逆効果になるかもしれません。
+リンカーの -z endfiltee オプションを使用して「フィルティー」を作成して、これが使用可能な最後の「フィルティー」であることを示します。このオプションによって、該当するフィルタに対してそれ以上の「フィルティー」検索を行わないようにできます。前の SPARC の例で、SPARCV9 フィルティーが存在し、-z endfiltee のタグが付いている場合、フィルティー検索は次のようになります。$ ldd -ls prog
+....
+find object=libbar.so.1; required by ./libfoo.so.1
+search path=/opt/ISV/lib/$ISALIST  (RPATH from file ./libfoo.so.1)
+trying path=/opt/ISV/lib/sparcv9+vis/libbar.so.1
+trying path=/opt/ISV/lib/sparcv9/libbar.so.1
+命令セット固有の共有オブジェクト - リンカーとライブラリ

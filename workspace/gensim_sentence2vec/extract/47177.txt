@@ -1,0 +1,3 @@
+d次元空間内のn点をk個のクラスターに分割し,クラスターの分散の総和を最小化するアルゴリズムについて考察する.この問題はNP困難であるがkやdの値が十分小さい場合に対しては効率良く解けることを示す(k=2のときはO(n^d)時間;k=3,d=2のときにはO(n^5logn)時間,等).さらに次元によらずにO(n^<k+1>)時間で終了する近似比2のアルゴリズムを示す.
+We are given n points in the d-dimensional space. The k-clustering problem that we consider is to find a partition of these points into k disjoint sets that minimizes the sum of variances of clusters. We show that although this problem is NP-hard, we can solve it efficiently for some special cases where k and/or d are small: in O(n^d) time for k=2; in O(n^5log n) time for k=3, d=2, etc. We also give an O(n^<k+1>)-time approximation algorithm with the performance ratio of 2 for any d.
+

@@ -1,0 +1,204 @@
+ March 14, 2007 10:52 PM by toshi_i
+研究員の石橋利真です。こんにちは。
+前回の記事 - MySQLで全文検索 - FULLTEXTインデックスの基礎知識 - で触れた、FULLTEXTとNgramを駆使した日本語全文検索についてまとめてみました。パフォーマンスや導入方法の解説にあわせて、専用のNgramテキストを生成する php/perl モジュールも公開していますので、使いどころを把握した上で、気軽に試してみてくださいませ。
+目次:
+この手法の特徴
+概要
+実行速度計測
+2万件 / 800KB のデータ
+20万件 / 8MB のデータ
+20万件 / 57MB のデータ
+速度比較まとめ
+導入方法
+1. 検索語の最低文字数制限を変更する
+2. テーブルを作成する
+3. ローダースクリプトの準備
+4. ローダースクリプトの作成
+5. mysql クライアントで試してみる
+6. クライアントアプリの作成
+弱点について
+任意の環境でベンチマークしてみたい
+この手法の特徴
+MySQL単体で動作する = 手軽、メンテが楽
+検索結果は近似値ソートされない = LIKE検索に近い
+でも、LIKE検索に比べて数倍～数十倍高速
+UTF8ならば、"ねっと" で検索しても "ネット" がヒットする = 文字のゆらぎ (ひらがな<>カタカナ、半角<>全角) を吸収してくれる 
+INSERT/UPDATE処理が遅くなる = これらが頻繁に発生するテーブルには不向き
+なので、決して万能な全文検索の仕組みではありません。精度の高い結果が欲しい場合や、INSERT/UPDATE処理を高速化したい場合は、Senna 等のソリューションの導入をオススメします。 
+別途Senna等のインストール/保守やMySQLの再コンパイルはしたくない、でも手軽に全文検索の仕組みを導入したい・・・そんな場合に有効な手法です。 
+RETURN TO TOP
+概要
+日本語文章をn文字ごとに規則的に分割しておきつつ (Ngram)、これらを BOOLEAN MODE で検索することで、LIKE検索に近い形の日本語全文検索を実現する手法。
+例で示すと、「今日もお仕事」という文章を Ngram 変換したテキストがテーブルに格納されていたとして、
+今日 日も もお お仕 仕事 事
+これに対して「お仕事」という語句で検索する場合は、この検索語も Ngram 変換させた上で BOOLEAN MODE の全文検索にかけます:
+sql> select * from hoge where match( myText )
+against( '+お仕 +仕事' in boolean mode );
+するといい感じに、期待する「今日もお仕事」レコードがヒットする、といった具合。機能としてはLIKE検索と同じですが、LIKE検索に比べて数倍から数十倍の速度 (語句によっては百倍近い速さ) で実行できるのが大きな特徴です。 
+RETURN TO TOP
+実行速度計測
+総レコード数や総データサイズが異なるテーブルを幾つか用意して、普通のLIKE検索とFULLTEXT + Ngram検索のベンチマーク比較をしてみました。
+2万件 / 800KB のデータ
+用意したデータはこんな感じです。これに対して、こんなようなperlで書かれたベンチマークスクリプトを実行してみた結果です。
+結果の見方)
+1リクエストにかかった時間 / ヒット件数 / 投げた検索語
+LIKE検索:
+0.021 sec /  306 hit / 銀座
+0.023 sec / 1762 hit / ダイニング
+0.022 sec /    3 hit / 銀座 タパス
+0.022 sec /   29 hit / ダイニング 銀座
+0.021 sec /    3 hit / 銀座 タパス イタリアン
+0.022 sec /   20 hit / 餃子 紅虎
+TOTAL 0.135 secs
+FULLTEXT検索:
+0.002 sec /  306 hit / 銀座
+0.025 sec / 1762 hit / ダイニング
+0.004 sec /    3 hit / 銀座 タパス
+0.018 sec /   29 hit / ダイニング 銀座
+0.012 sec /    3 hit / 銀座 タパス イタリアン
+0.002 sec /   20 hit / 餃子 紅虎
+TOTAL 0.073 secs
+2万件 / 700KB のデータだと、倍速程度の差が出るようです。 個別に見ていくと "銀座" や "餃子 紅虎" 等、10倍差まで出ているものもあります。
+RETURN TO TOP
+20万件 / 8MB のデータ 
+上記と同じテーブル構成ながらも、レコード数を10倍にしてみると...
+LIKE検索:
+0.289 sec /  867 hit / 銀座0.193 sec / 2543 hit / ダイニング0.188 sec /    3 hit / 銀座 タパス0.223 sec /   35 hit / ダイニング 銀座0.187 sec /    3 hit / 銀座 タパス イタリアン0.192 sec /   43 hit / 餃子 紅虎TOTAL 1.275 secs
+FULLTEXT検索:
+0.006 sec /  867 hit / 銀座0.039 sec / 2543 hit / ダイニング0.005 sec /    3 hit / 銀座 タパス0.031 sec /   35 hit / ダイニング 銀座0.022 sec /    3 hit / 銀座 タパス イタリアン0.003 sec /   43 hit / 餃子 紅虎TOTAL 0.118 secs
+20万件 / 8MB のデータだと速度差は10倍になりました。個別に見ると40 - 60倍差が出ているものもあります。
+RETURN TO TOP
+20万件 / 57MB のデータ 
+1レコードのデータサイズを大幅に増やした、こんな感じのデータだと...
+LIKE検索:
+1.382 sec / 10560 件 / あい1.393 sec /   242 件 / かきく1.482 sec /   728 件 / さし すせ1.414 sec /    22 件 / たちつ てと1.431 sec /     1 件 / とな にぬねTOTAL 7.105 secs
+FULLTEXT検索:
+0.068 sec / 10560 件 / あい0.059 sec /   898 件 / かきく0.056 sec /   728 件 / さし すせ0.108 sec /    92 件 / たちつ てと0.027 sec /     4 件 / とな にぬねTOTAL 0.328 secs
+20万件 / 57MB のデータだと、全体で20倍の速度差が出ています。※ヒット件数が異なる点については後述。
+RETURN TO TOP
+速度比較まとめ
+以上のことから、
+FULLTEXT + Ngram検索は、LIKE検索より数倍～数十倍速い
+データ件数・サイズが大きければ大きいほど、FULLTEXT + Ngram 検索の優位性が増す
+ことがわかります。
+RETURN TO TOP
+導入方法
+FULLTEXT + Ngram 検索が動作する環境の作り方。テーブルの準備から、クライアントアプリ側の実装まで、一通りを説明してみます。
+1. 検索語の最低文字数制限を変更する
+前回のエントリでも書いたように、デフォルトの状態では4文字以下の検索語は無視される仕様になっています。これを変更するには、root権限にて /etc/my.cnf に以下の記述を追加した上で mysqld を再起動させます。
+[mysqld]ft_min_word_len=1 
+RETURN TO TOP
+2. テーブルを作成する
+Ngramテキストを格納するカラムを1つ余計に用意するのがポイント。さらに、そのカラムに FULLTEXT インデックスを張っておきます。
+sql> create table hoge (  id int auto_increment primary key,  val text,  ngram text,  fulltext( ngram )) default charset utf8 collate utf8_unicode_ci;
+RETURN TO TOP
+3. ローダースクリプトの準備
+適当にひらがなが羅列された、こんな感じのデータファイルを読み込んで、上記のテーブルにロードする事にします。このローダースクリプトの中で、レコード毎にNgramテキストを生成し、専用カラムngramに格納します。 
+で、肝となるNgramテキスト生成ロジックですが、僕らが作成した下記モジュールを利用すれば、特に何も考えずに実装できます。
+perl版 - Text::Ngram::MySQL::FullText をダウンロード  (07/06/13 v0.02に更新)
+php版 - NgramConverter をダウンロード
+perl版の使い方:
+use Text::Ngram::MySQL::FullText;
+my $p = Text::Ngram::MySQL::FullText->new();print $p->to_fulltext( 'あいうえお' );
+# あい いう うえ えお お
+php版の使い方:
+require_once('./ngram_converter.php');$p = new NgramConverter();
+echo $p->to_fulltext( 'あいうえお' );
+// あい いう うえ えお お
+RETURN TO TOP
+4. ローダースクリプトの作成
+スクリプトで実装するべき処理は以下の通りです:
+テーブルを truncate する
+処理を高速化するため、一旦FULLTEXTインデックスを消去する
+データファイルを1件ずつ読み込む
+前述のモジュールを駆使してNgramを作成
+テーブルに対してデータINSERT
+最後にFULLTEXTインデックスを追加
+これをperlで実装したサンプルはこちら。スクリプト冒頭部分にある、データベース接続情報を修正しておくのを忘れずに。スクリプトを実行すれば、データがすべてロードされます。これで全文検索の準備が整いました。
+RETURN TO TOP
+5. mysql クライアントで試してみる
+全文検索ができるかどうか、とりあえず自分でSQLを叩いて確認してみましょう。
+sql> select count(*) from hoge where
+-> match( ngram ) against( 'あい かき' );
++----------+| count(*) |+----------+|       19 |+----------+1 row in set (0.00 sec)
+ちゃんと動いたよママン。
+RETURN TO TOP
+6. クライアントアプリの作成
+クライアントアプリで実装すべき処理は以下の通りです:
+検索語を動的に受け取る
+受け取った検索語をNgramに変換
+NgramをもってFULLTEXT検索を実施
+2番目の「Ngramに変換」の部分は、再度前述のモジュールを駆使します。
+my $p = Text::Ngram::MySQL::FullText->new( column_name=>'hoge');
+my $match = $p->to_match_sql( 'あいかき' );
+# $match = "MATCH( hoge ) AGAINST( '+あい +いか +かき' )"
+my $sql = qq{select count(*) from hoge where $match};
+MATCH ... AGAINST 部分のSQLごと生成してくれるのでラクチンです。※php版も同じメソッド名で実装されています。
+07/06/13 v0.02 追加実装 - DBIの parameter bind 機能を使いたい場合はこう書きます:
+my $p = Text::Ngram::MySQL::FullText->new( column_name=>'hoge', return_bind=>1 );
+my ($match, $bind) = $p->to_match_sql( 'あいかき' );
+# $match = "MATCH( hoge ) AGAINST( ? )"
+# $bind = "+あい +いか +かき"
+my $sth = $dbh->prepare( qq{select count(*) from hoge where $match} )
+$sth->execute( $bind );
+while ( my $res = $sth->fetchrow_hashref ){ ... }
+サンプル) 引数で受け取った文字列を検索語としてFULLTEXT検索を実施する perl スクリプトはこんな風になります。実行例:
+$ perl sample_client.pl 'あいかき'
+導入方法はそんな感じです。 
+RETURN TO TOP
+弱点について 
+実行速度計測の章で、20万件 / 57MB のデータを検証した際、 Like検索とFULLTEXT検索とで、ヒット件数が異なる例が幾つかありました:
+242 件 / かきく  # Like
+898 件 / かきく  # Fulltext
+22 件 / たちつ てと  # Like
+92 件 / たちつ てと  # Fulltext
+Fulltext のヒット件数の方が多くなっています。これはNgram検索のロジックに起因していいて、全文検索の仕組みとしては、弱点(限界?)ともとれる現象です。 
+Like検索では "かきく" という3文字の単語を探しに行くのに対し、FULLTEXT + Ngram検索だと "かき" と "きく" という2文字単語 x2つが含まれるレコードを探しに行く為、ヒット件数が一致しないケースがあります。
+回避策は特に思いつかないのですが、ひとつあるとしたら、Ngramで分割する文字数をより多くすることで、緩和する場合もあるかと思われます。
+かきくけ  かき くけ
+かきくけ  かきく きくけ
+こんな風に分割する文字数を変更するには、今回公開したモジュールで下記のように指定すればOKです (perl版のみ対応) :
+my $p = Text::Ngram::MySQL::FullText->new(
+window_size => 3 ); #通常は2
+RETURN TO TOP
+任意の環境でベンチマークしてみたい
+実行速度計測の章で実施していた、一通りのベンチマーク測定を任意の環境で手軽に実施できるよう、プログラムとサンプルデータ一式を用意しました。
+fulltext_ngram_bench_0.1.tar.gz をダウンロード
+アーカイブの中身
+create_table.sql     # テーブル作成SQL
+shops.dat            # 20万件/8MB テスト用データ
+shops_loader.pl      # データのロードスクリプト
+shops_bench.pl       # ベンチマークスクリプト
+phony_data_maker.pl  # 20万件/57MB データを動的生成するスクリプト
+phony_loader.pl      # データのロードスクリプト
+phony_bench.pl       # ベンチマークスクリプト
+実施手順は以下の通りです。
+1. テーブルを作成する
+$ mysql < create_table.sql
+またはログイン後に
+sql> source path/to/create_table.sql;
+2. テストデータを動的生成する
+後半テスト用の20万件/57MBのデータを生成するスクリプトを実行します。
+$ perl phony_data_maker.pl
+これで同階層に phony.dat というファイルが生成されます。
+3. 自分の環境のデータベース接続情報を書き換える
+下記4つのスクリプトをテキストエディタで開いて、冒頭部分にあるデータベース接続情報を、今作業している環境のものに書き換えます:
+shops_loader.pl
+shops_bench.pl
+phony_loader.pl
+phony_bench.pl
+変更すべき箇所はコメントで記してあるので、エディタで開いてみたらすぐにわかると思います。※ダサい実装ですんません (力尽きた) 
+4. データをロードする
+下記の2つのスクリプトを実行して、すべてのデータをデータベースにロードさせます。
+$ perl shops_loader.pl
+$ perl phony_loader.pl
+5. ベンチマーク!
+以上、準備が整ったので、後はベンチマークスクリプトを実行して、結果を待つだけです。
+$ perl shops_bench.pl  # 20万件/8MBのテスト
+$ perl phony_bench.pl  # 20万件/57MBのテスト
+あとは好きにデータなりスクリプトなりに手を加えて、あれこれ試してみてくださいませ。
+RETURN TO TOP
+関連情報
+DBMSデフォルト組み込みの全文検索 - グニャラくんのグニャグニャ備忘録@はてな ≫FULLTEXTに対してSennaがいかにハイクオリティか、について。
+MySQL を使った全文検索 (Full-Text Search) - NI-Lab.'s ヅラッシュドット ≫本エントリと似たようなことを以前に書いている方がいらっしゃいました。
+MySQL FULLTEXT + Ngram : LIKE検索より数十倍高速な、お手軽 日本語全文検索 について｜blog｜たたみラボ

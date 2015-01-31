@@ -1,0 +1,99 @@
+
+Copyright © 2014 Basis Technology Corporation. All rights reserved. This document is property of and is proprietary to Basis Technology Corporation. It is not to be disclosed or reproduced in whole or in part without the express written consent of Basis Technology Corporation.
+1.概要
+RSE-ES は、さまざまな言語の文書の索引付け(indexing)とクエリーを実行できる全文検索アプリケーションを作成するための Elasticsearch 向けプラグインです。このプラグインは言語ごとに分かち書き(Tokenization)及び、基本形(Lemmatization)の作成を行い、検索アプリケーションに貢献します
+以下に、サポート対象の言語とその識別に使用する ISO 639 コード(例 eng, jpn etc…)を示します。
+アラビア語(ara)、中国語(zho)、チェコ語(ces)、英語(eng)、フランス語(fra)、デンマーク語(dan)、オランダ語(nld)、ドイツ語(deu)、ギリシャ語(ell)、ヘブライ語(heb)、ハンガリー語(hun)、イタリア語(ita)、日本語(jpn)、韓国語(kor)、ノルウェー語(ブークモール)(nob)、ノルウェー語(ニーノシュク)(nno)、ポーランド語(pol)、ポルトガル語(por)、ルーマニア語(ron)、ロシア語(rus)、スペイン語(spa)、スウェーデン語(swe)、タイ語(tha)、およびトルコ語(tur)
+2.インストール
+まだ Elasticsearch がまだインストールされていない場合はインストールします。elasticsearchから、お使いのプラットフォームに適切なファイルをダウンロードし、解凍してください
+RSE-ES プラグインをインストールします。elasticsearch のホームディレクトリーに移動し、以下を実行します。
+bin/plugin --install analysis-rse --url http://download.basistech.com/httpFDL/elasticsearch-analysis-rse/latest
+これにより、RSE-ES プラグインが plugins/analysis-rse 配下に配置されます。
+Elasticsearch 検索サーバーを開始するには、以下を実行します。
+bin/elasticsearch
+3.解析チェーン
+ベイシス・テクノロジーのアナライザーを使用することも、独自の解析チェーンを使用することもできます。
+ベイシス・テクノロジーのアナライザーは、トークナイザーと形態素解析トークンフィルターを備えています。トークナイザーは、テキストを個別の単語(トークン)に分割します。トークンフィルターは、各トークンの基本形(辞書形)を生成します。
+独自の解析チェーンを作成する場合、追加フィルターを組み込むことができます。
+4.ユーザーオプション
+アナライザーまたは形態素解析トークンフィルターを作成した場合、索引付けまたはクエリーを実行する言語を指定する必要があります。またオプションで、クエリーの最適化を指定することもできます。
+language
+処理する言語を識別する 3 文字の ISO 639 言語コード。
+query
+クエリーのパフォーマンスを最適化する場合は、true に設定します。最適化には、クエリー内の個別の語句では通常うまく機能しない代替トークン解析の曖昧性解消を試行しないなどの機能があります。索引に文書を追加する場合は、文が曖昧性解消用の文脈を提供するため、false(デフォルト)にする必要があります。
+5.例
+以下のスニペットでは、cURLコマンドラインツールを使用して、RSE-ES プラグインを実行する Elasticsearch APの使用例を を示します。
+5.1.関連形態素解析アナライザーで Lucene 索引を作成する。
+索引に日本語文書が含まれ、アナライザーが日本語形態素解析アナライザーである場合、以下のようにします。
+curl -XPUT 'http://localhost:9200/rbl-test-jpn' -d '{
+"settings": {
+"analysis": {
+"analyzer": {
+"my_rbl": {
+"type": "rbl",
+"language": "jpn"
+}
+}
+}
+}
+}'
+以下のステートメントでは、トークナイザーと形態素解析トークンフィルターが含まれた解析チェーン(ベイシス・テクノロジーのアナライザーに相当)を作成することで、前のステートメントと同様の内容を実現しています。
+curl -XPUT 'http://localhost:9200/rbl-test-jpn/' -d '{
+"settings":{
+"analysis":{
+"analyzer" : {
+"my_rbl" : {
+"type" : "custom",
+"tokenizer" : "rbl",
+"filter" : ["rbl"]
+}
+},
+"tokenizer" : {
+"rbl": {
+"type" : "rbl",
+"lang" : "jpn"
+}
+},
+"filter" : {
+"rbl" : {
+"type" : "rbl",
+"lang" : "jpn",
+"addLemmaTokens" : "true"
+}
+}
+}
+}
+}'
+5.2.アナライザーが解析する文書タイプと索引フィールドを指定する。
+文書タイプが「typeJapanese」で、日本語アナライザーが「body」フィールドを解析する場合、以下のようにします。
+curl -XPUT 'http://localhost:9200/rbl-test-jpn/typeJapanese/_mapping' -d '{
+"typeJapanese": {
+"properties" : {
+"body" : { "type" : "string", "analyzer" : "my_rbl" }
+}
+}
+}'
+5.3.文書を索引(Index)に追加する。
+各文書には、日本語テキストが入っている「body」フィールドが含まれています。最後のコマンドで、文書をクエリーで検索できるように、索引をリフレッシュしています。
+curl -XPUT 'http://localhost:9200/rbl-test-jpn/typeJapanese/1' -d '{
+"body": "T水泳の世界選手権第11日は27日、豪州・メルボルンで行われ、女子百メートル背泳ぎ決勝で中村礼子(東京SC)が1分0秒40の日本人として大会初の銅メダルを獲得した。"}'
+curl -XPUT 'http://localhost:9200/rbl-test-jpn/typeJapanese/2' -d '{
+"body": "優勝は59秒44の世界新をマークしたアメリカ人のナタリー・コーグリン。"}'
+curl -XPUT 'http://localhost:9200/rbl-test-jpn/typeJapanese/3' -d '{
+"body": "女子千五百メートル自由形決勝では、柴田亜衣(チームアリーナ)が15分58秒55をマークし、2日続けて同種目の日本記録を更新し銅メダル。"}'
+curl -XPUT 'http://localhost:9200/rbl-test-jpn/typeJapanese/4' -d '{
+"body": "男子百メートル背泳ぎ決勝は、アーロン・ピアソル(米)が52秒98の世界新で優勝し、森田智己(セントラルスポーツ)は8位。"}'
+curl -XPOST 'http://localhost:9200/rbl-test-jpn/_refresh'
+5.4.索引(Index)に対してクエリーを実行する。
+以下のような各クエリーに対して、Elasticsearch は、ヒット数と各ヒットの文書 ID を返します。
+curl -s 'http://localhost:9200/rbl-test-jpn/typeJapanese/_search?pretty=true' -d '{
+"query": {"query_string": {"query": "body:豪州"}}, "fields":[ "_id"]}'
+curl -s 'http://localhost:9200/rbl-test-jpn/typeJapanese/_search?pretty=true' -d '{"query": {
+"query_string": {"query": "body:コーグリン"}}, "fields":["_id"]}'
+curl -s 'http://localhost:9200/rbl-test-jpn/typeJapanese/_search?pretty=true' -d '{
+"query": {"query_string": {"query": "body:柴田亜衣"}}, "fields":["_id"]}'
+curl -s 'http://localhost:9200/rbl-test-jpn/typeJapanese/_search?pretty=true' -d '{
+"query": {"query_string": {"query": "body:アーロン"}}, "fields":["_id"]}'
+5.5.索引(Index)を削除する。
+curl -XDELETE 'http://localhost:9200/rbl-test-jpn'
+Elasticsearch Plugin Documentation | Basis Technology

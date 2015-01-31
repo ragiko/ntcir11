@@ -1,0 +1,15 @@
+
+自動車の運動性能向上技術 (Vehicle Dynamics and Control)
+運転行動の状態遷移モデルを考慮した異常運転検出アルゴリズムの開発
+Investigation on Unusual Driving Diagnosis Algorithm Considering State Transition of Driving Behavior
+ドライバに情報提供をする際に煩わしさを感じさせず,また適切な支援をドライバ個人に合わせて行う個別適合型運転支援システムの開発がさかんに行われています.
+本研究室では,ドライブレコーダにより記録した過去の市街地走行データに基づき,先行車追従状態における車間距離特性や先行車減速場面におけるブレーキ反応時間と減速度の大きさを解析し,
+交通事故につながる可能性の高い急ぎ運転などの異常運転を検出し,それに対する助言・注意喚起を行う個別適合型運転支援システムの開発を行っています.
+RESEARCH ABSTRACT
+We investigate a method of driving diagnosis by considering current driving behaviour state with state transition feature.
+The driving diagnosis can be utilized for the design of a braking assistance system with individual adaptation to human driving characteristics.
+The proposed algorithm is designed from the analysis of the usual driving behaviour by long-term running data from the experiments. 
+In car-following state, the headway distance is used as an index of hazard. In braking state, the braking reaction time to a preceding vehicle tail lamp 
+and the magnitude of the deceleration are used. In state transition from car-following to free - cruising state, 
+the accelerator pedal behaviour is used.
+運転行動の状態遷移モデルを考慮した異常運転検出アルゴリズムの開発

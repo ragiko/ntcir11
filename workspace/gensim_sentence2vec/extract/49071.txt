@@ -1,0 +1,33 @@
+
+音響分析のフリーソフトでSonic Visualiserというソフトがあります。
+これは音響データを視覚化し分析するためのソフトで、マニュアルもありますし、対応OSもLinux、OS/X、Windows、Solarisと幅広いです。
+開発元はCentre for Digital Music, Queen Mary, University of London. 
+機能としては、IRCAMのAudiosculptと似ていて、FFT分析や部分音の視覚化、テキストや画像などの張り付けが可能ですので、特定の音響をドキュメントとして説明しなければならない場合等に便利でしょう。
+主な対象は、音楽学者、アーカイヴィスト、音響処理研究者のようですが、作曲家やサウンドアーティストなども積極的に使用することが考えられると思います。
+分析から何かを得るというのは現代の音楽では非常に重要な考え方となっています。
+ダウンロード
+http://www.sonicvisualiser.org/download.html
+関連記事
+Max/MSP/VSTプラグインで誰でもPerfume”パフューム”  max/mspにて歌声などのモノフォニックな音声信号をクロマティックな音階のピッチに自動補正、スケーリングするためのVSTプラグインを作りました。 若者ならご存知パフュームという3人組の日本のポップグループのようなヴォー &hellip; 続きを読む &rarr;...
+.WAV, .AIFF, .AIFC オーディオファイルフォーマット  オーディオファイルには様々なフォーマットがあります。 音楽制作の現場で多く使われるもので見ていくと拡張子だけでも.wavと.aif、.aiffがあります。 –wav .wavは、マイクロソフトとIBMが共同で &hellip; 続きを読む &rarr;...
+ミキシングを学びたい人のための教科書/理論書  方々でミキシングを学ぶにはどういう本を使えばいいですかという質問を受けます。 私はレコーディングスタジオでアシスタントエンジニアの経験があるので、様々な音楽ジャンルのプロのエンジニアからいろいろな技を目で見て吸収しました &hellip; 続きを読む &rarr;...
+Max/MSP/DIPS  Max/MSPの映像拡張のライブラリであるDIPSのデモを触ってみました。 DIPSは国立音楽大学の松田周さんが開発した(Digital Image Processing with Sound)オブジェクト群でMaxイン &hellip; 続きを読む &rarr;...
+Comment from 藤本隆行 (DUMBTYPE, Kinsei R&D)
+これらの音楽のために収集された過剰な音素は、一律の面というよりは網のように繋がりつつ積み重なっていき、その編目のそこここから接続を待つ炭素の腕が 飛び出している。それらのレイヤーは不透明で、重なりは直視出来なくても、その表面には下に隠されたモノの凹凸が浮き上がる。
+そこには、線的に伸びるモニュメントというよりは、有機分子モデルのアシンメトリーな規則性と複雑さがあるようで、その構造をリズムがオーバードライブするというよりは、冷徹に切り刻んでいく。
+その溢れる音の中でも手触りが感じられるのは、Akihiko Matsumotoがネイティヴなプログラマーなうえに、確たる音楽的教養を持っていることの証だと思う。
+彼の最新作「Metamemory」は蓄積された莫大な情報に振り回されることなく、その中を泳ぎ回るような作品となった。 
+http://plumus.tokyomax.jp/release/mus-012
+iTunes Music Store
+https://itunes.apple.com/jp/album/metamemory/id943297106?l=en 
+[MUS-012] Metamemory by Akihiko Matsumoto ℗ 2014 +MUS [ EP, Digital ]
+Released: 2014/09/30 
+Mastering :
+Yu Miyashita at Underarrow
+http://www.underarrow.com
+Artwork:
+Adam Hosmer
+http://adamhosmer.com
+アーティスト自身による全曲解説
+http://akihikomatsumoto.com/works/metamemory.html 
+音響分析ソフトSonic Visualiser | Akihiko Matsumoto Blog

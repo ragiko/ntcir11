@@ -1,0 +1,42 @@
+ Functionプロシージャの作成
+Select Case関数を用い
+たサンプルプロシージャと、IF関数を用いたサンプルプロシージャの2種類をご紹介します。どちらも同じ結果となります。
+データベースウィンドウからモジュールを選択します。
+新規作成をクリックします。
+Select Case関数の利用
+Function Var区分け(int結果 As Integer) As Variant
+Select Case int結果
+Case Is > 80
+Var区分け = "優"
+Case 60 To 79
+Var区分け = "良"
+Case 40 To 59
+Var区分け = "可"
+Case Else
+Var区分け = "落第"
+End Select
+End Function
+動作確認
+利用方法は、下記のようにクエリをデザインビューで開きフィールド内で利用します。
+デザインビューからデータシートビューに切り替えます。
+IF関数の利用
+こちらも同じく、クエリフィールド内に記述する関数です。
+Function Var区分け2(int結果 As Integer) As Variant
+If int結果 >= 80 Then
+Var区分け2 = "優"
+ElseIf int結果 >= 60 And int結果 < 80 Then
+Var区分け2 = "良"
+ElseIf int結果 >= 40 And int結果 < 60 Then
+Var区分け2 = "可"
+ElseIf int結果 < 40 Then
+Var区分け2 = "落第"
+End If
+End Function
+Access組み込み関数であるSwitch関数の利用       
+Functionプロシージャを作成する以外にも、Accessの組み込み関数である Switch関数 を用いる方法もあります。Switch関数の構文は、下記のようになります。
+Switch([点数]>=80,"優",60<=[点数] And 80>[点数],"良", _
+40<=[点数] And 60>[点数],"可",40>[点数],"落第")
+クエリに新しいフィールドを作成し、そのフィールドに直接下記のように書き込みます。
+関連ページ 
+非等号クエリ:SampleFile024
+テストの評価作業:SampleFile097

@@ -1,0 +1,35 @@
+HashcatというツールでLinuxのパスワードのハッシュを解析して平文のパスワードを入手しようという実験です
+まず、今回パスワード解析する(仮定)のユーザー名、パスワードはユーザー名: hogeuser
+パスワード: pass-hogeになります
+[root@vagrant-centos65 ~]# grep hogeuser /etc/shadow
+hogeuser:$6$9z0jptfN$lYO13.QO3c86UwDGcGfcpy1LdEMn579ajaqpiE8oBp3ItKG8J3wnPJMtysXd6x6Cp8O7hN7nMRfDQsoWMrhgj0:16379:0:99999:7:::これを解析するんですね。頭にユーザー名があって、冒頭の$6$という記述から、これがSHA-512アルゴリズムでハッシュ化されていることが分かります。そして、そこから次の$記号まで、つまりが9z0jptfNソルト(SALT)になります。そして、
+YO13.QO3c86UwDGcGfcpy1LdEMn579ajaqpiE8oBp3ItKG8J3wnPJMtysXd6x6Cp8O7hN7nMRfDQsoWMrhgj0がパスワードハッシュ本体にあたりますね。さっきのをファイルに出力
+[root@vagrant-centos65 ~]# grep hogeuser /etc/shadow > crack1.hash
+[root@vagrant-centos65 ~]# vi crack1.hashこういう風に編集(要はユーザー名の欄を消して、ハッシュタイプ、ソルト、ハッシュを抜き出すだけです)
+[root@vagrant-centos65 ~]# cat crack1.hash
+$6$9z0jptfN$lYO13.QO3c86UwDGcGfcpy1LdEMn579ajaqpiE8oBp3ItKG8J3wnPJMtysXd6x6Cp8O7hN7nMRfDQsoWMrhgj0
+ハッシュ解析するんですが、今回は辞書攻撃にしたいと思ってます(総当たりは時間がかかるので、)
+架空の辞書を用意します。今回は辞書に該当するパスワードが入っているという仮定です。取りあえず辞書は以下のwordlist.txt
+root@kali:/home/vagrant# cat wordlist.txt
+userpass
+Password
+12345678
+abc1234
+iloveyou
+dogcat
+Queen's
+pass-hoge      <---これが正解
+Bishops
+Williamでは、 Hashcatを実行します
+root@kali:/home/vagrant# hashcat -m 1800 -a 0 -o Answer.txt crack1.hash wordlist.txt
+-m 1800とは タイプ6暗号化パスワード、つまりSHA-512を指定しています
+-a 0とはクラックを辞書攻撃に指定
+-o で実行結果をファイル出力(Answer.txt)を設定
+crack1.hashが解析対象ファイル
+wordlist.txtは先程編集した辞書ファイル
+上記Hashcatを実行したので、出力結果を確認する
+root@kali:/home/vagrant# cat Answer.txt
+$6$9z0jptfN$lYO13.QO3c86UwDGcGfcpy1LdEMn579ajaqpiE8oBp3ItKG8J3wnPJMtysXd6x6Cp8O7hN7nMRfDQsoWMrhgj0:pass-hoge末尾、ハッシュの後に文字列が続いているのが分かります。pass-hoge これが求めたかったパスワードです
+解析に成功ということになります。
+おわり
+Hashcatでパスワードハッシュを解析 - 立ち止まって、ゆったりな談義。

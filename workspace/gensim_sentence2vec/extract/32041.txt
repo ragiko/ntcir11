@@ -1,0 +1,194 @@
+
+2.3 いくつかのキーポイント
+Dublin Coreの位置付け,特色を理解するためにいくつかのキーポイントを示す。
+(1)インターネット情報資源のためのコアメタデータの必要性
+Dublin Coreはインターネット上で提供される様々な文書(ないしは文書様オブジェクト,Document Like Object(DLO))のためのメタデータを記述し,DLOをネットワーク上で発見するために提案されたものである。Dublin Coreは,いわばWWW上のDLO用の目録規則と見ることもできる。ところが,従来の目録とは下記のような点で異なっている。(注:インターネット上には「Document(文書)」とは言いづらい様々な資料が提供されている。そのため,最近ではあまりDLOということばは用いられず,「Resource(ここでは情報資源と訳す)」が用いられている。次の段落以降では情報資源,もしくは単に資源と記す。)
+DLOの場合,出版や図書館による所蔵という概念がはっきりしないので,記述対象が明確でない。
+CIP (Cataloging in Publication)のようにDLOの中にある程度の書誌情報を入れられることが望ましいが,それを書くのは著者や編者,すなわち目録に関する素人である。
+WWW上には非常に多様なDLOがあるので,どんな種類のDLOにでも適用できる詳細に決められた規則を作ろうとすると,非常に複雑なものになってしまう。
+インターネットという巨大な分散環境で利用するので,相互利用性(Interoperability)が強く要求される。
+Dublin Coreは,素人にでも書け,多様な分野の情報資源の記述に適用できるという観点から少数の基本的要素(Core Elements)のみによるメタデータ記述を目指してきた。Dublin Coreのは単にシンプルなメタデータとして理解すべきではなく,様々な分野に共通な要素によるメタデータ記述,すなわち様々な分野に(できるだけ)共通の概念としてみとめられた属性の要素の集まりとして定義したコアメタデータとして提案されたものであることを忘れてはならない。
+(2) Semantic Interoperability
+Semantic InteroperabilityはDublin Coreにおける忘れてはならないキーワードである。インターネットという巨大な分散環境で利用することを前提にしているので,メタデータは異なる環境で作られ,かつ使われる。そのため,メタデータの相互利用性は非常に重要である。すなわち,メタデータのエレメントの意味(セマンティクス)定義が明確に与えられなければならす,かつ様々な分野で適用できなければならない。これまでのDublin Coreでの議論がもっぱらエレメントの意味定義に費やされてきているのはそのためである。また,メタデータは人間が読んで理解できるものでなければならず,かつコンピュータによっても利用できるものでなければならない。(たとえば,索引付けのためにタイトルや主題といったエレメントの意味が利用できねばならない。)
+(3) Dublin Coreの記述形式(シンタックス)
+記述形式(シンタックス)に関する定義を与えないと実際の記述を行うことができない。ところが,シンタックスを厳密に決めることは利用者環境の不均一さや利用者の好みの問題などのために容易ではない。また,シンタックスの定義がセマンティクスに影響することを完全に避けることは困難である。一方,WWWの進化の速さを考えるとシンタックスを固定することは得策とは考えにくい。そのため,Dublin CoreではHTMLでの記述方法に関する推奨やWWWのHTMLのグループへの要望等は行ってきたが,Dublin Core自身として記述形式を定めることはほとんどしてこなかった。現在では,WWW上でのメタデータ記述としてResource Description Framework(RDF)が与えられているので,基本的に将来のDublin Core記述はRDFに基づくものになっていく。
+(4) Simple Dublin CoreとQualified Dublin Core
+Dublin Coreによる記述には大きく分けて二つの考え方がある。ひとつは基本要素を更に細かく分けることはしないというもので,もう一方は基本要素をさらに細かく分けて記述するというものである。後者は前者を含むという風にも理解できるが,コアメタデータとしてのより細かな要素(基本要素の部分要素)の定義は一般に難しくなる。前者の考え方によって定義されたものをSimple Dublin Core(あるいはDC Simple(DCS)),後者によるものをQualified Dublin Core(あるいはDCQ)と呼ばれる。現在までに標準化の作業に取り掛かられているものはSimple Dublin Coreである。(注:Qualified DCではエレメントを細分化・詳細化するためのQualifierを用いてメタデータを表す。より詳細化・細分化されたエレメントをサブエレメントと呼ぶ。また,サブエレメントはサブストラクチャと呼ばれることもある。)
+たとえば,著者の名前,所属,住所,電子メールアドレスといった項目を書く場合,DC Simpleにしたがうとこれらを一まとめにして書いてしまうか,あるいはデータの中に属性を埋め込んで区別するしかない。一方,Qualified DCに従うとこれらを適切なサブエレメントに分けて定義することができる。
+DC Simpleで定義した例(HTMLのMETAタグを用いたもの)
+<META name="DC.Creator" content="Sugimoto, Shigeo, University of Library and Information Science, Tsukuba, Ibaraki, Japan, sugimoto@ulis.ac.jp">
+Qualified DCで定義した例
+<META name="DC.Creator.Name" content="Sugimoto, Shigeo">
+<META name="DC.Creator.Affiliation" content="University of Library and Information Science">
+<META name="DC.Creator.Address" content="Tsukuba, Ibaraki, Japan">
+<META name="DC.Creator.Email" content="sugimoto@ulis.ac.jp">
+こうして見るとサブエレメントを用いて記述した方が記述の意味が明確であることは明らかである。しかしながら,様々な分野の情報資源が提供されるネットワーク上でのメタデータの流通を考えた場合,共通のサブエレメントの定義をどのようにするかが難しい問題であることも容易に理解できる。
+(5) 1:1原則 (One to One Principle)
+実際にメタデータを記述する際,どういう単位を対象に記述するのかが問題である。冊子体の資料の場合であれば,記述対象が比較的明確であるのに対し,ディジタル資料の場合「ひとまとまり」の資料が何をさすのかが必ずしも明確でない。たとえば,ひとつの論文が章毎に分けられ複数のファイルで構成されている場合,論文にひとつのメタデータを与えるのか,それとも各章毎(すなわちファイル毎,いわばURLを与えられている実体毎)にメタデータを与えるのかが問題である。これまでDublin Coreでは原則として対象資源とメタデータは1対1で与えるとしている。筆者は,上の論文の例であれば各章毎に与えることになると理解している。また,ひとつの論文が何枚ものページイメージでできている場合,論文全体とページイメージ毎のメタデータがそれぞれ作られることになる。
+ディジタルコンテンツの場合,物理的な資料をディジタル化して作られることも多い。物理的な対象物をディジタル化して作った資料のメタデータを書く場合,対象資源として「物理的な対象物」と「ディジタルイメージ」のどちらをとらえるのかといった問題がある。たとえば,彫刻を写真にとってディジタル化したものの場合,Creatorは彫刻の作者なのか,それとも写真家なのかが問題になる。Creatorは「知的内容の想像に関わった人」である。単なるディジタル化のための撮影であればCreatorは彫刻家である。そうでなく写真としての創造性が認められる場合には写真家がCreatorであろう。その場合には彫刻,写真それぞれのメタデータが必要になり,またそれらの間の関係を表す必要が生じる。「原作(古典)の現代語版の翻訳を演じた劇のビデオをディジタル化したもの」といった例を考えると段々混乱してくるようである。
+(6) 多言語 (Multilinguality)
+インターネット上の情報資源のメタデータを表す上で多言語の問題は重要な問題である。Dublin Coreのワーキンググループの一つにMultilingualityグループがあり,この問題を検討している[5]。Simple Dublin Coreの場合,エレメントの意味は言語とは無関係に,世界共通のものとして与えられている。また,記述方法に関しても計算機が読むための形式には統一して与えられたラベルを用いてエレメントを識別すること,値の記述言語を指示するためにlang属性を利用することが了解されている。現在まで多言語グループではSimple Dublin Coreの参照記述(Reference Description)の翻訳を進めてきており,12言語への翻訳が終わり,他に6言語への翻訳が進められている。各言語による参照記述には要素名の翻訳も含められている。翻訳された要素名は基本的に人間が読むためのものであり,ユーザインタフェースなどに用いられる。一方,計算機は統一したラベルを検索や索引付けに利用する。
+言語間でのSemantic Interoperabilityを失わないためには英語で作られる標準定義の翻訳による意味の食い違いが生じないようにすることが重要である。また,Dublin Coreを世界中で利用するには言語(あるいは文化)固有の情報の記述を導入せざるを得ない。たとえば,日本語の場合,「よみ」は重要な情報である。利用が広がるに連れて言語固有の情報がメタデータの中に記述されることになるであろう。そうした場合でもsemantic interoperabilityを損なわないようにすることが求められる。
+2.4 記述に関して
+先に述べたようにDublin Coreの活動の中ではシンタックスの定義はそれほど熱心にはなされてきていない。WWW上でのXMLの利用が広がりRDFに基づく記述が一般化するまでは,WWW文書の中への埋め込みを目的とした記述はHTMLでせざるを得ない。しかしながら,HTMLのMETAタグを用いた記述にはグルーピングの問題(後述)がある。メタデータとしてもとの資源とは別に記述し蓄積する場合,筆者自身はSGML(もしくはXML)を用いて適切なDTDを決めてDublin Coreメタデータ記述をしておけばよいと考えている。これはDublin Coreの参照記述が定義する範囲での記述同士の間では変換を容易に行えるためである。
+参考のため,HTMLによる記述例と独自のDTDに基づきSGMLで記述した例を示す。
+HTMLによる記述例
+<meta name="DC.Title" content="図書館情報大学卒業論文目次 平成9年度" lang="ja">
+<meta name="DC.Publisher" content="University of Library and Information Science">
+<meta name="DC.Publisher" content="図書館情報大学" lang="ja">
+<meta name="DC.Contributor" content="Sugimoto, Shigeo">
+<meta name="DC.Contributor" content="杉本 重雄" lang="ja">
+<meta name="DC.Date" content="1998-6-6">
+SGMLに基づく記述例 (図書館雑誌no.11をディジタル化して作ったデータに対して与えたメタデータである。一部にサブエレメントを用いている。)
+<title lang=ja>図書館発達の内的動力を論じて本会会員諸君に望む
+<transcription lang=ja>トショカン ノ ナイテキドウリョク ヲ ロンジテ
+ホンカイ カイイン ショクン ニ ノゾム</transcription>
+</title>
+<creator>
+<personalName lang=ja>和田万吉</personalName>
+</creator>
+<subject lang=ja>図書館員</subject>
+<subject lang=ja>図書館</subject>
+<subject lang=ja>図書館員養成</subject>
+<subject lang=ja>日本図書館協会</subject>
+<publisher>
+<corporateName lang=ja>日本図書館協会</corporateName>
+</publisher>
+<date><creationOIC scheme=ANSIX3.30>1911-04-07</creationOIC></date>
+<type>Image</type>
+<format>gif</format>
+<identifier>tosyokanzasshi11/00000002.gif</identifier>
+<source>図書館雑誌第十一号</source>
+<language scheme=ISO639>ja</language>
+HTMLのMETAタグを用いた記述の場合,ひとつのタグには一つの値しか記述しないことを推奨している。(ただし,一つのタグの中に複数の値を繰り返して書くことも誤りではない。)METAタグを用いた記述では構造が明確に表現できないので,サブエレメントを含むエレメントのグルーピングが陽にできないという問題がある。たとえば,下の例のように二人の著者がいる場合,著者の名前を日英両方で記述した場合,4つタグでの記述となり,その間の対応関係が機械的には取りづらくなる。こうした曖昧性が生じる場合,何らかの慣習的規則を決め記述の統一性を保つようにすることが必要である。
+グルーピングの問題を含む例
+例1 日本語で書いたタグと英語で書いたタグとの対応が取れない
+<META name="DC.Creator" content="杉本重雄" lang="ja">
+<META name="DC.Creator" content="Sugimoto, Shigeo">
+<META name="DC.Creator" content="田畑孝一" lang="ja">
+<META name="DC.Creator" content="Tabata, Koichi">
+例2 同一人物のNameとEmailサブエレメントを結び付ることができない
+<META name="DC.Creator.Name" content="Smith, John">
+<META name="DC.Creator.Email" content="jsmith@foo">
+<META name="DC.Creator.Name" content="Suzuki, Taro">
+<META name="DC.Creator.Email" content="tsuzuki@bar">
+Dublin Coreでは基本的にフリーテキストによる記述を基本としている。しかしながら,まったく自由な形式の記述のみにしてしまうとデータの解析が困難になる。そこである程度の記述形式の基準を与える必要がある。Dublin Coreの記述には各エレメントに関して,エレメントの値の他,エレメントの値を記述するための基準(scheme)と値の記述言語(lang)を与えることになっている。たとえば,キーワードをLCSHに基づいて与えればschemeはLCSHである。また,もしエレメント値を日本語で書いてあれば記述言語を表すlangはjaである(注)。このほか,各エレメントには記述のための基本的な指針が与えられており,メタデータの品質管理が可能なように考えられている。たとえば日付の記述形式の場合ISOで決められたyyyy-mm-dd(年月日)やyyyy(年)といった形式を用いることを推奨している。エレメントよっては,たとえば形式(フォーマット)エレメントのように,あらかじめ用意された値の中から値を選択することを推奨しているものもある。こうした記述の推奨方式については各エレメントに関するワーキンググループ等で議論が進められており,現時点での推奨についてはUser Guideグループのワーキング・ドラフトで知ることができる[6]。
+(注:対象資源の記述言語を表すLanguageエレメントとエレメントの記述言語を表すlang属性とを混同しないように注意が必要である。たとえば,<META name=&quotDC.Language&quot content=&quot英語&quot lang=&quotja&quot>と<META name=&quotDC.Language&quot content=&quoten&quot>あるいは<META name=&quotDC.Language&quot content=&quotEnglish&quot>はいずれも対象資源が英語で記述されていることを意味する。ただし,HTMLによるメタデータの記述の場合,エレメントの記述言語は英語(lang=en)がデフォルト値である。)
+2.5 Dublin Core を利用したプロジェクト
+Dublin Coreのホームページ[2]から数多くのプロジェクトを見つけることができる。また,第6回Dublin Coreワークショップでもいくつかのプロジェクトの報告があった。たとえば,いくつかの博物館が共同して進めているCIMI(Consortium for the Computer Interchange of Museum Information)の報告ではDublin Coreに基づくメタデータの多くの部分を機械的な変換によって生成したそうである。オーストラリアの政府情報を扱うAGLS(Australian Government Information Locator Service)では15エレメントのほかにサービス(service)や機能(function)に関するエレメントを付加しているなどの報告があった。このほか,Z39.50にDublin Coreの15エレメントの定義が加えられていることなどの報告があった。
+図書館情報大学附属図書館ではDublin Coreに基づいて図書館情報学や図書館に関するネットワーク情報資源のメタデータの作成を進めることになっている。新たなメタデータはコンピュータの助けを借りた人手による記述が中心になる。一方,既存のメタデータ(たとえばOPAC)との統一的な検索インタフェースを作る上でDublin Coreを基礎とすることにしている。
+以上のように,Dublin Coreに基づくメタデータは必ずしも人手で一から作るというものばかりではなく,機械的な変換によって作り出したデータの利用,検索のための統一的なインタフェースのための利用が考えられる。これからは個々のデータベースへアクセスして検索するというよりは,ネットワークやディジタル図書館のような大きな情報空間の中から資源を探すことが多くなると考えられるので,そこでのコアメタデータの重要性は疑えない。
+3. Dublin Coreの現在の状況
+3.1 第6回Dublin Coreワークショップから
+去る11月2日から3日間に渡ってワシントンの議会図書館で第6回のDublin Coreワークショップが開かれ,筆者も参加した。参加者は約100名,16カ国(日本からは5名)であった。ワークショップに先立ち11月1日にDublin Coreのグループが作っているTechnical Advisory Committee (TAC)とPolicy Advisory Committee (PAC)のミーティング(TAC-PACミーティング)が開かれ,そこでDublin Coreの開発活動の今後についての議論がなされた。それに加えて知的財産権管理のためのメタデータ規則の開発を進めているINDECSグループにおける考え方などに関してGodfrey Rus氏tの講演があった。(同氏は文献[7]で知的財産権管理のためのメタデータの観点からDublin Coreに対する批判的な記事を書いている。なお,同氏はワークショップでも講演した。)
+筆者が理解した範囲で今回のワークショップを振り返ってみたい。今回のワークショップでは現在までに定義されたサブエレメントを持たないDublin Core(Simple Dublin CoreやDC Simpleと呼ばれる)に関しては今後基本的な定義変更をすることはせず,定義の明確化や利用経験に基づく修正にとどめることにし,現在のDC Simple(RFC 2413で定義されているもの)をバージョン1.0 (DC1.0)とした。サブエレメントを持つDublin Coreの検討を引き続き進めqualifier付きDublin Coreバージョン1.0 (DCQ1.0と呼ばれる)の定義を行うこと,さらにDavid Bearmanからのエレメントの見直しに関する提案(注)やRights Managementのためのメタデータを検討しているINDECSグループなどとも協調しながらバージョン2.0(DC2.0)の検討を始めることを了解した。
+(注:David Bearman氏はCreator,Publisher,Contributorといった人あるいは組織が情報資源の発信に関して果たした役割によって分けられているエレメントを実際に記述する際,その区別が必ずしも明快にはできないことなどの理由からこれらをひとまとめにしてAgentとでも呼んではどうかという提案をワークショップ前にしていた。ワークショップではRust氏の講演内容なども踏まえエレメントの性質による再分類について講演した。なお,Dublin CoreとRights Managementの両方の観点からの論文がBearman,Rustほかによって発表されている[8]。)
+筆者は以下の点に注意しなければならないと思っている。
+DC2.0の検討が始まることによってDC1.0の存在価値がなくなるもので決してなく,DC1.0は現在実際に存在する唯一の標準として今後も安定的に利用できること。
+DC2.0によって情報資源の発見というDublin Coreの役割と権利管理のメタデータ等がRDFという統一的な環境の下で統合的に利用できるようになる可能性があること。また,DC2.0にはDC1.0との間でSemantic Compatibility(別の表現をすると機械的な変換可能性を有すること)を持つことが要求されること。
+現在までの実現例の中でもqualifierはすでに多く用いられているが,DCQはqualifierの利用方法に関する標準を定義する上で必要であること。
+Dublin Coreの役割は情報資源の発見であり,知的財産権やアクセス制限はDublin Coreの直接的な応用分野ではない。15エレメントの中に権利管理のためのエレメントがあるとは言うものの,実際の知的財産権管理やアクセス制限に使うというよりは,そうした情報へのリンクを持つという位置づけに近い。知的財産権を扱うメタデータのグループとの協調が進むことは,情報資源の発見と発見された資源の利用のためのメタデータがRDFという共通基盤の上に作り上げられる可能性を意味する。その意味で今回のワークショップは大きな転換点であったように思える。
+以上のほか,Dublin Coreの発展に伴ってDublin Coreを維持管理するための組織に関する議論も行われた。これまではメーリングリストとワークショップを基本とする草の根組織によって進めてきたが,さらに標準化と利用を勧めていく上ではよりしっかりした体制が必要であるためどのような体制で今後進めていくかに関する提案がなされた。(具体的な方法については今後出されるであろうワークショップのレポートを待つことにしたい。)
+3.2 Resource Description Framework
+Dublin Coreに基づくメタデータの記述方法としてもっとも重要なものはWWWコンソーシアム(W3C)で進められているResource Description Framework (RDF)である。RDFはWWW上でいろいろなメタデータ規則に基づいてメタデータを記述するための形式と意味を定義している。また,RDFは第2回ワークショップで提案されたWarwick Frameworkの影響を受けている。したがって,将来のDublin Coreメタデータ記述はRDFに基づいて記述されることになる。RDFの詳細はW3Cのメタデータのページ[9]から選られる。またRDFのモデルとシンタックスに関するProposed Recommendation[10]や文献[11],[12],[13]等を参照していただきたい。
+4. 利用例
+4.1 図書館情報大学ディジタル図書館システム
+図書館情報大学附属図書館が1999年2月から開始したディジタル図書館システムの主要な機能は図書館および図書館情報学に関するサブジェクトゲートウェイである。この機能を構築するために現在WWW上に提供される当該分野の情報資源を収集し,それらのメタデータの蓄積を進めている。収集は機械的に行い,メタデータの作成は人手によっている。また,メタデータ作成と蓄積のためにデザインしたユーザインタフェースとデータベースを用意している。なお,本システムに関する詳しい説明は別の機会に譲りたい。
+このシステムではSimple Dublin Coreの15エレメントを基礎にして下記の項目を加えている。
+文字コード
+情報資源の発信国
+各エレメントのデータの「よみ」
+また,下に示す例のように蓄積するデータはSGMLのタグ付きテキストである。
+<Title>ULIS Library HomePage New</Title> 
+<Creator lang=ja>図書館情報大学附属図書館</Creator> 
+<Subject lang=ja>図書館情報大学</Subject> 
+<Subject lang=ja>大学図書館</Subject> 
+<Subject lang=ja>図書館情報大学附属図書館</Subject> 
+<Description lang=ja>図書館情報大学附属図書館のトップページ。以下の…</Description> 
+<Date>1998-11-06</Date> 
+<Type>text</Type> 
+<Identifier Scheme=URL>http://www.ulis.ac.jp/library/</Identifier> 
+<Language>ja</Language> 
+<Format>text/html</Format> 
+<Charcode>x-euc-jp</Charcode> 
+<Country Scheme=ISO3166>jp</Country> 
+4.2 Dublin Coreを利用した横断検索機能を持つ雑誌記事検索閲覧システム
+筆者の研究室ではDublin Coreを利用して雑誌記事の検索閲覧を行うシステムを作成している。このシステムでは,複数の雑誌(学術雑誌および国際会議論文集)の記事単位に作成したメタデータを利用して雑誌をまたがった検索を行うことができる。雑誌記事のメタデータはDublin Coreに基づくものとNACSIS-ELSの書誌データを基礎として作成したものがある。Dublin Coreに基づくものは第1回ワークショップで提案された13項目定義に基づくものと現在の15項目定義に基づくものがある。本システムではDublin Coreを基本のメタデータとし,他のメタデータとの間での要素の対応関係を定義した表(Crosswalkと呼ぶ)を準備して検索に利用している。下にメタデータ記述の例を示す。(なお,Dublin CoreのデータのDTDは本研究で独自に決めたものである。また,必ずしも最適の形式であるとは言えない。)
+15エレメントのDublin Core 
+2.4節で示した例を参照。
+13エレメントのDublin Core
+<dublinCo>
+<subject>Digital library</subject>
+<subject>電子図書館</subject>
+<subject>library</subject>
+<subject>図書館</subject>
+<subject>library collections</subject>
+<subject>蔵書</subject>
+<subject>information resources</subject>
+<subject>情報資料</subject>
+<subject>intellectual</subject>
+<subject>知的</subject>
+<subject>Incommensurate data</subject>
+<subject>比較できないデータ</subject>
+<subject>work(intellectual entity)</subject>
+<subject>知的作業</subject>
+<title>Intellectual Realities and the Digital Library</title>
+<author>Francis Miksa</author>
+<author>Philip Doty</author>
+<objectTy scheme=AACR2>computer file</objectTy>
+<form scheme=IMT>text/html</form>
+<identifi scheme=URL>http://www.csdl.tamu.edu/DL94/paper/miksa.html</identifi>
+<relation type=ContainedIn scheme=URL>http://www.csdl.tamu.edu/DL94/</relation>
+<source scheme=ISSN></source>
+<language>English</language>
+<coverage></coverage>
+</dublinCo>
+NACSIS-ELSに基づくデータ (図書館界vol.47, no.1より)
+<article journal = "TKK" vol = "047" num = "01" page = "1" page2 = "1" date = "1
+9950501" txtl = "jpn">
+<atl><nihongo.title>大震災から75日</nihongo.title></atl>
+<author>
+<g.name><kanji>正美</kanji><furigana>マサミ</furigana>
+<english>Masami</english></g.name>
+<f.name><kanji>柴田</kanji><furigana>シバタ</furigana>
+<english>Shibata</english></f.name>
+</author>
+<body><sec>
+<fg><fgart file = "TKK04701/00000005.tif"></fgart></fg>
+</sec></body>
+</article>
+この例ではDublin Core同士でもCreatorとAuthorというように名前の対応が必要となっている。Dublin Core(15要素)のTitleとCreatorに対してELSのatlとauthorを対応づけている。なお,データの変換は行わず検索時に適切なタグ名を表から得て検索している。また,本システムでは同様な対応表を用いることでULIS OPACのデータとの横断検索も実験した。また,本システムではタグ内の属性値の検索は行っていないため,ELSデータの日付(Dateに対応)や巻・号・ページのデータ(Sourceに対応)は照合対象としていない。
+5. おわりに
+メタデータはインターネット上での情報資源の利用やディジタル図書館においてキーとなる技術の一つである。たとえば,NSF/NASA/ARPAが進めたDigital Library Initiative (Phase 1)の中でも中心的な話題の一つであった[14]。NSFとEUが共同で進めたディジタル図書館に関する研究戦略を議論する5つのワーキンググループの中にメタデータを議論するワーキンググループが含まれており,中長期に渡る研究項目に関する提案をしている[15][16]。
+Dublin Coreはネットワーク上での情報資源の発見を目的としたメタデータである。現在まで,いくつものプロジェクトで利用されてきており,これからも利用は広がっていくと考えられる。ネットワーク上での利用を目的としてメタデータには,Dublin Core以外にも知的財産権やRating,プライバシーに関するメタデータの開発も進められている。将来,インターネット上での情報資源の流通には様々なメタデータを相互に利用することが必要になると考えられる。
+参考文献
+[1] Dempsy, L., Heery, R., Metadata:A Current View of Practice and Issues, Journal of Documentation, Vol.54, No.2, pp.145-172, 1998.3
+[2] Dublin Coreのホームページ,http://purl.org/dc/ 
+[3] Workshop Series(一連のDublin Coreワークショップ),http://purl.org/dc/about/workshop.htm
+[4] Lagoze, C., The Warwick Framework, A Container Architecture for Diverse Sets of Metadata,D-Lib Magazine, 1996.7/8,http://www.dlib.org/dlib/july96/lagoze/07lagoze.html
+[5] Baker, T., Language for Dublin Core, D-Lib Magazine, 1998.12,http://www.dlib.org/dlib/december98/12baker.html
+[6] Hilman, D. (ed), User Guide Working Group, User Guide Working Draft 1998-07-31, http://purl.org/dc/documents/working_drafts/wd-guide-current.htm
+[7] Rust, G., Metadata: The Right Approach, D-lib Magazine, July/August 1998, http://www.dlib.org/dlib/july98/rust/07rust.html
+[8] Bearman, D. et al., A Common Model to Support Interoperable Metadata - Progress report on reconciling metadata requirements from the Dublin Core and INDECS/DOI Communities,D-Lib Magazine,1999.1 ,http://www.dlib.org/dlib/january99/bearman/01bearman.html
+[9] W3Cメタデータグループのホームページ,http://w3c.org/Metadata/ 
+[10] Lassila, O., Swick, R.R. (eds), Resource Description Framework (RDF), Model and Syntax Specification, W3C Proposed Recommendation 05 January 1999, PR-rdf-syntax-19990105, http://www.w3.org/TR/PR-rdf-syntax/
+[11] 浦本直彦,武田浩一,インターネットでの情報の記述と交換方式の最近の動向,人工知能学会誌, Vol.13, No.4, pp.519-527, 1998.7
+[12] 門間敦仁,XMLとメタデータ,情報の科学と技術,Vol.49,No.1,pp.16-22,1999.1
+[13] 杉本重雄,メタデータについて-Dublin Coreを中心として-,情報の科学と技術,Vol.49,No.1,pp.3-10,1999.1
+[14] NSF/DARPA/NASA Digital Libraries Initiative Projects
+http://www.cise.nsf.gov/iis/dli_home.html
+[15] Sch舫ble, P. and Smeaton, A. F. (eds), An International Research Agenda for Digital Libraries: Summary Report of the Series of Joint NSF-EU Working Groups on Future Directions for Digital Libraries Research, 1998.10, http://www.iei.pi.cnr.it/DELOS/NSF/Brussrep.htm
+[16] Peters, C., DELOS Workshop on Emerging Technologies in the Digital Libraries Domain,ERCIM News No.36,1999.1,http://www.ercim.org/publication/Ercim_News/enw36/peters.html
+付録:Dublin Core エレメントの記述
+(この文書はDublin Coreの参考記述より翻訳したものであり,http://www.DL.ulis.ac.jp/DC/に置かれている。)
+下記はDublin Core Metadata Element Setの定義の基準となる参照記述(reference definition)である。定義済みの限定子(qualifier)を含め,最新の参照記述はDublin Coreのホームページ(http://purl.org/dc/)に置かれる。
+下記のエレメントの定義の記述において,各エレメントは,メタデータ記述に用いるためのエレメントの構文的仕様定義をより簡明にするための1語で表された形式的ラベルに加えて,各エレメントの意味を理解しやすい形で表すための記述的な名前(descriptive name)を持っている。
+HTMLのように大文字と小文字を区別しない環境で利用する場合もあるが,XML (Extensible Markup Language,http://www.w3.org/TR/PR-xml)のような大文字と小文字を区別する環境で利用するためにメタデータが抽出あるいは変換して利用される場合もあるので,下記に示したエレメントラベルの慣用に従って常に大文字と小文字を使い分けることを強く推奨する。
+各エレメントは省略可能であり,かつ繰り返し可能である。さらにメタデータエレメントはいかなる順序で現れてもかまわず,順序は意味を持たない。
+グローバルな相互利用性を向上するため,エレメントの値の記述の際に一定の統制された語彙の中から値を選ぶことが推奨されているものが多くある。また,この統制語彙とは別に,ある地域,あるいは分野の中での相互利用性を目的として作り上げられた統制語彙を用いることがあってもかまわない。
+情報資源の中にエレメントが埋め込まれている場合であっても,あるいは埋め込まれていない場合でも,メタデータエレメントの意味は不変である。
+メタデータエレメントはそれが表す情報のクラスないしは範囲によって次の3グループに分けることができる。(1)主として情報資源の内容に関係するエレメント,(2)主として知的財産として情報資源を見た場合に関係するエレメント,(3)主として情報資源の具現化に関係するエレメント。
+内容
+知的財産
+具現化
+Dublin Core Metadata Element Setについて — 現在の状況と利用例

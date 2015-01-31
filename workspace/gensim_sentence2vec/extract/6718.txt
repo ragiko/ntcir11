@@ -1,0 +1,21 @@
+tbb::flow 名前空間
+tbb::flow 名前空間には、プログラムで参照できる、ライブラリーにより定義されるパブリック識別子が含まれます。
+フローグラフのコミュニティー・プレビュー機能と関連しています。詳細は、「フローグラフ」を参照してください。
+tbb::interfacex 名前空間
+tbb::interfacex 形式の名前空間は、ライブラリーが tbb 名前空間に追加するパブリック識別子を定義します。
+数値 x は、互換性のない定義が誤ってリンクされるのを防ぐために提供される内部バージョン番号に相当します。
+ユーザーコードで tbb::interfacex 名前空間を直接参照しないでください。
+代わりに、tbb 名前空間を使用して名前を参照します。
+例えば、ヘッダー tbb/concurrent_hash_map.h は concurrent_hashmap<Key,T> テンプレートを tbb::version4::concurrent_hashmap<Key,T> として定義し、using 宣言子を使用して tbb 名前空間に追加します。
+この場合、ユーザーコードで tbb::concurrent_hashmap<Key,T> として参照してください。
+tbb::internal 名前空間
+tbb::internal 名前空間は、tbb::interfacex に似た役割を果たします。
+この名前空間は、ライブラリーの以前のバージョンとの後方互換性のために残されています。
+ユーザーコードで tbb::internal 名前空間を直接参照しないでください。
+ヘッダーファイルで提供される public typedef 経由での間接参照は可能です。
+tbb::deprecated 名前空間
+ライブラリーは、tbb 名前空間のデフォルトの意味が異なる古い識別子に tbb::deprecated 名前空間を使用します。
+TBB_DEPRECATED=1 でコンパイルすると、tbb 名前空間の相当する古い識別子に置換されます。
+例えば、tbb::concurrent_queue は、インテル&reg; スレッディング・ビルディング・ブロック (インテル&reg; TBB) 2.2 で tbb::concurrent_queue と tbb::concurrent_bounded_queue に分割され、いくつかのメソッドの名前が変更されました。
+レガシーコードのために、古いインテル&reg; TBB 2.1 の機能は、TBB_DEPRECATED=1 でコンパイルしたときに tbb 名前空間に追加される tbb::deprecated::concurrent_queue に残されています。
+名前空間

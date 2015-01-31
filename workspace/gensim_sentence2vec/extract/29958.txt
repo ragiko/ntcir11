@@ -1,0 +1,24 @@
+最近webサイトを制作する際、スマフォ対応が求められており、
+その方法としてレスポンシブwebデザインといった手法があります。
+その際に、使えるjQueryプラグインを紹介します。
+flexsliderという画像スライダーのプラグインです。
+Flexslider | WooThemes
+サイトのメインイメージで使える代物で、
+windowの幅に合わせ、画像を縮小してくれます。
+このプラグインでできることは、
+・スライドショーが、フェイドかスライド(横移動か縦移動)の設定ができ、計3パターンから選択できる
+・自動、手動でスライドショーが可能
+・前へ、次へ、スライドの操作を簡単に設置できる
+・スライドショーをループさせることができる
+等々です。  
+デモを作成したので、以下からご覧下さい。
+DEMO
+ウィンドウの横幅を縮めてみると、
+画像の幅が縮小されるかと思います。
+(サイト自体もレスポンシブになっています。そこまでしっかりやっていないですがww)
+flexsliderの使い方
+まずは、head部分に以下を記述します。
+<link rel="stylesheet" href="flexslider.css" type="text/css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="jquery.flexslider.js"></script>
+スマートフォン対応の画像スライダー「flexslider」 | スターフィールド株式会社

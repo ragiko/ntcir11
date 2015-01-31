@@ -1,0 +1,468 @@
+C#で高精度なテキストファイル文字コード自動判別(2014年版)
+C#, ReadJEnc, HNXgrep
+C#(.NET Framework)に限ったことではありませんが、汎用的にテキストファイルを扱うようなアプリケーションを作っていると、よく
+特定の文字コードのファイルしか読み出せないのでは困る⇒文字コードを自動判別し、テキストの内容を取り出したい
+読み出したファイルと同じ文字コードでファイルを書き出したい⇒読み出したファイルの文字コードを知りたい
+といった場面に出くわします。ですが、C#(.NET Framework)標準のライブラリではそのような機能は提供されていないため、文字コードを判定するには、
+自前で文字コード判定のロジックを実装する
+出来合いの外部ライブラリ、Windows版NKF32.dll、ICU4Cなどを利用する
+IE用の文字コード判別ライブラリ(mlang.dll)を利用する ※COMコンポーネント呼び出し要
+のいずれかの方法を取ることになります。HNXgrepという自作のgrepツール(Vectorからダウンロードできます)では、自前のソースコードで文字コードを判別しています。当初はJCode.pmのC#移植版を改良して使っていたのですが(2012年時点のソースコードはこちら)、その後も不具合改善・チューニング・機能追加を重ね、
+ANSI(ISO-8859-1拡張:欧米版Windowsのデフォルト文字コード)ファイル
+EUC補助漢字(0x8F始まりの3バイト文字コード)使用ファイル
+エスケープシーケンスを伴わない半角カナJISファイル
+の検出・デコードにも対応し、またEUCやUTF8NのファイルをShiftJISと誤判別する可能性をさらに低減、検出精度を高めたバージョンとなりました。2014年8月時点版のソースコードを以下に公開します。
+アルゴリズム概要
+ASCII制御コードのうち0x00-0x03、ないし0x7F(DEL)が出現した場合
+原則として非テキストファイルとみなす
+ただしファイル先頭2バイトで0x00が登場した場合は、BOMなしUTF16の可能性を調べる
+非ASCIIコード(0x80以降)が出現しなかった場合
+JISエスケープシーケンスがあればJIS、なければASCII
+非ASCIIコード(0x80以降)が出現した場合
+以下4種類の文字コードに該当するか、可能性を調査する
+ANSI(CP1252)
+BOMなしUTF8(CP65001)
+EUC(CP51932、補助漢字使用時はCP20932相当)⇒登場するコード範囲の関係で(必ず0x80以上となる)、上記3種はまとめてチェック
+ShiftJIS(CP932)⇒2バイト目が0x20-0x7EのASCIIになることもあるので、個別にチェック
+文字コード体系として明らかに妥当ではない場合、可能性なしとみなす
+半角文字(半角カナ)・全角文字が連続していれば可能性が高いとみなす
+逆に不連続であれば可能性は低いものとみなす
+誤判別を起こしやすい箇所は個々に配点をチューニング(過去の誤判別事例などをフィードバックしています)
+全バイト走査完了後、可能性が高いものから順にテキスト取り出しを試みる
+デコードエラーが発生しなければその文字コードで確定
+以下、ソースコード抜粋です。ソースコード全量は、Vectorライブラリに「ReadJEnc」という名前で登録してありますので、こちらからダウンロードしてください。(動作サンプル・利用例ソースコードも同梱してあります)
+ソースコード抜粋:文字コード判別クラス・判別メソッド本体
+public class ReadJEnc
+{
+////////////////////////////////////////////////////////////////////////
+// <ReadJEnc.cs> ReadJEnc 文字コード自動判別処理本体【抜粋】
+//  Copyright (C) 2014 hnx8(H.Takahashi)
+//  http://hp.vector.co.jp/authors/VA055804/
+//
+//  Released under the MIT license
+//  http://opensource.org/licenses/mit-license.php
+////////////////////////////////////////////////////////////////////////
+/// <summary>バイナリと判定するDEL文字コード、兼、ASCII/非ASCIIの境界文字コード</summary>
+const byte DEL = (byte)0x7F;
+/// <summary>非テキストファイルと判定する制御文字コードの最大値</summary>
+const byte BINARY = (byte)0x03; //0x01-0x07位の範囲で調整。0x08(BS)はTeraTerm等ログで出る。0x09(TAB)は普通にテキストで使う。0x03くらいにするのがよい。HNXgrepでは0x03を採用
+//文字コード判別メソッド================================================
+/// <summary>バイト配列を全走査し、文字コードを自動判別する</summary>
+/// <param name="Bytes">判定対象のバイト配列</param>
+/// <param name="Length">ファイルサイズ(バイト配列先頭からのデコード対象バイト数)</param>
+/// <param name="Text">out 判別した文字コードにより取り出したテキスト文字列(非テキストならnull)</param>
+/// <returns>文字コード判別結果(非テキストならnull)</returns>
+public CharCode GetEncoding(byte[] Bytes, int Length, out string Text)
+{
+byte b1 = (Length > 0) ? Bytes[0] : (byte)0; //汎用バイトデータ読み取り変数初期化
+byte b2;
+//【1】7bit文字コードの範囲の走査(ASCII判定/非ASCII文字開始位置把握)、およびUTF16N/JISチェック
+int jisScore = 0; //JIS用のエスケープシーケンスが登場したらカウントアップ
+int asciiEndPos = 0; //ループ変数、兼、非ASCII文字を初めて検出した位置
+while (b1 < DEL) //非ASCII文字が出現したらループ脱出:b1にはあらかじめ読み込み済
+{
+if (b1 <= BINARY)
+{   //バイナリ文字検出:先頭2バイトでの検出ならUTF16Nの可能性をチェック、否ならバイナリ確定
+CharCode ret = (asciiEndPos < 2 ? SeemsUTF16N(Bytes, Length) : null);
+if (ret != null && (Text = ret.GetString(Bytes, Length)) != null)
+{   //UTF16Nデコード成功:非テキスト文字混入チェック
+int i;
+for (i = -3; i <= BINARY; i++)
+{   //0xFFFD,0xFFFE,0xFFFF,0〜BINARY、DELが混入している場合は非テキストとみなす
+if (Text.IndexOf((char)i, 0, Text.Length) != -1) { break; }
+}
+if (i > BINARY && Text.IndexOf((char)DEL, 0, Text.Length) == -1)
+{   //UTF16N確定(非テキスト文字混入なし)
+return ret;
+}
+}
+Text = null;
+return null; //バイナリ確定
+}
+if (b1 == 0x1B && (b2 = JIS.isEscape(Bytes, Length, asciiEndPos)) > 0)
+{   //JISエスケープシーケンス検出時はカウント加算
+jisScore++;
+asciiEndPos += b2;
+}
+//次の文字へ
+if ((++asciiEndPos) >= Length)
+{   //全文字チェック完了:非ASCII文字未検出、JISもしくはASCII
+if (jisScore >= 2)
+{   //JIS確定(詳細種別を判定する)
+return JIS.GetEncoding(Bytes, Length, out Text);
+}
+if (JIS.hasSOSI(Bytes, Length))
+{   //SO,SIによるエスケープを検出した場合【抜粋】
+if ((Text = CharCode.JIS50222.GetString(Bytes, Length)) != null)
+{   //半角カナSOSIのみを使用したJISで確定
+return CharCode.JIS50222;
+}
+}
+//ASCII確定(ただしデコード失敗時はバイナリ)
+return ((Text = CharCode.ASCII.GetString(Bytes, Length)) != null) ? CharCode.ASCII : null;
+}
+b1 = Bytes[asciiEndPos];
+}
+//【2】非ASCII文字を含む範囲の走査、CP1252/UTF8/EUCチェック、JIS残チェック
+int cp1252Score = 0; //いずれも、可能性が否定されたらint.MinValueが設定される
+int utfScore = 0;
+int eucScore = 0;
+int sjisScore = 0;
+bool existsEUC0x8F = false; //EUC補助漢字を見つけたらtrueを設定
+for (int cp1252Pos = asciiEndPos; cp1252Pos < Length; ) //cp1252Posの加算はロジック途中で随時実施
+{
+if (b1 == DEL)
+{   //制御文字0x7F登場なら、ごくわずかなJISの可能性以外全消滅。JISの可能性を消しきれるか判定
+cp1252Score = int.MinValue;
+utfScore = int.MinValue;
+eucScore = int.MinValue;
+sjisScore = int.MinValue;
+if (jisScore == 0 || (cp1252Pos++) >= Length || (b1 = Bytes[cp1252Pos]) < 0x21 || b1 >= DEL)
+{   //JISエスケープ未出現 or ファイル末尾で2バイト目なし or 2バイト目が0x21-0x7E範囲外ならJISの可能性も否定
+Text = null;
+return null; //バイナリ確定
+}
+}
+//CP1252チェック&0x80以上の文字範囲の把握(notAsciiStartPos〜cp1252Pos)。b1読込済
+int notAsciiStart = cp1252Pos;
+switch (cp1252Score)
+{
+case int.MinValue: //CP1252可能性否定済み、非ASCII文字のスキップのみ実施
+while (b1 > DEL && (++cp1252Pos) < Length) { b1 = Bytes[cp1252Pos]; }
+break;
+default: //CP1252可能性あり、定義外文字混入チェック&CP1252ポイント加算
+while (b1 > DEL)
+{   // 非CP1252チェック用定義(0x2001A002):未定義の81,8D,8F,90,9Dに対応するビットがON
+//        FEDC BA98 7654 3210         FEDC BA98 7654 3210
+//        ---- ---- ---- ----         ---- ---- ---- ----
+// (0x9#) 0010 0000 0000 0001  (0x8#) 1010 0000 0000 0010
+if (b1 <= 0x9D && (0x2001A002 & (1u << (b1 % 32))) != 0)
+{   // CP1252未定義文字を検出、可能性消滅
+cp1252Score = int.MinValue;
+goto case int.MinValue; //非ASCII文字スキップへ
+}
+if ((++cp1252Pos) >= Length) { break; }
+b1 = Bytes[cp1252Pos];
+}
+//非ASCII文字範囲終了、評価ポイント加算
+//1バイトのみ出現時(SJISよりもCP1252の可能性が高い)、SJIS漢字1文字目と同評価・SJISカナよりも高評価となるようポイント加算
+if (cp1252Pos == notAsciiStart + 1) { cp1252Score += 2; }
+else if (cp1252Pos == notAsciiStart + 2 && (b2 = Bytes[cp1252Pos - 1]) >= 0xC0)
+{   //2バイトのみ出現時、ダイアクリティカルマーク(発音記号等)つきアルファベットなら配点補正
+if (b2 == (b2 = Bytes[cp1252Pos - 2])) { cp1252Score += 5; } //同一文字重ねはかなり特徴的(SJISカナより可能性高)
+else if (b2 >= 0xC0)
+{   //続きor直前のASCII文字がアルファベットっぽければ、SJISカナより可能性が高くなるよう補正                               
+if (b1 > 0x40 || (notAsciiStart > 0 && Bytes[notAsciiStart - 1] > 0x40)) { cp1252Score += 5; }
+else { cp1252Score += 3; } //どちらでもなければ、EUCよりは可能性高とする
+}
+else { cp1252Score++; } //否ならば低めの加算とする
+}
+else { cp1252Score++; } //いずれにも該当しなければやや低めの加算とする
+break;
+}
+//notAsciiStartPos〜cp1252Pos範囲のUTF8チェック
+if (utfScore >= 0)
+{
+bool prevIsKanji = false;
+for (int utfPos = notAsciiStart; utfPos < cp1252Pos; utfPos++)
+{
+b1 = Bytes[utfPos];
+//1バイト目・2バイト目(ともに0x80以上であることは確認済み)をチェック
+if (b1 < 0xC2 || (++utfPos) >= cp1252Pos || Bytes[utfPos] > 0xBF) { utfScore = int.MinValue; break; } //UTF8可能性消滅
+else if (b1 < 0xE0)
+{   //2バイト文字OK(半角文字とみなして評価)
+if (prevIsKanji == false) { utfScore += 6; } else { utfScore += 2; prevIsKanji = false; }
+}
+//3バイト目(0x80以上であることは確認済み)をチェック
+else if ((++utfPos) >= cp1252Pos || Bytes[utfPos] > 0xBF) { utfScore = int.MinValue; break; } //UTF8可能性消滅
+else if (b1 < 0xF0)
+{   //3バイト文字OK(全角文字とみなして評価)
+if (prevIsKanji == true) { utfScore += 8; } else { utfScore += 4; prevIsKanji = true; }
+}
+//4バイト目(0x80以上であることは確認済み)をチェック
+else if ((++utfPos) >= cp1252Pos || Bytes[utfPos] > 0xBF) { utfScore = int.MinValue; break; } //UTF8可能性消滅
+else if (b1 < 0xF5)
+{   //4バイト文字OK(全角文字とみなして評価)
+if (prevIsKanji == true) { utfScore += 12; } else { utfScore += 6; prevIsKanji = true; }
+}
+else { utfScore = int.MinValue; break; } //UTF8可能性消滅(0xF5以降はUTF8未定義)
+}
+}
+//notAsciiStartPos〜cp1252Pos範囲のEUCチェック
+if (eucScore >= 0)
+{   //前の文字との連続性チェック用定数定義
+const int PREV_KANA = 1; //直前文字は半角カナ
+const int PREV_ZENKAKU = 2; //直前文字は全角
+int prevChar = 0; //前の文字はKANAでもZENKAKUでもない
+for (int eucPos = notAsciiStart; eucPos < cp1252Pos; eucPos++)
+{   //1バイト目(0xA1-0xFE,0x8E,0x8F)・2バイト目(1バイト目に応じ範囲が異なる)のチェック
+b1 = Bytes[eucPos];
+if (b1 == 0xFF || (++eucPos) >= cp1252Pos) { eucScore = int.MinValue; break; } //EUC可能性消滅
+b2 = Bytes[eucPos];
+if (b1 >= 0xA1)
+{   //1バイト目=全角文字指定、2バイト全角文字チェック
+if (b2 < 0xA1 || b2 == 0xFF) { eucScore = int.MinValue; break; } //EUC可能性消滅
+//2バイト文字OK(全角)
+if (prevChar == PREV_ZENKAKU) { eucScore += 5; } else { eucScore += 2; prevChar = PREV_ZENKAKU; }
+}
+else if (b1 == 0x8E)
+{   //1バイト目=かな文字(orEUC-TWの4バイト文字)指定。2バイトの半角カナ文字チェック
+if (b2 < 0xA1 || b2 > 0xDF) { eucScore = int.MinValue; break; } //EUC可能性消滅
+//検出OK,EUC文字数を加算(半角文字)【抜粋】
+if (prevChar == PREV_KANA) { eucScore += 6; }
+else { eucScore += 2; prevChar = PREV_KANA; }
+}
+else if (b1 == 0x8F
+&& b2 >= 0xA1 && b2 < 0xFF
+&& (++eucPos) < cp1252Pos
+&& (b2 = Bytes[eucPos]) >= 0xA1 && b2 < 0xFF)
+{   //残る可能性は3バイト文字:検出OKならEUC文字数を加算(全角文字、補助漢字)
+if (prevChar == PREV_ZENKAKU) { eucScore += 8; } else { eucScore += 3; prevChar = PREV_ZENKAKU; }
+existsEUC0x8F = true; //※補助漢字有
+}
+else { eucScore = int.MinValue; break; } //EUC可能性消滅
+}
+}
+//ASCII文字範囲の読み飛ばし&バイナリチェック&JISチェック、b1に非ASCII文字出現位置のバイト値を格納
+while (cp1252Pos < Length && (b1 = Bytes[cp1252Pos]) < DEL)
+{
+if (b1 <= BINARY)
+{   //バイナリ確定
+Text = null;
+return null;
+}
+if (b1 == 0x1B && (b2 = JIS.isEscape(Bytes, Length, cp1252Pos)) > 0)
+{   //JISエスケープシーケンスを検出
+jisScore++;
+asciiEndPos += b2;
+}
+cp1252Pos++;
+}
+}
+//【3】SJISチェック(非ASCII登場位置からチェック開始:ただしDEL検出時などは可能性なし)
+if (sjisScore != int.MinValue)
+{
+sjisScore = GetEncoding(Bytes, asciiEndPos, Length);
+}
+//【4】ポイントに応じ文字コードを決定【抜粋】(実際にそのエンコーディングで読み出し成功すればOKとみなす)
+if (jisScore >= 2 && jisScore > (Length / 100000))
+{   //一定以上の比率でJISエスケープシーケンス出現
+return JIS.GetEncoding(Bytes, Length, out Text);  //JIS確定(詳細種別を判定する)
+}
+if (eucScore > 0 && eucScore > sjisScore && eucScore > utfScore)
+{   //EUC可能性高
+if (cp1252Score > eucScore)
+{   //ただしCP1252の可能性が高ければCP1252を先にチェック
+if ((Text = CharCode.ANSI.GetString(Bytes, Length)) != null) { return CharCode.ANSI; } //CP1252で読みこみ成功
+}
+if (existsEUC0x8F && (Text = CharCode.EUCH.GetString(Bytes, Length)) != null) { return CharCode.EUCH; }//EUC補助漢字読みこみ成功
+if ((Text = CharCode.EUC.GetString(Bytes, Length)) != null) { return EUC; } //EUCで読みこみ成功
+}
+if (utfScore > 0 && utfScore >= sjisScore)
+{   //UTF可能性高
+if ((Text = CharCode.UTF8N.GetString(Bytes, Length)) != null) { return CharCode.UTF8N; } //UTF-8Nで読みこみ成功
+}
+if (sjisScore >= 0)
+{   //SJIS可能性高(ただしCP1252の可能性が高ければCP1252を先にチェック)
+if (cp1252Score > sjisScore && (Text = CharCode.ANSI.GetString(Bytes, Length)) != null) { return CharCode.ANSI; } //CP1252で読みこみ成功
+if ((Text = CharCode.SJIS.GetString(Bytes, Length)) != null) { return CharCode; } //SJISで読みこみ成功
+}
+if (cp1252Score > 0)
+{   //CP1252の可能性のみ残っているのでチェック
+if ((Text = CharCode.ANSI.GetString(Bytes, Length)) != null) { return CharCode.ANSI; } //CP1252で読みこみ成功
+}
+//いずれにも該当しなかった場合は、バイナリファイル扱いとする
+Text = null;
+return null;
+}
+BOMなしUTF16/ShiftJISの判定は別メソッドに切り出しています。以下、そのソースコードです。
+ソースコード抜粋:BOMなしUTF16可能性判定メソッド/ShiftJIS判定メソッド
+/// <summary>BOMなしUTF16の可能性があるか(先頭文字がASCIIか否かをもとに)判定</summary>
+/// <param name="Bytes">判定対象のバイト配列</param>
+/// <param name="Length">ファイルサイズ</param>
+/// <returns>UTF16Nと思われる場合はその文字コード、否ならnull</returns>
+public static CharCode SeemsUTF16N(byte[] Bytes, int Length)
+{
+if (Length >= 2 && Length % 2 == 0)
+{
+if (Bytes[0] == 0x00)
+{
+if (Bytes[1] > BINARY && Bytes[1] < DEL && (Length == 2 || Bytes[2] == 0))
+{   //UTF16BigEndianの可能性あり
+return CharCode.UTF16BE;
+}
+}
+else if (Bytes[1] == 0x00)
+{
+if (Bytes[0] > BINARY && Bytes[0] < DEL && (Length == 2 || Bytes[3] == 0))
+{   //UTF16LittleEndianの可能性あり
+return CharCode.UTF16LE;
+}
+}
+}
+return null; //UTF16Nの可能性はないと判断
+}
+/// <summary>ShiftJISの判定スコア算出(判定開始位置〜ファイル末尾までの範囲を対象)</summary>
+/// <param name="Bytes">判定対象のバイト配列</param>
+/// <param name="pos">判定開始位置(非ASCII文字コードが初めて登場した位置)</param>
+/// <param name="Length">ファイルサイズ(バイト配列先頭からのデコード対象バイト数)</param>
+/// <returns>判定スコア算出結果</returns>
+protected override int GetEncoding(byte[] Bytes, int pos, int Length)
+{
+int score = 0; //初期値ゼロからReadJEnc評価を始める
+byte b1 = Bytes[pos];
+byte b2;
+while (pos < Length)
+{   //前の文字との連続性チェック用定数定義
+const int PREV_KANA = 1; //直前文字は半角カナ
+const int PREV_ZENKAKU = 2; //直前文字は全角
+int prevChar = 0; //前の文字はKANAでもZENKAKUでもない
+while (b1 > DEL)
+{
+if (b1 >= 0xA1 && b1 <= 0xDF)
+{   //1バイト半角カナ:OK(連続はEUCやCP1252よりも高配点とする)
+if (prevChar == PREV_KANA) { score += 3; } else { score += 1; prevChar = PREV_KANA; }
+}
+// 非CP932チェック用定数(0x00000061,0xE0009800):CP932ではデコード不能な未定義文字のビットを1
+//        FEDC BA98 7654 3210         FEDC BA98 7654 3210
+//        ---- ---- ---- ----         ---- ---- ---- ----
+// (0x9#) 0000 0000 0000 0000  (0x8#) 0000 0000 0110 0001 - 80(A0判定でも流用):定義外、85,86:未使用(shift_jis2004などでは使用ありだがCP932ではデコード不能)
+// (0xF#) 1110 0000 0000 0000  (0xE#) 1001 1000 0000 0000 - FD,FE,FF:定義外、EB,EC,EF:未使用 (F0-F9:外字は許容。HNXgrepなど外字不許容とする場合はビットを立てること)
+else if (((b1 < 0xE0 ? 0x00000061 : 0xE0009800) & 1u << (b1 % 32)) != 0
+|| (++pos) >= Length
+|| (b2 = Bytes[pos]) < 0x40 || b2 > 0xFC)
+{   //1バイト目がおかしい(SJIS定義外/未使用) or 2バイト目把握不能 or 2バイト目SJIS定義外
+return int.MinValue; //可能性消滅
+}
+else
+{   //全角文字数を加算(EUCよりは可能性を低めに見積もっておく)
+if (prevChar == PREV_ZENKAKU) { score += 4; }
+else
+{   //(ただし唐突に0x98以降の第二水準文字が出てきた場合は、UTF-8/EUC/CP1252の可能性が高いのでプラス値なしとする)
+score += (b1 > 0x98 ? 0 : 2);
+prevChar = PREV_ZENKAKU;
+}
+}
+//各国語全コード共通:さらに次の文字へ
+if ((++pos) >= Length) { break; }
+b1 = Bytes[pos];
+}
+//各国語全コード共通:半角文字の範囲を読み飛ばし
+while (b1 <= DEL && (++pos) < Length) { b1 = Bytes[pos]; }
+}
+return score;
+}
+文字コードの種類については別クラスにて定義しています。実際の文字コード判別処理にあたっては、ファイル内容を全バイト走査する前に、先頭バイト列(ByteOrderMark)からファイルの文字コード種類が識別できるかどうかもチェックします。BOMつきであればUnicodeと判定します。以下、文字コード定義クラスとBOMつきUTF判別メソッドです。各ファイル種類を定義するにあたり、先頭バイトデータの情報も持たせるようにしています。BOMはEncoding.GetPreamble()を利用して把握します。またテキスト取り出し時にはBOMバイトをデコード範囲から除外します。
+ソースコード抜粋:文字コード定義クラス・およびBOMつきUTF判別メソッド
+public class CharCode
+{
+////////////////////////////////////////////////////////////////////////
+// <CharCode.cs> ReadJEnc 文字コード種類定義【抜粋】
+//  Copyright (C) 2014 hnx8(H.Takahashi)
+//  http://hp.vector.co.jp/authors/VA055804/
+//
+//  Released under the MIT license
+//  http://opensource.org/licenses/mit-license.php
+////////////////////////////////////////////////////////////////////////
+//Unicode系文字コード
+/// <summary>UTF8(BOMあり)</summary>
+public static readonly Text UTF8 = new Text("UTF-8", new UTF8Encoding(true, true)); //BOM : 0xEF, 0xBB, 0xBF
+/// <summary>UTF32(BOMありLittleEndian)</summary>
+public static readonly Text UTF32 = new Text("UTF-32", new UTF32Encoding(false, true, true)); //BOM : 0xFF, 0xFE, 0x00, 0x00
+/// <summary>UTF32(BOMありBigEndian)</summary>
+public static readonly Text UTF32B = new Text("UTF-32B", new UTF32Encoding(true, true, true)); //BOM : 0x00, 0x00, 0xFE, 0xFF
+/// <summary>UTF16(BOMありLittleEndian)</summary><remarks>Windows標準のUnicode</remarks>
+public static readonly Text UTF16 = new Text("UTF-16", new UnicodeEncoding(false, true, true)); //BOM : 0xFF, 0xFE
+/// <summary>UTF16(BOMありBigEndian)</summary>
+public static readonly Text UTF16B = new Text("UTF-16B", new UnicodeEncoding(true, true, true)); //BOM : 0xFE, 0xFF
+/// <summary>UTF16(BOM無しLE)</summary>
+public static readonly Text UTF16LE = new Text("UTF-16LE", new UnicodeEncoding(false, false, true));
+/// <summary>UTF16(BOM無しBE)</summary>
+public static readonly Text UTF16BE = new Text("UTF-16BE", new UnicodeEncoding(true, false, true));
+/// <summary>UTF8(BOM無し)</summary>
+public static readonly Text UTF8N = new Text("UTF-8N", new UTF8Encoding(false, true));
+//非Unicode系文字コード
+/// <summary>Ascii</summary><remarks>デコードはUTF8Encodingを流用</remarks>
+public static readonly Text ASCII = new Text("ASCII", UTF8N.Encoding);
+/// <summary>1252 ISO8859 西ヨーロッパ言語</summary>
+public static readonly Text ANSI = new Text("ANSI欧米", 1252);
+/// <summary>50221 iso-2022-jp 日本語 (JIS-Allow 1 byte Kana) ※MS版</summary>
+public static readonly Text JIS = new Text("JIS50221", 50221);
+/// <summary>50222 iso-2022-jp 日本語 (JIS-Allow 1 byte Kana - SO/SI) ※MS版</summary><remarks>SO/SIによるカナシフトのみのファイルもCP50222とみなす</remarks>
+public static readonly Text JIS50222 = new Text("JIS50222", 50222);
+/// <summary>EUC補助漢字(0x8F)あり ※MS-CP20932を利用し強引にデコードする</summary><remarks>エンコードするとファイルが壊れるので注意</remarks>
+public static readonly Text EUCH = new EucH("EUC補漢");
+/// <summary>51932 euc-jp 日本語 (EUC) ※MS版</summary>
+public static readonly Text EUC = new Text("EUCJP", 51932);
+/// <summary>932 shift_jis 日本語 (シフト JIS) ※MS独自</summary>
+public static readonly Text SJIS = new Text("ShiftJIS", 932);
+// 文字コード(ファイル種類)判定メソッド
+/// <summary>BOMありUTFファイルの文字コードを判定する</summary>
+/// <param name="Bytes">判定対象のバイト配列</param>
+/// <param name="Read">バイト配列の読み込み済バイト数</param>
+/// <returns>BOMから判定できた文字コード種類、合致なしの場合null</returns>
+public static CharCode GetPreamble(byte[] Bytes, int Read)
+{   //BOM一致判定
+return GetPreamble(Bytes, Read,
+UTF8, UTF32, UTF32B, UTF16, UTF16B);
+}
+protected static CharCode GetPreamble(byte[] Bytes, int Read, params CharCode[] Array)
+{
+foreach (CharCode c in Array)
+{   //読み込み済バイト配列内容をもとにファイル種類の一致を確認
+byte[] bom = c.Bytes;
+int i = (bom != null ? bom.Length : int.MaxValue); //BOM・マジックナンバー末尾から調べる
+if (Read < i) { continue; } //そもそもファイルサイズが小さい場合は不一致
+do
+{   //全バイト一致ならその文字コードとみなす
+if (i == 0) { return c; }
+i--;
+} while (Bytes[i] == bom[i]); //BOM・マジックナンバー不一致箇所ありならdo脱出
+}
+return null; //ファイル種類決定できず
+}
+#region テキスト基本クラス定義【抜粋】----------------------------
+/// <summary>文字コード種類:テキスト
+/// </summary>
+public class Text : CharCode
+{
+internal Text(string Name, Encoding Encoding) : base(Name, Encoding, Encoding.GetPreamble()) { }
+internal Text(string Name, int enc)
+: base(Name, System.Text.Encoding.GetEncoding(enc, EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback), null) { }
+}
+/// <summary>ファイル文字コード種類名</summary>
+public readonly string Name;
+/// <summary>先頭バイト識別データ(BOM/マジックナンバー)</summary>
+protected readonly byte[] Bytes = null;
+/// <summary>エンコーディング</summary>
+private Encoding Encoding;
+/// <summary>基本コンストラクタ</summary>
+protected CharCode(string Name, Encoding Encoding, byte[] Bytes)
+{
+this.Name = Name;
+this.Encoding = Encoding;
+this.Bytes = Bytes;
+}
+/// <summary>引数のバイト配列から文字列を取り出す。失敗時はnullを返す</summary>
+public virtual string GetString(byte[] Bytes, int Length)
+{
+try
+{   //BOMサイズを把握し、BOMを除いた部分を文字列として取り出す
+int bomBytes = (this.Bytes == null ? 0 : this.Bytes.Length);
+return Encoding.GetString(Bytes, bomBytes, Length - bomBytes);
+}
+catch (DecoderFallbackException)
+{   //読み出し失敗(マッピングされていない文字があった場合など)
+return null;
+}
+}
+#endregion
+}
+※ここまでに掲載したソースコードは、文字コード判定ロジックコア部分の抜粋です。ソースコード全量は、Vectorライブラリ 『 ReadJEnc 』からダウンロードしてください。また、この自動判別ソースコードを使用したgrepツール 『 HNXgrep 』についても、Vectorライブラリに登録されています。記事からは割愛しましたが、ReadJEncには
+ファイル読み出し機能提供クラス
+非テキストファイルの種類(画像ファイル・圧縮ファイル等)を判別する機能
+EUC補助漢字(0x8Fから始まる3バイトの文字コード)のデコード機能
+日本語以外の文字コード(中国語繁体字・中国語簡体字・ハングル)についての文字コード判別機能
+なども備わっています。なおJIS判別に関するメソッドについては、C#で利用できるEncoding(CP5022x)の仕様が特異であること等いろいろ厄介な事情があり、この記事では掲載・説明を割愛します。ライセンスはソースコード記載のとおりMITライセンスです。ご意見ご感想、バグ情報のフィードバックなどは、こちらの記事のコメントへお寄せください。
+Permalink | コメント(3) | トラックバック(1) | 10:39   
+C#で高精度なテキストファイル文字コード自動判別(2014年版) - hnx8 開発室

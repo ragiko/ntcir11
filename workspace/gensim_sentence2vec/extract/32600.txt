@@ -1,0 +1,11 @@
+METAタグに埋め込む方法  &dagger;  
+下記を<head>と</head>の間に埋め込んでサイトのHTMLを記述してアップします。
+<meta name="robots" content="noindex" />
+これでOK。
+noindexでインデックスに載せないでね、と伝えることができるようです。
+Googleのヘルプにも詳細があります。
+メタ タグ - ウェブマスター/サイト所有者 ヘルプ
+場合によってはリンクもたどって欲しくない(nofollow)、キャッシュされても困るといった場合(noarchive)には以下のように書けば良いと思います。
+(とはいえ、noindexだけで十分じゃないのかなとも思う)
+<meta name="robots" content="noindex,nofollow,noarchive" />
+SEO/googleなど検索エンジンにインデックスさせない方法 - TOBY SOFT wiki

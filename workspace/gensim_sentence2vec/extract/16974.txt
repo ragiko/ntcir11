@@ -1,0 +1,89 @@
+
+ロールオーバーするイメージマップをjQueryで実装する
+詳細
+カテゴリ: JavaScript		
+最近ではあまり使うことがなくなったイメージマップ(クリッカブルマップ)ですが、地図などのナビゲーションを表現する際にFlashを使用せずに実装できるので便利だったりもします。
+でも、Dreamweaverの多角形スポットツールでそのまま作成したイメージマップでは、マウスカーソルを当てた際に変化がない為、クリックする領域が分かりにくくなります。
+jQueryを使用すると簡単に画像を切り替える機能を実装することができます。
+また、テキストリンクのナビゲーションを併用することによって、検索エンジンのロボットが適切なアンカーテキストからリンク先のページを巡回してくれるので、インデックスにもれがないようにできます。
+最初に地図の画像をIllustrator等を使って作成・準備します。
+それぞれのフォーマットはPNG画像となっており、地図全体を表すkantou_bg.pngと、幅・高さが同一の各県の画像を作ります。
+上記画像の白い領域は全て透明にして、さらに同じ大きさで全体が透明ピクセルになっているdummy.pngを作成します。
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<title>イメージマップのサンプル</title>
+<link href="/css/style.css" rel="stylesheet" type="text/css" />
+<script src="/js/jquery.js" type="text/javascript"></script>
+<script src="/js/example.js" type="text/javascript"></script>
+</head>
+<body>
+<div>
+<img src="/images/dummy.png" alt="" width="523" height="444" usemap="#map" id="japan" />
+<map name="map" id="map">
+<area shape="poly" alt="東京都" coords="296,261, 262,260, 181,264, 145,229, 85,236, 126,284, 185,307, 214,298, 246,303, 296,296, 296,261" href="#" id="tokyo" />
+<area shape="poly" alt="神奈川県" coords="126,284, 80,321, 99,381, 143,379, 173,366, 205,398, 230,378, 233,332, 246,303, 214,298, 185,307, 126,284" href="#" id="kanagawa" />
+<area shape="poly" alt="埼玉県" coords="63,196, 51,218, 85,236, 145,229, 181,264, 262,260, 296,261, 303,235, 271,171, 235,161, 222,146, 215,160, 173,146, 63,196" href="#" id="saitama" />
+<area shape="poly" alt="千葉県" coords="490,312, 417,262, 412,264, 399,267, 381,269, 360,266, 348,261, 344,258, 330,235, 303,235, 296,261, 296,296, 312,305, 321,305, 315,333, 271,351, 267,379, 257,395, 253,419, 238,429, 244,443, 331,405, 359,408, 392,375, 395,343, 420,317, 434,314, 490,312" href="#" id="chiba" />
+<area shape="poly" alt="栃木県" coords="231,21, 202,85, 224,106, 205,118, 235,165, 271,171, 387,139, 422,56, 392,12, 347,0, 231,21" href="#" id="tochigi" />
+<area shape="poly" alt="茨城県" coords="495,103, 522,77, 516,75, 504,71, 493,69, 483,71, 467,74, 452,78, 445,79, 422,56, 387,139, 271,171, 303,235, 330,235, 344,258, 348,261, 360,266, 381,269, 399,267, 412,264, 417,262, 490,312, 454,248, 454,199, 473,144, 495,103" href="#" id="ibaraki" />
+<area shape="poly" alt="群馬県" coords="75,24, 20,68, 0,104, 54,136, 46,188, 63,196, 173,146, 215,160, 222,146, 205,118, 224,106, 202,85, 231,21, 205,7, 75,24" href="#" id="gunma" />
+</map>
+</div>
+<ul>
+<li id="nav-tokyo"><a href="#">東京都</a></li>
+<li id="nav-kanagawa"><a href="#">神奈川県</a></li>
+<li id="nav-saitama"><a href="#">埼玉県</a></li>
+<li id="nav-chiba"><a href="#">千葉県</a></li>
+<li id="nav-tochigi"><a href="#">栃木県</a></li>
+<li id="nav-ibaraki"><a href="#">茨城県</a></li>
+<li id="nav-gunma"><a href="#">群馬県</a></li>
+</ul>
+</body>
+</html>
+HTMLでは、<area>に県名のid属性、リストのナビゲーションの<li>には先頭に「nav-」を付けた値を指定します。
+div {
+background: url("../images/kantou_bg.png") no-repeat;
+}
+style.cssにてdummy.pngと<area>を内包している<div>に背景画像としてkantou_bg.pngを指定します。
+$(function(){
+//初期段階にてダミー画像は透明にしておく
+$("#japan").css({
+"opacity": "0"
+});
+//areaのマウスオーバーにて画像を置換
+$("area").hover(function(){
+$("#japan").stop();
+var areaId = $(this).attr("id");
+$("#japan").attr("src", "images/" + areaId + ".png").fadeTo(500, 1);
+},
+function(){
+$("#japan").stop();
+$("#japan").attr("src", "images/dummy.png").css({
+"opacity": "0"
+});
+});
+//li aのマウスオーバーにて画像を置換
+$("li a").hover(function(){
+$("#japan").stop();
+var listId = $(this).parent("li").attr("id");
+var changeListId = listId.replace(/nav-(\w.)/, "$1");
+$("#japan").attr("src", "images/" + changeListId + ".png").fadeTo(500, 1);
+},
+function(){
+$("#japan").stop();
+$("#japan").attr("src", "images/dummy.png").css({
+"opacity": "0"
+});
+});
+});
+example.jsを上記のように記述します。
+hover()にてid属性の文字列を元に画像のパス(ファイル名)が変更され、ロールオーバーが実現します。
+処理ごとにstop()をかけているのは、連続したマウスオーバーの際に、繰り返し画像の置換をさせない為です。ストップさせないとマウスを離した後でも、ちかちか画像が切り替わってしまいます。
+制作ページによっては画像をたくさん作らなくてはならない点が大変ですが、jQueryを用いることによってスクリプトは比較的短い記述で済ませられます。
+これから実装される方は、イメージマップのサンプルにてソースをご確認ください。 
+次へ >
+ロールオーバーするイメージマップをjQueryで実装する - 無料のフォームプログラムならCGIラボ

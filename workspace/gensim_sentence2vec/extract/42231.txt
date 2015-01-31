@@ -1,0 +1,79 @@
+
+第11回【似通った英単語の選択方法(続編)】
+アブストラクトで大切な最終文
+英語技術論文のアブストラクトにおいて、特にその最終部分に、「このことから(今回の研究結果から)、～であることが分かる」などと、研究から導かれる示唆を表す一文が置かれることがあります。
+例えば、「セミの化学物質の生物濃縮に土壌汚染が与える影響」に関する論文のアブストラクトにおいて、次のような最終文がありました。
+このことから、セミは汚染された土壌からOPEs(有機リン酸取りエステル類)、PAHs(多環芳香族炭化水素類)を取り込んでいる可能性がある。
+このアブストラクトには、「セミの成虫、抜け殻、土壌に存在する化学物質を測定したこと」、そして「土壌の化学物質とセミにおける化学物資との間に相関関係が見られたこと」が書かれています。つまり、「このこと」は、「測定結果の相関関係」のことです。
+上の和文は、日本人研究者(論文著者)によって、次のように英訳されました。
+論文著者による英訳:
+This trend indicates that black cicadas have an influence on soils contaminated with the pollutants.
+アブストラクトの最終文は、研究の今後や研究結果の示唆を伝える重要な文章です。にもかかわらず、論文著者は、最後にこの部分を書くときには疲れてしまい、注意を怠って書いてしまうようなことがあるそうです。その結果、上の英文にも、誤訳が含まれています。誤りを修正した上で、より良い英文になるようリライトをしてみます。
+リライト案1:
+This trend indicates that cicadas may accumulate toxic substances in their bodies as they live in the contaminated soils.
+解説:まずは正確になるようリライト。後半部分のpollutantとcicadasの関係が原文では逆になっており、cicadasがsoilに影響を及ぼすことを意味していたので、内容を修正。著者による原文を生かしつつ、和文が表したい内容に忠実に、かつ直訳調にならないように訳し直す。
+リライト案1で、正しく、おおむね良い文章となったと思います。次に、さらに正しく自然な表現となるよう、「このことから」に対する英訳のtrendを別の言葉に修正したいと思いました。
+リライト案2:
+This finding indicates that cicadas may accumulate toxic substances in their bodies as they live in the contaminated soils.
+解説:trendfindingに変更。「このこと」はtrendよりもfinding(今回分かったこと)と書くほうが適切と思うため。
+原文に込められた気持ちを大切に—行ったり来たりしながら英訳を検討
+「このこと」の英訳をThis trendからThis findingに変更したリライト案2に対して、論文著者の意見は、次のようなものでした。
+論文著者の意見:
+「このこと」に対してfinding(知見)を使うのは一般的に良いと思うけれど、今回表したかった内容は、findingではなく、化学物質の測定結果の「傾向」。したがって、「傾向」を意味する英語を使いたい。
+一方、そこに居合わせた数々の研究者の意見は、「trendには時間的意味があるので不適切では」「trendというと「トレンド」というカタカナを想像してしまって、意味がずれる気がする」といったものでした。
+そこで、次のリライト案3では、trendではなくtendencyの使用を提案してみました。
+リライト案3:
+This tendency indicates that cicadas may accumulate toxic substances in their bodies as they live in the contaminated soils.
+解説:findingtendencyに変更。trendとtendencyの微妙な差異を生かし、表現をぼやかすため。
+実際は、技術論文でtrendという単語を使うことは可能で、単純にヒット数を比較すると、tendencyよりもむしろtrendは頻度が高くなります。つまり、科学技術の分野で「傾向」を表す場合、tendencyよりもむしろtrendが使われることが多いことになります。
+ですが、今回の内容の場合は、「何かが何かへと変化した」、あるいは「このような動きがあった」というような「傾向」ではなく、「セミ、セミの抜け殻、土壌、において化学物質が検出されたこと」、という内容でしたので、これをtrend(=動向)と表現することに、違和感がありました。そこで、はじめのリライト案ではtrendfinding(=今回分かったこと)に修正しました。ところが論文著者によると、「傾向」という言葉を使いたい、とのことでしたので、trend(=動向)ではなく、「状態としての傾向」を含むtendencyに変更し、少しぼやかすことで、解決へと向かいました。
+似通った単語を理解する—trendとtendency
+似通った単語tendencyとtrendの意味の違いについて、また論文での使用について調べるために今回参考にしたのは、辞書の定義と、コーパス(言語データの集まり)での各単語の使用例です。
+まず、複数の辞書の定義などにより、次のようなことが、見えてきます。
+①2つの単語には若干のニュアンスの差がある。trendには「動向」の意味が強く、つまり、物事が動いていく「方向」が強調される。一方でtendencyは単に「傾向」。またもう一つの違いとして、trendは「情勢の動き」、一方tendencyは「人やモノの傾向」。
+②また一般英語では、trendには「世論などの動向(fashionに近い意味)」という意味もある。またtendencyは人に使った場合に「くせ、好ましくない傾向」といった意味になることもある。
+次の複数の辞書の定義のアンダーライン部分を眺めると、「trend=動向、動きや方向を強調する語」、一方「tendency=傾向」、ということが見えてきます。「ウィズダム英和辞典」と「プログレッシブ英和辞典」の追記の部分も参考になります。
+辞書の定義(参考にした部分に下線)
+Oxford Advanced English Learners Dictionary
+trend    :a general direction in which a situation is changing or developing
+tendency  : if XX has a particular tendency, they are likely to behave or act in a particular way
+Collins English Dictionary
+trend   1.  general tendency or direction  
+2.  fashion; mode
+tendency 1.  an inclination, predisposition, propensity, or leaning: she has a tendency to be frivolous ; a tendency to frivolity
+2.  the general course, purport, or drift of something, esp a written work  
+ウィズダム英和辞典
+trend   (～の/～への)傾向、動向
+tendency  (～への/～する)傾向、風潮、くせ
+追記:trendは物事の一般的傾向
+小学館プログレッシブ英和辞典
+trend    1 (世論・事態などの)動向,大勢,趨勢(すうせい)《 of, in... 》;(…への)傾向《 toward, to... 》;(衣服などの)流行、はやり、ト	レンド《 in... 》.⇒FASHION類語
+tendency	(～の)傾向、趨勢
+追記:tendency人や物が一定方向へ動く傾向、趨勢。人の場合はなかなか変わらない性格的なかたよりや素質など。trend情勢が一定方向へ動いていること。なんらかの力が加われば変わる。
+次に、コーパス(言語データの集まり)を調べてみます。今回、PERC Corpus (http://scn.jkn21.com/~percinfo/index_j.html#)を使用します。これは、医学、生物、物理、数学、化学、通信等の科学技術・理工学分野における約1,700万語の学術雑誌論文からなるコーパスです。2011年10月現在、「小学館コーパスネットワーク(http://scn.jkn21.com/#)」が提供するインターネット上のコーパス検索ソフトを用いた無料アクセスが可能です。このコーパスを上手く使うと、多くの技術論文のデータから、ある単語の使用例や、ある単語と他の単語との結びつきなどを調べることができ、訳語を迷った際には大変参考になります。
+今回は、tendencyとtrendの使用例を調べるために、単純にtendencyとtrendをそれぞれ検索してみて、ヒットした内容を適当に抜き出してみます。
+使用例を抜粋して見ていくと、trendもtendencyも同じような文脈で使用が可能であることが見えてきます。
+一方で、コーパス中のこれらの語のヒット数を比較すると、約1:2で、trendの使用がtendencyの使用頻度を大きく上回ることが分かりました。科学技術の分野で「傾向」を表す場合、tendencyよりもむしろtrendが使われることが多い、ということが推測できます。
+コーパスから抜き出した例文(tendencyとtrendの部分に下線)
+<tendency>
+- At stoichiometric conditions, the descending line was shifted signiR- cantly to the lower temperature side (Fig. 1(b)), and this tendency increased with increasing methane in… 
+- NO does not have the tendency to dimerise at standard temperature and pressure.
+- This increasing tendency of polysaceharides indicated that more lignin was…
+- the chemical composition of shoots and rhizomes showed a tendency of higher N , P , K and sugar contents in rhizomes from…
+- Yet upon closer inspection, one common tendency among these three peroxidases is an interaction with tyrosine as a substrate.
+- The tendency of an ion to adsorb specifically (to chemisorb on the electrode surface) will depend on the balance between its chemical interaction with the substrate and the heat of solvation.
+- The tendency of this surface condensation is opposite to the self condensation…
+<trend>
+- The same trend of differences between the cvs was also recorded for roots grown in soil inoculated with race 2, although the amount of the pterocarpans was not significantly greater than that recorded for roots grown in sterile soil…
+- The physicians' assessment of sneezing, nasal itching, rhinorrhea, and eye irritation showed some significant treatment effects on some clinic visits, but there was no consistent trend across the groups.
+- The trend for the SY versus the AO colour signal was consistent with this, but not significant…
+- There was a trend (non-significant) of higher PVP scores in the EUB subgroup than that in the DFS subgroup…
+- A similar trend also was observed for 1.0-10.0 mM zeatin (P = 0.0086) .
+- This trend is opposite to that expected from classic trans-substituent effects in which one strongly donating axial ligand weakens the bonding of the other.
+正確・明確に書くために—思い込みを避け、和文作成者や他の関係者の意見に耳を傾け、その都度最適な訳語を選択する
+基本はやはり、複数の辞書の定義を調べることです。似通った単語についての説明付きの辞書は、便利で参考になります。そして、科学技術分野のコーパス(自然言語文章の集積)の例文も適宜利用し、各単語の使用状況などを確認した上で、単語を選択するとよいでしょう。また、リライトの際には、はじめに使われていた単語に込められた気持ちに配慮するとともに、複数の他の人の意見も取り入れることで、その時々の最適な訳語を選択でき、正確、明確に書けるようになると思います。
+【似通った英単語の選択方法(続編)】のPOINT
+辞書とコーパスを参考にするとともに、人の意見にも耳を傾けて単語を選択する。思い込みを避けて、しっかりと調べる努力をすることがスキルアップにつながる。
+論文アブストラクトに頻出する「このことから(今回の研究結果から)～が分かる」の「このこと」にはThis findingは便利で良い表現。
+「このこと」が「この傾向」である場合、tendencyとtrendを比較すると、trendは技術論文での使用頻度が高く適切な場合が多い一方で、tendencyに比較すると「動向」「動いていること」が強調される。一方、tendencyは「動き」や「傾向」。
+第11回【似通った英単語の選択方法(続編)】 | オンライン連載 | 特許英語・論文英語を専門とする翻訳と教育の会社 ユー・イングリッシュ

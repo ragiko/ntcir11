@@ -1,0 +1,32 @@
+サンプル
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>base要素</title>
+<link rel="stylesheet href="style1.css type="text/css" />
+<base href="http://www.example.com/2014/archive/index.html" />
+<link rel="stylesheet href="style2.css" type="text/css" />
+</head>
+<body>
+<p>2014年11月の<a href="/11/archives.html">アーカイブ</a>の記事です。</p>
+</body>
+</html>
+表示
+2014年11月のアーカイブの記事です。
+※ダミーのリンクなので動作しません。
+base要素の適用範囲
+head要素内に2つのlink要素があります。base要素はこれらの上に記述しなければ動作しません。上記の例では、style1.cssはbase要素の適用範囲外となり、この文書のみに適用されます。リンク先には適用されません。
+style2.cssはbase要素で指定した「http://www.example.com/archive/index.html」のリンク先にも適用されます。
+絶対パスは、URLをフルパスで表示します。
+トップページが「http:www.example.com/」の場合、
+下の階層のアーカイブは
+「http://www.example.com/archive.html」になります。
+さらに下の階層は
+「http://www.example.com/archive/2014.html」
+次は
+「http://www.example.com/archive/2014/11.html」
+とスラッシュで区切り階層を指定していくと最後のページは、
+「http://www.example.com/archive/2014/11/01.html」
+となります。実際はここまで深い階層は少ないと思いますが、ブログですと2階層くらいですかね。
+html5のbase要素の仕組みと使い方 - ブログつれづれ日記

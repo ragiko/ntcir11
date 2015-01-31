@@ -1,0 +1,53 @@
+
+C/C++ テクニック集
+時間をミリ秒単位で測定する
+リアルタイムシミュレーションやゲームなどでは時間を正確に測る必要があります.C 言語の標準ライブラリの関数は分解能が悪いので,Windows でのプログラミングにはマルチメディアタイマーを使いましょう.
+タイマーの分解能を調べるプログラムのソースコードと実行結果を以下に示します.C の標準ライブラリーにある時間を計る関数は clock() です.この関数は,プロセス(プログラムの実行)を開始してからの時間を返しますが,Windows の場合は分解能が50〜60 ミリ秒しか有りません.より精密な測定にはマルチメディアタイマの関数,timeGetTime() を使用します.この関数は Windows 起動後のシステム時間をミリ秒単位で返します.サンプルプログラムでは,上記2つの関数それぞれについて関数の戻り値が変化したときにその内容を表示しています.結果を見ると分かるように,timeGetTime() では1ミリ秒の分解能があります.
+// 時間測定プログラムの例
+#include <stdio.h&gt
+#include <time.h&gt // for clock()
+#include <windows.h&gt // これと下のヘッダーはマルチメディアタイマーに必要です
+#include <mmsystem.h&gt // winmm.lib をリンクするのを忘れずに
+int main(int argc, char* argv[])
+{
+int i;
+clock_t oldTime, newTime;
+oldTime = clock();
+for (i = 0; i &lt 10; i++) {
+while (oldTime == (newTime = clock())) ;
+printf("clock [sec]      = %.3f \n",
+(float)oldTime / (float)CLOCKS_PER_SEC);
+oldTime = newTime;
+}
+DWORD oTime, nTime;
+oTime = timeGetTime();
+for (i = 0; i &lt 10; i++) {
+while (oTime == (nTime = timeGetTime())) ;
+printf("timeGetTime [ms] = %d \n", oTime);
+oTime = nTime;
+}
+return 0;
+}
+上記プログラムの実行例
+clock [sec]      = 0.000
+clock [sec]      = 0.050
+clock [sec]      = 0.110
+clock [sec]      = 0.160
+clock [sec]      = 0.220
+clock [sec]      = 0.270
+clock [sec]      = 0.330
+clock [sec]      = 0.380
+clock [sec]      = 0.440
+clock [sec]      = 0.490
+timeGetTime [ms] = 123767
+timeGetTime [ms] = 123768
+timeGetTime [ms] = 123769
+timeGetTime [ms] = 123770
+timeGetTime [ms] = 123771
+timeGetTime [ms] = 123772
+timeGetTime [ms] = 123773
+timeGetTime [ms] = 123774
+timeGetTime [ms] = 123775
+timeGetTime [ms] = 123776
+前に戻る 
+C/C++ programming technique @ catfish

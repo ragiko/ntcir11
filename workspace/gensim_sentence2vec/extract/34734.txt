@@ -1,0 +1,95 @@
+
+メール添付ファイルデコード補助ツール
+DecodeBridge
+このプログラムは、復元できなかったメールの添付ファイルを整形してSchezoさん作のデコードプログラムLhaplusに渡します。フリーソフトです。
+「復元できなかったメールの添付ファイル」とはデコードできなかった次のような意味不明の文字列のことです。DecodeBridgeはこの文字列を解析してエンコード方法を推定し、適当な数行を元の文字列に付け加えてデコードプログラムに渡します。
+JkVQRChSUEMoUyE/KjNNOzRGNEMoU2BOLCMhPCoxWCQiQCJQYGA8UCtDYFAsI2BQJ0AwKQpN
+UEIoUlBDCk0oU2BbNyJUQjciKEMrIixDLCFYJCZQIlVgRjVENzVQTShFUEIoUlBDKFNgTiwj
+Ck0rM00/KzQhPysxWCQsQCJbY1NdPyszTT8rNCE/KzFYJCJgIlxgYDRQK0MhPyghWCQiQCJd
+DecodeBridgeに電子メールのテキストを与えられた場合には、デコードプログラムの動作を確実にするために次のような処理を行なってからデコードプログラムに渡します。
+メールのヘッダや本文を除去し、添付ファイルの部分だけを抜き出します。
+ファイルのセパレータに空白が含まれる場合もありうるので空白を含まないセパレータで置き換えます。
+添付されたファイルの名前がmimeエンコードされている場合にはシフトJISに直します。
+添付されたファイルの名前がRFC2311にしたがってエンコードされている場合にもシフトJISに直します。
+Content-disposition: attachment にファイル名がなければ付け足します。「size=」があれば削除します。
+添付ファイルがテキストファイルであって、すでにデコードされている場合は、それをLhaplusの解凍指定フォルダ(指定がなければデスクトップ)に書き出します。テキストファイルを添付した「Yahoo!メール」からのメールをメールソフトの電信八号で受信した場合などにこのような場合があります。
+対応しているエンコード方式はbase64, quoted-printable, uu-encode, BinHexです。ウィンドウズ95、98、Me、NT、2000、XPで使えるのではないかと思います。
+ダウンロード
+Vectorからダウンロード 
+本プログラムのバグレポートや改善要望などは作者までお願いします。ソフトサポート掲示板に書き込んでいただいても結構です。
+使い方
+まず、SchezoさんのLhaplusをインストールします。ダウンロードは
+ベクターのアーカイバのページ
+次にDecodeBridgeをダウンロードしてLhaplusで解凍し、どこかのディレクトリにおきます。ショートカットをデスクトップにおくと便利。
+エンコードされたファイル名をシフトJISに戻すときにNKF32.DLLを使います。ダウンロードしてDecodeBridgeと同じディレクトリに解凍してください。
+メールの中の添付ファイルの部分をファイルに保存し、DecodeBridgeにDrag&Dropします。
+添付ファイルのデコードはこれで終わりです。以下は補足です。
+デコードされてできたファイルがメールの本文などのようにJISエンコードされていた場合はこれだけではまだ読むことができません。この場合は、次のいずれかを行なってください。
+デコードされたファイルをLhaplusにDrag&DropすればシフトJISに変換することができます。
+デコードされたファイルを笹川泰宏さんの「ページブラウザ」または寺尾進さんのTeraPadにDrag&Dropすると内容を表示します。
+デコードプログラムとしてはLhaplus以外に次のフリーソフトも使えます。BinHexやuuencodeでエンコードされたファイルの場合はeoをインストールしてください。Lhaplusでは正しいデコードができないようです。ただし、eoだけではquoted-printableのデコードができないのでLhaplusは必ずインストールしてください。
+eo (手賀俊行)
+Aladdin Expander(Aladdin Systems, Inc.)
+UUDWin (Mark Spankus)
+各種デコードプログラムの機能比較もご覧ください。
+4/21/2010追記
+Lhaplus をLAN環境で使うと共有フォルダに対するアクセスが遅くなるといわれています。筆者は最近 Lhaplus を削除して、代わりに eo を使うことにしました。
+最近の履歴
+10/19/2009 Version 1.13f
+修正ミス訂正 
+10/19/2009 Version 1.13d
+Content-Dispositionに「size=」などがあった場合には削除する 
+3/30/2007 Version 1.13c
+RFC2231の添付ファイル名に「%25」があるとエラーになった
+11/25/2006 Version 1.13b
+uuencode, BinHexのときにbeginやthis fileの行を出力しなかった
+2/28/2006 Version 1.13a
+Content-Typeに"name="がない場合に対応
+2/26/2006 Version 1.13
+Lhaplusがレジストリにパスを書かなくなったのに対応
+RFC2231の添付ファイル書式に対応 nkf32.dllをインストールする必要がある
+10/12/05 Version 1.12a
+ちょっとしたミス
+10/10/05 Version 1.12
+セパレータが引用符号で囲まれていない場合もあることに気づいた
+5/9/04 Version 1.11
+電信八号で転送された添付ファイル付きメールがいつからかデコードできなくなっていた
+3/22/04 Version 1.10
+uuencodeの場合はeoでデコードするようにした(Lhaplusはファイルサイズを間違うことあり)
+Content-type: multipart/relatedのときデコードできなかった
+3/26/03 Version 1.09
+入れ子になったマルチパートの後にある添付ファイルを復元しなかった
+入れ子になったマルチパートは再帰処理ルーチンで処理する
+12/6/02 Version 1.08
+Content-Transfer-Encoding: 7bit があるとメール本文もファイルとして保存していた
+6/21/02 Version 1.07a
+作者へのメールの送り先を変更(プログラムはバージョン番号も含め変更なし)
+5/11/02 Version 1.07
+Microsoft Outlook Express Macintosh Edition - 5.01 (1513)からの添付ファイルに対応
+(Content-disposition: attachment にファイル名が書かれていない)
+2/2/02 Version 1.06
+BinHexはeoでデコードすることにした(eoがなければAladdin Expander)
+電信八号で転送された添付ファイル付きメールに対応した
+uuencodeされたファイルが本文中にあった場合デコードできなくなっていた
+10/21/01 Version 1.05
+ファイルがすでにデコードされておればLhaplusの指定ディレクトリに書き出す
+9/27/01 Version 1.04
+電信八号からメールをDrag&Dropすることができるようにした
+7/27/01 Version 1.03
+デコードが終われば終了する
+メール本文の中にuuencodeが含まれている場合に対応
+BinHexが添付されている場合はStuffIt ExpanderまたはUUDWinを起動する
+7/7/01 Version 1.02
+メールは本文部分を削除してデコードプログラムに送る
+メールのboundary文字列をスペースを含まない文字列に置きかえる
+ファイル名がbase64でエンコードされている場合シフトJISに変換する
+BinHexに対応(StuffIt ExpanderまたはUUDWinを登録すること)
+7/1/01 Version 1.01
+Unixの改行形式のファイルを復元できなかった
+圧縮ファイルは復元する(Lhaplusにそのまま送る)ようにした
+Shiftキーを押しているという検出が間違っていた
+1/15/01 Version 1.00
+公開
+All rights reserved. リンクは自由ですが、転載・引用・配布(印刷もふくむ)をされるときは作者までご連絡ください。感想もお待ちしています。
+作者のホームページにもどる
+DecodeBridge ダウンロード

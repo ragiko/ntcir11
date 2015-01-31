@@ -1,0 +1,69 @@
+Exercise 1 // 演習問題1  &dagger;
+When test scores (100points) are normally distributed and its mean is 65 and s.d. is 10 in class A, draw this normal distribution.
+Use a function dnorm(x, mean, s.d.) to calculate density function of Normal distribution and a function curve(function, min, max)
+ある授業のテストの点数(100点満点)が,平均65点,標準偏差10点の正規分布N(65,10)に従うとするとき、この 正規分布のグラフを描きなさい。
+正規分布の密度関数を求める関数dnorm(確率変数x, 平均μ,標準偏差σ)と,ある関数の曲線を描く関数curve(関数, 最小値, 最大値) をつかいます.
+curve(dnorm(x,65,10),0,100)
+Overlay class B's Normal distribution N(50, 10^2) with mean 50 and s.d. 10 and N(65, 15^2)
+Use dnorm(x, mean, s.d.)
+And overlay two distribution by using curve(function, min, max, col=color, add=TRUE)
+平均50点,標準偏差10点の正規分布N(50,10^2)と,平均65点,標準偏差15点の正規分布N(65,15^2)を重ねて描きなさい.
+dnorm(確率変数x, 平均μ,標準偏差σ)の平均と標準偏差の値を変更します.
+また,関数curve(関数, 最小値, 最大値, col=色, add=T)に,col=色番号,重ね合わせオプションadd=Tを加えます.
+If your score is 77 and above, you can be ranked in top ? % of class A
+A cumulative probabilistic distribution function pnorm(x, mean, s.d.) shows cumulative probability under score x.
+In case that score is normally distributed N(65, 10^2), cumulative probability from 0 point to 77 point can be calculated as followings;
+テストの点数が77点以上だと,上位何%となるか
+正規分布の累積確率分布関数pnorm(確率変数x, 平均μ,標準偏差σ)を使うと,ある点数までの累積確率がわかります.
+例えば,正規分布N(65,10^2)に従うとした場合の,(0点から)77点までの累積確率(つまり,約88.49%の学生は77点未満であること)を示すには,以下のようにします.
+pnorm(77,65,10) 
+[1] 0.8849303
+In order to calculate share from the top, calculate 1 - pnorm(77,65,10)
+77点の時の上位からの割合を求めるには,1からこの値を引いてあげればよいわけです.
+1-pnorm(77,65,10) 
+[1] 0.1150697 
+How many marks do you need to get not to become lower 20%?
+To calculate a variable x that becomes P[X<=x]=q for given probability q is equal to calculate probabilistic variable x which's probability becomes q from lower tail.
+Use qnorm(probability, mean, s.d., lower.tail=TRUE)
+テストで下位20%とならないためには,何点以上取ればよいか.
+確率 q に対して, P[X <=x]=qとなる x の値を求めたい場合とは,即ち,下位からの確率qとなる確率変数xの値を求めたい場合に異なりません.
+この場合,qnorm関数をもちいて,qnorm(確率値p, 平均, 標準偏差, lower.tail=TRUE) とします.
+qnorm(0.2,65,10, lower.tail=TRUE) 
+[1] 56.58379
+How many marks do you need to get to become upper 20%?
+テストで上位20%以内に入るためには,何点取ればよいか,その値を求めなさい.
+To calculate variable x that becomes P[X>x]=q for given probability q is equal to calculate variable x which's probability becomes q from upper tail.
+Use qnorm(probability, mean, s.d., lower.tail=FALSE)
+確率 q に対する P[X > x]=qとなる x の値を求めたい場合とは,上位からの確率qとなる確率変数xの値を求めたい場合に他なりません.
+このとき,qnorm(確率値p, 平均,標準偏差, lower.tail=FALSE) 用います.ここで,lower.tail=FALSEは上位からの確率を求めたいということを意味します.
+qnorm(0.2,65,10,lower.tail=FALSE) 
+[1] 73.41621
+つまり,約73.4点以上取れば,上位20%に入れるということですね.
+100点満点のテストで標準偏差が10点程度だと,受験生の間で点数の差が小さいため,1点の違いが成績の差に大きく影響する可能性があるということですね.
+二つ目のグラフで視覚的に理解できたように,標準偏差が15点だと,もう少し点数間のばらつきが見られるため,標準偏差が10点の場合と比べて,相対的に1点の重みは小さくなることがわかります.
+Exercise 3 // 演習問題3  &dagger;
+Draw t distribution
+Here, range of variable x is defined from -4 to 4 at 0.01 interval.
+t分布を描いてみる
+準備として,xの値の範囲を以下のようにして設定します.これは,xの範囲を-4から4まで0.01刻みで(連続的に)定義することを意味します.
+x <- seq(-4, 4, 0.01) 
+Draw t distribution with degree of freedom 10. Use dt(x, df) to draw t distribution of range x with degree of freedom df.
+まず,上記の範囲で,自由度10のt分布を描いてみましょう.ここで,dt(x, df) は,xの範囲で自由度dfのt分布であることを意味します.
+curve(dt(x, 10),-4,4,type="l") 
+Draw another t distributions by changing color and df from 5 to 1
+この調子で,今度は線の色を変えながら,自由度が5〜1までのt分布を描いてみましょう.
+curve(dt(x, 5),-4,4,type="l",col=2, add=T) 
+curve(dt(x, 4),-4,4,type="l",col=3, add=T) 
+curve(dt(x, 3),-4,4,type="l",col=4, add=T) 
+curve(dt(x, 2),-4,4,type="l",col=5, add=T) 
+curve(dt(x, 1),-4,4,type="l",col=6, add=T) 
+Overlay a Normal distribution on t distributions
+Use dnorm function as shown in exercise 1
+更に正規分布と重ね合わせる.
+演習問題1と同様にして,dnorm関数で正規分布を重ねましょう.
+curve(dnorm(x), type="l", lty=2, add=T) 
+R言語マニュアル1
+R言語マニュアル2
+R言語マニュアル3
+R言語マニュアル5
+R言語マニュアル4 - Pukiwiki

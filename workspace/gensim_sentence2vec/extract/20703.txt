@@ -1,0 +1,158 @@
+
+TITLE タイトル
+SEO的にも文字化け防止の意味でも文字コードの次に記述したいのが、title です。
+<title></title> <title> と </title> の間にタイトルを記入します。
+例1:<title>HEADのTITLE設定 WEBサイトの作り方</title>
+例2:<title>HTML構造とHEAD内の設定 - ホームページ作り方</title>
+まずは、30全角未満で、そのぺージに見合ったタイトル(余裕があればメインのサイトタイトルも)で、
+文の切れ目で空スペースを入れる(または、 - , | などで区切る)。
+ブラウザのタイトルバーに表示されたり「お気に入り」の登録名になったり
+検索結果のタイトルに表示されたり検索エンジンの最重要キーワードになります。
+短か過ぎず長過ぎず、各ページ毎に各タイトルを設定する事。
+タイトルを見てクリック(訪問)するユーザーが多いので
+キーワードを絡めた魅力的で完結なタイトルにしましょう。
+各ページ毎に、そのページのテーマに合ったタイトルを設定します。
+METAタグ
+description 説明文・概要
+検索結果のタイトルの下の説明文になる事が多く、説明文を確認してから
+クリック(訪問)するユーザーが多いのでクリックされやすい魅力的な文章にしましょう。
+<meta name="description" content="">
+content="" の " と " の間に文章を入れる。(以下参照)
+<meta name="description" content="説明文章。説明文章・・・。">
+descriptionが説明文として必ず掲載される訳では無く、検索キーワードに該当しない場合、
+検索結果が本文から抜粋される。80全角から110全角程度で表示(80全角以内程度で記入)
+カテゴリ登録サイトなどは、カテゴリの登録内容が掲載される場合もある。
+meta には、終了タグがないのでXHTMLは、 />で閉じる(半角スペースとスラッシュが必要)。
+例:<meta name="description" content="" />
+keywords キーワード
+検索エンジンにて、キーワードとして重要視されなくなってしまいましたので
+最近は、meta name="keywords"を設定しないウェブサイトも多々ある。
+ページ内の重要単語を数個(1-10個以内)だけ、半角カンマで区切って記入。
+少ない方が、各ポイントが高い。先(左順)から優先順。無関係ワードや多すぎるのも危険。
+<meta name="keywords" content="">
+content="" の "と" の間に単語を入れる。(以下参照)
+<meta name="keywords" content="単語1,単語2,単語3,単語4">
+meta には、終了タグがないのでXHTMLは、 /> で閉じる。
+<meta name="keywords" content="" />
+その他の META情報
+スタイルシート言語 (CSS利用時に記述)
+<meta http-equiv="Content-Style-Type" content="text/css">
+スクリプト言語 (javascript利用時に記述)
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+転送する、自動ジャンプ (10秒後にへ "10;url=.html") 非奨励
+<meta http-equiv="refresh" content="10;url=.html">
+作者名  <meta name="author" content="">
+エディタ名  <meta name="generator" content="notepad">
+クローラ(検索エンジン)などへの META情報
+全階層ページ検索巡回許可 デフォルトが許可なので設置不要( "index,follow" も同じ)
+<meta name="robots" content="all">
+検索巡回拒否(禁止)対策  (meta より robots.txtファイルで指定する方が良い)
+<meta name="robots" content="noindex">
+(インデックス登録拒否 Yahoo.Google.msn(Bing).対応)
+<meta name="robots" content="nofollow">
+(リンク先巡回拒否 Yahoo.Google.msn(Bing).対応)
+<meta name="robots" content="NONE">
+("noindex,nofollow" と同じ Yahoo.Google.msn(Bing).対応)
+<meta name="robots" content="noarchive">
+(キャッシュ保存禁止 Yahoo.Google.msn(Bing).対応)
+<meta name="robots" content="noimageclick">
+(画像巡回、検索画像の直リンク禁止)
+<meta name="robots" content="noimageindex">
+(Google対応。他対応無し? name="googlebot" の方が今は良いかも?)
+Googleの削除対策 (Googleのみ)
+<meta name="googlebot" content="unavailable_after: 01-Jan-2009 09:01:23 EST">
+(Google対応。他対応無し。 JSTやGMTは、出来るかな?)
+YAhoo推薦の拒否対策 (カンマで一行にまとめる)
+<meta name="robots" content="noindex, nofollow, noarchive">
+ALL NONE INDEX NOINDEX FOLLOW NOFOLLOW は、大文字の方が良いかも?
+つまり、検索避けする場合は、(インシュランスで)
+robots.txtファイルでクロール禁止 Disallow: / を記述して、更に
+<meta name="robots" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+とでもダブル記述しておきましょう。
+参考URL (拒否対策 robots.txtファイルを使うほうが良い)
+http://info.search.yahoo.co.jp/archives/002885.php
+http://www.google.com/support/webmasters/bin/answer.py?answer=61062
+http://www.google.com/support/webmasters/bin/answer.py?hl=jp&answer=156449
+http://support.microsoft.com/kb/217103/ja
+後日、再巡回させる (例は、30日後)
+<meta name="revisit_after" content="30 days">
+ブラウザのキャッシュ制御 (掲示板などの更新が頻繁な場合キャッシュしない)
+<meta http-equiv="Pragma" content="no-cache">
+(キャッシュ保存禁止 HTTP/1.0準拠の UA 次第)
+<meta http-equiv="Cache-Control" content="no-cache">
+(キャッシュ保存禁止 HTTP/1.1準拠の UA 次第)
+<meta http-equiv="refresh" content="10"> (キャッシュ10秒。自動転送可能)
+<meta http-equiv="Expires" content="0"> (キャッシュ0秒)
+http://support.microsoft.com/kb/234067/ja
+キャッシュの有効期限を指定 例: GMT(グリニッジ標準時)で指定
+<meta http-equiv="Expires" content="Thu, 01 Jan 2009 09:01:23 GMT">
+<meta http-equiv="Expires" content="86400"> (24時間後)
+閲覧指定 (デフォルト"general" 成人向"adult" 子供向"child" "safe for kids")
+<meta name="rating" content="general">
+上記の「検索避け」「拒否・禁止」のMETA対策をする場合は、
+HAEDの<head>のすぐ真下(HEAD内の一番上、文字コードの上)に記述しなければいけません。
+nameなどの属性が同じ場合は、カンマで区切って複数を一行にし設置します。
+今後の仕様変更や、各社クローラー、各検索エンジン、各UA 、などの対策もありそうですが、
+結局は、クロールや更新がなければ意味がありません。 (正直、必ず指定通りになるとは限らないのです)
+検索拒否は、METAよりもサーバ側で対処した方が良さそうです。( robots.txtファイル、.htaccess)
+説明文、スニペット
+説明文を無くする方法
+<meta name="robots" content="nosnippet"> (各検索エンジン共通)
+<meta name="Slurp" content="nosnippet"> (Yahoo,YST用)
+<meta name="googlebot" content="nosnippet"> (Google用)
+YST Yahoo!のみ設定、「name="robots"」か「name="Slurp"」
+YAHOOカテゴリの説明文を引用させない方法。
+<meta name="robots" content="noydir">
+<meta name="Slurp" content="noydir">
+Google のみ設定、「name="robots"」や「name="googlebot"」
+ODP,DMOZから説明文を引用させない方法。
+<meta name="robots" content="NOODP">
+<meta name="googlebot" content="NOODP">
+<meta name="googlebot" content="NOODP,nofollow">
+Yahoo! 重要度「低」属性 ROBOTS-NOCONTENT
+class="robots-nocontent"(METAではないけど参考までに)
+(関連性や重要性が無い部分に設定。Yahoo!独自の新属性。発リンク先には未適応。
+面白い属性ですが、悪用される可能性があるので、Googleでは採用しないでしょう。
+Yahoo!サイトエクスプローラー
+<meta name="y_key" content="">
+Googleウェブマスターツール
+<meta name="verify-v1" content="">
+<meta name="google-site-verification" content="" />
+Google翻訳避け NOTRANSLATE Google翻訳 ｜ 
+Google翻訳して検索
+<meta name="google" value="notranslate">
+部分的な翻訳避け class="notranslate" をクラスで割り当てる
+Email us at <span class="notranslate">sales at mydomain dot com</span>
+(at = @ メールアドレスなど変換して欲しくない場合に部分記述)
+XHTMLでMETAを記述する場合は、最後の閉めを /> で終了。
+LINK リンク
+「リンク」とは、連結することです。WEB以外のビジネスの現場でも良く聞かれますが、WEB上では、ハイパーリンクと言われ、HTMLの a要素(アンカー要素)で画像やテキストファイルなどを連結させます。現在地のWEBページからリンクメニューなどをクリックする事で別のWEBページにジャンプする。
+HEAD内のLINK要素は、WEBサイトの関連URLを結びつけたり、WEB情報やスタイルシート、代替文書などのリソースと結びつける働きをします。直接クリックする為では無く、HEAD内から誘導や参照する役目があります。
+HEAD内 linkタグ
+CSS、スタイルシート
+<link rel="stylesheet" href=".css" type="text/css">
+代替スタイルシート (IEは、8からサポート)
+<link rel="alternate stylesheet" href=".css" type="text/css" title="">
+(別バージョンの代替スタイルシートを href=".css" に title="" で登録)
+STARTページへの関係  <link rel="start" href="/" title="TOP">
+indexページへの関係  <link rel="index" href="index.html" title="">
+前ページへの関係  <link rel="prev" href=".html">
+次ページへの関係  <link rel="next" href=".html">
+その他の rel 属性の値
+ホーム home、 最初の文書 start、 目次 contents、 章 chapter、 節 section、 項 subsection、 検索 search、 代替文書 alternate、 付属書 appendix、 ブックマークメニュー bookmark、 用語集 glossary、 ヘルプ help、 著作権 copyright
+mailto: 管理者
+<link rev="made" title="管理者にメール" href="mailto:@">
+モバイルサイト
+<link rel="alternate" media="handheld" href="URL/i/">
+Atom
+<link rel="alternate" type="application/atom+xml" title="Atom" href="URI">
+RSS
+<link rel="alternate" type="application/rss+xml" title="RSS" href="URI">
+ファビコン
+<link rel="shortcut icon" href="/favicon.ico">
+(ルートに favicon.ico を置くだけでも表示される)
+CANONICAL属性Yahoo,Google,Bing.にも対応。(非対応エンジンもあって今後対応予定)
+<link rel="canonical" href="http://www..com">
+(wwwありなし、重複(類似)サイトから類似URIを削除して統一)
+XHTMLでMETAを記述する場合は、最後の閉じを /> で終了。
+HTML構造とHEAD内の設定 - ホームページの作り方

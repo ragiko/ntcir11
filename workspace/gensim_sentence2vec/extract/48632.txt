@@ -1,0 +1,24 @@
+cv::Canny¶
+Comments from the Wiki
+void Canny(const Mat& image, Mat& edges, double threshold1, double threshold2, int apertureSize=3, bool L2gradient=false)¶
+Cannyアルゴリズムを用いて,画像のエッジを検出します.
+パラメタ:
+関数
+Canny
+は,Cannyアルゴリズムを用いて入力画像
+image
+中のエッジを検出し,マップ
+edges
+に出力します.
+threshold1
+と
+threshold2
+の内,小さい方の値がエッジの接続に利用され,大きい方の値が明確なエッジの初期セグメントを検出するのに利用されます.詳しくは,
+http://en.wikipedia.org/wiki/Canny_edge_detector
+を参照してください.
+cv::cornerEigenValsAndVecs¶
+Comments from the Wiki
+void cornerEigenValsAndVecs(const Mat& src, Mat& dst, int blockSize, int apertureSize, int borderType=BORDER_DEFAULT)¶
+コーナーを検出するために,画像ブロックの固有値と固有ベクトルを求めます.
+パラメタ:
+特徴検出 &mdash; opencv 2.2 documentation

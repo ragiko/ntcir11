@@ -1,0 +1,173 @@
+※この記事を書いてる時点の最新ブラウザは以下の通り。また、記事の内容は、PCでの閲覧を想定してます。
+Microsoft Internet Explorer 11.0
+Mozilla Firefox 28.0
+Google Chrome 34.0
+Apple Safari 7.0
+マウスオーバー(ホバー)エフェクト
+ボタンや画像にカーソルを乗せた時の反応って大事ですよね。
+リンクするエリアにカーソルを合わせた時に、カーソルが指のアイコンに変わったり、テキストの色が変わったりすれば、カーソルが乗ったという事が認識しやすくなります:)。
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>CSS Animation - マウスオーバーエフェクト</title>
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../css/normalize.min.css">
+<link rel="stylesheet" href="../css/sample.css">
+</head>
+<body>
+<div id="wrapper">
+<p class="txt">こちらは<a href="">テキストリンク</a>です。</p>
+</div>
+</body>
+</html>
+body {
+background: url(../img/bg.png);
+font-family: "Heiti SC";
+}
+a {
+color: lightSeaGreen;
+}
+a:hover {
+color: indianRed;
+text-decoration: none;
+}
+.txt {
+margin: 50px 0 0;
+text-align: center;
+}
+:hoverを使ってスタイルを指定しておけば、カーソルが乗った時には、そのスタイルが適用されます。
+けどそれだけだと、カチッと切り替わるだけ。
+フェードでふわっと切り替わる
+サイトの雰囲気にもよるけれど、もちょっとだけ柔らかい印象にしたいなって時には、ふわっとするとよいかもです。文字の色が切り替わるスピードと、下線が消えてくスピードを調整することで、ふわっとした感じになります:)。
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>CSS Animation - フェードでふわっと切り替わる</title>
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../css/normalize.min.css">
+<link rel="stylesheet" href="../css/sample.css">
+</head>
+<body>
+<div id="wrapper">
+<p class="txt">こちらは<a href="">ふわっとリンク</a>です。</p>
+</div>
+</body>
+</html>
+/* 略 */
+.txt a {
+border-bottom: 1px solid rgba(32,178,170,1);
+text-decoration: none;
+transition: border-color 0.3s, color 0.3s;
+}
+.txt a:hover {
+border-color: rgba(205,92,92,0);
+}
+切り替わるスピードを調整するにはtransitionプロパティを使います!
+下記のように書くと、a要素でのcolorプロパティの値の変化の仕方を指定することができます。下記は「0.3秒かけていい感じで切り替わる」という指定。
+a {
+transition: color 0.3s ease 0s;
+}
+transitionの値は左から順に、property、duration、timing-function、delayを表してて、上の例を個別に指定するなら、下記のようにも書けます。
+a {
+transition-property: color;
+transition-duration: 0.3s;
+transition-timing-function: ease;
+transition-delay: 0s;
+}
+初期値を省略して、下記だけでもよいです:)。
+.txt a {
+transition: color 0.3s;
+}
+transitionの4つのプロパティは、それぞれ以下の役割と、初期値を持ってます。
+transition-property
+効果を適用したいプロパティ名を指定します。初期値は「all」すべて※のプロパティに適用します。
+※transitionを適用できるプロパティは、プロパティの値を数値で表現できるものすべて。colorの値に使われるredやlightSeaGreenなどの色名も、RGBなどの数値で表すことができるのでちゃんと適用されます。
+transition-duration
+変化の開始から完了までにかかる時間を、秒数で指定します。初期値は「0s」カチッと切り替わります。
+1秒(1000ミリ秒) = 1s(1000ms)。
+transition-timing-function
+変化の仕方(イージング)を指定します。初期値は「ease」ゆっくり始まってゆっくり終わる、一番いい感じのイージングです。
+他にlinear、ease-in、ease-out、ease-in-outが用意されてます。
+cubic-bezier関数を使えばオリジナルなイージングを作ることもできます。詳しくはこちらの記事を参照のこと。
+transition-delay
+変化を開始するまでの待ち時間を、秒数で指定します。初期値は「0s」すぐに変化を開始します。
+マイナスの値を指定すると、その分進んだ時点から変化を開始します。詳しくは後述。
+下線も同じようにtext-decoration-colorをtransitionさせたいところですが、text-decoration-colorプロパティはまだ対応ブラウザが少ないみたいなので、下線はtext-decorationじゃなくてborder-bottomで表示することにしました(2014年4月現在)。
+border-colorを、カーソルが乗る前は「rgba(32,178,170,1)(みどり)」、カーソルが乗った時は「rgba(105,92,92,0)(あかい透明)」となるように指定しました。
+文字色と下線の色、ひとつの要素内で複数のプロパティをtransitionさせるには、transitionの値を、プロパティごとに「,(カンマ)」区切りで続けて書きます。ここでは、前述のtransitionにborder-colorを追記しました。
+.txt a {
+border-bottom: 1px solid rgba(32,178,170,1);
+text-decoration: none;
+transition: color 0.3s, border-color 0.3s;
+}
+.txt a:hover {
+border-color: rgba(105,92,92,0);
+}
+#20b2aaという16進数の値から、rgba(32,178,170,1)みたいなRGB値に変換するのには下記ページを利用しましたよ;D。
+16進数形式をRGB,RGBAに変換するだけ – jsdo.it
+ちょっと補足:transition-delayについて
+transition-delayの値を「0.3s」とした場合、0.3秒待ってから変化を開始、「-0.3s」とした場合には、0.3秒進んだ時点から変化を開始します。
+下のサンプルでは、それぞれtransition-delayを変えてます。
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>CSS Animation - transition-delayについて</title>
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../css/normalize.min.css">
+<link rel="stylesheet" href="../css/sample.css">
+</head>
+<body>
+<div id="wrapper">
+<p class="delay1 delay"><a>すぐにアニメーションを開始します</a></p>
+<p class="delay2 delay"><a>0.3秒待ってから開始します</a></p>
+<p class="delay3 delay"><a>0.3秒進んだ時点から開始します</a></p>
+</div>
+</body>
+</html>
+.delay {
+position: relative;
+width: 100%;
+margin: 6px auto;
+font-size: 14px;
+text-align: center;
+}
+.delay a {
+z-index: 3;
+position: relative;
+display: block;
+padding: 0.8em 0;
+color: #20b2aa;
+}
+.delay::before,
+.delay::after {
+content: "";
+display: block;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+}
+.delay::before {
+z-index: 1;
+background-color: #fff;
+opacity: 0.3;
+}
+.delay::after {
+z-index: 2;
+width: 0%;
+background-color: #20b2aa;
+}
+#wrapper:hover .delay::after {
+width: 100%;
+}
+.delay1::after { transition: width 1s linear; }
+.delay2::after { transition: width 1s 0.3s linear; }
+.delay3::after { transition: width 1s -0.3s linear; }
+動くCSSのためのメモ。

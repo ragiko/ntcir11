@@ -1,0 +1,29 @@
+a が実数で n が整数の時,an = a &times; a &times; ・・・ &times; a (a を n 回掛ける)と書き表す。これを a の n 乗と呼び,このような演算のことを累乗と呼ぶ。
+(例)38 = 3 &times; 3 &times; 3 &times; 3 &times; 3 &times; 3 &times; 3 &times; 3 = 6561
+累乗の性質から考えて,以下のことが成り立つことは分かるであろう。
+a が実数,m・n が正整数の時 am &times; an = am + n
+a が実数,m・n が正整数の時 (am)n = am &times; n
+a・b が実数,m が正整数の時 am &times; bm = (a &times; b)m
+実例を挙げてみると
+35 &times; 33
+= (3 &times; 3 &times; 3 &times; 3 &times; 3) &times; (3 &times; 3 &times; 3)
+= 3 &times; 3 &times; 3 &times; 3 &times; 3 &times; 3 &times; 3 &times; 3
+= 38
+= 35 + 3
+(33)2
+= (3 &times; 3 &times; 3)2
+= (3 &times; 3 &times; 3) &times; (3 &times; 3 &times; 3)
+= 3 &times; 3 &times; 3 &times; 3 &times; 3 &times; 3
+= 36
+= 33 &times; 2
+24 &times; 54
+= (2 &times; 2 &times; 2 &times; 2) &times; (5 &times; 5 &times; 5 &times; 5)
+= (2 &times; 5) &times; (2 &times; 5) &times; (2 &times; 5) &times; (2 &times; 5)
+= (2 &times; 5)4
+ここで,a0というものを考えてみる。
+上の法則が正整数だけでなく0でも成り立つと考えると,公式1より(n は正整数)
+an &times; a0 = an + 0 = an
+&there4; an &times; a0 = an
+a &ne; 0 であれば,この両辺を anで割って a0 = 1 が得られる。a = 0 のときは 00 は定まらないため考えないものとする。
+「a &ne; 0 である任意の実数 a について,a0 = 1 が成り立つ」と定義する。
+指数・対数関数の基本

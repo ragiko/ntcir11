@@ -1,0 +1,15 @@
+私たちは、落ち着いた雰囲気の公園、騒がしいレストラン、混雑した駅、静かな砂浜など、様々な環境で生活しています。メドエルの人工内耳は、独自の技術で、それぞれの環境に応じた性能を、自動的に発揮できるように設計されています。
+装用者が自分自身で環境に合わせた設定を変えなければならないプロセッサが多い中、メドエルの優れた音声処理機能を備えた自動音声マネージメントは、環境の変化を素早く察知し、自動的に調整を行いますので、装用者は自分で設定を変える必要がありません。
+自動音声マネージメント(Automatic Sound Management: ASM)の仕組み
+効果的な人工内耳の音声処理のためには、健聴者では120 dBほどある大きな聞こえの幅を、問題なく電気刺激のできる30 dB ほどの小さな幅に圧縮しなければなりません。これを可能にするために、すべてのメドエル製オーディオプロセッサでは、自動音声マネージメントと呼ばれる前処理方法が使われています。自動音声マネージメントは2段階の自動利得制御 (Automatic Gain Control: AGC)からなり、入力音の幅 (Input Dynamic Range: IDR)をひろげ、自動的な音量調整を可能にしています。
+入力音の幅(Input Dynamic Range : IDR)はオーディオプロセッサ技術において、最も大切な要素のひとつです。研究によると、入力音の幅の広いプロセッサを使ったときのみ、騒音下でも適切に聞き取ることができることが示されています。1,2 メドエルでは、すべての耳かけ型(Behind the ear: BTE)のプロセッサにおいて、入力音の幅は75 dBとなっています。これによって、25 dBから100 dBといった幅広い入力音を処理することが可能で、よりきめ細やかな処理が可能となります。
+自動音量調整は小さな声から大きな声まで、日常生活でおこる幅の広い入力音に対応しています。自動音量調整によって、雑音下での言語理解が容易になり、小さな音も、大きな音も通常の言語音と同様の理解することが可能になります。様々な大きさでの言語音が一定の大きさの言語音と同様に理解できるようになります。3
+メドエルのオーディオプロセッサは、また、2段階の自動利得制御機能を備えています。4 この技術により、飛行機のように非常に大きい音や、ささやき声のような小さな音まで、快適な音量で聞くことできます。段階的な仕組みを設けることによって、突然、入力音が大きくなった場合でも、人工内耳を介した音量が急に変化して不快に感じるといったことのないように設計されています。同様に、突然大きな音が入ることによって、音が歪んでしまうことを防いでいます。これにより、言葉を理解するうえで最良の状態で聞くこと、またひとつひとつの音の大きさの微妙な違いを聞くことが可能となります。
+環境や騒音のレベルに応じて、装用者が頻繁にプロセッサを耳から外して調整を行うプロセッサが多い中、自動音声マネージメント機能を備えたプロセッサは、環境に合わせた調整が自動的に行われるため、安心して使用することができます。この機能は周囲の環境を自分で認識することが難しい、小さなお子様にとっては、特に有効な機能となります。
+この機能がなければ、お子様が最良の効果を得るためには、保護者の方がプロセッサの設定変更を頻繁に行わなければなりません。
+広い入力音の幅と自動音量調節機能を備えた、自動音声マネージメントによって、空港、コンサートホール、会議や会合、レストラン、また自宅にいるときなど、どのような環境にあっても、非常に良い状態で聞くことができます。
+Spahr, Dorman, Loiselle (2007): Per formance of Patients Using Different Cochlear Implant Systems: Effects of Input Dynamic Range
+Haumann et. al., 8th International Conference of the Eurepean Society of Paediatric Otorhinolaryngology, Budapest, 8-11 June 2008: Influence of the Front End Processing on Speech Perception with Cochlear Implants of Various Manufacturers
+Nopp P et al, Performance with the OPUS 2 processor in a roving-level speech test, Presented at the 9th European Symposium on Paediatric Cochlear Implantation, Warsaw, 2009
+St&ouml;bich, Zierhofer, Hochmair (1999): Influence of Automatic Gain Control Parameter Settings on Speech Understanding of Cochlear Implant Users Employing the Continuous Interleaved Sampling Strategy
+自動音声マネージメント｜メドエルジャパン株式会社

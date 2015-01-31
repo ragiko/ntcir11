@@ -1,0 +1,170 @@
+
+目次
+1 イントロ
+2 入門編/とりあえず使ってみる
+3 応用編/アトリビュートを使う
+3. 応用編/アトリビュートを使う
+2章では、とりあえずPixmapを作ることに主眼を置きました。
+この章では、最初にXpmAttributes構造体の使い方を示し、
+その後でこの構造体を使ってできることを幾つか示します。
+3.1〜3.2節を読んだあとは、それ以降は順不同に読んで構いません。
+3.1. XpmAttributes構造体
+XpmAttributes構造体は、Pixmapを作るときに何らかのデータを
+渡す、または、作成したリソースの情報を取得するために使用します。
+XlibのXSetWindowAttributes構造体やXGCValues構造体
+と同様、使用する属性の集合を対応するビットの論理和として表します
+(ビットマップ、またはベクトルと呼ばれます。以降はベクトルと呼びます)。
+ただし、Xlibのように構造体とベクトルを別の引数として渡すのではなく、
+ベクトルが構造体のメンバになっています。
+これは、関数内でベクトルが変化するからです。
+属性ごとのビットマスクはX11/xpm.hの中で#defineされており、
+これらを'|'演算子でつないで指定します。
+データを渡す時は、対応するメンバに値を格納し、ベクトルのビットをセットして
+関数を呼びます。
+データを取得する場合、そのが値が構造体の中に即値で収まるような場合
+(たとえば画像のサイズなど)、関数内で自動的に値がセットされ、
+ベクトルの対応するビットが立ちます。
+このような属性を使用する場合は、関数呼出し時にビットをセットする必要は
+ありません。属性が取得できない場合はビットがセットされないようです。
+いくつかの属性は、即値ではなくデータへのポインタが格納されます。
+このような属性の値を取得する場合、ベクトルのビットをセットしてから
+関数を呼びます。エラーが起きなければ、メンバにデータへのポインタが
+格納されます。エラーが起きた時はベクトルのビットがクリアされます。
+このような属性は、ビットマスクのシンボル名が「XpmReturnほげほげ」
+となっています。
+データを格納する領域はライブラリ内で確保されます。この領域を解放する時は、
+3.2節で説明するXpmFreeAttributes関数を使用します。
+なお、「Xpmほげほげ」と「XpmReturnほげほげ」というシンボルは
+同じ値を持ちますが、データを渡す時は前者、受け取る時は後者と使い分けるようです。
+また、ポインタを使わない属性の場合、常に「Xpmほげほげ」を使い、
+「XpmReturnほげほげ」は存在しません。
+(前の版では「Xpmほげほげ」をセットし、「XpmReturnほげほげ」
+でチェックすると書きましたが、そうではないようです。動作は同じですが。)
+XpmAttributes構造体のメンバはかなり多いうえ、筆者もごく一部しか使った
+ことがないので、全てを書くのはやめ、
+unsigned long valuemask;
+というメンバがベクトルを表わすということだけを示しておきます。
+具体的なメンバとビットマスクは、以下の章およびマニュアルを参照してください。
+3.2. XpmFreeAttributes関数
+関数呼出し時に動的に確保された領域を解放するときは、
+XpmFreeAttributes関数を使用します。
+int XpmFreeAttributes( XpmAttributes *attributes );
+attributesで示される構造体内のポインタが指す領域を解放します。
+3.3. How to
+よく使用する属性を説明します。
+「こんな事はできないのか?」というのがあればメールを下さい。
+判れば加えます。
+「ビット」とあるのは、valuemaskメンバにセットする/されるビットです。
+データを取得する場合、XpmReturnで始まるシンボルの場合は
+ビットをセットし、そうでない場合はセットしないことに注意してください。
+「設定」とあるのは、関数を呼ぶ前に設定するメンバです。
+「戻り値」は、関数内で設定されるメンバです。
+3.3.1. 画像サイズを取得したい
+ビット:XpmSize
+戻り値
+unsigned int width  -- 横方向のピクセル数
+unsigned int height -- 縦方向のピクセル数
+使用例
+XpmAttributes attr;
+int err;
+int w,h;
+attr.valuemask = 0;
+err = XpmCreatePixmapFromData(disp,root,data_xpm,&pix,&mask,&attr);
+if( err == 0 ){
+w = attr.width;
+h = attr.width;
+}
+3.3.2. デフォルトカラーマップ以外を使用したい
+ビット:XpmColormap
+設定
+Colormap colormap -- 使用するカラーマップを指定
+備考
+デフォルトでは、
+DefaultColormap(display,DefaultScreen(display))
+が使用される。
+使用例
+Colormap cmap;
+XpmAttributes attr;
+int err;
+cmap = XCreateColormap(disp,root,DefaultVisual(disp,DefaultScreen(disp)),AllocNone );
+attr.valuemask = XpmColormap;
+attr.colormap = cmap;
+err = XpmCreatePixmapFromData(disp,root,data_xpm,&pix,&mask,&attr);
+3.3.3. ホットスポットの位置を取得したい
+ビット:XpmHotspot
+戻り値
+unsigned int x_hotspot -- ホットスポットのx座標
+unsigned int y_hotspot -- ホットスポットのy座標
+使用例
+XpmAttributes attr;
+int err;
+int x,y;
+attr.valuemask = 0;
+err = XpmCreatePixmapFromData(disp,root,data_xpm,&pix,&mask,&attr);
+if( attr.valuemask & XpmHotspot ){
+x = attr.x_hotspot;
+y = attr.y_hotspot;
+}else{
+x = y = -1;
+}
+3.3.4. 確保したピクセル値を取得したい
+ビット:XpmReturnAllocPixels
+戻り値
+int nalloc_pixels -- 配列の要素数
+Pixels *alloc_pixels -- ピクセル値の配列
+備考
+Pixmapを破壊する時にカラーセルを解放するために使えると思う。
+この属性はライブラリのバージョン3.4gで追加された。
+前の版ではXpmReturnPixels,pixels,npixelsを使用すると書いたが、
+これらは、XpmColorSymbols(Pixmap作成時に色を置き換える)を使用する場合、
+新たに確保していないピクセル値を含む場合がある。
+使用例
+XpmAttributes attr;
+int err;
+int x,y;
+attr.valuemask = XpmReturnAllocPixels | XpmColormap;
+attr.colormap = cmap;
+err = XpmCreatePixmapFromData(disp,root,data_xpm,&pix,NULL,&attr);
+XFreePixmap(disp,pix);
+XFreeColors(disp,cmap,attr.alloc_pixels,attr.nalloc_pixels,0);
+XpmFreeAttributes(&attr);
+3.3.5. カラーセルが足りないとき減色したい(その1)
+設定
+ビット:XpmCloseness
+メンバ
+unsigned int closeness -- 許容する誤差の範囲
+備考
+closenessの範囲は0〜65535で、カラーセルの確保に失敗した時に
+誤差がこの範囲内のカラーセルで代用するらしい。
+ソースを見た感じでは、一番近い色を使用するようだ。
+マニュアルによれば、40000が適当らしい。
+ちなみに、悲観的な筆者は65535を指定している。これでXF86_VGA16でも安心(何がだ?)
+使用例
+XpmAttributes attr;
+int err;
+attr.valuemask = XpmCloseness;
+attr.closeness = 40000;
+err = XpmCreatePixmapFromData(disp,root,data_xpm,&pix,&mask,&attr);
+3.3.6. カラーセルが足りないとき減色したい(その2)
+設定
+ビット:XpmRGBCloseness
+メンバ
+unsigned int red_closeness -- 赤成分について許容する誤差の範囲
+unsigned int green_closeness -- 緑成分について許容する誤差の範囲
+unsigned int blue_closeness -- 青成分について許容する誤差の範囲
+備考
+(その1)よりも細かい指定をする。筆者は使ったことは無い。
+グレイスケールの時の挙動は不明。
+使用例
+XpmAttributes attr;
+int err;
+attr.valuemask = XpmRGBCloseness;
+attr.red_closeness = 20000;
+attr.green_closeness = 10000;
+attr.blue_closeness = 65535;
+err = XpmCreatePixmapFromData(disp,root,data_xpm,&pix,&mask,&attr);
+目次
+1 イントロ
+2 入門編/とりあえず使ってみる
+3 応用編/アトリビュートを使う
+XPM:Advance functions

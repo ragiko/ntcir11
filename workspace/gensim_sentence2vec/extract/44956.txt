@@ -1,0 +1,76 @@
+個体識別番号表示できますか
+さて、みなさんは自分のスマートフォンの個体識別番号(IMEI)を知っていますか?
+さらに表示させる方法を知っていますか?
+メーカーでもない限りわからないだろう。
+そんな大切な情報簡単にわかるはずがないなんて思っていませんか?
+実は「通話画面で*#06#と押すと表示されます」
+しかも通話履歴にも残りません。(iphoneでも表示可能ですww)
+開発者の知り合いがいたら試しに聞いてみてください。
+意外に知らない人が多くてびっくりします。
+いきなりプログラムでこう出せるとか
+電池のふたを外すとなど別解答をくれる人もいます。
+私自身*#06#のことを知らなかった時は電池を外して調べていました…
+IMEI=International Mobile Equipment Identityは
+GSM/W-CDMA/iDENの全ての携帯電話や一部の衛星電話に付与される識別番号,
+すなわち、携帯電話やデータ通信カードが1台ずつ持っている15ケタの識別番号です。
+ヨーロッパ圏では盗難時の端末の通信停止や不正利用端末の停止、
+ブラックリスト化などに利用されています。
+IMEIについてはこの記事に詳しく書いてあります。
+iphoneで*#06#をダイヤルすると原産国がわかる的なデマが出ているようですが
+電子レンジで充電したり、水に浸して音質をよくしたり
+iphoneはクリエティブなニュースにあふれているようですが、
+情報は正しくキャッチアップしていきましょう。
+複数ある個体識別番号のどれを使うか
+個体識別番号と同類のものでサブスクライバIDというものありますが
+これはau(KDDI)の携帯電話がEZwebを利用すると、
+接続先にこの情報がウェブサイトにアクセスすると渡される仕組みになっていました。
+au(KDDI)の携帯電話に割り当てられている固定ID、サブスクライバIDを利用することで『
+かんたんログイン』機能を実装するためにしばしば用いられていたりと
+実は結構識別番号は、一般的に用いられています。
+こっちから情報も打たずに認証簡単にできている時点で端末情報は送られていると思って間違いありません。
+さて個体意識別番号ですが、一般に個体識別番号といってもプログラム上では複数の取り方があります。
+Android SIM情報の取得
+SIMがなければ当然のようにnullが返ってきます。
+とりあえずこんな感じのデータがとれます。
+getLine1Number 電話番号
+getDeviceId デバイスID
+getSimCountryIso SIMの国コード
+getSimOperator MCC+MNC (mobile country code + mobile network code)
+getSimOperatorName サービスプロバイダの名前
+getSimSerialNumber SIMのシリアル番号
+getSimState SIMの状態(通信可能か、PINロックされているかなど)
+getVoiceMailNumber ボイスメールナンバー
+これはパーミッションを取らないと取得はできません。
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+ソースはこんな感じ
+TelephonyManager mTelephonyMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+String IMEI = mTelephonyMgr.getDeviceId();
+String IMSI = mTelephonyMgr.getSubscriberId();
+String PHONE_NUMBER = mTelephonyMgr.getLine1Number(); // Requires READ_PHONE_STATE
+String SIM_SERIAL = mTelephonyMgr.getSimSerialNumber(); // Requires READ_PHONE_STATE
+プログラム上では取得してくるだけなのでSIM情報といえどあっさりしてますね。
+ただSIMありきなのでWifiオンリーSIMなしでは何の情報も取れないでは困るので
+そんな場合を想定する場合は、次のAndroid IDの所得を考えます。
+Android ID(Garaxy系はすべての製品が同じANDROID_ID)
+Garaxy系はすべての製品が同じANDROID_IDとなっているので判別が効かないので注意しましょう。
+ただ、業務用などでSIMなしWi-Fi運用してる場合などはSIMは取りようがないのでこちらを用いることもあります。
+ソースは以下のようになります。
+(import android.provider.Settings;が必要)
+public class App extends Activity {
+public App() {
+String deviceId = Settings.Secure.getString(
+this.getContentResolver(), Settings.Secure.ANDROID_ID);
+}
+}
+Android端末のMacアドレス
+パソコンみたいなものなのでMacアドレスもとれます。
+上記の2つがだめならこちらなら確実にとれるでしょう。
+ソースは以下のようになっています。
+※android.permission.ACCESS_WIFI_STATEが必要です。
+WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+String MAC_ADDRESS = wifiInfo.getMacAddress();
+以上です。
+ご参考になれば幸いです。
+関連記事・最近の投稿は記事の下にあります。コチラもご参考ください。
+Android個体識別番号(IMEI)はじめてガイド | Androidアプリつくったった

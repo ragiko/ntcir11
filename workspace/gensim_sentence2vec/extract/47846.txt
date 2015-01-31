@@ -1,0 +1,7 @@
+
+ツイートする
+VBAから正規表現を使うには、VBScriptが便利です。ただし、正規表現をサポートしているVBScriptはVer5.0からですから、IE5.0がインストールされているパソコンでないと使えません。
+VBScriptの中で正規表現エンジンを提供しているのはRegExpオブジェクトです。参照設定によるEarly Bindingか、CreateObject関数を使ったLate Bindingで参照します。ここではLate Bindingによるサンプルを紹介します。
+まずは、正規表現で使用するオブジェクトとプロパティやメソッドを整理しましょう。
+RegExpオブジェクトのプロパティとメソッド
+Office TANAKA - Excel VBA Tips[正規表現によるマッチング]

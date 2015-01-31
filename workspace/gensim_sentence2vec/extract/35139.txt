@@ -1,0 +1,201 @@
+
+この章では,一番よく使われる種類のマクロを定義する方法を示す.
+それらは ---かなり重複が生じるが--- 3種類に分けられる.
+1種類目はコンテキストを作るマクロだ.
+オペレータが引数を新しいコンテキスト内で評価するものなら,
+おそらくマクロとして定義されなければならないだろう.
+始めの2節は基本的な2種類のコンテキストについて説明し,
+それぞれに対してマクロを定義する方法を示す.
+続く3節は条件付き評価と反復評価のためのマクロについて説明する.
+オペレータが引数を1回より少なく,または複数回評価するものなら,
+やはりマクロとして定義されなければならない.
+条件付き評価のためのマクロと反復評価のためのマクロとの間には明確な区別はない.
+この章で示した例の幾つかは両方を兼ねる(束縛と同様に).
+最後の節は条件付き評価のためのマクロと反復評価のためのマクロとの間のもう1つの類似性について説明する.
+場合によっては,どちらも関数によって実現できるのだ.
+コンテキストの生成
+コンテキストには2つの意味がある.
+1種類目のコンテキストとはレキシカルな環境だ.
+特殊式letは新しいレキシカル環境を作る.
+letの本体内の式は新しい変数を含んでいるかも知れないような環境内で評価される.
+xがトップレベル内でaに設定されたとする.
+しかし次の式は(b)を返す.
+(let ((x 'b)) (list x))
+これは値がbである新しい変数xを含む環境内でlistが呼ばれたからだ.
+式を実行本体として取るオペレータは普通はマクロとして定義されなければならない.
+prog1やprognなどの場合を除けば,
+そのようなオペレータの目的は普通は本体部を何か新しいコンテキスト内で評価させることだろう.
+コンテキストを生成するコードで本体部の外を覆うためには,
+コンテキストが新しいレキシカル変数を含まないときであっても,マクロが必要になる.
+(defmacro our-let (binds &body body)
+`((lambda ,(mapcar #'(lambda (x)
+(if (consp x) (car x) x))
+binds)
+,@body)
+,@(mapcar #'(lambda (x)
+(if (consp x) (cadr x) nil))
+binds)))
+\caption{letのマクロによる実装.}
+\label{fig:MacroLet}
+(defmacro when-bind ((var expr) &body body)
+`(let ((,var ,expr))
+(when ,var
+,@body)))
+(defmacro when-bind* (binds &body body)
+(if (null binds)
+`(progn ,@body)
+`(let (,(car binds))
+(if ,(caar binds)
+(when-bind* ,(cdr binds) ,@body)))))
+(defmacro with-gensyms (syms &body body)
+`(let ,(mapcar #'(lambda (s)
+`(,s (gensym)))
+syms)
+,@body))
+\caption{変数を束縛するマクロの例.}
+\label{fig:MacroBindsVar}
+第\ref{fig:MacroBindsVar}図にはレキシカル環境を作り出す新マクロを3個載せた.
+第7.5節ではwhen-bindを引数リストの構造化代入の例として扱ったので,
+このマクロはすでにchingページに説明されている.
+更に一般的なwhen-bind*は(\emph{symbol expression})の形のペアから成るリストを取る
+---letの引数と同じ形式だ.
+どれかの式がnilを返したら,式when-bind*全体の値としてnilが返される.
+そうでなければそれぞれのシンボルがlet*と同様に束縛された状態で本体部が評価される:
+> (when-bind* ((x (find-if #'consp '(a (1 2) b)))
+(y (find-if #'oddp x)))
+(+ y 10))
+11
+最後に,マクロwith-gensymsはそれ自身がマクロを書くために使われる.
+多くのマクロ定義はgensymの生成から始まるが,それは時としてかなりの数に昇る.
+マクロwith-redraw (p. 115)では5個だった.
+(defmacro with-redraw ((var objs) &body body)
+(let ((gob (gensym))
+(x0 (gensym)) (y0 (gensym))
+(x1 (gensym)) (y1 (gensym)))
+...))
+このようなマクロ定義は,with-gensymsによって簡潔になる.
+これはリスト内の変数を全てgensymに束縛するものだ.
+このマクロを使えば,ただ次のように書けばよい.
+(defmacro with-redraw ((var objs) &body body)
+(with-gensyms (gob x0 y0 x1 y1)
+...))
+この新マクロは以降の章を通じて使われる.
+幾つかの変数を束縛し,その後何かの条件に基づいて式の組の中の1つを評価したいとき,
+let内でただ条件判断を使っていた.
+(let ((sun-place 'park) (rain-place 'library))
+(if (sunny)
+(visit sun-place)
+(visit rain-place)))
+残念なことに,逆の状況には便利な慣用法が存在しない.
+つまり実行したいコードは常に同じだが,束縛が何かの条件によって変化するときだ.
+(defmacro condlet (clauses &body body)
+(let ((bodfn (gensym))
+(vars (mapcar #'(lambda (v) (cons v (gensym)))
+(remove-duplicates
+(mapcar #'car
+(mappend #'cdr clauses))))))
+`(labels ((,bodfn ,(mapcar #'car vars)
+,@body))
+(cond ,@(mapcar #'(lambda (cl)
+(condlet-clause vars cl bodfn))
+clauses)))))
+(defun condlet-clause (vars cl bodfn)
+`(,(car cl) (let ,(mapcar #'cdr vars)
+(let ,(condlet-binds vars cl)
+(,bodfn ,@(mapcar #'cdr vars))))))
+(defun condlet-binds (vars cl)
+(mapcar #'(lambda (bindform)
+(if (consp bindform)
+(cons (cdr (assoc (car bindform) vars))
+(cdr bindform))))
+(cdr cl)))
+\caption{condとletとの組み合せ.}
+\label{fig:CondLet}
+第\ref{fig:CondLet}図にはそのような状況のためのマクロを示した.
+名前から分かるように,condletはcondとletとの合の子のような働きをする.
+これは束縛指定の節と,その次の実行本体部を引数に取る.
+それぞれの束縛節はテスト式によって守られている.
+コード本体部はテスト式が真を返した最初の節に指定された束縛の下で評価される.
+一部の節にのみ含まれる変数は,真となった節が束縛を指定していなければnilに束縛される.
+> (condlet (((= 1 2) (x (princ 'a)) (y (princ 'b)))
+((= 1 1) (y (princ 'c)) (x (princ 'd)))
+(t          (x (princ 'e)) (z (princ 'f))))
+(list x y z))
+CD
+(D C NIL)
+condletの定義はour-letの定義の一般化として捉えられる.
+後者は本体部を関数に変え,その関数が初期値を決める式の評価結果に適用されるようにする.
+condletはlabelsを使ってローカルな関数を定義しているコードに展開される.
+その中では初期値を決める式のどの組が評価されて関数に渡されるかをcond節が決めるようになっている.
+展開コードは束縛指定節から変数名を抽出するために
+mapcanでなくmappendを使っていることに注意しよう.
+これはmapcanが破壊的であって,第10.3章で警告したように,
+引数のリスト構造に変更を加えることは危険だからだ.
+with-系マクロ
+レキシカル環境の他に,もう1種のコンテキストがある.
+そのコンテキストとは,広い意味で世界の状態のことを指す.
+これはスペシャル変数の値,データ構造体の内容,Lisp外部の事物の状態を含む.
+この種のコンテキストを作り出すオペレータも,
+コード本体がクロージャとしてまとめられていない限り,やはりマクロとして定義されなければならない.
+コンテキスト生成マクロの名前はしばしばwith-で始まる.
+この種のマクロの中で一番よく使われるのは多分with-open-fileだろう.
+その本体は新しく開かれたファイルが指定の変数に束縛された状態で評価される.
+(with-open-file (s "dump" :direction :output)
+(princ 99 s))
+この式の評価後にはファイル「dump」は自動的に閉じられ,中身は2文字「99」となっているだろう.
+このオペレータはsを束縛するので,明らかにマクロとして定義されなければならない.
+しかし式を新しいコンテキスト内で評価させるようなオペレータは,
+とにかくマクロとして定義されなければならないのだ.
+マクロignore-errorsはCLtL2で新たに追加されたものだが,
+これはその引数がprogn内にあるかのように評価されるようにする.
+いずれかの時点でエラーが発生すると,式ignore-errors全体がnilを返す.
+(これは,例えばユーザの入力したテキストを読み込む際などに便利だ.)
+ignore-errorsは変数を作る訳ではないが,マクロとして定義されなければならない.
+その引数が新しいコンテキスト内で評価されるからだ.
+一般的に言って,コンテキストを生成するマクロはコードのブロックに展開される.
+本体の前,後,または両方に式が付加されるかもしれない.
+そのコードが本体の前に来たときは,その目的はシステムを定常状態に保つことかも知れない
+---つまり何らかの後始末だ.
+例えばwith-open-fileは,自分が開いたファイルを閉じなければならない.
+そのような状況下では,unwind-protectに展開されるコンテキスト生成マクロを作るのが定石だ.
+unwind-protectの目的は,プログラムの実行が割り込みされたときであっても,
+ある式が必ず評価されるようにすることだ.
+それは1個以上の引数を取り,それらが順に評価される.
+何事もなければprog1と同様に第1引数の値を返す.
+それとの違いは,第1引数の評価がエラーやthrowによって中断されたときでさえも,
+残りの引数が評価される点だ.
+> (setq x 'a)
+A
+> (unwind-protect
+(progn (princ "What error?")
+(error "This error."))
+(setq x 'b))
+What error?
+>>Error: This error.
+式unwind-protect全体としてはエラーを返す.
+しかしトップレベルに戻った後には,第2引数も評価されていたことに気が付く:
+> x
+B
+これはwith-open-fileがunwind-protectに展開されたことで,
+本体の評価中にエラーが起きても普通なら開かれたファイルが閉じられるからだ.
+コンテキスト生成マクロは,大抵は特定の用途のために作られる.
+例として,複数の遠隔データベースを扱うプログラムを書いているとしよう.
+プログラムはグローバル変数*db*で指定されるデータベース1個ずつに命令する.
+データベースの使用前には,他人が同時に使うことがないようにそれをロックしなければならない.
+また作業が済んだらロックを解除しなければならない.
+データベースdbのクエリqの値が欲しいときは,次のようにするだろう.
+(let ((temp *db*))
+(setq *db* db)
+(lock *db*)
+(prog1 (eval-query q)
+(release *db*)
+(setq *db* temp)))
+マクロを使えば煩わしい作業を全て隠蔽できる.
+第\ref{fig:TypicalWithMacro}図では,
+高い抽象化レベルでデータベースを扱えるようにしてくれるマクロを定義した.
+with-dbを使えば,ただこうするだけでよい.
+(with-db db
+(eval-query q))
+with-dbは単なるprog1でなくunwind-protectに展開されるので,
+安全に呼び出せる.
+On Lisp --- 古典的なマクロ

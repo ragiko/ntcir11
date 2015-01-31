@@ -1,0 +1,22 @@
+文字列の差分(diff)を算出するアルゴリズム:レーベンシュタイン距離とエディットグラフについて
+テキスト処理
+文字列どうしの差分を求めるためには,「編集距離」を求めればよい。これを使うと,文字列のスペルミスを発見できる。
+編集距離 (Levenshtein Distance) - naoyaのはてなダイアリーhttp://d.hatena.ne.jp/naoya/20090329/1238307757
+編集距離はスペルミスを修正するプログラムや、近似文字列照合 (検索対象の文書から入力文字にある程度近い部分文字列を探し出す全文検索) などで利用されます。
+下記のページの説明が,すごくわかりやすい。図を使って,マトリックスの各点について距離を求め,最短経路を末尾からたどりなおす方法が示されている。JavaScriptによるサンプルコードつき。
+Diff algorithm - 枕を欹てて聴くhttp://constellation.hatenablog.com/entry/20091021/1256112978
+二次元配列全走査によるLevenshtein距離の求め方及び, それを使ったdiff
+算出の途中経過を,アニメーションで確認することもできる。
+Javascriptでレーベンシュタイン距離の実演http://www.mwsoft.jp/programming/munou/javascript_levenshtein.html
+レーベンシュタイン距離は、下記に出力されるようなテーブルを作成して、最小コストを割り出しています。
+マトリックスの全体をすべて探索すると,計算量が大きくなってしまう。そこで,Myersの論文に基づく高速化の手法がある。Mashiki's javascript note: javascriptでdiff実装http://mashiki-memo.blogspot.jp/2010/12/javascriptdiff.html
+高速とされるO(NP)のアルゴリズムをベースに 、javascriptで実装してみた。
+距離を数値として求めるだけの,シンプルなコード:
+レーベンシュタイン距離をJavaScriptで計算する - くじらはんどブログhttp://kujirahand.com/blog/index.php?%E3%83%AC%E3%83%BC%E3%83%99%E3%83%B3%E3%82%B7%E3%83%A5%E3%82%BF%E3%82%A4%E3%83%B3%E8%B7%9D%E9%9B%A2%E3%82%92JavaScript%E3%81%A7%E8%A8%88%E7%AE%97%E3%81%99%E3%82%8B
+JavaScriptでレーベンシュタイン距離を求めるプログラム
+PHPの場合は組み込み済み:
+javascriptで実装された編集距離 (レーベンシュタイン距離, Levenshtein Distance)を検証してみました。 - @camelmasaの開発日記http://d.hatena.ne.jp/camelmasa/20110203/1296758709
+phpの場合はlevenshtein関数があります。
+ツイートする
+Permalink 
+文字列の差分(diff)を算出するアルゴリズム:レーベンシュタイン距離とエディットグラフについて - アルゴリズムと数値計算法の勉強

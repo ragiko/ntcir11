@@ -1,0 +1,17 @@
+
+Windows Vistaには「.NET Framework 3.0」が標準搭載されていたが、Windows 7に標準搭載される.NET Frameworkは「.NET Framework 3.5.1」である(=初期状態で、すでに.NET Framework 3.5.1がインストールされている)。.NET Framework 3.5.1というのは、.NET Framework 3.5 SP1に、.NET Framework 3.5 SP1以降の累積パッチを適用したバージョンである。
+これは、Windows 7のコントロール・パネルで「プログラムと機能」を開き、さらに「Windowsの機能の有効化または無効化」のリンクをクリックすると開く［Windowsの機能］ダイアログに表示される項目により確認できる。
+［Windowsの機能］ダイアログ
+このダイアログは、コントロール・パネルで「プログラムと機能」を開き、さらに「Windowsの機能の有効化または無効化」のリンクをクリックすると開く。.NET Framework 3.5.1が有効化されているのが分かる。
+ちなみに、「Windows TIPS:.NET Frameworkのバージョンを確認する方法」で提供されているバッチ・ファイル「checkvdnfw.cmd」をWindows 7で実行すると、次のような結果となる。
+C:\tmp>checkvdnfw.cmd
+----- ローカル・コンピュータ(MG7) -----
+.NET Framework 2.0 Service Pack 2 がインストール済みです
+日本語Language Pack(Service Pack 2)がインストール済みです
+.NET Framework 3.0 Service Pack 2 がインストール済みです
+日本語Language Packはインストールされていません
+.NET Framework 3.5 Service Pack 1 がインストール済みです
+日本語Language Pack(Service Pack 1)がインストール済みです
+Windows 7でのcheckvdnfw.cmdの実行結果
+このバッチ・ファイルはレジストリを参照して、現在インストールされている.NET Frameworkのバージョンの有無を調べるものだが、この結果からも分かるように、Windows 7には.NET Framework 1.0/1.1が標準ではインストールされておらず、またサポートもされていない(参考:「.NET Framework移行センター:最新.NET開発環境への移行の必要性」)。
+Windows 7に標準で含まれる.NET Frameworkのバージョンは? − @IT

@@ -1,0 +1,19 @@
+ 原図は六個の発振器出力を使って作られます。各発振器はそれぞれ三つのパラメータを持つので、原図は18個のパラメータを持つ事になります。18個のパラメータを常に手動で設定しなくてはならないというのは面倒なので、乱数を使ってパラメータを設定する機能を追加します。
+乱数でパラメータを決めるといっても全くのランダムではなく、ある範囲内でパラメータを変化させる様にします。その変化させる範囲を環境設定でユーザに指定してもらう事にします。このような場合、システムが用意しているデフォルトデータベースというものを使いますので、まずこれについて説明します。
+ランダマイザの機能は原図のパラメータを乱数を使って決定する事です。ただし振幅と周波数は各発振器ごとに変化する範囲を指定できるものとします。これは周波数の変化範囲に制限を付けたかった、という理由でつけている機能です。
+やってみるとわかりますが、周波数を制約なしにランダムに決定すると、高い周波数が現れて原図が単なるぐちゃぐちゃの線の固まりになる確率が高いのです。これだと面白みがありません。例えばこんな感じの原図です。
+発振器ごとに制約をつける事で、ランダムでありながらある程度の方向性を決める事ができます。例えば第一の発振器は振幅を大きめ、周波数を低めにして全体の形を大まかに決める役割、第三の発振器は周波数を高めにするが振幅を小さめにしておいて波形にちょっとしたアクセントを付ける役割、第二の発振器はその中間といった具合です。
+振幅と周波数を変化させる範囲の指定は、環境設定パネルを作成してそこで行う様にします。環境設定パネルにスライダーをいくつか並べて、各発振器ごとにどこからどこまでの範囲でランダムに変化させるのかを指定できる様にします。こんな感じです。
+ユーザに指定してもらった値はシステムが用意しているデフォルトデータベースに保存します。デフォルトデータベースへ保存する事はInterface Builder上の設定だけで実現でき、プログラミングは不要です。
+例えば左上のスライダーは右の様に設定すればOKです。Bind to:の対象としてShared User Defaults Controllerを選択すると、自動的にコントローラが作成されてnibウィンドウに現れます。
+モデルキーパスは値を保存する際に使う名前を自分で決めて入力します。ここで入力した名前は、後でランダマイザで使います。
+保存はこのように簡単なのですが、保存した値を読み取るには若干のコードが必要です。ランダマイザは起動時にバインディングを設定する事により、インスタンス変数とデフォルトデータベースの値を同期させます。
+デフォルトデータベースを使用するにあたって必要な設定がありますので、説明します。
+デフォルトデータベースを使用するにあたって必要な設定があります。識別子を設定する事と、アプリケーションデフォルトを設定する事です。アプリケーションデフォルトは項目が多いので、プロパティリストの形で用意しますが、それについても説明します。
+識別子の設定
+デフォルトデータベースを使用するにあたって必要な設定があります。識別子の設定です。
+マニュアルを、ADC Home > Reference Library > Guides > Mac OS X > Runtime Configuration Guidelines >とたどっていくとCFBundleIdentifierの説明にたどり着きます。CFBundleIdentifierが識別子にあたります。
+CFBundleIdentifier
+This key identifies the type of the bundle. This identifier should be a uniform type identifier (UTI) string, for example com.mycompany.MyApp. This key does not uniquely identify a specific bundle in the file system, as multiple copies of an application with the same or different version may exist. See Uniform Type Identifiers Overview for details on UTIs.
+The preferences system uses this string to identify the application for which a given preference applies. Launch Services uses the bundle identifier to locate an application capable of opening a particular file, using the first application it finds with the given identifier.
+環境設定とデフォルトデータベース【実践的Macintoshプログラミング解説】

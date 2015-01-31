@@ -1,0 +1,126 @@
+2005年6月の写真
+【ロボットの概要】
+名前:小太郎(Kotaro)
+サイズ:W約500mm×H約1330mm×D約350mm
+重量:約20kg
+動力(電気):［パワー］24V［回路］5V
+稼動可能時間:電源外部供給
+動作:自由度91、アクチュエータ数120程度(追加可能)
+搭載センサ類:筋長、筋張力、電流、温度、関節角度、分布触覚、肉質触覚、二眼、ステレオ聴覚、スピーカ
+小太郎の技術的特長 
+超多自由度、柔軟性可変、多節脊椎、多種多感覚、筋配置変更が容易な(増強可能な)筋、体内分散処理系、学習・自己組織化などの特徴を有する全身筋骨格型ヒューマノイドで、2020年というロングタームの実用化を目指した、まさにプロトタイプです。
+将来の実用化イメージ 
+人の生活の場での必須機能として、安全性・多様なタスクへの対応・身体の柔らかさ・動作のしなやかさ等を実現します。柔軟性や人間のような身体構造により、安全性と人間のような自然でしなやかな動作を実現し、冗長な多自由度の構成によりこれまでのヒューマノイドの身体構成法と比較して遥かに多様なタスクに対応することが可能になり、タスクのバリエーションが無限に想定される家庭環境においても実際に役に立つことができるヒューマノイドとなります。また、アクチュエータは、将来実用化が期待できる人工筋肉で置き換えられ、多自由度筋骨格型という方向の研究の蓄積が花開くことが期待できます。
+参考資料 
+(論文誌・国際会議)
+人間の筋骨格構造を規範としたヒューマノイドロボット,
+設計工学, 第40巻, 9号, pp.459--467, Sep., 2005.
+(水内)
+A Musculoskeletal Flexible-Spine Humanoid `Kotaro' Aiming at Year 2020,
+in Proceedings of 36th International Symposium on Robotics (ISR2005), TH1C4, Dec., 2005.
+(I.Mizuuchi, T.Yoshikai, Y.Sodeyama, Y.Nakanishi, A.Miyadera, T.Yamamoto, T.Niemel&auml;, M.Hayashi, J.Urata, Y.Namiki, T.Nishino, M.Inaba)
+Development of Muscle-Driven Flexible-Spine Humanoids,
+in Proceedings of 2005 5th IEEE-RAS International Conference on Humanoid Robots (Humanoids2005), pp.339--344, Dec., 2005.
+(I.Mizuuchi, T.Yoshikai, Y.Nakanishi, Y.Sodeyama, T.Yamamoto, A.Miyadera, T.Niemel&auml;, M.Hayashi, J.Urata, M.Inaba)
+Pedaling by a Redundant Musculo-Skeletal Humanoid Robot,
+in Proceedings of 2005 5th IEEE-RAS International Conference on Humanoid Robots (Humanoids2005), pp.68--73, Dec., 2005.
+(Y.Nakanishi, I.Mizuuchi, T.Yoshikai, T.Inamura, M.Inaba)
+Pedaling Motion of a Cycle by Musculo-skeletal Humanoid with Adapting Ability Based on an Evaluation of the Muscle Loads,
+in Proceedings of the 9th International Conference on Intelligent Autonomous Systems, Mar., 2006.
+(T.Yoshikai, Y.Nakanish, I.Mizuuchi, M.Inaba)
+Tendon Arrangement Based on Joint Torque Requirements for a Reinforceable Musculo-Skeletal Humanoid,
+in Proceedings of the 9th International Conference on Intelligent Autonomous Systems, Mar., 2006.
+(Y.Nakanishi, I.Mizuuchi, T.Yoshikai, T.Inamura, M.Inaba)
+Development of Musculoskeletal Humanoid Kotaro,
+in Proceedings of the IEEE International Conference on Robotics and Automation, May, 2006.
+(I.Mizuuchi, T.Yoshikai, Y.Sodeyama, Y.Nakanish, A.Miyadera, T.Yamamoto, T.Niemel&auml;, M.Hayashi, J.Urata, Y.Namiki, T.Nishino, M.Inaba)
+Humanoid's Imitation Behavior with Reflexes by Parallel Evaluating Monitors,
+in Proceedings of the IEEE International Conference on Robotics and Automation, May, 2006.
+(T.Yoshikai, I.Mizuuchi, M.Inaba)
+A Three-Dimensional Angle Sensor for a Spherical Joint Using a Micro Camera,
+in Proceedings of the IEEE International Conference on Robotics and Automation, May, 2006.
+(J.Urata, Y.Nakanishi, A.Miyadera, I.Mizuuchi, T.Yoshikai, M.Inaba)
+Realization of Standing of the Musculoskeletal Humanoid Kotaro by Reinforcing Muscles,
+in Proceedings of the 2006 6th IEEE-RAS International Conference on Humanoid Robots (Humanoids 2006), pp.176-181, 2006.
+(I.Mizuuchi, Y.Nakanishi, Y.Namiki, T.Yoshikai, Y.Sodeyama, T.Nishino, J.Urata, M.Inaba)
+The Designs and Motions of a Shoulder Structure with a Wide Range of Movement Using Bladebone-Collarbone Structures,
+in Proceedings of the 2007 IEEE/RSJ International Conference on Intelligent Robots and Systems, pp.3629-3634, 2007.
+(Y.Sodeyama, T.Yoshikai, T.Nishino, I.Mizuuchi, M.Inaba)
+An Autonomous Reactive System for Humanoids Equipped with Very Many Actuators and Sensors,
+in Proceedings of the 2007 IEEE-RAS International Conference on Humanoid Robots (Humanoids 2007), 2007.
+(I.Mizuuchi, T.Nishino, Y.Sodeyama, Y.Nakanishi, Y.Namiki, T.Yoshikai, M.Inaba)
+(国内講演)
+超多自由度可変柔軟脊椎筋骨格型ヒューマノイド「小太郎」開発概要 ---愛知万博速報---,
+日本機械学会ロボティクス・メカトロニクス講演会'05講演論文集, ALL-N-021, Jun., 2005.
+(水内, 吉海, 袖山, 中西, 宮寺, 山本, Niemel&auml;, 安達, 林, 稲葉)
+超多自由度可変柔軟脊椎筋骨格型ヒューマノイド小太郎の開発,
+RSJ2005(※1), 2F11, Sep., 2005.
+(水内, 吉海, 袖山, 中西, 宮寺, 山本, Niemel&auml;, 浦田, 並木, 西野, 稲葉)
+筋骨格ヒューマノイド小太郎のデザイン,
+RSJ2005(※1), 2F12, Sep., 2005.
+(袖山, 中西, 吉海, 水内, 稲葉)
+粘性・弾性要素による基本姿勢への復元力を有する関節機構,
+RSJ2005(※1), 3E34, Sep., 2005.
+(並木, 山本, 吉海, 水内, 稲邑, 稲葉)
+筋骨格ヒューマノイド小太郎における鎖骨・肩甲骨構造の駆動システム,
+RSJ2005(※1), 3E33, Sep., 2005.
+(袖山, 吉海, 水内, 稲葉)
+筋配置可変な筋骨格ヒューマノイド小太郎の脚部の設計,
+RSJ2005(※1), 2F13, Sep., 2005.
+(中西, 水内, 袖山, 吉海, 稲葉)
+筋骨格ヒューマノイドのための追加可能なセンサ統合型筋ユニット,
+RSJ2005(※1), 2F14, Sep., 2005.
+(中西, 水内, 稲邑, 稲葉)
+筋駆動マルチメディアヘッドの開発とジョイスティックによる操作システム,
+RSJ2005(※1), 1F24, Sep., 2005.
+(吉海, 西野 Niemel&auml;, 袖山, 水内, 稲葉)
+携帯電話用カメラを用いた球関節姿勢センサ,
+RSJ2005(※1), 3E31, Sep., 2005.
+(浦田, 中西, 宮寺, 水内, 吉海, 稲葉)
+導電性発泡体を用いた肉質の触覚センサ,
+RSJ2005(※1), 1C15, Sep., 2005.
+(山本, 林, 水内, 稲邑, 稲葉)
+曲面を持つロボットのためのフレキシブル配置可能な触覚コンポーネントの開発,
+RSJ2005(※1), 1C16, Sep., 2005.
+(林, 山本, 岡田, 水内, 稲邑, 稲葉)
+超多自由度ヒューマノイドのための感覚動作制御通信システム,
+RSJ2005(※1), 1E35, Sep., 2005.
+(宮寺, 水内, 稲葉)
+筋骨格型ロボットの筋配置モデルの容易な設定システム,
+RSJ2005(※1), 3E32, Sep., 2005.
+(西野, 吉海, 水内, 稲邑, 稲葉)
+人間の身体構造に学んだ筋骨格型ヒューマノイドの設計と製作,
+第26回バイオメカニズム学術講演会SOBIM2005予稿集, pp.297--300, Oct., 2005.
+(水内, 袖山, 中西, 吉海, 山本, Niemel&auml;, 宮寺, 浦田, 並木, 西野, 稲葉)
+筋骨格ヒューマノイド研究の展望,
+Robomec2006(※2), 1A1-E04, May, 2006.
+(水内, 吉海, 袖山, 中西, 並木, 西野, 浦田, 宮寺, 稲葉)
+多自由度多センサロボットの自律反応系構成法に関する研究,
+Robomec2006(※2), 2A1-D28, May, 2006.
+(水内, 吉海, 西野, 袖山, 中西, 並木, 稲葉)
+筋骨格ヒューマノイドの背骨を用いた投球動作の実現,
+Robomec2006(※2), 2A1-D35, May, 2006.
+(並木, 袖山, 中西, 吉海, 水内, 稲邑, 稲葉)
+筋骨格ヒューマノイドにおけるビジュアルフィードバックに基づいたリーチング動作の実現,
+Robomec2006(※2), 2A1-D36, May, 2006.
+(西野, 袖山, 吉海, 水内, 稲邑, 稲葉)
+筋配置可変な筋骨格ヒューマノイドのための関節発生トルク要件に基づく筋張力和最少の筋配置決定法,
+Robomec2006(※2), 2A1-D37, May, 2006.
+(中西, 吉海, 水内, 西野, 稲邑, 稲葉)
+肩甲骨・鎖骨構造を有する筋骨格型ヒューマノイドの幾何制約を考慮した肩の運動生成法,
+Robomec2006(※2), 2A1-D38, May, 2006.
+(袖山, 西野, 吉海, 水内, 稲葉)
+筋骨格ヒューマノイドの自転車漕ぎにおける筋負荷の評価に基づいた馴染み反応学習機構,
+Robomec2006(※2), 2A1-E21, May, 2006.
+(吉海, 中西, 水内, 稲葉)
+※1 第23回日本ロボット学会学術講演会講演論文集
+※2 ロボティクス・メカトロニクス講演会2006予稿集
+(書籍・紹介記事など)
+愛知万博 最新ロボットガイド(別冊ロボコンマガジン Ohm MOOK No.45), オーム社, 2005. (ISBN: 4-274-20093-0)
+impress TV 高橋敏也のROBOT.TV : 【第16話】愛・地球博「プロトタイプロボット展」リポート(後編), 2005.
+e図鑑 ロボット図鑑
+体幹に柔軟構造を備えた全身筋骨格ロボット, パートナーロボット資料集成, pp.171--186, エヌ・ティー・エス, 2005. (ISBN: 4-86043-101-4) (稲葉)
+柔らかなヒューマノイド小太郎, ロボコンマガジン, pp.96--99, オーム社, 2006. (ISBN: 4-274-20205-4)
+東大、人型ロボットをテーマとした第一回工学体験ラボを開催,
+RobotWatch, 2006.
+小太郎

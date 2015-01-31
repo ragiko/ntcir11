@@ -1,0 +1,9 @@
+7.1. Theoretical backgrounds¶
+最小二乗法によるECIの評価 [1] [2]
+N>mとなるようなN種類のDFT構造について第一原理計算を行い,最小二乗法によりm個のECIを決定する.
+が最小になるようにECIを決定する.
+ここで,  は,n番目の構造のDFTによるエネルギーである.
+は,N個のDFT構造を元にクラスター展開して求めたn番目の構造のエネルギーである.
+交差検定スコア(CV score) [3] [4] [5]
+Leave-one-out CV score (LOO-CV) は以下の式で定義される.
+7. クラスター有効相互作用エネルギー(ECI)の評価 &mdash; CLUPAN v0.7 documentation

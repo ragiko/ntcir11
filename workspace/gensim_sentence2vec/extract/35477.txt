@@ -1,0 +1,1305 @@
+
+Go to the first, previous, next, last section, table of contents.
+13  MySQL の最大性能をひきだすには
+Optimization is a complicated task because it ultimately requires
+understanding of the whole system. While it may be possible to do some
+local optimizations with small knowledge of your system/application, the
+more optimal you want your system to become the more you will have to
+know about it.
+So this chapter will try to explain and give some examples of different
+ways to optimize MySQL. But remember that there are always some
+(increasingly harder) additional ways to make the system even faster.
+13.1  最適化 概要
+システムを速くするための最も重要な部分は、もちろん基礎的な設計です。
+You also need to know what kinds of things your system will be
+doing, and what your bottlenecks are.
+主なボトルネックは:
+Disk シーク :
+一片のデータを見つけるためには、ディスクに時間がかかります。
+1999年の最新型のディスクでは、このための平均時間は、10msよりも通常より小さいです。
+したがって、我々は、理論上は 1秒で約1000 シークすることができます。
+この時間は、一つのテーブルであるならば、データの増加と共にディスクアクセスの時間が
+少しずつ増加することになり、とても最適化するのは難しくなっていきます。
+これを最適化する方法は、データを 1個以上のディスクに分散する事です。
+Disk reading/writing
+When the disk is at the correct position we need to read the data. With
+modern disks in 1999, one disk delivers something like 10-20Mb/s. This
+is easier to optimize than seeks because you can read in parallel from
+multiple disks.
+CPU cycles :
+データをメイン・メモリーの中に入れた(または既にメモリに存在している)場合に、
+結果を得るためには、それを処理する必要があります。
+メモリー容量よりも小さなテーブルを持っている場合、これは、制限の要因となります。
+小さいテーブルでは、スピードは、通常問題にはなりません。
+Memory bandwidth :
+CPU がキャッシュに収まらないようなデータを要求した場合、メイン・メモリー
+のバンド幅はボトルネックになります。
+これはほとんどのシステムで分かりにくいボトルネックとなりますが、
+誰かはそれを知っているべきです。
+13.2  システム、コンパイル時、スタートパラメターのチューニング
+We start with the system level things since some of these decisions have
+to be made very early. In other cases a fast look at this part may
+suffice because it not that important for the big gains. However, it is always
+nice to have a feeling about how much one could gain by changing things
+at this level.
+使うべき OS はとても重要です! 複数の CPU を持つマシンでは、
+Solaris (なぜなら、Solaris のスレッドはとても素晴らしく動作するから)、
+あるいは、Linux ( kernel 2.2 は良い SMP をサポートしているから) を
+使用すべきです。 32bit マシンの Linux では、2G bytes のファイルサイズの
+制限があります。 これは新しいファイルシステム (XFS/ReiserFS) のリリース時に
+なくなって欲しいものです。
+If you have a desperate need for files bigger
+than 2G on Linux-intel 32 bit, you should get the LFS patch for the ext2
+file system.
+Because we have not run MySQL in production on that many platforms, we
+advice you to test your intended platform before choosing it, if possible.
+Other tips:
+充分 RAM があるならば、全ての swap を外してもよいでしょう。
+いくつかのシステムでは、たとえメモリーが空いていても、
+swap を使用する場合があります。
+外部のロックを避けるため、--skip-locking MySQL オプション
+を使用します。 
+Note that this will not impact MySQL's functionality as
+long as you only run one server.
+myisamchk を実行する前に、サーバーを止めることを忘れないでください。
+On some system
+this switch is mandatory because the external locking does not work in any
+case.
+MIT-pthread でコンパイルする時は --skip-locking がデフォルトです。
+これは全てのプラットフォームで MIT-pthread が flock() を完全にサポートし
+ていないためです。
+It's also on default for Linux
+as Linux file locking are not yet safe.
+--skip-locking が使用できないただ一つの状態は、
+もしあなたが複数の MySQL サーバー (クライアントではない) を
+同じデータに対して走らせている場合です。
+Or run
+myisamchk on the table without first flushing and locking the
+mysqld server tables first.
+たとえ --skip-locking を使用していても、
+LOCK TABLES/UNLOCK TABLES の使用は可能です。
+13.2.1  MySQL の速度に影響するコンパイルとリンク方法
+次のテストの多くは Linux 上で MySQL ベンチマークで行われました。
+しかし、これらは他の OS についてもいくつかの指標を与えます。 
+-static でのリンク時に最速の実行形式を得ます。
+Linux では、pgcc と -O3 でコンパイルした時に最速のコードを得られます。
+このオプションで `sql_yacc.cc' をコンパイルすると、gcc/pgcc は
+全ての関数をインラインにするために多くのメモリを必要とするので、200M のメモリが必要です。
+libstdc++ ライブラリの増加を避けるためには、
+MySQL の configure 時に CXX=gcc も設定すべきです。 
+Note that with some versions of pgcc,
+the resulting code will only run on true Pentium processors, even if you
+use the compiler option that you want the resulting code to be working on
+all x586 type processors (like AMD).
+より良いコンパイラー、そしてコンパイラーのオプションは、10-30% の
+速度の向上をもたらします。 これはあなた自身が MySQL をコンパイルする
+時に重要なことです!
+我々は Cygnus CodeFusion と Fujitsu コンパイラーでもテストしましたが、
+MySQL を最適化オプションでコンパイルするには、
+どちらもまだ完全なバグ・フリーではありませんでした。
+When you compile MySQL you should only include support for the
+character sets that you are going to use. (Option --with-charset=xxx).
+The standard MySQL binary distributions are compiled with support
+for all character sets.
+Here is a list of some mesurements that we have done:
+pgcc を使用して -O6 で全てをコンパイルすると、
+gcc 2.95.2 では、
+mysqld サーバーは 1% 速くなります。 
+動的リンク(-static) 無し)の場合、結果は 13% 遅くなります。
+Note that you still can use a dynamic linked MySQL
+library. It is only the server that is critical for performance.
+If you strip your mysqld binary with strip libexec/mysqld,
+the resulting binary can be up to 4 % faster.
+(localhost への接続に) Unix ソケットの代わりに TCP/IP を使用すると、結果は 7.5% 遅くなります。 
+(localhost へ接続する場合、MySQL はデフォルトではソケット
+を使用します)。
+If you connect using TCP/IP from another computer over a 100M Ethernet,
+things will be 8-11 % slower.
+--with-debug=full でコンパイルすると、ほとんどのクエリで 20% 遅くな
+りますが、いくつかのクエリは実質的にはもっと長くなります(MySQL ベ
+ンチマークでは 35% 遅くなりました)。
+--with-debug を使用すると、15% だけ遅くなります。
+By starting a mysqld version compiled with --with-debug=full
+with --skip-safemalloc the end result should be close to when
+configuring with --with-debug.
+SPARCstation 20 では、gcc 2.95.2 は Sun Pro C++ 4.2 より 5% 速くなります。
+UltraSPARC で gcc 2.95.2 でオプション -mcpu=v8
+-Wa,-xarch=v8plusa をつけてコンパイルすると 4% 良い性能が得られます。
+シングルプロセッサの Solaris 2.5.1 では、MIT-pthreads は Solaris ネイティブスレッドより 8-12% 遅くなります。
+With more load/CPUs the difference should
+get bigger.
+--log-bin での実行は MySQL を 1% 遅くします。
+Compiling on Linux-x86 using gcc without frame pointers
+-fomit-frame-pointer or -fomit-frame-pointer -ffixed-ebp
+mysqld 1-4% faster.
+The MySQL-Linux distribution provided by MySQL AB used
+to be compiled with pgcc, but we had to go back to regular gcc
+because of a bug in pgcc that would generate the code that does
+not run on AMD. We will continue using gcc until that bug is resolved.
+In the meantime, if you have a non-AMD machine, you can get a faster
+binary by compiling with pgcc.  The standard MySQL
+Linux binary is linked statically to get it faster and more portable.
+13.2.2  Disk の問題
+前に述べたディスクシークが大きなボトルネックです。 この問題は、データが効果的に
+キャッシングが不可能になるほど、大きくなり始めるときに、だんだん明白になってきます。
+For large databases,
+where you access data more or less randomly, you can count on that you
+will need at least one disk seek to read and a couple of disk seeks to
+write things. この問題を少なくするには、diskシーク時間の少ないディスクを
+使用します。
+利用できるディスクスピンドルの数を増やします(それによってディスクシーク
+のオーバーヘッドは縮小します)。
+これは違うディスクにシンボリックリンクをはったり、ストライピングを行うことで
+可能です。
+symbolic link の使用
+これは通常のデータディレクトリから、違うディスクへ、
+インデックスやデータファイルをシンボリック・リンクすることです。
+これは シーク と リード を速くします。 (もしそのディスクが
+他に使用されていなければ).  「13.2.2.1  データベースとテーブルにシンボリックリンクを使用する」節参照.
+Striping
+ストライピングは、複数のディスクに対して、まずデータの最初のブロックを
+1番目の disk に書き、2番目のブロックを2つ目のdiskに書き、順次 N 番目
+(N は disk の数) まで順に書いていきます。 これは、もしデータがストライプの
+サイズよりも小さければ、よりよいパフォーマンスを得ることが出来ます。
+ストライピングは、OS や ストライプのサイズにとても依存していることに注意してください。
+そのため、あなたのアプリケーションのベンチマークがストライプサイズによって
+変わるでしょう。  「13.7  Using Your Own Benchmarks」節参照.
+ストライピングのスピードの違いは、とても パラメターに依存しています。
+Depending on how you set the striping parameters and
+number of disks you may get a difference in orders of magnitude. Note that
+you have to choose to optimize for random or sequential access.
+信頼性のため、あなたは RAID 0+1 (striping + mirroring) を使用したいと
+思うかもしれません。 しかしこれは N 個のドライブのデータを収めるのに
+2*N 個のドライブが必要となります。
+これはもし資金があるならば一番よい方法でしょう! しかし、能率的にそれを
+取り扱うために、ボリューム・マネージメント・ソフトウェアに投資する必要が
+あってもよいです。
+A good option is to have semi-important data (that can be regenerated)
+on RAID 0 disk while storing really important data (like host information
+and logs) on a RAID 0+1 or RAID N disk. RAID N can be a problem if you
+have many writes because of the time to update the parity bits.
+データベースに使用しているファイルシステムの mount パラメターを変更しても
+良いでしょう。 一つの簡単な方法としては、noatime オプションでファイルシステムを
+マウントします。 これは inode にある最後にアクセスした時間の更新を
+スキップします。 これでいくらか ディスクシークを避けることができるでしょう。
+On Linux, you can get much more performance (up to 100 % under load is
+not uncommon) by using hdpram to configure your disk's interface!  The
+following should be quite good hdparm options for MySQL (and
+probably many other applications):
+hdparm -m 16 -d 1
+Note that the performance/reliability when using the above depends on
+your hardware, so we strongly suggest that you test your system
+thoroughly after using hdparm!  Please consult the hdparm
+man page for more information!  If hdparm is not used wisely,
+filesystem corruption may result.  Backup everything before experimenting!
+On many operating systems you can mount the disks with the 'async' flag to set the file
+system to be updated asynchronously.  If your computer is reasonable stable,
+this should give you more performance without sacrificing too much reliability.
+(This flag is on by default on Linux.)
+If you don't need to know when a file was last accessed (which is not
+really useful on a database server), you can mount your file systems
+with the noatime flag.
+13.2.2.1  データベースとテーブルにシンボリックリンクを使用する
+テーブルとデータベースのファイルを MySQL のデータベースディレクトリーから
+違う場所に移動し、 それに対してシンボリックリンクを張ることができます。
+これは例えばディスク容量が少なくなって、データベースを移動したい場合にそうしたくなるでしょう。 
+MySQL が、テーブルがシンボリックリンクであることに気づいた場合、
+symlink を解析し、代わりにその実体のテーブルを使用します。
+これは realpath() コールをサポートする全てのシステムで働きます(少
+なくとも Linux と Solaris は realpath() をサポートします!)。
+realpath() をサポー トしないシステム上では、symlink とテーブルを
+同時に使用すべきでありません! テーブルはテーブルの更新後に矛盾する事になるでしょう。 
+MySQL はデフォルトではデータベース同士のリンクをサポートしません。
+が、データベース間のシンボリックリンクを作成しない限り、これは正常に働くでしょう。
+MySQL データディレクトリに db1 データベースがあるとして、
+仮に db2 を db1 のシンボリックリンクにしたとします: 
+shell> cd /path/to/datadir
+shell> ln -s db1 db2
+すると、db1 中の tbl_a テーブルは db2 の  tbl_a テーブルとして見えます。
+もしあるスレッドが db1.tbl_a を更新し、他のスレッドが db2.tbl_a を
+更新した場合、 問題が発生します。 
+こういった使用をどうしてもしたい場合、`mysys/mf_format.c' を以下のように変更します: 
+if (flag & 32 || (!lstat(to,&stat_buff) && S_ISLNK(stat_buff.st_mode)))
+to
+if (1)
+On Windows you can use internal symbolic links to directories by compiling
+MySQL with -DUSE_SYMDIR. This allows you to put different
+databases on different disks.  「4.13.6  Windows において、異なるディスクをまたがるようにデータを分割する」節参照.
+13.2.3  サーバーパラメーターのチューニング
+mysqld サーバーが使用している現在のバッファサイズを次で得ることができます:
+shell> mysqld --help
+この結果、全ての mysqld オプションと次のようなコンフィグ可能変数のリスト
+を得られます。出力結果にはデフォルト値が含まれ、以下のように表示されます:
+Possible variables for option --set-variable (-O) are:
+back_log              current value: 5
+bdb_cache_size        current value: 1048540
+binlog_cache_size     current_value: 32768
+connect_timeout       current value: 5
+delayed_insert_timeout  current value: 300
+delayed_insert_limit  current value: 100
+delayed_queue_size    current value: 1000
+flush_time            current value: 0
+interactive_timeout   current value: 28800
+join_buffer_size      current value: 131072
+key_buffer_size       current value: 1048540
+lower_case_table_names  current value: 0
+long_query_time       current value: 10
+max_allowed_packet    current value: 1048576
+max_binlog_cache_size current_value: 4294967295
+max_connections       current value: 100
+max_connect_errors    current value: 10
+max_delayed_threads   current value: 20
+max_heap_table_size   current value: 16777216
+max_join_size         current value: 4294967295
+max_sort_length       current value: 1024
+max_tmp_tables        current value: 32
+max_write_lock_count  current value: 4294967295
+myisam_sort_buffer_size  current value: 8388608
+net_buffer_length     current value: 16384
+net_retry_count       current value: 10
+net_read_timeout      current value: 30
+net_write_timeout     current value: 60
+query_buffer_size     current value: 0
+record_buffer         current value: 131072
+slow_launch_time      current value: 2
+sort_buffer           current value: 2097116
+table_cache           current value: 64
+thread_concurrency    current value: 10
+tmp_table_size        current value: 1048576
+thread_stack          current value: 131072
+wait_timeout          current value: 28800
+もし mysqld サーバーを走らせているなら、以下のコマンドでも変数の値を見ることができます:
+shell> mysqladmin variables
+SHOW VARIABLES のすべての変数の説明はこちら   「7.28.4  SHOW VARIABLES」節参照.
+稼働中のサーバーの統計情報は SHOW STATUS で参照できます.  「7.28.3  SHOW STATUS」節参照.
+MySQL はとてもスケーラブルなアルゴリズムを使用します。そのため
+通常はとても少ないメモリで動作します。しかし MySQL に多くのメモリを与えれば、
+より良い性能を得ることができます。
+When tuning a MySQL server, the two most important variables to use
+are key_buffer_size and table_cache.  You should first feel
+confident that you have these right before trying to change any of the
+other variables.
+多くのメモリ(>=256M)と多くのテーブルを持っていて、適度のクライアント数で最大性能を得た
+い場合、次のようなものを使用します:
+shell> safe_mysqld -O key_buffer=64M -O table_cache=256 \
+-O sort_buffer=4M -O record_buffer=1M &
+If you have only 128M and only a few tables, but you still do a lot of
+sorting, you can use something like:
+shell> safe_mysqld -O key_buffer=16M -O sort_buffer=1M
+多くの接続で少ないメモリしかない場合、次のようなものを使用します:
+shell> safe_mysqld -O key_buffer=512k -O sort_buffer=100k \
+-O record_buffer=100k &
+or even:
+shell> safe_mysqld -O key_buffer=512k -O sort_buffer=16k \
+-O table_cache=32 -O record_buffer=8k -O net_buffer=1K &
+When you have installed MySQL, the `support-files' directory will
+contain some different my.cnf example files, `my-huge.cnf',
+`my-large.cnf', `my-medium.cnf', and `my-small.cnf', you can
+use as a base to optimize your system.
+もしとても多くの接続があり、mysqld が各接続に対して少ないメモリーで
+動作するように設定されていれば、スワップの読み書きによるパフォーマンスの低下がおきます。
+もちろん十分なメモリーがあれば、全ての接続にたいして mysqld のパフォーマンス良くなります。
+mysqld へのオプションを変更する場合、そのサーバのインスタンスにだけに
+有効であることに注意して下さい。
+パラメータ変更の効果を見るには、このようにします:
+shell> mysqld -O key_buffer=32m --help
+--help オプションは最後につけてください。
+その他のオプションを --help の後につけると、そのオプションは反映されません。
+13.2.4  MySQL はどのようにテーブルのオープン & クローズを行なうか?
+table_cache , max_connections , max_tmp_tables は
+サーバーが開いた状態にしておく事が出来るファイルの最大数に影響します。
+もしこれらの変数のうちの一つ、あるいは複数を増加させるなら、
+あなたのオペレーティング・システムの、1 プロセスあたりに開かれる
+ファイル・デスクリプタ の最大値を増やすことになるかもしれません。
+多くのシステムではこの制限を増やすことが可能です。
+これをどうやって行うかは、あなたの使用している OS のドキュメントを見てください。
+制限値の変更方法は、システムによってまちまちだからです。
+table_cache は max_connections に関連します。
+例えば 200 のコネクションを同時に開けるなら、少なくとも 200 * n の
+テーブル・キャッシュが必要です。 ここで n は join におけるテーブルの
+最大数です。
+オープンテーブルのキャッシュは最大で table_cache まで大きくなります(デ
+フォルトは 64, mysqld のオプション -O table_cache=# で変更可能)。
+キャッシュが一杯になって、他のスレッドがテーブルのオープンを試みた時、
+または mysqladmin refresh mysqladmin flush-tables
+を使用した場合を除いて、テーブルはクローズされません。
+キャッシュがいっぱいになった場合、サーバーは以下の処置を取って
+キャッシュを使用できるように配置します:
+現在使われていないテーブルが解放されます。もっとも使用されていないテーブルからから順に。
+もしキャッシュが一杯でテーブルを解放することが出来ず、さらに新しいテーブルの
+オープン要求がある場合、キャッシュは一時的な拡張を必要とします。
+もしそのキャッシュが一時拡張に配置されていて、かつ、テーブルが使用状態から
+未使用状態に移行した場合、そのテーブルは閉じられ、キャッシュから解放されます。
+テーブルは各同時アクセスに (再び) オープンされます。これは、同じテーブルで2つのスレッ
+ドが実行されている場合、または同じクエリで(AS で)テーブルを2回アクセス
+する場合、テーブルは2回オープンする必要があることを意味します。最初のテーブルのオー
+プンは2つのファイル記述子を使用し、続くテーブルの各使用は1つだけのファイル記述
+子を使用します。
+You can check if your table cache is too small by checking the mysqld
+variable opened_tables.  If this is quite big, even if you
+haven't done a lot of FLUSH TABLES, you should increase your table
+cache.  「7.28.3  SHOW STATUS」節参照.
+13.2.5  Drawbacks of creating large numbers of tables in the same database
+もしたくさんのファイルが一つのディレクトリにある場合、オープン、クローズ、
+create 操作は遅くなるでしょう。 もし SELECT 文を多くのテーブルに対し
+実行した場合、テーブルキャッシュが一杯ならば、このオーバーヘッドは多くなるでしょう。
+なぜなら、それぞれのテーブルにつきオープンし、クローズしなくてはならないからです。
+このオーバーヘッドを緩和するには、テーブルキャッシュを大きくします。
+13.2.6  何故そんなに多くのテーブルをオープンするのか?
+mysqladmin status を実行すると、次のようなものが得られます:
+Uptime: 426 Running threads: 1 Questions: 11082 Reloads: 1 Open tables: 12
+確かにたった6個しかテーブルがないのに、このような結果が出るので少々戸惑われるかもしれません。
+MySQL はマルチスレッドなので、同じテーブルで一度に多くのクエリを持て
+ます。同じファイル上で異なる状態を持つ2つのスレッドで、問題を最小化する
+ため、同時に動作する各スレッドのためテーブルを再びオープンします。これはいくつ
+かのメモリとデータファイルについての一つの拡張ファイル記述子を使用します。
+インデックスファイル記述子は全てのスレッド間で共有されます。
+13.2.7  MySQL はどのようにメモリを使用するのか?
+以下に mysqld サーバーがどのようにメモリーを使用するか、いくつか示します。
+サーバーに与える変数名は、サーバーのメモリーの使用方に関連した名前となっています:
+キーバッファ (変数 key_buffer) は全てのスレッドで共有され、
+残りは必要時に割り当てられます。
+「13.2.3  サーバーパラメーターのチューニング」節参照.
+各接続はいくつかのスレッド空間を使用します;
+スタック (64K, 変数 thread_stack), 接続バッファ(variable
+net_buffer_length), 結果バッファ(variable
+net_buffer_length)。接続バッファと結果バッファは必要となった時、
+動的に最大 max_allowed_packet まで増えます。
+クエリが走っている時、そのクエリの文字のコピーが割り当てられます。
+全てのスレッドは同じベースメモリを共有します。
+圧縮された ISAM / MyISAM だけが、memory mapped されます。
+これは 4GB の 32bit メモリ空間は多くの大きなテーブルを扱うには小さいためです。
+64bit アドレス空間を持つシステムがより普及すれば、我々は mmemory mapping を通常にサポートします。
+テーブルを越えて順次スキャンを行なう各要求は、読み込みバッファを割り当てます
+(変数 record_buffer)
+全ての結合は1パスで行なわれ、多くの結合は一時テーブルを使用せずに行なわ
+れます。多くの一時テーブルはメモリベース(HEAP)のテーブルです。大きなレコー
+ドサイズ (= 全フィールド長の合計) を持つ一時テーブルまたは、BLOB を含む
+テーブルはディスク上に置かれます。
+MySQL バージョン 3.23.2 以前での問題は、HEAP テーブルが 
+tmp_table_size のサイズを越えると、エラー The table tbl_name is full
+が出ることです。将来我々は、必要時にメモリ (HEAP) テーブルをディスクベー
+ス (NISAM) テーブルに自動的に変更することにより、これを修正します。この
+問題を回避するため、mysqld への tmp_table_size オプションま
+たはクライアント側で SQL オプション SQL_BIG_TABLES で増加できます。
+「7.33  SET 構文」節参照.
+MySQL バージョン 3.20 では、一時テーブルの最大サイズは 
+recordbuffer*16 でした。そのため、このバージョンを使用していると、
+recordbuffer を追加する必要があります。 mysqld を --big-tables で
+開始することで、常に一時テーブルをディスク上に格納できます。しかしこれは
+多くの複雑なクエリの速度に影響します。
+ほとんどのリクエストは、0-2個の一時ファイルとわずかなソートバッファへの割り当てを行います。
+「21.6  MySQL が一時ファイルを格納する場所」節参照.
+変形と演算時に使用されるほとんど全てのメモリはローカルメモリストア内で行
+なわれます。小さな項目に必要とされるメモリオーバーヘッドはなく、通常の遅
+いメモリ割り当て/解放が回避されます。メモリは予期しない大きな文字列にだ
+け割り当てられます(これは malloc() と free() で行なわれます)。
+各インデックスファイルは一度オープンされ、データファイルは各同時実行スレッ
+ド毎に一度オープンされます。各同時スレッドには、テーブル構造、各フィールドの構造そし
+て 3 * n のサイズのバッファが割り当てられます。
+( n は BLOB 型のフィールドの長さを含めない、一レコードの最大長です )
+BLOB は 5 から 8 バイト + BLOB データの長さを使用します。
+The ISAM/MyISAM table handlers will use one extra row
+buffer for internal usage.
+BLOB を持つ各テーブルでは、より大きな BLOB の読み込みでバッファ
+は動的に拡大されます。テーブルのスキャンをする場合、割り当てられたバッファは最
+も大きい BLOB と同じ大きさになります。
+全ての使用されているテーブルのテーブルハンドラーはキャッシュ内に保存され、
+FIFO として管理されます。
+通常、キャッシュは 64 個のテーブルです。テーブルが 2 つの実行しているス
+レッドで同時に使用される場合、キャッシュ内にテーブルの 2 つのエントリが
+あります。
+「13.2.4  MySQL はどのようにテーブルのオープン & クローズを行なうか?」節参照.
+mysqladmin flush-tables は使用されていない全てのテーブルをクローズし、
+使用されている全てのテーブルを、実行中スレッドが終った時にクローズするよ
+うにマークします。これは多くの使用メモリを解放するのに有効です。全てのロ
+グファイルもクローズと再オープンされます。
+mysqld 実行時、ps や他のプログラムは、それが多くのメモリ
+を使用していると報告するでしょう。これは異なったメモリアドレス上のスレッ
+ドスタックによって発生します。例えば、Solaris ps はスタック間の未使用メ
+モリを使用メモリとして計算します。'swap -s' で有効なスワップをチェックす
+ることでこれを確かめられます。我々は市販のメモリリーク検出プログラムで 
+mysqld をテストしました。そのため、メモリリークは全くありません。
+13.2.8  MySQL はどのようにテーブルをロックするか
+You can find a discussion about different locking methods in the appendix.
+「I.4  Locking methods」節参照.
+MySQL の全てのロックはデッドロックフリーです。これは、常にクエ
+リ開始時に一度ロックを必要とする全てを要求し、常に同じ順でテーブルをロッ
+クすることで管理されます。
+MySQL が使用する WRITE ロックは次のように働きます:
+テーブル上にロックがない場合 write ロックを置きます。
+そうでなければ write ロックキューにロックを置きます。
+MySQL の READ ロックは次のように動きます:
+テーブル上に write ロックがない場合 read ロックを置きます。
+そうでなければ read ロックキューにロックを置きます。
+ロックが解放されたとき、最初に write ロックキュー内のスレッドに、その後 
+read ロックキュー内のスレッドにロックを与えます。
+これは、同じテーブルで多くの更新をする場合、SELECT 構文は 
+update がなくなるまで待たされることを意味します。
+同じテーブルで多くの INSERT と多くの SELECT を行う場合、これを解決するに
+は、他のテーブルに行を挿入して、たまに、その一時テーブルから全てのレコー
+ドをもう一方のテーブルに update します。
+これは次のコードで行えます:
+mysql> LOCK TABLES real_table WRITE, insert_table WRITE;
+mysql> insert into real_table select * from insert_table;
+mysql> TRUNCATE TABLE insert_table;
+mysql> UNLOCK TABLES;
+You can use the LOW_PRIORITY options with INSERT,
+UPDATE or DELETE or HIGH_PRIORITY with
+SELECT if you want to prioritize retrieval in some specific
+cases.  You can also start mysqld with --low-priority-updates
+to get the same behaveour.
+Using SQL_BUFFER_RESULT can also help making table locks shorter.
+「7.19  SELECT構文」節参照.
+一つのキューだけを使用するように `mysys/thr_lock.c' 内のロックコードを変更
+することもできます。この場合、いくつかのアプリケーションのために、
+write ロックは read ロックと同じ優先順位にします。
+13.2.9  テーブル・ロッキングの問題
+MySQL のテーブル・ロッキングのコードはデッドロック・フリーです。
+MySQL はとても速いロックスピードを得るために、
+(レコードのロックやフィールドのロックの代わりに) テーブルのロックを使用します。
+大きなテーブルには、 テーブルのロックはレコードのロックよりはるかに良いですが、
+いくつかの落とし穴があります。
+For BDB and InnoDB tables, MySQL only uses table
+locking if you explicitely lock the table with LOCK TABLES or
+execute a command that will modify every row in the table, like
+ALTER TABLE.  For these table types we recommend you to not use
+LOCK TABLES at all.
+MySQL バージョン 3.23.7 以上では、
+あるスレッドが MyISAM テーブルを読んでいる最中に、
+同じテーブルにレコードを挿入する事ができます。
+Note that currently this only works if there are no holes after
+deleted rows in the table at the time the insert is made. When all holes
+has been filled with new data, concurrent inserts will automaticly be
+enabled again.
+テーブルのロックはたくさんのスレッドが同時にあるテーブルから読み出すのを可能にしますが、
+もしあるスレッドがあるテーブルに対し書込み要求を出す場合、
+それはまず最初に排他的なアクセスを得なければなりません.
+その更新の間、更新が完了するまで、この特定のテーブルにアクセスしようとする
+他の全てのスレッドが待たされることになります。
+通常データベースの更新は SELECT よりも重要とされるため、
+テーブルを更新する全てのスレッドが、テーブルから情報を検索するスレッドよりも
+高い優先順位を持ちます。 これは ある特定のテーブルに対して、多くの重いクエリが発行され
+た場合に、 更新が不完全に終わらないことを確実にするためです。
+(You can change this by using
+LOW_PRIORITY with the statement that does the update or
+HIGH_PRIORITY with the SELECT statement.)
+MySQL バージョン 3.23.7 から、max_write_lock_count 変数が使用できます。
+これは、一つのテーブルに対して、指定された回数だけ INSERT が行われた後に、
+SELECT を発行するようにします。
+テーブルロッキングは以下の場合にはあまり良くありません:
+あるクライアントが実行に長い時間のかかる SELECT を発行。
+その後に、他のクライアントが、使用されているテーブルに対し UPDATE を発行;
+このクライアントは先の SELECT が完了するまで待ちます
+さらに他のクライアントが同じテーブルに対して SELECT 構文を発行;
+UPDATE は SELECT よりも高い優先度を持つので、
+この SELECT は先の UPDATE が完了するまで待ちます。
+これは一番最初の SELECT が 終了するまで待たされます!
+A thread is waiting for something like full disk, in which case all
+threads that wants to access the problem table will also be put in a waiting
+state until more disk space is made available.
+この問題のいくつかの可能な解決は以下の通りです:
+SELECT 構文を速く実行できるように試みます; これを行うにあたり、
+いくつかのサマリーテーブルを作成しなければならないかもしれません.
+mysqld を --low-priority-updates オプションで起動。
+これは全てのあるテーブルを更新する構文に対して、 SELECT 構文よりも
+低い優先度を与えます。 この場合、前述のシナリオ中の最後の SELECT 構文は
+INSERT 構文が完了する前に実行されます。
+LOW_PRIORITY 属性指定を用いて、 INSERT,UPDATE,DELETE 構文
+に低い優先度を与えることも出来ます。
+Start mysqld with a low value for max_write_lock_count to give
+READ locks after a certain number of WRITE locks.
+SQL コマンドの SET SQL_LOW_PRIORITY_UPDATES=1 を使用して、
+ある特定のスレッドからの全ての更新を、低い優先度に指定する事ができます。
+「7.33  SET 構文」節参照.
+HIGH_PRIORITY 属性を用いて、特定の SELECT がとても重要であると
+指定することが可能です。.  「7.19  SELECT構文」節参照.
+もし INSERT と SELECT をあわせて使用した場合に問題が起きた場合、
+新しい MyISAM テーブルに切り替えます。 これは SELECT
+と INSERT を同時に行えます。
+もし INSERT と SELECT 構文を主に混在させるのなら、
+INSERT の DELAYED 属性指定はこの問題を解決させるでしょう。
+「7.21  INSERT構文」節参照.
+もし SELECT と DELETE で問題があるなら、
+DELETE の LIMIT オプションが助けになるでしょう。
+「7.17  DELETE構文」節参照.
+13.2.10  How MySQL uses DNS
+When a new thread connects to mysqld, mysqld will span a
+new thread to handle the request.  This thread will first check if the
+hostname is in the hostname cache. If not the thread will call
+gethostbyaddr_r() and gethostbyname_r() to resolve the
+hostname.
+If the operating system doesn't support the above thread-safe calls, the
+thread will lock a mutex and call gethostbyaddr() and
+gethostbyname() instead. Note that in this case no other thread
+can resolve other hostnames that is not in the hostname cache until the
+first thread is ready.
+You can disable DNS host lookup by starting mysqld with
+--skip-name-resolve.  In this case you can however only use IP
+names in the MySQL privilege tables.
+If you have a very slow DNS and many hosts, you can get more performance by
+either disabling DNS lookop with --skip-name-resolve or by
+increasing the HOST_CACHE_SIZE define (default: 128) and recompile
+mysqld.
+You can disable the hostname cache with --skip-host-cache. You
+can clear the hostname cache with FLUSH HOSTS or mysqladmin
+flush-hosts.
+If you don't want to allow connections over TCP/IP, you can do this
+by starting mysqld with --skip-networking.
+13.3  可能な限りデータを小さくする
+One of the most basic optimization is to get your data (and indexes) to
+take as little space on the disk (and in memory) as possible. This can
+give huge improvements because disk reads are faster and normally less
+main memory will be used. Indexing also takes less resources if
+done on smaller columns.
+MySQL supports a lot of different table types and row formats.
+Choosing the right table format may give you a big performance gain.
+「8  MySQL Table types」節参照.
+以下に挙げるテクニックを使用すれば、テーブルでのパフォーマンスの向上、
+保存領域の縮小化が可能でしょう:
+可能ならば、一番小さな型を使用します。 MySQL は
+ディスクとメモリーを節約する多くの型を持っています。
+より小さな整数型を可能ならば使用します。 例えば、
+MEDIUMINT は INT より良いでしょう。
+可能ならフィールドを NOT NULL に定義してください。これは全てをより速くし、
+各フィールド毎に1ビットを節約します。
+Note that if you really need
+NULL in your application you should definitely use it. Just avoid
+haveing it on all columns by default.
+可変長のフィールド (VARCHAR, TEXT, BLOB) を持たない場合は、
+固定サイズレコード形式が使用されます。
+これはかなり速いです。しかしあいにくいくらかの領域を浪費します。
+「8.1.2  MyISAM Table Formats」節参照.
+それぞれのテーブルは可能な限り短いプライマリ・インデックスを持つべきです。
+これは1レコードを一意にし、効率的にします。
+それぞれのテーブルについて、どのテーブルの形式を使用するかを
+決めます。  「8  MySQL Table types」節参照.
+本当に必要な物にだけインデックスを作成します。
+インデックスは検索には良いですが、より速く保存したい場合には良くありません。
+もしテーブルをフィールドの組み合わせでサーチすることがほとんどであれば、
+それらにインデックスを作成します。 最初のインデックスの部分は、もっとも
+使用されるフィールドにすべきです。
+If you are
+ALWAYS using many columns, you should use the column with more duplicates
+first to get better compression of the index.
+もしインデックスが頭からの何文字かで一意性を持っているなら、この部分にだけ
+インデックスを張る方が良いでしょう。 MySQL は文字列フィールドの
+一部分に対してのインデックスをサポートします。
+短いインデックスは、ディスクスペースを節約するだけでなく、
+インデックスのキャッシュに収まりやすくなることにより、ディスク・シークも少なくなるので、
+速くなります。  「13.2.3  サーバーパラメーターのチューニング」節参照.
+いくつかの状況下で、とてもよく走査されるテーブルを2つに分割することは、
+利益になることがあります。
+This is especially true if it is a dynamic
+format table and it is possible to use a smaller static format table that
+can be used to find the relevant rows when scanning the table.
+13.4  MySQL はどのようにインデックスを使用するか?
+Indexes are used to find rows with a specific value of one column
+fast. 
+インデックスがない場合、MySQL は、そのレコードが見つかるまで、
+最初のレコードからテーブルをなめていきます。 大きなテーブルでは多くの
+手間がかかります。 もし問い合わせの中にインデックスを持ったフィールドが
+ある場合、MySQL は全てのデータをみることなく、データの途中の位置を速く
+得ることができます。 もしあるテーブルが1000レコード持っていたとすると、
+順番に頭からなめていくことに比べて、これは少なくとも100倍速いことに
+なります。 Note that is you need to access almost all 1000
+rows it is faster to read sequentially because we then avoid disk seeks.
+全ての MySQL インデックス, PRIMARY, UNIQUE そして INDEX() 
+は B tree に格納されます。文字列は自動的に始めと終りの空白が圧縮されます。
+「7.36  CREATE INDEX 構文」節参照.
+Indexes are used to:
+WHERE節にマッチした行の素早い検索
+join を実行したときの他のテーブルからの行の検索
+与えられたフィールドの MAX() や MIN() 値の割り出し
+This is optimized by a preprocessor that checks if you are
+using WHERE key_part_# = constant on all key parts < N.  In this case
+MySQL will do a single key lookup and replace the MIN()
+expression with a constant.  If all expressions are replaced with
+constants, the query will return at once:
+SELECT MIN(key_part2),MAX(key_part2) FROM table_name where key_part1=10
+テーブルをソートかグループ化する場合で、ソート(グループ化)が一番左(接頭部)の
+キーを使用して行われる場合(例えば ORDER BY key_part_1,key_part_2 )。
+もし DESC 指定があれば、全てのキーは逆順に読まれます。
+The index can also be used even if the ORDER BY doesn't match the index
+exactly, as long as all the unused index parts and all the extra
+are ORDER BY columns are constants in the WHERE clause. The
+following queries will use the index to resolve the ORDER BY part:
+SELECT * FROM foo ORDER BY key_part1,key_part2,key_part3;
+SELECT * FROM foo WHERE column=constant ORDER BY column, key_part1;
+SELECT * FROM foo WHERE key_part1=const GROUP BY key_part2;
+データファイルを参照することなく値を検索する場合。
+もし使用する全てのフィールドが数値でかつ、一番左から(接頭部から)キーを形成する場合、
+値はインデックスツリーから検索され、これはとても速くなります。
+SELECT key_part3 FROM table_name WHERE key_part1=1
+以下のような SELECT 文を発行したとします:
+mysql> SELECT * FROM tbl_name WHERE col1=val1 AND col2=val2;
+もし col1 と col2 に複数フィールドインデックスが定義されている場合、
+すぐに思ったとおりの結果が得られます。
+If separate single-column
+indexes exist on col1 and col2, the optimizer tries to
+find the most restrictive index by deciding which index will find fewer
+rows and using that index to fetch the rows.
+もしテーブルが複数フィールドインデックスを持つなら、インデックスの接頭部一番左の部分
+がレコードを見つけるための最適化に使用されます。例えば、3つのフィールド
+(col1,col2,col3) に対して一つのインデックスを持っていたとします。
+すると、これは (col1), (col1,col2) ,
+(col1,col2,col3) でインデックスがサーチされます。
+もし一番左に指定しているフィールドがインデックスを作成していないなら、
+MySQL は部分的なインデックスを使用しません。
+以下のような SELECT 文を発行したとします:
+mysql> SELECT * FROM tbl_name WHERE col1=val1;
+mysql> SELECT * FROM tbl_name WHERE col2=val2;
+mysql> SELECT * FROM tbl_name WHERE col2=val2 AND col3=val3;
+もしインデックスが (col1,col2,col3) にあるならば、
+上に示した最初のクエリだけがインデックスを使用します。二番目三番目のクエリは
+インデックスを持つフィールドを発動しますが、
+(col2) と (col2,col3) は、(col1,col2,col3) の
+接頭部一番左に指定されていません。
+MySQL は、もし  LIKE がワイルドカードから始まっていなくて、
+ある種固定された文字で始まっているなら、
+LIKE の評価にインデックスを使用します。
+例えば、以下の SELECT 文はインデックスを使用します:
+mysql> select * from tbl_name where key_col LIKE "Patrick%";
+mysql> select * from tbl_name where key_col LIKE "Pat%_ck%";
+一つ目の文は、"Patrick" <= key_col < "Patricl" となるレコードだけ、考慮されます。
+二つ目の文は、"Pat" <= key_col < "Pau" となるレコードだけ、考慮されます。
+以下の SELECT 文はインデックスを使用しません:
+mysql> select * from tbl_name where key_col LIKE "%Patrick%";
+mysql> select * from tbl_name where key_col LIKE other_col;
+最初の文は、LIKE がワイルドカード文字で始まっています。
+二つ目の文は、LIKE が定数ではありません。
+Searching using column_name IS NULL will use indexes if column_name
+is an index.
+MySQL は通常、一番少ないレコード数を見つけるインデックスを使用します。
+インデックスは、以下に示す演算子を用いて比較できるフィールドに対して、使用されます:
+=, >, >=, <, <=, BETWEEN そして
+'something%' の様に頭にワイルドカードがない LIKE。
+WHERE 節内の全ての AND にかからないインデックスは、
+全くクエリの最適化に使用されません。
+In other words:  To be able to use an
+index, a prefix of the index must be used in every AND group.
+以下の WHERE 節はインデックスを使用します:
+... WHERE index_part1=1 AND index_part2=2 AND other_column=3
+... WHERE index=1 OR A=10 AND index=2      /* index = 1 OR index = 2 */
+... WHERE index_part1='hello' AND index_part_3=5
+/* optimized like "index_part1='hello'" */
+... WHERE index1=1 and index2=2 or index1=3 and index3=3;
+/* Can use index on index1 but not on index2 or index 3 */
+以下の WHERE 節はインデックスを使用しません:
+... WHERE index_part2=1 AND index_part3=2  /* index_part_1 is not used */
+... WHERE index=1 OR A=10                  /* Index is not used in both AND parts */
+... WHERE index_part1=1 OR index_part2=10  /* No index spans all rows */
+Note that in some cases MySQL will not use an index, even if one
+would be available.  Some of the cases where this happens are:
+If the use of the index would require MySQL to access more
+than 30 % of the rows in the table.  (In this case a table scan is
+probably much faster, as this will require us to do much fewer seeks).
+Note that if such a query uses LIMIT to only retrieve
+part of the rows, MySQL will use an index anyway, as it can
+much more quickly find the few rows to return in the result.
+13.5  データをアクセス・更新するクエリの速度
+最初に、全てのクエリに影響する一つの事柄をのべます:
+より複雑な権限の設定を行うと、オーバーヘッドが多くなります。
+もしあなたがいかなる GRANT 文も行っていなければ、
+MySQL はパーミッションの検査を少ししか最適化しないでしょう。
+So if you have a very high
+volume it may be worth the time to avoid grants. Otherwise more
+permission check results in a larger overhead.
+もし MySQL 関数のあるものが確実に問題を引き起こしているのならば、
+常に MySQL クライアント側は以下のようになります:
+mysql> select benchmark(1000000,1+1);
++------------------------+
+| benchmark(1000000,1+1) |
++------------------------+
+|                      0 |
++------------------------+
+1 row in set (0.32 sec)
+上の例では MySQL は 1,000,000 + 式を 0.32 秒で実行できています
+(たんなる PentiumII 400MHz マシンで)。
+全ての MySQL 関数は最適化されていますが、
+いくつかは例外があるかもしれません。
+benchmark(loop_count,expression)はあなたのクエリの
+問題を見つけるためのとてもよいツールです。
+13.5.1  クエリの性能評価
+ほとんどの場合、ディスク・シークを数えることでだいたいのパフォーマンスを予測できます。
+小さなテーブルでは、通常、1回のディスク・シークでレコードを見つけれるでしょう
+(インデックスがたぶんキャッシュされるので)。 大きなテーブルでは、
+おおよその予測として、(B++ ツリーインデックスを使用している場合)、
+log(row_count) /
+log(index_block_length / 3 * 2 / (index_length + data_pointer_length)) +
+1 シーク、1レコードを見つけるのに必要となるでしょう。
+MySQL では、インデックス・ブロックは通常 1024 バイトで、
+データ・ポインターは通常 4 バイトです。 これは、
+インデックス長が 3 (medium integer) 、データが 500,000 レコードあるテーブルでは、 
+log(500,000)/log(1024/3*2/(3+4)) + 1 = 4 シークとなります。
+As the above index would require about 500,000 * 7 * 3/2 = 5.2M,
+(assuming that the index buffers are filled to 2/3, which is typical)
+you will probably have much of the index in memory and you will probably
+only need 1-2 calls to read data from the OS to find the row.
+書き込み時には、上の場合、新しいインデックスを書き込める場所を
+探し出すのに、4 シークかかり、さらに、通常、インデックスを更新し、
+レコードを書くのに 2 シーク必要です。
+Note that the above doesn't mean that your application will slowly
+degenerate by N log N!  As long as everything is cached by the OS or SQL
+server things will only go marginally slower while the table gets
+bigger. After the data gets too big to be cached, things will start to
+go much slower until your applications is only bound by disk-seeks
+(which increase by N log N). To avoid this, increase the index cache as
+the data grows.  「13.2.3  サーバーパラメーターのチューニング」節参照.
+13.5.2  SELECT クエリの速度
+通常、遅い SELECT ... WHERE を速くするには、
+まず最初にインデックスがあるかどうかをチェックします。 「13.4  MySQL はどのようにインデックスを使用するか?」節参照. 
+違うテーブルを参照する場合には、普通はインデックスをともなうべきです。
+EXPLAIN コマンドを使用すれば、SELECT でどのインデックスが
+使用されているか確認できます。
+「7.29  EXPLAIN 構文 (SELECTについての情報を得る)」節参照.
+Some general tips:
+To help MySQL optimize queries better, run myisamchk
+--analyze on a table after it has been loaded with relevant data. This
+updates a value for each index part that indicates the average number of
+rows that have the same value.  (For unique indexes, this is always 1,
+of course.).  MySQL will use this to decide which index to
+choose when you connect two tables with 'a non-constant expression'.
+You can check the result from the analyze run by doing SHOW
+INDEX FROM table_name and examining the Cardinality column.
+インデックスとデータをインデックス順に従ってソートするには、
+myisamchk --sort-index --sort-records=1 を使用します
+(もし 1番目のインデックス順にソートするなら)。 
+If you
+have a unique index from which you want to read all records in order
+according to that index, this is a good way to make that faster. 
+しかし、このソート方法は最適状態では書かれず、また大きなテーブルでは
+多くの時間がかかることに注意してください!
+13.5.3  MySQL はどのように WHERE 節を最適化するか?
+WHERE の最適化は、WHERE がほとんど SELECT で使用されるため、
+SELECT に置かれています。 しかし、同じ最適化は
+DELETE や UPDATE 文でも使用されます。
+このセクションの最適化の説明はまだ不十分です。
+なぜなら、 MySQL はとても多くの最適化を行っており、
+それら全てについての説明を書ける時間が、我々はとれません。
+MySQLによる最適化のいくつかを以下に示します:
+括弧の除去 (全ての不必要な括弧は削除されます):
+((a AND b) AND c OR (((a AND b) AND (c AND d))))
+-> (a AND b AND c) OR (a AND b AND c AND d)
+定数の保持:
+(a<b AND b=c) AND a=5
+-> b>5 AND b=c AND a=5
+定数条件の除去 (定数保持のために必要とされます):
+(B>=5 AND B=5) OR (B=6 AND 5=5) OR (B=7 AND 5=6)
+-> B=5 OR B=6
+インデックスに使用される全ての表現は一度だけ評価されます。
+一つのテーブル上の WHERE がない CONST(*) は、テーブルから
+直接取り出されます。これはまた同じ条件下での任意の NOT NULL 表現
+のためにも行われます。
+不当な定数表現は早く検出されます。
+MySQL は不可能な  SELECT 構文を素早く見つけ、0 行を結果として返します。
+GROUP BY または group 関数 (COUNT(), MIN()...) を使用しない場合は、
+HAVING は WHERE とマージされます。
+各サブ結合についての速い WHERE 評価を得るために、また、可能な限り
+早くレコードをスキップするために、各サブ結合についてより簡単な 
+WHERE が構築されます。
+全ての定数テーブルをクエリー中の他のテーブルより先に読みます。
+定数テーブルは次です:
+0 または 1 行のテーブル。
+WHERE 節で UNIQUE インデックスや PRIMARY KEY が使用されたテーブルで、
+かつ、全てのインデックスが定数式で使用されていて、
+かつ、インデックスのパートが NOT NULL で定義されているテーブル。
+以下のテーブルのように定数だけを使用するテーブル:
+mysql> SELECT * FROM t WHERE primary_key=1;
+mysql> SELECT * FROM t1,t2
+WHERE t1.primary_key=1 AND t2.primary_key=t1.id;
+テーブルを結合するために最良の結合の組合せを見つけます。全ての可能性を試して 。
+ORDER BY または GROUP 内の全てのフィールドが同じテーブルの場合は、
+このテーブルは結合時に最初に優先されます。
+ORDER BY 節と GROUP BY 節がある場合、または ORDER BY か GROUP BY が結合キュー
+内の最初のテーブルではない他のテーブルからの項目を含む場合、一時テーブルが生成されます。
+もし SQL_SMALL_RESULT を使用するなら, MySQL はメモリー内の一次テーブルを
+使用します
+各テーブルのインデックスはクエリされ、得られる行の 30% 未満の幅しかない最良のインデックスが使用されます。
+そのようなインデックスが見つけられない場合、素早いテーブルの走査(quick table scan)が使用されます。
+同じように、MySQL はデータファイルを等しく調べはしないインデックスから
+レコードを読むことが可能です。もし全てのフィールドが数値型のインデックスなら、
+インデックスツリーだけがクエリの解決に使用されます。
+各レコードが出力される前に、HAVING 節に適合するものをスキップします。
+以下はとても速いクエリの例です:
+mysql> SELECT COUNT(*) FROM tbl_name;
+mysql> SELECT MIN(key_part1),MAX(key_part1) FROM tbl_name;
+mysql> SELECT MAX(key_part2) FROM tbl_name
+WHERE key_part_1=constant;
+mysql> SELECT ... FROM tbl_name
+ORDER BY key_part1,key_part2,... LIMIT 10;
+mysql> SELECT ... FROM tbl_name
+ORDER BY key_part1 DESC,key_part2 DESC,... LIMIT 10;
+以下のクエリはインデックスツリーのみを使用します(インデックス化されているフィールドは
+数値型と仮定します):
+mysql> SELECT key_part1,key_part2 FROM tbl_name WHERE key_part1=val;
+mysql> SELECT COUNT(*) FROM tbl_name
+WHERE key_part1=val1 AND key_part2=val2;
+mysql> SELECT key_part2 FROM tbl_name GROUP BY key_part1;
+以下のクエリは、ソートされた行の検索にインデックスを使用します:
+mysql> SELECT ... FROM tbl_name ORDER BY key_part1,key_part2,... ;
+mysql> SELECT ... FROM tbl_name ORDER BY key_part1 DESC,key_part2 DESC,... ;
+13.5.4  How MySQL Optimizes DISTINCT
+DISTINCT is converted to a GROUP BY on all columns,
+DISTINCT combined with ORDER BY will in many cases also
+need a temporary table.
+When combining LIMIT # with DISTINCT, MySQL will stop
+as soon as it finds # unique rows.
+If you don't use columns from all used tables, MySQL will stop
+the scanning of the not used tables as soon as it has found the first match.
+SELECT DISTINCT t1.a FROM t1,t2 where t1.a=t2.a;
+In the case, assuming t1 is used before t2 (check with EXPLAIN), then
+MySQL will stop reading from t2 (for that particular row in t1)
+when the first row in t2 is found.
+13.5.5  MySQL はどのように LEFT JOIN と RIGHT JOIN を最適化するか?
+MySQL の A LEFT JOIN B は以下のように組みこまれています:
+The table B is set to be dependent on table A and all tables
+that A is dependent on.
+テーブル A が LEFT JOIN 条件中に使用される全てのテーブル
+(ただし B は除く)に依存すると、セットされます。
+全ての LEFT JOIN 条件が WHERE 節に移動されます。
+All standard join optimizations are done, with the exception that a table is
+always read after all tables it is dependent on.  If there is a circular
+dependence then MySQL will issue an error.
+全ての WHERE 節の最適化が行われます。
+WHERE 節にマッチするレコードが A にあり、
+LEFT JOIN 条件にマッチするレコードが B にない場合、
+全てのフィールドが NULL にセットされた B のレコードが
+作成されます。 
+If you use LEFT JOIN to find rows that don't exist in some
+table and you have the following test: column_name IS NULL in the
+WHERE part, where column_name is a column that is declared as
+NOT NULL, then MySQL will stop searching after more rows
+(for a particular key combination) after it has found one row that
+matches the LEFT JOIN condition.
+RIGHT JOIN is implemented analogously as LEFT JOIN.
+The table read order forced by LEFT JOIN and STRAIGHT JOIN
+will help the join optimizer (which calculates in which order tables
+should be joined) to do its work much more quickly, as there are fewer
+table permutations to check.
+Note that the above means that if you do a query of type:
+SELECT * FROM a,b LEFT JOIN c ON (c.key=a.key) LEFT JOIN d (d.key=a.key) WHERE b.key=d.key
+MySQL will do a full scan on b as the LEFT
+JOIN will force it to be read before d.
+The fix in this case is to change the query to:
+SELECT * FROM b,a LEFT JOIN c ON (c.key=a.key) LEFT JOIN d (d.key=a.key) WHERE b.key=d.key
+13.5.6  MySQL はどのように LIMIT を最適化するか?
+In some cases MySQL will handle the query differently when you are
+using LIMIT # and not using HAVING:
+もし LIMIT を使用して限定した数だけ select を行うなら、 MySQL は、
+ある場合、テーブルを全て走査するよりも、インデックスを使用しようとします。
+もし LIMIT # を ORDER BY と共に使用するなら, MySQL は
+最初の # 行を見つけたらすぐに、全テーブルのソートは行わずに、
+ソートを終わらせます。 
+LIMIT # を DISTINCT と共に使用するなら, MySQL は
+# 個の一意なレコードを見つけた時点で終わります。
+In some cases a GROUP BY can be resolved by reading the key in order 
+(or do a sort on the key) and then calculate summaries until the
+key value changes.  In this case LIMIT # will not calculate any
+unnecessary GROUP BY's.
+MySQL は、最初の # 行をクライアントに送ったあと直に、
+クエリを中断します。
+LIMIT 0 は常に素早く空の結果を返します。
+これはクエリのチェックや結果として得られるフィールドの型を得るために利用できます。
+一時テーブルの大きさは、クエリを解決するためにどれぐらいのスペースがいるかを
+計算するのに、LIMIT # を使用します。
+13.5.7  INSERT クエリの速度
+レコードを挿入する時間はおおよそ次からなります:
+接続:                    (3)
+クエリをサーバへ送信:    (2)
+クエリの解析:            (2)
+レコードの挿入:          (1 x size of record)
+インデックスの挿入:      (1 x number of indexes)
+クローズ:                (1)
+ここで (数字) は比例時間です。これは、テーブルのオープンにかかる初期オーバーヘッ
+ド(これは同時に動作する各クエリ毎に1回行なわれます)は考慮されていません。
+テーブルのサイズはインデックスの挿入を N log N で遅くします (B-tree)。
+INSERT を速くするいくつかの方法:
+もし同じクライアントから多くのレコードを同時にインサートするなら、
+複数の値が書ける INSERT 文を使用します。 これは個々に INSERT 文
+を発行する場合に比べて、とても速くなります。
+もし違うクライアントから多くのレコードを同時にインサートするなら、
+INSERT DELAYED 文の使用で、より速くなるでしょう。  「7.21  INSERT構文」節参照.
+MyISAM では、複数の SELECT が走っているテーブルに対して、
+同時に、レコードを挿入できます。 ただしそのテーブルに対して
+レコードの削除がない場合に。
+テキストファイルからテーブルにデータをいれる場合は、 LOAD DATA INFILE を
+使用します。 これはたくさんの INSERT 文の発行に比べて通常 20倍 程度
+速くなります
+「7.23  LOAD DATA INFILE構文」節参照.
+テーブルが多くのインデックスを持っている場合、ある方法で、 LOAD DATA INFILE の
+実行を速くすることが可能です。
+以下の手順で行います:
+Optionally create the table with CREATE TABLE. For example, using
+mysql or Perl-DBI.
+FLUSH TABLES の実行。 あるいは mysqladmin flush-tables 
+コマンドの実行。
+myisamchk --keys-used=0 -rq /path/to/db/tbl_name の使用。
+これは指定されたテーブルから全てのインデックスを削除します。
+そのテーブルに LOAD DATA INFILE を使用してデータを入れます. 
+これはいかなるインデックスも更新しないでしょうし、そのため、速くもなるでしょう。
+If you are going to only read the table in the future, run myisampack
+on it to make it smaller.  「8.1.2.3  Compressed Table Characteristics」節参照.
+myisamchk -r -q /path/to/db/tbl_name でインデックスを再構築. 
+これは disk に書き込む前にインデックスをメモリに作成します。
+これは多くのディスクシークを避けることが出来るのでとても速くなります。
+でき上がったインデックスツリーは、バランスのよいものになります。
+FLUSH TABLES の実行。 あるいは mysqladmin flush-tables 
+コマンドの実行。
+この手順は、将来の MySQL の LOAD DATA INFILE に組み込むかもしれません。
+テーブルをロックすることで、挿入を速くすることも可能です:
+mysql> LOCK TABLES a WRITE;
+mysql> INSERT INTO a VALUES (1,23),(2,34),(4,33);
+mysql> INSERT INTO a VALUES (8,26),(6,29);
+mysql> UNLOCK TABLES;
+主な速度差は、全ての INSERT 構文でインデックスバッファが一度だけディスクにフ
+ラッシュされることです。通常は  INSERT 構文があるのと同じくらい多くのインデッ
+クスバッファフラッシュがあります。単一構文の全てのレコードは、ロックなしで挿入できます。
+ロックも複数接続テストの合計時間を低くしますが、いくつかのスレッドの最大
+待ち時間は上がります(ロックを待っているから)。
+例えば:
+thread 1 does 1000 inserts
+thread 2, 3, and 4 does 1 insert
+thread 5 does 1000 inserts
+ロックを使用しない場合、2, 3 そして 4 は 1 と 5 の前に終ります。ロックを
+使用する場合、2,3,4 は 1 や 5 の前に終わることはおそらくありませんが、合
+計時間は約 40 % 速くなります。
+INSERT, UPDATE , DELETE は、 MySQL ではとても速いので、
+1 行で約 5 つ以上、値を 挿入・更新 をする操作に対して、
+ロックを追加すれば、全般的により良い性能が得られます。
+とても多い insert を行なう場合、
+他のスレッドにそのロックしたテーブルへのアクセスを与えるために 、
+だいたい 1000 レコードごとに一度、UNLOCK TABLES した後に
+LOCK TABLES を行います。 これでもまだ良い性能が得られます。
+もちろん LOAD DATA INFILE はとても速いです。
+LOAD DATA INFILE と INSERT を共に速くするためには、
+キーバッファを増やします。  「13.2.3  サーバーパラメーターのチューニング」節参照.
+13.5.8  UPDATE クエリの速度
+UPDATE クエリは SELECT クエリのように最適化されますが、
+書き込みのオーバーヘッドが加わります。
+書き込み速度は、更新されるデータの大きさ、更新されるインデックス数に
+依ります。 変更されないインデックスは更新されません。
+Also, another way to get fast updates is to delay updates and then do
+many updates in a row later. 
+一文で多くの更新を行えば、もしテーブルがロックされていれば、
+一文で一個づつ更新するよりも、とても速くなります。
+Note that, with dynamic record format, updating a record to
+a longer total length may split the record.  So if you do this often,
+it is very important to OPTIMIZE TABLE sometimes.
+「7.11  OPTIMIZE TABLE構文」節参照.
+13.5.9  DELETE クエリの速度
+If you want to delete all rows in the table, you should use
+TRUNCATE TABLE table_name.  「7.18  TRUNCATE Syntax」節参照.
+1レコードを削除する時間は、ちょうどインデックスの数に比例します。
+より速くレコードを削除したいなら、インデックス・キャッシュを
+増やします。  「13.2.3  サーバーパラメーターのチューニング」節参照.
+テーブル中からレコードの大きな部分を消すよりも、
+全てのレコードを消すほうが、とても速いです。
+13.6  最適化に関するその他の助言
+Unsorted tips for faster systems:
+コネクションオーバーヘッドを避けるために、データベースに対して、
+逐次コネクションを落とさないように、常に接続を保ちます。
+If you can't use persistent connections and you are doing a
+lot of new connections to the database, you may want to change the value
+of the thread_cache_size variable.  「13.2.3  サーバーパラメーターのチューニング」節参照.
+あなたのクエリがテーブルのインデックスを使用しているか、いつもチェックします。
+MySQL では EXPLAIN コマンドでこれが行えれます。
+「7.29  EXPLAIN 構文 (SELECTについての情報を得る)」節参照.
+たくさん変更されるようなテーブルに対して、複雑な SELECT クエリを
+避けるように試みます。 これはテーブル・ロックの問題を避けるためです。
+新しい MyISAM テーブルでは、あるテーブルにレコードが挿入(削除は無しで)
+されている最中に、同時に、同じテーブルからデータを読むことが可能です。
+これがあなたにとって重要項目であるなら、
+レコードの削除の必要のない方法や、多くのレコードを削除した後に OPTIMIZE TABLE を
+実行することを、考慮すべきです。
+Use ALTER TABLE ... ORDER BY expr1,expr2... if you mostly
+retrieve rows in expr1,expr2.. order.  By using this option after big
+changes to the table, you may be able to get higher performance.
+In some cases it may make sense to introduce a column that is 'hashed'
+based on information from other columns. If this column is short and
+reasonably unique it may be much faster than a big index on many
+columns. In MySQL it's very easy to use this extra column:
+SELECT * FROM table_name WHERE hash=MD5(concat(col1,col2))
+AND col_1='constant' AND col_2='constant'
+多くの変更がなされるテーブルに対しては、全ての VARCHAR や BLOB 
+フィールドを避けるように試みるべきです。
+You will get dynamic row length as soon as you
+are using a single VARCHAR or BLOB columns.  「8  MySQL Table types」節参照.
+通常、あるテーブルを違うテーブルに分けることは、レコードが大きくなる
+ために役立ちません。
+レコードにアクセスする際、そのレコードの最初のバイトを見つけるための
+ディスク・シークが、一番かかります。
+After finding
+the data most new disks can read the whole row fast enough for most
+applications. The only cases where it really matters to split up a table is if
+it's a dynamic row size table (see above) that you can change to a fixed
+row size, or if you very often need to scan the table and don't need
+most of the columns.  「8  MySQL Table types」節参照.
+もし、多くのレコードからの情報を元にした計算(あるもののカウントとか)を
+しょっちゅう行う必要があるなら、新しいテーブルを用意し、逐次カウンターを
+更新した方が多分良いでしょう。
+UPDATE table set count=count+1 where index_column=constant の更新は
+とても速いです!
+これは、MySQL のようなテーブル・ロッキング
+(multiple readers / single writers)をもつデータベースを
+使う上で、本当に重要なことです。
+This will
+also give better performance with most databases as the row locking
+manager in this case will have less to do.
+もしたくさんの大きなテーブルから統計を収集する必要があるなら、
+全テーブルを走査する代わりに、サマリーテーブルを使用します。
+Maintaing the summarys should be
+much faster than trying to do statistics 'live'. It's much faster to
+regenerate new summary tables from the logs when things changes
+(depending on business decisions) than to have to change the running
+application!
+If possible, one should classify reports as 'live' or 'statistical',
+where data needed for statistical reports are only generated based on
+summary tables that are generated from the actual data.
+フィールドにはデフォルト値があるという事を利用して下さい。
+値がデフォルトとは違う場合に限り、値を挿入します。
+これは MySQL が必要とする分析を少なくし、インサートの速度が向上します。
+ある場合では、BLOB にデータをパックして保存するのが便利です。
+この場合、BLOB に入れた値を パック・アンパック するためのコードを
+あなたのアプリケーションに組み込まなくてはなりません。
+しかしこれは、多くのアクセスを抑制するでしょう。
+これは、静的(固定長)テーブル構造に適しないデータを持っている場合に
+実用になります。
+通常、あなたは全てのデータを冗長の無いように(データベース理論で
+第3正規形 , 3rd Normal Form , 3NF と呼ばれる)
+しようとするかもしれませんが、しかし、よりスピードを求める場合は、
+重複やサマリーテーブルの作成をおそれてはいけません。
+ストアド・プロシージャ や UDF (ユーザー定義関数) はよりパフォーマンスを得る
+ためにはよい方法かもしれません。
+In this case you should, however, always have a way
+to do this some other (slower) way if you use some database that doesn't
+support this.
+You can always gain something by caching queries/answers in your
+application and trying to do many inserts/updates at the same time.  If
+your database supports lock tables (like MySQL and Oracle),
+this should help to ensure that the index cache is only flushed once
+after all updates.
+データをすぐには書く必要がないとき、INSERT /*! DELAYED */ を使用します。
+これは、一回のディスクへの書き込みで、多くのレコードがかかれるので、
+速くなります。
+SELECT がより重要な場合、INSERT /*! LOW_PRIORITY */ を使用します。
+キューを無視して SELECT を優先的に行いたいときは
+SELECT /*! HIGH_PRIORITY */ を使用します。
+これは、たとえ誰かが書き込みを待っていたとしても、その SELECT は
+実行されます。
+複数行 INSERT 文の使用。 これは多くのレコードを一つの SQL コマンドで
+挿入することが出来ます。
+(多くの SQL サーバーがこれをサポートしています)
+大きなデータの読み込みには LOAD DATA INFILE を使用します。
+This if
+faster than normal inserts and will be even faster when myisamchk
+is integrated in mysqld.
+一意の値を作るために、 AUTO_INCREMENT を使用します。
+動的テーブルフォーマットの使用時には、フラグメンテーションを避けるために、
+OPTIMIZE TABLE を時々使用します。
+「7.11  OPTIMIZE TABLE構文」節参照.
+可能ならば HEAP テーブルをスピードアップのために使用します.  「8  MySQL Table types」節参照.
+通常の Web サーバーの設定ならば、イメージはファイルに保存すべきです。
+データベースには、それらファイルの参照(パスとか)のみを入れます。
+この主な理由は、通常の Web サーバーはデータベースよりもコンテンツを
+よりよくキャッシュしてくれるからです。 それでファイルを使用するなら、
+速いシステムをより簡単に得ることができます。
+重要でないデータで、よくアクセスされる物は、メモリテーブルにいれます。
+(like
+information about the last shown banner for users that don't have
+cookies)
+Columns with identical information in different tables should be
+declared identical and have identical names. Before Version 3.23 you
+got slow joins otherwise.
+名前は単純にしてください(customer テーブルでは customer_name の
+かわりに name を使うとか)。 他の SQL サーバーへの移植を考慮するなら、
+名前は 18 文字より短くすべきです。
+もし本当にハイ・スピードが必要なら、SQL サーバーがサポートしている物とは
+違う、ローレベルのデータ保存のインターフェースに注目すべきです。
+例えば、 MySQL MyISAM を直接アクセスすることは、
+SQL インターフェースを介してアクセスするよりも、2〜5倍速くなるでしょう。
+これを可能にするには、そのデータは、アプリケーションと同じマシン上になくてはならず、
+通常、一つのプロセスだけでアクセスされるべきです。
+(なぜなら、外部ファイルロックは、とても遅いから)。
+上の問題は、MySQL サーバー内の MyISAM のローレベルのコマンドの
+導入で解決できるでしょう。 (これはよりよいパフォーマンスを得ることの出来る、
+簡単な方法の一つです)。 By carefully designing the database interface
+it should be quite easy to support this types of optimisations.
+多くの場合、データベースからデータをアクセスする方が(接続を維持していれば)、
+テキストファイルからデータをアクセスするよりも速いです。 なぜなら、
+データベースはテキストファイルよりもコンパクトになり(数値データの場合)、
+このため、ディスクアクセスが少なくなるからです。
+また、行や項目を見つけるために、テキストファイルを解析する必要も省けます。
+複製もスピードアップに使用できるでしょう。  「11  Replication in MySQL」節参照.
+DELAY_KEY_WRITE=1 が定義されたテーブルは、インデックスの更新が速くなります。
+これはそのインデックス・ファイルが閉じられるまでディスクに記録されないからです。
+したがって、なにかが途中で mysqld をキルしてもテーブルが大丈夫なようにするため、
+mysqld を起動する前には、myisamchk をそれらのテーブルに対して実行すべきです。
+As the key information can always be generated
+from the data, you should not lose anything by using DELAY_KEY_WRITE.
+13.7  Using Your Own Benchmarks
+You should definitely benchmark your application and database to find
+out where the bottlenecks are.  By fixing it (or by replacing the
+bottleneck with a 'dummy module') you can then easily identify the next
+bottleneck (and so on).  Even if the overall performance for your
+application is sufficient, you should at least make a plan for each
+bottleneck, and decide how to solve it if someday you really need the
+extra performance.
+For an example of portable benchmark programs, look at the MySQL
+benchmark suite.  「14  MySQL ベンチマークスイート」節参照. You
+can take any program from this suite and modify it for your needs. By doing this,
+you can try different solutions to your problem and test which is really the
+fastest solution for you.
+It is very common that some problems only occur when the system is very
+heavily loaded. We have had many customers who contact us when they
+have a (tested) system in production and have encountered load problems. In
+every one of these cases so far, it has been problems with basic design
+(table scans are NOT good at high load) or OS/Library issues. Most of
+this would be a LOT easier to fix if the systems were not
+already in production.
+To avoid problems like this, you should put some effort into benchmarking
+your whole application under the worst possible load! You can use Sasha's
+recent hack for this -
+super-smack.
+As the name suggests, it can bring your system down to its knees if you ask it,
+so make sure to use it only on your development systems.
+13.8  Design Choices
+MySQL は、レコードのデータとインデックスを別のファイルに保存します。
+他の多くの(ほとんど全て)データベースでは、同じファイルにデータとインデックスを
+混在させて保存します。 我々は、最近のシステムには、MySQL の選択の方が
+良いと信じています。
+Another way to store the row data is to keep the information for each
+column in a separate area (examples are SDBM and Focus). This will cause a
+performance hit for every query that accesses more than one column. Because
+this degenerates so quickly when more than one column is accessed,
+we believe that this model is not good for general purpose databases.
+The more common case is that the index and data are stored together
+(like in Oracle/Sybase et al). In this case you will find the row
+information at the leaf page of the index. The good thing with this
+layout is that it, in many cases, depending on how well the index is
+cached, saves a disk read.  The bad things with this layout are:
+Table scanning is much slower because you have to read through the indexes
+to get at the data.
+You can't use only the index table to retrieve data for a query.
+You lose a lot of space, as you must duplicate indexes from the nodes
+(as you can't store the row in the nodes).
+Deletes will degenerate the table over time (as indexes in nodes are
+usually not updated on delete).
+It's harder to cache ONLY the index data.
+13.9  MySQL Design Limitations/Tradeoffs
+Because MySQL uses extremely fast table locking (multiple readers /
+single writers) the biggest remaining problem is a mix of a steady stream of
+inserts and slow selects on the same table.
+We belive that for a huge number of systems the extremely fast
+performance in other cases make this choice a win. This case is usually
+also possible to solve by having multiple copies of the table, but it
+takes more effort and hardware.
+We are also working on some extensions to solve this problem for some
+common application niches.
+13.10  Portability
+Because all SQL servers implement different parts of SQL, it takes work to
+write portable SQL applications. For very simple selects/inserts it is
+very easy, but the more you need the harder it gets. If you want an
+application that is fast with many databases it becomes even harder!
+To make a complex application portable you need to choose a number of
+SQL servers that it should work with.
+You can use the MySQL crash-me program/web-page
+http://www.mysql.com/information/crash-me.php to find functions,
+types, and limits you can use with a selection of database
+servers. Crash-me now tests far from everything possible, but it
+is still comprehensive with about 450 things tested.
+For example, you shouldn't have column names longer than 18 characters
+if you want to be able to use Informix or DB2.
+Both the MySQL benchmarks and crash-me programs are very
+database-independent.  By taking a look at how we have handled this, you
+can get a feeling for what you have to do to write your application
+database-independent.  The benchmarks themselves can be found in the
+`sql-bench' directory in the MySQL source
+distribution. They are written in Perl with DBI database interface
+(which solves the access part of the problem).
+See http://www.mysql.com/information/benchmarks.html for the results
+from this benchmark.
+As you can see in these results, all databases have some weak points. That
+is, they have different design compromises that lead to different
+behavior.
+If you strive for database independence, you need to get a good feeling
+for each SQL server's bottlenecks. MySQL is VERY fast in
+retrieving and updating things, but will have a problem in mixing slow
+readers/writers on the same table. Oracle, on the other hand, has a big
+problem when you try to access rows that you have recently updated
+(until they are flushed to disk). Transaction databases in general are
+not very good at generating summary tables from log tables, as in this
+case row locking is almost useless.
+To get your application really database-independent, you need to define
+an easy extendable interface through which you manipulate your data. As
+C++ is available on most systems, it makes sense to use a C++ classes
+interface to the databases.
+If you use some specific feature for some database (like the
+REPLACE command in MySQL), you should code a method for
+the other SQL servers to implement the same feature (but slower).  With
+MySQL you can use the /*!  */ syntax to add
+MySQL-specific keywords to a query.  The code inside
+/**/ will be treated as a comment (ignored) by most other SQL
+servers.
+If REAL high performance is more important than exactness, as in some
+Web applications, a possibility is to create an application layer that
+caches all results to give you even higher performance. By letting
+old results 'expire' after a while, you can keep the cache reasonably
+fresh.  This is quite nice in case of extremely high load, in which case
+you can dynamically increase the cache and set the expire timeout higher
+until things get back to normal.
+In this case the table creation information should contain information
+of the initial size of the cache and how often the table should normally
+be refreshed.
+13.11  What have we used MySQL for?
+MySQL の初期の開発期には、MySQL は我々のもっとも大口の顧客に合うように
+機能が作成されました。 彼らは、いくつかのスウェーデン最大手の小売り業者
+のために、倉庫に入れている(商品)データを取り扱います。
+我々は、すべての店から、全ボーナス・カード取扱高の、その週間まとめを得ます。
+そして、その店のオーナにとって有益な情報、その店の広告キャンペーンが
+お客にどの程度影響を及ぼすか、を提供することが、我々に求められています。
+そのデータは、とても大きくて (約700万/月 回の取り扱い)、
+我々はその顧客に提供する必要のあるデータを 4〜10年分、持っています。
+我々は、カスタマーから、彼らがこのデータからできる新しいレポートに
+即時にアクセスしたいという、要求を受けました。
+我々はこれを、全ての月ごとの情報を圧縮した 'transaction' テーブルに
+保存することで解決しました。
+We have a set of simple macros (script) that
+generates summary tables grouped by different criteria (product group,
+customer id, store ...) from the transaction tables. 
+そのレポートは Web ページで、これは小さな perl スクリプトで動的に
+作成されます。 この perl script は Web Page を分析し、SQL 文を
+実行し、結果を挿入します。
+We would have used PHP or mod_perl instead but they were
+not available at that time.
+画像データのために、我々は簡単なツールを C でかきました。
+これは SQL のクエリの結果を元に(結果にいくつか処理をして) GIF を提供します。
+これも動的に perl スクリプト(HTML ファイルを分析する)から実行されます。
+In most cases a new report can simply be done by copying an existing
+script and modifying the SQL query in it.  In some cases, we will need to
+add more fields to an existing summary table or generate a new one, but
+this is also quite simple, as we keep all transactions tables on disk.
+(Currently we have at least 50G of transactions tables and 200G of other
+customer data.)
+We also let our customers access the summary tables directly with ODBC
+so that the advanced users can themselves experiment with the data.
+我々はこれらを  Sun Ultra SPARCstation (2x200 Mz) で扱っていますが、
+なんの問題もありません。
+We recently upgraded one of our servers to a 2
+CPU 400 Mhz UltraSPARC, and we are now planning to start handling
+transactions on the product level, which would mean a ten-fold increase
+of data. We think we can keep up with this by just adding more disk to
+our systems.
+We are also experimenting with Intel-Linux to be able to get more CPU
+power cheaper.  現在、我々はバイナリ互換のデータベースフォーマットを持っており
+(new in Version 3.23) 、我々はこれをアプリケーションのいくつかの部分に使用しはじめる事でしょう。
+Our initial feelings are that Linux will perform much better on
+low-to-medium load and Solaris will perform better when you start to get a
+high load because of extreme disk IO, but we don't yet have anything
+conclusive about this. After some discussion with a Linux Kernel
+developer, this might be a side effect of Linux giving so much resources
+to the batch job that the interactive performance gets very low. This
+makes the machine feel very slow and unresponsive while big batches are
+going. Hopefully this will be better handled in future Linux Kernels.
+Go to the first, previous, next, last section, table of contents.
+MySQL Reference Manual for version 3.23.38. - 13  MySQL の最大性能をひきだすには

@@ -1,0 +1,193 @@
+
+%SQL.Statement クラスは、ダイナミック SQL を実行するために推奨される方法です。このクラスを使用しているダイナミック SQLは、前の章のダイナミック SQL の使用法で説明しています。
+従来の %ResultSet.SQL クラスまたは %Library.ResultSet クラスを使用して、データベースのクエリを実行することもできます。ほとんどの場合、%SQL.Statement クラスは新規のダイナミック SQL のコードに対して推奨されます。%ResultSet.SQL および %Library.ResultSet クラスは、ここでは既存のコードとの互換性の説明となります。
+%ResultSet.SQL を使用したダイナミック SQL
+以下の Cach&eacute; ObjectScript の例では、%ResultSet.SQL クラスを使用して、ダイナミック SQL クエリを作成し、実行しています。
+/* %ResultSet.SQL example */
+ZNSPACE "SAMPLES"
+SET myquery="SELECT TOP 5 Name,SSN FROM Sample.Person ORDER BY Name"
+SET rset=##class(%ResultSet.SQL).%Prepare(myquery,.err,"")
+WHILE rset.%Next() {
+WRITE rset.Name,", ",rset.SSN,! 
+}
+WRITE "End of data"
+次の %ResultSet.SQL クラスの例では、%Print() インスタンス・メソッドを使用して、クエリで指定された列順に、選択列すべての現在の行のデータを出力します。
+ZNSPACE "SAMPLES"
+SET myquery="SELECT TOP 10 Name,SSN FROM Sample.Person ORDER BY Name"
+SET rset=##class(%ResultSet.SQL).%Prepare(myquery,.err,"")
+WHILE rset.%Next() {
+DO rset.%Print("^")
+}
+WRITE "End of data"
+この例では、列値の間の区切り文字として ^ 文字を使用しています。この指定の区切り文字の使用は、オプションです。
+%Library.ResultSet を使用したダイナミック SQL
+以下の Cach&eacute; ObjectScript コードでは、%Library.ResultSet クラスと、その Prepare() メソッドおよび Execute() メソッドを使用して、ダイナミック SQL クエリを作成し、実行しています。
+/* %Library.ResultSet example */
+ZNSPACE "SAMPLES"
+SET myquery="SELECT TOP 5 Name,SSN FROM Sample.Person ORDER BY Name"
+SET rset=##class(%ResultSet).%New()
+SET sc=rset.Prepare(myquery)
+SET sc=rset.Execute()
+WHILE rset.Next() {
+WRITE rset.Data("Name"),", ",rset.Data("SSN"),!
+}
+WRITE "End of data",!
+WRITE "Row count=",%ROWCOUNT
+注意: 
+%ResultSet.%New() クラス・メソッドはもともと、新しい結果セットの作成に "%DynamicQuery:SQL" の引数を必要としていました。現在は、前述の例のようにまったく引数なしで呼び出すか、以下の例のように "%DynamicQuery:SQL" 引数を指定して呼び出すことができます。
+以下の %Library.ResultSet の例は、列名のエイリアスの使用方法を示しています。列名は、SQL クエリによって指定されます。同じ名前の 2 つの列が存在する場合、Data プロパティで両方を取得することはできません。SQL 文内でエイリアスを使用して、一意の列名を割り当てることができます。
+ZNSPACE "SAMPLES"
+SET q1="SELECT TOP 10 P.Name AS pn,E.Name AS en"
+SET q2=" FROM Sample.Person AS P,Sample.Employee AS E"
+SET myquery=q1_q2
+SET rset=##class(%ResultSet).%New("%DynamicQuery:SQL")
+SET sc=rset.Prepare(myquery)
+SET sc=rset.Execute()
+WHILE rset.Next() {
+WRITE rset.Data("pn"),", ",rset.Data("en"),!
+}
+WRITE "End of data",!
+WRITE "Row count=",%ROWCOUNT
+SQL 結果プロパティをサポートする %Library.ResultSet
+%Library.ResultSet は %SQLCODE、%ROWCOUNT、%ROWID、および %Message プロパティをサポートします。これは、クエリより返された状態値から %SQLCODE および %Message を設定します。Execute() メソッドはパブリック変数 %ROWID および %ROWCOUNT から %ROWID および %ROWCOUNTを生成します。Execute() はクエリがダイナミックでない場合、%ROWCOUNT をゼロに初期化します。また、Next() メソッドは %ROWCOUNT を生成します。
+%Library.ResultSet でサポートされていない CALL 文
+%Library.ResultSet では、ダイナミック・クエリを呼び出すための CALL 文はサポートされていません。SQL 文が CALL の場合、Invalid Statement Type というメッセージが Prepare() メソッドから返されます。%SQL.Statement クラスは CALL 文をサポートします。
+呼び出されたルーチンが関数の場合は、以下の例に示すように、%Library.ResultSet は SELECT を使用してそのルーチンを呼び出すことができます。
+ZNSPACE "SAMPLES"
+SET rs=##class(%ResultSet).%New()
+DO $SYSTEM.OBJ.DisplayError(rs.Prepare("SELECT Sample.Stored_Procedure_Test(?,?)"))
+WRITE rs.%Execute("Doe,John",""),!
+DO rs.%Display()
+WRITE !,"End of display"
+入力パラメータ
+クエリでは、疑問符 (?) を使用して入力パラメータを指定します。メソッドによって、これらの入力パラメータに値が渡されます。
+%ResultSet.SQL は、%Prepare() メソッドの 4 番目以降の引数として入力パラメータの値を指定します。入力パラメータの個数に制限はありません。入力パラメータを使用して、TOP 節と WHERE 節に値を渡すことができますが、SELECT リストに値を渡すことはできません。
+%Library.ResultSet は、Execute() メソッドの引数として入力パラメータの値を指定します。指定できる入力パラメータの数は 16 個までです。入力パラメータを使用して、TOP 節と WHERE 節に値を渡すことができますが、SELECT リストに値を渡すことはできません。
+%SQL.Statement は、引数として %Execute() の入力パラメータの値を指定します。入力パラメータの個数に制限はありません。入力パラメータを使用して、TOP 節および WHERE 節に値を渡したり、SELECT リストに式を渡したりできますが、SELECT リストに列名を渡すことはできません。
+次の 2 つの Cach&eacute; ObjectScript の例では、2 つの入力パラメータを持つ同じクエリを実行しています。最初の例では、%ResultSet.SQL を使用して、入力パラメータの値 (21 と 26) を Prepare() メソッドの 4 番目と 5 番目の引数として指定しています。2 番目の例では、%Library.ResultSet を使用して、Execute() メソッドで入力パラメータの値 (21 と 26) を指定しています。
+/* %ResultSet.SQL example */
+ZNSPACE "SAMPLES"
+SET myquery="SELECT Name,Age FROM Sample.Person WHERE Age > ? AND Age < ?"
+SET rset=##class(%ResultSet.SQL).%Prepare(myquery,.err,"",21,26)
+WHILE rset.%Next() {
+WRITE rset.Name,", ",rset.Age,! 
+}
+WRITE "End of data"
+/* %Library.ResultSet example */
+ZNSPACE "SAMPLES"
+SET myquery="SELECT Name,Age FROM Sample.Person WHERE Age > ? AND Age < ?"
+SET rset=##class(%ResultSet).%New("%DynamicQuery:SQL")
+SET sc=rset.Prepare(myquery)
+SET sc=rset.Execute(21,26)
+WHILE rset.Next() {
+WRITE rset.Data("Name"),", ",rset.Data("Age"),!
+}
+WRITE "End of data",!
+WRITE "Row count=",%ROWCOUNT
+以下の Cach&eacute; Basic の例では、%Library.ResultSet を使用して、2 つの入力パラメータを持つダイナミック SQL クエリを実行しています。
+myquery="SELECT Name,Age FROM Sample.Person WHERE Age > ? AND Age < ?"
+result = New %Library.ResultSet()
+' prepare the query
+result.Prepare(myquery)
+' find everyone with ages within the range specified below
+result.Execute(21,26)
+While (result.Next())
+PrintLn result.Data("Name") & ", " & result.Data("Age")
+Wend
+PrintLn "End of data"
+PrintLn "Row count=",%ROWCOUNT
+SQLCODE などのパブリック変数は Cach&eacute; Basic のサブルーチンではサポートされていません。Cach&eacute; Basic のサブルーチン内の変数は、すべてプライベート変数です。
+クエリのクローズ
+ダイナミック SQL クエリが完了したときには、以下の 2 つの方法でこれをクローズします (クエリが使用したリソースを開放します)。
+結果セット・オブジェクトを破棄する (有効範囲外に出す)。
+明示的に、%Library.ResultSet クラスの Close() インスタンス・メソッドを呼び出す。Close() メソッドを呼び出すことによって、現在の結果セット・カーソルをクローズします。これによって、クエリを再作成することなく、同じクエリを実行してそこからフェッチできます。
+以下の %Library.ResultSet の例は、Close() を使用して新しい結果セット・カーソルを開始する方法を示しています。
+ZNSPACE "SAMPLES"
+SET myquery="SELECT Name,SSN FROM Sample.Person WHERE Name %STARTSWITH ?"
+SET rset=##class(%ResultSet).%New("%DynamicQuery:SQL")
+SET sc=rset.Prepare(myquery)
+SET sc=rset.Execute("A")
+WHILE rset.Next() {
+WRITE rset.Data("Name"),", ",rset.Data("SSN"),!
+}
+WRITE "End of 'A' data",!!
+SET sc=rset.Close()
+SET sc=rset.Execute("B")
+WHILE rset.Next() {
+WRITE rset.Data("Name"),", ",rset.Data("SSN"),!
+}
+WRITE "End of 'B' data"
+%Library.ResultSet のメタデータ
+%Library.ResultSet は静的メタデータをサポートし、%SQL.Statement は動的メタデータをサポートします。ZEN レポートのプログラミングでは、静的メタデータが必要なため、%Library.ResultSet クラスを使用する必要があります。
+クエリを作成したら、そのクエリに関するメタデータを返すことができます。個々のメタデータ項目を返すには %Library.ResultSet クラスのメソッドを使用し、メタデータのテーブルを返すには %GetMetadata() メソッドを使用します。
+クエリ・メタデータ値のテーブルを返すには、次の例に示すように、%GetMetadata() とその %Display() メソッドを使用します。
+ZNSPACE "SAMPLES"
+SET q1="SELECT Name,SSN AS GovtNum,Age"
+SET q2=" FROM Sample.Person WHERE Name %STARTSWITH ?"
+SET myquery=q1_q2
+SET rset=##class(%ResultSet).%New("%DynamicQuery:SQL")
+SET sc=rset.Prepare(myquery)
+WRITE !,rset.%GetMetadata().%Display() 
+結果として得られるメタデータ・テーブルには、以下の項目が示されます。
+列名
+列の名前。列にエイリアスが指定されている場合は、そのエイリアスがここに示されます。SELECT 項目が式または集計である場合は、割り当てられた Expression_n ラベルまたは Aggregate_n ラベルが示されます (n は、SELECT 項目のシーケンス番号を表します)。式または集計にエイリアスを割り当てていた場合は、そのエイリアスがここに示されます。
+タイプ
+ODBC データ型の整数コード。このコードについては、"Cach&eacute; SQL リファレンス" のデータ型のリファレンス・ページの "データ型の整数コード" セクションに一覧があります。これらの ODBC データ型コードは、%Library.ResultSet クラス・メソッド GetColumnType(n) で返されるクライアント・データ型コードとは異なります。
+精度
+最大データ・サイズ (文字数)。
+スケール
+小数点以下の最大桁数。
+NULL
+列に NULL を許可しないか (0)、許可するか (1) を示すブーリアン値。SELECT 項目が式または集計であり、その結果が NULL になる可能性がある場合、この項目は 1 に設定されます。SELECT 項目が、システムの提供する値 (現在の日付や Pi を返すシステム変数や関数など) を持つ式である場合、この項目は 2 に設定されます。
+ラベル
+列名またはエイリアス。
+テーブル
+テーブル名。テーブルにエイリアスを指定していた場合でも、ここには実際のテーブル名が常に示されます。SELECT 項目が式または集計である場合には、テーブル名は示されません。
+スキーマ
+テーブルのスキーマ名。SELECT 項目が式または集計である場合には、スキーマ名は示されません。
+次に、各列には、Y (Yes) または N (No) で指定された 12 の Extended Column Info (SQLRESULTCOL) ブーリアン・フラグが示されます。それらのフラグは、1:AutoIncrement、2:CaseSensitive、3:Currency、4:ReadOnly、5:RowVersion、6:Unique、7:Aliased、8:Expression、9:Hidden、10:Identity、11:KeyColumn、12:RowId です。
+%Library.ResultSet クラスのメソッドを使用して、個々のメタデータ項目を返すこともできます。これらのメタデータ項目のメソッドには、以下のものがあります。
+メソッド
+説明
+GetColumnCount()
+クエリで選択された列数を返します。
+GetColumnName(n)
+列の名前 (またはエイリアス) を返します。整数 n は、目的の列をクエリ内の列のシーケンス番号で指定します。
+GetColumnType(n)
+クエリで指定された列のクライアント・データ型の整数コードを返します。整数 n は、目的の列をクエリ内の列のシーケンス番号で指定します。 このクライアント・データ型の整数コードのテーブルは、%Library.ResultSet クラス・ドキュメントに掲載されています。これらのクライアント・データ型コードは、広く使用されている ODBC データ型の整数コード (下を参照) とは異なります。また、リスト構造化されたデータが含まれている列 (Sample.Person の FavoriteColors など) は、列データ型 10 (VARCHAR) を返します。 
+GetParamCount()
+クエリで指定された入力パラメータ (疑問符) の数を返します。
+GetStatementType()
+クエリの SQL 文タイプの整数コードを返します(例えば、1=SELECT、2=INSERT など)。これらの整数コードのテーブルは、%Library.ResultSet クラス・ドキュメントに掲載されています。
+以下の Cach&eacute; ObjectScript の例は、これらのクエリ・メタデータのメソッドを使用しています。
+ZNSPACE "SAMPLES"
+SET q1="SELECT Name,SSN AS GovtNum,Age"
+SET q2=" FROM Sample.Person WHERE Name %STARTSWITH ?"
+SET myquery=q1_q2
+SET rset=##class(%ResultSet).%New("%DynamicQuery:SQL")
+SET sc=rset.Prepare(myquery)
+WRITE !,rset.GetStatementType() /* returns 1 (SELECT) */
+WRITE !,rset.GetColumnCount()  /* returns 3 */
+WRITE !,rset.GetColumnName(1)  /* returns Name */
+WRITE !,rset.GetColumnName(2)  /* returns GovtNum */
+WRITE !,rset.GetColumnType(1)  /* returns 10 (VARCHAR)  */  
+WRITE !,rset.GetColumnType(3)  /* returns 5 (INTEGER)  */
+WRITE !,rset.GetParamCount()  /* returns 1 */
+%ResultSet.SQL のメタデータ
+%ResultSet.SQL からクエリ・メタデータ値のテーブルを返すには、次の例に示すように、%PrepareMetaData() クラス・メソッドを使用します。
+ZNSPACE "SAMPLES"
+SET q1="SELECT ID,Name,CURRENT_DATE AS Now,DOB,Age,AVG(Age) AS AvgAge,SSN"
+SET q2=" FROM Sample.Person"
+SET myquery=q1_q2
+SET rset=##class(%ResultSet.SQL).%PrepareMetaData(myquery)
+DO rset.%Display()
+Copyright &copy; 1997-2014, 
+InterSystems Corp.
+[戻る] 
+[ホーム] 
+[ページトップ] 
+[次へ] 
+ビルド Cach&eacute; v2014.1 (608)
+最終更新: 2014-06-23 09:47:16
+ソース: GSQL_dynsqlold.xml
+従来の結果セット・クラスを使用した ダイナミック SQL

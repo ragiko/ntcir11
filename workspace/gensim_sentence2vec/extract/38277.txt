@@ -1,0 +1,42 @@
+
+実行する
+クローンしてきたリポジトリにあるcssdig.pyというファイルがあるので、引数に解析したいURLを指定して実行する。
+ローカルファイルもチェック出来ると良いと思うけど、今は対応してない。
+解析が終わると、reportというフォルダの配下に、解析レポートが出力されている。
+backgroundプロパティで何色使っているかや、!importantが何回宣言されているか等の結果が見れる他、
+そのプロパティをクリックするとCSSでどこで使われているかがハイライトされてひと目で確認することが出来る。
+解析結果の例
+余談
+FontAwesomeとか、normalize.cssみたいなライブラリCSSだと、使わないCSS増えるので解析の対象としないような指定も出来ていいかも?(未参照のCSSは削除しておくべきと言われればそれまでだけど。)
+あと、Webで使えると便利かなと思った。
+[CSS Audits: Taking Stock of Your Code](http://alistapart.com/article/css-audits-taking-stock-of-your-code) という、CSS Auditという面白いトピックの記事を見ていて、その中に出てきたCSS Digというツールがとても便利だったので紹介する。
+- [tomgenoni/cssdig](https://github.com/tomgenoni/cssdig)
+>Peek inside CSS to uncover refactor opportunities.
+CSS DigはPythonで実行するツールで、対象のURLに使われているCSSの利用状況を解析して、HTMLファイルでレポートするツール。
+## 準備と使い方
+Pythonは2.7.xじゃないと動かないそうなので、パスを通しているPythonを2.7系の最新にしておく。Pythonの環境構築については [pyenvを使ってMacにPythonの環境を構築する](http://qiita.com/1000ch/items/93841f76ea52551b6a97) あたりを参考にどうぞ。
+### BeautifulSoupのインストール
+依存しているライブラリを`easy_install`を使ってインストールする。
+```bash
+$ easy_install beautifulsoup4
+```
+### CSSDigリポジトリのクローン
+リポジトリにあるPythonスクリプトを実行することになるので、クローンする。
+```bash
+$ git clone git@github.com:tomgenoni/cssdig.git
+```
+### 実行する
+クローンしてきたリポジトリにある`cssdig.py`というファイルがあるので、引数に解析したいURLを指定して実行する。
+ローカルファイルもチェック出来ると良いと思うけど、今は対応してない。
+```bash
+$ python cssdig.py http://1000ch.net
+```
+解析が終わると、`report`というフォルダの配下に、解析レポートが出力されている。
+`background`プロパティで何色使っているかや、`!important`が何回宣言されているか等の結果が見れる他、
+そのプロパティをクリックするとCSSでどこで使われているかがハイライトされてひと目で確認することが出来る。
+## 解析結果の例
+![cssdig-report.png](https://qiita-image-store.s3.amazonaws.com/0/10549/1732c50a-8c20-873b-aa85-22f7266c8653.png)
+## 余談
+FontAwesomeとか、normalize.cssみたいなライブラリCSSだと、使わないCSS増えるので解析の対象としないような指定も出来ていいかも?(未参照のCSSは削除しておくべきと言われればそれまでだけど。)
+あと、Webで使えると便利かなと思った。
+CSS Digを使って対象URLのCSSを解析する - Qiita

@@ -1,0 +1,3 @@
+本論文では,テキスト中の各文について,その先行文脈における局所的一貫性を判定する,テキストの断片に対する局所的一貫性モデルを提案する.このモデルはテキストに出現する要素の構文的な役割の遷移の傾向に基づく局所的一貫性モデルである Entity Grid モデルを基にしている.先行文脈内の一貫性は保たれていると仮定を置き,先行文脈中に一貫性が悪い箇所が存在した場合,その箇所より前の文を先行文脈から除外する.人工的に一貫性の悪い箇所を作成したデータを用いた実験により,提案モデルがベースラインよりも性能が上回ることを示した.
+In this paper, we propose the local coherence model for text segments which consist of a target sentence and its precedent context. Our model is based on the Entity Grid model, which is the local coherence model considering tendency of grammatical roles of entities in text. Assuming that the precedent context is coherent, we exclude an incoherent fragment inside it. The experiment using automatically created incoherent texts shows that our model outperforms the baseline model.
+

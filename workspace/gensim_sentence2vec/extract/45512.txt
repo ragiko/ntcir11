@@ -1,0 +1,327 @@
+
+nucleotide blast
+Enter Query Sequence
+問い合わせ配列(Acession number, gi, または FASTAシーケンス)を入力する。
+例)FASTAシーケンス
+>gi|145336176|ref|NM_102535.2| Arabidopsis thaliana protein binding (AT1G27700) mRNA, complete cds
+TAATTTGGCTAATCGATGAACGAACGTTCCCTCTCTTCTCTGAAATCTTTCTCGATCCATCCATCTTCTC
+CATTTTCCTCCATTTCTGGGTTTCTTCTCATCTTCCAAGGATTAGGAAATTAGTTTGTTTTTTTTCATCT
+GCTCAAGTGATGACGACGAGTTTGGATCGGTGGGAGAAAGATCCTTTCTTTCCCGCTGCTGAAGAAGTTC
+AGGAATCTGCCGACAGGATGGAGTCAGCGTACAGGACATGGCTCAATGGGAAACGAGACTCTTCAAAAGT
+ATGGGACTCTGAGCAGCTTCATAGAGATCTTCACGCAGCTCTTGGAACCACCAAATGGCAGTTAGATGAA
+TTCCAAAAAGCTGTCAAATCTAGCTATGACAATCGTTTGAGTGATGAAACTAGAGATAGGCATCGTGAGT
+TTACTTTCGTAATGGAAGCTCAAGTGTCGAAAATCGAGAAATCTCTCAAGGAAGCTGCGCAATCCGATGG
+GAAAGGAACACCGAGATGGGTTCGTTTGGATGAAGATGATCGTAATGAGCTTGCTCTCTTCTTGACTGGT
+CCATCTGAATCTGCTAAAGCAAATCCTAATGGACATAGAAGGACTGCAAGTGCTGCTGAATTCAGTGCTT
+GGAACATTGCGGTTTCTGATGATGGTTTAGTGAAGAAATCTTGTGATGAGCCAGTGGTTCGACCTCCGAG
+GAAAGTACCTAGCTTCTCTGGATTCTTGAATTATATGGATCCTGTGTCCAAGCATTGCAATAGAAAGTGG
+AAGGGTTTAGATCGTCAAGGAGACTCTGATGCTGCTTTATTACCTATCCAAGCTAACCAACAAGATATGA
+ATGGATGTTCAGAGAGGGGCAAGAGTTGTATGGAGTGTGAGGAGGACTGTTATGAAAAGCAGCTTCATGG
+TTGGTATGGAGCTCTACAGAGGCAACTCCAACGGTCTCAGTATCGAATGCGATATAGTAAATCGGTTCAC
+GCTGCAATTTGGATTATTCTTTTAGTTTTTCTTATTGTGGTAGTTGCAGTGCATTCAATGTAGAAGAGAG
+GTTTGGAATAGCAAGGTTCGAGTTCATTCATCTTCTGTGTAACAGCGAAAGAGACGAATTTGGCAATCCA
+CATTTTTACTGTACAGTAAATTCCAACTGTTTTTGGTTGTTTGTAATATAGAAATGCATTTTTTTGGTTC
+GATTATTTGAAACGGGTTTCATTGAGCAATCATTGTTTTCTTAGGCACC
+Chose Search Set
+Databaseを選択するか、Entrez Queryを入力する。
+例)Databaseから「Others (nr etc.)」を選択する。
+「Nucleotide collection (nr/nt)」が選ばれる。
+Program Selection
+検索エンジンを選択する。
+例)「Highly similar sequences (megablast)」を選択する。
+［BLAST］ボタンをクリック
+BLAST検索結果
+Graphic Summary 
+問い合わせ配列にヒットした配列の分布
+Descriptions
+Accession       :Acession number
+Description     :説明
+Max score       :類似性の最大スコア
+Total score     :類似性のトータルスコア
+Query coverage
+E value         :偶然に同じスコアになる配列の数の期待値
+Max ident
+Links
+Alignments
+問い合わせ配列とのアライメント
+blast検索結果の表示フォーマット変更
+結果画面の上部の「Formatting options」をクリックする。
+出力フォーマット指定画面のAlignment Viewメニューを「Pairwise」から「Flat query-anchored with dots for identities」に変更する。
+右上の［Reformat］ボタンをクリックして再描画する。
+blastの結果がマルチプルアライメントで表示される。問い合わせ配列と同じ配列は"."で、違うところだけがACGTとなる。
+RによるHeatmapグラフの作成
+R言語, analysis, Bio
+手順
+距離関数Dist()で類似度を求め、hclust()でクラスタリングし、heatmap()のColv,Rowvオプションにdendrogram()を指定して出力する。
+プログラム例
+library(amap)
+# Heatmapグラフ作成
+#
+# ファイルの読み込み
+data <- read.table("test.txt", header=TRUE, row.names=1, sep="\t")
+#
+# PDFに出力する
+pdf()
+#
+# 距離関数で類似度のアルゴリズムとしてCosine係数を使用する
+# (method="pearson")は(1 - cosine)と同義である
+d1<-Dist(data, method="pearson")
+d2<-Dist(t(data), method="pearson")
+#
+# クラスタリングでAverage Linkageを使用する
+c1<-hclust(d1, method="average")
+c2<-hclust(d2, method="average")
+#
+# Heatmap PDFファイルの出力
+heatmap(as.matrix(data),
+Colv=as.dendrogram(c2),Rowv=as.dendrogram(c1),
+scale="none", col=cm.colors(256),
+main="Cosine-Average", margin=c(8,10))
+#
+# デバイスを閉じる
+dev.off()
+関数の主な仕様
+距離関数
+距離関数にはamapライブラリのDist()と標準のdist()がある。標準のdist()は類似度を指定するmethodオプションにPearson's相関係数とCosine係数が無いので、Dist()を使用した方がよい。また、dist()は結果の距離行列が千倍程度(?)の値になる。
+Dist()関数の使用例
+Dist()は類似度をmethodオプションとして指定できる。
+library(amap)
+Dist(data,method="peason")
+Dist()関数のmethodオプション文字列
+methodオプションの名前はまぎらわしいので気をつけること。
+"correlation" : Pearson's相関係数。(1 - peason)の値。
+"pearson"     : Cosine係数。(1 - cosine)の値。
+"euclidean"   : ユークリッド距離
+"maximum"     : 最大距離
+"manhattan"   : マンハッタン(シティーブロック)距離
+"canberra"    : キャンベラ距離
+"binary"      : バイナリー距離
+R Documentation
+dist()
+クラスタリング関数
+hclust()関数の使用例
+hclust()は階層的手法をmethodオプションとして指定できる。
+c1<-hclust(d1, method="average")
+hclust()関数のmethodオプション文字列
+"single"      : 単連結法  (Single Linkage)
+"complete"    : 完全連結法(Complete Linkage)
+"average"     : 群平均法  (Average Linkage)
+"ward"        : ウォード法(Ward's Minimum Variance)
+R Documentation
+hclust
+ヒートマップ関数
+heatmap()関数の使用例
+heatmap(as.matrix(data),
+Colv=as.dendrogram(c2),Rowv=as.dendrogram(c1),
+scale="none", col=cm.colors(256),
+main="Cosine-Average", margin=c(8,10))
+heatmap()関数のColv,Rowvとscaleオプション
+Colv,Rowvオプションにdendrogram()の返り値を指定する。このオプションの指定が無い場合は、正方行列のデータからしかヒートマップを作成できない。縦、横のサイズが異なるデータにおいては、Colv,Rowvオプションの指定は必須である。
+scaleオプションには"none"を指定すること。
+R Documentation
+dendrogram
+heatmap
+MATLABによるフィッシャーの正確確率検定
+MATLAB, analysis, Bio
+Fisher's exact test.
+fisher_exact()関数(霧笛作成)を使用する。
+引数
+data  : データ値のベクトル(2 * 2)
+data = [a b; c d]
+alpha : 有意水準
+both  : 0 片側検定
+1 両側検定
+返り値
+h     : 0 帰無仮説は採択される  2要因は独立でないとはいえない
+1 帰無仮説は棄却される  2要因は独立ではない
+p     : 生起確率
+プログラム例
+exact_test.m
+参考URL
+http://aoki2.si.gunma-u.ac.jp/lecture/Cross/Fisher.html
+% ---------------------------------------------------------------
+% フィッシャーの正確確率検定
+% Fisher's exact test.
+%
+% Web教材「統計学自習ノート」より、
+% フィッシャーの正確確率検定(直接確率)「例題」の計算。
+% http://aoki2.si.gunma-u.ac.jp/lecture/Cross/Fisher.html
+% ---------------------------------------------------------------
+function exact_test()
+% p 生起確率
+% h : 0 帰無仮説は採択される  2要因は独立でないとはいえない
+%   : 1 帰無仮説は棄却される  2要因は独立ではない
+data = [13 4; 6 14];
+alpha = 0.01;           % 有意水準
+% 片側検定
+[h,p] = fisher_exact(data,alpha,0)    
+% 両側検定
+[h,p] = fisher_exact(data,alpha,1)
+end
+プログラム例−実行結果
+>> exact_test
+p =
+0.0059
+h =
+1
+p =
+0.0081
+h =
+1
+fisher_exact()関数の実装
+fisher_exact.m
+% ---------------------------------------------------------------
+% フィッシャーの正確確率検定
+% Fisher's exact test.
+% 引数:
+%   data  : データ値のベクトル(2 * 2)
+%           data = [a b; c d]
+%   alpha : 有意水準
+%   both  : 0 片側検定
+%           1 両側検定
+% 返り値:
+%   h     : 0 帰無仮説は採択される  2要因は独立でないとはいえない
+%           1 帰無仮説は棄却される  2要因は独立ではない
+%   allp  : 生起確率
+% ---------------------------------------------------------------
+function [h,allp] = fisher_exact(data, alpha, both)
+h = 0;
+allp = 0.0;
+% +---------------+--------+
+% |    a     b    | sum_ab |
+% |    c     d    | sum_cd |
+% +---------------+--------+
+% | sum_ac sum_bd |        |
+% +---------------+--------+
+a = data(1,1);
+b = data(1,2);
+c = data(2,1);
+d = data(2,2);
+sum_ab = a + b;
+sum_cd = c + d;
+sum_ac = a + c;
+sum_bd = b + d;
+% 実際の観測値の正確な生起確率を得る
+p0 = get_exact_p(a,b,c,d);
+s0 = a*d - b*c;
+% aは 0〜小さい方の合計値まで推移
+index = 0;
+if(sum_ab <= sum_ac)
+for a=0:sum_ab
+index = index + 1;
+b = sum_ab - a;
+c = sum_ac - a;
+d = sum_cd - c;
+% 正確な生起確率を得る
+p(index) = get_exact_p(a,b,c,d);
+s(index) = a*d - b*c;
+end
+else
+for a=0:sum_ac
+index = index + 1;
+b = sum_ab - a;
+c = sum_ac - a;
+d = sum_cd - c;
+% 正確な生起確率を得る
+p(index) = get_exact_p(a,b,c,d);
+s(index) = a*d - b*c;
+end
+end
+number = index;
+% 実際の観測値よりも極端な場合の生起確率の合計を求める
+for index=1:number
+% 片側検定では(sとs0が同符号でかつ | s | ≧ | s0 |)の生起確率の合計
+if(both == 0)
+sflag = 0;
+% 同符号なら sflag = 1
+if((s0 >= 0 && s(index) >= 0) || (s0 < 0 && s(index) < 0))
+sflag = 1;
+end
+if((sflag == 1) && (abs(s(index)) >= abs(s0)))
+allp = allp + p(index);
+end
+% 両側検定では(| s | ≧ | s0 |)の生起確率の合計
+else
+if(abs(s(index)) >= abs(s0))
+allp = allp + p(index);
+end
+end
+end
+% 生起確率が有意水準以下
+if(allp <= alpha)
+h = 1
+end
+end
+% ---------------------------------------------------------------
+% 正確な生起確率を得る
+% 引数:
+%   a, b, c, d  : データ値(2 * 2)
+% 返り値:
+%   p           : 生起確率
+% ---------------------------------------------------------------
+function p = get_exact_p(a,b,c,d)
+% prod(1:n)は nの階乗の計算
+n = a + b + c + d;
+d1 = prod(1:a+b) * prod(1:c+d) * prod(1:a+c) * prod(1:b+d);
+d2 = prod(1:n) * prod(1:a) * prod(1:b) * prod(1:c) * prod(1:d);
+p = d1 / d2;
+end
+MATLABによるカイ二乗検定
+MATLAB, analysis, Bio
+Chi-square goodness-of-fit test.
+chi2gof()関数を使用する。詳細は、ヘルプ参照。
+主な引数
+x          : データ値のベクトル
+多次元にする方法が不明。とりあえず、一次元で計算する。
+N = (行の数 * 列の数)
+'ctrs'     : ビンの中央値ベクトル
+'frequency': 観測値ベクトル
+'expected' : 期待値ベクトル
+'nparams'  : (N-1-正しい自由度)を指定すること
+正しい自由度は以下の式で求められる。
+正しい自由度 = (行の数-1) * (列の数-1)
+nparamsを設定しないとき、デフォルトの自由度は(N-1)となる。
+このギャップをnparamsで調整するとよい。
+'alpha'    : 有意水準。デフォルトの有意水準は 0.05である。
+返り値
+h   : 0 帰無仮説は採択される  差はない
+1 帰無仮説は棄却される  差はないとは言えない
+p   : 生起確率
+st  : STATS構造体
+chi2stat  カイ二乗値
+df        自由度
+edges     ビンの境界ベクトル
+O         観測値(ビンごとのカウント)
+E         期待値(ビンごとのカウント)
+プログラム例
+chi2_test.m
+参考URL
+http://kogolab.jp/elearn/hamburger/chap3/sec0.html
+% ---------------------------------------------------------------
+% カイ二乗検定
+% Chi-square goodness-of-fit test.
+%
+% Web独習教材「ハンバーガーショップで学ぶ楽しい統計学」より、
+% カイ二乗検定の計算。
+% http://kogolab.jp/elearn/hamburger/chap3/sec0.html
+% ---------------------------------------------------------------
+function chi2_test()
+x = [0 1 2 3]; 
+f = [435 165 265 135]; 
+e = [420 180 280 120];
+[h,p,st] = chi2gof(x,'ctrs',x,'frequency',f,'expected',e,...
+'nparams',2,'alpha',0.05)
+end
+プログラム例−実行結果
+>> chi2_test
+h =
+1
+p =
+0.0346
+st = 
+chi2stat: 4.4643
+df: 1
+edges: [-0.5000 0.5000 1.5000 2.5000 3.5000]
+O: [435 165 265 135]
+E: [420 180 280 120]
+『*[analysis]』の検索結果 - 霧笛望のもったいない開発保管庫

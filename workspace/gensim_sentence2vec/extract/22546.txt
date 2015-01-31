@@ -1,0 +1,18 @@
+
+説明
+第1パス:フレーム同期ビーム探索(実時間処理版) 
+第1パスを入力開始と同時にスタートし,入力と平行して認識処理を行うための 関数が定義されている.
+バッチ処理の場合,Julius の音声認識処理は以下の手順で main_recognition_loop() 内で実行される.
+音声入力 adin_go()  入力音声が speech[] に格納される特徴量抽出 new_wav2mfcc() speechから特徴パラメータを param に格納第1パス実行 get_back_trellis() param とモデルから単語トレリスの生成第2パス実行 wchmm_fbs()認識結果出力
+第1パスを平行処理する場合,上記の 1 〜 3 が平行して行われる. Julius では,この並行処理を,音声入力の断片が得られるたびに 認識処理をその分だけ漸次的に進めることで実装している.
+特徴量抽出と第1パス実行を,一つにまとめてコールバック関数として定義.音声入力関数 adin_go() のコールバックとして上記の関数を与える
+具体的には,ここで定義されている RealTimePipeLine() がコールバックとして adin_go() に与えられる. adin_go() は音声入力がトリガするとその得られた入力 断片ごとに RealTimePipeLine() を呼び出す. RealTimePipeLine() は得られた 断片分について特徴量抽出と第1パスの計算を進める.
+CMN について注意が必要である. CMN は通常発話単位で行われるが, マイク入力やネットワーク入力のように,第1パスと平行に認識を行う 処理時は発話全体のケプストラム平均を得ることができない. バージョン 3.5 以前では直前の発話5秒分(棄却された入力を除く)の CMN がそのまま次発話に 流用されていたが,3.5.1 からは,上記の直前発話 CMN を初期値として 発話内 CMN を MAP-CMN を持ちいて計算するようになった. なお, 最初の発話用の初期CMNを "-cmnload" で与えることもでき,また "-cmnnoupdate" で入力ごとの CMN 更新を行わないようにできる. "-cmnnoupdate" と "-cmnload" と組み合わせることで, 最初にグローバルな ケプストラム平均を与え,それを常に初期値として MAP-CMN することができる.
+主要な関数は以下の通りである.
+RealTimeInit() - 起動時の初期化RealTimePipeLinePrepare() - 入力ごとの初期化RealTimePipeLine() - 第1パス平行処理用コールバック(上述)RealTimeResume() - ショートポーズセグメンテーション時の認識復帰RealTimeParam() - 入力ごとの第1パス終了処理RealTimeCMNUpdate() - CMN の更新
+作者:Akinobu Lee 
+日付:Tue Aug 23 11:44:14 2005
+Revision1.1.1.1 
+realtime-1stpass.c で定義されています。
+関数
+Julius: libjulius/src/realtime-1stpass.c

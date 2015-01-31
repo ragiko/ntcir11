@@ -1,0 +1,31 @@
+  1) Video has a valid factory
+Failure/Error: expect(build(:video)).to be_valid
+ActiveRecord::RecordInvalid:
+Validation failed: Name has already been taken
+# ./spec/models/video_spec.rb:5:in `block (2 levels) in <top (required)>'
+# -e:1:in `<main>'
+Loading test environment (Rails 4.1.6)
+[1] pry(main)> FactoryGirl.build(:video)
+(0.1ms)  BEGIN
+Country Exists (0.3ms)  SELECT  1 AS one FROM `countries`  WHERE `countries`.`name` = BINARY 'Japan' LIMIT 1
+SQL (0.2ms)  INSERT INTO `countries` (`created_at`, `name`, `updated_at`) VALUES ('2014-12-04 00:50:39', 'Japan', '2014-12-04 00:50:39')
+(0.6ms)  COMMIT
+(0.1ms)  BEGIN
+SQL (0.2ms)  INSERT INTO `events` (`country_id`, `created_at`, `name`, `updated_at`) VALUES (1, '2014-12-04 00:50:39', 'Oktoberfest', '2014-12-04 00:50:39')
+(0.2ms)  COMMIT
+(0.1ms)  BEGIN
+Country Exists (0.2ms)  SELECT  1 AS one FROM `countries`  WHERE `countries`.`name` = BINARY 'Japan' LIMIT 1
+(0.1ms)  ROLLBACK
+ActiveRecord::RecordInvalid: Validation failed: Name has already been taken
+from /Users/HeesungLee/.rbenv/versions/2.1.3/lib/ruby/gems/2.1.0/gems/activerecord-4.1.6/lib/active_record/validations.rb:57:in `save!'
+これはつまり、下図のような挙動になっている。
+①events_idを見て、eventを作りに行くも、eventで指定しているcountries_idがないため、countryをまず作る。
+②countris_idを見て、countryを作る。
+ここで②番目を実行する際に、ユニーク制約に引っかかる。そりゃそうだなってことで、どうすればよいか調べてみた。
+解決方法
+やり方はいくつかある。
+ここのサイト(http://d.hatena.ne.jp/a666666/20100402/1270134937) に書かれてるみたいに、countryのnameにシーケンス持たせたり、videoにcountryのインスタンス渡したりとか。
+ただ、前者はhas_manyの関係満たせてないし、後者はめんどくさすぎる。(もっと深い構造間になると、めっちゃcreateしてインスタンス渡しまくる必要が出てくる)
+何か良い方法ないかなあと考えていたら、find_or_create_byメソッド使えば良いということを知った。
+具体的には下記のように使う。
+RSpec - FactoryGirlでユニーク制約がついたモデルとリレーション関係にあるモデルをテストする際に、Validation failed: hoge has already been takenが出た場合の対処法 - Qiita

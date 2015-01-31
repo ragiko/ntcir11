@@ -1,0 +1,83 @@
+
+Qt をはじめよう! 第7回: Qt のオブジェクトモデルを理解しよう
+Julkaistu 水曜日 5月 5th, 2010 | Kirjoittanut 鈴木 佑				
+前回までは Qt SDK のインストールと簡単な Qt のアプリケーションの作成を行ってきました。
+これからしばらくの間、Qt のプログラミングをする上で必要となる基本的な仕組みについて学んでいきましょう。
+今回のテーマは「オブジェクトモデル」についてです。
+QObject
+[qt QObject] は Qt のオブジェクトの基底クラスです。C++ のオブジェクトモデルではサポートされていない以下のような機能を提供します。
+[qt “オブジェクト同士の親子関係の管理” l=objecttrees]
+[qt “強力でシームレスなオブジェクト間通信 – シグナルとスロット” l=signalsandslots]
+[qt “イベントのハンドリング” l=eventsandfilters]
+[qt “プロパティシステム” l=properties]
+[qt “国際化に必要な文字列の翻訳の仕組み” l=i18n]
+[qt QWidget] や [qt QThread] など多くの Qt のクラスは QObject を直接的/間接的に継承しているので、これらの機能を利用できます。
+また、[qt QChar] や [qt QString] などのデータを保持するクラスや、[qt QList] や [qt QMap] などのコンテナクラスなどは QObject を継承していない設計になっています。
+Qt のオブジェクトの階層図
+Qt の代表的なクラスの継承図が以下になります。QObject をルートとして、様々なクラスが派生していることがわかるでしょうか。
+[qt QObject]
+[qt QCoreApplication]
+[qt QApplication]
+[qt QLayout]
+[qt QBoxLayout]
+[qt QGridLayout]
+[qt QIODevice]
+[qt QFile]
+[qt QAbstractSocket]
+[qt QTcpSocket]
+[qt QUdpSocket]
+[qt QTimer]
+[qt QThread]
+[qt QWidget]
+[qt QDialog]
+[qt QFlame]
+[qt QLabel]
+[qt QAbstractButton]
+[qt QPushButton]
+[qt QCheckBox]
+[qt QRadioButton]
+[qt QLineEdit]
+[qt QComboBox]
+[qt QTextEdit]
+[qt QMainWindow]
+[qt QWebView]
+QObject の親子関係
+それぞれの QObject は親オブジェクトを持つことができ、以下の API より設定できます。
+[qt “” “QObject::QObject(QObject *parent)” l=qobject m=#QObject] // コンストラクタ
+[qt “” “void QObject::setParent(QObject *parent)” l=qobject m=#setParent] // 設定メソッド
+ある QObject が delete される時、そのオブジェクトは全ての子オブジェクトを delete します。これは各オブジェクトの生成時に親オブジェクトを指定しておけば、それらのオブジェクトを明示的に delete する必要がないことを意味します。
+もちろん、明示的にオブジェクトを delete する事も可能で、Qt のオブジェクトモデルでは自動的に子オブジェクトが delete されたことを検知し、親オブジェクトの管理から外します。
+QObject *parent = new QObject;
+QObject *child1 = new QObject(parent);
+QObject *grandchild1 = new QObject(child1);
+QObject *grandchild2 = new QObject(child1);
+QObject *child2 = new QObject(parent);
+QObject *grandchild3 = new QObject(child2);
+とオブジェクトを生成すると以下のようなツリーで親子関係が成立します。
+parent
+child1
+grandchild1
+grandchild2
+child2
+grandchild3
+ここで child1 を delete すると、parent は child1 が delete されたことを検知し、親子関係を解消します。
+delete child1;
+また、この時 child1 の子オブジェクト grandchild1, grandchild2 は自動的に delete され、親子関係は以下のようになります。
+parent
+child2
+grandchild3
+また、親オブジェクトを設定していないオブジェクトに関しては明示的に delete する必要があります。
+delete parent;
+この時 parent の子オブジェクト child2 やその子オブジェクト grandchild3 も自動的に delete されます。
+ここでは QObject だけを使用しましたが、QWidget や QTcpSocket などの QObject から派生したクラスについても同様に親子関係を管理します。
+おわりに
+今回は QObject の紹介と、親子関係について解説しました。
+親子関係に関連した以下の API も参照してください。
+[qt “” “QObject *QObject::parent()” l=qobject m=#parent]
+[qt “” “const QObjectList &children () const” l=qobject m=#children]
+[qt “” “T findChild(const QString &name) const” l=qobject m=#findChild]
+[qt “” “QList<T> findChildren(const QString &name) const” l=qobject m=#findChildren]
+[qt “” “QList<T> QObject::findChildren(const QRegExp &regExp) const” l=qobject m=#findChildren-2]
+デストラクタにデバッグメッセージを埋め込むような内容のQObject のサブクラスを作成し、親オブジェクトが delete された際に本当に子オブジェクトが delete されるかどうかを確認してみてはいかがでしょうか。
+次回は [qt QWidget] を紹介する予定です。
+Qt をはじめよう! 第7回: Qt のオブジェクトモデルを理解しよう |  Qt Japanese Blog

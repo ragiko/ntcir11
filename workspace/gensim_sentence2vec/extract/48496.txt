@@ -1,0 +1,30 @@
+    m  Multiline mode - ^ and $ match internal lines
+s  match as a Single line - . matches \n
+i  case-Insensitive
+x  eXtended legibility - free whitespace and comments
+p  Preserve a copy of the matched string -
+${^PREMATCH}, ${^MATCH}, ${^POSTMATCH} will be defined.
+o  compile pattern Once
+g  Global - all occurrences
+c  don't reset pos on failed matches when using /g
+a  restrict \d, \s, \w and [:posix:] to match ASCII only
+aa (two a's) also /i matches exclude ASCII/non-ASCII
+l  match according to current locale
+u  match according to Unicode rules
+d  match according to native rules unless something indicates
+Unicode
+m  複数行モード - ^ と $ が内部的な行にマッチします
+s  単行としてマッチ - . が \n にマッチします
+i  大小文字の違いを無視します
+x  読みやすさの拡張 - 空白やコメントを自由に置けます
+p  マッチした文字列のコピーを保存する -
+${^PREMATCH}, ${^MATCH}, ${^POSTMATCH} が定義されます。
+o  パターンを一度だけコンパイルします
+g  グローバル - マッチするものすべて
+c  /g を使っているときにマッチに失敗しても pos をリセットしません
+a  \d, \s, \w, [:posix:] で ASCII のみにマッチングするように制限
+aa (二つの a) また /i のマッチングは ASCII/非-ASCII を除外
+l  現在のロケールに従ってマッチング
+u  Unicode のルールに従ってマッチング
+d  Unicode を示すものがない限りネイティブなルールに従ってマッチング
+perlreref - Perl の正規表現のリファレンス - perldoc.jp

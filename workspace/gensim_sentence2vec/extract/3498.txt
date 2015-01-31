@@ -1,0 +1,42 @@
+
+確率分布のグラフ
+密度関数
+curve 関数を使う
+正規分布とt分布の重ね描き(折れ線:curve)
+curve(dnorm(x), -4, 4, main="normal / t")curve(dt(x,10), add=T, col=2)curve(dt(x,5), add=T, col=3)curve(dt(x,2), add=T, col=4)legend(2,0.35,c("normal","t(10)","t(5)","t(2)"),lwd=rep(1,4),col=1:4)
+ガンマ分布の重ね描き(curve + legend)
+a=1; b=a; curve(dgamma(x,a,b), 0, 4, main="gamma a=b")a=2; b=a; curve(dgamma(x,a,b), 0, 4, add=T, col=2)a=3; b=a; curve(dgamma(x,a,b), 0, 4, add=T, col=3)a=5; b=a; curve(dgamma(x,a,b), 0, 4, add=T, col=4)legend(3,0.8,c(1,2,3,5),lwd=rep(1,4),col=1:4)
+ベータ分布の重ね描き
+curve(dbeta(x,6,4), xlim=c(0,1), ylim=c(0,5), main="ベータ分布:α=6")curve(dbeta(x,6,2), add=T, lty=2)curve(dbeta(x,6,1.5), add=T, lty=3)curve(dbeta(x,6,1), add=T, lty=4)curve(dbeta(x,6,0.5), add=T, lty=5)legend(0, 4, c("β=4","β=2","β=1.5","β=1","β=0.5"), lty=c(1:5),cex=0.8)
+確率関数
+barplot 関数を使う
+2項分布の確率関数(棒グラフ:barplot + names.arg)
+n = 1000; p = 0.02; nc = 4*sqrt(n*p*(1-p))na = max(0,round(n*p-nc)); nb = min(n,round(n*p+nc));z = sapply(na:nb, function(k) dbinom(k,n,p))barplot(z, names.arg=c(na:nb))lines(c(na,nb+2),c(0,0))
+もどる
+乱数の生成
+確率分布からのサンプリング
+確率分布に従う乱数は、分布名の前に「r」を付ければ良い.例えば、正規乱数「rnorm(100)」、指数乱数「rexp(10,2)」、一様乱数「runif(10)」など
+乱数の系列を変えるためには「set.seed(11212221)」
+多項分布からのサンプリング(sample関数)
+多項分布()に従う乱数はsample()関数を使う。非復元抽出も可能。
+sample(A, size=n, replace=T/F, prob=c(...))
+A(集合)から「prob=」で指定された確率分布でサンプリング(文字でも良い)
+prob はベクトルで、A の並びに対応する抽出比率を与える。一様分布ならば省略可能
+replace=F(これがデフォルト)は非復元抽出
+replace も size も指定しないと、ランダム置換(sample(0:9))
+例:歪んださいころ投げ
+1,6 の目の出る確率が2倍多いさいころ振り、結果をヒストグラムで表示
+hist(sample(6,100,prob=c(2,1,1,1,1,2),replace=T)+0.01)sample(c("T","H"),100,replace=T) # コイン投げsample(0:9)                      # ランダム置換
+2変量正規乱数、その1
+(1) 条件付き確率を使う方法
+n = 200; mx = 10; sx = 3; my = 20; sy = 5; r = -0.8y = rnorm(n, my, sy)x = rnorm(n, mx + r*sx/sy * (y - my), sx*sqrt(1-r^2))plot(x,y)\\\c(mean(x), sd(x), mean(y), sd(y), cor(x,y))## 等高線図library(gregmisc)h2d = hist2d(x, y, show=F, nbins=c(20,20)) # 2次元の度数分布filled.contour(h2d$x, h2d$y, h2d$counts, nlevels=20, col=gray((25:0)/25))
+関数バージョン
+rnorm2 <- function(mx, sx, my, sy, r) {	y = rnorm(1, my, sy)	x = rnorm(1, mx + r*sx/sy * (y - my), sx*sqrt(1-r^2))	return(c(x,y))}n = 200; mx = 10; sx = 3; my = 20; sy = 5; r = -0.8z2 = sapply(1:n, function(x) rnorm2(mx, sx, my, sy, r))plot(z2[1,],z2[2,]) # これで100組の乱数の散布図が描かれるcor(z2[1,],z2[2,])  # 標本相関係数の計算
+(2) Z,Wを標準正規乱数とすると、ZとrZ+W√(1-r^2)の相関係数はrになる
+n = 200; mx = 10; sx = 3; my = 20; sy = 5; r = -0.8z = rnorm(n)y = my + sy*zx = mx + sx*(r*z + sqrt(1-r^2)*rnorm(n))plot(x,y)c(mean(x), sd(x), mean(y), sd(y), cor(x,y))
+周辺和が与えられているランダムな分割表
+r2dtable(n, r, c) # n:個数、r:行和ベクトル、c:列和ベクトルr2dtable(1, c(10,12,18), c(20,10,10))
+もどる
+文字列の扱い
+文字列処理関数
+Rの基本計算2

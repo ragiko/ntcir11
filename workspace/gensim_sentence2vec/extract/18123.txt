@@ -1,0 +1,8 @@
+						SQLのデータ挿入文、INSERT INTO～の構文はなぜUPDATE～の構文と違うのでしょうか。
+INSERT INTO (列名) VALUES (値)
+ではなく
+UPDATE テーブル SET 列名 = 値
+の方が可読性が高い気がするのですが、
+なぜ現状の構文が採用されたのでしょうか。
+知ってる方、教えてください。
+SQLのデータ挿入文、INSERT INTO～の構文はなぜUPDATE～の構文と違うの... - Yahoo!知恵袋

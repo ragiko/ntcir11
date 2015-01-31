@@ -1,0 +1,200 @@
+メール交換機でのスパム排除: PrevAppendix A. Eximによる実装NextA.10. SpamAssassinを追加する      Exim では、SMTPの時点で SpamAssassin を実行する方法が主に2つある:
+Exiscan-ACL が提供する spam
+条件によって。
+これが、ここで説明する機構である。
+SA-Exim によって。 これは、
+Marc Merlins (<marc (at) merlins.org>)
+が書いた別のユーティリティで、
+Exim で SpamAssassin をSMTPの時点で実行するためのものである。
+このプログラムは Exim の local_scan()
+インタフェースを通じて動作する。つまり、Exim のソースコードに直接パッチを当てるか、
+Marc による dlopen() プラグインを介して動作させる
+(なお、これは Debian の exim4-daemon-light
+パッケージや exim4-daemon-heavy
+パッケージには入っている)。
+SA-Exim はまた、ほかの仕様も提供する。つまり、
+グレーリスト法 と
+タール坑法 である。しかしながら、
+これらの仕様は2つともメッセージデータを受け取った後に検出を行なうので、
+SMTPトランザクションの初期に行なう場合ほどには有用でないだろう。
+SA-Exim は、次の場所で見つかる:
+http://marc.merlins.org/linux/exim/sa.html。
+A.10.1. ExiscanからSpamAssassinを呼び出す        Exiscan-ACL の
+"spam" 条件では、
+メッセージを SpamAssassin か Brightmail のいずれかに渡し、
+メッセージにゴミの徴候があれば文を実行する。
+これは既定では、
+localhost で実行している SpamAssassin デーモン
+(spamd) に接続する。
+ホストとポートは、Exim設定ファイルの首節に
+spamd_address 設定を追加すれば変更できる。
+さらなる情報は、パッチに入っている exiscan-acl-spec.txt
+ファイル [訳注: Exim 4.50版では spec.txt の40節]
+を見てほしい。
+この実装では、スパムに選別されたメッセージを拒否している。
+しかし、このようなメッセージの写しを、少なくともしばらくの間は、
+別のメールフォルダに保存しておくとよい。
+これは、
+偽陽性がないかをユーザがときどき調べられるようにするためだ。
+Exim には、受け付けたメッセージに適用できる制御子がある。
+freeze といったものだ。
+Exiscan-ACL パッチでは、もうひとつ制御子が増える。
+fakereject だ。
+これは、以下のようなSMTP 応答をさせる:
+550-FAKEREJECT id=メッセージID
+550-Your message has been rejected but is being kept for evaluation.
+550 If it was a legit message, it may still be delivered to the target recipient(s).
+以下の設定の断片を acl_data の中の最後の
+accept 文より前に挿入すれば、この仕様を採り入れられる:
+# SpamAssassinを呼び出して, $spam_score と $spam_report を得る.
+# 選別結果に応じて, $acl_m9 に "ham" か "spam" をセットする.
+#
+# メッセージが spam に選別されたら, 拒否したふりをする.
+#
+warn
+set acl_m9  = ham
+spam        = mail
+set acl_m9  = spam
+control     = fakereject
+logwrite    = :reject: Rejected spam (score $spam_score): $spam_report
+# メッセージに適切な X-Spam-Status: ヘッダを追加する.
+#
+warn
+message     = X-Spam-Status: \
+${if eq {$acl_m9}{spam}{Yes}{No}} (score $spam_score)\
+${if def:spam_report {: $spam_report}}
+logwrite    = :main: Classified as $acl_m9 (score $spam_score)
+この例では、はじめ $acl_m9 を
+"ham" にセットしてある。SpamAssassin を
+mail ユーザで呼び出す。
+メッセージがスパムに選別されたら
+$acl_m9 に "spam" をセットし、
+上記の FAKEREJECT 応答を発行する。
+最後に、X-Spam-Status: ヘッダをメッセージに追加する。
+これは何かというと、
+メール配送エージェントや受信者のメール利用者エージェントがこのヘッダを使って
+不要メールを別のフォルダへ移動できるようにするためのものだ。
+A.10.2. SpamAssassinの設定        既定では、SpamAssassin は詳細な表形式で報告を出す。
+これはメッセージの本体に入れたり添付したりするのにはかなり向いている。
+ここでは、報告は上の例の X-Spam-Status:
+ヘッダに向くような簡潔なものであってほしい。このようにするには、
+サイト独自の設定ファイル
+(/etc/spamassassin/local.cf、
+/etc/mail/spamassassin/local.cf など)
+に、つぎの断片を追加する:
+### 報告の雛型
+clear_report_template
+report "_TESTSSCORES(, )_"
+また、Bayes式得点づけの仕様があって、
+既定では有効になっている。これは通常は無効にしたい。なぜなら、
+これにはユーザそれぞれに特化した学習が必要で、
+システム全体のSMTPの時点での排除には向かないからだ:
+### Bayes式得点づけを無効にする
+use_bayes 0
+以上の変更が効くようにするには、
+SpamAssassin デーモン (spamd)
+を再起動しなければならない。
+A.10.3. ユーザごとの設定とデータ        SpamAssassin で個人的な設定 (スパム判定の閾値、受け入れる言語や文字集合、
+送信者のホワイトリストやブラックリストなど)
+を指定したいというユーザも、若干はいるだろう。
+また、SpamAssassin 組み込みのBayes式得点づけを
+わざわざ使いたいというユーザもいるかもしれない
+(私には理由がわからないが[1])。
+この文書の前のほうのユーザごとの設定とデータの節で述べたように、
+こうなるようにする方法はある。
+外部から来るメールの配送ごとに、受信者の数を1件に限るのだ。
+発信者が発行する
+RCPT TO: コマンドのうち最初のものだけを受け付け、
+以降のものは 451 SMTP応答を使って延期する。
+グレーリスト法と同じく、
+送り手が正しく動作するMTAならばこの応答の解釈のしかたはわかるから、
+後で再試行してくる。
+A.10.3.1. Eximが配送ごとに一つの受信者しか受け付けないようにする          acl_rcpt_to の、受信者アドレスの確認の後、
+リモートホストからローカルユーザの認証されていない配送に関する文の前
+(つまり、どのグレーリスト検査、エンヴェロープシグネチャ検査、
+などよりも前) に、以下の文を挿入する:
+# 外部から来るメッセージごとの受信者の数を1件に限って, ユーザごとの設定と
+# データ (例えば SpamAssassin のための) に対応する.
+#
+# 注意: 自分のサイトの複数のユーザに送られるメールは, 受信者ごとに30分ま
+#       たはそれ以上遅れていく. これは, 内部と外部の関係者にまたがるよう
+#       なやりとりのペースを著しく遅める.
+#
+defer
+message      = We only accept one recipient at a time - please try later.
+condition    = $recipients_count
+A.10.3.2. SpamAssassinに受信者のユーザ名を渡す          acl_data で、
+前節で追加した spam 条件を変更して、
+受信者アドレスのローカル部で決まるユーザ名を SpamAssassin に渡すようにする。
+# SpamAssassinを呼び出して, $spam_score と $spam_report を得る.
+# 選別結果に応じて, $acl_m9 に "ham" か "spam" をセットする.
+#
+# 受信者アドレスが示すユーザ名を渡す, つまり, どの '=' 文字や '@'
+# 文字よりも前の部分を, 小文字に変換して渡す. 複数の受信者が現れて
+# はいけない. さっき, 配送を一度に一受信者に限ったのだから.
+#
+# メッセージがスパムに選別されたら, 拒否したふりをする.
+#
+warn
+set acl_m9  = ham
+spam        = ${lc:${extract{1}{=@}{$recipients}{$value}{mail}}}
+set acl_m9  = spam
+control     = fakereject
+logwrite    = :reject: Rejected spam (score $spam_score): $spam_report
+Exim の
+${local_part:...} 関数を使ってユーザ名を得るのではなく、
+すべての "@" 文字や "="
+文字よりも前の部分を展開するようにしていることに注意。
+理由は、後のエンヴェロープシグネチャ方式でこの
+"=" 文字を利用するからだ。
+A.10.3.3. SpamAssassinでユーザごとの設定を有効にする          では、再び SpamAssassin を見てみよう。最初に、
+サイト全体の設定ファイルで
+use_bayes 0 を削除することにしたかもしれないが、
+今はどんな場合でも、
+この設定を上書きするかどうかを各々のユーザが自分で決めることができる。
+システムのメールボックスが
+ホームディレクトリのあるローカルのUNIXアカウントに直接対応しているのなら、
+もうやることはない。既定では、
+SpamAssassin デーモン (spamd) は
+渡したユーザ名で setuid() を実施し、
+ユーザのデータや設定をそのユーザのホームディレクトリの中に格納する。
+そうでない場合 (例えば、メールアカウントを
+Cyrus SASL などのサーバで管理している場合)、
+各ユーザの設定とデータファイルの場所の見つけかたを
+SpamAssassin に教えてやらなければならない。
+また、存在しないユーザに対しては spamd が
+setuid() しようとするのではなく、
+特定のローカルユーザとして実行するようにする必要がある。
+このようにするには、
+spamd の起動の際に次のようなオプションを指定する:
+Debian システムでは、
+/etc/default/spamassassin の
+OPTIONS= の設定を変更する。
+RedHat システムでは、
+/etc/sysconfig/spamassassin の
+SPAMDOPTIONS= 設定を変更する。
+他のシステムでも、推して知るべし、だ。
+必要なオプションは:
+-u ユーザ名 ---
+spamd を実行するユーザを指定する
+(例えば mail)
+-x ---
+ユーザのホームディレクトリの設定ファイルを無効にする。
+--virtual-config-dir=/var/lib/spamassassin/%u
+--- ユーザごとの設定とデータを格納する場所を指定する。
+"%u" は呼び出したユーザ名に置き換わる。
+spamd は、
+このディレクトリを作成したり変更したりできなければならない:
+# mkdir /var/lib/spamassassin
+# chown -R mail:mail /var/lib/spamassassin
+言うまでもなく、以上のような変更をした後は、
+spamd を再起動する必要がある。
+Notes[1]          Bayes式学習が各々のユーザに特化したものになるのは確かだが、
+SpamAssassin のBayes式選別機能は (これは私の意見だが)
+どんな場合でもそれほど有能ではないことに注意しなければならない。
+スパム送信者がでたらめな辞書単語や文章をメールの中に
+(例えばHTMLメッセージのメタデータに)
+入れ込んでこういうシステムを打ち破るテクニックを学んでしまっている場合は、
+特にそうなるようだ。
+PrevHomeNextウィルス対策ソフトウェアを追加するUpエンヴェロープ送信者のシグネチャを追加する
+    SpamAssassinを追加する

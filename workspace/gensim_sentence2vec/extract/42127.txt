@@ -1,0 +1,66 @@
+さいきんREST APIのドキュメントを書いていて、wiki使うのだるいし他に良い方法ないかな〜と調べてた時に見つけたツール群をまとめてみます。
+追記: こちらも便利そうなので参考にどうぞ。
+REST APIドキュメント作成ツールはapiary.ioが決定版かもしれない - Qiita
+swagger
+Swagger: A simple, open standard for describing REST APIs with JSON | Reverb for Developers
+デモ: Swagger UI
+ソースコード中にAPIの概要を書いておくと、それを元にドキュメントを自動生成してくれる。wikiやmarkdownで書くのと決定的な違いは、のようにドキュメント上のformからAPIコールを試すことができる点。
+様々な言語のWAFに対応したライブラリも開発されてる。
+Home  wordnik/swagger-core Wiki
+Scalatra2.2+scalatra-swaggerでREST APIのリファレンスを生成する #1 ｜ Developers.IO
+Scalatra2.2+scalatra-swaggerでREST APIのリファレンスを生成する #2 ｜ Developers.IO
+iodocs
+mashery/iodocs
+node.jsで動作するドキュメントツール。API概要の定義はjsonで記述するようになっていて、こちらもswaggerと同様にページ上でAPIコールを試せるようになっている。iodocsに関しては最近postしたのでこちらもどうぞ。
+iodocsで便利なREST APIドキュメントを作成する - Qiita [キータ]
+autodoc
+r7kamura/autodoc
+APIのテストケースからドキュメントを自動生成してくれる。Markdownで出力してくれるので、別途Webサーバを起動する必要とかも無し。
+Autodoc - r7kamura blog
+Rails でつくる API のドキュメントを自動生成してくれる autodoc がすごい - 彼女からは、おいちゃんと呼ばれています
+RESTdoclet
+RESTdoclet by IG-Group
+JavaでSpringMVCな環境で使うツール。Mavenプラグインとして提供されている。ドキュメント生成にはJavadocやSpringのRequestMapping等のアノテーションを利用するので、生成のために余計なアノテーション等をコードに書かなくていいのが特徴的。
+IG GroupがRESTdocletをオープンソース化
+carte
+devo-ps/carte
+デモ: Carte
+Markdownでドキュメント記述ができる。Jekyllベース。swaggerやiodocsと比較してシンプルな作りになっており、APIコールを試す機能は無い。
+まとめ
+この手の自動生成や効率化はやり方が沢山ある分、各ツールそれぞれのアプローチが見えて面白いなーと思いました。まだまだ開発途中のものもあり、ちょっと試してて不便に感じる所もあったのですが今後に期待。
+wikiやGithub READMEを使い続けるのもいいですが、こうした支援ツールも一度検討してみてはどうでしょうか。
+さいきんREST APIのドキュメントを書いていて、wiki使うのだるいし他に良い方法ないかな〜と調べてた時に見つけたツール群をまとめてみます。
+追記: こちらも便利そうなので参考にどうぞ。
+[REST APIドキュメント作成ツールはapiary.ioが決定版かもしれない - Qiita](http://qiita.com/horimislime/items/38327a3f4166b7b39eb5?utm_source=chrome-extention&utm_medium=browser-extention&utm_content=notifications)
+## swagger
+[Swagger: A simple, open standard for describing REST APIs with JSON | Reverb for Developers](https://developers.helloreverb.com/swagger/)
+デモ: [Swagger UI](http://swagger.wordnik.com/)
+ソースコード中にAPIの概要を書いておくと、それを元にドキュメントを自動生成してくれる。wikiやmarkdownで書くのと決定的な違いは、のようにドキュメント上のformからAPIコールを試すことができる点。
+![1387628508.png](https://qiita-image-store.s3.amazonaws.com/0/7325/ae2886e1-066b-eb3a-ee0f-7c748047d26b.png "1387628508.png")
+様々な言語のWAFに対応したライブラリも開発されてる。
+[Home  wordnik/swagger-core Wiki](https://github.com/wordnik/swagger-core/wiki)
+- [Scalatra2.2+scalatra-swaggerでREST APIのリファレンスを生成する #1 ｜ Developers.IO](http://dev.classmethod.jp/server-side/scalatra-swagger01/)
+- [Scalatra2.2+scalatra-swaggerでREST APIのリファレンスを生成する #2 ｜ Developers.IO](http://dev.classmethod.jp/server-side/scalatra-swagger02/)
+## iodocs
+[mashery/iodocs](https://github.com/mashery/iodocs)
+node.jsで動作するドキュメントツール。API概要の定義はjsonで記述するようになっていて、こちらもswaggerと同様にページ上でAPIコールを試せるようになっている。iodocsに関しては最近postしたのでこちらもどうぞ。
+[iodocsで便利なREST APIドキュメントを作成する - Qiita [キータ]](http://qiita.com/horimislime/items/ed13637c070b99dae959)
+![iodocs-screen.png](https://qiita-image-store.s3.amazonaws.com/0/7325/b50d4c1d-198c-3529-e4c2-02d0f39a76d3.png "iodocs-screen.png")
+## autodoc
+[r7kamura/autodoc](https://github.com/r7kamura/autodoc)
+APIのテストケースからドキュメントを自動生成してくれる。Markdownで出力してくれるので、別途Webサーバを起動する必要とかも無し。
+- [Autodoc - r7kamura blog](http://r7kamura.github.io/2013/12/01/autodoc.html)
+- [Rails でつくる API のドキュメントを自動生成してくれる autodoc がすごい - 彼女からは、おいちゃんと呼ばれています](http://blog.inouetakuya.info/entry/2013/10/20/132928)
+## RESTdoclet
+[RESTdoclet by IG-Group](http://ig-group.github.io/RESTdoclet/)
+JavaでSpringMVCな環境で使うツール。Mavenプラグインとして提供されている。ドキュメント生成にはJavadocやSpringのRequestMapping等のアノテーションを利用するので、生成のために余計なアノテーション等をコードに書かなくていいのが特徴的。
+- [IG GroupがRESTdocletをオープンソース化](http://www.infoq.com/jp/news/2012/08/RESTDocletOpenSource)
+## carte
+[devo-ps/carte](https://github.com/devo-ps/carte)
+デモ: [Carte](http://devo.ps/carte/)
+Markdownでドキュメント記述ができる。Jekyllベース。swaggerやiodocsと比較してシンプルな作りになっており、APIコールを試す機能は無い。
+![1387628935.png](https://qiita-image-store.s3.amazonaws.com/0/7325/c6eca932-de9f-69ca-7f07-5861180b6023.png "1387628935.png")
+## まとめ
+この手の自動生成や効率化はやり方が沢山ある分、各ツールそれぞれのアプローチが見えて面白いなーと思いました。まだまだ開発途中のものもあり、ちょっと試してて不便に感じる所もあったのですが今後に期待。
+wikiやGithub READMEを使い続けるのもいいですが、こうした支援ツールも一度検討してみてはどうでしょうか。
+Markdown - APIドキュメントを書くのが楽になるツールまとめ - Qiita

@@ -1,0 +1,69 @@
+
+CSSのエンコード規則についてCSSの変態向き - id, classを顔文字でコーディングする方法
+を読んで、いまさらになってやっと改行を含むルールの記述を知った。
+CSS 2.1 spec 4.1.7節には下記記述がある。
+Here is a more complex example. The first two pairs of curly braces are inside a string, and do not mark the end of the selector. This is a valid CSS 2.1 rule.
+p[example="public class foo\
+{\
+private int x;\
+\
+foo(int x) {\
+this.x = x;\
+}\
+\
+}"] { color: red }
+いかにも以下のような要素が赤色で表示されそうに期待するところだが、
+実際はそうならない。
+<p example="public class foo
+{
+private int x;
+foo(int x) {
+this.x = x;
+}
+}">test</p>
+これは引っかけ問題だ。「バックスラッシュ+改行」は改行をなくす
+意味があるとCSS 2.1 spec 4.3.7節にあるんので、
+以下と同じだ。
+p[example="public class foo{    private int x;    foo(int x) {        this.x = x;    }}"][
+color: red;
+}
+つまり、対象となる要素も以下のようにexample属性値をダラダラ長く
+続けた感じになる。
+<p example="public class foo{    private int x;    foo(int x) {        this.x = x;    }}">test</p>
+改行を含むルールにするにも、ルールのテキスト列について、
+改行コードを \00000A や \A として加えてやらないといけない。
+例えば以下のようになる。
+<p example="foo
+bar">
+test
+</p>
+<style>
+p[example="foo\00000Abar"] { color: red }
+/* 別解: */
+p[example="foo\A bar"] { color: red }
+</style>
+なお、ここで改行コードが LF (U+000A) でなくとも、
+この指定でダイジョブらしい旨が、CSS 2.1 spec 4.3.7節に書いてある。(参考訳は http://momdo.s35.xrea.com/web-html-test/spec/CSS21/syndata.html#strings から。)
+A string cannot directly contain a newline. To include a newline in a string, use an escape representing the line feed character in ISO-10646 (U+000A), such as "\A" or "\00000a". (参考訳:文字列は直接改行を含むことはできない。文字列に改行を含むには、ISO 10646で(U+000A)をエスケープ表現した改行文字"\A"または"\00000a"を用いる。この文字は、CSSで"改行"の一般概念を表現する。)
+というわけで、以下(再掲)の要素をスタイリングするには、
+<p example="public class foo
+{
+private int x;
+foo(int x) {
+this.x = x;
+}
+}">test</p>
+以下のようなCSSを書けばよい。
+p[example="public class foo\A \
+{\A \
+private int x;\A \
+\A \
+foo(int x) {\A \
+this.x = x;\A \
+}\A \
+\A \
+}"] { color: red }
+参考文献
+"CSSの変態向き - id, classを顔文字でコーディングする方法",  Web Design KOJIKA17, (2013-03-05)
+"Cascading Style Sheets Level 2 Revision 1" B. Bos, T. Çelik, I. Hickson, H. Lie. W3C.
+CSSの改行を含む属性値を含むセレクターについて cat_in_136.blog()

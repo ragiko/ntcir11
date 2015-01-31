@@ -1,0 +1,470 @@
+\documentclass[a4j,8pt,twocolumn]{jarticle}
+\usepackage{graphicx}
+\usepackage{dendentitle}
+\usepackage{here}
+\usepackage{tabularx}
+\usepackage{color}
+\pagestyle{plain}
+\setlength{\textwidth}{180mm}
+\setlength{\textheight}{250mm}
+\setlength{\topmargin}{-15mm}
+\setlength{\evensidemargin}{-10.4mm}
+\setlength{\oddsidemargin}{-10.4mm}
+\setlength{\columnsep}{9mm}
+\makeatletter
+\renewcommand{\theequation}{%
+\thesection.\arabic{equation}}
+\@addtoreset{equation}{section}
+\makeatother
+\makeatletter
+\renewcommand{\thefigure}{%
+\thesection.\arabic{figure}}
+\@addtoreset{figure}{section}
+\makeatother
+\makeatletter
+\renewcommand{\thetable}{%
+\thesection.\arabic{table}}
+\@addtoreset{table}{section}
+\makeatother
+\newcommand{\ruby}[2]{%
+\leavevmode
+\setbox0=\hbox{#1}%
+\setbox1=\hbox{\tiny #2}%
+\ifdim\wd0>\wd1 \dimen0=\wd0 \else \dimen0=\wd1 \fi
+\hbox{%
+\kanjiskip=0pt plus 2fil
+\xkanjiskip=0pt plus 2fil
+\vbox{%
+\hbox to \dimen0{%
+\tiny \hfil#2\hfil}%
+\nointerlineskip
+\hbox to \dimen0{\mathstrut\hfil#1\hfil}}}}
+\renewcommand{\abstractname}{Abstract}
+\renewcommand{\prepartname}{Pt.}
+\renewcommand{\postpartname}{}
+\renewcommand{\refname}{References}
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Tab.}
+\renewcommand{\thefootnote}{*\arabic{footnote}}
+\def\since{%
+\setlength{\unitlength}{1pt}%
+\thinlines %
+\begin{picture}(12,12)%
+\put(4,4){.}
+\put(6,0){.}
+\put(8,4){.}
+\end{picture}%
+}%
+\def\therefore{%
+\setlength{\unitlength}{1pt}%
+\thinlines %
+\begin{picture}(12,12)%
+\put(4,0){.}
+\put(6,4){.}
+\put(8,0){.}
+\end{picture}%
+}%
+\title{畳み込み非負値行列因子分解を用いた音声パターンの教師無し学習と音素分類\\Unsupervised learning of speech patterns and phone classification using Convolutive Non-Negative Matrix Factorization}
+\author{37-106488 針谷 航}
+\date{2012/07/27(Fri.)}
+\begin{document}
+\makedendentitle{T-05-MU}{近山研究室 修士2年}
+%Body Text
+\begin{abstract}
+Many problems in Signal Processing have been solved using unsupervised learning recently. Especially Non-negative Matrix Factorization (NMF) is often used to extract patterns from unlabelled data, because the algorithm is easier than other algorithms and can be implemented into various systems. Convolutive NMF, which is a extended version of NMF, is used for extracting speech patterns in this paper. In addition, it is shown that phone classification using the extracted patterns was successful to some extent, but it should be necessary to improve our proposed method more in order to use the extracted patterns for Speech Recognition.
+\end{abstract}
+\section{始めに}
+今日の音声認識において、音素の情報はトライフォンモデル\cite{triphone}という隠れマルコフモデル(HMM)により学習している。このトライフォンとは、各音素の前後に存在していた音素の情報もラベルに組み入れる事で、音素をより細かく分類した音声の要素を指す。このような処理を行う理由は、同じ音素と分類される音声でもその前後に存在する音素の種類により異なる音響的特徴を示す事が知られている為であり、音素をトライフォンとして扱う事で音声認識の精度は更に向上している。
+しかしながら音素をトライフォンとして扱い学習させると、組み合わせ爆発により音声認識の際の計算時間が膨大になる問題が生じてしまう。また、音素の組み合わせによっては大規模なコーパスを用いてもコーパス中に全く現れなかったり、殆ど現れなかったりするトライフォンが生じてしまい全てのトライフォンのパラメータを学習することが出来ない問題も生じる。そこで、現在では決定木を使うなどして似たパラメータを持つHMMを一つにまとめる事が行われている\cite{dt}。これによりトライフォンを用いた音声認識において必要な計算量が減り、パラメータが推定できないトライフォンが生じる問題も回避されている。
+しかしトライフォンは同一中心音素同士でHMMの状態を共有するのが一般的であり、異なる中心音素間では状態は共有する事は余り無い。ところが藪ら(2006) \cite{transpt}の研究では異なる音素間でも共通の状態を共有している事を示唆する報告がされている。このことから、もし異なる音素間から共通するパターンを見つける事が出来れば更なる計算量の削減や音声認識の精度の向上が可能になると考えられる。本論文では、教師無し学習の手法を用いて連続音声から音素よりも更に細かい音声パターンを抽出する事を行い、抽出した音声パターンが音声認識に役立つかの確認を行った。
+近年では計算機の性能が向上したことに付随して、ラベルが付いていないデータから様々なパターンを抽出する研究が盛んに行われている。今回教師無し学習を音声認識に応用する事を考えたが、この教師無しのパターン抽出の研究は人間の運動\cite{motion}、画像処理\cite{image}、自然言語処理\cite{nlp}、音声信号処理など様々な分野で行われている。音声信号処理においては混合正規分布 (GMM) \cite{gmmspe}やConvolutional Deep Belief Networks (CDBNs) \cite{cdbnspe}、Non-negative Matrix Factorization (NMF) \cite{nmfspe}を用いて音声信号の中に存在するパターンを抽出する研究が行われている。その中でもNMFに関する研究は多く報告されており、その理由としては簡単な更新式を使ってパターン抽出を行える事が挙げられる。
+教師無し学習の良い点として挙げられる事は、単にラベル無しのデータからパターンが抽出出来るだけではなく、より人間の処理に近い形でパターン抽出を行える所である。例えば画像認識の分野においては、教師無しのパターン抽出の結果が人間の第1視覚野での処理と似たものになっている報告がある\cite{v1}。今回の実験も人間の聴覚系において低次における処理であると考えられる為、教師無しのパターン抽出が有効であると考えた。
+今回はNMFを改良した、時間的に推移するパターンも抽出出来るConvolutive NMF (CNMF) \cite{cnmfpp}を用いて連続音声から教師無しでパターン抽出を行う。更に抽出したパターンを用いて音素分類を行いその有用性を確認した。
+本論文ではまずNMF、CNMFについて説明する。次に今回の実験で用いた目的関数とその更新式について説明し、その後具体的な実験の内容と結果について述べる。
+\section{Non-Negative Matrix Factorization}
+Non-Negative Matrix Factorization (NMF) \cite{nmfpp}は、与えられた$P\times Q$の非負行列\footnote{行列の各要素が0または正である行列。}${\bf A}$を$P\times R$の非負行列${\bf X}$と$R\times Q$の非負行列${\bf Y}$に分解するアルゴリズムである(式.\ref{nmfform})。NMFにより行列${\bf A}$の近似行列${\bf Z}$を得ることが出来、教師無しのパターン抽出が可能となる。
+\begin{eqnarray}
+{\bf A}&\approx&{\bf X}{\bf Y}\label{nmfform}\\
+&=&{\bf Z}\nonumber
+\end{eqnarray}
+この時、行列${\bf X}$の各列ベクトルは元の行列${\bf A}$から抽出したパターンを表し、行列${\bf Y}$の要素$\left[{\bf Y}\right]_{r,q}$は抽出した$r$番目のパターンが元の行列の$q$列目に存在する度合い(重み)を表している。ここで$\left[{\bf B}\right]_{i,j}$は行列${\bf B}$の第$i$行、第$j$列の要素を表す。これ以後、行列${\bf A}$は入力行列、行列${\bf X}$はパターン行列、行列${\bf Y}$は重み行列と呼ぶ事とする。NMFにおいて$R$の値は抽出するパターン数を表し、この値は問題に応じて適切に設定する必要がある。
+NMFを用いて行列を分解するとき、完全に2つの行列に分解出来ない状況が考えられる。そこでNMFでは目的関数を導入し、目的関数を最小にする行列${\bf X}$と${\bf Y}$の組を解とする。目的関数にはフロベニウス距離やカルバックライブラー発散(KL発散)等が用いられる。特にKL発散(式.\ref{kldiv})は更新式を用いて最適解を求める際に他の目的関数に比べ速く最適解に収束する事が知られており、その為によく用いられている。
+\begin{eqnarray}
+D_{KL}({\bf A}||{\bf Z})&=&\sum_{p,q}\left(\left[{\bf A}\right]_{p,q}\log\frac{\left[{\bf A}\right]_{p,q}}{\left[{\bf Z}\right]_{p,q}}-\left[{\bf A}\right]_{p,q}+\left[{\bf Z}\right]_{p,q}\right)\nonumber\\
+\label{kldiv}
+\end{eqnarray}
+音声信号処理においてNMFを導入する際は、入力行列${\bf A}$を振幅スペクトログラムとする事が多い。しかし入力行列をスペクトログラムとしたNMFは定常的なパターンしか抽出出来ないため、時間推移するパターンの抽出には不向きである。
+ここでNMFの簡単な例を示す。入力行列を\[{\bf A}=\left(\begin{array}{cccc}2&1&1&2\\1&2&2&1\\1&2&2&1\\2&1&1&2\end{array}\right)\]とし、これを$R=2$で分解する事を考える。この時、式.\ref{nmfex}の様に分解される事が考えられる。
+\begin{eqnarray}
+{\bf X}=\left(\begin{array}{cc}\color{red}{2}&\color{blue}{1}\\\color{red}{1}&\color{blue}{2}\\\color{red}{1}&\color{blue}{2}\\\color{red}{2}&\color{blue}{1}\end{array}\right),\ 
+{\bf Y}=\left(\begin{array}{cccc}\color{red}{1}&0&0&\color{red}{1}\\0&\color{blue}{1}&\color{blue}{1}&0\end{array}\right)\label{nmfex}
+\end{eqnarray}
+入力行列${\bf A}$を列ごとに見ると、パターン行列${\bf X}$に示されている赤、または青の列ベクトルのどちらかになっていることが確認できる。これよりパターン行列${\bf X}$は入力行列${\bf A}$に存在するパターンを表している事が確認できる。
+また重み行列${\bf Y}$は上の行が赤のパターンの存在度、下の行が青のパターンの存在度を示す。重み行列${\bf Y}$を列ごとに見ると、1列目と4列目は上の行が値が1となっており、これは入力行列${\bf A}$の1列目と4列目に赤のパターンが存在する事を示している。同様の事が2$\cdot$3列目でも言える。これより重み行列${\bf Y}$は各パターンの存在度を表している事が確認できる。
+以上のようにNMFはパターン抽出を行うが、上に挙げた入力行列では分解する方法が他にも存在し、距離関数を目的関数にしただけでは解が一意に決まらない問題が生じる。そこで目的関数には距離関数以外の何かしらの罰則項を付加する事が殆どである。どのような罰則項を設けるかは解きたい問題に応じて適切に設定する必要がある。
+\section{Convolutive NMF}
+Convolutive NMF (CNMF) \cite{cnmfpp}は定常的なパターンしか扱う事が出来なかったNMFを改良し、時間推移するパターンも抽出出来るようにしたアルゴリズムである。CNMFではパターン行列を複数個用意し、それぞれのパターン行列は各パターンのある時刻における特徴量の並びを表す。CNMFは数式を用いて次のように表す事が出来る(式.\ref{cnmfform})。
+\begin{eqnarray}
+{\bf A}&\approx&\sum_{t=0}^{T-1}{\bf X}_{t}\left({\bf Y}\right)^{t\rightarrow}\label{cnmfform}\\
+&=&{\bf Z}\nonumber
+\end{eqnarray}
+ここで${\bf X}_{t}$は時刻$t$における各パターンの特徴量の並びを示し、$T$は抽出パターンの時間長を表す。スペクトログラムにCNMFを適用する際は、抽出するパターンのフレーム数が$T$の値に相当する。式.\ref{cnmfform}で使われている演算子$(\cdot)^{t\rightarrow}$は行列の各列を$t$列矢印の方向に移動させる作用を持つ。演算子により移動した後、要素が空となる所は全て零で埋める事とする。演算子$(\cdot)^{t\rightarrow}$の例を以下に示す。
+\paragraph{(An example of the operator)} \\ \\
+${\bf A}=\left(\begin{array}{cccc}1&2&3&4\\5&6&7&8\end{array}\right)$のとき、\\ \\
+$\left({\bf A}\right)^{1\rightarrow}=\left(\begin{array}{cccc}0&1&2&3\\0&5&6&7\end{array}\right)$,\ $\left({\bf A}\right)^{\leftarrow 2}=\left(\begin{array}{cccc}3&4&0&0\\7&8&0&0\end{array}\right)$\\ 
+ここでCNMFの例を一つ示す。今回はパターン行列と重み行列を先に与え、そこから入力行列を逆算する事でCNMFの振る舞いを説明する。$R=2$, $T=2$としパターン行列${\bf X}_{t}$と重み行列${\bf Y}$を式.\ref{cnmfexset}とおく。
+\begin{eqnarray}
+\left\{\begin{array}{l}
+{\bf X}_{0}=\left(\begin{array}{cc}\color{red}1&\color{blue}1\\\color{red}1&\color{blue}0\\\color{red}0&\color{blue}0\\\color{red}0&\color{blue}1\end{array}\right),\ {\bf X}_{1}=\left(\begin{array}{cc}\color{red}0&\color{blue}0\\\color{red}0&\color{blue}1\\\color{red}1&\color{blue}1\\\color{red}1&\color{blue}0\end{array}\right)\\ \\
+{\bf Y}=\left(\begin{array}{ccccc}\color{red}1&0&0&0&0\\0&0&0&\color{blue}1&0\end{array}\right)
+\end{array}\right.\label{cnmfexset}
+\end{eqnarray}
+このとき入力行列は式.\ref{cnmfexres}となる。
+\begin{eqnarray}
+{\bf A}&=&\sum_{t=0}^{1}{\bf X}_{t}\left({\bf Y}\right)^{t\rightarrow}\nonumber\\
+&=&\left(\begin{array}{ccccc}\color{red}1&\color{red}0&0&\color{blue}1&\color{blue}0\\\color{red}1&\color{red}0&0&\color{blue}0&\color{blue}1\\\color{red}0&\color{red}1&0&\color{blue}0&\color{blue}1\\\color{red}0&\color{red}1&0&\color{blue}1&\color{blue}0\end{array}\right)\label{cnmfexres}
+\end{eqnarray}
+式.\ref{cnmfexres}よりパターン行列${\bf X}_{t}$の各列は、それぞれのパターンの$t$番目に現れるベクトルを表している事が確認できる。また重み行列${\bf Y}$の値は、各パターンが生起した列を表している事も確認できる(パターンが存在している列を表していない)。このような形でCNMFは遷移するパターンを抽出する事が出来る。
+CNMFは今までに音楽情報処理\cite{cnmfmusic}やブラインド音源分離\cite{cnmfbss}などの研究でよく使われているが、音声認識に使われている例はほとんど無い。本論文はCNMFを音声認識に適用する事を目的としており、その為にこれ以後の章で様々な手法を提案した。
+\section{提案手法}
+\subsection{罰則付きカルバックライブラー発散}
+単一話者による連続音声中では同時刻に一つのパターンが存在し、複数のパターンが存在する状態は余り存在しないと考えられる。このような形でCNMFを用いてパターンを抽出する際には重み行列にL1正則化を付加する事が良いと知られている。この時、重み行列はよりスパースな行列\footnote{殆どの要素が0である行列。}となる。これより目的関数は次のものを採用する事が望ましい(式.\ref{l1reg})。
+\begin{eqnarray}
+D({\bf A}||{\bf Z};\lambda_{x},\lambda_{y})&=&\sum_{p,q}\left(\left[{\bf A}\right]_{p,q}\log\frac{\left[{\bf A}\right]_{p,q}}{\left[{\bf Z}\right]_{p,q}}-\left[{\bf A}\right]_{p,q}+\left[{\bf Z}\right]_{p,q}\right)\nonumber\\
+&&+\color{red}\lambda_{y}\sum_{r,q}\left[{\bf Y}\right]_{r,q}\label{l1reg}
+\end{eqnarray}
+しかしながら、この目的関数を最小にするパターン行列と重み行列の組を更新式を用いて求めると、パターン行列の要素は無限大に、重み行列の要素は零に近づいていき解が求められない問題が生じる。そこで提案手法では、パターン行列の大きさをある程度抑える為にパターン行列${\bf X}$の大きさに罰則を付加した(L2正則化)。よって提案手法では次の目的関数を採用する(式.\ref{l2reg})。
+\begin{eqnarray}
+D({\bf A}||{\bf Z};\lambda_{x},\lambda_{y})&=&\sum_{p,q}\left(\left[{\bf A}\right]_{p,q}\log\frac{\left[{\bf A}\right]_{p,q}}{\left[{\bf Z}\right]_{p,q}}-\left[{\bf A}\right]_{p,q}+\left[{\bf Z}\right]_{p,q}\right)\nonumber\\
+&&+\lambda_{y}\sum_{r,q}\left[{\bf Y}\right]_{r,q}+\color{red}\frac{\lambda_{x}}{2}\sum_{p,r,t}\left[{\bf X}\right]_{p,r,t}^{2}\nonumber\\
+&&\label{l2reg}
+\end{eqnarray}
+この目的関数の中に出てくるパラメータ$\lambda_{x}$と$\lambda_{y}$は任意の正の実数を取り、問題に応じて適切な値に設定する必要がある。
+\subsection{更新式}
+式を解析的に解く事は困難である為、更新式を導入して行列${\bf X}$と${\bf Y}$の要素を最適な解に収束させる形で解を求める。更新式では負の値に更新される可能性がある和形のものは使わず、必ず正の値に更新される積形のものを導出し用いた。
+\subsubsection{パターン行列の更新式}
+始めにパターン行列の要素の更新式を求める。目的関数$D$をパターン行列の要素$\left[{\bf X}\right]_{p,r,t}$で偏微分して、
+\begin{eqnarray}
+\frac{\partial D}{\partial\left[{\bf X}\right]_{p,r,t}}&=&\sum_{\acute{q}}-\left[{\bf A}\right]_{p,\acute{q}}\cdot\frac{1}{\left[{\bf Z}\right]_{p,\acute{q}}}\cdot\frac{\partial\left[{\bf Z}\right]_{p,\acute{q}}}{\partial\left[{\bf X}\right]_{p,r,t}}\nonumber\\
+&&+\sum_{\acute{q}}\frac{\partial\left[{\bf Z}\right]_{p,\acute{q}}}{\partial\left[{\bf X}\right]_{p,r,t}}+\lambda_{x}\left[{\bf X}\right]_{p,r,t}\nonumber\\
+&=&-\sum_{\acute{q}}\frac{\left[{\bf A}\right]_{p,\acute{q}}}{\left[{\bf Z}\right]_{p,\acute{q}}}\left[\left({\bf Y}\right)^{t\rightarrow}\right]_{r,\acute{q}}\nonumber\\
+&&+\sum_{\acute{q}}\left[\left({\bf Y}\right)^{t\rightarrow}\right]_{r,\acute{q}}+\lambda_{x}\left[{\bf X}\right]_{p,r,t}\label{devx}
+\end{eqnarray}
+次に、この偏微分の値を用いてパターン行列の要素$\left[{\bf X}\right]_{p,r,t}$を新しい更新値$\hat{\left[{\bf X}\right]}_{p,r,t}$に更新する。最急降下法を用いて、新しい更新値$\hat{\left[{\bf X}\right]}_{p,r,t}$を次の式から求める。
+\begin{eqnarray}
+\hat{\left[{\bf X}\right]}_{p,r,t}&\leftarrow&\left[{\bf X}\right]_{p,r,t}-\eta\frac{\partial D}{\partial\left[{\bf X}\right]_{p,r,t}}\label{mgdx}
+\end{eqnarray}
+ここで$\eta$は学習率と言われ、任意の正の値が与えられる。今、学習率$\eta$を式.\ref{lratex}のように決める。
+\begin{eqnarray}
+\eta&=&\frac{\left[{\bf X}\right]_{p,r,t}}{\sum_{\acute{q}}\left[\left({\bf Y}\right)^{t\rightarrow}\right]_{r,\acute{q}}+\lambda_{x}\left[{\bf X}\right]_{p,r,t}}\label{lratex}
+\end{eqnarray}
+仮定より行列${\bf X}$と${\bf Y}$の要素は正であり、パラメータ$\lambda_{x}$も任意の正の値が与えられるため、学習率$\eta$は正となり条件を満たす。
+最後に、式.\ref{mgdx}に式.\ref{devx}と式.\ref{lratex}を代入して、パターン行列の要素$\left[{\bf X}\right]_{p,r,t}$の更新式を得る。
+\begin{eqnarray}
+\hat{\left[{\bf X}\right]}_{p,r,t}&\leftarrow&\left[{\bf X}\right]_{p,r,t}\frac{\sum_{\acute{q}}\left\{\left(\left[{\bf A}\right]_{p,\acute{q}}/\left[{\bf Z}\right]_{p,\acute{q}}\right)\left[\left({\bf Y}\right)^{t\rightarrow}\right]_{r,\acute{q}}\right\}}{\sum_{\acute{q}}\left[\left({\bf Y}\right)^{t\rightarrow}\right]_{r,\acute{q}}+\lambda_{x}\left[{\bf X}\right]_{p,r,t}}\nonumber\\
+&&\label{updx}
+\end{eqnarray}
+\subsubsection{重み行列の更新式}
+次に重み行列の要素の更新式を求める。パターン行列の要素の場合と同様に目的関数$D$を重み行列の要素$\left[{\bf Y}\right]_{r,q}$で偏微分するが、その前に幾つかの準備が必要である。
+まず$\sum_{\acute{q}}\left[{\bf Z}\right]_{p,\acute{q}}$を$\left[{\bf Y}\right]_{r,q}$で偏微分する場合を考える。この偏微分は下に示す形に変形する事が出来る。
+\begin{eqnarray}
+\frac{\partial\sum_{\acute{q}}\left[{\bf Z}\right]_{p,\acute{q}}}{\partial\left[{\bf Y}\right]_{r,q}}&=&\sum_{\acute{t}}\frac{\partial\left[\left({\bf Z}\right)^{\leftarrow \acute{t}}\right]_{p,q}}{\partial\left[{\bf Y}\right]_{r,q}}\label{spartz1}
+\end{eqnarray}
+次に式.\ref{spartz1}の$\sum_{t}$の中を計算する。$q+t\leq Q-1$の時、次のように計算できる。
+\begin{eqnarray}
+\frac{\partial\left[\left({\bf Z}\right)^{\leftarrow t}\right]_{p,q}}{\partial\left[{\bf Y}\right]_{r,q}}&=&\frac{\partial\left[{\bf Z}\right]_{p,q+t}}{\partial\left[{\bf Y}\right]_{r,q}}\nonumber\\
+&=&\frac{\partial}{\partial\left[{\bf Y}\right]_{r,q}}\sum_{\acute{r},\acute{t}}\left[{\bf X}\right]_{p,\acute{r},\acute{t}}\left[\left({\bf Y}\right)^{\acute{t}\rightarrow}\right]_{\acute{r},q+t}\nonumber\\
+&=&\frac{\partial}{\partial\left[{\bf Y}\right]_{r,q}}\left(\cdots+\left[{\bf X}\right]_{p,r-1,t}\left[{\bf Y}\right]_{r-1,q+t-t}\right.\nonumber\\
+&&+\left[{\bf X}\right]_{p,r,t}\left[{\bf Y}\right]_{r,q+t-t}\nonumber\\
+&&\left.+\left[{\bf X}\right]_{p,r+1,t}\left[{\bf Y}\right]_{r+1,q+t-t}+\cdots\right)\nonumber\\
+&=&\frac{\partial}{\partial\left[{\bf Y}\right]_{r,q}}\left(\cdots+\left[{\bf X}\right]_{p,r-1,t}\left[{\bf Y}\right]_{r-1,q}\right.\nonumber\\
+&&+\left[{\bf X}\right]_{p,r,t}\left[{\bf Y}\right]_{r,q}\nonumber\\
+&&\left.+\left[{\bf X}\right]_{p,r+1,t}\left[{\bf Y}\right]_{r+1,q}+\cdots\right)\nonumber\\
+&=&\left[{\bf X}\right]_{p,r,t}
+\end{eqnarray}
+また、$q+t>Q-1$のときは$\left[\left({\bf Z}\right)^{\leftarrow t}\right]_{p,q}$が常に零となるのでこの偏微分も常に零となる。
+以上より、{\Large $\frac{\partial\left[\left({\bf Z}\right)^{\leftarrow t}\right]_{p,q}}{\partial\left[{\bf Y}\right]_{r,q}}$}は次のように書く事が出来る。
+\begin{eqnarray}
+\frac{\partial\left[\left({\bf Z}\right)^{\leftarrow t}\right]_{p,q}}{\partial\left[{\bf Y}\right]_{r,q}}&=&\left\{
+\begin{array}{cc}
+\left[{\bf X}\right]_{p,r,t}&\left(q+t\leq Q-1\right)\\
+0&\left(q+t>Q-1\right)\\
+\end{array}
+\right.\label{partz}
+\end{eqnarray}
+式.\ref{spartz1}と式.\ref{partz}より、{\Large $\frac{\partial\sum_{\acute{q}}\left[{\bf Z}\right]_{p,\acute{q}}}{\partial\left[{\bf Y}\right]_{r,q}}$}は以下の計算で求める事が出来る。
+\begin{eqnarray}
+\frac{\partial\sum_{\acute{q}}\left[{\bf Z}\right]_{p,\acute{q}}}{\partial\left[{\bf Y}\right]_{r,q}}&=&\sum_{\acute{t}}\frac{\partial\left[\left({\bf Z}\right)^{\leftarrow \acute{t}}\right]_{p,q}}{\partial\left[{\bf Y}\right]_{r,q}}\nonumber\\
+&=&\left\{
+\begin{array}{cc}
+{\displaystyle\sum_{\acute{t}=0}^{T-1}}\left[{\bf X}\right]_{p,r,\acute{t}}&\left(q+T\leq Q\right)\\
+{\displaystyle\sum_{\acute{t}=0}^{Q-q-1}}\left[{\bf X}\right]_{p,r,\acute{t}}&\left(q+T>Q\right)
+\end{array}
+\right.\label{spartz2}
+\end{eqnarray}
+次に$\sum_{\acute{q}}\left[{\bf A}\right]_{p,\acute{q}}\log\left[{\bf Z}\right]_{p,\acute{q}}$を$\left[{\bf Y}\right]_{r,q}$で偏微分する場合を考える。
+\begin{eqnarray}
+\lefteqn{\frac{\partial\left(\sum_{\acute{q}}\left[{\bf A}\right]_{p,\acute{q}}\log\left[{\bf Z}\right]_{p,\acute{q}}\right)}{\partial\left[{\bf Y}\right]_{r,q}}}\nonumber\\
+&=&\sum_{\acute{t}}\frac{\partial\left(\left[\left({\bf A}\right)^{\leftarrow\acute{t}}\right]_{p,q}\log\left[\left({\bf Z}\right)^{\leftarrow\acute{t}}\right]_{p,q}\right)}{\partial\left[{\bf Y}\right]_{r,q}}\nonumber\\
+&=&\sum_{\acute{t}}\left(\left[\left({\bf A}\right)^{\leftarrow\acute{t}}\right]_{p,q}/\left[\left({\bf Z}\right)^{\leftarrow\acute{t}}\right]_{p,q}\right)\frac{\partial\left[\left({\bf Z}\right)^{\leftarrow\acute{t}}\right]_{p,q}}{\partial\left[{\bf Y}\right]_{r,q}}\nonumber
+\end{eqnarray}
+ここで式.\ref{partz}を用いて、
+\begin{eqnarray}
+\lefteqn{\frac{\partial\left(\sum_{\acute{q}}\left[{\bf A}\right]_{p,\acute{q}}\log\left[{\bf Z}\right]_{p,\acute{q}}\right)}{\partial\left[{\bf Y}\right]_{r,q}}}\nonumber\\
+&=&\left\{
+\begin{array}{cc}
+{\displaystyle\sum_{\acute{t}=0}^{T-1}}\left(\left[{\bf A}\right]_{p,q+\acute{t}}/\left[{\bf Z}\right]_{p,q+\acute{t}}\right)\left[{\bf X}\right]_{p,r,\acute{t}}&\left(q+T\leq Q\right)\\
+{\displaystyle\sum_{\acute{t}=0}^{Q-q-1}}\left(\left[{\bf A}\right]_{p,q+\acute{t}}/\left[{\bf Z}\right]_{p,q+\acute{t}}\right)\left[{\bf X}\right]_{p,r,\acute{t}}&\left(q+T>Q\right)
+\end{array}
+\right.\label{spartz3}
+\end{eqnarray}
+最後に、重み行列の更新式を求めるため目的関数$D$を重み行列の要素$\left[{\bf Y}\right]_{rq}$で偏微分する。
+\begin{eqnarray}
+\frac{\partial D}{\partial\left[{\bf Y}\right]_{r,q}}&=&-\sum_{\acute{p}}\frac{\partial\left(\sum_{\acute{q}}\left[{\bf A}\right]_{\acute{p},\acute{q}}\log\left[{\bf Z}\right]_{\acute{p},\acute{q}}\right)}{\partial\left[{\bf Y}\right]_{r,q}}\nonumber\\
+&&+\sum_{\acute{p}}\frac{\partial\sum_{\acute{q}}\left[{\bf Z}\right]_{\acute{p},\acute{q}}}{\partial\left[{\bf Y}\right]_{r,q}}+\lambda_{y}\label{devy}
+\end{eqnarray}
+パターン行列の要素の更新式と同様に、式.\ref{devy}、式.\ref{spartz2}、式.\ref{spartz3}と最急降下法を用いて重み行列の要素の更新式を導出する事が出来る。
+簡略に表記するため$sum1(r,q)=\displaystyle\sum_{\acute{p}}${\Large$\frac{\partial\sum_{\acute{q}}\left[{\bf Z}\right]_{\acute{p},\acute{q}}}{\partial\left[{\bf Y}\right]_{r,q}}$}, $sum2(r,q)=\displaystyle\sum_{\acute{p}}${\Large$\frac{\partial\left(\sum_{\acute{q}}\left[{\bf A}\right]_{\acute{p},\acute{q}}\log\left[{\bf Z}\right]_{\acute{p},\acute{q}}\right)}{\partial\left[{\bf Y}\right]_{r,q}}$}とすると、重み行列の要素$\left[{\bf Y}\right]_{r,q}$の更新式は次のように書く事が出来る。
+\begin{eqnarray}
+\hat{\left[{\bf Y}\right]}_{r,q}\leftarrow\left[{\bf Y}\right]_{r,q}\frac{sum2(r,q)}{sum1(r,q)+\lambda_{y}}\label{updy}
+\end{eqnarray}
+但し、
+{\small
+\begin{eqnarray}
+\lefteqn{sum1(r,q)}\nonumber\\
+&=&\left\{
+\begin{array}{cc}
+{\displaystyle\sum_{\acute{p}}\sum_{\acute{t}=0}^{T-1}}\left[{\bf X}\right]_{\acute{p},r,\acute{t}}&\left(q+T\leq Q\right)\\
+{\displaystyle\sum_{\acute{p}}\sum_{\acute{t}=0}^{Q-q-1}}\left[{\bf X}\right]_{\acute{p},r,\acute{t}}&\left(q+T>Q\right)
+\end{array}
+\right.\nonumber\\
+\lefteqn{sum2(r,q)}\nonumber\\
+&=&\left\{
+\begin{array}{cc}
+{\displaystyle\sum_{\acute{p}}\sum_{\acute{t}=0}^{T-1}}\left(\left[{\bf A}\right]_{\acute{p},q+\acute{t}}/\left[{\bf Z}\right]_{\acute{p},q+\acute{t}}\right)\left[{\bf X}\right]_{\acute{p},r,\acute{t}}&\left(q+T\leq Q\right)\\
+{\displaystyle\sum_{\acute{p}}\sum_{\acute{t}=0}^{Q-q-1}}\left(\left[{\bf A}\right]_{\acute{p},q+\acute{t}}/\left[{\bf Z}\right]_{\acute{p},q+\acute{t}}\right)\left[{\bf X}\right]_{\acute{p},r,\acute{t}}&\left(q+T>Q\right)
+\end{array}
+\right.\nonumber
+\end{eqnarray}
+}
+\subsection{Max-Pooling}
+CNMFの重み行列ではパターンが"生起した"時刻に対応する列の値だけが大きくなり、パターンが存在しているにも関わらず重みの値が大きくならないという問題が生じる。そこで提案手法ではパターンが"存在する"時刻で重みの値が大きくなるようにMax-Pooling \cite{mpp}を導入する。Max-PoolingはCDBNsやConvolutional Neural Network (CNN) 等の畳み込みを用いてパターンを学習するアルゴリズムによく適用されるものであり、今回はCDBNsを参考にCNMFに適する形でMax-Poolingを適用した。
+Max-Poolingで重み行列${\bf Y}$を変換して得られた行列を$\overline{{\bf Y}}$とすると、Max-Poolingの式は次のように書ける。
+\begin{eqnarray}
+\overline{\left[{\bf Y}\right]}_{r,q}&=&\max_{y\in {\cal Y}_{r,q}} y\label{mpform}
+\end{eqnarray}
+但し、
+\begin{eqnarray*}
+{\cal Y}_{r,q}&=&\left\{\left.\left[\left({\bf Y}\right)^{t\rightarrow}\right]_{r,q}\right|\ 0\leq t\leq T-1\right\}\nonumber
+\end{eqnarray*}
+変換後の重み行列の要素$\overline{\left[{\bf Y}\right]}_{r,q}$は変換前の重み行列${\bf Y}$の第$r$行の第$q-T+1$列から第$q$列までの最大値を取る。この変換によりパターンが存在する列において重みが上昇するようになる。
+式.\ref{cnmfexset}の重み行列を例にMax-Poolingの振る舞いを説明する。式.\ref{cnmfexset}の重み行列は
+\[{\bf Y}=\left(\begin{array}{ccccc}\color{red}1&0&0&0&0\\0&0&0&\color{blue}1&0\end{array}\right)\]
+であった。この行列にMax-Poolingを適用すると、
+\[\overline{{\bf Y}}=\left(\begin{array}{ccccc}\color{red}1&\color{red}1&0&0&0\\0&0&0&\color{blue}1&\color{blue}1\end{array}\right)\]
+と変換される。ここで入力行列${\bf A}$ (式.\ref{cnmfexres})を再掲する。
+\[{\bf A}=\left(\begin{array}{ccccc}\color{red}1&\color{red}0&0&\color{blue}1&\color{blue}0\\\color{red}1&\color{red}0&0&\color{blue}0&\color{blue}1\\\color{red}0&\color{red}1&0&\color{blue}0&\color{blue}1\\\color{red}0&\color{red}1&0&\color{blue}1&\color{blue}0\end{array}\right)\]
+入力行列${\bf A}$を変換前$\cdot$変換後の重み行列とそれぞれ比較すると、変換前の重み行列${\bf Y}$はパターンが生起した列を示していたのに対し、変換後の重み行列$\overline{{\bf Y}}$はパターンが存在している列を表している事が確認できる。今回の実験では、Max-Poolingにより変換した行列を各時刻の音声の特徴量とし、音素分類の実験を行った。
+\section{実験}
+今回はTIMIT Acoustic-Phonetic Continuous Speech Corpus \cite{timit}の音声を用いて音素分類の実験を行った。以下に実験の手順を示す。
+\subsection{基底音の抽出}
+男性20話者の音声、計100発話(20話者$\times$5発話)を音声パターンの抽出に用いた。実験では、まず音声を短時間フーリエ変換(STFT)によりスペクトログラムに変換し、それをCNMFの入力行列としてCNMFを用いて分解した。分解時には式.\ref{updx}と式.\ref{updy}を更新式として使用し、この2つの更新を交互に繰り返し最適解へ収束させた。
+基底音抽出の各パラメータは表.\ref{e1tbl}に示す。
+\begin{table}[h]
+\begin{center}
+\caption{パターン抽出のパラメータ}
+\begin{tabular}{|c|c|}
+\hline
+サンプリング周波数[kHz]&16\\
+FFTフレームサイズ[msec]&16\\
+FFTオーバーラップ[msec]&8\\
+窓関数&ハニング窓\\
+更新回数&200\\
+$\lambda_{x}$&$1.0$\\
+$\lambda_{y}$&$1.0$\\
+\hline
+\end{tabular}
+\label{e1tbl}
+\end{center}
+\end{table}
+\subsection{音素分類}
+次に抽出した音声を用いて音素分類を行い、抽出した音声の有用性を確認した。まず、訓練データは基底音抽出の際に得られた重み行列をMax-Pooling(式.\ref{mpform})で変換した行列$\overline{{\bf Y}}_{train}$とする。行列$\overline{{\bf Y}}_{train}$の各列ベクトルが各時刻における音声の特徴量となる。
+テストデータは計100発話(20話者$\times$5発話)から作成した。音声の話者は訓練データの話者と異なる話者である。テストデータ用の音声では抽出された音声パターンをパターン行列${\bf X}$の要素として固定し、重み行列${\bf Y}$の更新(式.\ref{updy})のみを繰り返して最適な重み行列を得る。更に訓練データと同様に、重み行列をMax-Poolingで変換して行列$\overline{{\bf Y}}_{test}$を得る。これをテストデータとする。
+音素の学習、分類にはSupport Vector Machine (SVM) \cite{svm}を用いた。この実験においてはSVMとして、広く使われているライブラリ"SVM$^{multiclass}$"\footnote{http://svmlight.joachims.org/svm multiclass.html}を使用した。SVMのパラメータを表.\ref{svmpara}に示す。
+\begin{table}[h]
+\begin{center}
+\caption{SVMのパラメータ}
+\begin{tabular}{|c|c|}
+\hline
+カーネル関数&動径基底関数\\
+損失関数&0-1損失\\
+Trade-off between Error \& Margin&1.0\\
+\hline
+\end{tabular}
+\label{svmpara}
+\end{center}
+\end{table}
+\section{結果}
+CNMFのパラメータのパターン数$R$とパターン長$T$を変化させたときの音素分類の精度を図.\ref{resfig}に示す。図.\ref{resfig}の横軸はパターン長$T$の値、縦軸は各フレームのラベルの正答率を表している。
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=1.4]{figure.eps}
+\caption{Accuracy of Phone Classification}
+\label{resfig}
+\end{center}
+\end{figure}
+図.\ref{resfig}より、パターン数$R$の方がパターン長$T$に比べ精度に大きな影響を与える事が分かる。まずパターン数$R$に注目して見ると、パターン数$R$が大きくなる程精度が大きくなる事が分かる、しかし$R=100$あたりでは精度の上昇が余り見られず、この辺りがパターン数$R$の最適値であると推測できる。これより、考えるべき音声のパターンは多くて100個であると言える。
+次にパターン長$T$に注目して見ると、どのパターン数$R$であっても$T=5,6$辺りで精度が最大となっていることが分かる。その為、$T=5,6$が抽出すべきパターンの時間長であると推測できる。これを時間に変換すると、およそ48〜56[msec]となる。
+今度は、今回の実験で最も良かった結果($R=100$, $T=5$)を他の手法と共に表.\ref{result1}に示す。この表でRaw Spectrogramとは元のスペクトル行列をそのまま特徴量として分類を行った場合、またMFCCとは特徴量にMFCC (Mel-Frequency Cepstrum Coefficients) \cite{mfcc}を用いて分類を行った場合の精度を示す。MFCCの結果はSohn \& Lee (2012) \cite{mfccacu}のものを載せており、このMFCCの次元は39次元である。他の手法として表.\ref{result1}に載せている手法は、Raw SpectrogramとMFCCの物を除き連続音声から教師無しでパターン抽出を行っている。
+\begin{table}[h]
+\begin{center}
+\caption{音素分類の精度}
+\begin{tabular}{|c|c|}
+\hline
+Raw Spectrogram&9.16\%\\
+\textcolor{blue}{Our Method ($R=100,\ T=5$)}&\textcolor{blue}{39.72\%}\\
+CDBNs (H. Lee et al, 2009) \cite{cdbnspe}&64.4\%\\
+MFCC \cite{mfccacu}&80.0\%\\
+H-LMGMM (Chang \& Glass, 2007) \cite{hlmgmm}&81.3\%\\
+\hline
+\end{tabular}
+\label{result1}
+\end{center}
+\end{table}
+まず、元のスペクトログラムの結果と今回の提案手法を比べると提案手法が優れている事が確認できる。周波数領域の情報も幾分かの音韻の情報を持っているが、提案手法の方が精度として良いという結果から抽出した音声パターンは何かしらの音韻情報を抽出していると考える事が出来る。
+しかしMFCCの結果と比べると提案手法は劣っている。これはMFCCの方が音韻の情報を良く表している事を示している。CNMFではMFCCよりも更に複雑な音の遷移を特徴量に組み込む事が出来るが、それよりもケプストラム領域で特徴量を扱える事の方が重要だと考える事が出来る。
+また他の教師無し学習を用いた手法と提案手法を比較すると、他の手法にはまだ及ばない事が確認できる。この原因の一つとして、学習時に用いたデータ量の少なさが挙げられる。今回の提案手法では学習時にかなりの時間を要する為、相当量のデータを学習出来なかった事が精度が悪い原因の一つとして考えられる。
+更に、今回提案した手法では様々なパラメータを適切に設定する必要があり、これも上手く精度が上がらない原因の一つに成ったと考えられる。先に挙げた学習データ量の不足とここで挙げたパラメータ設定の問題の解決は精度向上に不可欠であると考えられる。
+\section{まとめ}
+CNMFにより抽出した音声のパターンは少なからず音韻の情報を持っている事が確認できた。しかし、現在広く使われている特徴量のMFCCに比べると音声認識において扱うには難しい物であると言える。しかしCNMFを用いて抽出した音声のパターンを音声認識に使う試みは今回が初めてであり、まだまだ改善の余地が有ると考えられる。
+CNMFが持つ問題点として、まず始めに他の教師無し学習のアルゴリズムに比べ計算に時間が掛かることが挙げられる。この問題は、CNMFが学習時の各更新で全データの情報を扱っている為に生じてしまう。それに比べCDBNsではContrastive Divergence(CD) \cite{cd}という学習アルゴリズムが提案されている。これはGibbs Samplingの一種であり、モデルのパラメータを学習する際に用いるデータ量は全データ量に比べ非常に小さくなっている。
+このCNMFの計算時間の問題を解決するため、今後確率的勾配降下法(SGD) \cite{sgd}の導入を考えている。これは学習データの一部のみをサンプリングし、そのサブセット内で目的関数を小さくするようにパラメータを更新する作業を繰り返すアルゴリズムである。SGDは小規模のデータの学習には不向きであるが、大規模のデータの学習においては一定の成果を上げており近年注目されている。
+またCNMFにおける他の問題として、多くのパラメータの設定というものも挙げられる。今回提案したCNMFによる音声パターンの学習では非常に多くのパラメータが存在しており、適切に設定するにはかなりの労力を要する。しかし近年、CNMFのパラメータであるパターン数$R$とパターン長$T$の最適な値を推定する手法が提案されている。今後この提案されている推定法をこの実験に導入してその精度を向上させることを検討している。
+これとは別に音素分類に関する問題に目を傾けると、CNMFの重み行列の扱い方も更なる考察が必要な点として挙げる事が出来る。今回はMax-Poolingという手法を用いて各時刻におけるパターンの存在度を算出したが、CNMFを連続音声に適用した際に音声のパターンが完全にスパースに抽出されることは少なく、幾つかのパターンが入り交じる形で抽出される。そのような時に単純にMax-Poolingを適用しただけでは、各時刻に上手く存在度を割り振る事は出来ないと考える。今後Max-Poolingに変わる方法で重み行列を変換する事も一つの手立てと考えられる。
+此処までにCNMFにすべき改善点をいくつか挙げてきたが、CNMFではない他の教師無しアルゴリズムを本実験に適用する事も良い方法だと考えられる。CNMFが持つ根本的な問題として非負の値のみ持つデータしか扱えない点が挙げられる。NMFは他の教師無し学習アルゴリズムに比べ原理も簡単で実装も手軽であるが、それ故に制約も大きい。それに比べCDBNsなどは実数のデータを学習出来る為、この点においてCNMFよりも優位であると言う事が出来る。スペクトログラムから抽出するだけでは精度の向上が見られない場合は、CDBNsを用いてケプストラム領域からパターン抽出を行う事も一つの手立てとして考えている。
+以上に挙げた試みにより音声パターンの抽出の精度を上げ、今後も抽出した音声パターンをモデルに組み込んだ新しい音声認識の手法を提案しようと考えている。
+\begin{thebibliography}{99}
+\small
+\bibitem{triphone}
+S. J. Young, J. J. Odell, and P. C. Woodland,
+"Tree-based state tying for high accuracy acoustic modeling",
+{\em Proc. ARPAHuman Language Technology Workshop}, pp.307-312, 1994.
+\bibitem{dt}
+S. J. Young, J. J. Odell, and P. C. Woodland,
+"Tree-based state tying for high accuracy acoustic modeling,",
+in Proc. ARPAHuman Language Technology Workshop, pp. 307 312, 1994.
+\bibitem{transpt}
+藪 謙一郎, 伊福部 達, 青村 茂,
+"発話障害者支援のための音声生成器ーその研究アプローチと設計概念",
+{\em 電子情報通信学会技術研究報告}, Vol.106, No.613, pp.25-30, 2007.
+\bibitem{v1}
+A. M. Saxe, M. Bhand, R. Mudur, B. Suresh, and A. Y. Ng,
+"Unsupervised learning models of primary cortical receptive fields and receptive field plasticity",
+in {\em NIPS}, pp.1971-1979, 2011.
+\bibitem{motion}
+Yang Song, Luis Goncalves, and Pietro Perona,
+"Unsupervised learning of human motion",
+{\em IEEE Transactions on Pattern Analysis and Machine Intelligence}, Vol.25, No.25, pp.1-14, 2003.
+\bibitem{image}
+Deng Hua wu, and David A C,
+"Unsupervised image segmentation using a simple MRF model with a new implementation scheme",
+{\em Elsevier Ltd. Pattern Recognition Society}, Vol.37, No.27, pp.2323-2335, 2007.
+\bibitem{nlp}
+E. Ponvert, J. Baldridge, and K. Erk,
+"Simple unsupervised grammarinduction from raw text with cascaded finite state models,"
+in {\em Proc. of ACL-HLT}, pp.1077-1086, 2011.
+\bibitem{gmmspe}
+F. Sha, and L. K. Saul,
+"Large margin gaussian mixture modeling for phonetic classication and recognition",
+in {\em ICASSP 06}, 2006.
+\bibitem{cdbnspe}
+H. Lee, Y. Largman, P. Pham, and A. Ng,
+"Unsupervised feature learning for audio classi cation using convolutional deep belief networks",
+in {\em Advances in Neural Information Processing Systems 22, Cambridge, MA: MIT Press.}, 2009.
+\bibitem{nmfspe}
+B. Schuller, F. Weninger, M. Wollmer, Y. Sun, and G. Rigoll,
+"Non-negative matrix factorization as noise-robust feature extractor for speech recognition",
+in {\em Proc. of ICASSP, Dallas, TX}, pp.4562-4565, 2010.
+\bibitem{nmfpp}
+D. Lee, and S. Seung,
+"Learning the parts of objects by non-negative matrix factorization",
+{\em Nature}, Vol.401, pp.788-791, 1999.
+\bibitem{cnmfpp}
+P. Smaragdis,
+"Non-negative matrix factor deconvolution; extraction of multiple sound sources from monophonic inputs",
+in {\em Lecture Notes in Computer Science3195 Springer}, pp. 494-499, 2004.
+\bibitem{cnmfmusic}
+A. H. Phan, A. Cichocki, P. Tichavsk$\acute{{\rm y}}$, and Z. Koldovsk$\acute{{\rm y}}$,
+"On Connection Between the Convolutive and Ordinary Nonnegative Matrix Factorizations",
+in {\em Proc. of The 10th International Conference on Latent Variable Analysis and Source Separation (LVA/ICA 2012)}, pp.288-296, 2012.
+\bibitem{cnmfbss}
+P. D. O'Grady, and B. A. Pearlmutter,
+"Discovering speech phones using convolutive non-negative matrix factorisation with a sparseness constraint",
+in {\em Neurocomputing}, Vol.72, No.1-3, pp.88-101, 2008.
+\bibitem{mpp}
+D. Scherer, A. Muller, and S. Behnke,
+"Evaluation of pooling operations in convolutional architectures for object recognition",
+in {\em Proc. of the Intl.Conf. on Artificial Neural Networks}, pp.92-101, 2010.
+\bibitem{timit}
+J. S. Garofolo, L. F. Lamel, W. M. Fisher, J. G. Fiscus, D. S. Pallett, N. L. Dahlgren, and Victor Zue,
+"Timit acoustic-phonetic continuous speech corpus",
+{\em LDC, Philadelphia}, 1993.
+\bibitem{svm}
+K. Crammer, and Y. Singer, 
+"On the algorithmicimplementation of multiclass kernel-based vector machines",
+{\em J.Mach. Learn. Res.}, Vol.2, pp.265-292, 2002.
+\bibitem{mfcc}
+S. Davis, and P. Mermelstein,
+"Comparison of parametric representations for monosyllabic word recognition in continuously spoken sentences",
+in {\em Acoustics, Speech and Signal Processing, IEEE Transactions onDate of Publication}, Vol.28, No.4, pp.357-366, 1980.
+\bibitem{mfccacu}
+K. Sohn, and H. Lee,
+"Learning Invariant Representations with Local Transformations",
+in {\em Proc. International Conference on Machine Learning 2012}, 2012.
+\bibitem{hlmgmm}
+H. Chang, and J. R. Glass,
+"Hierarchical large-margin gaus-sian mixture models for phonetic classication",
+in {\em ASRU2007}, pp.272-277, 2007.
+\bibitem{cd}
+Y. Bengio, and O. Delalleau,
+"Justifying andgeneralizing contrastive divergence"
+in {\em Neural Computation}, Vol.21, No.6, pp.1601-1621, 2009.
+\bibitem{sgd}
+R. G. J. Wijnhoven, and P. H. N. de With,
+"Fast training ofobject detection using stochastic gradient descent",
+n {\em ICPR}, pp.424-427, 2010.
+\bibitem{findparam}
+R. J. Weiss and J. P. Bello. Identifying Repeated Patterns in Music Using Sparse Convolutive Non-Negative Matrix Factorization. in {\em Proc. International Society for Music Information Retrieval Conference}, pp.123-128, 2010. 
+\end{thebibliography}
+\end{document}
+\bibitem{cmu}
+J. Kominek, and A. W. Black,
+"CMU ARCTIC databasefor speech synthesis ver. 0.95",
+{\em Language technologiesinstitute, Carnegie mellon university}, 2003.
+Ruby
+\ruby{character}{reading}
+Equation
+\begin{eqnarray}
+&=& \label{}or\nonumber\\
+\end{eqnarray}
+Figure
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=1.0]{}
+\caption{}
+\label{}
+\end{center}
+\end{figure}
+Table
+\begin{table}[h]
+\begin{center}
+\caption{}
+\begin{tabular}{|c|c|}
+\hline
+example & example\\
+\hline
+\end{tabular}
+\label{}
+\end{center}
+\end{table}
+

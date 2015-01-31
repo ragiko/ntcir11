@@ -1,0 +1,20 @@
+音声認識(電話音声認識システム、分散型音声認識、耐雑音)
+話者認識(分散型話者照合、大規模音声データベース)
+信号処理(信号復元、z雑音・残響除去、音声認識を用いた知的信号処理)
+福祉情報工学(失語症支援・手話認識)
+ヒューマンインタフェース・テキスト情報検索(アドバイザー)
+学術論文
+(31) Shingo Kuroiwa, Yoshiyuki Umeda, Satoru Tsuge, and Fuji Ren, Nonparametric Speaker Recognition Method using Earth Movers Distance, IEICE Transactions on Information and Systems, Vol.E89-D, No.3, pp.1074-1081, Mar. 2006.
+(36) Mohamed Abdel Fattah, Fuji Ren, and Shingo Kuroiwa, Effects of Phoneme Type and Frequency on Distributed Speaker Identification and Verification, IEICE Transactions on Information and Systems, Vol.E89-D, No.5, pp.1712-1719, May 2006.
+(49) 黒岩眞吾, 森陽司, 高階政吏, 柘植覚, 任福継, スペクトルの微細構造を考慮した風雑音除去手法, 電子情報通信学会論文誌(A), Vol.J90-A, No.1, pp.1-12, Jan. 2007.
+(50) 柘植覚, 黒岩眞吾, 獅々堀正幹, 任福継, 北研二, 分散音声認識における実時間周波数特性正規化手法, 情報処理学会論文誌, Vol.48, No.2, pp.900-908, Feb. 2007.
+(53) Jiajun Yan, David B. Bracewell, Fuji Ren, Shingo Kuroiwa, Chinese Semantic Dependency Analysis: Construction of a Treebank and its Use in Classification, ACM Transactions on Speech and Language Processing, Vol.2, No.1, pp.722-731, Aug. 2007.
+(56) 原一眞, 黒岩眞吾, 田中康司, 柘植覚, 任福継, 獅々堀正幹, 北研二, 符号化音声認識のための合成音声を用いた不特定話者音響モデルの適応法, 電子情報通信学会論文誌(D), Vol.J90-D, No.9, pp.2541-2549, Sep. 2007.
+(57) Shingo Kuroiwa, Satoru Tsuge, Masahiko Kita and Fuji Ren, Speaker Identification Method Using Earth Movers Distance for CCC Speaker Recognition Evaluation 2006, International Jounal of Computational Linguistics & Chinese Language Processing, Vol.12, No.3, pp.239-254, Sep. 2007.
+(59) 遠藤俊樹, 黒岩眞吾, 清水徹, 笹瀬巌, 雑音の特徴分析に向けた実環境雑音データベースの構築, 日本音響学会誌, Vol.64, No.1, pp.8-15, Jan. 2008.
+(67) 安ヶ平雄太, 堀内靖雄, 西田昌史, 黒岩眞吾, 日本手話の手話発話速度の違いによる手動作変化の分析, 手話学研究,Vol.17, pp.57?68, Sep. 2008.
+(68) S. Kuroiwa, S. Tsuge, F.Ren, Distributed Speaker Identification and Verification for Mobile Terminals, International Journal of Biomedical Soft Computing and Human Sciences Volume 14, Number 1, pp.3-9, December 2008
+(72) 西田昌史,堀内靖雄,黒岩眞吾,市川熹,書き起こしへの付与を目指した音声とテキストを対象とした発話印象の分析, 情報処理学会論文誌, 「音声ドキュメント処理」特集号, Vol.50, No.2, pp.460-468, Feb. 2009.
+(76) Haoze Lu, Masafumi Nishida, Yasuo Horiuchi, Shingo Kuroiwa, Text-Independent speaker identification in phoneme- independent subspace using PCA transformation, International Journal of Biometrics, Vol.2, 2010.
+(78) 岡本悠, 柘植覚, 堀内靖雄, 黒岩眞吾, 順位統計量を用いたテキスト独立型話者照合手法, 電子情報通信学会論文誌D, Vol.94, No.9, pp.1551-1560, Sep. 2011.
+千葉大学 大学院工学研究科・工学部

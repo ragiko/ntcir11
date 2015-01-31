@@ -1,0 +1,19 @@
+VBAでやれば
+Sub test01()
+K = 1
+Dim cl
+For Each cl In Worksheets("Sheet1").Range("A1:Z10000")
+If cl.MergeCells = True Then
+If cl.MergeArea(1).Address = cl.Address Then
+Worksheets("Sheet2").Cells(K, "A") = cl.Address
+K = K + 1
+End If
+End If
+Next
+End Sub
+シートがSheet1の場合です。Sheet1を実際のシート名に変えること。
+A1:Z10000までの範囲をチェックします。
+これを増やすなら番地の範囲を増やしてください。
+上記でも実行に10秒ぐらいかかるようです。
+Sheet2のA列に、結合セルの上隅のセル番地が出ます。
+大きなエクセル表でセル結合されている場所を探す方法? - オフィス系ソフト - 教えて!goo

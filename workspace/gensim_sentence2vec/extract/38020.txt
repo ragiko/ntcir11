@@ -1,0 +1,261 @@
+
+WAVEデータの作成と再生
+概要:waveOut関数によるWAVEデータの操作
+本サイトの音系プログラミング解説のメインはここからですっ!
+何となく処理してくれるMCIは便利ですが、
+全てがブラックボックスで振幅値などにアクセスする事はできませんでした。
+扱えるのもファイルに限られています。
+それに対して、データを扱うのが waveOut関数 です。
+WAVEはデータとして用意するので、参照したり書き換えたりは当たり前にできます。
+画像で例えるなら、MCIがDDBでwaveOut関数がDIBって感じです。
+以降の解説では標本化や量子化の意味はわかっているものとします。
+waveOut関数
+waveOut関数はメモリにあるWAVEデータを操作する関数です。
+それぞれの操作に対して waveOut で始まる名前を持つ関数が用意されています。
+データを操作する関数なので、ファイルやリソースを操作したい場合は
+自分でデータとして読み込む処理を実装しなければなりません。
+WAVEファイル読み込み関数は後の節で作成するとして、
+本節ではWAVEデータをプログラムで作成してみましょう。
+やや専門的な知識が必要ですが、波形データそのものを作成するのは非常に簡単です。
+WAVEFORMATEX構造体
+まずはどのような波形データを作成するのかを決める必要があります。
+フォーマットは非圧縮形式である PCM で異論ないでしょう。
+以降の解説では全てPCM形式である事が前提です。
+モノラル/ステレオは、簡単なモノラルとします。
+標本化周波数は 8000Hz とします。
+一般的な値は 8000Hz、11025Hz、22050Hz、44100Hz です。
+量子化ビット数は 8ビット とします。
+他にも 16ビット が使えます。
+さて、この属性を関数に教える為に用いるのが WAVEFORMATEX構造体 です。
+typedef struct { 
+WORD wFormatTag; 
+WORD nChannels; 
+DWORD nSamplesPerSec; 
+DWORD nAvgBytesPerSec; 
+WORD nBlockAlign; 
+WORD wBitsPerSample; 
+WORD cbSize; 
+} WAVEFORMATEX;
+wFormatTag はフォーマットです。PCM形式は WAVE_FORMAT_PCM です。
+nChannels はチャンネル数です。1チャンネルならモノラル、2チャンネルならステレオです。
+nSamplesPerSec は標本化周波数です。
+nAvgBytesPerSec は1秒間のバイト数です。計算式は wfe.nSamplesPerSec * wfe.nBlockAlign
+です。
+nBlockAlign はブロックアライメント(データの最小単位)です。計算式は wfe.nChannels
+* wfe.wBitsPerSample/8 です。
+wBitsPerSample は量子化ビット数です。
+cbSize は使いません。0 を指定して下さい。
+nAvgBytesPerSec と nBlockAlign は計算した値に過ぎないので、
+処理する時は nChannels と nSamplesPerSec と wBitsPerSample に注目する事になります。
+#define SRATE    8000    //標本化周波数(1秒間のサンプル数)
+WAVEFORMATEX wfe;
+wfe.wFormatTag=WAVE_FORMAT_PCM;
+wfe.nChannels=1;    //モノラル
+wfe.wBitsPerSample=8;    //量子化ビット数
+wfe.nBlockAlign=wfe.nChannels * wfe.wBitsPerSample/8;
+wfe.nSamplesPerSec=SRATE;    //標本化周波数
+wfe.nAvgBytesPerSec=wfe.nSamplesPerSec * wfe.nBlockAlign;
+波形データ
+属性が決まったら、波形データの振幅値を記録する為のメモリ領域を確保しましょう。
+ここで考えるべきは何秒分の波形データを作成するか、です。
+2秒分なら wfe.nAvgBytesPerSec*2 バイト必要です。
+量子化ビット数が8ビットの場合は、0〜255 の範囲で振幅値を表現します。128 が中心(振幅なし)です。
+16ビットの場合は、-32768〜32767 の範囲で振幅値を表現します。0 が中心(振幅なし)です。
+8ビットと16ビットの違いは振幅値の分解能であり、最大音量に差はありません。
+つまり、8ビットの 192(=128+128/2) と、16ビットの 16384(=0+32768/2) は同じです。
+波形データを参照するポインタ型は8ビットなら LPBYTE が、16ビットなら short*
+が適しているでしょう。
+それでは、400Hz の音(440Hzが標準的な"ラ")を矩形波で再現するプログラムを見てみましょう。
+#define F    400    //周波数(1秒間の波形数)
+static LPBYTE lpWave;
+int i,len;
+lpWave=(LPBYTE)calloc(wfe.nAvgBytesPerSec,2);    //2秒分
+len=SRATE/F;    //波長
+for(i=0;i<SRATE*2;i++){  //波形データ作成
+if(i%len < len/2)    lpWave[i]=128+64;
+else                 lpWave[i]=128-64;
+}
+wfe.nAvgBytesPerSec は1秒間のバイト数です。
+また、波形はきちんと収まるように作成するのが望ましいでしょう。
+矩形波は一番簡単に作成できるし、かなりクリアな機械音がするので一番使い易いです。
+他にも正弦波、ノコギリ波、三角波などがありますが、面倒なので私は使いません。
+参考までに、正弦波は以下のように作成します。
+#include<math.h>
+#define PI      3.141592653589793       //円周率
+double d;
+len=SRATE/F;    //波長
+for(i=0;i<SRATE*2;i++){    //波形データ作成
+d=360.0/len;
+d*=(i%len);
+lpWave[i]=(BYTE)(128.0*sin(d/180.0*PI)+127.5);
+}
+また、ノコギリ波は以下のように作成します。
+double d;
+len=SRATE/F;    //波長
+d=255.0/(len-1);
+for(i=0;i<SRATE*2;i++){    //波形データ作成
+lpWave[i]=(BYTE)(d*(i%len));
+}
+三角波の作成は皆さんの課題とします。
+再生まで
+waveOut関数を使ってWAVEデータを再生させるまでの手順は次のようになります。
+waveOutOpen関数  waveOutPrepareHeader関数  waveOutWrite関数
+オープン
+waveOutOpen関数は、ウェーブフォームオーディオ出力デバイスを再生用にオープンします。
+MMRESULT waveOutOpen(
+LPHWAVEOUT phwo, 
+UINT uDeviceID, 
+LPWAVEFORMATEX pwfx, 
+DWORD dwCallback, 
+DWORD dwCallbackInstance, 
+DWORD fdwOpen 
+);
+phwo にはデバイス識別用ハンドルが格納される変数を指すポインタを指定します。
+他のwaveOut関数で使います。
+uDeviceID にはデバイス識別子を指定します。デフォルト設定を要求する WAVE_MAPPER
+を指定して下さい。
+pwfx にはWAVEFORMATEX構造体を指すポインタを指定します。
+dwCallback にはコールバック対象のアドレスを指定します。不要なら 0 を指定します。
+dwCallbackInstance にはコールバック対象に渡す任意データを指定します。不要なら
+0 を指定します。
+また、ウィンドウコールバック機構には渡されません。
+fdwOpen にはデバイスをオープンする為のフラグを指定します。コールバックの種類を指定する等に使います。
+fdwOpen に指定する主なフラグを以下に示します。
+CALLBACK_FUNCTION …… dwCallback はコールバック関数のアドレスです
+CALLBACK_NULL …… コールバックを利用しません
+CALLBACK_WINDOW …… dwCallback はウィンドウハンドルです
+pwfx に渡した WAVEFORMATEX構造体は直ぐに解放する事ができます。
+static HWAVEOUT hWaveOut;
+waveOutOpen(&hWaveOut,WAVE_MAPPER,&wfe,0,0,CALLBACK_NULL);
+waveOut関数の戻り値
+成功なら MMSYSERR_NOERROR が、失敗ならそれぞれのエラー値が返ります。
+これを文字列に変換する関数もありますが、詳しくは次節で解説します。
+準備
+waveOutPrepareHeader関数は再生用にウェーブフォームオーディオデータブロックを初期化します。
+MMRESULT waveOutPrepareHeader(
+HWAVEOUT hwo, 
+LPWAVEHDR pwh,
+UINT cbwh 
+);
+hwo にはウェーブフォームオーディオ出力デバイスのハンドルを指定します。
+pwh には初期化するWAVEHDR構造体のアドレスを指定します。
+cbwh にWAVEHDR構造体のバイト数を指定します。
+WAVEHDR構造体の定義は次のようになっています。
+typedef struct { 
+LPSTR lpData; 
+DWORD dwBufferLength; 
+DWORD dwBytesRecorded; 
+DWORD_PTR dwUser; 
+DWORD dwFlags; 
+DWORD dwLoops; 
+struct wavehdr_tag * lpNext; 
+DWORD_PTR reserved; 
+} WAVEHDR;
+設定が必要なメンバだけ解説します。
+lpData には波形データが格納されているメモリ領域を指すポインタを指定します。
+dwBufferLength には波形データのバイト数を指定します。
+dwFlags には追加情報フラグを指定します。
+ループの始まりと終わりを意味する WHDR_BEGINLOOP | WHDR_ENDLOOP を指定して下さい。
+dwLoops はループ回数です。
+このメンバで手軽にループさせる事もできますが、一般的にはコールバックを利用します。
+WAVEHDR構造体のメンバ lpData や dwBufferLength は、
+waveOutPrepareHeader関数の呼び出しとwaveOutWrite関数の呼び出しの間に変更することができます。
+ただし、lpData については私が試したらできちゃっただけであり、保証されていません。
+static WAVEHDR whdr;
+whdr.lpData=(LPSTR)lpWave;
+whdr.dwBufferLength=wfe.nAvgBytesPerSec * 2;
+whdr.dwFlags=WHDR_BEGINLOOP | WHDR_ENDLOOP;
+whdr.dwLoops=1;
+waveOutPrepareHeader(hWaveOut,&whdr,sizeof(WAVEHDR));
+wfe.nAvgBytesPerSec は1秒間のバイト数です。
+再生
+waveOutWrite関数はウェーブフォームオーディオ出力デバイスにデータブロックを送信します。
+Write や送信といった言葉が意味するところは重要です。
+これはウィンドウメッセージがキューにプッシュされ、順次処理されるのと同じです。
+つまり、waveOutWrite関数は再生要求を1つ発生させるわけですが、
+この関数を何度も実行すると……結果は「WAVEのマルチバッファリング」で解説します。
+MMRESULT waveOutWrite(
+HWAVEOUT hwo, 
+LPWAVEHDR pwh,
+UINT cbwh 
+);
+hwo にはウェーブフォームオーディオ出力デバイスのハンドルを指定します。
+pwh には初期化されたWAVEHDR構造体のアドレスを指定します。
+cbwh にはWAVEHDR構造体のバイト数を指定します。
+waveOutWrite(hWaveOut,&whdr,sizeof(WAVEHDR));
+それでは再生までのプログラムをまとめて見てみましょう。
+#define SRATE    8000    //標本化周波数(1秒間のサンプル数)
+#define F        400     //周波数(1秒間の波形数)
+WAVEFORMATEX wfe;
+static HWAVEOUT hWaveOut;
+static WAVEHDR whdr;
+static LPBYTE lpWave;
+int i,len;
+wfe.wFormatTag=WAVE_FORMAT_PCM;
+wfe.nChannels=1;    //モノラル
+wfe.wBitsPerSample=8;    //量子化ビット数
+wfe.nBlockAlign=wfe.nChannels * wfe.wBitsPerSample/8;
+wfe.nSamplesPerSec=SRATE;    //標本化周波数
+wfe.nAvgBytesPerSec=wfe.nSamplesPerSec * wfe.nBlockAlign;
+waveOutOpen(&hWaveOut,WAVE_MAPPER,&wfe,0,0,CALLBACK_NULL);
+lpWave=(LPBYTE)calloc(wfe.nAvgBytesPerSec,2);    //2秒分
+len=SRATE/F;    //波長
+for(i=0;i<SRATE*2;i++){  //波形データ作成
+if(i%len < len/2)    lpWave[i]=128+64;
+else                 lpWave[i]=128-64;
+}
+whdr.lpData=(LPSTR)lpWave;
+whdr.dwBufferLength=wfe.nAvgBytesPerSec * 2;
+whdr.dwFlags=WHDR_BEGINLOOP | WHDR_ENDLOOP;
+whdr.dwLoops=1;
+waveOutPrepareHeader(hWaveOut,&whdr,sizeof(WAVEHDR));
+waveOutWrite(hWaveOut,&whdr,sizeof(WAVEHDR));
+波形データはいつでも変更する事が可能です。
+望ましくはないでしょうが、再生中でも可能です。
+クローズまで
+waveOut関数を使ってWAVEデータの処理を終了させる手順は次のようになります。
+waveOutReset関数  waveOutUnprepareHeader関数  waveOutClose関数  メモリ領域解放
+停止
+waveOutReset関数は再生を停止させて、現在位置を 0 にリセットします。
+MMRESULT waveOutReset(
+HWAVEOUT hwo 
+);
+hwo にはウェーブフォームオーディオ出力デバイスのハンドルを指定します。
+クリーンアップ
+waveOutUnprepareHeader関数はwaveOutPrepareHeader関数で行われた初期化をクリーンアップします。
+MMRESULT waveOutUnprepareHeader(
+HWAVEOUT hwo, 
+LPWAVEHDR pwh,
+UINT cbwh 
+);
+hwo にはウェーブフォームオーディオ出力デバイスのハンドルを指定します。
+pwh にはクリーンアップするWAVEHDR構造体のアドレスを指定します。
+cbwh にはWAVEHDR構造体のバイト数を指定します。
+waveOutUnprepareHeader関数は
+waveOutReset関数の後、メモリ領域解放の前に呼び出さなければなりません。
+クローズ
+waveOutClose関数はウェーブフォームオーディオ出力デバイスをクローズします。
+MMRESULT waveOutClose(
+HWAVEOUT hwo 
+);
+hwo にはウェーブフォームオーディオ出力デバイスのハンドルを指定します。
+waveOutClose関数はwaveOutReset関数の後に呼び出さなければなりません。
+メモリ領域解放
+waveOutUnprepareHeader関数の後に行う必要があります。
+それではクローズまでのプログラムを以下に示します。
+処理する順番に気を付けて下さい。
+waveOutReset(hWaveOut);
+waveOutUnprepareHeader(hWaveOut,&whdr,sizeof(WAVEHDR));
+waveOutClose(hWaveOut);
+free(lpWave);
+ダウンロード 
+8ビット矩形波(waveOut_create.cpp) 16ビット矩形波(waveOut_create_16.cpp)
+8ビット正弦波(waveOut_create2.cpp) 8ビットノコギリ波(waveOut_create3.cpp)
+関数が多く、難しい印象を持ったかもしれませんが、
+慣れてしまえば、MCIよりも素直で直接的なプログラムです。
+これで何ができるのか?
+今回のように波形データをプログラムで作成する用途は稀ですが、
+再生中の波形データの現在位置を参照して、波形を描画する等がよくある処理でしょう。
+また、複数の音を合成する事もできます。
+戻る / ホーム
+WAVEデータの作成と再生【Windowsプログラミング研究所】

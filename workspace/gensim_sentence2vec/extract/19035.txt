@@ -1,0 +1,33 @@
+JSONICとは
+JSONICは、Java用のシンプルかつ高機能なJSONエンコーダー/デコーダーライブラリです。
+Java用のJSONライブラリはすでに多数存在しますが、JSONICはRFC 4627に従った正式なJSON形式でのデコード/エンコードを行いながらも、プログラミング言語に依存する情報をJSON内に含めることなくPOJO(Plain Old Java Object)と自然な変換を行える点に特徴があります。
+使い方も非常に簡単です。
+import net.arnx.jsonic.JSON;
+// POJOをJSONに変換します
+String text = JSON.encode(new Hoge());
+// JSONをPOJOに変換します
+Hoge hoge = JSON.decode(text, Hoge.class);
+ダウンロード
+ダウンロードはこちらからできます。なお、JSONICのビルド/実行には、Javaバージョン5.0以上が必要です。
+基本的な使い方
+通常の用途では、二つの静的メソッドencode/decodeだけ利用すれば事足ります。
+encodeメソッド - POJOからJSONへの変換
+POJOからJSONに変換する場合は、encodeを使います。デフォルトでは、空白などを含まない可読性の低いJSONが出力されますが、二番目の引数をtrueにすることで可読性の高いJSONが出力されるようになります(Pretty Printモード)。
+// 変換対象のPOJOを準備
+Hoge hoge = new Hoge();
+hoge.number = 10;      // public field
+hoge.setString("aaa"); // public property
+hoge.setArray(new int[] {1, 2, 3});
+// POJOをJSONに変換します。戻り値は {"number":10,"string":"aaa","array":[1,2,3]}となります
+String text = JSON.encode(hoge);
+// POJOを可読性の高いJSONに変換します。戻り値は次のような文字列になります
+// {
+//     "number": 10,
+//     "string": "aaa",
+//     "array": [1, 2, 3]
+// }
+String text = JSON.encode(hoge, true); 
+// Appendable(StringBuffer, Writerなど)やOutputStreamを出力先にすることもできます(※1)
+JSON.encode(hoge, new FileWriter("hoge.txt"));
+JSON.encode(hoge, new FileOutputStream("hoge.txt"));
+jsonic - simple json encoder/decoder for java

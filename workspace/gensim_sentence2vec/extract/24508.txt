@@ -1,0 +1,16 @@
+Microsoft .NET Framework の System.Security.Cryptography
+クラスを使用すると、ソース データに対するハッシュ値を簡単に計算できます。この資料では、ハッシュ値の取得方法と、2
+つのハッシュ値を比較して同一かどうかをチェックする方法について説明します。 
+要件
+推奨するハードウェア、ソフトウェア、ネットワーク インフラストラクチャ、および Service Pack を以下に示します。
+Microsoft Visual Studio .NET 
+ハッシュ値を計算する
+ハッシュ値の生成と比較は、System.Security.Cryptography
+名前領域に含まれている暗号化リソースを使用して簡単に行うことができます。すべてのハッシュ関数は Byte[]
+型の入力を受け付けるため、ソースをハッシュする前にバイト配列への変換が必要となる場合もあります。文字列値に対してハッシュを作成するには、以下の手順に従います。
+Visual Studio .NET を起動します。  Visual Basic .NET で新しいコンソール アプリケーションを作成します。Visual Studio
+.NET によって、モジュールおよび空の Main() プロシージャが作成されます。  プロジェクトが System および System.Security 名前領域を参照していることを確認します。
+System、System.Security、 System.Security.Cryptography 、および
+System.Text 名前領域に対して Imports
+ステートメントを使用します。これにより、以降のコードでこれらの名前領域からの宣言を修飾する必要がなくなります。これらのステートメントは、他のすべての宣言より前に配置する必要があります。
+[HOW TO] Visual Basic .NET を使用したハッシュ値の計算および比較方法

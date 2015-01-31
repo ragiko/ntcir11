@@ -1,0 +1,38 @@
+処理アルゴリズムをコンソールから使う¶
+処理フレームワークの他のGUIエレメントを使用しては実現できない上級ユーザ向けの生産性向上を可能にします。複数のアルゴリズムを含むモデルは、コマンドラインインタフェースを使って定義できます。また、ループや条件分岐のような付加的な演算子を追加して、より柔軟でパワフルなワークフローを作成することができます。
+QGIS 内には処理コンソールはありませんが、 QGIS  ビルトインPython コンソールで代わりにすべての処理コマンドが使えます.これは,自分のコンソール作業に対してそれらのコマンドを組み合わせて,そこから利用できるあらゆる他の地物( QGIS APIからのメソッドも含め)に対する処理アルゴリズムにつなぐことができるということを意味しています.
+Pythonコンソールから実行できるコードは、たとえいかなる処理メソッドを使っていない場合でも、ちょうど他のアルゴリズムでそうするように、ツールボックス、グラフィカルなモデラー、あるいはいかなる他のコンポーネントからでも呼び出すことができます。実際、ツールボックス内で見られるアルゴリズムの中にはシンプルなスクリプトもあります。
+この章では QGIS Python コンソールから,処理アルゴリズムの使い方と,同時にPython を使った自分のアルゴリズムを書く方法を見て行きます.
+今や、コンソールからこれを使ってできるのは基本的にひとつの(興味深い)ことだけ: つまりアルゴリズムの実行です。runalg() メソッドを使いますが、これはその第一パラメータとしてアルゴリズムの名前を使って、次にアルゴリズムの要件に応じた付加的なパラメータの可変な数値、を使って実行されます。このため、最初に知っておくべきことは、実行するアルゴリズムの名前です。ツールボックスで見える名前ではなく、むしろユニークなコマンドラインの名前です。自分のアルゴリズム用に正しい名前を探す場合は、algslist() メソッドを使うことができます。コンソールで次の行をタイプしてください:
+Accumulated Cost (Anisotropic)---------------->saga:accumulatedcost(anisotropic)
+Accumulated Cost (Isotropic)------------------>saga:accumulatedcost(isotropic)
+Add Coordinates to points--------------------->saga:addcoordinatestopoints
+Add Grid Values to Points--------------------->saga:addgridvaluestopoints
+Add Grid Values to Shapes--------------------->saga:addgridvaluestoshapes
+Add Polygon Attributes to Points-------------->saga:addpolygonattributestopoints
+Aggregate------------------------------------->saga:aggregate
+Aggregate Point Observations------------------>saga:aggregatepointobservations
+Aggregation Index----------------------------->saga:aggregationindex
+Analytical Hierarchy Process------------------>saga:analyticalhierarchyprocess
+Analytical Hillshading------------------------>saga:analyticalhillshading
+Average With Mask 1--------------------------->saga:averagewithmask1
+Average With Mask 2--------------------------->saga:averagewithmask2
+Average With Thereshold 1--------------------->saga:averagewiththereshold1
+Average With Thereshold 2--------------------->saga:averagewiththereshold2
+Average With Thereshold 3--------------------->saga:averagewiththereshold3
+B-Spline Approximation------------------------>saga:b-splineapproximation
+...
+これが、アルファベット順の、対応するコマンドライン名に沿った、利用可能な全アルゴリズムの一覧です。
+このメソッドでは、パラメ−タとして文字列を使えます。アルゴリズムの全文を返却する代わりに、その文字列を含むものだけを表示します。もし、例えば、DEMからスロープを計算するアルゴリズムを探している場合、alglist("slope") とタイプすると次のような結果が得られます:
+DTM Filter (slope-based)---------------------->saga:dtmfilter(slope-based)
+Downslope Distance Gradient------------------->saga:downslopedistancegradient
+Relative Heights and Slope Positions---------->saga:relativeheightsandslopepositions
+Slope Length---------------------------------->saga:slopelength
+Slope, Aspect, Curvature---------------------->saga:slopeaspectcurvature
+Upslope Area---------------------------------->saga:upslopearea
+Vegetation Index[slope based]----------------->saga:vegetationindex[slopebased]
+この結果は、あなたが利用可能なアルゴリズムによって変わります。
+これであなたが探しているアルゴリズムは探しやすくなったはずです。コマンドライン名はこの場合``saga:slopeaspectcurvature``です。
+いったんアルゴリズムのコマンドライン名が分かれば、次にやるのはそれを実行する構文を知ることです。それはすなわち、必要なパラメータと runalg() メソッドを呼び出す際に引き渡す順序を知ることです。アルゴリズムを詳細に説明するメソッドがあり、アルゴリズムが必要とするパラメータと、生成されるアウトプットの一覧を取得することができます。その目的のために、alghelp(name_of_the_algorithm) メソッドを使うことができます。説明用の長い名前ではなく、コマンドライン名を使用してください。
+saga:slopeaspectcurvature をパラメータとしてこのメソッドを呼び出すと,次の説明が得られるでしょう.
+処理アルゴリズムをコンソールから使う

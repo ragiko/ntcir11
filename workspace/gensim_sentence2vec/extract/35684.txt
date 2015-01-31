@@ -1,0 +1,14 @@
+最大エントロピー (maximum entropy; maxent)  &dagger;
+最大エントロピー原理 (principle of maximum entropy)では,素性関数で表された制約の下で,エントロピーを最大にする,すなわち,最も均一分布に近い分布を選ぶ.
+入力ベクトル \(\mathbf{x}_j\) と出力クラス \(y_j\) を考える.
+素性関数 (feature function) は \(\mathbf{x}_j\) と \(y_j\) が特定の条件を満たすとき 1,そうでないとき 0 をとる.
+例えば,文書を \(\mathbf{x}_j\) で表すとき,文書に「機械学習」の語が含まれていて,クラス \(y_j\) が「機械学習」のカテゴリなら \(f_i(\mathbf{x},y\) は 1 をとり,そうでなければ 0 をとる.
+次の 最大エントロピーモデル (maximum entropy model) は,最大エントロピー原理に基づいて確率分布を推定する
+真の分布 \(\Pr[\mathbf{x},y]\) と経験分布  \(\hat{\Pr}[\mathbf{x},y]\) ,それぞれの下での素性関数の期待値が等しいという制約
+\[\mathrm{E}_{\Pr}[f_i]=\mathrm{E}_{\hat{\Pr}}[f_i]\]
+この制約の下で,次のエントロピーを最大にする \(\Pr[y|\mathbf{x}]\) を求める
+\[\Pr^\ast=\arg\max_{\Pr} H(\Pr)=-\arg\max_{\Pr}\sum_{\mathbf{x},y}\hat{\Pr}[y]\Pr[y|\mathbf{x}]\log\Pr[y|\mathbf{x}]\]
+このとき,素性関数 \(f_i\) の重みを \(\lambda_i\) とすると,確率分布は次の形式になる
+\[\Pr[y|\mathbf{x}]=\frac{\exp[\sum_i\lambda_i f_i(\mathbf{x},y)]}{\sum_{y_j}\exp[\sum_i\lambda_i f_i(\mathbf{x},y_j)]}\]
+-- しましま
+最大エントロピー - 機械学習の「朱鷺の杜Wiki」

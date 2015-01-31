@@ -1,0 +1,96 @@
+(最終更新日 2014/05/07)
+データベースには、論文のタイトルで検索ができ、本文PDFへのリンク機能や、論文の抄録も備えている文献データベースや、調査・研究で得られた数値情報等の一次情報を収録しているファクトデータベースがあります。
+工学系でよく使うデータベース等の電子リソースについて、その概略や各特徴を次に挙げました。
+電子リソースの概略
+工学系全般のデータベース
+工学系分野別データベース
+学位論文
+電子リソースの概略
+電子リソース全般
+京都大学図書館電子リソース
+http://edb.kulib.kyoto-u.ac.jp/gakunaidb.html
+京都大学で利用できる電子リソースの、論文検索(Article Search)、電子ジャーナル/電子ブック(E-journal/E-Books)、データベース(Database)について総合案内をしているページです。
+※同時アクセス
+同時アクセスとは、特定のデータベースに、一度に複数のパソコンからアクセスすること。提供元と大学との契約により、同時アクセス数が決められている場合があります。同時アクセス数は、「電子リソース」のページの各データベースの説明に、次のように記載されています。
+例)同時アクセス:8
+同時アクセス数をオーバーした場合は、混み合っているという意味のメッセージが表示されるので、少し時間を置いてからアクセスしてください。
+電子リソースの利用上の注意
+http://edb.kulib.kyoto-u.ac.jp/ej/properuse.pdf 
+「ちょっと待って!過度なクリックは危険です。」 http://edb.kulib.kyoto-u.ac.jp/ej_click.pdf
+「他人に「ID」を貸してはダメ!」(PDF) http://edb.kulib.kyoto-u.ac.jp/media_id.pdf
+論文の本文へのアクセス
+文献データベースを使って検索をすると、学内では、ArticleLinker ( や )が、本文へのナビゲーションをしてくれます。
+京大ArticleLikerとはhttp://edb.kulib.kyoto-u.ac.jp/erhelp/al.html
+京大ArticleLikerの使い方http://www.kulib.kyoto-u.ac.jp/modules/refguide/index.php?content_id=4 
+京都大学が契約している電子ジャーナルの本文を読むには、ECS-IDまたはSPS-IDが必要です。
+学外からのアクセス
+学外から電子リソースを使う
+http://edb.kulib.kyoto-u.ac.jp/er-remote.html
+京都大学が契約するほとんどのデータベースや電子ジャーナルは、自宅のパソコンからPPTP接続(情報環境機構提供)などのリモートアクセスを使って、学内ネットワーク環境に接続し、利用することもできます。
+KUINS PPTP 接続サービスマニュアルhttp://www.kuins.kyoto-u.ac.jp/ja/index.php?PPTP 
+page top
+工学系全般のデータベース
+CiNii Articles [学内]国内で発行された全分野の学術雑誌や研究紀要に掲載された論文を検索することができます。学外でも無料提供されていますが、機関定額制を契約している京都大学内では、本文まで読める論文数が多くあります。ヘルプ-クイックガイド http://ci.nii.ac.jp/info/ja/articles/quickguide.html
+JDreamⅢ (同時アクセス数...8) [学内]http://jdream3.com/世界の科学技術文献約5,600万件を、日本語で検索できる日本で最大の科学技術文献データベース。
+JDreamⅢ 検索ガイド(文献検索のJDreamⅢ)http://jdream3.com/guide/※「ログイン」の「お名前」には、任意の名前を入れてください。
+医中誌Web [医学中央雑誌刊行会]  (同時アクセス数...4) [学内]http://search.jamas.or.jp/国内発行の医学、歯学、薬学、及び関連分野の定期刊行物の文献を収録しています。医用工学、医療情報学等、工学と医学との複合分野に便利です。
+Web of Knowledge[学内]Thomson Reuters社が提供する自然科学、社会科学、人文科学の各種データベースのプラットフォーム。データベースを横断して統合検索することができます。
+Web of Science約12,000誌の影響力の大きい雑誌や会議録を収録し、引用文献検索機能を備えるデータベース(収録:1900年～)。Science Citation Index Expanded (SCI-EXPANDED); Social Sciences Citation  Index (SSCI); Arts & Humanities Citation Index (A&HCI); Conference Proceedings Citation Index- Science (CPCI-S); Conference Proceedings Citation Index- Social Science & Humanities (CPCI-SSH)を含む。※CPCIは、会議録のデータベースの旧ISI Proceedings。http://science.thomsonreuters.jp/products/wos/
+Journal Citation Reports(JCR)主要学術雑誌の評価ツール。雑誌のインパクトファクターがわかる。
+Derwent Innovations Index世界40カ国以上、化学・電気・電子・機械工学分野の特許情報と引用文献情報を検索(収録:1963年～)。
+Essential Science Indicators (ESI)研究業績評価、比較。研究動向の分析。
+EndNote web参考文献情報をオンライン上に保存し、論文執筆時の参考文献の編成、保存、共有ができる文献管理ツール。EndNote(CD-ROM版)の簡易版。文献情報グループを同僚と共有できます。
+インターネット講習会[Thomson Reuters]http://science.thomsonreuters.jp/products/wos/training/トムソンロイターの講師が双方向で行う講習会に参加ができます(事前申込)。「過去に開催されたインターネット講習会 録音版」で、自学自習ができます。
+SciVerse Scopus [Elsevier] [学内]http://www.scopus.com/home.urlSciVerse Scopusは、世界の5,000以上の出版社の19,000以上の科学・技術・医学・社会科学・人文科学の雑誌を収録する世界最大級の抄録・引用文献データベース。
+SciVerse Scopus 概要 http://japan.elsevier.com/products/scopus/
+Article Search [学内]http://edb.kulib.kyoto-u.ac.jp/gakunaias.html京都大学で利用できる複数のデータベースを、横断的に検索することができます。同時アクセス数が制限されているデータベースは、検索が漏れる場合があるので注意。
+page top
+工学系分野別
+地球工学系
+土木学会学術論文等公開ページhttp://www.jsce.or.jp/library/open/files/open01.shtml
+page top
+建築系
+日本建築学会(データベース・検索サービス)http://www.aij.or.jp/de-tabe-su.html
+大阪府建築士会(建築雑誌記事検索サービス)http://www.aba-osakafu.or.jp/refer/ref.html
+国指定文化財等データベースhttp://kunishitei.bunka.go.jp/bsys/index_pc.asp
+日本古典籍総合目録http://base1.nijl.ac.jp/~tkoten/about.html
+※詳細は、京都大学建築系図書室ホームページhttp://www.library.archi.kyoto-u.ac.jp/
+page top
+物理系
+Lecture Notes in Physics (1997-present)  [Springer] [学内]SpringerLink Book Series の電子ブック1996年以前の同シリーズは、KULINEで検索後、各図書室の所蔵を確認してください。
+Springer Tracts in Modern Physics (1997-present)   [Springer] [学内]SpringerLink Book Series の電子ブック1996年以前の同シリーズは、KULINEで検索後、各図書室の所蔵を確認してください。
+Springer Tracts in Modern Physics [Springer] [学内]地質・地球物理 / 物理
+SpringerMaterials - The Landolt Bornstein Database [Springer] [学内]http://www.springermaterials.com/navigation/物理学・化学・工学、材料科学分野の物質情報を提供する世界最大のファクトデータベースLandolt-Bornstein(ランドルト・ベルンシュタイン)のオンライン版。Landolt-Bornsteinのニュー・シリーズ(第7 版、1961 年以降)をデータベース化し、400 巻以上のコンテンツを提供。REACH(化学物質の登録、評価、許可および制限のためのEU の法律)情報を含む。
+概要 http://www.springer.jp/database/springermaterials.php
+Les Houches [Springer] [学内]http://www.springerlink.com/content/110321/地質・地球物理 / 物理 1999-2004
+page top
+電気電子系
+電気学会 電子図書館(電気学会発行の雑誌論文・レポート・講演論文集・図書検索データベース)http://www.bookpark.ne.jp/ieej/
+電子情報通信学会 論文誌データベースhttp://search.ieice.org/bin/search.php?lang=J
+IEEE Xplore(IEEE発行の雑誌論文・会議録・規格・図書検索データベース)http://ieeexplore.ieee.org/Xplore/dynhome.jsp
+page top
+情報系
+Lecture Notes in Mathematics (1964-present) [Springer] [学内]SpringerLink Book Series の電子ブック
+Lecture Notes in Computer Science (1973-present) [Springer] [学内]SpringerLink Book Series の電子ブック
+SIAM ebooks [iGPublishing] Society for Industrial and Applied Mathematics［理学部提供］ [学内]http://www.igpublish.com/SIAM-ebook数学分野の電子ブック(約400タイトル)。
+KULINE http://m.kulib.kyoto-u.ac.jp/webopac/ufirdi.do?ufi_target=catdbl&ufi_locale=ja&pkey=EB03207468
+MathSciNet [学内]Mathematical Reviews、Current Mathematical PublicationsのWeb版。1940～
+page top
+化学系
+SciFinder (Web版) (同時アクセス数...10) [学内]https://scifinder.cas.org/scifinder/login.jsfSciFinder は、化学を中心とする医薬、生化学、物理、工学等の科学情報を検索できるデータベース。(※ID/パスワードを取得する必要があります)
+アクセス:https://scifinder.cas.org/scifinder/
+ユーザ登録方法:http://edb.kulib.kyoto-u.ac.jp/lusr/sfs2007.html#sfsweb
+サービス詳細・マニュアル:http://www.jaici.or.jp/SCIFINDER/index.php
+(2012年1月1日以降は、SciFinder検索ソフト版の提供を終了し、Web版のみ。)
+Reaxys(リアクシス) [Elsevier]［化学研究所提供］https://www.reaxys.com/化学反応情報と実測物性値を収録した世界最大級の反応・化合物データベース。
+化学物質リンクセンター [科学技術振興機構-JST]http://chemlink.jp/link_center/jsp/index.jsp
+日本化学物質辞書データベース(日化辞Web)http://nikkajiweb.jst.go.jp/nikkaji_web/pages/top.html
+化学物質安全情報提供システム(Kis‐net)http://www.k-erc.pref.kanagawa.jp/kisnet/
+既存化学物質毒性データベース(JECDB)http://dra4.nihs.go.jp/mhlw_data/jsp/SearchPage.jsp
+有機化合物のスペクトルデータベース(SDBS)http://riodb01.ibase.aist.go.jp/sdbs/cgi-bin/cre_index.cgi
+高分子データベース(PoLyInfo)http://polymer.nims.go.jp/
+Advances in Polymer Science (1997-present) [Springer]http://www.springerlink.com/content/104935/SpringerLink Book Series の電子ブック
+Progress in Colloid and Polymer Science (1997-present)  [Springer]http://www.springerlink.com/content/110318/SpringerLink Book Series の電子ブック
+SpringerMaterials - The Landolt Bornstein Database [Springer]物理学・化学・工学、材料科学分野の物質情報を提供する世界最大のファクトデータベースLandolt-Bornstein(ランドルト・ベルンシュタイン)のオンライン版。Landolt-Bornsteinのニュー・シリーズ(第7 版、1961 年以降)をデータベース化し、400 巻以上のコンテンツを提供。REACH(化学物質の登録、評価、許可および制限のためのEU の法律)情報を含む。
+概要 http://www.springer.jp/database/springermaterials.php
+

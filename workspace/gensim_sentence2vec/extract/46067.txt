@@ -1,0 +1,58 @@
+概要
+Pythonの文字コード指定による日本語文字化けの問題は誰もがハマるところ。
+この記事では文字化けの解決方法を簡単にまとめたものになります。
+実行環境はMacです。UnixやLinuxでもPath以外の箇所は同じように動作すると思います。
+間違いの指摘などあればよろしくお願いします。
+注意すべきこと
+簡単にいうと以下の4点になりそうです。
+1. ファイルの文字コード指定
+2. ファイル内部の行頭での文字コード指定
+3. Pythonの内部コードはUnicode(オブジェクト)として扱っている。
+4. printなどの出力関数では端末の設定に合わせた文字コードが利用されている
+※1,2の文字コード指定は一致させます。
+3. Pythonの内部コードはUnicode(オブジェクト)として扱っている。
+UTF-8とUnicode(オブジェクト)は違うものであり、必要に応じてそれぞれの変換が必要になります。
+Python内部ではUnicodeを使用しているので、文字列置換処理を行う場合などは処理前にUnicodeに変換する必要があります。
+以下に簡単なサンプルを書きます。
+#! /usr/bin/env python
+# -*- coding:utf-8 -*-
+data_orig = "日本語"                                 #日本語代入(UTF-8)
+print type( data_orig )                              #typeはstr
+data_unic = data_orig.decode( 'utf-8' )   #utf-8unicodeオブジェクト
+print type( data_unic )                             #typeはunicodeオブジェクト
+print data_unic                                        #ここはerrorになる可能性あり
+typeという関数で変数などの型を調べることができます。文字列の場合は通常'str'となりますが、unicodeに
+変換されたものは'unicode'というオブジェクトの出力になります。
+最後のprint data_unicで以下のようなerrorが出力された場合は(※Pythonのversionで表示されない場合もありそう)
+Unicodeから出力関数で使われる端末のデフォルト文字コードへの変換がミスしていることになります。
+Python UnicodeEncodeError: 'ascii' codec can't encode characterもしエラーが表示された場合は、¥Unicodeオブジェクト形式をそのままprintするのではなく、encodeを使ってstr型への
+変換を行ってみてください。余談ですが、端末(ターミナル)で使用しているデフォルトの文字コード調査と文字コードの変更は次のように出来ます。
+調査
+#! /usr/bin/env python
+# -*- coding:utf-8 -*-
+import sys 
+print sys.getdefaultencoding()
+変更
+※変更はやらないほうがいいと思いますが、どうしてもという場合
+/opt/local/var/macports/software/xorg-xcb-proto/1.6_0+python26/opt/local/lib/python2.6/site-packages/sitecustomize.py
+といったファイルを新規で作成し、以下の内容に書き換えます。
+import sys
+sys.setdefaultencoding( 'utf-8' )
+unicode,decode,encode関数の本質的な意味
+文字コード変換の際にunicode,decode,encodeなどの名前の関数を使いますが、
+最初は名前を覚えるのにややこしいのですが、意味を抑えるとすっきりします。
+最初に述べたようにPythonの内部エンコーディングはUnicodeを使用しています。
+よってUnicodeを中心に考えると良いです。unicodeはunicodeに変換しますという普通の意味として捉えます。
+decodeとは元の形式に変換しなおすという意味なので、Unicodeに戻しますよと覚えます。
+encodeとは別の形式に変換しますという意味なので、Unicodeから変換しますと覚えます。
+※unicodeとdecodeは同じ処理を行いますが、指定の仕方が異なるので注意が必要です。
+またUTF-8からEUC-JPなどへの直接変換はやらずに、一度Unicodeへの変換を中継させる必要がありそうです。以上を踏まえたサンプルコードは次のようなものになります。
+#! /usr/bin/env python
+# -*- coding:utf-8 -*-
+#UTF-8unicode変換 
+data_unic = data_orig.decode( 'utf-8' )
+data_unic_2 = unicode( data_orig, 'utf-8' )
+data_euc = data_unic.encode( 'euc-jp' )         #unicode  euc-jp変換
+data_euc = unicode( data_orig, 'utf-8' ).encode( 'euc-jp' )  #UTF-8  euc-jp変換
+print data_euc  #euc-jp文字コードで出力
+5分で理解するPython文字コード - Web就活日記

@@ -1,0 +1,19 @@
+.NET Framework Version 2.0 では、XmlReaderSettings クラスと Create メソッドを使って XmlReader インスタンスを作成する方法を推奨しています。  この方法に従えば、.NET Framework 2.0 で導入されたすべての新しい機能を利用できます。  詳細については、「XML リーダーの作成」を参照してください。  
+空白は、有意の空白と意味のない空白の 2 種類に分類されます。  有意の空白とは、ドキュメント型定義 (DTD) で定義されている混合コンテンツ モデル内の空白、または xml:space が  "preserve"  に設定されているときの特殊属性 xml:space のスコープ内の空白です。  有意の空白は、元のドキュメントから最終ドキュメントまで保持する必要のある空白です。  意味のない空白とは、ドキュメントの読み取りから出力ドキュメントまで保持する必要のない空白です。  空白は、次の文字のいずれかに該当します。  空白 (ASCII の空白、0x20)キャリッジ リターン (CR、0x0D)ライン フィード (LF、0x0A)水平タブ (0X09)W3C (World Wide Web Consortium) 標準では、ドキュメント内で空白が現れる場所と xml:space 属性の設定に応じて、空白の取り扱いを変更するように規定しています。  空白文字が混合要素コンテンツ内または xml:space="preserve" のスコープ内に現れた場合は、空白を保持し、変更せずにアプリケーションに渡す必要があります。  これ以外の空白は保持する必要はありません。  
+XmlTextReader
+は、xml:space="preserve" コンテキスト内に現れた空白だけを有意の空白として扱います。  
+XmlTextReader
+は DTD を解析せず、混合コンテンツが定義されているかどうかを判断できないため、DTD で混合コンテンツとして定義されている有意の空白を認識しません。  混合コンテンツの要素の有意の空白を認識する必要がある場合は、DTD を解析でき、混合コンテンツの要素を認識できる XmlValidatingReader を使用します。  現在のノード内の空白の種類を確認するには、NodeType プロパティを使用します。  有意の空白の場合は SignificantWhitespace 列挙値が返され、意味のない空白の場合は Whitespace 列挙値が返されます。  
+WhitespaceHandling
+プロパティは、列挙値を利用してリーダーがどのように空白を返すかを決定します。  列挙値の詳細については、「WhitespaceHandling」を参照してください。  W3C 標準の詳細については、www.w3.org/XML/Group/2000/07/REC-xml-2e-review#sec-white-space で公開されている『Extensible Markup Language (XML) 1.0』勧告のセクション 2.10 を参照してください。  空白を含み、xml:space 属性が "preserve" に設定されている XML の例を次に示します。  この例では、"改行" 文字が特別な空白文字として行の末尾に示されています。  
+<!DOCTYPE test [
+<!ELEMENT test (item | book)*> <-- element content model -->
+<!ELEMENT item (item*)> <-- element content model -->
+<!ATTLIST item xml:space (default | preserve) #IMPLIED>
+<!ELEMENT book (#PCDATA | b | i)*> <-- mixed content model -->
+<!ELEMENT b (#PCDATA)> <-- mixed content model -->
+<!ELEMENT i (#PCDATA)> <-- mixed content model -->
+]>
+<test><item><item xml:space="preserve">ººººººººººººº<item/>ººººººººº</item></item><book>ººººººººº<b>This<b>ººººººººº<i>is</i>ºººººººº<b>a test</b>ººººº</book>
+</test>(?) と表示されている空白は意味のない空白です。  (º) と表示されている空白は有意の空白です。  
+XmlTextReader による空白の取り扱い

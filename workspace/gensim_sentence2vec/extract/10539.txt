@@ -1,0 +1,7 @@
+文法において,自立語に付属する語として類別される語in grammar, a word or phrase that is classified as an adjunct
+- EDR日英対訳辞書
+日本語の単語のうち,文法上自立しているものin the grammar of Japanese, the least independent unit that corresponds to the unit of word in Western languages
+- EDR日英対訳辞書
+テキストデータ構造生成部5で当該自立語と当該自立語と係り受け関係を有する他の自立語との関係を示すテキストデータ構造情報を生成・記憶する。A text data structure generating part 5 generates and stores the text data structure information showing the relation between the independent words and other independent words having the modulation relation with the independent words. - 特許庁
+素性取得部54は、各単語について、注目単語の直前と直後の自立語を含む素性を抽出して素性ベクトルを得る。A feature acquisition part 54 extracts features including independent words, immediately before and after a target word, to obtain a feature vector. - 特許庁
+「自立語」に関連した英語例文の一覧 - Weblio英語例文検索

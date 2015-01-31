@@ -1,0 +1,186 @@
+トピックモデル
+R, 機械学習, Rpackage, 統計, Rを使いこなす
+Latent Dirichlet allocation(LDA)というなかなか面白そうなテキストマイニングを教えてもらったのでやってみる。
+最近のラノベのトピックは異世界物が多い。というかここ数年は、ツンデレ、空から女の子が降ってくるハーレム物から、難聴系・鈍感主人公がハーレムを築くような物へ移り変わっているような気がするが、物語自体のトピックを推定・分類して、流行り廃りをDynamic Topin Model(DTM)を用いて解析して遊んでみたらしい。
+結果としては異世界でオレTSUEEEEEEEEE!!物が流行っているという結果だった。オレらの感触と全く同じようにデータが物語っているので、このビッグウェーブに乗り遅れないようにオレも明日からラノベ書くわ!!
+Rではlda, topicmodelsパッケージが使えるようで、お互いに互換性のあるクラスのようである。こちらでldaを使っていたのでこれをパクってやってみる。
+DTMについてはRで実装されていなさそうなので保留。
+解析に必要なのは文章中の単語の出現頻度で、これを(単語・出現頻度)の行と出現単語数の列の行列で表す。
+例では2文章中に合わせて12単語出現している。$documentの1行目は0〜11となぜかR言語以外の他言語っぽい感じになっているけどそういう仕様のようだった。
+library(lda)
+sentence <- c("I am the very model of a modern major general", "I have a major headache")
+lexicalize(sentence, lower=TRUE)
+$documents
+$documents[[1]]
+[,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+[1,]    0    1    2    3    4    5    6    7    8     9
+[2,]    1    1    1    1    1    1    1    1    1     1
+$documents[[2]]
+[,1] [,2] [,3] [,4] [,5]
+[1,]    0   10    6    8   11
+[2,]    1    1    1    1    1
+$vocab
+[1] "i"        "am"       "the"      "very"     "model"    "of"      
+[7] "a"        "modern"   "major"    "general"  "have"     "headache"
+解析に移る。Coraという2410の科学記事のデータセットを読み込み、これをLDAで解析する。
+library(lda)
+data(cora.documents); data(cora.vocab); data(cora.links); data(cora.titles)
+as.data.frame(cbind(cora.vocab[cora.documents[[1]][1, ]+1], cora.documents[[1]][2, ]))
+Coraの最初の記事はこんな単語で構成されている。なんとなくだが、配列の組み合わせを推定するコンピューターアルゴリズムな話をしているのだろう。
+1        computer  1
+2      algorithms  4
+3     discovering  2
+4        patterns  2
+5          groups  1
+6         protein  2
+7       sequences  1
+8           based  2
+9         fitting  1
+10     parameters  1
+11    statistical  3
+12          model  4
+13          group  1
+14        related  1
+15        include  1
+16         hidden  1
+17         markov  1
+18       multiple  1
+19       sequence  3
+20      alignment  1
+21          gibbs  1
+22        sampler  1
+23      producing  1
+24         models  1
+25      incorrect  1
+26       produced  1
+27      situation  1
+28         convex  4
+29    combination  2
+30       weighted  1
+31        average  1
+32          paper  1
+33       presents  1
+34       solution  1
+35        problem  3
+36   combinations  2
+37           form  1
+38      heuristic  4
+39      extremely  1
+40       variance  2
+41      dirichlet  1
+42        mixture  1
+43         priors  1
+44           part  1
+45           call  1
+46      increases  1
+47       strength  1
+48      decreases  1
+49          prior  2
+50           size  2
+51          final  1
+52       strongly  1
+53         single  1
+54      component  1
+55       describe  2
+56        analyze  1
+57 mathematically  1
+58       motivate  1
+59 implementation  1
+60           show  1
+61    effectively  1
+62      eliminate  1
+63        pattern  1
+64      discovery  1
+LDAを行う。
+K <- 10
+result <- lda.collapsed.gibbs.sampler(cora.documents, K, cora.vocab, 25, 0.1, 0.1, compute.log.likelihood=TRUE)
+top.words <- top.topic.words(result$topics, 3, by.score=TRUE)
+各クラスターでの上位キーワードを抽出するとこんな感じの単語が取れる。推定してなんやかんややる系の単語が多い。
+top.words
+[,1]       [,2]        [,3]            [,4]      [,5]        [,6]         [,7]     [,8]         [,9]         [,10]     
+[1,] "research" "design"    "reinforcement" "neural"  "examples"  "report"     "markov" "genetic"    "algorithm"  "decision"
+[2,] "neural"   "reasoning" "control"       "network" "rules"     "technical"  "chain"  "search"     "estimation" "trees"   
+[3,] "networks" "knowledge" "genetic"       "visual"  "inductive" "university" "theory" "population" "method"     "data"    
+最初の3記事だけトピック割合をプロットしてみる。
+N <- 3
+topic.proportions <- t(result$document_sums) / colSums(result$document_sums)
+topic.proportions <- topic.proportions[1:N, ]
+topic.proportions[is.na(topic.proportions)] <-  1 / K
+colnames(topic.proportions) <- apply(top.words, 2, paste, collapse=" ")
+par(mar=c(5, 14, 2, 2))
+barplot(topic.proportions, beside=TRUE, horiz=TRUE, las=1, xlab="proportion")
+最初の記事は(research, neural, networks), (markov, chain, theory)などのトピック割合が大きいので、前後の関係から推定するアルゴリズムの話をしているのだろう。やる前の感触にそこそこ一致している。
+次の記事は…うん、なるほどわからん。
+トピック割合としては(design, reasoning, knowledge)とかが大きいけど、なるほどわからん。
+as.data.frame(cbind(cora.vocab[cora.documents[[2]][1, ]+1], cora.documents[[2]][2, ]))
+V1 V2
+1           paper  1
+2         problem  1
+3       describes  1
+4     preliminary  1
+5            work  1
+6            aims  1
+7           apply  1
+8        learning  3
+9      strategies  1
+10        medical  2
+11  investigation  1
+12    application  1
+13        machine  2
+14           foil  1
+15       identify  1
+16           risk  2
+17        factors  2
+18           rate  2
+19           goal  1
+20          study  1
+21         induce  1
+22    description  1
+23    explanation  1
+24 classification  1
+25      attribute  1
+26     completely  1
+27       improved  1
+28          worse  1
+29       examples  1
+30          rules  1
+31         result  1
+32    differences  1
+33        results  1
+34    encouraging  1
+35           play  1
+36           role  1
+37          large  1
+38          scale  1
+39        solving  1
+予測をしたかったら
+predictions <- predictive.distribution(result$document_sums[,1:2], result$topics, 0.1, 0.1)
+top.topic.words(t(predictions), 5)
+あまり使わないけどggplot系を使いたかったら
+library(ggplot2)
+library(reshape)
+topic.proportions.df <- melt(cbind(data.frame(topic.proportions), document=factor(1:N)), variable.name="topic", id.vars = "document")
+qplot(topic, value, fill=document, ylab="proportion", data=topic.proportions.df, geom="bar") + opts(axis.text.x = theme_text(angle=90, hjust=1)) + coord_flip() + facet_wrap(~ document, ncol=5)
+あと色々いじってみたけど図を載せるまで元気がなかったやつ。
+data(poliblog.documents); data(poliblog.vocab); data(poliblog.ratings)
+num.topics <- 10
+params <- sample(c(-1, 1), num.topics, replace=TRUE)
+result <- slda.em(documents=poliblog.documents, K=num.topics, vocab=poliblog.vocab, num.e.iterations=10, num.m.iterations=4, alpha=1.0, eta=0.1, poliblog.ratings / 100, params, variance=0.25, lambda=1.0, logistic=FALSE, method="sLDA")
+require("ggplot2")
+Topics <- apply(top.topic.words(result$topics, 5, by.score=TRUE), 2, paste, collapse=" ")
+coefs <- data.frame(coef(summary(result$model)))
+theme_set(theme_bw())
+coefs <- cbind(coefs, Topics=factor(Topics, Topics[order(coefs$Estimate)]))
+coefs <- coefs[order(coefs$Estimate),]
+qplot(Topics, Estimate, colour=Estimate, size=abs(t.value), data=coefs) + geom_errorbar(width=0.5, aes(ymin=Estimate-Std..Error, ymax=Estimate+Std..Error)) + coord_flip()
+predictions <- slda.predict(poliblog.documents, result$topics,  result$model, alpha = 1.0, eta=0.1)
+qplot(predictions, fill=factor(poliblog.ratings), xlab = "predicted rating", ylab = "density", alpha=I(0.5), geom="density") +geom_vline(aes(xintercept=0)) +opts(legend.position = "none")
+library(topicmodels)
+data(AssociatedPress)
+lda0 <- LDA(AssociatedPress[1:20,], control = list(alpha = 0.1), k = 2)
+lda_inf <- posterior(lda0, AssociatedPress[21:30,])
+topicmodels: An R Package for Fitting Topic Models
+Latent Dirichlet Allocation in R
+ツイートする
+Permalink | コメント(4) | トラックバック(0) | 14:34
+トピックモデル - 驚異のアニヲタ社会復帰への道

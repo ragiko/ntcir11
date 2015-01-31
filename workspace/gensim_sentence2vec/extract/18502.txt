@@ -1,0 +1,2 @@
+ 0){var rand = parseInt(Math.random() * (999999-100000)+100000);top.location.href='/'+encodeURIComponent(document.getElementById('s').value.trim().replace( / /g, '_'))+'?renovate='+rand;}else{top.location.href='/'+encodeURIComponent(document.getElementById('s').value.trim().replace( / /g, '_'));};return false;}" action="/">
+parameter是什么意思_parameter的翻译_音标_读音_用法_例句_爱词霸在线词典

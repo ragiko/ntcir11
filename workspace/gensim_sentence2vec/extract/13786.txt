@@ -1,0 +1,3 @@
+Returns the value of EXPR with all the ASCII non-"word" characters backslashed. (That is, all ASCII characters not matching /[A-Za-z_0-9]/ will be preceded by a backslash in the returned string, regardless of any locale settings.) This is the internal function implementing the \Q escape in double-quoted strings. (See below for the behavior on non-ASCII code points.)
+EXPR の中のすべての ASCII 非英数字キャラクタをバックスラッシュで エスケープしたものを返します。 (つまり、/[A-Za-z_0-9]/ にマッチしない全ての ASCII 文字の前には ロケールに関わらずバックスラッシュが前置されます。) これは、ダブルクォート文字列での \Q エスケープを実装するための 内部関数です。 (非 ASCII 符号位置での振る舞いについては以下を参照してください。)
+Perlの組み込み関数 quotemeta の翻訳 - perldoc.jp

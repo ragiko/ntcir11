@@ -1,0 +1,2 @@
+SQL実行不可 -検索-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1SELECT * FROM kiji WHERE (keyword like '%大気境界層%' ) ORDER BY volume ASC, no, start_page LIMIT 0 ,
+

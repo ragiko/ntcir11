@@ -1,0 +1,122 @@
+
+マルコフ連鎖
+1個前の状態だけによって次の状態が決まる連鎖
+モンテカルロ法
+乱数を用いて行うシミュレーションや数値計算手法の総称
+マルコフ連鎖モンテカルロ法(MCMC)
+任意の分布を不変分布に持つマルコフ連鎖を設計・生成することで望む分布に従った乱数を生成するモンテカルロ法のこと
+お天気推移モデル分かりやすい!
+マルコフ連鎖モンテカルロ法の発想
+お天気推移モデルでは天気の推移確率が与えられていて、そこから不変分布を出すということを行った
+望む不変分布を持つように推移確率を与えるにはどうすればよいか?
+詳細釣り合いの条件を満たすように推移確率を決める
+十分条件だが必要条件ではない
+MCMC = パラメータ推定ではない
+可視化で理解するマルコフ連鎖モンテカルロ法
+本日の LT 資料です。「可視化で理解するマルコフ連鎖モンテカルロ法」#みどりぼん
+http://t.co/Lzndn8Ddmi&mdash; hoxo_m (@hoxo_m) 2014, 9月 9
+メトロポリス法だと尤度が上がらない場合、値を更新しないのが視覚的によく分かった!
+ギブスサンプリングで複数パラメータを推定する場合、一方を定数としてランダムサンプルするのが視覚的によく分かった!
+今回は受付として参加させて頂いた
+運営側の苦労が少し分かりました。。。
+ピザの分量は最適化されたよう
+MacではWinBugs動かないのでRStan使ってMCMCの計算をやってみた(1) - データ解析勉強日記を参考にStanで動かしてみた。
+GLMで推定した場合と結果はほぼ同じ
+Rhat = 1なので収束しているとみなせる
+Rhat > 1.1ではサンプル列間のばらつきが大きいので定常分布・事後分布の推定はできないと判断する
+> #まずはGLM
+> load("d.RData")
+> y <- d$y
+> x <- d$x - mean(d$x)
+> model <- glm(y~x, family=poisson)
+> summary(model)
+Call:
+glm(formula = y ~ x, family = poisson)
+Deviance Residuals: 
+Min        1Q    Median        3Q       Max  
+-1.52168  -0.53195   0.06417   0.40797   1.57939  
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  1.98276    0.08318  23.836   <2e-16 ***
+x            0.08334    0.06838   1.219    0.223    
+---
+Signif. codes:  0 *** 0.001 ** 0.01 * 0.05 . 0.1   1
+(Dispersion parameter for poisson family taken to be 1)
+Null deviance: 15.660  on 19  degrees of freedom
+Residual deviance: 14.171  on 18  degrees of freedom
+AIC: 94.036
+Number of Fisher Scoring iterations: 4
+> # Stanで実行
+(中略)
+> d.fit
+Inference for Stan model: kubo9.
+3 chains, each with iter=1600; warmup=100; thin=3; 
+post-warmup draws per chain=500, total post-warmup draws=1500.
+mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta1   1.97    0.00 0.08   1.81   1.92   1.97   2.03   2.13  1500    1
+beta2   0.08    0.00 0.07  -0.05   0.04   0.08   0.13   0.22  1500    1
+lp__  143.97    0.03 0.98 141.23 143.60 144.27 144.65 144.94  1143    1
+Samples were drawn using NUTS(diag_e) at Fri Sep 09 08:50:27 2014.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+セッション前半で紹介されてたglmer2stanでも試してみた。
+RStan使ってMCMCの計算をやってみた(1) - データ解析勉強日記を参考にしたときと結果はほぼ同じ
+無情報事前分布は教科書と同じように平均0、標準偏差100の正規分布がデフォルトみたい
+> # CRANにはないのでGithubからインストールして読み込み
+> library(devtools)
+> install_github("rmcelreath/glmer2stan")
+> library(glmer2stan)
+> # Stan実行
+> res <- glmer2stan(y~x, family="poisson", iter=1600, warmup=100, thin=3, chain=3)
+> (res)
+Inference for Stan model: y ~ x [poisson].
+3 chains, each with iter=1600; warmup=100; thin=3; 
+post-warmup draws per chain=500, total post-warmup draws=1500.
+mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+Intercept   1.98    0.00 0.08   1.81   1.92   1.98   2.03   2.13  1439    1
+beta_x      0.08    0.00 0.07  -0.04   0.04   0.08   0.13   0.21  1416    1
+dev        92.01    0.06 2.06  90.09  90.62  91.32  92.69  97.71  1273    1
+lp__      143.99    0.03 1.03 141.14 143.65 144.33 144.68 144.95  1273    1
+Samples were drawn using NUTS(diag_e) at Sat Sep 13 12:50:34 2014.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+# stanのモデルコードを表示
+> res@stanmodel
+S4 class stanmodel 'y ~ x [poisson]' coded as follows:
+data{
+int N;
+int y[N];
+real x[N];
+}
+parameters{
+real Intercept;
+real beta_x;
+}
+model{
+real vary[N];
+real glm[N];
+// Priors
+Intercept ~ normal( 0 , 100 );
+beta_x ~ normal( 0 , 100 );
+// Fixed effects
+for ( i in 1:N ) {
+glm[i] <- Intercept
++ beta_x * x[i];
+glm[i] <- exp( glm[i] );
+}
+y ~ poisson( glm );
+}
+generated quantities{
+real dev;
+real vary[N];
+real glm[N];
+dev <- 0;
+for ( i in 1:N ) {
+glm[i] <- Intercept
++ beta_x * x[i];
+dev <- dev + (-2) * poisson_log( y[i] , exp(glm[i]) );
+}
+}
+第9回 「データ解析のための統計モデリング入門」 読書会に参加してきた - INPUTしたらOUTPUT!

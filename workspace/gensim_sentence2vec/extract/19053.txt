@@ -1,0 +1,6 @@
+hostcmd "mvs d a,l" コマンドを実行するとき、FRWSL0007E メッセージと IhsiSend 戻りコード 5 を
+受信する場合があります。
+TSERVER が開始されていないか、または停止されています。
+Tivoli Business Systems Manager タスク・サーバーの TDS&yen;EventService&yen;TDS ディレクトリーから tserver start コマンドを
+実行してください。
+プロキシー・モード z/OS 固有のインストールと構成の問題

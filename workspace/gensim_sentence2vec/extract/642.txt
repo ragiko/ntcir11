@@ -1,0 +1,172 @@
+
+Search
+プロジェクトの立ち上げ
+はじめてのモデル
+はじめての画面
+認証機能の追加
+AJAX アクションの追加
+Javascript によるアクションの実行
+主要なコンセプト
+HTTP プログラミング 
+非同期 HTTP プログラミング 
+テンプレートエンジン 
+HTTP フォームの投稿とバリデーション 
+JSON を使う 
+XML を使う 
+ファイルアップロード処理 
+SQL データベースへのアクセス 
+キャッシュを使う 
+Web サービスの呼び出し 
+Akka の統合 
+国際化 
+アプリケーション Global オブジェクト 
+アプリケーションのテスト 
+チュートリアル
+はじめてのアプリケーション 
+Zentask 
+Books
+更なるバックエンドタスク
+チュートリアルのこの段階では、バックエンドコントローラを書くスキルに磨きをかけていきます。これ以上 CoffeeScript を書くつもりはないので、代わりに作成済みのスクリプトを使います。このスクリプトは ここ からダウンロードすることができます:
+このファイルで app/assets/javascripts/main.coffee を置き換えてください。
+プロジェクト内のタスクの閲覧
+最初に行うのは、プロジェクト内のタスクを閲覧する機能を実装することです。今のところ、ダッシュボードで概要を得ることはできますが、プロジェクトとそのタスクを管理する機能と同じように、プロジェクトをクリックすることで、そのプロジェクトのタスクを詳細に閲覧する機能が欲しいと思います。
+追加のテンプレートをいくつか書くことから始めましょう。app/views/tasks/index.scala.html にタスク用の index テンプレートを実装します:
+dd@(project: Project, tasks: List[Task])
+@(project: Project, tasks: List[Task])
+<header>
+<hgroup>
+<h1>@project.folder</h1>
+<h2>@project.name</h2>
+</hgroup>
+</header>
+<article  class="tasks" id="tasks">
+@tasks.groupBy(_.folder).map {
+case (folder, tasks) => {
+@views.html.tasks.folder(folder, tasks)
+}
+}
+<a href="#newFolder" class="new newFolder">New folder</a>
+</article>
+このテンプレートは、タスクをプロジェクト内のフォルダーに分割して、それぞれをフォルダーテンプレート内にレンダリングします。新規フォルダーボタンも提供します。app/views/tasks/folder.scala.html テンプレートを実装しましょう:
+@(folder: String, tasks: List[Task])
+<div class="folder" data-folder-id="@folder">
+<header>
+<input type="checkbox" />
+<h3>@folder</h3>
+<span class="counter"></span>
+<dl class="options">
+<dt>Options</dt>
+<dd>
+<a class="deleteCompleteTasks" href="#">Remove complete tasks</a>
+<a class="deleteAllTasks" href="#">Remove all tasks</a>
+<a class="deleteFolder" href="#">Delete folder</a>
+</dd>
+</dl>
+<span class="loader">Loading</span>
+</header>
+<ul class="list">
+@tasks.map { task =>
+@views.html.tasks.item( task )
+}
+</ul>
+</div>
+フォルダーテンプレートは、フォルダー用の管理オプションをいくつか提供しています。また、それぞれのタスクも実装済みの item テンプレートを再利用してレンダリングします。 
+これでタスクをレンダリングできるようになったので、タスクを提供するアクションを書きましょう。conf/routes 内のルートから始めます:
+GET     /projects/:project/tasks    controllers.Tasks.index(project: Long)
+そして、ここで新しい app/controllers/Task.java コントローラクラスを作成しましょう:
+package controllers;
+import play.*;
+import play.mvc.*;
+import play.data.*;
+import static play.data.Form.*;
+import java.util.*;
+import models.*;
+import views.html.tasks.*;
+@Security.Authenticated(Secured.class)
+public class Tasks extends Controller {
+}
+Projects コントローラと同じように、このコントローラのすべてのメソッドは Secured 認証機能によって保護されています。それでは index アクションを実装しましょう:
+public static Result index(Long project) {
+if(Secured.isMemberOf(project)) {
+return ok(
+index.render(
+Project.find.byId(project),
+Task.findByProject(project)
+)
+);
+} else {
+return forbidden();
+}
+}
+以前に Projects コントローラで行った作業と似ているように見えると思います。このアクションは、まだ Task モデルに実装していない findByProject メソッドを使っているので、これを app/models/Task.java に追加しましょう:
+public static List<Task> findByProject(Long project) {
+return Task.find.where()
+.eq("project.id", project)
+.findList();
+}
+これで準備はほとんど整っており、あと必要なのは、クリックするとこのアクションを取得するリンクを提供することだけです。ダウンロードした新しい CoffeeScript は、ページに対する AJAX リクエストを取り扱うために backbone ルーターを使うので、#/some/path というフォーマットを使ってリンクを作成すれば、このリンクがページを更新することになります。これらのリンクは、リバースルーターを使ってレンダリングすることができます。これを今やりましょう。はじめは app/views/projects/item.scala.html 内のナビゲーションドローワーです:
+...
+<li data-project="@project.id">
+<a class="name" href="#@routes.Tasks.index(project.id)">@project.name</a>
+<button class="delete" href="@routes.Projects.delete(project.id)">Delete</button>
+...
+そして、つぎに app/views/index.scala.html 内のダッシュボードです:
+...
+<div class="folder" data-folder-id="@project.id">
+<header>
+<h3><a href="#@routes.Tasks.index(project.id)">@project.name</a></h3>
+</header>
+...
+ここで画面をリロードすると、ダッシュボードと同じように、ナビゲーションドローワーでプロジェクトをクリックすることができるようになっており、そして新しいタスク用の index ページを目にすることでしょう。
+タスクの追加
+それでは、タスクを追加する機能を実装しましょう。再びテンプレートから始めます。タスクを追加するフォームを含めるために、以前に追加した app/views/tasks/folder.scala.html テンプレートを変更する必要があります。フォルダー内のタスク一覧の後ろ、フォルダーの div の閉じタグの前にフォームを配置してください:
+...
+</ul>
+<form class="addTask">
+<input type="hidden" name="folder" value="@folder" />
+<input type="text" name="taskBody" placeholder="New task..." />
+<input type="text" name="dueDate" class="dueDate" placeholder="Due date: mm/dd/yy" />
+<div class="assignedTo">
+<input type="text" name="assignedTo" placeholder="Assign to..." />
+</div>
+<input type="submit" />
+</form>
+</div>
+先ほど追加した CoffeeScript は、このフォームをどのように取り扱うか既に知っているので、必要なのはスクリプトが使用するエンドポイントを実装することだけです。ルートを書くことから始めましょう:
+POST    /projects/:project/tasks    controllers.Tasks.add(project: Long, folder: String)
+ここで、今回は project パスパラメータだけではなく、パスに指定されていない folder パラメータもあることに気を付けてください。これには、クエリ文字列からパラメータを取得する機能が使われます。そのため、このルートは /projects/123/tasks?folder=foo のような POST リクエストを期待することを告げています。
+それでは、app/controllers/Tasks.java コントローラに add アクションを実装しましょう:
+public static Result add(Long project, String folder) {
+if(Secured.isMemberOf(project)) {
+Form<Task> taskForm = form(Task.class).bindFromRequest();
+if(taskForm.hasErrors()) {
+return badRequest();
+} else {
+return ok(
+item.render(Task.create(taskForm.get(), project, folder))
+);
+}
+} else {
+return forbidden();
+}
+}
+このアクションは、リクエストをフォームとして取り扱い、Task モデルオブジェクトに結び付けます。バリデーションも行いますが、Task モデルには何もバリデーションを定義していないので、これは常にパスします。
+このアクションを起動する CoffeeScript は Javascript リバースルーターを使ってこれを行うので、このアクションに対する新しいルートを追加する必要があります。app/controllers/Application.java に追加してください:
+...
+controllers.routes.javascript.Projects.addGroup(),
+controllers.routes.javascript.Tasks.add()
+)
+...
+これで、ページをリフレッシュして、イベント名と適切な email アドレスを入力し、enter を押すと、新しいタスクを作ることができるはずです。
+バリデーションとフォーマット
+上記のアクションでタスクフォームのバリデーションを行いましたが、タスクモデルにはまだ何の制約も定義していません。ここで定義しましょう。Play はアノテーションに基づいたバリデーションをサポートしています。app/models/Task.java に Required アノテーションを追加して title フィールドを必須にしましょう:
+import play.data.validation.*;
+...
+@Constraints.Required
+public String title;
+加えて、フォームを結び付ける際、期日が従っているべきフォーマットを指定したいと思います。Formats アノテーションを使うことができます:
+import play.data.format.*;
+...
+@Formats.DateTime(pattern="MM/dd/yy")
+public Date dueDate;
+JavaGuide7

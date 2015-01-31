@@ -1,0 +1,30 @@
+この例では、線形化パスのイベントベースのダイナミクスが原因でブロックごとの解析的な線形化から正確な解が得られない場合に、Simulink モデルの周波数応答を取得する方法を説明します。そのようなシステムには、Triggered Subsystem をもつモデルやパルス幅変調 (PWM) の入力信号を使用したモデルなどがあります。
+手順 1: モデルを開くエンジン タイミング用の Simulink モデルを開きます。このモデルをスロットル角からエンジン スピードまでブロックごとに解析的な線形化を行うと、線形化パスの Triggered Subsystem による "圧縮" によって、線形化の結果がゼロになります。scdengine
+mdl = 'scdengine';
+io = getlinio(mdl);
+linsys = linearize(mdl,io)
+linsys =
+d = 
+ThrottleAngl
+EngineSpeed             0
+Static gain.
+手順 2: Sinestream の入力信号を使用した周波数応答の推定Sinestream の入力信号は、FRESTIMATE を使用して Simulink モデルの正確な周波数応答を推定するうえで最も信頼性の高い入力信号です。これは、互いの末尾に追加される個々の正弦波信号で構成される信号です。FRESTIMATE コマンドは、"Frequency" パラメーターで指定された sinestream の入力信号の各周波数と、"NumPeriods" パラメーターで指定された対応する期間に対してモデルをシミュレートします。シミュレーションが終了したら、FRESTIMATE は出力信号を使用して、各周波数で応答を計算します。FRESTIMATE は、システムが "SettlingPeriods" パラメーターで指定された、その入力信号の定常状態に到達した後の期間のみを使用することに注意してください。0.1 ～ 10 rad/s の対数的に等間隔な異なる周波数を使用して sinestream 信号を作成します。in = frest.Sinestream('Frequency',logspace(-1,1,50),'Amplitude',1e-3)
+The sinestream input signal:
+Frequency           : [0.1 0.10985 0.12068 0.13257 ...] (rad/s)
+Amplitude           : 0.001
+SamplesPerPeriod    : 40
+NumPeriods          : 4
+RampPeriods         : 0
+FreqUnits (rad/s,Hz): rad/s
+SettlingPeriods     : 1
+ApplyFilteringInFRESTIMATE (on/off)    : on
+SimulationOrder (Sequential/OneAtATime): Sequential
+既定の設定では、sinestream の入力信号の各周波数は、4 つの期間に対してシミュレートされることに注意してください。つまり、"NumPeriods" はすべての周波数に対して 4 であり、最初の期間の最後はシステムが定常状態に到達するように指定されます。すなわち、"SettlingPeriods" はすべての周波数に対して 1 であるため、FRESTIMATE は出力信号の最後の 3 つの期間を使用します。この sinestream の入力信号を使用し、FRESTIMATE コマンドを使用して周波数応答を推定し、結果の周波数応答データをプロットします。[sys,simout] = frestimate(mdl,io,in);
+bode(sys)
+FRESTIMATE シミュレーション結果のビューアーを使用して、推定結果を調べることができます。ビューアーには、選択した周波数に対する時間領域および周波数領域のシミュレーション結果と、周波数を対話形式で切り替えることができる概要ボード線図が表示されます。sinestream 信号の周波数は、すべてのプロットで色分けされます。frest.simView(simout,in,sys);
+ビューアーは、問題を診断するツールとして使用できます。周波数応答の推定の精度に影響を与える問題には、次のようなものがあります。定常状態に到達しない非線形の励起不安定になる手順 3: チャープ入力信号を使用した周波数応答の推定Simulink モデルから周波数応答データを推定するときに使用できる別の入力信号は、周波数チャープです。周波数チャープは、周波数が即座に変化するという点で sinestream と異なります。チャープ入力信号を使用すると、周波数応答の推定を迅速に取得できます。ただし、チャープ入力を使用して取得された周波数推定結果は、sinestream 入力を使用して取得された結果ほどの信頼性はありません。これは、各周波数が、システムがその周波数で定常状態になるまでの十分な時間シミュレートされないためです。周波数 0.1 ～ 10 rad/s を対数的にスイープするチャープ信号を作成します。in_chirp = frest.Chirp('FreqRange',[0.1 10],'Amplitude',1e-3,...
+'SweepMethod','logarithmic','NumSamples',3000);
+チャープ信号を使用して、周波数応答推定を実行します。sys_chirp = frestimate(mdl,io,in_chirp);
+sinestream の入力信号とチャープ入力信号を一緒に使用して取得された結果をプロットします。bode(sys,sys_chirp,'r')
+モデルを閉じます。bdclose('scdengine');
+シミュレーションベースの手法を使った周波数応答の推定 - MATLAB & Simulink Example - MathWorks 日本

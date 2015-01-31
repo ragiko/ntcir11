@@ -1,0 +1,87 @@
+
+リターゲティング広告の功罪AdWords のリマーケティングや、DSPに搭載されているリターゲティング機能は、現在では多くのディスプレイ広告のキャンペーンで活用されるようになりました。特に、2010年春から本格的に利用されはじめた AdWords のリマーケティング広告は、これまでディスプレイ広告に参入してこなかったダイレクトレスポンス重視の広告主（多くは検索連動型広告の利用主）をディスプレイ広告へ引き寄せたという意味で、2000年代後半には検索連動型広告に押されて凋落が叫ばれつつあったディスプレイ広告の復権に多大な貢献をしたと言えると思います。RTBの普及に伴って、リターゲティングは今ではDSPのメインの機能となっており、日々採用する広告主は増えています。
+リターゲティングの普及は、これまで構造的に無視されがちだったコンバージョンしなかったユーザー（≒トラフィックの大部分）に焦点を当てました。リターゲティングによって、これまでコンバージョンしなかった「無駄」なトラフィックが、再活用できる「資産」に変貌すると同時に、誘導してくるプロモーション施策と受け皿であるウェブサイトの関連性が、トラフィックの資産価値そのものを左右するということが、広告効果の測定を続けることによって説得力のある数値として把握できるようになったと言えるのではないでしょうか。
+また、パーソナライズ／レコメンデーションといった、ずっと以前からあったにも関わらず下火だった技術が一気に進んだことや、アトリビューション分析などの効果測定の深化が流行りだした背景には、リターゲティングの普及が密接に絡んでいると言っても過言ではないと思います。
+一方で、急速な普及と同時に、プライバシーに関する懸念、過度のフリークエンシーによるブランド毀損などのネガティブな問題を露呈させたのもリターゲティング広告です。パーチェスファネルの上位から下位へ引き下げるようなコミュニケーションではなく、下位をただ刈り取るような利用のされ方が進んでしまったことも、高い広告効果という明るい印象の陰にあるネガティブな部分と言えるかもしれません。
+リターゲティングの功罪は、そのまま広告主企業・広告会社のデータマネジメントに対する体制や、それに伴う組織やビジネスパーソンのありようまでも問い直させるような、さまざまな新しいチャレンジの必要性も一気に前景化させています。
+リターゲティング広告 5つの基本リターゲティングが本格的に市場に登場してきて、数年が経ちました。好むと好まざるとにかかわらず、リターゲティングはオンライン・マーケティングを行う上でなくてはならないレベルにまできています。
+2012年にアナリティクス・リマーケティングが開始されたことが象徴するように、2013年はアクセス解析（ファーストパーティデータ）のマーケティング利用は、リターゲティングを共通言語としてより実践的なかたちで浸透していくと考えられます。清濁併せ呑みながら市場の中であるべきバランスをどうとっていくのか、2013年はリターゲティング広告を改めて考えるのにはいいタイミングかもしれません。
+「リターゲティングってなに？」から「リターゲティングの活用方法」まで、リターゲティングにまつわる記事はたくさんありますが、Search Engine Watch の「5 Tips to Maximize Your Retargeting Campaigns （リターゲティングキャンペーンを最大化する5つの方法）」という記事が、リターゲティング広告の問題点を捉えながら上手に利用していく方法について、きれいにまとまっていました。
+「最大化する」という表現が使われていますが、リターゲティング広告を利用する上で基本となるエッセンスが詰まっている内容だと思いますので、補足を加えつつ紹介したいと思います。
+5 Tips to Maximize Your Retargeting Campaigns - Search Engine Watch
+http://searchenginewatch.com/article/2233818/5-Tips-to-Maximize-Your-Retargeting-Campaigns
+1. ストーカーになってはいけないAs consumers, we’ve all experienced it: that brand that stalks us around the Internet after we leave its site without converting. Instead of being enticing, it's just plain creepy.
+When retargeting a site visitor, a marketer should always set a maximum time period based on the buying cycle for the product or service being advertised. If you’re uncertain, there are very few cases where retargeting for more than seven days is justified – it not only wastes money but can also damage the user’s opinion of your brand.
+あるサイトをコンバージョンせずに離れたあと、そのブランドがインターネットのあちこちで追い掛け回してくる経験は誰しもあるはずだ。その気になるどころか、単純に気持ちが悪い。
+ウェブサイトの訪問者へリターゲティングする際に、広告した製品やサービスの購買サイクルをもとに最大限の期間でセットするべきだ。もし購買サイクルが分からなくても、それは通常7日を超えない。リターゲティングする期間を長くとることは、予算を無駄遣いするだけでなく、ブランドにもダメージを与えかねない。
+これはリターゲティングについて一番耳にすることの多い、広告ストーキング問題ですね。よく Creepy（ゾッとする、気持ち悪い）と表現されます。
+セグメントしたリターゲティングリストに対しては、商品の購買サイクルに応じた適切な配信期間を設定しないと、いつまで経ってもリターゲティング広告が追いかけてくるという結果になりがちです。「節度あるリマーケティングのためにすべき3つのこと」というポストでも少し触れましたが、リターゲティング広告では、設計したセグメントに対して、
+「保持期間（Recency）」
+「広告クリエイティブ（Ad variation）」
+「フリークエンシーキャップ(Frequency)」
+などの項目を、実績を見ながら調整を加えていく運用が求められます。
+配信の時間帯調整やフリークエンシーごとの広告の出し分け（※1）など、仮説を元に運用していくリターゲティングの最適化が、結果としてユーザーの心証悪化を防ぎ、ブランド保護にもつながっていくのかもしれません。
+※1 AdWordsのリマーケティングでは、2013年1月時点でフリークエンシーごとの広告の出し分けはできません。
+2. 重複リターゲティングしてはいけないIf you use multiple retargeting vendors, they’ll end up competing against each other to serve ads to your site visitors, driving up the cost of the impressions and wasting media dollars. It’s like going to an auction, assigning split personalities to your left and right hands, and bidding against yourself – except not nearly as amusing.
+もし複数のリターゲティング業者を使っていたとすると、同一ユーザーへの広告配信のためにそれぞれが競合してインプレッション単価が引き上がり、媒体費を無駄遣いしてしまう。まるで左手と右手で違う人格を持ってオークションに参加するようなもので、自分で自分の入札価格を吊り上げてしまうことになる。
+よく考えれば当たり前なのですが、AdWords のリマーケティング広告だけを実施していたりすると気づきにくい事実です。媒体枠やオーディエンス重複を考慮しながらDSPのプランニングをする必要があるのは、意図せずマッチポンプ形式で入札を引き上げてしまうことを避けるためでもありますね。
+もちろんデータの量が多ければ計算根拠が増え、最適化エンジンの精度も高まることが期待できます。
+3. リターゲティングはサイトリターゲティングだけじゃないThe most popular type of retargeting is site retargeting – the practice of serving targeted ads to users who have already visited your site, but there are six other types of retargeting:
+1. Search
+2. SEO
+3. Email
+4. Contextual
+5. Engagement 
+6. Social
+The most exciting of these is search retargeting, the practice of targeting users with display ads based on the keywords they entered into search engines. It’s a brave new retargeting world, so make sure you explore all of it.
+最も一般的なリターゲティングと言えば、既にサイトに訪問したユーザーをターゲットにして広告を出す "サイトリターゲティング" だ。しかし、他にも6つのリターゲティング手法がある。
+1. 検索リターゲティング
+2. SEOリターゲティング
+3. メールリターゲティング
+4. 文脈リターゲティング
+5. エンゲージメントリターゲティング
+6. ソーシャルリターゲティング
+この中で面白いのは、ユーザーの検索クエリにもとづいてディスプレイ広告を出す "検索リターゲティング" だ。素晴らしいリターゲティングの世界、ぜひ全部試してほしい。
+日本でリターゲティングといえば通常は "サイトリターゲティング" を指しますが、ある履歴を持つオーディエンスグループに対して行う広告をリターゲティングと呼ぶとすると、上記のようにたくさんあります。
+この中だと "エンゲージメントリターゲティング" が分かりにくいですが、これは動画やリッチメディアなどにイベントを仕掛けておいて、そのイベントを通過したユーザーに対してリターゲティングを行うというものです。
+動画広告向けAdWords では、AdWords とYouTube のアカウントをリンクさせると、ユーザーのアクションに応じて以下のようないろいろな種類のリストを蓄積することができ、それをリマーケティングリストとして扱うことができます。これも "エンゲージメントリターゲティング" の一種ですね。
+4. 誰彼かまわずリターゲティングしないAll site visitors are not created equal. To take a basic example, a visitor to the DVD page of a retailer’s site is much more valuable than a visitor to that retailer's career page.
+This practice of using data points to create a sophisticated picture of a site visitor is known as programmatic site retargeting (PSR). Other data points factored into PSR include pages viewed, referral data, shipping address, and many others.
+Marketers use this data to assign a “visitor score” to each user. The score, in turn, tells us how much we should bid to serve an impression.
+PSR transforms site retargeting from an intelligent guess into a science, resulting in fewer wasted impressions, greater returns, and an ROI that will make your boss hug you for 10 seconds too long.
+ウェブサイトに訪れるユーザーはそれぞれ違います。例えば、EコマースサイトのDVDのページに訪れたユーザーは、そのサイトの人材募集のページの訪問者より価値があると言えます。
+データを活用して具体的な訪問者の様子を描写することは、プログラマティック・サイト・リターゲティング（PSR）と言われています。PSRに影響するデータには、閲覧ページ、リファラー、配送先など、様々な情報が含まれます。
+マーケターはこのデータを使って「訪問者スコア」をセットします。このスコアによって、どのくらい入札すべきかを判断できます。
+PSR によって、サイトリターゲティングは精緻な予測に行うことができ、無駄なインプレッションを防ぎ、多大な収益をもたらします。
+とにかくサイトに訪れたユーザーにリターゲティングしまくる、というキャンペーンはさすがに減ってきましたが、一方で、オーディエンスセグメントの設計は単純に細かく分ければよいというものではありません。広告側で伝えたいメッセージを分けたり、入札や配信の期間を変えるといったような、次のアクションにつなげる目的がなければあまり分ける意味がないというのが、リターゲティングを設計している運用者共通の思いではないでしょうか。
+細かく分けすぎると、粒度が細かい分一つ一つのリーチが少なく、ボリュームの帳尻をあわせるためにキャンペーンが肥大化したりしますので、キャンペーンの仮説があることを前提にセグメントすることが望ましいですね。最近はワンタグ化も浸透してきましたし、タグマネジメントも少しづつ普及してきた感がありますので、以前ほどウェブサイト側での作業負荷は減ってきましたが、その分キャンペーンの上流設計が重要視されてきているように思います。
+本文にある PSR（プログラマティック・サイト・リターゲティング）の導入には DMP の活用が前提となりますが、まだまだ DMP を本格導入している企業は少ないとはいえ、これから事例が徐々に出てくる分野だと考えられます。
+5. ビュースルーコンバージョンをお忘れなく
+Marketers rely on clicks as a key metric because they’re easy to measure, but the vast majority of users never click on an ad – and most do it accidentally. Smart marketers look to other types of measurements, such as view-through attribution, which tracks users who convert after viewing display ads that they never clicked on.
+This isn’t to say that 100 percent view-through credit is the right measurement. It’s not. Many marketers usually give view-through attribution a 65 percent allocation within a reasonable window of 14 days, which makes much more sense than the industry standard of 30 days.
+マーケターは、測りやすいクリックという指標を主に採用していますが、ほとんど大多数のユーザーは広告をクリックしませんし、間違ってクリックしてしまったようなケースもあるでしょう。賢いマーケターはビュースルーアトリビューションといった、ディスプレイ広告をクリックせずにコンバージョンしたユーザーの貢献度を集計するような、これまでとは違う種類の指標に注目しています。
+ビュースルーのクレジット分配（貢献度分配）に100%の正解はありません。多くのマーケターは、ビュースルーアトリビューションに65%程度のクレジットを分配し、期間を14日間で見ているようです。これは業界の標準である30日より残存期間を考慮した設計だといえるでしょう。
+ビュースルーの計測の必要性はリターゲティング広告に限りませんが、既に来訪履歴のあるユーザーほどコンバージョンファネルの下の方にあることを考えると、必然的にビュースルーコンバージョンの履歴はリターゲティング広告に集まりやすいとも言えます。
+「そんなの当たり前じゃないか」というのはかんたんですが、リターゲティング広告のビュースルーコンバージョンを考えることは、その前の初回や中間の来訪に対してどういう意図でクレジットを配分するのかという問題を前景化させます。結果的に、キャンペーンのKPIをある程度明確にしていないとアトリビューション分析ができず、ただの刈り取り広告になってしまいますので、ビュースルーコンバージョンを考えることはリターゲティング広告のみならず、キャンペーン全体の設計を考えることにもつながっていくのかもしれません。
+リターゲティング広告の未来2011年の古い記事ですが、The Trade Desk のCEO Jeff Green 氏が、リターゲティング広告の未来について語っています。今ではキャンペーンの設計上不可欠になりつつあるリターゲティング広告ですが、今後どのように進んでいくのか、そのヒントを探ってみたいと思います。
+5 Things You Should Know About the Future of Retargeting | ClickZ
+http://www.clickz.com/clickz/column/2106013/future-retargeting
+この記事によると、リターゲティングの未来について知っておくべきこととして、以下の5つが挙げられています。
+1. ページごとの広告枠は増えない
+2. RTBはリターゲティングの主役になる
+3. 「人」がもっとも重要
+4. トレーニングも同じように重要
+5. 自社データは競争上最重要
+2011年の記事なので、今（2013年）から1年半ほど前の記事になりますが、すでにRTB がリターゲティングの主役であること、自社データの利用が重要であることが明確に予見されています。
+そして、「枠から人へ」とターゲティングをシフトさせたリターゲティング広告が、ターゲティングメソッドのみならず、「運用や設計ができる人材の採用」と「そういった人材を育てる教育」という、自動化が進めば進むほど「人」への投資に重要性がシフトしてくるという逆説性を説明しています。
+3. People matter most. One of the most overlooked aspects of the DSP landscape today is people. Stockbrokers, surgeons, and racecar drivers all matter much more than the tools that they use. The same is true in the RTB space. Some of the "me-too" companies buying inventory on the ad exchanges take a spray-and-pray approach to retargeting. They bombard the site's audience with as many impressions as they can, with little regard for performance or efficiency. That works for month one of a display retargeting campaign. But it won't work long-term. As advertisers become more sophisticated about what DSPs can and should do, they will become more discerning about the people pushing the buttons. A great trader can make or break a campaign because they know how to use the tools. But make no mistake, it takes a good driver and a good car to win the race, and the trophy is always awarded to the driver. This should make forward-thinking agencies optimistic about the future. In exchange-traded display, great buyers are more necessary than ever. There is no easy button.
+3. 「人」がもっとも重要：DSPを考える上でもっとも見過ごされがちなのが、人です。株式仲買人、外科医、そしてレースカードライバーは、みな彼らが使うツールより大事です。RTBでもそれは一緒です。"右に倣え" が信条の企業は、広げるだけ広げてあとは神頼みのようなアドエクスチェンジの広告在庫を買っていて、彼らはパフォーマンスや効率を軽視し、サイトの閲覧者にできる限りのインプレッションをまるで絨毯爆撃のように出しています。それは短期的には成功するかもしれませんが、長い目で見るとうまくはいかないでしょう。広告主がDSPのできることとすべきことを理解し利用してもっと洗練されていけば、おのずとフォーカスすべき人々の動きが見えるようになるでしょう。素晴らしいトレーダーはツールの使い方を熟知しているのでキャンペーンを作ることも壊すこともできます。よいドライバーとよい車がセットでないとレースには勝てませんが、トロフィーは常にドライバーに授与されます。これは広告代理店にとっては未来を見つめる上で福音ではないでしょうか。アドエクスチェンジの世界では、よいトレーダーがこれまで以上に必要とされるからです。
+4. Training matters too. Buying display isn't easy. Some DSPs in the marketplace today are taking a cynical viewpoint towards agencies, and are beginning to approach advertisers directly rather than taking the time to train agency buyers. Essentially, these DSPs are aiming to become the agency of the future, which should be setting off alarm bells for many of you. Others in the DSP space are totally committed to training agencies how to become excellent buyers, and put their analytical skills from other channels to great use in RTB display.
+4. トレーニングも同じように重要： ディスプレイ広告を扱うのはかんたんではありません。現在のDSPの立ち位置は代理店にとっては微妙かもしれませんが、そうしている間にも、いくつかのDSPは代理店のメディア担当者をトレーニングするより早く、直接広告主にアプローチを始めています。これは、彼らのような積極的なDSPは未来の広告代理店になりうる存在であるという、多くの業界人への本質的な警鐘だと捉えるべきでしょう。そのような積極的な動きを見せないDSPも、広告代理店内に優秀な担当者を育成するためのトレーニングにはフルコミットしており、中にはRTBをしっかり使うために他のチャネルも含めた分析のトレーニングを提供しているところもあります。
+また、リターゲティングの仕組みは、ディスプレイ広告だけでなく検索連動型広告にも応用されています。
+2012年の7月のAdWords Blog で発表されたように、AdWords ではリマーケティングリストを検索連動型広告に応用する仕組みをベータ版で提供しています。
+RLSA（Remarketing List for Search Ads）は、リマーケティングリストを利用して、リストの対象者と一般のユーザーに、同じ検索クエリでも別々のキャンペーンを適用することができる仕組みです。2013年1月時点ではベータ版なので詳細はご紹介できませんが、Search Engine Journal に利用方法が掲載されていましたのでご紹介します。
+RLSA: A Practical Use Case | Search Engine Journal
+http://www.searchenginejournal.com/rlsa-a-practical-use-case/57538/
+リターゲティング広告は行動ターゲティングの一種であるという基本に帰ると、技術の進化とマーケターのアイデア次第でさまざまな活用方法が考えられるのではないでしょうか。リターゲティング広告を見つめなおし、キャンペーン全体の設計を考えることで、企業にもユーザーにも歓迎されるようなリターゲティングの活用が広がっていくことを期待しています！
+1月 2013 ~ admarketech.

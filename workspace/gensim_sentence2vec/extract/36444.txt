@@ -1,0 +1,147 @@
+idea:24103			javascript, bookmark, memo |  13:52 |    			はてなアイデア - ブクマ未使用ユーザがエントリページを見た場合、http://s.hatena.ne.jp/js/HatenaStar.jsの241行目で「Cannot read property addEventListener of null」のスクリプトエラーになる(2回程)。			
+エラー箇所におけるbacktrace(Google Chrome)。
+$ backtrace
+Frames #0 to #7 of 8:
+#00 #<an Object>.start() http://s.hatena.ne.jp/js/HatenaStar.js line 241 column 25 (position 6952)
+#01 new [anonymous](element=null, event=onclick, obj=#<an Object>, method=clickHandler) http://s.hatena.ne.jp/js/HatenaStar.js line 230 column 14 (position 6608)
+#02 #<an Object>.registerEventListeners() http://b.hatena.ne.jp/js/Hatena/Bookmark.js?013b410e9f9a line 4742 column 9 (position 166691)
+#03 new [anonymous](url=*****, iEL=null, niEL=null, icEL=#<an HTMLElement>, nicEL=#<an HTMLElement>, imageEL=#<an HTMLImageElement>) http://b.hatena.ne.jp/js/Hatena/Bookmark.js?013b410e9f9a line 4737 column 14 (position 166572)
+#04 function () {}.[anonymous](undefined) http://b.hatena.ne.jp/entry/***** line 71 column 17 (position 1966)
+#05 function () {}.dispatchEvent(type=onload, opt=undefined) http://s.hatena.ne.jp/js/HatenaStar.js line 341 column 26 (position 10310)
+#06 function () {}.finishLoad() http://s.hatena.ne.jp/js/HatenaStar.js line 533 column 15 (position 16790)
+#07 [anonymous]() http://s.hatena.ne.jp/js/HatenaStar.js line 525 column 19 (position 16599)
+原因はソースに直に埋め込まれているコレ。
+new Hatena.Bookmark.Interest(
+[URL],
+⇒document.getElementById('interesting'),
+⇒document.getElementById('not-interesting'),
+document.getElementById('interesting-count'),
+document.getElementById('not-interesting-count'),
+document.getElementById('interest-image')
+);
+「document.getElementById('interesting')」は、投票フォーム(β使用)のアンカータグのIDを取ってきている。
+が、この機能はブクマ使用中のユーザのみ使える機能であり、その場合はHTML上のソースでは「はい」「いいえ」がID付きアンカーになっている。
+<tr>
+<th>参考になった:</th>
+<td>
+<span class="interest">
+<a id="interesting" href="http://b.hatena.ne.jp/*****/api.interesting?url=[keywordのURL]">
+<img src ="/images/yes.gif" alt="はい" /></a>
+<span id="interesting-count" class="interest-count">0</span>
+<img id="interest-image" class="interest-image" src="/images/rank_05.gif" alt="0 / 0" title="0 / 0" />
+</span>
+<span id="not-interesting-count" class="interest-count">0</span>
+<span class="interest">
+<a id="not-interesting" href="http://b.hatena.ne.jp/*****/api.not_interesting?url=[keywordのURL]">
+<img src ="/images/no.gif" alt="いいえ" /></a>
+</span>
+</td>
+</tr>
+ブクマ未使用ユーザの場合、ここが単なる文字列の「はい」「いいえ」になっており、アンカータグそのものが無い。
+<tr> 
+<th>参考になった:</th> 
+<td>
+<span class="interest">はい
+<span id="interesting-count" class="interest-count">0</span> 
+<img id="interest-image" class="interest-image" src="/images/rank_05.gif" alt="0 / 0" title="0 / 0" /> 
+</span>
+<span id="not-interesting-count" class="interest-count">0</span> 
+<span class="interest">いいえ</span> 
+</td> 
+</tr> 
+当たり前だがタグすらないのでIDが取れる訳がない。よって、値はnullとなる。(not-interesting)も同じ。			
+Hatena.Bookmark.Interestは初期化時にクラス内メソッドのregisterEventListeners()を呼んでおり、2個のTen.Observerのインスタンスを作成している。
+(内容からすると投票機能のボタンを押した時のイベントリスナみたい)
+Hatena.Bookmark.Interest = new Hatena.Bookmark.Class({
+initialize: function(url, iEL, niEL, icEL, nicEL, imageEL) {
+this.url = url;
+this.iEL = iEL;             /* ブクマ未使用だとここがnull */
+this.niEL = niEL;           /* ブクマ未使用だとここがnull */
+this.icEL = icEL;
+this.nicEL = nicEL;
+this.imageEL = imageEL;
+⇒      this.registerEventListeners();
+this.nowPosting = false;
+}
+}, {
+registerEventListeners: function() {
+⇒      new Ten.Observer(this.iEL, 'onclick', this, 'clickHandler');
+⇒      new Ten.Observer(this.niEL, 'onclick', this, 'clickHandler');
+},
+で、この場合のTen.Observerはというと、http://s.hatena.ne.jp/js/HatenaStar.js のTen.Observerを呼んでいる。しかしこの時点でelementにはnullが入ってしまっている。
+/* Ten.Observer */
+Ten.Observer = new Ten.Class({
+initialize: function(element,event,obj,method) {
+var func = obj;
+if (typeof(method) == 'string') {
+func = obj[method];
+}
+this.element = element;   /* element=nullになる */
+this.event = event;
+this.listener = function(event) {
+return func.call(obj, new Ten.Event(event || window.event));
+}
+this.start();
+}
+で、start()を結局呼ぶようなのだが、ここでthis.element.addEventListenerとelementがnullかどうか確認せずにaddEvenetListenerを呼ぶためエラーになっている模様。
+start: function() {
+⇒      if (this.element.addEventListener) {
+if (this.event.match(/^on(.+)$/)) {
+this.event = RegExp.$1;
+}
+this.element.addEventListener(this.event, this.listener, false);
+} else if (this.element.attachEvent) {
+this.element.attachEvent(this.event, this.listener);
+}
+}
+関連
+23847は出し主がブクマ未使用だったのでこの影響を受けていると思われる(実際にGoogle Chrome/Firefoxで確認した)が、本当にスクリプトによる誤動作のせいなのか直接の因果関係は不明。
+ツイートする
+いつまで人力検索の入力支援機能はSafari/Google Chromeで使えないのか			question, javascript |  22:36 |    			今回は人力検索の話です。最近は人力検索もすっかり新機能リリースは滞り、他サービスのリリースも伴っていつの間にやら「正式サービスの第2群」辺りまで寂れた感が否めない感じですが、それでもたまに質問がブクマで話題になったりと存在感はまだそこそこあるのではないかと思います。			
+で、この人力検索ですが「人力検索」や「いわし」で回答しようとした場合、回答ウィンドウ欄の以下の赤枠の部分をご存知でしょうか。
+人力検索を使ったことのある人なら分かると思いますが「入力支援ボタン」です。見た目の通りそこそこ簡単な機能が備わっていると思います。ちなみにこの機能、2006年3月の人力検索リニューアル時から用意されているようです。			
+ですが、ちょうど1ヶ月程前にこの機能が使えないという以下のアイデアが立てられました。
+はてなアイデア - Google ChromeでもIEと同様に回答入力画面の書式ボタンが使える様にして欲しい。
+実際にGoogle Chromeで見てみるとこのような感じです。
+確かに入力支援機能は全く表示されません。同じWebkit系のブラウザで(Google Chromeよりもリリースが古い)Safariではどうかと言うと、こうなります(バージョン3.2.2)。
+やはり入力支援機能は全く表示されません。ちなみに今回は試していませんが、IEではちゃんと表示されます。
+つまり、Safari/Google Chromeでは人力検索リニューアル時の2006年3月から入力支援機能そのものが使えていなかった可能性が高くなるという訳です。*1			
+なぜ入力支援機能が表示されないのか
+実際にHTMLのソースコードを見ると、唯一どのブラウザでも表示されている「はまぞう」付近のソースコードはこのようになっています。
+<div id="anser-form-button">
+<script type="text/javascript">
+insertEditButtons();
+</script>
+<input type="button" class="field" onclick="javascript:window.open('/*****/hamazou/?can_review=0','_blank','width=460,height=600,resizable=1,scrollbars=1,status=1');return false;"  value="はまぞう" >
+</div>
+つまり、insertEditButtons()というJavaScriptの関数を呼んで、入力支援機能の表示部分を生成していることになります。
+で、insertEditButtons関数内容はというと、すぐ上のanswer_edit.jsの中に書かれています。
+http://q.hatena.ne.jp/js/answer_edit.js上でのソースコードはこのような感じです。
+function insertEditButtons() {
+if (!document.getElementById ||
+navigator.userAgent.indexOf("Safari")>=0) // IE5,6 and Mozilla
+return;
+document.write(
+:
+);
+}
+自分も含めて、Javascriptの初心者の方でも分かるのではないかと思うのですが、3行目の「navigator.userAgent.indexOf("Safari")>=0」が「入力支援機能が使えない直接の原因」と見て良いようです。「navigator.userAgent」で現在使っているブラウザのユーザエージェントの文字列を返すのですが、その文字列の中に"Safari"という文字列が入っていれば、この条件式は真になるというものです。
+ちなみにこのブラウザのnavigator.userAgentの値ですが、どんな値になるかと言うと、IE8やFirefox3.08の場合は、
+Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)			
+Mozilla/5.0 (Windows; U; Windows NT 5.1; ja; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8 (.NET CLR 3.5.30729)
+と「Safari」の文字は含まれません。では、肝心のSafari 3.2.2やGoogle Chromeはどんな感じになるのかと言うと、
+Mozilla/5.0 (Windows; U; Windows NT 5.1; ja-JP) AppleWebKit/525.28 (KHTML, like Gecko) Version/3.2.2 Safari/525.28.1
+Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.53 Safari/525.19
+こんな感じで「Safari」の文字列が入っています。そのため条件文内にある「return」でinsertEditButtons関数が終了してしまい、入力支援機能の部分が表示されなくなっているようです。			
+なぜこんなソースコードになっているのか?
+入力支援機能自体がリリースされたのは、先にも書きましたが人力検索がリニューアルされた2006年3月とのことです。ソースコードのコメントを見ても「IE5,6 and Mozilla」とあり、「Safari」は最初から除外されていた?感じが見受けられます。
+この頃はもちろん「Google Chrome」はありませんでしたし、「Safari」はというと、Wikipediaの項目を見る限り「MacOS X版の2.0系列」が最新だったようです。現行最も使われている3.0系やWindows版のリリースは2007年にリリースされています。
+となると「MacOS X版のSafari 2.0系列」では入力支援機能が上手く動作しなかったため表示しないようにしたが、その後のWebkit系ブラウザのリリース状況に対応できていないと考えるのが妥当なのかもしれません。
+ちなみにローカルでWindows版のSafari3.2.2やGoogle Chromeで簡単に上記のスクリプトコード部分を外し、入力支援機能を簡単に使ってみましたが、ほぼ問題なく使えるのではと思います。現にダイアリーでもこれとよく似た入力支援機能が用意されており、そちらはSafari/Google Chromeでも利用できています。			
+しかしそう考えると
+少なくとも人力検索がリニューアルされてから既に3年が経過されていますが、はてなアイデアに入力支援機能が使えないアイデアが立てられた形跡はGoogle Chromeの件が出るまではありませんでした。となると「SafariやGoogle Chromeを使って人力検索の質問・回答をしていたユーザはこの事実に今まで全く誰も気付かず使っていた?」という疑問が生じることになります(またいつものことだから…という可能性も考えられますが;;)。「はてな」ユーザはIE/Firefoxを使用しているユーザさんが多いとはいえ、Mac使用者ならば、Safariを使ってるユーザさんもそれなりにいらっしゃるのではないでしょうか。
+その点を踏まえて、実際人力検索で回答を行ったことがあるユーザは、いつもどのブラウザを使っているのか?を以下で質問している状況です。
+人力検索で回答をしたことのあるユーザのみに質問です。
+現在最も使用しているブラウザの種別を教えてください。
+現在最も使用しているブラウザの種別を教えてください。
+趣味には偏ってないだいちゃんの日記 - daichan330のテストグループ

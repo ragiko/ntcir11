@@ -1,0 +1,64 @@
+Nシリーズにおいて、Deduplication機能を使用する場合、本来自動的に削除されるべき無効Fingerprintが削除されない問題の対応(STOR-13-012)
+Nシリーズで標準実装されているDeduplication(重複排除機能 *1)を利用する場合、データをブロック(4KB)ごと分割して重複を判断します。 このブロック1つに対して1個のfingerprint(メタデータ)が作成されます。ファイルの削除などでブロックが削除された場合や重複排除プロセスで重複ブロックが削除された場合、そのブロックに対応したfingerprintは無効になり定期的に削除されます。  以下の【該当環境】で、Deduplicationを使用する場合、本来定期的に削除されるべき無効fingerprintが削除されない問題が発生しました。 この問題により Deduplicationのfingerprint用領域が無駄に消費されてしまう場合がありますので【対応策】にて対応いただきますようお願いいたします。  この問題の詳しい内容は【詳細】をご参照ください。   【該当環境】 下記該当S/Wが適用されている該当H/WにおいてDeduplicationを利用する環境のみ対象となります。  該当H/W:全ての N series モデル 該当S/W:Data ONTAP 8.1x(8.1、8.1.1、8.1.2とそのP/D-verison  例: 8.1.1P2、8.1.2D1 等)   【詳細】 Deduplication機能は、通常であれば重複排除実行コマンド"sis start"が実行される際、無効になったfingerprint数が有効fingerprint数の20%に達すると、"fingerprint checking"が自動的に実施され、無効になったfingerprintが削除されます。 ところが、Data ONTAP 8.1xの不具合(BUG 657692)により、無効fingerprint数が有効fingerprint数の20%に達しても"fingerprint checking"のプロセスが行われず、本来削除されるべき無効fingerprintが削除されません。  この問題により、fingerprint領域が無駄に消費されてしまうため、重複排除の処理速度の低下、更にはシステムのパフォーマンスに影響を与える恐れがあります。  <システム現状の診断方法> 1. sis check –c <vol> コマンドを実施  > sis check -c /vol/vol_test Checking fingerprint ... 18115836411 records Number of Segments: 3 Number of Records: 18003077302, 53607122, 59151987 Checking fingerprint.vvol ... 56538330 records Checking fingerprint.vvol.delta ... 2665604040 records  チェックされたfingerprint 総数18115836411を控えます。  2. sis status –l <vol> コマンドを実施  > sis status -l /vol/vol_test Logical Data:          3509 GB/49 TB (7%)  実際使用されたロジカルデータのサイズ3509 GB を控えます。  3. 実際使用されたロジカルデータのサイズをブロック数に換算 ブロック数=(ロジカルデータのサイズ[GB] x 1024[MB] x 1024[KB])/ 4 (こちらの4は4KBという意味です。ブロックサイズは4KBで固定です) 上記サンプルのブロック数は  (3509 x 1024 x 1024) / 4 = 919863296  4. 上記ブロック数は現在有効なfingerprint数なので、無効になったfingerprintメタデータの無効率を計算できます。 上記sampleの無効率は (18115836411 - 919863296) / 919863296=1869% 1869%は閾値の20%を遥かに超えていますので、Data ONTAP 8.1xの不具合によってfingerprint checkingが行われなかったことが分かります。  
+【
+対応策】
+<根本的な解決策>
+この問題を解決したData ONTAP 8.1.2P4またData ONTAP 8.1.3以上のバージョンにアップデートしてください。
+以下の修正版Data ONTAPがリリースされるまでは、
+暫定的な解決策で対応してください。
+Data ONTAP 8.1.2P4 リリース予定日:2013年5月下旬予定
+Data ONTAP 8.1.3 リリース予定日:2013年6月下旬予定
+<暫定的な解決策>
+暫定解決策は、スケジュールもしくは自動Deduplicationを停止し、手動(Manual)でのDeduplicationにオプションを付けて実行することになります。以下手順を示します。
+1. 上記
+システム現状の診断方法で現在fingerprintの無効率が20%以上であることを確認します。
+2. "sis config"コマンドで現在の Deduplication 設定(ScheduleかAutomaticかManualか)を確認します。 
+Schedule値に曜日および時刻が表示されたら、「Schedule」型のDeduplicationとなりますので、下記 3.を実施します
+> sis config
+Inline
+Path         Schedule   Compression Compression
+-------------------- ------------ ----------- -----------
+/vol/vol_test    
+sun-sat@0  Disabled  Disabled
+Schedule値に"auto"が表示されたら、「Automatic」型のDeduplicationとなりますので、下記 3.を実施します
+> sis config
+Inline
+Path         Schedule   Compression Compression
+-------------------- ------------ ----------- -----------
+/vol/vol_test    
+auto     Disabled  Disabled
+Schedule値に"-"と表示されたら、「Manual」型のDeduplicationなり、下記 3.をスキップした上で、下記 4.を実施します
+> sis config    
+Inline
+Path         Schedule   Compression Compression
+-------------------- ------------ ----------- -----------
+/vol/vol_test    
+-      Disabled  Disabled
+3. "sis config -s - <vol>" コマンドで Deduplication スケジュールを一旦解除し、Manual型Deduplicationに変更されていることを確認します。
+> sis config -s - /vol/vol_test
+> sis config 
+Inline
+Path         Schedule   Compression Compression
+-------------------- ------------ ----------- -----------
+/vol/vol_test    
+-      Disabled  Disabled 
+4. 無効fingereprintを削除するために、"sis start -s <vol>"コマンドを実行します。
+"sis start"コマンドに-sオプションをつけることによって、Deduplicationオペレーションを実行すると共に既存データ(fingerprintも含む)をスキャンし、fingerprintの無効率が20%に達していれば、無効fingereprintが削除されます
+> sis start -s /vol/vol_test
+The file system will be scanned to process existing data in /vol/vol_test.
+This operation may initialize related existing metafiles.
+Are you sure you want to proceed (y/n)? y
+The SIS operation for "/vol/vol_test" is started.
+> Fri Apr 12 15:49:34 JST [n3240a:wafl.scan.start:info]: Starting SIS volume scan on volume vol_test.
+5. 再度
+システム現状の診断方法で無効fingerprint が有効fingerprint の20%未満であることを確認します。
+6. 必要に応じて、"sis config -s"コマンドを使って、「Schedule」型もしくは「Automatic」型Deduplicationに戻します。
+> sis config -s sun-sat@0 /vol/vol_test ・・・Schedule型の場合 
+もしくは 
+> sis config -s auto /vol/vol_test ・・・Automatic型の場合
+7. 
+根本的な解決策が適用されるまでは、定期的に1.を実施しfingerprintの無効率を確認してください。
+<注意事項:> 
+4.を実行した後、"sis status"コマンドでプロセスの進捗を確認することができます。もしプロセスが長時間にわたっても進まない状態が続くようでしたら、IBM CE経由で問題報告をしてください。 
+> sis status Path              State   Status   Progress /vol/vol_test         Enabled  Active   5782 MB Scanned  > sis status Path              State   Status   Progress /vol/vol_test         Enabled  Active   4239 MB Searched  > sis status Path              State   Status   Progress /vol/vol_test         Enabled  Active   0 KB (0%) Done
+IBM Nシリーズにおいて、Deduplication機能を使用する場合、本来自動的に削除されるべき無効Fingerprintが削除されない問題の対応(STOR-13-012) - Japan

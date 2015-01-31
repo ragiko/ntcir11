@@ -1,0 +1,6 @@
+埋め込みdtMcは、セミ・マルコフ過程を遷移事例においてのみ考察することによって得られる。An embedded dtMc is obtained by looking at a semi-Markov process only at transition instances.
+- コンピューター用語辞典
+マルコフ連鎖の統計的振舞いは、遷移確率行列とその初期状態の分布によって完全に決定される。The statistical behaviour of a Markov chain is completely determined by the transition probability matrix and the distribution of its initial state.
+- コンピューター用語辞典
+初期確率遷移確率推定部36乃至観測確率推定部38は、時系列データから隠れマルコフモデルを推定するとともに、状態尤度計算部32乃至バックワード尤度計算部35により計算される尤度が大きくなるように、隠れマルコフモデルを更新する。An initial probability transition probability estimation part 36 to an observation probability estimation part 38 estimate the hidden Markov Model from the time-series data, and update the hidden Markov Model so that the likelihood to be calculated by the state likelihood calculation part 32 to the backward likelihood calculation part 35 can be increased. - 特許庁
+マルコフ遷移の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

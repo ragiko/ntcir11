@@ -1,0 +1,68 @@
+R のグラフィックスを適当な画像形式で保存する基本は postscript() デバイス関数等の画像ファイル出力専用の関数を使うことである。
+R でポストスクリプト画像を作る方法  &dagger;
+R のポストスクリプトデバイス postscript() 関数で作った EPS 画像は、気をつけないと真正の EPS ファイルにならず、xdvi で表示したり、pdf ファイルに取り込む際トラブルを引き起こす可能性があるので注意が要る。以下の注意を参照。
+data(Titanic)
+# ポストスクリプトデバイスを開く。出力 EPS ファイル名を指定
+# horizontal=FALSE を指定しないと、LATEX に取り込んだ時横にひっくり返る
+# オプション onefile = FALSE, paper = special は真正の eps ファイルを作るために不可欠(らしい)
+# height = 9, width = 9 は画像のサイズ
+# LATEX で表示サイズは後から変えられるので適当で良い
+postscript("mosaicplot.eps", horizontal = FALSE, onefile = FALSE, 
+paper = "special", height = 9, width = 9)
+mosaicplot(Titanic, main = "Survival on the Titanic", color = TRUE)
+dev.off()   # 必要な出力がすべて終ったら、すぐにデバイスを閉じるのがコツ
+いろいろ試した結果、次のやりかたがベターと気づきました。このやりかたでは
+X11() 画面と別のデバイスに同時に出力できます(2004/5/14)
+op <- par(no.readonly = TRUE) # 現在の作図パラメータを退避 
+par(bg = "gray94") # 薄いグレイの背景色 
+# まず既定の X11 デバイスへ出力
+data(Titanic)
+mosaicplot(Titanic, main = "Survival on the Titanic", color = TRUE)
+# これで良しとなったら、上の作図手順を変数 pp に記録
+pp = recordPlot() # 引数なしに注意
+# 新しいデバイスを開く(出力 postscript デバイスを指定、他のデバイスでもOK)
+# horizontal=FALSE を指定しないと、LATEX に取り込んだ時横にひっくり返る 
+postscript("mosaicplot.eps", horizontal = FALSE, onefile = FALSE, 
+paper = "special", height = 9, width = 9)
+# postscript デバイスに作図し直す
+replayPlot(pp)
+dev.off() # 必要な出力がすべて終ったら、すぐにデバイスを閉じるのがコツ
+# 終了時に元の作図パラメータを復帰する
+par(op) 
+# 関数中では on.exit 関数を使うと途中でエラーが起きてもパラメータを復帰してくれるので安心
+on.exit(par(op)) 
+もう一つのやりかたは、X11 デバイスに表示した後
+dev.copy2eps(file="ファイル名")
+でその内容を EPS ファイルに落すことです。追加の引数を指定しない限りサイズ等は保たれます。
+おまけ(グラフ内の日本語表示について)  &dagger;
+日本語表示をするために、
+X11デバイスへの出力には
+> options(X11fonts = c("-*-gothic-%s-%s-normal--%d-*-*-*-*-*-*-*","-adobe-symbol-*-*-*-*-%d-*-*-*-*-*-*-*"))
+としておいて、
+> plot(適当な引数)
+日本語表示のためにpostscript(EPS画像ファイル)への出力には、
+> postscript("output.eps",family="Japan1Ryumin")
+としておいて、
+> plot(適当な引数)
+> dev.off()
+LaTeX に EPS 画像を取り込む  &dagger;
+\documentclass[a4]{jarticle}
+\usepackage{graphicx}   % EPS 画像を取り込むためのおまじない
+\begin{document}
+......................................
+\begin{figure}[ht]
+\begin{center}  % 一つのEPS画像を表示 
+\includegraphics*[
+bb=18 72 594 720,   % EPS 画像ファイルの boundingbox 値 (ファイルの先頭に記録されている,なくともよい)
+trim=10 10 15 10, clip,    % 左下右上(この順)から指定量カット (適当な値は試行錯誤で決める,なくともよい)
+width=0.5\linewidth,       % 画像の横サイズ指定 (指定しないとEPSファイルそのものの幅になる,指定すると伸縮)
+height=0.45\textheight,    % 画像の縦サイズ指定 (同上)
+clip]{foo.eps} % EPS 画像ファイル名 (余計な余白をつかないため clip を指定するのがコツ)
+\vspace{-5mm}              % 図とキャプションとの隙間調整
+\caption{foo の図}         % 図のキャプション
+\label{figure:foo}         % 参照用ラベル (後で「第\ref{figure:foo}図」等とする)
+\end{center}
+\end{figure}
+...........................................
+\end{document}
+Rによるポストスクリプト画像のLaTeXでの利用 - RjpWiki

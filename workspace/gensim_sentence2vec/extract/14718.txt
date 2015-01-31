@@ -1,0 +1,43 @@
+検索キーワードを含む項目見出しを全文検索し、そのキーワードの文字列にぴったりマッチするもの(完全一致)、検索キーワードが項目見出しの先頭の文字列にマッチするもの(前方一致)、検索キーワードが項目見出しの途中の文字列に含まれるもの(部分一致)の順をベースに、アルファベット順で表示されます。
+これは、大原則とも言うべき規則で、細かい規則がいくつかありますので、以下に挙げておきます。
+例えば、manipulation という英単語で検索した場合、自動的に英和データベースの項目見出しを大文字小文字の違いを無視して、全文検索します。
+まず manipulation にぴったりマッチするもの(完全一致)が、検索結果の 1 位として表示されます。
+manipulation 
+以下、
+manipulation action 
+manipulation aid 
+manipulation capability 
+manipulation function 
+manipulation in the upper abdomen 
+……のように、manipulation に完全一致する単語で始まる連語など複数の単語で構成される項目が続きます。このグループの中での表示順は、manipulation に続く語彙のアルファベット順になります。
+manipulation に完全一致する単語で始まる項目が終了したら、
+abdominal manipulation 
+active manipulation 
+algebraic manipulation language 
+arithmetic manipulation 
+artificial manipulation 
+……のように manipulation に一致する単語が項目見出しの先頭以外の位置(連語などの 2 語めなど)に含まれる複数の単語で構成される項目がアルファベット順で続きます。ただし、ここではアルファベット順以上に、manipulation の前に何語の単語が存在するかが重視されます。
+detect improper manipulation 
+ion beam manipulation 
+……のように manipulation の前に 2 語以上の単語が存在するものは、先ほどの abdominal manipulation  や active manipulation よりも後に表示されます(これらの項目は、manipulation に先行する単語数が 1 なので)。つまり、manipulation に先行する単語数が少ないものほど、より上位に表示されるのです。
+たとえば、water level manipulation は、単純にアルファベット順に並べれば、allow for fine-enough manipulation よりも後ろに来るべきですが、manipulation に先行する単語の数が、
+water level manipulation  = 2(water / level の 2 語)
+allow for fine-enough manipulation  = 3(allow / for / fine-enough の 3 語)
+……であるため、最初の 1 文字めが w  である water level manipulation は、最初の 1 文字めが a である allow for fine-enough manipulation  よりも先に表示されます。manipulation に先行する単語数が同じ項目の中では、アルファベット順によって順位を決定します。
+manipulation に完全一致する単語がどこかにふくまれる項目が終了したら、最後に manipulation で始まる(前方一致)単語を含む項目(ここまでは、manipulation に完全一致する単語 を含む項目の話)が表示されます。これらは、
+perform financial manipulations 
+resort to technical manipulations 
+など manipulation に前方一致する単語(manipulations )が含まれる項目となります。また、ここでも manipulation で始まる単語に先行する単語数やアルファベット順などが考慮されます。
+すこし複雑になってしまいましたが、まとめると、
+完全一致した項目
+完全一致した文字列を含む複数語で構成される項目
+完全一致した文字列に先行する単語数 0 の項目※
+完全一致した文字列に先行する単語数 1 の項目※
+完全一致した文字列に先行する単語数 2 の項目※
+……※
+前方一致した文字列を含む複数語で構成される項目
+前方一致した文字列に先行する単語数 0 の項目※
+前方一致した文字列に先行する単語数 1 の項目※
+前方一致した文字列に先行する単語数 2 の項目※
+……※
+【Memo】英和検索の検索結果は、どんな順番で並んでいる?:英辞郎 on the WEB:アルク

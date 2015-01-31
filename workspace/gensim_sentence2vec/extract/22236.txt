@@ -1,0 +1,44 @@
+
+本発表では、Cairns (1988) が提案している音節の理論 MTSS (Markedness
+Theory of Syllable Structure) を構成するいくつかの点について、同理論に批判的な論考や同理論で問題になる可能性のある結論を含む論考を取り上げ、検討を加えた。結論としては、同理論に基づく英語の単一の形態素からなる一音節の非形式語
+(monomorphemic, monosyllabic non-function word) の音節の構造に関する提案および強弱格の脚
+(trochaic foot) を持つ単一形態素の語の母音間の子音列に関する提案は、基本的に正しいことを示した。
+Cairns は、英語の単一形態素からなる一音節の非形式語の音節(以下 σ)は、非義務的な
+Onset(以下 O)と義務的な Rhyme(以下 R)からなるとする。さらに、O には、非義務的な
+PCo (Pre Core of Onset)、義務的な Co (Core of Onset)、非義務的な Ao (Adjunct
+of Onset) が、この順で現れ、R には、義務的な V (Vowel)、非義務的な Ar (Adjunct
+of Rhyme)、義務的な Cr (Core of Rhyme)、PCr (Post Core of Rhyme) がこの順で現れると考える。
+σ
+|
++-----+------+
+(O)          
+R
+|           
+|
++----+---+   +--+-+-+---+
+|    |   |   | 
+|   |   |
+(PCo)  Co  Ao  V (Ar) R (PCr)
+原口 (1994) では、Cairns の提案では、(a)単母音で終わる音節、ならびに、(b)長母音が表示できないとしている。まず、(a)については、確かにそうであるが、Cairns
+が問題にしている英語の単一形態一音節非形式語は、単母音で終わる語が存在しないので、英語に関する限り、Cairns
+の主張は正しいと言えるし、(b)に関しては、Cairns によれば、長母音の後半は、Ar
+(または、 R)を占めるように表示できるので、原口の批判はあたらない。むしろ、英語には、'aft'
+のような語は存在するのに、[eyft] のような語が存在しないことを説明するためには、[ft]
+が、Ar-Cr を占める子音列であるとし、長母音や二重母音の後半が、Ar を占めるとすることが妥当である。
+Cairns は、一方で、強弱格の単一形態素の二音節の母音間の子音(列)が、第一音節に属すること示している。例えば、/m/
+を Cr に持ち、さらに Ar を持つ一音節語は、/lm/, /rm/, /ym/, /wm/ いづれかの子音列で終わる
+(elm, arm, time, room)。強弱格の単一形態素の二音節語の母音間の子音列で、/m/
+で終わる場合も、/lm/, /rm/, /ym/, /wm/ いづれかである (Wilma, Norma, lima,
+coma)。この観察は、母音間の子音列が、Ar-Cr を占める子音列と考えることによって、簡潔に説明ができる。つまり、強勢のない二音節目には、O
+がないということになる。
+Hammond (1995, 1997) は、最適性理論の枠組みを用いた英語の音節構造の分析を示したが、その際、英語においては、No
+Onset(無強勢音節には、O が無い)という旨の制約を提案しており、Cairns の主張とも一致する。しかし、彼が行なった実験やそれに先行実験の解釈の際に、誤りを犯している。誤りをただせば、Cairns
+の提案に照らし、実験結果がより首尾一貫して解釈可能であることを本発表では示した。
+Cairns, C. E. (1988). Phonotactics, Markedness and Lexical Representation.
+In Phonology, 5.2, pp 209--236. Cambrige University Press.
+Hammond, M. (1995). Syllable Parsing in English and French. Ms. ROA58.
+Hammond, M. (1997) Optimality Theory and Prosody.In Archangeli and Langendoen,
+(eds.), Optimality Theory: An Overview, chapter 2,pp33--58. Blackwell,
+Massachusetts.
+原口庄輔.(1994) 『音韻論』開拓社,東京.
+Some Aspects of English Phonotactics

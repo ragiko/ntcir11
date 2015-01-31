@@ -1,0 +1,3 @@
+道路標識認識において,位置ずれの問題を解決するため,レーベンシュタイン距離を用いたテンプレートマッチングプログラム開発した.高速化のため,プログラムをハードウェア化し,各テンプレートとのマッチングを並列に行うことにより8並列による実行を可能とした.アルゴリズムの変化に柔軟に対応するために,FPGA上に実装を行った.その結果,ソフトウェアの4倍以上の実行速度を実現し,このプログラムで求められる毎秒30フレームに対して十分な性能が得られることが分かった.
+An algorithm of template matching for signboard using Levenshtein's distance is proposed and implemented on an FPGA-based acceleration board. Using the FPGA board, both sufficient performance for the frame rate and flexibility for the frequent improvement of the algorithm are achieved. The preliminary experimental results show that the performance is more than four times as that of the software on the common PC, and enough to process 30 frames per second.
+

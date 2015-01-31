@@ -1,0 +1,65 @@
+
+セル範囲の削除、行や列の削除が行われた時に、何らかの処理を行いたいときがあります。例えば、削除を禁止させたり、削除されたセル範囲をログとして残したいときなどが考えられます。セルの削除を検出するには少し工夫が必要なので、ここで一例を紹介させて頂きます。
+削除を検出するイベントは無い
+残念なことに、セルや行列の削除が発生したことを教えてくれる標準のイベントはありません。このため「Worksheet_SelectionChangeイベント」と「Worksheet_Changeイベント」を併用して、削除を検出できるようにします。
+やるべきことはとてもシンプルで、まず「Worksheet_SelectionChangeイベント」で選択されたセル範囲の参照を大域変数に保持しておき、「Worksheet_Changeイベント」が発生した際に、大域変数に保持しておいたセル範囲の参照が失われていないかを確認するだけです。参照が消失していれば、そのセル範囲は削除されたということがわかります。
+削除を検出する処理
+次のソースコードは、セルが削除された際に、削除されたセル範囲のアドレスをメッセージボックスで表示する内容になっています。※シートモジュールに記述します。
+ソースコード: 削除されたセル範囲のアドレスを表示
+Private pv_TargetRange As Range
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+Set pv_TargetRange = Target
+End Sub
+Private Sub Worksheet_Change(ByVal Target As Range)
+If Not pv_TargetRange Is Nothing Then
+On Error Resume Next
+If pv_TargetRange.Address = "" Then
+MsgBox Target.Address & "が削除されました。", vbExclamation
+End If
+On Error GoTo 0
+End If
+End Sub
+解説
+セル範囲の削除を行う場合、まずマウスなどを使って、対象となるセル範囲を選択しますね。すると「Worksheet_SelectionChangeイベント」が発生するので、そのイベントプロシージャの中で、選択されているセル範囲の参照を大域変数[pv_TargetRange]に保持しておきます。
+次に、セルに対して何らかの変更が加わると「Worksheet_Changeイベント」が発生するので、このイベントプロシージャの中で削除処理であるかを判定します。削除を検出するためのポイントは、ソースコードの中で強調表示されているエラートラップとその次のIFステートメントの部分で、IFステートメントでは大域変数に保持されているはずのRangeオブジェクトからアドレスを取得し空白であるかを評価しようとしています。
+しかし、参照が消失している場合、この処理は失敗しエラーが発生します。IFステートメントでエラーが発生すると、ステップがIFステートメント内に移行する特性があるので、削除時に実行したい処理をIFステートメント内に記述しておきます。ここでは、該当セル範囲のアドレスをメッセージボックスで表示するようになっています。
+実行例を紹介します。
+セル範囲[A1:B2]を削除すると、下図のようにメッセージボックスが表示されます。
+削除を禁止する
+もう1つの例として「削除禁止」の方法を紹介します。次のソースコードは、シート全体のセル削除を禁止する内容になっています。※手動による削除のみ対応
+ソースコード: 
+Private pv_TargetRange As Range
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+Set pv_TargetRange = Target
+End Sub
+Private Sub Worksheet_Change(ByVal Target As Range)
+If Not pv_TargetRange Is Nothing Then
+On Error Resume Next
+If pv_TargetRange.Address = "" Then
+Application.EnableEvents = False
+Application.Undo
+Application.EnableEvents = True
+MsgBox "セルの削除は禁止されています。", vbExclamation
+End If
+On Error GoTo 0
+End If
+End Sub
+削除の禁止と言っていますが、実質的には一度削除されたセル範囲を「元に戻す(undo)」で復元し無効にしているだけです。元に戻す処理は「Application.Undoメソッド」で実現できます。下図は実行例になります。
+黄色いセルを削除しようとしても、削除できないことがわかります。
+ちなみに、特定のセル範囲だけ削除を禁止したい場合は下記のようにWorksheet_Changeイベントを変更します。
+セル範囲[1:10]に干渉する可能性があるセル削除を禁止する
+ソースコード: 特定のセル範囲だけ削除を禁止
+Private Sub Worksheet_Change(ByVal Target As Range)
+If Not pv_TargetRange Is Nothing Then
+If Intersect(Target, Me.Range("1:10")) Is Nothing Then Exit Sub
+On Error Resume Next
+If pv_TargetRange.Address = "" Then
+Application.EnableEvents = False
+Application.Undo
+Application.EnableEvents = True
+MsgBox "セルの削除は禁止されています。", vbExclamation
+End If
+On Error GoTo 0
+End If
+End Sub
+セルや行(列)が削除された時に処理を行う | ヴィーバ VeaBa! Excel VBA Tips

@@ -1,0 +1,173 @@
+
+記事のタイトルがだいぶ固い内容になっていまいましたがやりたい事はとても簡単です。過去に発せられたまどマギ台詞の形態素を学習し、予測モデルを作成します。その後に未分類の形態素のデータセットを与えた時にどれだけ人物のラベル付けが正しく行われたかを評価します。予測モデルの対象となる人物は鹿目まどか/暁美ほむら/美樹さやか/キュゥべえ/佐倉杏子/巴マミの合計6名です。機械学習にはSVMを利用します。先に実験の結果をお伝えしておくと、台詞の形態素ベクトルでは十分なマルチラベリングができていません。それでもこの記事が気になる方は読み進めてください。処理手順の詳細は以下の通りです。
+まどマギ台詞の収集。
+発言者の1行台詞を形態素解析し、形態素IDと形態素出現回数をベクトル化。
+TrainデータとPredictデータを分離する。
+SVMを利用したTrainデータの学習。Model作成。
+Kfold-Cross-Validation実施。Modelの評価。
+まどマギ台詞の収集
+魔法少女まどかマギカ WIKI - ネタバレ考察/台詞集 
+上のWIKIの台詞を利用させてもらっています。※承諾は得ていません。
+Pythonコードで各登場人物の台詞を取得します。Webページのスクレイピングによる抽出です。実行すると各登場人物ファイルにデータを落とし込みます。
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys,re,urllib,urllib2
+urls = { 'http://www22.atwiki.jp/madoka-magica/pages/131.html' : 'madoka.txt', 
+'http://www22.atwiki.jp/madoka-magica/pages/57.html'  : 'homura.txt',
+'http://www22.atwiki.jp/madoka-magica/pages/123.html' : 'sayaka.txt',
+'http://www22.atwiki.jp/madoka-magica/pages/130.html' : 'mami.txt',
+'http://www22.atwiki.jp/madoka-magica/pages/132.html' : 'kyoko.txt',
+'http://www22.atwiki.jp/madoka-magica/pages/56.html'  : 'kyube.txt'
+}
+opener = urllib2.build_opener()
+ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.51.22 (KHTML, like Gecko) Version/5.1.1 Safari/    534.51.22'
+referer = 'http://www22.atwiki.jp/madoka-magica/'
+opener.addheaders = [( 'User-Agent', ua ),( 'Referer', referer )]
+for k,v in urls.iteritems():
+f = open( './data/' + v , 'w' )
+content = opener.open( k ).read()
+if re.compile( r'^「(.*?)」$', re.M ).search( content ) is not None: 
+lines = re.compile( r'^「(.*?)」$', re.M ).findall( content )
+for line in lines:
+f.write( line + "\n" )
+f.close()
+Mecabによる形態素解析
+MeCab: Yet Another Part-of-Speech and Morphological Analyzer 
+形態素解析にはMecabを利用します。Mecabの設定完了後、import Mecabとmecab.parseToNodeを指定すると単語の形態素分解が出来ます。試しに文書をスペース区切りの分かち書きします。上で収集した台詞をdata/all.txtというファイルにまとめます。そして以下のPythonコードを実行します。
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+import MeCab
+mecab = MeCab.Tagger('-Ochasen')
+allfile = 'data/all.txt'
+data = open( allfile ).read()
+node = mecab.parseToNode( data )
+phrases = node.next
+while phrases:
+try:
+print node.surface + " ",
+node = node.next
+except AttributeError:
+break
+暁美  ほ  むら  です  。  よろしく  お願い  し  ます  東京  の  、  ミッション  系  の  学校  よ  やっ  て  無かっ  た  わ  ごめんなさい  。  何だか  緊張  し  すぎ  た  みたい  で  、  ちょっと  、  気分  が  。  保健  室  に  行か  せ  て  貰える  かしら  いえ  、  おか  まい  なく  。  係  の  人  に  お願い  し  ます  から  鹿目  まどか  さん  。 
+形態素ID付け/ベクトル化
+SVMはベクトル空間でのマージン最大化を行うので、形態素そのままだと機械学習ができません。そこで形態素に対して整数のIDを割り当て、1行の台詞で何回出現したかを記録します。libsvmに最終的に渡したいデータは 
+正解ラベル形態素ID:出現回数形態素ID:出現回数
+という形式にします。正解ラベルは人物ID、形態素IDは全形態素でユニークなIDを示します。以下のコードを実行するとlibsvmへの入力データを生成します。
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+import MeCab
+mecab = MeCab.Tagger('-Ochasen')
+names = { 'homura' : 1,
+'kyoko' : 2,
+'kyube' : 3,
+'madoka' : 4,
+'mami' : 5,
+'sayaka' : 6 }
+allfile = './data/all.txt'
+data = open( allfile ).read()
+node = mecab.parseToNode( data )
+words = {}
+num = 0;
+phrases = node.next
+while phrases:
+try:
+k = node.surface
+k = k.strip().rstrip()
+if k in words:
+pass
+else:
+words[k] = num;
+num = num + 1 
+node = node.next
+except AttributeError:
+break
+for i in names.keys():
+file = './data/' + i + '.txt'
+for line in open( file, 'r' ):
+line = line.strip().rstrip()
+n = mecab.parseToNode( line )
+p = n.next
+attrs = {}
+while p:
+try:
+k = n.surface
+if k not in words:
+break 
+id = words[k]
+if id in attrs:
+attrs[id] = attrs[id] + 1
+else:
+attrs[id] = 1
+n = n.next
+except AttributeError:
+break
+print names[i],
+for ak in sorted( attrs.keys() ):
+print str(ak) + ":" + str(attrs[ak]), 
+print 
+6 0:2 12:1 46:1 199:1 2188:1 2452:1
+6 0:2 54:1 757:1 1992:1 2453:1
+6 0:2 5:1 8:2 11:1 46:1 60:1 62:1 84:2 668:1 1329:1 1974:1 2005:1 2454:1 2455:1
+6 0:2 84:1 872:1 2456:1 2457:1
+6 0:2 2:1 4:1 5:1 8:1 26:1 33:1 44:1 46:1 54:2 66:1 83:1 100:1 144:3 353:1 530:1 1673:1 1992:1 2188:1 2458:1 2459:1 2460:1 2461:1 2462:1 2463:1 2464:1
+6 0:2 12:1 20:1 44:2 54:1 62:1 71:1 84:1 110:1 144:2 189:1 292:1 406:1 418:1 489:2 572:1 1974:1 2140:1 2188:2 2465:1 2466:1 2467:1 2468:1 2469:1 2470:1
+6 0:2 11:2 33:2 46:1 62:1 69:1 84:1 85:1 93:1 107:1 132:1 189:1 201:1 209:1 489:3 969:1 2188:2 2378:1 2453:1 2466:1 2471:1 2472:1
+2Fold-Cross-Validation
+形態素をベクトル化したデータを3つに分割して、それぞれを学習/評価データとして利用します。今回はデータも少ないので2つに分けています。上で出力したデータをvector.txtとして保存した場合、以下のスクリプトでデータを分離する事が出来ます。shuffle分割したファイルを別名で保存し直して、libsvmのsvm-trainコマンドに掛けます。その結果、予測Modelのファイルが生成されます。
+$ perl -MList::Util=shuffle -e 'print shuffle(<>)' < vector.txt | split -l 945
+$ mv xaa data1.txt
+$ mv xab data2.txt
+$ svm-train data1.txt 
+*
+optimization finished, #iter = 136
+nu = 0.739927
+obj = -200.401126, rho = 0.908119
+nSV = 214, nBSV = 189
+*
+optimization finished, #iter = 187
+nu = 0.521964
+obj = -201.006920, rho = 0.935477
+nSV = 221, nBSV = 180
+*
+optimization finished, #iter = 141
+nu = 0.824490
+obj = -200.481473, rho = 0.917041
+nSV = 214, nBSV = 189
+$ svm-train data2.txt 
+*
+optimization finished, #iter = 178
+nu = 0.414698
+obj = -157.645809, rho = 0.977467
+nSV = 196, nBSV = 128
+*
+optimization finished, #iter = 121
+nu = 0.774510
+obj = -157.307372, rho = 0.989609
+nSV = 172, nBSV = 142
+*
+optimization finished, #iter = 135
+nu = 0.661088
+obj = -157.307427, rho = 0.963986
+nSV = 181, nBSV = 141
+*
+$ ls
+合計 492
+drwxr-xr-x 2 yuta yuta   4096  9月  2 00:27 .
+drwxr-xr-x 5 yuta yuta   4096  9月  2 00:00 ..
+-rw-r--r-- 1 yuta yuta  69615  9月  2 00:19 data1.txt
+-rw-r--r-- 1 yuta yuta  84900  9月  2 00:27 data1.txt.model
+-rw-r--r-- 1 yuta yuta  66225  9月  2 00:19 data2.txt
+-rw-r--r-- 1 yuta yuta  81545  9月  2 00:27 data2.txt.model
+-rw-r--r-- 1 yuta yuta 135840  9月  1 23:52 vector.txt
+prediction
+$ svm-predict data2.txt data1.txt.model output > accuracy1.txt
+Accuracy = 31.9915% (302/944) (classification)
+$ svm-predict data1.txt data2.txt.model output2 > accuracy2.txt
+Accuracy = 30.2646% (286/945) (classification)大きな問題として学習データが少な過ぎて評価がしづらい状態になりました。またoutputファイルの中身を見てみると全て4(鹿目まどか)というラベル付けがされてしまっていて評価に失敗しています。これは学習データ量に4のラベルが偏っていたためと考えます。全体的な話だとAccuracyが32%、30%となっており登場人物6名のマルチラベル問題なので1/6= 16%と比較すると倍以上の正解度と考えられますが、前述したように学習自体が正しく行われていないので再度やり直します。
+Support Vector Machinesを用いた「魔法少女まどか☆マギカ」人物予測モデル - Web就活日記

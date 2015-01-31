@@ -1,0 +1,132 @@
+トークナイズ機能は、全文検索機能に無くてはならない機能です。
+欧米圏であれば、最低限スペース区切りに対応していれば実用的に使えます。
+しかし、中国語、日本語、韓国語への対応をする場合には、CJK対応言われる実装が必要です。
+汎用的な分かち書き(トークナイズ)方法としては、n-gram方式があり、uni-gramやbi-gram、tri-gramが有名です。
+n-gramは汎用ではありますが、機械的に分解するが故に精度があまり高くなく、語彙の部分一致検索でしかありません。
+そこで、品詞毎にトークナイズの出来る、MeCabやJumanといった形態素解析エンジンの出番となります。
+mroongaでは、groonga-tokenizer-mecabというパッケージを追加することで、形態素解析エンジンのMeCabに対応します。
+その他、Bigramの独自拡張にも対応しているようなので、それぞれどのような挙動を示すのか、実験してみたいと思います。
+この結果を参考に、要件に見合ったトークナイザーを選べると良いですね。
+tokenizerの指定方法(MySQL-5.1)
+MySQL-5.1では、my.cnfでのグローバルの設定のみ可能です。
+mroonga_default_parser変数を利用し、mysqldセクションに設定します。
+mroonga_default_parser=TokenMecab
+tokenizerの指定方法(MySQL-5.5/5.6)
+以下のように、インデックス毎に指定が可能です。
+FULLTEXT INDEXのCOMMENTに指定します。
+CREATE TABLE test (
+id int(11) NOT NULL AUTO_INCREMENT,
+content varchar(255) NOT NULL,
+PRIMARY KEY (id),
+FULLTEXT INDEX (content) COMMENT 'parser "TokenMecab"'
+) ENGINE=mroonga DEFAULT CHARSET=utf8;
+関連Tips
+MeCabのcabは小文字で指定します。そうしないと、フォールバック先であるTokenBigram扱いになります。
+正)TokenMecab     誤)TokenMeCab
+インデックスへのコメント付与を行う方法
+http://y-ken.hatenablog.com/entry/mysql-alter-table-index-comment
+normalizer併用時の記述方法
+http://y-ken.hatenablog.com/entry/mroonga-use-parser-and-normalizer-together
+デフォルトで選択されるparser(tokenizer)
+指定の無い場合には、TokenBigramが利用されます。
+デフォルトを変える場合には、my.cnfの[mysqld]セクションに
+mroonga_default_parser=TokenXXXという具合で設定を追加します。
+実行例に利用するコマンド
+今回は、直接groongaコマンドを利用します。
+tokenizeコマンドは、groonga-3.0.4から利用可能です。
+$ groonga
+> register normalizers/mysql
+> tokenize トークナイザー名 文字列 正規化機能名
+ただ、実行結果が以下のように読みにくいです。
+$ groonga
+> register normalizers/mysql
+> tokenize TokenMecab "隣の客はよく柿食う客だ。" NormalizerAuto
+[[0,1368939346.89651,0.0028831958770752],[{"value":"隣","position":0},{"value":"の","position":1},{"value":"客","position":2},{"value":"は","position":3},{"value":"よく","position":4},{"value":"柿","position":5},{"value":"食う","position":6},{"value":"客","position":7},{"value":"だ","position":8},{"value":"。","position":9}]]
+そこで、以下のように出力結果を保存し、それをsedで加工した物を貼り付けています。
+$ sed -e 's/"value":"//g' -e 's/","position":[0-9]*//g' -e 's/.*,\[//' -e 's/\]\]//g' tokenize.txt
+$ groonga
+> register normalizers/mysql
+> tokenize TokenMecab "隣の客はよく柿食う客だ。" NormalizerAuto
+{隣},{の},{客},{は},{よく},{柿},{食う},{客},{だ},{。}
+実行サンプル
+以下の文字列を渡し、どのようにトークナイズされるかの動作サンプルを以下に載せました。
+「あなたはジャンヌ・ダルクですか? Are you Jeanne d'Arc? TEL:123-456-789 #include <mecab.h>」
+なお、正規化機能には「NormalizerAuto」を利用しております。
+本家サイトでの解説もそれぞれに引用しております。
+off
+そのままなので省略。
+トークナイズしません。"off"はcontentをそのまま扱いたい場合に使います。例えば、この値は前方一致検索のために指定します。
+TokenMecab
+MeCabを用いてトークナイズする。groongaがMeCabサポート付きでビルドされている必要がある。
+> tokenize TokenMecab "あなたはジャンヌ・ダルクですか? Are you Jeanne d'Arc? TEL:123-456-789 #include <mecab.h>"
+{あなた},{は},{ジャンヌ・ダルク},{です},{か},{?},{Are},{you},{Jeanne},{d},{'},{Arc},{?},{TEL},{:},{123},{-},{456},{-},{789},{#},{include},{<},{mecab},{.},{h},{>}
+TokenBigram
+バイグラムでトークナイズする。ただし、連続したアルファベット・連続した数字・連続した記号はそれぞれ1つのトークンとして扱う。そのため、3文字以上のトークンも存在する。これはノイズを減らすためである。
+> tokenize TokenBigram "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か},{!?!?},{are},{you},{jeanne},{d},{'},{arc},{!?!?},{tel},{:},{123},{-},{456},{-},{789},{#},{include},{<},{mecab},{.},{h},{>}
+TokenBigramSplitSymbol
+バイグラムでトークナイズする。TokenBigramと異なり、記号が連続していても特別扱いして1つのトークンとして扱わず通常のバイグラムの処理を行う。
+TokenBigramではなくTokenBigramSplitSymbolを利用すると「Is it really!?!?!?」の「!?!?!?」の部分に「!?」でマッチする。TokenBigramの場合は「!?!?!?」でないとマッチしない。
+> tokenize TokenBigramSplitSymbol "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か!},{!?},{?!},{!?},{?},{are},{you},{jeanne},{d},{'},{arc},{!?},{?!},{!?},{?},{tel},{:},{123},{-},{456},{-},{789},{#},{include},{<},{mecab},{.},{h},{>}
+TokenBigramSplitSymbolAlpha
+バイグラムでトークナイズする。TokenBigramSplitSymbolに加えて、連続したアルファベットも特別扱いせずに通常のバイグラムの処理を行う。
+TokenBigramではなくTokenBigramSplitSymbolAlphaを利用すると「Is it really?」に「real」でマッチする。TokenBigramの場合は「really」でないとマッチしない。
+> tokenize TokenBigramSplitSymbolAlpha "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か!},{!?},{?!},{!?},{?},{ar},{re},{e},{yo},{ou},{u},{je},{ea},{an},{nn},{ne},{e},{d'},{'a},{ar},{rc},{c!},{!?},{?!},{!?},{?},{te},{el},{l:},{:},{123},{-},{456},{-},{789},{#i},{in},{nc},{cl},{lu},{ud},{de},{e},{<m},{me},{ec},{ca},{ab},{b.},{.h},{h>},{>}
+TokenBigramSplitSymbolAlphaDigit
+バイグラムでトークナイズする。TokenBigramSplitSymbolAlphaに加えて、連続した数字も特別扱いせずに通常のバイグラムの処理を行う。つまり、すべての字種を特別扱いせずにバイグラムの処理を行う。
+TokenBigramではなくTokenBigramSplitSymbolAlphaDigitを利用すると「090-0123-4567」に「567」でマッチする。TokenBigramの場合は「4567」でないとマッチしない。
+> tokenize TokenBigramSplitSymbolAlphaDigit "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か!},{!?},{?!},{!?},{?},{ar},{re},{e},{yo},{ou},{u},{je},{ea},{an},{nn},{ne},{e},{d'},{'a},{ar},{rc},{c!},{!?},{?!},{!?},{?},{te},{el},{l:},{:1},{12},{23},{3-},{-4},{45},{56},{6-},{-7},{78},{89},{9},{#i},{in},{nc},{cl},{lu},{ud},{de},{e},{<m},{me},{ec},{ca},{ab},{b.},{.h},{h>},{>}
+TokenBigramIgnoreBlank
+バイグラムでトークナイズする。TokenBigramと異なり、空白を無視して処理する。
+TokenBigramではなくTokenBigramIgnoreBlankを利用すると「み な さ ん 注 目」に「みなさん」でマッチする。TokenBigramの場合は「み な さ ん」でないとマッチしない。
+> tokenize TokenBigramIgnoreBlank "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か},{!?!?},{are},{you},{jeanne},{d},{'},{arc},{!?!?},{tel},{:},{123},{-},{456},{-},{789},{#},{include},{<},{mecab},{.},{h},{>}
+TokenBigramIgnoreBlankSplitSymbol
+バイグラムでトークナイズする。TokenBigramSplitSymbolと異なり、空白を無視して処理する。
+TokenBigramSplitSymbolではなくTokenBigramIgnoreBlankSplitSymbolを利用すると「! !? ??」に「???」でマッチする。TokenBigramSplitSymbolの場合は「? ??」でないとマッチしない。
+> tokenize TokenBigramIgnoreBlankSplitSymbol "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か!},{!?},{?!},{!?},{?},{are},{you},{jeanne},{d},{'},{arc},{!?},{?!},{!?},{?},{tel},{:},{123},{-},{456},{-},{789},{#},{include},{<},{mecab},{.},{h},{>}
+TokenBigramIgnoreBlankSplitSymbolAlpha
+バイグラムでトークナイズする。TokenBigramSplitSymbolAlphaと異なり、空白を無視して処理する。
+TokenBigramSplitSymbolAlphaではなくTokenBigramIgnoreBlankSplitSymbolAlphaを利用すると「I am a pen.」に「ama」でマッチする。TokenBigramSplitSymbolAlphaの場合は「am a」でないとマッチしない。
+> tokenize TokenBigramIgnoreBlankSplitSymbolAlpha "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か!},{!?},{?!},{!?},{?a},{ar},{re},{ey},{yo},{ou},{uj},{je},{ea},{an},{nn},{ne},{ed},{d'},{'a},{ar},{rc},{c!},{!?},{?!},{!?},{?t},{te},{el},{l:},{:},{123},{-},{456},{-},{789},{#i},{in},{nc},{cl},{lu},{ud},{de},{e<},{<m},{me},{ec},{ca},{ab},{b.},{.h},{h>},{>}
+TokenBigramIgnoreBlankSplitSymbolAlphaDigit
+バイグラムでトークナイズする。TokenBigramSplitSymbolAlphaDigitと異なり、空白を無視して処理する。
+TokenBigramSplitSymbolAlphaDigitではなくTokenBigramIgnoreBlankSplitSymbolAlphaDigitを利用すると「090 0123 4567」に「9001」でマッチする。
+TokenBigramSplitSymbolAlphaDigitの場合は「90 01」でないとマッチしない。
+> tokenize TokenBigramIgnoreBlankSplitSymbolAlphaDigit "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あな},{なた},{たは},{はジ},{ジャ},{ャン},{ンヌ},{ヌ・},{・ダ},{ダル},{ルク},{クで},{です},{すか},{か!},{!?},{?!},{!?},{?a},{ar},{re},{ey},{yo},{ou},{uj},{je},{ea},{an},{nn},{ne},{ed},{d'},{'a},{ar},{rc},{c!},{!?},{?!},{!?},{?t},{te},{el},{l:},{:1},{12},{23},{3-},{-4},{45},{56},{6-},{-7},{78},{89},{9#},{#i},{in},{nc},{cl},{lu},{ud},{de},{e<},{<m},{me},{ec},{ca},{ab},{b.},{.h},{h>},{>}
+TokenDelimit
+タグ検索に便利ですね。
+空白区切りでトークナイズする。
+> tokenize TokenDelimit "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あなたはジャンヌ・ダルクですか!?!?},{are},{you},{jeanne},{d'arc!?!?},{tel:123-456-789},{#include},{<mecab.h>}
+TokenDelimitNull
+今回はnull文字が無かったので、分かち書きされていないですね。
+null文字(\0)区切りでトークナイズする。
+> tokenize TokenDelimitNull "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あなたはジャンヌ・ダルクですか!?!? are you jeanne d'arc!?!? tel:123-456-789 #include <mecab.h>}
+TokenUnigram
+ユニグラムでトークナイズする。ただし、連続したアルファベット・連続した数字・連続した記号はそれぞれ1つのトークンとして扱う。そのため、2文字以上のトークンも存在する。これはノイズを減らすためである。
+> tokenize TokenUnigram "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あ},{な},{た},{は},{ジ},{ャ},{ン},{ヌ},{・},{ダ},{ル},{ク},{で},{す},{か},{!?!?},{are},{you},{jeanne},{d},{'},{arc},{!?!?},{tel},{:},{123},{-},{456},{-},{789},{#},{include},{<},{mecab},{.},{h},{>}
+TokenTrigram
+トリグラムでトークナイズする。ただし、連続したアルファベット・連続した数字・連続した記号はそれぞれ1つのトークンとして扱う。そのため、4文字以上のトークンも存在する。これはノイズを減らすためである。
+> tokenize TokenTrigram "あなたはジャンヌ・ダルクですか!?!? Are you Jeanne d'Arc!?!? TEL:123-456-789 #include <mecab.h>" NormalizerAuto
+{あなた},{なたは},{たはジ},{はジャ},{ジャン},{ャンヌ},{ンヌ・},{ヌ・ダ},{・ダル},{ダルク},{ルクで},{クです},{ですか},{すか},{か},{!?!?},{are},{you},{jeanne},{d},{'},{arc},{!?!?},{tel},{:},{123},{-},{456},{-},{789},{#},{include},{<},{mecab},{.},{h},{>}
+まとめ
+この分解されたキーワードを最小単位として、検索の対象とすることが出来ます。
+細かすぎるとキーワードのヒット率が上がりすぎて検索の精度が下がる状態となり、
+荒いとキーワードのヒット率が下がりますので、バランスが重要です。
+例えば以下のような使い分けをすると良いかもしれません。
+タグ検索なら
+TokenDelimit
+綺麗な日本語を検索するなら
+TokenMecab
+汎用性重視なら
+TokenBigram
+groonga/mroongaのトークナイザー(tokenizer)の挙動を追ってみる - Y-Ken Studio

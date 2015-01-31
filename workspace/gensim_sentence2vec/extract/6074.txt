@@ -1,0 +1,164 @@
+
+簡易百葉箱を作ってみるシリーズ今回で最終回です。前回までの内容で百葉箱の基本的な実装が完了し、残す作業は外観をかっこよくすることだけです。今回は、ケースを作成するとともに、ちょっと頑張ってハンダ付けにも挑戦してみようと思います。
+※ハンダ付けをしない方は、ブレッドボードに回路を作った状態でケースを作ってみてください。
+どんなケースを作るか考える
+Arduinoのケースを作る場合、どのような方法があるか調べてみます。ためしに検索エンジンに「Arduino ケース」で検索してみると、色々なケースが出てきますね。100円ショップで売っているプラスチックケースを利用している人、3Dプリンターやアクリル加工で本格的なケースを設計している人、お菓子の缶を代用している人、皆さん色々な方法でケースを自作していますね。
+色々調べた結果、今回作る百葉箱のケースはIT女子のラズベリーパイ入門奮闘記で利用していたナノブロックが良さそうなので、ナノブロックを使って自作してみようと思います!
+ナノブロックはブロックのサイズが小さく、4X4mmの世界最小級ブロックなので、ケースを作った際もなんとなく融通が利きそうです。ブロックだと気に入らなかったらまた作り直したりすることもできるので、今回はこのナノブロックを使ってケースを自作してみます。
+ケースを作るにあたり、今回は基本的なブロックがたくさん入っているナノブロックBasic Setを利用しました。
+ケースを作り始める
+さ、ケース作りの開始です。と言っても基本的にはブロックをあれやこれや選びながら、Arduinoを囲っていきます。
+ナノブロックでArduinoを囲んでいきます。
+ケースを作る際に気をつける点としては、Arduinoを長時間動作させる場合、回路によってArduinoが熱を持ってしまう可能性が高いので、発熱しても大丈夫なようにケースに通気性を持たせました。
+ケースの横は通気性を持たせてArduinoが発熱しても大丈夫なようにします。
+百葉箱の電子回路をArduinoシールド化してみる
+今回、ケースを作ると同時にこれまで作成した回路をArduinoのシールドとして簡単に取り外しができるようにArduinoユニバーサル基板上にハンダ付けをしてみます。これで、これまでブレッドボード上で実装をしていた回路がもっとコンパクトになるはずです!
+(ハンダ付けの道具がない、ちょっとハードルが高いな、と思う方はそのままブレッドボードで実装をした状態でケースを作ってももちろん問題ありません。)
+Arduinoユニバーサル基板。Arduinoの上にぴったり載せられるようになっています。
+Arduinoと並べてみました。
+ユニバーサル基板上に部品を配置
+ユニバーサル基板上にどのように部品を配置するかをイメージしながら、配置が決まったら実際に配線を行い、ハンダ付けを行っていきます。今回7セグLEDは3桁表示ができるものを利用しています。
+※今回利用した3桁7セグLEDのデータシートはこちらのページからダウンロードできます
+http://www.marutsu.co.jp/pc/i/15316/
+部品配置をイメージしてみます。
+Arudinoと連結する場合は、このようなゲタ(ヘッダーピン)を履かせます。
+Arduinoの上にユニバーサル基板を仮置きしてみました。
+ハンダ付けにトライ
+基板にハンダ付けをする前に、ブレッドボード上で確認の意味もこめて回路とプログラムを確認してみます。一度ハンダ付けをしてしまうと回路を直したりするのに手間がかかってしまうのでここはちょっと慎重に作業を進めます。
+ブレッドボード上に回路を組んできちんと動作するか再度確認。
+ブレッドボード上で問題なく動作を確認できたので、いよいよハンダ付けを行っていきます。ハンダ付けのやり方については、検索エンジンで「ハンダ付け」や「ハンダ付け コツ」などのキーワードで調べていただくと詳細な方法が書いてありますので、それを見てトライしてみてください。
+準備ができたらいざハンダ付け!
+配線に苦労しながらもなんとかハンダ付け完了。
+今回、部品の位置があまりよい位置でなかったため裏側の配線が少しゴテっとなってしまいました。でも、とりあえずハンダ付けができたので、Arduinoに合体させてみます。
+Arduinoに合体させてみました。
+いざ完成へ!
+ハンダ付けが完了したら、完成に向けてケースを仕上げていきます。といってもひたすらブロックを積み上げるのみ!ナノブロックはサイズが小さいので細かい調整ができるのですがブロック一つ一つが小さいため、なかなかケースを作成するのに時間がかかります(笑)
+地道にブロックを積み上げて…ケースがようやく完成しました。
+簡易百葉箱が完成!
+前回まで基板がずっとむき出しだったので、こうやってケースが完成すると感動しますね。
+前回の基板むき出しバージョン
+ケースが完成したので早速プログラムをArduinoにアップロードしてみます。今回は3桁の7セグLEDを使っているので使って前回のプログラムから少し変更しています。
+//
+// 簡易百葉箱プログラム
+//
+#include <avr/sleep.h>
+int _cnt = 0;
+float _number = 0;
+int _viewFlg = 0; // 桁を切り替える為のフラグ
+boolean _switchFlg = false; //温度・湿度を切り替えるフラグ
+int temperaturePin = A0; // select the input pin for the potentiometer
+int humidityPin = A1; // select the input pin for the potentiometer
+float temperatureValue = 0; // variable to store the value coming from the sensor
+float humidityValue = 1; // variable to store the value coming from the sensor
+void setup(){
+Serial.begin(9600);
+//2～8番ピン デジタル出力へセット
+for (int i=2; i<=8; i++){
+pinMode(i,OUTPUT);
+}
+pinMode(9,OUTPUT); //ドット
+pinMode(11,OUTPUT); //1桁目
+pinMode(12,OUTPUT); //2桁目
+pinMode(13,OUTPUT); //3桁目
+}
+//LEDレイアウトを定義
+boolean Num_Array[10][7]={
+{1,1,1,1,1,1,0}, //0
+{0,1,1,0,0,0,0}, //1
+{1,1,0,1,1,0,1}, //2
+{1,1,1,1,0,0,1}, //3
+{0,1,1,0,0,1,1}, //4
+{1,0,1,1,0,1,1}, //5
+{1,0,1,1,1,1,1}, //6
+{1,1,1,0,0,1,0}, //7
+{1,1,1,1,1,1,1}, //8
+{1,1,1,1,0,1,1} //9
+};
+//LED表示関数を定義
+void NumPrint(int Number){
+for (int w=0; w<=7; w++){
+digitalWrite(w+2,-Num_Array[Number][w]);
+}
+}
+//桁をそれぞれの桁で分解
+int NumParse(float Number,int s){
+Serial.print("number:");
+Serial.println(Number);
+if(s == 1){
+return int(Number) % 10;
+}
+else if(s == 2){
+return int(Number / 10);
+}
+//マイナスは小数点以下として判別させる
+else if(s == -1){
+return int((Number -int(Number))*10);
+}
+return 0;
+}
+void loop(){
+if(_viewFlg == 0){
+digitalWrite(11,HIGH);
+digitalWrite(12,HIGH);
+digitalWrite(13,LOW);
+NumPrint(NumParse(_number,2));
+//ドットを消す 
+digitalWrite(9,LOW);
+}
+else if(_viewFlg == 1){
+digitalWrite(11,LOW);
+digitalWrite(12,HIGH);
+digitalWrite(13,HIGH);
+NumPrint(NumParse(_number,1));
+//ドットを表示
+digitalWrite(9,HIGH);
+} else if(_viewFlg == 2){
+digitalWrite(11,HIGH);
+digitalWrite(12,LOW);
+digitalWrite(13,HIGH);
+NumPrint(NumParse(_number,-1));
+//ドットを消す
+digitalWrite(9,LOW);
+}
+_viewFlg++;
+if(_viewFlg == 3){
+_viewFlg = 0;
+}
+if(_cnt >= 300){
+_cnt = 0;
+Serial.print("NUMBER:");
+Serial.println(_number);
+if(_switchFlg == true){
+temperatureValue = analogRead(temperaturePin);
+_number = toTemperature(temperatureValue);
+Serial.print("temperature:");
+Serial.println(_number);
+_switchFlg = false;
+}
+else{
+humidityValue = analogRead(humidityPin);
+_number = toHumidity(humidityValue);
+Serial.print("humidity:");
+Serial.println(_number);
+_switchFlg = true;
+}
+}
+_cnt++;
+delay(20);
+}
+//アナログ入力値を摂氏度℃に変換
+float toTemperature(int analog_val){
+float v = 5; // 基準電圧値( V )
+float tempC = ((v * analog_val) / 1024) * 100;
+return tempC;
+}
+//アナログ入力値を湿度に変換
+float toHumidity(int analog_val){
+float v = 5; // 基準電圧値( V )
+float tempC = (analog_val / (1024/v)) * 100;
+return tempC;
+}
+※今回、プログラムでは小数点を扱うためデータシートに基づいて3桁の表示用にプログラムを改変し、ドットの制御を追加しています。
+完成した百葉箱はACアダプターで電源を供給したり、電池ボックスを作成して合体できるようにして、デスクの脇や窓際においてみたりと、今回作成した簡易百葉箱をぜひ日常生活の中に「インストール」してみてください。
+次回からは、電子工作では男のロマン!「モーター」を扱っていきたいと思います。
+第10回 Arduinoで作る簡易百葉箱(その4)ケースの作成、ハンダ付けに挑戦、そして完成へ! | Device Plus - デバプラ

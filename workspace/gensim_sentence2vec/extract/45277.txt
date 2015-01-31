@@ -1,0 +1,129 @@
+CSS 遷移効果 — CSS Transitions
+2014 年 8 月 21 日付 編集者草案
+このバージョン
+http://dev.w3.org/csswg/css3-transitions/
+最新発行バージョン
+http://www.w3.org/TR/css3-transitions/
+編集者草案
+http://dev.w3.org/csswg/css-transitions/
+(change log,
+older change log)
+以前のバージョン
+http://www.w3.org/TR/2013/WD-css3-transitions-20131119/
+編集
+Dean Jackson (Apple Inc)
+David Hyatt (Apple Inc)
+Chris Marrin (Apple Inc)
+L. David Baron
+(Mozilla)
+課題一覧
+In Bugzilla:
+for this level,
+for all levels
+フィードバック
+www-style@w3.org
+with subject line [css-transitions] … message topic …
+(archives)
+テストスイート
+http://test.csswg.org/suites/css-transitions-1/nightly-unstable/
+Copyright
+© 2014
+W3C®
+(MIT,
+ERCIM,
+Keio,
+Beihang),
+All Rights Reserved. W3C liability,
+trademark
+and
+document use
+rules apply.
+要約
+CSS Transitions は、 CSS 値におけるプロパティの変化が,指定された時間をかけて滑らかに生じさせられるようにする。
+CSS Transitions allows property changes in CSS values to occur smoothly over a specified duration.
+この文書の位置付け
+この節では、発行時点における…
+【
+以下、この節の内容の一部は
+CSS 日本語訳 共通ページ
+に委譲
+】
+この文書は、比較的 最終草案( last call )に近い物と予期されています。
+顕在化している一部の課題は解決される必要がありますが、このレベルにおける新たな特色機能は,まずあり得ないと見られています。
+This document is expected to be relatively close to last call. While some issues raised have yet to be addressed, new features are extremely unlikely to be considered for this level.
+目次
+1. 概要
+この節は参考である。
+This section is not normative.
+この文書は、暗黙的な遷移 を有効化する,新たな CSS 特色機能を導入する。
+それは、与えられた時間をかけて CSS プロパティをある値から別の値へ滑らかに変化させる方法を記述する。
+This document introduces new CSS features to enable implicit transitions, which describe how CSS properties can be made to change smoothly from one value to another over a given duration.
+【
+暗黙的( implicit )な遷移
+—
+プロパティの値を能動的/明示的( explicit )に変化させるアニメーションとは対照的に,下層のプロパティ値の変化に応じて受動的(自動的)に遷移させる(変化過程を時間的に引き延ばして呈示させる)効果。
+】
+2. 遷移効果
+通常, CSS プロパティの値が変化するとき、影響される要素のプロパティは古い値から新しい値へ即時に変化し,結果の描画は瞬時に更新される。
+この節では、新たな CSS プロパティを利用して遷移を指定する方法を述べる。
+これらのプロパティは、古い状態から新たな状態へ時間をかけて滑らかにアニメートさせるために利用される。
+Normally when the value of a CSS property changes, the rendered result is instantly updated, with the affected elements immediately changing from the old property value to the new property value. This section describes a way to specify transitions using new CSS properties. These properties are used to animate smoothly from the old state to the new state over time.
+例えば,
+left
+および
+background-color
+プロパティに対し 1 秒間の遷移が定義されたとする。
+次の図式に,要素上のそれらのプロパティが更新されるときの効果を示す
+—
+ここでは、要素は右へ移動し, 背景は赤色から青色に変化するとする。
+他の遷移パラメタについては,既定の値のままにされるとする。
+For example, suppose that transitions of one second have been defined on the left and background-color properties. The following diagram illustrates the effect of updating those properties on an element, in this case moving it to the right and changing the background from red to blue. This assumes other transition parameters still have their default values.
+図 1.
+left
+および
+background-color
+の遷移
+Transitions of left and background-color
+遷移は呈示上の効果である。
+プロパティの算出値は、
+【指定値の変化に応じて】
+古い値から新しい値へ時間をかけて遷移する。
+したがって、遷移中においてプロパティに算出されたスタイルに対し,スクリプトから問い合わせが行われたときは、プロパティの現在のアニメートされた値を表現する,中途の値が得られることになる。
+Transitions are a presentational effect. The computed value of a property transitions over time from the old value to the new value. Therefore if a script queries the computed style of a property as it is transitioning, it will see an intermediate value that represents the current animated value of the property.
+遷移が可能な CSS プロパティは、アニメート可能なものに限られる。
+この文書の末尾に,アニメート可能なプロパティの一覧が挙げられている。
+Only animatable CSS properties can be transitioned. See the table at the end of this document for a list of properties that are animatable.
+プロパティの遷移は、いくつかの新たなプロパティを利用して定義される。
+例えば:
+The transition for a property is defined using a number of new properties. For example:
+Example(s):
+div {
+transition-property: opacity;
+transition-duration: 2s;
+}
+上の例は、
+opacity
+プロパティに対し、新たな値があてがわれたときに,古い値から新しい値へ, 2 秒かけて滑らかに変化するような、遷移を定義する。
+The above example defines a transition on the opacity property that, when a new value is assigned to it, will cause a smooth change between the old value and the new value over a period of two seconds.
+各種 遷移プロパティにはコンマ区切りのリストも受容される。
+これにより、それぞれが異なるプロパティに作用するような複数の遷移を,一括して定義できるようになる。
+この場合、個々の遷移のパラメタは、これらのリストの,同じ index に位置する所からとられる。
+例えば:
+Each of the transition properties accepts a comma-separated list, allowing multiple transitions to be defined, each acting on a different property. In this case, the individual transitions take their parameters from the same index in all the lists. For example:
+一連の遷移プロパティに与えられた値の個数が不揃いの場合、
+transition-property
+の値の個数( n とする)が,遷移の文脈下における 他の遷移プロパティの値の個数を決定する。
+それぞれの値リストは先頭の値から互いに関連付けられ、 n を超える部分の値は利用されない。
+値の個数が n に満たない遷移プロパティに対しては、
+UA は,そのプロパティに与えられた値リストを,十分な値の個数になるまで繰り返すことにより、その使用値を算定しなければならない。
+この切り捨て/繰り返しは、算出値には影響しない。
+注記:
+これは
+background-* プロパティのふるまいに類似する(
+background-image
+が
+transition-property
+の役割に類似する)。
+【参照】
+In the case where the lists of values in transition properties do not have the same length, the length of the transition-property list determines the number of items in each list examined when starting transitions. The lists are matched up from the first value: excess values at the end are not used. If one of the other properties doesn't have enough comma-separated values to match the number of values of transition-property, the UA must calculate its used value by repeating the list of values until there are enough. This truncation or repetition does not affect the computed value. Note: This is analogous to the behavior of the background-* properties, with background-image analogous to transition-property.
+CSS Transitions — CSS 遷移効果(日本語訳)

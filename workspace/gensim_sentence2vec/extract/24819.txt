@@ -1,0 +1,16 @@
+Elasticsearchはデフォルトで文字列を要素解析して保存する。これによって部分一致検索ができるようになるのだが、完全一致検索が難しくなる。
+便利なTermsがうまくいかない
+KibanaにはTermsという値の上位10件とかを表示してくれるパネルがある。次のようなデータを入れているとする。
+{
+"@timestamp": "2013-12-17T10:12:40+09:00",
+"remote_addr": "203.0.113.10",
+"country_code": "JP",
+"request_uri": "/index.php",
+"user_agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)"
+}
+すると、いまアクセスされている国の比率とかを見たければ、country_codeを指定してあげれば次の様なグラフが書けて非常に便利だ。
+しかし、user_agentを指定するとつぎのようになったりして、うまくいかないことがある。
+これはKibanaが空気を読んで要素解析してしまったせいである。できれば完全一致で見たい。
+Mapping Templateを使う
+Elasticsearchはスキーマレスでインデックスが増えたら勝手にデータ型とかを判別してくれるが、フィールドのデータ型や、要素解析などを指定することもできる。そのためにはMapping Templateを使う。
+Kibana+Elasticsearchで文字列の完全一致と部分一致検索の両方を実現する - Qiita

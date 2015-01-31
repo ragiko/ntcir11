@@ -1,0 +1,277 @@
+
+1.基本問題
+まずは SQL で組み合わせを作る基本をマスターしましょう。組み合わせの種類には、大雑把に、順列/組み合わせ、重複あり/重複なし、の基準によって4つに分類されます。
+1-1.重複順列(Permutation with repetition)
+問題はこちら
+重複順列とは集合論で言うところの直積と同じです。従って SQL ではクロス結合を使えばお茶の子さいさい。
+--二つ選ぶ場合の重複順列
+SELECT E1.e AS e1, E2.e AS e2
+FROM Elements E1, Elements E2;
+結果:
+e1         e2
+---------- ----------
+1          1
+1          2
+1          3
+1          4
+1          5
+2          1
+2          2
+2          3
+・
+・
+・
+データ数が 5 なので、52 = 25 行選択されます。
+三つ以上を選択する場合も、単純に結合を増やすだけ。
+--三つ選ぶ場合の重複順列
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3
+FROM Elements E1, Elements E2, Elements E3;
+結果は省略しますが、53 = 125 行選択されます。
+参考:
+自己結合のイメージが湧かない人は「自己結合の使い方」を参照。
+1-2.順列(Permutation without repetition)
+問題はこちら
+二つ選択の場合、要するに(1, 1)とか(4, 4)みたいに同じ数のペアを除外するというわけなので、結合条件にもそのように書いてやりましょう。
+--二つ選ぶ場合の順列
+SELECT E1.e AS e1, E2.e AS e2
+FROM Elements E1, Elements E2
+WHERE E1.e <> E2.e;
+結果:(行数は、5P2 = 20)
+e1         e2
+---------- ----------
+1          2
+1          3
+1          4
+1          5
+2          1
+2          3
+2          4
+・
+・
+・
+それでは、三つ以上の選択ではどうなるでしょう? 「重複を省く」ということは、言い換えれば、選択した要素が「一意になる」ということです。それゆえ、「選択されたどの二つの要素も等しくない」という条件によって選択できます。
+--三つ選ぶ場合の順列 その1:どの二つの要v素も等しくない
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3
+FROM Elements E1, Elements E2, Elements E3
+WHERE E1.e <> E2.e
+AND E2.e <> E3.e
+AND E1.e <> E3.e;
+行数は、5P3 = 60。しかし、選択数が増えると、この否定条件を並べていく方法では、コードが長く分かりにくくなります。そこで、考え方をちょっと変えてみましょう。次のコードを見てください。
+--三つ選ぶ場合の順列 その2:一度使った要v素はその後の選択で使わない
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3
+FROM Elements E1, Elements E2, Elements E3
+WHERE E2.e NOT IN (E1.e)
+AND E3.e NOT IN (E1.e, E2.e);
+このクエリは、私たちが順列を作るときの思考プロセスを忠実になぞっています。まず、e1 を選択するときは、どれを選んでもよいので条件なし。次に、e2 を選択するときは、e1 で選んだ数はもう選べないので、「e1 以外」という条件になります。以下同様に、e3 を選ぶときには、e1 と e2 で使った数はもう使えない、ということになります。ちょうど、袋の中に入っている玉を取り出すたびに、袋に残る玉が減っていくイメージです(学校で順列を習ったとき、必ず出てきた図ですね)。
+これは、実質的には、さっきの否定条件をつらつらつなげた条件式と変わりませんが、NOT IN でまとめてた方がはるかに読みやすくなりますし、四つ以上の選択の場合も、簡単に拡張できます。
+--四つ選ぶ場合の順列:一度使った要素はそのフ後の選択で使わない
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3, E4.e AS e4
+FROM Elements E1, Elements E2, Elements E3, Elements E4
+WHERE E2.e NOT IN (E1.e)
+AND E3.e NOT IN (E1.e, E2.e)
+AND E4.e NOT IN (E1.e, E2.e, E3.e);
+参考:
+NOT IN を使った見事な解法は、J.セルコ『SQLパズル 第2版』「第40問 順列」より。
+1-3.重複組み合わせ(Combination with repetition)
+問題はこちら
+組み合わせの場合、結果のどの列にどの要素が現れるか、ということを気にしなくてよいので、e1 から昇順に並ぶと決めてしまいましょう。すると、簡単な自己結合で求められます。
+--二つ選ぶ場合の重複組み合わせ
+SELECT E1.e AS e1, E2.e AS e2
+FROM Elements E1, Elements E2
+WHERE E1.e <= E2.e;
+結果:(行数は、5H2 = 15)
+E1         E2
+---------- ----------
+1          1
+1          2
+1          3
+1          4
+1          5
+2          2
+2          3
+・
+・
+・
+三つ以上への拡張も同様にできます。順列と違って、e1 <= e2 という条件を書いたあとに、またわざわざ e1 <= e3 という冗長な条件を書く必要がないので、コードが短くてすみます。これは、不等号に推移性があるおかげです。三つの場合の行数は、5H3 = 35、四つの場合の行数は 5H4 = 70です。
+--三つ選ぶ場合の重複組み合わせ
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3
+FROM Elements E1, Elements E2, Elements E3
+WHERE E1.e <= E2.e
+AND E2.e <= E3.e;
+--四つ選ぶ場合の重複組み合わせ
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3, E3.e AS e4
+FROM Elements E1, Elements E2, Elements E3, Elements E4
+WHERE E1.e <= E2.e
+AND E2.e <= E3.e
+AND E3.e <= E4.e;
+1-4.組み合わせ(Combination without repetition)
+問題はこちら
+これもさっきの重複組み合わせをちょっと改変するだけ。(1, 1)のような同一要素のペアを除外するだけなので、比較条件から等号を外しましょう。二つの場合の行数は、5C2 = 10、三つの場合は5C3 = 10です。
+--二つ選ぶ場合の組み合わせ
+SELECT E1.e AS e1, E2.e AS e2
+FROM Elements E1, Elements E2
+WHERE E1.e < E2.e;
+--三つ選ぶ場合の組み合わせ
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3
+FROM Elements E1, Elements E2, Elements E3
+WHERE E1.e < E2.e
+AND E2.e < E3.e;
+簡単でしたねー。
+2.部分和問題
+部分和問題は、ある集合の部分集合の和に関する問題です。SQL で冪集合を作成するには、ちょっと工夫が必要になります。そのため、興味深いアプローチが数多く寄せられました。
+2-1.部分和問題(Subset sum problem)- 行持ちバージョン
+問題はこちら
+答え#その1
+組み合わせに使う要素数が固定であれば、1-4.組み合わせと同じ方法を n 回繰り返せば OK です。
+--一つの組み合わせ(該当なし)
+SELECT E1.e
+FROM Elements E1
+WHERE E1.e = 7;
+--二つの組み合わせ
+SELECT E1.e AS e1, E2.e AS e2
+FROM Elements E1, Elements E2
+WHERE E1.e < E2.e
+AND E1.e + E2.e = 7;
+e1         e2
+---------- ----------
+3          4
+2          5
+--三つの組み合わせ
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3
+FROM Elements E1, Elements E2, Elements E3
+WHERE E1.e < E2.e
+AND E2.e < E3.e
+AND E1.e + E2.e + E3.e = 7;
+e1         e2         e3
+---------- ---------- ----------
+1          2          4
+--四つの組み合わせ(該当なし)
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3, E4.e AS e4
+FROM Elements E1, Elements E2, Elements E3, Elements E4
+WHERE E1.e < E2.e
+AND E2.e < E3.e
+AND E3.e < E4.e
+AND E1.e + E2.e + E3.e + E4.e = 7;
+--五つの組み合わせ(該当なし)
+SELECT E1.e AS e1, E2.e AS e2, E3.e AS e3, E4.e AS e4, E5.e AS e5
+FROM Elements E1, Elements E2, Elements E3, Elements E4, Elements E5
+WHERE E1.e < E2.e
+AND E2.e < E3.e
+AND E3.e < E4.e
+AND E4.e < E5.e
+AND E1.e + E2.e + E3.e + E4.e + E5.e = 7;
+これで一応、解けることは解けました。しかし、n 個の要素を含む集合について n 回クエリを発行せねばならないというのも大変です。うまく一つの SQL で解く方法はないでしょうか? 良案求む。
+答え#その2
+この解法は、カノエさんから寄せられました。n 個の要素を使って組み合わせを作るには、ある要素を含むか含まないかに応じて、2n 通りが存在します。つまり、要素1について「使う/使わない」で2通り、要素2についても同様に2通り・・・というわけで、各要素について二つの分岐が存在するため、一つ要素が増えるたびに可能な組み合わせの総数が2倍に増えていくのです(樹形図を書いてやると分かりやすい)。高校の確率の授業でこんなの習いましたね。
+ということは、ある要素を使うか使わないかのビットフラグ列を持つような集合を作ってやれば、一つの SQL 内で全ての組み合わせを網羅できるはず! そこでまず、フラグを保持する補助テーブルを作りましょう。
+--ビットフラグ・テーブル(0、1の2行のみ)
+CREATE TABLE Bool(bit_flg INTEGER PRIMARY KEY);
+INSERT INTO Bool VALUES (1), (0);
+ある要素を含む(1)か含まない(0)かでフラグをたててやるには、次のクエリを使います。5つの要素であれば、25 = 32 行選択されます。
+--5つの要素で作りうる組み合わせ
+SELECT a.bit_flg AS a_bit, b.bit_flg AS b_bit, 
+c.bit_flg AS c_bit, d.bit_flg AS d_bit, e.bit_flg AS e_bit
+FROM Bool AS A, Bool AS B, Bool AS C, Bool AS D, Bool AS E
+a_bit | b_bit | c_bit | d_bit | e_bit
+-------+-------+-------+-------+-------
+1 |     1 |     1 |     1 |     1
+1 |     0 |     1 |     1 |     1
+1 |     1 |     0 |     1 |     1
+1 |     0 |     0 |     1 |     1
+・
+・
+0 |     1 |     0 |     0 |     0
+0 |     0 |     0 |     0 |     0
+あとは、このビットフラグと要素テーブルの直積を結合してやり、仕上げに「使用される要素(=フラグが1)を足した合計が7である」という条件で行をフィルタすれば完成です。
+--フラグが1の列だけを足して7になる行をさがェす
+SELECT  E1.e AS e1, E2.e AS e2, E3.e AS e3, E4.e AS e4, E5.e AS e5
+FROM (SELECT a.bit_flg AS a_bit, b.bit_flg AS b_bit, 
+c.bit_flg AS c_bit, d.bit_flg AS d_bit, e.bit_flg AS e_bit
+FROM Bool AS A, Bool AS B, Bool AS C, Bool AS D, Bool AS E) AS FLG
+LEFT OUTER JOIN 
+(SELECT e FROM Elements  WHERE e = 1) AS E1
+ON a_bit = 1
+LEFT OUTER JOIN 
+(SELECT e FROM Elements  WHERE e = 2) AS E2
+ON b_bit = 1
+LEFT OUTER JOIN
+(SELECT e FROM Elements  WHERE e = 3) AS E3
+ON c_bit = 1
+LEFT OUTER JOIN
+(SELECT e FROM Elements  WHERE e = 4) AS E4
+ON d_bit = 1
+LEFT OUTER JOIN
+(SELECT e FROM Elements  WHERE e = 5) AS E5
+ON e_bit = 1
+WHERE COALESCE(e1.e, 0) + COALESCE(e2.e, 0) + COALESCE(e3.e, 0) + COALESCE(e4.e, 0) + COALESCE(e5.e, 0) = 7;
+e1 | e2 | e3 | e4 | e5
+----+----+----+----+----
+|  2 |    |    |  5
+1 |  2 |    |  4 |
+|    |  3 |  4 |
+うーむ、これはお見事でした。
+参考:
+カノエさんのブログを参考にさせていただきました。
+答え#その3
+答え#2の外部結合をスカラ・サブクエリで代用して私が考えたのが、この方法。
+--ビットフラグの利用:スカラ・サブクエリ版ナ
+SELECT a_bit * e1 AS e1, b_bit * e2 AS e2, c_bit * e3 AS e3, d_bit * e4 AS e4, e_bit * e5 AS e5
+FROM (SELECT  a_bit, b_bit, c_bit, d_bit, e_bit,
+(SELECT e FROM Elements WHERE e = 1) AS e1,
+(SELECT e FROM Elements WHERE e = 2) AS e2,
+(SELECT e FROM Elements WHERE e = 3) AS e3,
+(SELECT e FROM Elements WHERE e = 4) AS e4,
+(SELECT e FROM Elements WHERE e = 5) AS e5
+FROM (SELECT a.bit_flg AS a_bit, b.bit_flg AS b_bit, c.bit_flg AS c_bit, 
+d.bit_flg AS d_bit, e.bit_flg AS e_bit
+FROM Bool AS A, Bool AS B, Bool AS C, Bool AS D, Bool AS E) AS FLG) AS TMP
+WHERE a_bit * e1 + b_bit * e2 + c_bit * e3 + d_bit * e4 + e_bit * e5 = 7;
+e1 | e2 | e3 | e4 | e5
+----+----+----+----+----
+1 |  2 |  0 |  4 |  0
+0 |  2 |  0 |  0 |  5
+0 |  0 |  3 |  4 |  0
+多少簡潔になった・・・かな。速度が外部結合に比べて遅いのが、スカラ・サブクエリの難点。
+2-2.部分和問題(Subset sum problem)- 列持ちバージョン
+問題はこちら
+答え#その1
+自明ですが見るだに恐ろしい解答は、WHERE句で「e1 + e2 = 7」とか「e1 + e4 + e5」のように、一つ一つの組み合わせをテストしてやることです。この場合、クエリを発行する回数は、2n になります。OR で条件をまとめれば巨大な一つのクエリに収められますが、あまり慰めにはなりません。
+答え#その2
+SQL:1999 で標準に取り入れられた OLAP 機能を使うことで、列の組み合わせを全て網羅できます。Oracle や DB2 ならば、この機能を使って非常に簡潔なコードで解くことが可能です。
+--CUBE で全ての組み合わせを網羅する
+SELECT e1, e2, e3, e4, e5
+FROM ElementCols
+GROUP BY CUBE(e1, e2, e3, e4, e5)
+HAVING COALESCE(e1, 0) + COALESCE(e2, 0) + COALESCE(e3, 0) + COALESCE(e4, 0) + COALESCE(e5, 0) = 7;
+e1      e2      e3      e4      e5
+------- ------- ------- ------- -------
+3       4
+2                       5
+1       2               4
+CUBE で一度全ての組み合わせを作るので、行数は 25 = 32 行作成されます。そのうち、必要なのは、足して 7 になる組み合わせだけなので、HAVING 句でその条件を記述しています。COALESCE は超集合行の NULL をゼロに変換して、NULL の伝播を防いでいます。
+参考:
+このエレガントな解法は、明智重蔵さんから寄せていただきました。
+2-3.併発患者のパズル
+問題はこちら
+基本的な考え方は、列持ちバージョンの部分和問題と同じです。CUBE を使って病気の組み合わせを全て作ることができます。ビットフラグの性質から、「要素を二つ使う」組み合わせとは、足して2になり、かつ 0 を一つも含まない、ということです。これをHAVING句で記述すれば答えが得られます。
+--二つの病気を併発している場合の治療費の計vを求める
+SELECT sick_1, sick_2, sick_3, sick_4, 
+SUM(cost) AS tot_cost
+FROM Patients
+GROUP BY CUBE(sick_1, sick_2, sick_3, sick_4)
+HAVING COALESCE(sick_1, 0) + COALESCE(sick_2, 0) + COALESCE(sick_3, 0) + COALESCE(sick_4, 0) = 2
+AND 0 NOT IN (COALESCE(sick_1, 1), COALESCE(sick_2, 1), COALESCE(sick_3, 1), COALESCE(sick_4, 1));
+sick_1     sick_2     sick_3     sick_4   tot_cost
+---------- ---------- ---------- ----------- ----------
+1          1                                3
+1                     1                    17
+1                                1         12
+1          1                    11
+1                     1         18
+1          1         21
+CUBE で一度全ての組み合わせを作るところは前問と同じです。今回は、要素の値がビットフラグなので、0 でない要素を足し算した結果が、そのままダイレクトにその部分集合の要素数と等しくなります。従って、三つや四つの病気に拡張する場合も、HAVINGの定数を変えるだけでよいというすぐれて拡張的な方法です。
+作成者:ミック
+作成日:2007/07/25
+最終更新日:2007/08/12
+この作品は、クリエイティブ・コモンズ・ライセンスの下でライセンスされています。
+SQLで数学パズルを解く(組み合わせ論編-解答)

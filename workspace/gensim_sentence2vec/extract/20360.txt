@@ -1,0 +1,45 @@
+						エクセル VBA テキストボックスの使い方で、冗長なコードをなんとかしたい。
+おしえてください。
+今、
+Me.textbox1.Text = .Cells(, 1).Text
+Me.textbox2.Text = .Cells(, 2).Text
+Me.textbox3.Text = .Cells(, 3).Text
+Me.textbox4.Text = .Cells(, 4).Text
+・
+・
+・
+・
+・
+Me.textbox47.Text = .Cells(, 47).Text
+というように、テキストボックスにセルの値を格納しているのですが、
+長いので、テキストボックスの値を配列を使って取得し、
+Me.A(i).Text = .Cells(, i).Text
+のような感じにしたいのですが、どうやらこの部分は変数が使えないようで
+困っています。
+いい知恵があてれば貸して下さい。
+そんなん無理だよということならあきらめます。
+尚、現在格闘中のコードを参考までに書いておきます。
+Private Sub putText(rgData As Range)
+With rgData.EntireRow
+gyou = Selection.Row
+Rows(gyou).Select
+Dim MC As Integer
+Dim uniq As String
+Dim A() As String
+Dim IX As Long
+Dim i As Integer
+Dim ABC
+MC = Cells(2, Columns.Count).End(xlToLeft).Column
+IX = MC
+ReDim A(IX)
+For i = 1 To IX
+uniq = Cells(2, i).Value
+A(i) = uniq
+ABC = A(i)
+Me.ABC.Text = .Cells(, i).Text
+'Me.連絡事項.Text = .Cells(, 45).Text
+Next
+End With
+End Sub
+よろしくお願いします。
+エクセル VBA テキストボックスの使い方で、冗長なコードをなんとか... - Yahoo!知恵袋

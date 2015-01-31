@@ -1,0 +1,4 @@
+血糖値予測装置、血糖値予測モデル作成装置、およびプログラムBLOOD SUGAR LEVEL PREDICTION DEVICE, CREATING DEVICE OF BLOOD SUGAR LEVEL PREDICTION MODEL, AND PROGRAM - 特許庁
+精度良の場合、予測値は出力され、その予測モデルは予測モデル逐次更新部202で再学習により更新される。When the prediction is good, the predicted value is outputted and the prediction model is updated through the relearning of a prediction model sequential update part 202. - 特許庁
+そして、予測部27で上記予測モデルに上記予測用のプロセスデータを入力して、測定データの予測値を得る。Then a prediction unit 27 inputs process data for prediction to the prediction model to obtain an estimate of measurement data. - 特許庁
+予測値モデルの英語・英訳 - 英和辞典・和英辞典 Weblio辞書

@@ -1,0 +1,58 @@
+../../filename
+図はA:\ドライブ上にいくつかのフォルダとファイルを作ってある様子を示している。
+今,A:\hobby\photo\index.html から各ファイルにリンクする場合の URL を示してみよう。
+ファイル構成図
+[A:\]
+|
++--index.html
++--daisuki.html
++--[hobby]
+|    |
+|    +--index.html
+|    +--hitorigoto.html
+|    |
+|    +--[photo]
+|    |    |
+|    |    +--index.html 
+|    |    +--snap.html
+|    |    +--[images]
+|    |          |
+|    |          +tori.jpg
+|    |
+|    +--[computer]
+|          |
+|          +--index.html
+|          +--cpu.html
+|          +--[mobile]
+|                |
++--[family]      +--index.html 
+|
++--index.html
++--hana.gif
+A:\hobby\photo\snap.html にリンクする。
+<a href="snap.html"> 〜 </a>
+A:\hobby\photo\images\tori.jpg にリンクする。
+<a href="images/tori.jpg"> 〜 </a>
+A:\hobby\hitorigoto.html にリンクする。
+<a href="../hitorigoto.html"> 〜 </a>
+A:\hobby\computer\cpu.html にリンクする。
+<a href="../computer\cpu.html"> 〜 </a>
+A:\index.html にリンクする。
+<a href="../../index.html"> 〜 </a>
+A:\family\index.html にリンクする。
+<a href="../../family/index.html"> 〜 </a>
+index.html という名のファイル 
+"index.html" というファイル名は特別な意味を含みます。
+一般的に WEB サーバーは,URL にただ単にディレクトリのみ指定された場合は,
+そのディレクトリ内の "index.html" という名のファイルを検索して表示します。
+したがって,先ほどのURL は次のように書くことができます。
+<a href="index.html">  
+<a href="./">
+<a href="computer/index.html">  
+<a href="computer/">
+<a href="../../family/index.html">  
+<a href="../../family/">
+なお,これは WEB サーバーにファイルを FTP などで置いてはじめて有効になるので,
+ローカルコンピュータ上では,index.html は検索・表示されずに,
+ディレクトリ一覧が表示されます。
+ハイパーリンク

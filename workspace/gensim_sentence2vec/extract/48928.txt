@@ -1,0 +1,16 @@
+私は(CREATE TABLE文下記参照)歩哨と呼ばれる私のデータベースにテーブルを持っている.これは、主キー、外部キー、それについて何も特別なのカップルを持っています.私はその1と同様、私のデータベース上で何度も持っていますが、何らかの理由で、この表は、EFプロキシクラスの「弁別」欄で終わる.これはクラスがC#で宣言されている方法は次のとおりです.
+public class SEntry{    public long SEntryId { get; set; }
+public long OriginatorId { get; set; }    public DateTime DatePosted { get; set; }    public string Message { get; set; }    public byte DataEntrySource { get; set; }    public string SourceLink { get; set; }    public int SourceAppId { get; set; }    public int? LocationId { get; set; }    public long? ActivityId { get; set; }    public short OriginatorObjectTypeId { get; set; }}
+public class EMData : DbContext{    public DbSet<SEntry> SEntries { get; set; }            ...    }
+私はそのテーブルに新しい行を追加しようとすると、私はエラーが表示されます.
+System.Data.SqlClient.SqlException: Invalid column name 'Discriminator'.
+あなたが別のクラスからC#クラスを継承している場合、私はこの問題について見つけるすべては、のみ発生しますが、(あなたが上記を参照することができますように)Sentryは、何を継承されていません.それに加えて、かつて私が歩哨プロパティのEMDataインスタンス上にマウス、それが表示され、デバッガ上でツールチップを取得する:
+base {System.Data.Entity.Infrastructure.DbQuery<EM.SEntry>} = {SELECT [Extent1].[Discriminator] AS [Discriminator], [Extent1].[SEntryId] AS [SEntryId], [Extent1].[OriginatorId] AS [OriginatorId], [Extent1].[DatePosted] AS [DatePosted], [Extent1].[Message] AS [Message], [Extent1].[DataEntrySource] AS [DataE...
+どこでこの問題の真相を、任意の提案やアイデア?私は、テーブルの名前を変更する主キーといくつか他のものを試してみましたが、何も動作しません.SQL-表:
+CREATE TABLE [dbo].[SEntries]([SEntryId] [bigint] IDENTITY(1125899906842624,1) NOT NULL,[OriginatorId] [bigint] NOT NULL,[DatePosted] [datetime] NOT NULL,[Message] [nvarchar](500) NOT NULL,[DataEntrySource] [tinyint] NOT NULL,[SourceLink] [nvarchar](100) NULL,[SourceAppId] [int] NOT NULL,[LocationId] [int] NULL,[ActivityId] [bigint] NULL,[OriginatorObjectTypeId] [smallint] NOT NULL,CONSTRAINT [PK_SEntries] PRIMARY KEY CLUSTERED ([SEntryId] ASC)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF,       ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[SEntries]  WITH CHECK ADD  CONSTRAINT [FK_SEntries_ObjectTypes] FOREIGN KEY([OriginatorObjectTypeId])REFERENCES [dbo].[ObjectTypes] ([ObjectTypeId])GO
+ALTER TABLE [dbo].[SEntries] CHECK CONSTRAINT [FK_SEntries_ObjectTypes]GO
+ALTER TABLE [dbo].[SEntries]  WITH CHECK ADD  CONSTRAINT [FK_SEntries_SourceApps] FOREIGN KEY([SourceAppId])REFERENCES [dbo].[SourceApps] ([SourceAppId])GO
+ALTER TABLE [dbo].[SEntries] CHECK CONSTRAINT [FK_SEntries_SourceApps]GO
+EFコードファースト "無効な列名 '弁別」「しかし、ないの継承  -- IT専門質問の答え -- 彼山の知識

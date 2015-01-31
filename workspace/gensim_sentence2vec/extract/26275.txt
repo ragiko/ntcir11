@@ -1,0 +1,18 @@
+このように FRIT は一回の実験によって複数のチューニング実験と同等の性能が得られる有効な方法となっています.
+なお, FRIT でその最適性の理論的解析[3]はもちろんのこと,以下のような制御器の制御パラメータ調整にも適用可能な形,およびその発展形として「制御器とモデルの同時獲得」[5,6,8]という新しい分野への展開も念頭に研究開発しています.
+むだ時間系に対するスミス補償 [8] 
+金子 修,和田垣 祐介,山本 茂 "FRITによるスミス補償器の最適制御パラメータとプラントモデルの同時獲得について&rdquo;,電気学会論文誌,Vol.131 No.4, ser.C, 採録決定 (2011-4)    
+内部モデル制御(IMC) [5] 
+Osamu Kaneko, Yusuke Wadagaki, and Shigeru Yamamoto, "Fictitious Reference Iterative Tuning for Internal Model Controller", Proceedings of the 10th IFAC Synposium on Adaptation and Learning on Control and Signal Processing (ALCOSP2010), CD-ROM,(2010-8) 
+2自由度制御 [7] 
+Osamu Kaneko, Yusuke Yamashina and Shigeru Yamamoto, "Fictitious Reference Tuning of the Feed-forward Controller in a Two-degree-of-Freedom Control System", SICE Journal of Control Measurement and System Integration, to appear (2011-2) 
+参考文献
+相馬 将太郎,金子 修,藤井 隆雄,"一回の実験データを用いた制御器パラメータチューニングの新しいアプローチ-Fictitious Reference Iterative Tuning の提案, システム制御情報学会論文誌, 第17巻,  第12号, 528/536 (2004-12) 
+金子 修,吉田 恭子,松本 和之,藤井 隆雄,"一回の閉ループ実験データと最小二乗法を用いた制御器パラメータチューニング -Fictitious Reference Iterative Tuning の拡張-", システム制御情報学会論文誌, 第18巻, 第11号, 400/409 (2005-11) 
+金子 修, 宮地 誠,藤井 隆雄, ``Fictitious Reference Iterative Tuningの最適性に関する考察", 計測自動制御学会論文集, 第44巻,第6号,541/543, (2008-5) 
+金子 修,"データを直接用いた制御器パラメータチューニング"  計測と制御, 第47巻, 第11号, 903/908 (2008-11) 
+Osamu Kaneko, Yusuke Wadagaki, and Shigeru Yamamoto, "Fictitious Reference Iterative Tuning for Internal Model Controller", Proceedings of the 10th IFAC Synposium on Adaptation and Learning on Control and Signal Processing (ALCOSP2010), CD-ROM,(2010-8) 
+Osamu Kaneko, Makoto Miyachi and Takao Fujii "Simultaneous Updating of Model and Controller Based on Fictitious Reference Iterative Tuning" SICE Journal of Control Measurement and System Integration, to appear  (2011-2) 
+Osamu Kaneko, Yusuke Yamashina and Shigeru Yamamoto, "Fictitious Reference Tuning of the Feed-forward Controller in a Two-degree-of-Freedom Control System", SICE Journal of Control Measurement and System Integration, to appear  (2011-2) 
+金子 修,和田垣 祐介,山本 茂" FRITによるスミス補償器の最適制御パラメータとプラントモデルの同時獲得について&rdquo;,電気学会論文誌,Vol.131 No.4, ser.C (2011-4)    
+FRIT を用いた制御器チューニング : 山本・金子研究室 @ 金沢大学

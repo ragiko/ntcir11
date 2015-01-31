@@ -1,0 +1,50 @@
+
+CPS (Cooprative Positioning System) とは?
+移動ロボットにとって,現在位置を正確に知ることは必要不可欠である. しかし従来の位置同定法は,屋外では同定精度が低下したり,未知環境では使えないなどの欠点があった.
+そこで我々はこれまでに複数のロボットがお互いに位置を参照しながら移動することで, 車輪回転角度の計測など従来の手法では全く考えられない高い位置同定精度を実現する
+群ロボットによる協調ポジショニング法,CPS」を提案している.下図は3台のロボットを使用したの一例である.これはロボット が相対角度や仰角を計測してロボットの三次元位置を測定し,その後,例えばロボット3を破線のように移動させ,ロボット
+2と1の位置を測定するという動作を繰り返すことで,全てのロボットの位置を次々と同定しながら移動するものである. 本手法は,
+人工的なランドマークが不要で,未知環境においても桁違いに高精度(0.3%以下)な位置同定が可能となる
+GPSが利用できないビル内部でも利用できる
+障害物と接触しても同定精度には影響がない
+など実用上著しく有効な特徴を有する.
+CPS 機械モデル
+発表論文等
+は Journal または 査読付き国際会議
+は 講演会での口頭発表
+【学術論文】
+Yukihiro Tobata, Ryo Kurazume, Yusuke Noda, Kai Lingemann, YumiIwashita, Tsutomu Hasegawa, Laser-based geometrical modeling of large-scale architectural structures using co-operative multiple robots, Autonomous Robot, Vol.31, No.-, (2011) to appear 
+鄭 龍振, 岩下 友美, 倉爪 亮, CPS-SLAMの研究 -計測精度の向上とトンネル出来形計測システムの構築-, 日本ロボット学会誌, Vol.30, No.1, pp.--, 2012 to appear
+Yukihiro Tobata, Ryo Kurazume, Yumi Iwashita and Tsutomu Hasegawa, Automatic laser-based geometrical modeling using multiple mobile robots, 2010 IEEE International Conference on Robotics and Biomimetics (ROBIO 2010), pp.363-369, Tianjin, Dec. 14-18, 2010(T.J.Tarn Best Paper in Robotics)
+横矢 剛, 長谷川 勉, 倉爪 亮, 村上 剛司, 群ロボットによる未知環境3次元地図の自動作成のための動作計画手法, 電子情報通信学会誌, Vol.J93-D, No.6, pp.1024-1035, (2010.6) 
+R. Kurazume and S. Hirose, Development of a Cleaning Robot System with Cooperative Positioning System, Autonomous Robots, Vol. 9, No. 3, pp. 237-246, (2000).
+R. Kurazume and S. Hirose, An Experimental Study of a Cooperative Positioning System, Autonomous Robots, Vol. 8, No. 1, pp. 43-52, (2000).
+倉爪,広瀬,岩崎,長田,協調ポジショニングシステムの研究 -CPSアクティブタッチ融合型地図生成法-, 日本ロボット学会誌, Vol.17, No.1, pp.84-90, (1999).
+倉爪,広瀬,岩崎,長田,指田,協調ポジショニングシステムの研究 -CPS-IIIを用いた自動清掃ロボットシステムの開発-, 日本ロボット学会誌, Vol.16, No.7, pp.934-941, (1998).
+倉爪,広瀬,岩崎,長田,指田,協調ポジショニングシステムの研究 -CPS-II型システムの最適化移動形態-, 日本ロボット学会誌, Vol.15, No.5, pp.773-780, (1997).
+倉爪,広瀬,岩崎,長田,指田,協調ポジショニングシステムの研究-冗長位置情報の融合と機械モデル実験-, 日本ロボット学会誌, Vol.14, No.8, pp.1229-1236 (1996)
+広瀬,倉爪,長田,群ロボットによる協調ポジショニング法, 日本ロボット学会誌, Vol.13, No.6, pp.838-845, (1995).
+【査読付き国際会議】
+Ryo Kurazume, Yukihiro Tobata, Yumi Iwashita, Tsutomu Hasegawa, 3D laser measurement system for large scale architectures using multiple mobile robots, The 6th International Conference on 3-D Digital Imaging and Modeling (3DIM2007), August 2007.
+R. Kurazume and S. Hirose, Study on Cooperative Positioning System - Optimum Moving Strategies for CPS-III -, Proc. IEEE Int. Conf. on Robotics and Automation, Vol. 4, pp. 2896-2903, 1998.
+R. Kurazume, S. Hirose, S. Nagata, and N. Sashida, Study on Cooperative Positioning System -Basic Principle and Measurement Experiment-, Proc. IEEE Int. Conf. on Robotics and Automation, Vol. 2, pp. 1421-1426, 1996.
+R. Kurazume, S. Nagata and S. Hirose, Cooperative Positioning with Multiple Robots, Proc. IEEE Int. Conf. on Robotics and Automation, Vol. 2, pp. 1250-1257, (1994).
+R. Kurazume, S. Nagata and S. Hirose, Cooperative Positioning with Multiple Robots, Proc. JSME 2nd Int. Conf. on Motion and Vibration Control, pp. 244-249, (1994).
+【口頭発表】
+戸畑 享大,倉爪 亮,村上 剛司,長谷川 勉,移動ロボット群による大規模建造物の3次元レーザ計測システムの開発,画像の認識理解シンポジウム (MIRU2007), オーラルセッション, (2007 7) 
+戸畑 享大,倉爪 亮,山田 弘幸,村上 剛司,長谷川 勉,CPS SLAM の研究 第2報 CPS とレーザ計測による屋内3次元地図の自動構築実験,日本機械学会ロボティクスメカトロニクス講演会, (2007.5)
+戸畑 享大,倉爪 亮,村上 剛司,長谷川 勉,CPS SLAMの研究 -CPS-Vの構築とSLAM実験-,第24回日本ロボット学会学術講演会講演予稿集,,1E14,(2006.9)
+横矢 剛,長谷川 勉,倉爪 亮,村上 剛司, ロボットタウンの実証的研究 -広域分散カメラのロボットによる自動キャリブレーション-,第24回日本ロボット学会学術講演会講演予稿集,,2N14,(2006.9)
+倉爪,広瀬, 協調ポジショニングシステムの研究 -第8報:CPS-IIIによる長距離移動測定実験- 第16回日本ロボット学会学術講演会予稿集, pp.169-170, (1998).
+倉爪,広瀬, 協調ポジショニングシステムの研究 −第7報:CPSアクティブタッチ融合型地図生成法− 日本機械学会ロボティクス・メカトロニクス講演会'98講演論文集, , 2CI1-4, (1998).
+倉爪,岩崎,広瀬, 群ロボットによる協調ポジショニングシステム−第6報: CPS-IIIを用いた自動清掃ロボットシステムの開発, 第15回日本ロボット学会学術講演会予稿集, pp.209-210, (1997).
+倉爪,岩崎,広瀬, 群ロボットによる協調ポジショニングシステム−第5報: 第三次機械モデルCPS-IIIの構築, 第15回日本ロボット学会学術講演会予稿集, pp.207-208, (1997).
+倉爪,広瀬, 協調ポジショニングシステムの研究(CPS-II型システムの最適化移動形態), 日本機械学会第74期通常総会講演会講演論文集, Vol.IV, pp.???-???, (1997).
+倉爪,広瀬,長田,指田, 協調ポジショニングシステムの研究 -第4報:第2次機械モデルCPS-IIの最適移動形態- 第14回日本ロボット学会学術講演会予稿集, pp.607-608, (1996).
+倉爪,広瀬, 協調ポジショニングシステムの研究-冗長位置情報の融合-, 日本機械学会ロボティクス・メカトロニクス講演会'96講演論文集, Vol.B, pp.943-946, (1996).
+倉爪,広瀬, ロボットシステムの微分特性評価に関する基本的考察 第13回日本ロボット学会学術講演会予稿集, pp.35-36, (1995).
+指田,長田,広瀬,倉爪, 群ロボットによる協調ポジショニングシステム−第3報: 第2次移動ロボットシステムの構築と測定実験, 第13回日本ロボット学会学術講演会予稿集, pp.849-850, (1995).
+広瀬,長田,倉爪,群ロボットによる協調ポジショニングシステム−第2報:複数位置情報の融合−, 第12回日本ロボット学会学術講演会予稿集, pp.301-302, (1994).
+広瀬,倉爪,長田, 群ロボットによる協調ポジショニング法, 第3回ロボットシンポジウム予稿集,pp. 37-42, (1993).
+広瀬,長田,倉爪,群ロボットによる協調ポジショニング法, 第10回日本ロボット学会学術講演会予稿集, pp.1135-1138, (1992).
+CPS (Cooprative Positioning System) とは?

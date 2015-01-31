@@ -1,0 +1,4 @@
+This page provides a basic tutorial on understanding, creating and using regular expressions in Perl. It serves as a complement to the reference page on regular expressions perlre. Regular expressions are an integral part of the m//, s///, qr// and split operators and so this tutorial also overlaps with "Regexp Quote-Like Operators" in perlop and "split" in perlfunc.
+このページではPerlの正規表現を理解し、作成し、使用するための基本的な チュートリアルを提供します。 詳細は正規表現のリファレンスページである perlre にあります。 正規表現は演算子 m//、s///、qr//、split の一部分であり、 本チュートリアルでは "Regexp Quote-Like Operators" in perlop や "split" in perlfunc と重複する部分があります。
+Perl is widely renowned for excellence in text processing, and regular expressions are one of the big factors behind this fame. Perl regular expressions display an efficiency and flexibility unknown in most other computer languages. Mastering even the basics of regular expressions will allow you to manipulate text with surprising ease.
+perlretut - Perl の正規表現のチュートリアル - perldoc.jp

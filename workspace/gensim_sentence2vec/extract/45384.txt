@@ -1,0 +1,63 @@
+- hosts: localhost
+connection: local
+gather_facts: no           
+sudo: no
+vars:
+homebrew_packages_taps:
+- homebrew/binary
+- homebrew/dupes
+homebrew_packages_packages:
+- { name: readline }
+- { name: openssl, state: linked }
+- { name: ansible }
+- { name: cmake }
+- { name: ctags }
+- { name: direnv }
+- { name: docker }
+- { name: git }
+- { name: jq }
+- { name: hub }
+- { name: imagemagick }
+- { name: mercurial }
+- { name: mysql }
+- { name: packer }
+- { name: pkg-config }
+- { name: pwgen }
+- { name: python }
+- { name: reattach-to-user-namespace }
+- { name: redis }
+- { name: subversion }
+- { name: the_silver_searcher }
+- { name: tig }
+- { name: tmux }
+- { name: whois }
+- { name: xz }
+- { name: vim }
+- { name: wget }
+- { name: zsh, install_options: disable-etcdir }
+roles:
+- homebrew-packages
+roleで使用するvariableの命名規則
+Ansible GalaxyのAboutページの"A note about variables"のセクションにroleで使用するvariableの命名規則が書かれています。${ロール名}_${変数名}のように変数名をそのまま使うのではなく${ロール名}_という接頭辞をつけるようにします。これは他のroleの変数と名前が衝突するのを避けるためです。
+例えば上記の例ではロール名がhomebrew-packagesでpackagesという変数なので、homebrew_pacakges_packagesという名前にしています。
+roleに自作モジュールを含める場合はlibraryディレクトリを作成
+role内に自作モジュールを含めたい場合は、モジュールのディレクトリにlibraryというディレクトリを作成してそこに置けば良いです。
+例えばhnakamur/ansible-role-atom-packagesの場合はlibraryディレクトリにapmファイルを含めています。
+ちなみに、このファイルはAnsible本体に含まれるnpmのソースをコピペして10分ぐらいでちゃちゃっと作成しました。自作モジュールも簡単に作れるのがAnsibleの魅力ですね!
+meta/main.yamlとREADME.mdを書く
+実装が終わったら、meta/main.yamlとREADME.mdを書きます。ansible-galaxy initで生成されたファイルにいろいろ説明が書いてあるので、それを読んで書いていきます。
+githubにレポジトリを作成してpush
+github.comのウェブ画面でレポジトリを作成します。この例では
+hnakamur/ansible-role-homebrew-packagesというレポジトリを作りました。
+role用のgithubレポジトリ名はrole名と同じにしない
+role名とレポジトリ名を同じにしてしまうと、Ansible roleが扱うupstreamのソフトウェアのレポジトリをforkするときに名前が衝突してしまいます。例えばnginxのroleをnginxという名前でgithubレポジトリを作ってしまうと、nginx自体のレポジトリをforkするときに困ってしまいます。そこで、role用のgithubレポジトリにはansible-role-という接頭辞をつけることにしました。
+roleのファイルをレポジトリにpush
+github.comでレポジトリを作成した時に表示されたコマンドを参考に、ローカルレポジトリを作ってファイルを追加、commitし、github.comのレポジトリにpushします。
+Ansible Galaxyにroleを登録
+Ansible GalaxyのAdd a Roleメニューを選んでroleを登録します。
+Github Username/Account: hnakamur
+Github Repository: ansible-role-homebrew-packages
+Alternate Name: homebrew-packages
+Ansible Galaxyに登録したroleをダウンロードして動作確認
+作業用に~/ansible-workspaceを作成して、ここに先程登録したroleをダウンロードして利用してみます。名前の部分は${ユーザ名}.${ロール名}という形式で指定します。またインストール先のディレクトリはカレントディレクトリにしたいので.を指定します。
+roleを作成してAnsible Galaxyに登録するワークフロー - Qiita

@@ -1,0 +1,2 @@
+twitter bootstrapでpostLinkのリンク文字をボタン風に表示させる。twitter bootstrapの導入は、他サイトで詳しく書かれているので割愛。普通   <?php echo $this->Form->postLink(__('削除申請'), array('action' => 'delete', $blog['Blog']['id']), null, __('削除申請を行いますか?')); ?> bootstrapのclass指定  <?php echo $this->Form->postLink(__('削除申請'), array('action' => 'delete', $blog['Blog']['id']), array('class'=>'btn btn-info'), __('削除申請を行いますか?')); ?> 表示ちょっとだけおしゃれに!!
+【CakePHP2】postLinkのリンク文字列をちょっとかっこ良くする : 脱落エンジニアの奮闘日誌

@@ -1,0 +1,57 @@
+ある時,「LDAのトピックと文書の生成(同時)確率」を求めるにはどうすればいいですか?と聞かれた.正確には,LDAで生成されるトピックをクラスタと考えて,そのクラスタに文書が属する確率が知りたい.できれば,コードがあるとありがたい.とのことだった.うーん,LDAの式をがんばって眺めてたのはもう1年も前のことだしなあ.とぼくの鈍い頭はすぐには動かない.
+そこで,自分用過去ログをあさってみると,「Latent Dirichlet Allocation(LDA)を用いたニュース記事の分類 | SmartNews開発者ブログがわかりやすいよ!」と書いてあったので,これで復習.
+このページにも書いてあるのだが,i番目の文書の背後にあるトピックkの確率(i番目の文書をトピックkが生成する確率)はtheta_i,kによって求めることができる.じゃあ,実際にtheta_i,kを表示できるようにすればいいじゃない.となる.
+以前,自分でもLDAをお手軽に使えるPythonライブラリのgensimを紹介したことがあったが,正直,中身を読んでも「うーん,よくわからんなあ」という印象だった.きっと,高速化のために色々と工夫がされているんだろう.もっとわかりやすいLDAのコードというと,shuyoさんのLDAコードが素直な実装をされていてとてもわかりやすいと思う.iir/lda at master &middot; shuyo/iir &middot; GitHub今回はこれを拝借して改造させていただくことにした.
+読み込ませるデータは,カレーの原材料で
+カラメル 調味料(アミノ酸等) トマト 小麦 砂糖 香辛料 うし カレー粉 たまねぎ 食塩 酸味料 じゃがいも にんじん りんご チャツネ 豚 だいず 米 トウモロコシ
+カラメル 調味料(アミノ酸等) トマト 小麦 砂糖 香辛料 うし カレー粉 たまねぎ 食塩 にんじん 豚 だいず ウスターソース トウモロコシ フルーツチャツネ 野菜エキスみたいな形の段落が270個近くある(掲載にあたって一部改変した)
+ひとつの段落がひとつのカレーの原材料を示しているらしい.今の目的は原材料を考慮にいれたカレーのクラスタリング.さらにクラスタリングした結果,270個近くのカレーが各クラスタに所属する確率を知りたい(つまり,文書iの背後にトピックkが存在する確率である)使わせていただいたのはsyuyoさんのLDAコードiir/lda/lda.py at master &middot; shuyo/iir &middot; GitHub
+改変した部分だけ載せておくことにする(他にもファイルフォーマットの都合上で,vocaburary.pyも色々といじっているが)
+def perplexity(self, flag, docs=None):
+if docs == None: docs = self.docs
+phi = self.worddist()
+log_per = 0
+N = 0
+Kalpha = self.K * self.alpha
+#ここでperplexityを計算をしている
+for m, doc in enumerate(docs):
+theta = self.n_m_z[m] / (len(self.docs[m]) + Kalpha)
+if flag==True:
+for topic_num, topic_score in enumerate(theta):
+print u'Doc number:{} topics_number:{} topic_score:{}'.format(m, topic_num, topic_score);
+print '----------------------------'
+for w in doc:
+log_per -= numpy.log(numpy.inner(phi[:,w], theta))
+N += len(doc)
+return numpy.exp(log_per / N)するとこんな感じで結果が得られる
+corpus=14, words=6, K=20, a=0.500000, b=0.500000
+Doc number:0 topics_number:0 topic_score:0.0454545454545
+Doc number:0 topics_number:1 topic_score:0.0454545454545
+Doc number:0 topics_number:2 topic_score:0.0454545454545
+Doc number:0 topics_number:3 topic_score:0.0454545454545
+Doc number:0 topics_number:4 topic_score:0.0454545454545
+Doc number:0 topics_number:5 topic_score:0.0454545454545
+Doc number:0 topics_number:6 topic_score:0.0454545454545
+Doc number:0 topics_number:7 topic_score:0.0454545454545
+Doc number:0 topics_number:8 topic_score:0.0454545454545
+Doc number:0 topics_number:9 topic_score:0.0454545454545
+Doc number:0 topics_number:10 topic_score:0.0454545454545
+Doc number:0 topics_number:11 topic_score:0.0454545454545
+Doc number:0 topics_number:12 topic_score:0.0454545454545
+Doc number:0 topics_number:13 topic_score:0.0454545454545
+Doc number:0 topics_number:14 topic_score:0.0454545454545
+Doc number:0 topics_number:15 topic_score:0.0454545454545
+Doc number:0 topics_number:16 topic_score:0.136363636364
+Doc number:0 topics_number:17 topic_score:0.0454545454545
+Doc number:0 topics_number:18 topic_score:0.0454545454545
+Doc number:0 topics_number:19 topic_score:0.0454545454545
+-------------------------------
+この後にもあと13文書文同じものが続く
+<||
+これだけみても「なんのこっちゃ?」だろうが,言葉に書き下すと次のようになる.
+文書番号0(いまは文書=カレー)がクラスタ0(クラスタ=トピック)に所属する確率は0.0454545454545
+文書番号0(いまは文書=カレー)がクラスタ1(クラスタ=トピック)に所属する確率は0.0454545454545
+(以下同じ)
+と,いうようにカレーがクラスタに所属する確率みたいなものがわかるわけだ.
+ぼくの頭の中では「LDA=トピック語の抽出」みたいな図式ができあがっていたから,解釈にちょっと時間がかかったけども,LDAは元々ソフトクラスタリングにも使われているものなので,そう考えれば,「LDAでクラスタリング」も非常にすっきり頭に入ってくる.
+LDAで,トピックと文書の生成確率を考える - kensuke-miの日記

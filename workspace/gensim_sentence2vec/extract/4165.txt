@@ -1,0 +1,13 @@
+驚異的な解析速度を誇る日本語係り受け解析器J.DepP
+macports, nlp
+日本語の係り受け解析器といえば、KNPやCaboChaが有名ですが、J.DepPは線形分類器を用いて大規模な対象を非常に高速に、また高精度に解析できることが特長です。2009年末に公開されてから着実にバージョンアップされていますが、ビルドの方法が簡単になって、モデルの学習機能が追加されたことで大変使いやすくなっています。また、J.DepPは線形分類器のpeccoやopalを利用していますが、ベースの分類器が高速化されたことが、そのまま解析器の性能向上につながっているようです:ソフトウェアの更新も一人旅になってきた - ny23の日記このJ.DepPをMacPortsとして登録しました。デフォルトの状態でjdeppをインストールすると、jumandicを参照するMeCabを組み込んだ解析器と、解析済みのブログコーパスであるKNBコーパスを対象とした学習モデルが利用できるようになります:
+$ sudo port selfupdate$ sudo port install jdepp
+MeCabの辞書としてはjumandicの他に、IPAdicやNAIST-jdicも利用可能で、それぞれ+ipadicまたは+naistjdicをインストール時に指定すると組み込まれます。また、学習モデルの対象に京都コーパスを指定することもできます。毎日新聞データが使える方であれば、/tmp/KyotoCorpus4.0にコーパスデータを参照できるようにしておいて、+kyotoを指定してインストールできます。例えば、ホームディレクトリに置いてある京都コーパスを学習データとして、IPAdicを利用する場合は、次のコマンドを実行します:
+$ ln -s ~/KyotoCorpus4.0 /tmp$ sudo port install +kyoto +ipadic
+なお、CaboChaでの話ですが、京都コーパスとKNBコーパスを使った場合の性能評価が次のブログに書かれていて参考になります:CaboChaでKNBコーパスを使う | 関口宏司のLuceneブログざっくりと動作の様子をみるために、KNBコーパスのテキスト(約252KB)を対象として係り受け解析を実行してみます(※コメントに、解析速度に関して作者の方からの説明がありますのでご覧ください):
+$ sudo port install nkf KNBC$ nkf -w /opt/local/share/KNBC/corpus2/Kyoto.tsv > Kyoto.tsv$ time jdepp -v -1 < Kyoto.tsv > kyoto.jdepp(input: STDIN [-I 0])J.DepP profiler:io        : 0.0196 ms./trial (58.69402665/2997)dict      : 10.3510 ms.preproc   : 3.8375 ms./sent. (5748.59597486/1498)chunk     : 0.0594 ms./sent. (88.98891755/1498)depnd     : 0.0452 ms./sent. (67.65351785/1498)real	0m8.720suser	0m0.345ssys	0m0.219s$ time jdepp -v -1 < Kyoto.tsv > kyoto.jdepp(input: STDIN [-I 0])J.DepP profiler:io        : 0.0162 ms./trial (48.47844897/2997)dict      : 0.5021 ms.preproc   : 0.0969 ms./sent. (145.11098944/1498)chunk     : 0.0428 ms./sent. (64.17484213/1498)depnd     : 0.0436 ms./sent. (65.25766264/1498)real	0m0.413suser	0m0.298ssys	0m0.106s
+参考までにCaboChaで同じことをさせてみます:
+$ sudo port install cabocha$ time cabocha -f 1 < Kyoto.tsv > kyoto.cabochareal	0m14.948suser	0m4.235ssys	0m0.314s$ time cabocha -f 1 < Kyoto.tsv > kyoto.cabochareal	0m4.484suser	0m4.227ssys	0m0.184s
+どちらも係り受け解析の前にMeCabによる形態素解析を行っていますが、J.DepPの係り受け解析の速度はMeCabの形態素解析とそれほど大きく変わらず、桁違いに遅いということはないようです:J.DepP - C++ implementation of Japanese Dependency ParsersCaboChaも相当速いと思っていましたが、こうなると前処理であったり、後処理の意味的な解析や索引化の処理が全体のボトルネックになってきそうです。
+Permalink | コメント(6) | トラックバック(0) | 10:45 
+驚異的な解析速度を誇る日本語係り受け解析器J.DepP - 自然言語処理 on Mac

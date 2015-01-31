@@ -1,0 +1,60 @@
+from scipy import stats
+import numpy as np
+np.random.seed(12345678)
+rvs1 = stats.norm.rvs(loc=5,scale=10,size=500)
+rvs2 = stats.norm.rvs(loc=5, scale=20, size=100)
+# スチューデントの t 検定
+stats.ttest_ind(rvs1, rvs2)
+# => (0.24107173714677796, 0.8095821484893867)
+# ウェルチの t 検定
+stats.ttest_ind(rvs1, rvs2, equal_var = False)
+# => (0.15778525230427601, 0.87491760438549948)
+## ウェルチの検定についての概要
+[昨日](http://qiita.com/ynakayama/items/a8d9da8215670b8d7317)は分散が等しくないときの検定について等分散検定等平均検定をする手順を説明しました。
+これを整理すると次のようになります。
+帰無仮説
+```math
+σ_a^2 = σ_b^2
+```
+統計量と分布
+```math
+T = U_a^2 / U_b^2 \ge 1 \\
+F(Na - 1, Nb -1)
+```
+なお棄却域は対立仮説において分散をどう比較するか (等しいかあるいは上回るか / 片側検定または両側検定) で変わります。
+さて、今日はいきなり[昨日](http://qiita.com/ynakayama/items/a8d9da8215670b8d7317)の内容を否定するかのような話をします。
+古典的な統計の教科書では 2 つの正規母集団で、母分散 σ_a^2, σ_b^2 が不明であり σ_a^2 と σ_b^2 が等しくないと判定されたとき、[ウェルチの t 検定 (Welch's t test)](http://ja.wikipedia.org/wiki/%E3%82%A6%E3%82%A7%E3%83%AB%E3%83%81%E3%81%AEt%E6%A4%9C%E5%AE%9A) を用います。
+t 検定は分散が等しいことを前提にした検定ですが、ウェルチの検定は必ずしも分散を等しいことを前提にしないという点が大きな違いです。
+昨今ではこのように等分散を前提としない方法が主流になりつつあり、むしろ[ウェルチの t 検定がデフォルトの t 検定で良いのではという雰囲気もある](http://laboratoryofbiology.blogspot.jp/2013/12/welchtanovastatwing.html)ほどなのです。
+次の記事及び各リンク先を読むと統計の教科書によくある等分散の検定 (F 検定)  t 検定の流れにおける問題点がつかめるかと思います。
+等分散検定から t検定・分散分析(ANOVA)・ウェルチ(Welch)検定への問題点
+http://note.chiebukuro.yahoo.co.jp/detail/n13859
+独立 2 群間の平均値の比較の際に生じる多重性の問題について
+http://www2.vmas.kitasato-u.ac.jp/lecture0/statistics/stat_info03.pdf
+2 段階検定を批判し等分散を前提としない検定で統一することを推奨する論文もあります。
+http://beheco.oxfordjournals.org/content/17/4/688.full
+深く理解するには[ウェルチの検定の文献](http://biol09.biol.umontreal.ca/BIO2041e/Correction_Welch.pdf)もあわせて参照しましょう。
+## SciPy における実装
+それでは我らが SciPy ではどのようになっているのでしょう。
+[scipy.stats.ttest_ind](http://docs.scipy.org/doc/scipy-0.13.0/reference/generated/scipy.stats.ttest_ind.html) のリファレンスを読めば一目瞭然ですが equal_var パラメータに False を指定することにより等分散を前提としなくなり即ちウェルチの t 検定となります。
+この t 分布の自由度 m は次のようになります。
+```math
+m = \frac {(\frac {S_a^2} {n_a - 1} + \frac {S_b^2} {n_b - 1})^2} { \frac {({S_a^2})^2} {{({n_a - 1})}^3} + \frac {({S_b^2})^2} {{({n_b - 1})}^3} }
+```
+あとは SciPy のリファレンスからそのままのやり方ですが n1 != n2 のとき t 検定とウェルチの検定でそれぞれ次のようになります。
+```py3
+from scipy import stats
+import numpy as np
+np.random.seed(12345678)
+rvs1 = stats.norm.rvs(loc=5,scale=10,size=500)
+rvs2 = stats.norm.rvs(loc=5, scale=20, size=100)
+# スチューデントの t 検定
+stats.ttest_ind(rvs1, rvs2)
+# => (0.24107173714677796, 0.8095821484893867)
+# ウェルチの t 検定
+stats.ttest_ind(rvs1, rvs2, equal_var = False)
+# => (0.15778525230427601, 0.87491760438549948)
+```
+また先ほどのリンク先のブログ記事にもある通り、[統計ソフト Statwing の T-Tests でもウェルチの t 検定がデフォルトである](http://docs.statwing.com/technical-notes/t-tests/)とありますね。
+以上のことから、筆者としても等分散か否かに関わらず、ウェルチの t 検定を利用することを推奨します。
+scipy - 等分散か否かに関わらずウェルチの t 検定を使う (べきである) - Qiita

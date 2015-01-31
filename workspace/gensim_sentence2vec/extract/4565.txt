@@ -1,0 +1,18 @@
+
+距離設定形の光電センサにある機能で、Background Suppressionの略です。
+設定距離より遠くにある背景を検出しない機能です。
+下記の図では、背景である「コンベア」は検出しません。
+BGS機能の特長
+・微小な段差を検出できる
+・検出物体の色の影響を受けにくい
+・背景物体の影響を受けにくい
+・形E3Z-LS61、-LS66、-LS81、-LS86では、配線でBGS機能、FGS機能を選択できます。
+〔関連FAQ〕
+距離設定形光電センサの動作原理を教えてください。
+光電センサ FGS機能とは何ですか?
+〔関連情報〕
+・センサの基礎知識 
+http://www.fa.omron.co.jp/guide/special/knowledge/index.html
+・テスト機貸出サービス
+http://www.fa.omron.co.jp/support/testing/
+光電センサ - 製品に関するFAQ FAQ05080 : オムロン制御機器

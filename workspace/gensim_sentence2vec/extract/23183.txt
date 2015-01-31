@@ -1,0 +1,9 @@
+The Swift Programming LanguageのLanguage Guideの"The Basics"の章をざっとまとめたものです。
+Objective-Cを始め、既に他の言語を習得されてる方向けです。
+英語は苦手なので、ソースコードから逆読みしている箇所もあります。
+間違いや補足等あれば、教えて頂ければ幸いです。
+次章 Basic Operators
+文末
+行末又はセミコロンまでが文。行末のセミコロンは必須ではない.
+定数
+Swift Language Guide "The Basics" - Qiita

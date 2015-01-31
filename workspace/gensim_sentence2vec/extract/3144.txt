@@ -1,0 +1,87 @@
+
+bounceHammer の動作環境
+bounceHammerはOpenBSD, FreeBSD, NetBSD等のBSD系OSおよびLinuxにて
+動作します。概ねどのようなUNIX系OSでも動作するよう設計していますが、動作
+環境の詳細は、下記リンク先にて確認して下さい。
+Perlのバージョン
+Perlモジュール
+Webサーバ
+動作確認済のOS
+対応データベース
+bounceHammer のインストール
+bounceHammerのインストールはApacheやPostgreSQLなどの一般的な
+サーバアプリケーションと同様にconfigureスクリプトとmake
+を使って構築します。
+システム自体はPerlで書かれていますので、いくつかのPerlモジュールを別途
+インストールする必要があります。
+構築の順序と手順は下記のリンクを参考にしてください。
+アーカイブの入手
+|
+bounceHammerのTAR玉の入手と展開
+必要なPerlモジュール |
+bounceHammerが必要とするモジュールを入れる
+./configure |
+構築の準備
+make && make install |
+構築とインストール
+データベースの準備 |
+データ蓄積用DBの準備
+ディレクトリ構造 |
+インストール直後のディレクトリ構造の確認
+bounceHammerの設定ファイル作成
+bounceHammerをmake installでインストールした後は、
+設定ファイルの準備と編集を行ってください。
+設定の順序と方法は次のリンクを参考にしてください。
+bouncehammer.cf
+| 基本設定ファイルの作成
+webui.cf
+| WebUI(ブラウザベースの管理画面)設定ファイルの作成
+neighbor-domains
+| 別分類したいドメインの定義ファイルの作成
+available-countries
+| 国別のドメイン分類と特殊なMTAの定義ファイルの作成
+bounceHammerの設定と運用準備
+bounceHammerの設定ファイルが作成できたら、運用に必要なスクリプトの設置や
+データの登録などを行ってください。
+設定の順序と方法は次のリンクを参考にしてください。
+管理画面(WebUI)の準備
+HTTP-APIの準備
+管理対象となるドメインの登録
+/etc/crontabで定期的に動かす
+bounceHammerのアンインストール
+bounceHammerの機能
+bounceHammerの機能、データ構造、処理の流れ等についてその概要を説明します。
+サーバ管理者向けにはコマンドラインツールを、サイト管理者向けにはWebUI(GUIの管理画面)を、
+そして開発者向けにはHTTPベースのAPIをそれぞれ用意しています。
+コマンドラインツール
+| bin/以下にインストールされるコマンドについて
+WebUI(管理画面)
+| ブラウザベースの管理画面
+HTTP-API
+| JSONでデータを得られるAPI
+処理の流れ
+| bounceHammer全体での処理の流れ
+データ構造
+| bounceHammerが作るデータの構造
+ベンチマーク
+| bounceHammerのコマンドラインツールの処理速度
+bounceHammerの各コマンドラインツール
+bounceHammerをインストールするとbin/ディレクトリ以下に配置される
+コマンドラインツールについて説明します。
+解析そのものを行うコマンドや、解析結果を集積するコマンド、蓄積したデータを操作する
+コマンドなどがあります。
+mailboxparser
+| バウンスメールを解析してYAML/JSONで出力
+logger
+| 解析したデータ(YAML)を日付別に集積する
+databasectl
+| 解析したデータ(YAML)をデータベースへ登録・更新
+datadumper
+| データベースに蓄積したバウンス記録をYAML/JSON/CSVで出力
+summarizer
+| 解析したバウンス記録の簡易統計を出力する
+tablectl
+| データベースのマスタデータを操作(登録・更新・削除)
+messagetoken
+| 発信者アドレスと受信者アドレスから一意の文字列(token)を生成
+

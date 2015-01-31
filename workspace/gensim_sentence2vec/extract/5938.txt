@@ -1,0 +1,146 @@
+1.2.5 曲線フィッティング再訪
+1.2.6 ベイズ曲線フィッティングのところを実装してみます。前回は、最小二乗法で曲線フィッティングをしたけど、ベイズ的な方法で解こうって話のようです。この2つの節では、
+最尤推定
+最大事後確率(MAP)推定
+ベイズ推定
+という3つのパラメータ推定方法が曲線フィッティングという具体例で説明されてます。他の教科書では抽象的に定式化されていて違いがよくわからなかったけど、この章では曲線フィッティングという具体例に基づいて説明されているのでわかりやすいと感じました。
+まず、最尤推定のプログラムです。実は、最尤推定で対数尤度(1.62)を最大化することは、最小二乗法の二乗和誤差関数E(w)の最小化と等価なのでwの求め方は最小二乗法(2010/3/27)とまったく同じです。最尤推定では、目標値tの予測分布を求めるためもう1個予測分布の精度パラメータ(分散の逆数)を最大化する必要があります(一方、最小二乗法では分布でなくtの値がバシッと決まる)。βについても対数尤度をβで偏微分して0と置いて解くと(1.63)が得られます。
+#coding:utf-8
+import numpy as np
+from pylab import *
+# M次多項式近似
+M = 3
+def y(x, wlist):
+ret = wlist[0]
+for i in range(1, M+1):
+ret += wlist[i] * (x ** i)
+return ret
+# 訓練データからパラメータを推定
+def estimate(xlist, tlist):
+# M次多項式のときはM+1個のパラメータがある
+A = []
+for i in range(M+1):
+for j in range(M+1):
+temp = (xlist**(i+j)).sum()
+A.append(temp)
+A = array(A).reshape(M+1, M+1)
+T = []
+for i in range(M+1):
+T.append(((xlist**i) * tlist).sum())
+T = array(T)
+# パラメータwは線形連立方程式の解
+wlist = np.linalg.solve(A, T)
+return wlist
+def main():
+# 訓練データ
+# sin(2*pi*x)の関数値にガウス分布に従う小さなランダムノイズを加える
+xlist = np.linspace(0, 1, 10)
+tlist = np.sin(2*np.pi*xlist) + np.random.normal(0, 0.2, xlist.size)
+# 訓練データからパラメータw_mlを推定
+w_ml = estimate(xlist, tlist)
+print w_ml
+# 精度パラメータを推定
+N = len(xlist)
+sums = 0
+for n in range(N):
+sums += (y(xlist[n], w_ml) - tlist[n]) ** 2
+beta_inv = 1.0 / N * sums
+# 連続関数のプロット用X値
+xs = np.linspace(0, 1, 500)
+ideal = np.sin(2*np.pi*xs)         # 理想曲線
+means = []
+uppers = []
+lowers = []
+for x in xs:
+m = y(x, w_ml)      # 予測分布の平均
+s = sqrt(beta_inv)  # 予測分布の標準偏差
+u = m + s           # 平均 + 標準偏差
+l = m - s           # 平均 - 標準偏差
+means.append(m)
+uppers.append(u)
+lowers.append(l)
+print uppers
+plot(xlist, tlist, 'bo')  # 訓練データ
+plot(xs, ideal, 'g-')     # 理想曲線
+plot(xs, means, 'r-')     # 予測モデルの平均
+plot(xs, uppers, 'r--')
+plot(xs, lowers, 'r--')
+xlim(0.0, 1.0)
+ylim(-1.5, 1.5)
+show()
+if __name__ == "__main__":
+main()
+結果は、下のような感じ。赤い実線が予測分布の平均、赤い点線が1σの範囲です。最尤推定は最小二乗法と等価なのでM=9(Mは多項式モデルの次数)のように複雑なモデルを使うと過学習になりました。グラフはM=3です。
+次は最大事後確率(MAP)推定です。MAP推定は、パラメータwの事前確率(1.65)を導入し、尤度関数と事前確率の積からベイズの定理によってパラメータwの事後確率(1.66)を求めて、事後確率が最大となるwを推定パラメータとする手法のようです。
+この方法はけっこうなじみがあるという感じです。テキスト分類でよく使うナイーブベイズも事後確率を最大化するクラスに分類するのでMAP推定の一種だったのかな?と思って読んでました。事前確率を正規分布として事後分布の式を求めると・・・なんと正則化項を導入した最小二乗法の二乗和誤差関数(1.67)が出てきました。びっくり!あとは、前回の最小二乗法と同様にパラメータwが求められます(前回と同じなのでプログラムは省略)。MAP推定は、正則化された最小二乗法と等価なので過学習に強いです。
+1.2.6のベイズ曲線フィッティングでベイズ的な方法を導入してます。ベイズ推定という言葉はかかれてないけど、ベイズ推定で間違いないと思います。最尤推定では対数尤度関数が最大となるパラメータw、MAP推定では事後確率が最大となるパラメータwをバシッと求めて(点推定)それをそのまま予測分布の式に代入してましたが、ベイズ推定ではwに関して周辺化して予測分布を求めるのが特徴とされています。上の式がベイズ推定の予測分布ですが、最尤推定やMAP推定ではパラメータwを(1)式に代入してそのまま予測分布としていたのに、ベイズ推定ではさらにwについて周辺化して予測分布としています。訓練データ (x,t) からパラメータwが得られる確率 (2) を計算し、そのパラメータwのときにtが得られる確率 (1) を計算し、それをすべてのwについて積分してます(そこまでするか・・・)。この積分はどうやって求めるんだと思ったのですが、解析的に解けて(1.69)のやたら複雑な正規分布になるそうです(この導出ができなかった・・・後で再挑戦予定)。朱鷺の杜によるとこの積分の計算は困難だったけど最近はMCMCや変分ベイズなどの近似手法で解けるようになり、ベイズ推定の研究が活発になってきたそうです。下巻で出てくるようです。
+では、さっそく(1.69)の結果だけ使って(あまり面白くないけど)プログラムしてみます。
+#coding:utf-8
+import numpy as np
+from pylab import *
+import sys
+M = 9
+ALPHA = 0.005
+BETA = 11.1
+# M次多項式近似
+def y(x, wlist):
+ret = wlist[0]
+for i in range(1, M+1):
+ret += wlist[i] * (x ** i)
+return ret
+def phi(x):
+data = []
+for i in range(0, M+1):
+data.append(x**i)
+ret = np.matrix(data).reshape((M+1, 1))  # 縦ベクトルで返す
+return ret
+# 式1.70
+def mean(x, xlist, tlist, S):
+sums = matrix(zeros((M+1, 1)))
+for n in range(len(xlist)):
+sums += phi(xlist[n]) * tlist[n]
+ret = BETA * phi(x).transpose() * S * sums
+return ret
+# 式1.71
+def variance(x, xlist, S):
+ret = 1.0 / BETA + phi(x).transpose() * S * phi(x)
+return ret
+def main():
+# 訓練データ
+# sin(2*pi*x)の関数値にガウス分布に従う小さなランダムノイズを加える
+xlist = np.linspace(0, 1, 10)
+tlist = np.sin(2*np.pi*xlist) + np.random.normal(0, 0.2, xlist.size)
+# ベイズ曲線フィッティングを用いて予測分布を求める
+# 行列Sを計算
+sums = matrix(zeros((M+1, M+1)))
+for n in range(len(xlist)):
+sums += phi(xlist[n]) * phi(xlist[n]).transpose()
+I = matrix(np.identity(M+1))
+S_inv = ALPHA * I + BETA * sums
+S = S_inv.getI()
+# 連続関数のプロット用X値
+xs = np.linspace(0, 1, 500)
+ideal = np.sin(2*np.pi*xs)         # 理想曲線
+means = []
+uppers = []
+lowers = []
+for x in xs:
+m = mean(x, xlist, tlist, S)[0,0]       # 予測分布の平均
+s = np.sqrt(variance(x, xlist, S)[0,0]) # 予測分布の標準偏差
+u = m + s                               # 平均 + 標準偏差
+l = m - s                               # 平均 - 標準偏差
+means.append(m)
+uppers.append(u)
+lowers.append(l)
+plot(xlist, tlist, 'bo')  # 訓練データ
+plot(xs, ideal, 'g-')     # 理想曲線
+plot(xs, means, 'r-')     # 予測モデルの平均
+plot(xs, uppers, 'r--')   # +sigma
+plot(xs, lowers, 'r--')   # -sigma
+xlim(0.0, 1.0)
+ylim(-1.5, 1.5)
+show()
+if __name__ == "__main__":
+main()
+実行結果は、赤い実線が予測分布の平均、赤い点線が1σの範囲です。予測分布の中に訓練データが入っていていい感じです。先ほどの最尤推定と違ってM=9としています。MAP推定がベースだからでしょうか。過学習もしてません。ベイズ推定を使う利点ですが、朱鷺の杜によると、「最大値を使うMAP推定では少数のはずれ値に大きく影響されることがあるが,ベイズ推定は予測分布や期待値なので頑健な推定ができる」そうです。ちょっとこの結果だけではわからないので訓練データにノイズを入れて、MAP推定(正則化最小二乗法)の結果とベイズ推定の結果を比べてみると違いがはっきりするかも。
+最尤推定、MAP推定、ベイズ推定 - 人工知能に関する断創録

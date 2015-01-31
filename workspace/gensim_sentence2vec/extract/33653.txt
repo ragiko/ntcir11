@@ -1,0 +1,67 @@
+[MySQL]information_schema.tables.table_rowsの値を参考にしてはいけません
+DBAの方々には既知の情報ですが、
+デイリーでテーブルから取得している行数が減っていることに気づき、「あれDELETEなんかしてないはず」と思い調べたところ、
+公式にありました。
+TABLE_ROWS カラムはテーブルが INFORMATION_SCHEMA のデータベースにある場合は NULL です。InnoDB テーブルは、行カウントは SQL の最適化で使用される単なる大雑把な予測です。
+INFORMATION_SCHEMA TABLES テーブル
+つまり、当てにならない
+count()取るしかないのかなあ、重いから嫌だなあ
+[MySQL]Using where; Using index; Not exists
+EXPLAINでExtraフィールドに表題のInfo『Using where; Using index; Not exists』が表示されていた場合
+クエリチューニングの余地があります。
+まいどお世話になります日本男児先生
+Using where・・・頻繁に出力される追加情報である。WHERE句に検索条件が指定されており、なおかつインデックスを見ただけではWHERE句の条件を全て適用することが出来ない場合に表示される。
+Using index・・・クエリがインデックスだけを用いて解決できることを示す。Covering Indexを利用している場合などに表示される。
+Not exists・・・LEFT JOINにおいて、左側のテーブルからフェッチされた行にマッチする行が右側のテーブルに存在しない場合、右側のテーブルはNULLとなるが、右側のテーブルがNOT NULLとして定義されたフィールドでJOINされている場合にはマッチしない行を探せば良い・・・ということを示す。
+MySQLのEXPLAINを徹底解説!!
+SELECT st.* FROM staff st 
+LEFT JOIN boss b ON st.id=b.staff_id
+WHERE st.del_flg='NO' AND b.id IS NULL;
+これは管理職でないスタッフを取得するクエリですが、LEFT JOINで右側のテーブルがNULLとして定義されたフィールドでJOINされていますね。
+ここでSQLを速くするぞ先生の出番です。
+サブクエリを引数に取る場合、IN述語よりもEXISTS述語を使う
+EXISTS の方が速いと期待できる理由は以下の二つです。
+<中略>
+IN の引数にサブクエリを与える場合、DB はまずサブクエリから実行し、その結果を一時的なワーク・テーブル(インライン・ビュー)に格納し、その後、ビューを全件走査します。これは、多くの場合、非常にコストがかかります(特に大規模なビューをメモリ上に展開する場合は)。EXISTS ならば、上述のようにワーク・テーブルは作成されません。 
+ただし、ソースコードの可読性という点において、IN は EXISTS に勝ります。要するに、IN で書いた方がぱっと見て意味が分かりやすいコードになります。そのため、IN を使っても十分短い応答時間が確保されているなら、その SQL を敢えて EXISTS で書き直す必要はありません。 
+SQLを速くするぞ
+今回はサブクエリではなく、JOINですが、同じくEXISTSのほうが早くなる
+SELECT st.* FROM staff st 
+LEFT JOIN boss b ON st.id=b.staff_id
+WHERE st.del_flg='NO' AND b.id IS NULL;
+SELECT st.* FROM staff st 
+WHERE st.del_flg='NO' AND NOT EXITS (SELECT * FROM boss WHERE staff_id=st.id);
+下のほうが早く、可読性はどっこいどっこいと言えるので、総合で軍配は下のクエリとなる。
+[MySQL]WHERE句のORの後ろはINDEXが効かない
+タイトルでそのまま完結してしまっていますが、
+ORを使用した場合、INDEXが効くのは左辺のみ
+「そもそもORを使うな」という話
+どうしても使わざるを得ないケースがあったとしても、クエリを二回実行するほうがベター
+ということであります。
+7.INはINDEXが有効でしかも結構速いが、ORは左辺と右辺のどちらかのみのINDEX適応(基本的には左辺)となる。
+できるだけORを使うSQLを発行しなくてすむような設計にすることが望ましいですが、多くの要件では100%は難しいと思うので、その場合には、ANDで結合できる部分をできるだけ前に持ってきて、ORの後ろの条件をできるだけ簡潔なものとする(なぜなら原則としてORの後ろはINDEXが聞かないから)
+MySQLにおける10の最適化設計
+[MySQL]データ更新時に、元データを別カラムに追記録していく(際の注意点も)
+CONCAT関数が使える
+mysql> UPDATE tbl SET 
+status='NG',
+up_time = NOW(), 
+up_time_log = CONCAT(IFNULL(up_time_log,''),CONCAT(',',up_time)) 
+WHERE id = ?
+例えば、上記SQLのように更新時間をup_time_logカラムに全て残しておきたい場合(ログデータを取るほどでもない)
+注意しておきたいのは、UPDATEが左から順次実行されて拾っていくこと
+分かり易いのが、次の例で
+mysql> UPDATE data SET price=price-1000, discount_rate=(price-1000)/price;
+割引きした値段と、元値の割引率をセットしようとしても、割引率セットの前に既にpriceは1000円引かれているので、正しい値が入りません。
+よって
+オリジナルの値を変更する処理が入る場合は、それを一番最後に持ってくるのが鉄則
+mysql> UPDATE data SET discount_rate=(price-1000)/price, price=price-1000;
+なので、最初のSQLも
+mysql> UPDATE tbl SET 
+status='NG',
+up_time_log = CONCAT(IFNULL(up_time_log,''),CONCAT(',',up_time)), 
+up_time = NOW() 
+WHERE id = ?
+となります。
+MySQLリファレンス
+『*[MySQL]』の検索結果 - 低空飛行記録 fly or die autonomically

@@ -1,0 +1,146 @@
+ 
+クラスタリングと分類
+クラスタリングとは、似ているサンプルをまとめてグルーピングをすることです。
+グルーピングするグループは前もって与えられていません。
+それに対して、分類では、グループは前もって与えられていて、サンプルを与えられたグループへ分類します。
+ここでは、2次元平面にランダムに生成されたサンプルを、距離が近いものをまとめてグルーピングする方法を考えます。
+混合正規分布によるクラスタリングは、グループは前もって与えられていないが、いくつのグループに分けるがグループの数は決まっている分類方法です。
+左上にメニューが表示される。
+[create data]ボタンを押すとランダムにサンプルが作成される。
+[create center]ボタンを押すとランダムにグループの中心が作成される。
+[start]ボタンを押すとclusteringが始まる。
+混合正規分布によるクラスタリング
+この分類方法には、データーのサンプル同士の距離が定義されている必要があります。
+ここでは2次元のユークリッド距離を用います。
+K-平均法を次のように発展させます。
+K-平均法では、サンプルは、グループの中心に近い方のグループに属します。
+混合正規分布によるクラスタリングでは、サンプルはどれかのグループ1つに属するのではなく、
+それぞれのグループに属する確率が、グループの中心を中心とし、グループの中心とサンプルの距離による、正規分布で与えられています。
+つまり、 p, q は A グループに属する確率が B グループより高く、 r は B グループに属する確率が A グループより高いです。。
+混合正規分布によるクラスタリング
+(ここでは、グループに属する確率を表す確率分布関数は、どのグループも同じ標準偏差を持つ正規分布とします。)
+m個のグループの中心をランダムに作成します。
+各グループに属する確率をすべてのサンプルについて計算します。
+グループの中心座標を、「サンプルの座標にグループに属する確率を掛け、すべてのサンプルで合計したもの」に書き換えます。
+2,3のを繰り返します。
+グループの中心座標が前の計算からの変化が閾値より小さくなった時にクラスタリングを終了させます。
+Agent.cs
+using UnityEngine;
+using System.Collections;
+public class Agent : MonoBehaviour {
+public GameObject line; 
+public float er=10.0f ;
+public  bool alive=false ;
+public float std = 50.0f; //各グループに属する確率を表す確率分布関数の標準偏差
+public Menu menu ;
+private ArrayList[] groupLists  ;
+private Vector3[] groupCenter0;
+private float [,] prob  ;
+private float [,] nprob  ;
+private float std2=0.0f;
+private int n=0;
+void Start () {
+groupLists = new ArrayList[menu.numberOfGroupe] ;
+groupCenter0 = new Vector3[menu.numberOfGroupe] ;
+prob = new float[menu.numberOfGroupe,menu.size] ;
+nprob = new float[menu.numberOfGroupe,menu.size] ;
+std2 = std * std / 2.0f; //分散
+}
+// Update is called once per frame
+void Update () {
+if (!alive) return;
+calcuGroup ();          ①
+findGroupeCenter ();    ②
+if (end ()) {           ③
+alive=false ;
+clusterling();      ④
+drawGroup();        ⑤
+}
+n++;
+}
+// 座標 vと 座標 m の距離による、分散sの正規分布の確率を求める
+float probability(Vector3 v,Vector3 m,float s){
+float a = Vector3.Distance (v, m);
+return Mathf.Exp (-a * a / s);
+}
+void calcuGroup (){
+for( int j=0;j &lt menu.size;j++){
+for (int i=0; i &lt menu.numberOfGroupe; i++) {
+// menuクラスに定義された、GameObjectを入れる配列 dataList の j 番目のGameObjectが、
+// menuクラスに定義された、GameObjectを入れる配列 groupCenter の i 番目のGameObjectに、
+// 属する確率を計算し、prob[i,j]に代入する。
+prob[i,j] = ??? ( ???  , ??? , std2 );
+}
+}
+// サンプルが、各グループに属する確率の和が、1となるように、正規化する。)
+for (int j=0; j &lt menu.size; j++) {
+float sum=0.0f ;
+for (int i=0; i &lt menu.numberOfGroupe; i++) {
+sum+=prob[i,j] ;
+}
+for (int i=0; i &lt menu.numberOfGroupe; i++) {
+nprob[i,j]=prob[i,j]/sum ;
+}
+}
+}
+void findGroupeCenter(){
+//グループの中心座標を、「サンプルの座標にグループに属する確率を掛け、すべてのサンプルで合計したもの」に書き換える。
+for (int i=0; i &lt menu.numberOfGroupe; i++) {
+float sum=0.0f, x=0.0f, z=0.0f;
+for (int j=0; j &lt menu.size; j++) {
+sum+=nprob[i,j] ;
+}
+for (int j=0; j &lt menu.size; j++) {
+x+=nprob[i,j]*menu.dataList[j].rigidbody.position.x;
+z+=nprob[i,j]*menu.dataList[j].rigidbody.position.z;
+}
+groupCenter0[i]=menu.groupCenter[i].rigidbody.position ;
+menu.groupCenter[i].rigidbody.position=new Vector3(x/sum,0,z/sum);
+}
+}
+bool end(){
+print (n);
+float sum = 0.0f;
+for (int i=0; i &lt menu.numberOfGroupe; i++) {
+sum+=Vector3.Distance(groupCenter0[i],menu.groupCenter[i].rigidbody.position) ;
+}
+print ("sum="+sum);
+if (sum &lt  er) return true;
+return false;
+}
+void clusterling(){
+for (int i=0; i &lt menu.numberOfGroupe; i++) {
+groupLists [i] = new ArrayList ();
+}
+for( int j=0;j &lt menu.size;j++){
+float max=0 ; 
+int imax=0;
+for(int i=0; i &lt menu.numberOfGroupe;i++){
+if( max &lt nprob[i,j] ) { max=nprob[i,j]; imax=i; }
+}
+groupLists[imax].Add (menu.dataList[j]) ;
+}
+}
+void drawGroup(){
+alive = false;
+for( int i=0 ; i &lt menu.numberOfGroupe ; i++ ){
+if( groupLists[i].Count==0 ) continue ;
+Vector3 p=(((GameObject)groupLists[i][0]).rigidbody.position) ;
+menu.lineList[i]=(GameObject)Instantiate (line, p, Quaternion.identity);
+LineRenderer lineRenderer = menu.lineList[i].GetComponent();
+for( int a=0 ; a &lt groupLists[i].Count ; a++ ){
+lineRenderer.SetVertexCount(a+1);
+lineRenderer.SetPosition(a,((GameObject)groupLists[i][a]).rigidbody.position );
+}
+}
+}
+}
+問題
+Agent.cs の中の ??? の部分にコードを書いて、このプログラムを完成させてください。
+以下の説明文は、①〜⑤ のどの位置に挿入すべきか、答えてください。
+番号【   】//もっとも確率の高いグループへ属するとして
+番号【   】//の中心座標を計算する。
+番号【   】//グループを表す線を画面に表示する。
+番号【   】//終了条件を満たすなら
+番号【   】//各サンプル(黄色の球)に、各グループ中心(赤色の球)が属する確率を計算する。
+Unity memo

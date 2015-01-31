@@ -1,0 +1,13 @@
+
+names 
+属性と要素のラベル
+ベクトルには names 属性と呼ばれる属性情報を付けることが出来,要素の名前を持つベクトルは名前を使って要素を取り出すことが出来る.
+mydata の各要素の名前が myname の各文字列に入っている.mydata 
+に name 属性を付け加えるには以下のようにする.ただし names 属性の値はベクトルと同じ長さの文字型ベクトルでなければならない.
+mydata <- c(57, 173, 19)                     # 体重,身長,BMI のデータ
+myname <- c("weight", "height", "BMI")       # 名前
+names(mydata) <- myname                      # 名付ける
+mydata                                       # mydata に名前が付いた
+weight height    BMI 
+57    173     19 
+R-Source

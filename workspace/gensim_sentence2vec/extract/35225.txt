@@ -1,0 +1,151 @@
+Pythonで音声信号処理(2011/05/14)の第20回目。以前、ケプストラム分析(2012/12/21)のところで声道の特性を意味するスペクトル包絡を求めた。今回は、線形予測分析(Linear Predictive Coding)という別の手法でスペクトル包絡を求めてみた。この方法で求めたスペクトル包絡は、LPCスペクトル包絡(LPC Spectral Envelope)と呼ばれるとのこと。
+レビンソン・ダービン再帰法を用いてLPC係数を求める
+ユール・ウォーカー方程式の解き方はいろいろあるみたいだけど、ここではレビンソン・ダービン再帰法(Levinson-Durbin Recursion)というアルゴリズム*1を使ってみました。実際は、ユール・ウォーカー方程式をさらに変形してとする。この変形が資料を見てもちょっとわからなかった。ユール・ウォーカー方程式にさらに下の式(残差分散の定義)が追加された連立方程式になっているが、条件を追加してもよいのはなぜ?詳しい人がいたら教えてください。レビンソン・ダービン再帰法は上の式を再帰的に解くアルゴリズムになっている。再帰的というのは、まず k=1 の場合を解く。次に、k=1の結果を利用して、k=2の場合を解くというようにだんだんkの値を大きくしていき、任意のLPC次数 k の場合を解くことを意味する。まず、k=1の場合だが、これは簡単に解けて各係数 a_i は、残差分散 E_1 は、となる。次に、kの場合からk+1の場合を求める再帰的な手順だが、導出は先の資料にまかせて最終的に次の3つのステップを実行するだけでOK。新しくλという変数を導入するのがミソ。このλは、実は重要なパラメータであってPARCOR係数を求めるときにも使える。ステップ1: λを次式で更新するステップ2: 係数ベクトルAを次式で更新するステップ3: 残差分散を次式で更新する
+実装
+では、上の結果をもとにレビンソン・ダービン再帰法をさっそくPythonで実装してみた。
+#coding:utf-8
+import numpy as np
+from pylab import *
+def autocorr(x, nlags=None):
+"""自己相関関数を求める
+x:     信号
+nlags: 自己相関関数のサイズ(lag=0からnlags-1まで)
+引数がなければ(lag=0からlen(x)-1まですべて)
+"""
+N = len(x)
+if nlags == None: nlags = N
+r = np.zeros(nlags)
+for lag in range(nlags):
+for n in range(N - lag):
+r[lag] += x[n] * x[n + lag]
+return r
+def LevinsonDurbin(r, lpcOrder):
+"""Levinson-Durbinのアルゴリズム
+k次のLPC係数からk+1次のLPC係数を再帰的に計算して
+LPC係数を求める"""
+# LPC係数(再帰的に更新される)
+# a[0]は1で固定のためlpcOrder個の係数を得るためには+1が必要
+a = np.zeros(lpcOrder + 1)
+e = np.zeros(lpcOrder + 1)
+# k = 1の場合
+a[0] = 1.0
+a[1] = - r[1] / r[0]
+e[1] = r[0] + r[1] * a[1]
+lam = - r[1] / r[0]
+# kの場合からk+1の場合を再帰的に求める
+for k in range(1, lpcOrder):
+# lambdaを更新
+lam = 0.0
+for j in range(k + 1):
+lam -= a[j] * r[k + 1 - j]
+lam /= e[k]
+# aを更新
+# UとVからaを更新
+U = [1]
+U.extend([a[i] for i in range(1, k + 1)])
+U.append(0)
+V = [0]
+V.extend([a[i] for i in range(k, 0, -1)])
+V.append(1)
+a = np.array(U) + lam * np.array(V)
+# eを更新
+e[k + 1] = e[k] * (1.0 - lam * lam)
+return a, e[-1]
+if __name__ == "__main__":
+original = np.zeros(128)
+for i in range(len(original)):
+original[i] = np.sin(i * 0.01) + 0.75 * np.sin(i * 0.03) + 0.5 * np.sin(i * 0.05) + 0.25 * np.sin(i * 0.11)
+lpcOrder = 16  # LPC係数の次数
+# 自己相関関数を計算
+# r[0]からr[lpcOrder]までlpcOrder+1個必要
+r = autocorr(original, lpcOrder + 1)
+for i in range(lpcOrder + 1):
+print "r[%d]: %f" % (i, r[i])
+# Levinson-Durbinアルゴリズムを用いてLPC係数と最小誤差を計算
+a, e = LevinsonDurbin(r, lpcOrder)
+print "*** result ***"
+print "a:", a
+print "e:", e
+# LPCで前向き予測した信号を求める
+predicted = np.copy(original)
+# 過去lpcOrder分から予測するので開始インデックスはlpcOrderから
+# それより前は予測せずにオリジナルの信号をコピーしている
+for i in range(lpcOrder, len(predicted)):
+predicted[i] = 0.0
+for j in range(1, lpcOrder):
+predicted[i] -= a[j] * original[i - 1 - j]
+# オリジナルの信号をプロット
+plot(original)
+# LPCで前向き予測した信号をプロット
+plot(predicted)
+show()
+メイン関数では、オリジナルの曲線と線形予測法で予測した曲線をプロットしている。LPC次数kの値を2, 8, 16と変えてプロットした結果はこちら。LPC次数が大きくなると元の曲線をよく予測できていることがわかる。大きければ大きいほど予測精度は上がるのかな?過学習みたいな概念はないのだろうか。
+LPCスペクトル包絡
+次に、LPC係数をもとにLPCスペクトル包絡を求めてみる。実は、先の資料には、LPC係数からLPCスペクトル包絡を求める方法が書いておらずいろいろ調べ回る必要が出てきた。同じような人がたくさんいるらしく調べていると、「LPC係数からLPCスペクトル包絡をどう求めるのか?」という質問がけっこうたくさんあった。どうやら、LPC係数をフィルタ係数とみなして周波数応答を求めるというのが正解のようだ。Pythonの場合、scipy.signal.freqz()という関数で求められる。この関数に渡すLPC係数は、a_0 = 1も入れておく必要がある。このせいでかなりハマった。
+#coding:utf-8
+import wave
+import numpy as np
+import scipy.io.wavfile
+import scipy.signal
+import scipy.fftpack
+from pylab import *
+from levinson_durbin import autocorr, LevinsonDurbin
+"""LPCスペクトル包絡を求める"""
+def wavread(filename):
+wf = wave.open(filename, "r")
+fs = wf.getframerate()
+x = wf.readframes(wf.getnframes())
+x = np.frombuffer(x, dtype="int16") / 32768.0  # (-1, 1)に正規化
+wf.close()
+return x, float(fs)
+def preEmphasis(signal, p):
+"""プリエンファシスフィルタ"""
+# 係数 (1.0, -p) のFIRフィルタを作成
+return scipy.signal.lfilter([1.0, -p], 1, signal)
+if __name__ == "__main__":
+# 音声をロード
+wav, fs = wavread("a.wav")
+t = np.arange(0.0, len(wav) / fs, 1/fs)
+# 音声波形の中心部分を切り出す
+center = len(wav) / 2  # 中心のサンプル番号
+cuttime = 0.04         # 切り出す長さ [s]
+s = wav[center - cuttime/2*fs : center + cuttime/2*fs]
+# プリエンファシスフィルタをかける
+p = 0.97         # プリエンファシス係数
+s = preEmphasis(s, p)
+# ハミング窓をかける
+hammingWindow = np.hamming(len(s))
+s = s * hammingWindow
+# LPC係数を求める
+lpcOrder = 32
+r = autocorr(s, lpcOrder + 1)
+a, e  = LevinsonDurbin(r, lpcOrder)
+print "*** result ***"
+print "a:", a
+print "e:", e
+# LPC係数の振幅スペクトルを求める
+nfft = 2048   # FFTのサンプル数
+fscale = np.fft.fftfreq(nfft, d = 1.0 / fs)[:nfft/2]
+# オリジナル信号の対数スペクトル
+spec = np.abs(np.fft.fft(s, nfft))
+logspec = 20 * np.log10(spec)
+plot(fscale, logspec[:nfft/2])
+# LPC対数スペクトル
+w, h = scipy.signal.freqz(np.sqrt(e), a, nfft, "whole")
+lpcspec = np.abs(h)
+loglpcspec = 20 * np.log10(lpcspec)
+plot(fscale, loglpcspec[:nfft/2], "r", linewidth=2)
+xlim((0, 10000))
+show()
+オリジナル信号の対数スペクトルとともに、LPC次数を8, 16, 32と変えてLPCスペクトル包絡を描画してみた。LPC次数が大きいほどスペクトル包絡がより細かくなるようだ。どれくらいの値が普通なのだろう?
+ケプストラム分析とLPC分析
+最後に、ケプストラム分析で求まるスペクトル包絡とLPC分析で求まるスペクトル包絡を比較してみよう。以下のケプストラム分析のコードを追加。詳細は、ケプストラム分析(2012/2/11)を参照。
+# ケプストラム分析
+cps = np.real(np.fft.ifft(logspec))
+cepCoef = 32  # ケプストラム次数
+cpsLif = np.array(cps)
+cpsLif[cepCoef:len(cpsLif) - cepCoef + 1] = 0
+spec = np.fft.fft(cpsLif, nfft)
+plot(fscale[0:nfft/2], spec[0:nfft/2], color="green", linewidth=2)
+結果は、となった。緑色がケプストラム分析で求めたスペクトル包絡、赤い色がLPC分析で求めたスペクトル包絡。LPC分析の方がスペクトル包絡のピークが鮮明に出ているのがわかる。次回は、LPCスペクトル包絡をもとに母音のフォルマントを抽出してみたい。
+線形予測分析(LPC) - 人工知能に関する断創録

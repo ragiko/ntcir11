@@ -1,0 +1,14 @@
+前回の記事で取り上げた、MITの研究についての記事を訳してみました。
+元記事はこちらです。
+“Digital Lip Reader”
+Speech recognition is a long-promised technology thats finally beginning to deliver. But todays best systems tend to fail when the speaker is in a noisy spot. To fix this problem, researchers are adding lip-reading to the mix.
+音声認識技術はついに実現し始めた、長らく約束され続けてきた技術である。しかし、今日使用されているシステムは、話し手が騒音のある場所にいる場合、うまく機能しない傾向がある。
+While people rely on mouth shapes all the time to interpret speech, lip reading is no simple task for a computer. For one thing, each shape can correspond to several specific sounds. To make matters worse, mouth movements begin as much as 120 milliseconds before a sound is uttered. Humans can use other cues such as sentence context and facial expressions to overcome these difficulties, but until recently, computers lacked the processing power to do so.
+人間は、話している言葉を解釈するときはいつも口の形に頼っているにもかかわらず、読唇術はコンピューターにとって単純な仕事ではない。まず第一に、それぞれの口の形は、数個の特定の音と一致している。より悪いことには、唇の動きは音が発される0.120秒前に始まる。人間は、その困難を克服するために文脈や顔の表情といった他のいくつかの糸口を使うことができる。しかし、最近に至るまでコンピューターはそのような処理を行う能力が欠けていた。
+Now groups at Intel, IBM, and other institutions are modifying language-processing programs to link each vocal sound to several possible mouth movements, allowing the software to make a best guess about whats being uttered. In tests in noisy environments, adding visual information boosted speech recognition accuracy from 20 percent to 75 percent, says Ara Nefian, a senior researcher at Intel Research in Santa Clara, CA.
+現在、インテルやIBMやその他の機関は、言語プロセスプログラムを修正し、それぞれの音声と数個のありうる唇の動きを結びつけ、ソフトウェアにどの音が発されているのか最も良い推測が出来るようにしている。カリフォルニアのサンタクララにあるIntel研究所のシニア研究員であるAra Nefian,によると、騒音のある環境下でのテストで、視覚的情報を加えることによって、音声認識精度は20パーセントから75パーセント上がることがわかった。
+Initially, this is likely to be most useful to doctors and others working in noisy locations who need better accuracy from office dictation software. With this audience in mind, IBM is building a tiny camera into the boom microphone that comes with existing speech recognition software. Further down the road, researchers envision the day when your car dashboard might have a camera peering at your lips for voice-actuated controls, or your cell phone might watch what you say.
+“まず、騒音下にいる医者やその他の人のように、より正確なオフィス口述ソフトウェアを求めている人にとってもっとも有益な技術になりそうである。IBMは小さなカメラを従来の音声認識ソフトを装着したブームマイクの中に組み込み中であることを覚えておいてほしい。加えて、近い将来、音声コントロールや車のダッシュボードにあなたの唇を見つめるカメラを装着するようになったり、あなたの携帯電話があなたが何を言っているか見つめるようになるだろうと研究者たちは予測している。
+なるほど、IBMやIntelといった巨大企業が読唇術と従来の音声認識ソフトを組み合わせて精度の向上につとめているのですね。個人的にものすごく期待しています。なぜなら、私ももっぱら読唇術に頼ったコミュニケーションをしているので、読唇術と音声の組み合わせというのは、まさに私が実践していることなのです。読唇術、音声認識の組み合わせによって、人間よりも高い精度で認識できるようになる可能性さえあるでしょう。そのような日が訪れたら、聴覚障害者にとって新しい時代が開けるでしょう。
+KAZ
+Digital Lip Reader -デジタル音声認識- | DEFY

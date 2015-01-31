@@ -1,0 +1,42 @@
+アドウェイズエンジニアのイシマルです。
+私が所属しているユニットでは、この半期の目標のうちの1つとして、
+「開発・運用環境を効率化しよう!」
+という目標を掲げているので、その目標に向かって、私がどんなことを考えているのか!?
+っという内容を、まず開発について、紹介したいと思います。
+サーバ
+基本的に、VM環境を推奨しています。
+理由は、物理環境と違い、サーバの複製が簡単かつ高速、サーバのスペックも動的に変更できたりと、基本的にメリットばかりですね。
+物理サーバは、「どうしてもVMではスペックが足りなくて必要」
+っていう時だけ利用する方針で考えています。
+サーバ環境構築
+VM環境でサーバを作るので、1台環境を構築し、その後にOSを複製する流れが良いかな、と考えています。
+その環境を作る部分は、Chefでやってしまおうと思っています。社内では既にChefを使っているチームもあるので、その流れに乗ろうと。
+chef-server、chef-solo、chef-zeroなど、chefにも色々種類がありますね。
+・Chefを使うメリット
+新しいプロジェクトを始める時や、既存のプロジェクトにメンバーが入る時に、サクっと環境を用意できます!
+言語 社内的には、Perl(Catalyst)をメインで使っていますが、
+私が携わっているプロジェクトでは、Ruby(Rails)を使っています。
+DB定義書
+DB定義書は、SchemaSpyを使っています。(参考URL: http://schemaspy.sourceforge.net/ )
+Excelってエンジニアにとっては、開くの面倒ですよね。
+SchemaSpyなら、MySQLのテーブルやカラムにコメントを入れるだけで、簡単にブラウザで定義を確認できます。
+RailsからMySQLのカラムにコメントを入れるには、migration_commentsというGemがあるので、そちらを利用しています。 (参考URL: https://github.com/pinnymz/migration_comments
+ER図
+Railsならmodelのリレーションから、rails-erdを用いて、簡単にER図ができますね。
+(参考URL: http://rails-erd.rubyforge.org/install.html )
+参考URLには、
+Rails ERD runs on all Rails 3 platforms: Ruby 1.8/1.9, Rubinius, or JRuby all work fine.
+のように書かれていますが、Rails4、Ruby2.0でも問題なく利用できました。
+(※ruby2.1ではまだ試していません)
+CI
+Jenkinsを利用しています。
+(参考URL: http://jenkins-ci.org/ )
+Jenkinsでは、テストコードを回すだけではなく、シェルを実行して、rubocopやrails_best_practicesを動かして、コード改善に勤めたりしています。
+コード改善に関していうと、Jenkinsとは関係ありませんが、vimにrubocopのpluginをいれたりもしています。
+gitlab
+最近は、git-flowを利用しているチームが増えてきました。
+(参考URL: https://github.com/nvie/gitflow )
+こういうdevops的な話は、年が過ぎるにつれて、どんどん新しい技術がでてきて面白いですね。
+従来よりも、「より効率的に」、「より安定した」、開発・運用ができるように、新しい技術も取り入れていきたいと思います。
+次回は、運用編を紹介したいと思います!
+開発・運用環境を効率化する 開発編(Rails):ADWAYS ENGINEERS BLOG

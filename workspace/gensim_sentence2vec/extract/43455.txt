@@ -1,0 +1,57 @@
+統計モデリングに関する本です。一般化線形モデルを中心に話が進んでいきます。
+この本はRを中心に話が進んでいきますが、せっかくなのでPythonで一般化線形モデルを試してみようと思います。
+Pythonの統計ライブラリ
+一般化線形モデルとは、線形回帰を(正規分布以外でも使えるように)拡張した統計モデルです。
+詳しい説明は教科書に譲るとして、Pythonでのライブラリについてお話します。Pythonで一般化線形モデル、というか統計全般のライブラリとして、簡単に調べたところメジャーなのが二種類あります。
+scikit-learn と StatsModels です。scikit-learn
+http://scikit-learn.org/stable/index.htmlStatsModels
+http://statsmodels.sourceforge.net/devel/index.htmlscikit-learn はどちらかというと機械学習の、StatsModels はどちらかというと統計のライブラリです。
+今回はStatsModels を使ってみようと思います。
+使うデータ
+先程紹介した本の著者である久保先生のデータをお借りします。
+http://hosho.ees.hokudai.ac.jp/~kubo/stat/iwanamibook/fig/poisson/data3a.csvどういったデータか簡単に説明すると、ある植物が種子を飛ばす数についてのデータです。
+観測変数は3つあり、
+y : 飛ばした種子の数
+x : 植物の大きさ
+f : 育てる時の肥料の有無(Cが肥料なし、Tが肥料あり)
+です。種子の数について、植物の大きさや肥料との関係を調べます。
+個体ごとに飛ばす種子の数の平均値が違うと仮定します。先にネタバレしてしまうと、種子(y)と植物の大きさ(x)には関係がありますが、種子(y)と肥料の有無(f)は特に関係ありません。
+肥料の有無はどちらかというと植物の大きさに関係してるので、確かに直感通りな結果ではあります。
+実際に関係を調べてみましょう。
+天下りではありますが、fはyと直接関係のないデータなので、yとxの関係だけを調べます。
+統計モデルとしてはポアソン回帰を用います。*1数式で表すと、ある個体iが種子を飛ばす個数は、
+に従うとします。ここでは種子を飛ばす数の平均値で、
+と表されるとします。このについて推定します。コードはこんな感じです。*2
+import statsmodels.api as sm
+import pandas
+# PandasでCSVの読み込み
+data = pandas.read_csv("data3a.csv")
+# 植物の大きさ
+x = sm.add_constant(data.x)
+# 飛ばした種子の数
+y = data.y
+# ポアソン回帰
+model = sm.GLM(y, x, family=sm.families.Poisson())
+results = model.fit()
+# 結果の表示
+print(results.summary())APIの詳細はこちら。
+http://statsmodels.sourceforge.net/devel/glm.html
+http://statsmodels.sourceforge.net/devel/generated/statsmodels.tools.tools.add_constant.html一つだけ注意することがあって、sm.add_constant でxに定数列を加えないと、切片()抜きで推定してしまいます。ここだけ何か腑に落ちないです。結果はこんな感じです。
+Generalized Linear Model Regression Results
+==============================================================================
+Dep. Variable:                      y   No. Observations:                  100
+Model:                            GLM   Df Residuals:                       98
+Model Family:                 Poisson   Df Model:                            1
+Link Function:                    log   Scale:                             1.0
+Method:                          IRLS   Log-Likelihood:                -235.39
+Date:                Tue, 13 May 2014   Deviance:                       84.993
+Time:                        11:39:50   Pearson chi2:                     83.8
+No. Iterations:                     6
+==============================================================================
+coef    std err          t      P>|t|      [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const          1.2917      0.364      3.552      0.000         0.579     2.005
+x              0.0757      0.036      2.125      0.034         0.006     0.145
+==============================================================================coefの列が推定値で、constが、xがに対応しています。こんな感じで(調べた時間の割には)あっさりとしたコードでポアソン回帰できました。
+一番大切な結果の考察などは教科書をご参照あれ。良書です。
+Pythonで一般化線形モデル - old school magic

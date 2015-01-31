@@ -1,0 +1,85 @@
+
+表の検索(SELECT)
+<DISTINCT>
+DISTINCTキーワードを指定すると、自動的に昇順に並べ替えられます。
+SELECT DISTINCT 列名1, 列名2, ...FROM 表名;
+(例)
+SELECT DISTINCT 商品コード FROM 売上明細;
+<INNER JOINとDISTINCT>
+SELECT DISTINCT 表別名1.列名1, 表別名2.列名2, ...FROM 表名1 表別名1
+INNER JOIN 表名2 表別名2 ON 表別名1.結合列名1 = 表別名2.結合列名2;
+(例)
+SELECT DISTINCT UM.商品コード, S.商品名 FROM 売上明細 UM
+INNER JOIN 商品 S ON UM.商品コード = S.商品コード;
+結合結果をもとに、重複したレコードを除外します。これにより、売上のあった商品の一覧が表示されます。
+<COUNT>
+SELECT COUNT(*) FROM 表名;例)
+SELECT COUNT(*) FROM 売上明細;
+<DISTINCTとCOUNT>
+COUNT関数にDISTINCTキーワードを指定すると、何種類の値が登録されているか調べることができます。
+SELECT COUNT (DISTINCT 列名, ...) AS 列別名 FROM 表名;
+(例)
+SELECT COUNT (DISTINCT 商品コード) AS 売上品目数 FROM 売上明細;
+<合計値>
+SELECT SUM (列名) AS 列別名 FROM 表名;
+(例)
+SELECT SUM (数量) AS 数量の合計 FROM 売上明細;
+<計算結果の合計値>
+SELECT SUM (計算式) AS 列別名 FROM 表名;
+(例)
+SELECT SUM (数量 * 単価) AS 金額の合計 FROM 売上明細;
+<平均値>
+SELECT AVG (列名) AS 列別名 FROM 表名;
+(例)
+SELECT AVG (英語) AS 英語の平均, AVG (数学) AS 数学の平均 FROM 成績;
+<最大値/最小値>
+SELECT MAX (列名) AS 列別名 FROM 表名;
+SELECT MIN (列名) AS 列別名 FROM 表名;
+(例)
+SELECT MAX (国語) AS 国語の最高点, MIN (国語) AS 国語の最低点 FROM 成績;
+<日付の最大値/最小値>
+SELECT MAX (日付の列名) AS 列別名 FROM 表名;
+SELECT MIN (日付の列名) AS 列別名 FROM 表名;
+(例)
+SELECT MAX (日付) AS 最新日付 FROM 売上;
+SELECT MIN (日付) AS 最古日付 FROM 売上;
+<グループ毎の合計値>
+GROUP BY句によって集約したレコードは、自動的に昇順に並べ替えられます。
+SELECT グループ化列名, SUM (列名) AS 列別名 FROM 表名 GROUP BY グループ化列名;
+(例)
+SELECT 商品コード, SUM (数量) AS 数量合計 FROM 売上明細 GROUP BY 商品コード;
+<計算結果をグループ毎に合計>
+SELECT グループ化列名, SUM (計算式) AS 列別名 FROM 表名 GROUP BY グループ化列名;
+(例)
+SELECT 商品コード, SUM (数量 * 単価) AS 金額の合計 FROM 売上明細 GROUP BY 商品コード;
+<グループ毎の平均値(降順)>
+グループ化した列を降順で並べ替えるには、ORDER BY句にDESCキーワードとともにグループ化した列を指定します。
+SELECT グループ化列名, AVG (列名) AS 列別名 FROM 表名 
+GROUP BY グループ化列名 ORDER BY グループ化列名 並び順;
+(例)
+SELECT 性別, AVG (英語) AS 英語の平均, AVG (数学) AS 数学の平均 FROM 成績 
+GROUP BY 性別 ORDER BY 性別 DESC;
+<グループ毎の合計(結合した表)>
+SELECT 表別名.グループ化列名, SUM (表別名1.列名1)
+FROM  表名1 表別名1 INNER JOIN 表名2 表別名2 ON 表別名1.結合列名1 = 表別名2.結合列名2
+GROUP BY 表別名.グループ化列名;
+(例)
+SELECT UM.商品コード, S.商品名, SUM (UM.数量) AS 数量合計
+FROM 売上明細 UM INNER JOIN 商品 S ON UM.商品コード = S.商品コード;
+GROUP BY UM.商品コード, S.商品名;
+<2レベルのグループで分類した平均値>
+SELECT 大分類列名, 中分類列名, ...AVG (列名2) AS 列別名 FROM 表名 
+GROUP BY 大分類列名, 中分類列名, ...;
+(例)
+SELECT 組 性別, AVG (英語) AS 英語の平均, AVG (数学) AS 数学の平均 FROM 成績 
+GROUP BY 組 性別;
+<HAVING>
+SELECT グループ化列名, SUM (列名) AS 列別名 FROM 表名
+GROUP BY グループ化列名 HAVING 条件式;
+(例)
+SELECT 商品コード, SUM (数量 * 単価) AS 金額の合計 FROM 売上明細
+GROUP BY 商品コード HAVING SUM (数量 * 単価) >= 200000;
+WHERE句とHAVING句の違い
+・WHERE句 .....集計前にレコードを抽出する。集計対象のレコードを限定する時に使用する。
+・HAVING句.....集計結果から抽出する。集計対象のレコードを限定する時には使えない。
+SQL

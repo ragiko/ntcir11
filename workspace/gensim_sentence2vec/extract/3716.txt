@@ -1,0 +1,35 @@
+[nmosh][teslawire] FFI VM用ストリーム・プロセッシング拡張(ComputeVM)の検討
+FFI VMのフレームワークを拡張し、FFI関数の呼び出しだけではなくバッファの処理にも使用できるようにすることを考える。つまり、パケットの処理のような分岐の多い処理やジオメトリ処理のような純粋な計算処理をカバーする。
+ComputeVMはFFI VMのスーパーセットになる。が、FFI関数を呼び出すことのできないComputeモジュールも考えられる。例えば、OpenCLでは関数ポインタを使用できないため、事実上FFI関数を呼び出すことができない。
+現時点では、"アーキテクチャの抽象化は必要最低限とし、手動による最適化の余地を作る"ことがもっとも現実的なデザインのように見える。つまり、既存のSIMDインターフェースは、"コンパイラによる自動ベクトル化"と"短い行列をインターフェースとするSIMDプリミティブ"の2極化が起きているといえる。
+SoA vs. AoS
+コンピュートのためのデータ構造として、いわゆるSoA(Structure of Arrays)やAoS(Array of Structures)がフォーカスされることが多い。
+実際問題としてはこの両方が重要であり、かつ、世間で言われている程にはSoAアルゴリズムは多くない。例えば、oil runtime compiler( http://code.entropywave.com/documentation/orc/ )は1要素配列をattachするタイプのAPIとすることで、この両者に対応している。orcのopcodeはSIMDでないが、orcが生成するバイナリはSIMD化される。(ただしorcは現状4要素のSIMDしか実装していないように見える)
+SoAの難しいポイントは、殆どのAPIはAoSをインターフェースとして採用しているというポイントで、一種の"転置"がAPI(や、ハードウェア)とのインターフェースに必要になる。一般に、SoAをサポートしたシステムは、SIMD化されたscatter/gather(shuffle)を使用して効率の良い変換をサポートしている。
+この変換の減らすため、SoAをサポートするならば本来アルゴリズムを合成可能なAPIを提供する必要がある。現状はintelのパーティクルのサンプル( https://software.intel.com/en-us/articles/creating-a-particle-system-with-streaming-simd-extensions )のように、手でSoAな構造体を定義してそれに合わせてコードを書く必要がある。
+https://github.com/erwincoumans/sce_vectormath/blob/master/doc/Vector_Math_Library-Overview.pdf?raw=true
+SCEのVectormathライブラリは、SoAとAoSの両方のインターフェースを提供している。SoAは3x4ベクタ等の最小単位のインターフェースをAoSと同様に提供しており、エンドユーザは手でこの両者を書き分ける必要がある。
+SIMDの無い環境では、この議論はほぼ行われていない。例えば、JavaScript向けの行列演算ライブラリであるglMatrix( http://glmatrix.net/ )はAoSとSoAの区別を持っていない。キャッシュ効率を意識する必要のある状況では必要になるが、そもそもそのような状況では通常SIMDが使用可能と見做せる。
+SIMDプリミティブ
+intelは彼らのSIMD命令セットであるSSEの導入時にdesign rationaleを説明した記事を出している
+http://www.intel.co.jp/content/dam/www/public/ijkk/jp/ja/documents/developer/simd_ext_j.pdf
+これには、SIMD巾の選択理由や、アラインメント制約の強制がソフトウェア開発上の要求であることが書かれている。
+本来CPUにおけるSIMD実装の重要なポイントは、32bits x4のような演算を並列に行えるだけでなく:
+SIMD演算命令はCPUアーキテクチャ毎に異なるものが採用されている。
+また、AVXのように拡張性を持たせることで128bit/256bit/512bitのような異なる巾をサポートしているものも存在する。
+SIMDレジスタの長さを単純に活用し、memcpyやmemcmpが効率的に実装できる
+殆どのケースでアラインメント制約が存在する
+といったポイントが有り、このため、SIMDプリミティブ - スクリプト言語に見せる抽象化されたSIMD intrinsic - は慎重に選択される必要がある。しかし、現実には、短い行列をインターフェースとしたSIMDプリミティブの提案がほとんどを占め、基本的にglMatrix同様の行列演算をインターフェースとして使用している。
+https://github.com/johnmccutchan/ecmascript_simd - JavaScript
+http://blogs.msdn.com/b/dotnet/archive/2014/11/05/using-system-numerics-vector-for-graphics-programming.aspx - .net (RyuJITが必要)
+これらのライブラリを使用して依然SoAなデータ構造のコードを記述することも可能だが、望ましいSIMD長等を事前に知っておく必要があり、長さの異なるSIMDアーキテクチャには直接的には対応できない。
+バッファ属性とパケットの定義
+ComputeVMは常にバッファを受け取りバッファを出力する処理を行う。一つの行列演算のみを行うためにComputeVMを起動するのは良いアイデアでない。(このような状況をサポートするために、同じAPIをホスト言語にも提供することが好ましいと考えられる)
+多くの場合、バッファはホスト言語のヒープとは異なる領域に確保され、明示的なコピーを必要とする。良い状況では、そもそもホスト言語はバッファを消費する必要が無く、外部から直接Computeバッファに入力し、FFI VMを通して外部のAPIに渡すことになる。
+殆どのSIMDアーキテクチャはアラインメント要求が存在するため、アラインメントの正しいバッファを確保しなければならない。また、望ましくないfalse sharingを避けるため、キャッシュライン単位での確保が必要になる。
+ホスト言語とのインターフェースのために、良いパケット定義方法が必要になる。例えばXMLからデータを読み取りComputeのためのバッファをセットアップするといった操作は多くの場合ホスト言語の役目になる。
+アプリケーション
+最初のアプリケーションはゲームシーンにおけるハイレベルなジオメトリ処理になる。例えば、オブジェクトの衝突判定とか、View-frustum culling(視錐台カリング: オブジェクトの3次元配置と視点の情報から画面上に表示されないオブジェクトを求める)のような処理が相当する。
+オブジェクトの衝突判定における数学はRealtime Renderingのページにリンクが有り( http://www.realtimerendering.com/intersections.html )、http://www.geometrictools.com/Documentation/Documentation.html を見るだけでも大量の考察がある。
+Permalink | コメント(0) | トラックバック(0)  
+FFI VM用ストリーム・プロセッシング拡張(ComputeVM)の検討 - .mjtの日記復帰計画

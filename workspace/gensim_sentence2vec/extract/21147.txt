@@ -1,0 +1,4 @@
+そして、選択された音声信号の番地から、歌唱音声の発音時刻を算出し、算出された複数の歌唱音声の発音時刻から歌唱音声の発音時刻の時間差を算出する。Then, utterance time of the singing voices is calculated from an address of the selected voice signal, and a time difference of the utterance time of the singing voices from the calculated utterance time of the two or more singing voices is calculated. - 特許庁
+タイマ107は、音声無感信号に応答して一定時間間隔で時刻をカウントする。The timer 107 counts time at a fixed-time interval in response to the sound insensitivity signal. - 特許庁
+二ヶ国語放送における主音声信号と副音声信号とを所定時間以前まで記憶するメモリ25を備えさせ、マイコン30の制御にての主音声と副音声のいずれか一方を他方より遅延出力させる。There is a memory 25 for storing a main voice signal and a subvoice one in the bilingual broadcasting before prescribed time, and one of the main voice signal and the subvoice one is delayed and outputted under the control of a microcomputer 30. - 特許庁
+「韓国語 音声 子音」に関連した英語例文の一覧 - Weblio英語例文検索

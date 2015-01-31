@@ -1,0 +1,354 @@
+
+注※ ctmidの設定は省略できます。省略時は,ホスト間で一意になるようにManagement Serverで自動的に設定されます。ctmidの省略値については,マニュアル「Cosminexus アプリケーションサーバ リファレンス 定義編(サーバ定義)」の「4.18 論理CTMで指定できるパラメタ」を参照してください。
+参考
+1台のサーバマシン内にある複数のサービスユニットを同時に起動しない運用をする場合は,各サービスユニットの同じ種類の論理サーバに同じ値を設定できます。
+サーバマシンに配置するサービスユニットが属するWebシステムによって,これらの設定項目をどの定義のコンフィグレーションで指定するかが異なります。
+同じWebシステムのサービスユニットを1台のサーバマシンに配置する場合
+各サービスユニットの論理サーバ定義(<define-server>タグ)内の<configuration>タグで指定します。
+異なるWebシステムのサービスユニットを1台のサーバマシンに配置する場合
+各Webシステムの物理ティア定義(<tier>タグ)内の<configuration>タグで指定します。なお,異なるWebシステムのサービスユニットを1台のサーバマシンに配置する場合の簡易構築定義ファイルの作成例については,「(3) 異なるWebシステム間で負荷分散機を共有する場合の簡易構築定義ファイルの作成」を参照してください。
+同じWebシステムで,サーバマシン内に複数のサービスユニットを配置する場合の構成情報の例を,次の図に示します。
+図8-16 サーバマシン内に複数のサービスユニットを配置する場合の構成情報の例(同一のWebシステムの場合)
+図8-16の構成情報に従って,簡易構築定義ファイルを作成します。なお,この例では,「8.4.4 簡易構築定義ファイルの作成」で示す簡易構築定義ファイル(MyWebSystemDef.xml)を基に,同じWebシステムで,サーバマシン内に複数のサービスユニットを配置する場合に差異のある定義について説明します。
+MyWebSystemDef.xmlファイルの作成例を,次に示します(一部抜粋)。
+MyWebSystemDef.xmlファイル
+<?xml version="1.0" encoding="UTF-8"?>
+<model-definition xmlns="http://www.cosminexus.com/mngsvr/schema/ModelDefinition-2.5">
+<!-- Webシステムの属性定義 -->
+<web-system>
+<name>MyWebSystem</name>
+<!-- 負荷分散機の定義 -->
+<load-balancer>
+:
+<!-- 物理ティアの定義 -->
+<tier>
+<tier-type>combined-tier</tier-type>
+<configuration>
+:
+</tier>
+<!-- サービスユニットの定義 -->
+<unit>
+<name>unit1</name>
+<allocated-host>
+<host-ref>apsv1</host-ref>
+<hosts-for>combined-tier</hosts-for>
+</allocated-host>
+</unit>
+<unit>
+<name>unit2</name>
+<allocated-host>
+<host-ref>apsv2</host-ref>
+<hosts-for>combined-tier</hosts-for>
+</allocated-host>
+</unit>
+<unit>
+<name>unit3</name>
+<allocated-host>
+<host-ref>apsv2</host-ref>
+<hosts-for>combined-tier</hosts-for>
+<!-- Webサーバのコンフィグレーション -->
+<define-server>
+<logical-server-type>web-server</logical-server-type>
+<configuration>
+<!-- httpポート番号 -->
+<param>
+<param-name>Listen</param-name>
+<param-value>81</param-value>
+</param>
+</configuration>
+</define-server>
+<!-- J2EEサーバのコンフィグレーション -->
+<define-server>
+<logical-server-type>j2ee-server</logical-server-type>
+<configuration>
+<!-- 管理用サーバのポート番号 -->
+<param>
+<param-name>ejbserver.http.port</param-name>
+<param-value>8081</param-value>
+</param>
+<!-- ajp13のポート番号 -->
+<param>
+<param-name>webserver.connector.ajp13.port</param-name>
+<param-value>8008</param-value>
+</param>
+<!-- インプロセスネーミングサービス用のポート番号 -->
+<param>
+<param-name>ejbserver.naming.port</param-name>
+<param-value>901</param-value>
+</param>
+<!-- JTAリカバリの固定ポート番号 -->
+<param>
+<param-name>ejbserver.distributedtx.recovery.port</param-name>
+<param-value>20303</param-value>
+</param>
+<!-- RMIレジストリのポート番号 -->
+<param>
+<param-name>ejbserver.rmi.naming.port</param-name>
+<param-value>23153</param-value>
+</param>
+</configuration>
+</define-server>
+<!-- パフォーマンストレーサのコンフィグレーション -->
+<define-server>
+<logical-server-type>performance-tracer</logical-server-type>
+<configuration>
+<!-- PRF識別子 -->
+<param>
+<param-name>PRFID</param-name>
+<param-value>PRF_ID2</param-value>
+</param>
+</configuration>
+</define-server>
+</allocated-host>
+</unit>
+</web-system>
+<!-- ホストの定義 -->
+<host>
+<host-name>apsv1</host-name>
+<agent-host>192.168.100.11</agent-host>
+</host>
+<host>
+<host-name>apsv2</host-name>
+<agent-host>192.168.100.12</agent-host>
+</host>
+</model-definition>
+注 太字の部分が設定の異なる部分です。作成例で使用しているタグおよびパラメタについては,マニュアル「Cosminexus アプリケーションサーバ リファレンス 定義編(サーバ定義)」の「4.6 簡易構築定義ファイル」を参照してください。
+異なるWebシステムのサービスユニットを1台のサーバマシンに配置する場合に,簡易構築定義ファイルで重複しないように設定する項目については,「(2) サーバマシン内に複数のサービスユニットを配置する場合の簡易構築定義ファイルの作成」を参照してください。
+異なるWebシステム間で1台の負荷分散機を共有する場合は,それぞれのWebシステムで使用する負荷分散機の仮想サーバを分ける必要があります。
+また,簡易構築定義ファイルでは,次の定義で注意が必要です。
+負荷分散機の定義
+各Webシステムの負荷分散機のIPアドレスに,同じ値を設定してください。
+仮想サーバの定義(負荷分散機の定義)
+各Webシステムの仮想サーバ名,仮想サーバのIPアドレスおよびポート番号が重複しないように設定してください。
+異なるWebシステム間で負荷分散機を共有する場合の構成情報の例を,次の図に示します。
+図8-17 異なるWebシステム間で負荷分散機を共有する場合の構成情報の例
+図8-17の構成情報に従って,簡易構築定義ファイルを作成します。なお,この例では,「8.4.4 簡易構築定義ファイルの作成」で示す簡易構築定義ファイル(MyWebSystemDef.xml)を基に,次の設定をする場合に差異のある定義について説明します。
+異なるWebシステムのサービスユニットを1台のサーバマシンに配置する
+異なるWebシステム間で負荷分散機を共有する
+さらに,ACOSの場合は,次の1.または2.の条件を満たす構成のとき,自動的にポート変換する設定(オートトランスレーション機能の使用)が必要です。
+仮想サーバまたは実サーバに設定したポート番号が1023より大きいとき(well-knownでないとき)
+実サーバのポート番号とそれに対応する仮想サーバのポート番号が異なるとき
+例:仮想サーバのポート番号は80だが,振り分け先のポート番号は8081にしたいとき
+オートトランスレーション機能の設定は,あらかじめ負荷分散機に対して実施しておいてください。設定の詳細については,ACOSのドキュメントを参照してください。
+MyWebSystemDef.xmlファイルの作成例を,次に示します(一部抜粋)。
+MyWebSystemDef.xmlファイル
+<?xml version="1.0" encoding="UTF-8"?>
+<model-definition xmlns="http://www.cosminexus.com/mngsvr/schema/ModelDefinition-2.5">
+<!-- Webシステム1の属性定義 -->
+<web-system>
+<name>MyWebSystem1</name>
+<!-- 負荷分散機の定義 -->
+<load-balancer>
+<name>MyBIGIPv9</name>
+<load-balancer-type>BIG-IPv9</load-balancer-type>
+<!-- cookieスイッチングの定義 -->
+<cookie-switching>
+<cookie-switching-enabled>true</cookie-switching-enabled>
+<cookie-name>CMX_SERVER_ID</cookie-name>
+</cookie-switching>
+<management-host>192.168.100.10</management-host>
+<!-- 仮想サーバ1の定義 -->
+<virtual-server>
+<virtual-server-name>www.sample1.com</virtual-server-name>
+<ip-address>192.168.1.10</ip-address>
+<http-port>80</http-port>
+</virtual-server>
+</load-balancer>
+<!-- 物理ティアの定義 -->
+<tier>
+<tier-type>combined-tier</tier-type>
+<configuration>
+<logical-server-type>j2ee-server</logical-server-type>
+<param>
+<param-name>webserver.container.server_id.enabled</param-name>
+<param-value>true</param-value>
+</param>
+</configuration>
+</tier>
+<!-- サービスユニットの定義 -->
+<unit>
+<name>unit1</name>
+<allocated-host>
+<host-ref>apsv1</host-ref>
+<hosts-for>combined-tier</hosts-for>
+</allocated-host>
+</unit>
+<unit>
+<name>unit2</name>
+<allocated-host>
+<host-ref>apsv2</host-ref>
+<hosts-for>combined-tier</hosts-for>
+</allocated-host>
+</unit>
+</web-system>
+<!-- Webシステム2の属性定義 -->
+<web-system>
+<name>MyWebSystem2</name>
+<!-- 負荷分散機の定義 -->
+<load-balancer>
+<name>MyBIGIPv9</name>
+<load-balancer-type>BIG-IPv9</load-balancer-type>
+<!-- cookieスイッチングの定義 -->
+<cookie-switching>
+<cookie-switching-enabled>true</cookie-switching-enabled>
+<cookie-name>CMX_SERVER_ID</cookie-name>
+</cookie-switching>
+<management-host>192.168.100.10</management-host>
+<!-- 仮想サーバ2の定義 -->
+<virtual-server>
+<virtual-server-name>www.sample2.com</virtual-server-name>
+<ip-address>192.168.1.20</ip-address>
+<http-port>81</http-port>
+</virtual-server>
+</load-balancer>
+<!-- 物理ティアの定義 -->
+<tier>
+<tier-type>combined-tier</tier-type>
+<configuration>
+<logical-server-type>j2ee-server</logical-server-type>
+<param>
+<param-name>webserver.container.server_id.enabled</param-name>
+<param-value>true</param-value>
+</param>
+<!-- 管理用サーバのポート番号 -->
+<param>
+<param-name>ejbserver.http.port</param-name>
+<param-value>8081</param-value>
+</param>
+<!-- ajp13のポート番号 -->
+<param>
+<param-name>webserver.connector.ajp13.port</param-name>
+<param-value>8008</param-value>
+</param>
+<!-- インプロセスネーミングサービス用のポート番号 -->
+<param>
+<param-name>ejbserver.naming.port</param-name>
+<param-value>901</param-value>
+</param>
+<!-- JTAリカバリの固定ポート番号 -->
+<param>
+<param-name>ejbserver.distributedtx.recovery.port</param-name>
+<param-value>20303</param-value>
+</param>
+<!-- RMIレジストリのポート番号 -->
+<param>
+<param-name>ejbserver.rmi.naming.port</param-name>
+<param-value>23153</param-value>
+</param>
+</configuration>
+<configuration>
+<logical-server-type>web-server</logical-server-type>
+<!-- httpポート番号 -->
+<param>
+<param-name>Listen</param-name>
+<param-value>81</param-value>
+</param>
+</configuration>
+<configuration>
+<logical-server-type>performance-tracer</logical-server-type>
+<!-- PRF識別子 -->
+<param>
+<param-name>PRFID</param-name>
+<param-value>PRF_ID2</param-value>
+</param>
+</configuration>
+</tier>
+<!-- サービスユニットの定義 -->
+<unit>
+<name>unit3</name>
+<allocated-host>
+<host-ref>apsv2</host-ref>
+<hosts-for>combined-tier</hosts-for>
+</allocated-host>
+</unit>
+:
+</web-system>
+<!-- ホストの定義 -->
+<host>
+<host-name>apsv1</host-name>
+<agent-host>192.168.100.11</agent-host>
+</host>
+<host>
+<host-name>apsv2</host-name>
+<agent-host>192.168.100.12</agent-host>
+</host>
+</model-definition>
+注 太字の部分が設定の異なる部分です。作成例で使用しているタグおよびパラメタについては,マニュアル「Cosminexus アプリケーションサーバ リファレンス 定義編(サーバ定義)」の「4.6 簡易構築定義ファイル」を参照してください。
+Smart Composer機能で構築するシステムの場合,簡易構築定義ファイルで論理ユーザサーバを設定できます。
+論理ユーザサーバは,サービスユニットに対応づけて配置します。このため,簡易構築定義ファイルで論理ユーザサーバの環境設定を定義する場合は,サービスユニットの定義でパラメタを設定してください。
+論理ユーザサーバを配置する場合の構成情報の例を,次の図に示します。
+図8-18 論理ユーザサーバを配置する場合の構成情報
+図8-18の構成情報に従って,簡易構築定義ファイルを作成します。なお,この例では,「8.4.4 簡易構築定義ファイルの作成」で示す簡易構築定義ファイル(MyWebSystemDef.xml)を基に,論理ユーザサーバを配置する場合に差異のある定義について説明します。
+MyWebSystemDef.xmlファイルの作成例を,次に示します(一部抜粋)。
+MyWebSystemDef.xmlファイル
+<?xml version="1.0" encoding="UTF-8"?>
+<model-definition xmlns="http://www.cosminexus.com/mngsvr/schema/ModelDefinition-2.5">
+<!-- Webシステムの属性定義 -->
+<web-system>
+<name>MyWebSystem</name>
+<!-- 負荷分散機の定義 -->
+<load-balancer>
+:
+</load-balancer>
+<!-- 物理ティアの定義 -->
+<tier>
+<tier-type>combined-tier</tier-type>
+</tier>
+<!-- サービスユニットの定義 -->
+<unit>
+<name>unit1</name>
+<allocated-host>
+<host-ref>host1</host-ref>
+<hosts-for>combined-tier</hosts-for>
+<define-server>
+<logical-server-name>UserServer1</logical-server-name>
+<logical-server-type>user-server</logical-server-type>
+<configuration>
+<param>
+<!-- サーバ起動用コマンド -->
+<param-name>start.arg</param-name>
+<param-value>c:/test/start.exe</param-value>
+</param>
+</configuration>
+</define-server>
+<define-server>
+<logical-server-name>UserServer2</logical-server-name>
+<logical-server-type>user-server</logical-server-type>
+<configuration>
+<param>
+<!-- サーバ起動用コマンド -->
+<param-name>start.arg</param-name>
+<param-value>c:/test/start.exe</param-value>
+</param>
+</configuration>
+</define-server>
+</allocated-host>
+</unit>
+<unit>
+<name>unit2</name>
+<allocated-host>
+<host-ref>host1</host-ref>
+<hosts-for>combined-tier</hosts-for>
+<define-server>
+<logical-server-name>UserServer3</logical-server-name>
+<logical-server-type>user-server</logical-server-type>
+<configuration>
+<param>
+<!-- サーバ起動用コマンド -->
+<param-name>start.arg</param-name>
+<param-value>c:/test/start.exe</param-value>
+</param>
+</configuration>
+</define-server>
+</allocated-host>
+</unit>
+</web-system>
+<!-- ホストの定義 -->
+<host>
+:
+</host>
+</model-definition>
+注 論理ユーザサーバのパラメタは,物理ティアの定義には設定できません。論理ユーザサーバのパラメタを設定する場合は,サービスユニットの定義に設定してください。作成例で使用しているタグおよびパラメタについては,マニュアル「Cosminexus アプリケーションサーバ リファレンス 定義編(サーバ定義)」の「4.6 簡易構築定義ファイル」を参照してください。
+参考
+論理ユーザサーバを配置するシステムをスケールアウトする場合は,構成変更定義ファイルのサービスユニットの定義で,追加する論理ユーザサーバを定義してください。構成変更定義ファイルのサービスユニットの定義例は,「9.6.1 WebサーバとJ2EEサーバを同じサーバマシンに配置するパターン(combined-tier)のシステムのスケールアウト」を参照してください。
+各構成定義パターンで使用できる設定と簡易構築定義ファイルの作成

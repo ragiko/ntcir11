@@ -1,0 +1,36 @@
+本セクションは規範的。
+3.1. 文書の適合性 (Document Conformance)
+この版の XHTML は XHTML 1.0 文書に厳密に適合する文書の定義を提供する。ここでは XML と XHTML 1.0 名前空間の要素と属性に限定される。XHTML を他の名前空間と利用するためには Section 3.1.2 を参照されたい。例えば、XHTML 名前空間に RDF で定義されるメタデータ表現を含めることができる。
+3.1.1. 厳密に適合する文書 (Strictly Conforming Documents)
+厳密適合 XHTML 文書とは、本文書で義務として記述されている機能だけを要求する XML 文書である。このような文書は以下の条件をすべて満たしていなければならない:
+DTDs と Appendix B にある 三つの DTD のひとつで表現される制約条件に適合していなければならない。
+文書のルート要素は html でなければならない。
+文書のルート要素は XHTML 名前空間 [XMLNS] のための xmlns 宣言を含まなければならない。例えばルート要素は次のようになる:
+文書のルート要素より先に DOCTYPE 宣言が存在しなければならない。DOCTYPE 宣言に含まれる公開識別子は DTDs にある三つの DTD のひとつを、対応する公式公開識別子をつかって参照しなければならない。システム識別子はローカルシステムの慣例を反映するように変更しても良い。
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+DTD のサブセットは DTD のいかなるパラメタ実体をも上書きしてはならない。
+XML 宣言は全ての XML 文書に必須なわけではない;しかしながら、 XHTML 文書記述者は、自分が書く全ての文書に XML 宣言を含めるように強く推奨される。この宣言は、文書の文字符号化方法が UTF-8 や UTF-16 以外であるときや、上位のプロトコルで符号化方法が指定されていないときに要求される。ここに挙げるのは XHTML 文書の例である。この例では、XML 宣言が含まれている。
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<title>仮想図書館</title>
+</head>
+<body>
+<p><a href="http://example.org/">example.org</a> に引っ越しました。</p>
+</body>
+</html>
+3.1.2. XHTML の他の名前空間との利用 (Using XHTML with other namespaces)
+XHTML 名前空間は、[XMLNS] に従って他の XML 名前空間と一緒に使っても良い。ただし、そのような文書は上で定義したところの 厳密適合 XHTML 1.0 文書ではない。W3C の作業では、複数の名前空間を含む文書に対する適合性を指定する方法について取り組んでいる。例えば、[XHTML+MathML] を参照されたい。
+次の例は XHTML 1.0 を MathML 勧告と接続して利用する方法を示している:
+XHTML 1.0 - Normative Definition of XHTML 1.0

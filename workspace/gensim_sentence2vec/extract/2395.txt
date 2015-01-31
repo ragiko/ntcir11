@@ -1,0 +1,140 @@
+
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM 2 PlatformStd. Ed. v1.3
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし
+概要:  内部クラス | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+java.awt
+クラス  GraphicsConfiguration
+java.lang.Object
+|
++--java.awt.GraphicsConfiguration
+public abstract class GraphicsConfigurationextends Object
+GraphicsConfiguration クラスは、プリンタやモニターなどのグラフィックスデスティネーションの特性を記述します。1 つのグラフィックスデバイスに、多くの GraphicsConfiguration オブジェクトを関連付けることができます。たとえば、X11 ウィンドウシステムでは、各画像はそれぞれ異なる GraphicsConfiguration です。PC と Macintosh では、画面解像度とカラー解像度の組み合わせごとに、GraphicsConfiguration が異なります。
+デスクトップ領域が物理的に複数の画面デバイスにまたがる仮想デバイスのマルチスクリーン環境では、GraphicsConfiguration オブジェクトの境界は、仮想の座標系を基準にしています。コンポーネントの位置を設定する際には、下記のコードサンプルで示すように、getBounds を使って目的の GraphicsConfiguration の境界を取得し、GraphicsConfiguration の座標との位置をオフセットします。
+Frame f = new Frame(GraphicsConfiguration gc);
+Rectangle bounds = gc.getBounds();
+f.setLocation(10 + bounds.x, 10 + bounds.y);
+環境が仮想デバイス環境かどうかを判定するには、システムにある全 GraphicsConfiguration オブジェクトで getBounds を呼び出します。返された境界の原点のどれかが (0, 0) 以外であれば、環境は仮想デバイス環境です。
+getBounds を使って仮想デバイスの境界も判定できます。システムにある全 GraphicsConfiguration オブジェクトで getBounds を呼び出します。続いて、getBounds の呼び出しから返された境界のすべての和集合を計算します。和集合が仮想デバイスの境界です。次のコードサンプルは、仮想デバイスの境界を計算したものです。
+Rectangle virtualBounds = new Rectangle();
+GraphicsEnvironment ge = GraphicsEnvironment.
+getLocalGraphicsEnvironment();
+GraphicsDevice[] gs =
+ge.getScreenDevices();
+for (int j = 0; j 
+関連項目: Window, 
+Frame, 
+GraphicsEnvironment, 
+GraphicsDevice
+コンストラクタの概要
+protected 
+GraphicsConfiguration()
+インスタンスを直接生成できない抽象クラスです。
+メソッドの概要
+abstract  BufferedImage
+createCompatibleImage(int width,
+int height)
+この GraphicsConfiguration と互換性のあるデータレイアウトとカラーモデルを持つ BufferedImage を返します。
+abstract  BufferedImage
+createCompatibleImage(int width,
+int height,
+int transparency)
+指定された透明度をサポートし、この GraphicsConfiguration と互換性のあるデータレイアウトおよびカラーモデルを持つ BufferedImage を返します。
+abstract  Rectangle
+getBounds()
+デバイスの座標の GraphicsConfiguration の境界を返します。
+abstract  ColorModel
+getColorModel()
+この GraphicsConfiguration に関連した ColorModel を返します。
+abstract  ColorModel
+getColorModel(int transparency)
+指定された透明度をサポートし、この GraphicsConfiguration に関連した ColorModel を返します。
+abstract  AffineTransform
+getDefaultTransform()
+この GraphicsConfiguration のデフォルトの AffineTransform を返します。
+abstract  GraphicsDevice
+getDevice()
+この GraphicsConfiguration に関連した GraphicsDevice を返します。
+abstract  AffineTransform
+getNormalizingTransform()
+ユーザ空間の 72 単位がデバイス空間の 1 インチに相当するように、GraphicsConfiguration のデフォルト AffineTransform と連結できる AffineTransform を返します。
+クラス java.lang.Object から継承したメソッド
+clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait
+コンストラクタの詳細
+protected GraphicsConfiguration()
+インスタンスを直接生成できない抽象クラスです。インスタンスは、適切なファクトリメソッドやクエリーメソッドから取得できます。
+関連項目: GraphicsDevice.getConfigurations(), 
+GraphicsDevice.getDefaultConfiguration(), 
+GraphicsDevice.getBestConfiguration(java.awt.GraphicsConfigTemplate), 
+Graphics2D.getDeviceConfiguration()
+メソッドの詳細
+getDevice
+public abstract GraphicsDevice getDevice()
+この GraphicsConfiguration に関連した GraphicsDevice を返します。
+戻り値: この GraphicsConfiguration に関連付した GraphicsDevice オブジェクト
+createCompatibleImage
+public abstract BufferedImage createCompatibleImage(int width,
+int height)
+この GraphicsConfiguration と互換性のあるデータレイアウトとカラーモデルを持つ BufferedImage を返します。このメソッドは、デバイスをメモリマッピングすることとは無関係です。返される BufferedImage は、このネイティブのデバイス構成にもっとも近いレイアウトおよびカラーモデルを持っているので、このデバイスに最適にブリットできます。
+パラメータ: width - 返される BufferedImage の幅height - 返される BufferedImage の高さ戻り値: データレイアウトとカラーモデルがこの GraphicsConfiguration と互換性のある BufferedImage
+createCompatibleImage
+public abstract BufferedImage createCompatibleImage(int width,
+int height,
+int transparency)
+指定された透明度をサポートし、この GraphicsConfiguration と互換性のあるデータレイアウトおよびカラーモデルを持つ BufferedImage を返します。このメソッドは、デバイスをメモリマッピングすることとは無関係です。返される BufferedImage は、この GraphicsConfiguration を持つデバイスに最適にブリットできるレイアウトおよびカラーモデルを持ちます。
+パラメータ: width - 返される BufferedImage の幅height - 返される BufferedImage の高さtransparency - 指定された透明度モード戻り値: データレイアウトとカラーモデルがこの GraphicsConfiguration と互換性があり、指定された透明度をサポートする BufferedImage関連項目: Transparency.OPAQUE, 
+Transparency.BITMASK, 
+Transparency.TRANSLUCENT
+getColorModel
+public abstract ColorModel getColorModel()
+この GraphicsConfiguration に関連した ColorModel を返します。
+戻り値: この GraphicsConfiguration に関連した ColorModel オブジェクト
+getColorModel
+public abstract ColorModel getColorModel(int transparency)
+指定された透明度をサポートし、この GraphicsConfiguration に関連した ColorModel を返します。
+パラメータ: transparency - 指定された透明度モード戻り値: 指定された透明度をサポートし、この GraphicsConfiguration に関連した ColorModel オブジェクト
+getDefaultTransform
+public abstract AffineTransform getDefaultTransform()
+この GraphicsConfiguration のデフォルトの AffineTransform を返します。この AffineTransform は通常、最標準の画面に対する恒等変換です。デフォルトの AffineTransform は、72 ユーザ空間座標単位がデバイス空間のおよそ 1 インチに対応するようにデバイスに座標をマッピングします。正規化変換を使用すると、このマッピングをより正確にすることができます。画面デバイスとプリンタデバイスのデフォルトの AffineTransform で定義されている座標空間の座標は、デバイスのターゲット領域の左上隅に原点を持ち、X 座標は右方向に、Y 座標は下方向に値が増加します。createCompatibleImage で作成されない、デバイスに関連していないイメージバッファなどでは、この AffineTransform は恒等変換になります。
+戻り値: この GraphicsConfiguration のデフォルトの AffineTransform
+getNormalizingTransform
+public abstract AffineTransform getNormalizingTransform()
+ユーザ空間の 72 単位がデバイス空間の 1 インチに相当するように、GraphicsConfiguration のデフォルト AffineTransform と連結できる AffineTransform を返します。
+特定の Graphics2D では、次の擬似コードを使って変換をリセットし、このようなマッピングを作成できます。
+GraphicsConfiguration gc = g.getGraphicsConfiguration();
+g.setTransform(gc.getDefaultTransform());
+g.transform(gc.getNormalizingTransform());
+ただし、この AffineTransform は場合によって、たとえばプリンタ出力やメタファイル出力の場合に恒等変換になり、その正確さは基礎のシステムによって指定される情報と同じ程度になります。createCompatibleImage によって作成されない、デバイスに関連していないイメージバッファなどでは、有効な距離測定法がないために、この AffineTransform は恒等変換になります。
+戻り値: ユーザ空間の 72 単位がデバイス空間の 1 インチに相当するように、デフォルトの AffineTransform に連結する AffineTransform
+getBounds
+public abstract Rectangle getBounds()
+デバイスの座標の GraphicsConfiguration の境界を返します。仮想デバイスを持つマルチスクリーン環境では、境界は負の X または Y の原点を持つことができます。
+戻り値: この GraphicsConfiguration によってカバーされる領域の境界導入されたバージョン: 1.3
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM 2 PlatformStd. Ed. v1.3
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし
+概要:  内部クラス | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+バグや機能要求の報告 さらに詳しい API リファレンスおよび開発者ドキュメントについては、  Java 2 SDK SE Developer Documentation を参照してください。このドキュメントには、概念、用語の定義、回避策、 実用的なコード例など、開発者を対象にした詳細な解説が掲載されています。 Java、Java 2D、JDBC は、米国およびその他の国における米国 Sun Microsystems, Inc. の商標もしくは登録商標です。 Copyright 1993-2000 Sun Microsystems, Inc. 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.  All Rights Reserved.
+Java 2 Platform SE 1.3: クラス  GraphicsConfiguration

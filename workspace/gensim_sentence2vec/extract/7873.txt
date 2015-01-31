@@ -1,0 +1,63 @@
+復活させたRAIDをCRIB35NASに戻して起動したところ、一見エラーもなく立ち上がりファイルにもアクセスできましたが。が、しばらくすると勝手に再構築が始まり、再構築終了後はめでたくアクセス不可能の不完全RAIDが出来上がりました。4台中3台がRAIDから脱落との判定。ubuntuでデータコピーしといてよかった…。
+その後、ubuntuのディスクチェックとかSeatools for DOSでチェックすると1台に不良セクタが発生してる模様。RMA期間中だったので返品手続きしました。ゆうパックで11/5に発送して、11/8の夕方にはUPSで交換品到着(実際には不在伝票だったけど)。UPSは土日再配達してくれないのが痛いところだけど、これで再びRAIDが正常化することを祈りつつ。
+今回Seatools for DOSをUSBブートで使用したときの作業メモ。
+1.ダウンロードしたISOファイルを仮想ドライブにマウントして、内部のseatools.imaを取り出しておく
+2.Win32DiskImagerを使って、imaファイルをUSBメモリに書き込み。
+(unetbootinでは起動できませんでした)
+そしてSeagateのRMA希望品の国内送付先の住所。
+〒270-1407
+千葉県白井市名内字内山322 白井ディストリビューションセンター
+UPSサプライチェーン・ソリューションズジャパン(株)
+Tel:0120-993-280
+RMA手続き作業中に表示されるのはローマ字で分かりにくいんですよね。
+裸族のインテリジェントビルNAS(CRIB35NAS)をシーゲートの3TB(ST3000DM001)×4台のRAID5構成で使っているのですが、ちょっと深刻なトラブル発生。このRIAD、1年ちょっと前から使っていて今回のトラブルとは別にこれまでにHDDが2回昇天してます。この短期間にその故障頻度はどうなのよって感じですが、そこはRIAD5。壊れたHDDを交換して再構築(25,6時間かかるけど)すればデータは残るんでさすがRIAD5、と思っていた矢先、RIADそのものが消えるという悲惨な事態に遭遇しました。(ちなみに壊れたHDDはRMAで新品交換して、これも「さすが」と思っていたけど、その交換HDDが再びクラッシュ。シーゲート…)
+新しく共有フォルダを作ってデータを書き込んでいたところ、突然「転送先が存在しない」というエラーが発生。新しく作ったフォルダだけでなく以前からあったフォルダにもアクセスできなくなり、管理ツールでみると、HDDは認識しているのにRAIDが消えてました。これが噂のRAID崩壊ってやつかー、6TBくらい入れてたデータもパーかー、と諦めそうになった一方で、HDDは認識してるし、SMART情報も正常(CRIB35NASの表示なんて当てにならない気もするけど)なのでこれはソフトウェアの問題と踏んで、復旧がんばってみました。
+こちらとこちらを参考にしつつ、まずは復旧作業用のPCをヤフオク他で調達。セレロン450(300円)、ATX電源(1,000円)、SATA端子が6つ以上のM/B(3,500円)、新品PCケース(3,580円)で計8,000円ちょい。RAIDケース買うより断然安い。この他にデータ救出用にWD30EZRX×2台(2万円)。無駄にHDDが増えてゆく…。
+手持ちの2GB MicroSDをUSBアダプタにセットして、ubuntuイメージ(日本語Remix)をunetbootinで書き込み。CRIB35NASから外したHDD4台と予めWindowsでフォーマットしておいた新HDD2台、ubuntuの入ったUSBメモリをつなぎ、BIOS設定をUSBブートに変更して復旧用PCを”Try ubuntu without installing”で起動。1,2分たつとubuntuのデスクトップが表示されます。ちなみにubuntuは日本語Remix(13.04)というのを使いましたが、メニュー表示などは全部英語でした。そういうもの?。
+放熱考えて隙間を空けてみたけど、丸棒の不安定さが半端ない。
+無事ubuntuが起動したらターミナル(デスクトップ左側ランチャーから1番上のアイコンを選び、”terminal”で検索)から作業開始。
+[1] fdiskでHDDの接続状況を確認。/dev/sd?という文字列を探します。
+ubuntu@ubuntu:~$ sudo fdisk -l
+WARNING: GPT (GUID Partition Table) detected on ‘/dev/sda’! The util fdisk doesn’t support GPT. Use GNU Parted.
+Disk /dev/sda: 3000.6 GB, 3000592982016 bytes (3TB HDD 1台目)
+255 heads, 63 sectors/track, 364801 cylinders, total 5860533168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disk identifier: 0×00000000
+WARNING: GPT (GUID Partition Table) detected on ‘/dev/sdb’! The util fdisk doesn’t support GPT. Use GNU Parted.
+Disk /dev/sdb: 3000.6 GB, 3000592982016 bytes (3TB HDD 2台目)
+256 heads, 63 sectors/track, 363376 cylinders, total 5860533168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disk identifier: 0×00000000
+(以下略)
+ubuntu@ubuntu:~$ sudo parted /dev/sda (/dev/sdaを確認)
+GNU Parted 2.3
+Using /dev/sda
+Welcome to GNU Parted! Type ‘help’ to view a list of commands.
+(parted) print (partedはコマンド入力が必要)
+Model: ATA ST3000DM001-9YN1 (scsi) (RAIDに使っていたHDD)
+Disk /dev/sda: 3001GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Number Start End Size File system Name Flags
+1 17.4kB 8001kB 7983kB
+2 8001kB 1048MB 1040MB xfs
+3 1048MB 3001GB 3000GB (容量から見てここがRAIDデータ領域)
+(parted) quit (partedコマンドを終了)
+ubuntu@ubuntu:~$ sudo parted /dev/sdb (続いて/dev/sdbを確認)
+GNU Parted 2.3
+Using /dev/sdb
+Welcome to GNU Parted! Type ‘help’ to view a list of commands.
+(parted) print
+Model: ATA WDC WD30EZRX-00D (scsi) (データ救出用に繋いだHDD)
+Disk /dev/sdb: 3001GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Number Start End Size File system Name Flags
+1 17.4kB 134MB 134MB Microsoft reserved partition msftres
+2 135MB 3001GB 3000GB ntfs Basic data partition (NTFSであることからもデータ吸出し用HDDと分かる)
+(parted) quit
+PC | ふえほ

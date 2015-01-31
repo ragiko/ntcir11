@@ -1,0 +1,34 @@
+線形モデルを当てはめる lm()
+関数 lm() は線形モデルの当てはめに使われる。回帰分析、および一元配置
+分散・共分散分析を行える(後者に付いては aov() 関数の方がより広範囲なインタフェイスを与える)。
+lm(formula, data, subset, weights, na.action,
+method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE,
+singular.ok = TRUE, contrasts = NULL, offset, ...)
+回帰診断 lm.influence()
+回帰当てはめの善し悪しを検査するための広範囲な診断手順に使われる基本的な量を計算する。
+influence(model, ...)
+## クラス "lm" に対する S3 メソッド:
+influence(model, do.coef = TRUE, ...)
+## クラス "glm" に対する S3 メソッド:
+influence(model, do.coef = TRUE, ...)
+lm.influence(model, do.coef = TRUE)
+線形モデルの当てはめ関数 lm.fit()
+線形モデルを当てはめる lm() から呼び出される、基本計算エンジンである。
+経験あるユーザでなければ直接使うべきではない。
+lm.fit (x, y,    offset=NULL, method="qr", 
+tol=1e-7, singular.ok=TRUE, ...)
+lm.wfit(x, y, w, offset=NULL, method="qr", 
+tol=1e-7, singular.ok=TRUE, ...)
+lm オブジェクトの診断図 plot.lm()
+lm オブジェクトの診断図を描く。現在 4 種類のプロット(which で選択できる)
+が提供されている:当てはめ値に対する残差プロット、当てはめ値に対する
+sqrt(|residuals|) の Scale-Location プロット、正規 Q-Q プロット、
+行ラベルに対する Cook  の距離のプロットである。
+## クラス "lm" に対する S3 メソッド:
+plot(x, which = 1:4,
+caption = c("Residuals vs Fitted", "Normal Q-Q plot",
+"Scale-Location plot", "Cook's distance plot"),
+panel = points, sub.caption = deparse(x$call), main = "",
+ask = prod(par("mfcol")) < length(which) && dev.interactive(),
+..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75)
+Rの基本パッケージ中の回帰、分散分析関数一覧 - RjpWiki

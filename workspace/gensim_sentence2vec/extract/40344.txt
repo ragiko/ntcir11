@@ -1,0 +1,84 @@
+サンプルプログラムの実行結果
+サンプルプログラムを実行すると、音が発生に合わせて数値が変化することが確認できます。GUIの応用を含んでいませんから、WPFに不慣れな場合にも読解できることと思います。
+Kinectから取得できる音の発生方向について
+Kinectには4つのマイクが内蔵されていて、それらを利用することによって音が発生した方向を検知することができます。ちょうど人間の耳が2つあるのと同じような仕組みです(ここでは仕組みについては解説しません)。Kinectでは、Kinectに向かって正面を0度として、左側をマイナス、右側をプラスとする-50～50度までの音の発生を検知することができます。
+Kinectが検知した音の発生方向を示す値は大きく2つあります。BeamAngleと、SoundSourceAngleです。詳細についてはこの記事の後半で解説しますが、BeamAngleからは10度刻みの凡その方向を取得することができ、もう一方のSoundSourceAngleプロパティからはより詳細な方向を取得することができる、といったような差があります。
+またこれらの値を取得する方法も2つあります。1つは対象となるKinectが取得した現在の値を取得するためにそれぞれプロパティを参照して取得する方法。もう1つは音の発生方向が変更されたことを通知するイベントから取得する方法です。
+サンプルプログラム
+サンプルプログラムを動かす
+後に続く解説の内容をスムーズに理解するには、まずサンプルプログラムを動かしてもらうのが良いと思います。プログラムを起動して、Kinectに向かって適当な音を立ててみてください。表示されている値がどのように変化しているのか、確認できると思います。
+音入力処理を有効にして開始する
+Kinectからの音入力処理を開始するには、KinectSensor.AudioSource.Startメソッドを利用します。このメソッドを呼び出すことによって音に関する処理が開始されます。厳密にはオーディオストリームを有効にしている、ということになります。
+KinectSensor kinect;
+…
+//Kinectへの参照の確保と初期化。
+this.kinect = KinectSensor.KinectSensors[0];
+this.kinect.Start();
+//音入力処理を開始する。
+this.kinect.AudioSource.Start();
+音の発生方向の変化を通知するイベント - BeamAngle
+音の発生方向を検知するにあたって、イベントを利用した実装の方がポピュラーなので、先にイベントを利用した実装方法について解説します。
+AudioSource.BeamAngleChangedイベントは、音入力が検知され、音の発生した方向が推定されると通知されるイベントです。このイベントに対してイベントハンドラを登録し、イベントハンドラ内で処理を実装します。
+KinectSensor kinect;
+…
+//Kinectへの参照の確保と初期化。
+this.kinect = KinectSensor.KinectSensors[0];
+this.kinect.Start();
+//イベントハンドラを登録する
+this.kinect.AudioSource.BeamAngleChanged += AudioSource_BeamAngleChanged;
+this.kinect.AudioSource.Start();
+サンプルで登録したイベントハンドラ(メソッド)は次のようになっています。引数のBeamAngleChangedEventArgsから、音が発生した方向を取得することができます。ここでは取得した角度をテキストとしてラベル上に表示したり、スライダの値に代入しています。
+void AudioSource_BeamAngleChanged(object sender, BeamAngleChangedEventArgs e)
+{
+//音が発生した角度
+this.Label_BeamAngleChanged_Angle.Content = "Angle : " + e.Angle;
+//音が発生した角度をスライダに対応付ける
+this.Slider_BeamAngleChanged_Angle.Value = e.Angle;
+}
+音の発生方向の変化を通知するイベント - SoundSourceAngle
+BeamAngleChangedイベントと類似するイベントに、AudioSource.SoundSourceAngleChangedイベントがあります。こちらのイベントも、音入力が検知され、音の発生した方向が推定されると通知されるイベントです。違いについては後述しますので先にソースコードを確認しましょう。BeamAngleChangedによる実装とあまり変化はありません。イベントに対してイベントハンドラを登録し、イベントハンドラ内で処理を実装します。
+KinectSensor kinect;
+…
+//Kinectへの参照の確保と初期化。
+this.kinect = KinectSensor.KinectSensors[0];
+this.kinect.Start();
+//イベントハンドラを登録する
+this.kinect.AudioSource.SoundSourceAngleChanged
++= AudioSource_SoundSourceAngleChanged;
+this.audioStream = this.kinect.AudioSource.Start();
+サンプルで登録したイベントハンドラ(メソッド)は次のようになっています。引数のSoundSourceAngleChangedEventArgsから、音が発生した方向を取得することができます。ここでは取得した角度をテキストとしてラベル上に表示したり、スライダの値に代入しています。
+void AudioSource_SoundSourceAngleChanged
+(object sender, SoundSourceAngleChangedEventArgs e)
+{
+//音が発生した角度
+this.Label_SoundSourceAngleChanged_Angle.Content = "Angle : " + e.Angle;
+//推定された角度の信頼性
+this.Label_SoundSourceAngleChanged_Confidence.Content 
+= "Confidence : " + e.ConfidenceLevel;
+//音が発生した角度をスライダに対応付ける
+this.Slider_SoundSourceAngleChanged_Angle.Value = e.Angle;
+}
+ここでConfidenceLevelという値が追加されていることに注目します。この値は発生した音の方向を推定したとき、その推定の信頼性を示す値です。信頼性を示す値は0.0～1.0の値で、1に近づくほど、信頼性が高くなります。BeamAngleにはConfidenceに該当する値がないので注意してください。
+現在の状態を取得する
+対象のKinectが現在までに認識した音の発生方向を取得するときは、AudioSource.SoundSourceAngleプロパティや、BeamAngleプロパティを利用します。サンプルプログラムではボタンを押したときに、取得した値をテキストとしてラベル上に表示するようにしています。音が検知されない場合には、いずれの場合にも取得できる値は0となります。
+private void Button_Click(object sender, RoutedEventArgs e)
+{
+this.Label_SoundSourceAngle.Content = 
+"SoundSourceAngle : " + kinect.AudioSource.SoundSourceAngle;
+this.Label_SoundSourceAngleConfidence.Content =
+"SoundSourceAngleConfidence : " + kinect.AudioSource.SoundSourceAngleConfidence;
+this.Label_BeamAngle.Content = 
+"BeamAngle : " + kinect.AudioSource.BeamAngle;
+}
+BeamAngleとSoundSourceAngleの解説
+BeamAngle
+BeamAngleプロパティからは、音の発生した角度をおよそ10度刻みで取得することができます。角度を検出できる範囲は-50度から50度までです。公式には{-50,-40,-30,-20,-10,0,10,20,30,40,50}のうちいずれかの値で取得できるとされていますが、取得できる値の型はdoubleで、小数点以下に0以外の値を含んでいます。
+BeamAngleプロパティから取得される値は、最後に発生した音の発生方向を示すことになります。つまり無音状態になった時には、直前に検知された角度の値を返します。例えば30度の方向から音が発生したとき、BeamAngleプロパティには30の値が代入されますが、その後に無音の状態が続いても、BeamAngleプロパティの値は0にはなりません。
+SoundSourceAngle
+BeamAngleと同様に音が発生した方向を取得することができます。角度を検出できる範囲も同様に-50度から50度までです。ただし取得できる角度はBeamAngleよりも詳細な値となり、10度刻みではありません。さらに角度の推定がどの程度信用できるのかどうかを示す値をSoundSourceAngleConfidenceプロパティから取得することができます。この値は0-1の値を示し、1に近づくほど、角度の推定の信頼性が高いことを示しています。
+SoundSourceAngleは音の発生方向を常に更新し続けます。無音状態が続くときはSoundSourceAngleには0の値が代入されます。例えば28度の方向から音が発生したとき、SoundSourceAngleには28が代入されていますが、その後に無音状態が続くと、徐々に0に近い値が代入されます。SoundSourceAngleの音の変化の様子は、後に続く音の発生方向の変更通知に関する項目を確認したほうが分かりやすいと思います。
+BeamAngleとSoundSourceAngleの違いについて
+SoundSourceAngleもBeamAngleも基本的には音の発生した方向を識別することができますが、挙動と利用目的が異なります。BeamAngleは最後に音が発生した方向を示す値を維持し続けますが、SoundSourceは常に更新されます。この挙動の違いについて、まず注意しておく必要があるでしょう。
+利用目的についてですが、音の発生した方向を取得したいときにはSoundSourceAngleを利用する、と覚えておくのが簡単です。BeamAngleを端的に説明すると、音声認識で注目する方向です。BeamAngleの詳細について必要であれば次のページを参考にしてください。
+BeamAngleの詳細と活用方法
+音の発生の検知と方向の取得 - Neareal

@@ -1,0 +1,74 @@
+授業メモ(サイトのトップページについて)
+授業
+サイトのトップページは・・・・
+一番見せたいものを配置する。
+スクロールしないで見える範囲に全て配置。
+新しい情報等もスクロールしないで見える範囲にする  スクロールしないと見えない部分は新しい情報でなくなる。
+「ごあいさつ」等はトップページ外にする。
+TWITTERなどの更新情報は設置OK。
+フラッシュやJSなどで勝手に動く動画はできるだけ控える。
+設置する場合は3秒以内におさめ、3秒後は静止にする。
+画像を切り替えたい場合はリロードするたびに切り替わるようにする  JSで設置できる。
+閲覧者がクリックして好きなタイミングで切り替える動画はOK。
+トップページでなければ勝手に動く動画はOK。
+※動画は、サイトを作る側にとっては良く思えるが、閲覧する側にとっては見えにくくイライラしやすいため、すぐにそのサイトから離れてしまう傾向が多い。初心者や初めての訪問者を取り込むには良いが、リピーターを確保するのは難しい。リピーターを確保したいのであれば、コンテンツに力を入れ、動きのあまりないサイトにすべき。たしかに、私がWEBの勉強をはじめ、サイト100選として色々なサイトを見はじめた時は、ダイナミックな動きやオールフラッシュに感動し、そういったサイトばかりを探していたけれど、途中から静かなサイトを探すようになった。オールフラッシュや動きが多すぎるサイトに出会うと、技術に感動するけれど、早々にそのサイトから去ってしまっていた。理由としては、見えにくく疲れることと、何がどこにあるのかがわかりにくい為だ。その後、そういったサイトにはリピートしていない。サイトを作る際は、自己満足ではなく、閲覧する側の目線でつくることがやはり必要だなあ。
+TwitterをハテナとWordPressに表示
+授業
+TwitterをハテナとWordPressに表示する 
+・Twitterに登録   https://twitter.com/about/resources/widgetsハテナのサイドバーにTwitterをはりつける  下記のコードを管理画面デザイン詳細の「ページのフッター」にはりつける(一番下の</div>の上)。
+<div id="twitter_div" class="hatena-module">
+<div class="hatena-moduletitle">
+<a href="http://twitter.com/アカウント名">Twitter Updates</a>
+</div>
+<div class="hatena-modulebody">
+<ul id="twitter_update_list"></ul>
+</div>
+</div>
+<script type="text/javascript" src="http://twitter.com/javascripts/blogger.js"></script>
+<script type="text/javascript" src="http://twitter.com/statuses/user_timeline/アカウント名.json?callback=twitterCallback2&count=ツイート数"></script>
+WordPressにTwitterを表示・プラグイン「Twitter Widget Pro」をインストール settingsで設定画面へ。 Use Twitter API via HTTPS にチェック。 Twitter usernameにtwitterアカウントを入力。 有効化し設定を編集後、Widgetページでサイドバーに設置。・プラグイン「WordTwit 2.6.4」をインストール Account Loginで自分のTwitterと連携させる。 その下のMessageの表示を英語ではなく日本語表示にする。   例)「WordPressを更新しました。, [title] - [link] 」 URL shortening Method を「Bit.ly」(短縮URL)に設定する。 UPDATE OPTIONSをクリックして設定終了。・Bitly  URLを短縮化する。  http://bitly.com/ スマホサイトのように、狭いリンク面積の中はshort URLが良い。zenbackをハテナに表示する  http://zenback.jp   登録し、コードを取得 ハテナの管理画面デザイン詳細の「ページのフッター」のsidebarの</div>タグ止めの下に貼り付ける。    ⇒ ブラウザで確認するとfooterに表示される。※表示まで時間がかかる。WordPressにプラグインAddtoAnyをインストールして、ソーシャルボタンを表示する。 「サービスの追加・削除」で表示するアイコンを選択する。 投稿ページだけに見せたい場合は、一番上と「Display at the bottom of post excerpts」の2ヶ所にチェックする。 
+サイト内検索
+授業
+サイト内検索
+5ページくらいのサイトには必要なし。(逆に設定するとページ数が少ないのではずかしい場合もある)
+10ページ以上のサイトに使う。ECサイトなど
+ページ数が少なくても、奥に入り込んだ階層のサイトには使う。(ECサイトなど)
+強調したい言葉がある場合などにも使う。
+as site serchは今は使わない。
+CMSはたいていサイト内検索があるので、あえて自分でつける必要はない。
+カスタム形式と旧形式
+カスタム形式だと本当にキーワードを入れないと検索されない。(検索力が弱い)カスタム形式はjimdoと相性があまりよくない。 
+旧形式でのグーグル検索は      
+上記のように検索が2種類あり、下の「このサイトを検索」だとグーグル検索のような検索画面になり、検索力が強いし見やすい。ただし、右側に競合サイトがでてくる場合があるので注意。
+上の「wwwを検索」はサイト外も含んだ検索となる。
+※競合サイトも表示されてしまう場合があるが、カスタム検索を貼るより旧形式を貼る方がよい。下記の旧形式のソースをjimdoのウィジェットで貼り付ける
+<center>
+<form method="get" action="http://www.google.co.jp/search">
+<table bgcolor="#FFFFFF">
+<tr valign="top">
+<td align="center">
+<a href="http://www.google.co.jp/"><img src="http://www.google.com/logos/Logo_40wht.gif" border="0" alt="Google" align="absmiddle" /></a>
+</td>
+</tr>
+<tr>
+<td>
+<input type="text" name="q" size="22" maxlength="255" value="" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="hl" value="ja" /><br />
+<input type="submit" name="btnG" value="Google 検索" />
+<font size="-1"><input type="hidden" name="domains" value="http://サイトアドレスを貼り付ける/" /><br />
+<input type="radio" name="sitesearch" value="" /> WWW を検索<br />
+<input type="radio" name="sitesearch" value="http://web-css-design.jimdo.com/" checked="checked" /> このサイトを検索
+</font>
+</td>
+</tr>
+</table>
+</form>
+</center>
+※<center>タグはHTML4.01までしか使えない。HTML5とXHTMLには使えない。 ※align="absmiddle" は縦横中央になる設定。
+zenbackをサイトに入れてみるのもよい。  ブログにも入れられる。
+http://zenback.jp/
+上位表示について
+・サイトでいくつか強くしたいものがある場合、サブドメインで分けて個別にindexをつけると非常に検索に強くなる・ ・indexが検索に一番強い ・ECサイトは百貨店ではなく、専門店のように一つの種類に特化する方が良い。 ・繁盛したい場合はブログを書く。 ブログは客引きのようなもの。
+『*[授業]』の検索結果 - WEB学習｜大豆変身記

@@ -1,0 +1,10 @@
+CSSのプロパティの一つ。背景画像を指定する。
+指定できる値は
+<uri> | none | inherit
+具体的には、
+body {
+background-image:url(xxx.gif);
+}
+と指定する。
+ナウいページのタイトル(h1)部分にも使われている。
+background-imageとは - はてなキーワード

@@ -1,0 +1,20 @@
+ 
+コンピュータネットワークではルーティングプロトコルによって交換される情報に基づいてルーティングテーブルが作成され,そのルーティングテーブルに従いパケットが配送される.代表的なルーティングプロトコルであるOSPF(Open Shortest Path First)では,ダイクストラ法と呼ばれる最短経路探索アルゴリズムを用いて,ルーティングテーブルが作成される.ダイクストラ法の計算量は,ノード数の二乗のオーダーであるため,ネットワークの規模が大きくなると,計算量が急速に増大し,多くのCPUパワーとメモリが必要になる.また最近では,回線容量や波長など複数の情報を考慮して最短経路を求める研究がなされている.しかしながら,通常の逐次処理型プロセッサでは個別に最短経路を計算する必要があるため,大幅に計算時間が増加する.そこで,山中研究室では,並列プロセッサを用いた様々な経路探索法の研究・実装を進めている.
+研究紹介
+山中研究室では,IPFlex社が開発した並列リコンフィギュラブルプロセッッサDAPDNA-2を用いて,新たな高速経路探索法を研究している.DAPDNA-2は,32bitの専用RISCプロセッサ(DAP)とDNAと呼ばれる並列処理エンジンの,大きく2つから構成される.DNAにはPE(Processing Element)と呼ばれる演算器が,マトリックス状に合計376個配置されている.複数のPEを接続することでデータフローマシンを生成し,並列演算が可能である.
+並列経路探索法 (MPSA)
+ダイクストラ法は,ある時点での計算において,それ以前の計算結果が必要となるため,並列処理が難しく,並列処理プロセッサに適したアルゴリズムとはいえない.そこで,DAPDNA-2の並列処理による最短経路探索アルゴリズムを提案する.提案アルゴリズムでは,複数のPEが独立にネットワーク経路を探索するため,並列処理が可能となる.さらに,ネットワークを複数のグループに分割して,各々のグループをパイプライン処理によって独立に計算した後,結果をマージする.これを,行列表現を用いてDAPDNA-2上に実装し,最短経路探索に必要な時間が従来のダイクストラ法と比較して大幅に減少することを示した.
+ジオラマ経路探索法
+本研究では,実際のネットワークトポロジを縮小したチップ内ネットワークに変換し,実際のルータとリンクをエミュレーションすることにより、チップ内で経路計算を行う方式を提案する.具体的にネットワーク内のノードやリンクをDNA内の複数のPE(Processor Element) により作成し,ネットワークトポロジをチップ内に構築する.コンフィギュレーションの変換によりNSFNet (Nation Science Foundation)やEON (European OFF network)などの様々なトポロジを構築可能である。下図にネットワーク構築の例を示す.実際のネットワークのリンクやノードの動作をDAPDNA-2上でエミュレーションする.メモリから仮想パケットを読み出し,構築した仮想ネットワーク上で流し,あて先ノードでメモリに書き込むことにより,実際のネットワーク上でのパケット送信をエミュレーションすることが可能である.
+並列リンク独立経路探索法
+次世代の光ネットワークではHD動画などの大容量データの送信要求が頻繁に発生することが予想される.災害によるリンクの故障などによる通信の切断は大量のデータ損失を引き起こしてしまう.そのため,障害発生時に切替え可能な,主経路と同じリンクを使用しない,リンク独立な予備経路を確保することが重要な課題となっている.従来は,リンク独立経路を算出する場合には,主としてk-shortest path方式が用いられていた.しかし,k-shortest path方式はダイクストラ法をベースとした方式であり,大規模なネットワークには適さず,また,最適解が求められない場合があるといった問題点がある.そこで本研究では,DAPDNA-2を用いた並列なリンク独立経路探索法を提案する.提案方式では,同時並列探索により,ネットワーク内の経路情報を高速に収集し,収集した経路情報を元にリンク独立な経路を選択することによって,従来のk-shortest path方式では算出できなかった最適なリンク独立経路を高速に算出することが可能である.
+研究業績
+石川浩行,清水翔,荒川豊,山中直明,斯波康祐,”並列リコンフィギュラブルプロセッサDAPDNA-2を用いた最短経路探索,”電子情報通信学会技術報告,NS2005-162,pp.17-20,2006年3月
+Hiroyuki ISHIKAWA, Sho SHIMIZU, Yutaka ARAKAWA, Naoaki YAMANAKA, Kosuke SHIBA, Parallel Shortest Path Searching Algorithm on Dynamically Reconfigurable Processor,’ CPT2007 -Photonic Technologies towards the Next Decade-, pp. 119-120, January 2007石川 浩行, 清水 翔, 荒川 豊, 山中 直明, 斯波 康祐, 並列リコンフィギャラブルプロセッサDAPDNA-2を用いた集合被覆問題の高速解法,’ 信学技報, Vol. RECONF2007-62, pp. p67-72, January 2008
+Taku KIHARA, Sho SHIMIZU, Yutaka ARAKAWA, Naoaki YAMANAKA, Kosuke SHIBA, Fast Link-Disjoint Path Algorithm on Parallel Reconfigurable Processor DAPDNA-2,’ International Conference on The 14th Asia-Paciffic Conference on Communications (APCC2008), Vol. 15-PM1-C-4, October 2008
+Shan GAO, Taku KIHARA, Sho SHIMIZU, Yutaka ARAKAWA, Naoaki YAMANAKA, Kosuke SHIBA, Traffic Engineering based on Experimentation in On-chip Virtual Network on Dyamically Reconfigurable Processor,’ International Student Paper Contest , Vol. Seoul Section 2008, pp. 90-95, November 2008
+高 山, 木原拓, 清水翔, 荒川豊, 山中 直明, 斯波 康祐 , ダイナミックリコンフィギュラブルプロセッサDAPDNA-2上のオンチップ仮想ネットワークによる新しいネットワーク最適化手法,’ (信学技報), Vol. RECONF2008-38~54, pp. 69-74, November 2008
+木原 拓, 清水 翔, 高 山, 荒川 豊, 山中 直明, 渡辺 昭文, 並列プロセッサDAPDNA-2を用いたリンクディスジョイント経路計算の高速解法,’ TECHNICAL REPORT OF IEICE, Vol. RECONF108, No. 414, pp. 201-206, January 2009
+Gao SHAN, Taku KIHARA, Sho SHIMIZU, Yutaka ARAKAWA, Naoaki YAMANAKA, and Akifumi WATANABE, A Novel Traffic Engineering Method using On-Chip Diorama Network on Dynamically Reconfigurable Processor DAPDNA-2,’ HPSR(High Performance Switching and Routing)2009, June 2009
+OSPF, zebra, dijkstra
+慶應義塾大学 山中研究室   » 並列プロセッサを用いた経路探索

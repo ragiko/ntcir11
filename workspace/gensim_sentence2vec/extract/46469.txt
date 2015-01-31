@@ -1,0 +1,39 @@
+Yahoo!やGoogleなどの検索結果画面で表示される説明文には、いくつかのパターンがあります。
+検索されたキーワードがあるページ内の前後のテキスト
+ページ内のmeta descriptionに記載されているテキスト
+特定のディレクトリ型検索サービスに登録されているテキスト
+「キーワードの前後のテキスト」と「descriptionのテキスト」は、ページ内のテキストを参照するので自由に編集が可能ですが、「ディレクトリ型検索サービスに登録されているテキスト」はサイト制作者の意図通りにできません。
+このディレクトリ型検索サービスは、Yahoo!は「Yahoo!ディレクトリ」、Googleは「Open Directory Project(dmoz)」になります。
+これらの説明文は、各サービスの管理者によって管理されており、申請すれば変更可能な場合もありますが、このエントリーではディレクトリ型検索サービスに登録されているテキストからの引用を拒否する方法を紹介します。
+ディレクトリ型検索サービスからの引用を拒否することにより、ページ内のテキストを参照するようになります。
+Yahoo!ディレクトリからの引用を拒否する方法
+Open Directory Project(dmoz) からの引用を拒否する方法
+参考サイト
+Yahoo!ディレクトリからの引用を拒否する方法
+検索結果の説明文に、Yahoo!ディレクトリからの引用を拒否する場合は、下記をページに記載します。
+Yahoo!ディレクトリからの引用を拒否
+<meta name="ROBOTS" content="NOYDIR" />
+また、「NOYDIR」は、Yahoo! に個別に設定することも可能です。
+Yahoo! からのみ引用を拒否
+<meta name="Slurp" content="NOYDIR" />
+Open Directory Project(dmoz) からの引用を拒否する方法
+検索結果の説明文に、Open Directory Project(dmoz) からの引用を拒否する場合は、下記をページに記載します。
+Open Directory Project(dmoz) からの引用を拒否
+<meta name="ROBOTS" content="NOODP" />
+また、「NOODP」は、Yahoo!やGoogle、MSN に個別に設定することも可能です。
+Yahoo! からのみ引用を拒否
+<meta name="Slurp" content="NOODP" />
+Google からのみ引用を拒否
+<meta name="GOOGLEBOT" content="NOODP" />
+MSN からのみ引用を拒否
+<meta name="msnbot" content="NOODP" />
+参考サイト
+Yahoo! Search Support for 'NOYDIR' Meta Tags and Weather Update
+[Yahoo! Search Blog]
+Yahoo! Search Weather Update and Support for 'NOODP'
+[Yahoo! Search Blog]
+自分のサイトの説明を変更するにはどうすればよいですか。
+[Google ウェブマスター向けヘルプ センター]
+Opting Out of Open Directory Listings for Webmasters
+[Live Search's WebLog]
+Yahoo! やGoogleの検索結果の説明文を変更する方法 | コリス

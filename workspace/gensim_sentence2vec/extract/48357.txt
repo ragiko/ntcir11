@@ -1,0 +1,87 @@
+
+索引リスト形式&nbsp&nbsp&nbsp 2011/06/13 Updated.
+&nbsp&nbsp | Prev. |&nbsp | Next |
+索引リスト形式ファイルはファイル情報と複数リスト構成のプレーンテキストです. 暗号化/圧縮および各種リストオプションをサポートします. 定義ツールで作成/編集し利用できます.
+|データ構成| |ファイル情報| |リスト情報| |リストデータ| |利用方法/用途|
+データ構成
+先頭のファイル情報および複数のデータリストの構成です. 各リストは先頭に名称およびオプションのリスト情報を持ちます. 単一リスト, 複数のサブリスト, 外部ファイルとのリンクリストの構成ができます.
+ファイルのイメージ
+FileInfo			:Bfit:...						ファイル情報					
+List-1			[@Name1](Tab)Options		リスト情報				
+ListData 1					 表/パラメタ形式			
+List-2			[@Name2](Tab)Options		サブリスト設定 
+SubList-1		[@.SubName1](Tab)Options	.は半角ピリオド
+ListData 2-1						
+SubList-2		[@.SubName2]					
+ListData 2-2						
+...								
+LinkList		[@Name3](Tab)F=FileName;LinkName		リンクリスト情報 
+List-n			[@NameN](Tab)Options			他にリンクリスト設定可	
+ListData	n		
+...				
+リンクファイルのイメージ
+FileInfo	:Bfit:...							ファイル情報は省略可		
+List		[@LinkName](Tab)Options		リスト索引情報			
+ListData											
+ファイル情報 - FileInfo
+ファイルの先頭にファイル情報を設定します. 
+形式:  :Bfit:Version:FileType:FitType:Langage:EncryptType:Charset:Datetime [:Caption]
+例
+:Bfit:20:FIT:*:ja:1:UTF8:20080214173006109:図書情報
+Version		ファイルバージョン				20/25/30	
+FileType		ファイルタイプ					SYS/DEF/FIT...	
+FitType			フィッタタイプ					$:System */3/4/5/6/7/8				
+Language		言語								ja/en/...		
+EncryptType	暗号化/圧縮						N:なし 1:暗号化&Zlib圧縮 9:Zlib圧縮		
+SecLevel		セキュリティレベル				V30サポート予定		
+Charset		文字セットエンコーディング			ANSI/UTF8	
+Datetime		更新日時								yyyymmddhhnnssmmm	
+Caption		ファイルキャプション				省略可
+FileType
+SYS 	 システム情報			
+DEF 	 データ定義ファイル		
+FIT	 フィッタ定義ファイル	
+APP	 アプリケーション		
+LST	 リスト定義ファイルなど	
+(省略)	 ユーザ用				
+EncryptType
+定義ファイルでの利用を想定して暗号化ができます. ファイル情報(先頭行)の次行より暗号化されます. 定義ツールで暗号化/圧縮, フィッタソフトで自動判別し実行します.
+- 圧縮ファイルは, 定義ツール側では読出し専用です.
+リスト情報
+リスト毎にリスト名(索引名)/オプションを設定します. オプションはキーワード=値形式です.
+リスト名 - Name/SubName
+リスト名			[@Name]			先頭 _(アンダーバー)の名称はシステム用	
+サブリスト名	[@.SubName]			
+リストオプション Options
+オプション	 	 指定値			サブリストメモ	
+コード	 		 C=Code						
+順序	 		 S=SEQ			 *		リスト順序	
+グループ 		 G=GroupID				リストグループ	
+タイプ 			 T=Type				リストタイプ		
+レベル			 L=Level				セキュリティレベル	
+べリファイ		 V=nnn					バイト数チェック			
+別名	 		 A=AlterName			リスト定義 索引表示	
+列数			 N=Count					省略可	
+リンクリスト	 F=[LinkFileName;]ListName				リスト名省略時はテキスト想定	
+リンクモード	 M={0|1}					0:リンク 1:継承		
+読込専用		 R={T|F}				リスト更新不可			
+更新時間		 U=yyyymmddhhnnssmmm		*	更新日時 V2.0変更	
+リストオプションは定義ツールで設定できます.
+リストデータ
+各リストは用途により表またはパラメタリスト形式で作成します.
+表形式(タブ区切り)  - ListData
+列1	列2		列n		
+Item1	Item2		Itemn..	
+Item1	Item2		Itemn..	
+...		...			...
+パラメタリスト形式 - ListData
+Keyword1=Value1	
+Keyword2=Value2	
+...	
+リンクリスト LinkList
+以下のリンク仕様です.
+- リンク先の先頭行にファイル情報があれば反映. なければリンク元ファイル情報を反映する.
+- リンク先ファイル情報により自動エンコーディング, 通常テキストのリンクはエンコーディング対象外.
+- リスト情報が存在すれば参照, なければメッセージ表示され, ツールで新規作成が可.
+- サブリスト指定がなければ通常テキスト(ファイル/リスト情報なし)としてリンクする.
+索引リスト形式

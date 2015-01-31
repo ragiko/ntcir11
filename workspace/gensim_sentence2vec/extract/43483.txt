@@ -1,0 +1,32 @@
+6月13日にDC Usage Boardからコレクション語彙のプロパティを採用するという決定がアナウンスされていた。Dublin Coreのdctermsの名前空間に、コレクションの取得に関するプロパティaccrualMethod, accrualPeriodicity, accrualPolicyの3つを加えるというもの。合わせて提案されていた、これらに対応するスキーム要素に関する決定は先送りされたようだ。
+3つのプロパティは、図書館などのコレクションに新しいアイテムを追加する際の方法、頻度、方針を記述する。ユーザーが自分の目的にあったコレクションをさがす時に、その内容や主題などの情報とともに、どんな頻度でどんな形でコレクションが追加されているかを知ることで、より適切なものを見つけるといった使い方が想定されている。
+コレクション語彙は、提案中のコレクション・タイプやスキーム要素と組み合わせて、あるコレクション全体をリソースとして記述することを目指している。例えば、WWWカンファレンスの写真とその注釈を集めようというw3photoプロジェクトなら、こんな具合に記述することが考えられている模様。
+(例)
+<dct:Collection rdf:about="http://www.w3photo.org/photos/">
+<dc:title>W3Photo - A Semantic-Photo History of the IW3C2 Conferences</dc:title>
+<dc:type rdf:resource="&cld;CollectionStillImage"/>
+<dcterms:accrualMethod>
+<dcterms:Donation>
+<rdfs:label>Donation</rdfs:label>
+</dcterms:Donation>
+</dcterms:accrualMethod>
+<dcterms:accrualPeriodicity>
+<dcterms:Annual>
+<rdfs:label>Annual</rdfs:label>
+</dcterms:Annual>
+</dcterms:accrualPeriodicity>
+<dcterms:accrualPolicy>
+<dcterms:Active>
+<rdfs:label>Active</rdfs:label>
+</dcterms:Active>
+</dcterms:accrualPolicy>
+</dct:Collection>
+実際には、コレクション・タイプはまだ草案だし、スキーム要素は先送りだから、この通りになるとは限らない。それに型付きノード要素としてスキームURIを使ってさらにrdfs:labelを加えるのがいいかどうかは難しいところで、現実には
+<dcterms:accrualMethod>Donation</dcterms:accrualMethod>
+と単純にリテラルで書くことになるかも知れない。
+コレクション語彙というのは、基本的には図書館などでのニーズが高いと思われるが、個人であっても自分のCDコレクションや趣味の収集品などを記述するのに使ってみると面白そうだ(今回の3つのプロパティは、あまり関係ないかも。使ってもいいけど)。
+SPARQL照会言語によるクエリをサーバーとやり取りするためのプロトコル仕様 SPARQL Protocol for RDF と、検索結果をXMLとして返すときのフォーマット SPARQL Query Results XML Format の草案が、いずれも5月27日付で改訂された。かなり変更されているので、実装には注意が必要だ。
+プロトコルの方は、前の草案とは構成が様変わりしている。抽象プロトコルというのはやめて、WSDL2.0による定義を用意し、それに具体的なバインディングを与えるようになった。HTTPバインディングでは、RDFソースのURIを表す変数名が、前回のgraph-idからdefault-graph-uriに変わっている。その他いろいろあったパラメータは整理されているようだ。
+XML結果フォーマットは、枠組みは同じだが、変数に値を結びつける部分の書式が大きく変更された。前回は、変数名を直接XML要素名として、URIならuri属性値、リテラルなら要素内容として値を記述するというものだったのに対し、今回は要素名は全て<binding>となり、変数名はそのname属性値、値はタイプに応じて<uri>、<literal>などの要素内容として記述する。
+例えば(FOAFデータなどを検索して)ホームページURIを?hpage、ニックネームを?nick、友人を表す空白ノードを?friendという形にしてクエリを送った場合、旧版なら次のような形のXMLとして返されることになっていた。
+ちょっとしたメモ - 最新から77～81番目のメモ

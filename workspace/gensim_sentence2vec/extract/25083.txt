@@ -1,0 +1,37 @@
+はじめにこの例では、コマンド LINEARIZE を使用してバッチ線形化を高速化する方法を説明します。ここでは、一連のブロック パラメーターが変化します。高速化を実行するには、変化するパラメーターを LINEARIZE に渡します。LINEARIZE を使用すると、これらのパラメーターが調整可能なパラメーターであれば、変化させる際もモデルを再コンパイルする必要はありません。全体的な線形化時間が最も改善するのは、モデルの更新時間が長いモデルの場合です。この例を実行するには、Aerospace Blockset が必要です。FOR ループで LINEARIZE を呼び出して完全な Simulink モデルを 20 回線形化この例では、高度およびピッチ コントローラーのゲインを +/- 10% ずつ変化させながら、軽量飛行機のモデルを線形化します。軽量飛行機の Simulink モデルを開きます。このモデルの詳細は、Aerospace Blockset の例にある「軽量飛行機の設計」を参照してください。mdl = 'scdskyhogg';
+open_system(mdl);
+io = getlinio(mdl);
+op = operpoint(mdl);
+MATLAB ワークスペース パラメーター k1 および k2 を使用して変化させるコントローラーのゲインを初期化します。open_system('scdskyhogg/Vehicle System Model/Avionics/Autopilot')
+blks = {'scdskyhogg/Vehicle System Model/Avionics/Autopilot/Alt Controller';...
+'scdskyhogg/Vehicle System Model/Avionics/Autopilot/Theta Controller'};
+set_param(blks{1},'Gain','0.0337283240400683*k1')
+set_param(blks{2},'Gain','-261.8699347622*k2')
+20 回の線形化を計算します。t = cputime;
+for ct = 20:-1:1
+k1 = 1+(ct-10)/100;
+k2 = 1+(ct-10)/100;
+sys_forloop(:,:,ct) = linearize(mdl,op,io);
+end
+合計時間を表示して、20 回の線形化を秒数で計算します。dt_for = cputime - t
+dt_for =
+39.7900
+この時間に影響を与えるファクターは、ブロックのマスクをコンパイルして評価し、ワークスペース パラメーターを解決するのに要する合計時間です。MATLAB プロファイラーは、このコンパイル処理のボトルネックを特定するために使用できる推奨ツールです。パラメーターを LINEARIZE に指定してSimulink モデルを 20 回線形化2 つのパラメーターのみを変化させます。LINEARIZE コマンド構文を使用できます。ここでは、構造体を使用してパラメーター名と値を渡します。ct = 1:20;
+k1val = 1+(ct-10)/100;
+k2val = 1+(ct-10)/100;
+params(1).Name = 'k1';
+params(1).Value = k1val;
+params(2).Name = 'k2';
+params(2).Value = k2val;
+t = cputime;
+sys_params = linearize(mdl,op,io,params);
+合計時間を表示して、1 回の LINEARIZE コマンドの呼び出しで、20 回の線形化を計算します。指定したパラメーターを変化させる場合、モデルは 1 回のみコンパイルされます。dt_params = cputime - t
+dt_params =
+9.8200
+結果の比較この例では、変化するパラメーターは、Simulink モデルの操作点に対して何の影響も与えません。両方の方法を使用した線形化は等価です。bode(sys_forloop(:,:,1),sys_params(:,:,1))
+legend('Linearization in a FOR loop','Linearization using parameter structure')
+結果の時間改善比を計算します。ratio = dt_for/dt_params
+ratio =
+4.0519
+Simulink モデルを閉じます。bdclose(mdl);
+パラメーターを変化させる、より効率的なバッチ線形化 - MATLAB & Simulink Example - MathWorks 日本

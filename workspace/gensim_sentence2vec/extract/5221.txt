@@ -1,0 +1,33 @@
+int preg_match_all
+( string $pattern
+, string $subject
+[, array &$matches
+[, int $flags = PREG_PATTERN_ORDER
+[, int $offset = 0
+]]] )
+subject を検索し、
+pattern に指定した正規表現にマッチした
+すべての文字列を、flags で指定した
+順番で、matches に代入します。
+正規表現にマッチすると、そのマッチした文字列の後から
+検索が続行されます。
+パラメータ
+pattern
+検索するパターンを表す文字列。
+subject
+入力文字列。
+matches
+マッチしたすべての内容を含む、
+flags
+で指定した形式の多次元配列。
+flags
+以下のフラグの組み合わせ
+(PREG_PATTERN_ORDER を
+PREG_SET_ORDER と組み合わせて使用することは
+無意味ですので注意してください)。
+PREG_PATTERN_ORDER
+$matches[0] はパターン全体にマッチした文字列の配列、
+$matches[1] は第 1 のキャプチャ用サブパターンにマッチした文字列の配列、
+といった順番となります。
+<?phppreg_match_all("|<[^>]+>(.*)</[^>]+>|U",    "<b>example: </b><div align=left>this is a test</div>",    $out, PREG_PATTERN_ORDER);echo $out[0][0] . ", " . $out[0][1] . "\n";echo $out[1][0] . ", " . $out[1][1] . "\n";?>
+PHPマニュアル:preg_match_all:繰り返し正規表現検索を行う

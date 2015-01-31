@@ -1,0 +1,36 @@
+いよいよTransactd 2.0をリリースします。Transactd 2.0で新しくなったのは主に、
+SQLライクなクエリーと結果セット
+分散クエリー
+O/Rマッピング
+です。順番に詳しく紹介してゆきます。今回は「SQLライクなクエリーと結果セット」です。Transactdの従来のAPIはどんな処理でも書けますが、SQLに慣れた方にとってはあまりフレンドリーではありませんでした。特に、JOINを含むレコードの読み取り・検索は、SQLと大きく異なっています。そこで、SQLライクなAPIと結果を扱うrecordsetクラスが追加されました。
+recordsetは連想配列によく似た結果セットで、rs[1]["name"]のように行・列に添え字でアクセスできます。内部実装はC++であり、PHPでもRubyでも高速にSQLライクな処理ができます。紹介のためのサンプルコードはPHPで書いてみます。メソッドの多くは、メソッドチェーンができるようにthisを返します。
+OrderBy
+まずはOrderBy。recordset rsの"group"というフィールドで昇順にソートします。
+$rs->orderBy("group");
+逆順にするにはreverseを使います。
+$rs->reverse();
+複数のフィールドで昇順、降順が混在するorderByは、sortFieldsクラスにフィールド名とソート方向をセットして渡します。
+"group"で昇順、"tel"で降順にするならば、以下のようになります。
+$sort = new sortFields();
+$sort->add('group', true).add('tel', false);
+$rs->orderBy($sort);
+GroupBy
+次に、GroupBy。groupQueryオブジェクトに情報をセットしてrecordsetのgroupByメソッドに渡します。
+$gq = new groupQuery();
+...
+$rs->groupBy(gq);
+groupQueryオブジェクトには複数の計算関数を追加できます。計算関数には対象のフィールドと結果フィールド名を指定します。
+例は"group"でグルーピングして各グループに属するレコード数をカウントし"group_count"という列に結果を格納します。
+$gq = new groupQuery();
+$gq->keyField("group");           //<---- グルーピングキーフィールドの指定
+$func = new count("group_count"); //<---- 関数と結果列名の指定
+$gq->addFunction($func);
+$rs->groupBy($gq);
+計算関数にはcountの他にもsum avg min max があります。レコードごとに計算の対象とするかどうか指定したいときは、計算関数のオブジェクトにWhenフィルタを設定できます。
+"tel" != ""の時だけカウントしたいときは
+$func->when("tel", "<>" ,"");
+でフィルタリングできます。さらに、
+$func->when("tel", "<>" ,"")->and_("tel" , "<>", "090*");
+のようにand_()とor_()条件をメソッドチェーンでつないでいくこともできます。また、グルーピングのキーは複数のフィールドとすることもできます。
+$gq->keyField("group", "name");
+Transactd 2.0 その1 SQLライクなクエリーと結果セット - BizStationブログ

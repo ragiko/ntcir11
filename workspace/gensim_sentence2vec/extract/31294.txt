@@ -1,0 +1,3 @@
+降雨信号出力手段69は、抵抗測定手段67で測定された抵抗が、弁別レベル未満である状態が、予め定める時間以上、継続したとき、降雨信号を出力する。A rainfall signal output means 69 outputs rainfall signals when the state that the resistance measured with the resistance measuring means 67 is below the discrimination level continued over a predetermined time. - 特許庁
+制御マイコン5a,5bは、通信状態を検出し、ワイパスイッチの状態、車速、降雨状態に基づいて動作継続時間Tcを算出する(S1,2)。The control micro computers 5a, 5b detects a communication state and computes operation continuing time Tc in accordance with a state of a wiper switch, car velocity and a rainfall state (S1, 2). - 特許庁
+降雨継続時間の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

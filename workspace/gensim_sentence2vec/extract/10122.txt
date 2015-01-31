@@ -1,0 +1,343 @@
+今回のサンプルではxmlファイル3枚とjavaクラスファイル3枚を作っていきます。
+みなさんで各JavaクラスファイルとXMLファイルを用意してみて下さい。
+Javaクラスの準備
+各Javaクラスは[プロジェクト名]/src/isa.androidに作成。
+各Javaクラスにスーパークラス:android.app.Activityをインポート。
+※MainActivityとEditActivityにはOnClickListenerインターフェースを実装してください。
+XMLファイルの準備
+各XMLファイルは[プロジェクト名]/res/layoutに作成。
+素材ファイルを配置
+素材ファイルを配置するフォルダー「raw」を「res」フォルダー直下に作成。
+各素材ファイルを[プロジェクト名]/res/rawに配置してください。
+手順4−1:AndroidManifest.xmlへActivityクラスを追加
+先程、用意したActivityクラスをAndroidManifestへ追加しましょう。
+追加の方法はこれまでのサンプルを参考に追加していきましょう。
+手順4−2:MainActivityの処理
+まずはMainのActivityとなるmain.xmlへオブジェクトを追加していきます。
+レイアウトを参考にボタンを一つ追加してみましょう。
+親LinearLayout内にボタンを1つ追加
+ボタンにはID:recoBtnを設定
+ボタンはActivityの横幅いっぱいに広がる設定
+手順4−2−1:MainActivityクラスの処理
+MainActivityクラスの処理を書いていきます。まずは、このクラスで使用する変数の宣言です。
+以下の内容で変数を宣言してください。
+整数値の変数
+アクセス修飾子:private
+修飾子:static final
+型名:int
+変数名:REQUEST_CODE
+初期値:0
+文字列の変数
+アクセス修飾子:private
+型名:String
+変数名:resultStr
+初期値:""
+ボタンの変数
+アクセス修飾子:private
+型名:Button
+変数名:btn
+手順4−2−2:MainActivityクラスの必要なメソッド
+MainActivity.javaに必要なメソッドを用意していきます。必要なメソッドは次の通りです。
+@Override
+public void onCreate(Bundle savedInstanceState) {
+}
+//クリック処理
+@Override
+public void onClick(View v) {
+}
+//音声認識画面から戻ってきた際に呼ばれる
+@Override
+protected void onActivityResult
+(int requestCode, int resultCode, Intent data) {
+}
+//音声認識から取得した文字列を次のActivityへ渡す
+public void nextActivity(){
+}
+手順4−2−3:MainActivityクラスの各メソッドの処理
+次は各メソッドに処理を書いていきます。処理は次の通りです。
+onCreate
+onCreateでは次の処理を書いて見ましょう。
+スーパークラスの呼び出し
+Activityの描画
+ボタンのインスタンス
+ボタンテキスト
+OnClickListenerのセット
+onClick
+onClickの具体的ソースコードは次の通りです。
+if(v == btn){
+try {
+// インテント作成
+Intent intent = new Intent(
+RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+intent.putExtra(
+RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+intent.putExtra(
+RecognizerIntent.EXTRA_PROMPT,"ジブリ映画");
+// お好きな文字に変更できます
+// インテント発行
+startActivityForResult(intent, REQUEST_CODE);
+} catch (ActivityNotFoundException e) {
+// インテントに応答できるアクティビティがない場合
+Toast.makeText(MainActivity.this,
+"ActivityNotFoundException",
+Toast.LENGTH_LONG).show();
+}
+}
+onActivityResult
+onActivityResultの具体的ソースコードは次の通りです。
+if (resultCode != RESULT_OK) {
+// 正しい結果が得られなかった場合の処理
+return;
+}
+if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+// 認識結果のリストを取得
+// 似ている言葉など、複数の結果がある場合もある。
+ArrayList results = data.getStringArrayListExtra
+(RecognizerIntent.EXTRA_RESULTS);
+for (String result : results) {
+resultStr = (result);
+}
+//nextActivitytメソッドを呼び出して実行
+nextActivity();
+}
+super.onActivityResult(requestCode, resultCode, data);
+nextActivity
+nextActivityの具体的ソースコードは次の通りです。
+//MovieActivityに遷移する
+Intent intentStr = new Intent(this,MovieActivity.class);
+//音声認識で取得した文字列を次のActivityに渡す
+intentStr.putExtra("recogStr", resultStr);
+//MovieActivityをスタート
+startActivity(intentStr);
+ポイント
+画面遷移は以前にも行いましたが、今回は更に遷移先のActivityに値を渡しています。
+考え方は次の通りです。
+//Intentのインスタンスと遷移先のクラス
+Intent 変数 = new Intent([コンテキスト],[遷移先のクラス名].class);
+//渡したい値の設定
+intentStr.putExtra("[渡す時に利用する紐付け名]", "[渡したい値]");
+//遷移先のActivityをスタートさせる
+startActivity(変数);
+手順4−3:MovieActivityの処理
+MovieActivityの処理を書いていきます。まずはXMLファイルの
+準備です。
+手順4−3−1:movie.xmlの処理
+movie.xmlには親となるLinearLayoutに「VideoView」を一つ配置してみましょう。
+VideoViewの設定は次の通りです。
+親LinearLayoutに入れ子にしてVideoViewを配置
+Activityいっぱいに幅と高さを設定
+IDには「movie」を設定
+手順4−3−2:MovieActivityクラスの処理
+MovieActivityクラスの変数を宣言していきます。
+宣言する変数は次の通りです。
+文字列の変数
+アクセス修飾子:private
+型名:String
+変数名:resultStr
+VideoViewの変数
+アクセス修飾子:private
+型名:VideoView
+変数名:vv
+手順4−3−3:MovieActivityクラスに必要なメソッド
+MovieActivity.javaに必要なメソッドを用意していきます。必要なメソッドは次の通りです。
+@Override
+public void onCreate(Bundle savedInstanceState) {
+}
+//VideoViewで動画を再生
+private void mpPlay(int rID, String mpName){
+}
+//動画リソースの処理
+private void raw2file(Context v, int resID, String fileName)
+throws Exception{
+}
+//入力ストリームの処理
+private void in2file(Context v, InputStream in, String fileName)
+throws Exception {
+}
+手順4−3−4:MovieActivityクラスの各メソッドの処理
+次は各メソッドに処理を書いていきます。処理は次の通りです。
+onCreate
+onCreateの具体的なソースコードは次の通りです。
+super.onCreate(savedInstanceState);
+setContentView(R.layout.movie);
+//一つ前のActivityからの情報を引き継ぎ
+Intent intent = getIntent();
+resultStr = intent.getStringExtra("recogStr");
+Toast.makeText(this, resultStr, Toast.LENGTH_LONG).show();
+//前のActivityから渡された文字列で動画を切り替え
+int rID = 0;
+String mpName = null;
+if(resultStr.equals("風の谷のナウシカ")){
+rID = R.raw.p01;//ナウシカ
+mpName = "p01.3gp";
+}else if(resultStr.equals("紅の豚")){
+rID = R.raw.p02;//紅の豚
+mpName = "p02.3gp";
+}else if(resultStr.equals("魔女の宅急便")){
+rID = R.raw.p03;//魔女の宅急便
+mpName = "p03.3gp";
+}else if(resultStr.equals("天空の城ラピュタ")){
+rID = R.raw.p04;//天空の城ラピュタ
+mpName = "p04.3gp";
+}else if(resultStr.equals("となりのトトロ")){
+rID = R.raw.p05;//となりのトトロ
+mpName = "p05.3gp";
+}else{
+//引き継がれた値が設定に無い場合
+Toast.makeText(this, resultStr, Toast.LENGTH_LONG).show();
+}
+mpPlay(rID,mpName);
+mpPlay
+VideoViewで動画を再生する具体的ソースコードは次の通りです。
+try{
+//VideoViewのインスタンス
+vv = (VideoView)findViewById(R.id.movie);
+vv.requestFocus();
+//VideoViewにメディアコントローラーを設定
+vv.setMediaController(new MediaController(this));
+//raw2fileを呼び出しリソースIDとファイル名を渡す
+raw2file(this,rID,mpName);
+//リソースファイルへのパスをVideoViewに渡す
+String path=getFilesDir().getAbsolutePath()+"/"+mpName;
+vv.setVideoPath(path);
+vv.start();
+}catch(Exception e){
+Log.e("",e.toString());
+}
+raw2file
+動画リソースの処理の具体的ソースコードは次の通りです。
+//リソースIDのファイルを保存
+InputStream in = v.getResources().openRawResource(resID);
+in2file(v,in,fileName);
+in2file
+入力ストリームの処理の具体的ソースコードは次の通りです。
+//保存したリソースをストリーム再生
+int size;
+byte[] w = new byte[1024];
+OutputStream out = null;
+try{
+out = v.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
+while(true){
+size = in.read(w);
+if(size
+ポイント
+遷移元からの値の引き受ける場合のソースコードと考え方は次の通りです。
+//受け取った値を入れる変数の宣言
+String 変数名 ;
+//getIntentで一つ前のActivityからの値を引き継ぎ
+Intent 変数名 = getIntent();
+//getStringExtraでどの値を引き継ぐかを設定
+String 変数名 = Intent変数名.getStringExtra("[遷移元からの紐付け名]");
+手順4−4:EditActivityの処理
+EditActivityの処理をしていきます。まずは、XMLファイルからです。
+手順4−4−1:edit.xmlの処理
+edit.xmlに必要なオブジェクトを配置していきましょう。配置するオブジェクトは次の通りです。
+EditTextの配置
+EditTextは横幅いっぱいになるように設定
+IDに「et01」を設定
+Buttonの配置
+ButtonはEditTextの下に来るように配置
+Buttonは横幅いっぱいになるように設定
+IDに「movieBtn」を設定
+手順4−4−2:EditActivityクラスの処理
+MovieActivityクラスの変数を宣言していきます。
+宣言する変数は次の通りです。
+EditTextの変数
+アクセス修飾子:private
+型名:EditText
+変数名:et
+ボタンの変数
+アクセス修飾子:private
+型名:Button
+変数名:btn
+手順4−4−3:EditActivityクラスに必要なメソッド
+EditActivity.javaに必要なメソッドを用意していきます。必要なメソッドは次の通りです。
+onCreate
+onClick
+手順4−4−4:EditActivityクラスの各メソッドの処理
+次は各メソッドに処理を書いていきます。処理は次の通りです。
+onCreate
+edit.xmlへの描画
+EditTextのインスタンス
+Buttonのインスタンス
+ButtonにonClickListenerをセット
+onClick
+EditTextに入力された文字列を取得
+ソースコードは次の通りです。画面の遷移は皆さんで書いてみましょう。
+//EditTextに入力された文字列を取得
+SpannableStringBuilder sb = (SpannableStringBuilder)et.getText();
+String etStr = sb.toString();
+MovieActivityへ画面遷移
+EditTextから取得した値をMovieActivityに渡す
+Activityをスタートさせる
+ポイント
+EditTextに入力された値を取得する場合のソースコードと考え方は次の通りです。
+EditTextに入力された文字列を入れる変数の宣言
+String etStr;
+EditTextに入力された文字列を「SpannableStringBuilder」の型に「getText」を利用して取得
+SpannableStringBuilder [値を入れる変数名] = (SpannableStringBuilder)[EditTextの変数名].getText();
+「toString」を利用してStringの型に変換
+String [文字列を入れる変数名] = [SpannableStringBuilderの変数名].toString();
+手順4−5:Menuの処理
+最後の処理となりました。最後にMenuを生成して、「MainActivity」「EditActivity」/
+「EditActivity」「MainActivity」へメニューで画面遷移できるように作っていきます。
+手順4−5−1:Menuに利用する変数の宣言
+メニューに利用する変数を宣言します。
+みなさんで宣言してみましょう。
+メニューボタン1:MainActivity遷移ボタン
+アクセス修飾子:private
+修飾子:static final
+型名:int
+変数名:MENU_ID_MENU1
+初期値:(Menu.FIRST + 1)
+メニューボタン2:EditActivity遷移ボタン
+アクセス修飾子:private
+修飾子:static final
+型名:int
+変数名:MENU_ID_MENU2
+初期値:(Menu.FIRST + 2)
+手順4−5−2:Menu利用に必要なメソッド
+Menuを利用する場合に必要なメソッドは次の通りです。
+// オプションメニューが最初に呼び出される時に1度だけ呼び出されます.
+@Override
+public boolean onCreateOptionsMenu(Menu menu){
+}
+//オプションメニューが表示される度に呼び出されます.
+@Override
+public boolean onPrepareOptionsMenu(Menu menu){
+}
+//オプションメニューアイテムが選択された時に呼び出されます.
+@Override
+public boolean onOptionsItemSelected(MenuItem item){
+}
+手順4−5−3:Menuの各メソッドの処理
+Menuの各メソッドの処理は次の通りです。
+オプションメニューが最初に呼び出される時に1度だけ呼び出される
+//メニューのアイテムを追加
+menu.add(Menu.NONE, MENU_ID_MENU1, Menu.NONE, "音声認識");
+menu.add(Menu.NONE, MENU_ID_MENU2, Menu.NONE, "テキスト入力");
+return true;
+ポイント
+メニューのアイテムを追加は「menu.add」を利用して追加します。
+第一引数:第一引数はグループID、第二引数はアイテムIDとなります。
+用途は、どちらも同じような意味合いです。メニューが選択された場合に実行されるイベント内で、どのメニューが押されたのかを判別するときの情報になります。
+第三引数:第三引数は、メニューの表示順序です。
+Menu.NONEは「0」です。同じ値が設定された場合は、設定した順にメニューが並ぶようですので、設定した順番でいい場合は、全てMenu.NONE、もしくは0に設定します。
+第四引数:第四引数は、メニューに表示する文言です。
+上記の例では、ベタ書きですが、通常は文字列リソースを指定するといいでしょう。
+オプションメニューが表示される
+super.onPrepareOptionsMenu(menu);
+return true;
+オプションメニューアイテムが選択された時に呼び出され
+if(item.getItemId() == MENU_ID_MENU1){
+//MainActivityに遷移
+Intent intentm = new Intent(this,MainActivity.class);
+startActivity(intentm);
+}else if(item.getItemId() == MENU_ID_MENU2){
+//EditActivityに遷移
+Intent intente = new Intent(this, EditActivity.class);
+startActivity(intente);
+}
+return true;
+音声認識を利用したアプリ-システム・アプリ【goowa株式会社】

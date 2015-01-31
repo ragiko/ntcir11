@@ -1,0 +1,122 @@
+特定のフェイズを実行したい場合は、mvn コマンドの引数にフェイズの名前を与えます:
+mvn <phase>
+例えば、compile フェイズを実行したい場合は次のコマンドを実行します:
+mvn compile
+また、「mvn compile」というコマンドを実行した場合、単純に compile フェイズだけが実行されるのではなく、それに必要なフェイズ (例えば validate フェイズ) の実行も行われます。
+7.3. フェイズとゴール
+今まで、「フェイズ」と「ゴール」という言葉の説明を簡単にしか行っていなかったので、両者の違いがいまいち分からない、という方もいるかもしれません。
+「フェイズ」とは、「7.2. プロジェクトのライフサイクルにおける各フェイズ」でも取り上げましたが、Maven の定めるプロジェクトのビルドサイクルに含まれる個々のステップのことです。 1 章の「1.1. Maven とはどのようなものか」において Maven の機能の 1 つに「統一したビルドシステムを提供する」と書きました。これは、Maven がプロジェクトのビルドサイクルに含まれるステップ (=フェイズ) を定めることにより、どの Maven プロジェクトでも「compile」というフェイズを実行すれば、プロジェクトのコンパイルが行われる、ということを指しています。
+「ゴール」とは、Maven のプラグインが持つ機能のことです。例えば、 5 章で紹介した tomcat-maven-plugin は start, stop, deploy, undeploy などの機能 (=ゴール) を持っています。
+また、「フェイズ」で行われる処理は、実際には対応するプラグインで行われています。例えば、「compile」フェイズでは、maven-compiler-plugin の compile というゴールが実行されます。
+このことから、「フェイズ」とは「あらかじめ決められたプラグインのゴールのエイリアスである」と考えることもできますが、これは正確な理解ではありません。「mvn compile」と「mvn compiler:compile」は必ず同じ動作をするとは限らないからです。というのも、「7.9. プラグインを特定のフェイズで実行する」で説明するように、特定のフェイズに関連付けてプラグインを実行させることができるからです。そのため、あるフェイズを実行することと、そのフェイズに対応するゴールを実行することは、必ずしも同じ動作結果とはなりません。
+7.4. 複数のゴールやフェイズを一度に実行できる
+mvn コマンドに複数のフェイズやゴールを与えることで、一連の処理をまとめて行うことができます。
+例えば、プロジェクトをクリーンしてからインストールしたい場合は、mvn コマンドの引数に「clean」と「install」を同時に与えることができます:
+mvn clean install
+7.5. デフォルト設定を含めた pom.xml や setting.xml の情報を得る
+Maven は多くのデフォルト設定を持っているため、いくつかのコマンドを知るだけで使い始めることができます。しかし、裏を返せばデフォルト設定が多すぎて、実際どんな設定になっているのか分かりづらいと言うこともできます。また、どんなデフォルト設定があるのかを知っておくことは、Maven に対する理解にもつながります。
+maven-help-plugin を利用すると、デフォルトの設定を含めた pom.xml や setting.xml の内容を得ることができます。
+デフォルト設定を含めた pom.xml の内容を確認するには、次のコマンドを実行します:
+mvn help:effective-pom
+この場合、pom.xml の内容はコンソールに出力が行われます。内容をファイルに書き出したい場合は、output 引数で指定します。effective-pom.xml という名前のファイルに出力するには次のように指定します:
+mvn help:effective-pom -Doutput=effective-pom.xml
+デフォルト設定を含めた settings.xml を effective-settings.xml というファイルに出力するには次のコマンドを実行します:
+mvn help:effective-settings -Doutput=effective-settings.xml
+内容をファイルに書き出す場合は、同様に output 引数で出力先ファイルを指定します。
+ほかにも、maven-help-plugin を使うと、現在有効となっているプロファイルや他のプラグインの情報 (どんなゴールを持つのか) を確認することもできます。
+maven-help-plugin のさらに詳しい情報は、maven-help-plugin のサイト を参照してください。
+7.6. Ant 用のビルドファイル (build.xml) を生成する
+Maven のプロジェクトファイル (pom.xml) から Ant 用のビルドファイル (build.xml) を生成するには、maven-ant-plugin を利用します。
+以下のコマンドを実行すると build.xml が作成されます:
+mvn ant:ant
+maven-ant-plugin のさらに詳しい情報は、maven-ant-plugin のサイトを参照してください。
+7.7. コンパイルするソースコードのバージョンを指定する
+コンパイルに関する設定は maven-compiler-plugin に対して行います。ソースコードを JDK 1.5 としてコンパイルするには、pom.xml で次のように指定します:
+<project>
+...
+<build>
+...
+<plugins>
+...
+<plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-compiler-plugin</artifactId>
+<configuration>
+<source>1.5</source>
+<target>1.5</target>
+</configuration>
+</plugin>
+...
+</plugins>
+...
+</build>
+...
+</project>
+maven-compiler-plugin のさらに詳しい情報は、maven-compiler-plugin のサイトを参照してください。
+7.8. 生成する javadoc の設定を行う
+javadoc を生成するには、「mvn javadoc:javadoc」コマンドを使用します:
+mvn javadoc:javadoc
+javadoc の生成に関する細かい指定は、maven-javadoc-plugin に対して行います。以下に pom.xml での設定例を示します:
+<project ...>
+...
+<build>
+...
+<plugins>
+...
+<plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-javadoc-plugin</artifactId>
+<configuration>
+<author>true</author>
+<source>1.5</source>
+<!--
+- showPackage がデフォルトで true になっているので、
+- showPackage 以外 (showPrivate など) を true にするときは
+- showPackage を明示的に false にしなければならない。
+- そうしないと javadoc コマンドに渡される引数に
+- "javadoc ... -package -private ..." という具合にパッケージングの指定が
+- 二つ以上含まれてしまうことになり、エラーとなってしまう。
+-->
+<showPackage>false</showPackage>
+<showPrivate>true</showPrivate>
+<encoding>Windows-31J</encoding>
+<charset>Windows-31J</charset>
+<docencoding>Windows-31J</docencoding>
+</configuration>
+</plugin>
+...
+</plugins>
+...
+</build>
+...
+</project>
+この例では、
+「@author」で指定された作者の情報を出力する。
+ソースコードのバージョンを Java 1.5 とする。
+全てのクラスとメンバ (private とそれより制限のゆるいクラスとメンバ) を含める。
+ソースコードの文字エンコーディングは Windows-31J。
+生成される HTML に含める文字エンコーディングの指定 (META 要素での指定) は Windows-31J。
+生成される HTML の文字エンコーディングは Windows-31J。
+という指定をしています。
+また、設定例の中でも記述しましたが、現状の問題点として、パッケージング (どのアクセスレベルまでのクラスやメンバを出力対象とするか) の指定をデフォルトの showPackage 以外にする場合は、明示的に showPackage に false を指定しなければエラーとなってしまいます。
+maven-javadoc-plugin のさらに詳しい情報は、maven-javadoc-plugin のサイトを参照してください。
+7.9. ライブラリをローカルリポジトリにインストールする
+デフォルトのリモートリポジトリには多くのライブラリが登録されていますが、マイナーなライブラリや、ライセンスの関係で登録されていないライブラリがあります。リモートリポジトリに必要なライブラリが登録されていない場合は、自分でライブラリを入手し、ローカルリポジトリに登録します。
+ライブラリをローカルリポジトリにインストールするには、次のコマンドを (実際には改行をせずに) 実行します:
+mvn install:install-file -Dfile=<path-to-file>
+-DgroupId=<group-id>
+-DartifactId=<artifact-id>
+-Dversion=<version>
+-Dpackaging=<packaging>
+file にはインストールするライブラリのパス、groupId と artifactId、version にはライブラリのものを指定します。packaging にはパッケージングの種類 (JAR をインストールするときは「jar」) を指定します。
+以下に指定例を示します:
+mvn install:install-file -Dfile=mail.jar
+-DgroupId=javax.mail
+-DartifactId=mail
+-Dversion=1.3.2
+-Dpackaging=jar
+ところで、Sun の提供しているライブラリは、ライセンスの関係で Maven のセントラルリポジトリに登録されていません。そのため、Sun の提供しているライブラリを使用する場合は、事前にローカルリポジトリにインストールしておかなければなりません。
+Sun 提供のライブラリをローカルリポジトリにインストールする場合は、「7.10. Sun の JAR ファイルをリポジトリに登録する場合の注意」を参照してください。
+7.0. Sun の JAR ファイルをリポジトリに登録する場合の注意
+Sun の提供している JAR ファイル (activation.jar や mail.jar など) はライセンスの関係で Maven のリモートリポジトリには登録されていません。そのため、Sun の提供している JAR ファイルは各自でローカルリポジトリに登録する必要があります。その場合、以下に示す groupId と artifactId で登録することが推奨されます。
+7. Maven Tips | TECHSCORE(テックスコア)

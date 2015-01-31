@@ -1,0 +1,81 @@
+概要
+時系列データセットを加工し, ggplot2 で作図する場合を例に, 以下のことに言及する.
+ggplot2で複数の系列の折れ線を1つのグラフに表示する方法
+さらにそれを積み上げグラフ(エリアプロット)に変形する方法
+デザインを洗練する方法
+-- 色系統の変更
+-- 凡例の変更
+-- 軸の目盛り数値のフォーマット変更
+ただし, Rやggplot2 のごく基本的な使用方法を知っていることが前提. ggplot2 の基本は ggplot2 の自分用メモ集を作ろう あたりで.
+下準備
+まずはパッケージとデータを読み込む.
+library(ggplot2)
+library(reshape2) # melt 関数は ggplot で複数系列のデータをプロットできるように変換するのに必要
+データの用意
+積み上げグラフをプロットするには, まず複数系列のデータを1つのグラフ内に収めなければならない. よって, 先に複数系列のデータをグラフ化する方法を書いておく. まずはデータを用意.
+data(Seatbelts) # イギリスの交通事故犠牲者
+df <- data.frame(Seatbelts, year=rep(1969:1984,each=12) ) # データフレームへ変換
+#年ごとの合計に簡略化 (要 plyr パッケージ)
+library(plyr) 
+df.yearly <- ddply(df, summarise, .variables="year", drivers=sum(drivers), front=sum(front), rear=sum(rear), .progress="text")
+detach("package:plyr")
+他のデータセット持って来いと言われそうだが, 積み上げ折れ線グラフの作例にはイギリス国内の交通事故犠牲者の時系列データ Seatbelt を使用. 1969-84年までの月ごとのデータ. driversKilled に運転手の死亡・重傷者, front に前部座席に座っていた乗員の事故死亡者・重傷者 後部座席に座っていた乗員の死亡・重傷者が rear に格納されている. ただ, そのままでは見づらいので, plyr パッケージで年単位の合計に加工しなおした. データフレーム df.yearly に変換したものをもとに, まずはこの3つの時系列データの推移を折れ線グラフで表す.
+ggplot() 関数にデータフレームを与え, geom_line() を3回用いてでそれぞれの系列に分けて表す, という方法でも複数系列のプロットはできる. しかし ggplot2 には複数系列のプロット用に自動で色分けしたり凡例を設定したりしてくれる機能があるため, これに則った構文を用いたほうが便利である. ただし, そのためにはデータフレームの構造を変えることが必要.
+df.yearly オブジェクトは,
+year drivers front rear
+1 1969   19951 11373 4912
+2 1970   21939 12527 5307
+3 1971   22309 12047 5244
+.
+.
+.
+というふうなデータフレームになっている. ggplot2 で複数の時系列データを扱う時,  y軸の値を同一の列に収め, それぞれの値が元の系列のどれであったかを記録する列を別に作る. まずは実際にやってみた方が分かりやすい. reshape2 パッケージに含まれる melt 関数でこれを実行する.
+library(reshape2)
+df.melt <- melt(data=df.yearly, id.vars="year", measure.vars=c("drivers", "front", "rear")) 
+head(df.melt)
+year variable value
+1 1969  drivers 19951
+2 1970  drivers 21939
+3 1971  drivers 22309
+.
+.
+.
+このように, variable 列に元の系列の名前が, value 列にy軸の値が格納される. melt 関数では, id.vars 引数に x 軸に対応する列を指定し, measure.vars に元のデータフレームの列のうち, value 列に格納したいものを与える. また, 出力後の variabel, value という列名はそれぞれ変更可能だが, 変更にあまり意味はないと思うので省略.
+図の作成
+melt 関数で形成した複数系列のデータをプロットするには, 本質的には以下のコードだけでいい.
+ggplot(df.melt) + geom_line(mapping=aes(x=year, y=value, group=variable))
+group 引数に variable を与えることで, ggplot が系列を識別してくれる. ただし, これだけではどれがどの系列に対応するかがわかりづらい. そこで, 線種を指定する linetype もしくは色を指定する color 引数にも variable を与える.
+ggplot(df.melt) + geom_line(mapping=aes(x=year, y=value, group=variable, linetype=variable, color=variable))
+ラベル名を日本語にしたいとか, 色が毒々しいとかデザインに関するものは後回しにして, 先に積み上げグラフのプロット例も記す.
+複数系列の折れ線グラフを積み上げ折れ線グラフにするのも非常に単純で, geom_line() に position="stack" を与えるだけで良い (aes の引数でないことに注意). さらに, 線だけでは積み上げグラフであると認識しづらいため, 各領域を塗りつぶすために, geom_ribbon 関数を使う. こちらにも, group=variable, position="stack" の指定が必要なのに加え, 各領域を塗りつぶす色も折れ線と統一するため, fill=variable とする. また, 輪郭をはっきりさせるため, linetype の指定はせず, また geom_ribbon() の alpha 引数を指定して塗りつぶしを半透明にしている.
+(g.stack <- ggplot(df.melt) + geom_line(mapping=aes(x=year, y=value, group=variable, color=variable), position="stack")  + geom_ribbon(mapping=aes(x=year,  y=value, ymin=0, ymax=value, group=variable, fill=variable), position="stack", alpha=.7) )
+position="stack" とした場合, aes に新たに ymax 引数を与えることになる. geom_line 関数ならば ymax を与えなくとも自動で y で代用してくれるが, geom_ribbon は挙動がおかしくなるので入れておく. geom_* 関数は, 基本的どれも position 引数の指定だけで積み上げグラフとして扱ってくれる. 例えば, 上のグラフに geom_text 数値を表記したい場合も, position="stack" としない場合, 積み上げグラフとテキストラベルの位置がずれることになる.
+デザインの洗練
+軸ラベル・凡例の設定
+軸のラベルを変更する場合, xlab, ylab 関数があるが, labs 関数でラベルをまとめて変更できる. また, title で表題を指定できる.
+凡例のタイトル (ここでは variable) は color, fill, linetype それぞれに設定できる. 一方なくすには theme() 関数に legend.title=element_blank() を与える. また, 凡例のラベルを変更する場合, scale_* 系の関数を使うことになる. 凡例のラベルも color, fill, ... ごとに設定されているので,  今回は塗りつぶし色の fill のみに設定し, 残りの linetype, color に対しては guide=F を与えることで非表示にしている. また, 凡例の並びとグラフの積み上がっている順序が逆なのも気になる. そこで,  guide=guide_legend(reverse=T) を使って凡例の順序を逆転させた
+legend.labels <- c("運転手", "前部座席乗員", "後部座席乗員")
+( graph2 <- g.stack + labs(x="年", y="死傷者数(人)", title="イギリスにおける交通事故死傷者数" )  + scale_fill_discrete(name="", labels=legend.labels, guide = guide_legend(reverse=T) ) + scale_linetype_discrete(guide=F) + scale_color_discrete(guide=F) + theme_bw()  )
+軸の目盛りの変更
+また, scales パッケージ併用で目盛り数値を変更することも可能. 例えばあまりに大きな数字が含まれていると, 数値が自動的に指数表記になるため, それが困るという場合に利用できる.
+library(scales)
+graph2 + scale_y_continuous(labels=comma) # y軸に3桁区切りコンマを付ける
+graph2 + scale_y_continuous(labels=dollar) # y軸に3桁区切りのコンマを付け, ドル表記する
+graph2 + scale_y_continuous(labels=percent) # y軸をパーセントとして扱う
+# 応用
+graph2 + scale_y_continuous(labels=function(x) paste("¥", format(x, big.mark=","), sep="")) # scales を使わず, 円記号と3桁区切りコンマを付ける
+scale_x_*() もしくは scale_y_*() の labels 引数には, 任意の文字列を与えても良い.
+element_text() 関数は文字の大きさや角度, 位置を調整できる. よって, これを使えば y軸ラベルを回転させ, 横書きにし, ラベルを上の方に持ってくることで日本で一般的な (?) 見た目にできる. 詳しくは element_text() および theme() 関数のヘルプ参照.
+graph2 + theme(axis.title.y = element_text(angle = 90*0, vjust = 1) ) # vjust で [0,1] の範囲で垂直方向の位置調整
+# この例ではグラフの左側が間延びするのでラベルを改行して調整. タイトルも改行可能.
+graph2 + theme(axis.title.y = element_text(angle = 90*0, vjust = 1) ) + ylab("死傷者数\n(人)")
+色の設定
+塗りつぶし色を同系統にしたい場合, scale_fill_brewer() 関数でカラーパレットを指定できる. ただし, 今回は geom_line の線の色である color も scale_color_brewer() で変更したほうが良い.
+graph2 + scale_fill_brewer(palette = "Greys") + scale_color_brewer(palette="greys")
+カラーパレットについては, RColorBrewer パッケージからコントラストのはっきりしたものを利用できる.
+参考
+Triad sou. (2010-05-28) ggplot2 の自分用メモ集を作ろう
+Cookbook for R Cookbook for R  Legends (ggplot2)
+inside-R A Community Site for R scale_continuous {ggplot2}
+RjpWiki グラフィックス参考実例集:RColorBrewer パッケージによるカラーパレット
+ggplot2 で積み上げ折れ線グラフ(エリアプロット)を作成する方法 - ill-identified diary

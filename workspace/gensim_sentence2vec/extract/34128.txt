@@ -1,0 +1,116 @@
+3日で作る高速特定物体認識システム (6) 線形探索を用いた特定物体認識(2009/11/22)のつづきです。今回がこのシリーズの最終回です。前回の線形探索は遅すぎるので最近傍探索を高速化します。これで表題の高速特定物体認識システムができあがります。高速化にはいくつかの方法がありますが、物体モデルデータベースをなんらかのデータ構造にあらかじめ格納しておくというのがポイントです。今回は、資料でも述べられているkd-treeとLocality Sensitive Hashing (LSH)という手法を試してみます。kd-treeは木構造、LSHはハッシュでデータを構造化(インデキシング)します。kd-treeは、厳密な最近傍を求めますが、LSHは近似最近傍検索と呼ばれ、厳密な最近傍は求められない代わりに計算を大幅に高速化できます。資料では、ANN (Approximate Nearest Neighbor)というライブラリのkd-treeを使っています。ANNのkd-treeは近似最近傍探索も行えるように拡張しているようです。OpenCVには、kd-tree(厳密版)とLSHは実装されています。OpenCVのkd-treeとLSHは、関数APIが似た形で整備されているので使うのは簡単です。
+kd-tree
+kdtree_recognition.cppまずはkd-treeです。えー、kd-treeとは、・・・というのは面倒なのでググってください。高次元データを効率よく検索するための木構造です。一般的には数十次元くらいまで高速に検索できると言われていますが、それ以上になると次元の呪いにより検索効率は落ちてきます。今回は、局所特徴量128次元なのですが線形探索に比べて大幅に高速化できました。
+// キーポイントの特徴ベクトルをobjMat行列にロード
+cout << "物体モデルデータベースをロードします ... " << flush;
+vector<int> labels;     // キーポイントのラベル(objMatに対応)
+vector<int> laplacians;  // キーポイントのラプラシアン
+CvMat* objMat;           // 各行が物体のキーポイントの特徴ベクトル
+if (!loadDescription(DESC_FILE, labels, laplacians, objMat)) {
+cerr << "cannot load description file" << endl;
+return 1;
+}
+cout << "OK" << endl;
+// 物体モデルデータベースをインデキシング
+cout << "物体モデルデータベースをインデキシングします ... " << flush;
+CvFeatureTree* ft = cvCreateKDTree(objMat);  // objMatはコピーされないので解放してはダメ
+cout << "OK" << endl;
+kd-treeを作るにはcvCreateKDTree()関数を使います。引数は、1行に1データの行列です。物体モデルデータベースの全特徴量をobjMat(全特徴量数x128次元の行列)に展開しています。objMatのデータはコピーされずポインタをkd-treeに格納しているのでobjMatは最後まで解放してはダメです。
+// クエリのキーポイントの特徴ベクトルをCvMatに展開
+CvMat* queryMat = cvCreateMat(queryDescriptors->total, DIM, CV_32FC1);
+CvSeqReader reader;
+float* ptr = queryMat->data.fl;
+cvStartReadSeq(queryDescriptors, &reader);
+for (int i = 0; i < queryDescriptors->total; i++) {
+float* descriptor = (float*)reader.ptr;
+CV_NEXT_SEQ_ELEM(reader.seq->elem_size, reader);
+memcpy(ptr, descriptor, DIM * sizeof(float));  // DIM次元の特徴ベクトルをコピー
+ptr += DIM;
+}
+// kd-treeで1-NNのキーポイントインデックスを検索
+int k = 1;  // k-NNのk
+CvMat* indices = cvCreateMat(queryKeypoints->total, k, CV_32SC1);   // 1-NNのインデックス
+CvMat* dists = cvCreateMat(queryKeypoints->total, k, CV_64FC1);     // その距離
+cvFindFeatures(ft, queryMat, indices, dists, k, 250);
+クエリの特徴ベクトル群を行列(CvMat)に展開して各特徴ベクトルの最近傍をkd-treeから検索する部分です。cvFindFeatures()という関数を使います。第1引数は、kd-treeです。第2引数はクエリ行列(各行がそれぞれクエリ画像の局所特徴量のベクトル)です。クエリ行列を与えると各特徴ベクトルのk-NNをまとめて計算できるようになってます。クエリが1つの特徴ベクトルの場合でもいったんCvMatに展開しないとダメなようですね。indicesとdistsは、クエリ行列と同じ行数を持つ行列で、クエリの各特徴ベクトルのk-NNのインデックスとクエリからの距離がそれぞれ格納されます。今回はk=1で1-NN(最近傍)の探索なので列数は1の縦に長い行列になります。k-NNを探索したい場合は、k列になります。小さなデータで試してみたところ距離はユークリッド距離で計算されているようです。
+LSH
+lsh_recognition.cpp次にLSHを試してみます。実はLSHの実装はOpenCV2.0から追加されたようでマニュアルにも説明が書かれていませんでした。そんなわけでちょっと時間をかけてOpenCV2.0/src/cv/cvlsh.cppを解読して使い方を調べてみました。
+// キーポイントの特徴ベクトルをobjMat行列にロード
+cout << "物体モデルデータベースをロードします ... " << flush;
+vector<int> labels;      // キーポイントのラベル(objMatに対応)
+vector<int> laplacians;  // キーポイントのラプラシアン
+CvMat* objMat;           // 各行が物体のキーポイントの特徴ベクトル
+if (!loadDescription(DESC_FILE, labels, laplacians, objMat)) {
+cerr << "cannot load description file" << endl;
+return 1;
+}
+cout << "OK" << endl;
+// 物体モデルデータベースをインデキシング
+cout << "物体モデルデータベースをインデキシングします ... " << flush;
+CvLSH* lsh = cvCreateMemoryLSH(DIM, 100000, 5, 64, CV_32FC1);
+cvLSHAdd(lsh, objMat);
+cout << "OK" << endl;
+cout << "LSH Size: " << LSHSize(lsh) << endl;
+// 以後はLSHに格納されたデータを使うのでオリジナルはいらない
+cvReleaseMat(&objMat);
+LSHの作成は、cvCreateMemoryLSH()という関数を使います。
+CvLSH* cvCreateMemoryLSH(int d, int n, int L, int k, int type, double r, int64 seed) 
+dは、オリジナルデータの次元数です。今回はSURF特徴量なのでd=128ですね。nはハッシュテーブルのサイズです。これはかなり微妙なパラメータですが適当に100000にしてみました。値が大きいほどメモリは食いますが衝突がおきにくくなるので検索が高速になるようです。LとkはLSHの中核をなすパラメータです。Lはハッシュテーブルの数でkはハッシュキーの次元数です(k-NNのkとややこしいですが無関係)。d次元データは、k次元のハッシュキーに変換され、L個のハッシュテーブルに格納されます(実装ではL個のハッシュテーブルを作らず、サイズnのハッシュテーブルを1つ用意してデータの格納をL回繰り返しているようです)。LSHの詳しい解説は参考文献を見てください。今回の例では、L=5、k=64としています。何か最適のLとkの式が論文に書いてあるんですがその通りやったらうまくいきませんでした。今回はいろんなパラメータで試行錯誤Lとkを決めてます。ここら辺はもう少し追求したい。LSHへデータを格納するのがcvLSHAdd()という関数です。
+void cvLSHAdd(CvLSH* lsh, const CvMat* data, CvMat* indices)
+lshは、cvCreateMemoryLSHが返したLSHです。dataは、格納すべきデータです。1行に1データの行列(CvMat)に展開してからまとめてAddできます。今回の例だとdataは、局所特徴点の数xSURFの次元数(=128)の行列になります。kd-treeと違って、objMatのデータをコピーしてLSHに格納しているのでlshを作成した後はobjMatはいらないので解放してます。objMatが巨大だとobjMatとlshの両方で2倍のメモリを使うためデータ全部をobjMatに展開せず、少しずつディスクからロードしてcvLSHAdd()を繰り返したほうがメモリ効率はよさそうです。
+// クエリのキーポイントの特徴ベクトルをCvMatに展開
+CvMat* queryMat = cvCreateMat(queryDescriptors->total, DIM, CV_32FC1);
+CvSeqReader reader;
+float* ptr = queryMat->data.fl;
+cvStartReadSeq(queryDescriptors, &reader);
+for (int i = 0; i < queryDescriptors->total; i++) {
+float* descriptor = (float*)reader.ptr;
+CV_NEXT_SEQ_ELEM(reader.seq->elem_size, reader);
+memcpy(ptr, descriptor, DIM * sizeof(float));  // DIM次元の特徴ベクトルをコピー
+ptr += DIM;
+}
+// kd-treeで1-NNのキーポイントインデックスを検索
+int k = 1;  // k-NNのk
+CvMat* indices = cvCreateMat(queryKeypoints->total, k, CV_32SC1);   // 1-NNのインデックス
+CvMat* dists = cvCreateMat(queryKeypoints->total, k, CV_64FC1);     // その距離
+cvLSHQuery(lsh, queryMat, indices, dists, k, 100);
+クエリの特徴ベクトル群を行列(CvMat)に展開して各特徴ベクトルの最近傍をkd-treeから検索する部分です。cvLSHQuery()という関数を使います。インタフェースは、kd-treeのcvFindFeatures()とほとんど同じです。LSHの作者があわせてくれたんですね。LSHのソースコードを読んでみましたが、ユークリッド距離空間のLSHを使っていました。実装は、Andoni氏のE2LSHと同じようです。
+実行時間の比較
+ためしに実験してみます。環境ですがCPUはCorei7 2.67GHz、メモリ3GBです。前回の線形探索と同じCaltech101のサブセットを使います。
+kd-treeの結果
+物体ID->物体名のハッシュを作成します ... OK
+物体モデルデータベースをロードします ... OK
+物体モデルデータベースをインデキシングします ... OK
+物体モデルデータベースの物体数: 990
+データベース中のキーポイント数: 321935
+Loading Models Time = 78036.5ms
+query? > dolphin_image_0001.jpg
+../dataset/caltech101_10/dolphin_image_0001.jpg
+クエリのキーポイント数: 183
+識別結果: dolphin_image_0001.jpg
+Recognition Time = 269.143ms
+query? > butterfly_image_0001.jpg
+../dataset/caltech101_10/butterfly_image_0001.jpg
+クエリのキーポイント数: 423
+識別結果: butterfly_image_0001.jpg
+Recognition Time = 216.022ms
+query? > LSHの結果
+物体ID->物体名のハッシュを作成します ... OK
+物体モデルデータベースをロードします ... OK
+物体モデルデータベースをインデキシングします ... OK
+LSH Size: 321935
+物体モデルデータベースの物体数: 990
+データベース中のキーポイント数: 321935
+Loading Models Time = 72197.6ms
+query? > dolphin_image_0001.jpg
+../dataset/caltech101_10/dolphin_image_0001.jpg
+クエリのキーポイント数: 203
+識別結果: dolphin_image_0001.jpg
+Recognition Time = 51.9376ms
+query? > butterfly_image_0001.jpg
+../dataset/caltech101_10/butterfly_image_0001.jpg
+クエリのキーポイント数: 453
+識別結果: butterfly_image_0001.jpg
+Recognition Time = 92.3854ms
+query? > どちらもクエリと同じ画像を識別結果として返しているので正解ですね。線形探索と同様クエリ画像を少しくらい変形しても正しく認識できます。計算時間は、線形探索は23秒と52秒だったのでkd-treeとLSHは桁違いに速いことがわかります。kd-treeとLSHを比べるとLSHのほうが数倍早いです。もっと大きなデータだとさらに差がつきそうです。どちらも200MBくらいメモリを消費します(LSHはobjMatを解放するまでx2倍かかってます)。リアルタイム認識も普通のPCでもできました。
+3日で作る高速特定物体認識システム (7) 最近傍探索の高速化 - 人工知能に関する断創録

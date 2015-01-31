@@ -1,0 +1,37 @@
+
+#include <stdio.h>
+#include <string.h>
+int main(int argc, char **argv){
+char b64[128], *w = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+char *p, c[4], *buff = p;
+int i = 0, j;
+if(argc != 2){
+fprintf(stderr, "引数に文字列を指定してください。\n");
+return 1;
+}
+p = argv[1]
+/* 変換テーブルの作成 */
+for(j = 0; j < 65; j++)b64[w[j]] = j % 64;
+while(*p){
+/* 4文字ずつ変換 */
+for(j = 0; j < 4; j++)c[j] = b64[*(p++)];
+for(j = 0; j < 3; j++)buff[i++] = c[j] << (j * 2 + 2) | c[j + 1] >> ((2 - j) * 2);
+}
+buff[i] = '\0';
+puts(buff);
+return 0;
+}
+実行例
+$ ./a.exe I2luY2x1ZGUgPHN0ZGlvLmg+
+#include <stdio.h>
+おまけ(ショートコーディング)
+2つ目のfor文がミソ
+charを使いたかったので、mainの引数の型宣言を省けなかったのが痛い。。
+main(int i, char **p){
+char  *w = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", j = 64, c[4], x[128];
+for(; --j; x[w[j]] = j % 64);
+for(++p; **p; j = ++j % 4)c[j] = x[*(*p)++], j && putchar(c[j - 1] << j * 2 | c[j] >> (3 - j) * 2);
+}
+スペース改行省いて211バイト。。まだ何とかなりそう・・
+ツイートする
+ちゃらっと書いてみたBase64デコードのソース(C言語) - ほんまの走り書き技術メモ

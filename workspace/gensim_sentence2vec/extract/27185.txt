@@ -1,0 +1,272 @@
+Courseraの機械学習ネタの続き。今回はロジスティック回帰をやってみます。回帰と付くのになぜか分類のアルゴリズム。以前、PRMLの数式をベースにロジスティック回帰(2010/4/30)を書いたけど今回はもっとシンプル。以下の3つの順にやってみたいと思います。
+勾配降下法によるパラメータ最適化
+共役勾配法(2014/4/14)によるパラメータ最適化(学習率いらない!速い!)
+正則化項の導入と非線形分離
+ロジスティック回帰は線形分離だけだと思ってたのだけど、データの高次の項を追加することで非線形分離もできるのか・・・使用したデータファイルなどはGithubにあります。
+https://github.com/sylvan5/PRML/tree/master/ch4
+勾配降下法によるパラメータ最適化
+2クラスのロジスティック回帰は、y=0(負例)またはy=1(正例)を分類するタスク。ロジスティック回帰の仮説は
+で表される。線形回帰(2014/4/1)の仮説の出力を下のシグモイド関数 g(z) に通すのがポイント。シグモイド関数を通すことでロジスティック回帰の仮説は、 を返すようになり、入力xが正例(y=1)に分類される確率と解釈できます。そのため、 のときy=1、 のときy=0と分類すればよい。ロジスティック写像のコスト関数は、二乗誤差関数ではなく、以下の交差エントロピー誤差関数を使います。PRMLを読んでいたときこの誤差関数がどこから出てきたのか不思議だったのだけど、この講義ではどういう考え方でこの形になったかわかりやすく解説されていました。誤差関数の偏微分は、で表されます。コスト関数とその導関数があれば、前回の共役勾配法で簡単に求まるけれど、その前に勾配降下法で解いてみよう。
+#coding: utf-8
+import numpy as np
+import matplotlib.pyplot as plt
+"""
+ロジスティック回帰
+交差エントロピー誤差関数の勾配降下法で解く
+"""
+def plotData(X, y):
+# positiveクラスのデータのインデックス
+positive = [i for i in range(len(y)) if y[i] == 1]
+# negativeクラスのデータのインデックス
+negative = [i for i in range(len(y)) if y[i] == 0]
+plt.scatter(X[positive, 0], X[positive, 1], c='red', marker='o', label="positive")
+plt.scatter(X[negative, 0], X[negative, 1], c='blue', marker='o', label="negative")
+def sigmoid(z):
+return 1.0 / (1 + np.exp(-z))
+def safe_log(x, minval=0.0000000001):
+return np.log(x.clip(min=minval))
+def computeCost(X, y, theta):
+# 二乗誤差関数ではなく、交差エントロピー誤差関数を使用
+h = sigmoid(np.dot(X, theta))
+J = (1.0 / m) * np.sum(-y * safe_log(h) - (1 - y) * safe_log(1 - h))
+return J
+def gradientDescent(X, y, theta, alpha, iterations):
+m = len(y)      # 訓練データ数
+J_history = []  # 各更新でのコスト
+for iter in range(iterations):
+# sigmoid関数を適用する点が線形回帰と異なる
+h = sigmoid(np.dot(X, theta))
+theta = theta - alpha * (1.0 / m) * np.dot(X.T, h - y)
+cost = computeCost(X, y, theta)
+print iter, cost
+J_history.append(cost)
+return theta, J_history
+if __name__ == "__main__":
+# 訓練データをロード
+data = np.genfromtxt("ex2data1.txt", delimiter=",")
+X = data[:, (0, 1)]
+y = data[:, 2]
+# 訓練データ数
+m = len(y)
+# 訓練データをプロット
+plt.figure(1)
+plotData(X, y)
+# 訓練データの1列目に1を追加
+X = X.reshape((m, 2))
+X = np.hstack((np.ones((m, 1)), X))
+# パラメータを0で初期化
+theta = np.zeros(3)
+iterations = 300000
+alpha = 0.001
+# 初期状態のコストを計算
+initialCost = computeCost(X, y, theta)
+print "initial cost:", initialCost
+# 勾配降下法でパラメータ推定
+theta, J_history = gradientDescent(X, y, theta, alpha, iterations)
+print "theta:", theta
+print "final cost:", J_history[-1]
+# コストの履歴をプロット
+plt.figure(2)
+plt.plot(J_history)
+plt.xlabel("iteration")
+plt.ylabel("J(theta)")
+# 決定境界を描画
+plt.figure(1)
+xmin, xmax = min(X[:,1]), max(X[:,1])
+xs = np.linspace(xmin, xmax, 100)
+ys = [- (theta[0] / theta[2]) - (theta[1] / theta[2]) * x for x in xs]
+plt.plot(xs, ys, 'b-', label="decision boundary")
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.xlim((30, 100))
+plt.ylim((30, 100))
+plt.legend()
+plt.show()
+実行結果は、
+initial cost: 0.69314718056
+theta: [-9.25573205  0.07960975  0.07329322]
+final cost: 0.283686931959
+学習率を0.001とかなり小さくしているので繰り返し回数が30万回とかなり大きくしないと収束しませんでした。もっと収束を速くしようと学習率を0.01くらいに上げると今度は収束せずに発散してしまいます。ここら辺のさじ加減が難しい。ときどきlog()に0が渡ってランタイムエラーが起きるのでそれを防ぐためにsafe_log()を導入しています。
+共役勾配法によるパラメータ最適化
+共役勾配法の使い方は共役勾配法によるコスト関数最適化(2014/4/14)で書きました。コスト関数 J() とその偏微分 gradient() を定義してscipy.optimize.fmin_cgに渡すだけでコスト関数を最小化する最適なパラメータを計算してくれます。gradient()の戻り値のgradは各パラメータでの偏微分なのでリストになっている点、パラメータ以外の教師データ (X, y) はargsを通して渡す点が実装上のポイントかな。
+#coding: utf-8
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import optimize
+"""
+ロジスティック回帰
+共役勾配法(Conjugate Gradient Method)で解く
+"""
+def plotData(X, y):
+# positiveクラスのデータのインデックス
+positive = [i for i in range(len(y)) if y[i] == 1]
+# negativeクラスのデータのインデックス
+negative = [i for i in range(len(y)) if y[i] == 0]
+plt.scatter(X[positive, 0], X[positive, 1], c='red', marker='o', label="positive")
+plt.scatter(X[negative, 0], X[negative, 1], c='blue', marker='o', label="negative")
+def sigmoid(z):
+return 1.0 / (1 + np.exp(-z))
+def J(theta, *args):
+"""コスト関数"""
+def safe_log(x, minval=0.0000000001):
+return np.log(x.clip(min=minval))
+X, y = args
+m = len(y)
+h = sigmoid(np.dot(X, theta))
+return (1.0 / m) * np.sum(-y * safe_log(h) - (1 - y) * safe_log(1 - h))
+def gradient(theta, *args):
+"""コスト関数Jの偏微分"""
+X, y = args
+m = len(y)
+h = sigmoid(np.dot(X, theta))
+grad = (1.0 / m) * np.dot(X.T, h - y)
+return grad
+if __name__ == "__main__":
+# 訓練データをロード
+data = np.genfromtxt("ex2data1.txt", delimiter=",")
+X = data[:, (0, 1)]
+y = data[:, 2]
+# 訓練データ数
+m = len(y)
+# 訓練データをプロット
+plt.figure(1)
+plotData(X, y)
+# 訓練データの1列目に1を追加
+X = X.reshape((m, 2))
+X = np.hstack((np.ones((m, 1)), X))
+# パラメータを0で初期化;
+initial_theta = np.zeros(3)
+# 初期状態のコストを計算
+print "initial cost:", J(initial_theta, X, y)
+# Conjugate Gradientでパラメータ推定
+theta = optimize.fmin_cg(J, initial_theta, fprime=gradient, args=(X, y))
+print "theta:", theta
+print "final cost:", J(theta, X, y)
+# 決定境界を描画
+plt.figure(1)
+xmin, xmax = min(X[:,1]), max(X[:,1])
+xs = np.linspace(xmin, xmax, 100)
+ys = [- (theta[0] / theta[2]) - (theta[1] / theta[2]) * x for x in xs]
+plt.plot(xs, ys, 'b-', label="decision boundary")
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.xlim((30, 100))
+plt.ylim((30, 100))
+plt.legend()
+plt.show()
+実行結果は、
+Optimization terminated successfully.
+Current function value: 0.203498
+Iterations: 244
+Function evaluations: 588
+Gradient evaluations: 588
+theta: [-25.16708315   0.20627763   0.20151821]
+final cost: 0.203497706505勾配降下法と比べて圧倒的に速い上に誤差がさらに小さい解が見つかっています。学習率も設定しなくてよいので簡単!
+正則化項の導入と非線形分離
+最後にロジスティック回帰で非線形分離ができるか試してみます。非線形分離では、後で述べるようにパラメータ数を多くする必要があるため過学習が起きないように初めに正則化を導入しておきます。正則化項を入れたロジスティック回帰のコスト関数は、で与えられます。後ろに正則化項が付くのがポイント。また、正則化項でj=0のパラメータは含まないのもポイント。このコスト関数の偏微分は、
+となります。非線形分離したい場合は、もとの変数の高次の項をデータに追加すればよい。それをしているのがmapFeature()関数。もとは、x1とx2の2次元特徴量だけれど、6次の項まで拡張するので最終的に28次元特徴量になります。パラメータ数が3から28まで跳ね上がるので、完全にオーバーフィッティングしそうだけど、そのために正則化があるのだ!
+#coding: utf-8
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import optimize
+"""
+正則化ロジスティック回帰
+高次元の特徴量を追加することで曲線でデータを分類する
+共役勾配法(Conjugate Gradient)で解く
+"""
+def plotData(X, y):
+# positiveクラスのデータのインデックス
+positive = [i for i in range(len(y)) if y[i] == 1]
+# negativeクラスのデータのインデックス
+negative = [i for i in range(len(y)) if y[i] == 0]
+plt.scatter(X[positive, 0], X[positive, 1], c='red', marker='o', label="positive")
+plt.scatter(X[negative, 0], X[negative, 1], c='blue', marker='o', label="negative")
+def mapFeature(X1, X2, degree=6):
+"""
+特徴X1と特徴X2を組み合わせたdegree次の項まで特徴をデータに追加
+バイアス項に対応するデータ1も追加
+"""
+# データ行列に1を追加
+m = X1.shape[0]
+X = np.ones((m, 1))
+for i in range(1, degree + 1):
+for j in range(0, i + 1):
+newX = (X1 ** (i - j) * X2 ** j).reshape((m, 1))
+X = np.hstack((X, newX))
+return X
+def sigmoid(z):
+return 1.0 / (1 + np.exp(-z))
+def J(theta, *args):
+"""正則化ロジスティック回帰のコスト関数"""
+def safe_log(x, minval=0.0000000001):
+return np.log(x.clip(min=minval))
+X, y, lam = args
+# 二乗誤差関数ではなく、交差エントロピー誤差関数を使用
+h = sigmoid(np.dot(X, theta))
+return (1.0 / m) * np.sum(-y * safe_log(h) - (1 - y) * safe_log(1 - h)) + lam / (2 * m) * np.sum(theta[1:] ** 2)
+def gradient(theta, *args):
+"""コスト関数の各パラメータでの偏微分のリストを返す"""
+X, y, lam = args
+h = sigmoid(np.dot(X, theta))
+grad = np.zeros(theta.shape[0])
+grad[0] = (1.0 / m) * np.sum(h - y)
+grad[1:] = (1.0 / m) * np.dot(X[:,1:].T, h - y) + (lam / m) * theta[1:]
+return grad
+if __name__ == "__main__":
+# 訓練データをロード
+data = np.genfromtxt("ex2data2.txt", delimiter=",")
+X = data[:, (0, 1)]
+y = data[:, 2]
+# 訓練データ数
+m = len(y)
+# 訓練データをプロット
+plt.figure(1)
+plotData(X, y)
+# 特徴量のマッピング
+# 元の特徴量の6次までの多項式項を追加
+# 1列目の1も追加する
+X = mapFeature(X[:, 0], X[:, 1], 6)
+# パラメータを0で初期化
+initial_theta = np.zeros(X.shape[1])
+lam = 1.0
+# 初期状態のコストを計算
+print "initial cost:", J(initial_theta, X, y, lam)
+# Conjugate Gradientでコスト関数を最適化するパラメータを求める
+# コスト関数Jとその偏微分gradientの関数オブジェクトを渡す
+theta = optimize.fmin_cg(J, initial_theta, fprime=gradient, args=(X, y, lam))
+print "theta:", theta
+print "final cost:", J(theta, X, y, lam)
+# 決定境界を描画
+plt.figure(1)
+gridsize = 100
+x1_vals = np.linspace(-1, 1.5, gridsize)
+x2_vals = np.linspace(-1, 1.5, gridsize)
+x1_vals, x2_vals = np.meshgrid(x1_vals, x2_vals)
+z = np.zeros((gridsize, gridsize))
+for i in range(gridsize):
+for j in range(gridsize):
+x1 = np.array([x1_vals[i, j]])
+x2 = np.array([x2_vals[i, j]])
+z[i, j] = np.dot(mapFeature(x1, x2), theta)
+# 決定境界はsigmoid(z)=0.5、すなわちz=0の場所
+plt.contour(x1_vals, x2_vals, z, levels=[0])
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.xlim((-1, 1.5))
+plt.ylim((-1, 1.5))
+plt.legend()
+plt.show()
+実行結果は、
+initial cost: 0.69314718056
+Optimization terminated successfully.
+Current function value: 0.529003
+Iterations: 18
+Function evaluations: 53
+Gradient evaluations: 53
+theta: [ 1.27257436  0.62529974  1.18105434 -2.01959854 -0.91720416 -1.43135806
+0.12413601 -0.36557735 -0.35743292 -0.17482593 -1.45831068 -0.0512377
+-0.61580723 -0.27469253 -1.19281652 -0.24221793 -0.20605881 -0.04496603
+-0.27780105 -0.29547585 -0.45639359 -1.04351029  0.02759301 -0.29256359
+0.01542301 -0.32749156 -0.14394421 -0.92493299]
+final cost: 0.52900273444試しにとして正則化項を削除してみると下のように見事にオーバーフィッティングするのが確認できました。ロジスティック回帰は最近知ったのだけれど思ったより強力なアルゴリズムでした。
+共役勾配法によるロジスティック回帰のパラメータ推定 - 人工知能に関する断創録

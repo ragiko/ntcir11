@@ -1,0 +1,868 @@
+%#! platex UserGuideJa
+\chapter{アプリケーションとライブラリ}
+\label{chap:3}
+\index{OpenFOAM!アプリケーション}%
+\index{OpenFOAM!ライブラリ}%
+\index{アプリケーション}%
+\index{ライブラリ}%
+繰り返しいいますが,OpenFOAMは実行のために,
+基本的にC++のライブラリを用いています.
+OpenFOAMはプリコンパイル済みの数多くのアプリケーションで
+構成されていますがユーザが独自に作成したり
+従来のものを修正しても構いません.
+アプリケーションは大きく二つのカテゴリに分けられています.
+\begin{description}
+\item[ソルバ] 数値連続体力学の特定の問題を解くためのもの
+\item[ユーティリティ] 主にデータ操作や代数計算を主に行う
+前後処理を実行するもの
+\end{description}
+OpenFOAMは一連のプリコンパイル済ライブラリに分けられ,
+それらはソルバとユーティリティの集合体をダイナミックにリンクします.
+ユーザが適宜独自のモデルをライブラリに追加できるように
+物理的モデルのこのようなライブラリはソースコードとして与えられます.
+この章ではソルバ,ユーティリティ,ライブラリの概説と
+これらの作成,修正,編集,実行方法について述べます.
+\section{OpenFOAMのプログラミング言語}
+\label{sec:3.1}
+OpenFOAMライブラリのはたらきを理解するためには
+OpenFOAMの基本言語であるC++の予備知識がいくらか必要となります.
+そのために不可欠な知識が本章にあります.
+その前に重要なことは,オブジェクト指向プログラミングや
+OpenFOAMのメインプログラミング言語としてのC++の選択の背景として
+一般論で様々な考えを説明するための言語の概念に着目することです.
+\subsection{言語とは}
+\label{ssec:3.1.1}
+話し言葉と数学が普及したのは,特に抽象的な概念を表現する際の,効率性によるものでした.
+その例として,流量について,
+「速度場 (velocity field)」という言葉を私たちが使うとき,
+流れの性質の言及もせず,何ら具体的な速度データがなくとも使っています.
+その言葉の中には,運動の向きと大きさやその他の
+物理的性質との関係の概念が要約されています.
+これを数学にすると,「速度場」を$\bm{U}$などの簡易な記号で表し,
+また速度場の大きさを表したいときには$|\bm{U}|$として表記します.
+数学は口話よりも効率性に優れ,複雑な概念を極めて明快に表現できます.
+連続体力学の中で解析しようとしている問題は,
+固有の構成要素やタイプとして表現されたものでもなく,
+コンピュータの認識する,
+いわゆるビット,バイト,数値などの概念とも異なります.
+問題はいつも,まず口話で提起され,空間と時間の三次元での
+偏微分方程式として表現されます.
+それらの方程式はスカラ,ベクトル,テンソル
+そしてそれらの場,テンソル代数,テンソル解析,次元の単位などの
+概念を含んでおり,これらの解は離散化手法やマトリクス,
+ソルバそして解法アルゴリズムを必要とします.
+\subsection{オブジェクト指向とC++}
+\label{ssec:3.1.2}
+C++のようなオブジェクト指向のプログラミング言語は,
+宣言の型としてクラスという考え方を採用しており,
+口語の部分や科学計算や技術計算に用いられる
+数学的な言語を取り扱っています.
+先に紹介した速度場はプログラミングコードでは記号\texttt{U}で表され,
+速度場の大きさは\texttt{mag(U)}で表されます.
+速度はベクトル場であり,
+オブジェクト指向コードでは\texttt{vectorField}クラスとなります.
+速度場\texttt{U}は,オブジェクト指向の項であることから,
+この場合\texttt{vectorField}クラスのインスタンス,
+あるいはオブジェクトとということになります.
+プログラミングの中で,
+物理的なオブジェクトと抽象的な構成要素を表現する
+オブジェクト指向のもっている明瞭さを過小評価してはいけません.
+クラス構造は,クラス自身など,
+開発したコードの領域を包含する集合であるから,
+容易にコードを管理することができます.
+新しいクラスには,他のクラスからのプロパティを
+継承させることができることから,
+\texttt{vectorField}には\texttt{vector}クラスと
+\texttt{Field}クラスを継承させることができます.
+C++はテンプレートクラスのメカニズムを備えています.
+例えばテンプレートクラス\texttt{Field}は\texttt{scalar},
+\texttt{vector},\texttt{tensor}など
+どんな\texttt{}の\texttt{Field}も表現できます.
+テンプレートクラスの一般的な特性はテンプレートから作成される
+どんなクラスにも通じます.
+テンプレート化や継承はコードの重複を減らし,
+コードの全体構造を決めるクラスのヒエラルキを作ります.
+\subsection{方程式の説明}
+\label{ssec:3.1.3}
+OpenFOAMの設計の中心的なテーマは,
+OpenFOAMのクラスを用いて書かれたソルバのアプリケーションであり,
+偏微分方程式の解法と非常に似た構造をもっています.例えば方程式
+\begin{align*}
+\frac{\partial\rho\bm{U}}{\partial t} + \nabla \cdot \phi\bm{U}
+- \nabla \cdot \mu\nabla\bm{U} = -\nabla p
+\end{align*}
+はコード
+\begin{OFverbatim}[file]
+solve
+(
+fvm::ddt(rho, U)
++ fvm::div(phi, U)
+- fvm::laplacian(mu, U)
+==
+- fvc::grad(p)
+);
+\end{OFverbatim}
+で表されます.
+これらの必要条件として,
+OpenFOAMの主たるプログラミング言語が継承やテンプレートクラス,
+仮想関数,演算子の多重定義といったオブジェクト指向的特徴を
+もっていることが必要です.
+これらの特性は,Fortran~90のようにオブジェクト指向と称しつつ
+実際には非常に限られたオブジェクト指向の能力しか
+もっていない多くの言語では十分に利用できません.
+しかし,C++はこれらの特性をすべてもつうえに,
+効率性の良い実行ファイルを作り出す信頼性のあるコンパイラを
+使えるように標準的な仕様が定められたうえで広く使われている
+というさらなる長所をもっています.
+ゆえにOpenFOAMの主要言語なのです.
+\subsection{ソルバコード}
+\label{ssec:3.1.4}
+ソルバコードは,解法アルゴリズムと方程式の手続き上の
+説明のようなものなので当然のようにほとんど手続きです.
+オブジェクト指向やソルバを書くための
+C++プログラミングへの深い知識は必要ありませんが,
+オブジェクト指向やクラスの原理やいくらかC++コードの
+構文の基礎知識は知っておくべきでしょう.
+基礎的な方程式やモデルや解法の理解やアルゴリズムは非常に重要です.
+ユーザはたいていの場合OpenFOAMクラスのどんなコードでも
+深く考える必要はありません.
+オブジェクト指向の真髄はユーザが何もしなくてもよいところにあります.
+単にクラスの在り方と機能の知識だけでクラスを使うのに十分です.
+それぞれのクラスやその機能などの説明は,
+OpenFOAMの配布物の中にDoxygenで生成されたHTMLのドキュメントとして
+供給されており,
+\OFpath{\$WM\_PROJECT\_DIR/doc/\allowbreak Doxygen/html/index.html}にあります.
+\section{アプリケーションやライブラリのコンパイル}
+\label{sec:3.2}
+コンパイルはアプリケーションの開発には必要不可欠の部分であり,
+各々のコードのピースがそれ自身,
+OpenFOAMのライブラリに依存している
+コンポーネントにアクセスすることから,
+細心の管理が必要となります.
+多くの場合,これらの構築はUNIX/Linuxシステムでは
+標準のUNIX
+\index{make@\OFtool{make}!スクリプト/エイリアス}%
+\index{スクリプト/エイリアス!make@\OFtool{make}}%
+\OFtool{make}ユーティリティを使ってコンパイルします.
+しかしながら,OpenFOAMはより用途が広く簡便性に優れている,
+\index{wmake@\OFtool{wmake}!スクリプト/エイリアス}%
+\index{スクリプト/エイリアス!wmake@\OFtool{wmake}}%
+\OFtool{wmake}でのコンパイルスクリプトを提供しています.
+実際,\OFtool{wmake}はOpenFOAMのライブラリだけでなく,
+どのコードにも使われています.
+コンパイルのプロセスを理解するために,
+最初にC++のある側面とそのファイル構成について
+\autoref{fig:3.1}で説明します.
+クラスとは,オブジェクトの構築様式,
+データの格納およびクラスのメンバ関数のような
+命令文のセットで定義されるものです.
+クラスの定義を含むファイルは\OFpath{.C}の拡張子をもっており,
+例えばクラスncであればファイル\OFpath{nc.C}と書かれます.
+このファイルは,他のコードとは独立にコンパイルして
+\OFpath{nc.so}のような拡張子\OFpath{.so}をもつ
+オブジェクトライブラリとして知られる
+バイナリ実行ライブラリファイルとすることができます.
+コードの一部を,仮に\OFpath{newApp.C}などとしてコンパイルするとき,
+ユーザーはncクラスを使うことにより,
+\OFpath{nc.C}を再コンパイルしなくても
+ランタイムとして\OFpath{newApp.C}で\OFpath{nc.so}を
+呼び出せばよいことになります.
+これがダイナミックリンクといわれるものです.
+\begin{figure}[ht]
+\includegraphics{fig-3-1}
+\caption{ヘッダファイル,ソースファイル,コンパイル,リンク}
+\label{fig:3.1}
+\end{figure}
+\subsection{ヘッダ\OFpath{.H}ファイル}
+\label{ssec:3.2.1}
+エラーチェックをおこなうにあたって,
+コンパイルするコードの部分がどのクラスで用いられるか,
+また実際の操作でどのように振舞うかを認識しなければなりません.
+それゆえ,(例えば\OFpath{nc.H}のような) \OFpath{.H}ファイル拡張子をもつ
+ヘッダファイルによってクラス宣言が必要です.
+このようなヘッダファイルにはクラス名とその機能が記述されています.
+このファイルは,クラスを用いるあらゆるコード
+(クラス宣言のためのコードも含め)の最初の部分に置きます.
+\OFpath{.C}コードではどの部分でいくつのクラスを用いてもかまいませんが,
+かならずクラス宣言のために\OFpath{.H}ファイルではじめる必要があります.
+クラスは他のクラスのリソースとして使うことができますが,
+その場合も関連付けた\OFpath{.H}ファイルではじめます.
+クラスヒエラルキを再帰的に検索することで,
+結局,上位\OFpath{.C}コードが
+\index{いぞん@依存}%
+依存しているクラス
+(これらの\OFpath{.H}ファイルはdependencyとよばれる) で,
+すべてのクラスに関するヘッダファイルのリストを
+コンパイルすることができます.
+\index{いぞんリスト@依存リスト}%
+依存リストがあればコンパイラはソースファイルが
+最終コンパイル以来アップデートされているかどうかチェックでき,
+選択的に必要な部分だけコンパイルできます.
+ヘッダファイルは,例えば
+\begin{OFverbatim}[file]
+# include "otherHeader.H";
+\end{OFverbatim}
+のような\ 
+\index{# include@\verb+# include+!C++こうぶん@C++構文}%
+\index{C++こうぶん@C++構文!# include@\verb+# include+}%
+\verb|# include|命令文を使ったコードに含まれていますが,
+このようなコードはコンパイラに特定のファイルを読ませるために
+現在のファイルの読み込みを一時中断させます.
+コードの中の,あらゆる独立した部品はヘッダファイルに収めて,
+メインコードの関連箇所でインクルードすることで,
+コード可読性を高めることができます.
+例えば多くのOpenFOAMアプリケーションでは,
+作成フィールドや読み込みフィールドの入力データのコードはコードの始めに
+\OFpath{createFields.H}と名づけられたファイルに含まれます.
+この方法では,ヘッダファイルは単独でクラスの宣言として
+使われるだけではありません.
+以下のようなその他の機能とともに依存リストファイルを
+維持管理するタスクを実行するのが\OFtool{wmake}なのです.
+\begin{itemize}
+\item ソースファイルと,それらが依存しているファイルの
+依存関係リストの自動作成と管理
+\item マルチ・プラットフォームコンパイル適切なディレクトリ構造を通じて
+ハンドルされたマルチプラットフォームでのコンパイルとリンク
+\item マルチ・ランゲージコンパイルとCやC++やJava等のリンケージ
+\item CやC++,Javaのようなマルチ言語でのコンパイルとリンク
+\item デバッグや最適化,並列処理,分析といった
+マルチオプションでのコンパイルとリンク
+\item lex,yacc,IDL,MOCといった,ソースコードの作成プログラムのサポート
+\item ソースファイルリストの簡潔なシンタックス
+\item 新規のコードリストのソースファイルリストの自動生成
+\item 多重分割あるいは静的ライブラリの簡潔なハンドリング
+\item 新しいタイプのマシンへの拡張性
+\item \texttt{make};\texttt{sh},\texttt{ksh}または\texttt{csh};
+\texttt{lex},\texttt{cc}をもついかなるマシンでの
+作業に対する優れた移植性
+\item Apollo,SUN,SGI,HP (HPUX),Compaq (DEC),IBM (AIX),Cray,Ardent,
+Stardent,PC Linux,PPC Linux,NEC,SX4,Fujitsu VP1000での動作確認
+\end{itemize}
+\subsection{\OFtool{wmake}によるコンパイル}
+\label{ssec:3.2.2}
+OpenFOAMのアプリケーションは各アプリケーションのソースコードが
+そのアプリケーション名のディレクトリに置かれるという
+一般的決まりで編成されます.
+最上位ソースファイルはアプリケーション名に拡張子\OFpath{.C}をつけます.
+例えば,newAppというアプリケーションのソースコードは
+\autoref{fig:3.2}に示すようにnewAppのディレクトリに存在し,
+最上位ファイルは\OFpath{newApp.C}となります.
+\begin{figure}[ht]
+\includegraphics{fig-3-2}
+\caption{アプリケーションのディレクトリ構成}
+\label{fig:3.2}
+\end{figure}
+ディレクトリは
+\index{options@\OFpath{options}!ファイル}%
+\index{ファイル!options@\OFpath{options}}%
+\OFpath{options}と
+\index{files@\OFpath{files}!ファイル}%
+\index{ファイル!files@\OFpath{files}}%
+\OFpath{files}の二つのファイルを含んだ
+\index{Make@\OFpath{Make}!ディレクトリ}%
+\index{ディレクトリ!Make@\OFpath{Make}}%
+\OFpath{Make}というサブディレクトリももっており,それについては次節で述べます.
+\subsubsection{ヘッダの読み込み}
+\label{sssec:3.2.2.1}
+コンパイラは,以下の順で
+\OFtool{wmake}で\verb|−I|オプションが指定されたヘッダファイルを検索します.
+\begin{enumerate}
+\item \OFpath{\$WM\_PROJECT\_DIR/src/OpenFOAM/lnInclude}ディレクトリ
+\item \OFpath{newApp/lnInclude}のようなローカルディレクトリ
+\item \OFpath{newApp}のようなローカルディレクトリ
+\item \OFpath{/usr/X11/include}や\OFpath{\$(MPICH\_ARCH\_PATH)/include}のように,
+\index{wmake@\OFtool{wmake}!プラットフォーム}%
+プラットフォームに依存する
+\OFpath{\$WM\_PROJECT\_DIR/wmake/rules/\$WM\_ARCH/}ディレクトリの中の
+ファイルに設定されているパス
+\item \verb|-I|オプションをもつ\OFpath{Make/options}ファイルの中で
+明確に指定されている他のディレクトリ
+\end{enumerate}
+\OFpath{Make/options}ファイルは構文を使っているヘッダファイルを
+配置するためのフルディレクトリパスを含みます.
+\begin{OFverbatim}[file]
+EXE_INC = \
+-I \
+-I \
+...                \
+-I
+\end{OFverbatim}
+ディレクトリ名は頭に\verb|-I|をつけ,
+各行では\verb|EXE_INC|を続けるために構文は\verb|\|を使い,
+最終記入後は\verb|\|をつけないことに注意してください.
+\subsubsection{ライブラリへのリンク}
+\label{sssec:3.2.2.2}
+コンパイラは,以下の\OFtool{wmake}の\verb|-L|オプションで指定された
+ディレクトリパスのオブジェクトライブラリファイルにリンクします.
+\begin{enumerate}
+\item \OFpath{\$FOAM\_LIBBIN}ディレクトリ
+\item \OFpath{\$WM\_DIR/rules/\$WM\_ARCH/}デイレクトリの中に設定された
+機種に依存するパス,例えば,\OFpath{/usr/X11/}や\OFpath{\$(MPICH\_ARCH\_PATH)/lib}
+\item \OFpath{Make/options}ファイルで指定された他のディレクトリ
+\end{enumerate}
+リンクされる実際のライブラリファイルは\verb|-l|オプションで指定し,
+接頭辞\OFpath{lib},ライブラリファイルの拡張子\OFpath{.so}を
+外さなければなりません.
+例えばライブラリ\OFpath{libnew.so}はフラグ\verb|-lnew|に含まれます.
+デフォルトでは,\OFtool{wmake}は以下のライブラリをロードするようになっています
+\begin{enumerate}
+\item \OFpath{\$FOAM\_LIBBIN}ディレクトリからの\OFpath{libOpenFOAM.so}ライブラリ
+\item \OFpath{\$WM\_DIR/rules/\$WM\_ARCH/}ディレクトリの中のファイルに設定された
+機種に依存するライブラリ,
+例えば,\OFpath{/usr/X11/lib}における\OFpath{libm.so}や,
+\OFpath{\$(LAM ARCH PATH)/lib}における\OFpath{liblam.so}
+\item \OFpath{Make/options}ファイルで指定された他のライブラリ
+\end{enumerate}
+\OFpath{Make/options}ファイルは構文を使っているヘッダファイルを
+おくための全ディレクトリパスを含みます.
+\begin{OFverbatim}[file]
+EXE_LIBS = \
+-L \
+-L \
+...              \
+-L \
+-l     \
+-l     \
+...              \
+-l
+\end{OFverbatim}
+繰り返しになりますが,ディレクトリパスは頭に\verb|-L|フラグを付け,
+ライブラリ名は頭に\verb|-l|フラグをつけます.
+\subsubsection{コンパイルすべきソースファイル}
+\label{sssec:3.2.2.3}
+コンパイラはコンパイルすべき\OFpath{.C}ソースファイルのリストが必要です.
+リストはメインの\OFpath{.C}ファイルだけではなく
+特定のアプリケーションのために生成されるがクラスライブラリの中に
+含まれない他のソースファイルも含まれなければなりません.
+例えば,新しいクラスを作成したり,
+特定のアプリケーション用のクラスに
+新しい機能をつけくわえることができます.
+\OFpath{.C}ソースファイルのフルリストは
+\index{Make/files@\OFpath{Make/files}!ファイル}%
+\index{ファイル!Make/files@\OFpath{Make/files}}%
+\OFpath{Make/files}ファイルに
+含む必要があります.当然,アプリケーションは多くなるので,
+フルリストには (例えば前述のアプリケーション例における
+\OFpath{newApp.C}のような) メイン\OFpath{.C}ファイルの名前だけを入れます.
+\OFpath{Make/files}ファイルは\verb|EXE =|構文によって
+指定されたコンパイル済み実行ファイルの名前とフルパスも含みます.
+一般的な決まりではnewAppのようにアプリケーション名をつけることが
+規定されています.
+OpenFOAMのリリースにはパスのために便利な二つの選択肢があります.
+標準的なリリースではアプリケーションは\OFpath{\$FOAM\_APPBIN}に
+保存されますが,ユーザにより開発されたアプリケーションは
+\OFpath{\$FOAM\_USER\_APPBIN}に保存されます.
+もしアプリケーションを開発したら,
+個人のOpenFOAMアプリケーションのためのソースコードを含む
+\OFpath{\$WM\_PROJECT\_USER\_DIR}ディレクトリに
+アプリケーションサブディレクトリを作ることをお薦めします.
+スタンダードアプリケーションと同様に
+各OpenFOAMアプリケーションのソースコードも
+各ディレクトリ内に保存しておいてください.
+ユーザーアプリケーションとスタンダードリリースのものの違いは
+\OFpath{Make/files}ファイルが\OFpath{\$FOAM\_USER\_APPBIN}ディレクトリ内に
+書き込まれている実行可能ファイルを指定していることだけです.
+例としての\OFpath{Make/files}を以下に記載します.
+\begin{OFverbatim}[file]
+newApp.C
+EXE = $(FOAM_USER_APPBIN)/newApp
+\end{OFverbatim}%$
+\subsubsection{\OFtool{wmake}の実行}
+\label{sssec:3.2.2.4}
+\OFtool{wmake}のスクリプトは以下のように入力することで実行されます.
+\begin{OFverbatim}[terminal]
+wmake  
+\end{OFverbatim}
+\texttt{} はコンパイルしようとしているアプリケーションの
+ディレクトリパスです.
+通常,\texttt{} が省略可能な場合には
+\OFtool{wmake}はコンパイル中のアプリケーションのディレクトリ内から実行されます.
+アプリケーションファイルを作成したい場合には \texttt{} は必要ありません.
+しかし \texttt{} は\autoref{tbl:3.1}に示すように
+ライブラリ等の作成の際には指定されることになります.
+\begin{table}[ht]
+\input{tbl/tbl-3-1}
+\caption{\OFtool{wmake}のコンパイルオプション}
+\label{tbl:3.1}
+\end{table}
+\subsubsection{\OFtool{wmake}の環境変数}
+\label{sssec:3.2.2.5}
+参考として,\OFtool{wmake}で使われる環境変数の設定を
+\autoref{tbl:3.2}に示します.
+\begin{table}[ht]
+\input{tbl/tbl-3-2}
+\caption{\OFtool{wmake}の環境変数の設定}
+\label{tbl:3.2}
+\end{table}
+\subsection{依存リストの削除:\OFtool{wclean}と\OFtool{rmdepall}}
+\label{ssec:3.2.3}
+実行に際して,例題における\OFpath{newApp.dep}のように,
+\OFtool{wmake}は拡張子として\OFpath{.dep}をもった依存関係のリストファイルを構築し,
+\OFpath{Make/\$WM\_OPTIONS}ディレクトリの中にファイルのリストを格納します.
+コードを変更してmakeした後などこれらファイルを除去したい場合には,
+\index{wclean@\OFtool{wclean}!スクリプト/エイリアス}%
+\index{スクリプト/エイリアス!wclean@\OFtool{wclean}}%
+\OFtool{wclean}を入力してスクリプトを実行します.
+\begin{OFverbatim}[terminal]
+wclean  
+\end{OFverbatim}
+さらに,\texttt{} はコンパイルされるアプリケーションの
+ディレクトリへのパスです.
+通常,パスが省略できる場合には\OFtool{wclean}はアプリケーションの
+ディレクトリ範囲内で実行されます.
+依存ファイルと\OFpath{Make}ディレクトリのファイルを削除したい場合には,
+\texttt{} は必要ありません.
+しかし,もし\OFkeyword{lib}が \texttt{} に指定されていたら
+ローカルの\OFpath{lnInclude}ディレクトリも同時に削除されます.
+追加のスクリプト,
+\index{rmdepall@\OFtool{rmdepall}!スクリプト/エイリアス}%
+\index{スクリプト/エイリアス!rmdepall@\OFtool{rmdepall}}%
+\OFtool{rmdepall}は実行時に,
+再帰的にディレクトリツリー下の依存関係にあるすべての
+\OFpath{.dep}ファイルを除去します.
+これはOpenFOAMのライブラリが更新されたときには有効な方法です.
+\subsection{コンパイルの例:pisoFoamアプリケーション}
+\label{ssec:3.2.4}
+アプリケーション\OFtool{pisoFoam}のソースコードは
+\OFpath{\$FOAM\_APP/solvers/incompressible/pisoFoam}ディレクトリ内にあり,
+最上位ソースファイルは\OFpath{pisoFoam.C}という名前です.
+\OFpath{pisoFoam.C}ソースコードは
+\begin{OFverbatim}[file, linenum]
+/*---------------------------------------------------------------------------*\
+=========                 |
+\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+\\    /   O peration     |
+\\  /    A nd           | Copyright (C) 2004-2010 OpenCFD Ltd.
+\\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+This file is part of OpenFOAM.
+OpenFOAM is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+You should have received a copy of the GNU General Public License
+along with OpenFOAM.  If not, see .
+Application
+pisoFoam
+Description
+Transient solver for incompressible flow.
+Turbulence modelling is generic, i.e. laminar, RAS or LES may be selected.
+\*---------------------------------------------------------------------------*/
+#include "fvCFD.H"
+#include "singlePhaseTransportModel.H"
+#include "turbulenceModel.H"
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+int main(int argc, char *argv[])
+{
+#include "setRootCase.H"
+#include "createTime.H"
+#include "createMesh.H"
+#include "createFields.H"
+#include "initContinuityErrs.H"
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+InfodivDevReff(U)
+);
+UEqn.relax();
+if (momentumPredictor)
+{
+solve(UEqn == -fvc::grad(p));
+}
+// --- PISO loop
+for (int corr=0; corrcorrect();
+runTime.write();
+Info}としています.
+どのアプリケーションにおいても,
+コマンドラインの入力フォームはコマンドラインで
+アプリーション名に\verb|-help|オプションをつけて
+入力するだけで見つけられます.例えば
+\begin{OFverbatim}[terminal]
+blockMesh -help
+\end{OFverbatim}
+と入力すると以下を含むデータが返ってきます.
+\begin{OFverbatim}[terminal]
+Usage: blockMesh [-region region name] [-case dir] [-blockTopology]
+[-help] [-doc] [-srcDoc]
+\end{OFverbatim}
+角括弧\texttt{[ ]}内の引数はオプショナルフラグです.
+アプリケーションがケースディレクトリ内で実行されると,
+そのケースを作動します.
+あるいは,\texttt{-case}~\OFpath{}オプションでは,
+直接ファイリングシステムで
+どこからでもアプリケーションを実行できるように
+ケースを指定することもできます.
+すべてのUNIX/Linuxの実行方法と同様に,
+アプリケーションは,
+\index{バックグラウンド!プロセス}%
+\index{プロセス!バックグラウンド}%
+バックグラウンドのプロセスで実行しており,
+ユーザがシェルに追加コマンドを与える必要はありません.
+\OFtool{blockMesh}のサンプルをバックグラウンドのプロセスで実行し,
+ケースの進捗をログファイルに出力したい場合には,
+以下のように入力します.
+\begin{OFverbatim}[terminal]
+blockMesh > log &
+\end{OFverbatim}
+\section{アプリケーションの並列実行}
+\label{sec:3.4}
+\index{へいれつ@並列!じっこう@実行}%
+\index{じっこう@実行!へいれつ@並列}%
+この節では複数のプロセッサによる並列処理での
+OpenFOAMの実行方法について説明します.
+OpenFOAMによる並列処理の方法はドメインの分割として知られており,
+ジオメトリと関連したフィールドを解析に用いるプロセッサに合わせて
+ピースに分割します.
+並列処理には,メッシュとフィールドの分割と,
+並列でのアプリケーションの実行がありますが,
+分割したケースの前処理については以降の節で説明します.
+並列処理には,標準のMPI (message passing interface) の実装である
+openMPIというパブリックドメインを使用しています.
+\subsection{メッシュの分解と初期フィールド・データ}
+\label{ssec:3.4.1}
+\index{ぶんかい@分解!フィールドの@フィールドの\jdash}%
+\index{フィールド!ぶんかい@分解}%
+\index{ぶんかい@分解!メッシュの@メッシュの\jdash}%
+\index{メッシュ!ぶんかい@分解}%
+メッシュとフィールドは,
+\index{decomposePar@\OFtool{decomposePar}!ユーティリティ}%
+\index{ユーティリティ!decomposePar@\OFtool{decomposePar}}%
+\OFtool{decomposePar}ユーティリティを用いて分割します.
+この根本的な目的は,最小限の労力でドメインを分割しつつ,
+解析の効率性を向上させようとするものです.
+ジオメトリとフィールドのデータは,
+\index{decomposeParDict@\OFdictionary{decomposeParDict}!ディクショナリ}%
+\index{ディクショナリ!decomposeParDict@\OFdictionary{decomposeParDict}}%
+\OFdictionary{decomposeParDict}と名前のつけられたディクショナリの中で
+指定されたパラメータにより分割されますが,
+このディクショナリは対象とするケースの\OFpath{system}ディレクトリの中に
+おかれている必要があります.
+もしユーザが必要とする場合には,
+\OFpath{interFoam/damBreak}チュートリアルから
+\OFdictionary{decomposeParDict}ディクショナリをコピーすることができます.
+そして,ディクショナリ中のエントリを次のように置き換えます.
+\begin{OFverbatim}[file, linenum=17]
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.0.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+version     2.0;
+format      ascii;
+class       dictionary;
+location    "system";
+object      decomposeParDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+numberOfSubdomains 4;
+method          simple;
+simpleCoeffs
+{
+n               ( 2 2 1 );
+delta           0.001;
+}
+hierarchicalCoeffs
+{
+n               ( 1 1 1 );
+delta           0.001;
+order           xyz;
+}
+manualCoeffs
+{
+dataFile        "";
+}
+distributed     no;
+roots           ( );
+// ************************************************************************* //
+\end{OFverbatim}
+ユーザは,以下に述べる\verb|method|キーワードにより
+指定できる四つの分割方法から選択します.
+\begin{description}
+\item[\OFkeyword{simple}]
+\index{simple@\OFkeyword{simple}!キーワードエントリ}%
+\index{キーワードエントリ!simple@\OFkeyword{simple}}%
+簡単なジオメトリの分割:
+ドメインは$x$,$y$方向に,例えば$x$方向に二つに,
+$y$方向一つにというように,ピースが分割されます.
+\item[\OFkeyword{hierarchical}]
+\index{hierarchical@\OFkeyword{hierarchical}!キーワードエントリ}%
+\index{キーワードエントリ!hierarchical@\OFkeyword{hierarchical}}%
+階層的なジオメトリの分割方法:
+基本的には\OFkeyword{simple}と同じですが,
+ユーザが,最初に$y$方向を,次に$x$方向を,
+というように,各方向の分割する順番を指定する点が異なっています.
+\item[\OFkeyword{scotch}]
+\index{scotch@\OFkeyword{scotch}!キーワードエントリ}%
+\index{キーワードエントリ!scotch@\OFkeyword{scotch}}%
+Scotch分割はユーザからのジオメトリの入力を必要とせず,
+プロセッサの限界の数値を最小化するよう試みます.
+ユーザは,任意指定の
+\index{processorWeights@\OFkeyword{processorWeights}!キーワード}%
+\index{キーワード!processorWeights@\OFkeyword{processorWeights}}%
+\OFkeyword{processorWeights}キーワードにより
+プロセッサ間の重み付けを行うことができるため,
+パフォーマンスの異なるマシン同士を有効に使うことができます.
+また,もう一つ
+\index{strategy@\OFkeyword{strategy}!キーワード}%
+\index{キーワード!strategy@\OFkeyword{strategy}}%
+\OFkeyword{strategy}という任意のキーワードエントリがあり,
+複雑な文字列をScotchに渡すことにより分割の戦略を制御できます.
+さらなる情報を得るには,ソースコードファイル
+\OFpath{\$FOAM\_SRC/decompositionMethods/\allowbreak
+decompositionMethods/scotchDecomp/scotchDecomp.C}を読んでください.
+\item[\OFkeyword{manual}]
+\index{manual@\OFkeyword{manual}!キーワードエントリ}%
+\index{キーワードエントリ!manual@\OFkeyword{manual}}%
+マニュアルでの分割:
+個別のプロセッサに対して,各々のセルの割り当てを直接指定します.
+\end{description}
+これらの各\verb|method|については,
+ディクショナリのリストに示すように,
+\verb|coeffs|と名前の付けられた\OFpath{decompositionDict}の
+サブディクショナリの中で指定された係数のセットがあります.
+\OFpath{decompositionDict}ディクショナリの中にある
+入力のキーワードのフルセットの説明を,\autoref{tbl:3.4}に示します.
+\begin{table}[ht]
+\input{tbl/tbl-3-4}
+\caption{\OFpath{decompositionDict}ディクショナリのキーワード}
+\label{tbl:3.4}
+\end{table}
+\index{decomposePar@\OFtool{decomposePar}!ユーティリティ}%
+\index{ユーティリティ!decomposePar@\OFtool{decomposePar}}%
+\OFtool{decomposePar}ユーティリティは
+以下のように入力することで正常に実行されます.
+\begin{OFverbatim}[terminal]
+decomposePar
+\end{OFverbatim}
+最終的に,ケースディレクトリ内に各プロセッサに一つずつ
+一連のサブディレクトリが作成されるでしょう.
+そのディレクトリはプロセッサナンバを表す$N = 0, 1, \ldots$を用いて
+\index{processorN@\OFpath{processor}$N$!ディレクトリ}%
+\index{ディレクトリ!processorN@\OFpath{processor}$N$}%
+\OFpath{processor}$N$と名づけられ,
+そして分割されたフィールドの説明を含む
+タイムディレクトリや分解されたメッシュの説明を含む
+\OFpath{constant/polyMesh}ディレクトリをもっています.
+\subsection{分解ケースの実行}
+\label{ssec:3.4.2}
+分解されたOpenFOAMのケースはMPIの
+\index{openMPI@\OFemph{openMPI}!メッセージパッシングインターフェイス}%
+\index{メッセージパッシングインターフェイス!openMPI@\OFemph{openMPI}}%
+\index{openMPI@\OFemph{openMPI}!MPI}%
+\index{MPI!openMPI@\OFemph{openMPI}}%
+\OFemph{openMPI}を使って並列実行されます.
+構成されるLAMマルチコンピュータのホストマシンの名前がある
+ファイルを作成する必要があります.
+ファイルには名前とパスを与えることができます.
+以下の記述では,フルパスを含んだ一般的な名前として
+\OFpath{}としています.
+この\OFpath{}ファイルは,1行ごとに
+1台のマシンのリストをもっています.
+これらの名前は,LAMのスタート時にマシンの\OFpath{/etc/hosts}ファイルの
+中のホスト名と,完全に一致させる必要があります.
+リストには,openMPIを実行するマシンの名前をもたせる必要があります.
+ここに,マシンのノードは一つ以上のプロセッサをもっており,
+ノードの名称は\texttt{cpu=}$n$の登録に依存しますが,
+この$n$はノード上でopenMPIが実行されるプロセッサの数です.
+例として,\texttt{aaa},二つのプロセッサをもつ\texttt{bbb},
+\texttt{ccc}というマシン構成から
+マシン\texttt{aaa}をホストとしてopenMPIを実行させるものとします.
+\OFpath{}は次のようにします.
+\begin{OFverbatim}[leftskip=3em]
+aaa
+bbb cpu=2
+ccc
+\end{OFverbatim}
+openMPIはそのとき以下の実行によって起動されます.
+あるアプリケーションを\OFtool{mpirun}を使って並列実行します.
+\begin{OFverbatim}[terminal]
+mpirun --hostfile  -np 
+-parallel > log &
+\end{OFverbatim}
+ここにあげた\verb||はプロセッサーの数,
+\verb||は\OFtool{icoFoam}のような実行可能なファイル名であり,
+アウトプットは\OFpath{log}と名前の付けられたファイルに変更されています.
+例えば,\OFpath{\$FOAM\_RUN/\allowbreak tutorials/incompressible/icoFoam}ディレクトリの中の
+\OFpath{cavity}チュートリアルにおいて\OFpath{icoFoam}を四つのノード上で走らせる場合には,
+以下のコマンドを実行させる必要があります
+\begin{OFverbatim}[terminal]
+mpirun --hostfile machines -np 4 icoFoam -parallel > log &
+\end{OFverbatim}
+\subsection{複数のディスクへのデータの分配}
+\label{ssec:3.4.3}
+例であげたように,ローカルのディスクのみの
+パフォーマンスを向上させるために,
+データファイルを分配する必要が生じる場合が考えられます.
+このようなケースでは,
+ユーザは異なるマシン間のケースディレクトリに対する
+パスを見つけなければなりません.
+その場合には,\OFkeyword{distributed}と\OFkeyword{roots}のキーワードを使って,
+パスを\OFdictionary{decomposeParDict}ディクショナリの中に指定する必要があります.
+\index{distributed@\OFkeyword{distributed}!キーワード}%
+\index{キーワード!distributed@\OFkeyword{distributed}}%
+\OFkeyword{distributed}のエントリが以下のように読み込まれなければなりません.
+\begin{OFverbatim}[leftskip=3em]
+distributed  yes;
+\end{OFverbatim}
+また,
+\index{roots@\OFkeyword{roots}!キーワード}%
+\index{キーワード!roots@\OFkeyword{roots}}%
+\OFkeyword{roots}のエントリは,各々のノードである,
+\verb||,\verb||,\ldots,
+のルートパスのリストとなっています.
+\begin{OFverbatim}[leftskip=3em]
+roots
+(
+""
+""
+...
+);
+\end{OFverbatim}
+\verb||はルートの数です.
+各\OFpath{processor}$N$ディレクトリは,
+\OFdictionary{decomposeParDict}ディクショナリの中で指定された
+各ルートパスにあるケースディレクトリの中に置かなければなりません.
+systemディレクトリや\OFpath{constant}ディレクトリ中のファイルについてもまた,
+各々のケースディレクトリの中にある必要があります.
+\OFpath{constant}ディレクトリの中のファイル類は必要となりますが,
+\OFpath{polyMesh}ディレクトリは必要のないことに注意してください.
+\subsection{並列実行されたケースの後処理}
+\label{ssec:3.4.4}
+並列実行されたケースの後処理時には,
+ユーザにふたつのオプションがあります.
+完全なドメインとフィールドを再生するために
+メッシュとフィールドの再構築を行う.
+ここではノーマルとして後処理を行うことができます.
+分割されたドメインを個別に引数で後処理を行う.
+\subsubsection{メッシュとデータの再構築}
+\label{sssec:3.4.4.1}
+ケースが並列処理された後に,
+後処理によって再構築を行うことができます.
+ケースは,時刻ディレクトリの一つのセットの中にある
+各\OFpath{processor}$N$ディレクトリから,
+時刻ディレクトリのセットを合併操作することにより再構築されます.
+\index{reconstructPar@\OFtool{reconstructPar}!ユーティリティ}%
+\index{ユーティリティ!reconstructPar@\OFtool{reconstructPar}}%
+\OFtool{reconstructPar}ユーティリティは,次のように,
+コマンドラインから実行することにより機能を発揮します
+\begin{OFverbatim}[terminal]
+reconstructPar
+\end{OFverbatim}
+データが異なるディスクに分散されるときには,
+最初に,再構築におけるローカルのケースディレクトリに
+コピーされる必要があります.
+\subsubsection{分解ケースの後処理}
+\label{sssec:3.4.4.2}
+\autoref{sec:6.1}に示すように\OFtool{paraFoam}ポストプロセッサを使って
+分割された各ケースの後処理を行えます.
+シミュレーション全体はケースを再構築することで後処理できますし,
+またはその代わりに個々のプロセッサディレクトリを
+それ自体でひとつのケースとして扱うことで
+個々に分解されたドメインのセグメントを後処理することもできます.
+\section{標準のソルバ}
+\label{sec:3.5}
+OpenFOAMのディストリビューションのソルバは
+\OFpath{\$FOAM\_SOLVERS}ディレクトリの中にあり,
+コマンドラインから\texttt{app}と入力すれば素早く到達できます.
+このディレクトリはさらに,非圧縮流体のような連続体力学,
+対流および固体応力解析等のカテゴリにより,
+いくつかのディレクトリに再分割されています.
+各ソルバには,非圧縮性・層流の\OFtool{icoFoam}ソルバ
+といったように分かりやすい名前がつけられています.
+このOpenFOAMで提供されているソルバのリストを
+\autoref{tbl:3.5}に示します.
+\vskip\floatsep
+\begingroup
+\small
+% \begin{table}[ht]
+\LTXtable{\textwidth}{tbl/tbl-3-5}
+\addtocounter{table}{-1}%
+\tblcaption{標準ライブラリソルバ}
+\label{tbl:3.5}
+% \end{table}
+\endgroup
+\vskip\floatsep
+\section{標準のユーティリティ}
+\label{sec:3.6}
+OpenFOAMで提供されているユーティリティは
+\OFpath{\$FOAM\_UTILITIES}ディレクトリの中にあり,
+コマンドラインで\texttt{util}と打つことにより簡単にアクセスできます.
+名称は内容を記述するようになっており,
+例えば,\OFtool{ideasToFoam}はI-DEASのフォーマットで書かれたデータを
+OpenFOAMのフォーマットに変換します.
+OpenFOAMで配布されている最新のユーティリティリストを
+\autoref{tbl:3.6}に示しておきます.
+\vskip\floatsep
+\begingroup
+\small
+% \begin{table}[ht]
+\LTXtable{\textwidth}{tbl/tbl-3-6}
+\addtocounter{table}{-1}%
+\tblcaption{標準ライブラリユーティリティ}
+\label{tbl:3.6}
+% \end{table}
+\endgroup
+\vskip\floatsep
+\section{標準のライブラリ}
+\label{sec:3.7}
+OpenFOAM配布のライブラリは
+\OFpath{\$FOAM\_LIB/\$WM\_OPTIONS}ディレクトリ内にあり,
+コマンド欄に\texttt{lib}と入力すればすぐに見つかります.
+一方,名前は\texttt{lib}を前につけて,
+例えば\OFclass{incompressibleTransportModels}が非圧縮性の輸送モデルの
+ライブラリを含むというように合理的でかつ説明的です.
+表現を簡単にするためにライブラリは二つのタイプに分けられます.
+\begin{description}
+\item[一般的ライブラリ]
+これらは一般的なクラスや\autoref{tbl:3.7}に
+記載したような関連機能を備えています.
+\item[モデルライブラリ]
+これらは\autoref{tbl:3.8},\autoref{tbl:3.9},\autoref{tbl:3.10}に
+記載した計算連続体力学で使われるモデルを定めます.
+\end{description}
+\vskip\floatsep
+\begingroup
+\small
+% \begin{table}[ht]
+\LTXtable{\textwidth}{tbl/tbl-3-7}
+\addtocounter{table}{-1}%
+\tblcaption{一般的使用のための共有オブジェクトライブラリ}
+\label{tbl:3.7}
+% \end{table}
+\endgroup
+\vskip\floatsep
+\vskip\floatsep
+\begingroup
+\small
+% \begin{table}[ht]
+\LTXtable{\textwidth}{tbl/tbl-3-8}
+\addtocounter{table}{-1}%
+\tblcaption{熱物理モデルのライブラリ}
+\label{tbl:3.8}
+% \end{table}
+\endgroup
+\vskip\floatsep
+\vskip\floatsep
+\begingroup
+\small
+% \begin{table}[ht]
+\LTXtable{\textwidth}{tbl/tbl-3-9}
+\addtocounter{table}{-1}%
+\tblcaption{乱流モデルとLESモデルのライブラリ}
+\label{tbl:3.9}
+% \end{table}
+\endgroup
+\vskip\floatsep
+\begin{table}[ht]
+\input{tbl/tbl-3-10}
+\caption{移送モデルの共有オブジェクトライブラリ}
+\label{tbl:3.10}
+\end{table}
+

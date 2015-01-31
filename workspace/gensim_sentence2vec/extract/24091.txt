@@ -1,0 +1,69 @@
+
+Catalyst QoS - Configuration 4 for Cat3560
+入力キューとWTDしきい値へのDSCP or CoS値のマッピング
+& WTDしきい値設定
+Catalyst3560の場合、入力キューは2つあります。優先するトラフィックとそうでないトラフィックを分類する
+ためには、優先キュー(queue2)にマッピングされるDSCP or CoS値が優先するトラフィックのDSCP or CoS
+値である必要があります。但し、デフォルトの設定で最適化されているのでDSCP値(40〜46)、CoS値(5)
+以外の値を優先キュー(queue2)にマッピングしたい場合に、設定変更するのが一般的な実装と言えます。
+次に、キュー(queue1またはqueue2)に対してWTDのスレッシュホールド(1or2or3)を定義します。デフォルト
+では、queue1と2ともにWTDのスレッシュホールドは [ 1 ] が割り当てられています。スレッシュホールドの
+1、2、3はデフォルトでキューフルステート(廃棄しきい値100%)です。[ 3 ] については設定変更不可能です。
+Catalyst(config)# mls qos srr-queue input dscp-map queue id threshold id dscp1.....dscp8
+または
+Catalyst(config)# mls qos srr-queue input cos-map queue id threshold id cos1....cos8
+最後に、入力キュー(queue1orqueue2)に対して、2つのWTDしきい値の割合(threshold1と2)を割り当てます。
+Catalyst(config)# mls qos srr-queue input threshold queue-id threshold-percentage1 threshold-percentage2
+CoS0, 1, 2, 3を入力キュー1とWTDしきい値1にマッピングして、CoS4,6を入力キュー1とWTDしきい値2に
+マッピングして、CoS7を入力キュー1とWTDしきい値3にマッピングします。入力キュー1において、WTDの
+しきい値1の廃棄しきい値は50%、WTDのしきい値2の廃棄しきい値を70%とにします。CoS5は入力キュー
+2とWTDしきい値1にマッピングします。※ CoS5のマッピングはデフォルトですが、以下のコンフィグに記す。
+Catalyst(config)# mls qos srr-queue input
+cos-map queue 1 threshold 1 0 1 2 3
+Catalyst(config)# mls qos srr-queue input
+cos-map queue 1 threshold 2 4 6
+Catalyst(config)# mls qos srr-queue input
+cos-map queue 1 threshold 3 7
+Catalyst(config)# mls qos srr-queue input
+cos-map queue 2 threshold 1 5
+Catalyst(config)# mls qos srr-queue input
+threshold 1 50 70
+※ mls qos srr-queue input threshold コマンドの後の項目は、thresholdのIDではなくqueueのIDです。非常に紛らわしい。
+入力キュー間のバッファスペースの割り当て
+2つのキュー間で入力バッファを分割する比率を定義します。このバッファの割り当てと次で紹介する入力
+キュー間の帯域幅の割当により、パケットが廃棄される前にバッファに格納できるデータ量が制限されます。
+Catalyst(config)# mls qos srr-queue input buffer percentage1 percentage2
+バッファスペースの60%を入力キュー1に、バッファスペースの40%を入力キューに割り当てる設定例です。
+デフォルトはバッファースペースの90%が入力キュー1に、バッファスペースの10%が入力キュー2となります。
+Catalyst(config)# mls qos srr-queue input
+buffer 60 40
+入力キュー間の帯域幅の割り当て
+入力キュー間に割り当てられる使用可能な帯域幅の量を指定します。ここで指定する重みの比率はSRR
+スケジューラが各キューからパケットを送信する頻度の比率です。この帯域幅割り当てとバッファ割り当て
+によりパケットが廃棄される前にバッファに格納できるデータ量を制限できます。デフォルトでの帯域幅の
+割り当ては2つキューでともに「4」であり、1対1の比率で送信されます。但し、この1対1の比率で送信され
+るというのは、デフォルトでプライオリティキューであるキュー2が処理された後に、プライオリティキュー2で
+割り当てた帯域幅を除く残りの帯域幅での1対1の比率の送信を意味します。つまり、プライオリティキュー
+はデフォルトで帯域幅10%が割り当てられており、キュー1と2の送信比率は残りの90%に対するものです。
+Catalyst(config)# mls qos srr-queue input bandwidth weight1 weight2
+以下では、プライオリティキューをディセーブルにして、キュー1と2の送信比率を25:75に定義しています。
+Catalyst(config)# mls qos srr-queue input
+priority-queue 2 bandwidth 0
+Catalyst(config)# mls qos srr-queue input
+bandwidth 25 75
+入力プライオリティキューの設定
+入力キューの場合、デフォルトでキュー2がプライオリティキューとして有効になっており、帯域幅の10%が
+割り当てられています。SRRではこのプライオリティキューを最優先で処理します。次に、mls qos srr-queue
+input bandwidth weight1 weight2 で設定した重みに従い、残りの帯域幅を両方のキューで共有し処理する。
+Catalyst(config)# mls qos srr-queue input priority-queue id bandwidth weight
+bandwidthの値はデフォルトで「10」であり、指定可能な範囲は0〜40です。入力キューのプライオリティキュー
+をディセーブルにする方法はbandwidthの値を「0」とすることです。以下のコンフィグでは、プライオリティキュー
+をqueue2からqueue1に変更しています。queue1とqueue2での帯域幅使用率は4/(4+4)の1対1の使用率です。
+Catalyst(config)# mls qos srr-queue input
+priority-queue 1 bandwidth 10
+Catalyst(config)# mls qos srr-queue input
+bandwidth 4 4
+Catalyst QoS - コンフィグ その3   Catalyst QoS - コンフィグ その5 
+ネットワークエンジニアとして
+Copyright(C) 2002-2014 Cool. All Rights Reserved
+Catalyst QoS ( C2960, C3560, C3750 ) コンフィグ その4

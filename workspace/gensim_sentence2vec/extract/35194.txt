@@ -1,0 +1,50 @@
+ユーザーと対話する   
+Lotus 製品は、対話式アプリケーションの作成に適しています。対話式アプリケーションは、ユーザーからの入力を受け入れたり、ユーザーに特定のタスクの実行を促したりします。それぞれの Lotus ソフトウェアにはスクリプトとの対話用に独自のユーザーインターフェースがありますが、LotusScript はどの Lotus ソフトウェアでも使える基本的なツールを提供します。
+InputBox 関数
+InputBox 関数は指定された入力応答とテキストボックス、および [OK] または [キャンセル] ボタンを使ったダイアログボックスを表示します。入力ボックスのタイトル、既定値、画面上の位置を指定することもできます。 
+ユーザーはテキストボックスに文字を入力して [OK] をクリックします。InputBox はユーザーが入力した文字列を返します。データ型変換の関数 (DateValue、CBool、CByte、CCur、CDat、CDbl、CInt、CLng、CSng、CVar) を使って、入力された値を数値、日付/時刻、または Variant 型の値に変換できます。文字列値以外の値を変換する場合、変換できない文字列をユーザーが入力したときのためのエラー処理を含めておくこともできます。たとえば「XYZ」は数値に変換することはできません。
+Print ステートメント、MessageBox 関数、MessageBox ステートメント
+Print ステートメントは現在の出力ウィンドウにメッセージを表示します。出力ウィンドウは作業している Lotus ソフトウェアアプリケーションによって異なります。MessageBox はタイトル (省略可能)、メッセージ、アイコン (省略可能)、1 つ以上のコマンドボタンを含むメッセージボックスを表示します。
+メッセージを表示する場合、MessageBox ステートメントを使い、[OK] ボタンを含めます (既定)。ユーザーはメッセージを読んで [OK] をクリックし、スクリプトの実行は次のステートメントに進みます。
+ユーザーに複数のオプションを提供するには、MessageBox 関数を使って複数のコマンドボタンを含めます。たとえば、[OK] と [キャンセル] ボタンを含めます。If ステートメントや Case ステートメントを使って、ユーザーの入力に応じて応答できます。
+次の例では、InputBox 関数を使ってユーザーから月次売上と月次経費を取得し、文字列を Currency 型に変換します。
+スクリプトは差引きを計算し、MessageBox ステートメントを使って差引き勘定を Currency 型でフォーマットして表示します。
+Sub CalcBalance
+Dim revenue As Currency, expenses As Currency, balance _
+As Currency
+revenue@ = CCur(InputBox("How much did we make" & _
+" this month?"))
+expenses@ = CCur(InputBox("How much did we spend?"))
+balance@ = revenue@ - expenses@
+MessageBox "Our balance this month is " _
+& Format(balance@, "Currency")
+End Sub
+2 つの入力ボックスのサンプル入力と結果のメッセージボックスは、次のとおりです。
+CCur 関数が Currency 型に変換できない文字列をユーザーが入力すると、エラーになります。そのような場合には、On Error ステートメントを使ってエラー処理ルーチンへ分岐させることもできます。
+次の例は上の例を拡張し、MessageBox 関数を使って、再入力するかどうかをユーザーに尋ねます。2 番目のメッセージボックスにも疑問符のアイコンを MB_ICONQUESTION (32) で指定して含めます。MessageBox の引数と対応する数値の代わりに定数を使うには、定数を定義するファイル LSCONST.LSS をモジュール宣言に含める必要があります。
+%Include "LSCONST"
+Sub CalcBalance
+Dim revenue As Currency, expenses As Currency, balance _
+As Currency
+EnterValues:
+On Error GoTo BadCur:
+revenue@ = CCur(InputBox("How much did we make" & _
+" this month?"))
+expenses@ = CCur(InputBox("How much did we spend?"))
+balance@ = revenue@ - expenses@
+MessageBox "Our balance this month is " _
+& Format(balance@, "Currency")
+Exit Sub
+BadCur:
+If MessageBox("Invalid entry!Do you want to try again?", _
+MB_YESNO + MB_ICONQUESTION) = IDYES Then GoTo _
+EnterValues
+Exit Sub
+End Sub
+ユーザーが無効な値を入力すると、メッセージボックスが表示されて再入力を促されます。
+エラー処理について詳しくは、「エラーの処理」を参照してください。
+Lotus Domino Server のコンテキストでの MsgboxLotusScript エージェントを Lotus Domino Server 上で実行すると、MsgBox、Inputbox、および Print コマンドはステータスバーにリダイレクトされ、エージェントログに入れられます。 
+HTTP サーバーについては、これらのコマンドは出力をブラウザにリダイレクトします。これらのコマンドを使って HTML ページを動的に作成し、任意のブラウザに提供できます。
+関連項目
+LotusScript の拡張
+Lotus Domino Designer 8 ヘルプ - ユーザーと対話する

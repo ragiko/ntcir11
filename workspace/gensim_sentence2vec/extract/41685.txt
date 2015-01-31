@@ -1,0 +1,231 @@
+
+インストール・設定 − サービス
+IP電話用に、 Brekeke Software, 
+Inc. が提供する OnDO SIP Server を導入しましたが、導入環境整備が面倒なのと、OnDO SIP Server 
+をシャットダウンしないでTomcatを再起動したりしてしまうと、OnDO SIP Server 
+がコントロールできなくなってしまうことがあるなど、少し使いづらいところがあったので、再度調査したところ Asterisk 
+というオープンソースのIP-PBXがあることがわかり、SuSE9.3にはRPMも用意されていたのでこれを使ってみることにしました。但し、SuSE9.3のAsteriskはバージョンが1.06と少し古かったので、最新の1.2.0を使用することにしました。
+特徴としては、Asterisk は SIP サーバではなく IP-PBX という位置付けですので、単に電話をするだけではなく、転送やボイスメールなどの電話関連のサービス機能もあり実用も含めていろいろ遊べそうです。プロバイダのIP電話サービスを利用すれば、外線発着信もできます。
+なお、Asteriskは動的IP環境にも対応しているようなので、本情報で対応された方で動作確認ができたら情報提供をお願いします。
+Asteriskのインストール
+Asteriskをインストールするには、 Asterisk 
+からソースを落としてくる方法もありますが、今回は、最新のAsteriskをインストールするためCVSリポジトリを使用しました。
+Asteriskをインストールするには、以下のパッケージがインストールされていなければならないので、YaSTを起動してインストールされているか確認し、インストールできていなければインストールしておくこと。
+No.
+パッケージ
+備 考
+1
+Linux 2.6 kernel source
+zaptel, libpri
+2
+ncurses & ncurses-devel
+astman etc..
+3
+zlib & zlib-devel
+4
+openssl & openssl-devel
+以降でAsteriskをインストールしていくが、Asteriskはデフォルトのままではrootで動作するので、non-rootのユーザ 
+(今回はasterisk) 
+で動作させるため今回はchroot対応をした。具体的には、pidファイルを置くディレクトリの変更とasterisk関連のディレクトリ・ファイルのアクセス権限の変更、起動スクリプトの対応である。この対応として、Asteriskを動かすasteriskグループとasteriskユーザを作成しておく。
+# groupadd asterisk# useradd -g asterisk -r 
+-d /var/lib/asterisk -s /bin/false \        
+-c "Asterisk PBX" asterisk 2>/dev/null || 
+:
+CVSサーバから最新版を落としてくる。おやじはStableバージョンをインストールした。
+# cd /usr/src# export 
+CVSROOT=:pserver:anoncvs@cvs.digium.com:/usr/cvsroot# cvs loginLogging in to 
+:pserver:anoncvs@cvs.digium.com:2401/usr/cvsrootCVS password: anoncvs [Enter] <-パスワード:anoncvscvs login: warning: 
+failed to open /root/.cvspass for reading: No such file or 
+directory# cvs init <-初回は上記エラーが出る場合は初期化する# cvs checkout zaptel 
+libpri asterisk
+# cvs checkout -r v1-2-0 zaptel libpri asterisk 
+<-Stableバージョンを使用する場合Asteriskのソースコード管理がSVNリポジトリに変更になったようです。しばらくはCVSも使えるようですが、早めに切り替えたほうがよいでしょう。リポリトジはいくつかあり、Asteriskの例は以下のとおりです。
+HEAD バージョンhttp://svn.digium.com/svn/asterisk/trunk (was CVS 
+HEAD)
+ブランチの最新バージョンhttp://svn.digium.com/svn/asterisk/branches/1.2 (was CVS 
+v1-2)
+バージョン指定http://svn.digium.com/svn/asterisk/tags/1.2.0 (was CVS 
+v1-2-0)
+# cd /usr/src[HEADバージョン]# svn 
+checkout http://svn.digium.com/svn/asterisk/trunk asterisk# svn 
+checkout http://svn.digium.com/svn/zaptel/trunk zaptel# svn checkout 
+http://svn.digium.com/svn/libpri/trunk libpri[バージョン指定]# svn 
+checkout http://svn.digium.com/svn/asterisk/tags/1.2.1 asterisk# svn 
+checkout http://svn.digium.com/svn/zaptel/tags/1.2.1 zaptel# svn 
+checkout http://svn.digium.com/svn/libpri/tags/1.2.1 
+libpri
+zaptelは、ISDNカード等のVoIP用のハードを使用しないならインストールは不要だが、電話会議(meetme)でクロックソースが必要なため、電話会議を使用するならzaptel
+( ztdummy ) をインストールすること。インストールが済んだら、zaptelドライバのパーミッション変更のパッチをあて(zaptel-1.2.2以降non-root対策されているので不要。おやじのパッチを入れたのなら、/etc/udev/55-zaptel.rulesを削除しておく。)、udev対策(
+install-udev )をしておく。
+ここではインストールまでで、電話会議(meetme)のところで具体的な起動設定を行う。なお、SuSE9.3はkernel2.6なので、make 
+linux26とすること。
+Kernelのバージョンアップをしたら、zaptelを必ず再インストールすること。
+# wget 
+http://www.aconus.com/~oyaji/suse9.3/zaptel.patch
+# patch -p0 < 
+zaptel.patch# cd zaptel# make clean# make linux26# make 
+install# make install-udev 
+本来ならISDNのPRIインタフェースを搭載する場合だけでよいが、asteriskのコンパイルでエラーが出るのでlibpriをインストールする。その場合は、RPMで古いバージョンが入っている場合があるので削除してから作業する。
+# rpm -e libpri# cd ../libpri# make clean 
+; make install
+上記で示したように、今回はchrootで動作せるようにした。また、デフォルトのままだとボイスメール等のアナウンスが英語なので使いにくいが、こちらに日本語音声ファイルが用意されていたので利用させてもらった。感謝!! 
+1.2.x用が公開されているのでそちらを利用する。wgetは非常に長いので画面上は複数行に見えるかもしれないので注意すること。
+# cd ../asterisk# wget 
+http://www.aconus.com/~oyaji/suse9.3/chroot.patch# patch -p0 < 
+chroot.patch
+# wget -O say_2.c.diff \
+http://voip.gapj.net/index.php?plugin=attach\&refer=%B2%BB%C0%BC%A5%D1%A5%C3%A5%C1\&openfile=say_2.c.diff
+# patch < say_2.c.diff# cd apps
+# wget -O app_voicemail_2.c.diff \
+http://voip.gapj.net/index.php?plugin=attach\&refer=%B2%BB%C0%BC%A5%D1%A5%C3%A5%C1\&openfile=app_voicemail_2.c.diff
+# patch < app_voicemail_2.c.diff# cd ../# make clean ; make 
+install
+下記操作でサンプルのコンフィグファイルを作成する。/etc/asterisk配下にサンプルのコンフィグファイルが作成されるので、これをベースに変更していく。
+# make samples
+続けて忘れないうちに日本語音声ファイルをインストールし、アクセス権限を変更しておく。
+# cd /var/lib/asterisk/sounds
+# wget -O asterisk-sound-jp-060317.tar.gz \
+http://voip.gapj.net/index.php?plugin=attach\&refer=%C6%FC%CB%DC%B8%EC%B2%BB%C0%BC%A5%D5%A5%A1%A5%A4%A5%EB\&openfile=asterisk-sound-jp-060317.tar.gz
+# tar zxfv asterisk-sound-jp-060317.tar.gz# chown -R asterisk:asterisk 
+./
+自動起動できるようにスクリプトを/etc/init.d配下に置き設定する。起動スクリプトは、SuSEのものをベースに作成した。
+# cd /etc/init.d# wget -O asterisk 
+http://www.aconus.com/~oyaji/suse9.3/asterisk.init# chmod 755 
+asterisk# ln -s /etc/init.d/asterisk /usr/sbin/rcasterisk# 
+insserv asterisk# chkconfig --list 
+asteriskasterisk    0:off  1:off  
+2:off  3:on   4:off  5:on   
+6:off
+ここで、asterisk を起動してみる。下記のようにudp:5060他が起動していればOK。起動スクリプトが "done" 
+となっていても起動していないことがあるので、確認すること。
+# /etc/init.d/asterisk 
+startStarting Asterisk             done# netstat -an 
+-udpActive Internet connections (servers and established)Proto 
+Recv-Q Send-Q Local Address  Foreign Address  State  
+PID/Program nameudp        0      
+0 0.0.0.0:2727   0.0.0.0:*          
+32085/asteriskudp        
+0      0 0.0.0.0:4520   0.0.0.0:*    
+32085/asteriskudp  
+0      0 0.0.0.0:5060  
+0.0.0.0:*              
+32085/asteriskudp        0    
+0 0.0.0.0:4569   0.0.0.0:*        
+32085/asterisk
+起動が確認できたら、ここで「asterisk 
+-vvvr」と入力してAsteriskのコンソールが起動できるか確認しておく。下記のような表示がでれば起動している。確認ができたら「quit」と入力してとりあえず終了する。
+# asterisk -vvvr  == 
+Parsing '/etc/asterisk/asterisk.conf': Found  == Parsing 
+'/etc/asterisk/extconfig.conf': FoundAsterisk 
+CVS-Nv1-2-0-11/23/05-12:58:21, Copyright (C) 1999 - 2005 
+Digium.Written by Mark Spencer 
+<markster@digium.com>=========================================================================Connected 
+to Asterisk CVS-Nv1-2-0-11/23/05-12:58:21 currently running on linux 
+(pid = 32084)Verbosity was 0 and is now 3linux*CLI> 
+quit 
+[Enter]asteriskを起動スクリプトで起動すると、バックグラウンドで動作している。asteriskがバックグラウンドで動作している場合や、他のコンソールで既にasteriskを起動している場合には、"-r" 
+スイッチを使用する。# asterisk 
+-rこれをフォアグラウンドで動かすには、"-c"スイッチを使用する。フォアグラウンドで動作させた場合は、"quit"コマンドで抜けるとasteriskも停止する。# 
+asterisk -cなお、"-v"スイッチはvの数だけデバッグレベルが上がり詳細なログが出力されるので、テスト中は "-vvvr" や 
+"-vvvc"ぐらいで起動すると動作状況がつかめ、テストしやくなる。 
+Asteriskの設定
+Asteriskはいろいろな機能があり、使いこなすにはかなり勉強が必要そうです。ここでは、おやじが確認した基本的な機能を動かすことを前提に設定していきます。なお、デフォルトのコンフィグは必ずバックアップしてから修正してください。
+基本的な設定
+ここでは、Asteriskを動かすための基本的な設定を行います。なお、コメントは「#」ではなく「;」なので注意してください。(#はダイヤルで使用するため・・・。 
+赤字:追加、緑字:変更、青字:削除)
+sip.confでサーバの基本的な設定を行う。
+[general]context=defaultbindport=5060bindaddr=0.0.0.0srvlookup=yes;disallow=all;allow=ulaw;allow=alaw;allow=gsm;allow=ilbcmusicclass=default;language=enlanguage=jp; 
+NATexternip = 200.201.202.203;externhost=foo.dyndns.net 
+;externrefresh=10;localnet=192.168.0.0/255.255.0.0
+下記内容を参考に設定する。
+contextデフォルトのコンテキストを指定。基本的に変更不要。
+bindportSIP用のUDPのポートを指定。デフォルトの5060から変更すべきではない。
+bindaddrバインドするアドレスで、特段の理由がなければデフォルトの全てのアドレス( 0.0.0.0 
+)のままででよい。おやじの場合は、2つのドメインでサーバが2つのアドレスを持っているので、外部に公開するドメインのアドレス( 192.168.1.101 
+)をバインドした。
+srvlookup外部と通信する場合はDNSのSRVレコードを牽くように「yes」に設定する。この設定によりドメイン名でのアクセスが可能になるようだが、SRVレコードはほとんど普及していないのであまり意味はなく、実質はIPアドレスでの運用になる。
+disallow=all / allow=ulaw / allow=alaw / allow=gsm / 
+allow=ilbc使用するコーデックを指定する。最初に「disallow=all」で全てのコーデックを使用不可にし、その後で許可するコーデックを指定する。国内はμlawなので上記の設定で問題ないはず。
+musicclass保留音のクラスを指定。デフォルトは「default」であり必要に応じて変更する。バージョン1.0.xでは、デフォルトのままでは「mpg123」をインストールしないと保有音は流せないが、1.2.0では設定変更により.gsmや.wavファイルを音源に流せるようになった。詳細は、保留音を参照のこと。
+languageデフォルトの言語は英語。日本語対策済みならば「jp」に変更する。
+externip固定IPの場合、サーバがNAT配下にあるときにルータのWAN側のグローバルアドレスを指定。下記のexternhostでのホスト名指定でも運用できるが、固定IPの場合はDNSを牽くのは無駄な負荷になるだけなのでIP指定とすること。動的IPの場合は、下記のexternhostでホスト名指定でも運用できる。
+externhost / 
+externrefresh動的IPの場合、externhostを使用すればでホスト名を指定できる。これにより、動的IPアドレス環境下でもDNSでルータのWAN側のグローバルアドレスを牽けるホスト名を指定することでIPアドレスが変化しても追従できるようになる。この場合、セットでexternrefreshでDNS検索する周期を秒単位で指定する。負荷になるのであまり短くしないこと。
+localnetデフォルトで、サーバと同じネットワークがローカルネットとして扱われるので家庭内なら一般的には設定は不要。ルータで他のローカルネットワークがつながっている場合は、ここで指定する。複数指定可。(以前のおやじのように、家庭内でもサーバとクライアントが異なるセグメントに存在するような場合は設定要。)
+rtp.confでRTPで使用するポート範囲を設定する。
+[general]rtpstart=10000rtpend=10009
+下記内容を参考に設定する。ここで指定したポート範囲は、前述のSIPのポート番号(5060)とともに、UDPをルータでサーバにポートマッピングするとともに、ファイヤウォールも開けなければならないので、忘れずに作業すること。ここで指定したポート範囲は、サーバがRTP中継(通話の中継)をする場合のポートのため、サーバ回線の帯域を1Callあたり15Kbps程度消費するので不用意に多く取るべきではない。
+rtpstartRTPで使用するポートの開始ポート番号を指定。
+rtpendRTPで使用するポートの終了ポート番号を指定。上記設定では10000 - 
+10009番までが使用される。
+内線の登録
+内線を使えるようにするには、内線の登録とダイヤルプランの設置が必要になります。内線そのものの登録は sip.conf で行い、ダイヤルプランは 
+extensions.conf で行います。
+sip.conf で内線の基本的な登録を行う。下記内容を前記の sip.conf の設定に続けて設定を追加していく。 以下は、2000 - 2002 
+番までの内線を登録する例である。
+[2000]type=friend
+username=2000secret=password0canreinvite=nohost=dynamic[2001]type=friend
+username=2001secret=password1canreinvite=nohost=dynamic[2002]type=friend
+username=2002secret=password2canreinvite=nohost=dynamic
+下記内容を参考に設定する。
+[2000]内線毎に [ ] で括って内線番号を指定。
+typetypeには、"user"、"peer"、"friend"がある。・user:発信専用モード。・peer:着信専用モード。・friend: 
+一般的な内線は本設定にする。発着信が可能。 
+username登録ユーザ名を指定。
+secretユーザパスワードを指定。
+canreinvite設定は "yes/no" 
+である。本設定は、通話中にINVITE要求を送ってアドレスやポートを変更とする機能であり、RTPでの音声パケットを端末間で直接送受させる場合は"yes"とすること。"no"の場合はサーバがRTP中継することになり、常にサーバ負荷になるのと同時に両方の端末が仮にインターネット上にあった場合は、サーバ回線に2通話分の音声パケットのトラヒックが流れるので注意が必要である。なお、"yes"に設定しても一方が"no"の場合や、転送サービスとしてextensions.confで "t/T"オプションが指定してある場合は、サーバ中継になるので不用意にサービスを付与しないこと。
+host内線のホスト名かIPアドレスを指定する。 "dynamic" 
+を指定するとホスト名やIPアドレスは無視されるので、モバイルアクセスや動的IP環境のクライアントは本設定とすること。
+続けて、内線のダイヤルプランを extensions.conf で行う。ここでの設定が基本的な処理の流れを決めることになる。
+[default]exten => 
+2000,1,Dial(SIP/2000,30)exten => 2000,2,Congestionexten => 
+2000,102,Busyexten => 2001,1,Dial(SIP/2001,30)exten => 
+2001,2,Congestionexten => 2001,102,Busyexten => 
+2002,1,Dial(SIP/2002,30)exten => 2002,2,Congestionexten => 
+2002,102,Busyextensions.confの基本的なフォーマットは以下の通りである。exten 
+=> 
+内線番号,プライオリティ,アプリケーション[,arguments][基本的な処理の流れ]処理の流れを上記設定をベースに以下に示す。
+プライオリティ"1"内線番号がダイヤルされると、ダイヤル番号にマッチしたプライオリティ"1"の設定が実行される。
+exten => 
+2000,1,Dial(SIP/2000,30)
+2000対象とする内線番号を指定。
+1プライオリティを指定であり、内線番号(2000)をダイヤルされた時に処理する優先度を示す。1は最初に実行する指定。内線が通話中の場合は、プライオリティn+101(1+101=102)にジャンプする。それ以外はプライオリティn+1(1+1=2)が実行される。
+Dial(SIP/2000,30)Dial()関数で内線の2000番(SIPの2000)を呼び出す指定。30は呼び出しタイムアウト時間(秒)で、タイムアウトしたらプライオリティn+1(1+1=2)が実行される。
+プライオリティ"2"呼出タイムアウトや内線がRegistされていない(電源断等)場合にプライオリティ"2"の設定が実行される。
+exten => 
+2000,2,Congestion
+2000対象とする内線番号を指定。
+2プライオリティを指定であり、呼出タイムアウトや内線がRegistされていない(電源断等)場合に実行される。
+CongestionCongestionを指定すると発信側の切断待ち状態になり、発信者に切断音が送出される。
+プライオリティ"102"対象内線が通話中の場合の場合、1項からプライオリティn+101(102)でジャンプしてきて実行される。
+exten => 
+2000,102,Busy
+2000対象とする内線番号を指定。
+102プライオリティを指定であり、対象内線が通話中の場合の場合、1項からプライオリティn+101(102)でジャンプしてきて実行される。
+Busy 
+Busyを指定すると発信側の切断待ち状態になり、発信者にビジートーンが送出される。[ワイルドカードによるパターン指定方法]ダイヤルプランでは、上記のような設定を内線毎に設定していくが、一連の内線番号が同一の処理でよい場合は、設定にワイルドカードを使用できる。例えば、2000 
+- 2009までを上記と同じ処理をさせるなら下記の設定でもよい。
+exten => 
+_200X,1,Dial(SIP/${EXTEN},30)exten => 
+_200X,2,Congestionexten => 
+_200X,102,Busy上記は、以下のような意味である。
+内線番号が "_200X" のように  "_" で始まる場合は、パターン指定であることを示す。
+内線番号の末尾は以下のような設定が使用できる。 X : 0 - 9 の数字 Z : 1 - 9 の数字 N : 2 
+- 9 の数字 [12679] : 1、2、6、7、9  . : ワイルドカード
+${EXTEN} は入力された内線番号が入る環境変数であり、"2000" とダイヤルされれば ${EXTEN} は "2000" 
+となり、内線番号 "2000" が呼び出される。
+DN(Ded Number) & DL(Ded Level)の設定
+空き番号、空きレベルのための設定をextensions.conf 
+で行う。本設定によりダイヤルした番号に該当する処理が無い場合は、「内線番号が間違っています。もう一度入力してください。」というガイダンス(pbx-invalid)が流れる。
+[default]; DN & DLexten => 
+_X,1,Answer()exten => _X,2,Wait(1)exten => 
+_X,3,Playback(pbx-invalid)exten => _X,4,Hangupexten => 
+_X.,1,Answer()exten => _X.,2,Wait(1)exten => 
+_X.,3,Playback(pbx-invalid)exten => 
+_X.,4,Hangup"_X" で1桁、"_X." 
+で2桁以上の番号を指定している。なお、本設定は、それ以前の全てのダイヤルプランにマッチしなかったという条件で実行させるため、extensions.conf 
+の最後に置くこと。着信と同時に音声を発生させると、「話頭断(話初めが欠けること)」が発生することがあるので1秒waitさせている。
+インストール・設定 − サービス
+Topページへ 
+AsteriskによるIP-PBXの構築(SuSE9.3編)

@@ -1,0 +1,77 @@
+素数判定(そすうはんてい)とは、ある自然数 n が素数であるか合成数であるかを判定する問題である。素数判定を行うアルゴリズムのことを素数判定法という。
+RSA暗号の鍵生成のように素数性の判定は応用上重要であるので、素数性を高速に判定するアルゴリズムは計算理論において強い関心の対象である。
+仮定なしで決定的かつ多項式時間で終了する素数判定法が存在するか否かは長らく未解決の問題だったが、2002年にそのような素数判定法が存在することを示す論文がAgrawal, Kayal, Saxenaにより発表された(AKS素数判定法)。しかし多項式の次数が高く、実用上はAPR(Adleman-Pomerance-Rumely)判定法などのほうが高速であることが多い。
+なお、メルセンヌ数など特殊な形をした数に対しては次数の低い多項式時間で動作するアルゴリズムがあることが知られている。
+確率的素数判定法[編集]
+素数判定法の中には確率的アルゴリズムに基づいた、与えられた自然数 n を「合成数である」または「良く分からない」と判別する判定法がある。この判定法を確率的素数判定法(probabilistic primality test)ということがある。これに対して「素数である」あるいは否と判定する決定的アルゴリズムは決定的素数判定法(deterministic primality test)ということがある。
+「合成数である」と判定した場合には、nは合成数であると確定するが、「良く分からない」と判断した場合には、それだけではあまり有用な情報は得られない。しかし、判定を適当な回数だけ繰り返し、その間一度も「合成数である」と出力されないならば、その n は素数である見込みが大きいと言える。このようにして得られた「素数ではないかと思われる数」のことを確率的素数(probable prime)という。
+一般に確率的素数判定法は、決定的素数判定法よりもはるかに高速であるので、実用上は確率的素数判定法の繰り返しをもって素数判定法に代える場合も多い。
+また、Miller-Rabinの素数判定法はある種の一般化されたリーマン予想のもとでは多項式時間で動く素数判定法として動作することが知られている。
+様々な判定法[編集]
+一般的な数に対する判定法
+決定的素数判定法
+試し割り、エラトステネスの篩
+最大公約数
+Millerテスト - 多項式時間アルゴリズムだが、GRHのもとで正当性が示される。
+Adleman-Pomerance-Rumely - 高速だが、多項式時間アルゴリズムではない。
+ECPP
+AKS素数判定法 - 多項式時間アルゴリズム
+確率的素数判定法
+フェルマーテスト
+Solovay-Strassenテスト
+ミラー-ラビン素数判定法
+特殊な条件の数に対する判定法
+Pocklingtonの判定法 - N = FR+1, F> sqrt(N), Fの素因数分解が既知の場合の判定法
+リュカ-レーマーテスト(Lucas-Lehmer primality test)、リュカ(Lucas)テスト - メルセンヌ数に対する判定法
+特殊な形の数に対する判定法
+Prothの判定法 - N=2^n h +1 の形の数に対する判定法
+Pepin の判定法 - フェルマー数に対する判定法
+プログラム例[編集]
+C言語による素数判定(試し割り)のプログラム例を示す。
+int IsPrime(int n){
+int i;
+if(n < 2)
+return 0;
+else if(n == 2)
+return 1;
+if(n % 2 == 0)
+return 0;
+for(i = 3; i <= n / i; i += 2)
+if(n % i == 0)
+return 0;
+return 1;
+}
+(defun eratosthenes (n)
+(labels ((foo (i ls)
+(if (= i 1)
+ls
+(foo (1- i) (cons i ls))))
+(spam (ls0 ls1)
+(if (> (expt (car ls1) 2) (car (last ls0)))
+(revappend ls1 ls0)
+(let ((ls2
+(remove-if #'(lambda (x)
+(zerop (mod x (car ls1))))
+ls0)))
+(spam (cdr ls2) (cons (car ls2) ls1))))))
+(let ((lst (foo n nil)))
+(spam (cdr lst) (list (car lst))))))
+(require (lib "1.ss" "srfi"))
+;;;上は[[MzScheme]]の[[SRFI]]の呼び出し例。
+;;;例えば[[Gauche]]の場合は
+;;;(use srfi-1)
+;;;となる
+(define (eratosthenes n)
+(let ((ls (iota (- n 2) 3)))
+(letrec ((func0 (lambda (x lst)
+(filter (lambda (y)
+(not (zero? (modulo y x))))
+lst)))
+(func1 (lambda (z)
+(apply max z))))
+(let loop ((ls0 '(2)) (ls1 (func0 2 ls)))
+(if (< (func1 ls1) (expt (func1 ls0) 2))
+(append (reverse ls0) ls1)
+(let ((w (car ls1)))
+(loop (cons w ls0) (func0 w (cdr ls1)))))))))
+素数判定 - Wikipedia

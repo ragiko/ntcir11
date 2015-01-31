@@ -1,0 +1,275 @@
+はじめに
+VIM(Vi IMproved) は UNIX 標準エディタ VI (VIsual editor) のクローンです。このページでは VIM の使い方を説明します。
+バージョンは VIM 7 を想定しています。
+[ ... ] は省略可能を意味します。
+目次
+基本の操作
+便利な操作
+細かい操作
+もっと細かい操作
+設定
+基本の操作
+モード
+VIM にはいくつかのモードがあります。
+ノーマルモード(起動時のモード)
+コマンドモード
+挿入モード
+置換モード
+ビジュアルモード
+ここでは基本的にノーマルモードでの操作を説明しています。
+起動
+vim [ファイル名]
+カーソル移動
+h (左)
+j (下)
+k (上)
+l (右)
+文字の挿入
+i (カーソル位置から挿入モードに入る)
+操作の取消 (ノーマルモードに戻る)
+ESC または Ctrl-C
+文字の削除
+x (カーソル位置の文字を削除)
+文字の削除 (挿入モード)
+Backspace または Ctrl-H (カーソル左の文字を削除)
+保存
+:w [ファイル名]
+終了
+:q
+:q! (強制終了)
+保存して終了
+:wq
+変更されていれば保存して、終了
+:x または ZZ
+元に戻す
+u
+Ctrl-R (やり直し)
+ヘルプの表示
+:h [キーワード]
+便利な操作
+操作の繰り返し
+. (前の操作を繰り返す)
+回数 操作 (回数分操作を繰り返す)
+文字の挿入
+I (行の先頭から挿入モードに入る)
+文字の追加
+a (カーソルの右から挿入モードに入る)
+A (カーソル行の末尾から、挿入モードに入る)
+文字の置換
+r を押して、置換する文字を入力する
+R (置換モードに入る)
+行の挿入
+o (カーソルの下に行を挿入して、挿入モードに入る)
+O (カーソルの上に行を挿入して、挿入モードに入る)
+行の連結
+J (カーソル行と下の行を連結する)
+行の削除
+dd
+行の削除と挿入
+cc または S (カーソル行を削除して、挿入モードに入る)
+行のコピー
+yy または Y
+行のペースト (ヤンク)
+p (削除またはコピーされた行を、カーソル下に挿入)
+P (削除またはコピーされた行を、カーソル上に挿入)
+検索
+/文字列 (文字列を前に検索)
+?文字列 (文字列を後ろに検索)
+/文字列\c, ?文字列\c (大文字小文字区別しないで検索)
+/文字列\C, ?文字列\C (大文字小文字区別して検索)
+* (カーソル位置の単語を前に検索)
+# (カーソル位置の単語を後ろに検索)
+再検索
+n (前に再検索)
+N (後ろに再検索)
+移動
+gg (ファイルの先頭に移動)
+G  (ファイルの末尾に移動)
+行移動
+行番号 G (指定した行番号に移動)
+細かい操作
+新規作成
+:enew
+ファイルを開く
+:e [ファイル]
+:e Ctrl-D (ファイルの一覧を表示)
+行内の移動
+0 (行頭へ移動)
+$ (行末へ移動)
+^ (行頭の非空白文字へ移動)
+ページ移動
+Ctrl-D (半ページ下へ移動)
+Ctrl-U (半ページ上へ移動)
+Ctrl-F (1 ページ下へ移動)
+Ctrl-B (1 ページ上へ移動)
+削除
+D (カーソル位置から行末まで削除)
+d0 (カーソル位置の左から行頭まで削除)
+d^ (カーソル位置の左から行頭の非空白文字まで削除)
+文字の選択 (ビジュアルモードに入る)
+v (文字ごとの選択)
+V (行ごとの選択)
+カーソル移動で選択範囲の指定、y でコピー、x または d で削除
+文字のペースト (ヤンク)
+p (削除またはコピーされた内容を、カーソル右に挿入)
+P (削除またはコピーされた内容を、カーソル左に挿入)
+文字列の置換
+:s/文字列/置換文字列/g (行や選択範囲での置換)
+:s/文字列/置換文字列/gi (大文字小文字を区別しないで置換)
+:s/文字列/置換文字列/gI (大文字小文字を区別して置換)
+:%s/文字列/置換文字列/g (ファイル内の指定した文字列すべてを置換)
+もっと細かい操作
+括弧の対応
+% (カーソル位置の括弧の対応位置に移動)
+行のインデント
+&gt&gt (インデントを右に移動)
+&lt&lt (インデントを左に移動)
+== (適切なインデントを行う)
+インデント (ビジュアルモード)
+&gt (選択範囲のインデントを右に移動)
+&lt (選択範囲のインデントを左に移動)
+= (選択範囲の適切なインデントを行う)
+単語の補完 (挿入モード)
+Ctrl-P (単語入力中、前に出てくる単語から補完)
+Ctrl-N (単語入力中、後に出てくる単語から補完)
+マーク
+m アルファベット (カーソル位置にマークを付ける)
+` アルファベット (マークを付けた位置に移動)
+操作の記録
+q アルファベット (操作の記録開始)
+q (操作の記録終了)
+@ アルファベット (操作の再生)
+ファイルの挿入
+:r [ファイル] (カーソル位置の下にファイルを挿入)
+外部プログラムの結果の挿入
+:r! プログラム (カーソル位置の下に結果を挿入)
+外部プログラムの実行
+:! プログラム
+外部プログラムの適用(ビジュアルモード)
+:! プログラム (選択範囲に sort などのプログラムを適用)
+シェルの起動
+:sh
+バッファ
+一度開いたファイルはバッファとして管理されます。
+:ls (バッファリストの表示)
+:b バッファ (バッファを表示)
+:bn (次のバッファを表示)
+:bp (前のバッファを表示)
+ウインドウの分割
+:sp [ファイル] (ウインドウを横に分割)
+:vs [ファイル] (ウインドウを縦に分割)
+:new (空の横ウインドウを開く)
+:vnew (空の縦ウインドウを開く)
+Ctrl-W w (次のウインドウに移動)
+Ctrl-W p (前のウインドウに移動)
+Ctrl-W h, j, k, l (別のウインドウに移動)
+Ctrl-W H, J, K, L (ウインドウを移動)
+Ctrl-W +, - (ウインドウの高さを変更)
+Ctrl-W &gt, &lt (ウインドウの幅を変更)
+Ctrl-W = (全てのウインドウを同じ高さにする)
+Ctrl-W o (現在のウインドウ以外を閉じる)
+:wa (全て保存)
+:qa (全て閉じる)
+:wqa (全て保存して終了)
+タグジャンプ
+ctags などで作った tags ファイルをもとにタグジャンプを行います。
+(コマンドラインで) vim -t タグ (タグから VIM を起動)
+:tag タグ (タグに移動)
+Ctrl-] (カーソル位置のタグに移動)
+Ctrl-T (元の位置に戻る)
+Ctrl-W ] (ウインドウを分割してカーソル位置のタグに移動)
+Ctrl-W } (プレビューウインドウでカーソル位置のタグを表示)
+設定
+オプション
+:set [all] (設定状況の表示)
+:set オプション (オプションの設定)
+:set オプション? (オプションの設定状況を表示)
+:set noオプション (オプションの設定解除)
+:setlocal (:set と同じだが、現在のバッファでのみ設定が有効)
+:options (オプションの説明の表示)
+シンタックスハイライト
+:syntax on (キーワードをハイライト表示する)
+ファイルタイププラグイン
+:filetype plugin indent on (ファイルタイプを判別して設定を変える)
+キーマッピング
+imap [キー列] (挿入モードでのキーマッピングの定義内容の表示)
+imap キー列1 キー列2 (挿入モード用にキー列1をキー列2と定義)
+iunmap キー列 (定義の解除)
+設定例
+設定ファイル ~/.vimrc
+set nocompatible " VI 互換でない
+set nobackup " バックアップはとらない
+set laststatus=2 " 常にステータスを表示
+set showmode " モードを表示
+set ruler " ルーラーを表示
+set showcmd " 打ったキーを表示
+set backspace=indent,eol,start " 挿入開始以前の文字や改行も削除
+set whichwrap=b " カーソル移動で行を越えて移動させるか
+set showmatch " 括弧の対応の表示
+set ignorecase " 検索時大文字と小文字を区別しない
+set incsearch " インクリメンタルサーチ
+set smartindent " 賢いオートインデント
+set number " 行番号を表示
+syntax on " シンタックスハイライト
+filetype plugin indent on " ファイルタイププラグインを有効にする
+" エンコーディング
+set fileencoding=euc-jp
+set fileencodings=iso-2022-jp,shift-jis,utf-8,utf-16,euc-jp
+" カーソル位置の記憶
+if has("autocmd")
+au BufReadPost * if line("'\"") > 1 && line("'\"") 
+ダブルクウォート (") から行末まではコメント。
+Tab で空白を使いたい場合
+set expandtab " Tab で空白を挿入する
+set shiftwidth=4 " 自動インデントで挿入される空白数
+set softtabstop=4 " Tab で挿入される空白数
+コメントアウト用設定
+vmap #  :s/^/#/<CR>
+vmap .# :s/^#//<CR>
+vmap //  :s%^%//%<CR>
+vmap .// :s%^//%%<CR>
+行を選択して "#" と打つと行頭に "#" がつき、".#" と打つと行頭の "#" が消える。
+Fortran 用設定ファイル ~/.vim/ftplugin/fortran.vim
+let s:extfname = expand("%:e")
+if s:extfname ==? "f90" || s:extfname ==? "f95"
+let fortran_free_source=1
+end
+setlocal shiftwidth=2
+setlocal softtabstop=2
+" imap
+imap	;pr	program
+imap	;pa	parameter (
+imap	;im	implicit
+imap	;com	common /
+imap	;rd(	read(
+imap	;rd	read(*,*)
+imap	;wt(	write(
+imap	;wt	write(*,*)
+imap	;su	subroutine
+imap	;f	function
+imap	;int	integer
+imap	;re	real
+imap	;do	double precision
+imap	;di	dimension
+imap	;ch	character
+imap	;con	continue
+imap	;eif	end if
+if s:extfname ==? "f90" || s:extfname ==? "f95"
+imap	;mo	module
+imap	;mp	module procedure
+imap	;inf	interface
+imap	;it	intent(
+imap	;con	contains
+imap	;se	select case(
+imap	;po	pointer
+imap	;ep	end program
+imap	;em	end module
+imap	;esu	end subroutine
+imap	;ef	end function
+imap	;et	end type
+imap	;ed	end do
+imap	;einf	end interface
+imap	;ese	end select
+end
+";pre" と打つと "program" と展開される。
+PENGUINITIS - VIM の使い方

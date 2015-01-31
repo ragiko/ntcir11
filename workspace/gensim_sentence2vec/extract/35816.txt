@@ -1,0 +1,12 @@
+型変換については、第4章で簡単に説明しましたが、複雑な規則があり、迷うことの多い部分です。ですから、ここで少し詳しく算術型の型変換について説明してみようと思います。
+なお、説明中で用いたコードの実行結果は「Borland C++ Compiler 5.5」(int:4バイト short:2バイト char:1バイト)で確認をしています。
+1.汎整数拡張
+文字型や整数型などの汎整数型の場合、型が、int より小さな場合(char, signed char, unsigned char, short, unsigned short)は、演算の最初に int か、表現できなければunsigned int に変換されます。このとき、符号を含めてその値を変えることはありません。
+(例)
+short a = 30000, b = 30000;
+printf("sizeof(a) = %d\n", sizeof(a));
+printf("sizeof(b) = %d\n", sizeof(b));
+printf("sizeof(~a) = %d\n", sizeof(~a));
+printf("sizeof(a + b) = %d\n", sizeof(a + b));
+printf("a + b = %d\n", a + b);
+少し詳しい型変換の説明

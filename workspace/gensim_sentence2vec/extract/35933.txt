@@ -1,0 +1,28 @@
+
+インストール
+vagrant-cachier プラグインをインストールするには、vagrant plugin install コマンドを実行するだけです。
+$ vagrant plugin install vagrant-cachier
+Vagrantfile への記述
+vagrant-cachier プラグインを有効にするには、Vagrantfile に下記の設定を行います。config.cache.scope では、キャッシュスコープを設定します。
+下記では、:boxを指定しており、これは、プロビジョンでインストールしたパッケージを Box 単位でキャシュします。同一 Box を使う Vagrantfile であれば、別の VM でもキャッシュを共有することができます。
+私の用途であれば、この設定が使いやすそうです。
+あとは、通常どおり、vagrant up を行うとプラグインが有効となり、キャッシュを行うようになります。
+Vagrant.configure("2") do |config|
+# (snip)
+if Vagrant.has_plugin?("vagrant-cachier")
+config.cache.scope = :box  
+end
+# (snip)
+end
+その他のキャッシュスコープやオプションついては、vagrant-cachier のサイトを参照にして下さい。
+http://fgrehm.viewdocs.io/vagrant-cachier/usage
+何をキャッシュしているのか
+プロビジョンで追加したパッケージをどうやってキャッシュしているのか気になったので、仕組みを見てみました。
+コードを見たところ、CentOS の場合は、ゲストの /var/cache/yum が /tmp/vagrant-cache/yum へのシンボリックリンクになっています。そして、この /tmp/vagrant-cache/ は、ホスト側との synced_folder となっており、~/.vagrant.d/cache/BOX_NAME/ がマウントされています。
+つまり、ゲストで yum install コマンドでインストールすると、/var/cache/yum にパッケージのキャッシュファイルが保存されます。これは、ホストの ~/.vagrant.d/cache/BOX_NAME/yum と synced_folder で同期しているので、結果としてホストにこのキャッシュファイルが保存されます。
+これは、なかなか面白い仕組みですね。
+さいごに
+vagrant-cachier プラグインを使うことで、プロビジョンの実行速度が大きく改善されます。プロビジョンコードを書くと、検証のために何度もプロビジョンを実行することになり、その度に待たされていました。このプラグインを使うことで、その時間が削減できるので、プロビジョンが捗ります。
+ちなみに、このプラグインは、CakePHPで学ぶ継続的インテグレーション を読んで、知りました。
+いま読み進めているところですが、PHP で CI したい人には嬉しい内容になっています。書評は、また別エントリで書きますね。
+Vagrant のプロビジョン時間を削減する vagrant-cachier プラグインが良い - Shin x blog

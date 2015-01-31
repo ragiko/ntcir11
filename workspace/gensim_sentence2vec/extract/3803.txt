@@ -1,0 +1,38 @@
+[機械学習] [論文] Parallel Inference for Latent Dirichlet Allocation on Graphics Processing Units
+NIPS 2009のonline papersがすでにダウンロードできるように*1なってたのでタイトルを眺めていたらGPUでLDAを並列化するという論文があって読んだので少し紹介してみる。
+まず、彼らの論文[1]ではLDAの推論アルゴリズムのうち、Collapsed Gibbs sampling(CGS)とCollapsed Variational Bayes(CVB)の2つに関して並列化を試みているがCollapsed Gibbs samplingの方に関してのみ紹介する。また、彼らの論文ではGPGPUの統合開発環境としてCUDAを用いている。
+LDAについて
+LDAは論文[2]で提案された、文章生成モデルでトピック分析などに広く用いられている。
+モデルの推論アルゴリズムとしては変分ベイズ[1]、ギブスサンプリング[4]、EP、collapsed 変分ベイズ[5]などが知られている。
+このうちGriffiths and Steyversによって提案されたギブスサンプリング(前述のCGS)を用いることが多い。理由としては導出が他の手法に比べ容易であり、精度が高く、収束速度も比較的早いという点がある。
+推論アルゴリズムについて大雑把に述べると、文章に出現する各単語に対してクラスを割り当て、その一つ一つに関して他のクラス割り当てを固定した場合の条件づけ確率に基づいて新たなクラスをサンプリングするという作業を繰り返す。更新式は平滑化項を無視すると
+と書ける。ここで[x_{ij}]はj番目の文章のi番目の単語、はクラスkに割り当てられている単語の総数、はクラスkに割り当てられている単語wの総数、は文章jの中でクラスkに割り当てられている単語の総数を表す。
+CUDAについて
+CUDAはNVIDIAが提供するGPU向けのC言語の統合開発環境で、これを用いるとC言語を使って汎用的なプログラムを書くことができる。
+CUDAにおける並列処理の単位としてはBlockとThreadが存在する。まずThreadは各Block上で並列に実行され、相互に同期処理とshared memoryを用いてデータのやりとりを行うことができる。次にBlockはGPU上の1Multiprocessor上で実行される、ここで並列に実行されるBlockは同時実行される保証がないため、Block間の同期はCPU上で行う必要があり、データのやりとりに関してはGlobal memoryを用いて行う。
+CPUとの違いとしてはshared memoryの量が数KBしかない、Global memoryの量がハイエンドモデルでも1G程度しかない、少し安いものだと512MBとかで扱えるメモリの量が少ないという点があげられる。
+PLDAについて
+PLDAは論文[6]で提案されたCGSを並列に行えるようにした推論アルゴリズムである。論文[6]ではマルチコアプロセッサ上で実験を行っているが、後に論文[5]でMPIおよびMapReduceを用いた並列実装が行われている。なお余談ではあるが論文[5]の著者はGoogleの人なのでMapReduceはHadoopではなく本家のものである、実験結果ではMPIの半分程度の性能となっているがHadoopを用いた場合どのていどのパフォーマンスとなるかに関しては興味深いところではある。
+PLDAでは文章集合をP個のプロセッサ上に分割し、その上でクラスの割り当てを計算するという手法を用いている。前に述べた更新式のパラメータのうちは文章ごとに決まる値なので独立に保持してよく、を共有することになる。しかし、1更新でクラスの割り当てが変更するたびにの値は変わり、毎回同期をとっていると並列に実行する意味が無くなるので、プロセッサ固有の累計値を保持し
+を用いてクラス割り当ての更新を行う。更新作業が1巡すると、プロセッサ固有の累計値を集計して、グローバルな値を計算し、プロセッサ固有の値を更新する。(この処理は論文[5]だとMPI_ALLreduce一発で行っている)
+GPU実装
+さて、いよいよ論文[1]で述べられているGPUを用いたLDAの実装について述べる。まずPLDAをそのまま用いると単語数が100,000程度でトピック数を256としたときにを保存するために必要なメモリ量が1プロセッサあたり25M程度となり、プロセッサの数が60としたとき、必要なメモリが1.5Gとなり、メモリに乗らなくなる。そのため一つのみを用いて、並列実行を行う必要が出てくる。これを行うために論文[1]では文章だけではなく、単語集合もプロセッサ数だけ分割を行っている。
+このとき下図のような分割が得られた場合、同色のブロックに関してはクラス割り当ての更新を行ったとしてもの値が干渉することなく並列実行できる。このためのみをプロセッサごとに保持しておけばよい。
+また、CUDAで実装する際にはプロセッサの部分をblockに割り当て、block内のスレッドは更新式における各クラスの値を並列に実行するのに用いている。また、訓練データをGPU上にすべて乗せるのは不可能であるが、そこはdata streaming scheme(論文[7] これについてはまだ目を通してないので参考文献にあるのを移してるだけです)を利用すると上手いこといくらしい。
+その他
+論文[1]では他にもデータ集合の分割アルゴリズムに関してと、CGSとは別の推論アルゴリズムであるCVBに関する並列アルゴリズムを提案しているので興味のある方は参考にされたい。
+実験結果
+実験結果によれば文章数30万のNYTデータセットでトピック数を128としたときに、1回の反復に22.1秒かかっているものが26倍高速となったと報告されている。また1000反復を行うのに1.5時間かかり、CPU上で30時間訓練を行った際とほぼ同じperplexityを達成している。
+また、今回はなさなかったCVBに関しては文章数1500のNIPSデータセットに対して196倍の高速化を見せている。ただし、CVBに関してはCPU上で保持すべきデータ量がメモリに乗りきらないためNYTデータセットに関しては実験を行っていない。
+感想
+まず、この方法は[5]と組み合わせることができて、サーバごとに文章集合を分割して割り当て、さらにサーバ上のGPUでもデータを分割したりすることが可能なのかなと思った。
+参考文献
+[1] Feng Yan, Ningyi Xu and Yuan Qi: Parallel Inference for Latent Dirichlet Allocation on Graphics Processing Units, NIPS 22 TBA, 2009.
+[2] David M. Blei, Andrew Y. Ng, and Michael I. Jordan: Latent Dirichlet Allocation,JMLR (3), 2003.
+[3] Y. W. Teh, D. Newman, and M. Welling: A collapsed variational Bayesian inference algorithm for Latent Dirichlet allocation, NIPS 19, 2006
+[4] Griffiths, Thomas L. and Steyvers, Mark : Finding scientific topics, Proceedings of the National Academy of Sciences 101, 2004
+[5] Yi Wang, Hongjie Ba, Matt Stanton, Wen-Yen and Edward Y. Chang: PLDA: Parallel Latent Dirichlet Allocation for Large-Scale Applications, Algorithmic Aspects in Information and Management, Lecture Notes in Computer Science, 2009
+[6] David Newman, Arthur Asuncion, Padhraic Smyth and Max Welling: Distributed Inference for Latent Dirichlet Allocation, NIPS 20, 2007
+[7] F. Labonte, P. Mattson, W. Thies, I. Buck, C. Kozyrakis and M. Horowitz: The stream virtual machine, PACT 2004
+Permalink | コメント(0) | トラックバック(1) | 22:39 
+[論文] Parallel Inference for Latent Dirichlet Allocation on Graphics Processing Units - tsubosakaの日記

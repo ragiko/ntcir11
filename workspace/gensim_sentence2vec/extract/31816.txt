@@ -1,0 +1,107 @@
+
+テキスト・ファイルを処理するコンソール・アプリケーションでは、コマンドライン引数で指定されたファイルを開き、その内容を読み込んで処理するというのが一般的だ。この際、ファイルだけでなく、標準入力からの読み込みにも対応しておけば、パイプ(「|」。パイプラインとも呼ばれる)により、ほかのコンソール・アプリケーションからの出力を取り込んで処理することができる。
+パイプの基本的な使い方
+例えばWindowsには、ファイル内の文字列を検索するためのfindコマンド(コンソール・アプリケーションであるfind.exe)が標準で用意されている。
+findコマンドでは、次のようにして検索する文字列と検索対象となるファイルをコマンドライン引数で指定して実行する。
+find "Console" *.cs
+findコマンドの標準的な使用例
+この例では、拡張子が「.cs」のファイルを検索して、文字列「Console」を含む行を表示する。実行はコマンド・プロンプトから行う。
+findコマンドはパイプ処理にも対応しており、次のようにしてほかのコマンドの出力も処理できる。
+netstat | find "TCP"
+パイプを使用したfindコマンドの使用例
+netstatコマンドの出力から文字列「TCP」を含む行のみを表示する。
+findコマンドでは、コマンドライン引数でファイルが指定されていない場合にパイプからデータを読み込むというわけだ。以下ではそのようなプログラムの作り方について説明する。
+標準入力を示すConsoleクラスのInプロパティ
+.NET Frameworkのクラス・ライブラリでは、Consoleクラス(System名前空間)のInプロパティにより標準入力に対するストリームを取得できる。このプロパティは静的プロパティであり、その値はTextReaderクラス(System.IO名前空間)のオブジェクトである。
+通常、テキスト・ファイルを開いて処理する場合には、StreamReaderクラス(System.IO名前空間)により、そのファイル対するストリームを得て文字列の読み込みを行うが、StreamReaderクラスはTextReaderクラスの派生クラスである。
+よって、プログラムではテキストの読み込み処理をTextReaderオブジェクトに対して行うようにしておけば、入力(読み込み元)がファイルであってもパイプであっても共通に処理することができる。
+次のコードは、読み込んだテキスト・ファイルの各行の先頭に行番号を追加して出力するサンプル・プログラムである。コマンドライン引数にファイルのパスが指定された場合には、そのファイルを開いてテキストを読み込むが、コマンドライン引数が指定されていない場合にはパイプ(標準入力)からテキストを読み込む。
+// catnum.cs
+using System;
+using System.IO;
+class Program {
+static void Main(string[] args) {
+TextReader input;
+if (args.Length == 0) {
+// 読み込み元は標準入力
+input = Console.In;
+} else {
+// 読み込み元はファイル
+input = new StreamReader(args[0],
+System.Text.Encoding.GetEncoding("Shift_JIS"));
+}
+CatNum(input);
+input.Dispose();
+}
+static void CatNum(TextReader tr) {
+string line;
+int num = 1;
+while ((line = tr.ReadLine()) != null) {
+// {0, 6}は右詰め6けたの指定
+Console.WriteLine("{0, 6} : {1}", num, line);
+num++;
+}
+}
+}
+// コンパイル方法:csc catnum.cs
+// 実行例1:catnum catnum.cs
+// 実行例2:type catnum.cs | catnum
+テキストに行番号を付加して出力するC#のサンプル・プログラム(catnum.cs)
+catnum.csのダウンロード
+' catnum.vb
+Imports System
+Imports System.IO
+Class Program
+Shared Sub Main(ByVal args As String())
+Dim input As TextReader
+If args.Length = 0 Then
+' 読み込み元は標準入力
+input = Console.In
+Else
+' 読み込み元はファイル
+input = New StreamReader(args(0), _
+System.Text.Encoding.GetEncoding("Shift_JIS"))
+End If
+CatNum(input)
+input.Dispose()
+End Sub
+Private Shared Sub CatNum(ByVal tr As TextReader)
+Dim num As Integer = 1
+Dim line As String = tr.ReadLine()
+While (Not line Is Nothing)
+' {0, 6}は右詰め6けたの指定
+Console.WriteLine("{0, 6} : {1}", num, line)
+line = tr.ReadLine()
+num += 1
+End While
+End Sub
+End Class
+' コンパイル方法:vbc catnum.vb
+' 実行例1:catnum catnum.vb
+' 実行例2:type catnum.vb | catnum
+テキストに行番号を付加して出力するVBのサンプル・プログラム(catnum.vb)
+catnum.vbのダウンロード
+CatNumメソッドのパラメータをTextReader型としているのがポイントである。
+例えばこのサンプル・プログラムの実行ファイルをcatnum.exeとすると、「dir | catnum」の出力結果は次のようになる。
+1 :  ドライブ C のボリューム ラベルは 100G XP です
+2 :  ボリューム シリアル番号は FCB2-3DAE です
+3 :
+4 :  C:\c#\tips\catnum のディレクトリ
+5 :
+6 : 2007/12/04  18:56    <DIR>          .
+7 : 2007/12/04  18:56    <DIR>          ..
+8 : 2007/12/04  17:21             2,026 a
+9 : 2007/12/04  17:19               703 catnum.cs
+10 : 2007/12/04  17:21             6,656 catnum.exe
+11 : 2007/12/04  17:21               794 catnum.vb
+12 :                4 個のファイル              10,179 バイト
+13 :                2 個のディレクトリ   9,240,834,048 バイトの空き領域
+「dir | catnum」の実行結果例
+ちなみに、パイプを使用していない場合の標準入力元はキーボードである。このサンプル・プログラムをパイプやコマンドライン引数を指定せずに単体で実行した場合には、キーボードから入力された文字列に行番号を付加して出力することになる。
+利用可能バージョン:.NET Framework 2.0のみ
+カテゴリ:クラス・ライブラリ 処理対象:Windows環境
+カテゴリ:クラス・ライブラリ 処理対象:コンソール・アプリケーション
+使用ライブラリ:Consoleクラス(System名前空間)
+使用ライブラリ:StreamReaderクラス(System.IO名前空間)
+使用ライブラリ:TextReaderクラス(System.IO名前空間)
+標準入力(パイプ)からテキストを読み込むには?［C#、VB］ − @IT

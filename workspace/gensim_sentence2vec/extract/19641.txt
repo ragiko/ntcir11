@@ -1,0 +1,6 @@
+sys = frd(response,frequency)sys = frd(response,frequency,Ts)sys = frdsysfrd = frd(sys,frequency)sysfrd = frd(sys,frequency,units)
+説明sys = frd(response,frequency) は多次元配列 response に格納されている周波数応答データから周波数応答データ (frd) モデル オブジェクトの sys を作成します。ベクトルの frequency は周波数応答データの基になっている周波数を表します。応答データ形式の一覧は、「FRD モデルで使う引数 response に対応するデータ形式」を参照してください。sys = frd(response,frequency,Ts) はスカラーのサンプル時間が Ts の離散時間 frd モデル オブジェクト sys を作成します。サンプル時間を指定せずに離散時間 frd モデル オブジェクトを作成する場合は、Ts = -1 に設定します。sys = frd は、空の frd モデル オブジェクトを作成します。これらの構文の入力引数一覧に次のプロパティ名/プロパティ値の組み合わせを続けることができます。'PropertyName',PropertyValue
+これらの追加引数を使用して、モデルにさまざまなプロパティを設定できます。frd モデルの利用可能なプロパティの詳細は、「プロパティ」を参照してください。FRD モデルの sys が既存の LTI モデルの refsys から強制的にすべての一般 LTI プロパティを継承するようにするには、次の構文を使用します。 sys = frd(response,frequency,ltisys)
+sysfrd = frd(sys,frequency) は、動的システム モデル sys を周波数応答データ形式に変換します。周波数応答はベクトル frequency で提供される周波数で rad/TimeUnit 単位で計算されます。このとき、TimeUnit は sys の TimeUnit プロパティで指定される、入力動的システムの時間単位です。sysfrd = frd(sys,frequency,units) は動的システム モデルを frd モデルに変換して、frequency ベクトル内の周波数が文字列 units によって指定された単位になるように解釈します。文字列 units の値のリストについては、「プロパティ」の FrequencyUnit プロパティを参照してください。
+引数SISO FRD モデルや MIMO FRD モデル、または FRD モデルの配列を指定する場合、入力引数 frequency は常に長さが Nf のベクトルになり、Nf は FRD の周波数データ点を示します。入力引数 response の指定を次の表にまとめます。 FRD モデルで使う引数 response に対応するデータ形式モデル形式応答データ形式
+周波数応答データ モデルの作成、周波数応答データ モデルへの変換 - MATLAB frd - MathWorks 日本

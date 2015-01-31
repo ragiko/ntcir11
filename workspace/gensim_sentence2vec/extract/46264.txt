@@ -1,0 +1,16 @@
+
+線形フィットの詳細
+このVIでは、反復的な一般一般最小2乗法とレーベンバーグ・マルカート法を使用して、実験データを以下の式で表される一般的形式の直線にフィットさせます。
+f = ax + b
+x は入力シーケンスX、a は勾配、b は切片です。このVIは、観測値(X、Y)に最良フィットの a と b の値を検出します。
+以下の式は、線形フィットアルゴリズムの結果の線形曲線を示します。
+y[i] = ax[i] + b
+ノイズYがガウス分布の場合、最小2乗メソッドを使用します。以下の図は、このメソッドを使用した線形フィットの結果を示します。
+最小2乗メソッドを使用する場合、このVIは以下の公式に従って残差を最小化することによって、線形モデルの勾配と切片を検出します。
+ここで、N はYの長さ、wi は加重の i番目の要素、fi は最良線形フィットの i番目の要素、yi はYの i番目の要素です。
+最小絶対残差および二重平方メソッドは、確実性の高いフィッティングメソッドです。観測値に外れ値が存在する場合、これらのメソッドを使用します。以下の図は、最小2乗、最小絶対残差、二重平方フィッティングメソッドのフィットの結果を比較します。ほとんどの場合、二重平方メソッドは最小絶対残差よりも外れ値に影響されません。
+最小絶対残差メソッドを使用する場合、このVIは以下の公式に従って残差を最小化することによって、線形モデルの勾配と切片を検出します。
+二重平方メソッドを使用する場合、このVIは以下の図に示すように、反復プロセスを使用して勾配および切片を取得し、最小2乗メソッドと同じ式を使用して残差を計算します。
+サンプル
+線形フィットVIの使用サンプルは、以下のVIで参照できます。Regression Solver VI: labview\examples\analysis\regressn.llbRegressions Demo VI: labview\examples\analysis\regressn.llbFinancial Forecasting VI: labview\examples\analysis\regressn.llbLinear, Exp, and Power Fitting VI: labview\examples\math\curvefit.llbParametric Curve Fitting VI: labview\examples\math\curvefit.llbRobust linear fit VI: labview\examples\math\curvefit.llb
+線形フィット (VI) - LabVIEW 2012ヘルプ - National Instruments

@@ -1,0 +1,14 @@
+iOS8の設定URLスキームで一つ深いページを開く方法がありました 
+3つほど発見。
+MyMemo - メモウィジェット 1.0分類: ユーティリティ, 仕事効率化価格:¥100 (Takeyoshi Nakayama)
+MyMemoを弄りながら見つけました。iOSを英語モードで再起動し、設定アプリの表記を順番に入れていく。あるいは関連語句を試してみる。うまくいけば、望んだページが開く、行き当たりばったりなストラテジー。
+prefs:root=General&path=USAGE/BATTERY_USAGE  バッテリーの使用状況
+prefs:root=General&path=Keyboard/KEYBOARDS  キーボードの追加と削除
+prefs:root=General&path=Keyboard/USER_DICTIONARY  ユーザ辞書の管理
+こんなのが使えそうです。ユーザ辞書はTwitterで流れてた。
+MyMemo用スクリプトはこちら http://tinyurl.com/pr5duq8
+「バッテリーの使用状況」は、バックグラウンドで動いているアプリを特定するのに便利です。でも、使った覚えのあるアプリしか出ない場合は、誰も悪くありません。バッテリーが減っていくのは自然の摂理です。諦めましょう。
+prefs:root=General&path=ACCESSIBILTY/VISION
+試していて、やっぱりあった。アクセシビリティの視覚補助ですが、やってみると空白が出ます。はい、ベータ版のページが残っている。消し忘れがある。これでしょうね。Appleとして、通知センターでURLスキームを使われたくない理由は。空白なら良いけど、もし設定可能なまま残っていたら、マニアの血が騒ぎます。
+まだ大丈夫。2つだけならiOS8の設定URLスキームへ飛べる Quickiee願い事を2つだけ叶えて進ぜよう。Launcherは便利。通知センターから設定アプリの項目を直接呼び出せる。でも、AppStoreから消えちゃいました。まあ、「Today Extension」だから「T...
+iOS8の設定URLスキームで一つ深いページを開く方法がありました  - W&R : Jazzと読書の日々

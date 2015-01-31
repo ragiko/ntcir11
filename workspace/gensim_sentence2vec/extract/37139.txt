@@ -1,0 +1,783 @@
+
+この文書はRFC3374の日本語訳(和訳)です。
+この文書の翻訳内容の正確さは保障できないため、
+正確な知識や情報を求める方は原文を参照してください。
+翻訳者はこの文書によって読者が被り得る如何なる損害の責任をも負いません。
+この翻訳内容に誤りがある場合、訂正版の公開や、
+誤りの指摘は適切です。
+この文書の配布は元のRFC同様に無制限です。
+Network Working Group                                      J. Kempf, Ed.
+Request for Comments: 3374                                September 2002
+Category: Informational
+Problem Description: Reasons For Performing Context Transfers
+Between Nodes in an IP Access Network
+問題記述:IPアクセスネットワークでノード間の状況転送をする行う理由
+Status of this Memo
+この文書の状態
+This memo provides information for the Internet community.  It does
+not specify an Internet standard of any kind.  Distribution of this
+memo is unlimited.
+このメモはインターネット共同体のための情報を供給します。これはインター
+ネット標準を指定しません。このメモの配布は無制限です。
+Copyright Notice
+著作権表示
+Copyright (C) The Internet Society (2002).  All Rights Reserved.
+Abstract
+概要
+In IP access networks that support host mobility, the routing paths
+between the host and the network may change frequently and rapidly.
+In some cases, the host may establish certain context transfer
+candidate services on subnets that are left behind when the host
+moves.  Examples of such services are Authentication, Authorization,
+and Accounting (AAA), header compression, and Quality of Service
+(QoS).  In order for the host to obtain those services on the new
+subnet, the host must explicitly re-establish the service by
+performing the necessary signaling flows from scratch.  In some
+cases, this process would considerably slow the process of
+establishing the mobile host on the new subnet.  An alternative is to
+transfer information on the existing state associated with these
+services, or context, to the new subnet, a process called "context
+transfer".  This document discusses the desirability of context
+transfer for facilitating seamless IP mobility.
+ホスト移動性をサポートするIPアクセスネットワークで、ホストとネット
+ワークの間のルーティングパスはしばしば、そして急速に変化するかもしれ
+ません。ある場合には、ホスト移動後もサブネット上で継続するある特定の
+状況転送サービスを、ホストは確立してもよいです。このようなサービスの
+例は認証・認可・課金(AAA)と、ヘッダ圧縮と、サービス品質(QoS)
+です。ホストが新しいサブネット上でそれらのサービスを得るために、ホス
+トはゼロから必要な信号を送って明示的にサービスを再確立しなくてはなり
+ません。ある場合には、このプロセスは新しいサブネット上で移動ホストを
+確立するプロセスをかなり遅くするでしょう。代案は、「状況転送」と呼ば
+れるプロセスで、新しいサブネットにこれらのサービスや状況と結び付けら
+れた既存の状態の情報を転送する事です。この文書はスムーズなIP移動を
+容易にするらめ状況転送の望ましさを論じます。
+Table of Contents
+目次
+1.0   Introduction
+1.0   はじめに
+2.0   Reference Definitions
+2.0   参照定義
+3.0   Scope of the Context Transfer Problem
+3.0   状況転送問題の扱う範囲
+4.0   The Need for Context Transfer
+4.0   状況転送の必要性
+4.1   Fast Context Transfer-candidate Service Re-establishment
+4.1   早い状況転送の候補のサービスの再建
+4.1.1 Authentication, Authorization, and Accounting (AAA)
+4.1.1 認証と認可と課金(AAA)
+4.1.2 Header Compression
+4.1.2 ヘッダ圧縮
+4.1.3 Quality of Service (QoS)
+4.1.3 サービス品質(QoS)
+4.2   Interoperability
+4.2   互換性
+5.0   Limitations on Context Transfer
+5.0   状況転送の限界
+5.1   Router Compatibility
+5.1   ルータ互換性
+5.2   Requirement to Re-initialize Service from Scratch
+5.2   ゼロからサービスを再度初期化する必要条件
+5.3   Suitability for the Particular Service
+5.3   特定のサービスの適合性
+5.4   Layer 2 Solutions Better
+5.4   よりよいレイヤ2つの解決策
+6.0   Performance Considerations
+6.0   性能の考察
+7.0   Security Considerations
+7.0   セキュリティの考察
+8.0   Recommendations
+8.0   推薦
+9.0   Acknowledgements
+9.0   謝辞
+10.0  References
+10.0  参考文献
+11.0  Complete List of Authors' Addresses
+11.0  著者のアドレスの完全なリスト
+12.0  Full Copyright Statement
+12.0  著作権表示全文
+1.0 Introduction
+1.0 はじめに
+In networks where the hosts are mobile, the routing path through the
+network must often be changed in order to deliver the host's IP
+traffic to the new point of access.  Changing the basic routing path
+is the job of a IP mobility protocol, such as Mobile IPv4 [1] and
+Mobile IPv6 [2].  But the success of real time services such as VoIP
+telephony, video, etc., in a mobile environment depends heavily upon
+the minimization of the impact of this traffic redirection.  In the
+process of establishing the new routing path, the nodes along the new
+path must be prepared to provide similar routing treatment to the IP
+packets as was provided along the old routing path.
+ホストが移動であるネットワークで、ネットワークを通るルーティングパス
+はしばしば新しいアクセスポイントにホストのIPトラフィックを届けるた
+めに変えられなくてはなりません。基本的なルーティングパスを変えること
+はIP移動プロトコルの、モバイルIPv4[1]とモバイルIPv6[2]のよ
+うな仕事です。けれども移動環境での、VoIP電話やビデオなどの、リア
+ルタイムサービスの成功は、このトラフィック方向変更の影響の最小化に依
+存します。新しいルーティングパスを確立するプロセスで、新しいパスに沿っ
+たノードは古いルーティングパスに沿って供給されたIPパケットに類似の
+ルーティング待遇を供給する用意ができているに違いありません。
+In many cases, the routing treatment of IP packets within a network
+may be regulated by a collection of context transfer-candidate
+services that influence how packets for the host are treated.  For
+example, whether a particular host has the right to obtain any
+routing at all out of the local subnet may depend on whether the host
+negotiated a successful AAA exchange with a network access server at
+some point in the past.  Establishing these services initially
+results in a certain amount of related state within the network and
+requires a perhaps considerable amount of time for the protocol
+exchanges.  If the host is required to re-establish those services by
+the same process as it uses to initially establish them, delay-
+sensitive real time traffic may be seriously impacted.
+多くの場合、ネットワーク内のIPパケットのルーティングの扱いは、どの
+ようにホストのパケットを扱うかに影響を与える状況転送サービスの集合に
+よって統制されるかもしれません。例えば、特定のホストがローカルサブネッ
+ト外へのルーティングを得るべき権利を持っているかどうかは、ホストが過
+去にある時点でネットワークアクセスサーバと成功したAAA交換交渉をし
+たかどうかによるかもしれません。初めにこれらのサービスを確立すること
+はネットワーク内にある量の関連した状態をもたらして、そしてプロトコル
+交換のために多分重要な量の時間を必要とします。もしホストが初めと同じ
+手順でサービスを再確立するように要求されるなら、遅延要求が高いリアル
+タイムトラフィックにひどく影響を与えらるかもしれません。
+An alternative is to transfer enough information on the context
+transfer-candidate service state, or context, to the new subnet so
+that the services can be re-established quickly, rather than require
+the mobile host to establish them from scratch.  The transfer of
+service context may be advantageous in minimizing the impact of host
+mobility on, for example, AAA, header compression, QoS, policy, and
+possibly sub-IP protocols and services such as PPP.  Context transfer
+at a minimum can be used to replicate the configuration information
+needed to establish the respective protocols and services.  In
+addition, it may also provide the capability to replicate state
+information, allowing stateful protocols and services at the new node
+to be activated along the new path with less delay and less signaling
+overhead.
+代案は、移動ホストがゼロからサービスを確立するように要求するより速く
+再確立できるように、十分な状況転送サービスで状態や状況の情報を新しい
+サブネットに転送する事です。サービス状況の転送は、例えば、AAAやヘッ
+ダ圧縮やQoSやポリシーやPPPの様なサブIPプロトコルとサービスで、
+ホスト移動の影響を最小にする際に有利であるかもしれません。少なくとも
+状況転送はそれぞれのプロトコルとサービスを確立するために必要な設定情
+報の複製に使うことができます。加えて、新しいノードの新しいパスで、ス
+テートフルなプロトコルとサービスを、より少ない遅延とより少ない信号オー
+バーヘッドで、活性化されることを許す状態情報を複製する能力を供給する
+かもしれません。
+In this document, a case is made for why the Seamoby Working Group
+should investigate context transfer.
+この文書で、事例はSeamoby作業グループが状況転送を調査するべきである理
+由に対してされます。
+2.0 Reference Definitions
+2.0 参照定義
+Context
+状況
+The information on the current state of a service required to re-
+establish the service on a new subnet without having to perform
+the entire protocol exchange with the mobile host from scratch.
+新しいサブネット上でサービスを再確立する際に、ゼロから移動ホストが
+全部のプロトコル交換を行う必要がないために必要な、サービスの現在の
+状態についての情報。
+Context Transfer
+状況転送
+The movement of context from one router or other network entity to
+another as a means of re-establishing specific services on a new
+subnet or collection of subnets.
+1つのルータあるいは他のネットワーク参加者から他へ、新しいサブネッ
+トあるいはサブネット集合上に特定のサービスを再確立する手段としての、
+状況の動き。
+Context Transfer Candidate Service
+状況転送候補サービス
+A service that is a candidate for context transfer.  In this
+document, only services that are concerned with the forwarding
+treatment of packets, such as QoS and security, or involve
+granting or denying the mobile host access to the network, such as
+AAA, are considered to be context transfer-candidate services.
+状況転送の検討の候補となってるサービス。この文書では、パケットの転
+送処理に関係している、QoSやセキュリティや移動ホストがネットワー
+クへのアクセスの可否を与えるAAAのようなサービスだけが状況転送の
+検討の候補となるサービスであると考えられます。
+3.0 Scope of the Context Transfer Problem
+3.0 状況転送問題の扱う範囲
+The context transfer problem examined in this document is restricted
+to re-establishing services for a mobile host that are, in some
+sense, related to the forwarding treatment of the mobile host's
+packets or network access for the mobile host.  It is not concerned
+with actually re-establishing routing information.  Routing changes
+due to mobility are the domain of the IP mobility protocol.  In
+addition, transfer of context related to application-level services,
+such as those associated with the mobile host's HTTP proxy, is also
+not considered in this document, although a generic context transfer
+protocol for transferring the context of services related to
+forwarding treatment or network access may also function for
+application-level services as well.
+この文書で調べる状況転送問題は移動ホストのサービス再確立に限定され、
+ある意味でこれは、移動ホストのパケットや移動ホストのネットワークアク
+セスの転送の扱いに関連します。これは実際にルーティング情報を再度確立
+することに関わっていません。移動のためのルーティング変更はIP移動性
+ロトコルの管轄です。加えて、転送の扱いやネットワークアクセスのサービ
+ス状況を転送することのための一般的な状況転送プロトコルがアプリケーショ
+ンレベルサービスの機能かもしれないが、移動ホストのHTTPプロクシに
+関するもののような、アプリケーションレベルサービスと関係がある状況転
+送が、この文書で考慮されません。
+An important consideration in whether a service is a candidate for
+context transfer is whether it is possible to obtain a "correct"
+context transfer for the service in a given implementation and
+deployment, that is, one which will result in the same context at the
+new access router as would have resulted had the mobile host
+undergone a protocol exchange with the access router from scratch.
+For some services, the circumstances under which context transfer may
+result in correctness may be very limited [11].
+サービスが状況転送の候補であるか否かにかかわらず、重要な考慮は、与え
+られた実装と配置でのサービスのための「正しい」状況転送を得ることは可
+能であるかどうか、つまり、新しいアクセスルータで移動ホストがゼロから
+アクセスルータとプロトコル交換を経た結果として生じたのと同じ状況とな
+るかどうかです。あるサービスで、状況転送が正当な結果をもたらす状況は
+非常に限定されているかもしれません[11]。
+4.0 The Need for Context Transfer
+4.0 状況転送の必要性
+There are two basic motivations for context transfer:
+状況転送の2つの基本的な動機があります:
+1) The primary motivation, as mentioned in the introduction, is the
+need to quickly re-establish context transfer-candidate services
+without requiring the mobile host to explicitly perform all
+protocol flows for those services from scratch.
+1) 主要な動機は、はじめにで述べたように、移動ホストが明示的にゼロから
+サービスのすべてのプロトコル流れを行わずに速く状況転送の候補となる
+サービスを再確立することです。
+2) An additional motivation is to provide an interoperable solution
+that works for any Layer 2 radio access technology.
+2) 追加の動機が、任意のレイヤ2無線アクセス技術で動く共通解決策を提供
+することです。
+These points are discussed in more detail in the following
+subsections.
+これらのポイントは次の章で詳細に論じられます。
+4.1 Fast Context Transfer-candidate Service Re-establishment
+4.1 早い状況転送の候補のサービスの再建
+As mentioned in the introduction, there are a variety of context
+transfer-candidate services that could utilize a context transfer
+solution.  In this section, three representative services are
+examined.  The consequences of not having a context transfer solution
+are examined as a means of motivating the need for such a solution.
+はじめにで述べたように、状況転送解決策を利用することができるいろいろ
+な状況転送の候補のサービスがあります。この章で、3つの代表サービスが
+調べられます。状況転送解決策を持たない結果はこのような解決策の必要に
+興味を起こす手段として調べられます。
+4.1.1 Authentication, Authorization, and Accounting (AAA)
+4.1.1 認証と認可と課金(AAA)
+One of the more compelling applications of context transfer is
+facilitating the re-authentication of the mobile host and
+re-establishment of the mobile host's authorization for network
+access in a new subnet by transferring the AAA context from the
+mobile host's previous AAA server to another.  This would allow the
+mobile host to continue access in the new subnet without having to
+redo an AAA exchange with the new subnet's AAA server.  Naturally, a
+security association between the AAA servers is necessary so that the
+mobile host's sensitive authentication information can be securely
+transferred.
+状況転送のより説得的なアプリケーションの1つが、移動ホストの再認証と
+移動ホストの新しいサブネットネットワークアクセスの再認可を、移動ホス
+トの前のAAAサーバから新しいのへAAA状況を転送することによって容
+易にすることです。これは移動ホストに新しいサブネットのAAAサーバと
+AAA交換をやり直さずに新しいサブネットアクセスを続けることを許すで
+しょう。移動ホストの重要な認証情報を安全に転送するために、当然、AA
+Aサーバ間のセキュリティアソシエーションが必要です。
+In the absence of context transfer, there are two ways that can
+currently be used for AAA:
+状況転送がない場合に、現在AAAに使える2つの方法があります:
+1) Layer 2 mechanisms, such as EAP [3] in PPP [4] or 802.1x [5] can
+be used to redo the initial protocol exchange, or possibly to
+update it.  Currently, there is no general Layer 3 mechanism for
+conducting an AAA exchange between a host and an AAA server in the
+network.
+1) 2層メカニズム、例えばPPP[4]のEAP[3]や802.1x[5]が最初の
+プロトコル交換をやり直すか更新するために使えます。現在、ネットワー
+ク内のホストとAAAサーバ間でAAA交換を行う一般的なレイヤ3メカ
+ニズムがありません。
+2) If the mobile host is using Mobile IPv4 (but not Mobile IPv6
+currently), the host can use the AAA registration keys [6]
+extension for Mobile IPv4 to establish a security association with
+the new Foreign Agent.
+2) もし移動ホストがモバイルIPv4を使っているなら(しかし現在のモバ
+イルIPv6ではないなら)、ホストが外部エージェントとセキュリティ
+アソシエーションを確立するためにモバイルIPv4のAAA登録鍵[6]
+拡張を使えます。
+Since 2) is piggybacked on the Mobile IPv4 signaling, the performance
+is less likely to be an issue, but 2) is not a general solution.  The
+performance of 1) is likely to be considerably less than is necessary
+for maintaining good real time stream performance.
+2)がIPv4に便乗するので、性能低下が問題ではないが、2)は一般的な
+解決ではありません。1)の性能は良いリアルタイムフロー性能を持続する
+ことに必要なよりかなりより低い可能性が高です。
+4.1.2 Header Compression
+4.1.2 ヘッダ圧縮
+In [7], protocols are described for efficient compression of IP
+headers to avoid sending large headers over low bandwidth radio
+network links.  Establishing header compression generally requires
+from 1 to 4 exchanges between the last hop router and the mobile host
+with full or partially compressed headers before full compression is
+available.  During this period, the mobile host will experience an
+effective reduction in the application-available bandwidth equivalent
+to the uncompressed header information sent over the air.  Limiting
+the uncompressed traffic required to establish full header
+compression on a new last hop router facilitates maintaining adequate
+application-available bandwidth for real time streams, especially for
+IPv6 where the headers are larger.
+[7]に、大きいヘッダを低帯域無線ネットワークリンク上に送るのを避けるた
+めのIPヘッダの効率的な圧縮のプロトコルが記述されます。一般にヘッダ
+圧縮を確立することは、完全な圧縮が利用可能になる前に、最終ホップルー
+タと移動ホスト間で、完全あるいは部分的に圧縮されたヘッダによる1から
+4回の情報交換を必要とします。この期間は、移動ホストは無線上で送られ
+た圧縮されないヘッダ情報に等しいアプリケーション利用可能帯域を経験す
+るでしょう。新しい最終ホップルータ上で完全ヘッダ圧縮を確立する際の非
+圧縮トラフィックを制限することは、特にヘッダが大きいIPv6でのリア
+ルタイムストリームで、適切なアプリケーション利用可能帯域幅を保守する
+ことを容易にします。
+Context transfer can help in this case by allowing the network entity
+performing header compression, usually the last hop router, to
+transfer the header compression context to the new router.  The
+timing of context transfer must be arranged so that the header
+context is transferred from the old router as soon as the mobile host
+is no longer receiving packets through the old router, and installed
+on the new router before any packets are delivered to or forwarded
+from the mobile host.
+状況転送がこの場合、通常最終ルータが新しいルータにヘッダ圧縮状況を転
+送する事で、ネットワーク装置がヘッダ圧縮をするのを助けることができま
+す。状況転送のタイミングは、移動ホストが古いルータからパケットを受け
+取らなくなってすぐにヘッダ状況が古いルータから転送され、新しいルータ
+に移動ホストからパケットが届くか届ける前に設定されるように、取り決め
+られなくてはなりません。
+4.1.3 Quality of Service (QoS)
+4.1.3 サービス品質(QoS)
+Significant QoS protocol exchanges between the mobile host and
+routers in the network may be required in order to establish the
+initial QoS treatment for a mobile host's packets.  The exact
+mechanism whereby QoS for a mobile host should be established is
+currently an active topic of investigation in the IETF.  For existing
+QoS approaches (Diffsrv and Intsrv) preliminary studies have
+indicated that the protocol flows necessary to re-establish QoS in a
+new subnet from scratch can be very time consuming for Mobile IP, and
+other mobility protocols may suffer as well.
+移動ホストとネットワークのルータの間の重要なQoSプロトコル交換が移
+動ホストのパケットの最初のQoS待遇を確立するために要求されるかもし
+れません。移動ホストのためのQoSが確立されるべきである正確なメカニ
+ズムはIETFの現在調査のアクティブなトピックです。既存のQoS手法
+(DiffsrvとIntsrv)で、予備調査では新しいサブネットでゼ
+ロからQoSを再確立するために必要なプロトコルフローがモバイルIPで
+非常に時間がかかり得ることを示しました、そして他の移動プロトコルが同
+様に苦しむかもしれません。
+A method of transferring the mobile host's QoS context from the old
+network to the new could facilitate faster re-establishment of the
+mobile host's QoS treatment on the new subnet.  However, for QoS
+mechanisms that are end-to-end, transferring context at the last hop
+router may be insufficient to completely re-initialize the mobile
+host's QoS treatment, since some number of additional routers in the
+path between the mobile host and corresponding node may also need to
+be involved.
+古いネットワークから新しいネットワークへ移動ホストのQoS状況を転送
+する方法が新しいサブネット上の移動ホストのQoS待遇のより速い再建を
+容易にすることができます。しかしながら、エンドエンドQoSメカニズム
+で、最終ホップルータで状況を転送することは、移動ホストと対応ノードの
+間のパスに追加されるいくつかのルータの対応を必要とするかもしれないの
+で、完全に移動ホストのQoS待遇を再度初期化するには不十分であるかも
+しれません。
+4.2 Interoperability
+4.2 互換性
+A particular concern for seamless handover is that different Layer 2
+radio protocols may define their own solutions for context transfer.
+There are ongoing efforts within 3GPP [8] and IEEE [9] to define such
+solutions.  These solutions are primarily designed to facilitate the
+transfer of Layer 2-related context over a wired IP network between
+two radio access networks or two radio access points.  However, the
+designs can include extensibility features that would allow Layer 3
+context to be transferred.  Such is the case with [10], for example.
+スムーズハンドオーバの特定の懸念は、異なったレイヤ2無線プロトコルが、
+それら自身で異なる状況転送解決策を定義するかもしれないということです。
+3GPP[8]とIEEE[9]はこのような解決策を定義する進行中の努力があ
+ります。これらの解決策は主に2つの無線アクセスネットワークあるいは2
+無線アクセスポイント間の有線IPネットワーク上でレイヤ2関連の状況の
+転送を容易にするよう意図されます。しかしながら、デザインはレイヤ3の
+状況転送を許すように拡張機能を含むことができます。例えばこれは[10]で
+本当です。
+If Layer 2 protocols were to be widely adopted as an optimization
+measure for Layer 3 context transfer, seamless mobility of a mobile
+host having Layer 2 network interfaces that support multiple radio
+protocols would be difficult to achieve.  Essentially, a gateway or
+translator between Layer 2 protocols would be required, or the mobile
+host would be required to perform a full re-initialization of its
+context transfer-candidate services on the new radio network, if no
+translator were available, in order to hand over a mobile host
+between two access technologies.
+もしレイヤ2プロトコルがレイヤ3の状況転送の広く最適化手法として採用
+されるなら、多数の無線プロトコルをサポートするレイヤ2ネットワークイ
+ンタフェースを持つ移動ホストのスムーズな移動を成し遂げることが難しい
+でしょう。本質的に、ゲートウェイあるいはレイヤ2のプロトコルの間の翻
+訳が必要とされるでしょう、あるいはもし翻訳が利用可能でないなら、2つ
+のアクセス技術の間で移動ホストをハンドオーバするのに、移動ホストは新
+しい無線ネットワーク上で状況転送の候補となるサービスの完全な最初期化
+を行う必要があるでしょう。
+A general Layer 3 context transfer solution may also be useful for
+Layer 2 protocols that do not define their own context transfer
+protocol.  Consideration of this issue is outside the scope of the
+Seamoby Working Group, however, since it depends on the details of
+the particular Layer 2 protocol.
+一般的なレイヤ3の状況転送解決策が、自身の状況転送プロトコルを定義し
+ないレイヤ2プロトコルの役立つかもしれません。この問題の考察は、しか
+しながら、特定の2層プロトコルの詳細に依存するので、Seamoby作業グルー
+プの範囲外です。
+5.0 Limitations on Context Transfer
+5.0 状況転送の限界
+Context transfer may not always be the best solution for
+re-establishing context transfer-candidate services on a new subnet.
+There are certain limitations on when context transfer may be
+useful. These limitations are discussed in the following subsections.
+状況転送が常に新しいサブネットの上に状況転送の候補のサービスを再確立
+する最も良い解決策ではないかもしれません。いつ状況転送が有用であるか
+について、ある特定の限界があります。これらの限界は次の章で論じられま
+す。
+5.1 Router Compatibility
+5.1 ルータ互換性
+Context transfer between two routers is possible only if the
+receiving router supports the same context transfer-candidate
+services as the sending router.  This does not mean that the two
+nodes are identical in their implementation, nor does it even imply
+that they must have identical capabilities.  A router that cannot
+make use of received context should refuse the transfer.  This
+results in a situation no different than a mobile host handover
+without context transfer, and should not be considered an error or
+failure situation.
+2つのルータ間の状況転送は、受信ルータが送信ルータと同じ状況転送の候
+補のサービスをサポート支援する場合に限り、可能です。これは2つのノー
+ドの実装で同一であることを意味しませんし、同様に同一の能力を持ってい
+なくてはならないことを意味しさえしません。受信した状況を利用すること
+ができないルータが転送を断るべきです。これは状況転送がない移動ホスト
+ハンドオーバーと同じで、エラーや失敗状態と思われるべきでありません。
+5.2 Requirement to Re-initialize Service from Scratch
+5.2 ゼロからサービスを再度初期化する必要条件
+The primary motivation for context transfer assumes that quickly
+re-establishing the same level of context transfer-candidate service
+on the new subnet is desirable.  And yet, there may be situations
+where either the device or the access network would prefer to
+re-establish or re-negotiate the level of service.  For example, if
+the mobile host crosses administrative domains where the operational
+policies change, negotiation of a different level of service may be
+required.
+状況転送のための主要な動機は、状況転送の候補となるサービスを、速く新
+しいサブネット上で同じレベルで再確立することが望ましいとの想定です。
+それにも拘わらず、装置あるいはアクセスネットワークがサービスレベルを
+再確立するか、あるいは再度交渉することをより好む状態があるかもしれま
+せん。例えば、もし移動ホストが運用上のポリシーが変化する管理ドメイン
+に移動するなら、異なったレベルのサービスの交渉が必要とされるかもしれ
+ません。
+5.3 Suitability for the Particular Service
+5.3 特定のサービスの適合性
+Context transfer assumes that it is faster to establish the service
+by context transfer rather than from scratch.  This may not be true
+for certain types of service, for example, multicast, "push"
+information services.
+状況転送は、状況転送によるサービス確立が、ゼロからより速いと想定しま
+す。これはある特定のタイプのサービス、例えばマルチキャストや「プッシ」
+情報サービスで、真ではないかもしれません。
+5.4 Layer 2 Solutions Better
+5.4 よりよいレイヤ2つの解決策
+Context transfer is an enhancement to improve upon the performance of
+a handover for Layer 3 context transfer-candidate services.  Many
+networks provide support for handover at Layer 2, within and between
+subnets.  Layer 3 context transfer may not provide a significant
+improvement over Layer 2 solutions, even for Layer 3 context, if the
+handover is occurring between two subnets supporting the same Layer 2
+radio access technology.
+状況転送がレイヤ3の状況転送の候補のサービスのためのハンドオーバの性
+能を改善するための拡張です。多くのネットワークがレイヤ2でサブネット
+内とサブネット間のハンドオーバのサポートを供給します。もしハンドオー
+バが同じレイヤ2の無線アクセス技術をサポートしている2つのサブネット
+の間でおこるなら、レイヤ3の状況のためであっても、レイヤ3の状況転送
+がレイヤ2の解決に重要な改良を供給しないかもしれません。
+6.0 Performance Considerations
+6.0 性能の考察
+The purpose of context transfer is to sustain the context
+transfer-candidate services being provided to a mobile host's traffic
+during handover.  It is essentially an enhancement to IP mobility
+that ultimately must result in an improvement in handover
+performance.  A context transfer solution must provide performance
+that is equal to or better than re-initializing the context
+transfer-candidate service between the mobile host and the network
+from scratch.  Otherwise, context transfer is of no benefit.
+状況転送の目的は、状況転送の候補ちなるサービスをハンドオーバの間も移
+動ホストのトラフィックに供給することです。IP移動性への拡張で、究極
+的なハンドオーバ性能の改良は本質です。状況転送解決策が移動ホストとネッ
+トワークの間でゼロから状況転送の候補のサービスを再度初期化するのより
+も、同等以上の性能を供給しなくてはなりません。さもなければ、状況転送
+の利益がありません。
+7.0 Security Considerations
+7.0 セキュリティの考察
+Any context transfer standard must provide mechanism for adequately
+securely the context transfer process, and a recommendation to deploy
+security, as is typically the case for Internet standards.  Some
+general considerations for context transfer security include:
+どのような状況転送標準でも、典型的なインターネット標準同様に、十分に
+安全なセキュリティメカニズムを供給しなくてはならず、安全に配置する勧
+告をしなければなりません。状況転送セキュリティに対する一般的な考察は
+以下を含みます:
+- Information privacy: the context may contain information which the
+end user or network operator would prefer to keep hidden from
+unauthorized viewers.
+- 情報プライバシー:状況はエンドユーザやネットワークオペレータが無許
+可の者から隠される状態にすることを求める情報を含んでいるかもしれま
+せん。
+- Transfer legitimacy: a false or purposely corrupted context
+transfer could have a severe impact upon the operation of the
+receiving router, and therefore could potentially affect the
+operation of the access network itself.  The potential threats
+include denial of service and theft of service attacks.
+- 転送正当性:誤りや偽造した状況転送は、受信ルータの運用にひどい影響
+を与えることができ、従って潜在的にアクセスネットワーク自身の運用に
+影響を与えることができます。可能性がある脅威はサービス妨害とサービ
+ス横取を含みます。
+- Security preservation: part of the context transfer may include
+information pertinent to a security association established between
+the mobile host and another entity on the network.  For this
+security association to be preserved during handover, the transfer
+of the security context must include the appropriate security
+measures.
+- セキュリティ維持:状況転送の一部にネットワークの移動ホストと他の要
+素間で確立されたセキュリティアソシエーションと関係がある情報を含む
+かもしれません。このセキュリティアソシエーションがハンドオーバーの
+間に維持されるために、セキュリティ状態の転送は適切なセキュリティ手
+段を含まなくてはなりません。
+It is expected that the measures used to secure the transport of
+information between peers (e.g., IPSEC [10]) in an IP network should
+be sufficient for context transfer.  However, given the above
+considerations, there may be reason to provide for additional
+security measures beyond the available IETF solutions.
+IPネットワークでピアの間で情報を転送するのを保証する使われた方法
+(例えばIPSEC[10])が状況転送に十分である事が期待されます。しか
+しながら、上記の考慮の条件下で、利用可能なIETF解決策を越えて追加
+のセキュリティ手段を備える理由があるかもしれません。
+Since context transfer requires a trust relationship between network
+entities, the compromise of only one of the network entities that
+transfer context may be sufficient to reduce the security of the
+whole system, if for example the context transferred includes
+encryption keying material.  When the host moves from the compromised
+network entity to an uncompromised network entity in the presence of
+context transfer, the compromised context may be used to decrypt the
+communication channel.  When context transfer is not used, a
+compromise of only one network entity only gives access to what that
+network entity can see.  When the mobile host moves to an
+uncompromised network entity in the absence of context transfer,
+security can be re-established at the new entity.  However, to the
+extent that context transfer happens primarily between routers, the
+security of context transfer will depend on the security of the
+routers.  Any compromise of security on a router that affects context
+transfer may also lead to other, equally serious disruptions in
+network traffic.
+状況転送がネットワーク装置間の信頼関係を必要とするので、状況転送をす
+るネットワーク装置の1つが汚染され、もし例えば転送された状況が暗号化
+の鍵の材料を含むなら、システム全体のセキュリティを悪化させるかもしれ
+ません。ホストが状況転送の汚染された装置から汚染されたない装置に移動
+する時、汚染された状況は通信チャネルを解読するために使われるかもしれ
+ません。状況転送が使われない時、1つのネットワーク装置の汚染は、その
+ネットワーク装置が見ることができるものへのアクセスを与えるだけです。
+移動ホストが状況転送がなければ、汚染されてないネットワーク装置に移動
+する時、セキュリティが新しい装置で再度確立できます。しかしながら、状
+況転送が主にルータ間で起きる限り、状況転送の安全管理はルータのセキュ
+リティに依存するでしょう。状況転送に影響を与えるルータ上のセキュリ
+ティの汚染は、ネットワークトラフィックに他の同様な重大な混乱を導くか
+もしれません。
+The context transfer investigation must identify any novel security
+measures required for context transfer that exceed the capabilities
+of the existing or emerging IETF solutions.
+状況転送の調査は、既存や議論中のIETF解決策の能力を越える、状況転
+送のために必要とされる新しいセキュリティ処置を、識別しなくてはなりま
+せん。
+8.0 Recommendations
+8.0 推薦
+The following steps are recommended for Seamoby:
+次のステップはSeamobyに勧められます:
+- Investigation into candidate router-related services for context
+and an analysis of the transfer requirements for each candidate;
+- 状況の候補となるルータ関連のサービスと、それぞれの候補の転送条件の
+分析調査;
+- The development of a framework and protocol(s) that will support
+the transfer of context between the routing nodes of an IP network.
+- IPネットワークのルーティングノード間で状況の転送をサポートするフ
+レームワークとプロトコルの開発。
+The context transfer solution must inter-work with existing and
+emerging IP protocols, in particular, those protocols supporting
+mobility in an IP network.
+状況転送解決策は、既存と検討中のIPプロトコル、特に、IPネットワー
+クで移動性をサポートしているプロトコル、との相互動作が必要です。
+9.0 Acknowledgements
+9.0 謝辞
+The editor would like to thank the Seamoby CT design team (listed at
+the end of the document as co-authors), who were largely responsible
+for the initial content of this document, for their hard work, and
+especially Gary Kenward, who shepherded the document through its
+initial versions.
+エディタは、主にこの文書の最初の内容に関して責任があった(共著者とし
+て文書の終わりにおいてリストアップされた)Seamoby CTデザイン
+チーム、特にその最初のバージョンを書いたGary Kenwardに対して、にその
+努力の感謝をしたいです。
+10.0 References
+10.0 参考文献
+[1]  Perkins, C., "IP Mobility Support", RFC 3220, January 2002.
+[2]  Johnson, D. and C. Perkins, "Mobility Support in IPv6", Work in
+Progress.
+[3]  Blunk, L. and Vollbrecht, J., "PPP Extensible Authentication
+Protocol (EAP)", RFC 2284, March 1998.
+[4]  Simpson, W., "The Point-to-Point Protocol (PPP)", STD 51, RFC
+1661, July 1994.
+[5]  IEEE Std. P802.1X/D11, "Standard for Port based Network Access
+Control", March 2001.
+[6]  Perkins, C., and P. Calhoun, "AAA Registration Keys for Mobile
+IP", Work in Progress.
+[7]  Borman, C., Burmeister, C., Degermark, M., Fukushima, H., Hannu,
+H., Jonsson, L., Hakenberg, R., Koren T., Le, K., Martensson,
+A., Miyazaki, A., Svanbro, K., Wiebke, T., Yoshimura, T. and H.
+Zheng, "RObust Header Compression (ROHC): Framework and four
+profiles: RTP, UDP, ESP, and uncompressed", RFC 3095, July 2001.
+[8]  3GPP TR 25.936 V4.0.0, "Handovers for Real Time Services from PS
+Domain," 3GPP, March 2001.
+[9]  IEEE Std. 802.11f/D2.0, "Draft Recommended Practice for Multi-
+Vendor Access Point Interoperability via an Inter-Access Point
+Protocol Across Distribution Systems Supporting IEEE 802.11
+Operation," July 2001.
+[10] Kent, S. and Atkinson, R., "Security Architecture for the
+Internet Protocol", RFC 2401, November 1998.
+[11] Aboba, B. and M. Moore, "A Model for Context Transfer in IEEE
+802", Work in Progress.
+11.0 Complete List of Authors' Addresses
+11.0 著者のアドレスの完全なリスト
+O. Henrik Levkowetz
+A Brand New World
+Osterogatan 1
+S-164 28 Kista
+SWEDEN
+Phone: +46 8 477 9942
+EMail: henrik@levkowetz.com
+Pat R. Calhoun
+Black Storm Networks
+110 Nortech Parkway
+San Jose  CA 95134
+USA
+Phone: +1 408-941-0500
+EMail: pcalhoun@bstormnetworks.com
+James Kempf
+NTT DoCoMo USA Laboratories
+181 Metro Drive, Suite 300
+San Jose, CA 95110
+USA
+Phone: 408-451-4711
+EMail: kempf@docomolabs-usa.com
+Gary Kenward
+Nortel Networks
+3500 Carling Avenue
+Nepean, Ontario  K2G 6J8
+CANADA
+Phone: +1 613-765-1437
+EMail: gkenward@nortelnetworks.com
+Hamid Syed
+Nortel Networks
+100 Constellation Crescent
+Nepean  Ontario K2G 6J8
+CANADA
+Phone: +1 613 763-6553
+EMail: hmsyed@nortelnetworks.com
+Jukka Manner
+Department of Computer Science
+University of Helsinki
+P.O. Box 26 (Teollisuuskatu 23)
+FIN-00014 Helsinki
+FINLAND
+Phone: +358-9-191-44210
+EMail: jmanner@cs.helsinki.fi
+Madjid Nakhjiri
+Motorola
+1501 West Shure Drive
+Arlington Heights  IL 60004
+USA
+Phone: +1 847-632-5030
+EMail: madjid.nakhjiri@motorola.com
+Govind Krishnamurthi
+Communications Systems Laboratory, Nokia Research Center
+5 Wayside Road
+Burlington  MA 01803
+USA
+Phone: +1 781 993 3627
+EMail: govind.krishnamurthi@nokia.com
+Rajeev Koodli
+Communications Systems Lab, Nokia Research Center
+313 Fairchild Drive
+Mountain View  CA 94043
+USA
+Phone: +1 650 625 2359
+EMail: rajeev.koodli@nokia.com
+Kulwinder S. Atwal
+Zucotto Wireless Inc.
+Ottawa  Ontario K1P 6E2
+CANADA
+Phone: +1 613 789 0090
+EMail: kulwinder.atwal@zucotto.com
+Michael Thomas
+Cisco Systems
+375 E Tasman Rd
+San Jose  CA 95134
+USA
+Phone: +1 408 525 5386
+EMail: mat@cisco.com
+Mat Horan
+COM DEV Wireless Group
+San Luis Obispo  CA 93401
+USA
+Phone: +1 805 544 1089
+EMail: mat.horan@comdev.cc
+Phillip Neumiller
+3Com Corporation
+1800 W. Central Road
+Mount Prospect  IL 60056
+USA
+EMail: phil_neumiller@3com.com
+12.0 Full Copyright Statement
+12.0 著作権表示全文
+Copyright (C) The Internet Society (2002).  All Rights Reserved.
+著作権(C)インターネット学会(2002)。すべての権利は保留される。
+This document and translations of it may be copied and furnished to
+others, and derivative works that comment on or otherwise explain it
+or assist in its implementation may be prepared, copied, published
+and distributed, in whole or in part, without restriction of any
+kind, provided that the above copyright notice and this paragraph are
+included on all such copies and derivative works.  However, this
+document itself may not be modified in any way, such as by removing
+the copyright notice or references to the Internet Society or other
+Internet organizations, except as needed for the purpose of
+developing Internet standards in which case the procedures for
+copyrights defined in the Internet Standards process must be
+followed, or as required to translate it into languages other than
+English.
+上記著作権表示とこの段落が全ての複写や派生的な仕事につけられていれば、
+この文書と翻訳は複写や他者への提供ができ、そしてコメントや説明や実装
+を支援する派生的な仕事のためにこの文書の全部か一部を制約なく複写や出
+版や配布できます。しかし、この文書自身は、英語以外の言葉への翻訳やイ
+ンターネット標準を開発する目的で必要な場合以外は、インターネット学会
+や他のインターネット組織は著作権表示や参照を削除されるような変更がで
+きません、インターネット標準を開発する場合はインターネット標準化プロ
+セスで定義された著作権の手順に従われます。
+The limited permissions granted above are perpetual and will not be
+revoked by the Internet Society or its successors or assigns.
+上に与えられた限定された許可は永久で、インターネット学会やその後継者
+や譲渡者によって無効にされません。
+This document and the information contained herein is provided on an
+"AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
+TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+この文書とここに含む情報は無保証で供給され、そしてインターネット学会
+とインターネット技術標準化タスクフォースは、特別にも暗黙にも、この情
+報の利用が権利を侵害しないことや商業利用や特別の目的への利用に適当で
+ある事の保障を含め、すべての保証を拒否します。
+Acknowledgement
+謝辞
+Funding for the RFC Editor function is currently provided by the
+Internet Society.
+RFCエディタ機能のための資金供給が現在インターネット学会によって
+供給されます。
+[]Japanese translation by Ishida So
+RFC3374 問題記述:IPアクセスネットワークでノード間の状況転送をする行う理由

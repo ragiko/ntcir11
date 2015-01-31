@@ -1,0 +1,539 @@
+
+統計基礎用語集(英和編)
+和英編
+「Excel 統計方法解説辞典」    
+各種用語集
+クイックジャンプ
+数学一般
+統計学
+A, B, C, D,    
+E, F, G, H,    
+I, J, K, L,    
+M, N, O, P,    
+Q, R, S, T,    
+U, V, W, Z   
+数学一般(数学編も参照のこと)
+addition  加法
+algebra  代数
+analysis  解析学
+arithmetic  算術
+calculus  微積分
+coefficient  係数
+column  列
+constant  定数
+coordinates  座標
+cube(d)  立方
+cubic root  立方根
+curve  曲線
+denominator  分母
+difference  差
+division  除法
+equation  方程式
+fractions  分数
+function  関数
+geometry  幾何学
+integers  整数
+line  直線
+matrix  行列
+multiplication  乗法
+natural numbers  自然数
+negative  負
+numerator  分子
+plane  平面
+point  点
+positive  正
+power  ・・・乗
+probability theory  確率論
+product  積
+proportional (to)  比例
+quotient  商
+ratio  比率・割合
+root, solution  根・解
+row  行
+sign  符号
+square(d)  平方
+square root  平方根
+subtraction  減法
+sum  和
+summation  総和
+variable  変数
+vector  ベクトル
+統計学
+一般的な頻出項目を中心に、社会調査、医学、実験計画などにおける統計用語から、十分に熟し訳語が安定した項目をカバーした。今後、計量経済学、経済統計、社会統計学、心理・教育、行動科学、医学、薬学、疫学、公衆衛生学などさらに広い諸分野の統計用語を収録、増補の予定。収録に際し参考にした文献は後の注参照。
+*) 和英に収録している項目 
+A
+acceptance region  採択域
+adjusted  修正済み
+allocation  配分、割当
+alternative hypothesis  対立仮説
+* analysis of variance  分散分析
+* analysis of covariance  共分散分析
+ANOCOVA  =Analysis of covariance 
+* ANOVA  =Analysis of variance 
+arithmetic mean  算術平均
+association  関連性
+* assumed mean  仮平均
+* asymmetric distribution  非対称分布
+autoregressive  自己回帰(の)
+averages  代表値
+B
+bar chart  棒グラフ
+Bartlett's test  バートレットの方法
+* Bayes, -ian  ベイズ的、ベイジアン
+beta function  ベータ関数
+between  (級)内
+bias  偏り
+biased question  誘導質問
+* binomial distribution  二項分布
+binomial theorem  二項定理
+bioassay  生物検定法
+bivariate normal distribution  二変量正規分布
+blind test  盲検法
+Bonferroni's inequality  ボンフェローニの不等式
+bootstrap  ブートストラップ
+Box-Cox transformation  ボックス・コックス変換
+C
+canonical correlation  正準相関
+case control study  患者・対照研究、ケース・コントロール研究(スタディ)
+categorization  カテゴリー化
+categorize  カテゴリーのまとめ方
+category  カテゴリー
+causality  因果関係
+central limit theorem  中心極限定理
+Chebyshev's inequality  チェビシェフの不等式
+χ2-statistic  χ2統計量
+χ2-test  χ2検定
+classification  分類
+cluster analysis  クラスター分析
+coding  コーディング
+coefficient of concordance  一致係数
+coefficient of determination  決定係数
+cohort  コホート
+common factors  共通因子
+communality  共通性
+comparison  比較
+component  成分
+* conditional probability  条件付き確率
+* confidence coefficient  信頼係数
+* confidence interval  信頼区間
+* confidence limits  信頼限界
+* confound, -ing  交絡する、交絡
+* confounding design  交絡計画
+* consumer's price index  消費者物価指数
+consumer's risk  消費者危険
+* contribution  寄与率
+confirmatory  確認的
+consistent, consistency  一致(する)、一致性
+contingency table  分割表
+continuous distribution  連続分布
+control(group)  対照、制御(群)
+convergence in probability  確率収束
+convergence in law (distribution)  法則収束(分布の収束)
+correction  補正、修正
+correction factor  修正項
+correction for continuity  連続性の補正
+correlation  相関
+correlation coefficient  相関係数
+correlation ratio  相関比
+correlogram  コレログラム
+covariate  共変量
+covariation  共変動
+criterion variable  基準変数
+critical region  棄却域
+* cross-section  横断面
+* cross-tabulation  クロス表
+* cumulative frequency  累積度数
+cumulative distribution function  累積分布関数
+* cumulative relative frequency  累積相対度数
+curvilinear  曲線(の)
+D
+* data  データ
+* data analysis  データ分析
+* degree of freedom  自由度
+density  密度
+density function  密度関数
+* dependent variable  従属変数
+* descriptive statistics  記述統計
+deviate  偏差
+deviation  偏り、偏差 (cf. standard -- , mean --) 
+dichotomous question  二項選択法
+discriminant analysis  判別分析
+discriminant function  判別関数
+discrimination  判別
+discrete distribution  離散分布
+distribution  分布
+D.K.(Don't Know)  「わからない」
+dose-response curve(relationship)  用量反応曲線(関係)
+double blind test  二重盲検法
+* downward trend  下降傾向
+drop out  脱落例
+Durbin-Watson statistic(ratio)  ダービン・ワトソン統計量(比)
+E
+efficient, efficiency  有効な、効率性
+* Engel's coefficient  エンゲル係数
+entropy  エントロピー
+epidemiology  疫学
+* error  誤差、過誤
+error margin  誤差幅
+error of the first kind(type I error)  第 1 種の過誤 
+error of the second kind(type II error)  第 2 種の過誤 
+error term  誤差項
+estimable  推定可能
+estimate  推定値
+* estimation  推定
+estimator  推定量
+event  事象
+exact probability test  直接確率法
+* expectation  期待値
+* expected frequency  期待度数
+experimental design  実験計画
+* explanatory variable  説明変数
+exploratory  探索的
+exponential distribution  指数分布
+F
+face sheet  フェイス・シート
+factor  因子
+* factor analysis  因子分析
+* factor loadings  因子負荷量(係数)
+factorial effects  要因効果
+factorial experiment  要因実験
+fiducial probability  フィデューシャル確率
+filter, -ing  フィルター、フィルタリング
+finite population  有限母集団
+Fisher information  フィッシャー情報量
+* fitting  あてはめ
+fixed-effect model  母数モデル
+follow-up study  追跡研究
+force of mortality  死力
+fractional factorial design  一部実施計画、——の一部実施(法)
+free-answer question  自由回答法
+* frequency  度数
+* frequency distribution  度数分布
+F statistic(ratio, test)  F 統計量(F 比、F 検定)   
+G
+Gauss, Gaussian  ガウス(の)
+* genetic algorithm  遺伝的アルゴリズム
+geometric distribution  幾何分布
+geometric mean  幾何平均値
+goodness of fit  適合度
+Greco-Latin square  グレコ・ラテン方格
+H
+harmonic mean  調和平均
+hazard function  ハザード関数
+heteroscedastic, -ity  不等分散(性)
+* histogram  ヒストグラム
+homoscedastic, -ity  等分散(性)
+hypergeometric distribution  超幾何分布
+hypothesis  仮説
+I
+* independence  独立
+* independent variable  独立変数
+infinite population  無限母集団
+input  入力
+inspection  検査
+interaction  交互作用
+intercept  切片
+* interval estimation  区間推定
+* interval scale  間隔尺度
+interviewee  被調査者
+interviewer  調査員
+interviewing method  面接調査法
+item  アイテム
+J
+Jacknife  ジャックナイフ
+K
+Kaplan-Meier estimate  カプラン・マイヤー推定量
+* Kendall's rank correlation coefficients  ケンドールの順位相関係数
+Kullback-Leibler information number  カルバック・ライブラー情報数
+* kurtosis  尖度
+L
+lag  時間遅れ、時間差、ラグ
+large sample  大標本
+Latin square  ラテン方格
+law of large numbers  大数の法則(strong -, weak- :  
+強法則、弱法則)
+least significant difference, LSD.  最小有意差
+* least square  最小自乗法
+* level of significance  有意水準
+life table  生命表
+likelihood  尤度
+linear discriminant function  線形判別関数
+local control  局所管理
+logistic function  ロジスティック関数
+logit analysis(transformation)  ロジット分析(変換)
+log-linear model  対数線形モデル
+log-log  両対数
+log-normal distribution  対数正規分布
+longitudinal  継時的、縦断的
+loss function  損失関数
+M
+Mahalanobis' generalized distance  マハラノビス汎距離
+mail survey  郵送調査
+main effect  主効果
+marginal  周辺(の)
+Markov, -ian  マルコフ(的)
+mathematical statistics  数理統計学
+* maximum  最大(pl. maxima) 
+maximuim likelihood estimate(estimation)  最尤推定値(推定法)
+McNemar's test  マクネマーの検定
+* mean  平均(値)
+* mean deviation  平均偏差
+mean effect  平均効果
+* median  中央値
+meta-analysis  メタ分析
+* minimum  最小(pl. minima) 
+missing value  欠測値
+* mode  最頻値
+model, -ing  モデル(モデリング)
+moment  モーメント、積率
+moving average  移動平均
+multicolinear, -ity  多重共線(性)
+multidimensional scaling(MDS)  多次元尺度構成
+multiple answer  重複回答
+multiple choice  多項選択
+multiple comparison  多重比較
+* multiple correlation coefficient  重相関係数
+* multiple regression  重回帰
+multi-stage sampling  多段サンプリング
+* multivariate analysis  多変量解析
+Multivariate analysis of variance  多変量分散分析
+multivariate normal distribution  多変量正規分布*
+MANOVA =Multivariate analysis of variance 
+* multiway table  多重クロス表
+N
+* n×m table  n×m クロス表 
+* nominal scale  名義尺度
+non-central  非心
+nonparametric  ノンパラメトリック
+normal approximation  正規近似
+* normal distribution  正規分布
+normal equation  正規方程式
+null hypothesis  帰無仮説
+O
+observational error  観測誤差
+* observed frequency  観測度数
+observed value  観測値
+OC(operating characteristic)curve  作用特性曲線
+odds  オッズ
+odds ratio  オッズ比
+one-sided  片側
+1-way layout  1 元配置法 
+open-ended question  自由回答法
+optimum allocation  最適割当法
+ordered classification  順序化
+* ordinal scale  順序尺度
+orthogonal polynomial  直交多項式
+outlier  外れ値
+output  出力、結果、産出高
+P
+paired comparison  一対比較法
+panel survey  パネル調査
+parameter  パラメータ、母数
+partial confounding  部分交絡(法)
+* partial correlation coefficient  偏相関係数
+Pearson's product moment correlation coefficient  ピアソンの積率相関係数
+percentile  パーセント点
+periodic  周期的
+periodogram  ぺリオドグラム
+phi coefficient  φ(ファイ)係数
+pie chart  円グラフ
+plot  点図、図示
+* point estimation  点推定
+* Poisson distribution  ポアソン分布
+pooled variance estimate  合併(併合)分散推定値
+* population  母集団
+population correlation coefficient  母相関係数
+* population mean  母平均
+* population variance  母分散
+posterior probability(distribution)  事後確率(分布)
+power(function)  検出力(関数)
+pre-coding  プリ・コーディング
+predicted value  予測値
+* prediction  予測
+predictive  予測(の)
+presentation  表示、表現(法)
+primary sampling unit  第 1 次サンプリングの単位 
+principal component, -- analysis  主成分(分析)
+prior probability(distribution)  事前確率(分布)
+* probability  確率
+* probability distribution  確率分布
+probability proportionate sampling  確率比例サンプリング
+probit analysis  プロビット分析
+process  過程
+producer's risk  生産者危険
+projection pursuit  財影追跡
+proportion  出現率
+proportional hazard model  比例ハザードモデル
+prospective study  前向き調査
+Q
+quartile  四分位点
+quartile deviation  四分位偏差
+* quality  質
+qualitative  質的
+qualitative data  質的データ
+* quantity  量
+quantitative  量的、計量的
+quota system  割当調査法
+R
+* radar chart  レーダーチャート
+* random  無作為
+random-effect model  変量モデル
+randomization  確率化、無作為化
+* randomness  ランダムネス
+random number  乱数
+random sampling  無作為抽出
+random walk  ランダム・ウォーク、酔歩
+* range  範囲(レンジ)
+* rank  順位
+* rank correlation coefficients  順位相関係数
+ranking method  順序づけ法
+* rank-size rule  順位規模規則
+rank test  順位検定
+rating method  格づけ法
+* ratio scale  比尺度
+* regression  回帰
+* regression coefficient  回帰係数
+regression diagnosis  回帰診断
+* regression equation(line)  回帰方程式(直線)
+* rejection region  棄却域
+* relative frequency  相対度数
+relative risk  相対リスク
+reliability(coefficient)  信頼性(係数)
+* residual  残差
+response curve(surface)  応答曲線(曲面)
+retrospective study  後向き(回顧)調査
+risk  リスク
+risk factor  リスク・ファクター
+robust, -ness  頑健な(性)
+* run  連
+S
+* sample  標本(サンプル)
+* sample mean  標本平均
+* sample size  標本の大きさ
+* sample variance  標本分散
+* sampling  サンプル抽出、サンプリング
+sampling error  抽出(サンプリング)誤差
+sampling interval  抽出(サンプリング)間隔
+sampling unit  抽出単位
+* scales  尺度
+* scattergram, scatter plot(diagram)  散布図
+Scheffe's test  シェフェの方法
+score  スコア、得点
+seasonality  季節性
+secondary sampling unit  第 2 次サンプリングの単位 
+serial correlation  系列相関
+self-adminstration  自記式
+semi-log  半対数
+sigmoid  擬 S 型、S 状 
+signal to noise ratio  SN(信号雑音)比
+signed rank test  符号付き順位検定
+* significance, significant  有意(な)
+* significance probability  有意確率
+simple random sampling  単純無作為抽出(ランダム・サンプリング)
+* simple regression  単回帰
+single replication  1 回実施 
+size proportionate allocation  比例割当法
+skewed  歪んだ
+* skewness  歪度
+slope  傾き
+spectral window  スペクトル・ウィンドウ
+spectrogram  スペクトログラム
+spectrum  スペクトル
+* Spearman's rank correlation coefficients  スピアマンの順位相関係数
+* spurious correlation  見かけ上の相関
+square  方格
+* standard deviation, S.D.  標準偏差
+* standard error  標準誤差
+* standard score  標準得点
+start number  スタート番号
+* stationary  定常的
+* statistic(for inference)  統計量(統計推論の)
+statistical  統計的(な)
+statistically significant  統計的に有意
+stem-and-leaf presentation  幹葉表示
+stereotype  決まり文句
+stochastic process  確率過程
+* stratification  層別
+stratified sampling  層別抽出(サンプリング)
+* stratum([pl.] strata)  層
+Student('s)  スチューデント(の)
+studentized range  スチューデント化された範囲
+study  研究
+sub-sampling  副次抽出
+sufficiency  十分性
+sufficient statistic  十分統計量
+supervisor  責任者
+survival analysis  生存時間分析
+survey  調査
+systematic sampling  等間隔サンプリング
+T
+taxonomy  分類(学)
+tail  すそ
+* test  検定
+* test of goodness of fit  適合度の検定
+* test of independence  独立性の検定
+3-way layout  3 元配置法 
+threshold  しきい値、閾(値)
+tie  タイ
+tie correction  タイ修正
+*time series  時系列
+total variation  全変動
+treatment  処理
+* trend  傾向
+trend analysis  傾向分析
+trial  試行
+* t-statistic, -test, -ratio  t 統計量(t 検定、t 値) 
+two-sided  両側
+* 2-sample t-test  2 標本 t 検定 
+2-stage sampling  2 段抽出(サンプリング) 
+two-by-two contingency table  2×2分割表
+2-way layout  2 元配置法 
+* 2-way table  2 重クロス表 
+two-stage sampling  2 段抽出(サンプリング)  
+U
+unbiased estimator  不偏推定量
+unbiased variance  不偏分散
+uncorrelated  無相関(の)
+uniform distribution  一様分布
+uniform random numbers  一様乱数
+uniqueness  独自性
+updating  更新
+* upward trend  上昇傾向
+V
+validity  妥当性
+variate  変量
+* variance  分散
+variance ratio  分散比
+varimax rotation  バリマックス回転
+varimax solution  バリマックス解
+variation  変動
+variability  ばらつき、ちらばり
+W
+weighted sampling  ウェイトづきサンプリング
+Welch's test  ウェルチの検定
+within  (級)間
+with probability 1(w.p.1)  確率 1 で 
+wording  ワーディング、云い回し 
+X
+Y
+Yates' correction  イェーツの補正
+Z
+* Zipf's law  ジップの法則
+* z transformation  z 変換  
+注) 参考文献(用語英訳をふくむもの) 
+松原 望『わかりやすい統計学』丸善, 
+1996(用語集付き)
+宮原 英夫、白鷹 増男『医学統計学』朝倉書店, 1992 
+奥野忠一『農業実験計画小史』日科技連, 1994 
+西平重喜『統計調査法』培風館, 1957  
+人名については工事中
+表現慣用句については工事中
+統計関係リンク
+データ練習 => http://www.qmss.jp/databank/  
+大学ですが => http://www.qmss.jp/e-stat/  
+放送大学 => http://www.qmss.jp/statair/  
+「確率」なら => http://www.qmss.jp/prob/  
+社会科学を数学で・・・なら、これを機に;
+ゲーム、ポートフォリオ、経済・経営、国際政治、心理、社会、日常、・・・
+=> http://www.qmss.jp/qmss/  
+統計基礎用語集(英和編)

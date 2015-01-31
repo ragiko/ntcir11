@@ -1,0 +1,107 @@
+
+文脈IDは-1を指定すれば自動採番してくれるという噂だったのですが、実行したら「自動で探したけど、対応するのが見つからなかったよ」と言われた為(文字コードの問題かな)、自前でシステム辞書ディレクトリ内の「left-id.def」と「right-id.def」を探して、それっぽいIDを拾ってきました(本当にこの方法で良いのか未確認)。
+辞書によってIDは変わってきて、IPA辞書の「名詞,一般」は、我が家の環境では1285になっていました。バージョンによっても違う可能性もあるので注意が必要です。
+読み・発音については、はてなのファイルの読みは全て平仮名で記述されているので、NAISTの辞書に合わせる為に片仮名に変換して登録します。発音は本来「アマクサシロー」になるべきですが、その辺は変換してると面倒なのでこのままで。
+参考URLでは、CSVの末尾に「はてなキーワード」と入れて、はてなの辞書が使われたことを見やすくしてました。簡易に使用辞書を見分けたい方はその方法を取ると良いと思います。
+コストの計算については、計算式で求めます。詳細は後述。
+本当は品詞を「名詞,一般,*」ではなく、「名詞,一般,はてな」にしたかったのですが、文脈IDを追加しようとすると、defファイルをいろいろ変更する必要があって面倒そうなので、とりあえず今回はこのままで。
+上記の話を踏まえた上で、辞書を生成する為のCSVファイルを作ってみます。
+ソースは以下のサイトを参考にしました。
+【参考サイト】MeCabの辞書にはてなキーワードを追加しよう
+http://d.hatena.ne.jp/code46/20090531/p1
+【参考サイト】MeCabの辞書にはてなキーワードを追加する際に地域名(千葉県など)を省くようにする方法
+http://d.hatena.ne.jp/rin1024/20090830/1251608698
+※Ruby1.8.7、Fedora11にて動作確認
+※MeCab、mecab-rubyがインストールされている必要があります
+※インストールされてない場合は、こちらを参考にしていただければ
+#!/usr/local/bin/ruby -Ku
+require 'kconv'
+require 'MeCab'
+# http://d.hatena.ne.jp/hatenadiary/20060922/1158908401から落としたファイル
+in_file = File::open( "keywordlist_furigana.csv" )
+# 出力ファイル(hatena.csvというファイルを出力します)
+out_file = File::open( "hatena.csv", 'w' )
+i = 0
+# 1行ずつ読み込み、out_fileに出力していく
+while line = in_file.gets
+# EUC-JPのファイルなので、使用しているUTF-8に変換(ついでにtrim)
+# システム辞書でEUCを使用している場合は、toutf8は削ってください
+line = line.toutf8.strip
+# タブ区切り(仮名\t単語)になっているので、split
+splitted_word = line.split("\t")
+next if splitted_word.size < 2
+kana = splitted_word[0].strip
+kana = "*" if kana.to_s == ""
+word = splitted_word[1].strip
+# 日付が入ったワードは、不要なものが多いので外す
+next if /[0-9]{4}(\/|\-)[0-9]{2}(\/|\-)[0-9]{2}/ =~ word
+next if /[0-9]{4}年/ =~ word
+next if /[0-9]{1,2}月[0-9]{1,2}日/ =~ word
+# 制御文字、HTML特殊文字が入ったものは外す
+next if /[[:cntrl:]]/ =~ word
+next if /\&\#/ =~ word
+# はてなという言葉が入ってるものは、運用の為のワードが多いので削除
+# 一部、正しい用語も消してしまっているので、用途によっては下行をコメントアウト
+next if /はてな/ =~ word
+# MeCabでパース
+node = MeCab::Tagger.new( "-Ochasen" ).parseToNode( splitted_word[1] )
+#ノード数
+node_count = 0
+# 未知語数
+unk_count = 0
+#品詞細分類2が地域の数
+area_count = 0
+#品詞細分類2が人名の数
+name_count = 0
+#ノードと種類をカウント
+while node
+begin
+feature = node.feature.split( "," )
+node_word = feature[0].strip
+# BOS(stat:2)/EOS(stat:3)はスキップ
+next if node.stat == 2 or node.stat == 3
+area_count += 1 if feature[2].strip == "地域"
+name_count += 1 if feature[2].strip == "人名"
+# 未知語(stat:1)をカウント
+unk_count += 1 if node.stat == 1
+node_count += 1
+ensure
+node = node.next
+end
+end
+# node数が1つ(システム辞書で1語として解析可能)の場合は登録しない
+next if node_count <= 1 and unk_count == 0
+# 全nodeが地域名だった場合は、登録しない(東京都北区は、東京都 | 北区で分けたい為)
+next if node_count == area_count
+# 全nodeが人名だった場合は、登録しない(相田翔子は、相田 | 翔子で分けたい為)
+next if node_count == name_count
+# コストの計算
+cost = -400 * word.split(//u).size ** 1.5
+cost = -36000 if cost < -36000
+# 平仮名を片仮名に変換(jcode使わないと文字化けします)
+require 'jcode'
+kana.tr!('ぁ-ん', 'ァ-ン')  
+# 行出力 
+out_file.puts "#{word},1345,1345,#{cost},名詞,一般,*,*,*,*,*,#{word},#{kana},#{kana}"
+# 英字の場合は、小文字統一、大文字統一も出力しておく
+if word != word.downcase
+out_file.puts "#{word.downcase},1345,1345,#{cost},名詞,一般,*,*,*,*,*,#{word},#{kana},#{kana}"
+end
+if word != word.upcase
+out_file.puts "#{word.upcase},1345,1345,#{cost},名詞,一般,*,*,*,*,*,#{word},#{kana},#{kana}"
+end
+puts "#{i.to_s}件目を処理" if ( i += 1 ) % 1000 == 0
+# break if i > 3000
+end
+in_file.close
+out_file.close
+はてなキーワードのcsvファイルとこのソースを同じ場所に置いて叩けば、hatena.csvというファイルが出来ると思います。
+コストについて
+コストについては、参照サイトのロジックをそのまま利用しています。
+MeCab の辞書構造と汎用テキスト変換ツールとしての利用
+http://mecab.sourceforge.net/dic-detail.html
+コストは16bitの符号付整数と書いてあったので、-32768～32767まで設定できることになります。
+この時、長い言葉ほどコストは低く設定しておく必要があるそうです。例えばはてなキーワードの中には、「相続」という言葉と「相続人」という言葉がありますが、「相続」の方がコストが低ければ、「相続 | 人」のように分割される可能性が高くなります(前後の単語によって結果は変わるので、必ず数字が低い方が優先されるというわけではありませんが)。
+その為、参考サイトでは長さに応じてコストを調整する、という設定をしているようです。
+NAISTの辞書を見ると、ほとんどの一般名詞は正の数で設定されています。今回使った辞書はマイナスで設定してあるので、多くの場合でシステム辞書よりも今回設定したはてなキーワードの方が優先して使われることになります。
+はてなキーワードからMecCab辞書を生成する(Ruby版)

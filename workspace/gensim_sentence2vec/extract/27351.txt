@@ -1,0 +1,101 @@
+Accessで複数ユーザーで共有する場合、フロントエンドデータベースとバックエンドデータベースに分割して、フロントエンドファイルを各ユーザーに配布して運用するというのはもう常識ですよね。
+で、このように運用しているとき、フロントエンドデータベースのバージョンアップあった場合、更新ファイルを各クライアントにコピーする必要があります。ネットワーク経由で上書きコピーするにしても、ユーザーがファイルを開いているとコピーできませんので、いちいち声をかけて閉じてもらう必要があります。
+この不満を解決する方法を紹介します。
+難易度: 
+自動バージョンアップの概要
+データベースの分割って何?という方はまずは下記を参照してください。
+データベースを分割する - Access
+さて、最近のソフトだと更新情報を取得して、自動でバージョンアップするというのが多くなっています。この仕様と同じようことができればいいですよね。
+データベースファイルを開いている時に、自分自身を上書きコピーするというのはできませんので、別に起動用のプログラムを作成する必要があります。起動用プログラムはAccessで作ってもいいし、お使いの開発言語があるならそれを使用してもいいですね。
+今回は、Windowsに標準でインストールされているWSH(Windows Script Host)を使用する例を紹介します。これなら、エディターでだれでも作成することができます。また、手直しする時もエディターだけ簡単にできます。
+自動バージョンアップの概要としては、下記のようになります。
+各クライアントには、
+起動用プログラムとフロントエンドデータベースファイルを配布します。ユーザーには、起動用プログラムを起動してもらいます。(デスクトップにショートカットを作成するとか、スタートメニュー、タスクバーなどに表示しておくといいでしょう。)
+フロントエンドデータベースには、バージョンを格納しておくテーブルを入れておきます。
+サーバーには最新のフロントエンドデータベースを置いておきます。
+起動用プログラムでは、サーバーのファイルのバージョンとカレントのファイルのバージョンを比較して、サーバーのバージョンが上がっていれば、カレントへ上書きコピーしてからフロントエンドファイルを開くようにします。バージョンが変わってなければそのまま開きます。
+自動バージョンアップVBSコード
+フロントエンドデータベースにはバージョン情報を格納するために下記のテーブルを作成して、バージョン番号を入力しておいてください。
+テーブル名 _VerInfo
+フィールド ver   (数値型)
+WSH(VBS)のコードは下記のようになります。エディターに下記のコードをコピーして、3～5行目のパス名、ファイル名は実際のものに書き換えてください。拡張子をvbsにして保存してください。(文字コードはShift-JISにしてください。)
+Option Explicit
+Const SysPath = "C:\システム\"    'クライアントのフォルダー
+Const SvrPath = "\\サーバー\data\"    'サーバーのフォルダー
+Const SysFile = "フロントエンド.accdb"    'データベースファイル名
+Const vbNormalFocus = 1    '通常のウィンドウ、かつ最前面のウィンドウ
+Const adOpenForwardOnly = 0
+Const adOpenKeyset = 1
+Const adLockOptimistic = 3
+Const adLockReadOnly = 1
+Dim fso, WShell
+Dim cnC, cnS, rsC, rsS
+Dim wmiLocator
+Dim wmiService
+Dim objEnumerator
+Dim strQuery
+'スクリプトの二重起動防止
+strQuery = "Select * FROM Win32_Process WHERE (Caption = 'wscript.exe' OR " & _
+"Caption = 'cscript.exe') AND CommandLine LIKE '%" & WScript.ScriptName & "%'"
+Set wmiLocator = CreateObject("WbemScripting.SWbemLocator")
+Set wmiService = wmiLocator.ConnectServer
+Set objEnumerator = wmiService.ExecQuery(strQuery)
+If objEnumerator.Count > 1 Then
+WScript.Quit
+End If
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set cnC = CreateObject("adodb.connection")
+Set rsC = CreateObject("adodb.recordset")
+Set cnS = CreateObject("adodb.connection")
+Set rsS = CreateObject("adodb.recordset")
+cnC.Open "Driver={Microsoft Access Driver (*.mdb, *.accdb)};" _
+& "DBQ=" & SysPath & SysFile
+rsC.Open "_VerInfo", cnC, adOpenForwardOnly, adLockReadOnly
+cnS.Open "Driver={Microsoft Access Driver (*.mdb, *.accdb)};" _
+& "DBQ=" & SvrPath & SysFile
+rsS.Open "_VerInfo", cnS, adOpenForwardOnly, adLockReadOnly
+If rsC("ver") 
+このVBSを二重起動されると危険なので二重起動できないコードを追加してあります。
+開発者は、フロントエンドファイルを更新したら、バージョンテーブルのバージョンを更新して、サーバーへ上書きコピーするだけです。
+あとはユーザーがこのVBSを実行すると、バージョンアップされたファイルが有る場合は、「アップデイトしますか」と聞いてきて、「はい」を選択すると自動的に最新ファイルに置き換えられて開きます。
+VBSの弱点は、ソースコードが簡単に見ることができるという点ですね。それでは、セキュリティ上問題が有るという場合は、下記の方法で暗号化するといいかも知れません。
+@IT:Windows TIPS -- Tips:WSHスクリプト・コードを暗号化する
+また、OS と Office のビット数が異なったり環境によってはエラーになる場合がありますので、その場合は下記を参照したください。
+64bitOS、32bitOffice環境でのWSH(VBS)でAccessデータベースに接続する - hatena chips
+はじめまして。
+ゼロからAccessを勉強し、苦労している者です。
+未熟者の上、他の人からの要求もあり、バージョンアップが度々必要になります。
+その度にメールでユーザにフロントエンドを配布し、置き換えをしてもらっていますが、このページにたどり着き、とても良い方法だと思い、すぐに実行したくなりました。
+私を含め数人は、Access2010本体を入れているので、accdbファイルが使用できるため、ここに書いて下さっているコードで自動バージョンアップが可能なのですが、Runtimeしか入れてない人は、accdrファイルから実行しています。この場合、Driverの部分は、どうなるのでしょう?
+私のPC(Access2010本体のみ)でも、.accdrの拡張子に変えたファイルで実行すると、エラー([ODBC Microsoft Access Driver]ファイル'(不明)')となります。
+いろいろ調べたのですが分からないので、教えていただければ幸いです。
+2014/08/20(水) 11:52:40 | 
+URL | 
+こまったちゃん 
+[ 編集 ] 
+> 私を含め数人は、Access2010本体を入れているので、accdbファイルが使用できるため、ここに書いて下さっているコードで自動バージョンアップが可能なのですが、Runtimeしか入れてない人は、accdrファイルから実行しています。この場合、Driverの部分は、どうなるのでしょう?
+> 私のPC(Access2010本体のみ)でも、.accdrの拡張子に変えたファイルで実行すると、エラー([ODBC Microsoft Access Driver]ファイル'(不明)')となります。
+> いろいろ調べたのですが分からないので、教えていただければ幸いです。
+当方の環境(Windows7 64bit, Access2010)で、拡張子を .accdr に変えて実験してみましたが、問題なく接続できました。
+エラー内容からいっても、.accdr か .accdb かの違いが影響するとは思えません。
+とりあえずは、下記の内容を確認してみてください。
+64bitOS、32bitOffice環境でのWSH(VBS)でAccessデータベースに接続する - hatena chips
+http://hatenachips.blog34.fc2.com/blog-entry-421.html
+2014/08/20(水) 23:55:02 | 
+URL | 
+hatena 
+[ 編集 ] 
+回答、ありがとうございました。
+お返事遅くなり、申し訳ありません。
+こちらの環境は、WindowsXP SP3(32bit)、Office2003と2010の両方入っています。
+また、ユーザーの環境も、ほとんどの人が同じですが、中にはWindows7が入っていたりと、まちまちです。
+環境による問題かと、教えて頂いたHPからいろいろやってみましたが、よく分からなかったので、accdrで配布することを諦め、accdbのままで使ってもらうことにしました。
+accdbなら、このvbsでランタイムを使えるようです。
+ありがとうございました。
+Hatenaさんの書かれているブログは、いろいろ便利なものがありそうなので、これからもお世話になるかもしれません。
+またよろしくお願いします。
+2014/08/25(月) 11:51:18 | 
+URL | 
+こまったちゃん 
+[ 編集 ] 
+複数ユーザーで共有している場合のフロントエンドファイルのバージョンアップ - hatena chips

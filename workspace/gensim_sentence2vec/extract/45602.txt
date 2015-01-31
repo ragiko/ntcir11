@@ -1,0 +1,143 @@
+# 久々に技術ネタを書いてみる。
+# と言っても、某掲示板で使ったネタの使い回し。
+C++ にはなかった新しいキーワードとして、C# では interface というものが出てくる。
+interface は、Java ではおなじみのキーワードだ。
+例.
+interface ICloneable
+{
+object Clone();
+}
+interface では公開されているメソッドとプロパティの外見 (名前、パラメータ、戻り値) だけが宣言されていて、実装部分が定義されていない。実装部分は、その interface を実装するクラスによって定義される。
+例.
+class Employee : ICloneable
+{
+private string name;
+public string Name
+{
+get { return name; }
+set { name = value; }
+}
+public Employee(string name)
+{ Name = name; }
+public object Clone()
+{
+return new Employee(Name);
+}
+}
+interface は 抽象クラス (abstract class) と機能的には似ている。
+抽象クラスも、中身のないメソッド (abstract method) の宣言を持つことができ、そこから派生したクラスで、そのメソッドの実装を定義する。
+例.
+abstract class Person
+{
+private string name;
+public string Name
+{
+get { return name; }
+set { name = value; }
+}
+public Person(string name)
+{ Name = name; }
+public abstract void DoSomething();
+}
+class Employee : Person
+{
+public Employee(string name) : base(name)
+{}
+public override void DoSomething()
+{ /* Do good job. */ }
+}
+機能上の大きな違いとしては、
+抽象クラスは、実装を持つこともできる。上記の例でいうと、name や Name や Person(string name)。
+interface は、実装が持てない。
+抽象クラスは、二つ以上継承できない。つまり、多重継承できない。
+interface は、二つ以上でも継承できる。
+というものがある。
+しかし、機能上の違いでなく、使い分けるときの一般的な指針はないだろうか。
+デザインパターンの一つである、State/Strategy パターンの場合で考えてみよう。
+先ずは、抽象クラスを使った場合と、interface を使った場合の両方について書いてみる。
+・抽象クラスを使った場合の例:
+class Context
+{
+State state = null;
+public State State
+{
+set { state = value; }
+}
+public void DoSomething()
+{
+if (state != null)
+state.DoSomething();
+}
+}
+abstract class State
+{
+public abstract void DoSomething();
+}
+class ConcreteState1 : State
+{
+public override void DoSomething()
+{ /* 省略 */ }
+}
+class ConcreteState2 : State
+{
+public override void DoSomething()
+{ /* 省略 */ }
+}
+・interface を使った場合の例:
+class Context
+{
+State state = null;
+public State State
+{
+set { state = value; }
+}
+public void DoSomething()
+{
+if (state != null)
+state.DoSomething();
+}
+}
+interface State
+{
+void DoSomething();
+}
+class ConcreteState1 : State
+{
+public void DoSomething()
+{ /* 省略 */ }
+}
+class ConcreteState2 : State
+{
+public void DoSomething()
+{ /* 省略 */ }
+}
+さて、State/Strategy パターンを使う場合、はたしてどちらが標準的なのだろうか。
+「State/Strategy パターンを構成している部分だけ」を見ると、或る振る舞いに関する制約が付けられれば十分なので、interface が適しているような気がする。
+但し、実際の設計では、
+「State/Strategy パターン」を使おう  じゃ interface を使おう
+とはならない。
+それは、通常 State/Strategy パターンが適用される場合というのは、先ず (リファクタリングなりの結果としての) クラス設計があって、そこにおける抽象化すべきものがクラスなのか、振る舞いに関する制約なのかの判断があり、結果として「State/Strategy パターン」の形になるだけであるからだ。
+つまり、抽象化したいのがクラスであれば抽象クラス、単なる振る舞いに関する制約であれば interface、という感じで使い分けることになる。
+それから、もう一つ。
+実装上の問題として、State/Strategy パターンなどが対象としている関心事が、既存のクラス階層と直交する関心事であった場合は、抽象クラスでなく interface を使う。多重継承ができないからだ。
+例えば、始めの方の例でいうと、
+等の継承によって形成される継承ツリー或るいはその他の継承ツリーが対象としている関心事と、ICloneable が対象としている関心事は直交している。
+従って、ICloneable の方の関心事の実装には interface を使う。
+これは、「アスペクトの実装を便宜上 (言語の都合上) interface で行う」というイディオムといえるかと思う。
+尚、余談になるが、Strategy パターンの場合は、抽象クラスも interface も使わずに delegate を使う、というイディオムも有ると思う。
+例.
+class Context
+{
+public delegate void DoSomethingMethod();
+DoSomethingMethod doSomething = null;
+public DoSomethingMethod OnDoSomething
+{
+set { doSomething = value; }
+}
+public void DoSomething()
+{
+if (doSomething != null)
+doSomething();
+}
+}
+C# Tips: interface を 抽象クラス (abstract class) とどう使い分けるか (プログラミング C# - 翔ソフトウェア (Sho's))

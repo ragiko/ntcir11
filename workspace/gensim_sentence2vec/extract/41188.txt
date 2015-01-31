@@ -1,0 +1,141 @@
+
+メニュー
+フレーム分割
+フレーム分割
+フレームとは?  
+画面を左右に分けてみる  
+縦にフレームを切ってみる  
+FRAMEタグの各種オプション   
+どのフレームに表示するか決める   
+案内メニューを作る  
+||| フレームとは? ||| 
+フレームとは、ブラウザの画面を複数の領域に
+区切って表示することです。
+それぞれの領域にHTMLファイルを現すことができます。
+つまり一度に沢山の画面を出すことができる訳です。
+Netscape Navigator2.0以上、
+Internet Explorer3.0で使うことができます。
+一枚の画面では表現出来なかった、
+新しいレイアウトが可能です。
+例えば、分割したフレームを使ってメニューと本文を
+対比させるようなことが出来るようになります。
+一番簡単な、画面を2分割することをやってみましょう。
+Page Top
+||| 画面を左右に分けてみる ||| 
+フレームを切るためにはFRAMESETタグと
+FRAMEタグを組み合わせて使います。
+その前に左右のフレームに表示させる
+HTMLファイルを用意しておきます。
+勿論、今までに作ったもので良いです。
+ここでは、仮にFRAMELEFT.HTMLと
+FRAMERIGHT.HTMLとします。
+HTML文書はFRAMEタグの
+SRC=URLで指定します。
+- 左右分割の基本スタイル -
+<HTML>
+<TITLE>フレーム左右分割</TITLE>
+<FRAMESET COLS="50%,50%">
+<FRAME SRC="FRAMELEFT.html"
+NAME="FRAMELEFT"> 
+<FRAME SRC="FRAMERIGHT.html"
+NAME="FRAMERIGHT">
+</FRAMESET>
+</HTML>
+これで、左右に丁度半分づつ画面が出てきます。
+配分を変えたければCOLSオプションの数値を変更します。
+パーセンテージの合計が100%になるようにしましょう。
+ピクセル数で指定する方法もあります。
+<FRAMESET COLS="120,*">
+こうすると、120ピクセルだけ固定にして
+残りはブラウザの表示幅に応じて設定してくれます。
+なお、フレームを切る時は<BODY></BODY>タグは記述しません。
+Page Top
+||| 縦にフレームを切ってみる ||| 
+フレームを縦に分割するためには、
+FRAMESETタグにROWSオプションを指定します。
+今度は縦方向に、ピクセル数を指定して3分割してみましょう。
+- 縦方向分割の基本スタイル -
+<HTML>
+<TITLE>フレーム縦分割</TITLE>
+<FRAMESET ROWS="60,*,100">
+<FRAME SRC="FRAMETOP.html"
+NAME="FRAMETOP">
+<FRAME SRC="FRAMEMIDDLE.html"
+NAME="FRAMEMIDDLE"> 
+<FRAME SRC="FRAMEBOTTOM.html"
+NAME="FRAMEBOTTOM">
+</FRAMESET>
+</HTML>
+ここまで出来れば後はタグの
+オプションを入れてみるだけです。
+Page Top
+||| FRAMEタグの各種オプション ||| 
+フレームを分割しているバーをドラッグしてみてください。
+自由に左右に移動したり、
+上下に移動したりでき、画面の幅が変わります。
+もし、固定にしたければ、FRAMEタグに"NORESIZE"を追加します。
+その他のオプションは、
+SCROLLING="YES"           フレームの中の表示をスクロールさせる。
+SCROLLING="NO"            フレームの中の表示をスクロールさせない。
+MARGINWIDTH="ピクセル数"   フレームの縦枠と文書間のスペース
+MARGINHEIGHT="ピクセル数"  フレームの横枠と文書間のスペース
+等があります。
+これらを使ったフレームを見てみましょう。
+- 各種オプションを使ったフレーム -
+<FRAME SRC="frameleft.html" NAME="frameleft"
+NORESIZE SCROLLING="YES" MARGINWIDTH="80" MARGINHEIGHT="80"> 
+左右分割のフレームのうち、左側のウィンドウのHTML文書が
+上下左右に80ピクセル分の余白が取られています。
+また、スクロールバーが現れており、
+縦バーのドラッグができません。
+<SCROLLING="AUTO">にするか、
+あるいは何も指定しないとフレームの領域に
+データが収まりきらないときだけ
+自動的にスクロールバーが現れます。
+<SCROLLING="YES">にすると
+常にスクロールバーが表示されるようになります。
+Page Top
+||| どのフレームに表示するか決める ||| 
+ここまできてFRAMEタグのNAMEというのは
+何に使うんだろうと思われたでしょう。
+これこそフレーム機能の神髄なのです。
+NAMEオプションにより分割した
+フレームの名前を予め決めておくと、
+フレーム内に表示されたHTML文書の
+TARGETオプションによって
+NAMEで指定した名前のフレームに飛ぶことができます。
+簡単な例をあげてみましょう。
+あるフレーム内のHTMLの記述
+<A HREF="FRAMERIGHT.HTML"
+TARGET="FRAMERIGHT">右側のフレームに表示します</a>
+Page Top
+||| 案内メニューを作ってみる ||| 
+URLの表示先を自由に決めれるわけですから、
+これを応用すると今までにない表示の手段を考えることが出来ます。
+早速、左側のフレームにメニューを表示して、
+右側のフレームに内容を次々に表示していくようにしてみましょう。
+- メニュー形式のフレーム -
+<HTML>
+<TITLE>メニュー形式フレーム</TITLE>
+<FRAMESET COLS="40%,60%">
+<FRAME SRC="framemenu.html"
+NAME="framemenu" SCROLLING="YES"
+MARGINWIDTH="20" MARGINHEIGHT="20">
+<FRAME SRC="frameright.html"
+NAME="frameright" SCROLLING="YES"
+MARGINWIDTH="20" MARGINHEIGHT="20">
+</FRAMESET>
+</HTML>
+framemenu.htmlのなかでは次のように指定しています。
+<a href="frametop.html" target="frameright">一番目のHTML文書</a>
+<a href="framemiddle.html"
+target="frameright">二番目のHTML文書</a>
+<a href="framebottom.html"
+target="frameright">三番目のHTML文書</a>
+このようにすると簡単にメニュー形式が出来ます。
+左右反対にしたり、縦方向のフレーム3分割であれば、
+一番下のフレームをメニューにして、
+上二つのフレームに其々targetを指定することも出来ます。
+Page Top
+メニュー
+// HTML DESIGN // - site design

@@ -1,0 +1,17 @@
+Mecabに新しい単語を追加したくなることは多々あるはず。
+今回は人名の例で解説する。
+人名追加に必要となる知識
+重要なリンク
+Mecab公式「単語の追加方法」
+http://mecab.googlecode.com/svn/trunk/mecab/doc/dic.html
+人名辞書一覧
+http://www.mwsoft.jp/programming/munou/ime_dictionary_link.html#person
+辞書の追加先
+まず、システム辞書として追加するか、ユーザー辞書として追加するかが問題となる。
+人名辞書の項目は大抵万を超えるので、解析速度のことを考え、システム辞書に追加するのが妥当と考えられる。
+辞書更新が頻繁でないときや, 解析速度を落としたくない時は, 直接 システム辞書を変更するのがよいでしょう.
+mecab-ipadic があるディレクトリに移動
+foo.csv というファイルを作成 (拡張子が .csv なら何でも可)
+foo.csv に単語を追加
+辞書の再コンパイル + インストール
+Mecabに人名辞書を追加 - Qiita

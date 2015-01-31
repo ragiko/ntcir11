@@ -1,0 +1,289 @@
+
+統計関数のパーセント点     Last modified: May 15, 2002
+# パーセント点を求める
+# gxp, xxp, txp, fxp, abs を使用する
+BEGIN {
+print pxg(0.05)       # 引数:上側確率
+print pxx(0.05, 1)    # 引数:上側確率,自由度
+print pxt(0.05, 100)  # 引数:両側確率,自由度
+print pxf(0.5, 1, 1)  # 引数:上側確率,自由度,自由度
+}
+# 正規分布のパーセント点を求める。
+function pxg(p,     y, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o)
+{
+a =  0.161614603871299e-15
+b = -0.178837229464158e-13
+c =  0.888943322341436e-12
+d = -0.261195052190738e-10
+e =  0.500533655324426e-09
+f = -0.646627744010232e-08
+g =  0.553751002988654e-07
+h = -0.283629174340630e-06
+i =  0.539877747512783e-06
+j =  0.122127251950965e-05
+k =  0.154574365345128e-04
+l = -0.234768842092152e-03
+m = -0.830686207721635e-03
+n =  0.370684581838722e-01
+o =  1.57079636931376
+y = -log(4*p*(1-p))
+return sqrt(((((((((((((((y*a+b)*y+c)*y+d)*y+e)*y+f)*y+g)*y+h)*y+i)*y \
++j)*y+k)*y+l)*y+m)*y+n)*y+o)*y)
+}
+# カイ二乗分布のパーセント点を求める。
+function pxx(p0, idf,     df9, temp, u, xl, xm, xr, ok)
+{
+ok = 0
+xl = 0
+xr = 10
+while (xr < 1e30) {
+temp = xxp(xr, idf)
+if (temp == p0) {
+return xr
+}
+else if (temp < p0) {
+ok = 1
+break
+}
+xl = xr
+xr *= 10
+}
+if (ok == 0) {
+printf "pxx(1): 近似計算を行いました。" > "/dev/stderr"
+u = pxg(p0)
+df9 = 2/(9*idf)
+temp = 1-df9+u*sqrt(df9)
+return idf*temp^3
+}
+else {
+do {
+xm = (xl+xr)*0.5
+temp = xxp(xm, idf)
+if (temp > p0) {
+xl = xm
+}
+else {
+xr = xm
+}
+} while (abs(xr-xl)/xm > 1e-10)
+return xm
+}
+}
+# t分布のパーセント点を求める。
+function pxt(p0, idf,     p9, u, u2, xl, xm, xr, ok)
+{
+ok = 0
+if (p0 == 1) {
+return 0
+}
+xl = 0
+xr = 10
+while (xr < 1e30) {
+p9 = txp(xr, idf)
+if (p9 == p0) {
+return xr
+}
+else if (p9 < p0) {
+ok = 1
+break
+}
+xl = xr
+xr *= 10
+}
+if (ok == 0) {
+fprintf "pxt(1): 近似計算を行いました。" > "/dev/stderr"
+u = pxg(p0/2)
+u2 = u*u
+return u + ((u2+1.0)*u)/(4.0*idf)
++ (((5*u2+16)*u2+3)*u)/(96*idf^2)
++ ((((3*u2+19)*u2+17)*u2-15)*u)/(384*idf^3)
+}
+else {
+do {
+xm = (xl+xr)*0.5
+p9 = txp(xm, idf)
+if (p9 > p0) {
+xl = xm
+}
+else {
+xr = xm
+}
+} while (abs(xr-xl)/xm > 1e-10)
+return xm
+}
+}
+# F分布のパーセント点を求める。
+function pxf(p0, df1, df2,     p9, xl, xm, xr, c, temp, ok)
+{
+ok = 0
+xl = 0
+xr = 10
+while (xr < 1e30) {
+p9 = fxp(xr, df1, df2)
+if (p9 == p0) {
+return xr
+}
+else if (p9 < p0) {
+ok = 1
+break
+}
+xl = xr
+xr *= 10
+}
+if (ok == 0) {
+if (df1 > df2) {
+temp = df1
+df1 = df2
+df2 = temp
+p0 = 1-p0
+ok = 1
+}
+if (df1 == 1) {
+c = pxt(p0, df2)
+c = c*c
+}
+else {
+temp = df1-2.0
+printf "pxf(1): 近似計算を行いました。" > "/dev/stderr"
+c = pxx(p0, df1)
+c = c/df1*(1+ (c-temp)*0.5/df2 + (4*c*c-11*temp*c \
++temp*(7*df1-10))/(24*df2^2)+(2*c^3-10*temp*c*c \
++temp*(17*df1-26)*c-(df1-2)*temp*(9*df1-6))/(48*df2^3))
+}
+return (ok == 1 && c != 0) ? 1/c : c
+}
+do {
+xm = (xl+xr)*0.5
+p9 = fxp(xm, df1, df2)
+if (p9 > p0) {
+xl = xm
+}
+else {
+xr = xm
+}
+} while (abs(xr-xl)/xm > 1e-10)
+return xm
+}
+# 正規分布の上側確率
+function gxp(x,    is, i, c, p, y, z, pi2)
+{
+pi2 = 0.398942280401432677940
+is = -1
+y = abs(x)
+c = y*y
+p = 0.0
+z = exp(-c*0.5)*pi2
+if (y < 2.5) {
+for (i = 20; i > 0; i--) {
+p = i*c/(i*2+1+is*p)
+is = -is
+}
+p = 0.5-z*y/(1.0-p)
+}
+else {
+for (i = 20; i > 0; i--) {
+p = i/(y+p)
+}
+p = z/(y+p)
+}
+return (x < 0.0) ? 1.0-p : p
+}
+# カイ二乗分布の上側確率
+function xxp(x, is,     i, t, w, pi2)
+{
+pi2 = 0.398942280401432677940
+if (x == 0.0) {
+return 1
+}
+else if (is == 1) {
+return gxp(sqrt(x))*2.0
+}
+else if (is == 2) {
+return exp(-x/2.0)
+}
+else if ((is%2) == 0) {
+w = t = 1.0
+for (i = 2; i <= is-2; i += 2) {
+t *= x/i
+w += t
+}
+return exp(log(w) - x*0.5)
+}
+else {
+t = w = sqrt(x)
+for (i = 3; i <= is-2; i += 2) {
+t *= x/i
+w += t
+}
+return 2.0*(gxp(sqrt(x))+pi2*exp(log(w)-x*0.5))
+}
+}
+# t分布の両側確率 <a name="txp">txp.awk</a>
+function txp(t, df,    i, t1, t2, p, w, m2pi)
+{
+m2pi = 0.636619772367581343076
+t1 = abs(t)/sqrt(df)
+t2 = 1.0/(1.0+t1*t1)
+if ((df%2) == 0) {
+w = t1*sqrt(t2)
+p = 1.0-w
+for (i = 2; i <= df-2; i += 2) {
+p -= w *= t2*(i-1)/i
+}
+}
+else {
+p = 1.0-m2pi*atan2(t1, 1)
+if (df >= 3) {
+w = m2pi*t1*t2
+p -= w
+for (i = 3; i <= df-2; i += 2) {
+p -= w *= t2*(i-1)/i
+}
+}
+}
+return (p < 0.0 && abs(p) < 1e-10) ? 0.0 : p
+}
+# F分布の上側確率 <a name="fxp">fxp.awk</a>
+function fxp(f, df1, df2,     i1, i2, c, p, s, w, y, m2pi)
+{
+m2pi = 0.636619772367581343076
+m_pi = 3.14159265358979323846
+i1 = 2-(df1%2)
+i2 = 2-(df2%2)
+w = df2/(df2+df1*f)
+y = 1.0-w
+p = sqrt(w)
+s = sqrt(y)
+if (2*i1-i2 == 0) {
+p = 1.0-s
+c = s*w/2.0
+}
+else if (2*i1-i2 == 1) {
+c = s*p/m_pi
+p = 1.0-atan2(s, p)*m2pi
+}
+else if (2*i1-i2 == 2) {
+p = w
+c = w*y
+}
+else {
+c = y*p/2.0
+}
+for (; df2 > i2; i2 += 2) {
+p -= 2.0/i2*c
+c *= w*(i1+i2)/i2
+}
+for (; df1 > i1; i1 += 2) {
+p += 2.0/i1*c
+c *= y*(i1+i2)/i1
+}
+return (p < 0.0 && abs(p) < 1e-10) ? 0.0 : p
+}
+# x の絶対値を求める
+# 使用例: x = abs(-10.95)
+function abs(x)
+{
+return (x < 0) ? -x : x
+}
+直前のページへ戻る   E-mail to Shigenobu AOKI
+統計関数のパーセント点

@@ -1,0 +1,29 @@
+
+では、各メソッドをサンプルとともに見ていきましょう。fiind() メソッド
+find() メソッドは boolean 値を返すクロージャを引数にとり、各要素をクロージャに処理させて true を返した最初の要素を返します。 List のように順序づけされたコレクションはその順序で最初に true を返した要素が返されます:
+def langs = ['Java', 'Groovy', 'Scala', 'Clojure', 'Jython', 'JRuby', 'Fantom']
+assert langs.find{ it.contains 'o' } == 'Groovy'
+assert (0..10).find() == 1
+2つ目の場合、引数なしなので Closure.IDENTITY が渡されたものとして処理されますが、0は false と評価される(asBoolean() が false を返す)ので、次の1が find() の返り値となってます。findAll() メソッド
+findAll() は find() と似てますが、クロージャに処理された結果 true を返す全ての要素をコレクションにして返します。 クロージャによる要素のフィルタですね。
+def langs = ['Java', 'Groovy', 'Scala', 'Clojure', 'Jython', 'JRuby', 'Fantom']
+assert langs.findAll{ it.startsWith 'J' } == ['Java', 'Jython', 'JRuby']
+assert (0..10).findAll() == (1..10)
+関数型言語では filter という名前の方がよく使われているかと。findResult() メソッド
+findResult() メソッドは、Object を返すクロージャを引数にとり、find() と違って変換結果が null でないならその要素を返します。 返り値が false と評価される(asBoolean() が false を返す)かどうかで返り値を判別しているわけではないので注意。
+def langs = ['Java', 'Groovy', 'Scala', 'Clojure', 'Jython', 'JRuby', 'Fantom']
+assert langs.findResult{ it.size() > 6 ? it.toLowerCase() : null } == 'clojure'
+assert langs.findResult('javascript'){ it.size() > 8 ? it.toLowerCase() : null } == 'javascript'
+引数を2つとる findResult() は、全ての要素が null と評価された場合に(おそらく元が空集合の場合も)第1引数の値を返します。findResults() メソッド
+findResults() メソッドは、findResult() と似てますが、null でない全ての要素をコレクションとして返します。 それ以外は findResult() と同じ:
+def langs = ['Java', 'Groovy', 'Scala', 'Clojure', 'Jython', 'JRuby', 'Fantom']
+assert langs.findResults{ it.size() > 5 ? it.toLowerCase() : null } == ['groovy', 'clojure', 'jython', 'fantom']
+なんか、findResult() のときもそうだけど、findAll() と collect() を使って
+langs.findAll{ it.size() > 5 }.collect{ it.toLowerCase() }
+と書いた方が分かりやすそう。 findResult() の場合はデフォルト値を設定できる有難味はあるけど、findResults() っていらなくね? このサンプルがぎこちないだけかなぁ。grep() メソッド
+最後は「find」で始まらないけど、findAll() と同じようにフィルタの役目をする grep() メソッド。 grep() は引数としてクロージャを渡せば findAll() と同じように働きますが、クロージャ以外でも isCase() メソッドが定義されていればフィルタとして使えます。
+def langs = ['Java', 'Groovy', 'Scala', 'Clojure', 'Jython', 'JRuby', 'Fantom']
+assert langs.grep(~/J.*/) == ['Java', 'Jython', 'JRuby']
+assert (0..10).grep() == (1..10)
+1つ目では正規表現をフィルタとして使ってます。 2つ目の引数がないものは Closure.IDENTITY が渡されたとみなすので、findAll() の場合と同じ。なんか、Object クラスのときとほとんど同じ記事になりましたが、まぁそんなこともあるサ。 次回はメソッド名が「collect」で始まる要素の蒐集メソッド(予定)。
+GDK のコレクションがこんなに便利なわけがない。 (Collection 編3) 要素の検索 find - 倭マン's BLOG

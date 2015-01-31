@@ -1,0 +1,77 @@
+Excelでセルの文字列を分割する方法といえば、区切り位置を用いた分割方法だろう。
+この方法はGUIなので取っ付き易いだろうし、初心者にも説明がしやすい。…が、作業内容によっては、数式やマクロで対処したくなる。
+たとえば、ターミナルの操作ログを貼り付けて、そのままテスト結果として用いたりする際に有効だ。
+1.数式での対応
+数式で対応出来るのであれば、非常にありがたい…のだが、どうもExcelにはSplit関数のようなものが存在しない。
+そのため、複数の数式を組み合わせて対応する必要がある。今回は、こちらの数式を元に10個までの分割に対応させてみる。
+作業の例としては、以下のようにA列にlsコマンドの実行ログを貼り付けて、その内容をB列から右に切り出していく。
+次に、以下の数式を各セルに貼り付けていく。
+[B2]
+=IF(TRIM($A2)=””,””,IF(ISERROR(FIND(” “,TRIM($A2),1))=TRUE,TRIM($A2),MID(TRIM($A2),1,FIND(” “,TRIM($A2),1)-1)))
+[C2]
+=IF(LEN(TRIM($A2))>LEN($B2)+2,
+MID(TRIM($A2),LEN($B2)+2,
+IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2)+2))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN(B2)+2))-LEN($B2)-2),””)
+[D2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2)+3,
+MID(TRIM($A2),LEN($B2&C2)+3,
+IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2&$C2)+3))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN($B2&$C2)+3))-LEN($B2&$C2)-3),””)
+[E2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2&$D2)+4,
+MID(TRIM($A2),LEN($B2&$C2&$D2)+4,
+IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2&$C2&$D2)+4))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN($B2&$C2&$D2)+4))-LEN($B2&$C2&$D2)-4),””)
+[F2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2&$D2&$E2)+5,
+MID(TRIM($A2),LEN($B2&$C2&$D2&$E2)+5,
+IF(ISERROR(FIND(” “,$A2,LEN($B2&$C2&$D2&E2)+5))=TRUE,LEN($A2)+1,
+FIND(” “,$A2,LEN($B2&$C2&$D2&E2)+5))-LEN($B&$C2&$D2&$E2)-5),””)
+[G2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2&$D2&$E2&$F2)+6,
+MID(TRIM($A2),LEN($B2&$C2&$D2&$E2&$F2)+6,
+IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2)+6))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2)+6))-LEN($B2&$C2&$D2&$E2&$F2)-6),””)
+[H2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2&$D2&$E2&$F2&$G2)+7,
+MID(TRIM($A2),LEN($B2&$C2&$D2&$E2&$F2&$G2)+7,
+IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2)+7))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2)+7))-LEN($B2&$C2&$D2&$E2&$F2&$G2)-7),””)
+[I2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2)+8,
+MID(TRIM($A2),LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2)+8
+,IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2&$H2)+8))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2&$H2)+8))-LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2)-8),””)
+[J2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2&$I2)+9,
+MID(TRIM($A2),LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2&$I2)+9,
+IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2&$H2&$I2)+9))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2&$H2&$I2)+9))-LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2&$I2)-9),””)
+[K2]
+=IF(LEN(TRIM($A2))>LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2&$I2&$J2)+10,
+MID(TRIM($A2),LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2&$I2&$J2)+10,
+IF(ISERROR(FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2&$H2&$I2&$J2)+10))=TRUE,LEN(TRIM($A2))+1,
+FIND(” “,TRIM($A2),LEN($B2&$C2&$D2&E2&$F2&$G2&$H2&$I2&$J2)+10))-LEN($B2&$C2&$D2&$E2&$F2&$G2&$H2&$I2&$J2)-10),””)
+この例ではK2は必要無いが、まぁ念のため。
+上記数式を見ればわかると思うが、基本的に計算に前のセルを追加していっているだけだ。処理の追加も容易に行えると思う。
+実際に貼り付けて分割した結果がこちら。
+無事、セルの内容を分割することが出来た。
+2.独自関数での対応
+さて、上記数式での対応でもいいが、やっぱり読みにくいとか色々と問題がある。
+そこで、独自関数をVisual Basicで作成して対応をしてみる。
+Function STR_SPLIT(str, sep, n) As String
+Dim V() As String
+V = Split(str, sep)
+STR_SPLIT = V(n - 1)
+End Function
+上記コードを、Visual Basicで「標準モジュール」を作成して貼り付ける。
+貼り付け完了後、B2、C2以降に以下のように数式を記述する。
+[B2]
+=IF(ISERROR(STR_SPLIT(TRIM($A2),” “,1)),””,STR_SPLIT(TRIM($A2),” “,1))
+[C2]
+=IF(ISERROR(STR_SPLIT(TRIM($A2),” “,2)),””,STR_SPLIT(TRIM($A2),” “,2))
+[D2]
+=IF(ISERROR(STR_SPLIT(TRIM($A2),” “,3)),””,STR_SPLIT(TRIM($A2),” “,3))
+以降のセルは、「STR_SPLIT」関数の最後の数字を順に足していけばいい。
+インフラエンジニアの便利なExcel Tips ～関数、独自関数でセルの文字列を分割する方法～ | 俺的備忘録 〜なんかいろいろ〜

@@ -1,0 +1,18 @@
+次の例の WHERE 句には、相関性のあるサブクエリが含まれています。このタイプのサブクエリには、サブクエリの列と他のクエリが生成した列の間に相関性があります。この場合、相関は where s.listid=l.listid となります。外部クエリが生成する各行に対してサブクエリが実行され、行が適正か適正でないかが判断されます。 
+select salesid, listid, sum(pricepaid) from sales s
+where qtysold=
+(select max(numtickets) from listing l
+where s.listid=l.listid)
+group by 1,2
+order by 1,2
+limit 5;
+salesid | listid |   sum
+---------+--------+----------
+27 |     28 | 111.00
+81 |    103 | 181.00
+142 |    149 | 240.00
+146 |    152 | 231.00
+194 |    210 | 144.00
+(5 rows)
+クエリのプランナーは、MPP 環境で実行する相関サブクエリの複数のパターンを最適化するため、「サブクエリ相関解除」と呼ばれるクエリ再生成メソッドを使用します。相関サブクエリの中には、Amazon Redshift が相関を解除できずサポートすることができないパターンを採用しているものがわずかにあります。次の相関参照を含んでいるクエリがエラーが返します。
+相関性のあるサブクエリ - Amazon Redshift

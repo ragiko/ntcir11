@@ -1,0 +1,70 @@
+ 下のダウンロードボタンからダウンロード後、適当な場所に解凍してください。
+cycSlidesShow.zip 1.75KB
+【解凍後ファイル一覧】
+cycSlidesShow.js : ライブラリー本体です。
+【その他必要とするライブラリー】
+Prototype : prototype.js ver1.6以上 http://www.prototypejs.org/から
+script.aculo.us : ver1.8以上 http://www.script.aculo.us/から(effects.js)
+下の「ライブラリを読み込む」を参考に、それぞれのファイルを配置してください。
+【書式】
+<script src="【URI1】/prototype.js" type="text/javascript"></script>
+<script src="【URI2】/effects.js" type="text/javascript"></script>
+<script src="【URI3】/cycslidesShow.js" type="text/javascript"></script>
+【URI1】: prototype.jsがあるURI、ファイルパス
+【URI2】: script.aculo.usライブラリがあるURI、ファイルパス
+【URI3】: cycSlidesShow.jsがあるURI、ファイルパス
+ライブラリを読み込むには、<script>タグでprototype.jsを読み込ませた後、
+script.aculo.usのeffects.jsを読み込み、最後に本体のcycSlidesShow.jsを読み込ませる必要があります。
+【サンプル】
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Language" content="ja" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<script src="../js/lib/prototype.js" type="text/javascript"></script>
+<script src="../js/src/effects.js" type="text/javascript"></script>
+<script src="../js/cycSlidesShow.js" type="text/javascript"></script>
+<script src="../js/mySampleLoad.js" type="text/javascript"></script>
+//......mySampleLoad.js:スライドショーを表示開始するjs
+<title>【サンプル】</title>
+</head>
+<body>
+<div id="photos" style="width:400px; heigth:260px;" >
+<!-- ここがスライドショー表示エリアです -->
+</div>
+</body>
+</html>
+続いて、mySampleLoad.jsでスライドショーを開始します。
+【サンプル】
+//mySampleLoad.js
+Event.observe(document, "dom:loaded", function(){
+var slideInfs = [
+{img:'./img/photos/s1.jpg', scrool:'H', direction:0,
+sDuration:2, anchor:"./abc.html"},
+{img:'./img/photos/s2.jpg', scrool:'V', direction:1,
+sDuration:2, anchor:""},
+{img:'./img/photos/s5.jpg', scrool:'H', direction:1,
+sDuration:3, anchor:"./def.php"},
+{img:'./img/photos/s3.jpg', scrool:'H', direction:0,
+sDuration:3, anchor:"./ghi.html"},
+{img:'./img/photos/s4.jpg', scrool:'H', direction:1,
+sDuration:2, anchor:""}
+];
+//個々のスライドイメージのプロパティーをオブジェクト配列で指定します。
+new cycSlidesShow('photos', slideInfs, {interval:6,
+duration:2.5,
+parallel:true
+});
+//スライドショーを生成します
+})
+【書式】
+new cycSlidesShow(【id】, 【slides】 ,【options】)
+【id】: スライドショーを表示するブロックエレメント(DIV)のidを指定
+【slides】: 個々のスライドのプロパティーを指定したオブジェクトの配列
+【options】: 各種オプション(省略化)
+【slides】で指定する内容について
+名前
+内容
+Javascriptで簡単連続スライドショー

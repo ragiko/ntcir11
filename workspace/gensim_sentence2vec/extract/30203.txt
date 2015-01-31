@@ -1,0 +1,35 @@
+1.6.5のZabbixサーバのデータを元に、新規に1.8.5-1.el5.JPのZabbixサーバを構築しました。(MySQLデータのフルバックアップ、差分バックアップを採取し新規へ反映しています)
+今まで監視していた機器の、zabbix_agentd.conf内、下記の箇所を変更し、エージェントの再起動を行いました。
+<blockquote>
+Server=新しいZabbixサーバのIP
+Hostname=エージェント側のホスト名
+ListenPort=10050
+ListenIP=エージェント側のIP
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+</blockquote>
+すると、zabbix_agentd.logに次のメッセージが書かれており、Pingのみしか監視できていない状況です。
+<blockquote>
+28907:20110817:142010 zabbix_agentd started. ZABBIX 1.6.1.
+28908:20110817:142010 zabbix_agentd collector started
+28909:20110817:142010 zabbix_agentd listener started
+28910:20110817:142010 zabbix_agentd listener started
+28911:20110817:142010 zabbix_agentd listener started
+28912:20110817:142010 zabbix_agentd listener started
+28913:20110817:142010 zabbix_agentd listener started
+28914:20110817:142010 zabbix_agentd listener started
+28915:20110817:142010 zabbix_agentd listener started
+28916:20110817:142010 zabbix_agentd listener started
+28917:20110817:142010 zabbix_agentd listener started
+28918:20110817:142010 zabbix_agentd listener started
+28919:20110817:142010 zabbix_agentd listener started
+28920:20110817:142010 zabbix_agentd listener started
+28921:20110817:142010 zabbix_agentd listener started
+28922:20110817:142010 zabbix_agentd active check started [ZabbixサーバのIP:10051]
+28922:20110817:142010 Unsucesfull response received from server
+</blockquote>
+お手数ですが、解決方法に関しましてご教授いただけないでしょうか。よろしくお願い致します。
+----
+Zabbixサーバ:1.8.5-1.el5.JP
+Zabbixエージェント:1.6.1
+エラーメッセージ「Unsucesfull response received from server」 | ZABBIX-JP

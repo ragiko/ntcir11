@@ -1,0 +1,61 @@
+
+Lightbox導入方法
+Lightboxの導入方法とサンプルのダウンロード
+簡単にLightboxに対応出来ます。
+Lightboxのサンプル
+サンプルページ
+サンプルページの写真をクリックするとLoghtboxが起動します。
+サンプルページのHTMLファイルはこちらからダウンロード出来ます。
+Lightbox導入方法
+1.ダウンロード
+LightBoxサイトからLightboxをダウンロードして下さい。
+ダウンロードはこちら(ページの中央あたりのDOWNLOAD)
+2.ZIPファイルを解凍
+LHACA、LHASAなどで解凍して下さい。
+解凍すると「css」「images」「js」が作成されます。
+3.サーバーに転送
+Lightboxに対応させたいページと同じフォルダに「css」「images」「js」を転送します
+転送後、ディレクトリ構造はこのようになります
+[フォルダ]
+全体が入っているフォルダ
+index.htm
+Lightboxに対応させたいページ
+[image]
+写真を入れるフォルダ。場所、名前とも自由
+.jpg
+写真
+.gif
+画像
+[css]
+lightbox.css
+[img]
+・・・.gif
+[js]
+lightbox.js
+・・・.js
+※ 解凍した「images」の中の「image-1.jpg」と「thumb-1.jpg」は不要です
+4.HTMLタグの編集
+Lightboxに対応させたいページのHTMLタグを編集します。
+HTMLページの1行目に
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+を挿入し、<TITLE></TITLE>の次の行に
+<link rel="stylesheet" href="css/lightbox.css" type="text/css" media="screen" />
+<script src="js/prototype.js" type="text/javascript"></script>
+<script src="js/scriptaculous.js?load=effects,builder" type="text/javascript"></script>
+<script src="js/lightbox.js" type="text/javascript"></script>
+<style type="text/css"><!--
+#outerImageContainer {
+-moz-border-radius-topleft:10px;
+-moz-border-radius-topright:10px;
+}
+#imageDataContainer {
+-moz-border-radius-bottomleft:10px;
+-moz-border-radius-bottomright:10px;
+}
+--></style>
+を挿入します。
+各写真のHTMLタグを下記のように修正します。
+<A href="image/ファイル名" rel="lightbox[グループ名]" title="説明文"><IMG src="image/ファイル名" width="80" height="60" border="0"></A>
+グループ名は「aiueo」や「abc」など自由な半角英字で指定します。
+CopyRight&copy;ChamaNet
+Lightboxの導入方法とサンプルです。簡単に対応出来ます。

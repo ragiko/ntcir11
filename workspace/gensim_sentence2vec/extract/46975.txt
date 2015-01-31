@@ -1,0 +1,20 @@
+class:pChart
+書式:void drawTreshold($Value,$R,$G,$B,$ShowLabel=FALSE,$ShowOnRight=FALSE,$TickWidth=4,$FreeText=NULL)
+戻り値:なし
+引数
+$Value :(サンプルコードでは0を指定している)
+$R :行およびテキストの赤色
+$G :行およびテキストの緑色
+$B :行およびテキストの青色
+$ShowLabel=FALSE :ラベルを描画するか否か
+$ShowOnRight=FALSE :ラベルの表示位置を右側にするか否か
+$TickWidth=4 :刻みの幅
+$FreeText=NULL :ラベル
+この関数は、水平方向のしきい線を描画します(これは、0行を描画する簡単な方法です)。
+ShowLabelにTRUEを設定する場合は、しきい値がグラフ上に書き込まれます。
+ShowOnRightにTRUEが設定されている場合には、Valueはグラフの右側に書き込まれます。
+R、G、Bは、行およびテキストの色を設定するために使用されます。
+TickWidthは刻みの幅を設定します、0に設定した場合実線を描画します。
+必要に応じてしきい線のキャプションを提供することができます(デフォルトではしきい値が使用されます)。
+(訳注)しきい値はthresholdと綴ります。
+しきい値を描画する - pChartの部屋

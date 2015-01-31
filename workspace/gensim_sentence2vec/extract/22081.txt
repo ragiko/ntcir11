@@ -1,0 +1,84 @@
+				
+こんにちわ。pencoです。
+今回はBroadcastReceiverを使ってネットワークの接続状況を監視する方法について書いていきたいと思います。
+流れとしては、
+ネットワークの接続の変更を通知するBroadcast intentを受信するレシーバを用意する
+ネットワークの接続状況を確認する
+状況に応じてActivityにコールバックを返す
+こんな感じです。
+1. レシーバの用意
+ではさっそく。
+ネットワークの接続の変更を通知するBroadcast intentを受信するレシーバを用意します。コンストラクタの引数については後程説明します。
+public class ConnectionReceiver extends BroadcastReceiver {
+public ConnectionReceiver(Observer observer) {
+//コンストラクタ
+}
+@Override
+public void onReceive(Context context, Intent intent) {
+//Broadcast intentを受信
+}
+}
+今回はメインのActivityでのみ使用するので、Activityでレシーバの設定をします。
+以下のコードをonCreateに書いています。
+IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+ConnectionReceiver receiver = new ConnectionReceiver(this);
+registerReceiver(receiver, filter);
+これでBroadcast intent「android.net.conn.CONNECTIVITY_CHANGE」を受信するレシーバが用意できました。
+2. ネットワークの接続状況を確認
+次にレシーバでネットワーク状況を確認します。
+先程作ったレシーバクラスのonReceive()メソッドの中身を変更していきます。
+@Override
+public void onReceive(Context context, Intent intent) {
+ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+NetworkInfo info = manager.getActiveNetworkInfo();
+if (info == null) {
+//接続していない
+}else {
+//接続している
+}
+}
+ネットワークの接続状況を確認するためにConnectivityManagerをSystemServiceから取得します。これを行うためにはマニフェストへのパーミッションの記述が必要です。
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+取得したConnectivityManagerを使用してNetworkInfoを取得します。
+ネットワーク接続がない場合ではNetworkInfoはnullを返します。
+これで、接続しているか否かが判断できたので、最後にActivityにコールバックします。
+3. 状況に応じてActivityにコールバックを返す
+レシーバクラスにコールバック用のinterfaceを追加します。
+レシーバクラスの全体はこんな感じです。
+public class ConnectionReceiver extends BroadcastReceiver {
+private Observer mObserver;
+public ConnectionReceiver(Observer observer) {
+mObserver = observer;
+}
+@Override
+public void onReceive(Context context, Intent intent) {
+ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+NetworkInfo info = manager.getActiveNetworkInfo();
+if (info == null) {
+mObserver.onDisconnect();
+}else {
+mObserver.onConnect();
+}
+}
+//----- コールバックを定義 -----
+interface Observer {
+void onConnect();
+void onDisconnect();
+}
+}
+先程説明を省いたコンストラクタについてですが、
+この引数にはコールバックinterfaceを実装したクラスが入ります。
+つまり今回はActivityが入ります。
+レシーバの設定を行う際に以下の様に記述し、コールバック先を自身に設定しているので、ActivityではConnectionReceiver.Observerをimplementsする必要があります。
+ConnectionReceiver receiver = new ConnectionReceiver(this);
+あとはActivityで実装したコールバックメソッドで適宜必要な処理を行います。
+@Override
+public void onConnect() {
+//ネットワークに接続した時の処理
+}
+@Override
+public void onDisconnect() {
+//ネットワークが切断された時の処理
+}
+本日はここまで。
+【Android】BroadcastReceiverでネットワークの接続状況を監視する | 日本VTR実験室

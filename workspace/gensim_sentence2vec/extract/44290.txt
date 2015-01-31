@@ -1,0 +1,157 @@
+12.3. テキスト検索の制御  全文検索を実装するためには、文書からtsvectorを、そしてユーザの問合わせからtsqueryを作成する関数が存在しなければなりません。また、結果を意味のある順で返す必要があります。そこで、問合わせとの関連性で文書を比較する関数も必要になってきます。結果を体裁良く表示できることも重要です。PostgreSQLはこれらすべての機能を提供しています。
+12.3.1. 文書のパース    PostgreSQLは、文書をtsvectorデータ型に変換するto_tsvector関数を提供しています。
+to_tsvector([ config regconfig, ] document text) returns tsvector    to_tsvectorは、テキスト文書をパースしてトークンにし、トークンを語彙素に変換、文書中の位置とともに語彙素をリストとして持つtsvectorを返します。文書は、指定したものか、あるいはデフォルトのテキスト検索設定にしたがって処理されます。単純な例を示します。
+SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats');
+to_tsvector
+-----------------------------------------------------
+'ate':9 'cat':3 'fat':2,11 'mat':7 'rat':12 'sat':4
+上に示す例では、結果のtsvectorで、a、on、itという単語が含まれないこと、ratsという単語がratになっていること、句読点記号-が無視されていることがわかります。
+to_tsvector関数は、文書をトークンに分解して、そのトークンに型を割り当てるパーサを内部的に呼び出しています。それぞれのトークンに対して辞書(項12.6)のリストが検索されます。ここで、辞書のリストはトークンの型によって異なります。最初の辞書は、トークンを認識し、トークンを表現する一つ以上の正規化された語彙素を出力します。例えば、ある辞書はratsはratの複数形であることを認識しているので、ratsはratになります。ある単語はストップワード(項12.6.1)として認識されます。これは、意味のある検索中にあまりも多く出現するため、無視されるものです。先の例では、a、on、およびitがそれです。もしリスト中の辞書のどれもがトークンを認識しなければ、そのトークンは無視されます。先の例では、句読点の-がそうです。なぜなら、実際にはそのトークン型(Space symbols)に対して辞書が割り当てられておらず、空白トークンは決してインデックス付けされないことを意味します。パーサ、辞書、そしてどのトークンがインデックス付けされるかという選択は、テキスト検索設定(項12.7)によって決められます。同じデータベース中に多くの異なった設定を持つことができ、多くの言語用に定義済の設定が用意されています。先の例では、英語用として、デフォルトのenglish設定を使っています。
+関数setweightを使ってtsvectorのエントリに与えられた重みのラベルを与えることができます。ここで重みは、A, B, C, Dのどれかの文字です。重みの典型的な使い方は、文書の各部分がどこから来たのかをマークすることです。たとえば、タイトルから来たのか、本文から来たのかなど。後でこの情報は検索結果のランキングに利用できます。
+to_tsvector(NULL)はNULLを返すので、NULLになる可能性のある列に対してはcoalesceを使うことをお勧めします。構造化された文書からtsvectorを作るための推奨できる方法を示します。
+UPDATE tt SET ti =
+setweight(to_tsvector(coalesce(title,'')), 'A')    ||
+setweight(to_tsvector(coalesce(keyword,'')), 'B')  ||
+setweight(to_tsvector(coalesce(abstract,'')), 'C') ||
+setweight(to_tsvector(coalesce(body,'')), 'D');
+ここでは、完成したtsvectorの語彙素に対して、ラベル付けのためにsetweightを使っています。そして、tsvectorの連結演算子||を使って、ラベルづけされたtsvectorの値をマージします。(詳細は項12.4.1を参照してください。)
+12.3.2. 問合わせのパース    PostgreSQLは、問合わせをtsqueryに変換するto_tsquery関数とplainto_tsquery関数を提供しています。to_tsqueryは、plainto_tsqueryよりも多くの機能を提供していますが、入力のチェックはより厳格です。
+to_tsquery([ config regconfig, ] querytext text) returns tsquery    to_tsqueryは、querytextからtsqueryとしての値を生成します。querytextは、論理演算子& (AND), | (OR)、! (NOT)で区切られる単一のトークンから構成されなければなりません。これらの演算子は括弧でグループ化できます。言い換えると、to_tsqueryの入力は、項8.11で述べられている一般規則にしたがっていなければなりません。違いは、基本的なtsqueryの入力はトークンの表面的な値を受け取るのに対し、to_tsqueryは指定した、あるいはデフォルトの設定を使ってトークンを語彙素へと正規化し、設定にしたがって、ストップワードであるようなトークンを破棄します。例を示します。
+SELECT to_tsquery('english', 'The & Fat & Rats');
+to_tsquery   
+---------------
+'fat' & 'rat'
+基本的なtsqueryの入力では、各々の語彙素に重みを付加することにより、同じ重みを持つtsvectorの語彙素のみに照合するようにすることができます。例を示します。
+SELECT to_tsquery('english', 'Fat | Rats:AB');
+to_tsquery    
+------------------
+'fat' | 'rat':AB
+また、明示的な前方一致検索のため、*を語彙素に与えることもできます。
+SELECT to_tsquery('supern:*A & star:A*B');
+to_tsquery        
+--------------------------
+'supern':*A & 'star':*AB
+このような語彙素は、与えられた文字列で始まるtsvector中のどんな単語にも照合するでしょう。
+to_tsqueryは、単一引用符で囲まれた語句を受け付けることもできます。これは主に、設定の中にそういった語句を持つ同義語辞書を含んでいるときに有用です。以下の例では、ある同義語の中にsupernovae stars : snという規則が含まれています。
+SELECT to_tsquery('''supernovae stars'' & !crab');
+to_tsquery
+---------------
+'sn' & !'crab'
+引用符がない場合は、to_tsqueryは、ANDあるいはOR演算子で区切られていないトークンに対して構文エラーを引き起こします。
+plainto_tsquery([ config regconfig, ] querytext text) returns tsquery    plainto_tsqueryは整形されていないテキストquerytextを、tsqueryに変換します。テキストはパースされ、to_tsvectorとしてできる限り正規化されます。そして、& (AND) 論理演算子が存続した単語の間に挿入されます。
+例:
+SELECT plainto_tsquery('english', 'The Fat Rats');
+plainto_tsquery 
+-----------------
+'fat' & 'rat'
+plainto_tsqueryは、入力中の論理演算子も、重さラベルも、前方一致ラベルも認識できないことに注意してください。
+SELECT plainto_tsquery('english', 'The Fat & Rats:C');
+plainto_tsquery   
+---------------------
+'fat' & 'rat' & 'c'
+ここでは、入力中のすべての句読点がスペース記号に変換された結果、破棄されています。
+12.3.3. 検索結果のランキング   ランキングはある問合わせに対して、どの程度文書が関連しているかを計測しようとするものです。合致している文書が多数あるとき、もっとも関連している文書が最初に表示されるようにするためです。PostgreSQLは、2つの定義済ランキング関数を提供しています。それらは、辞書情報、近接度情報、構造的情報を加味します。すなわち、問合わせの用語がどの位の頻度で文書に出現するか、文書中でどの程度それらの用語が近接しているか、どの用語が含まれる文書部位が度の程度重要なのかを考慮します。しかし、関連度という概念は曖昧で、用途に強く依存します。異なる用途は、ランキングのために追加の情報を必要とするかも知れません。たとえば、文書の更新時刻など。組み込みのランキング関数は例に過ぎません。利用者の目的に応じて、自分用のランキング関数を作ったり、その結果を追加の情報と組み合わせることができます。
+今のところ、二種類のランキング関数が利用可能です。
+ts_rank([ weights float4[], ] vector tsvector,
+query tsquery [, normalization integer ]) returns float4        それらの語彙素にマッチした頻度に基づくベクターのランク。
+ts_rank_cd([ weights float4[], ] vector tsvector,
+query tsquery [, normalization integer ]) returns float4       この関数は、"Information Processing and Management"ジャーナルに掲載された Clarke, Cormack, Tudhopeの"Relevance Ranking for One to Three Term Queries"で述べられている方法で、与えられた文書ベクターと問合わせの表面密度(cover density)を計算します。
+この関数は、入力中に位置情報を必要とします。ですから、"剥き出しの" tsvector値では動きません &mdash; この場合は常に0を返します。
+これらの関数では、単語がどの程度ラベル付けに依存するかを、単語ごとに指定する機能がweightsオプションパラメータによって提供されています。重み配列で、それぞれのカテゴリの単語がどの程度重み付けするかを指定します。その順は以下のようになっています。
+{D-weight, C-weight, B-weight, A-weight}
+weightsを与えない場合は、次のデフォルト値が使われます。
+{0.1, 0.2, 0.4, 1.0}
+重みの典型的な使い方は、文書のタイトルやアブストラクトのような特定の場所にある単語をマーク付けするような使い方です。そうすることにより、文書の本体に比べてそこにある単語がより重要なのか、そうでないのか、扱いを変えることができます。
+文書が長ければ、それだけ問合わせ用語を含む確率が高くなるため、文書のサイズを考慮にいれることは理にかなっています。たとえば、5つの検索語を含む100語の文書は、たぶん5つの検索語を含む1000語の文書よりも関連性が高いでしょう。ランキング関数には、どちらも整数型の正規化オプションがあります。これは、文書の長さがランクに影響を与えるのかどうか、与えるとすればどの程度か、ということを指定します。この整数オプションは、いくつかの挙動を制御するので、ビットマスクになっています。複数の挙動を|で指定できます(例:2|4)。
+0(デフォルト):文書の長さを無視します
+1:ランクを(1 + log(文書の長さ))で割ります
+2:ランクを文書の長さで割ります
+4:ランクをエクステントの間の調和平均距離で割ります(これはts_rank_cdで実装されています)
+8: ランクを文書中の一意の単語の数で割ります
+16: ランクをlog(文書中の一意の単語の数)+1 で割ります
+32 ランクをランク自身+1 で割ります
+2以上のフラグビットが指定された場合には、変換は上記に列挙された順に行われます。
+これは重要なことですが、ランキング関数はグローバル情報を一切使わないので、時には必要になる1%から100%までの均一な正規化はできません。正規化オプション32(rank/(rank+1))を適用することにより、すべてのランクを0から1に分布させることができます。しかし、もちろんこれは表面的な変更に過ぎません。検索結果のならび順に影響を与えるものではありません。
+マッチする順位の高い10位までを選ぶ例を示します。
+SELECT title, ts_rank_cd(textsearch, query) AS rank
+FROM apod, to_tsquery('neutrino|(dark & matter)') query
+WHERE query @@ textsearch
+ORDER BY rank DESC
+LIMIT 10;
+title                     |   rank
+-----------------------------------------------+----------
+Neutrinos in the Sun                          |      3.1
+The Sudbury Neutrino Detector                 |      2.4
+A MACHO View of Galactic Dark Matter          |  2.01317
+Hot Gas and Dark Matter                       |  1.91171
+The Virgo Cluster: Hot Plasma and Dark Matter |  1.90953
+Rafting for Solar Neutrinos                   |      1.9
+NGC 4650A: Strange Galaxy and Dark Matter     |  1.85774
+Hot Gas and Dark Matter                       |   1.6123
+Ice Fishing for Cosmic Neutrinos              |      1.6
+Weak Lensing Distorts the Universe            | 0.818218
+同じ例を正規化ランキングを使ったものを示します。
+SELECT title, ts_rank_cd(textsearch, query, 32 /* rank/(rank+1) */ ) AS rank
+FROM apod, to_tsquery('neutrino|(dark & matter)') query
+WHERE  query @@ textsearch
+ORDER BY rank DESC
+LIMIT 10;
+title                     |        rank
+-----------------------------------------------+-------------------
+Neutrinos in the Sun                          | 0.756097569485493
+The Sudbury Neutrino Detector                 | 0.705882361190954
+A MACHO View of Galactic Dark Matter          | 0.668123210574724
+Hot Gas and Dark Matter                       |  0.65655958650282
+The Virgo Cluster: Hot Plasma and Dark Matter | 0.656301290640973
+Rafting for Solar Neutrinos                   | 0.655172410958162
+NGC 4650A: Strange Galaxy and Dark Matter     | 0.650072921219637
+Hot Gas and Dark Matter                       | 0.617195790024749
+Ice Fishing for Cosmic Neutrinos              | 0.615384618911517
+Weak Lensing Distorts the Universe            | 0.450010798361481
+ランキングは、I/Oバウンドであるが故に遅い処理である、文書のtsvectorへのアクセスが必要なので、高価な処理であるかもしれません。不幸なことに、実際の問合わせでは往々にして大量の検索結果が生じるため、これはほとんど不可避であると言えます。
+12.3.4. 結果の強調   検索結果を表示する際には、文書の該当部分を表示し、どの程度問合わせと関連しているかを示すのが望ましいです。PostgreSQLはこの機能を実装したts_headline関数を提供しています。
+ts_headline([ config regconfig, ] document text, query tsquery [, options text ]) returns text   ts_headlineは、問合わせと一緒に文書を受け取り、問合わせが注目した文書中の語句を抜粋して返します。文書をパースするのに使われる設定をconfigで指定することができます。configが省略された場合は、default_text_search_config設定が使われます。
+options文字列を指定する場合は、一つ以上のoption=valueのペアをカンマで区切ったものでなければなりません。
+StartSel, StopSel: 文書中に表れる問合わせ単語を区切るこの文字列は、他の抜粋される単語と区別されます。これらの文字列が空白やカンマを含んでいる場合は、二重引用符で囲う必要があります。
+MaxWords, MinWords: この数字を使って見出しの最大の長さと最小の長さを指定します。
+ShortWord: この長さか、それ以下の長さの単語は、見出しの最初と最後から削除されます。デフォルト値の3は、常用される英語の冠詞を取り除きます。
+HighlightAll: 論理値フラグ; trueなら文書全体が見出しの様にハイライトされ、前の3つのパラメータは無視されます。
+MaxFragments:表示するテキスト引用句、もしくは断片の最大数です。デフォルト値の0は断片化を起こさない見出しの生成の選択となります。0より大きい場合は断片化を基本とした見出しの生成の選択となります。この方法は、可能な限り多くの検索単語でテキスト断片を探し出し、検索単語周辺のそれらのテキスト断片を広げます。結果として、検索単語が各断片の中央部分近くに位置し、両端に単語を持つことになります。各断片は最大でMaxWordsと同数の単語を持ち、ShortWordより少ないサイズの単語を断片の両端に持ちません。もし全ての検索単語を文書から見つけられなかった場合は、文書中の最初のMinWords分の単語数から成る一つの断片が表示されるでしょう。
+FragmentDelimiter: 複数の断片が表示される時、その断片はこの文字で区切られます。
+指定されなかったオプションの値は以下のデフォルトになります。
+StartSel=<b>, StopSel=</b>,
+MaxWords=35, MinWords=15, ShortWord=3, HighlightAll=FALSE,
+MaxFragments=0, FragmentDelimiter=" ... "
+例を示します。
+SELECT ts_headline('english',
+'The most common type of search
+is to find all documents containing given query terms
+and return them in order of their similarity to the
+query.',
+to_tsquery('query & similarity'));
+ts_headline                         
+------------------------------------------------------------
+containing given <b>query</b> terms
+and return them in order of their <b>similarity</b> to the
+<b>query</b>.
+SELECT ts_headline('english',
+'The most common type of search
+is to find all documents containing given query terms
+and return them in order of their similarity to the
+query.',
+to_tsquery('query & similarity'),
+'StartSel = <, StopSel = >');
+ts_headline                      
+-------------------------------------------------------
+containing given <query> terms
+and return them in order of their <similarity> to the
+<query>.
+ts_headlineは、tsvectorの要約ではなく、元の文書を使います。ですので遅い可能性があり、注意深く使用する必要があります。よくある間違いは、たった10個の文書を表示しようとしているのに、すべての合致した文書にts_headlineを適用することです。SQLの副問合わせがこのときに役に立ちます。例を示します。
+SELECT id, ts_headline(body, q), rank
+FROM (SELECT id, body, q, ts_rank_cd(ti, q) AS rank
+FROM apod, to_tsquery('stars') q
+WHERE ti @@ q
+ORDER BY rank DESC 
+LIMIT 10) AS foo;
+前のページホーム次のページテーブルとインデックス上に戻る追加機能
+テキスト検索の制御

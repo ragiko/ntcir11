@@ -1,0 +1,315 @@
+ 
+主なスパイクデータ解析法と分類
+単一細胞記録データの解析
+外的なイベントをトリガーにした解析
+感覚刺激の呈示時刻や、動物の反応時刻など、外的な実験イベント時刻に
+揃えたスパイク系列に対する解析。
+Spike Raster: 特定の外的イベント前後のスパイクパターンをそのまま表示。
+PSTH(Peri-Stimulus Time Histogram): 
+特定の外的イベント前後のスパイク頻度の時間変化。
+Fano Factor: ある時間幅に入るスパイク数の平均と分散の比。
+スパイク系列自体や試行に対する変動性の指標。
+Mutual Information: ある時間幅に入るスパイク数がもつ外的イベントの情報量。
+スパイク時刻をトリガーにした解析
+ニューロンがスパイク信号を発した時刻という内的な時刻をトリガーにした解析。
+Auto-correlogram: 自己相関関数の推定。
+STA(Spike-Triggered Average) or Reverse correlation: 
+スパイク時刻をトリガーにした外的刺激の平均。
+スパイク間隔(ISI)に対する解析
+ISI(Inter-Spike Interval) Histogram: ISI分布の形状を推定。
+ISI分布の統計量(CVなど)
+その他、特殊な統計量(系列相関、LVなど)
+単一細胞記録した多細胞データの解析
+単一細胞記録を繰り返して得られた、同時記録ではない多細胞データに対する解析。
+単一細胞記録データの解析結果の集合に対する統計分析となる。
+Population Vector: 方位の集団表現モデル。
+Clustering Analysis: ニューロン選択性に対するクラスタ解析。
+Visualization of spike frequency pattern: 
+スパイク頻度の集団パターンの時間変化の表示。
+Power Law of Spike Counts: 
+スパイク数の平均と分散の間に成り立つベキ則
+Mutual Information: 
+ある時間幅に入るスパイク数の集団パターン(独立性を仮定)
+がもつ外的イベントの情報量。
+多細胞同時記録データの解析
+全てのスパイクを対象にする解析
+Trial-Variability correlation: 
+スパイク数のゆらぎの相関。
+Cross-correlogram: 相互相関関数の推定。
+joint PSTH: 時間依存相互相関。
+Prediction Model: 予測モデルによる解析。
+Neural Abalanche: 自発的集団活動のベキ則。
+Mutual Information: 
+ある時間幅に入るスパイク数の集団パターンがもつ外的イベントの情報量。
+特定のスパイクパターンイベントを対象にする解析
+Unitary Event Analysis: 
+各解析法の詳細
+Spike Raster
+各試行でスパイクが発生した時刻を横軸時間として点や縦棒で横一列に表示し、
+刺激呈示時刻など特定の外的イベントに揃えて縦に並べたもの。
+最も素朴なスパイクデータ表示法。
+PSTH(Peri-Stimulus Time Histogram)
+感覚刺激を与えた時刻前後のスパイク頻度の時間変化。
+その他、動物の反応時刻に揃えたPRTH(Peri-Response Time Histogram)
+など、様々な実験イベントに揃えた派生が考えられる。
+特定の外的イベントに揃えた Spike Raster を適当な短い時間幅で区切り、
+その時間幅に入ったスパイク数を縦方向(試行方向)に平均したもの。
+一定の時間幅を連続的にスライドさせながら、
+連続的なグラフを得る方法も取られる。
+スライドによる方法は、複数のPSTHを同時に見せたいときに便利である。
+注: PSTHを Spike Raster の可視化のツールと考えるなら、
+自由に時間幅を選んでも構わないが、
+発火率の推定値と考えて、何らかの統計的結論を導くならば、
+客観的な指標で時間幅を選ぶ必要がある。
+Fano Factor
+特定の外的イベントに揃えたある時間幅に注目し、
+各試行で、その時間幅に入ったスパイク数をNとする。
+スパイク数Nの全試行に対する平均と分散の比が Fano Factor である。
+F=Var[N]/E[N]
+ランダムスパイク列の典型であるポアソン過程・
+変動ポアソン過程では F=1 をとり、
+一定スパイクパターンならば F=0 となる。
+スパイク系列自体や試行に対する変動性の指標。
+Mutual Information(相互情報量)
+スパイクデータ解析では、
+スパイク数(もしくはスパイク数パターン)が持つ外的イベント
+(感覚刺激、行動など)の情報量を推定するために用いられる。
+外的条件のセット{S}(視覚刺激セットなど)を考え、その確率分布を
+P(S) とする。
+そのうちのある外的条件 S のときに、
+一定の時間幅に入ったスパイク数 N の分布を P(N|S)とする。
+全ての外的条件に対して、スパイク数分布 P(N|S) を求める。
+外的条件 S に特定しないスパイク数分布を
+P(N)=ΣSP(N|S)P(S) とする。
+相互情報量は次のように定義される。
+I(N;S)=ΣS,N P(N|S) P(S) log[P(N|S)/P(N)] 
+複数のニューロンのデータがあったとき、その間が独立であると仮定すれば、
+相互情報量には加算性が成り立つ。
+例えば、2つのニューロン A, Bが独立だとすると、
+A,Bのスパイク数パターン {NA, NB} 
+がもつ外的条件 S の情報量は、
+I(NA,NB;S)=
+I(NA;S)+I(NB;S)
+となる。
+独立性を仮定せざるを得ない単一細胞記録した多細胞データにおいて、
+この加算性を利用し、データ全体の特性を表示するのに有用である。
+参考:
+Sugase Y, Yamane S, Ueno S, Kawano K. 
+Global and fine information coded by single neurons in the temporal visual cortex.
+Nature. 1999 Aug 26;400(6747):869-73. 
+多細胞同時記録データの場合、さらに次のような解析が可能である。
+各ニューロンのスパイク頻度のパターンに比べて、
+同時記録された各試行のスパイク数の集団パターンが、
+どの程度外的イベントを表現するしているか?
+例えば2ニューロンの場合、次の量を評価する。
+D{A,B}
+=I(NA,NB;S)-I(NA;S)-I(NB;S)
+ある外的イベントを表現するのに、どの程度のニューロンが必要か?
+多ニューロンの場合の上記の値 D{X} は、
+ニューロン数の増加に伴い、一般に頭打ちとなる。
+頭打ちとなるニューロン数で調べることができる。
+Auto-correlogram
+自己相関関数の推定。
+各スパイク時刻をトリガーにして揃えたスパイク列を、
+Spike Raster のように並べ、
+データに存在する全てのスパイクについて得られるスパイク列を、
+別試行のスパイク列だと思ってPSTHをとったもの。
+周期的活動、ニューロンの発火特性(不応期など)、入力の長時間相関などを
+調べるために用いる。
+STA(Spike-Triggered Average) or Reverse correlation
+スパイク時刻をトリガーにした外的刺激の平均。
+例えば視覚刺激の場合、
+平均が各画素で一定であるようなランダムな視覚刺激を呈示し、
+記録された各スパイク時刻をトリガーにして揃えた、
+外的刺激パターンの平均をとったもの。
+ニューロンの発火に無関係な画素は、ランダム画像の平均値と一致し、
+ニューロンの発火に関係する画素は、
+どのようなパターンのとき発火しやすいかを表現することとなる。
+初期視覚野の方位選択性細胞の受容野・最適方位を特定するのによく使われる。
+平均だけでなく、より高次の統計も取れる。例えば 
+STC(Spike-Triggered Covariance) は、
+STAではキャンセルして消えてしまう Complex Cell 
+の性質も抽出することができる。
+関連論文:
+Schwartz O, Pillow JW, Rust NC, Simoncelli EP. 
+Spike-triggered neural characterization.
+J Vis. 2006 Jul 17;6(4):484-507. 
+Nishimoto S, Ishida T, Ohzawa I. 
+Receptive field properties of neurons in the early visual cortex revealed by local spectral reverse correlation.
+J Neurosci. 2006 Mar 22;26(12):3269-80. 
+ISIヒストグラム
+スパイク間隔(Inter-Spike Interval, ISI) の分布。
+ニューロンの発火特性を調べるために用いる。
+関連論文:
+Gerstein GL, Mandelbrot B.
+Random walk models for the spike activity of a single neuron.
+Biophys J. 1964 Jan;4:41-68. 
+参考図書:
+Tuckwell HC, 
+Introduction to theoretical neurobiology,
+Cambridge University Press,
+Cambridge,
+1988.
+ISI分布の統計量(CVなど)
+ISI分布の特性を示すための指標。
+例えば、CV(変動係数, Coefficient of Variation)は、
+スパイク系列の不規則性の指標で、
+CV = SD[ISI]/E[ISI]
+ランダムスパイク列の典型であるポアソン過程 
+では、発火率に関わらず、CV=1 となり、
+等間隔で規則的なスパイク系列の場合、CV=0 となる。
+当然、さらに高次の統計量もとることができ、
+分布の非対称性や尖り度などを表す指標もある。
+関連論文:
+Softky WR, Koch C. 
+The highly irregular firing of cortical cells is inconsistent with temporal integration of random EPSPs.
+J Neurosci. 1993 Jan;13(1):334-50. Review. 
+その他のISI統計量(系列相関、LVなど)
+ISI分布の統計量は、ISIの順序に依らない統計量であるが、
+ISI系列 {T1,T2, ・・・ } 
+の順序に依存した統計量も存在する。
+例えば、隣り合うISIに相関があるかどうかを調べる系列相関や、
+発火率が変動していても、内在する不規則性を表す LV (Local Variation)
+などが挙げられる。
+系列相関: Cov[Ti,Ti+1]
+LV= E[3(Ti-Ti+1)^2/(Ti+Ti+1)^2]
+関連論文:
+Shinomoto S, Miyazaki Y, Tamura H, Fujita I. 
+Regional and laminar differences in in vivo firing patterns of primate cortical neurons.
+J Neurophysiol. 2005 Jul;94(1):567-75. 
+Population Vector
+方位の集団表現モデル。
+関連論文:
+Georgopoulos AP, Schwartz AB, Kettner RE.
+Neuronal population coding of movement direction.
+Science. 1986 Sep 26;233(4771):1416-9. 
+Clustering Analysis
+ニューロン選択性に対するクラスタ解析。
+関連論文:
+Tanaka K. 
+Columns for complex visual object features in the inferotemporal cortex: clustering of cells with similar but slightly different stimulus selectivities.
+Cereb Cortex. 2003 Jan;13(1):90-9. Review. 
+Visualization of spike frequency pattern
+スパイク頻度の集団パターンの時間変化の表示。
+関連論文:
+Matsumoto N, Okada M, Sugase-Miyamoto Y, Yamane S, Kawano K. 
+Population dynamics of face-responsive neurons in the inferior temporal cortex.
+Cereb Cortex. 2005 Aug;15(8):1103-12. 
+Power Law of Spike Counts
+スパイク数の平均と分散の間に成り立つベキ則。
+関連論文:
+Dean AF. 
+The variability of discharge of simple cells in the cat striate cortex.
+Exp Brain Res. 1981;44(4):437-40. 
+Lee D, Port NL, Kruse W, Georgopoulos AP.
+Variability and correlated noise in the discharge of neurons in motor and parietal areas of the primate cortex.
+J Neurosci. 1998 Feb 1;18(3):1161-70. 
+Trial-Variability correlation
+2つのニューロンのスパイク数の間の相関係数。
+ある外的イベントに揃えた時間幅に入るニューロン A, B のスパイク数を、
+NA, NB とし、
+全試行に対する NA, NBの共分散 
+Cov[NA, NB] を各標準偏差の積で割ったもの。
+Cov[NA, NB]/(SD[NA]SD[NB])
+Cross-correlogram
+2つのニューロンの相互相関関数の推定。
+ニューロンAの各スパイク時刻をトリガーにして揃えた、
+ニューロンBのスパイク列を Spike Raster のように並べ、
+データに存在する全てのニューロンAのスパイクをトリガーにして
+得られるニューロンBのスパイク列を、
+別試行のスパイク列だと思ってPSTHをとったもの。
+2つのニューロンのスパイク発生の相関を調べることができる。
+Time Histogram を取る時間幅を十分大きくして、
+各試行で一つの時間幅になるようにすれば、
+Trial-Variability correlation 
+と同等となる。
+Time Histogram の時間幅によって、
+様々な時間スケールの相関を測ることができる。
+独立な場合には、
+各ニューロンの平均スパイク頻度の積に等しくなると期待されるため、
+平均スパイク頻度の積を引いたり、
+さらに平均スパイク頻度の積で割ったりして、標準化する。
+また、それぞれの発火率の変動や自己相関の影響をわかりやすく取り除くため、
+試行をシフトした、同時記録ではないデータ間の
+Cross-correlogram (Shift Predictor) を差し引くという操作もよく用いられる。
+関連論文:
+Engel AK, Fries P, Singer W. 
+Dynamic predictions: oscillations and synchrony in top-down processing.
+Nat Rev Neurosci. 2001 Oct;2(10):704-16. Review. 
+Joint PSTH
+2ニューロン(または1ニューロンの)の相互(自己)相関の時間的変化、
+時間平均した相互(自己)相関、各PSTHをわかりやすく表示する手法。
+Cross-correlogram は、トリガーにするニューロンAのスパイク時刻に関わらず、
+すべて同等に平均をとったものである。
+もし、外的なイベントに依存して、相互相関が時間変化しているとすると、
+その特徴を捉えることができない。
+そこで、ニューロンAのスパイク時刻毎に 
+Cross-correlogram を取り、
+その時間変化を表示したものが、
+Time-dependent Cross-correlogram 
+(時間依存相互相関ヒストグラム)である。 
+Time-dependent Cross-correlogram の作成手順:
+ある外的なイベントに揃えて、短い時間幅で分割し、
+各時間幅に入るニューロンAのスパイクだけをトリガーにした
+Cross-correlogram  をとり、
+その値を濃淡やカラーで縦に表示し、時間方向に横に並べる。
+この Time-dependent Cross-correlogram と、
+普通の Cross-correlogram、
+2つのニューロンの PSTH を、
+わかりやすく同じ図にまとめたものが Joint PSTH である。 
+Joint PSTH の作成手順:
+ニューロンA・B の1試行の Rasterを
+それぞれ縦軸・横軸に配置し、
+各ニューロンのスパイク時刻の全てのペア(tA,tB) 
+に対応する座標に点を打ったものを1シートとする。
+各試行に対応するシートを重ねる。
+シートを適当な時間幅でメッシュに切り、
+各メッシュに存在する点の全てのシートに対するヒストグラムを
+メッシュ状に濃淡またはカラー表示する。
+(Time-dependent Cross-correlogram を斜めに表示したものと同等)
+対角線(右上)方向に平均をとると、普通の 
+Cross-correlogram となり、
+これを右上側に表示し、
+このヒストグラムの下にニューロンAの PSTH 
+を表示し、
+このヒストグラムの左にニューロンBの PSTH 
+を表示する。
+同じニューロンの間の Joint PSTH を取れば、
+同様に時間依存自己相関、通常の自己相関、PSTHを表示できる。
+メッシュ状に表示した時間依存相互相関は、
+Cross-correlogram と同様に、
+対応する時間幅での平均スパイク頻度の積で標準化したり、
+試行をシフトした同時記録でないデータ間の Joint PSTH (Shift Predictor) で
+標準化したりする。
+関連論文:
+Vaadia E, Haalman I, Abeles M, Bergman H, Prut Y, Slovin H, Aertsen A. 
+Dynamics of neuronal interactions in monkey cortex in relation to behavioural events.
+Nature. 1995 Feb 9;373(6514):515-8. 
+Prediction Model
+予測モデルによる解析。
+関連論文:
+Harris (Nat Rev Neurosci. 2005)
+Harris et al. (Nature 2003)
+Neural Abalanche
+自発的集団活動のベキ則。
+関連論文:
+Beggs JM, Plenz D.
+Neuronal avalanches in neocortical circuits.
+J Neurosci. 2003 Dec 3;23(35):11167-77. 
+Unitary Event Analysis
+ある時間帯に特定のスパイクパターン(集団・時間的)
+が統計的に有意生じているとき、Spike Raster 
+関連論文:
+Riehle et al. (Science 1997)
+スパイク発生モデル
+ポアソン過程(Poisson Process)
+一定の発火率にしたがって各時刻独立にスパイクを発生する。
+ランダムスパイク列の基本。
+変動ポアソン過程(Variable Poisson Process)
+時間変化する特定の発火率パターンにしたがって各時刻独立にスパイクを発生する。
+発火率の変化は確率的なものとは考えず、複数試行を考えるときは、
+各試行で共通の発火率パターンに従うとするのが一般的である。
+重確率的ポアソン過程(Doubly Stochastic Poisson Process)
+確率的に時間変化する発火率にしたがって各時刻独立にスパイクを発生する。
+(酒井)
+スパイクデータ解析法

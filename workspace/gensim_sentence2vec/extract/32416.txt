@@ -1,0 +1,82 @@
+
+もっとgroongaを知ってもらおう!ということで週刊groongaをはじめました。毎週木曜にgroongaやmroonga、rroongaのトピックを投稿予定です。
+gihyo.jpさんでgroongaの隔週連載が最終回を迎えました。groongaの最新情報と今後に興味があれば一読をおすすめします。該当記事は「最終回 groongaの今と未来」 です。
+第1回から第10回までの過去記事については、隔週連載groongaのページを参照してください。
+今年も11/29に全文検索エンジンgroongaを囲む夕べ 4を開催することになりました。groongaのいろんな話を聞きたい人にはおすすめです。参加登録はお早めに! 発表者も募集しています。
+はじめに
+オープンソースのカラムストア機能付き全文検索エンジンgroongaを公開しています。最新のバージョンは2013年9月29日にリリースした3.0.8です。
+今回は、ログにまつわる便利ツールについて紹介します。
+groongaと関連プロダクト
+全文検索エンジンgroongaにはいくつか関連プロダクトがあります。そのうちのいくつかは groonga関連プロジェクト のページで紹介しています。
+また、コマンドラインから使うときに注目して groongaをコマンドラインから便利に使うには という紹介記事も書きました。
+とはいえ関連プロダクトはこれだけではありません。すでにリリースされているものがほかにもいくつかあります。
+例えば、Rubyのgemに限って検索するだけでも、rroongaのほかにこれだけあります。
+% gem search -d groonga
+groonga (1.0.0)
+Authors: Kouhei Sutou, Tasuku SUENAGA, daijiro, Yuto HAYAMIZU,
+SHIDARA Yoji
+Homepage: http://groonga.rubyforge.org/
+Ruby bindings for groonga that provides full text search and column
+store features.
+groonga-client (0.0.3)
+Authors: Haruka Yoshihara, Kouhei Sutou, Kosuke Asami
+Homepage: https://github.com/ranguba/groonga-client
+Groonga-client is a client for groonga (http://groonga.org/)
+implemented with pure ruby.
+groonga-command (1.0.5)
+Author: Kouhei Sutou
+Homepage: https://github.com/groonga/groonga-command
+Groonga-command is a library that represents
+[groonga](http://groonga.org/)'s command. You can write a program
+that handle groonga's command by using groonga-command.
+groonga-command-parser (1.0.0)
+Author: Kouhei Sutou
+Homepage: https://github.com/groonga/groonga-command-parser
+Groonga-command-parser is a Ruby library to parses
+[groonga](http://groonga.org/)'s command syntax. You can write a
+program to process groonga's command by using
+groonga-command-parser.
+groonga-query-log (1.0.1)
+Author: Kouhei Sutou
+Homepage: https://github.com/groonga/groonga-query-log
+Groonga-query-log is a collection of libarary and tools to process
+[groonga](http://groonga.org/)'s query log. You can write a program
+to process query log by using groonga-query-log as a library. You
+can analyze your groonga's queries and test with your groonga's
+query log by using groonga-query-log as a tool.
+今回はログ関連ということで、groonga-query-logを紹介します。
+groonga-query-logとは
+groonga-query-logはgroongaのクエリログを解析するためのライブラリとツールを提供します。
+groongaを運用していくときに蓄積されるクエリログを有効活用することができるようになります。
+groonga-query-logは次のようにgemとしてインストールすることができます。
+groonga-query-logはライブラリとして使うこともできますが、あらかじめコマンドも提供されています。
+まずは、あらかじめ用意されたコマンドを使ってみるのが良いでしょう。
+groonga-query-log-analyze
+groonga-query-log-detect-memory-leak
+groonga-query-log-extract
+groonga-query-log-replay
+次はそれぞれのコマンドを紹介します。
+groonga-query-log-analyze
+groonga-query-log-analyzeはクエリログを解析するためのコマンドです。
+与えられたクエリログからどんなクエリがn回実行されているのか、遅いクエリは何かというのをサマリとして知ることができます。
+全体に占める割合から重点的に改善すべきクエリを抽出することができるようになります。
+どれだけかかっているクエリを遅いクエリとみなすかはデータ量にもよるので、その点はthresholdとして調整できるようになっています。
+実行サンプルを次に示します。
+% groonga-query-log-analyze (ログファイルのパスをここに指定)
+Summary:
+Threshold:
+slow response     : 0.2
+slow operation    : 0.1
+# of responses      : 2
+# of slow responses : 0
+responses/sec       : 20.595248188135617
+start time          : 2012-12-17 15:00:10.1
+last time           : 2012-12-17 15:00:10.1
+period(sec)         : 0.097109779
+slow response ratio : 0.000%
+total response time : 0.096952599
+Slow Operations:
+Slow Queries:
+1) [2012-12-17 15:00:10.1-2012-12-17 15:00:10.1 (0.05231682)](0): table_create --name Comments --flags TABLE_HASH_KEY --key_type UInt32
+...
+全文検索エンジンgroongaで遅いクエリをログからすばやく特定するには - Qiita

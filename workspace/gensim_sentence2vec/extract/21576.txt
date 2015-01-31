@@ -1,0 +1,306 @@
+テキストマイニング手法のひとつであるトピック分析をR言語を使ってやってみる。
+トピック分析とは、簡単に言うと、単語の出現確率の組み合わせで表現されたトピックにより与えられた文書のテーマを推定する手法である。(と思っています)
+これをLDA:Latent Dirichlet Allocationというトピックモデルを用いて行う。CRANにRのLDAパッケージが存在する。
+Mac Book Air
+Mac OS 10.8.2
+R 2.15.1
+インストール
+Rはインストールされているものとする。
+> install.packages("lda")
+--- このセッションで使うために、CRANのミラーサイトを選んでください --- 
+Tcl/Tkインターフェースのロード中   終了済 
+CRAN mirror 
+1: 0-Cloud                       2: Argentina (La Plata)       
+3: Argentina (Mendoza)           4: Australia (Canberra)       
+5: Australia (Melbourne)         6: Austria                    
+7: Belgium                       8: Brazil (PR)                
+9: Brazil (RJ)                  10: Brazil (SP 1)              
+11: Brazil (SP 2)                12: Canada (BC)                
+13: Canada (NS)                  14: Canada (ON)                
+15: Canada (QC 1)                16: Canada (QC 2)              
+17: Chile                        18: China (Beijing 1)          
+19: China (Beijing 2)            20: China (Guangzhou)          
+21: China (Hefei)                22: China (Xiamen)             
+23: Colombia (Bogota)            24: Colombia (Cali)            
+25: Denmark                      26: Ecuador                    
+27: France (Lyon 1)              28: France (Lyon 2)            
+29: France (Montpellier)         30: France (Paris 1)           
+31: France (Paris 2)             32: Germany (Berlin)           
+33: Germany (Bonn)               34: Germany (Falkenstein)      
+35: Germany (Goettingen)         36: Greece                     
+37: Hungary                      38: India                      
+39: Indonesia                    40: Iran                       
+41: Ireland                      42: Italy (Milano)             
+43: Italy (Padua)                44: Italy (Palermo)            
+45: Japan (Hyogo)                46: Japan (Tsukuba)            
+47: Japan (Tokyo)                48: Korea (Seoul 1)            
+49: Korea (Seoul 2)              50: Latvia                     
+51: Mexico (Mexico City)         52: Mexico (Texcoco)           
+53: Netherlands (Amsterdam)      54: Netherlands (Utrecht)      
+55: New Zealand                  56: Norway                     
+57: Philippines                  58: Poland                     
+59: Russia                       60: Singapore                  
+61: Slovakia                     62: South Africa (Cape Town)   
+63: South Africa (Johannesburg)  64: Spain (Madrid)             
+65: Sweden                       66: Switzerland                
+67: Taiwan (Taichung)            68: Taiwan (Taipei)            
+69: Thailand                     70: Turkey                     
+71: UK (Bristol)                 72: UK (London)                
+73: UK (St Andrews)              74: USA (CA 1)                 
+75: USA (CA 2)                   76: USA (IA)                   
+77: USA (IN)                     78: USA (KS)                   
+79: USA (MD)                     80: USA (MI)                   
+81: USA (MO)                     82: USA (OH)                   
+83: USA (OR)                     84: USA (PA 1)                 
+85: USA (PA 2)                   86: USA (TN)                   
+87: USA (TX 1)                   88: USA (WA 1)                 
+89: USA (WA 2)                   90: Venezuela                  
+91: Vietnam                      
+選択： 
+メニューから項目を入力するか、0 を入力して終了して下さい 
+選択： 46
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/lda_1.3.2.tgz' を試しています 
+Content type 'application/x-gzip' length 460292 bytes (449 Kb)
+開かれた URL 
+==================================================
+downloaded 449 Kb
+ダウンロードされたパッケージは、以下にあります 
+/var/folders/1c/8xf1yn7x5zl37mfvqjrl31ph0000gp/T//RtmpIxno8E/downloaded_packages 
+さらに関連パッケージをインストールしておきます。
+> install.packages("reshape2")
+also installing the dependencies ‘plyr’, ‘stringr’
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/plyr_1.8.tgz' を試しています 
+Content type 'application/x-gzip' length 726655 bytes (709 Kb)
+開かれた URL 
+==================================================
+downloaded 709 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/stringr_0.6.2.tgz' を試しています 
+Content type 'application/x-gzip' length 70411 bytes (68 Kb)
+開かれた URL 
+==================================================
+downloaded 68 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/reshape2_1.2.2.tgz' を試しています 
+Content type 'application/x-gzip' length 56717 bytes (55 Kb)
+開かれた URL 
+==================================================
+downloaded 55 Kb
+ダウンロードされたパッケージは、以下にあります 
+/var/folders/1c/8xf1yn7x5zl37mfvqjrl31ph0000gp/T//RtmpIxno8E/downloaded_packages 
+> install.packages("Matrix")
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/Matrix_1.0-11.tgz' を試しています 
+Content type 'application/x-gzip' length 4066929 bytes (3.9 Mb)
+開かれた URL 
+==================================================
+downloaded 3.9 Mb
+ダウンロードされたパッケージは、以下にあります 
+/var/folders/1c/8xf1yn7x5zl37mfvqjrl31ph0000gp/T//RtmpIxno8E/downloaded_packages 
+> install.packages("ggplot2")
+also installing the dependencies ‘colorspace’, ‘RColorBrewer’, ‘dichromat’, ‘munsell’, ‘labeling’, ‘digest’, ‘gtable’, ‘scales’, ‘proto’
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/colorspace_1.2-1.tgz' を試しています 
+Content type 'application/x-gzip' length 404391 bytes (394 Kb)
+開かれた URL 
+==================================================
+downloaded 394 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/RColorBrewer_1.0-5.tgz' を試しています 
+Content type 'application/x-gzip' length 22390 bytes (21 Kb)
+開かれた URL 
+==================================================
+downloaded 21 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/dichromat_2.0-0.tgz' を試しています 
+Content type 'application/x-gzip' length 144378 bytes (140 Kb)
+開かれた URL 
+==================================================
+downloaded 140 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/munsell_0.4.tgz' を試しています 
+Content type 'application/x-gzip' length 125546 bytes (122 Kb)
+開かれた URL 
+==================================================
+downloaded 122 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/labeling_0.1.tgz' を試しています 
+Content type 'application/x-gzip' length 35236 bytes (34 Kb)
+開かれた URL 
+==================================================
+downloaded 34 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/digest_0.6.3.tgz' を試しています 
+Content type 'application/x-gzip' length 161113 bytes (157 Kb)
+開かれた URL 
+==================================================
+downloaded 157 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/gtable_0.1.2.tgz' を試しています 
+Content type 'application/x-gzip' length 60865 bytes (59 Kb)
+開かれた URL 
+==================================================
+downloaded 59 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/scales_0.2.3.tgz' を試しています 
+Content type 'application/x-gzip' length 169299 bytes (165 Kb)
+開かれた URL 
+==================================================
+downloaded 165 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/proto_0.3-10.tgz' を試しています 
+Content type 'application/x-gzip' length 454829 bytes (444 Kb)
+開かれた URL 
+==================================================
+downloaded 444 Kb
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/ggplot2_0.9.3.1.tgz' を試しています 
+Content type 'application/x-gzip' length 2659920 bytes (2.5 Mb)
+開かれた URL 
+==================================================
+downloaded 2.5 Mb
+ダウンロードされたパッケージは、以下にあります 
+/var/folders/1c/8xf1yn7x5zl37mfvqjrl31ph0000gp/T//RtmpIxno8E/downloaded_packages 
+> install.packages("penalized")
+URL 'http://cran.md.tsukuba.ac.jp/bin/macosx/leopard/contrib/2.15/penalized_0.9-42.tgz' を試しています 
+Content type 'application/x-gzip' length 522276 bytes (510 Kb)
+開かれた URL 
+==================================================
+downloaded 510 Kb
+ダウンロードされたパッケージは、以下にあります 
+/var/folders/1c/8xf1yn7x5zl37mfvqjrl31ph0000gp/T//RtmpIxno8E/downloaded_packages 
+デモ実行
+> library("lda")
+> demo(lda)
+demo(lda)
+---- ~~~
+Type    to start : 
+> require("ggplot2")
+Loading required package: ggplot2
+> require("reshape2")
+Loading required package: reshape2
+> data(cora.documents)
+> data(cora.vocab)
+> theme_set(theme_bw())  
+> set.seed(8675309)
+> K <- data-blogger-escaped-10="" data-blogger-escaped-clusters="" data-blogger-escaped-num=""> result <- data-blogger-escaped-0.1="" data-blogger-escaped-25="" data-blogger-escaped-clusters="" data-blogger-escaped-compute.log.likelihood="TRUE)" data-blogger-escaped-cora.documents="" data-blogger-escaped-cora.vocab="" data-blogger-escaped-iterations="" data-blogger-escaped-k="" data-blogger-escaped-lda.collapsed.gibbs.sampler="" data-blogger-escaped-num=""> ## Get the top words in the cluster
+> top.words <- data-blogger-escaped-5="" data-blogger-escaped-by.score="TRUE)" data-blogger-escaped-result="" data-blogger-escaped-top.topic.words="" data-blogger-escaped-topics=""> ## Number of documents to display
+> N <- data-blogger-escaped-10=""> topic.proportions <- data-blogger-escaped-colsums="" data-blogger-escaped-document_sums="" data-blogger-escaped-result="" data-blogger-escaped-t=""> topic.proportions <- data-blogger-escaped-dim="" data-blogger-escaped-n="" data-blogger-escaped-sample="" data-blogger-escaped-topic.proportions=""> topic.proportions[is.na(topic.proportions)] <- data-blogger-escaped-1="" data-blogger-escaped-k=""> colnames(topic.proportions) <- data-blogger-escaped-2="" data-blogger-escaped-apply="" data-blogger-escaped-collapse=" " data-blogger-escaped-paste="" data-blogger-escaped-top.words=""> topic.proportions.df <- data-blogger-escaped-cbind="" data-blogger-escaped-data.frame="" data-blogger-escaped-document="factor(1:N))," data-blogger-escaped-id.vars="document" data-blogger-escaped-melt="" data-blogger-escaped-topic.proportions="" data-blogger-escaped-variable.name="topic"> qplot(topic, value, fill=document, ylab="proportion",
++       data=topic.proportions.df, geom="bar") +
++   opts(axis.text.x = theme_text(angle=90, hjust=1)) +  
++   coord_flip() +
++   facet_wrap(~ document, ncol=5)
+'opts' is deprecated. Use 'theme' instead. (Deprecated; last used in version 0.9.1)
+theme_text is deprecated. Use 'element_text' instead. (Deprecated; last used in version 0.9.1)
+次の図を見るためにはキーを押して下さい:  
+でキーを叩くと、下のような画面が出現する。
+四角の枠は、10個のドキュメントの分析結果それぞれを表している。
+縦軸の各項目がトピックでその内の単語はそのトピックで使われる代表的な単語である。この単語群からトピックの内容を把握する。
+横軸は、各トピックの各ドキュメントにおけるトピックの割合(最大1)である。LDAでは、ドキュメントのテーマは複数のトピックの混合で表現される。
+外部データ読み込み
+外部データを取り込んでこのLDAに食わせてみる。
+利用するコーパスは、NLTKのデータセット「nltk.corpus.webtext」とする。
+このファイル一つを1ドキュメントとする。各ドキュメントに対して前処理として以下を実施した。
+小文字に変換
+ASCII文字コードの「SP(¥x20)」から「~(¥x7e)」以外を除去
+文末のコンマを除去
+-ing, -s, -edなどを除去（nltkのLancasterStemmer()を利用）
+意味のないトークンを除去（アルファベット以外のみで構成された単語）
+ストップワードを除去（and, a, the, など）
+下記のソースコード参照
+ドキュメント毎の文字列のリストと語彙のリストからLDAが食える形に変換することが可能である。
+> doclines <- data-blogger-escaped-6="" data-blogger-escaped-docr.txt="" data-blogger-escaped-earn_r="" data-blogger-escaped-items="" data-blogger-escaped-lda="" data-blogger-escaped-read="" data-blogger-escaped-scan="" data-blogger-escaped-sep="\n" data-blogger-escaped-sers="" data-blogger-escaped-shu222="" data-blogger-escaped-what="character"> vocablist <- data-blogger-escaped-11826="" data-blogger-escaped-earn_r="" data-blogger-escaped-items="" data-blogger-escaped-lda="" data-blogger-escaped-read="" data-blogger-escaped-scan="" data-blogger-escaped-sep="\n" data-blogger-escaped-sers="" data-blogger-escaped-shu222="" data-blogger-escaped-vocab.txt="" data-blogger-escaped-what="character"> library(lda)
+>  corpus <- data-blogger-escaped-doclines="" data-blogger-escaped-lexicalize="" data-blogger-escaped-lower="TRUE," data-blogger-escaped-pre="" data-blogger-escaped-sep=" " data-blogger-escaped-vocab="vocablist)">
+崩壊型ギブスサンプリングのLDAを実行する。
+トピック数：10
+サンプリング回数：25
+ハイパーパラメータα：0.1
+ハイパーパラメータβ：0.1
+> result <- data-blogger-escaped-0.1="" data-blogger-escaped-10="" data-blogger-escaped-25="" data-blogger-escaped-compute.log.likelihood="TRUE)" data-blogger-escaped-corpus="" data-blogger-escaped-lda.collapsed.gibbs.sampler="" data-blogger-escaped-pre="" data-blogger-escaped-vocablist="">
+可視化。
+> require("ggplot2")
+要求されたパッケージ ggplot2 をロード中です 
+警告メッセージ： 
+パッケージ '‘ggplot2’' はバージョン 2.15.2 の R の下で造られました  
+> require("reshape2")
+要求されたパッケージ reshape2 をロード中です 
+> theme_set(theme_bw())
+> top.words <- data-blogger-escaped-5="" data-blogger-escaped-by.score="TRUE)" data-blogger-escaped-result="" data-blogger-escaped-top.topic.words="" data-blogger-escaped-topics=""> N <- data-blogger-escaped-6=""> topic.proportions <- data-blogger-escaped-colsums="" data-blogger-escaped-document_sums="" data-blogger-escaped-result="" data-blogger-escaped-t=""> topic.proportions <- data-blogger-escaped-dim="" data-blogger-escaped-n="" data-blogger-escaped-sample="" data-blogger-escaped-topic.proportions=""> topic.proportions[is.na(topic.proportions)] <- data-blogger-escaped-10="" data-blogger-escaped-1=""> colnames(topic.proportions) <- data-blogger-escaped-2="" data-blogger-escaped-apply="" data-blogger-escaped-collapse=" " data-blogger-escaped-paste="" data-blogger-escaped-top.words=""> topic.proportions.df <- data-blogger-escaped-cbind="" data-blogger-escaped-data.frame="" data-blogger-escaped-document="factor(1:N))," data-blogger-escaped-id.vars="document" data-blogger-escaped-melt="" data-blogger-escaped-topic.proportions="" data-blogger-escaped-variable.name="topic"> qplot(topic, value, fill=document, ylab="proportion", data=topic.proportions.df, geom="bar") +
++ opts(axis.text.x = theme_text(angle=90, hjust=1)) +
++ coord_flip() + facet_wrap(~ document, ncol=3)
+するとこんなグラフが。
+ちなみに、イテレーションを500した場合のグラフ。
+ドキュメント3ドキュメント1は、「パイレーツ・オブ・カリビアン」について書かれていそうだ。
+データファイル作成プログラム
+参考として、今回使用したPythonコード。コメント皆無で恐縮です。
+#!/usr/bin/env python
+# -*- encoding: utf_8 -*-
+import re, random
+import nltk
+class MyDocs:
+def __init__(self, rawDocs, stopwordFilePath, stemmer):
+self.docs = []
+for rawDoc in rawDocs:
+tokens = nltk.word_tokenize(rawDoc)
+tokens = self.tolowerTokens(tokens)
+tokens = self.removeNotASCII(tokens)
+tokens = self.removeEndComma(tokens)
+tokens = self.stemmingTokens(tokens, stemmer)
+tokens = self.removeMeaninglessTokens(tokens)
+tokens = self.removeStopword(tokens, stopwordFilePath)
+self.docs.append(tokens)
+def tolowerTokens(self, tokens):
+newTokens = [token.lower() for token in tokens]
+return newTokens
+def removeNotASCII(self, tokens):
+newTokens = []
+for token in tokens:
+rep = re.sub(r'[^\x20-\x7e]', '', token)
+newTokens.append(rep)
+return newTokens
+def stemmingTokens(self, tokens, stemmer):
+if stemmer is None:
+stemmer = nltk.LancasterStemmer()
+newTokens = [stemmer.stem(token) for token in tokens]
+return newTokens
+def removeMeaninglessTokens(self, tokens):
+newTokens = []
+for token in tokens:
+if not re.match(r'^[^a-z]+.*$', token):
+newTokens.append(token)
+return newTokens
+def removeEndComma(self, tokens):
+newTokens = []
+for token in tokens:
+rep = re.sub(r'\.$', '', token)
+newTokens.append(rep)
+return newTokens
+def removeStopword(self, tokens, stopwordFilePath):
+f = open(stopwordFilePath)
+stopwords = f.read().split()
+f.close()
+newTokens = []
+for token in tokens:
+if not token in stopwords:
+newTokens.append(token)
+return newTokens
+def getVocablary(self):
+allTokens = []
+for doc in self.docs:
+allTokens += doc
+return sorted(set(allTokens))
+def getDocForRLDA(self):
+docForR = []
+for doc in self.docs:
+docStr = ' '.join(doc)
+docStr += '\n'
+docForR.append(docStr)
+return docForR
+def main():
+docs = []
+for fileid in nltk.corpus.webtext.fileids():
+docs.append(nltk.corpus.webtext.raw(fileid))
+stopwordFilePath = './stopword.list'
+stemmer = nltk.LancasterStemmer()
+mydocs = MyDocs(docs, stopwordFilePath, stemmer)
+vocabs = mydocs.getVocablary()
+f = open('./vocab.txt', 'w')
+for vocab in vocabs:
+f.write(vocab + '\n')
+f.close()
+docForR = mydocs.getDocForRLDA()
+f = open('./docR.txt', 'w')
+for doc in docForR:
+f.write(doc)
+f.close()
+if __name__ == '__main__':
+main()
+おわり
+時の最果て: Rでトピック分析（LDA:Latent Dirichlet Allocatoion）

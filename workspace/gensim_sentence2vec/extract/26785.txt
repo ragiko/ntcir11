@@ -1,0 +1,785 @@
+この節では、Oracle VM Server for SPARC 2.1 ソフトウェアに関する一般的な問題と固有のバグについて説明します。
+一般的な問題
+この節では、Oracle VM Server for SPARC ソフトウェアの今回のリリースに関する一般的な既知の問題のうち、特定のバグ番号でカバーされないものについて説明します。回避方法がある場合は、一緒に記載しています。
+I/O MMU バイパスモードが不要になった
+Oracle VM Server for SPARC 2.0 リリースから、I/O メモリー管理ユニット (Memory Management Unit、MMU) バイパスモードは不要になりました。その結果、ldm add-io
+コマンドの bypass=on プロパティーは使用できなくなりました。
+サービスプロセッサとシステムコントローラは読み替え可能な用語
+Oracle VM Server for SPARC のドキュメントでは、サービスプロセッサ (Service Processor、SP) とシステムコントローラ (System Controller、SC) という用語は同じ意味で使用されます。
+特定の状況で、ゲストドメインの Solaris Volume Manager 構成またはメタデバイスが失われることがある
+サービスドメインが Oracle Solaris 10 9/10 より前のバージョンの Oracle Solaris 10 OS で動作しており、ゲストドメインに仮想ディスクとして物理ディスクスライスをエクスポートしている場合、このゲストドメインではその仮想ディスクが不適切なデバイス ID
+で表示されます。その後、このサービスドメインを Oracle Solaris 10 9/10 にアップグレードすると、このゲストドメインでは、仮想ディスクとしてエクスポートされた物理ディスクスライスはデバイス ID がない状態で表示されます。
+仮想ディスクのデバイス ID を削除すると、仮想ディスクのデバイス ID を参照しようとするアプリケーションで問題が発生する可能性があります。特に、これが原因で Solaris Volume Manager がその構成を確認できなくなったり、メタデバイスにアクセスできなくなったりする可能性があります。
+回避方法: サービスドメインを Oracle Solaris 10 9/10 にアップグレードしたあとで、ゲストドメインでその Solaris Volume Manager 構成またはメタデバイスを確認できない場合は、次の手順を実行してください。
+ゲストドメインの Solaris Volume Manager 構成またはメタデバイスの検索
+ゲストドメインを起動します。
+Solaris Volume Manager の devid 機能を無効にするために、次の行を /kernel/dr/md.conf ファイルに追加します。md_devid_destroy=1;
+md_keep_repl_state=1;
+ゲストドメインを再起動します。ドメインが起動したあとは、Solaris Volume Manager 構成とメタデバイスが認識されるようになるはずです。
+Solaris Volume Manager 構成が正しいことを確認します。
+Solaris Volume Manager の devid 機能を再度有効にするために、手順 2 で追加した 2 行を /kernel/drv/md.conf ファイルから削除します。
+ゲストドメインを再起動します。再起動時に次のようなメッセージが表示されます。NOTICE: mddb: unable to get devid for 'vdc', 0x10これらのメッセージは正常で、問題を報告するものではありません。
+論理ドメインチャネルと Logical Domains
+論理ドメインで使用できる論理ドメインチャネル (LDC) の数には制限があります。UltraSPARC T2 サーバー、SPARC T3-1 サーバー、SPARC T3-1B サーバー、SPARC T4-1 サーバー、SPARC T4-1B
+サーバーの場合、制限は 512 です。UltraSPARC T2 Plus サーバー、ほかの SPARC T3 サーバー、ほかの SPARC T4 サーバーの場合、制限は
+768 です。実際には、この制限が問題になるのは制御ドメインのみです。これは、制御ドメインには I/O サブシステムの少なくとも一部が割り当てられているためです。また、仮想 I/O データ通信と Logical Domains Manager によるほかの論理ドメインの制御の両方の目的で多数の LDC が作成される可能性がある場合も、この制限が問題になることがあります。
+サービスの追加やドメインのバインドを実行しようとすると LDC チャネルの数が制御ドメインで制限を超えるため、処理は失敗し、次のようなエラーメッセージが表示されます。13 additional LDCs are required on guest primary to meet this request,
+but only 9 LDCs are available
+同じ仮想スイッチに接続している仮想ネットワークデバイスが多数存在する場合は、ldm add-vsw コマンドまたは ldm set-vsw コマンドを使用して inter-vnet-link=off を設定し、割り当てられている LDC チャネルの数を減らすことができます。このプロパティーが off に設定されると、LDC チャネルは inter-vnet
+通信に使用されません。代わりに、LDC チャネルは仮想ネットワークデバイスと仮想スイッチデバイス間の通信のみに割り当てられます。ldm(1M) マニュアルページを参照してください。
+次のガイドラインによって、制御ドメインで LDC 機能がオーバーフローする可能性のある構成を作成することを防止できます。
+制御ドメインは、ハイパーバイザ、障害管理アーキテクチャー (Fault Management Architecture、FMA)、およびシステムコントローラ (System Controller、SC) とのさまざまな通信用に、約 15 個の LDC を割り当てます。これは、構成済みのほかの論理ドメインの数には依存しません。制御ドメインによって割り当てられる正確な LDC チャネルの数は、プラットフォーム、および使用されているソフトウェアのバージョンによって異なります。
+制御ドメインは、制御ドメイン自身を含む各論理ドメインに対して、制御トラフィック用に LDC を 1 つ割り当てます。
+制御ドメインの各仮想 I/O サービスは、そのサービスに接続されているクライアントごとに LDC を 1 つ使用します。
+たとえば、制御ドメインが 1 つとそれ以外の論理ドメインが 8 つある場合について考えます。各論理ドメインには少なくとも次のものが必要です。
+仮想ネットワーク
+仮想ディスク
+仮想コンソール
+前述のガイドラインに従うと、次のような結果になります。丸括弧内の数字は、値の算出に用いた前述のガイドラインの番号に対応しています。
+15 (1) + 9 (2) + 8 × 3 (3) = LDC
+の合計数 48
+次に、ドメインの数が 8 ではなく 45 で、各ドメインに 5 つの仮想ディスク、5 つの仮想ネットワーク、および 1 つの仮想コンソールがある場合について考えます。この場合、数式は次のようになります。
+15 + 46 + 45 × 11 = LDC の合計数 556
+使用するプラットフォームでサポートされる LDC の数に応じて、Logical Domains Manager が構成を受け入れるか拒否するかが決まります。
+メモリーサイズの要件
+Oracle VM Server for SPARC ソフトウェアでは、ドメインを作成するときのメモリーサイズの制限はありません。メモリーサイズの要件は、ゲストオペレーティングシステム特有のものです。Oracle VM Server for SPARC の機能によっては、現在のメモリー容量が推奨サイズより少ないと動作しない場合があります。Oracle Solaris
+10 OS に推奨される最小サイズのメモリー要件については、『Oracle Solaris 10 9/10 インストールガイド (インストールとアップグレードの計画)』の「システム要件と推奨事項」を参照してください。
+OpenBoot PROM では、ドメインの最小サイズに関する制限があります。現在、制限値は 12M バイトです。このサイズより小さいドメインが存在すると、Logical Domains Manager はそのドメインのサイズを自動的に 12M バイトに引き上げます。メモリーサイズの要件については、使用しているシステムファームウェアのリリースノートを参照してください。
+メモリー動的再構成 (Dynamic Reconfiguration、DR) 機能では、操作に関与するメモリーのアドレスとサイズが 256M バイト単位であることが要求されます。『Oracle VM Server for SPARC 2.1 管理ガイド』の「メモリー配置」を参照してください。
+多数のドメインの起動
+起動できるドメインの数は、プラットフォームに応じて次のように異なります。
+SPARC T4 サーバーでは最大 128
+SPARC T3 サーバーでは最大 128
+UltraSPARC T2 Plus サーバーでは最大 128
+UltraSPARC T2 Plus サーバーでは最大 64
+未割り当ての仮想 CPU を使用できる場合は、それらをサービスドメインに割り当てて、仮想 I/O 要求の処理に役立てます。32 を超えるドメインを作成する場合は、サービスドメインに 4 ～ 8 個の仮想 CPU を割り当ててください。ドメインの最大構成ではサービスドメインに
+CPU が 1 つしか含まれない場合、ドメインを構成して使用する際は、この単一の CPU に余分な負荷を与えないようにします。仮想スイッチ (vsw) サービスは、マシンで使用できるネットワークアダプタ全体に接続する必要があります。たとえば、Sun SPARC Enterprise T5240 サーバーで
+128 のドメインを起動する場合、4 つの vsw サービスを作成し、各サービスで 32 の仮想ネット (vnet) インスタンスを処理します。1 つの vsw サービスで
+32 を超える vnet インスタンスを処理しないでください。1 つの vsw に 32 を超えるインスタンスを関連付けると、サービスドメインでハードハングが発生する可能性があるためです。
+最大構成を実行するには、ゲストドメインをサポートするために適切な量のメモリーがマシンに必要です。このメモリー量は、使用しているプラットフォームと OS によって異なります。使用しているプラットフォームのドキュメント、『Oracle Solaris 10 8/11 Installation Guide: Planning for Installation and Upgrade 』、おおよび『Installing Oracle Solaris 11 Systems 』を参照してください。
+ゲストドメインのメモリーおよびスワップ空間の使用率は、そのドメインで使用する vsw サービスが、複数のドメインで多数の仮想ネットワークにサービスを提供する場合に増加します。これは、vsw に接続するすべての vnet の間のピア・ツー・ピア接続によるものです。サービスドメインでは、追加のメモリーを設定すると役立ちます。64 を超えるドメインが動作する場合は、4G バイト以上にすることをお勧めします。10 以下のドメインをグループにまとめて起動し、起動が完了するまで待機してから次のグループを起動します。この方法は、ドメインにオペレーティングシステムをインストールする際にも適用されます。リンクの数は、inter-vnet チャネルを無効にすることで減らすことができます。『Oracle VM Server for SPARC 2.1 管理ガイド』の「Inter-Vnet LDC チャネル」を参照してください。
+Logical Domains システムの正常な停止と電源の再投入
+構成を SC に保存したあとで構成に変更を加えた場合は、Logical Domains システムの電源を切って再投入する前に、保持する必要のある最新の構成を必ず保存してください。 
+アクティブなドメインが複数存在するシステムの電源を切る
+I/O ドメイン以外のすべてのドメインをシャットダウンし、停止して、バインドを解除します。
+アクティブな I/O ドメインをすべてシャットダウンし、停止して、バインドを解除します。
+primary ドメインを停止します。ほかにバインドされているドメインは存在しないため、ファームウェアは自動的にシステムの電源を切ります。
+システムの電源を再投入する
+I/O ドメイン以外のすべてのドメインをシャットダウンし、停止して、バインドを解除します。
+アクティブな I/O ドメインをすべてシャットダウンし、停止して、バインドを解除します。
+primary ドメインを再起動します。ほかにバインドされているドメインは存在しないため、システムを再起動する前に、ファームウェアは自動的にシステムの電源を再投入します。システムの再起動時には、最後に保存された、または明示的に設定された Logical Domains 構成で起動します。
+要求されたメモリーサイズが割り当てられたメモリーサイズと異なる場合がある
+特定の状況では、Logical Domains Manager は、要求されたメモリー割り当てを 8K バイトまたは 4M バイトの倍数のいずれかに切り上げます。次の ldm list-domain l コマンドの出力例では、制約値が実際に割り当てられるサイズより小さくなっていることがわかります。Memory:
+          Constraints: 1965 M
+          raddr          paddr5          size
+          0x1000000      0x291000000     1968M
+Logical Domains 変数の持続性
+変数の更新は再起動の場合には保持されますが、電源を再投入した場合には、制御ドメインの OpenBoot ファームウェアから開始されるか、変数の更新後に SC に構成が保存されていないかぎり保持されません。
+ここでは、次のような制御ドメインの再起動によって、システムの電源の再投入が開始される可能性があることに注意することが重要です。
+バインドされているゲストドメインが存在せず、遅延再構成が進行中でない場合に制御ドメインが再起動すると、SC はシステムの電源を再投入します。
+バインドされているゲストドメインまたはアクティブなゲストドメインが存在する場合 (または制御ドメインで遅延再構成が進行中の場合) に制御ドメインが再起動すると、SC はシステムの電源を再投入しません。
+ドメインの Logical Domains 変数は、次のいずれかの方法で指定できます。
+OpenBoot プロンプトを使用する
+Oracle Solaris OS の eeprom(1M) コマンドを使用する
+Logical Domains Manager CLI (ldm) を使用する
+システムコントローラ (System Controller、SC) から bootmode コマンドを使用して変更する。これは、限定的な方法で、factory-default 構成の場合のみで、かつ特定の変数しか変更できません。
+これらいずれかの方法で更新された変数がドメインを再起動しても必ず保持されるようにすることが目標です。また、更新された変数がこのあと SC に保存されたすべての論理ドメイン構成に必ず反映されるようにします。
+Oracle VM Server for SPARC 2.1 ソフトウェアでは、更新された変数が期待どおりに保持されない場合がいくつかあります。
+どの方法で変数を更新した場合でも、変数はそのドメインを再起動しても保持されます。ただし、システムの電源を再投入すると、新しい論理ドメイン構成が SC に保存されていないかぎり、更新された変数は保持されません。変数を更新する方法としては、OpenBoot ファームウェア、eeprom コマンド、および ldm コマンドを使用できます。また、制御ドメインでは、OpenBoot ファームウェアを使用した変数の更新は、システムの電源を再投入しても、つまり、あとで新しい論理ドメイン構成を SC に保存しなくても保持されます。
+あらゆる場合において、Logical Domains Manager で生成された構成から factory-default 構成に戻すと、すべての Logical Domains 変数はデフォルト値に戻ります。
+Logical Domains 変数の変更について懸念がある場合は、次のいずれかの手順を実行します。
+システムで ok プロンプトを表示し、変数を更新します。
+Logical Domains Manager を無効にして変数を更新します。# svcadm disable ldmd
+update variables
+# svcadm enable ldmd
+Live Upgrade を実行し、次のコマンドを実行します。# svcadm disable -t ldmd
+# luactivate be3
+# init 6
+ntpdate コマンドなどを使用して、論理ドメインの時刻または日付を変更すると、この変更はドメインを再起動しても保持されますが、ホストの電源を再投入した場合は保持されません。時刻の変更を保持するには、時刻が変更された構成を SP に保存して、この構成から起動します。
+これらの問題を解決するために、バグ ID 6520041、6540368、6540937、および 6590259 が報告されています。
+Oracle Sun SNMP Management Agent は複数ドメインをサポートしない
+Sun Simple Management Network Protocol (SNMP) Management Agent は複数ドメインをサポートしません。単一のグローバルドメインのみをサポートします。
+コンテナ、プロセッサセット、およびプールは CPU Power Management と互換性がない
+CPU の動的再構成 (Dynamic Reconfiguration、DR) を使用した仮想 CPU の電源切断は、プロセッサセット、資源プール、またはゾーンの専用 CPU 機能とともに機能しません。
+CPU Power Management をエラスティックモードで使用している場合、Oracle Solaris OS のゲストは電源が入っているドメインに割り当てられた CPU のみを確認できます。つまり、現在電源が管理されている CPU の数に応じて、psrinfo(1M) コマンドの出力が動的に変わります。これが原因で、プロセッサセットとプールで問題が発生します。プロセッサセットとプールではそれらのセットへの割り当てが可能になるように実際の
+CPU ID を静的にする必要があります。また、ゾーンの専用 CPU 機能に影響を及ぼす場合もあります。
+回避方法: Power Management ポリシーをパフォーマンスモードに設定します。
+障害管理
+FMA および CPU の電源管理に関して、いくつかの問題があります。エラスティックモードで動作中の CPU に障害が発生した場合、障害が発生した CPU が回復するまでパフォーマンスモードに切り替えてください。障害が発生したすべての CPU が回復したら、エラスティックモードを再度使用できます。
+遅延再構成
+primary ドメインが遅延再構成状態にある場合、CPU の電源は、primary ドメインが再起動したあとに管理されます。つまり、primary ドメインが再起動して遅延再構成状態がクリアーされるまで、そのドメインが高負荷で使用されている間は CPU Power Management によって別の CPU が追加でオンラインになることはありません。
+暗号化装置
+Oracle Solaris 10 10/09 OS では、暗号化装置の動的再構成 (Dynamic Reconfiguration、DR) と呼ばれる、ドメインの暗号化装置を動的に追加したり削除したりする機能が導入されています。Logical Domains Manager は、ドメインで暗号化装置の
+DR が許可されているかどうかを自動的に検出し、許可されているドメインに対してのみこの機能を有効にします。また、暗号化装置がバインドされ、適切なバージョンの Oracle Solaris OS が実行されているドメインでも、CPU DR は有効になります。
+SP がエラスティックモードに設定されている場合は、暗号化装置がバインドされているドメインではコアを無効にする操作は実行されません。システムがエラスティックモードのときにコアを無効にする操作を実行できるようにするには、ドメインにバインドされている暗号化装置を削除してください。
+ldmp2v convert コマンド: 起動時の VxVM 警告メッセージ
+Veritas Volume Manager (VxVM) を Oracle Solaris 10 OS 上で実行する場合に、Oracle VM Server
+for SPARC P2V ツールでサポートされる (テスト済みである) のはバージョン 5.x のみです。これよりも古いバージョンの VxVM、たとえば 3.x や 4.x
+と Solaris 8 または Solaris 9 オペレーティングシステムとの組み合わせも、動作する可能性があります。この場合は、ldmp2v convert コマンド実行後の最初のブート時に VxVM ドライバの警告メッセージが表示されることがあります。このメッセージは無視してかまいません。ゲストドメインが起動したら、古い VRTS* パッケージを削除してもかまいません。Boot device: disk0:a File and args:
+SunOS Release 5.10 Version Generic_139555-08 64-bit
+Copyright 1983-2009 Sun Microsystems, Inc. All rights reserved.
+Use is subject to license terms.
+Hostname: normaal
+Configuring devices.
+/kernel/drv/sparcv9/vxdmp: undefined symbol ?romp?
+WARNING: mod_load: cannot load module ?vxdmp?
+WARNING: vxdmp: unable to resolve dependency, module ?misc/ted? not found
+/kernel/drv/sparcv9/vxdmp: undefined symbol ?romp?
+WARNING: mod_load: cannot load module ?vxdmp?
+WARNING: vxdmp: unable to resolve dependency, module ?misc/ted? not found
+/kernel/drv/sparcv9/vxio: undefined symbol ?romp?
+WARNING: mod_load: cannot load module ?vxio?
+WARNING: vxio: unable to resolve dependency, module ?drv/vxdmp? not found
+WARNING: vxspec : CANNOT INITIALIZE vxio DRIVER
+WARNING: VxVM vxspec V-5-0-0 vxspec: vxio not loaded. Aborting vxspec load
+WARNING: vxspec : CANNOT INITIALIZE vxio DRIVER
+WARNING: VxVM vxspec V-5-0-0 vxspec: vxio not loaded. Aborting vxspec load
+WARNING: vxspec : CANNOT INITIALIZE vxio DRIVER
+WARNING: VxVM vxspec V-5-0-0 vxspec: vxio not loaded. Aborting vxspec load
+WARNING: vxspec : CANNOT INITIALIZE vxio DRIVER
+WARNING: VxVM vxspec V-5-0-0 vxspec: vxio not loaded. Aborting vxspec load
+WARNING: vxspec : CANNOT INITIALIZE vxio DRIVER
+WARNING: VxVM vxspec V-5-0-0 vxspec: vxio not loaded. Aborting vxspec load
+WARNING: vxspec : CANNOT INITIALIZE vxio DRIVER
+WARNING: VxVM vxspec V-5-0-0 vxspec: vxio not loaded. Aborting vxspec load
+WARNING: vxspec : CANNOT INITIALIZE vxio DRIVER
+NOTICE: VxVM not started
+拡張されたマップイン領域は Oracle Solaris 10 8/11 OS と Oracle Solaris 11 OS でのみ使用できる
+拡張されたマップイン領域は Oracle Solaris 10 8/11 OS と Oracle Solaris 11 OS でのみ使用できます。デフォルトでは、この機能は無効になっています。
+ldm add-domain または ldm set-domain コマンドを使用して、Oracle Solaris 10 8/11 OS または Oracle Solaris 11
+OS を実行しているドメインに extended-mapin-space=on を設定することで、このモードを有効にできます。ldm(1M) マニュアルページを参照してください。
+グラフィカルな Configuration Assistant ツールが削除されている
+Oracle VM Server for SPARC 2.1 以降のリリースでは、端末ベースの Configuration Assistant ツールとして、ldmconfig のみを使用できます。グラフィカルユーザーインタフェースのツールは使用できなくなりました。
+ldmp2v prepare -R の使用時にアップグレードオプションが提供されない
+ルート (/) ファイルシステムを保持するスライスのパーティションタグが root に設定されていない場合、Solaris インストーラはアップグレードオプションを提供しません。この状況は、ゲストの起動ディスクにラベル付けを行う際に、タグが明示的に設定されていない場合に発生します。format コマンドを使用して、パーティションタグを次のように設定できます。AVAILABLE DISK SELECTIONS:
+0. c0d0 <SUN-DiskImage-10GB cyl 282 alt 2 hd 96 sec 768>
+/virtual-devices@100/channel-devices@200/disk@0
+1. c4t2d0 <SUN146G cyl 14087 alt 2 hd 24 sec 848>
+/pci@400/pci@0/pci@1/scsi@0/sd@2,0
+2. c4t3d0 <SUN146G cyl 14087 alt 2 hd 24 sec 848>
+/pci@400/pci@0/pci@1/scsi@0/sd@3,0
+Specify disk (enter its number)[0]: 0
+selecting c0d0
+[disk formatted, no defect list found]
+format> p
+PARTITION MENU:
+0      - change `0' partition
+1      - change `1' partition
+2      - change `2' partition
+3      - change `3' partition
+4      - change `4' partition
+5      - change `5' partition
+6      - change `6' partition
+7      - change `7' partition
+select - select a predefined table
+modify - modify a predefined partition table
+name   - name the current table
+print  - display the current table
+label  - write partition map and label to the disk
+!<cmd> - execute <cmd>, then return
+quit
+partition> 0
+Part      Tag    Flag     Cylinders       Size            Blocks
+0 unassigned    wm       0              0         (0/0/0)          0
+Enter partition id tag[unassigned]: root
+Enter partition permission flags[wm]:
+Enter new starting cyl[0]: 0
+Enter partition size[0b, 0c, 0e, 0.00mb, 0.00gb]: 8g
+partition> label
+Ready to label disk, continue? y
+partition>
+動的に追加されたメモリーのブロックはブロック全体でしか動的に削除できない
+動的に追加されたメモリーのブロックは、ブロック全体でしか動的に削除できません。つまり、そのメモリーブロックのサブセットを動的に削除することはできません。
+この問題が発生するのは、次の例に示すように、ドメインのメモリーサイズが最初は小さく、そのあとで動的に大きく拡張した場合です。# ldm list ldom1
+NAME  STATE FLAGS   CONS VCPU MEMORY UTIL UPTIME
+ldom1 active -n---- 5000 2    1G     0.4% 23h
+# ldm add-mem 16G ldom1
+# ldm rm-mem 8G ldom1
+Memory removal failed because all of the memory is in use.
+# ldm rm-mem 16G ldom1
+# ldm list ldom1
+NAME  STATE FLAGS   CONS VCPU MEMORY UTIL UPTIME
+ldom1 active -n---- 5000 2    1G     0.4% 23h
+回避方法: メモリーを動的に追加する量を小さくすると、この問題が発生する可能性が低くなります。
+回復方法: ドメインを再起動します。
+ldmp2v コマンド: ufsdump によるアーカイブは今後使用されない
+UFS ファイルシステム上のファイルでバックアップされた仮想ディスク上の ufsdump アーカイブを復元すると、システムがハングアップすることがあります。このような場合、ldmp2v prepare コマンドは終了します。また、仮想ディスクが UFS ファイルシステム上のファイルである場合に、ldmp2v prepare -R /altroot コマンドに備えて手動で ufsdump アーカイブを復元した際にも、この問題が発生する可能性があります。以前作成された ufsdump アーカイブとの互換性のために、ldmp2v prepare
+コマンドを使用して、UFS ファイルシステム上のファイルでバックアップされていない仮想ディスク上の ufsdump アーカイブを復元することはできます。ただし、ufsdump アーカイブの使用はお勧めしません。
+ドメインマイグレーションの制限
+次の節では、ドメインマイグレーションの制限について説明します。Logical Domains Manager ソフトウェアおよびシステムファームウェアのバージョンは、マイグレーションを許可するために相互に互換している必要があります。また、ドメインマイグレーションを正常に完了するためには、特定の CPU 要件を満たす必要があります。
+マイグレーションにおけるバージョン制限
+ソースとターゲットの両方のマシンで、バージョン 2.1 以降の Logical Domains Manager が実行されている必要があります。
+古いバージョンの Logical Domains Manager、システムファームウェア、または両方を実行した際に表示されるメッセージを次の例に示します。
+ターゲットマシンで古いバージョンの Logical Domains Manager が実行されています。
+たとえば、ソースマシンとターゲットマシンで次のバージョンが実行されていることを想定します。
+ソースマシン: Version 2.1 の Logical Domains Manager と Version 7.4 のシステムファームウェアを実行
+ターゲットマシン: Version 2.0 の Logical Domains Manager と Version 7.4 のシステムファームウェアを実行
+# ldm migrate ldg1 system2
+The target machine is running an older version of the domain
+manager that does not support the latest migration functionality.
+ソースマシンで古いバージョンの Logical Domains Manager が実行されています。
+たとえば、ソースマシンとターゲットマシンで次のバージョンが実行されていることを想定します。
+ソースマシン: Version 2.0 の Logical Domains Manager と Version 7.4 のシステムファームウェアを実行
+ターゲットマシン: Version 2.1 の Logical Domains Manager と Version 7.4 のシステムファームウェアを実行
+# ldm migrate ldg1 system2
+The source machine is running an older version of the domain manager
+that is not compatible with the version running on the target machine.
+ソースマシンとターゲットマシンで古いバージョンの Logical Domains Manager が実行されています。
+たとえば、ソースマシンとターゲットマシンで次のバージョンが実行されていることを想定します。
+ソースマシン: Version 2.0 の Logical Domains Manager と Version 7.3 のシステムファームウェアを実行
+ターゲットマシン: Version 2.0 の Logical Domains Manager と Version 7.4 のシステムファームウェアを実行
+# ldm migrate ldg1 system2
+Unable to migrate guest resource state
+Domain Migration of LDom ldg1 failed
+ターゲットマシンで、ソースマシンで実行されているシステムファームウェアのバージョンと互換性のない古いバージョンのシステムファームウェアが実行されています。
+たとえば、ソースマシンとターゲットマシンで次のバージョンが実行されていることを想定します。
+ソースマシン: Version 2.1 の Logical Domains Manager と Version 7.4 のシステムファームウェアを実行
+ターゲットマシン: Version 2.1 の Logical Domains Manager と Version 7.3 のシステムファームウェアを実行
+# ldm migrate ldg1 system2
+The target machine is running an older version of the System Firmware
+that is not compatible with the version running on the source machine.
+ソースマシンで、ターゲットマシンで実行されているシステムファームウェアのバージョンと互換性のない古いバージョンのシステムファームウェアが実行されています。
+たとえば、ソースマシンとターゲットマシンで次のバージョンが実行されていることを想定します。
+ソースマシン: Version 2.1 の Logical Domains Manager と Version 7.3 のシステムファームウェアを実行
+ターゲットマシン: Version 2.1 の Logical Domains Manager と Version 7.4 のシステムファームウェアを実行
+# ldm migrate ldg1 system2
+The source machine is running an older version of the System Firmware
+that does not support the latest migration functionality.
+マイグレーションにおける CPU の制限
+移行するドメインで、Oracle Solaris 10 9/10 OS よりも古いバージョンの Oracle Solaris OS が実行されている場合、マイグレーション中に次のメッセージが表示される場合があります。Domain domain-name is not running an operating system that is
+compatible with the latest migration functionality.
+次の CPU 要件と制限が適用されます。
+移行されるドメインにフルコアが割り当てられている必要があります。移行するドメインのスレッドの数がフルコアより少ない場合、移行されたドメインが再起動するまで、追加のスレッドはどのドメインでも使用できません。
+マイグレーション後、移行されたドメインが再起動するまで、移行されたドメインでの CPU の動的再構成 (Dynamic Reconfiguration、DR) は無効になります。再起動した時点で、移行されたドメインで CPU の DR を使用できるようになります。
+ターゲットマシンでは、移行されたドメインに必要なスレッドの数を提供する、完全に解放されたフルコアが十分に存在している必要があります。マイグレーション後に、移行されたドメインによってフルコアが部分的にしか使用されない場合、移行されたドメインが再起動するまで、追加のスレッドはどのドメインでも使用できません。
+これらの制限は、OpenBoot またはカーネルデバッガで実行されているドメインを移行しようとする際にも適用されます。『Oracle VM Server for SPARC 2.1 管理ガイド』の「OpenBoot またはカーネルデバッガで実行中のドメインの移行」を参照してください。
+Oracle VM Server for SPARC MIB の問題
+この節では、Oracle VM Server for SPARC 管理情報ベース (Management Information Base、MIB) ソフトウェアの使用時に発生する可能性のある問題について要約します。
+誤った ldomCryptoRpReserved プロパティー値
+バグ ID 7042966: 暗号化装置のリソースプール (ldomCryptoResourcePool) 内の ldomCryptoRpReserved プロパティーの値に、アクティブではないドメインに割り当てられた暗号化装置デバイスの数が誤って含まれます。
+snmptable コマンドをバージョン 2 またはバージョン 3 のオプションとともに使用できない
+バグ ID 6521530: snmptable コマンドを -v2c または -v3 オプションとともに使用して Oracle VM Server for SPARC
+MIB 2.1 ソフトウェアをクエリーすると、空の SNMP テーブルが返されます。snmptable コマンドを -v1 オプションとともに使用した場合は予想したとおりに動作します。
+回避方法: -CB オプションを使用し、GETBULK 要求ではなく、GETNEXT 要求のみを使用してデータを取得します。『Oracle VM Server for SPARC 2.1 管理ガイド』の「Oracle VM Server for SPARC MIB オブジェクトの取得」を参照してください。
+Oracle VM Server for SPARC 2.1 ソフトウェアに影響するバグ
+この節では、このバージョンのソフトウェアを使用するときに発生する可能性があるバグの概要について説明します。バグの説明は、バグ ID の番号の順に記載されています。利用できる回避方法および回復手順がある場合は、これも記載されています。
+init-system で、ゲストドメインの名前付きコアの制約が、保存された XML ファイルから復元されない
+バグ ID 7117766: ldm init-system コマンドで、ゲストドメインの名前付き CPU コアの制約を、保存された XML ファイルから復元できません。
+回避方法: 次の手順を実行します。
+primary ドメインの XML ファイルを作成します。# ldm ls-constraints -x primary > primary.xml
+ゲストドメインの XML ファイルを作成します。# ldm ls-constraints -x ldom[,ldom][,...] > guest.xml
+システムの電源を切ってすぐに入れ直し、出荷時のデフォルトの構成で起動します。
+XML の構成を primary ドメインに適用します。# ldm init-system -r -i primary.xml
+リブートします。
+XML の構成をゲストドメインに適用します。# ldm init-system -f -i guest.xml
+バインドモードのときに名前付きコアがすべての CPU の電源を切断できる
+バグ ID 7111119: ドメインでエラスティックポリシーが有効になっている場合、ldm add-core、ldm set-core、および ldm remove-core コマンドを使用できません。
+回避方法: ドメインでパフォーマンスポリシーが有効になっていることを確認します。
+Oracle Solaris 11 OS: マルチソケットの SPARC T シリーズシステムで、直接 I/O を使用して primary ドメインから複数の PCIe スロットを削除すると、ブート時にパニックが発生することがある
+バグ ID 7100859: 直接 I/O (ldm remove-io) を使用して、マルチソケットの SPARC T シリーズシステムから複数の PCIe スロットを削除すると、ブート時にシステムでパニックが発生することがあります。これは、PCIe スロットのパスが互いに似ている場合に発生します (ルートコンプレックスパスを除く)。PCIe
+スロットを削除したあとで primary ドメインを再起動すると、パニックが発生することがあります。直接 I/O (DIO) 機能の詳細については、『Oracle VM Server for SPARC 2.1 管理ガイド』の「PCIe エンドポイントデバイスの割り当て」を参照してください。
+たとえば、/SYS/MB/PCIE5 (pci@500/pci@2/pci@0/pci@0) スロットと /SYS/MB/PCIE4 (pci@400/pci@2/pci@0/pci@0) スロットを削除すると、パス名が似ているため、Oracle Solaris 11 OS の次回のブートでパニックが発生することがあります。
+次の ldm list-io コマンドは、/SYS/MB/PCIE4 および /SYS/MB/PCIE5 PCIe スロットが削除されたあとで実行されます。# ldm list-io
+IO              PSEUDONYM       DOMAIN
+--              ---------       ------
+pci@400         pci_0           primary
+niu@480         niu_0           primary
+pci@500         pci_1           primary
+niu@580         niu_1           primary
+PCIE                       PSEUDONYM       STATUS  DOMAIN
+----                       ---------       ------  ------
+pci@400/pci@2/pci@0/pci@8  /SYS/MB/PCIE0   OCC     primary
+pci@400/pci@2/pci@0/pci@4  /SYS/MB/PCIE2   OCC     primary
+pci@400/pci@2/pci@0/pci@0  /SYS/MB/PCIE4   OCC
+pci@400/pci@1/pci@0/pci@8  /SYS/MB/PCIE6   OCC     primary
+pci@400/pci@1/pci@0/pci@c  /SYS/MB/PCIE8   OCC     primary
+pci@400/pci@2/pci@0/pci@e  /SYS/MB/SASHBA  OCC     primary
+pci@400/pci@1/pci@0/pci@4  /SYS/MB/NET0    OCC     primary
+pci@500/pci@2/pci@0/pci@a  /SYS/MB/PCIE1   OCC     primary
+pci@500/pci@2/pci@0/pci@6  /SYS/MB/PCIE3   OCC     primary
+pci@500/pci@2/pci@0/pci@0  /SYS/MB/PCIE5   OCC
+pci@500/pci@1/pci@0/pci@6  /SYS/MB/PCIE7   OCC     primary
+pci@500/pci@1/pci@0/pci@0  /SYS/MB/PCIE9   OCC     primary
+pci@500/pci@1/pci@0/pci@5  /SYS/MB/NET2    OCC     primary
+#
+回避方法: パス名が似ているスロットをすべて削除することはしないでください。代わりに、そのような PCIe スロットを 1 つだけ削除してください。
+また、パスが似ていないスロットに PCIe カードを挿入し、それらを DIO 機能で使用することもできます。
+部分的なコアを持つ primary でコア全体の DR 移行を許可できない
+バグ ID 7100841: primary ドメインが最小番号の物理コア (通常は 0) を別のドメインと共有している場合、primary ドメインにコア全体の制約を設定しようとすると失敗します。
+回避方法: 次の手順を実行します。
+ドメインで共有されている、最小番号のバインドされたコアを判定します。# ldm list -o cpu
+primary ドメイン以外のすべてのドメインから、最小番号コアのすべての CPU スレッドをバインド解除します。
+結果として、最小番号コアの CPU スレッドは共有されなくなり、primary ドメインにバインドできるようになります。
+次のいずれかを実行して、コア全体の制約を設定します。
+primary ドメインに CPU スレッドをバインドし、ldm set-vcpu -c コマンドを使用してコア全体の制約を設定します。
+ldm set-core コマンドを使用して、CPU スレッドのバインドおよびコア全体の制約の設定を 1 つの手順で行います。
+ldmconfig は Oracle Solaris 10 システムでのみサポートされる
+バグ ID 7093344: ldmconfig コマンドを使用できるのは Oracle Solaris 10 システムだけです。
+Oracle VM Server for SPARC MIB は Oracle Solaris 10 システムでのみサポートされる
+バグ ID 7082776: Oracle VM Server for SPARC MIB を使用できるのは Oracle Solaris 10 システムだけです。
+SPARC T4-4s で非常に大容量のメモリーのドメインを移行すると、ターゲットシステムのドメインでパニックが発生する
+バグ ID 7071426: 移行対象のドメインに合計で 500 GB を超える複数のメモリーブロックがある場合、マイグレーションの間にパニックが発生することがあります。ドメインのメモリーの量を調べるには、ldm list -o mem コマンドを使用します。
+パニックスタックは次のようなものです。panic[cpu21]/thread=2a100a5dca0:
+BAD TRAP: type=30 rp=2a100a5c930 addr=6f696e740a232000 mmu_fsr=10009
+sched:data access exception: MMU sfsr=10009: Data or instruction address out of range context 0x1
+pid=0, pc=0x1076e2c, sp=0x2a100a5c1d1, tstate=0x4480001607, context=0x0
+g1-g7: 80000001, 0, 80a5dca0, 0, 0, 0, 2a100a5dca0
+000002a100a5c650 unix:die+9c (30, 2a100a5c930, 6f696e740a232000, 10009, 2a100a5c710, 10000)
+000002a100a5c730 unix:trap+75c (2a100a5c930, 0, 0, 10009, 30027b44000, 2a100a5dca0)
+000002a100a5c880 unix:ktl0+64 (7022d6dba40, 0, 1, 2, 2, 18a8800)
+000002a100a5c9d0 unix:page_trylock+38 (6f696e740a232020, 1, 6f69639927eda164, 7022d6dba40, 13, 1913800)
+000002a100a5ca80 unix:page_trylock_cons+c (6f696e740a232020, 1, 1, 5, 7000e697c00, 6f696e740a232020)
+000002a100a5cb30 unix:page_get_mnode_freelist+19c (701ee696d00, 12, 1, 0, 19, 3)
+000002a100a5cc80 unix:page_get_cachelist+318 (12, 1849fe0, ffffffffffffffff, 3,
+0, 1)
+000002a100a5cd70 unix:page_create_va+284 (192aec0, 300ddbc6000, 0, 0, 2a100a5cf00, 300ddbc6000)
+000002a100a5ce50 unix:segkmem_page_create+84 (18a8400, 2000, 1, 198e0d0, 1000, 11)
+000002a100a5cf60 unix:segkmem_xalloc+b0 (30000002d98, 0, 2000, 300ddbc6000, 0, 107e290)
+000002a100a5d020 unix:segkmem_alloc_vn+c0 (30000002d98, 2000, 107e000, 198e0d0,
+30000000000, 18a8800)
+000002a100a5d0e0 genunix:vmem_xalloc+5c8 (30000004000, 2000, 0, 0, 80000, 0)
+000002a100a5d260 genunix:vmem_alloc+1d4 (30000004000, 2000, 1, 2000, 30000004020, 1)
+000002a100a5d320 genunix:kmem_slab_create+44 (30000056008, 1, 300ddbc4000, 18a6840, 30000056200, 30000004000)
+000002a100a5d3f0 genunix:kmem_slab_alloc+30 (30000056008, 1, ffffffffffffffff, 0, 300000560e0, 30000056148)
+000002a100a5d4a0 genunix:kmem_cache_alloc+2dc (30000056008, 1, 0, b9, fffffffffffffffe, 2006)
+000002a100a5d550 genunix:kmem_cpucache_magazine_alloc+64 (3000245a740, 3000245a008, 7, 6028f283750, 3000245a1d8,
+193a880)
+000002a100a5d600 genunix:kmem_cache_free+180 (3000245a008, 6028f2901c0, 7, 7, 7, 3000245a740)
+000002a100a5d6b0 ldc:vio_destroy_mblks+c0 (6028efe8988, 800, 0, 200, 19de0c0, 0)
+000002a100a5d760 ldc:vio_destroy_multipools+30 (6028f1542b0, 2a100a5d8c8, 40, 0, 10, 30000282240)
+000002a100a5d810 vnet:vgen_unmap_rx_dring+18 (6028f154040, 0, 6028f1a3cc0, a00,
+200, 6028f1abc00)
+000002a100a5d8d0 vnet:vgen_process_reset+254 (1, 6028f154048, 6028f154068, 6028f154060, 6028f154050, 6028f154058)
+000002a100a5d9b0 genunix:taskq_thread+3b8 (6028ed73908, 6028ed738a0, 18a6840, 6028ed738d2, e4f746ec17d8,
+6028ed738d4)
+回避方法: メモリーが 500 GB を超えるドメインのマイグレーションは行わないようにします。
+ゲストドメインから多数の CPU を削除する
+バグ ID 7062298: ゲストドメインから多数の CPU を削除しようとすると、次のようなエラーメッセージが表示される場合があります。Request to remove cpu(s) sent, but no valid response received
+VCPU(s) will remain allocated to the domain, but might
+not be available to the guest OS
+Resource modification failed
+回避方法: 100 より多くの CPU をドメインから削除する場合は、その前にゲストドメインを停止します。
+ドメインのマイグレーションをキャンセルした後で、CPU のスレッドモードが復元されない
+バグ ID 7061265: threading プロパティが max-ipc に設定されているドメインのマイグレーションをキャンセルした場合、マイグレーション対象のドメインで threading プロパティの値が誤って max-throughput に復元されます。
+回避方法: ソースマシンからマイグレーションされるドメインで threading プロパティを max-ipc に手動でリセットします。
+エラスティックモードの大容量メモリードメインで停止するまでに長い時間がかかる場合がある
+バグ ID 7058261: システムがエラスティック Power Management モードのときに ldm stop コマンドを使用して大容量メモリードメインを停止すると、時間がかかる場合があります。ドメインがアイドル状態の場合は、ドメインに割り当てられている CPU スレッドの大半が無効になります。CPU を無効にすることにより、ドメインを停止するために必要な処理が残りのアクティブなスレッドに委ねられます。
+たとえば、252 GB のメモリーを備えるゲストドメインで、有効な CPU が 2 つしかない場合、停止するまでに約 7 分かかります。
+回避方法: ドメインを停止する前に、エラスティックモードからパフォーマンスモードに切り替えることで、Power Management (PM) を無効にします。
+Solaris ホットプラグ操作を使用して PCIe エンドポイントデバイスをホットリムーブできない
+バグ ID 7054326: ldm rm-io コマンドを使用して PCIe エンドポイントデバイスをプライマリドメインから削除した後、Solaris ホットプラグ操作を使用してそのデバイスをホットリムーブすることはできません。PCIe エンドポイントデバイスを交換または削除する方法については、『Oracle VM Server for SPARC 2.1 管理ガイド』の「PCIe ハードウェアの変更」 を参照してください。
+別のディレクトリから絶対パスを使用して実行すると install-ldm がハングする
+バグ ID 7050588: 別のディレクトリから install-ldm コマンドへの絶対パスを指定すると、コマンドがハングします。
+回避方法: install-ldm コマンドがインストールされているディレクトリに移動してから、コマンドを実行します。# cd dirname/OVM_Server_SPARC-2_1/Install
+# ./install-ldm
+ldm add-dev が、OpenBoot でサポートされているものよりも長いデバイスの別名を作成できる
+バグ ID 7044329: ゲストドメインに 31 文字を超える名前の仮想デバイスがある場合、OpenBoot はドメインの起動時にエラーメッセージを発行します。仮想デバイスの名前に一致するデバイスの別名は作成されません。
+次のようなエラーメッセージが表示されます。Error: device alias name 'mynet1234567890123456789012345678901234567890'
+length is greater than 31 chars, device alias not created
+スライス 2 がない物理ディスクの仮想ディスク検証に失敗する
+バグ ID 7042353: 物理ディスクが 0 サイズのスライス 2 で構成されている場合、次の問題が発生する可能性があります。
+ldm add-vdsdev コマンドを使用して、このようなディスクを仮想ディスクのバックエンドとして追加すると、コマンドの実行に失敗します。# ldm add-vdsdev /dev/dsk/c3t1d0s2 vol@primary-vds0
+Path /dev/dsk/c3t1d0s2 is not valid on service domain primary
+この問題は、ldm add-vdsdev コマンドの -q オプションを使用することで回避できます。# ldm add-vdsdev -q /dev/dsk/c3t1d0s2 vol@primary-vds0
+ldm bind コマンドを使用して、このようなディスクがあるドメインを仮想ディスクのバックエンドとしてバインドすると、コマンドの実行に失敗します。# ldm bind ldg3
+Path /dev/dsk/c3t1d0s2 is not valid on service domain primary
+この問題は、ldm bind コマンドの -q オプションを使用することで回避できます。# ldm bind -q ldg3
+ほかにも、ldm add-vdsdev および ldm bind コマンドによって実行されるディスク検証を永続的に無効にする回避方法があります。この方法を使用する場合は、-q オプションを指定する必要はありません。ldmd サービスの device_validation プロパティーを更新することで、ディスク検証を永続的に無効にします。# svccfg -s ldmd setprop ldmd/device_validation=value
+# svcadm refresh ldmd
+# svcadm restart ldmd
+値 0 を指定すると、ネットワークデバイスとディスクデバイスの検証が無効になります。値 1 を指定すると、ディスクデバイスの検証は無効になりますが、ネットワークデバイスの検証は有効なままです。
+device_validation プロパティーに指定できる値は次のとおりです。0
+すべてのデバイスの検証を無効にする
+1
+ネットワークデバイスの検証を有効にする
+2
+ディスクデバイスの検証を有効にする
+3
+ネットワークデバイスとディスクデバイスの検証を有効にする
+-1
+すべてのタイプのデバイスの検証を有効にする (デフォルト)
+incoming_migration_enabled=false に設定されている場合、別のシステムへのマイグレーションに失敗する
+バグ ID 7039793: incoming_migration_enabled=false および outgoing_migration_enabled=true に設定されている場合、次のメッセージが表示され、別のシステムへのマイグレーションに失敗します。The source machine is running an older version of the System Firmware
+that is not compatible with the version running on the target machine.
+outgoing_migration_enabled=false に設定されている場合は、別のシステムへのマイグレーションに失敗します。
+回避方法: 次の手順を実行します。
+incoming_migration_enabled=true に設定します。# svccfg -s ldmd setprop ldmd/incoming_migration_enabled=true
+ldmd を更新します。# svcadm refresh ldmd
+ldmd を再起動します。# svcadm restart ldmd
+ハイブリッド I/O および仮想 I/O の仮想ネットワークデバイスを持つゲストドメインの移行時に、nxge パニックが発生する
+バグ ID 7038650: ハイブリッド I/O 構成が含まれた高負荷のゲストドメインを移行しようとすると、nxge パニックが発生することがあります。
+回避方法: primary ドメイン、およびそのドメインのハイブリッド I/O 構成の一部であるサービスドメイン上で、/etc/system ファイルに次の行を追加します。set vsw:vsw_hio_max_cleanup_retries = 0x200
+Sun の管理コンソールソフトウェアを Oracle VM Server for SPARC システムの監視に使用しない
+バグ ID 7037495: Sun の管理コンソールを使用して Oracle VM Server for SPARC システムの CPU ステータスをクエリーすると、システムのデータが壊れる可能性があります。この破壊は、ハイパーバイザが実行中のドメインを追跡するために使用するデータ構造に限定され、 Logical
+Domains Manager は起動できなくなります。上記の理由のため、Sun の管理コンソールソフトウェアを Oracle VM Server for SPARC システムの監視に使用しないでください。
+回避方法: システムの電源を再投入し、既知の有効な構成を使用します。
+誤った SP 構成がデフォルトで使用されている
+バグ ID 7037295: Logical Domains Manager が再起動した場合、または primary ドメインが ldm add-spconfig -r spconfig コマンドの実行後に再起動した場合、Logical Domains Manager
+は、指定された構成 spconfig ではなく、デフォルトの構成を使用します。これは、それ以降に発生する構成変更が、指定された構成 spconfig に対してではなく、デフォルトの構成に対して行われることを意味しています。
+回避方法: 電源を再投入するか、ldm add-spconfig spconfig コマンドを実行して、Logical Domains Manager の現在の構成を設定します。
+マイグレーションで失われた共有 NFS リソースがあると、すべての ldm コマンドがハングアップする
+バグ ID 7036137: 開始された、または進行中のマイグレーション、またはすべての ldm コマンドが絶え間なくハングアップします。この状況は、移行するドメインが別のシステムの共有ファイルシステムを使用し、そのファイルシステムが共有されなくなった場合に発生します。
+回避方法: 共有ファイルシステムを再びアクセス可能にします。
+ldmd が部分的なコアを持つドメインからコアを削除できない
+バグ ID 7035438: ldmd を使用すると、部分的なコアを持つドメイン上でコア全体の制約を有効にできますが、同じドメインからコアを削除したり、そのドメインでコアを設定することに失敗します。
+回避方法: 制御ドメイン上で、出荷時のデフォルト構成から次の操作を実行します。
+制御ドメインの遅延再構成を開始します。# ldm start-reconf primary
+最初に、メモリー再構成操作を実行します。
+CPU 再構成操作を実行します。# ldm set-vcpu 16 primary
+# ldm set-vcpu -c 2 primary
+この例では 2 つのコアを使用しますが、コア数は、1 からシステムの制限値までの範囲に設定できます。
+シングルユーザーモードで起動したドメイン上で失敗した CPU DR 操作の戻り値が誤った状態になる
+バグ ID 7034498: シングルユーザーモードで仮想 CPU をドメインに追加しようとすると、ステータス値 0 が返されます。この失敗のステータス値は 1 になる必要があります。
+システムログサービスがオンラインにならない場合、Logical Domains エージェントサービスもオンラインにならない
+バグ ID 7034191: システムログサービス svc:/system/system-log が起動に失敗してオンラインにならない場合、Logical Domains エージェントサービスもオンラインになりません。Logical Domains エージェントサービスがオンラインではない場合、virtinfo、ldm add-vsw、ldm add-vdsdev、および ldm list-io の各コマンドが予想したとおりに動作しない場合があります。
+回避方法: svc:/ldoms/agents:default サービスが使用可能でオンライン状態であることを確認します。# svcs -l svc:/ldoms/agents:default
+svc:/ldoms/agents:default サービスがオフラインの場合は、サービスが使用可能で、依存するすべてのサービスがオンラインであることを確認します。
+マイグレーション中にカーネルのデッドロックによってマシンがハングアップする
+バグ ID 7030045: アクティブなゲストドメインのマイグレーションがハングアップし、ソースマシンが応答しなくなることがあります。この問題が発生した場合、次のメッセージがコンソールと /var/adm/messages ファイルに書き込まれます。vcc: i_vcc_ldc_fini: cannot close channel 15
+vcc: [ID 815110 kern.notice] i_vcc_ldc_fini: cannot
+close channel 15
+表示されるチャネル番号は Oracle Solaris 内部チャネル番号であり、警告メッセージごとに異なる可能性があります。
+回避方法: ドメインを移行する前に、ゲストドメインのコンソールの接続を切断します。
+回復方法: ソースマシンの電源を再投入します。
+DRM および ldm list 出力に、ゲストドメイン内の実際の仮想 CPU の数とは異なる数が表示される
+バグ ID 7027105: CPU の数が大幅に削減されたあとにロードされたドメインの DRM ポリシーの期限が切れると、Oracle VM Server for SPARC ログに No response メッセージが表示されることがあります。ldm list
+出力には、psrinfo 出力に示されている数よりも多くの CPU リソースがドメインに割り当てられていることが示されています。
+回避方法: ldm set-vcpu コマンドを使用して、ドメイン上の CPU の数を psrinfo 出力に示されている数にリセットします。
+ポリシーが削除された場合やポリシーの期限が切れた場合に、移行されたドメインで DRM が仮想 CPU の数を標準設定に戻すことができない
+バグ ID 7026160: DRM ポリシーが有効な間にドメインのマイグレーションを行っています。その後、DRM ポリシーの期限が切れた場合、または移行されたドメインから DRM ポリシーが削除された場合、DRM はドメイン上の仮想 CPU の数を元の数に戻すことができません。
+回避方法: DRM ポリシーがアクティブな間にドメインを移行し、その後 DRM ポリシーが削除された場合や DRM ポリシーの期限が切れた場合は、仮想 CPU の数をリセットします。ldm set-vcpu コマンドを使用し、ドメイン上の仮想 CPU の数を元の数に設定します。
+DR 中に仮想 CPU のタイムアウトに失敗する
+バグ ID 7025445: 100 を超える仮想 CPU といくつかの暗号化装置を持つゲストドメインで ldm set-vcpu 1 コマンドを実行すると、仮想 CPU の削除に失敗します。仮想 CPU は DR
+タイムアウトの失敗が原因で削除されません。暗号化装置は正常に削除されます。
+回避方法: ldm rm-vcpu コマンドを使用して、ゲストドメインから仮想 CPU を 1 つを残してすべて削除します。100 を超える仮想 CPU を一度に削除しないでください。
+XML ファイルに無効なネットワークまたはディスクバックエンドが含まれている場合に、ドメインのバインドに失敗する
+バグ ID 7024499: XML ファイルを使用してドメインを ldm bind -i xml-file コマンドとバインドすると、バインドに失敗します。無効なネットワークデバイスまたはディスクバックエンドパスが失敗の理由です。この問題は、-f または -q オプションを使用した場合でも発生します。バインドは、次に示す両方の状況が true の場合に失敗します。
+XML ファイルが無効なネットワークデバイスまたはディスクバックエンドパスを参照している。
+無効なネットワークデバイスまたはディスクバックエンドパスをサポートするサービスドメインが有効で、ldmad をサポートしている。
+-f および -q の両方のオプションを bind -i xml-file コマンドに指定することはできますが、これらのオプションは無視されます。
+回避方法: 次の手順を実行します。
+無効なデバイスまたはバックエンドが含まれたサービスドメインで、ldmad を一時的に無効にします。# svcadm disable ldoms/agents
+バインド後に、ldmad を無効にした各サービスドメインで、ldmad を再び有効にします。# svcadm enable ldoms/agents
+システムの MAC アドレスが別の MAC アドレスと重複している場合、マイグレーションの失敗理由が報告されない
+バグ ID 7023216: ドメインに重複する MAC アドレスが含まれている場合、そのドメインを移行できません。通常、この理由によってマイグレーションに失敗すると、失敗メッセージには MAC アドレスの重複が示されます。しかし、この失敗メッセージが、MAC アドレスの重複を報告しないことがまれにあります。# ldm migrate ldg2 system2
+Target Password:
+Domain Migration of LDom ldg2 failed
+回避方法: ターゲットマシンの MAC アドレスが一意であることを確認します。
+「反対方向」のマイグレーション処理を同時に実行すると、ldm がハングアップする
+バグ ID 7019493: 「反対方向」の 2 つの ldm migrate コマンドをに同時に実行すると、2 つのコマンドがハングアップして完了できなくなる場合があります。反対方向とは、たとえば、マシン A からマシン B へのマイグレーションと、マシン B
+からマシン A へのマイグレーションを同時に開始する状況を意味します。
+ハングアップは、マイグレーションプロセスが -n を使用して予行演習として開始された場合でも、マイグレーションプロセスの結果として発生します。この問題が発生した場合は、その他すべての ldm コマンドもハングアップする可能性があります。
+回避方法: ありません。
+制御ドメインから多数の CPU を削除する
+バグ ID 6994984: 動的再構成ではなく遅延再構成を使用して、100 を超える CPU を primary ドメインから削除します。次の手順を実行します。
+ldm start-reconf primary コマンドを使用して、制御ドメインを遅延再構成モードにします。
+必要に応じて、制御ドメインにより所有されているホストシステムのリソースを分割します。
+必要な場合は、ldm cancel-reconf コマンドを使用して手順 2 の操作を元に戻し、やり直します。
+制御ドメインを再起動して、再構成の変更を有効にします。
+メモリー管理の実行時に SPARC T3: Oracle VM Server for SPARC がハングアップする
+バグ ID 6994300: メモリー管理やマイグレーション処理の実行時に、Logical Domains Manager が SPARC T3 システム上でハングアップすることがあります。実行した処理は失敗し、完了しません。
+このハングアップは、ネットワークインタフェースユニット (Network Interface Unit、NIU) アダプタを使用する T3 プラットフォームで発生している可能性がありますが、XAUI 拡張部品を持つシステムで確認されています。
+回避方法: パッチ ID 144500-19 を適用します。
+エラスティックポリシーが設定され、Oracle Solaris 10 8/11 OS を実行しているシステムが、ハングする場合がある
+バグ ID 6989192 および 7071760: 次の条件が満たされていると、ログイン時またはコマンド実行中に OS がハングすることがあります。
+Oracle Solaris 10 8/11 OS が SPARC sun4v システムで実行している
+Power Management (PM) エラスティックポリシーが、システムの ILOM サービスプロセッサで設定されている
+回避方法: パッチ ID 147149-01 を適用します。
+pkgadd が /var/svc/manifest/platform/sun4v/ldmd.xml での ACL エントリの設定に失敗する
+バグ ID 6984681: Sun ZFS ストレージアプライアンスから NFS でエクスポートされた SUNWldm.v パッケージを、pkgadd コマンドを使用してディレクトリからインストールするときは、次のエラーメッセージが表示される場合があります。cp: failed to set acl entries on /var/svc/manifest/platform/sun4v/ldmd.xml
+回避方法: このメッセージは無視してください。
+SPARC T3-1: 複数の直接 I/O パス経由でアクセスできるディスクの検出と処理
+バグ ID 6984008: SPARC T3-1 システムには、デュアルポートディスクをインストールできます。このディスクには、2 つの異なる直接 I/O デバイスからアクセスできます。この 2 つの直接 I/O デバイスをそれぞれ異なるドメインに割り当てると、ディスクが両方のドメインで使用されることになり、ディスクの実際の使用状態によっては他方のドメインに影響を及ぼすことがあります。
+回避方法: 同じディスクセットにアクセスする複数の直接 I/O デバイスを、それぞれ異なる I/O ドメインに割り当てないでください。T3-1 システムにデュアルポートディスクがあるかどうかを確認する手順は、次のとおりです。
+システムにデュアルポートディスクがあるかどうかを調べるために、次のコマンドを SP で実行します。-> show /SYS/SASBP
+出力の fru_description の値が次のとおりならば、対応するシステムにデュアルポートディスクがあります。fru_description = BD,SAS2,16DSK,LOUISE
+システムにデュアルディスクが存在している場合は、次に示す直接 I/O デバイスが両方とも同じドメインに割り当てられていることを確認します。pci@400/pci@1/pci@0/pci@4  /SYS/MB/SASHBA0
+pci@400/pci@2/pci@0/pci@4  /SYS/MB/SASHBA1
+複数の NIU nxge インスタンスが plumb されているときにメモリー DR 削除操作を実行すると無限にハングアップして完了しないことがある
+バグ ID 6983279: 1 つのドメインで複数の NIU nxge インスタンスが plumb されているときは、ドメインからのメモリーを削除するための ldm rm-mem コマンドと ldm set-mem コマンドが完了しません。メモリー削除操作中に問題が発生したかどうかを確認するには、ldm list -o status
+コマンドで操作の進行状況を監視します。完了率が変わらない状態が何分間も続いているときは、この問題が発生している可能性があります。
+回復方法: ldm rm-mem コマンドまたは ldm set-mem コマンドをキャンセルします。
+回避方法: ldm rm-mem コマンドまたは ldm set-mem コマンドをキャンセルし、十分な量のメモリーが削除されたかどうかを確認してください。削除されていない場合は、もう一度メモリー削除コマンドを実行するときに削除するメモリーの量を小さくすると、正常に完了する可能性があります。
+この問題が primary ドメインで発生した場合は、次の手順を行ってください。
+primary ドメインに対して遅延再構成処理を開始します。# ldm start-reconf primary
+必要な量のメモリーをこのドメインに割り当てます。
+primary ドメインを再起動します。
+この問題がその他のドメインで発生した場合は、そのドメインを停止してから、ドメインに割り当てるメモリー量を調節します。
+ldmd が、ドメイン上の CPU 使用率が 100% であるという誤った報告をする
+バグ ID 6982280: エラスティックモードの場合に、ゲストドメインで I/O の実行に使用されている CPU 使用率が少ないにもかかわらず、100% の使用率であると ldmd が誤って報告することがまれにあります。この ldmd の報告は、ゲストドメインで prsinfo
+を実行することによって報告される実際のプロセッサ状態と矛盾しています。
+回避方法: ゲストドメインの CPU の数を 2 に設定します。次に、CPU の数を元の値にリセットします。
+エクスポートされた DVD デバイスからゲストドメインを起動できない
+バグ ID 6981081: 起動可能な物理 CD または DVD が仮想ディスクとしてエクスポートされているときに、この仮想 CD または DVD を使用しているゲストドメインからこの仮想 CD または
+DVD を起動できないことがあります。また、次のようなエラーが発生して起動が失敗することがあります。{0} ok boot /virtual-devices@100/channel-devices@200/disk@1:f
+Boot device: /virtual-devices@100/channel-devices@200/disk@1:f  File and args:
+Bad magic number in disk label
+ERROR: /virtual-devices@100/channel-devices@200/disk@1: Can't open disk label package
+ERROR: boot-read fail
+Can't open boot device
+この問題が発生するかどうかは、システムにインストールされている物理 CD または DVD ドライブの種類によって異なります。
+マスター - スレーブ関係にあるドメインに対して ldm stop -a コマンドを実行するとスレーブに stopping フラグが設定されたままになる
+バグ ID 6979574: リセット依存関係が作成されているときに、ldm stop -a コマンドを実行すると、リセット依存関係にあるドメインが単に停止するのではなく、再起動されることがあります。
+回避方法: 最初に、マスタードメインに対して ldm stop コマンドを実行します。次に、スレーブドメインに対して ldm stop コマンドを実行します。スレーブドメインの初回の停止に失敗した場合は、ldm stop -f コマンドをスレーブドメインに対して実行します。
+暗号化装置を primary ドメインから削除できない
+バグ ID 6978843: 暗号化装置を動的に削除しようとしたときに、次のメッセージが表示されることがあります。# ldm set-crypto 0 primary
+Aug 20 13:02:27 guest1 ncp: WARNING: ncp0: ncp_mau_unconfig:
+unable to find MAU for cpu 112
+Aug 20 13:02:27 guest1 ncp: WARNING: ncp0: ncp_mau_unconfig:
+unable to find MAU for cpu 104
+回避方法: 障害状態の CPU があるかどうかを確認し、ある場合はその CPU をオンライン状態に変更します。# psrinfo
+# psradm -n 0-127
+遅延再構成を使用して、暗号化装置を削除します。# ldm start-reconf primary
+# ldm set-crypto 0 primary
+# reboot
+ハイブリッド I/O が有効な仮想ネットワークデバイスを持つゲストドメインを移行するとサービスドメインでパニックが発生する
+バグ ID 6972633: ゲストドメインのウォームマイグレーションの実行時にサービスドメインでパニックが発生します。マイグレーションのソースマシンは、NIU ハイブリッド I/O 機能がある SPARC T3-1 です。
+この問題は、次の条件がすべてあてはまる場合に発生します。
+ソースマシンが SPARC T3-1 サーバーである。
+ゲストドメインでハイブリッド I/O モードが有効になっている。
+ゲストドメインにハイブリッド I/O リソースが割り当てられている。
+ゲストドメインの仮想ネットワークインタフェースに対してハイブリッド I/O が有効化されている場合は、次のように MODE 列に hybrid と表示されます。# ldm list -o network ldg1
+...
+NAME    SERVICE             ID  DEVICE     MAC                MODE    PVID  MTU
+vnet2    niu-vsw@primary     1  network@1  00:14:4f:fa:9e:89  hybrid  1    1500
+ただし、ハイブリッド I/O リソースが割り当てられるのは、次のコマンドの実行時にゲストドメインについて何らかの出力がある場合のみです。# kstat -p nxge
+回避方法: 次の手順を実行します。
+仮想ネットワークデバイスの現在の構成を取得します。
+この手順は、インタフェースの plumb を再実行するときにエラーが発生しないようにするためです。# ifconfig vnet1
+マイグレーションの前に、ゲストドメイン上の仮想ネットワークインタフェースの plumb を解除します。# ifconfig vnet1 unplumb
+マイグレーションを実行します。
+インタフェースを plumb します。# ifconfig vnet1 plumb
+有効なデフォルト DRM ポリシーがあるドメインをマイグレートすると、使用可能な CPU がすべてターゲットドメインに割り当てられる
+バグ ID 6968507: アクティブなドメインのマイグレーション後、マイグレートしたドメインの CPU 利用率が短時間で劇的に増加することがあります。マイグレーションの時点で動的リソース管理 (Dynamic Resource Managment、DRM) ポリシーがドメインに対して有効化されている場合は、Logical Domains Manager によって CPU
+の追加が開始されることがあります。特に、ポリシーの追加時にプロパティー vcpu-max および attack が指定されていなかった場合は、デフォルト値 unlimited が有効になるため、ターゲットマシンのバインドされていない CPU がすべて、マイグレートされたドメインに追加されます。
+回復方法: 回復させる必要はありません。CPU 利用率が、DRM ポリシーで指定された上限を下回ると、Logical Domains Manager によって自動的に CPU が削除されます。
+使用中の MAC アドレスが再び割り当て可能になる
+バグ ID 6968100: 使用中の MAC アドレスが検出されず、誤って再び割り当てられることがあります。
+回避方法: 使用中の MAC アドレスを再び割り当てることができないように手動で確認してください。
+ldmconfig が SP 上にドメイン構成を作成できない
+バグ ID 6967799: ldmconfig スクリプトが、格納された論理ドメイン構成をサービスプロセッサ (Service Processor、SP) 上に正しく作成できません。
+回避方法: ldmconfig スクリプトがドメインの再起動を完了したあとにシステムの電源を再投入しないでください。代わりに、次の手順を手動で実行してください。
+SP に構成を追加します。# ldm add-spconfig new-config-name
+primary-with-clients 構成を SP から削除します。# ldm rm-spconfig primary-with-clients
+システムの電源を切ってすぐに入れ直します。
+システムの電源を再投入する前にこれらの手順を実行しなかった場合、primary-with-client 構成の存在により、ドメインが非アクティブになります。この場合、各ドメインを手動でバインドしてから、ldm start -a コマンドを実行してそれらのドメインを起動する必要があります。ゲストの起動後にこの処理を繰り返すと、電源の再投入後にゲストドメインが自動的に起動するようになります。
+非協調的 Oracle Solaris ドメインマイグレーションが cpu0 がオフラインの場合にブロックされることがある
+バグ ID 6965758: アクティブドメインのマイグレーション時に、ドメインで実行されているリリースが Oracle Solaris 10 10/09 OS よりも古く、かつドメイン内の最小番号の CPU が offline 状態の場合に、マイグレーションに失敗することがあります。この操作に失敗するのは、Logical
+Domains Manager が CPU DR を使用してドメインの CPU を 1 つだけに減らしたときです。このときに、Logical Domains Manager
+はドメイン内の最小番号の CPU を除いてすべて削除しようとしますが、最小番号の CPU がオフラインのため、処理が失敗します。
+回避方法: マイグレーションを実行する前に、ドメイン内の最小番号の CPU が online 状態になっていることを確認してください。
+メモリー DR がマイグレーションのキャンセル後に無効になる
+バグ ID 6956431: Oracle Solaris 10 9/10 ドメインがマイグレーション操作の中で一時停止状態にされたあとで、メモリー動的再構成 (Dynamic Reconfiguration、DR) が無効になります。この動作は、マイグレーションに成功した場合だけでなく、マイグレーションがキャンセルされて、ドメインがソースマシン上に残っている場合にも行われます。
+仮想ネットワークデバイスの MTU 値の動的再構成が失敗することがある
+バグ ID 6936833: 制御ドメインの仮想ネットワークデバイスの最大伝送単位 (Maximum Transmission Unit、MTU) を変更すると、遅延再構成処理が動作します。そのあとで遅延再構成をキャンセルしても、デバイスの MTU 値は元の値に復元されません。
+回復方法: ldm set-vnet コマンドを再実行して MTU を元の値に設定します。MTU の設定を変更すると、制御ドメインが遅延再構成モードになりますが、このモードをキャンセルする必要があります。これで、MTU 値は元の正しい MTU 値になります。# ldm set-vnet mtu=orig-value vnet1 primary
+# ldm cancel-op reconf primary
+メモリー DR が一部の物理メモリー構成でサポートされていない
+バグ ID 6912155: サポートされている特定の構成において、マシン内に DIMM スロットが割り当てられていない場合、得られる物理メモリーのアドレスマップが隣接せず、連続するメモリーブロック間にアドレス「ホール」が発生します。このような構成では、メモリー DR はサポートされません。
+回避方法: メモリー DR がサポートされていない場合にメモリーを再構成するには、以下を実行します。
+primary ドメイン: 遅延再構成を使用します。
+その他のドメイン: ドメインを停止し、メモリー再構成を実行してからドメインを再起動します。
+メモリーレイアウトの情報については、使用しているプラットフォームのハードウェアのドキュメントを参照してください。
+ターゲット OS が暗号化装置の DR をサポートしていない場合、MAU を持つ移行したドメインに CPU が 1 つしか含まれない
+バグ ID 6904849: Logical Domains 1.3 リリース以降では、ドメインに暗号化装置がバインドされていてもドメインを移行できます。
+次の場合には、マイグレーションの完了後、ターゲットマシンに 1 つの CPU しか含まれません。
+ターゲットマシンで Logical Domains 1.2 が実行されている
+ターゲットマシン上の制御ドメインが実行している Oracle Solaris OS のバージョンが、暗号化装置の DR をサポートしていない
+暗号化装置が含まれるドメインを移行した
+マイグレーションの完了後、ターゲットドメインは正常に再開され運用されますが、CPU が 1 つのみの縮退状態になります。
+回避方法: マイグレーション前に、Logical Domains 1.3 を実行しているソースマシンから暗号化装置を削除します。
+軽減方法: この問題を防ぐには、次のいずれかまたは両方の手順を実行します。
+ターゲットマシンに最新の Oracle VM Server for SPARC ソフトウェアをインストールします。
+ターゲットマシンの制御ドメインにパッチ ID 142245-01 をインストールするか、または Oracle Solaris 10 10/09 以降の OS にアップグレードします。
+実アドレスメモリーバインドの失敗に対し、マイグレーション失敗メッセージが表示される
+バグ ID 6904240: 特定の状況では、マイグレーションが失敗して次のエラーメッセージが表示され、ソースドメインに必要なメモリーをバインドできなかったことが ldmd で報告される場合があります。この状況は、ターゲットマシンで使用可能なメモリーの合計容量がソースドメインで使用されているメモリー容量より多い場合でも発生することがあります。メモリー容量は ldm ls-devices -a mem で確認できます。Unable to bind 29952M memory region at real address 0x8000000
+Domain Migration of LDom ldg0 failed
+原因: この障害は、ターゲットマシン上の実アドレス (Real Address、RA) と物理アドレス (Physical Address、PA) の間の一致要件を満たすことができないために発生します。
+回避方法: ドメインを停止し、コールドマイグレーションとしてマイグレーションを実行します。ゲストドメイン上のメモリーのサイズを 128M バイト削減し、ドメインの動作中にマイグレーションが続行されるようにすることもできます。
+ドメインからすべての暗号化装置を動的に削除すると、SSH が終了する
+バグ ID 6897743: 動作中のドメインからすべてのハードウェア暗号化装置を動的に削除すると、暗号化フレームワークがソフトウェア暗号化プロバイダへのシームレスな切り替えに失敗し、すべての ssh 接続が強制終了します。
+回復方法: ドメインからすべての暗号化装置を削除したあと、ssh 接続を再確立します。
+回避方法: サーバー側の /etc/ssh/sshd_config ファイルに UseOpenSSLEngine=no を設定し、svcadm restart ssh コマンドを実行します。
+これで、ssh 接続にはハードウェア暗号化装置が使用されなくなるので、パフォーマンスの向上というメリットはなくなりますが、暗号化装置が削除されても ssh 接続は切断されなくなります。
+ldm list-io -l 出力で、Atlas PCI Express Dual 10-Gigabit Ethernet Fiber Card に 4 つのサブデバイスが表示される
+バグ ID 6892229: Atlas PCI Express Dual 10-Gigabit Ethernet Fiber カード (X1027A-Z) がインストールされているシステムで ldm ls-io -l
+コマンドを実行すると、次のように出力されることがあります。primary# ldm ls-io -l
+...
+pci@500/pci@0/pci@c PCIE5 OCC primary
+network@0
+network@0,1
+ethernet
+ethernet
+この出力には 4 つのサブデバイスが表示されていますが、この Ethernet カードにはポートが 2 個しかありません。これは、このカードには 4 つの PCI 機能があるために発生します。4 つの機能のうち
+2 つは内部で無効になっており、ldm ls-io -l 出力では ethernet として表示されます。
+回避方法: ldm ls-io -l 出力の ethernet 項目は無視してかまいません。
+いくつのドメインが起動中の場合、ldm コマンドの応答が遅くなる
+バグ ID 6855079: いくつかのドメインが起動中の場合、ldm コマンドの応答が遅くなることがあります。この段階で ldm コマンドを実行すると、コマンドがハングアップしているように見える場合があります。ldm コマンドは、期待どおりのタスクを実行したあとで戻されます。コマンドが戻されたら、システムは通常どおり ldm コマンドに応答するはずです。
+回避方法: 多くのドメインを同時に起動することを避けてください。ただし、いくつかのドメインを同時に起動する必要がある場合、システムが通常の状態に戻るまで新しい ldm コマンドを実行しないようにします。たとえば、Sun SPARC Enterprise T5140 および T5240 サーバーでは約 2 分間、Sun
+SPARC Enterprise T5440 サーバーまたは Netra T5440 サーバーでは約 4 分間待機します。
+システムが Power Management のエラスティックモードのときにゲストドメインが正常に再起動できない場合がある
+バグ ID 6853273: システムが Power Management のエラスティックモードのときにゲストドメインを再起動しようとすると、次の警告メッセージが発生して正常に起動できない場合があります。WARNING: /virtual-devices@100/channel-devices@200/disk@0:
+Sending packet to LDC, status: -1
+WARNING: /virtual-devices@100/channel-devices@200/disk@0:
+Can't send vdisk read request!
+WARNING: /virtual-devices@100/channel-devices@200/disk@0:
+Timeout receiving packet from LDC ... retrying
+回避方法: このような警告が表示される場合、次の順序でいずれかの回避方法を実行します。
+ゲストドメインで ok> プロンプトが表示され、入力が受け付けられる場合、「reset-all」と入力します。
+制御ドメインで ldm stop domain-name コマンドを実行してから、ldm start domain-name コマンドを実行します。
+Power Management モードをパフォーマンスモードに変更し、影響を受けたゲストドメインを停止してから起動したあとで、エラスティックモードに戻ります。
+制御ドメインまたはゲストドメインの再起動時に見せかけの「ds_ldc_cb: LDC READ event」メッセージが発生する
+バグ ID 6846889: 制御ドメインまたはゲストドメインの再起動時に、再起動中の制御ドメインおよびゲストドメインのログに、次の警告メッセージが記録される場合があります。WARNING: ds@0: ds_ldc_cb: LDC READ event while port not up
+回避方法: このメッセージは無視できます。
+ゲストドメインが制御ドメインに対して適切なドメインサービス接続を行わない場合がある
+バグ ID 6839787: Oracle Solaris 10 10/08 OS 以降を実行するゲストドメインから Oracle Solaris 10 5/09 OS
+を実行する制御ドメインへのドメインサービス接続が適切に行われないことがあります。
+ドメインサービス接続により、動的再構成 (Dynamic Reconfiguration、DR)、FMA、Power Management (PM) などの機能が有効になります。この問題はゲストドメインの起動時に発生するため、通常はゲストドメインを再起動することで解決します。
+回避方法: ゲストドメインを再起動します。
+制御ドメインで仮想ネットワークデバイスが適切に作成されない
+バグ ID 6836587: 仮想ネットワークまたは仮想ディスクデバイスをドメインに追加したあと、ifconfig でデバイスが存在しないと表示されることがあります。この状態は、/devices エントリが作成されていないために発生することがあります。
+この状態は通常操作時には発生しませんが、仮想ネットワークデバイスのインスタンス番号が /etc/path_to_inst ファイルに示されているインスタンス番号と一致しない場合にこのエラーが検出されました。
+例:# ifconfig vnet0 plumb
+ifconfig: plumb: vnet0: no such interface
+仮想デバイスのインスタンス番号は、ldm list の出力内の「DEVICE」列の下に表示されます。# ldm list -o network primary
+NAME             
+primary          
+MAC
+00:14:4f:86:6a:64
+VSW
+NAME         MAC               NET-DEV DEVICE   DEFAULT-VLAN-ID PVID VID MTU  MODE  
+primary-vsw0 00:14:4f:f9:86:f3 nxge0   switch@0 1               1        1500        
+NETWORK
+NAME   SERVICE              DEVICE    MAC               MODE PVID VID MTU  
+vnet1  primary-vsw0@primary network@0 00:14:4f:f8:76:6d      1        1500
+このインスタンス番号 (ここに示す vnet および vsw の場合は両方とも 0) と path_to_inst ファイルのインスタンス番号を比較して、両方の番号が確実に一致するようにすることができます。# egrep '(vnet|vsw)' /etc/path_to_inst
+"/virtual-devices@100/channel-devices@200/virtual-network-switch@0" 0 "vsw"
+"/virtual-devices@100/channel-devices@200/network@0" 0 "vnet"
+回避方法: インスタンス番号が一致していない場合、その仮想ネットワークまたは仮想スイッチデバイスを削除します。次に、id プロパティーを設定することで必要なインスタンス番号を明示的に指定し、削除した仮想デバイスをふたたび追加します。
+/etc/path_to_inst ファイルを手動で編集することもできます。path_to_inst(4) マニュアルページを参照してください。
+Logical Domains が構成されている場合に、新しく追加した NIU/XAUI アダプタがホスト OS に表示されない
+バグ ID 6829016: システムに Logical Domains が構成されている場合に別の XAUI ネットワークカードを追加すると、マシンの電源を再投入してもそのカードは表示されません。
+回復方法: 新しく追加した XAUI が制御ドメインに表示されるようにするには、次の手順を実行します。
+制御ドメインにダミー変数を設定し、クリアーします。
+次のコマンドでは、fix-xaui というダミー変数を使用します。# ldm set-var fix-xaui=yes primary
+# ldm rm-var fix-xaui primary
+変更した構成を SP に保存し、現在の構成を置き換えます。
+次のコマンドでは、構成名として config1 を使用します。# ldm rm-spconfig config1
+# ldm add-spconfig config1
+再構成のために制御ドメインを再起動します。# reboot -- -r
+この時点で、新しく使用可能になったネットワークを Logical Domains 用に構成できます。
+e1000g からの起動時に I/O ドメインまたはゲストドメインでパニックが発生する
+バグ ID 6808832: Sun Fire T5240 などのシステムでは、専用 PCI-E ルートコンプレックスで最大 2 つのドメインを構成できます。このようなシステムには、2 つの UltraSPARC T2+
+CPU と 2 つの I/O ルートコンプレックスが装備されています。
+システムの 2 つのルートコンプレックスは、pci@500 と pci@400 です。primary ドメインには、少なくとも 1 つのルートコンプレックスが必ず含まれます。2 つ目のドメインは、割り当てまたはバインドされていないルートコンプレックスを使用して構成できます。
+pci@400 ファブリック (またはリーフ) には、オンボード e1000g ネットワークカードが備わっています。次の状況では、ドメインでパニックが発生する場合があります。
+pci@500 を含む primary ドメインと pci@400 を含む 2 つめのドメインでシステムが構成されている
+2 つめのドメインの起動に、pci@400 ファブリック上の e1000g デバイスが使用される
+次のネットワークデバイスが primary 以外のドメインに構成されている場合、これらのデバイスを避けてください。/pci@400/pci@0/pci@c/network@0,1
+/pci@400/pci@0/pci@c/network@0
+これらの条件に該当する場合、PCI-E の致命的エラーが発生し、そのドメインでパニックが発生します。
+このような構成を避けるか、またはこのような構成を使用している場合は、示されているデバイスから起動しないでください。
+明示的なコンソールグループおよびポートのバインドが移行されない
+バグ ID 6781589: 移行中、明示的に割り当てられたコンソールグループおよびポートはすべて無視され、デフォルトのプロパティーを持つコンソールがターゲットドメインに作成されます。このコンソールは、コンソールグループとしてターゲットドメイン名を使用し、制御ドメインの最初の仮想コンソール端末集配信装置 (vcc) デバイスの使用可能ポートを使用して作成されます。デフォルトのグループ名と競合する場合、移行は失敗します。
+回復方法: マイグレーション後に明示的なコンソールプロパティーを復元するには、ターゲットドメインのバインドを解除し、ldm set-vcons コマンドを使用して目的のプロパティーを手動で設定します。
+制約データベースと保存された構成との同期がとれていない
+バグ ID 6773569: ldm set-config コマンドを使用してから電源を再投入する方法で、ある構成から別の構成に切り替えを行うと、以前の構成で定義されたドメインが現在の構成にもアクティブでない状態で存在していることがあります。
+これは、Logical Domains Manager の制約データベースと構成の変更とが同期していないことが原因です。このようなアクティブでないドメインは、動作している構成に影響しないため、安全に削除できます。
+ターゲットの vdsdev のバックエンドが異なっていても移行が失敗しない
+バグ ID 6772120: ターゲットマシンの仮想ディスクが指しているディスクバックエンドがソースマシンで使用されているものとは異なる場合は、移行されたドメインがそのディスクバックエンドを使用して仮想ディスクにアクセスすることはできません。そのドメインの仮想ディスクにアクセスすると、ハングアップする可能性があります。
+現時点では、Logical Domains Manager が確認するのは仮想ディスクのボリューム名がソースマシンとターゲットマシンで一致しているかどうかだけです。このときに、ディスクのバックエンドが一致していなくてもエラーメッセージは表示されません。
+回避方法: 移行されたドメインを受け取るターゲットドメインを構成するときに、ディスクボリューム (vdsdev) が、ソースドメインで使用されているディスクバックエンドと一致していることを確認します。
+回復方法: ターゲットマシン上の仮想ディスクデバイスが誤ったディスクバックエンドを指していることがわかった場合は、次のいずれかの処理を実行します。
+以下を実行します。
+ドメインを移行してソースマシンに戻します。
+ターゲットの vdsdev が正しいディスクバックエンドを指すように修正します。
+ドメインをターゲットマシンに再度移行します。
+ターゲットでドメインを停止し、バインドを解除して、vdsdev を修正します。OS で仮想 I/O 動的再構成がサポートされており、誤った仮想ディスクがドメインで使用中でない場合、つまり起動ディスクではなくマウントが解除されている場合は、次の手順を実行します。
+ldm rm-vdisk コマンドを使用してディスクを削除します。
+vdsdev を修正します。
+ldm add-vdisk コマンドを使用して仮想ディスクを再度追加します。
+ターゲットに使用可能なメモリーが十分にある場合でも、移行でメモリーのバインドに失敗することがある
+バグ ID 6772089: 特定の状況では、移行が失敗し、ソースドメインに必要なメモリーをバインドできなかったことが ldmd で報告される場合があります。これは、ターゲットマシンで使用可能なメモリーの合計容量がソースドメインで使用されているメモリー容量より多い場合でも発生することがあります。
+この障害は、ソースドメインで使用されている特定のメモリー範囲を移行するには、ターゲットでもそれに対応するメモリー範囲が使用可能である必要があるために発生します。ソースのメモリー範囲に対応するメモリー範囲が見つからない場合、移行は続行できません。
+回復方法: この状況が発生した場合は、ターゲットマシンのメモリー使用量を変更すると、ドメインを移行できるようになることがあります。この操作を行うには、ターゲットでバインドされている、またはアクティブな論理ドメインのバインドを解除します。
+使用可能なメモリーとその使用状況を確認するには、ldm list-devices -a mem コマンドを使用してください。また、別のドメインへのメモリーの割り当て量を減らす必要があることもあります。
+マシンがネットワーク接続されていない場合に NIS クライアントが実行されていると、Logical Domains Manager が起動しない
+バグ ID 6764613: マシンにネットワークが構成されていない場合にネットワーク情報サービス (Network Information Service、NIS) クライアントが実行されていると、Logical Domains Manager が起動しません。
+回避方法: ネットワークに接続されていないマシンでは NIS クライアントを無効にします。# svcadm disable nis/client
+移行されたドメインが、すでに起動されているにもかかわらず Logical Domains Manager には「移行」状態と表示される
+バグ ID 6760933: アクティブな論理ドメインが、起動してから長時間が経過していたり、ドメイン移行の完了後であるにもかかわらず、「通常」の状態ではなく「移行」状態として表示されることがあります。この不具合が問題を引き起こすことはなく、ドメインは正常に動作しています。設定されているフラグを確認するには、ldm list -l -p コマンド出力の flags フィールドか、ldm list コマンドの FLAGS フィールドを確認します。このフィールドには、通常の状態の場合は -n----、移行状態の場合は -t---- と表示されます。
+回復方法: 次回の再起動後に、ドメインの正しい状態が表示されます。
+vntsd を再起動しないかぎり、移行したドメインのコンソールに接続できない
+バグ ID 6757486: ドメインの移行後、そのドメインのコンソールに接続できない場合があります。
+回避方法: vntsd SMF サービスを再起動し、コンソールに接続できるようにします。# svcadm restart vntsd
+Logical Domains システムから uadmin 1 0 コマンドを実行すると、システムが OK プロンプトに戻らないことがある
+バグ ID 6753683: Logical Domains システムのコマンド行から uadmin 1 0 コマンドを実行すると、それ以降のリセットでシステムが ok プロンプトに戻らない場合があります。この誤った動作は、Logical Domains 変数 auto-reboot? が
+true に設定されている場合にのみ発生します。auto-reboot? が false に設定されている場合は、期待どおりに動作します。
+回避方法: 代わりに次のコマンドを使用します。uadmin 2 0
+または、常に auto-reboot? を false に設定して実行するようにします。
+Logical Domains Manager によるドメインの停止に 15 分以上かかることがある
+バグ ID 6742805: CPU が 1 つのみでメモリーが大容量の構成では、ドメインの停止またはメモリーのスクラブに 15 分以上かかることがあります。停止の際、ドメインの CPU はそのドメインが所有するすべてのメモリーをスクラブするために使用されます。CPU が 1 つのみでメモリーが
+512G バイトのドメインのように不均衡な構成では、スクラブの完了までに非常に長い時間がかかる場合があります。スクラブ時間が長くなると、ドメインの停止にかかる時間も長くなります。
+回避方法: 100G バイトを超える大容量メモリー構成が、少なくとも 1 つのコアを持つようにします。これにより、停止時間が短縮されます。
+Oracle Solaris 10 5/08 OS がサービスドメインにインストールされている場合に、そのドメインがサービスを提供している任意のゲストドメインで Oracle Solaris 10 8/07 OS のネットワーク起動を試みると、インストールがハングアップすることがある
+バグ ID 6705823: Oracle Solaris 10 5/08 OS が動作しているサービスドメインによってサービスが提供されている任意のゲストドメインで、Oracle Solaris 10 8/07 OS のネットワーク起動を試みると、インストール中にゲストドメインでハングアップが発生することがあります。
+回避方法: Oracle Solaris 10 8/07 OS ネットインストールイメージのミニルートにパッチ ID 127111-05 を適用します。
+制御ドメインが遅延再構成モードのときに複数の set-vcpu 操作が制御ドメイン上で実行されると ldmd がコアダンプを出力することがある
+バグ ID 6697096: 特定の状況下では、制御ドメインが遅延再構成モードのときに複数の ldm set-vcpu 操作が制御ドメイン上で実行されると、Service Management Facility (SMF) によって ldmd が強制終了されて再起動されることがあります。
+制御ドメインが遅延再構成モードのときに ldm set-vcpu 操作を行うときは注意してください。1 回目の ldm set-vcpu 操作は成功しますが、2 回目の ldm set-vcpu 操作を実行すると、ldmd デーモンがコアダンプを出力する場合があります。
+回避方法: 2 回目の ldm set-vcpu 操作を行う前に制御ドメインを再起動してください。
+スライス 2 に構築した Solaris Volume Manager ボリュームをゲストドメインの起動デバイスとして使用すると JumpStart が失敗する
+バグ ID 6687634: Solaris Volume Manager ボリュームが構築されているディスクスライスに、そのディスクのブロック 0 が含まれている場合は、ディスクラベルの上書きを防ぐために Solaris Volume Manager はボリュームのブロック 0
+への書き込みを禁止します。
+ディスクのブロック 0 が含まれるディスクスライスに構築された Solaris Volume Manager ボリュームが、フル仮想ディスクとしてエクスポートされた場合は、その仮想ディスクにゲストドメインがディスクラベルを書き込むことはできないため、そのディスク上には Oracle Solaris OS をインストールできなくなります。
+回避方法: 仮想ディスクとしてエクスポートされた Solaris Volume Manager ボリュームは、ディスクのブロック 0 を含むディスクスライスの先頭に構築しないでください。
+さらに一般的なガイドラインとして、物理ディスクの最初のブロック (ブロック 0) で始まるスライスは、直接的にも間接的にも仮想ディスクとしてエクスポートしないでください。『Oracle VM Server for SPARC 2.1 管理ガイド』の「ディスクスライスの直接的または間接的なエクスポート」を参照してください。
+共通コンソールグループ内で複数ドメインを同時にネットインストールすると失敗する
+バグ ID 6656033: 共通のコンソールグループを持つシステムで、複数のゲストドメインのネットインストールを同時に実行すると失敗します。
+回避方法: それぞれ固有のコンソールグループを持つゲストドメインでのみネットインストールを実行してください。この障害は、ネットインストールを行う複数のドメイン間で共有される、共通のコンソールグループを使用するドメインでのみ発生します。
+SC または SP のリセット後、scadm コマンドがハングアップすることがある
+バグ ID 6629230: SC リセットのあとに、Solaris 10 11/06 OS 以降が動作している制御ドメイン上で scadm コマンドがハングアップすることがあります。SC のリセット後、システムは適切に接続を再確立できません。
+回避方法: ホストを再起動して、SC との接続を再確立します。
+回復方法: ホストを再起動して、SC との接続を再確立します。
+ldc_close: (0xb) unregister failed, 11 警告メッセージ
+バグ ID 6610702: 次の警告メッセージがシステムコンソールまたはシステムログに表示されることがあります。ldc_close: (0xb) unregister failed, 11
+丸括弧内の番号は Oracle Solaris 内部チャネル番号であり、警告メッセージごとに異なる可能性があります。
+回避方法: このメッセージは無視してかまいません。
+DHCP を使用している同一ネットワーク上で、ゲストドメインに構成された仮想ネットワークが多すぎると、ゲストドメインが応答しなくなることがある
+バグ ID 6603974: 動的ホスト構成プロトコル (Dynamic Host Configuration Protocol、DHCP) を使用している同一ネットワーク上で、ゲストドメインに 5 つ以上の仮想ネットワーク (vnet) を構成すると、ネットワークトラフィックの実行中に、ゲストドメインが最終的に応答しなくなることがあります。
+回避方法: ip_ire_min_bucket_cnt および ip_ire_max_bucket_cnt に大きい値を設定します。たとえば、8 つのインタフェースを使用している場合は 32 に設定します。
+回復方法: 問題のゲストドメイン (ldom) に対して、ldm stop-domain ldom コマンドを実行したあとで、ldm start-domain ldom コマンドを実行します。
+パニックおよび再起動のあと、Logical Domains Manager がゲストドメインのリソースをリタイアしない
+バグ ID 6591844: CPU またはメモリーに障害が発生すると、影響を受けるドメインでパニックが発生し、再起動が行われる場合があります。ドメインの再起動中に、障害管理アーキテクチャー (Fault Management Architecture、FMA) が障害が発生したコンポーネントのリタイアを試みると、Logical Domains Manager はドメインと通信できなくなり、リタイアは失敗します。このような場合、fmadm faulty コマンドでは、このリソースは
+degraded (縮退) として表示されます。
+回復方法: ドメインの再起動が完了するのを待機してから、次のコマンドを使用して制御ドメイン上で障害管理デーモン (Fault Manager Daemon、fmd) を再起動し、FMA による障害イベントの再現を強制的に行います。primary# svcadm restart fmd
+Logical Domains Manager の動作中に eeprom(1M) コマンドで OpenBoot PROM 変数を変更できない
+バグ ID 6540368: この問題の概要は、「Logical Domains 変数の持続性」 で説明しています。この問題は制御ドメインにのみ影響します。
+Logical Domains 実行中にセキュリティーキーを設定できない
+バグ ID 6510214: Logical Domains 環境では、広域ネットワーク (WAN) 起動キーの設定または削除を Oracle Solaris OS 内から、ickey(1M) コマンドを使用して行うことはサポートされていません。ickey 操作はすべて失敗し、次のようなエラーが表示されます。ickey: setkey: ioctl: I/O error
+また、制御ドメイン以外の論理ドメインで OpenBoot ファームウェアを使用して設定された WAN 起動キーは、ドメインを再起動すると記憶されていません。これらのドメインでは、OpenBoot ファームウェアで設定したキーは 1 回の使用でのみ有効です。
+ldm stop-domain コマンドの動作がわかりにくいことがある
+バグ ID 6506494: ldm stop-domain コマンドの動作がわかりにくい場合があります。# ldm stop-domain -f ldom
+ドメインにカーネルモジュールデバッガの kmdb(1) プロンプトが表示されている場合、ldm stop-domain コマンドは失敗し、次のようなエラーが表示されます。LDom <domain name> stop notification failed
+同時処理でゲストの OS がハングアップする場合がある
+バグ ID 6497796: まれに、boot-device などの Logical Domains 変数を eeprom(1M) コマンドを使用してゲストドメイン内から更新するのと同時に、Logical Domains Manager を使用して同じドメインに対して仮想 CPU
+の追加または削除を行うと、ゲストの OS がハングアップする場合があります。
+回避方法: これらの 2 つの操作を同時に実行しないようにします。
+回復方法: ldm stop-domain および ldm start-domain コマンドを使用して、ゲスト OS を停止してから起動します。
+要求されたすべての CPU を削除する DR 要求が失敗することがある
+バグ ID 6493140: Oracle Solaris OS は DR を使用して要求された CPU をすべて削除できないことがあります。この問題が発生したときは、次のようなエラーメッセージが表示されます。Removal of cpu 10 failed
+回復方法: 初回の削除に失敗した数の CPU を削除するために、次の要求を実行します。この再試行は、通常成功します。
+ドキュメントの訂正
+この節では、Oracle VM Server for SPARC 2.1 のリリース後に見つかったドキュメントの誤りを示します。
+必要なソフトウェアの情報の相互参照が正しくない
+『Oracle VM Server for SPARC 2.1 管理ガイド』の「ソフトウェアの互換性」の節で、最新の機能を入手するための要件に関する情報の参照先が誤っています。代わりに、「ライブドメインマイグレーションの要件」を参照してください。
+ldm stop コマンドの説明が正しくない
+説明では ldm stop コマンドは shutdown 要求を発行するようになっていますが、実際には uadmin() システムコールを発行します。
+もっとも「正常な」方法でドメインをシャットダウンするには、停止するドメインで shutdown または init 操作を実行します。shutdown(1M) または init(1M) マニュアルページを参照してください。
+アップグレード手順で Logical Domains Manager パッケージの名前が正しくない
+インストールする Logical Domains Manager パッケージの名前は SUNWldm.v です。Oracle VM Server for SPARC 2.1
+のドキュメントの pkgadd コマンドでは、SUNWldm.v というパッケージ名を使用する必要があります。
+ILOM load コマンドの機能説明で正しくない文字が使用されている
+『Oracle VM Server for SPARC 2.1 管理ガイド』の「システムファームウェアをアップグレードする」の ILOM load コマンドの機能説明で、コマンド全体を 1 行で入力する必要があることを示すための、バックスラッシュ文字 (\) が誤って使用されています。
+このコマンドを指定するときは、バックスラッシュ文字を使用してはならず、コマンド全体を 1 行で入力する必要があります。
+既知の問題 - Oracle VM Server for SPARC 2.1 リリースノート

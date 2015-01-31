@@ -1,0 +1,63 @@
+PDA研究室 - PDA-JAPAN用CosmicTripper設定ファイル(04/13/2001)
+ZACダウンロードはこちら。
+PDA-JAPANが無くなってしまったので削除。
+新しくMIXS-PDAJ対応版作りました。こちら。
+展開されたファイル「WME3PDAJ.LSD」を「WME3DEF.LSD」にリネームするか、既にあるファイルへ必要部分を適宜追記して下さい。
+#CosmicScript Ver1.0
+connect
+setvar,char_code,SJIS
+setvar,time_out,60000
+setvar,title_start,<TITLE>
+setvar,title_end,</TITLE>
+setvar,txt_start,<td width="46%" nowrap><b>
+setvar,txt_end,<td width="5%" bgcolor="#CCFFFF">広告: </td>
+setvar,title_prefix,
+go,www.pdajapan.com
+get,/news.html,F1:\PDANEWS.TXT
+get,/palm.html,F1:\PALMNEWS.TXT
+get,/tel.html,F1:\TELNEWS.TXT
+get,/zaurus.html,F1:\ZAUNEWS.TXT
+get,/windows.html,F1:\CENEWS.TXT
+get,/pdaoth.html,F1:\PDAOTHER.TXT
+get,/other.html,F1:\OTHER.TXT
+disconnect
+以下は私が作者のウクレレとりっぷ様にお送りしたメールの内容。
+まだ落としたばかりで勘違いがあるかもしれません。
+以下三通。
+まさに求めていたソフトをありがとうございます。
+今某サイト用のスクリプトを書いています。
+んで、早速要望なんですが、
+1.txt_start&end、title_start&endを適用する範囲をさらに限定する変
+数が欲しい
+というのも、上下に広告があって、それがたまたまtxt_startに引っかか
+る場合があるため。
+その変数に広告に特徴的なタグを指定すればそこを回避できる。
+2.保存先をディレクトリ指定できるようにして欲しい
+せっかくTTVがディレクトリ対応しているんですから、テキストの保存先
+を指定することで収集時に自動的に記事を分類できた方が良いと思いま
+すので。
+無いディレクトリを指定したら自動生成してくれるとさらに。
+SZAB使ってませんのでそんなことができるのかどうか知りませんが。
+といったところです。
+とりあえずお伝えしておきます。
+ちなみに、ディレクトリ保存、ディレクトリ自動生成は既に可能だとのこと。
+はい、試していませんでした。すいません。m(_ _)m
+先程書いたスクリプトを走らせてみました。
+結果、致命的な欠陥が判明しました。
+っていうか、バグじゃなくて仕様上のなんですけど。
+title_start&endとtxt_start&endはそれぞれ一回しか適用されない。
+最初に適合した部分が抜き出され、それで終わり。
+それ以降の適合部分も抜き出して欲しいのですが。
+できれば、適用回数を指定できると良いんではないかと。
+0なら無限とか。
+それと、切り出し部分にある<TABLE>関連のタグが大量のスペースにな
+ってしまうのもいかがなものかと。
+って思います。
+と思ったら、途中のインデントの可能性が高いですね。
+う〜ん、行頭の大量のスペースは切るようにできませんか?
+んでわ。
+すいません、もう一つ言い忘れました。
+もうひとつは、title_start&endおよびtxt_start&endに複数のvalueを
+指定できるようにして欲しいということです。
+これが不可能だとかなりのハードルになります。
+幾霜

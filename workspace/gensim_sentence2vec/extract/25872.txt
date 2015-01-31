@@ -1,0 +1,4 @@
+発話音声抽出部7は、入力したデジタル信号中から発話音声信号成分を抽出し音声認識装置8に入力する。The utterance voice extractor 7 extracts the utterance voice signal components from among the inputted digital signals, and inputs it to the voice recognition device 8. - 特許庁
+変調雑音などを用いることなく、入力された発話音声に対する信号分析により発話音声の明瞭度を評価することができるようにする。To evaluate the articulation of utterance voice by voice analysis to inputted utterance voice, without having to use modulated noise, etc. - 特許庁
+発話音声は、2G電話から電話サーバに送信され、発話音声対応Webページの処理により、テキストデータは取得され、Webサーバに送信される。Text data is acquired by a processing of the Web page, corresponding to the emitted voice and is transmitted to the Web server. - 特許庁
+「"発話音声"」に関連した英語例文の一覧 - Weblio英語例文検索

@@ -1,0 +1,215 @@
+TF・IDF計算
+自然言語処理の勉強としてTF・IDFによる重要単語の抽出をwikipediaのデータに対して試してみます。TF・IDFを一言でまとめると、とある単語の重要度を出現頻度から計算する手法です。計算結果は重みを表します。TFは単語の出現数(Term Frequency)、IDFは総文書数 / 単語が出現する文書の総数の対数(Inverted Document Frequency)、TFIDFはその積になります。数式にすると以下のようになりますが、Webを検索してみると人によって計算の仕方が異なっています。思想としてはTFは大きい値であればあるほど重みが大きくなるし、IDFは出現頻度がドキュメント総数に対して少なければ価値のある単語となります。
+: Number Of Occurrences Of i In j
+: Number Of Documents Containing i
+: Total Number Of Documents
+今回はMecab Pythonを使って自力でTF・IDFを計算します。PythonのNLTKライブラリを利用するとTF・IDFの計算を簡単に出力してくれたりもします。てっとり早くやりたい人はそちらを使ってみると良いでしょう。
+nltk.text.TextCollection 
+Mecab Python
+形態素解析器で有名なMecabをPythonから利用できるようにします。Mecab本体、Mecab-ipadic、mecab-pythonの3つをinstallします。mecab-pythonのinstallの時に"mecab-config: コマンドが見つかりません"のように怒られたらsetup.pyのmecab-configをmecabをinstallした時のlocalディレクトリを指定するように修正するとinstallできます。
+// mecab本体
+$ wget http://mecab.googlecode.com/files/mecab-0.99.tar.gz
+$ tar -xzf mecab-0.99.tar.gz
+$ cd mecab-0.99
+$ ./configure --with-charset=utf8
+$ make && sudo make install
+// mecab-ipadic
+$ wget http://sourceforge.net/projects/mecab/files/mecab-ipadic/2.7.0-20070801/mecab-ipadic-2.7.0-20070801.tar.gz/download
+$ tar -xzf mecab-ipadic-2.7.0-20070801.tar.gz
+$ cd mecab-ipadic-2.7.0-20070801
+$ ./configure --with-charset=utf8
+$ make && sudo make install
+// mecab-python
+$ wget http://mecab.googlecode.com/files/mecab-python-0.993.tar.gz
+$ tar -xzf mecab-python-0.993.tar.gz
+$ cd mecab-python-0.993
+$ python setup.py build
+$ sudo python setup.py install
+libmecab.so.2の読み込み
+上の設定が完了しただけではまだPythonからMeCabが読み出せません。libmecab.so.2のエラーが出てしまうのでそれを回避するために設定ファイルに/usr/local/libを追記してldconfigの再読み込みを行います。これでmecab-pythonが起動できる準備が整いました。
+$ sudo vim /etc/ld.so.conf.d/lib.conf
+/usr/local/lib  //追記
+// 再読み込み
+$ sudo ldconfig
+// mecab-pythonの起動
+$ python
+Python 2.6.6 (r266:84292, Sep 11 2012, 08:34:23) 
+[GCC 4.4.6 20120305 (Red Hat 4.4.6-4)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import MeCab
+形態素解析のサンプル
+下はChasenの互換モードと分かち書きの出力になります。MeCab.Taggerの引数を変えるとデータの出力形式を変えることができます。引数の候補としては-Ochasen,-Owakati,-Oyomi,mecabrcといったものがあります。
+#!/bin/env python
+#coding:utf-8
+import MeCab
+tagger = MeCab.Tagger("-Ochasen")
+print tagger.parse("MecabPythonのサンプルデータを入れてみます")
+$ python mecab-sample.py
+MecabPython	MecabPython	MecabPython	名詞-固有名詞-組織		
+の	ノ	の	助詞-連体化		
+サンプル	サンプル	サンプル	名詞-一般		
+データ	データ	データ	名詞-一般		
+を	ヲ	を	助詞-格助詞-一般		
+入れ	イレ	入れる	動詞-自立	一段	連用形
+て	テ	て	助詞-接続助詞		
+み	ミ	みる	動詞-非自立	一段	連用形
+ます	マス	ます	助動詞	特殊・マス	基本形
+EOS#!/bin/env python
+#coding:utf-8
+import MeCab
+tagger = MeCab.Tagger("-Owakati")
+print tagger.parse("MecabPythonのサンプルデータを入れてみます")
+$ python mecab-sample.py
+MecabPython の サンプル データ を 入れ て み ます 
+TF・IDF計算
+出現頻度が上位100件のデータのみTF・IDFを計算します。そのためにはまず各単語のTFを計算します。今回単語は名詞だけに限定しました。上のMecabPythonを利用して単語/出現頻度のKey/Valueデータを作成し、ValueでSortをして上位100件取得します。取得した100件に対してTF・IDFを計算し値の降順で出力しています。以下はコードのサンプルと出力結果になります。(jawiki-latest-pages-articles.xmlは7GByteの大量なデータで計算が半日で終わりませんでした。よってInputのデータをここから10万行サンプリングして結果を出しています。これにより本当はNの値が変わるので、そこは気をつけて下さい。全データで実行した結果は後日記載したいと思います。)
+TFの上位100件を基に出力しているので結構ありきたりな単語が出てしまっています。(当たり前といえば当たり前ですが)その辺は本当は絞らずに全データに対してやってみると良いと思います。また記号や数値のゴミデータが目立つので、重要単語抽出という考え方ではそれらは削る方が得策だと思いました。今後はWikipedia以外のデータに対しても実行してみて、比較してみたいと思います。
+#!/bin/env python
+#coding:utf-8
+import MeCab,re
+from xml.dom.minidom import parse
+from math import log
+def getNoun(words):
+noun = []
+tagger = MeCab.Tagger( "-Ochasen" )
+node = tagger.parseToNode( words.encode( "utf-8" ) )
+while node:
+if node.feature.split(",")[0] == "名詞":
+replace_node = re.sub( re.compile( "[!-/:-@[-`{-~]" ), "", node.surface )
+if replace_node != "" and replace_node != " ":
+noun.append( replace_node )
+node = node.next
+return noun
+def getTopKeywords(TF,n):
+list = sorted( TF.items(), key=lambda x:x[1], reverse=True )
+return list[0:n]
+def calcTFIDF( N,TF, DF ):
+tfidf = TF * log( N / DF )
+return tfidf
+if __name__ == "__main__":
+N = 1675757
+tf = {}
+df = {}
+dom = parse( "jawiki-latest-pages-articles.xml" )
+text = dom.getElementsByTagName( "text" )
+for i, text in enumerate( text ):
+df_list = []
+noun = getNoun( text.childNodes[0].data )
+for word in noun:
+try:
+tf[word] = tf[word] + 1
+except KeyError:
+tf[word] = 1
+for word in noun:
+try:
+if word in df_list: 
+continue
+df[word] = df[word] + 1
+except KeyError:
+df[word] = 1
+tfidf = {}
+for k,v in getTopKeywords( tf, 100 ):
+tfidf[k] = calcTFIDF(N,tf[k],df[k])
+for k,v in getTopKeywords( tfidf, 100):
+print k,v
+年 66613.1601091
+( 60811.5789562
+月 41064.7265812
+市 38793.2058157
+、 35897.1092786
+県 35531.6062785
+ref 32550.5063022
+1 27219.3962586
+26629.1034504
+2 26010.7570077
+) 24975.2229491
+日 24845.8575948
+こと 24338.4726683
+br 23043.4252839
+町 21117.4815875
+的 20149.8364309
+4 19529.5668477
+3 18483.5610773
+者 16357.2448111
+。 15986.9689403
+人 14562.1441206
+日本 14473.0081316
+語 13842.7697899
+8 13603.5545074
+国 13283.6854812
+5 13259.0075252
+よう 13063.2902642
+曲 12769.6075236
+6 12728.3569169
+ため 12525.1298452
+style 12443.6880405
+http 12187.5587885
+漫画 11705.4284901
+郡 11523.5422818
+7 11523.5422818
+? 11422.3624209
+学 11404.8366163
+もの 11327.6198548
+Wikipedia 10952.491378
+号 10538.9477452
+9 10358.5046488
+12 10177.4888257
+著作 9665.1650733
+『 9444.90629238
+言語 9396.02171528
+www 9389.90041411
+10 9334.70225252
+の 9273.14817053
+地域 9260.80946614
+name 8981.71851206
+0 8957.5269733
+』 8932.37257793
+地方 8696.0202828
+版 8407.6132549
+家 8351.54449379
+ファイル 8313.26438084
+平成 8301.00136659
+中 8225.64193053
+P 8225.64193053
+jp 8124.31472923
+作品 7985.4170126
+利用 7985.4170126
+Category 7972.85146367
+align 7877.2070575
+場合 7864.54560108
+放送 7864.54560108
+権 7851.87256853
+」 7788.33504843
+「 7718.4425015
+局 7641.44759679
+7404.26942518
+一覧 7365.59145365
+村 7359.32987476
+11 7333.66598997
+都市 7294.79040945
+一 7288.49177514
+人口 7236.84584191
+ゲーム 7217.84800941
+化 7210.95003018
+時代 7204.60782799
+en 6997.71764181
+社会 6939.01187354
+現在 6932.53010674
+日本語 6861.01218133
+6782.54238294
+: 6775.98233098
+right 6704.08453262
+圏 6632.24592806
+部 6553.76901633
+万 6540.41749413
+区 6507.42721569
+ISBN 6468.07593104
+世界 6468.07593104
+記事 6408.80781899
+これ 6369.13715631
+テレビ 6342.89723226
+px 6243.76275419
+jpg 6144.20369991
+後 6097.5637075
+性 5957.66273408
+Mecab Pythonを使ったTF・IDFによるWikipediaの重要単語抽出 - Web就活日記

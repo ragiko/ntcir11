@@ -1,0 +1,21 @@
+ある集合に要素が存在するかどうかはmemberという関数で調べることができる.
+> (setf aset '(a b c d e f g))
+(A B C D E F G)
+;; asetにdがあるかどうか
+> (member 'd aset)
+(D E F G)
+> (setf bset '(a b (c d) e f g))
+(A B (C D) E F G)
+;; bsetに(caddr bset)があるかどうか(式の意味的にあるに決まっているが...)
+> (member (caddr bset) bset)
+((C D) E F G)
+;; bsetに'(c d)があるかどうか
+> (member '(c d) bset)
+NIL
+このように,memberは第一引数で指定したオブジェクトと同じオブジェクトがあれば,それをcar部にもつコンスを返す.デフォルトでは同じオブジェクトかどうかは,eqlで判断される.これは上の例の三つ目のmember式の返り値がnilであることからも想像がつく.これをequalで判断させるには,member関数にキーワード引数と呼ばれるものを指定する.
+> (member '(c d) bset :test #'equal)
+((C D) E F G)
+memberに似た関数member-ifは引数で指定されたリストから,引数で指定された述語を満たす要素をcar部にもつコンスを返す.
+> (member-if #'consp '(a b (c d) e))
+((C D) E)
+集合とキーワード引数

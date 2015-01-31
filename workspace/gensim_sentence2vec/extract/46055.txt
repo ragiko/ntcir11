@@ -1,0 +1,25 @@
+トップページ > リンク・画像タグ > リンクを貼る
+リンクを貼るタグ <A Href="URL">〜</A>
+<A Href="http://www.yahoo.co.jp/">Yahoo!JAPAN</A>
+Yahoo!JAPAN
+オンマウスで説明文
+<A Href="http://www.yahoo.co.jp/"  Title="説明文">Yahoo!JAPAN</A>
+Yahoo!JAPAN  マウスを乗せてみて下さい。
+別窓でリンク <A Href="URL" Target="_blank">〜</A>
+<A Href="http://www.yahoo.co.jp/" Target="_blank">Yahoo!JAPAN</A>
+Yahoo!JAPAN
+ターゲットとは…
+リンクの方法です。別窓でリンクするのか、
+フレームのページの場合はフレームを取り除いてリンクするのか。
+ターゲットの種類
+Target="_blank"・・・・別枠を開いたリンク
+Target="_top"・・・・全てのフレームを取り払うリンク
+Target="_self"・・・・同じ枠でリンク
+Target="_parent"・・・・一番外のフレームは残す。
+Target="フレーム名"・・・・フレームから別フレームへのリンク
+<例>
+<A Href="http://www.yahoo.co.jp/" Target="_blank">Yahoo!JAPAN</A>
+Yahoo!JAPAN
+リンクを装飾する方法はこちら。
+ページトップ 
+リンクを貼るタグ/リンク・画像タグ/みんなのタグ辞書/HTMLタグ辞書

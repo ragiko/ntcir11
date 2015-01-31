@@ -1,0 +1,67 @@
+この例では、watershed セグメント化を使用してイメージ内で接触しているオブジェクトを分離する方法を示します。Watershed 変換は、この問題によく適用されます。Watershed 変換は、明るいピクセルを高い表面、暗いピクセルを低い表面として扱うことにより、イメージ内の "集水域 (catchment basins)" と "流域の稜線 (watershed ridge lines)" を検出します。
+前面のオブジェクトと背景の位置を識別、あるいは "印付け" することができる場合、Watershed 変換を使ったセグメント化はうまく機能します。マーカーをコントロールした watershed セグメント化は、以下の手順になります。
+1. セグメント化関数を計算します。これは、暗い領域をセグメント化しようとするオブジェクトのイメージです。
+2. 前景のマーカーを計算します。これらは、各オブジェクト内のピクセルの連結された粒子です。
+3. 背景のマーカーを計算します。これらは、任意のオブジェクトの一部ではないピクセルです。
+4. 前景と背景のマーカーの位置が最小となるようにセグメント化関数を修正します。
+5. 修正したセグメント化関数の Watershed 変換を計算します。
+fspecial、imfilter、watershed、label2rgb、imopen、imclose、imreconstruct、imcomplement、imregionalmax、bwareaopen、graythresh、および imimposemin などを含む数種の Image Processing Toolbox™ の関数が使用されています。
+手順 1: カラー イメージの読み取りとグレースケールへの変換rgb = imread('pears.png');
+I = rgb2gray(rgb);
+imshow(I)
+text(732,501,'Image courtesy of Corel(R)',...
+'FontSize',7,'HorizontalAlignment','right')
+手順 2: 勾配の大きさをセグメント化関数として使用ソーベル エッジ マスク imfilter および簡単な算術を使用して、勾配振幅を計算します。勾配はオブジェクトの境界線で高く、オブジェクトの内部で低くなります (ほとんどの場合)。hy = fspecial('sobel');
+hx = hy';
+Iy = imfilter(double(I), hy, 'replicate');
+Ix = imfilter(double(I), hx, 'replicate');
+gradmag = sqrt(Ix.^2 + Iy.^2);
+figure, imshow(gradmag,[]), title('Gradient magnitude (gradmag)')
+勾配振幅で watershed 変換を直接使用することにより、イメージをセグメント化できますか?L = watershed(gradmag);
+Lrgb = label2rgb(L);
+figure, imshow(Lrgb), title('Watershed transform of gradient magnitude (Lrgb)')
+いいえ。下記のマーカー計算などの追加の事前処理なしでは、watershed 変換を直接使用すると、結果は "oversegmentation" となります。手順 3: 前景オブジェクトのマーク付けさまざまな手順をここに適用して前景のマーカーを検出します。これは各前景オブジェクト内のピクセルの連結された粒子でなければなりません。この例では、"opening-by-reconstruction" および "closing-by-reconstruction" と呼ばれるモルフォロジー手法を使用して、イメージを "消去" します。これらの操作は、imregionalmax を使用して配置できる各オブジェクト内のフラット最大値を作成します。オープン処理は、縮退の後に膨張を行ないます。opening-by-reconstruction は縮退の後にモルフォロジー再構成を行います。この 2 つを比較します。まず、imopen を使用してオープン処理を計算します。se = strel('disk', 20);
+Io = imopen(I, se);
+figure, imshow(Io), title('Opening (Io)')
+次に imerode および imreconstruct を使用して opening-by-reconstruction を計算します。Ie = imerode(I, se);
+Iobr = imreconstruct(Ie, I);
+figure, imshow(Iobr), title('Opening-by-reconstruction (Iobr)')
+オープン処理の後でクローズ処理をすると、暗斑およびステム マークを削除できます。通常のモルフォロジー クローズ処理と closing-by-reconstruction を比較します。最初に imclose を試行します。Ioc = imclose(Io, se);
+figure, imshow(Ioc), title('Opening-closing (Ioc)')
+そして、imdilate を使用し、その後 imreconstruct を使用します。imreconstruct のイメージ入力と出力を補足しなければならないことに注意してください。Iobrd = imdilate(Iobr, se);
+Iobrcbr = imreconstruct(imcomplement(Iobrd), imcomplement(Iobr));
+Iobrcbr = imcomplement(Iobrcbr);
+figure, imshow(Iobrcbr), title('Opening-closing by reconstruction (Iobrcbr)')
+Iobrcbr と Ioc を比較すると、オブジェクトの全体の形状に影響を与えずに小さな傷を削除する際、再構成ベースのオープン処理およびクローズ処理が標準のオープン処理およびクローズ処理よりも効率的であることがわかります。Iobrcbr の局所的最大値を計算して、適切な前景のマーカーを取得します。fgm = imregionalmax(Iobrcbr);
+figure, imshow(fgm), title('Regional maxima of opening-closing by reconstruction (fgm)')
+結果を解釈するには、前景マーカー イメージを元のイメージに重ね合わせます。I2 = I;
+I2(fgm) = 255;
+figure, imshow(I2), title('Regional maxima superimposed on original image (I2)')
+最も遮蔽され影になったオブジェクトのいくつかはマークされていません。これらのオブジェクトが、最終結果で適切にセグメント化されないということです。また、オブジェクトの前景マーカーがオブジェクトのエッジにまで到達しています。マーカー粒子のエッジをきれいにし、縮小する必要があります。クローズ処理の後の縮退処理によって、実行できます。se2 = strel(ones(5,5));
+fgm2 = imclose(fgm, se2);
+fgm3 = imerode(fgm2, se2);
+この手順は、削除されなければならない散在して孤立したピクセルを残す可能性があります。関数 bwareaopen を使用することにより、一定数のピクセルより少ないすべての粒子を削除できます。fgm4 = bwareaopen(fgm3, 20);
+I3 = I;
+I3(fgm4) = 255;
+figure, imshow(I3)
+title('Modified regional maxima superimposed on original image (fgm4)')
+手順 4: 背景マーカーの計算ここで、背景にマークを付ける必要があります。クリーンアップされたイメージ Iobrcbr では、暗い色のピクセルは背景に属するため、しきい値処理から開始できます。bw = im2bw(Iobrcbr, graythresh(Iobrcbr));
+figure, imshow(bw), title('Thresholded opening-closing by reconstruction (bw)')
+背景ピクセルは黒色ですが、背景マーカーがセグメント化するオブジェクトのエッジに近すぎないことが理想です。bw の前景の "skeleton by influence zones" すなわち SKIZ を計算することにより、背景を "希薄" にします。これは、bw の距離変換の watershed 変換を計算し、結果の流域の稜線 (DL == 0) を探すことにより、実行できます。 D = bwdist(bw);
+DL = watershed(D);
+bgm = DL == 0;
+figure, imshow(bgm), title('Watershed ridge lines (bgm)')
+手順 5: セグメント化関数の Watershed 変換の計算関数 imimposemin は、イメージが特定の場所にのみ局所的最小値をもつように、イメージを変更するために使用できます。ここで、関数 imimposemin を使用して、局所的最小値のみが前景と背景マーカー ピクセルで発生するように、勾配振幅イメージを変更します。gradmag2 = imimposemin(gradmag, bgm | fgm4);
+これで、watershed ベースのセグメント化を計算する準備ができました。L = watershed(gradmag2);
+手順 6: 結果の可視化可視化の手法の 1 つは、前景マーカー、背景マーカー、およびセグメント化されたオブジェクトの境界線を元のイメージに重ね合わせる手法です。必要に応じて膨張を使用し、オブジェクトの境界など特定の局面をより明確にします。オブジェクトの境界線は L == 0 にあります。I4 = I;
+I4(imdilate(L == 0, ones(3, 3)) | bgm | fgm4) = 255;
+figure, imshow(I4)
+title('Markers and object boundaries superimposed on original image (I4)')
+この可視化は、前景および背景マーカーの場所が結果に与える影響を示します。いくつかの場所では、遮蔽されたオブジェクトは前景マーカーをもたないため、部分的に遮蔽された暗い色のオブジェクトは、隣接する明るい色のオブジェクトにマージされます。別の便利な可視化の手法は、ラベル行列をカラー イメージとして表示することです。watershed および bwlabel で作成されたようなラベル行列は、label2rgb を使用して、可視化目的のためにトゥルーカラー イメージに変換できます。Lrgb = label2rgb(L, 'jet', 'w', 'shuffle');
+figure, imshow(Lrgb)
+title('Colored watershed label matrix (Lrgb)')
+透明性を使用して、この疑似色ラベル行列を元の強度イメージに重ね合わせることができます。figure, imshow(I), hold on
+himage = imshow(Lrgb);
+set(himage, 'AlphaData', 0.3);
+title('Lrgb superimposed transparently on original image')
+マーカー コントロール付き watershed セグメント化 - MATLAB & Simulink Example - MathWorks 日本

@@ -1,0 +1,75 @@
+
+CakePHPのModelでの多言語対応パターンをまとめてみました。
+多言語対応についてはこちら
+*マニュアル*
+http://book.cakephp.org/2.0/en/core-libraries/internationalization-and-localization.html
+まずは言語の切り替え方法
+``` php
+Configure::write('Config.language', 'ja'); # 日本語
+Configure::write('Config.language', 'en'); # 英語
+```
+次に、言語ごとのメッセージを定義
+``` app/Locale/jpn/LC_MESSAGES/default.po
+msgid "validate_error_empty"
+msgstr "必須項目です"
+```
+``` app/Locale/eng/LC_MESSAGES/default.po
+msgid "validate_error_empty"
+msgstr "Required field"
+```
+## ここからが本題。
+validationのメッセージ出力方法は3パターンあります。
+1,default.poに定義した内容をそのまま利用
+2,別ファイル[validate.po]を作成して利用
+3,別ファイル[validate.po]を作成するけどパターン1と同じ方法で多言語対応
+### パターン1
+一番シンプルなパターンです。
+``` php
+public $validate = array(
+'test' => array(
+'notEmpty' => array(
+'rule' => array('notEmpty'),
+'message' => 'validate_error_empty' # [msgid]で設定した文字列
+)
+),
+);
+```
+これだけでConfigureの設定に従って言語ごとのエラーメッセージを取得可能です。
+### パターン2
+defaulut.poに全てをまとめると肥大化しすぎてしまうため、
+同じ階層に別ファイル[validate.po]を作成し、そちらで定義する。
+```Model
+public $validate = array();
+public function beforeValidate($options=array()) {
+$this->validate = array(
+'test' => array(
+'notEmpty' => array(
+'rule' => array('notEmpty'),
+'message' => __d('validate', 'validate_error_empty')
+)
+),
+);
+return parent::beforeValidate($options);
+}
+```
+別ファイルの場合、__d()関数でファイル名を指定する関係でbeforeValidate()で定義します。
+### パターン3
+パターン2の用にするのは嫌だ!!という場合、AppModelのbeforeValidate()で強制的に上書きします。
+validateの定義はパターン1と同じです。
+``` app/Model/AppModel.php
+public function beforeValidate($options=array()) {
+foreach ($this->validate as &$validate) {
+foreach ($validate as &$column) {
+if (!empty($column['message'])) {
+$column['message'] = __d('validate', $column['message']);
+}
+}
+}
+return parent::beforeValidate($options);
+}
+```
+### 最後に
+多言語対応の方法はControllerでもViewでも同じです。
+もしサイト全体を多言語対応する可能性がある場合は、default.poだけでは肥大化しすぎるため、
+適切にファイルを分けて全てのメッセージをapp/Locale以下に定義するようにしておくと幸せになれると思います。
+CakePHP2系でModelのmessageを多言語対応(localization) - Qiita

@@ -1,0 +1,419 @@
+
+akira,Dino マクロ集
+akira32II,akira32Gold のマクロは「Script-A」と言います(DinoはScript-A')。文字列処理からakira,Dinoの設定変更までいろいろな事が出来ます。以下は僕が作ったマクロです。試してみてください。改造、再配布は自由です。どんどん改良して自分用のマクロにしてください。
+Dino Ver3 以降,akira21ではScript-Aマクロが動かない場合があります。そのときはForthマクロページ,Script-A'マクロページにあるマクロを試してみてください。
+[Update: 2001-12-08]
+[What's new
+| Forthマクロ
+| Dino Ver3,akira21用Script-A'マクロ
+]
+[関連リンク
+| akira,Dinoのマクロ作者の方へ]
+[ダウンロード
+| 以前の更新履歴
+]
+佐々川猛彦のホームページへ戻る
+What's new
+[A] : akira32II で使用可能
+[G] : akira32Gold で使用可能
+[D] : Dino で使用可能
+[DX] : DinoX で使用可能
+[D3] : Dino Ver3 で使用可能
+[DX3] : DinoX Ver3 で使用可能
+[ak21] : akira21 で使用可能
+[ak21++] : akira21++ で使用可能
+2001-12-08 [A][G][D][DX]HTML化キット 拡張キット
+2001-12-08 [A][G][D][DX] Script-A 作成支援メニューはHTML化キット 拡張キットに統合
+2001-04-04 otk_mac.dll Ver1.05
+2001-04-04 [A][G]X-Face表示マクロ Ver1.1
+2000-04-14 [A][G][D][DX]大文字小文字変換マクロ 新規登録
+2000-04-14 [A][G][D][DX]キャレット移動拡張マクロ Ver 1.1
+2000-02-27 [D][DX]半自動改行挿入マクロ 1.6 dino,dinox用
+2000-01-26 [A][G][D][DX]マクロ一覧マクロ Ver1.0新規登録
+2000-01-21 [DX]メール本文テキストファイルDino用新規登録
+1999-12-23 [G][DX]署名選択挿入マクロ Ver1.0 新規登録
+1999-12-23 [G][DX]アドレス検索、設定マクロ Ver1.0 新規登録
+1999-10-30 [A][G][D][DX]diredモードマクロ Ver1.0 新規登録
+1999-08-19 [A][G][D][DX]選択範囲スクラップマクロ Dino版新規登録
+1999-06-24 [G][DX]数字付 Subject 修正マクロ ver1.2 DinoX用登録
+1999-06-24 [A][G][D][DX]ローカルリンクジャンパー 1.1
+1999-06-24 [A][G][D][DX]JISコード変換支援マクロ 1.45 Dino用登録
+1999-05-06 [A][G][D][DX]現在時刻ユーザ設定文字列挿入マクロ 新規登録
+1999-03-02 [A][G][D][DX]一行のカラム数変更マクロ Ver1.1
+1999-02-17〜1999-02-23分は主にDinoへの対応です
+1999-02-23 [A][G][D][DX]右寄せ、左寄せ、センタリングマクロ Ver1.21
+1999-02-23 [A][G][D][DX]URL encode 文字列のデコードマクロ Ver1.11
+1999-02-23 [A][G][D][DX]現在時刻挿入マクロ Ver1.31
+1999-02-23 [A][G][D][DX]拡張TABマクロ Ver1.01
+1999-02-23 [A][G][D][DX]お気に入り Ver1.21
+1999-02-23 [A][G][D][DX]再Grepマクロ Ver1.01
+1999-02-23 [A][G][D][DX]HTMLChecker Ver0.966
+1999-02-22 [A][G][D][DX]下線、傍線、傍点マクロ Ver1.2
+1999-02-17 [A][G][D][DX]全角半角相互変換マクロ Ver1.4
+1999-02-17 [A][G][D][DX]ひらがなカタカナ変換マクロ Ver1.2
+1997-11-13 [A][G]半自動改行挿入マクロ Ver 1.51.6
+1997-10-26 [G]メール本文テキストファイル 新規登録
+1997-09-30 [A][G]似非LESS Ver 1.31.4
+以前の更新履歴
+関連リンク
+akira32IIのページのマクロ集
+akira シリーズの作者、綾の明さんのakira32II,akira32Gold のサポートページで、いろいろなマクロが登録されています。
+漢字チェックマクロ
+英数カナ記号、教育漢字の1年〜6年、教育漢字以外の常用漢字、人名用漢字、その他、の10分類の文字を検索するマクロ(シェアウェア)本宮明典さん作
+16進ダンプ/逆ダンプ/ウィンドウサイズ調整
+akira 上でバイナリファイルを編集するマクロです。だーしゅ!さん作
+ヘルパーアプリケーション
+Menu Editor
+akira32II, akira32Gold のメニューをD&Dでカスタマイズするアプリケーション。本宮明典さん作
+akira,Dinoのマクロ作者の方へ
+macroinfo.txtのマクロヘッダへの対応をしてもらえると助かります。今のところマクロ一覧マクロと本宮さんのMenu Editorが対応しています。
+ダウンロード
+[A][G][D][DX]大文字小文字変換マクロ Ver1.0 
+キャレット位置、または選択範囲の英単語の大文字小文字を切りかえるマクロです。
+case  Case  CASE  case ... の順に切り替わります。
+あるいは case  Case  CASE  case ...
+手抜きなので頭文字が切り替わるのは選択範囲の先頭だけです(^^;
+ヘルプ (Plaintext)
+Download : caserot10.lzh
+( 2000-04-14 : 
+2kbyte)
+[A][G][D][DX]キャレット移動拡張マクロ Ver1.1 
+キャレット上下移動の際にキャレットが画面上下端に達する前にスクロールをはじめるようにするフックマクロです。
+また、「ファイル末尾へ移動」でファイル末尾が画面下端に来るようにするマクロ、編集行を画面中央にくるよう再表示するマクロも同梱しています。
+ヘルプ (Plaintext)
+Download : carethook11.lzh
+( 2000-04-14 : 
+4kbyte)
+otk_mac.dll Ver1.05 
+akiraのScript-Aを拡張するDLLです。
+一部のマクロを実行するために必要です。
+ヘルプ (Plaintext)
+Download : otkmacdll105.zip
+(
+2001-04-04 : 
+172kbyte)
+Download :ソース otkmacsrc105.zip
+(
+2001-04-04 : 
+330kbyte)
+[A][G][D][DX]マクロ一覧マクロ Ver1.0 
+macrosディレクトリ内のマクロを一覧表示します。そこからマクロを実行することが出来ます。
+akira,Dinoへのマクロ登録やキー設定をしていないマクロも実行することが出来ます。
+実行にはotk_mac.dll Ver1.02以降が必要です
+マクロ作者の方へ:同梱のmacroinfo.txtのマクロヘッダへの対応をしてもらえると助かります。今のところこのselmacro.aと本宮さんのMenu Editorが対応しています。
+DinoX Ver3 以降, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : selmacro10.lzh
+( 2000-01-26 : 
+11kbyte)
+[G][DX]アドレス検索、設定マクロ Ver1.0 
+アドレスを検索して、メニューで選んだアドレスをアドレス欄に挿入するマクロです。
+Dino用マクロの実行にはotk_mac.dll Ver1.01以降が必要です
+DinoX Ver3 以降, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)(Dino用)
+Download(akira用) : seladr10-akira.lzh
+( 1999-12-23 : 
+4kbyte)
+Download(Dino用) : seladr10-dino.lzh
+( 1999-12-23 : 
+4kbyte)
+[G][DX]署名選択挿入マクロ Ver1.0 
+メール作成画面で署名を選択して挿入するマクロです。
+Dino用マクロの実行にはotk_mac.dll Ver1.01以降が必要です
+DinoX Ver3 以降, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)(Dino用)
+Download(akira用) : selsig10-akira.lzh
+( 1999-12-23 : 
+1kbyte)
+Download(Dino用) : selsig10-dino.lzh
+( 1999-12-23 : 
+3kbyte)
+[A][G][D][DX]diredモードマクロ Ver1.0 
+emacs の dired モードを模したマクロです。
+実行にはotk_mac.dll Ver1.00以降と、
+lsコマンド(cygnusのcygwin b20.1 の full.exe か usertools.exe内のもの推奨)が必要です
+ヘルプ (Plaintext)
+Download(akira用) : dired10-akira.lzh
+( 1999-10-30 : 
+7kbyte)
+Download(Dino用) : dired10-dino.lzh
+( 1999-10-30 : 
+7kbyte)
+[A][G]X-Face表示マクロ Ver1.1 
+メールやニュースにはX-Face:ヘッダを使って48x48ドットの画像が付いてくることがあります。このマクロはその画像を表示します。いちおうカラー/マルチ/アニメ X-Faceにも対応しています。
+実行にはotk_mac.dll Ver1.05以降が必要です。
+DinoX Ver3 以降, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : dispxface11.zip
+( 2001-04-04 : 
+8kbyte)
+[A][G][D][DX]現在時刻ユーザ設定文字列挿入マクロ 
+akira32II,akira32Goldにある現在の時刻を挿入する機能の強化版です。また、Dinoの場合挿入パターンを変える事が出来ないので、Dinoでデフォルトと違うパターンで日付を挿入するのに役立つでしょう。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : datetime10.lzh
+(
+1999-05-06 : 
+9kbyte)
+[A][G][D][DX]一行のカラム数変更マクロ 
+・一行のカラム数を変更するマクロです。メニューで変更します。
+・自分のよく使う桁数を3つ登録出来ます。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : chglocol11.lzh
+(
+1999-03-02 : 
+2kbyte)
+[A][G][D][DX]お気に入り Ver1.21 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.8b で動作確認
+登録しておいた、よく使うファイルをメニュー表示して開きます。
+要するにInternet Explorer 4.0 のお気に入りのようなことをします。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : okini121.lzh
+( 
+1999-02-23 : 
+16kbyte)
+[A][G][D][DX]拡張TABマクロ Ver1.01 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.8b で動作確認
+論理行単位で動作するTAB挿入,削除マクロです。
+選択状態
+論理行行頭にTABを挿入
+Shiftキーが押されていれば論理行行頭の、TABかTAB相当のspaceを削除
+選択状態でない場合
+論理行行頭か現在位置に、TABを挿入
+Shiftキーが押されていれば論理行行頭か現在位置の、TABかTAB相当のspaceを削除
+ヘルプ (Plaintext)
+Download : exttab101.lzh
+( 
+1999-02-23 : 
+4kbyte)
+[A][G][D][DX]現在時刻挿入マクロ  
+[A][G][D][DX]カレンダーマクロRX 
+[A][G][D][DX]ファイル情報表示マクロ 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.8b で動作確認
+akira32II,akira32Gold,Dino 本体にも現在の時刻を挿入する機能はありますが、 1 種類しか登録出来ません。なので、いろいろなパターンの日付や時刻を挿入したいときに使ってください。また、簡易世界時計にもなります。
+カレンダーからはカーソル位置の日付をクリップボードに入れる事が出来ます。
+ファイル情報表示マクロは表示中のファイルの情報(作成日、サイズ等)を表示します。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロのカレンダーマクロ,現在時刻挿入マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : nowtim131.lzh
+( 1999-02-23 : 
+33kbyte)
+[A][G][D][DX]URL encode 文字列のデコードマクロ Ver1.1 
+akira32II,akira32Gold
+Dino Ver1.00.8b で動作確認
+URL encode された文字列(%1B%24B5W@n%21%210%3D%1B%28J 等)をデコードします。変換範囲を選択して実行してください。範囲選択しないとクリップボードの文章をデコードしようとします。
+HTTPのログに URL encode 文字列があったとき等に使えると思います。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : urldecode111.lzh
+(
+1999-02-23 : 
+4kbyte)
+[A][G][D][DX]右寄せ、左寄せ、センタリングマクロ Ver1.2 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.8b で動作確認
+右寄せ、左寄せ、センタリングをするマクロです。
+範囲を指定した場合は指定範囲を行単位で(桁は見ません)、選択してない場合はカーソルのある行の文字列を処理します。
+範囲選択してない場合はテーブル(罫線素片)も意識します。
+また、1桁、或いはユーザー設定で任意の桁数移動する事が出来ます。実行してメニューで寄せの種類を選んでください。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : lcrjust12.lzh
+(
+1999-02-23 : 
+21kbyte)
+[A][G][D][DX]再Grepマクロ Ver1.01 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.8b で動作確認
+Grep結果のファイルを対象に再びgrep、あるいはgrep結果のファイルを全て開きます
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : regrep101.lzh
+( 
+1999-02-23 : 
+7kbyte)
+[A][G]HTMLChecker Ver0.966 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.8b で動作確認
+正しいHTML かどうかを調べるマクロです。
+ヘルプ (Plaintext)
+Download : htchk0966.lzh
+(
+1999-02-23 : 
+57kbyte)
+[A][G][D][DX]HTML化キット 拡張キット 
+akira32II,akira32Gold Ver4.57i 以降
+動作には otk_mac.dll Ver.1.01 以降が必要
+DinosaurX v3.00.5 以降
+akira21++ v1.00.5 以降で動作確認
+動作には otk_lib ver1.6以降が必要です。
+akira32,Dino,akira21のHTMLメニューの拡張キットです。
+xhtml1.1
+xhtml1.0
+HTML4.01
+HTML4.01のCharacter entity references
+Netscape Navigator4.0x,Internet Explorer 4.0x の独自拡張タグ
+i-mode HTML
+i-mode 絵文字
+CSS, CSS2
+Script-A'(Dino,akira21用マクロ)
+Script-A (akira32用マクロ)
+を入力できます。
+ヘルプ (Plaintext)
+Download : htmlmenu20011208.zip
+( 2001-12-08 : 
+238kbyte)
+[A][G][D][DX]下線、傍線、傍点マクロ 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.8b で動作確認
+・下線、二重下線、傍線、傍点を引くマクロです。
+選択範囲の次行に下線または前行に傍線を引きます。
+~~~~~~~~~~
+・・
+又は二重下線、傍点
+========
+............
+(半角文字にはkonnnakannji)。以上を実行時メニュー選択します。
+選択されていない場合カーソル位置の語に線を引きます。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : underline12.lzh
+(
+1999-02-23 : 
+2kbyte)
+[A][G][D][DX]ひらがなカタカナ変換マクロ Ver1.2 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.6b で動作確認
+ひらがなカタカナ変換をするマクロです。変換範囲を指定して実行した場合選択範囲を変換、範囲指定しない場合はカーソル位置の語を変換します。
+(半角全角)カタカナ全角ひらがな変換マクロ kata5hira.a は、変換範囲を指定して実行した場合、メニューで変換方向を選択、範囲指定しない場合は、カーソル位置の字種がひらがなの場合は全角ひらがな全角カタカナ、カーソル位置の字種がカタカナの場合(半角全角)カタカナ全角ひらがな変換をします。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : kana5kata12.lzh
+(
+1999-02-17 : 
+7kbyte)
+[A][G][D][DX]全角半角相互変換マクロ Ver1.4 
+akira32II,akira32Gold Ver4.11i 以降
+Dino Ver1.00.6b で動作確認
+全角半角変換をするマクロです。変換したい範囲を指定して実行してください。選択状態ではない時はカーソル位置の語を変換します。
+h5zchg.a は選択範囲の全角半角文字を数えて、全角が多ければ半角に、半角が多ければ全角に変換します。普通はこれ一つで十分だと思います。
+zen2hanm.a, han2zenm.a は実行時にメニューで変換する字種を選択します。メニューの「ユーザー定義」はマクロをカスタマイズして選んだ字種を変換します。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : h5zchg14.lzh
+(
+1999-02-17 : 
+14kbyte)
+[A][G][D][DX]ローカルリンクジャンパー Ver1.1 
+引用符 または括弧 () で囲まれて記述されている相対ファイルを開きます。主にHTMLファイル中の相対URLを対象にしていますが Windowsの絶対パスも開く事が出来ます。またHTMLのリンクのアンカーに対応しています。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download(akira用) : linkjump11.lzh
+(1999-06-24 : 
+5kbyte)
+Download(Dino用) : linkjump11.dino.lzh
+(1999-06-24 : 
+5kbyte)
+[A][G][D][DX]JISコード変換支援マクロ 
+ISO-2022-JPに変換できない文字チェックマクロ jischeck.a
+インターネットで使われる ISO-2022-JP には1バイト片仮名
+(いわゆる半角カナ)は含まれません。また 機種依存文字
+(PC-9801 シリーズの丸付き数字や拡張漢字、IBM拡張漢字
+これらは Windows でも使用可能) などは JIS X 0208 (新旧 JIS)
+で定義されていません。それらの文字を探し出すマクロです。
+カーソル位置から文章末尾方向へ検索します。
+見つかったらその場で安全な文字に変換出来ます。
+ISO-2022-JPに変換できない文字チェック(メール送信時)
+akira32Gold、DinoX専用
+jischeck.a の機能をメール送信時に使うマクロです。
+メールで使用してはいけない文字を送信しないために使います。
+この場合メールの先頭からチェックし、またSubjectもチェックします。
+見つかったらその場で安全な文字に変換出来ます。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はForthマクロの方を使ってください。
+ヘルプ (Plaintext)
+Download(akira用) : tojissup145.lzh
+(1998-09-19 : 
+30kbyte)
+Download(Dino用) : tojissup145.dino.lzh
+(1999-06-24 : 
+29kbyte)
+[G][DX]数字付 Subject 修正マクロ Ver1.2 
+メール作成画面で Re: Re^2: 等の付いたSubjectを修正します。
+Re:, Re^3:, Re*3:, Re[3]:, Re3: のいずれかに変更します。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download(akira32Gold用) : modifyre12.lzh
+( 1998-09-27 : 
+2kbyte)
+Download(DinosaurX用) : modifyre12.dinox.lzh
+( 1999-06-24 : 
+3kbyte)
+[A][G]半自動改行挿入マクロ Ver 1.6 
+指定桁数に改行を挿入、次行連結するマクロです。範囲選択しない場合はカーソルのある行に改行挿入、範囲指定した場合は指定範囲行に改行挿入します。メールの引用文にも対応しています。
+マクロ実行時にシフトキーが押されていて、かつ範囲選択されてい
+ない場合、カーソルのある段落を選択した状態で整形します。
+たとえば Ctrl+Return に登録した場合は今まで通りの動作をし、Shift+Return に登録すれば、カーソル位置の段落を整形するといった使い分けができます。
+この場合同じマクロに 2 つの操作キーを登録するだけでOKです。(デフォルトでこの機能はONになっていますが、OFFにもできます。)
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download(akira用) : insertcr16.lzh
+( 1997-11-13 : 
+15kbyte)
+Download(Dino用) : insertcr16-dino.lzh
+( 2000-02-27 : 
+11kbyte)
+[G]メール本文テキストファイル 
+akira32Gold において、エディタ部で作成中の文章をメール作成画面に送ったり、表示メールの本文を無題ファイルに送ったりします。
+ヘルプ (Plaintext)
+Download : mail5txt.lzh
+( 1997-10-26 : 
+1kbyte)
+[DX]メール本文テキストファイル 
+DinoX において、表示メールの本文を別プロセスのDinoで表示します。
+範囲選択している場合は選択範囲をコピーします。
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download : mail2txt-dino.lzh
+( 2000-01-21 : 
+1kbyte)
+[A][G]似非LESS Version 1.4 
+akira で動くページャがほしかったので、UNIX でおなじみのless を手本に作ってみました。が、挙動不審なlessになってしまいました(^^;。なので似非LESSなのれす・・・
+akira はエディタなのでテキストの閲覧はそもそもお手の物です。less や Miel のようなキー操作での閲覧もキー定義が自由自在なakiraですから問題無いのですが、カーソルキーをスクロールに割り当てると普段のテキスト入力時に戸惑ってしまいます。
+と言うわけで、マクロ起動中はテキスト閲覧に特化したキー操作とスクロールが出来るようにした物がこのマクロです。右カーソルで半画面スクロール、スペースで1画面スクロール、下カーソルで1行スクロールといった具合です。
+主な機能は以下の通りです
+スクロール
+ペアマッチ
+キーボードマクロ実行
+上記機能実行回数指定
+HTMLリンクジャンプモード
+簡易インクリメンタルサーチ
+ユーザマークジャンプ
+キャレット位置で辞書引き
+ヘルプ (Plaintext)
+Download : eseles14.lzh
+( 1997-09-30 : 
+12kbyte)
+[A][G][D][DX]選択範囲スクラップマクロ 
+範囲を選択して実行すると、選択範囲を指定ファイルに追加書きします。メールならSubject等、普通のファイルならファイル名もいっしょに書き出します。
+akiraのアウトライン機能を使うと Subject だけの表示等もできてさらに便利かも
+Dino, DinoX Ver3 以降, akira21, akira21++を使用している場合はScript-A'マクロの方を使ってください。
+ヘルプ (Plaintext)
+Download(akira用) : selscrap.lzh
+( 1997-08-31 : 
+2kbyte)
+Download(Dino用) : selscrap10-dino.lzh
+( 1999-08-19 : 
+3kbyte)
+佐々川猛彦のホームページへ戻る
+データ作成者:佐々川猛彦@リムネット大阪ドメイン
+データの間違いや質問は以下までお願いします。
+このページへのリンクはご自由にどうぞ。
+Copyright (C) 1997-2001 
+Takehiko Sasakawa.
+All rights reserved.
+akira,Dino のマクロ集

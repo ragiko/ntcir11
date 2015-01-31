@@ -1,0 +1,195 @@
+推定経過の出力の間隔
+入出力仕様
+amis を利用するには,上で述べた設定ファイルの他に,
+モデルファイル, イベントファイル
+を用意する必要があります.それぞれについて以下で説明します.
+各ファイルにおいて,# から行末まではコメントとして無視されます.コメント
+はスペースと同等の扱いとなります.各トークンはスペースまたはタブで区切
+られ,改行文字が行の終りを表します.また,コロン(:)は特別な文字として
+認識されます.これらの特別な文字をトークンの一部として使いたい時は,バッ
+クスラッシュ(\)でエスケープしてください.バックスラッシュ自身は \\ で
+表します.
+入力モデルファイル
+モデルファイルは,素性関数の名前と,それに対応する重みの初期値を与えるファイルです.
+素性名    初期値
+素性名    初期値
+素性名    初期値
+...
+一行が一素性に対応し,各行には素性名と素性の重みの初期値を,スペースまたはタブで区切って記述します.
+素性名には,スペース,タブ,コロン(:),シャープ(#)以外の文字ならなんでも使えます.
+初期値は C スタイルの実数で記述します.
+初期値は正の実数(FEATURE_WEIGHT_TYPEがlambdaなら任意の実数)
+ならいくつでも構いませんが,
+普通は 1.0 (FEATURE_WEIGHT_TYPEがlambdaなら0.0)にします.
+入力イベントファイル
+イベントファイルでは,学習データとなる事象のリストを与えます.
+最大エントロピー法における事象は,観測事象(observed event)と補完事象(complement event)からなります.
+補完事象には,観測事象以外の,想定される選択肢を列挙します.
+各々の事象は,観測事象と補完事象の和集合のなかから,観測事象を選びとることと見なすことが出来ます.
+実際には,観測事象,補完事象ともに,そこで観測された素性を列挙することによって記述します.
+イベントファイルの形式は,Amis形式,AmisFix形式,およびAmisTree形式から選ぶことが出来ます.
+AmisFix形式は一定数のラベル集合から,分類対象に付与するラベルを選ぶ問題に使います.
+AmisTree形式は feature forest に対するパラメータ推定アルゴリズムを利用する時に使います.
+Amis形式とAmisTree形式は,理論的には同等の表現力を持ちますが,
+feature forestがコンパクトに記述できるような問題では,
+速度,メモリともにAmisTree形式のほうが大幅に高効率となります.
+AmisFix形式は,表現力が制限されますが,単純な分類問題ではAmis形式に比べて消費メモリが少なくなります.
+ただし,速度はAmis形式のほうが速くなる可能性があります.
+Amis形式
+event_1
+1    素性 素性 素性 ...
+0    素性 素性 素性 ...
+0    素性 素性 素性 ...
+0    素性 素性 素性 ...
+...
+event_2
+0    素性 素性 素性 ...
+1    素性 素性 素性 ...
+0    素性 素性 素性 ...
+...
+...
+ただし,「素性」の部分には,
+素性名
+を書きます.
+FEATURE_TYPEでintegerやrealを指定した場合は
+素性名:素性の値
+を書くこともできます.
+空行で分けられたブロックが一つの事象に対応します.一行目には,事象の名
+前を記述します.事象名には,上述した特殊文字以外の任意の文字が使えます.
+事象名は,推定には影響を与えないので,意味のない文字列でも構いません.
+次の行からは,各行に観測事象または補完事象を記述します.行の先頭には,
+その事象の観測回数を記述します.観測事象の場合は正の数,補完事象の場合
+は0になります.一つの事象につき観測事象は一つしか記述できません.
+観測回数の後ろに,発火した素性を列挙します.
+素性は,モデルファイルで記述したものを指定します.モデルファイルにない
+素性を指定するとエラーになります.各素性の後ろには,素性関数の値を指定
+することができます.上の例の通り,コロン(:)に続けて素性関数の値を指定
+します.省略した場合は1とみなされます.
+各事象は,空行で区切ります.空行は何行でも構いません.コメントのみの行
+も空行とみなされるので注意して下さい.
+AmisFix形式
+まず,イベントファイルから素性を取り出すために,
+FIXMAP_FILEとして,次の形式のファイルを指定します.
+ラベル名 ラベル名 ラベル名 ...
+特徴名 ラベル名 素性名  ラベル名 素性名 ...
+特徴名 ラベル名 素性名  ラベル名 素性名 ...
+特徴名 ラベル名 素性名  ラベル名 素性名 ...
+...
+イベントファイルとしては,次の形式のものを与えます.
+ラベル名 1 特徴 特徴 特徴 ...
+ラベル名 1 特徴 特徴 特徴 ...
+ラベル名 1 特徴 特徴 特徴 ...
+...
+ただし,「特徴」の部分には,
+特徴名
+または
+特徴名:素性の値
+を書きます.
+FIXMAPファイルの先頭の行では,分類に用いるラベルを列挙します.
+先頭以外の行は,一行が一つの特徴に対応し,
+各特徴がそれぞれのラベルと共起したときに発火する素性を指定します.
+イベントファイルは,一行が一つの観測事象に対応します.
+行頭には,観測されたラベルと,その事象の頻度を記述します.
+それに続けて,観測された特徴を列挙します.
+Amisは,行頭のラベルと,列挙された特徴を組み合わせて,
+FIXMAP_FILEの対応する素性からなる観測事象を作ります.
+補完事象は,行頭に書いたもの以外のラベルを用いて,自動的に作られます.
+入力仕様(AmisTree形式)
+事象名
+頻度       素性 素性 素性 ...
+[disjunctive node]
+[disjunctive node]は,BNF風に書くと以下のようになります.
+[disjunctive node] :=
+ノード名の参照 |
+{ ノード名 [conjunctive node] [conjunctive node] ... }
+[disjunctive node] :=
+ノード名の参照 |
+( ノード名 素性 素性 ... [disjunctive node] [disjunctive node] ... )
+中かっこ及び小かっこの前後には必ずスペースを空けてください.
+スペースがない場合はノード名や素性名の一部とみなされます.
+具体的には,以下のようになります.
+event_1
+2       feature1:2 feature2:3 feature3
+{ dnode_1 ( node_1 feature1:2 { dnode_2 ( node_2 feature2:3 ) ( node_3 ) } { dnode_3 $node_2 ( node_4 feature3 ) } ) }
+event_2
+1       feature2:3
+{ dnode_1 ( node_1 feature1 ) ( node_2 { dnode_2 ( node_3 feature2:3 ) ( node_4 feature3 ) } ) }
+...
+Amis 形式と同様に,空行が事象の区切りを表します.AmisTree 形式では,一
+つの事象を3行で記述します.1行目は,事象の名前を記述します.2行目に
+は,その事象の観測回数と,観測事象の素性を記述します.上の例では,事象 
+event_1 は2回,event_2 は1回観測されたことを表します.Amis 形式と同
+様,素性の名前と素性関数の値を組で記述します.3行目には,観測事象およ
+び補完事象の feature forest を記述します.まず,disjunctive node は中
+かっこで表します.中かっこの中に,はじめにノード名を記述し,次に 
+conjunctive node をスペースで区切って並べます.
+ノード名は,イベント単位で一意になっている必要がありますが,
+共有する必要のないノードに対しては,'_'にすることもできます.
+conjunctive node は,小
+かっこまたはノード名で表します.小かっこで表すときは,最初にその 
+conjunctive node の名前を記述します.conjunctive node の名前は,ノード
+の共有を表すために使います.素性と同様に,特殊文字以外の任意の文字が使
+えます.その後にそのノードで発火する素性を記述します.素性の記述方法は 
+Amis 形式などと同じです.その後に,disjunctive node を記述することもで
+きます.conjunctive node や disjunctive node の共有を表すときは,ノー
+ド名を用います.既出のノードについて,そのノード名の先頭に $ をつけた
+ものでノードの共有を表します.上の例では,event_1 において,$node2 は
+前に出てきた node2 と共有していることを表します.このようにノードを共
+有して feature forest のサイズを小さくすると,計算量が小さくなり,スピー
+ドアップします.
+feature forestからは,次のような相互再帰的な手続きで,観測/補完事象の素性列を取り出すことができます.
+[disjunctive node]に出会ったら,子ノードのどれかから取り出した素性列を返す
+[conjunctive node]に出会ったら,そのノードの素性列と,全ての子ノードから取り出した素性列を合併して返す
+AmisTree形式のイベントは,この手続きで得られる全ての素性列が,観測/補完事象として現れているような
+Amis形式のイベントで表すことができます.
+パラメタ推定の際には,そのようなAmis形式のイベントファイルが与えられた場合と同等の計算が,
+feature forestのサイズに比例するコストで行われます.
+出力仕様
+amis は,素性とパラメータの組を、OUTPUT_FILEで指定したファイルに出力します.出力形式は,
+モデルファイルと同じです.出力形式がモデルファイ
+ルと同じなので,出力データを新たな入力として amis を使うこともできます.
+すなわち,ある程度学習したデータを元に,さらに学習を進めることができます.
+各素性に対応するパラメータa_iが出力されるので,
+未知のデータに対して発火する素性のa_iの積を求め
+ることで,その確率値を計算することができます.
+参照分布の利用
+内部仕様
+準備中です.
+特記事項(制約,既知のバグ等)
+扱えるイベント数,素性数はシステムリソースに依存します.
+メモリが足りない時は,EVENT_ON_FILE オプションを使って下さい.
+GIS や GISMAP で "Infinite!" というエラーメッセージが表示されたり,
+BFGS アルゴリズムが収束しない(Line search in BFGS algorithm .. とい
+うメッセージが表示される)時は,パラメタ推定の途中でオーバーフローや
+アンダーフローを起こしている可能性があります.そのときは,
+PARAMETER_TYPEにlambdaを指定して実行してみてください.
+Feature forest model では,観測事象で記述されている素性列が,
+feature forest に必ず含まれている必要があります.amis はこの条件が満
+たされているかどうかのチェックは行いませんので注意して下さい.そうなっ
+ていない時は,パラメタ推定が収束しない場合があります."forestcheck"
+ツールを使うことでこの条件のチェックを行うことができます.
+参考文献
+[1] Adam L. Berger, Stephen A. Della Pietra and Vincent J. Della
+Pietra.  A maximum entropy approach to natural language processing.
+Computational Linguistics, 22(1):39-71, 1996.
+[2] Yusuke Miyao and Jun'ichi Tsujii.  Maximum entropy estimation for
+feature forests.  In Proc. HLT2002.
+[3] Stephen A. Della Pietra, Vincent J. Della Pietra and John
+Lafferty.  Inducing features of random fields.  IEEE Transactions on
+Pattern Analysis and Machine Intelligence, 19(4):380-393, 1997.
+[4] Jorge Nocedal.  Updating quasi-Newton matrices with limited
+storage.  Mathematics of Computation, 35:773-783, 1980.
+[5] J. N. Darroch and D. Ratcliff.
+Generalized iterative scaling for log-linear models.
+Annals of Mathematical Statistics, 43:1470-1480, 1972.
+[6] Stanley F. Chen and Ronald Rosenfeld.
+A Gaussian prior for smoothing maximum entropy models.
+Technical Report CMUCS -99-108, Carnegie Mellon University, 1999.
+[7] Steven J. Benson and Jorge More'.
+A Limited-Memory Variable-Metric Algorithm for Bound-Constrained Minimization.
+Mathematics and Computer Science Division, Argonne National Laboratory,
+ANL/MCS-P909-0901, 2001.
+[8] Jun'ichi Kazama and Jun'ichi Tsujii.
+Evaluation and Extension of Maximum Entropy Models with Inequality Constraints.
+In the Proceedings of EMNLP 2003.
+Amis

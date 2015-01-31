@@ -1,0 +1,91 @@
+機械学習(きかいがくしゅう、Machine learning)とは、人工知能における研究課題の一つで、人間が自然に行っている学習能力と同様の機能をコンピュータで実現しようとする技術・手法のことである。
+概要[編集]
+センサやデータベースなどからある程度の数のサンプルデータ集合を入力して解析を行い、そのデータから有用な規則、ルール、知識表現、判断基準などを抽出し、アルゴリズムを発展させる。なおデータ集合を解析するので統計学との関連が深い。
+そのアルゴリズムは、第一にそのデータが生成した潜在的機構の特徴を捉え、複雑な関係を識別(すなわち定量化)する。そして第二にその識別したパターンを用いて新たなデータについて予測を行う。データは観測された変数群のとりうる関係の具体例と見ることができ、アルゴリズムは機械学習者として観測されたデータの部分(訓練例などと呼ぶ)を学習することでデータに潜在する確率分布の特徴を捉え、学習によって得た知識を用いて新たな入力データについて知的な決定を行う[1]。
+1つの根本的な課題は、観測例に全てのとりうる挙動例を示すあらゆる入力を含めるのは(多くの実用的な関心事の場合)大きすぎて現実的でないという点である。したがって、学習者は与えられた例を一般化して、新たなデータ入力から有用な出力を生成しなければならない[1]。
+光学文字認識では、印刷された活字を事前の例に基づいて自動認識する。これは典型的な機械学習の応用例である[1]。
+機械学習は検索エンジン、医療診断、スパムメールの検出、金融市場の予測、DNA配列の分類、音声認識や文字認識などのパターン認識、ゲーム戦略、ロボット、など幅広い分野で用いられている。応用分野の特性に応じて学習手法も適切に選択する必要があり、様々な手法が提案されている[2]。これらの手法は、テストデータにおいての検出・予測性能において評価されることがある。大量のデータから従来にない知見を得るというビッグデータの時代では、特にその応用に期待が集まっている[3]。
+定義[編集]
+1959年、アーサー・サミュエルは機械学習を「明示的にプログラムしなくても学習する能力をコンピュータに与える研究分野」だとした[4]。
+トム・M・ミッチェル(英語版)は、よく引用されるさらに厳格な定義として「コンピュータプログラムがある種のタスクTと評価尺度Pにおいて経験Eから学習するとは、タスクTにおけるその性能をPによって評価した際に、経験Eによってそれが改善されている場合である」とした[5]。
+一般化[編集]
+この文脈における一般化とは、学習用データセットを使って訓練した後に新たな見たことのない例について正確に判断できるアルゴリズムの能力をいう。学習者の最も重要な目的は、経験から一般化することである[6]。訓練例は一般に未知の確率分布に従っており、学習者はそこから新たな例について有用な予測を生み出す何か一般的なもの、その分布に関する何かを引き出す必要がある。
+人間との相互作用[編集]
+機械学習システムによっては人間の直観によるデータ解析の必要性を排除しようとしているが、人間と機械の協調的相互作用を取り入れたものもある。しかしそもそも、システムのデータ表現方法やデータの特徴を探る機構は人間が設計したものであり、人間の直観を完全に排除することはできない。
+データマイニングとの関係[編集]
+機械学習とデータマイニングは交差する部分が大きく、技法も同じなので混同されることが多いが、次のように定義できる。
+機械学習の目的は、訓練データから学んだ「既知」の特徴に基づく予測である。
+データマイニングの目的は、それまで「未知」だったデータの特徴を発見することである。
+この2つは様々な面でオーバーラップしている。データマイニングは機械学習の技法を使うが、その目的は若干異なることが多い。一方機械学習もデータマイニングの技法を「教師なし学習」として、あるいは学習者の正確性を向上させる前処理として用いる。2つの研究領域は、ECML PKDD という例外はあるが、基本的に学会も学術誌も別々である。それらの間の混同の最大の原因は、それらの基本的前提に由来する。機械学習では既知の知識を再生成できるかどうかで性能を評価するが、データマイニングではそれまで「未知」だった知識を発見することが重視される。既知の知識によって評価するなら教師なしの技法より教師ありの技法の方が容易に優れた結果を示すことができるが、典型的なデータマイニングでは訓練データが用意できないので教師ありの技法を採用できない。
+アルゴリズムの分類[編集]
+機械学習のアルゴリズムは、要求される結果により以下のように分類される。
+教師あり学習
+入力とそれに対応すべき出力(人間の専門家が訓練例にラベル付けすることで提供されることが多いのでラベルとも呼ばれる)を写像する関数を生成する。例えば、統計分類問題では入力ベクトルと出力に対応する分類で示される例を与えられ、それらを写像する関数を近似的に求める。
+教師なし学習
+入力のみ(ラベルなしの例)からモデルを構築する。データマイニングも参照。
+半教師あり学習(英語版)
+ラベルありの例とラベルなしの例をどちらも扱えるようにしたもので、それによって近似関数または分類器を生成する。
+強化学習
+周囲の環境を観測することでどう行動すべきかを学習する。行動によって必ず環境に影響を及ぼし、環境から報酬という形でフィードバックを得ることで学習アルゴリズムのガイドとする。例えばQ学習がある。
+トランスダクション(英語版)(トランスダクティブ推論)
+観測された具体的な(訓練)例から具体的かつ固定の(テスト)例の新たな出力を予測しようとする。
+マルチタスク学習(英語版)
+関連する複数の問題について同時に学習させ、主要な問題の予測精度を向上させる。
+理論[編集]
+機械学習アルゴリズムとその性能についての分析は理論計算機科学の一分野であり、計算論的学習理論(英語版)と呼ばれている。訓練例は有限で未来は不確かであるため、学習理論は一般にアルゴリズムの性能を保証できない。その代わりに性能の確率的範囲を与えるのが一般的である。
+それに加えて、学習の時間複雑性と実現可能性についても研究している。計算論的学習理論では、多項式時間で終了する計算を実現可能とみなす。
+機械学習と統計学は多くの点で似ているが、使用する用語は異なる。
+技法[編集]
+決定木学習
+決定木を予測モデル(英語版)として使用した学習であり、アイテムについての観測をそのアイテムの目標値についての結論とマッピングする。具体例としてID3やRandom forestがある。
+相関ルール学習(英語版)
+大規模データベースにおける変数間の興味深い関係を発見するための技法。
+人工ニューラルネットワーク (ANN)
+単にニューラルネットワーク (NN) とも呼ばれ、生物の神経ネットワークの構造と機能を模倣するという観点から生まれた学習アルゴリズムである。人工神経を相互接続したもので計算を構造化し、コネクショニズム的計算技法で情報を処理する。現代的ニューラルネットワークは非線形な統計的データモデリングツールである。入力と出力の間の複雑な関係をモデル化するのに使われ、データのパターン認識や観測された変数間の未知の同時分布における統計的構造を捉えるなどの用途がある。
+遺伝的プログラミング (GP)
+生物の進化を模倣した進化的アルゴリズムに基づく技法であり、ユーザーが定義したタスクを実行するプログラムを探索する。遺伝的アルゴリズムを拡張・特化させたものである。所定のタスクを実行する能力によって適応度地形を決定し、それによってコンピュータプログラムを最適化させていく機械学習技法である。
+帰納論理プログラミング(英語版) (ILP)
+例、背景知識、仮説を一様な表現とし、論理プログラミングを使って学習を規則化する技法である。既知の背景知識と例の集合をコード化して事実の論理データベースとし、全てのポジティブな例を含み、ネガティブな例を全く含まない仮説的論理プログラムを生成する。
+サポートベクターマシン (SVM)
+統計分類や回帰分析に使われる一連の教師あり学習技法である。訓練例のラベルは2値(2つに分類される)であり、訓練アルゴリズムによってモデルを構築し、新たな例がどちらに分類されるかを予測する。
+クラスタリング
+クラスタリングは、観測された例をクラスタと呼ばれる部分集合に振り分けるもので、振り分けは事前に指示された基準に従って行う。クラスタリングはデータの構造についての仮説(基準)の立て方によって結果が異なる。仮説は「類似尺度」で定義され、「内部コンパクト性」(同一クラスタ内のメンバー間の類似性)や異なるクラスタ間の距離によって評価される。「推定密度」や「グラフ接続性」に基づく技法もある。クラスタリングは教師なし学習技法であり、統計的データ解析でよく使われる。
+ベイジアンネットワーク
+確率変数群とそれらの条件付き独立性(英語版)を有向非巡回グラフ (DAG) で表した確率論的グラフィカルモデルである。例えば、病気と症状の関係を確率的に表すことができる。そのネットワークに症状を入力すれば、考えられる病気の一覧を確率付きで出力できる。これを使って推論と学習を行う効率的アルゴリズムが存在する。
+強化学習
+「エージェント」が「環境」の中でどのような「行動」をとるべきかを、何らかの長期的「報酬」を最大化するよう決定する。環境の「状態」からエージェントの行動への写像を行う「方針」を求めるのが強化学習アルゴリズムである。正しい入出力例は与えられないし、最適でない行動が明示的に訂正されることもないので、教師あり学習とは異なる。
+教師なし学習アルゴリズムの一部は、訓練中に提供された入力のよりよい表現を発見しようとする。古典的な例として主成分分析やクラスタ分析がある。入力の持つ情報は保持したまま、分類や予測の前に入力をより便利な表現に変換するアルゴリズムもある。その際に入力データが従っている未知の確率分布から入力を再建できるようにするが、その確率分布においては信じがたい例も忠実に再現する必要はない。例えば多様体学習(英語版)アルゴリズムは、何らかの制約下で入力の次元を低く変換して表現する。スパースコーディング(英語版)アルゴリズムでは、入力が疎ら(ゼロが多い)という制約下で同様の表現の変換を行う。deep learning アルゴリズムは複数レベルの表現または特徴の階層を発見するもので、低いレベルで抽出した特徴から高いレベルの抽象化した特徴までを求める。知的機械は、観測されたデータを説明する偏差の潜在的要因を解きほぐす表現を学習するものだという主張もある[7]。
+応用分野[編集]
+機械学習には以下のような応用分野がある。
+^ a b c Wernick, Yang, Brankov, Yourganov and Strother, Machine Learning in Medical Imaging, IEEE Signal Processing Magazine, vol. 27, no. 4, July 2010, pp. 25-38
+^ それらの手法は、Machine Learning や IEEE Transactions on Pattern Analysis and Machine Intelligence などの学術雑誌などで発表されることが多い。
+^ もう一度「ビッグデータ」を考える
+^ http://holehouse.org/mlclass/01_02_Introduction_regression_analysis_and_gr.html
+^ Mitchell, T. (1997). Machine Learning, McGraw Hill. ISBN 0-07-042807-7, p.2.
+^ Christopher M. Bishop (2006) Pattern Recognition and Machine Learning, Springer ISBN 0-387-31073-8.
+^ Yoshua Bengio (2009). Learning Deep Architectures for AI. Now Publishers Inc.. p. 1–3. ISBN 978-1-60198-294-0. http://books.google.com/books?id=cq5ewg7FniMC&pg=PA3. 
+^ "BelKor Home Page" research.att.com
+Thomas Mitchell "Machine Learning" McGraw-Hill (1997) ISBN 978-0071154673 (入門用の教科書) サポートページ
+Christopher M. Bishop "Pattern Recognition And Machine Learning" Springer-Verlag (2006) ISBN 978-0387310732 (中上級の教科書) サポートページ(ここから、第8章 "Graphical Models" をpdf形式で入手可能)
+日本語版「パターン認識と機械学習 - ベイズ理論による統計的予測」シュプリンガージャパン (2007-2008) 上巻:ISBN 978-4431100133 下巻:ISBN 978-4431100317 日本語版サポートページ
+Trevor Hastie, Robert Tibshirani, and Jerome H. Friedman "The Elements of Statistical Learning: Data Mining, Inference, and Prediction" Springer-Verlag (2001) ISBN 978-0387952840 (高度な内容も含む.数理・統計系の手法が中心) サポートページ(ここから、全章をpdf形式で入手可能)
+David MacKay "Information Theory, Inference, and Learning Algorithms" (2003) (ベイズ推論を中心に、情報理論と機械学習を包括的にカバーした教科書) 著者ページ(ここから全文をPDF形式で入手可能)
+Sergios Theodoridis, Konstantinos Koutroumbas (2009) "Pattern Recognition", 4th Edition, Academic Press, ISBN 978-1-59749-272-0.
+Ethem Alpaydın (2004) Introduction to Machine Learning (Adaptive Computation and Machine Learning), MIT Press, ISBN 0-262-01211-1
+Bing Liu (2007), Web Data Mining: Exploring Hyperlinks, Contents and Usage Data. Springer, ISBN 3-540-37881-2
+Toby Segaran (2007), Programming Collective Intelligence, O'Reilly, ISBN 0-596-52932-5
+Ray Solomonoff, "An Inductive Inference Machine" A privately circulated report from the 1956 Dartmouth Summer Research Conference on AI.
+Ray Solomonoff, An Inductive Inference Machine, IRE Convention Record, Section on Information Theory, Part 2, pp., 56-62, 1957.
+Ryszard S. Michalski, Jaime G. Carbonell, Tom M. Mitchell (1983), Machine Learning: An Artificial Intelligence Approach, Tioga Publishing Company, ISBN 0-935382-05-4.
+Ryszard S. Michalski, Jaime G. Carbonell, Tom M. Mitchell (1986), Machine Learning: An Artificial Intelligence Approach, Volume II, Morgan Kaufmann, ISBN 0-934613-00-1.
+Yves Kodratoff, Ryszard S. Michalski (1990), Machine Learning: An Artificial Intelligence Approach, Volume III, Morgan Kaufmann, ISBN 1-55860-119-8.
+Ryszard S. Michalski, George Tecuci (1994), Machine Learning: A Multistrategy Approach, Volume IV, Morgan Kaufmann, ISBN 1-55860-251-8.
+Bishop, C.M. (1995). Neural Networks for Pattern Recognition, Oxford University Press. ISBN 0-19-853864-2.
+Richard O. Duda, Peter E. Hart, David G. Stork (2001) Pattern classification (2nd edition), Wiley, New York, ISBN 0-471-05669-3.
+Huang T.-M., Kecman V., Kopriva I. (2006), Kernel Based Algorithms for Mining Huge Data Sets, Supervised, Semi-supervised, and Unsupervised Learning, Springer-Verlag, Berlin, Heidelberg, 260 pp. 96 illus., Hardcover, ISBN 3-540-31681-7.
+KECMAN Vojislav (2001), Learning and Soft Computing, Support Vector Machines, Neural Networks and Fuzzy Logic Models, The MIT Press, Cambridge, MA, 608 pp., 268 illus., ISBN 0-262-11255-8.
+Ian H. Witten and Eibe Frank (2011). Data Mining: Practical machine learning tools and techniques Morgan Kaufmann, 664pp., ISBN 978-0123748560.
+Sholom Weiss and Casimir Kulikowski (1991). Computer Systems That Learn, Morgan Kaufmann. ISBN 1-55860-065-5.
+Mierswa, Ingo and Wurst, Michael and Klinkenberg, Ralf and Scholz, Martin and Euler, Timm: YALE: Rapid Prototyping for Complex Data Mining Tasks, in Proceedings of the 12th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD-06), 2006.
+Vladimir Vapnik (1998). Statistical Learning Theory. Wiley-Interscience, ISBN 0-471-03003-1.
+機械学習 - Wikipedia

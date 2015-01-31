@@ -1,0 +1,33 @@
+Web BrowserコントロールでHTMLソースを取り出してパース(解析)
+するよりは多少楽な方法を提案します。
+(1)検索リクエストはYahooやGoogleの公開APIを使います。
+-Yahooの場合
+http://search.yahooapis.jp/WebSearchService/V1/w …
+にパラメーターを付けてHTTP GETリクエストすると検索結果が
+XML形式で返されます。( http://developer.yahoo.co.jp/webapi/search/webse … )
+-Googleの場合
+http://ajax.googleapis.com/ajax/services/search/ …
+にパラメーターを付けてHTTP GETリクエストすると検索結果が
+JSON形式で返されます。( http://code.google.com/intl/ja/apis/ajaxsearch/d … )
+(2)HTTP GET のリクエストはMSXML COMオブジェクトを使って
+GETできます。
+Dim ObjReq As MSXML2.DOMDocument
+Set ObjReq = CreateObject("MSXML2.DOMDocument")
+とか
+Dim ObjReq As MSXML2.XMLHTTP
+Set ObjReq = CreateObject("MSXML2.XMLHTTP")
+でオブジェクトを作って、
+ObjReq.async = True
+if ObjXml.Load("http://hoge.hoge/hoge?fuga=xxx&....") = true
+then ....
+で結果を取得する。
+(3)結果のパース(解析)はXMLならMSXMLのメソッドやプロパティが
+そのままつかえるので多少は楽、JSON(テキストデータ)の場合
+VBAでそのまま使えないので面倒だが、VBAでJSONをパースする
+ページを発見( http://d.hatena.ne.jp/so_blue/20090326/1238084885 )
+といったプログラムを作ればよいと思う。
+注意点として、結果は文字コードUTF-8で返ってくる(問題なさそう?)
+リクエストはURLエンコードする必要がある。YahooやGoogleのAPIを使うためのキーを事前に取得する必要がる(ローカルだと何でもOKみたい?)
+あんまり詳しく書けません。後はご自身で調べてみてください
+面白そうなので、私も作ってみよう。
+VBAで検索エンジンの自動検索とHP文章の自動収集 - Visual Basic - 教えて!goo

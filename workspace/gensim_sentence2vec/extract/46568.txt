@@ -1,0 +1,85 @@
+リストやテーブルの値をユーザの入力値によってフィルタリングするような UI を作る際、正規表現オブジェクトを利用すると前方一致検索、後方一致検索、含む検索などが容易でなにかと便利だったりする。但し、ユーザが正規表現の予約語を入力する可能性があるので、それらをエスケープした後フィルタリング処理をしないと想定した処理結果にならない可能性があり注意が必要。
+例えば以下のようなリストがあった場合、
+<ul><li>$123.456</li>...
+検索キーワードに $123 と入力し、以下のロジックでフィルタリングした場合、正規表現の予約語である $ をエスケープしていないため $123.456 にヒットせず表示対象にならない。
+//画面より $123 と入力・・・
+var search_word = $('input.search_word').val();
+$('ul > li').each(function(){
+var list = $(this);
+//$ は前方一致の意味合いなのでヒットしない
+if(!(new RegExp(search_word)).test(list.text())){
+list.hide();
+}
+});
+意図的にユーザに正規表現検索をさせる場合を除いては、以下のように、ユーザ入力値に含まれる可能性のある正規表現の予約語を、フィルタリング処理前にエスケープしておく必要がある。
+//正規表現の予約語
+var esc_str = '\\,^,$,*,+,?,.,(,),|,{,},[,]';
+//予約語のエスケープ
+var escape_source = function(source){
+$.each(esc_str.split(','),function(){
+var esc_s = '\\' + this;
+source = source.replace(new RegExp(esc_s,'g'),esc_s);
+});
+return source;
+}
+//例 $123 という入力値が \$123 になる
+var search_word = escape_source($('input.search_word').val());
+//フィルタリング処理を実行・・・
+先程の例だと $123 という入力値が \$123 に置換されるため $123.456 という値にもヒットするようになる。
+ワイルドカード検索をできるようにしてみる
+*.png のように一般的にも使用されるワイルドカード検索をできるようにするには、エスケープ処理により生成された \* という文字列を .* に置換し、検索文字列の前後に、前方一致文字(^)と後方一致文字($)を付けることで可能になる。
+//\* を .* に置換
+var wildcard_match_escape_source = function(source){
+return escape_source(source).replace(/\\\*/g,'.*');
+}
+//検索文字の前後に ^ と $ を付ける。
+var search_word = '^' + wildcard_match_escape_source($('input.search_word').val()) + '$';
+//フィルタリング処理を実行・・・
+$123.* という入力値が ^\$123..*$ という値になり、ワイルドカード検索が可能になる。
+jQuery プラグイン化
+jQuery プラグイン化してみる。
+;(function($){
+var f = $.regexp = function(option){
+if(!(this instanceof f)) return new f(option);
+var o = this,c = o.config = $.extend({},f.defaults,option);
+};
+$.extend(f,$.extend(f.prototype,{
+_getInstance : function(target){
+return target instanceof f ? target : f()
+},
+escapeSource : function(source){
+var o = f._getInstance(this),c = o.config;
+$.each(c.esc_str.split(','),function(){
+var esc_s = '\\' + this;
+source = source.replace(new RegExp(esc_s,'g'),esc_s);
+});
+return source;
+},
+wildcardMatchEscapeSource : function(source){
+var o = f._getInstance(this), c = o.config;
+return o.escapeSource(source).replace(/\\\*/g,'.*');
+}
+}));
+f.defaults = {
+esc_str : '\\,^,$,*,+,?,.,(,),|,{,},[,]'
+};
+})(jQuery);
+jQuery RegExp - gist
+使い方。
+//正規表現の予約語をエスケープ
+var v1 = $.regexp.escapeSource( $('input').val() );
+//ワイルドカード検索用のエスケープ
+var v2 = $.regexp.wildcardMatchEscapeSource( $('input').val() );
+//^ と $ の付加は利用者側が必要に応じて
+var v2 = '^' + v2 + '$';
+デフォルト値を変更してエスケープする予約語を限定する。
+//ユーザに * + ? を利用した正規表現検索を許可する
+$.regexp.defaults.esc_str = '\\,^,$,.,(,),|,{,},[,]';
+インスタンス毎にエスケープする予約語を設定する。
+//インスタンスの生成
+var r = $.regexp({
+esc_str : '\\,^,$,.,(,),|,{,},[,]'
+});
+//エスケープの実行
+var v = r.escapeSource( $('input').val() );
+CYOKOLOG — 予約語を考慮した正規表現ベースのフィルタリング処理の実装

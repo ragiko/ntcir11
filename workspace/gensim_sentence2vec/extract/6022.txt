@@ -1,0 +1,139 @@
+メニュー
+4. メニュー
+[参考1] http://developer.android.com/intl/ja/index.html
+次の資料は一読されているものとします。
+[参考1] 開発ガイド・タブ >> 左欄:フレームワークトピック
+UserInterface >> Creating Menus
+4.1 メニューの種類
+メニューは次の3種類があります。
+(1)オプションメニュー
+各Activityの主メニューでメニューキーを押下すると表示されます。さらに次の二つに分類できます。
+(a)アイコンメニュー
+メニューキーを押下すると画面下部に表示される。
+最大6項目(アイテム)
+アイコンが使える唯一のメニュー
+チェックボックスやラジオボタンをサポートしない唯一のメニュー
+(b)拡張メニュー(extended
+menu)
+オプションメニューの項目が7以上あると、アイコンメニューにすべては表示されないので、5項目をアイコンメニューで表示し、アイコンメニューの第6項目は"More"にし、これを押すと第6項目以降を垂直のリストで表示します。このメニューを拡張メニューといいます。
+7項目以上になると自動的に拡張メニューが追加されます。
+(2)コンテキストメニュー
+あるViewの上を長押しすると表示される。
+(3)サブメニュー
+オプションメニュー又はコンテキストメニューのメニューアイテムによって現れるフローティングリストです。
+サブメニューはネストしない。
+4.2 メニューの作成
+オプションメニューはonCreateOptionsMenu()、コンテキストメニューはonCreateContextMenu()の中で作成します。
+xmlファイルの中にメニューを宣言することもできます。
+4.3 リスナー
+リスナーは登録する必要はありません(対応するActivityがリスナーです)。ただし、コンテキストメニュの場合は、コンテキストメニューを設定するViewを登録しなければなりません。
+リスナーのメソッド名は次の通りです。いずれもActivityクラスのメソッドです。
+onOptionsItemSelected()
+onPrepareOptionsMenu()
+onContextItemSelected()
+onPrepareOptionsMenu()は、オプションメニューが表示されるたびに呼び出されます。動的にオプションメニューを変更するときに使えます。
+コンテキストメニューを登録するメソッド
+registerForContextMenu()     Activityクラスのメソッド
+4.4 オプションメニュー用コード
+参考資料 http://thedevelopersinfo.wordpress.com/2009/11/01
+/operations-with-options-menu-items-group/   Operations with Options Menu
+items group
+メニューのgroup属性はいくつかのメニュー項目をまとめて削除、非表示、disableなどの処理をするための属性です。
+4.5 オプションメニュー用コード
+/* 
+参照元  http://developer.android.com/guide/topics/ui/menus.html
+*/
+/* Creates the menu items */
+public boolean onCreateOptionsMenu(Menu
+menu) {
+boolean result = super.onCreateOptionsMenu(menu);
+menu.add(0, MENU_NEW_GAME, 0,
+"New Game");// 引数 groupId itemId order title
+menu.add(0, MENU_QUIT, 0, "Quit");       
+// 戻り値はMenuItemオブジェクト(本例は未使用)。
+return result;// true:表示する             
+// 文字列はリソースを使うのがお薦め
+}
+/* Handles item selections */
+public boolean onOptionsItemSelected(MenuItem
+item) {
+switch (item.getItemId()) { // itemIdでクリックされた項目を特定する。
+case MENU_NEW_GAME:   // 作成時に指定した項目Id  // onCreateOptionsMenuのmenu.add参照
+newGame();
+return true;
+case MENU_QUIT:
+quit();
+return true;
+}
+return false;// false:処理を継続,true:処理を破棄(その結果どうなるかは明記されていない)
+}
+/* 
+参照元  http://developer.android.com/guide/topics/ui/menus.html
+*/
+private static final int EDIT_ID=Menu.FIRST;
+private static final int
+DELETE_ID=Menu.FIRST+1;
+public void onCreate(Bundle
+savedInstanceState) {
+...
+view を設定
+registerForContextMenu(view);//
+viewにコンテキストメニューを設定
+}
+public void onCreateContextMenu(ContextMenu
+menu, View v,ContextMenuInfo menuInfo) {
+super.onCreateContextMenu(menu, v, menuInfo);
+menu.add(0,
+EDIT_ID, 0, "Edit");
+menu.add(0, DELETE_ID,
+0,  "Delete");
+}
+public boolean onContextItemSelected(MenuItem
+item) {
+ContextMenuInfo info =
+item.getMenuInfo();// ListViewの場合はデータの詳細が設定される
+switch (item.getItemId())
+{
+case EDIT_ID:
+editNote(info);
+return true;
+case DELETE_ID:
+deleteNote(info);
+return true;
+default:
+return super.onContextItemSelected(item);
+}
+}
+}
+コンテキストメニューもオプションメニューとほぼ同じです。次の点に注意して下さい。
+(1)コンテキストメニューはViewに登録しなければなりません。
+registerForContextMenu(view)
+を登録時に呼び出します。
+(2)ContextMenuInfo onCreateContextMenuの引数
+onCreateContextMenuの第3引数でContextMenuInfoが渡されます。ContextMenuInfoは内容はViewによって異なります(ContextMenuInfoは中身のないinterfaceです---少なくともリファレンスには記述されていません)。たとえば、AdapterViewの場合、項目のidがContextMenuInfoから取得できます。TextViewの場合はnullです。その他、実装しているViewについてはリファレンスで確認して下さい。
+ContextMenuInfoはonContextItemSelectedで渡されるメニュー項目からも取得できます。
+4.7 サブメニュー用コード
+/* 
+参照元  http://developer.android.com/guide/topics/ui/menus.html
+*/
+public boolean onCreateOptionsMenu(Menu menu)
+{
+boolean result =
+super.onCreateOptionsMenu(menu);
+SubMenu fileMenu =
+menu.addSubMenu("File");//addSubMenuを使います。戻り値 SubMenu
+SubMenu editMenu =
+menu.addSubMenu("Edit");
+fileMenu.add(0, MENU_FILE_NEW, 0, "new");
+//サブメニューのaddを使います。
+fileMenu.add(0,
+MENU_FILE_OPEN, 0, "open");
+fileMenu.add(0,
+MENU_FILE_SAVE, 0, "save");
+editMenu.add(0,
+MENU_EDIT_UNDO, 0, "undo");
+editMenu.add(0,
+MENU_EDIT_REDO, 0, "redo");
+return result;
+}
+0500a-menu

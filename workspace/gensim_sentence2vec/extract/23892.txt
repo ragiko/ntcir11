@@ -1,0 +1,47 @@
+Sass のディレクトリ構成やファイル管理の仕方は、プログラムを管理しやすくする上でとても重要だと思いますが、まだまだ日本語での記事はあまり見かけません。
+そこで、海外サイトで素晴らしい記事(Q&Aでのコメント)を見つけましたので、御本人の許可をいただいて和訳させていただきました。
+Sass ファイル読み込みの際のかなり基本的な部分についての解説ですが、とても丁寧にアドバイスされており、CSS/Sass 初心者にもわかりやすい内容だと思います。
+Rails での Sass のコンパイルはどうなっているの?
+Stack Overflow で、(質問の概要をざっくりまとめると)
+『Rails の stylesheets の読み込み順についてよくわかりません。
+思った通りにコンパイルできないのですが、どうしたらエラーを解決できますか。』
+という質問が投げられていました。
+以下、その質問に対しての、Benjamin 氏による回答です。
+(読みやすいように、小見出しは、私の言葉でつけさせていただきました)
+元記事はこちらです。
+Proper SCSS Asset Structure in Rails - Stack Overflow
+http://stackoverflow.com/questions/9138946/proper-scss-asset-structure-in-rails
+answered Feb 12 12 at 8:38
+Benjamin Udink ten Cate
+Benjamin 氏による回答(翻訳)
+今回のCSSによる課題は、自動的にすべてのファイルが追加されてしまうのを避けたいということですね。
+基本的には、スタイルシートはブラウザによって読み込まれて処理されたとおりの順番になります。
+つまり、いつでも最終的にはすべての CSS を読み込むことになります。
+CSS をランダムに読み込んでしまうと
+例えば、各ブラウザ間による恐ろしい挙動の違いを防ぐために、デフォルトの見栄えを用意する normalize.css シートを、あなたが持っていたとします。
+ブラウザはこのファイルを最初に読み込むべきですね。
+もし、このシートをあなたが読み込む CSS のどこかに、ただランダムに入れてしまったとしたら、
+ブラウザのデフォルトスタイルを上書きするだけでなく、その他の CSS ファイルの中に示されているいくつかのスタイルも先に読み込まれてしまうでしょう。
+これは、変数でもミックスインでも同じです。
+私は、Euruko2012 での Roy Tomeji によるプレゼン(*1)を見てから、管理しなければならないCSSが大量にあるときには、以下のアプローチをすることに決めました。
+たくさんの CSS を管理するには
+私は通例このアプローチを使います:
+すべての .css ファイルを .scss に改名
+application.scss のすべてのコンテンツを削除
+application.scss に @import 命令を加えることから始めましょう。
+もしあなたが twitters bootstrap といくつか自分のスタイルシートを使っているのでしたら、スタイルをリセットするためのシートがすでにあるので、まずは bootstrap を読み込むべきです。
+ですので、@import bootstrap/bootstrap.scss; をあなたの application.scss に加えてください。
+bootstrap.scss ファイルはこのようになります:
+// CSS Reset
+@import reset.scss;
+// Core
+@import variables.scss;
+@import mixins.scss;
+// Grid system and page structure
+@import scaffolding.scss;
+// Styled patterns and elements
+@import type.scss;
+@import forms.scss;
+@import tables.scss;
+@import patterns.scss;
+CSS - Rails での適切な Sass の構成手法について(翻訳) - Qiita

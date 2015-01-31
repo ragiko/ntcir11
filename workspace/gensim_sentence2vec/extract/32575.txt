@@ -1,0 +1,9 @@
+ヘッダセルのWordWrapはデフォルトでTrueになっています。そのため、列幅の自動調整時やGetPreferredColumnWidthメソッド・GetPreferredWidthメソッドの利用によって列ヘッダを含む最大長(最も幅の広いテキストの幅)を取得するには、以下のようにWordWrapを無効にしておく必要があります。
+サンプルコード(VB)
+Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+' 全ての列ヘッダラベルのWordWrapを無効にします
+Dim ch As New FarPoint.Win.Spread.CellType.EnhancedColumnHeaderRenderer
+ch.WordWrap = False
+FpSpread1.ActiveSheet.ColumnHeader.DefaultStyle.Renderer = ch
+End Sub
+列幅の自動調整時に列ヘッダを含む最大長を取得したい - SPREAD for Windows Forms 7.0J - ナレッジベースの詳細 ｜ GrapeCity Developer Tools

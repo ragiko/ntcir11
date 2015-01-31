@@ -1,0 +1,652 @@
+
+目次
+おことわり
+論文を書くときの作業に関すること
+辞書はどんなふうに使うとよいか
+スペルチェック
+論文の表記法・形式に関すること
+コンマ,ピリオド,セミコロン
+単語の頭文字による略語とその表記
+論文の表題,セクションのタイトル,図のキャプションなどにおける大文字と
+小文字
+フォントについての注意
+"a MIMD machine" と "an MIMD machine"
+論文の文体に関すること
+英語論文における一人称複数 "we"
+文頭の "And", "But"
+文中の "and", "but"
+名詞の単数形と複数形,"a"と"the"
+主部と述部の長さのバランス
+おまけ
+論文にそぐわない表現
+知っていると便利な表現
+おことわり
+この文書は,英語で論文を書く場合に文体その他で最低限注意して欲しいなぁ
+と私が思うことを整理したものである.「これが正しい英語論文だ」と言っているわけではなくて,むしろ「私が他の人から英語論文の
+チェックを頼まれたときには,こんなところをこんな風に直しています」 という性格のものである.
+また,私に論文のチェックを頼もうという学生諸氏 に対しては,あらかじめこういう所に注意して書い
+ておいてくれると,その分だ
+け論文の本質的な部分の検討に費す時間が増やせるのでぜひそうしてよ,という希望
+が込められている.
+したがって,この中には,私個人の好みや信条による部分も多々含まれており,
+それとは異なる意見を持つ先生方もおられるであろうことをあらかじめお断りし
+ておく.
+また,ここに書いた注意事項は,計算機関連の,特にシステム寄りの論文を書い
+たり添削したりしてきた中で,私が気づいたことをまとめたものである.計算
+機以外の分野や,理論計算機科学の分野ではあてはまらないようなことも含まれ
+ているはずである.
+辞書はどんなふうに使うとよいか
+和英辞書(キーボードの横に置いて使う)
+日本語の文章をまず考え,それから英語に直そうとして適切な訳語を思い付か
+ない場合,どうしても和英辞書を引くことになる.したがって,和英辞書は必
+須の道具である.
+しかし,それで見つかった訳語をそのまますぐに使ってはいけない.
+和英辞書は,1つの日本語見出し語に対する英訳と,それを使った文 の例を並べてあるだけのものが多く,1つの見出し語に対して複数の英訳があ
+る場合の使い分けのしかたまでは書かれていないことが多い.うっかりすると,
+不適切な訳語を選んでしまう可能性がある.
+また,1つの訳語あたりそれほどたくさんの文例が書かれているわけではない
+ので,その単語の正しい英訳がみつかったとしても,文例の中に自分が書こう
+としている文とまったく同じ形のものが見つかることは少ない.結局,英訳し
+ようとしている日本語文の他の単語もた同じようにひとつひとつ和英辞書で引
+いて訳語を選択し,それらを並べ直すことで英作文をすることになってしまう.
+こういったことを防ぐには,見出し語の英訳例のそれぞれを,改めて英和辞
+書で引き直し,使い分けのしかたや自分が訳そうと思っている文に近い文例を
+探さなければならない.
+したがって,文例の多い和英辞書を選ぶのに越したことはないが,そ れでも,
+和英辞書は「英和辞書を引くとっかかりを見つけるための辞書」
+という位置づけで使うのがよいと思う.
+英和辞書(キーボードの横に置いて使う)
+和英辞書を引いて,目指す日本語の英訳の候補がいくつか見つかったら,今度
+はそれらを英和辞書で引いてみる.
+文例の多い英和辞書では,その英語表現を使ったたくさんの文例の中に,いま
+自分が書こうとしている文とそっくりなものが入っていることもあるので,そ
+のときはそれをそのまま使うことができる.文法的解説の多い辞書では,一つ
+の英訳を引くとそれの(英語での)類義語の使い分けのしかたがまとめて書いて
+あることも多く,他の英訳を引き直す手間が省けることもある.
+「英文を書くときは英和でなく英英辞書を使うのがよい」という人もいるが,
+(英語力を高めることではなく)とにかく英文を書くことが第一の目標であるとき
+には,英和辞書を引くよりも労力がかかるばかりで,得られるものは少ないと天
+野は思う.
+コンピュータ用語事典,数学事典(研究室か図書室にあればよいだろう)
+専門用語など,和英辞書では英訳が見つからないものは,この種の辞書で英訳を
+探すとよい.専門用語は通常1対1に訳が見つかることが多い.
+シソーラス(研究室か図書室にあればよいだろう)
+何度も何度も同じ英単語を使うと幼稚な感じがしていやだ,という場合には,
+シソーラス Thesaurus を使うとよい.例えば,グラフの説明をしている部分 で
+increase が何度も何度も出て来る,というときに,increase をシソーラ スで引くと,ascend
+や rise という単語が見つかったりする.
+ただし,これらは「類義語」であって「同義語」ではない.
+したがって,和英辞書のときと同様に,たくさんの類義語の使い分けのしかた
+は書かれていないので,英和辞書の助けが必要になる.
+スペルチェック
+スペルチェッカは万能ではないし,Emacs/Mule で LaTeX ソースを編集している
+ときには妙な環境の名前などがひっかかったりして使いにくくもあるが,それで
+も,つまらないミスはかなり防げるので,必ず使うこと.
+コンマ,ピリオド,セミコロン
+コンマ・ピリオド・セミコロンの配置
+コンマ・ピリオド・セミコロンと直前の単語の間には,空白を入れない.
+プログラムを書くときにはどうでもよいようなことなのだが,通常の
+文書では奇異な感じがする.
+また,LaTeX やワープロは,コンマ・ピリオド・セミコロンの
+前に空白が入っていると,禁則処理(行末に句読点等が来たときの処理)を間違
+えて見苦しくなる恐れがあるので要注意.
+同一文中の近い位置にコンマが現れるときは…
+長ーい文の中の互いに離れた位置ではそうでもないかも知れないが, ごく短い語句(あるいは1語)をはさんで2つのコンマが現れるときは,
+その両端のコンマではさまれた部分をまるまる削除しても,残りの部分だけで文
+が成立するかどうか,
+考えたほうがよい. このような近接する2つのコンマは,通常,普通の文を一旦中断して,
+何か他の語句(直前の語の言い替えなど)をはさみ込むために使われることが 多い.関係代名詞節などが挿入されるときには,かなり長くなることもある.
+This object, called a heap management object,
+handles
+all the persistent objects located in the PE.
+Dataparallel C, which was originally called C*
+and
+developed as a programming language for Thinking Machine CM-5, is
+an exapmple of a data-parallel language.
+Most parallel programming languages, however, just
+accept simple data structures such as arrays.
+一方,1つの文の中にコンマがいくつも現れるようなときには,複数の文に分 けるなど,文を書き換えたほうがよい.
+たとえ文法的に間違ってはいないという自信があったとしても,読者の負担を
+軽減するためには,コンマの少ない短い文に書き換えるのがよい.
+単語の頭文字による略語とその正式表記
+英語では,PC, WS, MPI, PE のように,英単語の頭文字をつないだ略語がよく
+登場する.また,自分たちで作ったシステムに名前を付けるときにも,このよ
+うなやり方で名前を付けることがある.
+PC や WS なんてもはや一般的な言葉であるから,いちいちその由来を説明し
+ない,というのもひとつの考え方ではあるが,一体どのくらい通用していれば
+そのような一般的な用語と言えるのか,厳密な境界はない.かといって, そのような略語をまったく使わずに文章を書くのは,書き手にとっても読み手
+にとっても苦痛である.
+そこで,最初の1回だけ略語の意味を書いておくこ
+とになるのだが,そのやり方にも2つの流儀がある.
+省略しない表記を先に書き,略語を括弧つきで加える
+This system can be run on a personal computer (PC).
+(これ以降でpersonal computer が出てくるところは,"PC" と書く.)
+略語を先に書き,略語を括弧つきで加える
+This system can be run on a PC (personal computer).
+(これ以降でpersonal computer が出てくるところは,"PC" と書く.)
+私は,いつも次のような使い分けをしたいと考えている.(ついうっかり 忘れていることがあるかもしれないが)
+"MPI" などのようにもはやその略語のほうが有名になってしまった名前の由来や,
+自分のシステムの名前の由来を説明するときには,「ほんとの名前は…なんだ
+けど」という意味で,略語を先に,正式表記を括弧つきで後ろに書く.
+MPI (message passing interface) and PVM (parallel virtual machine)
+are often used for emulating a parallel computer on multiple computers
+on a network.
+特定のシステムなどを指す名称ではなく,一般に使われている通常の略語や,
+自分の論文の中であまりにもたくさん登場するので自分なりの略語を作成する
+場合は,「以下,…という」という意味で,正式表記を先に,略語を括弧つき
+で後ろに書く.
+A persisitent heap management object (PHMO) is created on each
+processing
+element (PE), and it maintains a table of all the objects allocated on
+the PE.
+前者の場合,通常は,括弧の中の正式表記はできるだけす
+べて小文字で書くのがよいと私は考える.上の例では,message passing
+interface, parallel virtual machine とすべて小文字で書いてみたが,特に
+どの文字とどの文字が頭文字となっているのかは明白だからである.(まさか,
+MPI が Message PassIng interface の略だなんてこと
+は誰も思わないだろうし)
+一方,システムなどの名前を付けるときに,ちゃんと発音できるつづりになる
+よう,むりやり途中の文字まで拾った場合には,上記の限りではない. たとえば,SEQUEL
+(Structured English QUEry
+Language)なんてのがこれに当たる.
+論文の表題,セクションのタイトル,図のキャプションなどにおける大文字
+と小文字
+論文の表題,セクションのタイトル,図のキャプションなどでは,単語の頭を大
+文字にすることが多い.しかし,実は,すべての単語がそうなっているわけでは
+ない.これには簡単なルールがある.
+先頭の単語は,どんな品詞であっても, 頭の文字を必ず大文字にする.
+先頭以外の単語は,前置詞と冠詞を除いて,頭の
+文字を必ず大文字にする.
+もともとすべて大文字で書くことになっている名称などは,そのまますべて大
+文字で書く.
+このようなルールで表題を書いた例を以下にあげる.
+A Massively Parallel Programming Language for Database Applications
+("a" は先頭なので大文字."for" は前置詞なので,頭が大文字にならない.)
+On a Massively Parallel Programming Language for Database
+Applications
+(「〜について」というタイトルは英語ではあまりみかけないが,無理に書く
+とこうなるだろう)
+Performance Evaluation through TPC-D Benchmark
+("TPC-D" はもともとすべて大文字で書くことになっている)
+フォントについての注意
+重要な用語が最初に出てくるところ
+日本語の論文では,重要な用語が最初に登場するところでは, ゴシック体を用いることが多い.英語の論文では,その代わりに
+イタリック体
+を用いる.以下に例を示す. (あなたのブラウザがうまくイタリックを表示できるとよいのだが)
+Dynamic load balancing by object relocation
+moves some objects allocated on heavy-loaded PEs to light-loaded PEs,
+or
+re-group objects causing heavy inter-processor communications onto a
+single
+PE.
+A relation is a finite subset of
+the
+Cartesian product of one or more domains. A domain
+is a finite or infinite set of values.
+ただし,注意すべき点を以下に述べる.
+上の例に示したように,冠詞がついているものは,冠詞の部分を除いた単語本体
+のみをイタリックにする(A relation などとしない).
+最初に登場したときにはイタリックにするが,それ以降登場したときは,すべて
+普通の書体(ローマン体)にする.日本語でも,同じ語句を繰り返し繰り返しゴシッ
+ク体で書き続けることはないので,それと同じことだと思って欲しい.
+LaTeXの数式モードで出てくる書体と,イタリック体とは微妙に違うので注意する
+こと.具体的に言うと,数式モードでも文字がイタリック体にはなるのだが,文
+字と文字との間の空白の詰め方が微妙に異なるので,普通の単語全体を数式モー
+ドの中に入れると,表示が少し変になってしまう.
+予約語,関数,変数,システムコールなどの名前
+一方,論文中に登場するたびにいつも特定のフォントを使って欲しいのが, プログラミング言語の予約語,関数,変数,システムコールなどの名前である.
+(あなたのブラウザがうまくタイプライタフォントを表示できるとよいのだが)
+This is expressed by a parallel construct called for_all
+statement.
+The OO1 benchmark database contains part
+objects and the relationships among them. Each part
+object has three links (``to'')
+to
+its child parts. In our experiments, ``to''
+contains the OID of the child part, and the performance of traverse
+operations
+were measured.
+"a MIMD machine" と "an MIMD machine"
+単語の頭文字をつなげて作った略語の前に冠詞の "a" と "an" のどちらを付け
+たらよいか迷うようなときには,「それを声に出して読むとき,単語の頭が母音
+になるかどうか」を考えるとよい.
+an HMO (エイチ・エム・オーと読むわな,普通.あ,フランス語だと違うかも)
+a MIMD machine (ミムディー・マシンと読む人はこちらを)
+an MIMD machine (エム・アイ・エム・ディー・マシンと読む人はこちらを)
+そう,"a MIMD machine" と "an MIMD machine"は,同じ論文の中ではどちらか
+一方だけを使い続けるというなら,どちらも正しい
+のだ.
+一方,y や w で始まる単語の場合は,日本語と少し状況が異なることに注意し
+て欲しい.以下のような単語の頭は,日本語の感覚では母音になっているよう
+な気がする (「やいゆえよ」,
+「わいうえお」) が,英語では立派な(?)子音なのである.
+a year (an year ではない)
+a web (an web ではない)
+a weak equivalence (an weak equivalence ではない)
+英語論文における一人称複数 "we"
+よく「英語論文では"we" ("our", "us")を使ってはいけ ない」と言われることがある.しかし,これは必ずしも正確な言い方ではない
+と,私は思っている.私自身,論文中で一人称複数の "we" を使うことが ある.ただし,それは以下のような場合に限っているつもりである.
+著者が複数で,「著者全員」という意味で we を使うとき.
+著者が単数の場合でも複数の場合でも,著者と読者とその他一般の人々すべて
+を含めて we と呼ぶとき.
+著者が単数の場合でも複数の場合でも,著者と読者とを合わせて we と呼ぶと
+き.
+「著者全員」という意味の we
+自分の共同研究者や指導教官と連名で学会研究会や論文誌等に投稿する場合は,
+著者全員を指す用語として,日本語でも「われわれ」という一人称を用いるこ
+とがある.これに相当する "we"を用いるのは,決して間違いではないと思う.
+ただし,この場合,"the authors" と言い替えてもまったく意味は変わらない.
+事実,人に添削を頼むと,このように直されることも多い.
+ただし,「著者全員の"we"」には一つ制限がある.
+アブストラクトの中では"we"を用いるべきでない.
+これは,タイトル・著者・アブストラクト・出典等が抽出されて,他の人・
+機関が作成する文献データベース等に収録された場合,"we"が著者を指してい
+るのか,データベース作成者を指しているのか,わからなくなるからである.
+あなたが書く論文は見知らぬ第三者によってデータベース化されることもあるのだ.
+したがって,アブストラクトを書くときは,最初から,著者以外の第三者が要
+約したのと同じ形になるように,"This paper (thesis)" や "The authors"
+を主語に用いた文でまとめるべきであろう.もちろん,受動態を使う手もある.
+一方,自分が単独で著者となる学位論文のような場合には,「われわれの研究
+室は」というつもりで"we"を決して使ってはならないと私は思っている.
+例えば,自分の所属する研究室で開発されているシステムのうちの一部を担当
+し,それについて自分の修士論文・博士論文を書く場合でも,自分の仕事を中
+心に据えて書くべきである. 先輩や先生に手伝ってもらったのだからという気持ちは理解できるが,
+学位論文の本文は決してそのように書いてはならない.どうしても周囲の人へ
+の感謝の気持ちを表したいなら,それは謝辞 Acknowledgment の中で大々的に
+明記すること.
+それでも,自分やその他の人の以前の成果に言及するため,「天野研究室で開
+発された××システム」と書きたい場合には,「天野らが開発した××システ
+ム」という意味で
+the ×× system developed by Amano et al.
+のように書くとよい.論文の本文中では,自分の指導教官を呼び捨てにしても
+まったく構わない.実は,英語で,日本の大学でいう「天野研究室」と同じよ
+うな意味で "Amano laboratory" のように書いてあるのをあまり見たことがな
+いのだ.
+著者と読者とその他一般の人々すべてを含む we
+私がこの種の "we" を使うのは,著者も読者もその他すべての人を指して,
+「われわれ人間は」と言うときである.これは,著者が単独の場合でも複数の
+場合でも,用いることができる.ただし,私の経験では,この種の表現が登 場するのは,第1章の研究の背景の部分で一般論を述べているときのみである.
+例1:
+If we were to develop an interface which
+can accept every naturally-expressed input, and can respond in a
+natural
+way, we would be forced to equip the
+system with
+a huge storage of human knowledge --- knowledge we
+ourselves cannot describe.
+例2:
+Due to the recent advances in computer hardware technology, we
+can achieve a vast main memory, a vast secondary storage and a large
+computation
+power in total also through workstation (WS) clusters consisting of a
+large
+number of WSs connected via high-speed interconnection networks.
+このような "we" を他の言葉で無理に書き換えようとすると,"human being"
+や "mankind" といった,大上段にふりかぶった表現になってしまう.もちろん,
+私はこのような表現を計算機関係の論文ではまだ見たことがない.
+著者と読者とを合わせた we
+理論系の論文によく現れる表現として,「上の式に定理1を適用すると,次の式
+を得る」といったものがある.日本語では主語をぼかして書くことができるが,
+英語では主語を明らかにしなくてはならない.
+このような場合,「著者である私が適用しても読者であるあなたが適用して
+も,同じ結果になるわけだから,われわれと言ってもいいよね」というわけで,
+「われわれが上の式に定理1を適用することにより,われわれは次の式を得る」
+というように書くことができる.
+By applying Theorem 1 to the above expression, we
+obtain the following expression.
+このような表現も,著者が単数・複数に関わらず,用いることができる. 数学出身の同僚は,「こういうときに
+"we" が使えなかったら非常に困るだろ う」とも言っていた.
+文頭の "And", "But"
+前の文を受けて,「そして」あるいは「しかし」と言うときに,
+文の頭に
+"And, ..." とか "But, ..." と書くのはやめよう.
+このような表現は,英語圏の人の論文ではあまりみかけない.
+おそらく,論文のような格式ばった文章には合わないのだと思う.
+まず,"And, ..." と書くようなときは,前の文に対して次の文が順接の関係
+で続くので,接続詞はなくても意味が通るはずである.
+論旨が跳んでいると感じるようなら,それは何か他のものが欠けているためであ
+る ので,何が足りないのかじっくり考えるべし.
+どうしても「さらに」と書きたいときは,"Moreover,
+..." という便利な表現がある.
+例えば,もし座り心地が悪いと感じるようなら,それは前後が単なる順接でつら
+なっているのではなく,原因と結果の関係にあるのではないか?  そのようなときには,"Therefore,
+..." とか,"Thus, ..." とか,"..., because (since) ..." といった言い方ができるはず
+である.
+では,"But, ..." と逆接で書きたいときにはどうしたらよいのだろうか? 
+そのようなときには,"But, ..." の代わりに "However,
+..."
+を用いるとよい.この言葉は,中学や高校では「文語的表現」であるとして,
+あまり使わなかったかも知れない.しかし,心配はまったく要らない.皆さん
+は論文を書こうとしているのである.「古語」でない限り「文語」は多いに使っ
+てよろしい.
+"However, " を使い過ぎたと思ったら,前の文を "Although (Though) ...,
+" として前の文の後ろにくっつけてしまうか,逆に"..., though ..."の形で前
+の文を後ろにくっつけてしまう手もある.
+"however"を使うときの上級テクニックとして,この接続詞を文のど真ん中に
+ぶち込むというものがある.主語と述語のところで文をまっぷたつに切って,
+カンマで割り,その間に "however" を挟み込む.
+文中の"and","but"
+上述の,文と文をつなぐ接続詞としての "and" や "but" 以外に,名詞と名詞,
+形容詞と形容詞,動詞を含む句全体どうしとか,いろいろなものを対比させる
+"and" や "but" がある. 重要なのは,それがつないでいる2つのものどうしが,
+意味的にも形式的にも対等であるべきだ,
+ということである.
+As database systems are applied to wider areas, the necessary amount of
+computation is growing larger both in database management systems
+and
+in
+application programs. (前置詞句と前置詞句)
+To solve the above problems without significant overhead, we must
+devise
+a more precise but still
+approximate
+way
+to find the objects to be relocated without resorting to PE-wise
+counters
+for each object and enumerating exhaustively on them. (修飾語句と修飾語句)
+This method leads to the simplest implementation and the least
+space/time
+overheads, but fails to achieve
+the
+expected performance improvement.
+(動詞を含む句全体どうし)
+文の中に "and" や "but" が出てくるときは,その前と後にならんでいる1対の
+ものがちゃんと対等になっているかどうか, 確認し
+よう.
+名詞の単数形と複数形,"a"と"the"
+名詞の単数複数の使い分けや,単数形の場合の冠詞の付け方は,日本語に類 似の概念があまりないこともあって,非常に難しい.
+残念ながら,これでばっちり,というような簡単な規則はない.
+「英語には可算名詞と非可算名詞というのがあって,辞書の中にはその区別も表
+示したものがあるじゃないか」,という人がいるかも知れないが,これはあま
+り役に立たない.実は,多くの名詞に C (可算)と U(非可算)の両方の記号が
+付いていたりする.論文でも,同じ用語が可算・非可算両方に使われることが多い.
+むしろ,残念ではあるが,
+可算・非可算は名詞ごとに決まっているのではなく,その名詞がどの
+ような意味で使われているかによって変化するものだ
+と思うことにしたほうがよい.同じ段落の中でも同じ名詞に
+"a" が付いたり 付かなかったりすることがありうるのだ.
+私は言語学者でもなければ英文学者でもないので,あまり頼りになる文法解
+説を書くことはできないが,いくつかの「近似的?」な経験則をあげてみること
+にする.
+1つ2つと数えられるものをたまたま1個だけ取り上げるときは,必ず冠 詞を付ける
+まず,可算名詞の単数には必ず冠詞を付けると思っ
+てよい.言い替えると,1つ2つと数えられるもので単数なら,必ず冠詞を付
+ける,ということである.
+たとえば,
+A path expression is a
+sequence starting
+from a variable and involving relationships or attributes concatenated
+by the "." (dot) notation.
+「経路式とは…」という用語の定義である.「経路式なんて抽象的な概念じゃ
+んか」と言われるかも知れないが,ここでは,式(expression)の具体
+的な記述形式を議論していて,実際に記述されたものは「この式,あの式…」
+と数え上げることができる.したがって,この場合の「経路式」は可算名詞で
+ある.ここでは,そのうちの1つを取り上げ,「1つの経路式は…からなる」
+と言っているので,"a"が付いている.
+しかし,同じ名詞の単数形でも,その仲間全体を包含する抽象的な「概念」を
+表す場合には,1つ2つと数えられない.このように,同じ名詞でも非加算名詞
+となるときには,冠詞なしの「裸名詞」になる.
+Path expression is used for navigating through complex
+objects and
+obtaining necessary information at the far end of a sequence of object
+references.
+今度は,1つの経路式をうんぬんしているのではなくて,「経路式というもの
+は」とか,「経路式という概念は」という意味を持っている ので,非可算名詞として扱う.
+初回は "a",2回目以降は "the"
+文章の中でそれを1回目に取り上げたときには "a",それについてさらに説明
+を続けるときには,"the" というのは,わりによく当てはまる近似である.
+Amano et al. proposed an object-parallel
+approach
+for database programming languages. The approach
+assumes no regular structure in data to be processed in parallel.
+approach (手法)は「この手法,あの手法」というように数え上げることがで
+きるので,可算名詞として使われている.数ある手法のうちの1つなので, 最初は
+"a" であるが,次の文ではその同じ手法をさらに説明しているので, 「その手法は…」となり,同じ名詞
+approach の前に付くのが"the" になる.
+修飾語句がいろいろと付いた結果,ただ1つに限定されるものは "the"
+可算名詞なので何か冠詞を付けたいが,それに修飾語が付くときには要注意.
+最初に登場したときから "the" になることもある.
+The difference of relations R
+and
+S, denoted R−S, is the set of tuples in R
+but
+not in S.
+先程の "a path expression" の例とは異なり,今度は「RとS
+の差」を定義している.「RとSを定めるとその差はただ1つに
+定まる」という意味で,"the" を用いる.
+ほとんど同じ文形なのに,"a"だったり "the" だったりすることもある.これ
+は,ただ1つに決まるのか,それとも,いくつかあるうちの1つというだけな
+のか,ケースバイケースで判断するよりほかない.
+An obvious way to reduce the
+amount
+of message passing is to eliminate the host processor.
+「メッセージ通信の量を減らす方法はいろいろあるのだが,そのうちの明白な
+ものの1つに…がある」というような場合には,"a" である.
+In this situation, the only way
+to
+reduce the amount of message passing is to pack the contents of
+multiple
+message requests into a single message.
+文脈によっては,同じ「メッセージ通信の量を減らす方法」も,ただ1つに限
+定されるようなことがあるだろう.そのときには,"the"を用いなくてはなら ない.
+上の例のように,名詞の前についている形容詞によってはほどんど "the" になる
+と思ってよいものもある."only"が付くと,当然
+それはただ1つに限定されてしまう. 一方,"first",
+"last", "best", "most ...(最上級)"
+などもたいてい頭は "the" になるが,"only"
+とは異なり後ろの名詞 が複数になることもある.しかし,その場合でも頭にはたいてい
+"the" が付く(複 数だから"a"はありえないが).
+逆に,単数形可算名詞に"arbitrary" が付くと,
+その名詞の頭はたいてい "a (an)" であろう.だって,「任意の」なんだから.
+複数形で逃げられるときはできるだけ複数形に
+「このシステムの利用者は対象となるデータ構造を指定する必要がない」 と日本語で書くと,利用者が単数か複数かはあいまいであるが,英語ではどち
+らかにしなければならない.単数にすると,利用者は1人2人と数えられるの
+で"a" なのか "the"なのか悩む必要が出て来る.
+こういうときには,複数形にしておくと,冠詞が不要である.
+Users of this system need not specify the target data
+structure.
+後ろに修飾語句が付いているが,このシステムの利用者は,はっきりと定まっ
+ているわけではない.将来増えるかも知れないし,減るかも知れない.そんな
+ときは,裸の複数形にしてごまかしておくのである.
+このような「裸の複数形」には,他にも思わぬ効用がある.これよりも後ろの
+文で,人称代名詞の「性別」に悩む必要がなくなるのである.
+Users of this system need not specify the target data
+structure.
+They
+can apply the same method to an arbitrary set of objects just by a
+simple
+for
+all statement.
+三人称単数は,代名詞 he/she/it のいずれかで受けることになるが,この場
+合,利用者は男か女かわからない.複数形にしておけば,性別に悩む必要がな
+くなる.
+"the" +複数形は「その条件を満たすものすべて」という意味が出てくる
+ここまでほとんど単数形の話ばかりしていたので,複数形について少し考えてみ
+よう.複数形にくっつく冠詞は "the" だけであるが,"the" +複数形の扱いに
+は少し注意が必要である.
+Objects to be relocated to remote PEs have been registered in a table .
+When a relocation operation is initiated, the
+objects
+in
+the table are scanned and examined one by one.
+このように書くと,そのテーブルの中のオブジェクトの
+すべてが
+例外なく1つずつスキャンされ調べられる ことになる.
+The users of this system need not
+specify
+the target data structure.
+これは,上の「裸の複数形」の話で登場した文の頭に "the" を付けたものであ
+る.こうなると,「このシステムの利用者は全員」という意味になる.このよ
+うな表現は「将来増えるかも知れないし,減るかも知れない」というような漠
+然とした利用者集合ではなく,「現在の」とか「ある計算機センターの」とい
+うようなかなり限定的な利用者集合を指している.
+"Figure 1" は固有名詞扱いで冠詞なし
+論文中の図や表,定理などは,それぞれのカテゴリごとに通し番号を付けて,
+Figure 1, Table 2 とか,Theorem 3 などと表現する.このような表現は,例外
+的に,冠詞を付けない.英語論文の書き方の教科書などでは,「固有名詞扱いさ
+れるため」と説明されている.
+本当に固有名詞なのかどうかはさておき,本文中でこれらに言及して,「図1は…
+を示す.」などと言いたいときにはどうなるか,見てみよう.
+Figure 1 shows an overview of the
+system architecture
+of the prototype.
+The result of this experiment is shown in Figure
+1. This figure indicates that the propsed method is effective
+when
+the number of processors is low.
+最初の文では,文の先頭でなくても "Figure" の頭は大文字である.これが「固
+有名詞扱いだ」と言われるゆえんだろう.一方,2番目の文では同じ「固有名詞」
+を繰り返す代わりに「この図はまた,…」と一般名詞で受けている.このた め,"This
+figure
+..." のようにすべて小文字で表記されている.
+Tables 1 and 2 summarize the system
+environment
+employed throughout the experiments.
+2つ以上のものを まとめて「表1と2に…」などというときには,"Table 1
+and Table 2 ..." など と書く代わりに,複数形 "Tables" を用いたほうが,スマートである.
+主部と述部の長さのバランス
+日本語論文を英語に直すと,主部が非常に長く,述部が非常に短い文になること
+がある.
+一般論として,主部が長く述部が短い文は読みにくいので,受動態を使うな
+どして,主部が短くなるように工夫したほうがよい.能動態⇔受動態の書き換え,
+"it" を主語にした文など,高等学校までで習った英語の範囲で,いろいろなテ
+クニックがある.
+しかし,世の中はそんなに単純なケースばかりではない.
+凝った書き換えが必要になる場合(1)
+まずは,文の周辺を見渡すと主語になりそうなものがすぐ見つかる例を出そう.
+Although PSocket is meant for sequential programs, it is
+also expectable
+that the communication performance between parallel programs using
+network striping  improves.
+(PSocket は逐次プログラム用に作られたものであるが,ネットワークストライピン
+グを用いた並列プログラム間の通信性能が向上するということも期待できる.)
+文法的に間違っているわけではないのだが,長ーい主語の後に動詞が一個だけ,
+というのは避けたい.
+この書き換えには,主語を置き換えるとともに,動詞を変
+更するのがよいだろう.おおまかな意味を変
+えずに,表現の主体を他のものに変えるのである.
+Although PSocket is meant for sequential programs, network striping  is
+likely to improve the communication performance also between parallel
+programs.
+(PSocket は逐次プログラム用に作られたものであるが,ネットワークストライピン
+グは,並列プログラム間の通信性能も向上させそうである.)
+もちろん,こういった書き換えができるためには,ネットワークストライピング
+が通信性能を向上させるものだ,という専門的な知識が必要であることは言うま
+でもない.
+凝った書き換えが必要になる場合(2)
+次は,その周辺に出ている名詞句をつつきまわしても,主語の候補が出てこない
+例である.
+Recent advances in computer hardware, especially in
+parallel computers,
+has made it possible to achieve a large computation power. This leads
+to various applications such as high-precision car crash
+analysis or planetary-scale environmental simulation, which were not
+feasible on conventional computers. However, a computation power
+larger than what parallel computers within a single site can provide
+might be required.
+(コンピュータハードウェアの最近の進歩,特に並列計算機における最近の進歩
+により,大きな計算パワーを得ることが可能になった.これは,高精
+度の自動車衝突解析あるいは惑星規模の環境シミュレーションといった,多様な
+シミュレーション(の実現)につながる.それらは,従来のコンピュータでは実現
+不能であった.しかし,単一のサイト内の並列計算機によって得られるものより
+も大きな計算パワーが必要になることもあろう.)
+これも,文法的に間違っているわけではないのだが,あまりかっこうのよいもの
+ではない.
+特に,関係代名詞節がくっついた主部があると,関係代名詞節の中の述部(上の
+例では"can provide")の後に文全体の述部("might be required")が現れるため,
+読者を混乱させやすい.
+このような場合には,元の文に現れていない「無生物」を主語にすることを考え
+る.ただし,これには,高等学校までの英語で大いに訓練された
+単純な能動態⇔受動態の変換ではなく,文脈や言外の意味をとらえて翻訳する
+必要がある.
+このような文を無生物を主語にして書き直すには,行間に隠された,"might be
+required"という動詞句の「主体」,もっと大きな計算パワーを必要とする「何
+か」を見つけてやる必要がある.この文にはもともと "by 〜"の部分がなく,こ
+れは言外に隠されている.
+その直前の文を見ながら,計算パワーを必要としそうな主体は何かとさがしてみる
+と,シミュレーションとかアプケーションという単語が出ている.どうやらこれ
+が第一容疑者である.
+あとは,これを使って能動態に書き換えてみる.説明のために文に番号を振った.
+(1) Recent advances in computer hardware, especially in
+parallel computers,
+has made it possible to achieve a large computation power. 
+(2) This leads to various applications such as high-precision car crash
+analysis or planetary-scale environmental simulation, which were not
+feasible on conventional computers.
+(3) However, 
+varisous applications 
+might require a computation power
+larger than what parallel computers within a single site can provide. 
+うーん,これでは,(2) で言っていることと (3) で言っていることが矛盾して
+しまう.あることが,できると言ったり,できないと言ったりしているのである.
+もちろん,こんな矛盾したことが言いたかったわけではない.すなわち,
+直前の文に現れた語句をそのままひっぱってきても,うまくいかない
+のである.
+実は,ここでは,「多様なアプリケーションが(だんだん/おおむね)可能に
+なったのだが,(それでもやはりまだ)できないようなこともある」というように,
+(1)や(2)の状況に対して,(3)のような例外もある,と言いたいのである.
+そうすると,単なる「多様なアプリケーション」ではなく,「極端なアプリケー
+ション」とか「例外的なアプリケーション」と考えると,うまくつながりそうで
+ある.
+Recent advances in computer hardware, especially in
+parallel computers,
+has made it possible to achieve a large computation power. This leads
+to various applications such as high-precision car crash
+analysis or planetary-scale environmental simulation, which were not
+feasible on conventional computers.
+However, 
+some extreme applications 
+might require a computation power larger than what parallel computers
+within a
+single site can provide. 
+あと,「それでもまだ」を強調するとしたら,以下のようにしてもよいだろう.
+Recent advances in computer hardware, especially in
+parallel computers,
+has made it possible to achieve a large computation power. This leads
+to various applications such as high-precision car crash
+analysis or planetary-scale environmental simulation, which were not
+feasible on conventional computers.
+However, 
+some extreme applications 
+might 
+still
+require a computation power larger than what parallel
+computers within a
+single site can provide. 
+論文にそぐわない表現
+have to (has to, had to)
+「〜しなければならない」という意味で "has to" などと書いている例をよく見
+かける.しかし,これは口語的表現なので,論文では,mustを使うべき.ど
+うしても
+過去形にする必要があるのなら,was required to とか was forced to といった表
+現で代用できないか,検討すること.
+(接続詞の)So, ...
+「したがって」という意味で So
+を使っている例をよくみかける.これもあまりに口語的でお勧めできない.あなたなら日本語で「だからさぁ」なんて平気で論文に書くだろうか?
+これのかわりに論文で使うのは,Therefore, ...である.Thus,
+... でもよい.
+知っていると便利な表現
+AAA consisting of BBB 「BBB からなる
+AAA」
+名詞句の後ろにくっついて修飾語として用いる.文として用いるときは "AAA consists
+of BBB." などとする.
+conventional 「従来の」「伝統的な」
+これまで一般に取られてきた手法や実装法をひとくくりにして「従来の× ×」などというときに使うとよい.したがって,そういう状況では「既存
+の」という意味で用いることもできる.ただし,自分たちの開発しているシス
+テムの「現在のやつの前の実装」というときは "the previous
+implementation" としたほうがよい.
+de facto 「(規則・法律で決まっているわけで
+はないが)事実上の」
+"a de facto  standard" 「事実上の国際標準」
+「事実上の業界標準」
+multiple 「複数の」
+この単語が思い出せなかったためか,"more than one ..." とか "several ..."
+と書いてあるのを見かけることもあるが,multiple のほうがずっと スマート."several
+..." では,「数台(2〜3台程度)」とかいうときの 「数…」になって,厳密ではないが,数量がある程度限定されてしまう.
+よく見かける間違いは,multiple のつもりで "plural"
+(複数形の)を用いているもの.
+arbitrary 「任意の」
+"any given ..." 
+ばかりでなく,この単語も「任意の〜」として使えることを覚えておくとよい.(例:"an
+arbitrary set of objects")
+英語で論文を書こうとする人へ

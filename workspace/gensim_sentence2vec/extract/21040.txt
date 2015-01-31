@@ -1,0 +1,53 @@
+ある論文を読んでいたらジェフリーズ事前分布に基づく事後分布がimproperな例が載っていたので.
+設定はシンプルです.以下のような一次元のパラメトリックモデル$\{p(x|\theta)|\theta\in\mathbf{R}\}$を考えます.\[
+p(x|\theta)=\frac{1}{2\sqrt{2\pi}} \exp\bigg(-\frac{x^2}{2}\bigg)+
+\frac{1}{2\sqrt{2\pi}} \exp\bigg(-\frac{(x-\theta)^2}{2}\bigg).
+\]このモデルのジェフリーズ事前分布を求めます.
+そのためにフィッシャー情報量を計算します.スコアは\begin{eqnarray*}
+\frac{\partial}{\partial\theta} \log p(x|\theta)=(x-\theta)-\frac{x-\theta}{1+\exp(\theta x-\theta^2/2)}.
+\end{eqnarray*}従ってフィッシャー情報量$I(\theta)$は
+\begin{eqnarray*}
+I(\theta)&=&\int_{-\infty}^{\infty}\bigg\{(x-\theta)-\frac{x-\theta}{1+\exp(\theta x-\theta^2/2)}\bigg\}^2p(x|\theta) {\rm d}x\\
+&=&-\frac{\theta^2}{2}+\int_{-\infty}^{\infty}\frac{(x-\theta)^2\exp(-x^2/2)}{2\sqrt{2\pi}(1+\exp(\theta x-\theta^2/2))} {\rm d}x.
+\end{eqnarray*}最後の積分を計算できるのかよくわかりませんでしたので,数値的に計算させます.
+ジェフリーズ事前分布$p(\theta)\propto \sqrt{I(\theta)}$は下のようになります.ソースは以下の通りです.ちょっとggplot2を使ってみました.
+#Jeffreys prior for mixture normal model
+library(ggplot2)
+#Fisher情報量の計算の最後の積分の被積分関数
+Integrand_Jeffreys <- function(x,theta){
+(x-theta)*(x-theta)*exp(-x^2/2)/(1+exp(theta*x-theta^2/2))*
+(1/(2*sqrt(2*pi)))
+}
+Jeffreys <- function(theta){
+FisherInfo <- sapply(theta,function(eta){integrate(function(x){Integrand_Jeffreys(x,eta)},
+lower = -Inf,upper = Inf)$value - eta^2/2})
+sqrt(FisherInfo)
+}
+#plot
+ggplot(data.frame(x=c(-2, 2)), aes(x)) + stat_function(fun=Jeffreys) +
+xlab(expression(theta)) + ylab("Probability Density")+
+ggtitle("Jeffreys Prior")+
+theme(axis.title.x=element_text(size=20),
+axis.title.y=element_text(size=20),
+axis.text.x=element_text(size=20),
+axis.text.y=element_text(size=20),
+plot.title=element_text(size=20))
+このとき事後分布はimproperです.というのも\[
+p(x|\theta)>\frac{1}{2\sqrt{2\pi}}\exp\bigg(-\frac{x^2}{2}\bigg)>0, \quad 
+I(\theta) \geq 0.5,
+\]
+なので
+\[
+\int p(x|\theta)\sqrt{I(\theta)}{\rm d}\theta =\infty,\quad \forall{x},
+\]
+となるからです.原点でとがっているように見えますが,積分と微分の交換を認めれば,
+$I(\theta)>0$は原点で微分可能です.実際図を原点周りで拡大すると以下のようになります.
+ジェフリーズ事前分布の形について
+どうしてこのような形(0で最小値をとり,逆ベル型)になるのか考えてみます.
+(説明が正しいか保障はありませんが)次のような通信を考えます.送信者をA,受信者をBとします.Aはメッセージ$\theta$をある通信路を通してBに送ります.
+この通信路は粗悪で,確率0.5で$\theta$に標準正規分布のノイズを足した値$x$をBに送り,
+また確率0.5で全く関係ない標準正規分布からの乱数$x$をBに送り付けます.フィッシャー情報量$I(\theta)$はBが$x$というメッセージを受け取った時に得られる
+真のメッセージ$\theta$に関する情報量であると考えられます.そう考えると,$\theta$が$0$に近い場合は,観測$x$は全くノイズであっても$\theta$にノイズが加わったものでも,$0$に近い値をとります.従ってこの場合,$x$を観測したとき真のメッセージ$\theta$にノイズが乗ったものを観測したのか,それとも全くの雑音なのか判別がつきづらいです.よって観測$x$のもつ真のメッセージに関する情報量は小さいと考えられます.しかし,$|\theta|$がある程度大きい場合には(たとえば$\theta=10$),$x$を観測しそれが大きい値の場合には$x$は$\theta$に近い値だなということになります.逆に$x$が$0$に近ければ雑音だなということがわかりやすくなります.従って$|\theta|$が$0$に近いときと$|\theta|$が大きい時では観測$x$から得られる情報量に差があり,また$|\theta|$が大きくなればなるほど$\theta=0$のときに得られる情報量との差が大きくなる(判別しやすくなる)ことがわかります.混合正規モデルではなく,平均が未知,分散が既知の正規分布の場合を考えますと,フィッシャー情報量が一定です.これは$\theta$がどんな値だろうと,観測$x$の周りに$\theta$がいるのは変わりないからだとも解釈できます(一般にlocation modelのlocation parameter).
+$|\theta|=7$付近で$I(\theta)>0.7$となるのですが,$|\theta|=7$くらいから,もし$|x|3$ならば$x$は真のメッセージの付近,と思えるからでしょうか(自信がありませんが).
+最後に参考文献を.この論文を読んでいたわけではないですが,上の話は下の論文に載っています.Wasserman, L. (2000). Asymptotic inference for mixture models using data-dependent priors. JRSS-B, vol. 62, pp. 159-180. この論文は客観ベイズの話(probability matching prior)です.客観ベイズも面白そうです.
+混合正規モデルに対するジェフリーズ事前分布 - 突然終わるかもしれないブログ

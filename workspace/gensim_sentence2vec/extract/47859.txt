@@ -1,0 +1,88 @@
+どうもこんにちは。Toshikuraです。今回のTipsは【CSS 画像やテキスト要素を縦横中央配置する6つの方法】です。CSSの基礎的な記事ですが縦横中央配置には色々な方法がありますのでメモしておきます。うまく使い分けると便利な場面もあったりしますので備忘としてお役に立つかもしれません。
+1. display:tableでの実装
+CSSのdisplayプロパティによって要素をテーブル化し、vertical-alignで縦方向へ中央配置する方法でレスポンシブ化も容易です。もっとも安定した方法だと思いますがIE7では動作しません。
+HTML
+<div class="table">
+<p>p tag p tag p tag p tag p tag p tag</p>
+</div>
+<div class="table">
+<div>
+<h1>H1 text</h1>
+<p>p tag p tag p tag p tag p tag p tag</p>
+<a href="">LINK</a>
+</div>
+</div>
+<div class="table">
+<div><img src="images/img.png" alt=""></div>
+</div>
+.table{
+width: 300px;
+height: 300px;
+background: #ccc;
+display:table;
+text-align: center;
+}
+.table > *{
+display:table-cell;
+vertical-align: middle;
+}
+対象ブラウザ
+Chrome / Firefox / Safari / Opera / IE8〜
+2. display:inilne-block; (span)
+CSSのdisplayプロパティによって要素をinilne-block化し、vertical-alignで縦方向へ中央配置する方法です。この方法ではspan要素をゴーストとして配置し、親要素の高さを取得する必要があります。
+HTML
+<div class="inline_block">
+<span></span>
+<p>p tag p tag p tag p tag p tag p tag</p>
+</div>
+<div class="inline_block">
+<span></span>
+<div>
+<h1>H1 text</h1>
+<p>p tag p tag p tag p tag p tag p tag</p>
+<a href="">LINK</a>
+</div>
+</div>
+<div class="inline_block">
+<span></span>
+<img src="images/img.png" alt="">
+</div>
+.inline_block{
+width: 300px;
+height: 300px;
+background: #ccc;
+display: block;
+text-align: center;
+}
+.inline_block > *{
+vertical-align: middle;
+display: inline-block;
+zoom: 1; /* Fix for IE7 */
+*display: inline; /* Fix for IE7 */
+}
+.inline_block span {
+height: 100%;
+width: 0px;
+display: inline-block;
+zoom: 1; /* Fix for IE7 */
+*display: inline; /* Fix for IE7 */
+}
+対象ブラウザ
+Chrome / Firefox / Safari / Opera / IE7〜
+3. display:inilne-block; (:before)
+2で配置したspan要素を:before(疑似要素)で代替した方法です。HTMLは短くなりますがIE8以降推奨です。
+HTML
+<div class="inline_block_before">
+<p>p tag p tag p tag p tag p tag p tag</p>
+</div>
+<div class="inline_block_before">
+<div>
+<h1>H1 text</h1>
+<p>p tag p tag p tag p tag p tag p tag</p>
+<a href="">LINK</a>
+</div>
+</div>
+<div class="inline_block_before">
+<img src="images/img.png" alt="">
+</div>
+CSS 画像やテキスト要素を縦横中央配置する6つの方法 – How to Center Elements Horizontally and Vertically. | Stronghold

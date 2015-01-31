@@ -1,0 +1,3 @@
+AWSマイスターシリーズ Reloaded~ELB, AutoScaling & CloudWatch~                    2012年5月21日                    玉川 憲( @KenTamagawa )                    技術統括部長/エバンジェリスト                    2012年5月21日更新 v.1.0
+ELB、CloudWatch、Auto Scalingの密接な関係典型的使用例: 異なるアベイラビリティゾーンに存在するWebサーバー(EC2)の前にELBを利用する。CloudWatchはバックエンドのサーバーの負荷をモニタリングし、定義しておいた設定を満たすとアラームをあげ、Auto Scalingの設定(ポリシー)にそってEC2サーバーを増減させる                        Elastic Load   ロードバランサ                         BalancingEC2サーバを          EC2増減する                                             モニタリングメカニズム                  ゾーンA      ゾーンB            サービス                                  CPU利用率  Auto Scaling                             CloudWatch                               アラーム
+ELB & CloudWatch & AutoScaling - AWSマイスターシリーズ - SSSSLIDE

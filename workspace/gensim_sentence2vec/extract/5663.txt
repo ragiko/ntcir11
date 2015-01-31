@@ -1,0 +1,63 @@
+前のエントリに引き続きMySQLについての話です。今回は、文字コードの設定を確認するためのコマンドを紹介します。
+文字コード関係の設定を表示する
+次のコマンドを実行すると、文字コードに関する設定が表示されます。
+mysql> show variables like 'character_set%';
+前回のエントリで書いたように、Ubuntuでは特に何もしないと、MySQLのデフォルトの文字コードはlatin1になっています。ですから、次のように表示されます。
+mysql> show variables like 'character_set%';
++--------------------------+----------------------------+
+| Variable_name            | Value                      |
++--------------------------+----------------------------+
+| character_set_client     | utf8                       |
+| character_set_connection | utf8                       |
+| character_set_database   | latin1                     |
+| character_set_filesystem | binary                     |
+| character_set_results    | utf8                       |
+| character_set_server     | latin1                     |
+| character_set_system     | utf8                       |
+| character_sets_dir       | /usr/share/mysql/charsets/ |
++--------------------------+----------------------------+
+8 rows in set (0.00 sec)
+前のエントリで説明したように、my.cnfにcharacter_set_server = utf8という設定をしておくと、次のように文字コードがutf8となります。(character_set_filesystemはファイルシステムの文字コードで、binaryで構いません。) 
+mysql> show variables like 'character_set%';
++--------------------------+----------------------------+
+| Variable_name            | Value                      |
++--------------------------+----------------------------+
+| character_set_client     | utf8                       |
+| character_set_connection | utf8                       |
+| character_set_database   | utf8                       |
+| character_set_filesystem | binary                     |
+| character_set_results    | utf8                       |
+| character_set_server     | utf8                       |
+| character_set_system     | utf8                       |
+| character_sets_dir       | /usr/share/mysql/charsets/ |
++--------------------------+----------------------------+
+8 rows in set (0.00 sec)
+このような設定になっていれば、文字コードを指定しないでcreate databaseやcreate tableを実行した時に、データベースやテーブルの文字コードがutf8になります。
+データベースの文字コード設定を表示する
+特定のデータベースの文字コード設定を知るには、次のコマンドを実行します。
+mysql> show create database データベース名;
+次の例は、mydbデータベースの文字コードを表示しています。「DEFAULT CHARACTER SET utf8」となっているので、文字コードがutf8に設定されていることがわかります。
+mysql> show create database mydb;
++----------+---------------------------------------------------------------+
+| Database | Create Database                                               |
++----------+---------------------------------------------------------------+
+| mydb     | CREATE DATABASE `mydb` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++----------+---------------------------------------------------------------+
+1 row in set (0.00 sec)
+テーブルの文字コード設定を表示する
+特定のテーブルの文字コード設定を知るには、次のコマンドを実行します。
+mysql> show create table テーブル名;
+次の例は、mydbデータベースのusersテーブルの文字コードを表示しています。11行目の「DEFAULT CHARSET=utf8」から、文字コードがutf8に設定されていることがわかります。
+mysql> show create table mydb.users \G
+*************************** 1. row ***************************
+Table: users
+Create Table: CREATE TABLE `users` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(255) DEFAULT NULL,
+`email` varchar(255) DEFAULT NULL,
+`password` varchar(255) DEFAULT NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+1 row in set (0.00 sec)
+MySQLの文字コード関連の設定を調べる方法 | 近藤嘉雪のプログラミング工房日誌

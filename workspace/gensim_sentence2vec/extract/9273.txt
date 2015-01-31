@@ -1,0 +1,63 @@
+
+このような文はどのような規則から作られるか考えてみよう。
+最初の2文は、まず最初に「寺社名」に分類される名詞が現れ、次に助詞「の」が続き、次に「情報」に分類される名詞(行き方、拝観料など)、「を」、最後に「述語」がくるというパターンである。後の2文は「条件」を表す句、「の」、「宿泊施設」、「を」、「述語」というパターンである。
+これを文法ファイル(kyoto.grammar)で記述すると以下のようになる。
+S : NS_B JISYA NO INFO WO VERB NS_E
+S : NS_B JYOKEN NO SYUKUHAKU WO VERB NS_E
+# 条件
+JYOKEN  :  TIMEI NO AREA
+JYOKEN  :  HAKU KINGAKU RANGE
+# 述語
+VERB  :  OSHIETE KUDASAI
+VERB  :  OSHIETE
+VERB  :  SHIRITAI
+%JISYA
+銀閣寺	g i N k a k u z i
+清水寺	k i y o m i z u d e r a
+%NO
+の	n o
+%INFO
+行き方	i k i k a t a
+拝観料	h a i k a N ry o:
+%WO
+を	o
+%OSHIETE
+教えて	o sh i e t e
+%KUDASAI
+下さい	k u d a s a i
+%SHIRITAI
+知りたい	sh i r i t a i
+%TIMEI
+京都駅	ky o: t o e k i
+河原町	k a w a r a m a ch i
+%AREA
+近く	ch i k a k u
+%HAKU
+一泊	i q p a k u
+%SYUKUHAKU
+ホテル	h o t e r u
+旅館	ry o k a N
+%KINGAKU
+五千円	g o s e N e N
+七千円	n a n a s e N e N
+一万円	i ch i m a N e N
+%RANGE
+以下	i k a
+ぐらい	g u r a i
+% NS_B
+<s>            silB
+% NS_E
+</s>           silE
+NS_Bは文の最初、NS_Eは文の最後の無音区間(ノイズ)を表す。
+上記と同様の手順を経て、例文をある程度考えてから、文法ファイルと語彙ファイルを作成せよ。語彙数は50単語以上になるのが望ましい。なお、「漢字表記」には全角文字の漢字・ひらがな・カタカナのみを用いること。
+また、音素表記には以下の記号を用いること。
+a, i, u, e, o
+N, w, y, j, 
+my, ky, by, gy, ny, hy, ry, py
+p, t, k, ts, ch, b, d, dy, g, z
+m, n, s, sh, h, f, r, q
+ただし、「あー」などの長音は"a:"のように「母音+":"」、小さい「っ」は「q」、「ん」は「N」、「きょ」は「ky o」等、「つ」は「ts u」と書く。かな表記に合わせるのではなく、音に忠実に書くようにする(例えば、格助詞の「へ」「は」はそれぞれ「e」「w a」、「光景」は「k o: k e:」)。
+ファイルは、班ごとの作業ディレクトリ(例えばAグループ音声1班であればa1というディレクトリ;以下a1というディレクトリが出てきたら、各班の作業ディレクトリと読み替えること)に作成すること。
+漢字コードはEUC、改行コードはLFであることをPeggy Proの下部ステータスバー表示で確認すること。(コードが違う場合はPeggy Proのメニューから「編集」「文字変換」「ファイルの漢字コード」、「ファイルの改行コード」で変換すること。)
+ファイルごと文字コードを変換するには以下のコマンドを用いることができる。
+音声認識実験マニュアル

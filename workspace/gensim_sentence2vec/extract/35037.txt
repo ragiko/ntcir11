@@ -1,0 +1,9 @@
+Active Directoryに含まれる特定の種類のオブジェクトを検索するためのコマンドとして「dsquery」がありますが、ここでは「contactオプション」について纏めてみることにします。(Windows Server 2008 R2上で確認。それ以外のオプションについては、「dsqueryコマンドのオプションについて その1」を参照。)
+構文
+dsquery contact [{<開始ノード> | forestroot | domainroot}]
+[-o {dn | rdn}] [-scope {subtree | onelevel | base}]
+[-name <名前>] [-desc <説明>]
+[{-s <サーバー> | -d <ドメイン>}] [-u <ユーザー名>]
+[-p {<パスワード> | *}] [-q] [-gc]
+[-limit <オブジェクト数>] [{-uc | -uco | -uci}]
+dsqueryコマンドのオプションについて その3 | 焦げlog

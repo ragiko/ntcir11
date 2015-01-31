@@ -1,0 +1,3 @@
+入力歌声の音響信号から「人間らしい歌声」を合成するための歌声合成パラメータデータを自動推定する歌声合成パラメータデータ推定システムを提供する。To provide a singing voice synthesis parameter data estimation system that automatically estimates singing voice synthesis parameter data for automatically synthesizing a human-like singing voice from an audio signal of input singing voice. - 特許庁
+操作履歴に応じて、音声認識誤りが生じた場合にはその原因を推定してその利用者の調整すべき音声認識環境パラメータを特定し、パラメータ調整装置17により調整することで、音声認識環境パラメータを自動的に最適化する。When a voice recognition error occurs, its cause is estimated from the operation histories to specify a voice recognition environmental parameter of the user to be adjusted and a parameter adjusting device 17 adjusts the parameter to automatically optimize voice recognition environmental parameters. - 特許庁
+パラメータ自動推定の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

@@ -1,0 +1,413 @@
+当記事は Ruby のテスティングフレームワーク、RSpec の解説記事です。 入門記事ではなく、比較的実践的な内容を目指しているので it や describe やテストの実行の仕方など最低限の RSpec の知識ある人を対象としています。
+RSpec は今やメジャーなテスティングフレームワークとなりましたが、実は日本語での情報はあまりありません。*1
+そういった背景から大多数の人が RSpec をうまく使いこなせているとは言えず、RSpec らしくないテストコードを見かけることが多々あります。
+この記事の目的はそういった状況を少しでも改善するために、RSpec に興味がある、もしくは使っているが今一使いこなせてるように感じない人に向け RSpec の使い方を指南することです。
+xUnit っぽい RSpec のコード
+ここでいう「xUnit っぽい」というのは、簡単に言えば RSpec の機能を使いこなすことなく、it を xUnit のテストメソッドと同じように扱ってしまっているものをさします。
+1|  describe Stack do
+2|    before do
+3|      @stack = Stack.new
+4|    end
+5|
+6|    it '#pushの返り値はpushした値であること' do
+7|      @stack.push('value').should eq 'value'
+8|    end
+9|    it 'スタックが空の場合、#popの返り値はnilであること' do
+10|      @stack.pop.should be_nil
+11|    end
+12|
+13|    it 'スタックに値がある場合、#popで最後の値を取得すること' do
+14|      @stack.push 'value1'
+15|      @stack.push 'value2'
+16|      @stack.pop.should eq 'value2'
+17|      @stack.pop.should eq 'value1'
+18|    end
+19|
+20|    it '#sizeはスタックのサイズを返すこと' do
+21|      @stack.size.should eq 0
+22|
+23|      @stack.push 'value'
+24|      @stack.size.should eq 1
+25|    end
+26|  end
+上記のテストコードは RSpec でスタック構造をあらわす Stack クラスに対して書かれたものです。Stack クラスは push、pop、size の 3 つのメソッドを持ちます。
+xUnit では基本的にテストメソッドは全てフラットに定義されます (最近ではそうじゃないものも増えてきましたが) ので、このテストコードは xUnit ぽいテストコードと言っていいでしょう。テストメソッドがそのまま it に置き換わっただけですし、before ブロックも setup メソッドのようにしか使っていません。
+describe と context
+さきほどのテストコードをいくつかの手順を踏んで修正してみましょう。まずは describe です。describe は RSpec でテストコードを書くときは必ず一つは登場するものですが、同じレベルで並べたりネストさせたりすることができます。
+1|  describe Stack do
+2|    before do
+3|      @stack = Stack.new
+4|    end
+5|
+6|    describe '#push' do
+7|      it '返り値はpushした値であること' do
+8|        @stack.push('value').should eq 'value'
+9|      end
+10|
+11|      it 'nilをpushした場合は例外であること' do
+12|        lambda { @stack.push(nil) }.should raise_error(ArgumentError)
+13|      end
+14|    end
+15|
+16|    describe '#pop' do
+17|      it 'スタックが空の場合、#popの返り値はnilであること' do
+18|        @stack.pop.should be_nil
+19|      end
+20|
+21|      it 'スタックに値がある場合、#popで最後の値を取得すること' do
+22|        @stack.push 'value1'
+23|        @stack.push 'value2'
+24|        @stack.pop.should eq 'value2'
+25|        @stack.pop.should eq 'value1'
+26|      end
+27|    end
+28|
+29|    describe '#size' do
+30|      it '#sizeはスタックのサイズを返すこと' do
+31|        @stack.size.should eq 0
+32|
+33|        @stack.push 'value'
+34|        @stack.size.should eq 1
+35|      end
+36|    end
+37|  end
+describe を使うことでテストコードに構造がうまれました。各テストケースがグルーピングされることによって、テストケースが何についてテストを行なっているのかわかりやすくなります。
+次に context です。context は describe のエイリアスでしかありませんが使う目的が違います。ひとことで言うなら、 describe はテストする対象をあらわし、 context はテストする時の状況をあらわします。
+1|  describe Stack do
+2|    before do
+3|      @stack = Stack.new
+4|    end
+5|
+6|    describe '#push' do
+7|      context '正常値' do
+8|        it '返り値はpushした値であること' do
+9|          @stack.push('value').should eq 'value'
+10|        end
+11|      end
+12|
+13|      context 'nilをpushした場合' do
+14|        it '例外であること' do
+15|          lambda { @stack.push(nil) }.should raise_error(ArgumentError)
+16|        end
+17|      end
+18|    end
+19|
+20|    describe '#pop' do
+21|      context 'スタックが空の場合' do
+22|        it '返り値はnilであること' do
+23|          @stack.pop.should be_nil
+24|        end
+25|      end
+26|
+27|      context 'スタックに値がある場合' do
+28|        it '最後の値を取得すること' do
+29|          @stack.push 'value1'
+30|          @stack.push 'value2'
+31|          @stack.pop.should eq 'value2'
+32|        end
+33|      end
+34|    end
+35|
+36|    describe '#size' do
+37|      it 'スタックのサイズを返すこと' do
+38|        @stack.size.should eq 0
+39|
+40|        @stack.push 'value'
+41|        @stack.size.should eq 1
+42|      end
+43|    end
+44|  end
+今回、describe はメソッド単位でわけました。理由としてはテストケースを書くときは何らかのメソッドを対象としていることがほとんどのため、このようにわけた方がテストが書き易いことが多いためです。またメソッド単位でわけることでドキュメントとしても読み易くなります。
+ですが、テストの対象となるものはメソッドだけとは限りませんし、複数のオブジェクトのコラボレーションをテストしたいこともあるでしょう。そのときは素直に自分がわかりやすいと思うように describe をわければいいでしょう。メソッド単位にこだわる必要はあまりありません。
+段階的に仕様をテストコードに落とし込む
+describe と context の概念は個人的には非常に重要な概念だと思っています。というのもアプリケーションの仕様をテストコードに落とし込むにあたって、思考ツールとして機能するためです。
+例えば、先程の Stack クラスについてテストコードを書くときに、大抵まずはどのメソッドから実装しようかを考えると思います。その時に push メソッドから実装しようとしたと考えたとしましょう。
+まずは push メソッドをテスト対象とする describe を用意します。
+1|  describe Stack do
+2|    describe '#push' do
+3|    end
+4|  end
+対象が決まったら、次はそのメソッドを呼び出す状況を考えます。push メソッドの場合、最初に思いつくのは、そのまま値を保存する状況でしょう。この時は、まだ他に context がないのでそのまま it にしてしまうことができます。
+1|  describe Stack do
+2|    describe '#push' do
+3|      it '値が保存されること'
+4|    end
+5|  end
+正常値について考えたら、異常値についても考えるので、nil を保存しようとした時に例外が発生する状況について考えます。先程の正常値とは状況が違うので、今度は context をわける必要があります。
+1|  describe Stack do
+2|    describe '#push' do
+3|      context '正常値' do
+4|        it '値が保存されること'
+5|      end
+6|
+7|      context 'nilの場合' do
+8|        it '例外になること'
+9|      end
+10|    end
+11|  end
+このように describe、context、it と順番を踏むことで仕様を段階的にテストコードに落とし込んでいきやすくなります。describe と context を使うことでアプリケーションの仕様を整理し、設計を行ないやすくなります。
+subject
+RSpec では subject を使うことで should のレシーバを省略することができます。先程のテストコードの一部を subject を使って書き直してみます。
+1|  describe '#pop' do
+2|    subject { @stack.pop }
+3|
+4|    context 'スタックが空の場合' do
+5|      it '返り値はnilであること' do
+6|        should be_nil
+7|      end
+8|    end
+9|
+10|    context 'スタックに値がある場合' do
+11|      before do
+12|        @stack.push 'value1'
+13|        @stack.push 'value2'
+14|      end
+15|
+16|      it '最後の値を取得すること' do
+17|        should eq 'value2'
+18|      end
+19|    end
+20|  end
+subject のメリットはテスト対象が明確になること、そしてほぼ強制的にひとつのテストケースにひとつのアサーションしか書けなくなることです。テストを書くときに「今何をテストしているのか」ということを意識するのは重要です。describe を切った時点である程度明確になっていますが、subject に比べると若干弱いのは否めません。subject を使うと例えばメソッドを実行した後のオブジェクトの状態をテストしているのか、もしくはメソッドの返り値をテストしているのかという普段つい曖昧にしがちな部分もはっきりと分けることができます。
+1|  describe Array, '#delete' do
+2|    subject { [1,2,3].delete(3) }
+3|    it { should eq 3 }
+4|  end
+5|
+6|  describe Array, '#delete' do
+7|    before do
+8|      @array = [1,2,3]
+9|      @array.delete(3)
+10|    end
+11|    subject { @array }
+12|    its(:size) { should eq 2 }
+13|  end
+そして、should のレシーバを省略することでひとつのテストケースにひとつのアサーションしか書けなくなります。一般的にテストケースにはひとつのアサーションを書くのがよいとされており、subject をうまく使うことで自然とそのようなテストを書くようになります。
+describe のネスト と subject
+場合によっては、関連先のオブジェクトについてもテストしたい場合があります。例えば User クラスと それに関連する Profile クラスなどが考えられます。この場合、subject を使って should のレシーバを省略すると関連先のオブジェクトにアクセスできないのでテストすることができません。解決するには 新たに describe をネストさせてもう一度 subject を定義しましょう。
+1|  describe User, '#create!' do
+2|    before { @user=User.create! }
+3|    subject { @user }
+4|    it { should_not be_new_record }
+5|
+6|    descirbe Profile do
+7|      subject { @user.profile }
+8|      it { should_not be_new_record }
+9|      its(:name) { should eq 'AKAMATSU Yuki' }
+10|    end
+11|  end
+このようにして関連先のオブジェクトもテストすることができます。Rails のアプリケーションを開発している場合、こういうケースは結構あるのではないかと思います。
+もうひとつ、 its を使う方法もあります。テストする箇所が少ない場合はこちらでもいいでしょう。
+1|  describe User, '#create!' do
+2|    subject { User.creat! }
+3|    it { should_not be_new_record }
+4|    its(:profile) { should_not be_new_record }
+5|    its('profile.name') { should eq 'AKAMATSU Yuki' }
+6|  end
+it に文字列を渡すのか、渡さないのか
+さて、途中から書き方を変えていたので気づいた方もいるかもしれませんが、it に与える文字列は省略することができます。このように書くと、「it should be nil」といった風に RSpec のコードをそのまま英文のように読めるため文字列を渡さずともそれなりにテストの内容をそのまま読めるようになります。
+RSpec のよくある議論のひとつに、it に文字列を渡すのかどうかというものがあります。筆者の感覚ですと RSpec の最新版を絶えず追っているような人は文字列を省く傾向があるように思えます。筆者も基本的には省いて RSpec のコードのみでテストを表現するようにしています。
+理由としては、it に文字列を渡す書き方だとコメントとコードの乖離と同じような問題があるためです。最近のよいコードの書き方の指針のひとつに「コメントを書かなくても内容がわかるコードを書く」というものがあります。理由としてはコメントとコードの両方があるのは DRY (Don't Repeat Yourself) ではなく、コメントもしくはコードのどちらかだけが修正され内容が一致しなくなるといった問題が起きるためです。
+RSpec の it と文字列にも同じことが言えます。中のテストケースが修正されているにもかかわらず、it の引数の文字列が修正されず内容が一致しなくなることは十分にありえます。また、文字列を毎回渡しているとどうしてもテストコードの行数が長くなってしまい見通しがわるくなってしまいます。
+とは言え、省略した場合に何も問題がないわけでもありません。私は日本人ですし、多分この記事を読まれている方のほとんども日本人でしょう。日本人ならやはり日本語で書かれている方がわかりやすいはずです。また、RSpec の実行オプションに「--format documentation」を指定した時のドキュメントもわかりづらくなってしまいます。例えば先程の Stack クラスの 「最後の値を取得すること」というテスト内容が「should eq 'value2'」となってしまい仕様が読み取れません。
+Stack
+#pop
+スタックが空の場合
+返り値はnilであること
+スタックに値がある場合
+最後の値を取得すること
+Stack
+#pop
+スタックが空の場合
+should be nil
+スタックに値がある場合
+should == value2
+こちらはいくつか解決する方法があります。1つは context に具体的な値を入れてしまう方法、もうひとつは カスタムマッチャを定義してしまうことです。
+1|  RSpec::Matchers.define :be_latest_value do |expected|
+2|    match do |actual|
+3|      actual == latest_value
+4|    end
+5|  end
+6|
+7|  describe Stack do
+8|    before { @stack = Stack.new }
+9|    describe '#pop' do
+10|      subject { @stack.pop }
+11|
+12|      context 'スタックが空の場合' do
+13|        it { should be_nil }
+14|      end
+15|
+16|      # 具体的な値をcontextに書く
+17|      context 'スタックの最後の値が"value2"の場合' do
+18|        before do
+19|          @stack.push 'value1'
+20|          @stack.push 'value2'
+21|        end
+22|
+23|        it { should eq 'value2' }
+24|      end
+25|
+26|      # カスタムマッチャでメッセージを調整する
+27|      context 'スタックに値がある場合' do
+28|        let(:latest_value) { 'value2' }
+29|        before do
+30|          @stack.push 'value1'
+31|          @stack.push latest_value
+32|        end
+33|
+34|        it { should be_latest_value }
+35|      end
+36|    end
+37|  end
+Stack
+#pop
+スタックが空の場合
+should be nil
+スタックの最後の値が"value2"の場合
+should == value2
+スタックに値がある場合
+should be latest value
+context で具体的な値を明示することで RSpec の出力から最後の値を取得する仕様だというのが推測できます。カスタムマッチャは定義したものがそのまま出力されるので、こちらの方がより仕様としてわかりやすいでしょう。
+ですが、実際筆者がここまでやるかというとあまりやりません。せいぜい、context の文言を気にする程度でしょうか*2。なぜならプログラマとしては RSpec が出力するドキュメントよりテストコードの方が重要なため、RSpec の出力結果だけを見るということはあまりないためです。なので、テストコードが読みやすく書かれているのであれば、ドキュメントとして意味がわかりにくい文章が出力されていてもあまり気にならないでしょう。
+結論としては、筆者としては it には文字列を使わない書き方をおすすめします。やはり文字列とテスト内容が DRY ではないというのが理由としては大きいです。また、今回はサンプルが小さいのであまり気にならないと思いますが、実際はもっとたくさんのテストケースがあるのが普通です。そうなると文字列を省いた方がテストコード全体がコンパクトになります。
+以上の理由から個人的には文字列を使わない書き方をおすすめしますが、当然文字列をちゃんと書くという人もいます。*3なので、自分なりにでいいので、どちらがいいのか考えてみてください。どちらにもいい点悪い点はあるので絶対的にどちらが正しいというのはありません。
+let でデータ以外の部分だけを共通化する
+RSpec には let という機能があります。subject などに比べるとあまり知られておらず、知っていても使い方がよくわからないという方も多いようなので解説したいと思います。
+1|  descirbe 'let' do
+2|    let(:foo) { 'foo' }
+3|    specify { foo.should eq 'foo' }
+4|  end
+let はブロックの評価値が、引数として渡されたシンボルと同名の変数に格納されます。上記の例ではブロックの評価値が文字列 'foo' でシンボルが :foo なので foo という変数名に文字列 'foo' が格納されています。動作としては遅延評価される仕組みになっており*4、実際に呼び出しされるまでは実行されません。また、同じテストケース内ではブロックの評価値はキャッシュされており、複数回呼び出したときに毎回処理を行なうということはおきません。
+テストを書くとき、事前処理や呼び出すメソッドは同じでも使うデータだけが違うという場合があります。その時はそれぞれの describe や context の before の中で同じ処理を毎回書くか、テスト用のヘルパーメソッドを書くなどするしかありませんでしたが、let を使うともう少しスマートに書くことができます。
+1|  describe User, '#admin?' do
+2|    before do
+3|      @user = User.new(:name => 'jack')
+4|    end
+5|    subject { @user }
+6|
+7|    context 'admin' do
+8|      before do
+9|        @user.role = Role.new(:role => :admin)
+10|      end
+11|
+12|      it { should be_admin }
+13|    end
+14|
+15|    context 'not admin' do
+16|      before do
+17|        @user.role = Role.new(:role => :normal)
+18|      end
+19|
+20|      it { should_not be_admin }
+21|    end
+22|  end
+User クラスは内部に Role クラスを持ち、その Role の状態によって admin? メソッドの結果がかわります。このテストコードは let を使わず before と subject だけで書かれています。admin の context と not admin の context の違いは Role クラスに渡す引数だけです。
+1|  describe User, '#admin?' do
+2|    before do
+3|      @user = User.new(:name => 'jack')
+4|      @user.role = Role.new(:role => role)
+5|    end
+6|    subject { @user }
+7|
+8|    context 'admin' do
+9|      let(:role) { :admin }
+10|      it { should be_admin }
+11|    end
+12|
+13|    context 'not admin' do
+14|      let(:role) { :normal }
+15|      it { should_not be_admin }
+16|    end
+17|  end
+let を使うとデータの定義の部分だけを抜き出すことができるので、Role の設定もひとつの before の中ですませることができます。先程のテストコードよりこちらの方が DRY でコードの見通しもよくなっています。これが let の最もオーソドックスな使い方だと思います。
+もちろん、単純にインスタンス変数の置き換えとしても使うことができます。このあたりは好みの問題の気も若干しますが、データの定義を宣言的に書くことができるので大体の場合は見やすくなるでしょう。
+1|  describe Stack, '#pop' do
+2|    let(:stack) { Stack.new }
+3|    subject { stack.pop }
+4|
+5|    context 'スタックが空の場合' do
+6|      it { should be_nil }
+7|    end
+8|
+9|    context 'スタックに値がある場合' do
+10|      let(:oldest_value) { 'value1' }
+11|      let(:latest_value) { 'value2' }
+12|
+13|      before do
+14|        stack.push oldest_value
+15|        stack.push latest_value
+16|      end
+17|
+18|      it { should eq latest_value }
+19|    end
+20|  end
+shared_context
+RSpec の context はさきほど説明した通り、テストの状況を分けるために使うものですが context 自体は describe のエイリアスなので特になにかをしてくれるというわけではありません。実際にテストの状況をわけるためには before や subject などを使う必要があります。
+実は同じコンテキストでもひとつの context の中にまとめられないことが多々あります。例えば、複数のメソッドのテストで同じコンテキストを使いたい時などがそうです。
+1|  describe '#method_a' do
+2|    context '#context_a' do
+3|      before {} # DRYじゃない
+4|    end
+5|  end
+6|
+7|  describe '#method_b' do
+8|    context '#context_a' do
+9|      before {} # DRYじゃない
+10|    end
+11|  end
+describe と context のネストを逆にすることで解決できそうな気もしますが、普通あるメソッドに対するテストは複数のコンテキストで行いますから今度は同じメソッドに対するテストがバラバラに記述されてしまいます。
+1|  context '#context_a' do
+2|    before {}
+3|
+4|    describe '#method_a' do
+5|    end
+6|
+7|    describe '#method_b' do
+8|    end
+9|  end
+10|
+11|  context '#context_b' do
+12|    before {}
+13|
+14|    describe '#method_a' do
+15|    end
+16|
+17|    describe '#method_b' do
+18|    end
+19|  end
+バラバラになるとはいえ、これはこれでうまく構造化できているような気がします。ですが、これにはひとつ大きな問題があります。先程、段階的に仕様をテストコードに落とし込むという話で最初に describe を分けるところからはじめました。それと同じ理由で、これからテストしようと思う describe があってその次にテストする状況としての context があるので context が describe より上に来るのは自然ではありません。なので私はこの書き方はおすすめしません。
+これを解決するためには shared_context を使います。shared_context はその名前の通りコンテキスト (テストを行なうときの状況) を共有するための機能です。
+1|  shared_context '要素がふたつpushされている' do
+2|    let(:latest_value) { 'value2' }
+3|    before do
+4|      @stack = Stack.new
+5|      @stack.push 'value1'
+6|      @stack.push latest_value
+7|    end
+8|  end
+9|
+10|  describe Stack do
+11|    describe '#size' do
+12|      include_context '要素がふたつpushされている'
+13|      subject { @stack.size }
+14|      it { should eq 2 }
+15|    end
+16|
+17|    describe '#pop' do
+18|      include_context '要素がふたつpushされている'
+19|      subject { @stack.pop }
+20|      it { should eq latest_value }
+21|    end
+22|  end
+shared_context を使うことで複数箇所にちらばる同一処理をまとめることができます。shared_context は shared_context が書かれたファイルを require することでも使えるようになるので別のスペックファイルでも使うことができます。
+RSpec を使うとなったときに使い方についてどこで知ればいいのかと困る人も多いようです。実際、日本語での情報はあまり多くありません。本記事はそういう状況を少しでも改善できたらと思い書きましたがやはりこれでも十分ではありません。
+なので現時点ではやはり大元のドキュメントを参照するのが一番でしょう。rspec.info は現在ほぼ更新されていないので、Relish の方の RSpec Documentation を見ることをおすすめします。
+Relish は Cucumber のシナリオをドキュメントとして表示してくれるので基本的にはこれが最新のドキュメントと思えばいいでしょう。ただ、Relish のドキュメントは API ドキュメントに近く、使い方はわかってもそれを活用する方法がわからない場合もあります。例えば私は最初 let のメリットがよくわからず、しばらく手元で let を使ったテストコードを何回か書いて理解したりしました。
+この辺りの問題はなかなかむずかしく、ググって調べるか人に聞くなどするしかありません。もちろん自分で考えるという方法もあります。人に聞く場合は twitter などで発言すれば誰かが答えてくれるかもしれません。
+RSpec に関するコミュニティは私は Testing w/ Rails using RSpec in Japanese ぐらいしか知りませんが、あまり活発に活動しているわけでもありません。ただ少なくとも私は普段からチェックしていますし、Facebook にグループがあるのでそちらで質問を投げてもらえればわかる範囲でお答えできます。他の人も見てれば答えてくれるでしょう。もちろん、今この記事を見ているあなたも答えてもらって大丈夫です。むしろぜひ答えてください。github に wiki があるのでそちらに自分の知っていることを書くことも歓迎します。
+RSpec はよく「難しい」とか「構文がわかりづらい」と言われます。Rubyist はものごとをきっと Ruby のコードで考えるのでそのコードと RSpec の DSL にギャップがあるからなのかなと個人的には思っています。正直、この辺は慣れの問題でしょう。もちろん、どうしても受け付けないという人はいると思います。
+そういう人はまず describe と context のふたつから始めてみてください。仕様をテストするという点ではこのふたつを理解できれば十分だと個人的には思っています。it の中も Test::Unit のテストケースと同じように書いてしまっていいでしょう。
+そのうちにテストコードを DRY にしたくなると思います。そうしたときに初めて subject や let、shared_context などの機能を使うとよいでしょう。RSpec はテストコードを DRY にするという点で非常に優秀なテスティングフレームワークです。その分、機能が多く複雑に見えるかもしれませんが、ひとつずつ使い込なしていけばいいでしょう。
+これが私の知っている RSpec の全てというわけではありません。他にも伝えたいことはいろいろとありましたが、それをするとひとつの本になりかねないので省略させてもらいました。この記事が RSpec をもっと使いこなしたいという方の参考になれば幸いです。
+Rubyist Magazine - 改めて学ぶ RSpec

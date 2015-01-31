@@ -1,0 +1,121 @@
+7.3.26.1. 概要¶
+select はテーブルから指定された条件にマッチするレコードを検索し、見つかったレコードを出力します。
+select は最も重要なgroongaのコマンドです。groongaの力を最大限に活かすためには select を理解する必要があります。
+select table
+[match_columns=null]
+[query=null]
+[filter=null]
+[scorer=null]
+[sortby=null]
+[output_columns="_id, _key, *"]
+[offset=0]
+[limit=10]
+[drilldown=null]
+[drilldown_sortby=null]
+[drilldown_output_columns="_key, _nsubrecs"]
+[drilldown_offset=0]
+[drilldown_limit=10]
+[cache=yes]
+[match_escalation_threshold=0]
+[query_expansion=null]
+[query_flags=ALLOW_PRAGMA|ALLOW_COLUMN|ALLOW_UPDATE|ALLOW_LEADING_NOT|NONE]
+[query_expander=null]
+[adjuster=null]
+table_create Entries TABLE_HASH_KEY ShortText
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+column_create Entries content COLUMN_SCALAR Text
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+column_create Entries n_likes COLUMN_SCALAR UInt32
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+table_create Terms TABLE_PAT_KEY|KEY_NORMALIZE ShortText --default_tokenizer TokenBigram
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+column_create Terms entries_key_index COLUMN_INDEX|WITH_POSITION Entries _key
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+column_create Terms entries_content_index COLUMN_INDEX|WITH_POSITION Entries content
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load --table Entries
+[
+{"_key":    "The first post!",
+"content": "Welcome! This is my first post!",
+"n_likes": 5},
+{"_key":    "Groonga",
+"content": "I started to use groonga. It's very fast!",
+"n_likes": 10},
+{"_key":    "Mroonga",
+"content": "I also started to use mroonga. It's also very fast! Really fast!",
+"n_likes": 15},
+{"_key":    "Good-bye Senna",
+"content": "I migrated all Senna system!",
+"n_likes": 3},
+{"_key":    "Good-bye Tritonn",
+"content": "I also migrated all Tritonn system!",
+"n_likes": 3}
+]
+# [[0, 1337566253.89858, 0.000355720520019531], 5]
+ブログエントリ用の Entries テーブルがあります。各エントリはタイトルと内容と「いいね!」数を持っています。タイトルは Entries のキーとします。内容は Entries.content カラムの値とします。「いいね!」数は Entries.n_likes カラムの値とします。
+Entries._key カラムと Entries.content カラムには TokenBigram トークナイザーを使ったインデックスを作成します。そのため、 Entries._key と Entries.content は両方とも全文検索できます。
+これで例を示すためのスキーマとデータの準備ができました。
+select Entries
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         5
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "content",
+#           "Text"
+#         ],
+#         [
+#           "n_likes",
+#           "UInt32"
+#         ]
+#       ],
+#       [
+#         1,
+#         "The first post!",
+#         "Welcome! This is my first post!",
+#         5
+#       ],
+#       [
+#         2,
+#         "Groonga",
+#         "I started to use groonga. It's very fast!",
+#         10
+#       ],
+#       [
+#         3,
+#         "Mroonga",
+#         "I also started to use mroonga. It's also very fast! Really fast!",
+#         15
+#       ],
+#       [
+#         4,
+#         "Good-bye Senna",
+#         "I migrated all Senna system!",
+#         3
+#       ],
+#       [
+#         5,
+#         "Good-bye Tritonn",
+#         "I also migrated all Tritonn system!",
+#         3
+#       ]
+#     ]
+#   ]
+# ]
+7.3.26. select &mdash; Groonga v4.0.8ドキュメント

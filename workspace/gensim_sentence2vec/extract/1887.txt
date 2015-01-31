@@ -1,0 +1,16 @@
+引用元やほかリソースの参照を表すcite要素<cite>……</cite>
+citeは「citation」の略で、cite要素は参照元を表すために使います。文章内のある特定の部分に、構造上の情報を付加する要素の1つです。引用元の文章や著者名、Webサイト名などをcite要素で囲みます。
+使用の際には、blockquote要素やq要素などと組み合わせてマークアップするのが望ましいでしょう。
+例制作現場で役立つCSSハックという記事内で、
+あまり使わない方がよいCSSハックがリストアップされています。
+<html>
+<head>
+<title>cite要素のサンプル</title>
+</head>
+<body>
+<p><a href="http://www.atmarkit.co.jp/fwcr/design/benkyo/css04/02.html"><cite lang="ja" title="制作現場で役立つCSSハック">制作現場で役立つCSSハック</cite></a>という記事内で、<br />
+<q lang="jp" cite="http://www.atmarkit.co.jp/fwcr/design/benkyo/css04/02.html">あまり使わない方がよいCSSハック</q>がリストアップされています。
+</p>
+</body>
+</html>
+引用元やほかリソースの参照を表すcite要素>テキストに意味を持たせる正しいXHTMLタグ(18/20) − @IT

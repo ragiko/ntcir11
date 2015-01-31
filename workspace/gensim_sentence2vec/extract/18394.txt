@@ -1,0 +1,69 @@
+
+ツイート
+2つの文字列が等しいかどうかを判定する
+ある文字列が、ある文字列と等しいかどうかを判定するには、「=」「
+「=」演算子は「A = B」としたとき、AとBが等しい場合にTrueを返します。
+たとえば次のサンプルは、アクティブセルに「新宿」という文字列が入力されているかどうかを判定します。
+Sub Sample1()
+If ActiveCell.Value = "新宿" Then
+MsgBox "新宿です"
+Else
+MsgBox "新宿ではありません"
+End If
+End Sub
+「
+Sub Sample2()
+If ActiveCell.Value 
+文字列が含まれているかどうかを判定する(InStr関数)
+2つの文字列が等しいかどうかではなく、ある文字列が、別の文字列に含まれているかどうかを判定するときは、InStr関数を使います。
+InStr関数は「InStr(文字列1, 文字列2)」のように使い、文字列1の中に文字列2が含まれていればその位置を返し、含まれていない場合には0を返します。
+次のサンプルは、アクティブセルに「新宿」という文字列が含まれているかどうかを判定します。
+Sub Sample3()
+If InStr(ActiveCell.Value, "新宿") > 0 Then
+MsgBox "新宿を含んでいます"
+Else
+MsgBox "新宿を含んでいません"
+End If
+End Sub
+InStr関数は文字列の位置を返す関数です。
+アクティブセルに「東京都新宿区」と入力されていたら「InStr(ActiveCell.Value, "新宿")」は4を返します。
+ここでは、含まれていない = 0を返す かどうかを判定しています。
+文字列のパターンマッチング(Like演算子)
+InStr関数で判定する文字列には「*」「?」などのワイルドカードを使用できないので、InStr(ActiveCell.Value, "東京都*区*")のような判定ではできません。
+そんなときは、Like演算子を使います。
+Sub Sample4()
+If ActiveCell.Value Like "東京都*区*" Then
+MsgBox "23区内です"
+Else
+MsgBox "23区外です"
+End If
+End Sub
+Like演算子ではパターンに文字リストや文字範囲を指定できるので、次のサンプルのように文字列が1〜5の数値で始まるかどうか、といった判定も可能です。
+Sub Sample5()
+If ActiveCell.Value Like "[1-5]*" Then
+MsgBox "範囲内です"
+Else
+MsgBox "範囲外です"
+End If
+End Sub
+ただし、次のサンプルでアクティブセルの値が「東京」「大阪」「神奈川」のいずれかで始まるかどうか、を判定することはできません。
+Sub Sample6()
+If ActiveCell.Value Like "[東京,大阪,神奈川]*" Then
+MsgBox "範囲内です"
+Else
+MsgBox "範囲外です"
+End If
+End Sub
+なぜなら、 文字列 Like "[東京,大阪,神奈川]*"   は
+「東」「京」「,」「大」「阪」「神」「奈」「川」の8つの文字のいずれかで始まる場合にTrueを返すパターンマッチングだからです。
+「京都府・・・」や「神戸市・・・」などもマッチしてしまいます。リスト内の「,」も文字リストを区切る意味にはなりませんので注意してください。
+次のコードを実行すると、47都道府県名のうち、「北海道」「東京都」「神奈川県」「和歌山県」「鹿児島県」の文字色が赤になります。
+Sub Sample7()
+Dim c As Range
+For Each c In Range("A1:A47")
+If Not c.Value Like "??[県府]" Then
+c.Font.Color = vbRed
+End If
+Next c
+End Sub
+文字列の比較:Excel VBA｜即効テクニック｜Excel VBAを学ぶならmoug

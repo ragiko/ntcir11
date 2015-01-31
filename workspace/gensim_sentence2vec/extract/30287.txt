@@ -1,0 +1,358 @@
+
+概要
+ルート リクエスト
+交通手段
+乗換案内のオプション
+単位系
+ルートの地域のバイアス
+ルートのレンダリング
+ルートのステータス コード
+DirectionsResult の表示
+DirectionsResults オブジェクト
+ルート
+区間
+ステップ
+乗換案内固有の情報
+DirectionsResults の検査
+ルート内でのウェイポイントの使用
+ドラッグ可能なルート
+概要
+DirectionsService オブジェクトを使用することにより、各種の交通手段を使用したルートを計算できます。このオブジェクトは、Google Maps API ルート サービスと通信します。サービス側は、ルート リクエストを受信して、計算した結果を返します。ルートの計算結果は、お客様自身で処理することも、DirectionsRenderer オブジェクトを使用してレンダリングすることもできます。
+ルートでは、原点と目的地をテキスト文字列(「シカゴ、イリノイ」、「ダーウィン、NSW、オーストラリア」など)または LatLng 値として指定できます。ルート サービスは、一連のウェイポイントを使用した複数の部分からなるマルチパート ルートを返すことがあります。ルートは、地図上に経路を描画するポリラインとして表示されるか、<div> 要素内の説明テキストとして表示されます(「Williamsburg Bridge ランプを右折」など)。
+ルート リクエスト
+ルート サービスへのアクセスは、Google Maps API が外部サーバーへの呼び出しを行う必要があるため、非同期に行われます。このため、コールバック メソッドを渡してリクエストの完了時に実行する必要があります。このコールバック メソッドによって結果が処理されます。ルート サービスは、複数のルートをそれぞれ独立した routes[] の配列として返すことがあります。
+V3 でルートを使用するには、DirectionsService タイプのオブジェクトを作成して DirectionsService.route() を呼び出し、ルート サービスへのリクエストを開始します。そして、入力用語を格納する DirectionsRequest オブジェクト リテラルと、レスポンスの受け取り時に実行するコールバック メソッドを渡します。
+DirectionsRequest オブジェクト リテラルには次のフィールドがあります:
+{
+origin: LatLng | String,
+destination: LatLng | String,
+travelMode: TravelMode,
+transitOptions: TransitOptions,
+unitSystem: UnitSystem,
+waypoints[]: DirectionsWaypoint,
+optimizeWaypoints: Boolean,
+provideRouteAlternatives: Boolean,
+avoidHighways: Boolean,
+avoidTolls: Boolean
+region: String
+}
+各フィールドの概要は次のとおりです:
+origin(必須): ルートの計算の開始位置を指定します。この値は、String 値(「シカゴ、イリノイ」など)か LatLng 値として指定できます。
+destination(必須): ルートの計算の終了位置を指定します。この値は、String 値(「シカゴ、イリノイ」など)か LatLng 値として指定できます。
+travelMode(必須): ルート計算に使用する交通手段を指定します。有効な値については、下記の交通手段をご覧ください。
+transitOptions(省略可能): travelMode が google.maps.TravelMode.TRANSIT であるリクエストだけに適用される値を指定します。有効な値については、乗換案内のオプションをご覧ください。
+unitSystem(省略可能): 結果の表示に使用する単位系を指定します。有効な値については、下記の単位系をご覧ください。
+waypoints[](省略可能): DirectionsWaypoint の配列を指定します。ウェイポイントにより、ルートは指定された場所を通過するように変更されます。ウェイポイントは、以下に示すフィールドを持つオブジェクト リテラルとして指定されます:
+location: ウェイポイントの位置を LatLng または String として指定します。位置はジオコーディングされます。
+stopover: ウェイポイントがルート上の停止地点であることを示すブール値で、これによってルートは 2 つに分割されます。
+(ウェイポイントの詳細については、下記のルート内でのウェイポイントの使用をご覧ください。)
+optimizeWaypoints(省略可能): 指定された waypoints を使用するルートを最適化して、最短ルートを取得するように指定します。true の場合、ルート サービスは並べ替えた waypoints を waypoint_order フィールドに返します。(詳細については、以下のルート内でのウェイポイントの使用をご覧ください。)
+provideRouteAlternatives(省略可能): true に設定すると、複数の代替ルートを返すようにルート サービスに対して指定されます。なお、代替ルートを返すように指定すると、サーバーのレスポンス タイムが長くなる可能性があります。
+avoidHighways(省略可能): true に設定すると、高速道路を可能な限りルートの計算から除外するように指定されます。
+avoidTolls(省略可能): true に設定すると、有料道路を可能な限りルートの計算から除外するように指定されます。
+region(省略可能): ccTLD(「トップレベル ドメイン」)の 2 文字の値として指定される地域コードを指定します。(詳細については、下記の地域のバイアスをご覧ください。)
+以下にサンプルの DirectionsRequest を示します:
+{
+origin: "Chicago, IL",
+destination: "Los Angeles, CA",
+waypoints: [
+{
+location:"Joplin, MO",
+stopover:false
+},{
+location:"Oklahoma City, OK",
+stopover:true
+}],
+provideRouteAlternatives: false,
+travelMode: TravelMode.DRIVING,
+unitSystem: UnitSystem.IMPERIAL
+}
+交通手段
+ルートを計算するときは、使用する交通手段を指定する必要があります。現在、以下の交通手段がサポートされています:
+google.maps.TravelMode.DRIVING(デフォルト): 道路網を利用した標準の運転ルートです。
+google.maps.TravelMode.BICYCLING: 自転車専用道路と優先道路を使用した自転車ルートをリクエストします。
+google.maps.TravelMode.TRANSIT: 公共交通機関を使用したルートをリクエストします。
+google.maps.TravelMode.WALKING: 歩行者専用道路と歩道を使用した徒歩ルートをリクエストします。
+各国でサポートされているルートの範囲については、Google Maps の対象範囲を示すスプレッドシートをご覧ください。リクエストしたルートの種類が、その地域で利用できない場合は、応答として DirectionsStatus="ZERO_RESULTS" が返されます。
+徒歩ルートには明確な歩行者用道路が含まれないことがあるため、DirectionsResult に対して警告が返されます。デフォルトの DirectionsRenderer を使用していない場合は、これを表示する必要があります。
+乗換案内のオプション
+乗換案内サービスは現在、「試験運用」中です。このフェーズの間は、API の不正使用を避けるためにレート制限を設けます。今後、API の適正な利用に基づいて、地図の読み込み 1 回あたりの総クエリ数に上限を設定します。
+ルート リクエストで使用できるオプションは、交通手段によって異なります。乗換案内をリクエストする際は、avoidHighways、avoidTolls、waypoints[]、および optimizeWaypoints オプションは無視されます。乗換案内固有のルート オプションは、TransitOptions オブジェクト リテラルで指定できます。
+乗換案内のオプションは、時間の影響を受けます。ルートは、将来の時刻についてのみ返されます。
+TransitOptions オブジェクト リテラルには次のフィールドがあります:
+{
+departureTime: Date,
+arrivalTime: Date
+}
+各フィールドの概要は次のとおりです:
+departureTime(省略可能): 希望する出発時刻を Date オブジェクトとして指定します。departureTime は、arrivalTime が指定された場合は無視されます。departureTime と arrivalTime のどちらも指定されなかった場合は、デフォルトで現在の時刻になります。
+arrivalTime(省略可能): 希望する到着時刻を Date オブジェクトとして指定します。到着時刻が指定されると、出発時刻は無視されます。
+乗換案内によるサンプルの DirectionsRequest を以下に示します:
+{
+origin: "Hoboken NJ",
+destination: "Carroll Gardens, Brooklyn",
+travelMode: google.maps.TravelMode.TRANSIT,
+transitOptions: {
+departureTime: new Date(1337675679473)
+},
+unitSystem: google.maps.UnitSystem.IMPERIAL
+}
+単位系
+デフォルトでは、ルートは出発地点の国または地域における単位系を使用して計算および表示されます。(注: 住所ではなく緯度と経度で表された出発地点は、常にメートル法がデフォルトになります。)たとえば、イリノイ州シカゴ(Chicago, IL)からオンタリオ州トロント(Toronto, ONT)までのルートはマイルで結果が表示されますが、逆方向ではキロメートルで表示されます。単位系のデフォルト設定は、次のいずれかの UnitSystem 値を使用してリクエスト内で明示的に設定することでオーバーライドできます:
+UnitSystem.METRIC: メートル系を使用するよう指定します。距離はキロメートルで表示されます。
+UnitSystem.IMPERIAL: ヤード ポンド法(英国式)を使用することを指定します。距離はマイルで表示されます。
+注: この単位系設定は、ユーザーに表示されるテキストにのみ影響します。ルートの結果にはユーザーに表示されない距離の値も含まれますが、これは常にメートルで表現されます。
+ルートの地域のバイアス
+Google Maps API ルート サービスは、JavaScript ブートストラップを読み込んだドメイン(地域または国)に影響される住所結果を返します。(多くのユーザーは http://maps.google.com/ を読み込むため、明示的に指定しない限り、米国がドメインに設定されます。)別のサポート ドメインからブートストラップを読み込むと、そのドメインの影響を受けた結果が返されます。たとえば、「サンフランシスコ」を検索する場合、http://maps.google.com/(米国)を読み込むアプリケーションから返される結果と http://maps.google.es/(スペイン)を読み込むアプリケーションから返される結果は異なる可能性があります。
+また、region パラメータを使用することにより、ルート サービスの結果において特定の地域が優先されるように設定することもできます。このパラメータは、IANA 言語の region サブタグで指定される地域コードを使用します。このタグは多くの場合、「co.uk」の場合の「uk」など、ccTLD(「トップレベル ドメイン」)の 2 文字の値に直接対応します。region タグは ISO-3166-1 コードもサポートする場合もあります。このコードは ccTLD 値とは異なることがあります(イギリスの「GB」など)。
+各国でサポートされているルートの範囲については、Google Maps の対象範囲を示すスプレッドシートをご覧ください。
+ルートのレンダリング
+DirectionsService へのルート リクエストを route() メソッドで開始する場合は、サービス リクエストの完了時に実行されるコールバックを渡す必要があります。このコールバックでは、DirectionsResult と DirectionsStatus コードがレスポンスとして返されます。
+ルート クエリのステータス
+DirectionsStatus は、次の値を返します:
+OK: レスポンスに有効な DirectionsResult が含まれていることを示します。
+NOT_FOUND: リクエストで指定された出発地、目的地、ウェイポイントのうち、少なくとも 1 つの場所がジオコーディングできないことを示します。
+ZERO_RESULTS: 出発地と目的地の間にルートが見つからなかったことを示します。
+MAX_WAYPOINTS_EXCEEDED: DirectionsRequest に指定された DirectionsWaypoint が多すぎることを示します。ウェイポイントの最大許容数は、8 に出発地点と到着地点を加えた数です。Maps API for Business をご利用の方は、23 のウェイポイントと出発地点、到着地点を使用できます。ウェイポイントは、乗換案内ではサポートされていません。
+INVALID_REQUEST: 指定された DirectionsRequest が無効であることを示します。このエラー コードの最も一般的な原因は、リクエストに出発地点または到着地点が指定されていないか、乗換案内にウェイポイントを含めていることです。
+OVER_QUERY_LIMIT: 許可された期間内でウェブページから送信されたリクエストが多すぎることを示します。
+REQUEST_DENIED: ウェブページでルート サービスが使用できないことを示します。
+UNKNOWN_ERROR: サーバー エラーが原因でルート リクエストを処理できなかったことを示します。もう一度実行すると、リクエストが正常に処理される可能性があります。
+結果を処理する前にこの値を確認して、ルート クエリが有効な結果を返したことを確認してください。
+DirectionsResult の表示
+DirectionsResult はルート クエリの結果を格納しており、お客様自身で処理することも、DirectionsRenderer オブジェクトに渡して自動的に地図上に結果を表示させるように処理することもできます。
+DirectionsRenderer を使用して DirectionsResult を表示するには、以下を実行します:
+DirectionsRenderer オブジェクトを作成します。
+レンダラで setMap() を呼び出して、渡された地図にバインドします。
+レンダラで setDirections() を呼び出して、上記で説明したように DirectionsResult を渡します。レンダラは MVCObject であるため、プロパティに変更があった場合は自動的に検出し、関連付けられたルートの変更に応じて地図を更新します。
+次の例では、ルート 66 上の 2 つの地点間のルートを計算します。出発地点と到着地点は、ドロップダウン リストで指定された "start" 値と "end" 値によって設定されています。DirectionsRenderer は、指定された地点間のポリラインの表示、ならびに出発地点、到着地点、ウェイポイント(存在する場合)のマーカーの配置を処理します。
+var directionsDisplay;
+var directionsService = new google.maps.DirectionsService();
+var map;
+function initialize() {
+directionsDisplay = new google.maps.DirectionsRenderer();
+var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+var mapOptions = {
+zoom:7,
+mapTypeId: google.maps.MapTypeId.ROADMAP,
+center: chicago
+}
+map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+directionsDisplay.setMap(map);
+}
+function calcRoute() {
+var start = document.getElementById("start").value;
+var end = document.getElementById("end").value;
+var request = {
+origin:start,
+destination:end,
+travelMode: google.maps.TravelMode.DRIVING
+};
+directionsService.route(request, function(result, status) {
+if (status == google.maps.DirectionsStatus.OK) {
+directionsDisplay.setDirections(result);
+}
+});
+}
+HTML の本文:
+<div>
+<strong>Start: </strong>
+<select id="start" onchange="calcRoute();">
+<option value="chicago, il">Chicago</option>
+<option value="st louis, mo">St Louis</option>
+<option value="joplin, mo">Joplin, MO</option>
+<option value="oklahoma city, ok">Oklahoma City</option>
+<option value="amarillo, tx">Amarillo</option>
+<option value="gallup, nm">Gallup, NM</option>
+<option value="flagstaff, az">Flagstaff, AZ</option>
+<option value="winona, az">Winona</option>
+<option value="kingman, az">Kingman</option>
+<option value="barstow, ca">Barstow</option>
+<option value="san bernardino, ca">San Bernardino</option>
+<option value="los angeles, ca">Los Angeles</option>
+</select>
+<strong>End: </strong>
+<select id="end" onchange="calcRoute();">
+<option value="chicago, il">Chicago</option>
+<option value="st louis, mo">St Louis</option>
+<option value="joplin, mo">Joplin, MO</option>
+<option value="oklahoma city, ok">Oklahoma City</option>
+<option value="amarillo, tx">Amarillo</option>
+<option value="gallup, nm">Gallup, NM</option>
+<option value="flagstaff, az">Flagstaff, AZ</option>
+<option value="winona, az">Winona</option>
+<option value="kingman, az">Kingman</option>
+<option value="barstow, ca">Barstow</option>
+<option value="san bernardino, ca">San Bernardino</option>
+<option value="los angeles, ca">Los Angeles</option>
+</select>
+</div>
+例を表示(directions-simple.html)
+次の例では、カリフォルニア州サンフランシスコのハイトアシュベリーとオーシャンビーチとの間でさまざまな交通手段を使用したルートを表示します:
+var directionsDisplay;
+var directionsService = new google.maps.DirectionsService();
+var map;
+var haight = new google.maps.LatLng(37.7699298, -122.4469157);
+var oceanBeach = new google.maps.LatLng(37.7683909618184, -122.51089453697205);
+function initialize() {
+directionsDisplay = new google.maps.DirectionsRenderer();
+var mapOptions = {
+zoom: 14,
+mapTypeId: google.maps.MapTypeId.ROADMAP,
+center: haight
+}
+map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+directionsDisplay.setMap(map);
+}
+function calcRoute() {
+var selectedMode = document.getElementById("mode").value;
+var request = {
+origin: haight,
+destination: oceanBeach,
+// Note that Javascript allows us to access the constant
+// using square brackets and a string value as its
+// "property."
+travelMode: google.maps.TravelMode[selectedMode]
+};
+directionsService.route(request, function(response, status) {
+if (status == google.maps.DirectionsStatus.OK) {
+directionsDisplay.setDirections(response);
+}
+});
+}
+HTML の本文:
+<div>
+<strong>Mode of Travel: </strong>
+<select id="mode" onchange="calcRoute();">
+<option value="DRIVING">Driving</option>
+<option value="WALKING">Walking</option>
+<option value="BICYCLING">Bicycling</option>
+<option value="TRANSIT">Transit</option>
+</select>
+</div>
+例を表示(directions-travel-modes.html)
+DirectionsRenderer は、ポリラインと関連マーカーを表示するよう処理するだけでなく、ルートをステップごとにテキストで表示するよう処理することもできます。これを行うには、setPanel() を DirectionsRenderer で呼び出して、この情報を表示する <div> を渡します。このように設定することで、該当する著作権情報やルート結果に関する警告を表示することができます。
+テキストによるルート表示では、ブラウザの優先言語設定で指定された言語か、API JavaScript のロード時に language パラメータで指定された言語が使用されます。(詳細については、ローカライズをご覧ください)。乗換案内の場合、時刻は乗換駅のタイムゾーンで表示されます。
+次の例は、上記のサンプルとほとんど同じですが、ルートを表示する <div> パネルが組み込まれています:
+var directionsDisplay;
+var directionsService = new google.maps.DirectionsService();
+var map;
+function initialize() {
+directionsDisplay = new google.maps.DirectionsRenderer();
+var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+var mapOptions = {
+zoom:7,
+mapTypeId: google.maps.MapTypeId.ROADMAP,
+center: chicago
+}
+map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+directionsDisplay.setMap(map);
+directionsDisplay.setPanel(document.getElementById("directionsPanel"));
+}
+function calcRoute() {
+var start = document.getElementById("start").value;
+var end = document.getElementById("end").value;
+var request = {
+origin:start,
+destination:end,
+travelMode: google.maps.TravelMode.DRIVING
+};
+directionsService.route(request, function(response, status) {
+if (status == google.maps.DirectionsStatus.OK) {
+directionsDisplay.setDirections(response);
+}
+});
+}
+HTML の本文:
+<div id="map_canvas" style="float:left;width:70%; height:100%"></div>
+<div id="directionsPanel" style="float:right;width:30%;height 100%"></div>
+例を表示(directions-panel.html)
+DirectionsResult オブジェクト
+ルート リクエストを DirectionsService に送ると、ステータス コードとルート結果(DirectionsResult オブジェクト)で構成されるレスポンスが返されます。DirectionsResult は、次の 1 つのフィールドを持つオブジェクト リテラルです:
+routes[]: DirectionsRoute オブジェクトの配列が格納されます。各ルートは、DirectionsRequest で指定された出発地点から到着地点に至る経路を示します。原則として、1 つのリクエストに対して返されるルートは 1 つだけです。ただし、リクエストの provideRouteAlternatives フィールドが true に設定されている場合は、複数のルートが返されることがあります。
+ルート全体
+以前の DirectionsTrip オブジェクトは DirectionsRoute に名前が変更されました。現在、ルートの意味は、上位ルートの一区間ではなく、出発から到着までの全行程であることに注意してください。
+DirectionsRoute には、指定された出発地点と到着地点からの結果が 1 つ格納されます。このルートには、ウェイポイントが 1 つでも指定されているかどうかに応じて、1 つまたは複数の区間(タイプ DirectionsLeg)で構成されます。また、ルートには著作権や警告の情報も含まれます。これらの情報は、ユーザーに対してルート情報を表示するときに一緒に表示する必要があります。
+DirectionsRoute は、次のフィールドを持つオブジェクト リテラルです:
+legs[]: DirectionsLeg オブジェクトの配列が格納されます。各オブジェクトには、ルート内の 2 つの地点に基づくルート内区間に関する情報が格納されます。区間は、指定されたウェイポイントまたは目的地ごとに 1 つずつ存在します。(ウェイポイントがないルートには、DirectionsLeg が 1 つだけ含まれます。)各区間は一連の DirectionStep で構成されます。
+waypoint_order: 計算されたルート内のウェイポイントの順序が格納されます。DirectionsRequest に optimizeWaypoints: true が渡された場合は、この順序が変更されることがあります。
+overview_path: ルート結果のおよその(なめらかな)パスを表す LatLng の配列が格納されます。
+bounds: ルートのポリラインの境界を示す LatLngBounds が格納されます。
+copyrights: ルートと一緒に表示される著作権表示のテキストが格納されます。
+提供されている DirectionsRenderer オブジェクトを使用しない場合は、各自でこの情報を処理して表示する必要があります。
+warnings[]: ルートと一緒に表示される警告の配列が格納されます。提供されている DirectionsRenderer オブジェクトを使用しない場合は、各自でこの警告を処理して表示する必要があります。
+ルートの区間
+以前の DirectionsRoute オブジェクトは DirectionsLeg に名前が変更されました。
+DirectionsLeg は、計算されたルート内の出発地点から到着地点までの行程内の 1 つの区間を定義します。ウェイポイントが含まれていないルートは、単一の区間で構成されます。1 つまたは複数のウェイポイントが定義されたルートは、行程内の区間に応じて複数の区間で構成されます。
+DirectionsLeg は、次のフィールドを持つオブジェクト リテラルです:
+steps[]: 行程内の区間の各ステップに関する情報を示す DirectionsStep オブジェクトの配列が格納されます。
+distance: 当該区間の距離の合計を、次の形式の Distance オブジェクトとして示します:
+value: メートル法に基づく距離を示します。
+text: 距離の文字列表現が格納されます。デフォルトでは、出発地点で使用されている単位で表示されます。(たとえば、出発地点が米国内の場合はマイルが使用されます。)単位系のデフォルト設定は、元のクエリ内で UnitSystem を明示的に設定することでオーバーライドできます。使用する単位系に関係なく、distance.value フィールドにはメートルで表された値が格納されます。
+距離が不明な場合、各フィールドは未定義になる可能性があります。
+duration: 当該区間の所要時間の合計を、次の形式の Duration オブジェクトとして示します:
+value: 所要時間を秒で示します。
+text: 所要時間の文字列表現が格納されます。
+時間が不明な場合、各フィールドは未定義になる可能性があります。
+arrival_time: この区間の予測到着時刻が格納されます。このプロパティは、乗換案内の場合にのみ返されます。結果は、以下の 3 つのプロパティを持つ Time オブジェクトとして返されます:
+value: JavaScript の Date オブジェクトで指定される時刻が格納されます。
+text: 文字列で指定される時刻が格納されます。時刻は乗換駅のタイムゾーンで表示されます。
+time_zone: この駅のタイムゾーンが格納されます。値は、「America/New_York」など、IANA タイム ゾーン データベース(リンク先は英語)に定義されているタイムゾーンの名前です。
+departure_time: この区間の予測出発時刻が Time オブジェクトとして指定されて格納されます。departure_time は、乗換案内の場合に限り使用できます。
+start_location: この区間の出発地点の LatLng が格納されます。ルート ウェブ サービスでは、始点と終点に最も近い交通手段(通常は道路)に基づいてルートが計算されるため、start_location は、この区間で指定された出発地点と異なることがあります(出発地点付近に道路がない場合など)。
+end_location: この区間の到着地点の LatLng が格納されます。DirectionsService では、始点と終点に最も近い交通手段(通常は道路)に基づいてルートが計算されるため、end_location は、この区間で指定された到着地点と異なることがあります(到着地点付近に道路がない場合など)。
+start_address: この区間の始点の住所が人間の読める形式で格納されます(通常は住所形式)。
+end_address: この区間の終点の住所が人間の読める形式で格納されます(通常は住所形式)。
+ルートのステップ
+DirectionsStep はルートを構成する最小単位で、行程内の具体的な指示を示す 1 つのステップを含んでいます。ステップの例は「西 4 丁目で左折(Turn left at W. 4th St.)」などです。ステップには、指示だけでなく、後続ステップまでの距離と所要時間の情報も含まれています。たとえば、「州間高速道路 80 号西行きと合流(Merge onto I-80 West)」というステップには、次のステップまで 37 マイル、40 分であることを示す「37 miles」および「40 minutes」という距離や所要時間が含まれる可能性があります。
+ルート サービスを使用して乗換案内を検索すると、ステップの配列には乗換案内固有の情報が transit オブジェクトの形式で含まれます。ルートに複数の交通手段が含まれる場合は、徒歩または運転のステップに関する詳細なルートが steps[] 配列で提供されます。たとえば、徒歩ステップには、「Innes Ave と Fitch St の交差点まで歩く(Walk to Innes Ave & Fitch St)」のような始点から終点までのルートが含まれます。このステップには、次のように、steps[] 配列にそのルートの詳細な徒歩ルートが含まれます: 「北西を向く(Head north-west)」、「Arelious Walker で左折(Turn left onto Arelious Walker)」、「Innes Ave で左折(Turn left onto Innes Ave)」。
+DirectionsStep は、次のフィールドを持つオブジェクト リテラルです:
+instructions: このステップの指示がテキスト文字列で格納されます。
+distance: このステップから次のステップまでの距離が Distance オブジェクトとして格納されます。(上記の DirectionsLeg の説明をご覧ください。)距離が不明な場合、このフィールドは未定義になる可能性があります。
+duration: このステップの標準的な所要時間が Duration オブジェクトとして格納されます。(上記の DirectionsLeg の説明をご覧ください。)所要時間が不明な場合、このフィールドは未定義になる可能性があります。
+start_location: このステップの始点の LatLng をジオコーディングした値が格納されます。
+end_location: このステップの終点の LatLng が格納されます。
+steps[]: 乗換案内における徒歩または運転のステップの詳細なルートを含む DirectionsStep オブジェクト リテラル。乗換案内の場合に限り、サブステップが提供されます。
+travel_mode: このステップで使用される TravelMode が格納されます。乗換案内に含まれるルートは、徒歩と交通機関が組み合わされることがあります。
+path: このステップのコースを記述する LatLngs の配列。
+transit: 到着時刻と出発時刻、交通機関の路線名など、乗換案内固有の情報が格納されます。
+乗換案内固有の情報
+乗換案内からは、他の交通手段には無関係な追加の情報が返されます。これらの追加プロパティは、TransitDetails オブジェクトを通じて公開され、DirectionsStep のプロパティとして返されます。TransitDetails オブジェクトからは、TransitStop、TransitLine、TransitAgency、および VehicleType の各オブジェクトに関する以下の情報にアクセスできます。
+乗換案内の詳細
+TransitDetails オブジェクトは、以下のプロパティを公開します:
+arrival_stop: 到着駅/停車地を表す、次のプロパティを備えた TransitStop オブジェクトが格納されます:
+name: 乗換駅の名前。例: 「Union Square」
+location: LatLng で表される乗り継ぎ駅/停車地の場所。
+departure_stop: 出発駅/停車地を表す TransitStop オブジェクトが格納されます。
+arrival_time: 到着時刻を表す、以下のプロパティを持つ Time オブジェクトが格納されます:
+value: JavaScript の Date オブジェクトで指定される時刻が格納されます。
+text: 文字列で指定される時刻が格納されます。時刻は乗換駅のタイムゾーンで表示されます。
+time_zone: この駅のタイムゾーンが格納されます。値は、「America/New_York」など、IANA タイム ゾーン データベース(リンク先は英語)に定義されているタイムゾーンの名前です。
+departure_time: Time オブジェクトとして指定される出発時刻が格納されます。
+headsign: 車両または出発駅に示されている、この路線を進む方向を指定します。終着駅によって表されていることがあります。
+headway: データが存在する場合、同じ場所における現時点での推定出発間隔を指定します。たとえば、headway 値が 600 の場合、バスを逃すと 10 分待つことになると予想されます。
+line: このステップで使用される交通機関の路線に関する情報を含む TransitLine オブジェクト リテラルが格納されます。TransitLine は路線の名前と運営者の他、TransitLine 参考ドキュメントに説明されているその他のプロパティを示します。
+num_stops: このステップ内の停車地の数が格納されます。到着停車地は含まれますが、出発停車地は含まれません。たとえば、駅 A から出発し、駅 B および C を通過して駅 D に到着する場合、num_stops は 3 を返します。
+交通機関の路線
+TransitLine オブジェクトは、以下のプロパティを公開します:
+name: この路線の完全な名前が格納されます。例: 「7 Avenue Express」、「14th St Crosstown」など。
+short_name: この路線の略称が格納されます。これは通常、「2」や「M14」などの路線番号です。
+agencies: TransitAgency オブジェクトの配列が格納されます。各 TransitAgency オブジェクトは、次のプロパティに示すこの路線の運営者に関する情報を示します:
+name: 交通機関の名前が格納されます。
+url: 交通機関の URL が格納されます。
+phone: 交通機関の電話番号が格納されます。
+DirectionsRenderer オブジェクトを使用せずに手動で乗換案内を表示する場合は、ルートを提供する交通機関運営者の名前と URL を表示する必要があります。
+url: 交通機関運営者が提供している、この交通機関の路線の URL が格納されます。
+icon: この路線を表すアイコンの URL が格納されます。多くの都市では、車両タイプごとに定められている共通のアイコンを使用しています。ニューヨーク市の地下鉄のように、一部の交通機関では路線ごとにアイコンがあります。
+color: この交通機関に対して一般的に使用される色が格納されます。色は、#FF0033 などの 16 進文字列で指定します。
+text_color: この路線に対して一般的に使用されるテキストの色が格納されます。色は、16 進文字列で指定します。
+vehicle:以下のプロパティを備えた Vehicle オブジェクトが格納されます:
+name: この路線の車両の名前が格納されます。例: 「Subway」
+type: この路線で使用される車両のタイプが格納されます。サポートされている値の完全なリストは、車両タイプをご覧ください。
+icon: この車両タイプに一般的に関連付けられるアイコンの URL が格納されます。
+local_ icon: 現在の地域で、この車両タイプに関連付けられるアイコンの URL が格納されます。
+車両タイプ
+VehicleType オブジェクトは、以下のプロパティを公開します:
+値
+定義
+ルート サービス - Google Maps JavaScript API v3 &mdash; Google Developers

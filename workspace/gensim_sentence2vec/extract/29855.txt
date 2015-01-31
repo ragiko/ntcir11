@@ -1,0 +1,34 @@
+
+$_= "abcdefg";
+#ガラクタ。任意の1文字が連続で0回以上マッチする
+if (/c.*e/) 
+{
+print "match\n";
+}
+if (/ab*d/)
+{
+print "match\n";
+}
+#+の使い方
+$_ = "abcdef";
+if (/ab+c/)
+{
+print "match\n";
+}
+$_ = "aabbbcc";
+if (/a+b+c+/)
+{
+print "match\n";
+}
+#?の使い方
+$_ = "abcdef";
+if (/a?bc/)
+{
+print "match\n";
+}
+$_ = "aa-ccc";
+if (/aa?cc/)
+{
+print "match\n";
+}
+Perl - 正規表現

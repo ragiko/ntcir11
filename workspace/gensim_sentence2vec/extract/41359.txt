@@ -1,0 +1,80 @@
+これを読んで得られるもの
+ここに書いてある内容をそのままやれば,
+USBカメラとPCだけで,拡張現実感アプリケーションを作れる&遊べる
+自分で作ったマーカの上に,自分で作った3Dモデルをオーバーレイ表示できる
+はずです.
+用意するもの
+PC
+USBカメラ (LogitechのQcamシリーズがオススメ)
+C言語のプログラミング環境 (VisualC++など)
+定規
+好奇心
+実験を行った基本ソフトウェア環境
+今回のコラム執筆にあたり,実験を行った環境は以下のとおりです.
+Windows XP
+Visual C++ 6.0
+他のプログラミング環境でも大差はないと思いますので適当に読み替えてください.
+Visual C++ 6.0 は開発環境としてはかなり古いです.
+マイクロソフトからVisual C++ 2008 Express Edition(無償版)が配布されていますのでそちらを利用してください.
+VC2008でのインストールについては以下のページを参考にしてください.
+ゼロからはじめるARToolKit on VisualC++ 2008 Express Edition
+ARToolKitのダウンロード
+ARToolKitは加藤博一先生(現在,奈良先端科学技術大学院大学 教授)とワシントン大学HITL(Human Interface Technology Lab)によって開発されました.
+ARToolKitはフリーで提供されており,ARToolKit Home Page
+よりダウンロードすることができます.
+ダウンロードページ
+から以下の3つのファイルをダウンロードしてください.
+ARToolkit-2.71.2.tgz (988KB)
+DSVL-0.0.8b.zip (2.57MB)
+OpenVRML-0.14.3-win32.zip (10.8MB)
+【ページの辿り方】
+最初のページ
+その次のページ
+ここからダウンロードする
+GLUTのダウンロード
+ARToolKitの3Dグラフィックス処理の部分にはOpenGLおよびGLUTが使われています.
+OpenGLはDirectXと並んで有名な3Dグラフィックス・プログラミングライブラリです.
+そしてGLUTはその補助ライブラリです.OpenGLは標準のライブラリとしてVCの中に含まれていますが,
+GLUTについては別途ダウンロードする必要があります.
+GLUT for Win32のページ
+から以下のファイルをダウンロードしてください.
+glut-3.7.6-bin.zip (117KB)
+GLUTをインストールしてからARToolKitをインストールしてください.
+GLUTのインストール
+以下の手順で進めてください.
+まず,glut-3.7.6-bin.zipを解凍してください.
+「glut32.dll」を「C:\windows\system32」に入れてください.
+「glut.h」を自分の開発環境の「include\GL」フォルダに入れてください.
+<VisualC++6.0の場合>
+C:\Program Files\Microsoft Visual Studio\VC98\Include\GL
+「glut32.lib」を自分の開発環境の「Lib」フォルダに入れてください.
+<VisualC++6.0の場合>
+C:\Program Files\Microsoft Visual Studio\VC98\Lib
+ARToolKitのインストール
+以下の手順で進めてください.
+【1】 ファイルの解凍とコピー
+ARToolkit-2.71.2.tgz,DSVL-0.0.8b.zip,OpenVRML-0.14.3-win32.zipをそれぞれ解凍してください.
+解凍すると「ARToolKit」「DSVL」「OpenVRML」という3つのフォルダができます.
+「ARToolKit」の中に「DSVL」と「OpenVRML」を移してください.
+「ARToolKit」を「C:\Program Files\」に移してください.
+以下の3つのDLLファイルを「ARToolkit\bin\」にコピーしてください.
+ARToolKit\DSVL\bin\DSVL.dll
+ARToolKit\DSVL\bin\DSVLd.dll
+ARToolKit\OpenVRML\bin\js32.dll
+「ARToolKit\Configure.win32.bat」をダブルクリックして実行してください.
+【2】 VisualC++の設定
+まずはインクルードファイルとライブラリのパスを通しておきましょう.これは開発環境にファイルの場所を教える作業です.
+VisualC++のメニューを「ツール>オプション」とたどり,出てきたダイアログの「ディレクトリ」タブをクリックします.
+まず「表示するディレクトリ」を「インクルードファイル」にした状態で,下の空白の横にある「...」ボタンをクリックして
+C:\PROGRAM FILES\ARTOOLKIT\INCLUDE
+を追加してください.
+次に「表示するディレクトリ」を「ライブラリファイル」にした状態で,同様にして
+C:\PROGRAM FILES\ARTOOLKIT\LIB
+を追加してください.できたらOKボタンを押します.
+次にライブラリとサンプルプログラムを自分でコンパイルして作成します.
+「ARToolKit\ARToolKit.dsw」をVisualC++で開いてください.
+VisualC++のメニューを「ビルド>バッチビルド」とたどり,「ビルド」をクリックしてください.
+ライブラリとサンプルプログラムのコンパイルが実行されます.終わるまで待ちましょう.
+これが終わればすべて終了です!
+これでようやくARToolKitでプログラムを作る準備が整いました!
+「攻殻機動隊」「電脳コイル」の世界を実現! - ARToolKitを使った拡張現実感プログラミング - 工学ナビ

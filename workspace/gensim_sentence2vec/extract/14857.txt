@@ -1,0 +1,531 @@
+
+remember the milkから、Google Tasks(GmailのToDoリスト)に乗り換えました。
+Google Tasksを使ってみて一番不満に感じるのは、「メールからのタスク登録が不便なこと」。
+これ!と言う解決方法が見つからなかったのと、雪で予定が潰れたので解決方法をちょっと作ってみました。導入の手順が多いので面倒かと思いますが、同じ不満を持つ方の参考になれば幸いです。remember the milkからGoogle Tasksに乗り換えてみました
+乗り換えた理由はこんな感じ。
+(もう2月ですが)年も明けたし新しいノート的な気分で。しかも、無料。
+個々の”タスク”は、最終的にGoogleカレンダーで”予定”にすることが多い。Googleカレンダーと仲の良いGoogle Tasksが良いんじゃないか。
+“タスク”となる依頼がメールで飛んでくることが多い。Gmailと仲の良いGoogle Tasksが良いんじゃないか。
+RTMに預けるときは固有名詞は全て隠語にしている。Google Apps for Businessのアカウントで扱うタスクは、Google Tasksで管理した方が気兼ねがないんじゃないか。
+そんなこんなでGoogle Tasks使ってみると、remember the milkのようなスマートな検索ができなかったり、期限の登録が面倒と感じることがあったりと、多少の不満はあるものの、今の仕事の仕方なら十分使えると思いましたが…
+メールを簡単にタスク登録できると思ってたのに…
+使いにくいなぁと思ったのは、
+「専用のメールアドレスにメールを送れば、タスクの登録ができる」的な機能がない。
+Gmailの「ToDoリストに追加」機能がシンプル過ぎる。
+の2点。
+ちなみに「ToDoリストに追加」の機能は簡単に使えます。メールをタスクに登録したいと思ったら［その他］ー［Todoリストに追加］と操作するだけ。
+しかし、操作がシンプルな分、機能もシンプル。登録先のリストは強制的にデフォルトのリストになる、期限はあとから登録しなくちゃいけない。さらにiPhone版のGmailアプリには［ToDoリストに追加］がないなど不満が膨らんできました。
+作ってみました
+文句を言っていてもしょうがないので「指定したラベルが付いているメールを、Googleタスクの指定したリストへ自動登録。ついでに本文中に期限が指定されていたら期限を登録する。」って言うのを作ってみました。
+Gmailのフィルター機能を使えば、[Googleアカウント名]+todo@gmail.comに届いたメールを、自動でGoogleタスクに登録すると言う使い方もできます。
+今回使ったのはGoogle Apps Script。GoogleドライブのExcel VBA(≒マクロ)的存在です。APIを経由して各種Googleサービスとの連携ができるのが便利。また、Excelマクロはパソコン上で動作しますが、Google Apps Scriptはサーバー上で動作します。パソコンを起動していなくても定期実行が行えるのもGoodです。ちなみにExcel VBAはVisual Basic for Applicationsで書きますが、Google Apps ScriptはJavaScriptで書きます。
+導入方法
+導入方法と使い方をご案内。同じ不満を持つ方の参考になれば幸いです。ちょっと手順が多いですが…
+1.スクリプトの新規作成
+いままでGoogle Apps Scriptを使ったことがないと言う方は、「Google Apps Script」(http://www.google.com/script/start/)にアクセスして、［Start Scripting］をクリックしてください。
+使ったことのある方は、Googleドライブにアクセスして［作成］ー［スクリプト］を選択します。
+続けて［空のプロジェクト］を選びましょう。
+2.ソースコードのコピーとプロジェクトの保存
+次に以下のソースコードをコピーして、1の手順で開いた[コード.gs]に貼り付けます。[コード.gs]にある”function myFunction() {}”は不要です。
+上手くコピーできない場合は、labeledGmailtoGTask.gsをダウンロードし、エディタで開いてコピー&ペーストしてください。
+//Copyright (c) 2014 GOODEGG.JP
+/**
+*  @fileoverview ラベル付きGmailをGoogle Tasksに登録するスクリプト
+*      http://goodegg.jp/archives/7282
+*/
+/**
+*  Gmailのラベルと、Googleタスクのリストの組み合わせを決めておきましょう。
+*  @const
+*  Gmailで Gmail_todo ラベルが付いたメールを、Googleタスクの Gtask_todo リストに登録し、&lt;br /&gt;
+*  Gmailで Gmail_work ラベルが付いたメールを、Googleタスクの Gtask_work リストに登録するなら...
+*  var  INITIAL_SETTINGS =[
+*    {'labelname' : 'Gmail_todo', 'listname' : 'Gtask_todo'},
+*    {'labelname' : 'Gmail_work', 'listname' : 'Gtask_work'}
+*  ];
+*/
+var INITIAL_SETTINGS = [
+{'labelname' : '00.todo/blog', 'listname' : 'Blog'},
+{'labelname' : '00.todo/next', 'listname' : 'Next'},
+{'labelname' : '00.todo/someday', 'listname' : 'Someday'},
+{'labelname' : '00.todo/writing', 'listname' : 'writing'}
+];
+/**
+* ラベル付きGmailをGoogle Taskに登録します。
+*/
+function labeledGmailtoGTask() {
+'use strict';
+try {
+for (var i = 0; i &lt; INITIAL_SETTINGS.length; i++) {
+//Gmailからタスクに登録するメールを検索して、
+//Googleタスク用のタイトル・期限・メモを生成します。
+var label = GmailApp.getUserLabelByName(INITIAL_SETTINGS[i].labelname);
+if (label === null) {
+throw new Error('Gmailに[' +
+INITIAL_SETTINGS[i].labelname +
+']と言うラベルは登録されていません。INITIAL_SETTINGSを見直してください。'
+);
+}
+var threads = GmailApp.search('label:' + INITIAL_SETTINGS[i].labelname);
+var subject;
+var url;
+var messages;
+var memo;
+var messageDate;
+var due;
+var tasklists;
+var tasklistsid;
+var tasks;
+for (var j = 0; j &lt; threads.length; j++) {
+//「タスクのタイトル」はスレッドの最初の件名。
+subject = threads[j].getFirstMessageSubject();
+//スレッドのURL(A)。
+url = 'https://mail.google.com/mail/u/0/?shva=1#inbox/' +
+threads[j].getId();
+//整形されたメールの本文(B)。
+messages = threads[j].getMessages();
+memo = '';
+for (var k = messages.length - 1; k &gt;= 0; k--) {
+memo = memo + messages[k].getBody();
+if (k === messages.length - 1) {
+messageDate = messages[k].getDate();
+}
+}
+memo = formatText(memo);
+//「タスクの期限」をメールの本文から取得。
+due = messageToTimestamp(memo,messageDate);
+////(A)と(B)で「タスクのメモ」を設定。
+if (memo === '') {
+memo = url;
+}else {
+memo = url + '\n--\n' + memo;
+}
+//Googleタスクに登録。
+tasklists = Tasks.Tasklists.list().getItems();
+tasklistsid = null;
+for (var l = 0; l &lt; tasklists.length; l++) {
+if (tasklists[l].getTitle() == INITIAL_SETTINGS[i].listname) {
+tasklistsid = tasklists[l].getId();
+}
+}
+if (tasklistsid === null) {
+throw new Error('Google Tasksに[' +
+INITIAL_SETTINGS[i].listname +
+']と言うタスクリストは登録されていません。INITIAL_SETTINGSを見直してください。'
+);
+}
+tasks = Tasks.newTask();
+tasks.setTitle(subject);
+tasks.setNotes(memo);
+if (due !== null) {
+tasks.setDue(due);
+}
+Tasks.Tasks.insert(tasks, tasklistsid);
+//Googleタスクに登録したら、
+//該当するGmailのスレッドからラベルを削除します。
+threads[j].removeLabel(label);
+}
+}
+}
+catch (e) {
+Logger.log(e.toString());
+}
+}
+/**
+* 引数で与えられた文字列からタグや複数続く改行などを取り除き整形する。
+* @param {string} memo HTMLメールや改行の多いメールなど、
+*   そのままGoogleタスクのメモにするには不都合な文字列。
+* @return {string} 整形された文字列。
+*/
+function formatText(memo) {
+'use strict';
+//brタグを改行コードに。(HTMLメール対策)
+memo = memo.replace(/&lt;br\s*[\/]?&gt;/gi, '\n');
+//タグを削除する。(HTMLメール対策)
+memo = memo.replace(/&lt;(&quot;[^&quot;]*&quot;|'[^']*'|[^'&quot;&gt;])*&gt;/g, '');
+//複数続く空白文字は半角スペースに。(HTMLメール対策)
+memo = memo.replace(/\x20{2,}|  {2,}|\t{2,}/g, '\x20');
+//空白だけの行は取り除く。(HTMLメール対策)
+memo = memo.replace(/^\s*$/gm, '');
+//頻出文字のみデコードする。
+memo = memo.replace(/&amp;lt;/g, '&lt;')
+.replace(/&amp;gt;/g, '&gt;')
+.replace(/&amp;amp;/g, '&amp;')
+.replace(/&amp;quot;/g, '\&quot;')
+.replace(/&amp;#39;/g, &quot;\'&quot;);
+//連続する改行は1つにまとめる。
+memo = memo.replace(/(\r\n){2,}|\r{2,}|\n{2,}/g, '\n');
+//2KBでカット。
+memo = memo.substring(0, 2048);
+return memo;
+}
+/**
+* 引数で与えられた文字列中に@で囲まれた日付表記があれば、
+*   RFC3339タイムスタンプに変換して返す。
+* @param {string} message @で囲まれた日付表記が含まれると思われる文字列。
+* @param {string} messageDate 基準となる日付。メールの送信日時
+* @return {string} RFC3339タイムスタンプもどき(検索キー:MODOKI)を返す。
+*   日付表記がないもしくは変換できない場合はnullを返す。
+*/
+function messageToTimestamp(message,messageDate) {
+'use strict';
+message = message.match(/@(.*?)@/);
+if (message === null) {return null;}
+message = message[1];
+var returnDate = null;
+var dt = new Date();
+var n = message.split('/').length - 1;
+switch (n) {
+case 1:  //スラッシュ1つは今年として
+message = dt.getFullYear() + '/' + message;
+/* breakしない
+/* falls through */
+case 2:  //スラッシュ2つ(とスラッシュ1つの続き)は日付として評価できるか
+var ymd = message.split('/');
+returnDate = new Date(ymd[0], ymd[1] - 1, ymd[2], 0, 0, 0);
+if (returnDate === null ||
+returnDate.getFullYear() != ymd[0] ||
+returnDate.getMonth() + 1 != ymd[1] ||
+returnDate.getDate() != ymd[2]) {
+return null;
+}
+break;
+default : //それ以外はキーワードから日付判断
+var day = messageDate.getDay();
+//各曜日までの日数(同じ曜日は7日間)
+var leftUntilDay = [];
+for (var i = 0; i &lt;= 6; i++) {
+if (day &lt; i) {
+leftUntilDay[i] = i - day;
+}else {
+leftUntilDay[i] = 7 - day + i;
+}
+}
+//今週末までの日数(日曜日が今週末)
+var endOfThisWeek = leftUntilDay[0];
+//今日が日曜なら期限は今日
+if (leftUntilDay[0] === 7) { endOfThisWeek = 0; }
+//今月末までの日数
+dt = new Date(messageDate);
+dt.setMonth(dt.getMonth() + 1);
+dt.setDate(0);
+var endOfThisMonth = Math.floor(
+(dt.getTime() - messageDate.getTime()) / (24 * 60 * 60 * 1000)
+);
+//来月末までの日数
+dt.setMonth(dt.getMonth() + 1);
+var endOfNextMonth = Math.floor(
+(dt.getTime() - messageDate.getTime()) / (24 * 60 * 60 * 1000)
+);
+//キーワードと何日加算するかのリスト
+var daysToAdd = [
+{'string' : '今日' , 'addvalue' : 0},
+{'string' : 'きょう' , 'addvalue' : 0},
+{'string' : '今日中' , 'addvalue' : 0},
+{'string' : '明日' , 'addvalue' : 1},
+{'string' : 'あした' , 'addvalue' : 1},
+{'string' : '明日中' , 'addvalue' : 1},
+{'string' : '明後日' , 'addvalue' : 2},
+{'string' : 'あさって' , 'addvalue' : 2},
+{'string' : '明後日中' , 'addvalue' : 2},
+{'string' : '昨日' , 'addvalue' : -1},
+{'string' : '一昨日' , 'addvalue' : -2},
+{'string' : 'おととい' , 'addvalue' : -2},
+{'string' : '日曜' , 'addvalue' : leftUntilDay[0]},
+{'string' : '月曜' , 'addvalue' : leftUntilDay[1]},
+{'string' : '火曜' , 'addvalue' : leftUntilDay[2]},
+{'string' : '水曜' , 'addvalue' : leftUntilDay[3]},
+{'string' : '木曜' , 'addvalue' : leftUntilDay[4]},
+{'string' : '金曜' , 'addvalue' : leftUntilDay[5]},
+{'string' : '土曜' , 'addvalue' : leftUntilDay[6]},
+{'string' : '日曜日' , 'addvalue' : leftUntilDay[0]},
+{'string' : '月曜日' , 'addvalue' : leftUntilDay[1]},
+{'string' : '火曜日' , 'addvalue' : leftUntilDay[2]},
+{'string' : '水曜日' , 'addvalue' : leftUntilDay[3]},
+{'string' : '木曜日' , 'addvalue' : leftUntilDay[4]},
+{'string' : '金曜日' , 'addvalue' : leftUntilDay[5]},
+{'string' : '土曜日' , 'addvalue' : leftUntilDay[6]},
+{'string' : '今週中' , 'addvalue' : endOfThisWeek - 2},
+{'string' : '今週末' , 'addvalue' : endOfThisWeek},
+{'string' : '今月' , 'addvalue' : endOfThisMonth},
+{'string' : '今月中' , 'addvalue' : endOfThisMonth},
+{'string' : '今月末' , 'addvalue' : endOfThisMonth},
+{'string' : '来月' , 'addvalue' : endOfThisMonth + 1},
+{'string' : '来月頭' , 'addvalue' : endOfThisMonth + 1},
+{'string' : '来月末' , 'addvalue' : endOfNextMonth}
+];
+for (i = 0; i &lt; daysToAdd.length; i++) {
+if (message == daysToAdd[i].string) {
+returnDate = new Date(messageDate.getFullYear(),
+messageDate.getMonth(),
+messageDate.getDate(),
+0, 0, 0);
+returnDate.setDate(returnDate.getDate() + daysToAdd[i].addvalue);
+break;
+}
+}
+}
+//RFC3339タイムスタンプを返す
+if (returnDate !== null) {
+/**
+*  setDueの日付の扱いがちょっと不明。 #MODOKI
+*  return returnDate.toISOString();
+*  return returnDate.getUTCFullYear() + '-' +
+*  ('0' + (returnDate.getUTCMonth() + 1)).slice(-2) + '-' +
+*  ('0' + returnDate.getUTCDate()).slice(-2) + 'T' +
+*  ('0' + returnDate.getUTCHours()).slice(-2) +':' +
+*  ('0' + returnDate.getUTCMinutes()).slice(-2) +
+*  ':00.000Z';
+*
+*  上記のコードでこの関数に@2012/12/31@を渡すと、
+*    2012-12-30T15:00:00.000Zが返る。
+*  これをsetDueに渡すと、
+*    タスクの期限は2012-12-30で設定される。
+*
+*  次に
+*  return returnDate.getFullYear() + '-' +
+*  ('0' + (returnDate.getMonth() + 1)).slice(-2) + '-' +
+*  ('0' + returnDate.getDate()).slice(-2) + 'T' +
+*  ('0' + returnDate.getHours()).slice(-2) +':' +
+*  ('0' + returnDate.getMinutes()).slice(-2) +
+*  ':00.000+09:00';
+*  として返ってくる2012-12-31T00:00.000+9:00をsetDueに渡しても、
+*  タスクの期限は2012-12-30で設定される。
+*
+*  とりあえずは思った通りの期限で設定されるようにする...
+*/
+return returnDate.getFullYear() + '-' +
+('0' + (returnDate.getMonth() + 1)).slice(-2) + '-' +
+('0' + returnDate.getDate()).slice(-2) + 'T' +
+('0' + returnDate.getHours()).slice(-2) + ':' +
+('0' + returnDate.getMinutes()).slice(-2) +
+':00.000Z';
+}
+return null;
+}
+ソースコードを貼り付けたら、プロジェクトに名前を付けて保存します。名前はなんでも構いません。
+3.Tasks APIの有効化
+このスクリプトでは、Google TasksにアクセスするためにTasks APIを使います。APIを使うには準備が必要です。まずは［リソース］ー［Googleの拡張サービス］と進み、
+Tasks APIを「ON」に、さらに「Googleデベロッパーコンソール」へ進みます。
+ここでもTasks APIを「ON」にしましょう。
+4.ラベルやフィルターの設定
+次にスクリプトで処理するラベルとリストを設定します。
+ここでは「MailTodo」と言うラベルが付いたメールを、「ListTodo」と言うリストにタスク登録したいとして説明します。
+4-1 ラベルの設定Gmailの［設定］-［ラベル］で［新しいラベルを作成］から「MailTodo」と言うラベルを作ります。
+4-2 リストの設定［ToDoリスト］を開いて、
+［リストの名前を変更］もしくは［新しいリスト］から「ListTodo」と言うラベルを作りましょう。
+4-3 フィルターの設定(googleアカウント)+todo@gmail.comに届いたメールに、「MailTodo」と言うラベルを付けるようにフィルター(自動振り分け)を作成しましょう。
+まずはGmailの検索窓にto:(googleアカウント名+todo@gmail.com)と入力して、［この検索条件でフィルタを作成］を選択します。
+フィルタの設定では［ラベルを付ける］で［MailTodo］を選びます。
+フィルターが設定できていることを確認するために、メールを一通送ってみましょう。送ったメールに[MailTodo]と言うラベルが付いていればOKです。
+注意
+このフィルターでは誰から送られたメールでも[MailTodo]のラベルが付くことになります。(=誰でもGoogle Taskにタスクを登録できることになってしまいます。)これが不都合なら、TOの指定に加えて、FROMに自分のアドレス(やタスク登録のために使うアドレス)を設定するのが良いでしょう。
+4-4 スクリプトの設定あとちょっとです…
+書き替えるのは18行目のINITIAL_SETTING。labelnameにGmailのラベル名を、listnameにGoogle Taskのリスト名を指定します。
+var INITIAL_SETTINGS = [
+{'labelname' : 'MailTodo', 'listname' : 'ListTodo'}
+];
+このように複数指定することも可能です。
+var INITIAL_SETTINGS = [
+{'labelname' : '00.todo/blog', 'listname' : 'Blog'},
+{'labelname' : '00.todo/next', 'listname' : 'Next'},
+{'labelname' : '00.todo/someday', 'listname' : 'Someday'},
+{'labelname' : '00.todo/writing', 'listname' : 'writing'}
+];
+5.labeledGmailtoGTask関数の実行
+ここまで準備が終わったら、3の手順で開いていたGoogle Apps Scriptのエディタで［実行］ー［labeledGmailtoGTask］を選択します。
+すると、［承認が必要です］と表示されるので、画面の指示に従い［続行］、［承認する］と進んでください。
+これで4-3の手順で送ったテストメールの内容が、ListTodoに登録されているはずです。
+なお、このスクリプトではGoogle Tasksにタスク登録したら、そのメールからラベルを削除します。削除するのはINITIAL_SETTINGSで指定したラベルだけです。
+上手く行かない時は
+［表示］ー［ログ］からログを確認してください。
+すべての設定を見直すとともに、ラベルの付いたメールがあるかどうかも確認してください。
+6.トリガーの設定
+ここまで上手くいったら定期実行の設定をしましょう。［リソース］ー［現在のプロジェクトのトリガー］と進んで、
+［…今すぐ追加…］をクリックし、［labeledGmailtoGTask］［時間主導型］［分タイマー］［10分ごと］を選択して［保存］しましょう。
+7.使い方のヒント
+・タスクのタイトルは、スレッドの最初のメッセージに書かれた件名を取得しています。なので、Re:やFwd:は無視されます。
+・メールの本文は、タスクのメモとして保存します。ただし、2KBを超える場合は切り捨てられます。
+・メールの本文中に@で日付を指定すると期限の設定ができます。指定できる形式は、YYYY/MM/DD、MM/DD(今年の扱いになります)と、223行目付近のキーワードとなります。
+ちなみに「今週中」は金曜日(土日の場合は過去の指定となります)、「今週末」は日曜日となります。
+このようにキーワード含めこのスクリプトは、私の生活に合わせて書いています。必要があれば書き替えてください。
+stringはキーワード、addvalueは基準日(メールの送信日時)から何日加算するかです。
+//キーワードと何日加算するかのリスト
+var daysToAdd = [
+{'string' : '今日' , 'addvalue' : 0},
+{'string' : 'きょう' , 'addvalue' : 0},
+{'string' : '今日中' , 'addvalue' : 0},
+{'string' : '明日' , 'addvalue' : 1},
+{'string' : 'あした' , 'addvalue' : 1},
+{'string' : '明日中' , 'addvalue' : 1},
+{'string' : '明後日' , 'addvalue' : 2},
+{'string' : 'あさって' , 'addvalue' : 2},
+{'string' : '明後日中' , 'addvalue' : 2},
+{'string' : '昨日' , 'addvalue' : -1},
+{'string' : '一昨日' , 'addvalue' : -2},
+{'string' : 'おととい' , 'addvalue' : -2},
+{'string' : '日曜' , 'addvalue' : leftUntilDay[0]},
+{'string' : '月曜' , 'addvalue' : leftUntilDay[1]},
+{'string' : '火曜' , 'addvalue' : leftUntilDay[2]},
+{'string' : '水曜' , 'addvalue' : leftUntilDay[3]},
+{'string' : '木曜' , 'addvalue' : leftUntilDay[4]},
+{'string' : '金曜' , 'addvalue' : leftUntilDay[5]},
+{'string' : '土曜' , 'addvalue' : leftUntilDay[6]},
+{'string' : '日曜日' , 'addvalue' : leftUntilDay[0]},
+{'string' : '月曜日' , 'addvalue' : leftUntilDay[1]},
+{'string' : '火曜日' , 'addvalue' : leftUntilDay[2]},
+{'string' : '水曜日' , 'addvalue' : leftUntilDay[3]},
+{'string' : '木曜日' , 'addvalue' : leftUntilDay[4]},
+{'string' : '金曜日' , 'addvalue' : leftUntilDay[5]},
+{'string' : '土曜日' , 'addvalue' : leftUntilDay[6]},
+{'string' : '今週中' , 'addvalue' : endOfThisWeek - 2},
+{'string' : '今週末' , 'addvalue' : endOfThisWeek},
+{'string' : '今月' , 'addvalue' : endOfThisMonth},
+{'string' : '今月中' , 'addvalue' : endOfThisMonth},
+{'string' : '今月末' , 'addvalue' : endOfThisMonth},
+{'string' : '来月' , 'addvalue' : endOfThisMonth + 1},
+{'string' : '来月頭' , 'addvalue' : endOfThisMonth + 1},
+{'string' : '来月末' , 'addvalue' : endOfNextMonth}
+];
+おまけ。期限切れ、今日、3日以内のタスクを毎日メールする方法。
+今週末は雪遊び&雪かきくらいしかすることがなかったので、もう一本。
+こちらは「期限切れ、今日、3日以内のタスクをまとめてメールする」と言うスクリプトです。
+導入方法は基本的には先程の手順と一緒です。ソースコードは以下の通り。gtaskReporter.gs
+;//Copyright (c) 2014 GOODEGG.JP
+/**
+*  @fileoverview Googleタスクのレポートを送付するスクリプト
+*      http://goodegg.jp/
+*/
+/**
+*  メールの送信先を指定します。
+*  @const
+*/
+var MAILTO = 'hoge@gmail.com';
+/**
+*  Googleタスクに登録されているタスクのうち、
+*  期限切れ、今日、3日以内のものを見つけメールで送ります。
+*/
+function GtaskReporter() {
+'use strict';
+try {
+//土日祝日はいらない
+if (isHoliday(new Date()) !== true) {
+var taskLists = Tasks.Tasklists.list().getItems();
+var listName;
+var taskItems;
+var task;
+var today;
+var after3Day = new Date();
+after3Day.setDate(after3Day.getDate() + 2);
+var taskDay;
+var dueString;
+var dueDate;
+var dt;
+var mailTasks = [2];
+mailTasks[0] = [];
+mailTasks[1] = [];
+mailTasks[2] = [];
+var DAYS = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'];
+for (var i = 0; i < taskLists.length; i++) {
+listName = taskLists[i].getTitle();
+taskItems = Tasks.Tasks.list(taskLists[i].getId());
+task = taskItems.getItems();
+for (var j = 0; j < task.length; j++) {
+if (task[j].getStatus() !== 'completed' && task[j].getDue() !== undefined) {
+dueString = task[j].getDue().match(/^(\d{4})-(\d{2})-(\d{2})/);
+dueDate = new Date(dueString[1], dueString[2] - 1, dueString[3], 0, 0, 0);
+dt = new Date();
+today = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 0, 0, 0);
+if (dueDate.getTime() < today.getTime()) {
+//過去
+mailTasks[0].push({'list' : listName, 'title' : task[j].getTitle(), 'due' : dueString[1] + '-' + dueString[2] + '-' + dueString[3] + DAYS[dueDate.getDay()]});
+}else if (dueDate.getTime() === today.getTime()) {
+//今日
+mailTasks[1].push({'list' : listName, 'title' : task[j].getTitle(), 'due' : dueString[1] + '-' + dueString[2] + '-' + dueString[3] + DAYS[dueDate.getDay()]});
+}else if (dueDate.getTime() <= after3Day.getTime()) {
+//3日以内
+mailTasks[2].push({'list' : listName, 'title' : task[j].getTitle(), 'due' : dueString[1] + '-' + dueString[2] + '-' + dueString[3] + DAYS[dueDate.getDay()]});
+}
+}
+}
+}
+var body = 'https://mail.google.com/tasks/canvas\n\n';
+var HR = '====================\n';
+for (i = 0; i < mailTasks.length; i++) {
+if (i === 0) { body += HR + '過去\n' + HR;}
+if (i === 1) { body += HR + '今日\n' + HR;}
+if (i === 2) { body += HR + '3日以内\n' + HR;}
+for (j = 0; j < mailTasks[i].length; j++) {
+body += mailTasks[i][j].due + '\t' + mailTasks[i][j].list + ':' + mailTasks[i][j].title + '\n';
+}
+body += '\n';
+}
+GmailApp.sendEmail(MAILTO, '【タスクレポート】' + today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2) + DAYS[today.getDay()], body);
+}
+}
+catch (e) {
+Logger.log(e.toString());
+}
+}
+function isHoliday(dt) {
+'use strict';
+var day = dt.getDay();
+//日曜(0)と土曜(6)は休日扱い
+if (day === 0 || day === 6) {return true;}
+//国民の祝日も送らない
+var HOLIDAYS = {
+'2014': {
+'0101': true,
+'0113': true,
+'0211': true,
+'0321': true,
+'0429': true,
+'0503': true,
+'0504': true,
+'0505': true,
+'0506': true,
+'0721': true,
+'0915': true,
+'0923': true,
+'1013': true,
+'1103': true,
+'1123': true,
+'1124': true,
+'1223': true
+},
+'2015': {
+'0101': true,
+'0112': true,
+'0211': true,
+'0321': true,
+'0429': true,
+'0503': true,
+'0504': true,
+'0505': true,
+'0506': true,
+'0720': true,
+'0921': true,
+'0922': true,
+'0923': true,
+'1012': true,
+'1103': true,
+'1123': true,
+'1223': true
+}
+};
+var d = ('0' + (dt.getMonth() + 1)).slice(-2) + ('0' + dt.getDate()).slice(-2);
+if (typeof HOLIDAYS[dt.getFullYear()][d] === undefined){
+return false;
+}else{
+return HOLIDAYS[dt.getFullYear()][d];
+}
+}
+事前設定
+12行目の送信先メールアドレスを指定してください。
+var MAILTO = 'taku0843@gmail.com';
+トリガーの設定
+毎日決まった時間にメールを受け取りたい時は、[gtaskReporter][時間主導型][日タイマー][希望の時間帯]を指定します。
+使い方のヒント
+土日と国民の祝日(2014年及び2015年のみ設定)は、メールは送らないようにしています。夏休みを追加したい、土日も受け取りたいなどは、isHoliday関数の戻り値がtrueにならないように調整してください。
+(最後に)スクリーンショットについて
+この記事のスクリーンショットで使っているGmailアドレスは常時利用していません。そちらにお問い合わせ頂いてもお答えできませんのでご了承ください。
+メールを送ってGoogle Tasksにタスクを登録する | GOODEGG.JP

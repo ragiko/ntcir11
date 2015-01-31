@@ -1,0 +1,19 @@
+
+LSAやLDAを使って最終的に実現するのは文章間の類似度判定
+「LSAやLDAを使って最終的に実現したいこと」についての分かりやすい解説がチュートリアル内にあったので、その文章を翻訳します。
+前回のチュートリアル「Corpora and Vector Spaces」と「Topics and Transformations」では、ベクトル空間におけるコーパスの作成と、そのコーパスを他のベクトル空間モデルに変換する方法を学びました。
+そのような手順を踏んだ目的は、「文章間の類似度決定」や「ある文章とその他複数の文章の類似度決定」を行うためです。その一例として、ユーザーが入力したテキストと既にインデックスされた文章の類似度比較が挙げられます。
+- Similarity Queries
+つまり、このチュートリアルを終えることで、文章間の類似度比較ができるようになるよ、ということらしいです。
+LSIモデルを使った文章間の類似度判定
+# 毎度お決まりの手順
+import logging
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+from gensim import corpora, models, similarities
+dictionary = corpora.Dictionary.load('/tmp/deerwester.dict')
+corpus = corpora.MmCorpus('/tmp/deerwester.mm') # comes from the first tutorial, "From strings to vectors"
+print corpus
+MmCorpus(9 documents, 12 features, 28 non-zero entries)
+# lsiモデルを使う
+lsi = models.LsiModel(corpus, id2word=dictionary, num_topics=2)
+gensim0.8.6のチュートリアルをやってみた【Similarity Queries】 - Hive Color

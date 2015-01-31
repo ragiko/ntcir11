@@ -1,0 +1,324 @@
+
+SAK 図書館 
+|
+VB |
+SQL |
+Perl |
+PHP |
+ASP |
+JSP |
+C |
+PC |
+HP |
+FAQ |
+フリーソフト |
+PostgreSQL 編13 - 文字関数、連結、空白削除、置換、切出、検索、長さ、数値
+文字列連結
+・「||」演算子で文字列の結合を行う。
+concat() 関数は、PostgreSQL では使用できない。
+select 'abc' || 'def';
+?column?
+----------
+abcdef
+select key || data1 from testm;
+chr 文字変換
+・chr() 関数は、コードに該当する ASCII 文字を返す。
+この例では、「1」と言う文字が返る。
+select chr(49);
+chr
+-----
+1
+ascii コード変換
+・ascii() 関数は、文字に該当する ASCII コードを返す。
+この例では、「49」と言う数字が返る。
+select ascii('1');
+ascii
+-------
+49
+小文字化
+・lower() 関数は、英字を小文字にして返す。
+select lower('ABC012');
+lower
+--------
+abc012
+大文字化
+・upper() 関数は、英字を大文字にして返す。
+select upper('abc012');
+upper
+--------
+ABC012
+左文字埋め
+・lpad() 関数は、文字列の左に指定文字を埋めて指定数切り出します。
+(切り出し指定数になるまで繰り返し埋めます。)
+select lpad('abc', 5, '0');
+lpad
+-------
+00abc
+select lpad('abc', 5, '012');
+lpad
+-------
+01abc
+・指定文字省略値は ' ' 半角スペースです。
+select lpad('abc', 5);
+lpad
+-------
+abc
+select lpad('abc', 5, ' ');
+lpad
+-------
+abc
+右文字埋め
+・rpad() 関数は、文字列の右に指定文字を埋めて指定数切り出します。
+(切り出し指定数になるまで繰り返し埋めます。)
+select rpad('abc', 5, '0');
+rpad
+-------
+abc00
+select rpad('abc', 5, '012');
+rpad
+-------
+abc01
+・指定文字省略値は ' ' 半角スペースです。
+select rpad('abc', 5);
+rpad
+-------
+abc
+select rpad('abc', 5, ' ');
+rpad
+-------
+abc
+左空白削除
+・ltrim() 関数は、文字列の左側の空白を除去します。
+select ltrim('          abc');
+ltrim
+-------
+abc
+右空白削除
+・rtrim() 関数は、文字列の右側の空白を除去します。
+select ltrim('abc          ');
+ltrim
+---------------
+abc
+左右空白削除
+・trim() 関数は、文字列の左右の空白を除去します。
+select trim('          abc          ');
+btrim
+-------
+abc
+文字列置き換え
+・translate() 関数は、凝った文字列の置き換えをする。
+select translate('abc012', '0123456789abc', '0000000000AAA');
+translate
+-----------
+AAA000
+・カットもできる。この例では、「000」が返る。
+select translate('abc012', '0123456789abc', '0000000000');
+translate
+-----------
+000
+文字列切り出し
+・substr() 関数は、文字列の切り出しをする。
+select substr('abc012', 3, 2);
+substr
+--------
+c0
+・開始位置以降、最後まで切り出す場合は、切り出す文字数を省略できる。
+select substr('abc012', 3);
+substr
+--------
+c012
+文字列検索
+・strpos() 関数は、文字列の検索を行う。
+開始位置や後方検索の指定は、PostgreSQL ではできない。
+select strpos('abc012', 'c0');
+strpos
+--------
+3
+文字列の長さ
+・length() 関数は、文字列の長さを返す。
+octet_length() 関数は、バイトで返します。
+select length('abc012');
+length
+--------
+6
+文字列繰り返し
+・repeat() 関数は、文字列を繰り返し返す。
+select repeat('abc012', 2);
+repeat
+--------------
+abc012abc012
+数値から文字列へ変換 (数値フォーマット、書式変換)
+・to_char() 関数は、数値を文字列型に変換します。
+単純な to_char(123456) は、明示的にする必要がないようです。
+「数値 || 数値」すると自動的に文字変換され結合されます。
+select 123456 || 789012;
+?column?
+--------------
+123456789012
+・三桁毎に数値にカンマ「,」を入れたい場合、次のようにします。
+select to_char(123456, '999,999,999,999');
+to_char
+------------------
+123,456
+・小数点以下をフォーマットする場合は、次のようにします。
+select to_char(123456, '999,999,999,999.99');
+to_char
+---------------------
+123,456.00
+・ゼロ埋め(0 埋め) フォーマットする場合は、次のようにします。
+select to_char(123456, '000000000000');
+to_char
+---------------
+000000123456
+文字列から数値へ変換
+・to_number() 関数は、文字列を数値に変換します。
+select to_number('00123456', '000000000000');
+to_number
+-----------
+123456
+select to_number('123,456', '999,999,999,999');
+to_number
+-----------
+123456
+select to_number('123' || '456', '999999999999');
+to_number
+-----------
+123456
+型変換
+・cast() 関数は、ANSI 規程の変換関数です。
+select cast('123' || '456' as int8);
+int8
+--------
+123456
+PostgreSQL 編、JAVA Servlet、JSP 編資料
+2002.10.21 PostgreSQL 編1 - UNIX コマンド、Cygwin 2.05b、Cygwin B20(bash 2.02)
+2002.10.21 PostgreSQL 編2 - Cygwin B20、.bashrc、IPC パッチ、PostgreSQL インストール
+PostgreSQL 7.2.3(postgresql-7.2.3.tar.gz)、JDBC pgjdbc2.jar インストール
+2002.10.21 PostgreSQL 編3 - ipc-daemon 起動、PostgreSQL 起動、psql 起動、ipgsql
+2002.10.21 PostgreSQL 編4 - テーブル作成、制約、項目タイプ、キー作成、順序作成
+2002.11.01 PostgreSQL 編5 - テーブルクリア、テーブル定義変更、整合性制約定義、権限
+2002.11.01 PostgreSQL 編6 - ビュー作成、結合ビュー作成、ビュー削除、create view
+2002.11.01 PostgreSQL 編7 - 問い合わせ、レコード参照、クエリ、select、like、count
+2002.11.01 PostgreSQL 編8 - 表結合(join)、単純結合、等価結合、外部結合、再帰結合
+2002.11.05 PostgreSQL 編9 - スカラー副問い合わせ、件数指定、OFFSET、LIMIT、HAVING
+2002.11.05 PostgreSQL 編10 - 問い合わせ、抽出、ソート、where、like、order by、desc
+2002.11.05 PostgreSQL 編11 - 問い合わせ、集計、平均、最大、最小、重複、集合、複合
+2002.11.05 PostgreSQL 編12 - 数値関数、余り、四捨五入、切り捨て、切り上げ、数値書式
+2002.11.05 PostgreSQL 編13 - 文字関数、連結、空白削除、置換、切出、検索、長さ、数値
+2002.11.05 PostgreSQL 編14 - 日付関数、システム日付、切捨、日付差、日付加算、書式
+2002.11.05 PostgreSQL 編15 - 特殊関数、多重判定、ヌル判定、ヌル比較、case、nullif
+2002.11.05 PostgreSQL 編16 - 日付計算、曜日、月末日、時間計算、期間計算、日付抽出
+2002.11.05 PostgreSQL 編17 - 問い合わせ、テーブルリスト、ユーザリスト、テーブル構造
+2002.11.05 PostgreSQL 編18 - テーブルコピー、レコード追加、修正、削除、表切り捨て
+2002.11.05 PostgreSQL 編19 - ストアドファンクション、function、PL/pgSQL、トリガー
+2002.11.05 PostgreSQL 編20 - VB ストアド呼び出し、トリガー、トランザクションロールバック
+2002.11.06 PostgreSQL 編21 - PL/pgSQL、構文書式、制御構造、メッセージ、動的 SQL
+2002.11.06 PostgreSQL 編22 - PL/pgSQL、カーソル for ループ、カーソル制御、FETCH
+2003.05.01 PostgreSQL 編23 - PL/pgSQL、テーブルレコード件数一覧表示
+2003.05.01 PostgreSQL 編24 - PL/pgSQL、テーブル構造一覧表示、標準、動的SQL、LIKE
+2002.10.22 PostgreSQL + VB ADO 編1 - ODBC ドライバ、レコード更新、レコード参照
+2002.10.22 PostgreSQL + ASP ADO 編1 - ODBC ドライバ、レコード更新、レコード参照
+2002.10.22 PostgreSQL + Web 編1 - Apache、CGI Perl、PHP、MySQL インストール、設定
+2002.10.22 PostgreSQL + PHP 編1 - 接続 pg_connect、レコード参照 pg_fetch_array
+2002.10.24 PostgreSQL + Web 編2 - JAVA Servlet、JSP、J2SDK、Tomcat、JDBC 環境
+2002.10.24 PostgreSQL + Servlet、JSP 編1 - war 作成、JDBC 配置、Servlet, JSP テスト
+2002.10.24 PostgreSQL + Servlet、JSP 編2 - Servlet JDBC アクセス、getConnection
+2002.10.24 PostgreSQL + Servlet、JSP 編3 - JSP JDBC アクセス、executeQuery
+2002.10.25 Oracle9i + Servlet、JSP 編1 - Servlet JDBC アクセス、getConnection
+2002.10.25 Oracle9i + Servlet、JSP 編2 - JSP JDBC アクセス、executeQuery
+2002.11.01 PostgreSQL + Web 編3 - Apache、Tomcat 連携、mod_jk.dll、mod_jk.conf
+2002.11.01 PostgreSQL + Web 編4 - Cygwin 2.05b、Cygipc 1.11.1 インストール、移行
+MySQL 編資料
+2003.06.01 MySQL 編1 - インストール、ODBC ドライバ、日本語設定、トランザクション設定
+2003.06.01 MySQL 編2 - ODBC + VB ADO、テーブル作成、レコード更新、レコード参照
+2003.06.01 MySQL 編3 - ODBC + ASP ADO、テーブル作成、レコード更新、レコード参照
+2003.06.01 MySQL 編4 - PHP、レコード更新、レコード参照、トランザクション
+2003.06.01 MySQL 編5 - JDBC + JAVA Servlet、JSP、レコード更新、レコード参照
+2003.06.01 MySQL 編6 - テーブル作成、制約、項目タイプ、キー作成、順序作成
+2003.06.01 MySQL 編7 - テーブルクリア、テーブル定義変更、整合性制約定義、権限
+2003.06.01 MySQL 編8 - 問い合わせ、レコード参照、クエリ、select、like、count、concat
+2003.06.01 MySQL 編9 - 表結合(join)、単純結合、等価結合、外部結合、再帰結合
+2003.06.01 MySQL 編10 - スカラー副問い合わせ、件数指定、LIMIT、HAVING、USING
+2003.06.01 MySQL 編11 - 問い合わせ、抽出、ソート、where、like、order by、desc
+2003.06.01 MySQL 編12 - 問い合わせ、集計、平均、最大、最小、重複、集合、複合
+2003.06.01 MySQL 編13 - 数値関数、余り、四捨五入、切り捨て、切り上げ、数値書式
+2003.06.01 MySQL 編14 - 文字関数、連結、空白削除、置換、切出、検索、長さ、数値
+2003.06.01 MySQL 編15 - 特殊関数、多重判定、ヌル判定、ヌル比較、case、nullif
+2003.06.01 MySQL 編16 - 日付関数、システム日付、切捨、日付差、日付加算、書式
+2003.06.01 MySQL 編17 - テーブルコピー、レコード追加、修正、削除、表切り捨て
+SQL 基礎編資料
+2000.10.14 SQL 基礎編 (その一) テーブル操作 create table、alter table、drop table
+SQL 基礎編 - 【補足】複合キー alter table、primary key
+2000.10.14 SQL 基礎編 (その二) ビュー操作 create view、select、drop view
+2000.10.14 SQL 基礎編 (その三) データ操作 insert、update、delete、commit、rollback
+2000.10.14 SQL 基礎編 (その四) データ照会 select、where、group by、order by
+2000.11.18 SQL 基礎編 (その五) キーワード char、varchar2、number、long、raw
+2000.11.18 SQL 基礎編 (その六) テーブル創成 create table、select、union、rename
+2000.11.18 SQL 基礎編 (その七) レコード操作 insert、update、where、having、distinct
+2000.11.18 SQL 基礎編 (その八) ユーザ関数 create or replace function
+2000.11.18 SQL 基礎編 (その九) PL/SQL declare、begin、DBMS_SQL、dbms_output
+2001.11.20 SQL 基礎編 (その十) SQL*Plus コマンド - describe、variable、execute、spool
+SQL 基礎実地編資料
+2001.11.20 SQL 基礎実地編 (その一) テーブル作成、項目タイプ、キー作成、順序作成
+SQL クラスタ - クラスタ索引、ハッシュクラスタ、データベースリンク
+2001.06.20 SQL 基礎実地編 (その二) テーブル削除、クリア、定義変更、名前変更、権限
+2001.06.20 SQL 基礎実地編 (その三) ビュー作成、結合ビュー作成、ビュー削除
+2001.06.20 SQL 基礎実地編 (その四) 問い合わせ、レコード参照、クエリ
+SQL 表結合(join) - 単純結合、等価結合、非等価結合、外部結合、再帰結合
+SQL 問い合わせ - スカラー副問い合わせ、cursor、row_number、over、with
+SQL 問い合わせ - 分析ファンクション、over、partition by、range、dense_rank
+SQL 問い合わせ - rollup、cube、grouping sets、having、using、cross、natural
+2001.06.20 SQL 基礎実地編 (その五) 問い合わせ、抽出、ソート(並べ換え)
+2001.06.20 SQL 基礎実地編 (その六) 問い合わせ、集計、重複レコード、集合、複合
+2001.07.12 SQL 基礎実地編 (その七) 問い合わせ、関数、四捨五入、文字操作他
+SQL 数値関数 - 余り、四捨五入、切り捨て、切り上げ、数値フォーマット他
+SQL 文字関数 - 連結、空白削除、置換、切出、検索、長さ、数値変換他
+SQL 日付関数 - システム日付、日付の差、日付の加算、次の曜日、月末日
+SQL 日付計算、曜日計算、月末日計算、時間計算、期間計算、日付抽出
+SQL 特殊関数 - 等価判断、最大判断、最小判断、ヌル変換
+2001.06.20 SQL 基礎実地編 (その八) 問い合わせ、スキーマリスト、テーブル構造他
+2001.06.20 SQL 基礎実地編 (その九) テーブルコピー、レコード追加、修正、削除
+SQL マージ - MERGE、using、matched、not matched (Oracle9i 以降)
+2001.06.20 SQL 基礎実地編 (その十) ストアドファンクション、PL/SQL、動的 SQL
+SQL パッケージ - ストアドパッケージ、データベーストリガー
+SQL チューニング編資料
+2001.08.01 SQL チューニング編1 - チューニングの方向、プログラムチューニング
+2001.08.01 SQL チューニング編2 - SQL 実行計画解析、EXPLAIN、表走査、索引走査
+2001.08.01 SQL チューニング編3 - SQL 実行計画解析、EXPLAIN、ヒントオプション
+2001.08.01 SQL チューニング編4 - SQL 実行計画解析、ANALYZE、コストベース
+Oracle PL/SQL 編資料
+2001.08.24 Oracle PL/SQL 編1 - 注釈、識別子、引用句、変数、演算子、比較演算子
+2001.08.24 Oracle PL/SQL 編2 - 制御構造、条件式、判断、多重判定、ループ、例外処理
+2001.08.26 Oracle PL/SQL 編3 - コレクション、table、varray、宣言、コレクションメソッド
+2001.08.26 Oracle PL/SQL 編4 - SQL 文、動的 SQL、select、insert、update、delete
+2001.08.26 Oracle PL/SQL 編5 - カーソル、カーソル for ループ、例外識別子、例外処理
+2002.07.12 Oracle PL/SQL 編6 - ストアドパッケージ package 、データベーストリガー
+2002.07.03 Oracle PL/SQL 編7 - 標準ファイル I/O utl_file.fopen、utl_file.put_line
+Oracle PL/SQL utl_file.fopen、get_line、put、new_line、put_line、putf、fflush
+2002.07.01 Oracle PL/SQL 編8 - SMTP メール送信 utl_smtp、utl_raw.cast_to_raw
+2002.07.01 Oracle PL/SQL 編9 - 動的 SQL、EXECUTE IMMEDIATE、using、into、returning
+2002.07.01 Oracle PL/SQL 編10 - 暗号化、dbms_obfuscation_toolkit、desencrypt
+2002.07.01 Oracle PL/SQL 編11 - 乱数、dbms_random、initialize、seed、random
+2002.07.01 Oracle PL/SQL 編12 - BASE64 エンコード、utl_encode、base64_encode
+2002.07.01 Oracle PL/SQL 編13 - テーブル構造表示、項目検索表示、user_tab_columns
+2002.07.01 Oracle PL/SQL 編14 - 全テーブル構造リストファイル出力、utl_file.put_line
+2002.07.03 Oracle PL/SQL 編15 - ユーザオブジェクト一覧 CSV 出力、HTML 出力
+2002.07.04 Oracle PL/SQL 編16 - デバッグメッセージ表示、dbms_output.put_line
+2002.07.04 Oracle PL/SQL 編17 - テーブル構造取得ストアド、CreatePLSQLDynaset、ASP
+2002.07.12 Oracle PL/SQL 編18 - パッケージサブプログラムオーバーロード、package
+2002.07.15 Oracle PL/SQL 編19 - ウェブアクセス、UTL_HTTP、UTL_URL、UTL_INADDR
+2002.08.12 Oracle PL/SQL 編20 - レコード件数一覧表示、cursor、execute immediate
+|
+VB |
+SQL |
+Perl |
+PHP |
+ASP |
+JSP |
+C |
+PC |
+HP |
+FAQ |
+フリーソフト |
+Copyright (C) 1999-2015 Y.SAK
+PostgreSQL 編13 - 文字関数、連結、空白削除、置換、切出、検索、長さ、数値 - SAK Streets

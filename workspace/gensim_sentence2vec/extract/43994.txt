@@ -1,0 +1,25 @@
+ブックマークの同期機能が有効な状態で、別のパソコンで削除したブックマークを、元のパソコンで復元する方法
+注意!
+うまく復元するために、このページの情報が役に立ちそうだと思ってもブックマークしないでください。
+とりあえず何もいじらず、下記の方法を試してみてください。変更点が少なければ少ないほど、復元できる可能性が上がるためです。(復元できない場合もあります)
+別のパソコンでChromeにログイン。ブックマークを削除したら、自宅のChromeのブックマークも削除された。
+そんな状態から、自宅のブックマークを復元する方法です。
+復元方法
+復元にはブックマークのバックアップファイルを使います。このバックアップファイルが書き換えられてなければ復元可能です。
+1.ブックマークのバックアップファイル「Bookmarks.bak」をコピーして複製します。Bookmarks.bakは以下のフォルダにあります。
+Vistaもしくは7の場合※「Cドライブ > ユーザー > (ユーザー名) > AppData > Local > Google > Chrome > Application > Default > Bookmarks.bak」
+XPの場合は「C > Documents and Settings > [user name] > Local Settings > Application Data > Google > Chrome > User Data > Default > Bookmarks.bak」
+※コメントでWindows7 64bitだと、「Cドライブ > Users > ユーザ名 > AppData > Local > Google > Chrome > User Data > Default > Bookmarks.bak」にあったとの情報をいただきました。
+2.同じフォルダにある「Bookmarks」を削除して、複製した「Bookmarks.bak」を「Bookmarks」にリネーム。
+3.Chromeを再起動
+どうですか?復元できましたか?復元できた方も、残念ながらできなかった方も、たまにはブックマークのエクスポートをしてバックアップしておくことをおすすめします。
+Chromeのブックマーク同期を停止する方法
+ブックマークの同期を解除したいという場合は「Chromeの設定 > 個人設定 > ログイン > 詳細」ボタンをクリック。
+「同期の詳細設定」にあるプルダウンメニューで「同期するデータタイプを選択」を選択。「ブックマーク」のチェックを外して「OK」ボタンをクリックしてください。
+以上でChromeにログインしてもブックマークの同期が行われません。
+便利になったからこそ起こる、新しい形の失敗。そんなものって多いですよね。(遠い目…)
+追記
+der_denker_2000さんより情報頂きました。Chromium系なら、何でも適合するとのことです。
+IronPortableの場合
+「(IronPortableをインストールしたフォルダ)\Profile\Default\Bookmarks.bak」
+誤って削除したGoogle Chromeのブックマークを復元する方法 | OXY NOTES

@@ -1,0 +1,38 @@
+ユーザ定義  &dagger;
+アクセス制御で使用するユーザ名とパスワードを設定します。
+/////////////////////////////////////////////////
+// User definition
+$auth_users = array(
+// Username => password
+'foo'   => 'foo_passwd', // Cleartext
+'bar'   => '{x-php-md5}f53ae779077e987718cc285b14dfbe86', // PHP md5()  'bar_passwd'
+'hoge'  => '{SMD5}OzJo/boHwM4q5R+g7LCOx2xGMkFKRVEx',      // LDAP SMD5  'hoge_passwd'
+);
+PukiWiki 1.4-1.4.5 までは、パスワードを暗号化することはできません。改造しない限り、直接パスワードを書き込む形(Cleartext)のみになります。
+PukiWiki 1.4.6 からは、パスワードの暗号化形式を複数の中から選択できるように変わりました。(利用可能な暗号化形式など、詳細はdev:BugTrack/709 へ)
+パスワードを暗号化せずに書く事も可能ですが、
+何らかの理由(アクセス権限設定のミスなど)で設定ファイル(pukiwiki.ini.php)が他者に覗かれるような事態の可能性を考えると、暗号化したパスワードをタイプしておくほうが安心です。
+認証方式  &dagger;
+以降で設定する正規表現マッチを、ページ名に対して行うのか、ページの内容に対して行うのかを設定します。
+/////////////////////////////////////////////////
+// Authentication method
+$auth_method_type       = 'pagename';   // By Page name
+//$auth_method_type     = 'contents';   // By Page contents
+※1.4.7 現在、両方を同時使用することはできません。
+※ページ内容を対象に認証を行うのは、負荷を考えるとお勧めできません。
+登録した正規表現の数やその設定、そしてページ内容の長さによっては、認証動作が極端に重くなります。
+閲覧認証と検索認証を有効にした場合の単語検索では、links プラグイン を実行するのとほとんど変わらないぐらいの時間が必要となる場合があります。(最悪、完走せずにエラーとなります)
+以上の理由から1.4.7 以降は、ページ名を対象に認証する設定が、デフォルトになっています。
+閲覧認証  &dagger;
+/////////////////////////////////////////////////
+// Read auth (0:Disable, 1:Enable)
+$read_auth = 0;
+$read_auth_pages = array(
+// Regex                   Username
+'#HogeHoge#'            => 'hoge',
+'#(NETABARE|NetaBare)#' => 'foo,bar,hoge',
+);
+$read_auth フラグで、閲覧認証機能を使用するかどうかを設定します。
+$read_auth_pages で閲覧認証を要求するページ(閲覧制限するページ)を決定するための正規表現パターンを設定します。
+カンマ区切りで複数ユーザを書いても良い。
+PukiWiki/Install/ユーザ認証 - PukiWiki-official

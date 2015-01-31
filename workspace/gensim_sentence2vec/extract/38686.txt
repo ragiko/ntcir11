@@ -1,0 +1,9 @@
+分類の場合は、Y はカテゴリカル変数、文字配列、または文字列のセル配列です。Y の各行は、X の対応する行の分類を表します。 
+回帰の場合は、Y は、X と同じ行数の数値列ベクトルです。Y の各エントリは X の対応する行に対する応答です。
+次のいずれかを含む大文字小文字を区別する文字列。
+2 つのクラスによる分類:'AdaBoostM1''LogitBoost''GentleBoost''RobustBoost' (Optimization Toolbox™ のライセンスが必要)'LPBoost' (Optimization Toolbox のライセンスが必要)'TotalBoost' (Optimization Toolbox のライセンスが必要)'RUSBoost''Subspace''Bag'3 つ以上のクラスによる分類:'AdaBoostM2''LPBoost' (Optimization Toolbox のライセンスが必要)'TotalBoost' (Optimization Toolbox のライセンスが必要)'RUSBoost''Subspace''Bag'回帰:'LSBoost''Bag'
+'Bag' はすべてのメソッドに適用されます。したがって、'Bag' を使用する場合、type 名前と値のペアを 'classification' または 'regression' に設定して、分類または回帰のどちらが必要であるかを指定します。
+アンサンブル学習サイクルの数で、正の整数 (または 'AllPredictorCombinations' 文字列。次の段落を参照) です。学習サイクルが発生するたびに、fitensemble は Learners のすべての学習器テンプレートに対する操作を繰り返し、1 つの弱学習器がすべてのテンプレートについて学習するようにします。Ensemble に存在する学習済みの学習器の数は NLearn*numel(Learners) で表されます。
+Method を 'Subspace' に設定した場合、NLearn は 'AllPredictorCombinations' に設定できます。この設定を使用する場合、fitensemble は NPredToSample をとる予測子のすべての可能な組み合わせに対する学習器を一度に構築します。これは集団内の学習器 nchoosek(size(X,2),NPredToSample) の総和を示します。この設定の学習器テンプレートは 1 つのみ使用できます。
+集団の NLearn は数十から数千までさまざまな数になります。通常、予測能力の高い集団の場合は、数百から数千の弱学習器が必要です。集団に対しては多くのサイクルの学習を一度に行う必要はありません。数十個の学習器の学習から開始して、集団の性能を調査しながら、必要に応じて集団の resume メソッドを使用して、弱学習器の数を増やします。 
+分類または回帰のために近似された集団 - MATLAB fitensemble - MathWorks 日本

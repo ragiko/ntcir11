@@ -1,0 +1,157 @@
+
+Fundamental of MATLAB Programming
+1. Command Window
+MATLABを起動すると、右に"Command Window"がある。
+MATLABへの命令はここで行う。
+直接Commandを記述することもできるし、
+M-fileといって、Commandをまとめて書いたものをつくり、
+それを実行することもできる。
+1.1 Commandの実行
+Commandを一文一文Command Windowに書き込んで実行する。
+手早く命令を実行したいときには使えるが、
+複雑なプログラミングをこれで行うのは面倒。
+そこで通常はプログラムファイルを作り、
+そのファイルを実行する。(See 1.2)
+Example:
+>> 1+2
+ans =
+3
+>>
+1.2 M-file
+拡張子".m"のファイルを作ると、M-fileとしてCommand Windowで実行できる。
+Example:
+(Example.m)
+a = 1; セミコロンをつけると実行時に表示されない
+b = 2;
+%sum of a,b       "%"でコメントアウト
+a + b
+(Command Window)
+>>Example
+ans =
+3
+>>
+2. ベクトルと行列の計算
+2.1 ベクトルと行列の書き方
+基本の書き方はベクトルも行列も同じ
+>>x = [1 2 3; 4 5 6] スペースで行を、セミコロンで列をつくる
+x =
+1   2   3
+4   5   6
+>>
+2.1.1 等差数列のベクトル
+>>a = 1:3
+a =
+1  2  3
+>>b = 1:0.5:3  初期値 : 増分 : 最終値
+b =
+1  1.5  2  2.5  3
+>>c = linspace(1,3,5)             (初期値 : 最終値 : 要素の数)
+c =
+1  1.5  2  2.5  3
+>>
+2.1.2 要素の指定
+>>u = [4 5 6];
+>>u(3)     (要素の番号)
+ans =
+6
+>>
+行列の場合は要素の番号はコンマで区切り、(行番号, 列番号)となる。
+要素の指定にはベクトルを使うこともできる。
+>>u(2:3) = [2 3]
+u =
+4  2  3
+>>
+2.2 有用な行列
+零行列      :zeros(行, 列)
+単位行列  :ones(行, 列)
+2.3 行列の転置
+シングルクォーテーション『'』を後ろにつける
+3. 繰り返しと分岐
+3.1 for文
+for 繰り返し部分
+実行文たち
+end
+3.2 while文
+while 終了条件
+実行文たち
+end
+3.2.1 関係演算子
+x==y       :xはyと等しい
+x~=y       :  と等しくない
+x>y        :  より大きい
+x>=y       :  以上
+x<y        :  より小さい
+x<=y       :  以下
+3.2.2 論理演算子
+~p          :pの否定
+p&q         :pとqの論理積
+p|q         :   論理和
+3.3 if文
+if 判定条件
+実行文たち
+end
+あるいは
+if 判定条件1
+実行文たち1
+else
+実行文たち2
+end
+あるいは
+if 判定条件1
+実行文たち1
+elseif 判定条件2
+実行文たち2
+else
+実行文たち3
+end
+3.4 switch文
+switch 数値または文字列を与える数式
+case 数式で得られる結果1
+実行文たち1
+・・・・・・・・・
+case 数式で得られる結果n-1
+実行文たちn-1
+otherwise
+実行文たちn
+end
+4. Function M-file
+入力引数を使って出力引数を導くファイル
+(これに対して1.2 のM-fileをScript M-fileという)
+Function M-fileの構成:
+定義行:function [出力引数1,...,出力引数n]= 関数名(入力引数1,...,入力引数m)
+(概略)
+(ヘルプテキスト)
+本体
+5. グラフを書く
+plot(横軸の変数, 縦軸の変数)              変数ひとつだと縦軸の変数として引き渡される
+6. テキストファイルの読み書き
+6.1 ファイルへの書き込み
+ファイルをオープンし(fopen)、データを書き込み(fprintf)、ファイルをクローズする(fclose)。
+Example:
+x=1:3; y=[x;x.^2];
+Fid = fopen('datafilename.out', 'wt');  fopen('ファイル名', 'オプション')
+fprintf(Fid, '%2d%5d\n' ,y);            fprintf(識別子, 'フォーマット', 変数)
+fclose(Fid);                            fclose(識別子)
+これで'datafilename.out'に結果が出力される。
+>>type datafilename.out
+1    1
+2    4
+3    9
+6.2 ファイルの読み込み
+Example:
+Fid = fopen('datafilename.out', 'rt');
+DATA = fscanf(Fid, '%d%d', [2, inf]); fscanf(識別子, )
+fclose(Fid);
+DATA'  ファイルから読み込んだデータは列方向に格納されるので転置
+ans =
+1    1
+2    4
+3    9
+付録
+デバッグ:
+1)変数を表示させてみる
+2)グラフを書いてみる (See 5 )
+3)コマンドラインに''でくくった文字列を入れどこでプログラムが止まったかを見る
+Copyright &copy; 2005-2007 N.Ohnishi, All Rights Reserved. 
+ご意見・ご質問等はrcs.arch.t.u-tokyo.ac.jp?subject=fromHP:">ohnishi<at>rcs.arch.t.u-tokyo.ac.jpまで
+犬研｜MATLABプログラミングの基本

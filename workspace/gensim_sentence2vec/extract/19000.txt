@@ -1,0 +1,25 @@
+
+ViewController に Storyboard ID を設定する
+storyboard 中の表示したい ViewController に Storyboard ID を設定する。
+AppDelegate 内で読み出す
+初回起動時や特定の条件によって表示する ViewController を指定します。下の例は初回起動時に表示画面を切り替える例。
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+...
+self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
+bool isFirst = NO;
+// 初回起動かどうかを判定する処理
+...
+// ここで表示したい ViewController を指定する
+UIViewController *viewController;
+if(isFirst){
+viewController = [storyboard instantiateViewControllerWithIdentifier@"initial view controller storyboard id"];
+}else{
+viewController = [storyboard instantiateViewControllerWithIdentifier@"main view controller storyboard id"];
+}
+self.window.rootViewController = viewController;
+[self.window makeKeyAndVisible];
+return YES;
+}
+iOS - 起動時に表示する ViewController を動的に変更する - Qiita

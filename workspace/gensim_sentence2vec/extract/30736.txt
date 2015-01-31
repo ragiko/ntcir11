@@ -1,0 +1,255 @@
+
+以前動いてたモノを書き直したので大丈夫だとは思うけど
+計算が合ってるかとかのチェックしてない。=実用レベルではない。
+その内使うだろうって程度のメモ。
+rotete()はクォータニオンの方に入れようと思って消すの忘れてた。
+#pragma once
+#ifndef INCLUDED_VEC3_H
+#define INCLUDED_VEC3_H
+#include <cmath>	// sqrt
+namespace util {
+template< typename T > class vec3 {
+public:
+typedef vec3<T> Ty;
+vec3();
+vec3( T x, T y, T z );
+vec3( const Ty& );
+~vec3();
+Ty& operator=( const Ty& );
+Ty operator-() const;					// 逆ベクトル
+Ty operator+( const Ty& ) const;
+Ty operator-( const Ty& ) const;
+Ty operator*( const Ty& ) const;
+Ty operator/( const Ty& ) const;
+Ty operator+( const T ) const;			// 係数
+Ty operator-( const T ) const;
+Ty operator*( const T ) const;
+Ty operator/( const T ) const;
+void operator+=( const Ty& );
+void operator-=( const Ty& );
+void operator*=( const Ty& );
+void operator/=( const Ty& );
+void operator+=( const T );				// 係数
+void operator-=( const T );
+void operator*=( const T );
+void operator/=( const T );
+bool operator==( const Ty& ) const;
+bool operator!=( const Ty& ) const;
+bool operator>=( const Ty& ) const;		// length比較
+bool operator<=( const Ty& ) const;
+bool operator>( const Ty& ) const;
+bool operator<( const Ty& ) const;
+void normalize();						// 一般化(1としたとき)
+void reverse();							// 逆ベクトル変換
+T length() const;						// 大きさ
+T dot( const Ty& a ) const;				// 内積:dotProduct( this, a );
+void cross( const Ty&, const Ty& );		// 外積:this = crossProduct( a, b );
+void rotate( const Ty&, const float );	// 回転
+T	x, y, z;
+private:
+// 以下の演算子は利用禁止。
+Ty operator++( int );
+Ty operator--( int );
+};
+// 定義部
+#define ClassTemplate template< class T >
+#define ClassName vec3
+#define ClassType ClassName<T>
+ClassTemplate
+ClassType::ClassName() :
+x(0), y(0) {
+}
+ClassTemplate
+ClassType::ClassName( T a, T b, T c ) :
+x(a), y(b), z(c) {
+}
+ClassTemplate
+ClassType::ClassName( const ClassType& a ) {
+*this = a;
+}
+ClassTemplate
+ClassType::~ClassName() {
+}
+ClassTemplate
+ClassType& ClassType::operator=( const ClassType& Right ) {
+this->x = Right.x;
+this->y = Right.y;
+this->z = Right.z;
+return *this;
+}
+ClassTemplate
+ClassType ClassType::operator-() const {
+ClassType t( *this );
+t.reverse();
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator+( const ClassType& Right ) const {
+ClassType t( *this );
+r += Right;
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator-( const ClassType& Right ) const {
+ClassType t( *this );
+r -= Right;
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator*( const ClassType& Right ) const {
+ClassType t( *this );
+r *= Right;
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator/( const ClassType& Right ) const {
+ClassType t( *this );
+r /= Right;
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator+( const T k ) const {
+ClassType t( *this );
+r += Right;
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator-( const T k ) const {
+ClassType t( *this );
+r -= Right;
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator*( const T k ) const {
+ClassType t( *this );
+r *= Right;
+return t;
+}
+ClassTemplate
+ClassType ClassType::operator/( const T k ) const {
+ClassType t( *this );
+r /= Right;
+return t;
+}
+ClassTemplate
+void ClassType::operator+=( const ClassType& Right ) {
+x += Right.x;
+y += Right.y;
+z += Right.z;
+}
+ClassTemplate
+void ClassType::operator-=( const ClassType& Right ) {
+x -= Right.x;
+y -= Right.y;
+z -= Right.z;
+}
+ClassTemplate
+void ClassType::operator*=( const ClassType& Right ) {
+x *= Right.x;
+y *= Right.y;
+z *= Right.z;
+}
+ClassTemplate
+void ClassType::operator/=( const ClassType& Right ) {
+x /= Right.x;
+y /= Right.y;
+z /= Right.z;
+}
+ClassTemplate
+void ClassType::operator+=( const T k ) {
+x += k;
+y += k;
+z += k;
+}
+ClassTemplate
+void ClassType::operator-=( const T k ) {
+x -= k;
+y -= k;
+z -= k;
+}
+ClassTemplate
+void ClassType::operator*=( const T k ) {
+x *= k;
+y *= k;
+z *= k;
+}
+ClassTemplate
+void ClassType::operator/=( const T k ) {
+x /= k;
+y /= k;
+z /= k;
+}
+ClassTemplate
+bool ClassType::operator==( const ClassType& Right ) const {
+return (x == Right.x) && (y == Right.y) && (z == Right.z);
+}
+ClassTemplate
+bool ClassType::operator!=( const ClassType& Right ) const {
+return !(*this == Right);
+}
+ClassTemplate
+bool ClassType::operator>=( const ClassType& Right ) const {
+return this->length() >= Right.length();
+}
+ClassTemplate
+bool ClassType::operator<=( const ClassType& Right ) const {
+return this->length() <= Right.length();
+}
+ClassTemplate
+bool ClassType::operator>( const ClassType& Right ) const {
+return this->length() > Right.length();
+}
+ClassTemplate
+bool ClassType::operator<( const ClassType& Right ) const {
+return this->length() < Right.length();
+}
+ClassTemplate
+void ClassType::normalize() {
+T t = length();
+*this /= t;
+}
+ClassTemplate
+void ClassType::reverse() {
+(*this) * -1;
+}
+ClassTemplate
+T ClassType::length() const {
+return sqrt( this->dot( *this ) );
+}
+ClassTemplate
+T ClassType::dot( const ClassType& a ) const {
+return (x * a.x) + (y * a.y) + (z * a.z);
+}
+ClassTemplate
+void ClassType::cross( const ClassType& a, const ClassType& b ) {
+x = (a.y * b.z) - (a.z * b.y);
+y = (a.z * b.x) - (a.x * b.z);
+z = (a.x * b.y) - (a.y * b.x);
+}
+ClassTemplate
+void ClassType::rotate( const ClassType&, const float ) {
+#if 0
+/*------------------------------------------------
+* ベクトル_Xを原点を中心に単位ベクトルTを回転軸として
+* 角度θだけ回転させたベクトル_X'を求めるには、
+* _X, _X' を実部 = 0 の四元数とみなし、
+*
+* 四元数 R = cos( θ/2 ) + sin( θ/2 )*T とすると
+* _X' = R _X ~R
+*
+* ※ ~ : ビットごとの反転(1の歩数[共役四元数])
+*------------------------------------------------*/
+f32 r = deg2rad( d.a ) / 2.f;
+Quaternion q( 0.f, *this );
+Quaternion rot( cos( r ), t*sin( r ) );
+q *= rot;
+q *= rot.Conjugate();
+(*this) = q.xyz();
+#endif
+}
+#undef ClassName
+#undef ClassType
+#undef ClassTemplate
+}// namespace util
+#endif// INCLUDED_VEC3_H
+ぽこつん研究所   » 3次元ベクトルのテンプレートクラス

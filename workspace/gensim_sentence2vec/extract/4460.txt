@@ -1,0 +1,10 @@
+
+マイクロソフトやIBMといったエンタープライズ市場の大手企業が次々とDocker対応を発表する中で、また1つ大手企業がDocker対応を発表しました。VMwareです。
+VMwareは5日、Mac用のエミュレーションソフトウェア「VMware Fusion」、サーバ用仮想化ソフトウェア「VMware vSphere」、パブリッククラウド「VMware vCloud Air」にDockerの技術を統合することを発表しました。
+また、VMware vSphere上のDockerコンテナクラスタの管理にKubernetesの対応も明らかにしています。
+VMware Fusion、VMware vSphere、vCloud AirでDocker対応
+VMware Fusion、VMware vSphere、VMware vCloud Airでは、Dockerが発表した新しい機能であるDocker Machineに対応。Docker Machineとは、ベアメタル、仮想マシンなどにコマンド一発でDocker環境を構築する機能。これを実現するためには仮想マシンなどインフラ側にもDocker Machine用のAPIの実装が必要となります。
+VMwareはDockerと協力してこのDocker MachineのAPIを仮想マシン側に実装。VMware Fusion、VMware vSphere、VMware vCloud AirなどにワンクリックでDockerコンテナをデプロイできるようになります。
+Docker Machine対応は現在テクニカルプレビューとして公開中。
+またVMware vSphereではKubernetesにも対応。Kubernetes対応のコンテナクラスタを迅速にデプロイし、Kubernetesで管理するためのツールが提供されます。現在こちらもプレビュー公開中です。
+VMwareもDocker対応を表明。仮想マシンにワンクリックでDockerコンテナをデプロイ、Kubernetes対応も − Publickey

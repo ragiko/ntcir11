@@ -1,0 +1,4 @@
+研究活動の初期においては、機械学習の理論研究に参画し、カーネル部分空間法や、TOPカーネル、周辺化カーネルなどを提案しました(文献1-2)。また、情報幾何に基づくオンライン学習の研究を行い、Matrix Exponentiated Gradient Updateの理論を発表しました(文献3)。その後、データマイニングの列挙法と、ブースティングなどの統計法を組み合わせた手法(グラフブースティングなど)の研究により、情報処理学会長尾真記念特別賞を受賞しました(文献4)。近年は、大量データから、組み合わせ要因を発見・検定する手法などに力を入れています(文献5)。
+[文献]
+1) K. Tsuda et al., Marginalized kernels for biological sequences. Bioinformatics, 18(Suppl. 1):S268?S275, 2002.2) K. Tsuda et al., A new discriminative kernel from probabilistic models. Neural Computation, 14(10):2397?2414, 2002.3) K. Tsuda et al., Matrix exponentiated gradient updates for online learning and Bregman projection. Journal of Machine Learning Research, 6:995?1018, 2005.4) H. Saigo et al., gBoost: A mathematical programming approach to graph classification and regression. Machine Learning, 75:69-89, 2009.5) A. Terada et al., Statistical significance of combinatorial regulations. PNAS, 110(32):12996-13001, 2013.
+津田 宏治

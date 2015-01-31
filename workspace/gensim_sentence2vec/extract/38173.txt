@@ -1,0 +1,3 @@
+
+お世話になっております。表領域に作成できるテーブル数の上限について教えてください。『USER』という表領域が存在し、その領域が100GBであると仮定します。『USER』に対しCREATE TABLEを実行した場合、100GB使い切ってしまうまではいくつでもテーブルを作成することが出来るのでしょうか。また、インデックスも上記と同様の扱いとなるのでしょうか。現在開発中のアプリケーションが1ユーザごとに専用のテーブルが2つずつ作成される仕組みとなっているため、作成可能であるテーブル数の上限が決まっている場合が心配です。http://www.oracle.co.jp/forum/message.jspa?messageID=6006313ちょっと古い記事ですが、上記スレッドにOracleのバージョンによる制限があるとの記載があったため調べてみたところ、初期化パラメータの『ENQUEUE_RESOURCES』はOracle 10.2より廃止されているパラメータであることと、Oracle10gでは制限があるかどうかが分からず質問しました。なお、現在使用しているOSとOracleのバージョンは以下となります。 OS    :Windows Server 2003 Standard Edition (64bit版) ORACLE:Oracle Database 10.2.0.4 Standard Edtion(64bit版)よろしくお願いします。
+Oracle Technology Network (OTN) Japan - 掲示板 : 表領域に作成できるテーブル数の上限につい ...

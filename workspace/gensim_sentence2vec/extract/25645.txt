@@ -1,0 +1,103 @@
+
+public JaUtil()
+メソッドの詳細
+getGannen
+public static int getGannen(String gengo)
+和暦の「元号」を渡し、元年の西暦年を取得する。
+パラメータ:gengo - 和暦の「元号」。WAREKI_TABLE参照。
+戻り値:元年の西暦年。導入されたバージョン:
+0.6
+transHiraganaKatakana
+public static String transHiraganaKatakana(String hiragana)
+Transliterator.transliterate(String)を用いて
+ひらがなをカタカナに変換する。
+パラメータ:hiragana - 変換対象のひらがな文字列
+戻り値:変換後のカタカナ文字列導入されたバージョン:
+0.5
+transKatakanaHiragana
+public static String transKatakanaHiragana(String katakana)
+Transliterator.transliterate(String)を用いて
+カタカナをひらがなに変換する。
+パラメータ:katakana - 変換対象のカタカナ文字列
+戻り値:変換後のひらがな文字列導入されたバージョン:
+0.5
+isNumber
+public static boolean isNumber(String str)
+文字列がすべて算用数字か算用数字でないかを判定する。算用数字は半角の'0'-'9'と 全角の'0'-'9'を含む。
+パラメータ:str - 判定対象の文字列
+戻り値:判定結果。すべて算用数字の時はtrue導入されたバージョン:
+0.8
+isNumber
+public static boolean isNumber(char[] str)
+文字列がすべて算用数字か算用数字でないかを判定する。算用数字は半角の'0'-'9'と 全角の'0'-'9'を含む。
+パラメータ:str - 判定対象の文字列
+戻り値:判定結果。すべて算用数字の時はtrue導入されたバージョン:
+0.8
+isNumber
+public static boolean isNumber(char[] str,
+int start,
+int len)
+文字列がすべて算用数字か算用数字でないかを判定する。算用数字は半角の'0'-'9'と 全角の'0'-'9'を含む。
+パラメータ:str - 判定対象の文字列start - 判定対象の文字列の開始位置len - 判定対象の文字列の長さ
+戻り値:判定結果。すべて算用数字の時はtrue導入されたバージョン:
+0.8
+isNumber
+public static boolean isNumber(char c)
+文字が算用数字か算用数字でないかを判定する。算用数字は半角の'0'-'9'と 全角の'0'-'9'を含む。
+パラメータ:c - 判定対象の文字
+戻り値:判定結果。算用数字の時はtrue導入されたバージョン:
+0.8
+isNumber
+public static boolean isNumber(int c)
+文字が算用数字か算用数字でないかを判定する。算用数字は半角の'0'-'9'と 全角の'0'-'9'を含む。
+パラメータ:c - 判定対象の文字
+戻り値:判定結果。算用数字の時はtrue導入されたバージョン:
+0.8
+isAzimuth
+public static boolean isAzimuth(char c)
+文字が方位(東西南北)のいずれか否かを判定する。
+パラメータ:c - 判定対象の文字
+戻り値:判定結果。方位を表す文字の場合はtrue
+isAzimuth
+public static boolean isAzimuth(int c)
+文字が方位(東西南北)のいずれか否かを判定する。
+パラメータ:c - 判定対象の文字
+戻り値:判定結果。方位を表す文字の場合はtrue
+isIMEVowel
+public static boolean isIMEVowel(char c)
+文字が母音か否かを判定する。IMEを考慮した上での判定となるため、
+小文字の「ぁ」「ァ」などは母音とはならない。
+パラメータ:c - 判定する文字
+戻り値:母音の場合はtrue。母音でないときはfalse導入されたバージョン:
+0.5
+isIMEVowel
+public static boolean isIMEVowel(int c)
+文字が母音か否かを判定する。IMEを考慮した上での判定となるため、
+小文字の「ぁ」「ァ」などは母音とはならない。
+パラメータ:c - 判定する文字
+戻り値:母音の場合はtrue。母音でないときはfalse導入されたバージョン:
+0.5
+isIMEVowel
+public static boolean isIMEVowel(String s)
+文字列が1文字の母音か否かを判定する。IMEを考慮した上での判定となるため、
+小文字の「ぁ」「ァ」などは母音とはならない。
+パラメータ:s - 判定する文字列
+戻り値:母音の場合はtrue。母音でないときはfalse導入されたバージョン:
+0.5
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+RONDHUIT Certified Solr Subscription Package
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要: 入れ子 | フィールド | コンストラクタ | メソッド
+詳細: フィールド | コンストラクタ | メソッド
+Copyright &copy; 2009-2014 RONDHUIT Co.,Ltd. All Rights Reserved.
+JaUtil (RONDHUIT-solr-plugin 1.4.1 API)

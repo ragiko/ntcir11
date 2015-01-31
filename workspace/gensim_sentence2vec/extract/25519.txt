@@ -1,0 +1,25 @@
+
+"IN" の場合、サブクエリが返す値 (行) は複数でもよい。複数カラムはダメ。これは、IN が配列を受け付け可能で、こういう使い方もできるから。
+SELECT kcord, kamoku FROM tkamoku WHERE kcord IN (1, 2);
+「kcord の値が 1 または 2」のレコードを取り出すので結果は同じ。意味の反転は "NOT IN"。
+詳細は、PostgreSQL 
+7.3.x ユーザガイド
+なお、上記クエリは、パターンマッチングの POSIX 正規表現を使って下のように書いても同じ結果が得られ、場合によっては、正規表現マッチの方が検索コストが低くくできる;
+SELECT kcord, kamoku FROM tkamoku WHERE kcord ~ '^[12]$';
+さらに、同じ検索は WHERE ... OR を使って;
+SELECT kcord, kamoku FROM tkamoku WHERE kcord = 1 OR kcord = 2; 
+とも書けるわけだが、筆者の経験からすると、たいていの場合 POSIX 正規表現と IN のどちらよりも検索コストが悪化する。
+パターンマッチング
+WHERE 句で、「まさにこの文字列」ではなく、近似表現でレコードを取り出したいことがよくある。 PostgreSQL には、2種類のパターンマッチング演算子があったが、7.3 で "SIMILAR TO" が増えて3種類になった。
+※詳細は、PostgreSQL 
+7.3.x ユーザガイド
+POSIX正規表現 "～"
+Perl や egrep で馴染み深い正規表現が使え、最も柔軟性が高い。Perl 正規表現の "/i" 
+のように大文字小文字を区別したくない場合は "~*" を、全体を否定するには "!~" 
+が使える。 7.4 でさらに拡張が進んでほぼ Perl 正規表現近似となり、前方先読参照や、結果に格納しないグループ参照、\b, \n, \r, \t などのエスケープ表現も使えるようになった (pgsql.conf 参照)。ただし、高機能な分、作業コストがやや高く、複雑なマッチが必要ない場面では後述の LIKE のほうが検索時間が短くできることが多い。
+例:
+SELECT scord, hinmei FROM tshohin WHERE hinmei ~ '^カ.*ポ[タチツテ]ト(シオ|ミソ)$';
+結果: 
+scord
+hinmei
+Stray Penguin - Linux Memo (PostgreSQL-3)

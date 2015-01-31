@@ -1,0 +1,61 @@
+
+c++には可変長配列のstd::vectorがあるが、std::vectorでは配列の範囲外にアクセスしたときに自動でサイズを拡張せずにエラーを吐くため、値を代入するときにサイズをチェックしなければならないことがある。勝手にサイズが拡張されてしまうとバグを見逃す可能性が増えるため一長一短ではあるが、テスト用コードを書く場合などはいちいちサイズをチェックしなくても勝手にサイズを拡張してほしい。
+例えば、(x, value)という値の組を読み込みvector[x] = value;と格納していきたい場合、std::vectorを使うと以下のようになる。
+#include <iostream>
+#include <fstream>
+#include <vector>
+int main(){
+std::vector<unsigned int> v;
+// ファイルから読み込み
+std::ifstream in("data.txt");
+while(!in.eof()){
+// (x, value)の組を繰り返し読み込む
+unsigned int x, value;
+in >> x >> value;
+// vectorに代入
+if(v.size() <= x){//  サイズをチェックする必要がある
+v.resize(x+1);
+}
+v[x] = value;
+}
+in.close();
+// 出力
+for(unsigned int i=0; i<v.size(); ++i){
+std::cout << "(" << i << ", " << v[i] << ")" << std::endl;
+}
+return 0;
+}
+(※この例の場合、読み込んでいるだけなのでstd::mapを使う方法もある。)
+このようにわざわざサイズをチェックしなくても勝手にサイズを拡張してくれるクラスがあれば便利なので、std::vectorを継承して作ってみた。
+template<class TYPE>
+class AutoResizeVector: public std::vector<TYPE>{
+public:
+// 添え字演算子[]のオーバーロード
+TYPE& operator[](const unsigned int i){
+if(this->size() <= i){
+this->resize(i+1);
+}
+return this->std::vector<TYPE>::operator[](i);	// 基底クラスの[]を呼ぶ
+}
+};
+8行目で少し変なことをしているが、これは基底クラスの添え字演算子[]を呼び出していて、これを「(*this)[i]」と呼び出すと再帰的な呼び出しになり無限ループとなってしまうため、明示的に基底クラスの演算子を呼び出している。
+これを使うと先ほどのmain関数は以下のようになる。
+int main(){
+AutoResizeVector<unsigned int> v;
+// ファイルから読み込み
+std::ifstream in("data.txt");
+while(!in.eof()){
+// (x, value)の組を繰り返し読み込む
+unsigned int x, value;
+in >> x >> value;
+// vectorに代入
+v[x] = value;
+}
+in.close();
+// 出力
+for(unsigned int i=0; i<v.size(); ++i){
+std::cout << "(" << i << ", " << v[i] << ")" << std::endl;
+}
+return 0;
+}
+自動でサイズを拡張する可変長配列【C++】 - Programming Magic

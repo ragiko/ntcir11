@@ -1,0 +1,113 @@
+javaパーセントを機械のIPアドレスとMACコード
+すでに計測システム: 
+windows linux unix
+排除127.0.0.1と0.0.0.0.1等の非正常なIP
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+public class IpUtil {
+private IpUtil(){}
+/**
+* この方法の説明の獲得サーバーのIPアドレス
+* @author: みんな
+* @バージョン: 2014年9月5日午後4時57: 15
+*/
+public static String getLocalIP() {
+String sIP = "";
+InetAddress ip = null;
+try {
+boolean bFindIP = false;
+Enumeration<NetworkInterface> netInterfaces = (Enumeration<NetworkInterface>) NetworkInterface
+.getNetworkInterfaces();
+while (netInterfaces.hasMoreElements()) {
+if (bFindIP) {
+break;
+}
+NetworkInterface ni = (NetworkInterface) netInterfaces
+.nextElement();
+Enumeration<InetAddress> ips = ni.getInetAddresses();
+while (ips.hasMoreElements()) {
+ip = (InetAddress) ips.nextElement();
+if (!ip.isLoopbackAddress() 
+&& ip.getHostAddress().matches(
+"(\\d{1,3}\\.){3}\\d{1,3}")) {
+bFindIP = true;
+break;
+}
+}
+}
+} catch (Exception e) {
+e.printStackTrace();
+}
+if (null != ip) {
+sIP = ip.getHostAddress();
+}
+return sIP;
+}
+/**
+* この方法の説明の獲得サーバーのMACアドレス
+* @author: みんな
+* @バージョン: 2014年9月5日午後1: 27: 25
+*/
+public static String getMacId() {
+String macId = "";
+InetAddress ip = null;
+NetworkInterface ni = null;
+try {
+boolean bFindIP = false;
+Enumeration<NetworkInterface> netInterfaces = (Enumeration<NetworkInterface>) NetworkInterface
+.getNetworkInterfaces();
+while (netInterfaces.hasMoreElements()) {
+if (bFindIP) {
+break;
+}
+ni = (NetworkInterface) netInterfaces
+.nextElement();
+// ----------特定の状況を考えてni.getNameで判断する
+// すべてのipを遍歴する
+Enumeration<InetAddress> ips = ni.getInetAddresses();
+while (ips.hasMoreElements()) {
+ip = (InetAddress) ips.nextElement();
+if (!ip.isLoopbackAddress() // 非127.0.0.1
+&& ip.getHostAddress().matches(
+"(\\d{1,3}\\.){3}\\d{1,3}")) {
+bFindIP = true;
+break;
+}
+}
+}
+} catch (Exception e) {
+e.printStackTrace();
+}
+if (null != ip) {
+try {
+macId = getMacFromBytes(ni.getHardwareAddress());
+} catch (SocketException e) {
+e.printStackTrace();
+}
+}
+return macId;
+}
+private static String getMacFromBytes(byte[] bytes) {
+StringBuffer mac = new StringBuffer();
+byte currentByte;
+boolean first = false;
+for (byte b : bytes) {
+if (first) {
+mac.append("-");
+}
+currentByte = (byte) ((b & 240) >> 4);
+mac.append(Integer.toHexString(currentByte));
+currentByte = (byte) (b & 15);
+mac.append(Integer.toHexString(currentByte));
+first = true;
+}
+return mac.toString().toUpperCase();
+}
+public static void main(String[] args) throws SocketException {
+System.out.println(getLocalIP());
+System.out.println(getMacId());
+}
+}
+javaパーセントを機械のIPアドレスとMACコード

@@ -1,0 +1,40 @@
+複数単語の類似度を算出したい
+今回やりたい事は「4つの単語の中から一番似ている単語の組み合わせを選出したい」です.
+文字列AとBのの類似度を図るにはレーベンシュタイン距離を使う方法があります.
+カンタンにいうと,文字列AをBにするために何回編集する必要があるか.ってのを計算してます.
+このアルゴリズムを使えばどんな言語でも実装可能ですが, PHPでlevenshteinde関数があったのでこれをそのまま使いました.
+単語X単語の計算をループさせますが,
+単語Ax単語Bの計算結果と,単語Bx単語Aの計算結果は同じなのでunset()で計算から除外するようにしています.
+計算結果から,一番類似している組み合わせを選出するために,$result["distance"]の値が小さいものを導き出すのですが,多次元配列のソートがイマイチ分からなくて手こずりました.ここのやり方を真似たらできました.
+<?php
+//比較する単語
+$option[] = "ハル";
+$option[] = "馬";
+$option[] = "るろうに剣心";
+$option[] = "(ハル)";
+$data = $option; //元の文字列
+foreach ($option as $key => $value) {
+unset($data[$key]);
+foreach ($data as $key2 => $value2){
+$result[] = array(
+"str1" => $value,
+"str2" => $value2,
+"distance" => (int)levenshtein($value,$value2)
+);
+//表示(ソート前)
+echo $value ."と". $value2 ."の類似度は".levenshtein($value,$value2)."<br />";
+}
+}
+echo "<hr >";
+//ソート実行
+usort($result, function($a, $b) {
+return $a['distance'] < $b['distance'];
+});
+//表示(ソート後)
+foreach ($result as $key => $value) {
+echo $value["str1"] ."と". $value["str2"] ."の類似度は".$value["distance"]."<br />";
+}
+//表示(一番似てる組み合わせ)
+echo "<hr>".$result[0]["str1"] ."と". $result[0]["str2"] ."の類似度は".$result[0]["distance"]."で一番似ています<br />";
+?>
+[PHP]レーベンシュタイン距離で似ている単語の組み合わせを順番に表示 | offsidenowの日常を綴ったブログ

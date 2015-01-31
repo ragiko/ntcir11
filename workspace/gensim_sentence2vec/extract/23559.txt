@@ -1,0 +1,71 @@
+
+//ウィンドウプロシージャ
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
+WPARAM wParam, LPARAM lParam)
+{
+HDC hDC;            //デバイスコンテキストのハンドル
+PAINTSTRUCT ps;     //PAINTSTRUCT構造体
+static HPEN hPen;   //HPENオブジェクト
+static HBRUSH hBr;  //HBRUSHオブジェクト
+static bool Flag;   //マウスの左ボタンが押されているかどうかのフラグ
+int x, y;           //マウスの座標用の変数
+//メッセージの種類に応じて処理を分岐する
+switch(message)
+{
+case WM_CREATE:
+/* ウィンドウが作成されたときの処理 */
+hPen = CreatePen(PS_DASH, 1, RGB(255,0,0));
+hBr = CreateSolidBrush(RGB(0,0,255));
+return 0;
+case WM_PAINT:  //クライアント領域の再描画処理
+/* デバイスコンテキストのハンドルを取得 */
+hDC = BeginPaint(hWnd, &ps);
+/* 文字の色と背景色を変えた文字の描画 */
+SetTextColor(hDC, RGB(0,0,255));   //文字の色を設定する
+SetBkColor(hDC, RGB(255,255,0));   //文字の背景色を設定する
+/* テキストの描画 */
+TextOut(hDC, 100, 170, "風が吹けば桶屋が儲かる", 22);
+/* 線の描画 */
+SelectObject(hDC, hPen);     //線の色を変更する
+MoveToEx(hDC, 100,190,NULL); //線の始点の位置
+LineTo(hDC, 280, 190);       //線の終点の位置
+/* ハンドルの解放 */
+EndPaint(hWnd, &ps);
+return 0;
+case WM_LBUTTONDOWN: //マウスの左ボタンが押されたとき
+Flag = true;   //フラグを立てる
+return 0;
+case WM_LBUTTONUP:  //マウスの左ボタンが離されたとき
+Flag = false;   //フラグを下げる
+return 0;
+case WM_RBUTTONDOWN: //マウスの右ボタンが押されたとき
+Flag = false;   //フラグを下げる
+/* 画面を再描画する */
+InvalidateRect(hWnd, NULL, TRUE);
+return 0;
+case WM_MOUSEMOVE:  //マウスが移動しているとき
+if(Flag == true)   //フラグがオンのとき
+{
+/* デバイスコンテキストのハンドルを取得 */
+hDC = GetDC(hWnd);
+/* マウスの座標を取得 */
+x = LOWORD(lParam);   //X座標の取得
+y = HIWORD(lParam);   //Y座標の取得
+/* 円形の描画 */
+SelectObject(hDC, hBr);            //ブラシの色を変更する
+Ellipse(hDC, x-3, y-3, x+3, y+3);  //円を描画
+/* デバイスコンテキストのハンドルを解放 */
+ReleaseDC(hWnd, hDC);
+}
+return 0;
+case WM_DESTROY:  //ウィンドウが破棄されたときの処理
+/* オブジェクトの解放を行う */
+DeleteObject(hPen);
+DeleteObject(hBr);
+PostQuitMessage(0);
+return 0;
+default: //デフォルトの処理
+return DefWindowProc(hWnd, message, wParam, lParam);
+}
+}
+Windowプログラム Lesson3

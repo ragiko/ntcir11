@@ -1,0 +1,592 @@
+[R] Cox回帰(比例ハザードモデル)
+R を使って、生存分析でもっともよく使われるCox回帰(比例ハザードモデル)をやってみる。基本的にSASのノート "Survival Analysis Using the Proportional Hazards Model" を参考にして、そのなかで使われているのと同じ、ヘロイン依存患者のメタドン治療についてのデータを使った(データはこの辺でも入手できる)。アウトカム(イベント)はクリニックでのメタドン治療からの脱落、共変量(独立変数)は治療を受けたクリニック(2ヶ所)、服役歴の有無、メタドンの用量(連続変数)。
+まずはデータを読み込んで変数を名付けたら、イベント数の確認。
+> meth <- read.table("methadone.txt")
+> names(meth) <- c("id","clinic","status","time","prison","dose")
+> meth[1:5,]
+id clinic status time prison dose
+1   1      1      1  428      0   50
+2   2      1      1  275      1   55
+3   3      1      1  262      0   55
+4   4      1      1  183      0   30
+5   5      1      1  259      1   65
+> table(meth$status)
+0   1 
+88 150
+イベント数(メタドン治療からの脱落者数)は150に対して、打ち切り例数(誤解しやすいけど、この場合は非脱落者数)は88。Cox回帰を使う1つの目安に「共変量1つにつき10のイベント数(あるいは非イベント数)」というのがあるけど、ここでは大丈夫みたい。実際にCox回帰を行なうには survival パッケージの coxph() を使う。
+> library(survival)
+> meth.cox <- coxph(Surv(time,status)~clinic+dose+prison,meth,method="efron")
+> summary(meth.cox)
+Call:
+coxph(formula = Surv(time, status) ~ clinic + dose + prison, 
+data = meth, method = "efron")
+n= 238 
+coef exp(coef) se(coef)     z       p
+clinic -1.0099     0.364  0.21489 -4.70 2.6e-06
+dose   -0.0354     0.965  0.00638 -5.54 2.9e-08
+prison  0.3266     1.386  0.16722  1.95 5.1e-02
+exp(coef) exp(-coef) lower .95 upper .95
+clinic     0.364      2.745     0.239     0.555
+dose       0.965      1.036     0.953     0.977
+prison     1.386      0.721     0.999     1.924
+Rsquare= 0.238   (max possible= 0.997 )
+Likelihood ratio test= 64.6  on 3 df,   p=6.23e-14
+Wald test            = 54.1  on 3 df,   p=1.06e-11
+Score (logrank) test = 56.3  on 3 df,   p=3.6e-12
+イベントが同時発生した場合(タイがある場合)の取り扱いについては method で Efron 法、Breslow 法、または Exact を指定できる。デフォルトは Efron で、上では明示的にこれを指定している。結果をみるとクリニックと用量で有意、服役歴については微妙なところ。また回帰係数の指数をとったハザード比も計算されている。クリニックを比較した場合、クリニック2では脱落のハザードがクリニック1の36.4%、またメタドンの用量が1単位増えるたびにハザードは3.5% 減っていくことになる。
+coxph() の結果をプロットすると、各共変量が平均値で調整された生存曲線(とその信頼区間)が描かれる。
+> plot(survfit(meth.cox),xlab="Days Spent in Clinic",
++      ylab="Survival Function Estimate",main="Adjusted Survival Function")
+また例えばクリニックごとに調整された生存曲線をプロットするには、変数ごとにハザード関数に放り込む値を指定したデータフレームを作ってやって、survfit() の引数 newdata に指定してからプロットする。
+> attach(meth)
+> meth.adj <- data.frame(clinic=c(1,2),prison=rep(mean(prison),2),dose=rep(mean(dose),2))
+> detach(meth)
+> plot(survfit(meth.cox,newdata=meth.adj),lty=1:2,col=1:2,xlab="Days Spent in Clinic",
++      ylab="Survival Function Estimate",main="Adjusted Survival Function by Clinic")
+> legend(650,1,lty=1:2,col=1:2,legend=c("Clinic 1","Clinic 2"))
+> abline(h=0.5,lty=3,col=3)
+同様にして、「クリニック2で治療を受け、服役歴があり、メタドン用量が90 mg/day」の患者の生存曲線をプロットしてみる。
+> meth.pred <- data.frame(clinic=2,prison=1,dose=90)
+> plot(survfit(meth.cox,newdata=meth.pred),xlab="Days Spent in Clinic",
++      ylab="Survival Function Estimate")
+> abline(v=200,lty=3,col=3)
+> (data.frame(pred$time,pred$surv,pred$lower,pred$upper))[45:50,]
+pred.time pred.surv pred.lower pred.upper
+45       181 0.9592266  0.9344855  0.9846226
+46       183 0.9581918  0.9329043  0.9841647
+47       190 0.9571393  0.9313015  0.9836939
+48       192 0.9560832  0.9296940  0.9832215
+49       193 0.9550238  0.9280821  0.9827475
+50       204 0.9539589  0.9264626  0.9822711
+この場合、その患者が200日間脱落せずにいられる確率は95%ほどで、その95%信頼区間は92-98%であることが分かる。
+さて回帰診断だけど、Cox回帰のいちばんの前提は、ハザード比が時間によらず一定であること。この比例ハザードの仮定を吟味するのには cox.zph() の関数を使うのが簡単。どうやらこれはモデルに時間の関数を組み込んだときに、その関数にかかる係数が0であるかどうかを検定しているらしい。この辺参照。
+> meth.zph <- cox.zph(meth.cox)
+> meth.zph
+rho  chisq        p
+clinic -0.2578 11.185 0.000824
+dose    0.0724  0.700 0.402749
+prison -0.0382  0.220 0.639369
+GLOBAL      NA 12.616 0.005546
+結果を見ると、クリニックの変数で有意となり、比例ハザードの仮定が充たされていない様子。さらにそのアウトプットをそのままプロットすると、変数ごとの Scaled Schoenfeld residual plot が吐きだされる。
+> windows(width=11,height=4)
+> par(mfrow=c(1,3))
+> plot(meth.zph)
+ただしこのプロットはやや見にくいので、自分でScaled/unscaled Schoenfeld 残差をプロットしてみよう。それぞれの残差は residual() で引数 type に scaledsch あるいは shoenfeld を指定して抽出できる。Schoenfeld 残差はイベント例にしか計算されないことに注意しよう。
+> ##### Schoenfeld residuals against survival time
+> windows(width=11,height=8)
+> par(mfrow=c(2,3),cex=.8)
+> scshoen <- resid(meth.cox,type="scaledsch")
+> time.sort <- sort(meth$time[meth$status==1])
+> xnames <- names(meth)[c(2,5,6)]
+> for (i in 1:3){
++     plot(time.sort,scshoen [,i],xlab="Days",
++          ylab=paste("Scaled Schoenfeld Residuals for",xnames[i]))
++     abline(h=0,lty=2,col=3)
++     lines(lowess(time.sort,scshoen [,i],0.9),col=2)}
+> schoen <- resid(meth.cox,type="schoenfeld")
+> for (i in 1:3){
++     plot(time.sort,schoen[,i],xlab="Days",
++          ylab=paste("Schoenfeld Residuals for",xnames[i]))
++     abline(h=0,lty=2,col=3)
++     lines(lowess(time.sort,schoen[,i],0.9),col=2)}
+Schoenfeld 残差プロットにパターンが見られなければ比例ハザードの仮定には問題はない。プロットをみると、クリニックの変数でやはり右下がりの傾向がみられて、比例ハザードが怪しいことが分かる。
+Schoenfeld 残差プロットでもいいのだけど、比例ハザードを確かめるより一般的なやりかたは、生存関数の二重対数プロット(ログマイナスログ)をとってやること。これにはまず各共変量を Strata() で層別して、横軸に対数時間をとってプロットしてやる。ただし、用量のように共変量が連続変数の場合、適当にデータを区切って層別する必要がある。下のコードでは二重対数プロットの関数を定義してある。
+> ##### Log-log survival functions
+> meth.clinic <- coxph(Surv(time,status)~strata(clinic)+dose+prison,meth)
+> meth.prison <- coxph(Surv(time,status)~clinic+dose+strata(prison),meth)
+> dose.strata <- cut(meth$dose,c(0,50,60,70,120))
+> meth.dose <- coxph(Surv(time,status)~clinic+strata(dose.strata)+prison,meth)
+> loglog.plot <- function(coxph, title=NULL) {
++   group <- rep(1:length(survfit(coxph)$strata), survfit(coxph)$ntimes.strata)
++   plot(log(survfit(coxph)$time), log(-log(survfit(coxph)$surv)),type='n', 
++        xlab="Log(time)",ylab="Log(-log(S(t)))")
++   for (i in 1:length(survfit(coxph)$strata)) {
++     lines(log(survfit(coxph)$time)[(group==i)],
++           log(-log(survfit(coxph)$surv))[(group==i)],type="l",lty=i,lwd=2,col=i)
++   }
++   if (!is.null(title)) {
++     title(title)
++   }
++ }
+> windows(width=11,height=4)
+> par(mfrow=c(1,3))
+> loglog.plot(meth.clinic,"Log-log Survival Functions for Clinic")
+>   legend(5.3,-4,lty=1:2,col=1:2,legend=c("Clinic 1","Clinic 2"))
+> loglog.plot(meth.prison,"Log-log Survival Functions for Prison")
+>   legend(4.3,-4,lty=1:2,col=1:2,legend=c("Prison Record: No","Prison Record: Yes"))
+> loglog.plot(meth.dose,"Log-log Survival Functions for Dose")
+>   legend(5.4,-3,lty=1:4,col=1:4,legend=c("Dose 1","Dose 2","Dose 3","Dose 4"))
+比例ハザードの仮定が充たされているならば、ほぼ平行な直線がプロットされるはず。プロットをみると、クリニックの変数で明らかに傾きが違っているけれど、用量と服役歴のグラフでははっきりしない。
+また共変量が連続変数の場合、対数ハザードとその共変量との関係が線形であるという仮定がある。この線形の仮定を吟味するのに手っ取り早いのはMartingale 残差プロットとその成分プラス残差プロットをとってやること。プロットを lowess() で平滑化した直線がゼロの周辺、あるいは回帰直線上に乗っていれば線形の仮定に問題はない。
+> ##### Martingale residual plot and Component-plus-residual plot
+> windows(width=7.5,height=4)
+> par(mfrow=c(1,2))
+> martin <- resid(meth.cox,type='martingale')
+> plot(meth$dose,martin,xlab="Dose",ylab="Martingale Residual")
+> abline(h=0,lty=2,col=3)
+> lines(lowess(meth$dose,martin,iter=0),col=2)
+> plot(meth$dose,coef(meth.cox)[2]*meth$dose+martin,xlab="Dose",ylab="Component+Residual")
+> abline(lm(coef(meth.cox)[2]*meth$dose+martin~meth$dose),lty=2,col=3)
+> lines(lowess(meth$dose,coef(meth.cox)[2]*meth$dose+martin,iter=0),col=2)
+どうやら問題はないみたい。線形の仮定をチェックするもう1つのやりかたは、共変量をいくつかに区切ってダミー変数を作り、Cox回帰を行なったときの係数がほぼ線形になっていることを確認する。ただしサンプルがあまり大きくない場合、ダミー変数の数に注意。「共変量1つにつき10のイベント数(あるいは非イベント数)」の目安を忘れずに。
+> levels(dose.strata) <- 1:4
+> x <- matrix(0,ncol=4,nrow=nrow(meth))
+> for (i in 1:nrow(x)){
++   if (dose.strata[i]==1) {x[i,1] <- 1}
++   else if (dose.strata[i]==2) {x[i,2] <- 1}
++   else if (dose.strata[i]==3) {x[i,3] <- 1}
++   else if (dose.strata[i]==4) {x[i,4] <- 1}
++ }
+> meth <- data.frame(meth,x)
+> names(meth)[7:10] <- c("dose1","dose2","dose3","dose4")
+> meth.dose <- coxph(Surv(time,status)~clinic+prison+dose1+dose2+dose3+dose4,meth)
+> summary(meth.dose)
+Call:
+coxph(formula = Surv(time, status) ~ clinic + prison + dose1 + 
+dose2 + dose3 + dose4, data = meth)
+n= 238 
+coef exp(coef) se(coef)     z       p
+clinic -0.951     0.386    0.219 -4.35 1.4e-05
+prison  0.303     1.354    0.167  1.81 7.0e-02
+dose1   1.451     4.268    0.292  4.96 7.0e-07
+dose2   1.209     3.350    0.285  4.24 2.2e-05
+dose3   1.093     2.982    0.311  3.52 4.3e-04
+dose4      NA        NA    0.000    NA      NA
+exp(coef) exp(-coef) lower .95 upper .95
+clinic     0.386      2.589     0.251     0.593
+prison     1.354      0.739     0.976     1.879
+dose1      4.268      0.234     2.406     7.570
+dose2      3.350      0.299     1.916     5.857
+dose3      2.982      0.335     1.623     5.481
+dose4         NA         NA        NA        NA
+Rsquare= 0.242   (max possible= 0.997 )
+Likelihood ratio test= 65.9  on 5 df,   p=7.34e-13
+Wald test            = 50.8  on 5 df,   p=9.68e-10
+Score (logrank) test = 57.1  on 5 df,   p=4.9e-11
+上の結果では dose4 が基準となって、係数はほぼ直線上に並んでいると言っていいだろう。
+またはずれ値や影響の大きな観測値を見つけるには DfBeta をプロットするか、連続変数に対してはscore residual をプロットしてやるといい。DfBeta もscore residual も residual() で引数の type に指定してやることで抽出できる。
+> ##### Detecting influential observations
+> dfbeta <- resid(meth.cox,type="dfbeta")
+> windows(width=11,height=4)
+> par(mfrow=c(1,3),cex=1)
+> for (i in 1:3){
++    plot(dfbeta[,i],ylab=paste("dfbeta for",xnames[i]))
++    abline(h=0,lty=2)
++ }
+> score <- resid(meth.cox,type="score")
+> plot(meth$dose,score[,2],xlab="Dose",ylab="Score Residual")
+いずれの場合も、他から飛びぬけている観測値が影響の大きな観測値である。
+[R] 多項ロジスティック回帰、順序ロジスティック回帰
+さて今度はロジスティック回帰でも目的変数が3分類以上あるときに使われる多項ロジスティック回帰と、その目的変数が順序尺度である場合の順序ロジスティック回帰(比例オッズ、累積ロジットモデル)をRでやってみる。データは Kutner et al. "Applied Linear Statistical Models" (5th Ed) の14章にある妊娠期間について。目的変数は、妊娠週数が36週未満の早産(= 1)、36-37週のやや早産(= 2)、38週以上の満期(= 3)の3分類。説明変数は栄養状態(連続変数)、年齢(カテゴリカル:20歳以下、21-30歳、31歳以上の3水準)、飲酒歴(有・無)、喫煙歴(有・無)の4つ。この場合、目的変数の分類は順序尺度なのでふつうは順序ロジスティック回帰を使うけど、これを名義尺度として解釈すれば多項ロジスティック回帰にもできるので、一緒にやってみよう。データの読み出しはテキストのウェブサイトから。年齢の変数は3水準あるので、2つのダミー変数(age1, age2)がデータにはすでに用意されており、ここでの基準は中間の「21-30歳」。またどういうわけか、目的変数のためにも3つのダミー変数が用意さえているけれども、ここでは使用しない。
+まずは多項ロジスティック回帰から。データを読み込んで変数を名付けたら、ordered() で妊娠期間の変数を順序尺度にする。あとで実際にロジスティック回帰をするとき、最初のカテゴリが基準として扱われるので、ここでは満期出産を基準として levels=c(3,2,1) と指定。
+> # Reading data...
+> pregn <-read.table("http://apps.csom.umn.edu/Nachtsheim/5th/KutnerData/Chapter%2014%20Data%20Sets/CH14TA13.txt")
+> names(pregn) <- c("case","dur","y1","y2","y3","nutr","age1","age2","alco","smk")
+> pregn$dur <- ordered(pregn$dur,levels=c(3,2,1))
+多項ロジスティック回帰には nnet パッケージにある multinom() 関数を使う。
+> # Multinomial logistic regression
+>
+> library(nnet)
+> pregn.mltnom <- multinom(dur~nutr+age1+age2+alco+smk,pregn,Hess=T)
+# weights:  21 (12 variable)
+initial  value 112.058453 
+iter  10 value 84.619847
+final  value 84.337718 
+converged
+> summary(pregn.mltnom,cor=F,Wald=T)
+Call:
+multinom(formula = dur ~ nutr + age1 + age2 + alco + smk, data = pregn)
+Coefficients:
+(Intercept)        nutr     age1     age2     alco      smk
+2    3.958370 -0.04644903 2.913475 1.887550 1.067001 2.230492
+1    5.475147 -0.06541919 2.957028 2.059662 2.042900 2.452362
+Std. Errors:
+(Intercept)       nutr      age1      age2      alco       smk
+2    1.941063 0.01488581 0.8575544 0.8088255 0.6495262 0.6681955
+1    2.271677 0.01823916 0.9644921 0.8947727 0.7097461 0.7315106
+Value/SE (Wald statistics):
+(Intercept)      nutr     age1     age2     alco      smk
+2    2.039280 -3.120357 3.397423 2.333693 1.642738 3.338083
+1    2.410179 -3.586743 3.065891 2.301883 2.878354 3.352463
+Residual Deviance: 168.6754 
+AIC: 192.6754
+線形予測子が2つあることに注意。多項ロジスティック回帰は目的変数のカテゴリのうち1つを基準として他のカテゴリと比較するので、(カテゴリ数 - 1)だけの線形予測子がある。詳しくはこの辺を参照のこと。モデルが全体として有意であるかどうかには切片だけのモデルとで尤度比検定を行なう。 
+> pregn.mltnom0 <- multinom(dur~1,pregn)
+# weights:  6 (2 variable)
+initial  value 112.058453 
+final  value 110.343080 
+converged
+> anova(pregn.mltnom,pregn.mltnom0)
+Model Resid. df Resid. Dev   Test    Df LR stat.      Pr(Chi)
+1                               1       202   220.6862           NA       NA           NA
+2 nutr + age1 + age2 + alco + smk       192   168.6754 1 vs 2    10 52.01072 1.135910e-07
+ところで summary() では Wald 検定量は出せるけど、p値まではない。Wald 検定量をオブジェクトとして取り出すこともできないみたい。なのでヘッセ行列の逆行列をとって標準誤差を再計算、そこから求めた Wald 検定量をカイ2乗にしてからp値を無理やり算出してみた。
+> se <- matrix(sqrt(diag(solve(pregn.mltnom$Hess))),nrow=2,byrow=T)
+> (pval <- 1-pchisq((coef(pregn.mltnom)/se)^2,df=1))
+(Intercept)         nutr         age1       age2        alco          smk
+2  0.04142210 0.0018063197 0.0006802383 0.01961182 0.100437243 0.0008435843
+1  0.01594470 0.0003348344 0.0021702208 0.02134177 0.003997568 0.0008009609
+というわけで最初の線形予測因子のなかの飲酒歴以外はみな有意だということがわかる。さらにオッズ比とその95%信頼区間の算出。
+> (OR <- exp(coef(pregn.mltnom))[,2:6])
+nutr     age1     age2     alco       smk
+2 0.9546132 18.42070 6.603172 2.906650  9.304445
+1 0.9366747 19.24071 7.843318 7.712946 11.615748
+> (lCI <- exp(coef(pregn.mltnom)-qnorm(.975)*se)[,2:6])
+nutr     age1     age2     alco      smk
+2 0.9271641 3.430476 1.352942 0.813795 2.511432
+1 0.9037818 2.905654 1.357900 1.919037 2.769391
+> (uCI <- exp(coef(pregn.mltnom)+qnorm(.975)*se)[,2:6])
+nutr      age1     age2     alco      smk
+2 0.9828749  98.91398 32.22746 10.38175 34.47145
+1 0.9707648 127.40843 45.30349 30.99969 48.72032
+例えば20歳以下の出産の場合(age1)、満期出産に対する早産のオッズは21-30歳での出産に比べて19倍以上高くなることがわかる(ただし信頼区間も大きいことに注意)。
+さて同じデータを使って、次は順序ロジスティック回帰をやってみる。これには MASS パッケージの polr() 関数を使う。
+> # Ordinal logistic regression (Proportional odds model)
+> 
+> library(MASS)
+> pregn.polr <- polr(dur~nutr+age1+age2+alco+smk,pregn)
+> summary(pregn.polr)
+Re-fitting to get Hessian
+Call:
+polr(formula = dur ~ nutr + age1 + age2 + alco + smk, data = pregn)
+Coefficients:
+Value Std. Error   t value
+nutr -0.04886324 0.01182065 -4.133718
+age1  1.97601134 0.57612022  3.429859
+age2  1.36345136 0.54642384  2.495227
+alco  1.66984881 0.47532016  3.513103
+smk   1.59155788 0.45160776  3.524204
+Intercepts:
+Value   Std. Error t value
+3|2 -5.0236  1.5441    -3.2534
+2|1 -2.9289  1.4926    -1.9623
+Residual Deviance: 173.5122 
+AIC: 187.5122 
+今度はβ係数はそれぞれ1つしかないけど、切片が2つあることに注意。これはつまり、順序尺度カテゴリのどこで2つに分けてロジットをとっても切片が違うだけでその勾配が同じ、つまりオッズ比が常に同じであることを仮定しているから。順序ロジスティック回帰が比例オッズモデルとも呼ばれるのはそのため。詳しくはこの辺を参照のこと。
+モデルが全体として有意であるかどうか。切片だけのモデルとで尤度比検定。
+> pregn.polr0 <- polr(dur~1,pregn)
+> anova(pregn.polr,pregn.polr0)
+Likelihood ratio tests of ordinal regression models
+Response: dur
+Model Resid. df Resid. Dev   Test    Df LR stat.     Pr(Chi)
+1                               1         2   220.6862                                  
+2 nutr + age1 + age2 + alco + smk         7   173.5122 1 vs 2     5 47.17396 5.23592e-09
+オッズ比とその信頼区間の計算については多重ロジスティック回帰のときに定義した関数が使える。
+> orci(pregn.polr)
+Re-fitting to get Hessian
+OR          lCI        uCI
+nutr 0.952311356 0.9305017733  0.9746321
+age1 7.213911681 2.3322569620 22.3133739
+age2 3.909663710 1.3397463660 11.4092269
+alco 5.311364686 2.0922465828 13.4833987
+smk  4.911394341 2.0267285310 11.9018379
+3|2  0.006580665 0.0003190898  0.1357146
+2|1  0.053456459 0.0028675993  0.9965106
+また順序ロジスティック回帰については Design パッケージのロジスティック回帰用の関数 lrm() も使うことができる。使い方は多重ロジスティック回帰のときと同じ。
+> library(Design)
+> attach(pregn)
+> ddist <- datadist(nutr,age1,age2,alco,smk)
+> options(datadist='ddist')
+> detach(pregn)
+> pregn.lrm <- lrm(dur~nutr+age1+age2+alco+smk,pregn,x=T,y=T)
+> summary(pregn.lrm,nutr=c(100:101))
+Effects              Response : dur 
+Factor      Low High Diff. Effect S.E. Lower 0.95 Upper 0.95
+nutr        100 101  1     -0.05  0.01 -0.07      -0.03     
+Odds Ratio 100 101  1      0.95    NA  0.93       0.97     
+age1          0   1  1      1.98  0.58  0.85       3.11     
+Odds Ratio   0   1  1      7.21    NA  2.33      22.32     
+age2          0   1  1      1.36  0.55  0.29       2.43     
+Odds Ratio   0   1  1      3.91    NA  1.34      11.41     
+alco          0   1  1      1.67  0.48  0.74       2.60     
+Odds Ratio   0   1  1      5.31    NA  2.09      13.49     
+smk           0   1  1      1.59  0.45  0.71       2.48     
+Odds Ratio   0   1  1      4.91    NA  2.03      11.90  
+順序ロジスティック回帰のいちばんの仮定である比例オッズを検証するにはどうすればいいか。SAS の PROC LOGISTIC だと Score Test というものを出してくれるけど、よく分からない。だけどこの辺によると、順序ロジスティックモデルと多項ロジスティックモデルとで尤度比検定すればいいらしい。もし多項ロジスティックモデルのほうのフィットがいいなら比例オッズの仮定は適切ではない。以下は自分で対数尤度を拾って計算したものと、リンク先にあった関数を使ったもの。
+> # Test the proportional odds assumption
+> 1-pchisq(173.5122-168.6754,df=5)
+[1] 0.4361205
+> parlines<-function(mod1, mod2){
++    dev2<-deviance(mod1)
++    dev<-deviance(mod2)
++    d<-abs(mod1$edf-mod2$edf)
++    ch2<-abs(dev2-dev)
++    p<-1-pchisq(ch2, d)
++    output<-round(cbind(ch2, d, p),5)
++    dimnames(output)[[2]]<-c("Chi-square", "df", "p-value")
++    output }
+> parlines(pregn.mltnom,pregn.polr)
+Chi-square df p-value
+[1,]    4.83677  5 0.43612
+統計的に有意でないので比例オッズの仮定は適切といえる。
+[R] 多重ロジスティック回帰
+今度は説明変数を複数含む多重ロジスティック回帰を行なってみる。データは Kutner et al. "Applied Linear Statistical Models" (5th Ed) の14章にある疫病のアウトブレイクについて。目的変数はその疫病に感染したかどうか、説明変数は年齢、社会経済的地位(カテゴリカル、3水準)、都市での居住地区(2水準)の3つ。ただし、社会経済的地位の変数は3水準あるために2つのダミー変数(socio1, socio2)を使う。データにはあらかじめそのダミー変数が用意され、コーディングもされてある状態。glm() の使い方は基本的に説明変数が1つの場合と同じ。
+> # Reading data...
+> epidem <-read.table("http://apps.csom.umn.edu/Nachtsheim/5th/KutnerData/Chapter%2014%20Data%20Sets/CH14TA03.txt")
+> names(epidem) <- c("case","age","socio1","socio2","city","status")
+> # Multiple logistic regression
+> epi.glm <- glm(status~age+socio1+socio2+city,epidem,family=binomial)
+> summary(epi.glm)
+Call:
+glm(formula = status ~ age + socio1 + socio2 + city, family = binomial, 
+data = epidem)
+Deviance Residuals: 
+Min       1Q   Median       3Q      Max  
+-1.6552  -0.7529  -0.4788   0.8558   2.0977  
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -2.31293    0.64259  -3.599 0.000319 ***
+age          0.02975    0.01350   2.203 0.027577 *  
+socio1       0.40879    0.59900   0.682 0.494954    
+socio2      -0.30525    0.60413  -0.505 0.613362    
+city         1.57475    0.50162   3.139 0.001693 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+(Dispersion parameter for binomial family taken to be 1)
+Null deviance: 122.32  on 97  degrees of freedom
+Residual deviance: 101.05  on 93  degrees of freedom
+AIC: 111.05
+Number of Fisher Scoring iterations: 4
+モデルが全体として有意であるかどうか。切片だけのモデルとの尤度比検定。
+> # Testing model fit: all beta = 0 ?
+> epi.int <- glm(status~1,epidem,family=binomial)
+> anova(epi.int,epi.glm,test="Chisq")
+Analysis of Deviance Table
+Model 1: status ~ 1
+Model 2: status ~ age + socio1 + socio2 + city
+Resid. Df Resid. Dev Df Deviance P(>|Chi|)
+1        97    122.318                      
+2        93    101.054  4   21.263 0.0002808
+いちいち回帰係数からオッズ比を計算するのは面倒なので、信頼区間も一緒に計算する関数を用意する。引数でパーセントも指定できる(デフォルトは95%)。
+> # Function to calculate CI for OR
+> orci <- function(model,pct=.95){
++   coeffs <- coef(summary(model))
++   lCI <- exp(coeffs[,1] - qnorm((1+pct)/2) * coeffs[,2])
++   OR <- exp(coeffs[,1])
++   uCI <- exp(coeffs[,1] + qnorm((1+pct)/2) * coeffs[,2])
++   orci <- cbind(OR,lCI,uCI)        
++   orci
++ }
+> orci(epi.glm)
+OR        lCI        uCI
+(Intercept) 0.09897037 0.02808881  0.3487201
+age         1.03019705 1.00329047  1.0578252
+socio1      1.50499600 0.46522433  4.8686469
+socio2      0.73693576 0.22552497  2.4080451
+city        4.82953038 1.80686070 12.9087780
+実はオッズ比は Design パッケージのロジスティック回帰用の関数 lrm() を使えば計算してくれる。ただしこれを使う場合、あらかじめ datadist() で使う説明変数を別に用意しておく。また年齢のような連続変数が含まれている場合、summary() の引数でその変数の範囲を指定しないと、その連続変数の第1四分位と第3四分位にわたるオッズ比が計算されてしまう。例えば年齢が1歳違うときのオッズ比を求めたいときには age=c(20:21) のように適当に範囲を指定する必要がある。
+> library(Design)
+> attach(epidem)
+> ddist <- datadist(age,socio1,socio2,city)
+> options(datadist='ddist')
+> detach(epidem)
+> epi.lrm <- lrm(status~age+socio1+socio2+city,epidem,x=T,y=T)
+> summary(epi.lrm,age=c(20:21))
+Effects              Response : status 
+Factor      Low High Diff. Effect S.E. Lower 0.95 Upper 0.95
+age         20  21   1      0.03  0.01  0.00       0.06     
+Odds Ratio 20  21   1      1.03    NA  1.00       1.06     
+socio1       0   1   1      0.41  0.60 -0.77       1.58     
+Odds Ratio  0   1   1      1.50    NA  0.47       4.87     
+socio2       0   1   1     -0.31  0.60 -1.49       0.88     
+Odds Ratio  0   1   1      0.74    NA  0.23       2.41     
+city         0   1   1      1.57  0.50  0.59       2.56     
+Odds Ratio  0   1   1      4.83    NA  1.81      12.91 
+この lrm() のいいところは適合度の検定も行なえること。ふつうロジスティックモデルに連続変数が含まれる場合、Hosmer-Lemeshow の適合度検定を使うけれど、以下のようにするとHosmer-Le Cessie test というより検出力のある検定を行なってくれるらしい。この辺参照。
+> resid(epi.lrm,'gof')
+Sum of squared errors    Expected value|H0             SD              Z              P 
+17.0317397           16.7003935      0.2133231      1.5532598      0.1203611 
+分散共分散行列のチェック。
+> # Approximate var-cov matrix
+> print(summary(epi.glm)$cov.unscaled,digits=2)
+(Intercept)      age  socio1   socio2     city
+(Intercept)      0.4129 -0.00571 -0.1836 -0.20098 -0.16324
+age             -0.0057  0.00018  0.0011  0.00073  0.00034
+socio1          -0.1836  0.00115  0.3588  0.14822  0.01289
+socio2          -0.2010  0.00073  0.1482  0.36497  0.06227
+city            -0.1632  0.00034  0.0129  0.06227  0.25162
+さてモデルには主効果だけしか入ってないけど、2次交互作用項を入れたときにモデルが改善するか尤度比検定で比較して調べてみよう。update(epi.glm,.~.^2) とすると式の表示のなかではダミー変数同士の交互作用(socio1:socio2)が表示されてるけど、実際には無視されてるみたい(自由度が5になっていることに注意)。えらい(当たり前?)。
+> # Checking interactions...
+> epi.intx <- update(epi.glm,.~.^2)
+> anova(epi.glm,epi.intx,test="Chisq")
+Analysis of Deviance Table
+Model 1: status ~ age + socio1 + socio2 + city
+Model 2: status ~ age + socio1 + socio2 + city + age:socio1 + age:socio2 + 
+age:city + socio1:socio2 + socio1:city + socio2:city
+Resid. Df Resid. Dev Df Deviance P(>|Chi|)
+1        93    101.054                      
+2        88     93.996  5    7.058     0.216
+デビアンスは有意でないので、交互作用を心配する必要はない。また年齢を削ったモデルとを比較をしてみると、
+> # Dropping age variable...
+> drop1(epi.glm,~age,test='Chisq')
+Single term deletions
+Model:
+status ~ age + socio1 + socio2 + city
+Df Deviance    AIC    LRT Pr(Chi)  
+<none>      101.05 111.05                 
+age     1   106.20 114.20   5.15 0.02325 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+デビアンスが有意なので年齢の変数は削れない。こんなことをひとつひとつやっていくわけにはいかないのでAICに基づいてステップワイズに変数選択をさせてみよう。これには step() を使う。切片だけのモデルから変数を増やしていく場合には direction="forward" を指定する。本来は社会経済的地位の2つのダミー変数は一緒に加えられるべきなのだけど、どうやったらいいかわからないので気にしないでやってみる。
+> # Forward stepwise selection
+> epi.fstp <- step(epi.int,.~age+socio1+socio2+city,direction="forward")
+Start:  AIC= 124.32 
+status ~ 1 
+Df Deviance    AIC
++ city    1   107.53 111.53
++ age     1   114.91 118.91
++ socio2  1   118.23 122.23
+<none>        122.32 124.32
++ socio1  1   120.88 124.88
+Step:  AIC= 111.53 
+status ~ city 
+Df Deviance    AIC
++ age     1   102.26 108.26
+<none>        107.53 111.53
++ socio2  1   106.37 112.37
++ socio1  1   106.88 112.88
+Step:  AIC= 108.26 
+status ~ city + age 
+Df Deviance    AIC
+<none>        102.26 108.26
++ socio1  1   101.31 109.31
++ socio2  1   101.52 109.52
+> summary(epi.fstp)
+Call:
+glm(formula = status ~ city + age, family = binomial, data = epidem)
+Deviance Residuals: 
+Min       1Q   Median       3Q      Max  
+-1.7296  -0.7048  -0.4940   0.9870   2.0929  
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -2.33515    0.51113  -4.569 4.91e-06 ***
+city         1.67345    0.48734   3.434 0.000595 ***
+age          0.02929    0.01317   2.224 0.026153 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+(Dispersion parameter for binomial family taken to be 1)
+Null deviance: 122.32  on 97  degrees of freedom
+Residual deviance: 102.26  on 95  degrees of freedom
+AIC: 108.26
+Number of Fisher Scoring iterations: 4
+結局、2つのダミー変数は要らないということになった。さらに残差分析と影響診断をやってみよう。そのまま plot() してやると、いつもの4つのプロット(残差プロットとそのQQプロット、影響プロットとクックの距離)がでてくる。
+> par(mfrow=c(2,2))
+> plot(epi.glm)
+> par(mfrow=c(1,1))
+この場合の残差QQプロットはどう見ていいかよく分からない。標準化されたデビアンス残差は正規分布に従うと考えていいわけ?テキストのほうには半正規プロットをとっていて、「フィットしたモデルが正しいときでも必ずしも直線になるとは限らない」ってあるけど。だけどそれ以外はまあテキストと同じ図。ただし、残差プロットはそのままでは分かりにくいので、lowess() 関数で平滑化してやる。モデルが適切ならばその曲線が0のあたりでほぼ横ばいになっているはず。以下は残差を縦軸にとり、横軸に予測確率あるいはそのロジットをとったもの。ピアソン残差とデビアンス残差を取り出すには residuals.glm() の引数に type で指定する。スチューデント化された残差はないのかな?
+> # Pearson & Deviance residual plots for diagonistics
+> pres = residuals(epi.glm, type='pearson')
+> dres = residuals(epi.glm, type='deviance')
+> par(mfrow=c(2,2))
+> plot(pres~fitted(epi.glm),xlab='Estimated Probability',ylab='Pearson Residual')
+> lines(lowess(pres~fitted(epi.glm),f=0.7),lwd=2,col=2)
+> plot(pres~predict(epi.glm),xlab='Linear Predictor',ylab='Pearson Residual')
+> lines(lowess(pres~predict(epi.glm),f=0.7),lwd=2,col=2)
+> plot(dres~fitted(epi.glm),xlab='Estimated Probability',ylab='Deviance Residual')
+> lines(lowess(dres~fitted(epi.glm),f=0.7),lwd=2,col=2)
+> plot(dres~predict(epi.glm),xlab='Linear Predictor',ylab='Deviance Residual')
+> lines(lowess(dres~predict(epi.glm),f=0.7),lwd=2,col=2)
+> par(mfrow=c(1,1))
+[R] ロジスティック回帰
+Rでロジスティック回帰を行なうときには一般化線形モデルの関数 glm() を使う。ロジスティックモデルの場合、リンク関数はロジットなので glm() の引数に正しくは family=binomial(link="logit") を使うのだけど、分布にbinomial(二項分布)を指定した場合のデフォルトはロジットなので (link="logit") は省略していい。またもや Kutner et al. "Applied Linear Statistical Models" (5th Ed) からのデータを使ってやってみよう。14章にある、プログラマの経験年月と課題成功率について。目的変数は制限時間内でプログラミング課題ができたかどうか、説明変数は経験月数。データの読み出しはテキストのウェブサイトから(データにはどういうわけか、当てはめたモデルからの予測値も含まれるけれども、これはあとで確認用に使ってみる)。
+> # Reading data...
+> prog <-read.table("http://apps.csom.umn.edu/Nachtsheim/5th/KutnerData/Chapter%2014%20Data%20Sets/CH14TA01.txt")
+> names(prog) <- c("month","success","fit")
+> # Simple logistic regression...
+> logi <- glm(success~month,prog,family=binomial)
+> summary(logi)
+Call:
+glm(formula = success ~ month, family = binomial, data = prog)
+Deviance Residuals: 
+Min       1Q   Median       3Q      Max  
+-1.8992  -0.7509  -0.4140   0.7992   1.9624  
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)  
+(Intercept) -3.05970    1.25935  -2.430   0.0151 *
+month        0.16149    0.06498   2.485   0.0129 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+(Dispersion parameter for binomial family taken to be 1)
+Null deviance: 34.296  on 24  degrees of freedom
+Residual deviance: 25.425  on 23  degrees of freedom
+AIC: 29.425
+Number of Fisher Scoring iterations: 4
+モデルが全体として有意であるかどうかは、説明変数を含まない切片だけのモデル(Null model)と比較する。
+> anova(logi,test='Chisq')
+Analysis of Deviance Table
+Model: binomial, link: logit
+Response: success
+Terms added sequentially (first to last)
+Df Deviance Resid. Df Resid. Dev P(>|Chi|)
+NULL                     24     34.296          
+month  1    8.872        23     25.425     0.003
+ところで summary.glm() にはオッズ比までは計算されない。なので自分で回帰係数の指数をとってやる。
+> exp(coef(logi)[2])
+month 
+1.175256 
+というわけで経験月数のオッズ比は1.175。経験が1ヵ月増えると課題達成のオッズが17.5%上がる。さらに経験が1年多いと、
+> exp(coef(logi)[2]*12)
+month 
+6.943674 
+オッズはおよそ7倍ほど上がることになる。ついでに係数の推定値とその標準誤差を使って、オッズ比の信頼区間も計算してみよう。
+> # Calculating 95% CI for OR 
+> uCIb <- coef(logi)[[2]]+ qnorm(.975) * coef(summary(logi))[2,2]
+> lCIb <- coef(logi)[[2]]- qnorm(.975) * coef(summary(logi))[2,2]
+> out1 <- data.frame(OR=exp(coef(logi)[2]),lowerCI=exp(lCIb),upperCI=exp(uCIb))
+> print(out1,digits=4)
+OR lowerCI upperCI
+month 1.175   1.035   1.335
+またモデルに基づく成功率の推定値はそれぞれ、
+> print(fitted(logi),digits=5)
+1        2        3        4        5        6        7        8        9 
+0.310262 0.835263 0.109996 0.726602 0.461837 0.082130 0.461837 0.245666 0.620812 
+10       11       12       13       14       15       16       17       18 
+0.109996 0.856299 0.216980 0.856299 0.095154 0.542404 0.276802 0.167100 0.891664 
+19       20       21       22       23       24       25 
+0.693379 0.276802 0.502134 0.082130 0.811825 0.620812 0.145815 
+となり、あらかじめデータに含まれていた数値と一致する。では観測値とフィット曲線をプロットしてみよう。predict.glm()で type="response" を指定すると推定確率をだしてくれる(デフォルトはロジット)。
+> # Plotting a graph...
+> par(cex=1.25)
+> plot(success~month,data=prog,col=2,pch=16,xlab="Months of Experience",ylab="Success in Task")
+> # And add the logistic fit...
+> ld <- seq(4,32,0.1)
+> lines(ld,predict(logi,data.frame(month=ld),type="response"),lwd=2)
+ついでに同じシグモイド関数であるプロビットと complementary log-log を使って当てはめた場合にどうなるか見てみる(リンク関数にはそれぞれ probit と cloglog を指定)。
+> # Also add the probit fit...
+> probit <- glm(success~month,prog,family=binomial(probit))
+> lines(ld,predict(probit,data.frame(month=ld),type="response"),lwd=2,lty=2,col=3)
+> # Further add the complementary log-log fit...
+> cll <- glm(success~month,prog,family=binomial(cloglog))
+> lines(ld,predict(cll,data.frame(month=ld),type="response"),lwd=2,lty=3,col=4)
+ロジスティック、プロビット、complementary log-log のどのフィット曲線もさほど変わりはないことが分かる。それでもやはりロジスティック回帰が多く使われるのはやはりオッズ比が使えて解釈が簡単ということか。多重ロジスティック回帰とその残差分析についてはまた今度。
+[R] 二元配置分散分析(繰り返しのない場合)
+Rで一元配置分散分析を行なうときには oneway.test() を使えばいいけど、二元配置のときには SAS の PROC GLM のように線形モデルからの結果を分散分析表として吐き出すような感じ。線形モデルのバイブルである Kutner et al. "Applied Linear Statistical Models" (5th Ed) の成長ホルモンデータ(23章)を使ってやってみる。要因A(gender)は2水準、要因B(depress)は3水準ある。データの読み出しはテキストのウェブサイトから。
+> gh <- read.table("http://apps.csom.umn.edu/Nachtsheim/5th/KutnerData/Chapter%2023%20Data%20Sets/CH23TA01.txt")
+> names(gh) <- c("b.growth","gender","depress","rep")
+> attach(gh)
+> gender <- factor(gender); depress <- factor(depress)
+> interaction.plot(depress,gender,b.growth,type="b",pch=c(16,17),col=c(4,2),xlab="Bone Development",ylab="Change in Growth Rate")
+> anova(lm(b.growth ~ gender * depress))
+Df Sum Sq Mean Sq F value   Pr(>F)   
+gender          1 0.0029  0.0029  0.0176 0.897785   
+depress         2 4.3960  2.1980 13.5262 0.002713 **
+gender:depress  2 0.0754  0.0377  0.2321 0.798034   
+Residuals       8 1.3000  0.1625                    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+lm() 内のモデルのなかで要因間に * を使うとその交互作用も含まれる(Y ~ A + B + A:B でも同じ)。さらに要因を加えれば三元配置になるし、共変量の項を入れれば共分散分析になる。ただし、上の anova() での出力結果は Type I の平方和を用いたもの。Type III(または Type II)の結果が欲しい場合には car パッケージの Anova() を使うといい。このとき要因には contrasts で contr.sum または contr.helmert を指定する。
+> library(car)
+> Anova(lm(b.growth ~ gender * depress,contrasts=list(gender=contr.sum,depress=contr.sum)),type='III')
+Anova Table (Type III tests)
+Response: b.growth
+Sum Sq Df  F value    Pr(>F)    
+(Intercept)    34.680  1 213.4154 4.729e-07 ***
+gender          0.120  1   0.7385  0.415160    
+depress         4.190  2  12.8914  0.003145 ** 
+gender:depress  0.075  2   0.2321  0.798034    
+Residuals       1.300  8                       
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> detach(gh)
+SASを使ってるひとなら分かってるだろうけど、Type I, II, III の違いについてはこの辺を参照のこと。それぞれ一長一短があって、統計を専門にやっているひとたちでもどれを使うかは意見の分かれるところ。
+『*[R]』の検索結果 - Action Potentials: 閾値以下

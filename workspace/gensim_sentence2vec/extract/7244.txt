@@ -1,0 +1,44 @@
+
+サードパーティ製品に起因する問題を含む、リリース時に確認されていた問題は以下のとおりです。
+表 1. 一般的な既知の問題
+既知の問題
+問題ID
+Red Hat® Enterprise Linux®(RHEL)5.1クライアントのバックアップが、以下のエラーを伴って失敗する場合があります。「Cannot find the Xen® hypervisor file which the system was booted with.Without this, it is not possible to perform a system installation.You should create the file /storix/config/multibootfile with a line specifying the full path to the hypervisor file and recreate the boot media.(システムを起動したXenハイパーバイザ・ファイルが見つかりません。これを使用しないと、システムのインストールを実行することができません。/storix/config/multibootfileファイルを作成し、ハイパーバイザ・ファイルへの完全パスを指定する行を追加してから起動メディアを再作成してください。)」
+対処法:
+1 
+/boot/grub/grub.confを開き、起動したマシンからのスタンザを検索します。
+以下の形式に類似しているはずです。 kernel /xen.gz-2.6.18-53.el5
+2 
+ファイルを新規作成して/storix/config/multibootfileという名前を付け、以下の例に示すようなハイパーバイザー・ファイルへの完全パスを指定する行を追加します。 /boot/xen.gz-2.6.18-53.el5
+17294, 17342
+リストアは正常に完了したが、マウント済みパーティションのサイズが変わり、一時ファイル・システムがマウント解除されないことがあります。この場合、一時ファイル・システム(tmpfs)を手動でマウントするか、起動時に/etc/fstabを編集してマウントする必要があります。
+17302
+SCSIまたはネットワーク・デバイスが起動時にStorix®起動メディアから利用できない場合、デバイス・モジュールが起動メディアに含まれていない、あるいはマスター・モジュール・ファイルにリストされていないと示されることがあります。
+対処法:
+見つからないSCSIやネットワーク・デバイス・モジュールを追加するには、起動メディアが作成されるクライアント上で以下の手順を実行します。
+1 
+以下のコマンドを実行して、カスタム・ディレクトリに元のブートリスト・ファイルをコピーします: # cp /opt/storix/config/bootlist_scsi /storix/config/bootlist_scsi
+ネットワーク・ドライバにエントリを追加する場合は「bootlist_network」ファイルを使用し、SCSIドライバにエントリを追加する場合は「bootlist_scsi」ファイルを使用する必要があります。
+2 
+カスタム・ディレクトリで「bootlist」ファイルを開き、#$ SCSI adapters行の下にSCSIデバイス・モジュールを追加し、"#$ Ethernet Network Adapters行の下にネットワーク・デバイス・モジュールを追加します。
+モジュールを追加するには、以下の形式を使用します。 #MOD:S:モジュール名:詳細
+例: #MOD:S:dc395x_trm:DC-395U SCSI adapter support
+17317
+Ubuntu®クライアントで、リストア後にStorix管理シェルがmaint>を返しません。これはUbuntu内で/bin/shが/bin/dashにリンクされているためです。このため、リストア完了後Storixは新たにリストアされたルートでchrootを実行して/bin/shを呼び出しますが、このシェルにはプロンプトがひとつも表示されません。
+17346
+本プラグインでは、暗号化されたパーティションをサポートしません。暗号化パーティションを有効化した場合、バックアップは以下のエラーを伴って失敗します。
+Warning: Volume Group VolGroup00 will be ignored because it contains physical volume mapper/luks-bfb0ef38-6066-4d0e-9e15-8c5fbe53ee4f, which is not a supported device type.
+Error: The / filesystem exists on the system but is not included on the backup because it is in a logical volume you did not select to include.You must include volume group VolGroup00 on a system backup.
+17361
+Storixを使用している場合、同じディスク・サイズの同一クライアントまたはその他のクライアントをリストアすると(これらのいずれかが論理グループやボリュームの一部として設定されているなど)、以下のメッセージが表示されることがあります。「The following non-fatal errors must be corrected before continuing: Disk sdb: This disk is not large enough for the partitions as they are currently defined.You must reduce the space requirements on this disk by at least 7MB by removing the partitions or reducing their sizes.(致命的ではありませんが、継続する前に以下のエラーを修正する必要があります: Disk sdb: このディスクには、現在定義されているパーティションに対して十分な空き容量がありません。パーティションを削除またはサイズを小さくすることにより、このディスク上で必要な容量を少なくとも7MBまで削減する必要があります。)」
+対処法: Storix内の［View/Change Installation Settings］機能を使用して、パーティション・サイズを調整します。
+複数ディスクにまたがったストライプ化論理ボリュームを再作成するためにリカバリ・プロセスを許可するには、ストライプ・サイズを手動で変更する必要があります。
+1 
+Storixのメイン・メニューから、［View/Change Installation Settings］>［Logical Volume Management］>［Add or Change Logical Volume］を選択します。
+2 
+利用可能なボリュームを選択し、［Enter］を押します。
+3 
+［Stripe Size］を「0」から元々設定されていたサイズに変更します。
+4 
+メイン・メニューに戻り、各選択画面上でF3を押します。
+既知の問題 - NetVault Bare Metal Recovery 10.0 Release Notes for Linux Live Client...

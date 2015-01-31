@@ -1,0 +1,120 @@
+回答例1: array_peek()? あ、array_front() と array_back()...?
+概念的にはdequeの話だ。普通他言語でもあるし、何かしら類する関数があるに違いない。PHPの配列系関数は実直にもarray_xxx()の形式だから、きっとpeekとかfrontとか、そういうのがあるはずだ。
+実にありそうな回答だが、現在PHPの組み込み関数にこのような関数はない。残念! ...ていうかなんでないんだよ。不便だよ。
+ちなみにJavaのdequeの場合は peekFirst() / peekLast()、C++ STLの場合は front() / back() である。こんなところでも言語の癖が伺える。
+回答例2: 添え字でアクセスすればいいのでは?
+普通に添え字でアクセスすればいいじゃない。
+$a = array("a", "b", "c");
+var_dump($a[0]);
+var_dump($a[count($a) - 1]);
+結果:
+string(1) "a"
+string(1) "c"
+やったね。
+と思いきや、PHPの配列はキーが数値とは限らないのだ。
+$s = array("First" => "a", "Second" => "b", "Third" => "c");
+var_dump($s[0]);
+var_dump($s[count($s) - 1]);
+結果:
+NULL
+NULL
+うぬぬ...。
+回答例3: array_pop() と array_shift() があるじゃない。
+待ってよ。PHPには array_shift() / array_pop() っていう組み込み関数があるよ?
+$a = array("a", "b", "c");
+var_dump(array_shift($a));
+var_dump(array_pop($a));
+$s = array("First" => "a", "Second" => "b", "Third" => "c");
+var_dump(array_shift($s));
+var_dump(array_pop($s));
+結果:
+string(1) "a"
+string(1) "c"
+string(1) "a"
+string(1) "c"
+やった...ね?
+まあ、もちろんこれで問題ない場合もある。しかし、これら関数はその名前の通り、配列を破壊してしまう。
+$a = array("a", "b", "c");
+var_dump(array_shift($a));
+var_dump(array_pop($a));
+$s = array("First" => "a", "Second" => "b", "Third" => "c");
+var_dump(array_shift($s));
+var_dump(array_pop($s));
+var_dump($a, $s);
+結果:
+string(1) "a"
+string(1) "c"
+string(1) "a"
+string(1) "c"
+array(1) {
+[0]=>
+string(1) "b"
+}
+array(1) {
+["Second"]=>
+string(1) "b"
+}
+無残だ。二番目の要素しか残っていない...。
+回答例4: reset() / end() を使う。
+えっ? 何その関数。どこから出てきたの?
+$a = array("a", "b", "c");
+var_dump(reset($a));
+var_dump(end($a));
+$s = array("First" => "a", "Second" => "b", "Third" => "c");
+var_dump(reset($s));
+var_dump(end($s));
+var_dump($a, $s);
+結果:
+string(1) "a"
+string(1) "c"
+string(1) "a"
+string(1) "c"
+array(3) {
+[0]=>
+string(1) "a"
+[1]=>
+string(1) "b"
+[2]=>
+string(1) "c"
+}
+array(3) {
+["First"]=>
+string(1) "a"
+["Second"]=>
+string(1) "b"
+["Third"]=>
+string(1) "c"
+}
+わーお、すげえ期待通りに動いてる...。しかしなんでこんな関数名なのかがワカラン...。
+実はこの reset() / end() という関数、本来は配列の巡回のために使用される関数群の一部だ。こんなふうに使用されていた。
+$s = array("First" => "a", "Second" => "b", "Third" => "c");
+reset($s);
+while (list($k, $v) = each($s)) {
+var_dump($k, $v);
+}
+結果:
+string(5) "First"
+string(1) "a"
+string(6) "Second"
+string(1) "b"
+string(5) "Third"
+string(1) "c"
+他にも仲間に current() / next() / prev() などがある。
+従って、本来は配列の要素を参照するための関数ではない。本来の目的のために、配列の内部ポインタを移動させてしまうという「副作用」がある。あ、えと、いや、主作用とでもいうべきか...。ただ、もちろん今は上記のような用途には当然 foreach とか array_walk() といったような配列の内部ポインタに影響されないものを使うわけで、もはや副作...ええと、主作用のことは完全に無視してしまっていいだろう。
+そんなわけで、名前については大変残念だが、冒頭の問いに対しては reset() / end() が最も正解だと思っている。
+なお、これら関数は配列の内部ポインタを変更する性質上、参照を受け取る。そのため、PHP 5.0.4 以下の場合は直接関数の戻りを利用できなかったようだ。
+$s = array("First" => "a", "Second" => "b", "Third" => "c");
+var_dump(reset(array_keys($s)));
+var_dump(end(array_keys($s)));
+PHP 5.0.4 以下での結果:
+Fatal error: Only variables can be passed by reference
+一旦変数に格納すれば利用できたとのこと。
+$s = array("First" => "a", "Second" => "b", "Third" => "c");
+$k = array_keys($s);
+var_dump(reset($k));
+var_dump(end($k));
+結果:
+string(5) "First"
+string(5) "Third"
+5.0.5 以上であれば前述の直接戻りを受け取るコードでもそのまま動くようだ。
+PHPで配列の先頭または末尾要素を参照する - TIM Labs

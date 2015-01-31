@@ -1,0 +1,35 @@
+右は、clock(大文字小文字は無視)をキーワードで、ショウジョウバエ(Drosophila melanogaster)のリミットで検索した結果の例です。
+公式名称はよく使う名前とは異なる場合が多いので気をつけましょう。「Clk」をクリックし、ショウジョウバエClockのページに進みます。
+ちょっと裏道です。ヒト・マウスで正確な遺伝子名が分かる場合に限られますが、比較的簡単に特定遺伝子を検索できるNIHのツールがあります。
+Gene Finder を開く
+"1. Select organism"でヒトかマウスをえらぶ。
+"2. Enter a unique identifier" にclock, per2など遺伝子シンボルを入れる(periodだけではダメ)。
+結果が表示されたら、"Gene Info" をクリック、Database Linksの中にある、Entrez Gene を開きます。(ヒトCLOCKの例)
+元々ガン研究に特化したデータベースですが、ガン関連遺伝子以外も検索できます。
+RefSeqをNCBI Geneのページからダウンロードする
+右はNCBI Gene ページの例です。
+こののページは、塩基配列、タンパク情報だけでなく、
+機能ドメイン(Conserved Domains)
+マイクロアレイのデータ(GEO Profiles)
+他の生物のホモログ情報(HomoloGene)
+ゲノム情報(Map Viewer)
+遺伝学的情報(OMIM or MIM, Online Mendelian Inheritance in Man なので人間の遺伝子の場合のみ)
+など、様々な情報にリンクしています。
+Genomic regions, transcripts, and products (遺伝子構造図)からRefSeqを表示します。
+ゲノムは NT_XXXXX から、cDNA (mRNA)は NM_XXXXX若しくはエクソンイントロン構造図からGenBankを選択します。
+※遺伝子構造図をクリックしても反応しない場合。
+mRNAは下部のreference sequence detailsから取ります。
+遺伝子は、右メニューMapViewerを開き、目的遺伝子の
+「Clk      &uarr; 
+fb    sv    ev   
+pr    dl    mm   
+hm」
+の「dl」をクリックします。
+その場合は、遺伝子の方向(plus minus)を指定し、形式をGenBankに変更する必要があります。
+RefSeqとは?
+cDNAなら >NM_123456のようにN_で始まるレコードを「Refseq (reference sequence)」と呼びます。(多分、NM=NCBI mRNA, NT=NCBI conttig, NC=NCBI chromosome, NP=NCBI protein)。研究者がクローニングして登録したものや、ゲノムプロジェクト・ESTから予想された配列(XM_, XP_ eXpected由来か)を統合して作成されています。信頼できる重宝な配列ですが、系統によりSNPsがあったり、稀にORFの取り方が違うものもありました。
+GenBank?FASTA? 
+遺伝子情報のフォーマットは複数有ります。私は主にGenBankとFASTAを使います。
+後述のApE(無料)やGENETYX(有料)など、対応したソフトで扱う場合はGenBank形式が良いでしょう。
+塩基配列・アミノ酸配列だけが欲しい場合にはFASTA形式が便利です。以降GenBank形式で説明します。GenBank、FASTA形式の見方は別ページのサンプルをご参照下さい。
+DNA情報の取得とApEでの操作 - 花井@産総研

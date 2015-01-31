@@ -1,0 +1,322 @@
+最新FFmpegのページへ戻る
+最新ffmpegの高度なオプション  &dagger;
+最新版の ffmpeg に関する高度なオプションの抜粋です。
+詳細不明なものや、掲示板やページコメントから吸い上げた情報も含まれています。
+ただし、オプションのデフォルト値や挙動は今後のリビジョンアップで変わる可能性があり、
+また以下に書いた内容が間違っている可能性もありますのでffmpegのバージョンを変えた場合は
+コマンドラインの -h 等でそのバージョンのオプションを確認して使ってください。
+また、間違いやおかしな記述を発見した場合は、適宜修正をお願いします。
+Advanced options:  &dagger;
+-map <file:stream[:syncfile:syncstream]>
+出力ファイルへのストリームマッピングを指定する。
+例1. Input #0 -> #0.0: 映像、#0.1: 音声 (jpn)、#0.2; 音声 (eng) とかの場合
+-map 0.0 -map 0.2 とつけると、映像と英語音声のみのファイルにできます。
+例2. -newvideo, -newaudio, -newsubtitle オプションと組み合わせることで
+ソースファイルから任意のストリームを取り出して組み合わせられます。
+例えばソースが以下のような構成だとします。
+#0:0 映像
+#0:1 日本語主音声 (LPCM 48KHz 2ch)
+#0:2 日本語副音声 (AC3 48KHz 2ch)
+#0:3 英語主音声 (LPCM 48KHz 2ch)
+#0:4 英語副音声 (AC3 48KHz 2ch)
+このソースから、日本語主音声は AAC にエンコード、日本語副音声は AC3 音声をそのままコピーし、
+映像と2つの音声を mkv にまとめるためには以下のようにオプションを指定します。
+-i <source> [映像エンコードオプション] -acodec libfaac -ab 128k -map 0:0
+-map 0:1 -map 0:2 output.mkv -acodec copy -newaudio
+・-newaudio でその直前に出てきた output.mkv に新しい音声トラックを追加しています
+これにより、出力は映像1トラック、音声2トラックになります。
+・output.mkv から -newaudio の間のオプションは「新しく追加する音声トラック」に
+対するオプションを指定 (この場合 AC3 をそのままコピーしたいので -acodec copy)
+・-map 0:0 -map 0:1 -map 0:2 はそれぞれソースファイルの対応する番号のトラックを
+この順で出力ファイルの 0:0, 0:1, 0:2 トラックに対応させることを表します。
+-re
+入力ファイルのフレームレートをそのまま読み込む。
+は間違いで、ソースのフレームレートをエミュレートするというのが正しいです。
+(具体例) 30fps のソースを ffmpeg でエンコードして ffserver でストリームする場合
+ffmpeg はエンコードしたデータを直ちに送り出すため、エンコード速度がソースの実フレームレートより速い (例.60fps) と
+ストリームされる側では動画が早送りされたような状況 (例.エンコードfpsが60fpsなら2倍速) になってしまいます。
+これを防ぐためには、データを即座にストリームしないで、ソースのフレームレートと同じ頻度で送り出す必要があります。
+この機構 (ソースのフレームレートをエミュレートする, rate emulation ) を ON にするのが -re オプションです。
+従って、通常のエンコードでは指定しても意味を持ちません (出力先がストリーム URL 形式の場合のみ有効です)。
+※「入力ファイルのフレームレートをそのまま読み込む」だと VFR なソースの変換に対応するようなオプションであるという
+印象をもつ方もいるかもしれませんが、-re はそのようなオプションではありません。
+通常、ソースのフレームレートは ffmpeg が入力ファイルを demux した時点で判明し、
+基本的にはこの値の固定フレームレートのビデオに変換されます。
+-threads <count>
+エンコードのスレッド数。数字で指定。
+-vsync
+映像の同期方法。
+フレームをドロップ・コピーしてタイムスタンプをあわせることで映像を同期する。
+同期時に参照するタイムスタンプは -map の syncfile:syncstream で指定されたストリームから取る。
+-async <1-1000>
+音声の同期方法。
+音声サンプルを Stretch/Squeeze (つまりサンプルの持続時間を変更) して同期する。
+値は、音がズレたときに1秒間で何サンプルまで変更していいかを指定する
+-async 1 は特別で、音声の最初だけ同期して後続のサンプルはそのまま
+サンプルの持続時間変更を伴うので、あまり大きな音ズレを無理に補正しようとすると音がゆがむ(その場合は値を小さくして調整)
+また、音声のインターリーブがおかしい入力ファイルの場合も音がゆがむ可能性がある
+vorbis や VBR な mp3 が原因の場合の音ずれは -async で無理に同期するのではなく
+一旦音声を分離して WAV にデコードしたものを再度エンコードしなおして結合するほうがよい
+-copyts
+ソースサンプルのタイムスタンプを維持する。入力ファイルがm2tsの場合(インタレース,プログレッシブ共)に必須
+(これが無いと映像だけ倍の時間になってしまう)
+-shortest
+入力ファイル間で長さが違う場合、一番短いものの長さ分だけエンコードする。
+-dts_delta_threshold
+timestamp discontinuity delta threshold (詳細不明)
+-muxdelay <seconds>
+set the maximum demux-decode delay (デコード遅延の最大値)
+-muxpreload <seconds>
+set the initial demux-decode delay (デコード遅延の初期値)
+AVCodecContext AVOptions  &dagger;
+<一般的なオプション>
+-coder <int>
+符号化方式の種類を指定。
+x264 では -coder vlc (-coder 0) で CABAC なし、-coder ac (-coder 1) で CABAC あり。
+-level <int>
+映像エンコードのレベル指定。指定可能な Codec は H.263、H.264、MPEG-1/2。具体的な値と意味についてはコーデックの仕様を参照のこと。
+例えばH.264では16段階定義されている(参考:コーデック)
+過去のffmpegにはvlevelというオプションがあったが最新のffmpegにはない。
+-threads <int>
+エンコードスレッド数。デュアルコア以上の CPU の場合には2など (CPUのコア数+α)を指定するとエンコードを高速化できる。
+x264 を使う場合に限り -threads 0 を指定すると x264 エンコーダ側で自動で (論理CPU数×1.5) スレッドで並列処理される。
+-profile <int>
+以下の指定可能な値からわかるようにほぼAACのプロファイル指定専用。
+各プロファイルの詳細は この辺 を参照のこと。
+ただし、ポータブル機器向けでは実質 AAC-LC 以外は利用しないと思われるのでこのオプションを指定する機会はまずないはずです。
+また、ffmpeg にリンクされている faac では AAC-HE や AAC-HEv2 は作成できない。
+unknown       このオプションを指定しない場合のデフォルト値。aac_low と同じに扱われる。
+aac_main      AAC の Main プロファイル
+aac_low       AAC の Low-Complexity プロファイル。いわゆる AAC-LC
+aac_ssr       AAC の Scalable Sampling Rate プロファイル。
+aac_ltp       AAC の Long-Term Prediction プロファイル。
+<ノイズ対処>
+-nr <int>
+ノイズリダクションの強さ。デフォルト=0。範囲 0〜100000。
+簡易的なノイズ低減フィルタとして使える。エンコード/デコードの負荷にはほとんど影響しない。
+通常の実用範囲は 100〜1000 (ソース) とか 0〜600 (ソース: ここ の -nr の説明) とかの模様
+-deblockalpha <int>
+x264 の in-loop デブロックフィルタの強度パラメータ [-6〜6] の範囲で指定。
+-deblockbeta <int>
+x264 の in-loop デブロックフィルタの閾値パラメータ [-6〜6] の範囲で指定。
+-deblockalpha -deblockbeta とも -flags loop でデブロックフィルタを ON にした場合のみ意味がある。-6:デブロック弱 <-> +6:デブロック強。
+値を上げるとブロックノイズは減るが全体的にぼやけた絵になりやすく、逆に値を下げるとぼやけた感じは減るが平坦な部分やフェードのシーン等でブロックノイズが出やすくなる。
+一般的にはデフォルトの0が推奨で、値を増減させる場合でも -3〜+3 の範囲にとどめるべきと言われている (※ソース失念。Doom9のフォーラム内のどこか)
+-qns <int>
+量子化ノイズを目立たなくするような量子化を行う。
+デフォルト=0 (無効)、1〜3 を指定可能。数字を大きくするほどエンコードは遅くなる。
+有効にする場合は -flags trell を一緒に指定する必要がある。
+また、これからわかるように -flags trell の対象 Codec (xvid とか msmpeg4 など) 以外では指定しても意味がない。
+※ x264 の qns パッチはこれとは別物なので x264 で指定しても意味ありません。
+<レートコントロール>
+-b <int>
+映像ビットレート (in bits/s)。デフォルト=200kbits/s
+-ab <int>
+音声ビットレート (in bits/s)。デフォルト=64kbits/s
+-bt <int>
+映像ビットレートの変動許容幅 (in bits/s)。デフォルト=4000kbits/s
+x264 の場合は、btの値/bの値 が -ratetol オプションの値として渡される。デフォルトだと ratetol=4000k/200k=20.0
+-crf <float>
+固定 "品質" でのエンコードモード (x264 のみ)。x264で最も推奨されるVBR。
+-cqp <int>
+固定 "量子化係数" でのエンコードモード。xvid 等の -qscale と同じ。通常は使用する意味がないとされる。0で可逆圧縮。
+-qmin <int>
+q値の最小値 (デフォルト=2)
+x264 ではデフォルトの qmin=2 は小さ過ぎる。少なくとも 10 以上にした方がよい。
+qminが小さすぎるとソースによっては黒いバックなどの動きが少ないシーンでグレーの
+靄がかかったようなフレーム ("Gray Fogged Frame") が出来てしまうことがある。
+x264 と以前のMPEG系(MPEG1/2, MSMPEG4, xvid 等)の q 値の大体の対応
+x264 q=12 <-> xvid q=1 程度
+x264 q=18 <-> xvid q=2 程度
+x264 q=21 <-> xvid q=3 程度
+x264 q=24 <-> xvid q=4 程度
+x264 q=30 <-> xvid q=8 程度
+-qmax <int>
+q値の最大値 (デフォルト=31)。旧MPEG系Q値との対応は qmax のところに書いたものと同じ
+-qdiff <int>
+隣接フレーム間でのq値の最大変動幅 (デフォルト=3)
+-qcomp <float>
+q値をどのくらい変動させてよいかの尺度 (デフォルト=0.5)
+1.0 だと q 値固定 (-cqp, -qscale) とほぼ同等
+0.0 だと bitrate 固定とほぼ同等
+-i_qfactor <float>
+I-P フレーム間の q 値の比 (I フレームの q 値/P フレームの q 値)。デフォルト=0.8。
+-i_qoffset <float>
+I-P フレーム間の q 値のオフセット。デフォルト=0。
+-b_qfactor <float>
+B-P フレーム間の q 値の比 (B フレームの q 値/P フレームの q 値)。デフォルト=1.25。
+-b_qoffset <float>
+B-P フレーム間の q 値のオフセット。デフォルト=0。
+-mpeg_quant <int>
+H.263 量子化ではなく MPEG の量子化を使う。
+-maxrate <int>
+最大ビットレート (in bits/s)。デフォルト=0 (指定なし)。
+-minrate <int>
+最小ビットレート (in bits/s)。デフォルト=0 (指定なし)。
+-qscale や -cqp を指定しているときは max/minrate 制限は無視される
+-bufsize <int>
+レートコントロールのバッファサイズ (in bits)。デフォルト=0 (指定なし)。
+x264 を使う場合は -bufsize を指定しないと maxrate 制限は機能しない (ついでにx264にはminrate制限はない)
+他のコーデックでは -bufsize を指定しなくても min/maxrate 制限は機能するかも
+-bufsize を小さくしすぎるとアンダーフローしやすくなり再生に影響がでるので、端末の許す限り大きな値を指定
+-rc_init_occupancy <int>
+デコードバッファの初期占有量 (bit 単位)。デフォルト=0 (指定なし?)
+-chromaoffset <int>
+chroma (UV) と luma (Y) の q 値に一定の差をつけてエンコードする。デフォルト=0 (指定なし)
+-qsquish <float>
+レートコントロールが qmin を下回る (または qmax を越える) q 値を弾き出したときの取り扱いを指定する
+0: 単純にクリップ ( 要求された q 値 < qmin の場合は無条件で q = qmin で符号化。qmax を超える場合も同じ)
+1: differentiable function を使う (品質の急激な変化を避けるため、q が qmin や qmax 付近では滑らかに変化するように調整する)
+-rc_eq <string>
+レートコントロールの式を指定する。デフォルト="tex^qComp"。
+-rc_init_cplx <float>
+1-pass レートコントロールで、フレームの消費ビットを大まかに見積もる際に使う係数 (詳細不明)
+<GOP 関連設定>
+-g <int>
+GOP サイズを指定。デフォルト=12。
+シークのしやすさに関係してきます。通常は fps × 5 〜 10 程度 (5〜10秒単位でシーク可能) が目安。
+携帯電話などのデコード機能によってはあまり長く取りすぎると再生やシークに問題が出ることがあるようなので、
+その場合は短めにしてください。
+-keyint_min <int>
+IDR フレームの最小間隔 (x264 のみ)。デフォルト=25。
+-sc_threshold <int>
+シーンチェンジ検出の閾値
+MPEG2 等の場合: デフォルト=0。ここの同パラメータを参照のこと。
+基本的にマイナスで大きい値にすると積極的にIフレームを挿入し、プラスで大きい値にするとその逆になる。
+x264 の場合: デフォルト=0 は同じ。指定範囲は [-1 〜 100] で、-1 でシーンチェンジ検出無効。あとは値を大きくするほどIフレームの挿入が増える。
+<その他 (動き予測、B フレーム)>
+-mbd <int>
+マクロブロック決定のアルゴリズム。
+デフォルトの 0 で不満なら数字を上げる (ただし、上げると遅くなる)。
+simple (0)             use mbcmp (デフォルト)
+bits   (1)             use fewest bits
+rd     (2)             use best rate distortion
+-me_method <int>
+フルピクセルの動き予測アルゴリズムを指定。
+以下は x264 を使う場合。libxvid 等でも指定できる値は同じだが意味は若干違う模様。
+dia                     E.V.. ダイヤモンドサーチ、半径 1 (デフォルト)
+epzs                    E.V.. dia とおなじ
+hex                     E.V.. 六角形サーチ、半径 2
+umh                     E.V.. 不等複数六角形サーチ
+esa                     E.V.. 徹底サーチ (超低速で umh と比べて非常に遅いので)
+full                    E.V.. esa とおなじ
+tesa                    E.V.. 動き予測 (2つのMBの比較) に SATD (アダマール変換) を用いる徹底サーチ
+一般的には esa と比べてさらに若干重くなるが umhesa ほどの差はない。
+-me_range <int>
+動き予測の検索範囲を指定する
+-subq <int>
+サブピクセルの動き予測アルゴリズムを指定 (デフォルト=?)。1が最も高速・低精度、9が最も低速・高精度。
+-refs <int>
+動き予測の際に参照できるフレームの上限数 (デフォルト=1)。
+-trellis <int>
+trellis 量子化を有効にする。デフォルト=0、指定可能値 0〜2。
+指定値の意味
+0 = 無効 (デフォルト)
+1 = MB の最終的なエンコード時のみに利用
+2 = MB のモード決定の全処理で使用 (subq = 6 or 7 の指定が必要)
+x264 で trellis 有効にするには CABAC が必須のため、Baseline では使えない
+大きい値を指定するほどエンコード負荷が増える (デコード負荷への影響はない)
+ごく最近のリビジョンでは xvid の trellis On/Off も -trellis で OK なもよう
+-bf <frames>
+最大 "frames" 枚の連続する B フレームを使う。デフォルト=0 (B フレーム不使用)。最大値=16。
+-b_strategy <int>
+B フレームの挿入位置を適応的に判断するかどうか。デフォルト=0 (-bf で指定した枚数を常に使う)
+x264 の場合は 1 を指定すると adaptive B frame decision が有効 (x264 のデフォルト) になる
+-b_sensitivity <int>
+-b_strategy=1 のときに B フレームの使用の判断基準にする閾値。デフォルト=40。
+-bframebias <int>
+B フレームをどのくらい使うかの指標 (x264のみ)。デフォルト=0。-100〜100 の範囲で設定。大きいほど B フレームをたくさん使う。
+-directpred <int>
+B フレームの直接予測のモード - 0 (none), 1 (spatial), 2 (temporal) (x264のみ)。デフォルト=2 (temporal)。
+x264 CLI と違い文字列指定は出来ません。文字列はすべて 0 (none) と同じ扱いになります。数字で指定してください。
+また、ヘルプにはでてきませんが、3 を指定すると x264 CLI の --direct auto と同等になります。
+-bidir_refine <int>
+B フレームの双方向予測を有効化する。x264 の --bime 相当のオプション。0 以外を指定すると有効になる。
+xvid の HighQuality モードとかでも参照されるみたいだが、こちらは詳細不明。
+-partitions <flags>
+マクロブロックをサブブロックに分割する際に利用可能なモードを指定する。
+複数指定する場合は + でつなぐ (例. -partitions parti4x4+partp8x8+partb8x8 等)
+基本的には数多く指定するほどエンコード負荷が上がり時間がかかる
+携帯機器向けのBaselineの場合、CPU に余裕があるなら -partitions parti4x4+partp8x8(+partp4x4) を指定するとよい
+parti4x4                基本的に指定した方が画質は安定すると思う
+parti8x8                High Profile のみ、かつ -flags2 dct8x8 を指定しないと使われない。
+よって携帯機器向けでは出番なし。
+partp4x4                以前はp4x4を使うとSSIMやPSNRが下がるという話だったが最近のrevでは指定しても問題ないらしい
+最新ffmpegでx264のリビジョンが新しいものであれば常に指定しても問題ないかも (以上、2ch の某スレで見かけた発言)
+以下のmencoderのマニュアルでは "p4x4 is recommended only with subq >= 5, and only at low resolutions"
+http://www.mplayerhq.hu/DOCS/man/en/mplayer.1.html
+partp8x8                基本的に指定した方が画質は安定すると思う
+partb8x8                B-Frame を使う場合には指定するとよい
+-cmp <int>
+E.V.. フルピクセルの動き予測で用いられる比較関数
+sad                     sum of absolute differences, fast (default)
+sse                     sum of squared errors
+satd                    sum of absolute Hadamard transformed differences
+dct                     sum of absolute DCT transformed differences
+bit                     number of bits needed for the block
+rd                      rate distortion optimal, slow
+※ x264 の場合 -subq 6 以上を指定で RDO 有効化なので、このオプションを指定しても意味はない
+chroma                  色情報を含めた動き予測をする
+※ x264 の場合 -cmp chroma 指定 (かつ、subq が 5 以上) の場合 chroma me が ON になる
+(-cmp chroma を指定しないと x264.exe の --no-chroma-me 相当)
+<各種フラグ>
+-flags <flags>
+主にエンコードに関係するフラグ類。複数指定するときは + でつなぐ。
+基本的に x264 系のオプションは別途 -flags2 に固めてあるようなので指定しても意味が無いものが多い。
+mv4                     use four motion vector by macroblock (mpeg4 のみ)
+16x16 のマクロブロックを4x4のサブブロック4つにわけてそれぞれに動きベクトルを持たせる
+obmc                    use overlapped block motion compensation (h263+ のみ)
+ブロック境界での予測誤差を減らすために、マクロブロックの境界を overlap させて動き補償解析をする。
+qpel                    use 1/4 pel motion compensation (mpeg4, xvid 系)
+動き補償を 1/4 ピクセル精度にする。デフォルトは 1/2 ピクセル精度。
+x264 の場合は、別の -subq オプションでこの辺を制御するので指定しても意味がない。
+loop                    use loop filter
+デブロックフィルタを有効にする (デフォルトは無効)。x264 のブロックフィルタの ON/OFF もこれで切り替える。
+gmc                     use gmc (mpeg4, xvid 系)
+global motion compensation を使う (全画面のパンなどで有効らしい)。
+x264 では指定しても意味なし。
+mv0                     always try a mb with mv=<0,0>
+part                    use data partitioning
+gray                    only decode/encode grayscale
+グレイスケール (白黒) のエンコード
+naq                     normalize adaptive quantization
+ildct                   use interlaced dct
+インターレース対応の DCT を使う (インターレース保持用)
+最近の rev の ffmpeg ではこれを指定すると x264 のインタレ対応モードがONになる。
+low_delay               force low delay
+alt                     enable alternate scantable (mpeg2/mpeg4)
+bitexact                use only bitexact stuff (except (i)dct)
+リファレンスエンコーダとの比較用オプションなので、通常は使わない。
+つけないと携帯機器で再生できないファイルになってしまう場合のみつければよい。
+aic                     h263 advanced intra coding / mpeg4 ac prediction
+umv                     use unlimited motion vectors
+cbp                     use rate distortion optimization for cbp
+qprd                    use rate distortion optimization for qp selection
+aiv                     h263 alternative inter vlc
+slice                   
+cgop                    closed gop
+closed gop にする (シーンチェンジ検出を無効にしないと機能しない)。
+編集用にGOP単位で切り取れるようにしたいときなどに指定する。
+ilme                    interlaced motion estimation
+インターレース対応の動き予測を使う (インターレース保持用)
+-flags2 <flags>
+主にエンコードに関係するフラグ類(その2)複数指定するときは + でつなぐ。
+bpyramid                allows B-frames to be used as references for predicting (x264)
+B フレームを参照フレームとして使えるようにする
+wpred                   weighted biprediction for b-frames (H.264)
+B フレームに対して重み付け予測を使う
+mixed_refs              one reference per partition, as opposed to one reference per macroblock
+16x16 のマクロブロック内の、サブマクロブロック (4x4とか8x16とか) がそれぞれ異なるフレームを参照できるようにする
+mbtree                  リビジョン20770からONとOFFが追加。x264のみ。映像を先読みしてq値の決定に重み付けを行う。
+具体的には時間軸で映像を観察して、後々重要になりそうな部分の品質を上げておき、どうでもよさそうなところは品質を下げる。
+特に動きが少なくて平板な部分が多い動画に使用すると、ビットレートを大幅に節約でき、全体的な品質の向上が見込める。
+qcompの値を上げると効き目が弱くなり、下げると強くなる。
+mbtree は背景が静止映像の場合ビットレートの節約になるけど、動きが早い映像だと背景が汚くなる場合が・・・好みかな。。。 
+dct8x8                  high profile 8x8 transform (H.264)
+8x8 DCT を使用可能にする。指定すると自動的に High Profile になってしまうので注意。
+また、-partitions parti8x8 はこれを指定しないと機能しない。
+fastpskip               fast pskip (H.264)
+P フレームでの早い段階でのスキップ MB 検出を有効にする。
+brdo                    b-frame rate-distortion optimization (H.264)
+B フレームにレート歪み最適化を使う。subq が 6 以上でないといけない。
+最新ffmpeg/高度なオプション - MobileHackerz Knowledgebase Wiki

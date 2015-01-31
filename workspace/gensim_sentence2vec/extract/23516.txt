@@ -1,0 +1,204 @@
+
+ノードとは
+Maya のシーンは、すべてノードによって構成されています。
+つまり、Maya においてモデリング・アニメーション・シェーディングを行なうときには、
+以下の手順を繰り返してシーンを作ってゆきます。
+新しいノードを作成
+必要ならばノードに親ノードを設定
+ノードのアトリビュートに値を設定
+他のノードのアトリビュートと、自分のアトリビュートをコネクト
+GUI やほとんどの MEL コマンド・Python 関数などは、
+これらの操作を直接・間接に実行するか、
+手順を省いて便利に実行できるようにするために存在しています。
+ノードの種類
+Maya のノードには、
+DG(Dependency Graph,ディペンデンシーグラフ)ノード、
+DAG(Directed Acyclic Graph,有向非循環グラフ)ノード
+の 2 種類があります。
+DGノードとは、アトリビュートをコネクトし合ってシーンを構成するノードです。
+Input ノードや Shading ノードが DG ノードです。
+また、DAGノードとは、親子関係になってジオメトリを決定するノードです。
+Transform ノードや Shape ノードが DAG ノードです。
+主なノードの種類は以下のとおりです。
+Transform ノード(DAG, DG)
+移動(Transform)・回転(Rotate)・スケール(Scale) などをアトリビュートとして持ちます。
+他の Transform ノード・Shape ノードの親になることができます。
+グループやジョイントも Transform ノードです。
+Shape ノードや他の Transform ノードの親子になるので DAG ノードですが、
+他のノードからアトリビュートをコネクトされている場合は
+DG ノードにもなります。
+Shape ノード(DAG, DG)
+オブジェクトのジオメトリをアトリビュートとして持ちます。
+必ず Transform ノードを親にもちます。
+他のノードの親になることはありません。
+Transform ノードの子であるので DAG ノードになりますが、
+Input ノードなどにコネクトされているので DG ノードでもあります。
+Input ノード(DG)
+オブジェクトのジオメトリ(コンポーネント)を作るか、
+または、他のノードからジオメトリを受け取って加工してから出力するノードです。
+Shape ノードの入力元となります。
+Shading ノード(DG)
+シェーディング・テクスチャーのためのノードです。
+Set ノード(DG)
+オブジェクトやオブジェクトのコンポーネント・アトリビュートをまとめて
+1 つのグループにするノードです。
+レンダリングするオブジェクトや、デフォーマで変形されるオブジェクトが
+どれなのかを管理するのに使われます。
+ObjectSet ノードや、ObjectSet を継承して作られているノードがこの種類のノードです。
+通常 Set ノードは maya.cmds.sets() 関数によって作られます。
+Partition ノード(DG)
+Sets ノードをまとめてグループにするノードです。
+レンダリングするべき Sets ノードがどれなのかを区別するときなどに使われます。
+通常 Partition ノードは maya.cmds.patition() 関数によって作られます。
+ノードの例
+NURBRS 球を 1 つ作ったときに、
+この球をレンダリングするために必要なノードは以下のようになります。 
+makeNurbSphere1
+NUBRS のジオメトリを作る Input ノードです。
+アトリビュート outputSurface が nurbSphereShape1 ノードの
+inputSurface アトリビュートにコネクトされています。
+makeNurbSphere1 のアトリビュートが変更されると、
+mesh データが再計算されます。
+その mesh データが outputSurface から nurbSphereShape1 の inputSurface に送られます。
+nurbSphere1
+NURBS の親になる Transform ノード
+nurbSphereShape1 ノードの保持しているジオメトリに、
+この nurbSphere1 ノードの移動・回転・スケールをかけたものが
+最終的に NURBS 球体のジオメトリデータになります。
+nurbSphereShape1
+NURBS のジオメトリを保持する Shape ノード
+ここでは、makeNurbSphere1 から送られてきた mesh データを保持しています。
+initialShadingGroup
+シェーダに属しているジオメトリを管理しているノードです。
+このノードは ObjectSet というノードを継承して作られている
+shadingEngine という種類のノードです。
+このノードの dagSetMembers[*] というアトリビュートにコネクトされている Shape ノードが、
+surfaceShader というアトリビュートにコネクトされている
+シェーダによってシェーディングされます。
+lambert1
+シェーダノードです。
+このノードの outColor アトリビュートが
+initialShadingGroup の surfaceShader というアトリビュートにコネクトされているので、
+このシェーダが NURBS 球のシェーダになります。
+lightLinker1
+各ジオメトリにどのライトが当たっているかを管理するノードです。
+defaultLightSet
+シーン中のライトを管理するノードです。
+このノードは ObjectSet という種類のノードです。
+renderPartition
+レンダリングするシェーダとジオメトリを管理します。
+ノード関係の Python 関数
+これら以外にも関数はありますが、
+最低限これだけあれば Maya のシーンのほとんどを作成することができます。
+maya.cmds.createNode()
+ノードを作成します。
+新たに作成するノードの親ノードを指定することもできます。
+maya.cmds.setAttr()
+ノードのアトリビュートに値を設定します。
+maya.cmds.connectAttr()
+ノード間のアトリビュートをコネクトします。
+すでに作成されているシーンを変更する場合には、
+これら以外の関数が必要になることもあります。
+(練習問題参照)
+アトリビュートのコネクト
+アトリビュート同士をコネクトするときは、同じ種類のアトリビュート同士である必要があります。
+また、出力するアトリビュートは複数のアトリビュートとコネクトできますが、
+入力アトリビュートはひとつのアトリビュートとしかコネクトできません。
+ノードの作成例
+最低限の関数だけを使って、ポリゴンのプリミティブを作成してみましょう。
+以下の Python スクリプトを createPolyPlane1.py という名前で保存します。
+import maya.cmds
+def createPolyPlane1():
+plane = maya.cmds.createNode('polyPlane')
+transform = maya.cmds.createNode('transform')
+mesh = maya.cmds.createNode('mesh', p=transform)
+maya.cmds.connectAttr(plane + '.out', mesh + '.i')
+maya.cmds.connectAttr(mesh + '.iog', 'initialShadingGroup.dsm', na=True)
+スクリプト エディタ の ファイル  スクリプトのロード によって createPolyPlane1.py を読み込んで、テンキーの Enter キーなどで実行します。
+以下のようにスクリプト エディタのインプットウインドウに入力してみます。
+createPolyPlane1()  
+ポリゴンのプレーンが作成されます。
+スクリプトの解説
+import maya.cmds
+Maya モジュールをインポートします。
+def createPolyPlane1():
+createPolyPlane1 という関数の定義です。
+plane = maya.cmds.createNode('polyPlane')
+polyPlane という種類のノードを作成します。
+このノードはポリゴンプレーンのジオメトリデータを作成する Input ノードです。
+transform = maya.cmds.createNode('transform')
+Transform ノードを作成します。
+mesh = maya.cmds.createNode('mesh', p=transform)
+mesh ノードを作成します。
+このノードはメッシュのデータを保持する Shape ノードです。
+p フラグによって、この mesh ノードの親ノードを直前に作成した Transform ノードに設定します。
+maya.cmds.connectAttr(plane + '.out', mesh + '.i')
+polyPlane ノードの out (output) アトリビュートを mesh ノードの i (inMesh) アトリビュートにコネクトします。
+これで、polyPlane ノードが mesh ノードの Input ノードになります。
+maya.cmds.connectAttr(mesh + '.iog', 'initialShadingGroup.dsm', na=True)
+mesh ノードの iog (instObjGroups) アトリビュートを
+initialShadingGroup ノードの dsm (dagSetMembers) アトリビュートにコネクトします。
+これによって、ポリゴンプレーンがレンダリング可能になります。
+フラグ na=True (nextAvailable=True) によって、
+配列アトリビュート dsm の空いているインデックスに
+mesh ノードの iog アトリビュートがコネクトされます。
+練習
+deleteEdge1.py という Python スクリプトを作り、
+選択されているポリゴンのエッジを削除できるようにしてみましょう。
+ただし、 select() 、 delete() や polyDelEdge()
+関数を使用しないで、
+deleteComponent ノードを作ることで実行できるようにします。
+deleteEdge1.py には、以下の関数を定義します。
+def deleteEdge1(num):
+引数 num は、消去したいエッジの番号です。
+(実行例)
+ポリゴンのオブジェクトを作り、選択された状態にしておきます。
+スクリプト エディタ の ファイル  スクリプトのロード によって deleteEdge1.py を読み込んで、テンキーの Enter キーなどで実行します。
+以下のようにスクリプト エディタのインプットウインドウに入力して、実行します。
+deleteEdge1(3)
+ポリゴンのオブジェクトから、3 番のエッジ(e[3])が消去されます。
+(ヒント)
+以下の手順で実行します。
+選択されているポリゴンオブジェクトの名前を調べます。
+maya.cmds.ls(sl=True)
+この関数の返り値は,リストになります。
+選択されているポリゴンオブジェクトの、
+i アトリビュートにコネクトされているオブジェクトとアトリビュート名を調べます。
+maya.cmds.listConnections(選択されているポリゴンオブジェクトの名前 + '.i', p=True)
+フラグ p=True は、
+オブジェクト名とともに、
+コネクトされているアトリビュート名も同時に返すためのものです。
+この関数の返り値は,リストになります。
+選択されているポリゴンオブジェクトの i アトリビュートのコネクトを解除します。
+maya.cmds.disconnectAttr(listConnectionsで調べた名前, 選択されているポリゴンオブジェクトの名前 + '.i')
+deleteComponent ノードを作成します。
+maya.cmds.createNode('deleteComponent')
+2. で調べたアトリビュートと、
+deleteComponent ノードの ig アトリビュートをコネクトします。
+maya.cmds.connectAttr(listConnectionsで調べた名前, deleteComponentの名前 + '.ig')
+deleteComponent ノードの og アトリビュートを、
+選択されているポリゴンオブジェクトの i アトリビュートにコネクトします。
+maya.cmds.connectAttr(deleteComponentの名前 + '.og', 選択されているポリゴンオブジェクトの名前 + '.i')
+deleteComponent ノードの dc アトリビュートに、削除するエッジを設定します。
+maya.cmds.setAttr(引数1, 引数2, 引数3, フラグ)
+setAttr() の引数とフラグは、以下のようになります。
+引数 1 (文字列)
+deleteComponent の名前 + '.dc'
+引数 2 (整数)
+削除するエッジの個数
+1
+引数 3 (文字列)
+'e[' + str(削除するエッジ番号) + ']'
+str() 関数は、数値を文字列に変換します.
+フラグ 
+type フラグに文字列 'componentList' を引数として与えます。
+type='componentList'
+参考
+Maya 
+Maya, MEL 関係(Tips, FAQ, コマンド)のページ
+Maya Help
+ノード(英語)のリファレンス
+Prev
+Home | Contents
+Mail
+ノード 1 ( Maya Python - 07AA )

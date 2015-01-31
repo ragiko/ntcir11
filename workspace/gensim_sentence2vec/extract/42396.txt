@@ -1,0 +1,82 @@
+この例では、デジタル ダウンコンバーター (DDC) の実装で複素マルチレート フィルターを使用する方法を示します。DDC は、デジタル無線の主要な構成要素です。DDC は、通常はアナログ デジタル (A/D) コンバーターの出力で見られる高い入力サンプルレートを、低いサンプルレートに変換するために必要な周波数変換を実行して、その後の処理を容易にします。この例では、450 kHz 搬送周波数で変調された音声信号を 20 kHz のサンプリング周波数に下げる方法を見てみます。従来の DDC アーキテクチャについて簡単に復習した後、中間周波数 (IF) サブサンプリングと呼ばれる別のソリューションについて説明し、これら 2 つのソリューションの実装コストを比較します。この例には Fixed-Point Designer™ のライセンスが必要です。
+従来のデジタル ダウン コンバーター従来のダウン コンバーターのプロセスは、搬送波のナイキスト条件を満たすアナログ信号レートでアナログ信号をサンプリングすることから開始します。可能なオプションとして、450 kHz の入力信号を 2.0 MHz でサンプリングしてから、デジタル ダウン コンバーターを使用してベースバンドへの複素変換を実行し、カスケード接続積分器櫛形 (CIC) フィルターを適用して 25 でダウンサンプリングし、1 組のハーフバンド フィルターを使って 4 でダウンサンプリングします。以下に、このような実装を示します。
+CIC フィルター設計従来の DDC の最初のフィルターは通常 CIC フィルターです。CIC フィルターは、高い間引きまたは内挿のあるシステムで使用される、効率性が高く乗算器のない構造です。ここでは、2 MHz の信号を 2.0 MHz/25 = 80 kHz に低減します。Fs_cddc = 2e6;          % Sampling frequency
+R       = 25;           % Decimation factor
+Fpass   = 10e3;         % Passband Frequency
+Astop   = 60;           % Aliasing Attenuation(dB)
+D       = 1;            % Differential delay
+dcic = fdesign.decimator(R,'cic',D,Fpass,Astop,Fs_cddc);
+hcic = design(dcic);
+hgain = dfilt.scalar(1/gain(hcic)); % Normalize gain of CIC filter
+hcicnorm = cascade(hgain,hcic);
+補償 FIR 間引き設計従来の DDC の 2 番目のフィルターは、CIC によって生じる通過帯域の低下を補正します。CIC は sinc に似た応答であるため、通過帯域に逆 sinc 応答のあるローパス フィルターで低下を補正できます。Nsecs = hcic.NumberOfSections; % NumberOfSections
+Fpass  = 10e3;                 % Passband Frequency
+Fstop  = 25e3;                 % Stopband Frequency
+Apass  = 0.01;                 % Passband Ripple (dB)
+Astop  = 80;                   % Stopband Attenuation (dB)
+dcp = fdesign.decimator(2,'ciccomp',...
+D,Nsecs,Fpass,Fstop,Apass,Astop,dcic.Fs_out);
+hcfir = design(dcp,'equiripple',...
+'StopBandShape','linear','StopBandDecay',60);
+ハーフバンド フィルター設計最後に、20 番目の次数のハーフバンド フィルターを使用して 40 kHz の信号を 20 kHz に低減します。dhb = fdesign.decimator(2,'halfband','N',20,dcp.Fs_out);
+hb = design(dhb);
+従来の DCC フィルターは、前に設計した 3 段階をカスケードすると得られます。Hcddc = cascade(hcicnorm,hcfir,hb);
+IF サブサンプリング搬送周波数は信号抽出の一部として破棄されるため、データサンプリングのプロセス中に保持する必要がありません。実際には、複素エンベロープの帯域幅のナイキスト条件が満たされる限り、搬送波のナイキスト条件には違反してもかまいません。ナイキスト条件をこのような狭帯域で解釈すると、IF サブサンプリングと呼ばれる別のデータ収集プロセスにつながります。このプロセスでは、A/D コンバーターのサンプルレートは、中心周波数を意図的にエイリアシングするために、信号の中心周波数より少なくなるように選択されます。ナイキスト条件に意図的に違反しているので、複数の周波数範囲が目的の信号コンポーネントと同じ周波数位置にエイリアシングしないように、アナログ信号を調整しなければなりません。変数 y は、450 kHz の搬送周波数で変調された約 3 秒の音声信号を表します。離散信号 ys は、120 kHz A/D コンバーターの出力を表します。[y, ys, Fs] = loadadcio;
+Fs_addc = 1.2e5;   % Sampling frequency
+[Hys, Fys] = periodogram(ys,[],[],Fs,'power','centered');
+N = length(Fys);
+figure('color','white')
+periodogram(y,[],[],Fs,'power','centered');
+clear y;
+hold on;
+hl=plot((-(ceil(N/2*9)-1):floor(N/2*9))/N*Fs_addc/1000, ...
+repmat(10*log10(Hys),9,1),'r:');
+axis([-50 500 -160 0])
+legend('Input of A/D Converter','Aliased Output of A/D Converter',...
+'Location','NorthEast');
+約 450 kHz の周波数帯域は約 -30 kHz でエイリアシングしました。サンプリング周波数の 4 分の 1 までエイリアシングすると、正の周波数エイリアスと負の周波数エイリアスの分離を最大化できます。これによってアナログ バンドパス フィルターの遷移帯域幅を最大化できるので、そのコストが最小化されます。また、サンプリング周波数に 120 kHz を選択すると、ファクター 6 のダウン サンプリングによって達成される次の 20 kHz へのダウン コンバージョン タスクが容易になります。ダウン コンバージョンは 2 段階で行います。まず、複素バンドパス フィルターによって 3 から 1 へのダウン サンプリングを実行してから、ハーフバンド フィルターで 2 から 1 への変換を実行します。以下に、このエイリアシング DDC の構造を示します。
+複素バンドパス フィルター設計複素バンドパス フィルターを得るには、フィルター係数に周波数変換式の項 exp(-j*pi/2*n) を乗算してローパス間引きプロトタイプを 4 分の 1 のサンプルレートに変換します。ローパス フィルターの係数は実数ですが、変換後のフィルターの係数は複素数です。下の図は、これらのフィルターの振幅応答を表しています。M = 3;               % Decimation Factor
+TW   = Fstop-Fpass;  % Transition Width (Hz)
+dlow = fdesign.decimator(M,'nyquist',M,TW,Astop,Fs_addc);
+hlow = design(dlow); % Lowpass prototype
+n = 0:length(hlow.Numerator)-1;
+hcbp = mfilt.firdecim(M,hlow.Numerator.*exp(-1i*pi/2*n));
+hfvt = fvtool(hlow,hcbp,'Fs',Fs_addc,'Color','White');
+legend(hfvt,'Lowpass Decimator','Complex Bandpass Decimator', ...
+'Location','NorthEast')
+次に、複素バンドパスの間引きを A/D コンバーターの出力に適用します。4 分の 1 のサンプルレートの信号は、間引きの下ではどの整数ファクターでも常に 4 分の 1 のサンプルレートの倍数にエイリアシングすることがわかります。この例では、-30 kHz の中心の信号は 40/4 = 10 kHz にエイリアシングします。ycbp = filter(hcbp,ys);
+figure('color','white')
+periodogram(ycbp,[],[],dlow.Fs_out,'power','centered');
+legend('Output of Complex Bandpass Decimator')
+次に、出力シーケンス ycbp がヘテロダイン効果でゼロになります。yht = ycbp.*(-1i).^(0:length(ycbp)-1).';
+figure('color','white')
+periodogram(yht,[],[],dlow.Fs_out,'power','centered');
+legend('Heterodyned Sequence')
+最後に、ヘテロダインを発生させたシーケンスが入力としてハーフ バンド フィルターに渡され、2 で間引きされます。従来の DCC と同様に、同じハーフバンド フィルターを再利用できます。yf = filter(hb,yht);
+figure('color','white')
+periodogram(yf,[],[],dhb.Fs_out,'power','centered');
+legend('Output of Aliasing DDC')
+「エイリアシング」DCC の出力で音声信号を再生します。(Copyright 2002 FingerBomb)p = audioplayer(yf,dhb.Fs_out);
+play(p)
+実装コストの比較コスト分析に進む前に、2 つの DDC ソリューションのフィルターの振幅応答が同等であることを確認しましょう。従来の DDC ケースでのベースバンドへの複素変換と、IF サブサンプリング ケースのヘテロダインは除外します。さらに、遷移の幅、通過帯域のリップル、および阻止帯域の減衰が複素バンド パスの間引きと同じであるため、後のケースではローパス プロトタイプの間引きを使用します。Haddc = cascade(hlow,hb);
+両ケースで使用されるフィルターの振幅応答が類似することを確認します。通過帯域リップルが 0.04 dB 未満、6dB の カットオフ周波数 10 kHz、13.4 kHz での阻止帯域の減衰が 55 dB となるため、コスト分析に進むことができます。set(hfvt, ...
+'Filters',[Hcddc,Haddc],'FrequencyRange','Specify freq. vector', ...
+'FrequencyVector',linspace(0,100e3,2048),'Fs',[Fs_cddc Fs_addc], ...
+'ShowReference','off','Color','White');
+legend(hfvt,'Conventional DDC Filter', ...
+'Equivalent Digital IF Subsampling Filter',...
+'Location','NorthEast');
+従来の DDC の場合は、最初にベースバンド変換のコストを考慮に入れなければなりません。これは、2 MHz で動作している乗算器 1 つだけで行うと想定しています。次に、CIC フィルターとハーフバンド フィルターのコストを足します。IF サブサンプリングの場合は、ヘテロダインのコストを考慮に入れなければなりません。これは、40 kHz で動作している乗算器 1 つだけで行うと想定しています。次に、複素バンドパス フィルターとハーフバンド フィルターのコストを足します。c_cddc = cost(Hcddc);            % Cost of CIC and halfband filters
+c_addc = cost(cascade(hcbp,hb)); % Cost of complex bandpass
+% and halfband filters
+ddccostcomp(Fs_cddc,c_cddc,Fs_addc,c_addc)
+ans =
+Total Cost                      : Conventional DDC | IF subsampling
+-------------------------------------------------------------------
+Number of Multipliers           :               37 |             43
+Number of Adders                :               41 |             40
+Number of States                :               50 |             62
+Multiplications per microsecond :             5.18 |            1.5
+Additions per microsecond       :             9.44 |            1.4
+IF サンプリングの場合に必要な乗算器、加算器、および状態の数は、従来の DDC と同等ですが、1 秒間の乗算の数を 71%、1 秒間の加算の数を 85% 節約できるので、1 秒間の演算数が大幅に減少します。まとめこの例では、IF サブサンプリングを基盤とするデジタル ダウン コンバーターの設計時に、複素マルチレート フィルターを使用する方法を紹介しました。IF サブサンプリング法は、従来の DDC に比べて多くの用途でコスト効率を向上できます。IF サブサンプリングの詳細は、『Multirate Signal Processing for Communication Systems』(fredric j harris, Prentice Hall, 2004) を参照してください。
+複素マルチレート フィルターを使用する IF サブサンプリング - MATLAB & Simulink Example - MathWorks 日本

@@ -1,0 +1,2 @@
+#include <stdio.h>main() {  char str[48];  int len;  len = sprintf( str , "String is %s." , "JAPAN" );  /* 文字列の途中でも末尾に\を付ければ継続行にできる */  printf( "出力文字列は'%s'です。\n出力文字数は\%dです。\n" , str , len );}
+C言語 sprintf

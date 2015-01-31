@@ -1,0 +1,22 @@
+指定したオブジェクトの色やパターンといった塗り潰し属性を表すInteriorオブジェクトを参照します。セル範囲の塗り潰しを設定したい場合には、Rangeオブジェクトの下位オブジェクトであるInteriorオブジェクトを参照します。
+構文  Object.Interior     取得のみ
+設定項目    内容
+Object      Range, Styleオブジェクト
+次のサンプルはInteriorオブジェクトの主要なプロパティを使用し、セルを塗り潰すサンプルです。
+サンプル
+Sub InteriorSamp1()
+Range("A1:A5").Interior.ColorIndex = 1 '--(1)カラーパレットの色で塗り潰し
+Range("B1:B5").Interior.Pattern = xlPatternChecker
+'--(2)チェックのパターン
+Range("C1:C5").Interior.Color = RGB(255, 0, 0)
+'--(3)RGB値で塗り潰し
+With Range("D1:D5").Interior      '--(4)
+.Pattern = xlGrid             '---グリッドのパターン
+.PatternColor = RGB(0, 0, 255)'---RGB値でグリッドの色を指定
+End With
+With Range("E1:E5").Interior    '---(5)
+.Pattern = xlPatternVertical'---垂直線のパターン
+.PatternColorIndex = 15     '---カラーパレットの色でパターンの色を指定
+End With
+End Sub
+

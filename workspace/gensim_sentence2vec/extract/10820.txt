@@ -1,0 +1,62 @@
+Vision / ビジョン
+How to make and maintain software systems efficiently and effectively?
+How to establish development practices based on engineering theory?
+To answer these questions, Washizaki laboratory is conducting actionable researches with many industrial and academic partners in the field of software engineering. Research topics cover almost all phases of software and systems life cycle from requirements to maintenance, but special focus on software design and reuse, program analysis and processing, software quality assurance, agile developments and pattern languages, and engineering education.
+ソフトウェア開発の現場が、勘や経験であふれていると感じるときがあります。その顕著な形がパターンやプラクティスであり、紛れもなく敬意を表すべき成果です。それらに理論的基盤が与えられるなら、ソフトウェアの開発や運用はより効率的で、より効果的となり、専門職としてより誇りある仕事になると感じます。一方、ソフトウェアエンジニアリングに関するアカデミアは、長年にわたり研究を積み重ね、多くの成果を生み出してきました。それらの成果を、現場と手を携えてよりアクショナブルなものへ昇華させることで、ソフトウェアエンジニアリングは “Engineering” 本来の実践的な技術活動を規律ある形で扱い、まさしく現場に息づいた理論的基盤を与えらえれると確信します。
+Research area / 研究領域
+Programming Language and Environment/ プログラミング言語・環境
+Source Code Analysis and Processing / ソースコード解析・処理
+Modularity and Post Object-Oriented Programming (Aspect-orientation and Context-orientation) / モジュール性・ポストオブジェクト指向プログラミング(アスペクト指向、コンテキスト指向)
+Software Design and Reuse / ソフトウェア設計・再利用
+Modeling and Design / モデリング・設計
+Traceability and Product-Line Engineering / トレーサビリティ・プロダクトラインエンジニアリング
+Software Quality Assurance / ソフトウェア品質保証
+Testing and Verification / テスティング・検証
+Quality and Measurement / 品質・測定
+Security / セキュリティ
+Development Management / 開発マネジメント
+Development Process and Agile Methods / 開発プロセス・アジャイル開発手法
+Pattern Languages / パターンランゲージ
+Engineering Education / 工学教育
+Information Systems Development and Programming Education / 情報システム開発・プログラミング教育
+News and articles / ニュース・記事他
+JICA, 鷲崎先生(早稲田大学)のE-JUST訪問
+Interview on Dept. Computer Science and Engineering/現状の「その先」に人間優先の高信頼情報システムを(読売オンライン)
+Software reuse and quality assurance for reliable software engineering
+マイナビニュースにETロボコンパターンランゲージが紹介されました(ETロボコン2012東京地区大会 – 今年は全国制覇も狙えそうな優秀なチームも)。
+ITPro に SEMAT Japan Chapter 設立に関する記事ソフトウエア工学と方法論の再建を目指す「SEMAT」の日本コミュニティが活動開始が掲載されました。
+Tech Village に SQiPシンポジウム2012における論文発表の紹介: 再利用しやすさを判別できるメトリクスを究明 が掲載されました。
+OO エンジニアの輪 ～ 第 26 回 鷲崎 弘宜さんの巻 ～ (2004年5月)
+研究プロジェクト
+進行中
+2013-2015年度, “多プログラミング言語対応の拡張可能なアスペクト指向プログラミングフレームワーク”, 科研費 基盤研究(C)
+2013年度, “ソフトウェア開発ライフサイクルの最適化手法の研究”, 企業共同研究
+2012-2013年度, “オープンソースソフトウェアを活用したスマートフォンソフトウェア開発におけるプロセス・プロダクト品質改善方法の確立”, 企業共同研究
+2012-2013年度, “設計モデルに基づくアーキテクチャ抽出の研究”, 企業共同研究
+2011-2013年度, “組込みソフトウエアの定量的品質評価の研究”, 企業委託研究
+2010-2013年度, “グローバルスタンダードを活用したソフトウェア組織能力向上の研究”, 企業委託研究
+2009-2013年度, “ソフトウェア品質保証技術の研究”, 企業委託研究
+2012-2013年度, “初学者プログラミング教育環境”, 企業委託研究
+2013年度, “品質確保のためのプログラムソースコードにおける高精度なデザインパターン自動検出”, 早稲田大学特定課題研究助成費特定課題A
+2012-2013年度, “ゲーミフィケーションを用いたソフトウェアテストに取り組む意欲を高める枠組みの構築”, 中山隼雄科学技術文化財団
+終了
+2012年度, “多プログラミング言語時代の統一的なアスペクト指向プログラミング”, 柏森情報科学振興財団
+2012年度, “ゲームAIプログラムコンテストのための高品質フレームワークの実現”, 倉田記念日立科学技術財団
+2011年度, “組込みソフトウェアのアスペクト指向およびモデル駆動開発による効率的な省電力化に関する研究”, ローム株式会社-理工学術院研究助成
+2011年度, “アスペクト指向とモデル駆動に基づく高効率なディペンダブルWeb開発”, 国際科学技術財団研究助成
+2010-2012年度, “拡張および再利用可能な多プログラミング言語対応テストカバレッジ測定フレームワーク”, 科学研究費補助金 若手研究B
+2010-2011年度, “モデル駆動型開発による高セキュリティソフトウェアの実現”, 日揮・実吉奨学会研究助成金
+2010年度, “ソフトウェア品質管理基盤としての統一テストカバレッジ測定環境の実現”, 日本品質管理学会研究助成
+2009-2010年度, “設計に基づく組込みソフトウェアの高精度な品質評価”, 財団法人みずほ学術振興財団工学研究助成, 代表者: 鷲崎弘宜
+2009年度,“効率的なディペンダブルWeb開発に向けたアスペクト指向ソフトウェア技術の調査研究”, 財団法人情報科学国際交流財団SSR産学戦略的研究フォーラム2009年度, 代表者: 鷲崎弘宜
+2009年度, “業務に関する大規模知識再利用のためのパターン活用枠組みの実現”, 早稲田大学特定課題研究B
+2007-2009年度, “再利用可能かつ高精度なプログラムソースコード品質評価枠組みの実現”, 科学研究費補助金 若手研究B, 代表者: 鷲崎弘宜
+2008年度,“Web2.0におけるリッチクライアント開発のためのアスペクト指向技術の調査研究”, 財団法人情報科学国際交流財団SSR産学戦略的研究フォーラム2008年度, 代表者: 鷲崎弘宜
+2008年度, “ソフトウェアの高精度な品質測定及び評価の枠組みの確立”, 企業受託研究, 代表者: 鷲崎弘宜
+研究の方針
+理論や経験に裏づけされて真に役立つソフトウェア工学技法の確立のために、以下を基本方針として丁寧に取り組んでまいります。
+学術機関連携: 大規模文献調査と密な多面的議論により理論を深めます。早大深澤研究室、国立情報学研究所トップエスイー/SSEプロジェクト、米 Florida Atlantic University、英Open University ほか(実施中)。
+産業界連携: 実践により実問題の理解と適用に関する経験・知見を深めます。オージス総研、富士通、富士通研究所、小松製作所、日立製作所、東芝、NECほか(2013年度 実施中)。
+成果発表や学術団体・省庁関連プロジェクトへの参画: 社会発信・貢献により進展を深めます。情報処理学会ソフトウェア工学研究会,日本科学技術連盟研究会,文部科学省先導的ITスペシャリスト人材養成プログラム,文部科学省科学技術振興調整費TopSEプロジェクト,組込みシステム技術協会ETロボットコンテスト, 情報処理学会MDDロボットチャレンジ,IPA-SEC/経済産業省要求設計開発技術研究部会 ほか(実施中)。
+外部資金獲得: 科研費・若手研究、(財)情報科学国際交流財団 ほか(実績)。
+Research / 研究活動 | Reliable Software Engineering, Washizaki Laboratory

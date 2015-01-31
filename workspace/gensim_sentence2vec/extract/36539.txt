@@ -1,0 +1,11 @@
+10.1. 同じ検索キーワードなのに全文検索結果が異なる¶
+同じ検索キーワードでも一緒に指定するクエリによっては全文検索の結果が異なることがあります。ここでは、その原因と対策方法を説明します。
+10.1.1. 例¶
+まず、実際に検索結果が異なる例を説明します。
+DDLは以下の通りです。BlogsテーブルのbodyカラムをTokenMecabトークナイザーを使ってトークナイズしてからインデックスを作成しています。:
+table_create Blogs TABLE_NO_KEY
+column_create Blogs body COLUMN_SCALAR ShortText
+column_create Blogs updated_at COLUMN_SCALAR Time
+table_create Terms TABLE_PAT_KEY|KEY_NORMALIZE ShortText --default_tokenizer TokenMecab
+column_create Terms blog_body COLUMN_INDEX|WITH_POSITION Blogs body
+10.1. 同じ検索キーワードなのに全文検索結果が異なる &mdash; Groonga v4.0.8 documentation

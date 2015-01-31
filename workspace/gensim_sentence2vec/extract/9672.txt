@@ -1,0 +1,5 @@
+対象領域抽出部111は、最適パスに対応する文字ラティスの単位領域を含む領域を、最終的に文字認識の対象となる対象領域として抽出する。An object region extraction part 111 extracts as the target area to finally undergo the character recognition the area including all the unit areas in the character lattice corresponding to the optimum path. - 特許庁
+中央処理装置16は、TV受像機2に表示される放送の画像を取り込み、取り込んだ画像に対してテキスト文字変換をかけ、テキスト文字の内容を解釈する。A central processing unit(CPU) 16 fetches, the image of broadcasting displayed on a TV receiver 2, applies text character conversion to the fetched image and interprets the contents of text characters. - 特許庁
+単語群が単語IDに対応して記憶された単語記憶部11と、単語群を構成する文字毎にその文字を含む単語の単語IDが記憶された単語索引部12を有する。This word retrieval device has: a word storage part 11 storing the word group correspondingly to word IDs; and a word index part 12 storing the word ID of the word including a character in each the character constituting the word group. - 特許庁
+分類部102は、抽出されたトライグラムのうち中央の文字が共通なトライグラムを、先頭および末尾の文字に基づいて、トライグラム群に分類する。A classification part 102 classifies trigrams whose central characters are common among the extracted trigrams into a trigram group based on a character of the beginning and the end. - 特許庁
+「に文字」に関連した英語例文の一覧(191ページ目) - Weblio英語例文検索

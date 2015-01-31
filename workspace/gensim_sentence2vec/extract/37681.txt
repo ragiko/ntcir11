@@ -1,0 +1,45 @@
+ 今回は、前回の記事で登場した語彙成長率 (GrowthRate) について、もう少し紹介したいと思います。今回の分析データは、Herman MelvilleのMoby-Dickとします。
+# パッケージの読み込み
+library(languageR)
+library(zipfR)
+# 分析データの読み込み
+data(moby)
+まず、このデータにおける語彙頻度の分布を簡単に見てみましょう。
+# 語彙頻度の概観
+moby.growth <- growth.fnc(text = moby, size = 5000)
+plot(moby.growth)
+上記のスクリプトを実行すると、以下のような図が表示されます。 この図に含まれる8つのパネルは、データの総語数が変化するにつれて、8つの語彙指標がどのように変化していくかを視覚化したものです。例えば、左上のパネルを見ると、総語数が増えるにつれて、異語数も増えていくことが分かります。
+次に、データの頻度スペクトルを作成し、LNRE (Large Number of Rate Events) モデルへの当てはまりの良さを調べてみましょう。
+# 頻度スペクトルの作成
+moby.tab <- table(table(moby))
+moby.spc <- spc(m = as.numeric(names(moby.tab)), Vm = as.numeric(moby.tab))
+# LNREモデルへの当てはまりの良さ
+(moby.lnre <- lnre("gigp", moby.spc))
+上記のスクリプトを実行すると、以下のような結果が表示されます。
+Generalized Inverse Gauss-Poisson (GIGP) LNRE model.
+Parameters:
+Shape:          gamma = -0.8298606 
+Lower decay:        B = 0.009449864 
+Upper decay:        C = 0.03558846 
+[ Zipf size:          Z = 28.099 ]
+Population size: S = 52683.44 
+Sampling method: Poisson, with exact calculations.
+Parameters estimated from sample of size N = 215994:
+V       V1      V2      V3     V4     V5    
+Observed: 20531.00 10282.00 3299.00 1720.00 972.00 678.00 ...
+Expected: 20406.83 10174.17 3634.53 1708.41 978.72 635.11 ...
+Goodness-of-fit (multivariate chi-squared test):
+X2 df            p
+286.6681 13 1.473591e-53
+出力の一番下にある当てはまりの良さ (Goodness-of-fit) を見ると、p値が1.473591e-53となっています。Baayen (2008) によると、小説のような単一の大きいテクストを扱う場合は、それほど当てはまりが良くないようです。*1 
+なお、データにおける頻度スペクトラムと語彙成長曲線を視覚化するには、以下のような処理を行います。
+par(mfrow = c(1, 2))
+# 頻度スペクトラムの視覚化
+plot(moby.spc, lnre.spc(moby.lnre, N(moby.spc)))
+# 語彙成長曲線の視覚化
+moby.ext <- lnre.vgc(moby.lnre, seq(N(moby.spc), N(moby.spc) * 2))
+moby.int <- lnre.vgc(moby.lnre, seq(0, N(moby.spc)))
+moby.vgc <- growth2vgc.fnc(moby.growth)
+plot(moby.int, moby.ext, moby.vgc)
+上記のスクリプトを実行すると、以下のような図が表示されます。
+語彙成長率を調べる - langstat blog

@@ -1,0 +1,8 @@
+
+HTSのインストール
+まずは、HTK-3.4.1.zip と HDecode-3.4.1.zip を解凍します。
+解凍してできたファイルとディレクトリをhtkディレクトリにまとめます。
+HTS-2.2_for_HTK-3.4.1.tar.bz2 を解凍後、HTS-2.2_for_HTK-3.4.1ディレクトリ内にあるHTS-2.2_for_HTK-3.4.1.patchを先ほどのhtkディレクトリにコピーします。
+htkディレクトリをHTSディレクトリ(/hpme/cube370/HTS)内へコピーします。
+端末(ターミナル)を起動して以下のようにコマンドを実行していきます。
+音響モデルの作成 - MMDAgent & Project-NAIP wiki

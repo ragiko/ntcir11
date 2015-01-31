@@ -1,0 +1,97 @@
+RichEditの機能を提供するライブラリはいくつかのバージョンがあり、バグが多い上に上位互換性もない。RichEdit1.0にあった機能の
+動作がRichEdit2.0では違う動作となってしまう。マイクロソフトの仕様上の不具合。例えば以下の例がある。
+マルチフォントの採用…いわゆる倍角文字と半角文字に別々のフォントが割り当てられるようになった。
+しかし別々のフォントの割り当てがデフォルトになってしまったため、従来のプログラムではフォントを
+切り替えると倍角文字も半角文字も同じフォントになっていたものが、バージョンがアップすることにより
+片方のフォントしか変更されなくなってしまった。
+文字検索FindText()が前向きにも対応…しかし、この前向き検索をデフォルトにしてしまっているため、
+従来の後向きに検索するには、新たに(FR_DOWN)をすることになった。当然ながら、それ以前のプログラムでは
+これを指定していないため、従来後ろに検索していたものが、前に検索するようになってしまった。
+スタイルにES_AUTOHSCROLLとWS_HSCROLLをオフにしてもこれはViewを作成する時にだけ有効である。メモ帳のように途中で切り替えるには、毎回Viewを作り直さなければいけない。
+[メモ帳++のソースより抜粋]
+BOOL CMemoPpView::SetWordWrap(BOOL bWordWrap)	// EDIT
+{
+// WRAPモードを設定する(ウィンドウ再作成)。
+// 古い情報を取り出す。
+int	bufLen = GetWindowTextLength();	// エディトバッファ内の文字数。NULLを含まない
+BYTE*	pSaveText = new BYTE[bufLen+1];	// セーブエリアを確保
+GetWindowText((LPTSTR)pSaveText, bufLen+1);	// エディットバッファ内のデータをコピー
+// WRAPスタイルを設定する。
+DWORD dwStyle;
+if(bWordWrap){
+dwStyle = GetStyle() & ~(ES_AUTOHSCROLL|WS_HSCROLL);
+}else{
+dwStyle = GetStyle() | (ES_AUTOHSCROLL|WS_HSCROLL);
+}
+// 現在のウィンドウの位置を取得する。
+CWnd* pParent = GetParent();	// 親ウィンドウのハンドラを取得
+CRect rect;
+GetWindowRect(rect);		// ウィンドウの位置とサイズを取得
+pParent->ScreenToClient(rect);	// 座標を親ウィンドウとの相対位置に変換
+CWnd* pFocus = GetFocus();	// 入力のフォーカスを持つウィンドウを取得
+UINT nID = GetDlgCtrlID();	// ウィンドウの子ウィンドウの識別子
+// 新たにウィンドウを作成する。
+DWORD dwExStyle = GetExStyle();	// 拡張スタイルを取得
+HWND hWnd =
+::CreateWindowEx(dwExStyle,	// 拡張ウィンドウスタイル
+m_cs1st.lpszClass,// クラス名
+m_cs1st.lpszName,	// ウィンドウの名称
+dwStyle,	// スタイル
+rect.left,	// x 座標
+rect.top,	// y 座標
+rect.right-rect.left,	// 幅
+rect.bottom-rect.top,	// 高さ
+pParent->m_hWnd,	// 親ウィンドウハンドラ
+(HMENU)nID,		// 子ウィンドウ識別子
+AfxGetInstanceHandle(),	// アプリケーションインスタンス
+m_cs1st.lpCreateParams);	// ウィンドウ作成データ
+if (hWnd == NULL)	// ウィンドウ作成に失敗した場合
+{
+delete[] pSaveText;
+return FALSE;
+}
+// 新ウィンドウのフォントを再設定
+::SendMessage(hWnd, WM_SETFONT, (WPARAM)m_font.m_hObject, 0);
+// 旧ウィンドウのエディットバッファをクリア
+SetWindowText(NULL);
+// 新しいウィンドウのエディットバッファにテキストをセット
+::SetWindowText(hWnd, (LPTSTR)pSaveText);
+delete[] pSaveText;
+// 旧ウィンドウを切り離す
+SetDlgCtrlID(nID+1);	// 子ウィンドウ識別子を変更
+HWND hWndOld = Detach();// ウィンドウからC++のオブジェクトを切り離す
+// 新ウィンドウを取り付ける
+::SetWindowLong(hWndOld, GWL_WNDPROC, (LONG)*GetSuperWndProcAddr());
+SubclassWindow(hWnd);
+// 旧ウィンドウを破棄する
+::DestroyWindow(hWndOld);
+// その他の状態設定
+GetEditCtrl().LimitText(nMaxSize);	// エディット可能サイズ
+if (pFocus == this){
+SetFocus();
+}
+return TRUE;
+}
+CWinAppの派生クラスでOpenDocumentFile(LPCTSTR lpszFileName)をオーバライドする。
+[メモ帳++のソースより抜粋]
+CDocument* CMemoPpApp::OpenDocumentFile(LPCTSTR lpszFileName) 
+{
+// ショートファイル名ならロングファイル名に変換する。
+CString szLongFileName;
+char szPath[_MAX_PATH], szDrive[_MAX_DRIVE], szName[_MAX_FNAME], szExt[_MAX_EXT]; 
+_splitpath(lpszFileName, szDrive, szPath, szName, szExt);
+WIN32_FIND_DATA findData;
+if(strlen(szName) <= 8 && strlen(szExt) <= 4){
+HANDLE hFind = FindFirstFile(lpszFileName, &findData);
+if(hFind==INVALID_HANDLE_VALUE) return NULL;
+FindClose(hFind);
+LPTSTR lpszLongFileName = szLongFileName.GetBuffer(_MAX_PATH);
+wsprintf(lpszLongFileName, "%s%s", szDrive, szPath);
+SetCurrentDirectory(szLongFileName);
+wsprintf(lpszLongFileName, "%s%s%s", szDrive, szPath, findData.cFileName);
+szLongFileName.ReleaseBuffer();
+lpszFileName = (LPCTSTR)szLongFileName;
+}
+return CWinApp::OpenDocumentFile(lpszFileName);
+}
+O.K.U.'s Software Workshop 〜lanai〜/Programing Tips

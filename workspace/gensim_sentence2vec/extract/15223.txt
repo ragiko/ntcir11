@@ -1,0 +1,2 @@
+NSString *string = @"http://yoshiminu.tumblr.com/post/39763242929/amazon-api-isbn これも http://yoshiminu.tumblr.com/post/30161327220/iphone これも http://yoshiminu.tumblr.com/post/29677963673/clgeocoder これも http://yoshiminu.tumblr.com/post/29677030181/nslocalizedstring-iphone これもみーんな置換しちゃいます!";
+正規表現でマッチした部分文字列(今回の場合はURLリンク)を取得

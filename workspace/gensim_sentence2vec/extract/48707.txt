@@ -1,0 +1,112 @@
+自分は日本語配列キーボードの ThinkPad を使用しているのですが、英語配列風にして使ってます。
+昔は Sun の Type3 や Type4 キーボードを使っていて、最近は英語配列の HHK キーボードを使ってるので、英語配列の方が使いやすいのです。
+英語配列キーボードの ThinkPad にするのも良かったんですが、最近の英語配列は Escape キーとチルダキーが変な位置にあるのが気に入りません。Escape キーは 1 キーの左横で、チルダキーは右端の辺りにあるべきです。ソフト的にキー配列をいじろうにも、Backspace キーが幅をきかせていて、物理的にキーが一つ足りません。
+ということで、日本語キーボードを使って、ソフト的にキー配列を変えています。
+CapsLock は Control キーにするのは当然ですが、ついでに、無変換も Super キーにします。
+チルダキーは Enter キーの左下の「む」キーに割り当てます。
+最終的にはこんな感じにします。
+Linux Mint Cinnamon でやりましたが、Ubuntu や他のディストリビューションでもおそらく同様にできると思います。
+Xmodmap
+キーボードとして「英語(US)」を選択して xmodmap で次のファイルを指定するとそれっぽくなります。
+keycode 49 = Escape
+keycode 51 = grave asciitilde
+keycode 66 = Control_L
+keycode 97 = backslash underscore
+keycode 101 = Alt_R
+keycode 102 = Super_L
+keycode 132 = backslash bar
+keycode 151 = Super_R
+keycode 166 = BackSpace
+keycode 167 = space
+clear lock
+clear mod1
+add Control = Control_L
+add mod1 = Alt_L Alt_R Meta_L
+clear mod4
+add mod4 = Super_L Super_R
+clear mod5
+xmodmap コマンドを自動起動するアプリに設定しておけば良いでしょう。
+XKB
+上の Xmodmap でもいいのですが、Bluetooth マウスを使っていると、接続,切断のタイミングでデフォルトの状態に戻ってしまいます。
+しょうがないので XKB で独自のキー配列を定義します。
+http://www.freedesktop.org/wiki/Software/XKeyboardConfig/ の Links のリンクや http://people.uleth.ca/~daniel.odonnell/Blog/custom-keyboard-in-linuxx11 を読んでなんとかできました。
+次のファイルを /usr/share/X11/xkb/symbols/tmtms というファイル名で作成します。
+default partial alphanumeric_keys modifier_keys
+xkb_symbols "tmtms" {
+name[Group1]= "Japanese (tmtms)";
+key <AE00> { [ Escape     ] };
+key <TLDE> { [ Escape     ] };
+key <HKTG> { [ Escape     ] };
+key <AE01> { [ 1, exclam      ] };
+key <AE02> { [ 2, at      ] };
+key <AE03> { [ 3, numbersign  ] };
+key <AE04> { [ 4, dollar      ] };
+key <AE05> { [ 5, percent     ] };
+key <AE06> { [ 6, asciicircum ] };
+key <AE07> { [ 7, ampersand       ] };
+key <AE08> { [ 8, asterisk        ] };
+key <AE09> { [ 9, parenleft       ] };
+key <AE10> { [ 0, parenright  ] };
+key <AE11> { [ minus, underscore  ] };
+key <AE12> { [ equal, plus        ] };
+key <AE13> { [ backslash, bar     ] };
+key <AD01> { [ q, Q           ] };
+key <AD02> { [ w, W           ] };
+key <AD03> { [ e, E           ] };
+key <AD04> { [ r, R           ] };
+key <AD05> { [ t, T           ] };
+key <AD06> { [ y, Y           ] };
+key <AD07> { [ u, U           ] };
+key <AD08> { [ i, I           ] };
+key <AD09> { [ o, O           ] };
+key <AD10> { [ p, P           ] };
+key <AD11> { [ bracketleft,   braceleft   ] };
+key <AD12> { [ bracketright, braceright   ] };
+key <AC01> { [ a, A           ] };
+key <AC02> { [ s, S           ] };
+key <AC03> { [ d, D           ] };
+key <AC04> { [ f, F           ] };
+key <AC05> { [ g, G           ] };
+key <AC06> { [ h, H           ] };
+key <AC07> { [ j, J           ] };
+key <AC08> { [ k, K           ] };
+key <AC09> { [ l, L           ] };
+key <AC10> { [ semicolon, colon   ] };
+key <AC11> { [ apostrophe, quotedbl   ] };
+key <AC12> { [ grave, asciitilde  ] };
+key <AB01> { [ z, Z           ] };
+key <AB02> { [ x, X           ] };
+key <AB03> { [ c, C           ] };
+key <AB04> { [ v, V           ] };
+key <AB05> { [ b, B           ] };
+key <AB06> { [ n, N           ] };
+key <AB07> { [ m, M           ] };
+key <AB08> { [ comma,  less       ] };
+key <AB09> { [ period, greater    ] };
+key <AB10> { [ slash, question    ] };
+key <AB11> { [ backslash, underscore] };
+key <LCTL> { [ Control_L      ] };
+key <CAPS> { [ Control_L  ] };
+modifier_map Control { <CAPS> };
+key <LWIN> { [ Super_L        ] };
+key <NFER> { [ Super_L        ] };
+modifier_map Mod4   { <NFER>, Muhenkan, Super_L, Super_R };
+};
+/usr/share/X11/xkb/rules/evdev.xml の <layoutlist> の中に次のように記述します。
+<layout>
+<configItem>
+<name>tmtms</name>
+<description>tmtms</description>
+<languageList>
+<iso639Id>jpn</iso639Id>
+</languageList>
+</configItem>
+</layout>
+/usr/share/X11/xkb/rules/xorg.lst の ! layout ブロックの最後に次の行を追記します。
+tmtms           tmtms
+システム設定の「地域と言語の設定」「Layouts」に「tmtms」を追加します。
+これだけでキー配列が変更できるのですが、元 CapsLock キーを Control キーとして Emacs で使うと、C-p や C-n でカーソルを移動しようとすると範囲選択も同時にされてしまいます。
+xev コマンドで調べてみると、本来 Control キーは state 0x4 のはずなのに 0x6 になっています。xmodmap で clear lock すれば問題ないので、ビミョーに CapsLock キーの名残がある感じです。
+理由はわかりませんが、「地域と言語の設定」「Layouts」のオプションで、「Caps Lock キーの動作」「Caps Lock を追加の Control にするが、Caps_Lock キーコードはそのままにする」を選択すると、問題なくなりました。左下の元々の Ctrl キーも正常です。
+XKB まわりは全然理解できてないので、試行錯誤の結果です。しばらくこれで使ってみます。
+日本語キーボードを英語配列風にする - @tmtms のメモ

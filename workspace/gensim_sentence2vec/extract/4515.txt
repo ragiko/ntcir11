@@ -1,0 +1,19 @@
+
+ポリゴンの複製の方法に「押し出し」か「複製」を選択することができます。
+[Edit]  [Duplicate/Instantiate Options...] を選択する。Duplicate Optionsダイアログが開く。
+[Options]タブ  [Duplicated Items]項目の [Polygons] を変更する。(Extrude:押し出し Duplicate:複製)
+以下のスクリプトで、ポリゴンの複製方法の設定をトグル変更することができます。
+'-------------------------------------------------------------------------------------------
+'DNZ_ToggleToDuplicatePolygons
+'Duplicate Options のポリゴンの複製方法(Extrude/Duplicate)をトグル切り替えします。
+'-------------------------------------------------------------------------------------------
+DupPoly = GetValue("preferences.duplicate.polygons")
+if DupPoly = 0 then
+SetValue "preferences.duplicate.polygons", 1
+logmessage "Set duplicate polygons : Extrude"
+else
+SetValue "preferences.duplicate.polygons", 0
+logmessage "Set duplicate polygons : Duplicate"
+end if
+Keyboard Maping で「Alt + D」等に割り当てておくと便利です。
+らっぱ王子:Softimage/XSI メモ

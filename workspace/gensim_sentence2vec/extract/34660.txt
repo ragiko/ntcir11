@@ -1,0 +1,110 @@
+
+[Date Prev][Date Next][Thread Prev][Thread Next][Date Index][Thread Index]
+[chasen-users:00208] Re: 
+未知語
+連結,
+句読点,
+形容詞接尾詞連結
+To: chasen-users@is.aist-nara.ac.jp, HGA03630@nifty.ne.jp
+Subject: [chasen-users:00208] Re: 
+未知語
+連結,
+句読点,
+形容詞接尾詞連結
+From: Yuji Matsumoto <matsu@is.aist-nara.ac.jp>
+Date: Sun, 04 Aug 2002 13:26:45 +0900 (JST)
+Delivered-to: chasen-users@ml.aist-nara.ac.jp
+Delivered-to: chasen-users@is.aist-nara.ac.jp
+In-reply-to: <3D4C80AD.5030507@nifty.ne.jp>
+List-help: <mailto:chasen-users-ctl@is.aist-nara.ac.jp?body=help>
+List-id: chasen-users.is.aist-nara.ac.jp
+List-owner: <mailto:chasen-users-admin@is.aist-nara.ac.jp>
+List-post: <mailto:chasen-users@is.aist-nara.ac.jp>
+List-software: fml [fml 4.0 STABLE (20011124/4.0.3_BETA)]
+List-unsubscribe: <mailto:chasen-users-ctl@is.aist-nara.ac.jp?body=unsubscribe>
+References: <3D4C80AD.5030507@nifty.ne.jp>
+Reply-to: chasen-users@is.aist-nara.ac.jp
+岩谷様
+奈良先端大の松本と申します。
+> .chasenrcの中で連続する名詞を連結品詞に指定し、未知語のPOS
+> を名詞と指定した場合、しかし未知語は連結されず従前どおり個
+> 別出力されます。未知語も連結したいのですが、解決方法は?
+.chasenrc での未知語の品詞定義は、未知語に対する文法的な性質
+を記述するものであって、品詞名を指定するものではありません。
+デフォルトで「名詞 サ変接続」になっているのは、未知語が他の
+単語と持つ連接関係をとりあえずサ変接続の名詞と同じように取り
+扱うようにシステムに指定しているだけです。
+よって、未知語の品詞はあくまで未知語のままで、連結の定義には
+反映されません。
+> またまた話題が変わりますが、形容詞と接尾詞を連結して
+> 「おもしろさ」「楽しさ」などの、名詞としての取り出し
+> には成功しましたが、同時に「遠い」「山」などが「遠い山」
+> などと連結されてしまい、困っております(そうなる原因の
+> 半分は名詞連結ですが)。この問題の解決方法はあるでしょ
+> うか?
+上の話題とも関連しますが、連結品詞は、記号、数字、あるいは、
+複合名詞など、用途によっては分離してほしくないものを連結する
+ための対処療法的な機能です。複雑な品詞同志の連結に利用するの
+はお勧めできません。細かい設定は、できれば、後処理として、他
+のプログラムかデータ処理ツールでされることをお勧めします。
+> 話題は変わりますが、「、」が「記号-句点」で「。」が「記号-一般」
+> となるのを、前者を「記号-読点」、後者を「記号-句点」と出力させ
+> たいのですが、何をどうしたらよろしいか?
+辞書では、「、」は「記号-読点」、「。」は「記号-句点」と定義
+されている筈です。もし、本当に上のように品詞が出力されるよう
+であれば、品詞のコードがずれている可能性があります。辞書をコ
+ンパイルされた時の文法ファイルと、今使われているシステムが指
+定している文法ファイルの版が異なるということはないでしょうか。
+> 最後に一般的に、ユーザが茶筅やその辞書の振る舞いを細かく
+> カスタマイズするノウハウをドキュメンテーション(できれば
+> +ツール)化していただければ、大いに助かります。
+現在の茶筌は、機能がかなり細かくなってしまっています。今後、
+作り直すとすると、細かい機能は取り去って、すっきりさせ、出力
+の加工は後処理として行う方向に移行するというのが、現在の開発
+陣の共通認識です。
+出力を加工するツールを用意するか、出力をデータベースに格納し
+て、そこで加工するようになるのではないかと思われますが、この
+方向ではまずいでしょうか。
+松本裕治@奈良先端大
+Follow-Ups:
+[chasen-users:00209] Re: 
+未知語
+連結,
+句読点,
+形容詞接尾詞連結
+From: Hiroshi Iwatani <HGA03630@nifty.ne.jp>
+References:
+[chasen-users:00207] 
+未知語連
+結,
+句読点,
+形容詞接尾詞連結
+From: Hiroshi Iwatani <HGA03630@nifty.ne.jp>
+Prev by Date:
+[chasen-users:00207] 
+未知語連
+結,
+句読点,
+形容詞接尾詞連結
+Next by Date:
+[chasen-users:00209] Re: 
+未知語
+連結,
+句読点,
+形容詞接尾詞連結
+Previous by thread:
+[chasen-users:00207] 
+未知語連
+結,
+句読点,
+形容詞接尾詞連結
+Next by thread:
+[chasen-users:00209] Re: 
+未知語
+連結,
+句読点,
+形容詞接尾詞連結
+Index(es):
+Date
+Thread
+

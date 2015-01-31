@@ -1,0 +1,25 @@
+(例)
+int a;
+scanf("%d", &a);
+switch (a) {
+case 1:
+printf("a = 1\n");
+break;
+case 3:
+printf("a = 3\n");
+break;
+case 5:
+printf("a = 5\n");
+break;
+default:
+printf("others\n");
+break;
+}
+(特記事項)
+「break」に出会うとswitchの {} を抜ける。
+「break」がないと、それ以下の文を全て実行してしまうので、「break」を忘れないこと。
+一致する定数式がないときは、「default」部分に記述された文を実行。「default」部は省略可。
+文は複数行の文も可。ただし、複数行でも { } は不要。
+「式」は整数を結果とするもののみ可。
+正しい式誤った式 
+switch文

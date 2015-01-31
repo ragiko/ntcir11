@@ -1,0 +1,3 @@
+
+ASP+ADO+Oracle9iR2での開発を行っているのですがSELECT文中にCASE文を使用したとき、エラーになります。トレースの結果、CASE文中の空白が全て削除されていました。ちなみに、VB6SP5+ADOで同一のSELECT文を実行すると、OKでした。ProviderをOraOLEDB.OracleからMSDAORA変更すると問題なく実行されます。当面の対策としてMSDAORAを使用することで実害はないのですが気持ち悪くて・・・。同様な現象をご存知の方、いらっしゃいましたら情報をください。環境Windows2000ServerSP3IIS 5.0Oracle9i Release 9.2.0.1.0Oracle Provider for OLE DB 9.2.0.1.0
+Oracle Technology Network (OTN) Japan - 掲示板 : ASP+ADO ...

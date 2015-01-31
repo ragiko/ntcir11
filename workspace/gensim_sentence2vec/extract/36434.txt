@@ -1,0 +1,5 @@
+ビット重畳回路14は音声ベースバンド信号101に同期圧縮符号化スタートのためのビット102を重畳する。The bit superposition circuit 14 superposes the bits 102 for starting the synchronous compression coding on the speech baseband signal 101. - 特許庁
+MP3エンコーダ113は音声データDAをMP3規格でデータ圧縮してMP3ファイルFmp3に変換する。An MP3 encoder 113 compresses the voice data DA according to the MP3 standards and converts them into a MP3 file Fmp3. - 特許庁
+バッファメモリ24には、撮像による画像とマイク18による音声が圧縮符号化されて格納される。The images taken by imaging and the sound picked up through a microphone 18 are compression-coded and stored in the buffer memory 24. - 特許庁
+バッテリ駆動で、マイク入力の場合、演算処理回路105は、入力音声データを、その下位数ビットを無視して圧縮符号化する。In the case of the battery driving and the microphone input, the arithmetic operation circuit 105 compresses and encodes input audio data by neglecting some lower bits. - 特許庁
+「圧縮音声」に関連した英語例文の一覧(6ページ目) - Weblio英語例文検索

@@ -1,0 +1,15 @@
+ここまででKinectの機能概要やインターフェイスとしての利用用途などについて解説してきました。ここからは実際にコードを書いてKinectを動かしてみたいと思います。
+第4回ではRGBカメラからの情報を取得・表示するコードと、深度センサーからの情報を取得・表示するコードをそれぞれ書いていきます。実際にKinectを動かしてみることで、このデバイスの魅力を強く感じることができるのでぜひ体感してみてください。
+また、本プログラムではプログラミング言語はC#を使用します。さらにアプリケーションはWPF(Windows Presentation Foundation)を利用します。どちらも基本的な知識があることを前提とします。本コラムのプログラムのソースコードはこちら(Kinect_RGB_Depth_Sample.zip)よりファイルをダウンロードしていただくか、またはGithubからもソースコードをダウンロードすることが可能です。
+コラム内ではソースコードのすべてについて解説は行いませんので、コラムにて記載されていない部分につきましてはソースコードより確認をお願い致します。
+必要な環境
+Microsoft Windows 7 または Microsoft Windows Embedded Standard 7
+.NET Framework 4
+Visual C# 2010 Express (無償) 以上
+Kinect for Windows SDK (無償)
+Kinect for Windows または Kinect for Xbox 360 (for Xbox 360は開発用途に限ります)
+Kinectを利用した開発を行うためにはVisual C# (またはVisual Studio)とKinect for Windows SDK、そしてKinect for Windows 本体が必要となります。ただし、Kinect本体につきましてはすでに発売されているKinect for Xbox 360も開発用途に限り使用することができます。
+さて、ここでは初めにKinect for Windows SDKのインストールについて簡単に説明します。
+はじめにKinect for Windows SDK をこちらより入手します。SDKを利用するにあたってライセンス料などはかかりません。
+SDKのダウンロード完了後、インストーラを起動します。使用許諾契約を確認し、同意してインストールを開始してください。
+第4回:Kinectを動かしてみよう! (RGB・深度カメラ編) | ユニダックス株式会社

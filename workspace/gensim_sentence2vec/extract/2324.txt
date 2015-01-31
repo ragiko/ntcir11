@@ -1,0 +1,49 @@
+
+歴史[編集]
+Swiftは2010年にLLVMの始祖であるChris Lattner(英語版)によって開発が始められた。その後Apple社内での4年間の開発期間を経て、2014年のWWDCにおいて一般に発表され、同時にAppleに開発者登録している開発者に対してベータ版の提供が開始された。
+特徴[編集]
+AppleはSwiftの発表に際して「モダン、安全、高速、インタラクティブ」を大きな特徴として挙げた。
+モダン
+クロージャやタプル、ジェネリックプログラミング、Optional型の採用などが挙げられる。
+安全
+静的な型チェック、変数の初期化の強制、数値型のオーバーフローの検査、自動参照カウントによるメモリ管理などが挙げられる。
+また、if文のブレースの省略禁止、switch-case文は明示的に指定されない限りフォールスルーしないなど、既存のプログラミング言語において記述ミスによるバグが発生しやすかった部分を文法的に解決している。
+インタラクティブ
+Swiftはコンパイラ言語でありながら、インタプリタとしてスクリプトを実行することも可能で、対話実行環境(REPL(英語版))も用意されている。
+Swiftと同時に発表されたXcodeバージョン6では、コードの実行結果をグラフィカルに確認しながら開発できるPlaygroundsが実装された。
+サンプルコード[編集]
+Hello World[編集]
+/* 
+* コメントはCスタイルの複数行コメントと…
+*/
+// C++スタイルの一行コメントの双方をサポートしている
+// var name:Type = value でType型の変数nameを宣言し、valueで初期化する
+var explicitDouble:Double = 70 // 70.0
+/// 型が省略された場合は、型推論により初期値の型が適用される
+var implicitInteger = 70    // Int
+var implicitDouble = 70.0   // Double
+// let name:Type = value でType型の定数nameにvalueを設定する。
+// 型推論可能な場合、型の表記は省略できる。
+let theAnswer = 42
+// 識別子にはたいていのUnicode文字を用いることができる。
+let リンゴの数 = 3
+let みかんの数 = 5
+// 文字列リテラル"..."の中にある\(expr)には、式exprの内容が展開される
+let リンゴ説明 = "私は\(リンゴの数)個のリンゴを持っている。"  // 私は3個のリンゴを持っている。"
+let 果物説明 = "私は\(リンゴの数 + みかんの数)個の果物を持っている。" //"私は8個の果物を持っている。"
+// Swiftでは辞書も組み込みでサポートされている。
+// 以下は Dictionary<String, Int> 型の定数辞書の定義の一例である。
+let people = ["Anna": 67, "Bety": 8, "Jack": 33, "Sam": 25]
+// 辞書の内容の列挙は for (key, value) in dict { ... }
+for (name, age) in people {
+println("\(name) is \(age) years old.")
+}
+// メソッドや関数は "func"文法を使って宣言する。
+// パラメータ名の付け方に注意。-> で戻り値の型を宣言する
+func sayHello(personName: String) -> String {
+let greeting = "こんにちは、" + personName + "さん"
+return greeting
+}
+// "こんにちは、花子さん"を出力
+println(sayHello("花子"))
+Swift (プログラミング言語) - Wikipedia

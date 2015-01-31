@@ -1,0 +1,77 @@
+次のサンプル1は、アクティブシートの名前をユーザーに設定させるマクロです。
+サンプル1
+Sub Sample1()
+Dim myStr As String
+InputSheetName:
+On Error GoTo ErrHandle
+myStr = InputBox(Prompt:="シート名を入力してください", _
+Default:=ActiveSheet.Name, Title:="シート名入力", XPos:=0, YPos:=0)
+'---(1)キャンセル時または空欄の時の処理
+If Len(myStr) = 0 Then
+MsgBox "シート名の変更をキャンセルします", vbInformation
+'---(2)既定値以外の文字だった場合
+ElseIf myStr 
+サンプル1を実行すると、入力用のダイアログボックスが画面左上端に現れます。
+既定値として、アクティブシートの名前を表示します。
+仮にこのまま［OK］ボタンをクリックすると、変数myStrには、テキストボックスに既定値として反転表示されている文字列が代入されます。
+他のシート名と重複している場合や、命名規則に反している場合にはエラーが発生するため、ErrHandleの処理を行い、再入力を促します。
+［キャンセル］ボタンをクリックした場合や、右上の[×]ボタンでダイアログを閉じた場合、また何も入力しなかった場合は、InputBox関数は空の文字列を返すので、(1)の条件式で判定します。
+空欄とキャンセルを識別する
+サンプル1ではキャンセルした場合と、空欄のまま［OK］ボタンをクリックした場合を区別していませんが、要件によっては両者を区別したい場合もあります。
+それには、InputBox関数が返す空の文字列を判別します。
+InputBox関数が返す空の文字列には、2種類あります。
+何も入力せずに［OK］ボタンをクリックした場合、
+InputBox関数は「長さ0の文字列("")」を返します。
+これは、 If myStr = "" Then  または  If Len(myStr) = 0 Then  で判定します。
+一方、［キャンセル］ボタン、または［×］ボタンでキャンセルした場合、
+InputBox関数は「値0の文字列(vbNullString)」を返します。
+これは、StrPtr関数を使って  If StrPtr(myStr) = 0 Then  のように判定します。
+次のサンプルは、6文字以内の文字列をユーザーに入力させ、キャンセルした場合と、空欄のまま［OK］ボタンをクリックした場合を区別して処理を行います。
+サンプル2
+Sub Sample2()
+Dim myStr As String
+Do While True
+myStr = InputBox("6文字以内で文字列を入力してください")
+'---(1)キャンセルしたとき
+If StrPtr(myStr) = 0 Then
+MsgBox "キャンセルします"
+Exit Do
+'---(2)空欄のまま［OK］したとき
+ElseIf myStr = "" Then
+MsgBox "未入力です", vbExclamation
+'---(3)入力文字が6文字より長いとき
+ElseIf Len(myStr) > 6 Then
+MsgBox "文字が長すぎます", vbExclamation
+Else
+'---(4)入力文字が6文字以内のとき
+MsgBox "入力された文字列は「" & myStr & "」です"
+Exit Do
+End If
+Loop
+End Sub
+キャンセルの判定に使用している「値0の文字列(vbNullString)」は、String型の変数の初期状態を表す値です。String型の変数を初期状態に戻したり、API関数に初期状態のString型データを引数として渡すときなどに使用します。
+「長さ0の文字列("")」とは別のものですが、通常はあまり区別されることはありません。
+実際、「値0の文字列(vbNullString)」は、
+If vbNullString = "" Then
+のように、「長さ0の文字列("")」と比較してもTrueになり、
+Len(vbNullString) 
+としても 0 が返ります。
+「値0の文字列」と「長さ0の文字列」を判別するには、String型の変数のアドレス値を返すStrPtr関数を使用します。
+StrPtr関数は、String型変数を宣言した直後など、変数が「値0の文字列(vbNullString)」のとき、0を返します。
+一方、変数を宣言した後、何らかの値や「長さ0の文字列("")」を代入すると、その変数のアドレス値を返します。
+そこで、StrPtr関数の戻り値が0かどうかで、両者を判別します。
+Dim strX As String
+MsgBox StrPtr(strX)	' strXの値はvbNullString。0 が表示される
+strX = ""
+MsgBox StrPtr(strX)	' "" や値を代入するとアドレス値が表示される
+ただし前述のように、変数myStrの値が「値0の文字列(vbNullString)」になっていても、
+If myStr = "" Then  や、  If Len(myStr) = 0 Then  はいずれもTrueになるため、
+If StrPtr(myStr) = 0 Then
+のキャンセルの判定を先に行うところがポイントです。
+補足1
+StrPtr関数は非表示のメンバです。オブジェクトブラウザで［非表示のメンバを表示］をオンにすると、参照できます。
+補足2
+InputBox関数と間違いやすい機能にInputBoxメソッドがあります。
+両者を比較するとInputBox関数の方が低機能ですが、文字列の入力だけであれば、こちらで十分対応できるでしょう。
+逆に、数値データだけ入力させたり、セル範囲を指定させたりする場合は、InputBoxメソッドの方がよいでしょう。ケースに応じて使い分けてください。
+ユーザーの入力を文字列で取得する(InputBox関数):Excel VBA｜即効テクニック｜Excel VBAを学ぶならmoug

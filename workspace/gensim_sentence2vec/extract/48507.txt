@@ -1,0 +1,32 @@
+
+TRLFSと化学種分布評価
+時間分解型レーザ蛍光測定(TRLFS)は試料からの蛍光スペクトルの時間変化を測定する分光測定手法です.特に,蛍光性の金属イオンを対象としたTRLFSでは,比較的高感度な化学種分布評価手法として,溶液中における錯生成反応から,HSのような巨大分子への結合,鉱物表面への吸着まで,多様な反応が存在する系で用いられております1.通常,化学種分布分析は,(i) 物理化学的性質に基づく化学種の分離,(ii) 分離された化学種の定量,(iii) 化学構造(反応の化学量論比の決定)から成る.TRLFSは,対象となる金属イオンが蛍光性金属イオンに限られるという制限はあるものの,これらの点においてバランスのとれた手法であると言えます.つまり,TRLFSでは,蛍光性金属イオンのスペクトルと時間減衰が化学種に固有であることに基づいて,化学種の分別が可能であり,また,蛍光強度が濃度に比例することから,化学種の定量を行うことができ,そして,スペクトルの形状や時間減衰の寿命が金属イオンが置かれている化学的環境に依存することを利用して,化学構造に関する知見を得ることが可能となるのです1, 2.
+このような化学種分布評価におけるTRLFSの優位性は,そのデータ構造が本質的に多次元であることに依ると言えます.しかしながら,一般的に,そのような多次元データをそのままの形で解析することはなく,データの次元を落とした解析が行われております.TRLFSにおいて,最も頻繁に行われる解析方法は,ある特定の時間,化学条件での発光や励起スペクトル(f vs. λex, λem)のみを対象とするものやある特定の励起・発光波長の組み合わせにおける蛍光強度の時間減衰(f vs. t)のみを対象にするものなどがあります.前者はスペクトルのデコンボリューション解析に代表され,後者は蛍光減衰曲線の指数関数フィッティングに代表されます.これらの解析では本来多次元データであるはずのTRLFSデータの一部(2次元サブデータセット)のみしか,解析にが用いられません.一方,多くの場合,化学種間のスペクトルや蛍光寿命の相違が小さく,スペクトル中のピーク分離や指数関数によるフィッティングがうまく行かないと言った問題があります.そこで,本研究では,元々のTRLFSデータに立ち返り,多次元データ全体に対して,マルチモード因子分析を用いることで,異なる化学種の蛍光スペクトル,時間減衰,化学条件の変化(x)に応じた濃度変化を一括して取得することを試みております.このような方法をとることで,解析に用いるデータの次元を増やすことが可能となり,データの分離がより拘束されることため,マルチモード因子分析はTRLFSデータの解析において,非常にロバストな手法であると言える.
+Parallel Factor Analysis (PARAFAC)
+本研究では,マルチモード因子分析手法として,PARAFAC(parallel factor analysis)を用いております3, 4.PARAFACは心理学の分野で開発された多変量解析手法の一種であり,化学の分野でも,ケモメトリックスの一つとして用いられております4, 5.ある特定の励起波長で,化学条件の異なる一連の試料のTRLFS測定から得られるデータは3次元(3-way)のデータ配列 Xとして表されることになります.3-way PARAFACでは,Xの要素xi, j, kが以下のような多重線形性を満たすことを求めます(Figure 1).
+ここで,aim, bjm, ckmは,それぞれ,1から3番目のモード(次元)への因子負荷量マトリクス,また,m (= 1 … M)は異なる因子を,eijkは残差配列の要素を表す.上で例示したTRLFSデータの場合,PARAFACモデリングから,1番目のモードとして試料の化学条件(この場合はpH)が,2, 3番目のモードとして,それぞれ,発光スペクトルと時間減衰プロファイルが対応することになります.
+Figure 1.PARAFACによる3-way多次元データの分離概念図.
+PARAFACモデルによる当てはめを,Broによって開発されたN-way Toolbox for MATLABを使用して,ALS(altanating least-squares)法にて行いました4.特に,PARAFACによる分離の安定化のために,PARAFACモデルを系の物理化学的性質に基づいて,拘束することが行われます4, 5.本解析では,第1, 2番目のモードに対して,それぞれ,非負の制限を,第3番目のモードに対して指数関数変化の拘束を課しおります.さらに,TRLFSデータのPARAFACモデリングにおいては,因子数Mは系に含まれる蛍光性化学種の数に対応し,その決定が最も重要となりますが,本解析では,実データとPARAFACモデルの残差の二乗和,および,PARAFACモデルの多重線形性からのずれを表す指標であるcore consistency11を指標とし,異なる因子数におけるこれらの指標の変化から,最適な因子数を決定しております.
+TRLFS-PARAFACによる化学種分布評価の実例
+Eu3+-酢酸 (Ac)系6
+Figure 2. Ac濃度を変化させたEu3+-Ac溶液のTRLFSスペクトル(cCA = 0 - 200 mM,規格化済).(a) 全波長領域のスペクトル,(b) 660 - 750 nm領域(5D0  7F4>遷移に対応)の拡大図.
+Ac濃度の増加に伴い,5D0  7F1遷移由来のピーク(591 nm)に対する5D0  7F2遷移由来のピーク(616 nm)強度が増加し,5D0  7F4遷移由来のピークの形状が変化していることが見て取れる.また,これに応じて,蛍光強度の時間減衰も遅くなる.
+Figure 3. PARARACモデリングより得られた3つの因子(化学種)の(a)蛍光スペクトル,(b)時間減衰,(c)cCAに対する相対濃度変化.
+因子1, 2, 3の順で,5D0  7F1遷移由来のピーク(591 nm)に対する5D0  7F2遷移由来のピーク(616 nm)強度が増加し,蛍光寿命が長くなっていることが分かる.また,cCAの増加に伴い,因子1, 2, 3の順で寄与が増加する.これら3つの因子は,Eu3+,Eu3+Ac,Eu3+Ac2に対応する.
+Figure 4.報告されている安定度定数を用いて計算されるEu3+-Ac系の化学種分布
+PARAFACモデリングより得られた化学種分布(Figure 3 (c))と良く対応していることが分かる.
+Eu3+-カオリナイト系7
+カオリナイトは比較的単純な構造を有する1:1型アルミノケイ酸塩(粘土)鉱物であり,酸素を共有する1対のシリカの四面体シートとアルミの八面体シートが層状に重なった構造をしております.他の粘土鉱物同様,金属イオンはカオリナイトのシリカ四面体シートに水和水を保持したまま静電的に吸着するか(外圏型表面錯体),アルミ八面体シートの端面の水酸基に化学的に結合することで吸着する(内圏型表面錯体)ことが知られています(Figure 5).
+本研究では,幅広い条件におけるEu3+のカオリナイトへの吸着をTRLFS-PARAFACで調べ,異なる表面錯体の存在とその量的な変化,さらには,構造に関わる情報を取得しました.異なるpH,塩濃度,Eu3+濃度に調整した一連の吸着試料のTRLFSデータにPARAFACを適用することで,3つの因子(化学種)の存在が示されました.それら3つの因子の蛍光スペクトル,時間減衰,化学条件に対する強度変化をFigure 6に示します.因子Aは比較的低pH領域に存在し,塩濃度の増加と共に,その存在量が減少しています.この因子のスペクトルはEu3+水和イオンと似ていることから,Eu3+が水和水を保持したままカオリナイトへ吸着している外圏型の錯体に対応していると言えます.一方,因子Bは,因子Aの減少とともに,比較的高いpH領域でその量が増加する化学種で,そのスペクトルがカオリナイトのアルミ八面体シートを模擬する鉱物であるギブサイト(Al(OH)3)に吸着したEu3+と一致することから,八面体シートの端面に内圏型で吸着した表面錯体に対応すると考えられます.この点は,この因子の寿命がEu3+水和イオンの蛍光寿命(110 μsec)より長く,水和水の減少を伴っていることと調和的です.さらに,因子Cは特徴的なスペクトル形状と極端に短い蛍光寿命を有しおります.これらはEu3+の加水種,特に,Eu(OH)3(s),あるいは,Eu(OH)3(aq)に共通したもので,特に,試料がEu(OH)3(aq)に対して未飽和であることを考えると,カオリナイト表面でのOH-で架橋された多核の表面錯体の存在を示唆していると言えるます.
+このように,TLRFS-PARAFACは,液相での錯体形成反応だけではなく,固液界面での吸着反応にも有用であることが示されました.
+Figure 5. カオリナイト,および,外圏型,内圏型の表面錯体形成によって吸着イオンの模式図.
+Figure 6. Eu3+/カオリナイト系における3つの因子(A, B, C)の蛍光スペクトル (a),時間減衰 (b),および,強度変化.励起波長394 nm.
+参考文献
+Collins, R. N.; Saito, T.; Aoyagi, N.; Payne, T. E.; Kimura, T.; Waite, T. D., Applications of Time-Resolved Laser Fluorescence Spectroscopy to the Environmental Biogeochemistry of Actinides. J. Environ. Qual. 2011, in press.
+Moulin, C.; Decambox, P.; Moulin, V.; Decaillon, J. G., Uranium Speciation in Solution by Time-Resolved Laser-Induced Fluorescence. Anal. Chem. 1995, 67, (2), 348-353.
+Saito, T.; Aoyagi, N.; Kimura, T.; Nagasaki, S.; Tanaka, S., Parallel factor analysis for time-resolved laser fluorescence spectroscopy: A powerful tool for speciation studies. Geochim. Cosmochim. Acta 2010, 74, (12), A899-A899.
+Bro, R., PARAFAC. Tutorial and applications. Chemometrics and Intelligent Laboratory Systems 1997, 38, (2), 149-171.
+Bro, R. Multi-way analysis in the Food Industry, Models, Algorithms and Applications. Ph.D. Thesis, Royal Veterinary and Agricultural University, Frederiksberg C, Denmark, 1998.
+Saito, T.; Sao, H.; Ishida, K.; Aoyagi, N.; Kimura, T.; Nagasaki, S.; Tanaka, S. Application of Parallel Factor Analysis for Time-Resolved Laser Fluorescence Spectroscopy: Implication for Metal Speciation Study. Environ Sci Technol 2010, 44, 5055-5060.
+Ishida, K.; Saito, T.; Aoyagi, N.; Kimura, T.; Nagaishi, R.; Nagasaki, S.; Tanaka, S. Surface Speciation of Eu3+ Adsorbed on Kaolinite by Time-Resolved Laser Fluorescence Spectroscopy (TRLFS) and Parallel Factor Analysis (PARAFAC), J. Colloid Interface Sci. 2012, 374, 258-266.
+TRLFS-PARAFAC - Environmental geochemistry group, Tanaka Lab.

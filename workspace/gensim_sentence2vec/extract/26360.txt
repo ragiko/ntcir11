@@ -1,0 +1,240 @@
+作成者: 怡土順一, 最終変更者: 怡土順一, 最終変更リビジョン: 357, 最終変更日時: 2007-12-26 14:22:07 +0900 (水, 26 12月 2007)
+サポートベクターマシン
+OpenCV-1.0.0で提供されるSVMに関する関数は,libsvmライブラリ(version 2.6)の機能を実装したものである.
+また,このバージョンでは,学習後のパラメータを保存,読み込みする関数
+(save, load)にバグが存在し,Yahoo!Groupsで報告されているパッチ
+(http://tech.groups.yahoo.com/group/OpenCV/message/48635
+)等をあてなければ,当該機能が利用できないので注意すること.
+#include <cv.h>
+#include <highgui.h>
+#include <ml.h>
+#include <time.h>
+int
+main (int argc, char **argv)
+{
+const int s = 1000;
+int size = 400;
+int i, j, sv_num;
+IplImage *img;
+CvSVM svm = CvSVM ();
+CvSVMParams param;
+CvTermCriteria criteria;
+CvRNG rng = cvRNG (time (NULL));
+CvPoint pts[s];
+float data[s * 2];
+int res[s];
+CvMat data_mat, res_mat;
+CvScalar rcolor;
+const float *support;
+// (1)画像領域の確保と初期化
+img = cvCreateImage (cvSize (size, size), IPL_DEPTH_8U, 3);
+cvZero (img);
+// (2)学習データの生成
+for (i = 0; i  50 * cos (pts[i].x * CV_PI / 100) + 200) {
+cvLine (img, cvPoint (pts[i].x - 2, pts[i].y - 2), cvPoint (pts[i].x + 2, pts[i].y + 2), CV_RGB (255, 0, 0));
+cvLine (img, cvPoint (pts[i].x + 2, pts[i].y - 2), cvPoint (pts[i].x - 2, pts[i].y + 2), CV_RGB (255, 0, 0));
+res[i] = 1;
+}
+else {
+if (pts[i].x > 200) {
+cvLine (img, cvPoint (pts[i].x - 2, pts[i].y - 2), cvPoint (pts[i].x + 2, pts[i].y + 2), CV_RGB (0, 255, 0));
+cvLine (img, cvPoint (pts[i].x + 2, pts[i].y - 2), cvPoint (pts[i].x - 2, pts[i].y + 2), CV_RGB (0, 255, 0));
+res[i] = 2;
+}
+else {
+cvLine (img, cvPoint (pts[i].x - 2, pts[i].y - 2), cvPoint (pts[i].x + 2, pts[i].y + 2), CV_RGB (0, 0, 255));
+cvLine (img, cvPoint (pts[i].x + 2, pts[i].y - 2), cvPoint (pts[i].x - 2, pts[i].y + 2), CV_RGB (0, 0, 255));
+res[i] = 3;
+}
+}
+}
+// (3)学習データの表示
+cvNamedWindow ("SVM", CV_WINDOW_AUTOSIZE);
+cvShowImage ("SVM", img);
+cvWaitKey (0);
+// (4)学習パラメータの生成
+for (i = 0; i 
+// (1)画像領域の確保と初期化
+画像領域を確保し,ゼロクリア(黒色で初期化)する.
+// (2)トレーニングデータの生成
+2次元のトレーニングデータをランダムに生成し,その値をCvPoint型の配列pts[]に格納する.
+また,各トレーニングデータのクラスを閾値によって決定し,配列res[]に格納する.
+// (3)トレーニングデータの表示
+生成されたトレーニングデータを,最初に確保した画像上に描画し,表示する.
+クラス1-3までが,赤,緑,青の各色で示される.
+ここで,何かキーが押されるまで待つ.  
+// (4)学習パラメータの生成
+SVMの学習パラメータを以下のように決定する.
+svmの種類:CvSVM::C_SVC
+カーネルの種類:CvSVM::RBF
+degree:10.0(今回は,利用されない)
+gamma:8.0
+coef0:1.0(今回は,利用されない)
+C:10.0
+nu:0.5(今回は,利用されない)
+p:0.1(今回は,利用されない)
+また,トレーニングデータを正規化し,CvMat型の行列に格納する.
+// (5)SVMの学習
+トレーニングデータと決められた学習パラメータを用いて,SVMの学習をおこなう.
+// (6)学習結果の描画
+学習結果を示すために,画像領域内の全てのピクセル(特徴ベクトル)を入力として,クラス分類を行う.
+また,入力ピクセルを,それが属するクラスに対応した色で描画する.
+// (7)トレーニングデータの再描画
+トレーニングデータを,結果画像の上に重ねて描画する.
+// (8)サポートベクターの描画
+トレーニングデータのうち,サポートベクターを白い丸で囲んで表示する.
+// (9)画像の表示
+実際に,処理結果の画像を表示し,何かキーが押されると終了する.
+実行結果例
+[左]学習サンプル,[右]分類結果
+画像の各ピクセル値を特徴ベクトルとしたSVMの学習
+学習用の画像を読み込み,そのピクセル値を特徴ベクトルとしてSVMの学習を行う
+#include <cv.h>
+#include <highgui.h>
+#include <ml.h>
+#include <stdio.h>
+int
+main (int argc, char **argv)
+{
+int i, j, ii, jj;
+int width = 28, height = 30;	/* サンプル画像サイズ */
+int image_dim = width * height;
+int pimage_num = 500;		/* ポジティブサンプル数 */
+int nimage_num = 1000;	/* ネガティブサンプル数 */
+int all_image_num = pimage_num + nimage_num;
+IplImage *img_org;
+IplImage *sample_img;
+int res[all_image_num];
+float data[all_image_num * image_dim];
+CvMat data_mat, res_mat;
+CvTermCriteria criteria;
+CvSVM svm = CvSVM ();
+CvSVMParams param;
+char filename[64];
+// (1)ポジティブサンプルの読み込み
+for (i = 0; i imageData[ii * sample_img->widthStep + jj])) / 255.0);
+}
+}
+res[i] = 1;
+}
+// (2)ネガティブサンプルの読み込み
+j = i;
+for (i = j; i imageData[ii * sample_img->widthStep + jj])) / 255.0);
+}
+}
+res[i] = 0;
+}
+// (3)SVM学習データとパラメータの初期化
+cvInitMatHeader (&data_mat, all_image_num, image_dim, CV_32FC1, data);
+cvInitMatHeader (&res_mat, all_image_num, 1, CV_32SC1, res);
+criteria = cvTermCriteria (CV_TERMCRIT_EPS, 1000, FLT_EPSILON);
+param = CvSVMParams (CvSVM::C_SVC, CvSVM::RBF, 10.0, 0.09, 1.0, 10.0, 0.5, 1.0, NULL, criteria);
+// (4)SVMの学習とデータの保存
+svm.train (&data_mat, &res_mat, NULL, NULL, param);
+svm.save ("svm_image.xml");
+cvReleaseImage (&img_org);
+cvReleaseImage (&sample_img);
+return 0;
+}
+// (1)ポジティブサンプルの読み込み
+ポジティブサンプルとなる画像群を読み込み,各ピクセルの値をfloat型の配列に変換する.
+ここでは簡単のために,ポジティブサンプル("positive/ディレクトリ以下にある")は,
+3桁連番のファイル名の画像として予め用意されているとする.
+まず,読み込んだ各画像を同一のサイズ(ここでは,28&times;30)にリサイズし,ノイズの影響を軽減するためにスムージングを行う.
+次に,その画像の各ピクセルの輝度値(ここで,画像はグレースケール画像として読み込まれている)を特徴ベクトルとして利用するために,配列に変換する.
+つまり,1つの画像に対する特徴ベクトルは,画像の高さ&times;画像の幅,となり,それがサンプル画像の枚数分だけ用意される.
+判別値として,"1"を利用している.また,ポジティブサンプルとして500枚の顔画像(ほぼ正面,傾き無し)を利用している.
+OpenCVには,haar-like特徴を利用した物体検出手法が実装されており,そちらを利用した顔検出の方が精度も処理速度も良いので,
+顔画像を検出する意味はあまりないのだが,サンプルの入手のしやすさと分かりやすさから今回は顔画像を利用した学習を行った.
+// (2)ネガティブサンプルの読み込み
+ネガティブサンプルとなる画像群を読み込み,ポジティブサンプルと同様に配列に変換する.
+判別値として,"0"を利用している.
+また,ネガティブサンプルとして1000枚の任意画像(顔以外の画像)を利用している.
+// (3)SVM学習データとパラメータの初期化
+サンプル画像のピクセル値の配列と判別値の配列を,行列に変換する.
+また,SVMの学習の為のパラメータを初期化する.
+ここでは,かなり適当にパラメータを指定しているので,必要に応じて適切なパラメータを設定する必要がある.
+// (4)SVMの学習とデータの保存
+ポジティブ,ネガティブサンプルのピクセル値,および指定されたパラメータを用いて,svm.train()メソッドによりSVMの学習を行う.
+サンプル数は,ポジティブ500,ネガティブ1000,特徴ベクトルは,28&times;30=840次元である.
+また,学習されたSVMのパラメータを,svm.save()メソッドによりXML形式のファイルとして保存する.
+このページの最初でも述べたように,saveおよびloadの機能を利用するためには,OpenCVのソースを修正する必要がある.
+実行結果例
+svm_image_xml.zipが,実際に保存されるパラメータの一例である.
+ここでは,XML形式を利用したが,YAML形式で保存することも可能である.
+画像の各ピクセル値を特徴ベクトルとしたSVMによる物体検出
+学習されたSVMパラメータを読み込み,与えられた画像中から物体を検出する
+#include <cv.h>
+#include <highgui.h>
+#include <ml.h>
+#include <stdio.h>
+int
+main (int argc, char **argv)
+{
+int i, j;
+int width = 28, height = 30;	/* サンプル画像サイズ */
+int image_dim = width * height;
+CvMat m;
+float a[image_dim];
+float ret = -1.0;
+float scale;
+IplImage *src, *src_color, *src_tmp;
+int sx, sy, tw, th;
+int stepx = 3, stepy = 3;
+double steps = 1.2;
+int iterate;
+CvSVM svm = CvSVM ();
+// (1)画像の読み込み
+if (argc width;
+th = src->height;
+for (iterate = 0; iterate width;
+th = src_tmp->height;
+for (sy = 0; sy height - height; sy += stepy) {
+for (sx = 0; sx width - width; sx += stepx) {
+for (i = 0; i imageData[(i + sy) * src_tmp->widthStep + (j + sx)])) / 255.0);
+}
+}
+cvSetData (&m, a, sizeof (float) * image_dim);
+// (4)SVMによる判定と結果の描画
+ret = svm.predict (&m);
+if ((int) ret == 1) {
+scale = (float) src->width / tw;
+cvRectangle (src_color, cvPoint ((int) (sx * scale), (int) (sy * scale)),
+cvPoint ((int) ((sx + width) * scale), (int) ((sy + height) * scale)), CV_RGB (255, 0, 0), 2);
+}
+}
+}
+cvReleaseImage (&src_tmp);
+}
+// (5)検出結果画像の表示
+cvNamedWindow ("svm_predict", CV_WINDOW_AUTOSIZE);
+cvShowImage ("svm_predict", src_color);
+cvWaitKey (0);
+cvDestroyWindow ("svm_predict");
+cvReleaseImage (&src);
+cvReleaseImage (&src_color);
+cvReleaseImage (&src_tmp);
+return 0;
+}
+// (1)画像の読み込み
+SVMによる判別の対象となる画像を,コマンド引数で指定されたファイルから読み込む.
+処理はグレースケール画像に対して行われるが,最後の結果表示のためにカラー画像も別途用意しておく.
+// (2)SVMデータの読み込み
+予め学習されたSVMのパラメータを,svm.load()メソッドによりファイル(ここでは,"xvm_image.xml")から読み込む.
+このページの最初でも述べたように,saveおよびloadの機能を利用するためには,OpenCVのソースを修正する必要がある.
+// (3)画像を縮小し,現在の部分画像を行列へ変更
+読み込まれた画像を部分画像毎に処理するために,stepx=3, stepy=3ピクセル
+毎に,width&times;height=28&times;30のサイズの部分画像のピクセル値を配列に代入する.
+また,SVMを適用するために,関数cvSetData()により,その配列を1&times;(28&times;30)の行列のデータとしてセットする.
+// (4)SVMによる判定と結果の描画
+svm.predict()メソッドにより,行列に変換された部分画像が,どのクラスに属するかを判別する.
+ここでは,前述の学習パラメータファイルを利用しているので,処理対象となる部分画像がその学習された物体(顔)であるか否かを判別している.
+顔だと判別された部分画像は,赤い矩形で表示される.
+パラメータの最適化や,特別な処理上の工夫(処理領域の選定や特徴ベクトルの抽出など)をしているわけでも無いので,検出精度は高くない.
+さらに,画像全体に対して処理をおこなう場合は,特徴ベクトルが大きいこともあり,かなりの処理時間が必要である.
+また,今回は,iterate変数によるループを1度しか行っていないが,
+画像中から異なる大きさの物体を検出したい場合には,元画像を随時縮小(ここでは,1/steps=1/1.2)して同様の処理を行う.
+// (5)検出結果画像の表示
+検出結果として赤い矩形が描画された画像を表示し,何かキーが押されるまで待つ.
+実行結果例
+opencv.jp - OpenCV: サポートベクターマシン(Support Vector Machine)サンプルコード -

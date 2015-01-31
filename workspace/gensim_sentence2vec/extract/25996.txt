@@ -1,0 +1,306 @@
+string
+C# の組込み型 string の実体は System.String クラスです。
+System.String クラスには以下のようなメソッドが標準で用意されています。
+(以下の例に挙げるもの以外にも、いくつかのメソッドがあります。)
+using System;
+class TestString
+{
+static void Main()
+{
+string s = "This Is a Program Which Allows You to Play It";
+// ToUpper … アルファベットを大文字に変換
+Console.Write(s.ToUpper() + "\n");
+// ToLower … アルファベットを小文字に変換
+Console.Write(s.ToLower() + "\n");
+// Replace … 文字列の置換
+Console.Write(s.Replace("Play", "View") + "\n");
+// Split … 文字列を分割
+int i = 0;
+foreach(string word in s.Split(' '))
+{
+if((i % 2) == 0)
+{
+// PadLeft … 左寄せで10文字分の幅にする。
+Console.Write("/{0}/\n", word.PadLeft(10));
+}
+else
+{
+// PadRight … 右寄せで10文字分の幅にする。
+Console.Write("/{0}/\n", word.PadRight(10));
+}
+++i;
+}
+// IndexOf … 文字列の検索
+Console.Write("\"Program\" is found at {0}\n", s.IndexOf("Program"));
+}
+}
+THIS IS A PROGRAM WHICH ALLOWS YOU TO PLAY IT
+this is a program which allows you to play it
+This Is a Program Which Allows You to View It
+/      This/
+/Is        /
+/         a/
+/Program   /
+/     Which/
+/Allows    /
+/       You/
+/to        /
+/      Play/
+/It        /
+"Program" is found at 10
+書式指定出力
+String.Fomat メソッドや、Console.Write メソッドは、
+数値などの体裁を整える書式指定機能を持っています。
+詳細説明に別ページを儲けました: 
+「文字列の書式設定」
+using System;
+class TestConsoleWrite
+{
+static void Main()
+{
+Console.Write(
+@"
+通常     {0:d}
+通貨     {0:c}
+, 区切り {0:n}
+16進数   {0:x}
+", 19980);
+Console.Write(
+@"
+通常 {0:d}
+4桁  {0:d4}
+8桁  {0:d8}
+", 196);
+Console.Write(
+@"
+通常       {0:g}
+固定桁     {0:f}
+指数表記   {0:e}
+パーセント {0:p}
+", 0.012345678);
+Console.Write(
+@"
+標準 {0:f}
+4桁  {0:f4}
+6桁  {0:f6}
+", 365.242199);
+Console.Write(
+@"
+桁数明示 {0:000.000}
+", 3.14);
+Console.Write(
+@"
+通常     {0}
+千単位   {0:#,} 千
+百万単位 {0:#,,}    百万
+電話番号 {0:(000) 000-0000}
+", 123456789);
+}
+}
+通常     19980
+通貨     \19,980
+, 区切り 19,980.00
+16進数   4e0c
+通常 196
+4桁  0196
+8桁  00000196
+通常       0.012345678
+固定桁     0.01
+指数表記   1.234568e-002
+パーセント 1.23%
+標準 365.24
+4桁  365.2422
+6桁  365.242199
+桁数明示 003.140
+通常     121378376
+千単位   121378 千
+百万単位 121    百万
+電話番号 (012) 137-8376
+正規表現
+System.Text.RegularExpressions.Regex クラスにより、
+正規表現による文字列探索を利用できます。
+詳細説明に別ページを儲けました: 
+「正規表現(文字列パターン マッチング)」
+Regex クラスの正規表現は、Perl や Awk などの有名な実装との互換性を意識して設計されています。
+using System;
+using System.Text.RegularExpressions;
+class TestRexex
+{
+static void Main()
+{
+string s =
+@"
+This is a test program.
+you can download it from the following page.
+http://www.xxx.yyy/bin/test.exe
+If you have any questions about this,
+please contact us by sending e-mail to the following address.
+support@xxx.yyy
+";
+// メールアドレス抽出
+Regex email = new Regex(@"\w*@[\w\.]*");
+Console.Write("{0}\n", email.Match(s).Value);
+// URL 抽出
+Regex http = new Regex(@"http://(?<domain>[\w\.]*)/(?<path>[\w\./]*)");
+Match m = http.Match(s);
+Console.Write("{0}\n", m.Value);
+Console.Write("domain: {0}\npath  : {1}\n",
+m.Groups["domain"].Value,
+m.Groups["path"].Value);
+// t の付く単語全部抜き出し
+Regex wordIncludingT = new Regex(@"\w*[tT]\w*");
+for(m = wordIncludingT.Match(s); m.Success; m = m.NextMatch())
+Console.Write("{0}\t", m.Value);
+Console.Write("\n");
+}
+}
+support@xxx.yyy
+http://www.xxx.yyy/bin/test.exe
+domain: www.xxx.yyy
+path  : bin/test.exe
+This    test    it      the     http    test    questions       about   this
+contact to      the     support
+サンプル
+正規表現クラス Regex を使って、
+XML の中身を HTML 中に貼り付けれる形に変換します。
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+namespace XmlToText
+{
+class Program
+{
+static void Main(string[] args)
+{
+Regex regComment = new Regex(
+"\\<!--(?<inner>.*?)--\\>",
+RegexOptions.Compiled
+);
+Regex regElem = new Regex(
+"\\<(?<inner>/{0,1}[\\w:\\.]+\\s*" +
+"([\\w:\\.]+\\s*=\\s*\\\"[^\\\"]+\\\"\\s*)*/{0,1})\\>",
+RegexOptions.Compiled
+);
+Regex regName = new Regex(
+"^/{0,1}(?<name>[\\w:\\.]+)",
+RegexOptions.Compiled
+);
+Regex regAttrName = new Regex(
+"(?<attname>[\\w:\\.]+)\\s*=",
+RegexOptions.Compiled
+);
+Regex regAttrValue = new Regex(
+"(?<attvalue>=\\s*\\\"[^\\\"]+\\\")",
+RegexOptions.Compiled
+);
+string target;
+using (
+StreamReader reader = new
+StreamReader(Console.OpenStandardInput(), Encoding.UTF8))
+{
+target = reader.ReadToEnd();
+}
+string result = target;
+result = result.Replace("&", "&");
+result = result.Replace("\t", "  ");
+result = regComment.Replace(result,
+delegate(Match mc)
+{
+return
+"$$$comment$$$<!--" +
+mc.Groups["inner"].Value.Replace("<", "<").Replace(">", ">") +
+"-->$$$/comment$$$";
+});
+result = regElem.Replace(result,
+delegate(Match m)
+{
+string q = m.Groups["inner"].Value;
+q = regName.Replace(q,
+delegate(Match m0)
+{
+string r = m0.Value;
+string name = m0.Groups["name"].Value;
+return r.Replace(name, "<element>" + name + "</element>");
+});
+q = regAttrName.Replace(q,
+delegate(Match m1)
+{
+string s = m1.Value;
+string attname = m1.Groups["attname"].Value;
+return s.Replace(attname, "<attribute>" + attname + "</attribute>");
+});
+q = regAttrValue.Replace(q,
+delegate(Match m2)
+{
+string t = m2.Value;
+string attvalue = m2.Groups["attvalue"].Value;
+return t.Replace(attvalue, "<attvalue>" + attvalue + "</attvalue>");
+});
+return "<lt/>" + q + "<gt/>";
+});
+result = result.Replace("$$$comment$$$", "<comment>");
+result = result.Replace("$$$/comment$$$", "</comment>");
+Console.Write(result);
+}
+}
+}
+入力 XML ファイル。
+<Page
+xmlns=
+"http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x=
+"http://schemas.microsoft.com/winfx/2006/xaml"
+Background="White"
+>
+<FlowDocument>
+<Paragraph
+FontSize="32"
+Foreground="Blue">
+Example
+</Paragraph>
+<Paragraph
+FontSize="24">
+This is an example of a 
+<Span
+FontStyle="Italic"
+Foreground="Red">
+xaml
+</Span>
+application.
+</Paragraph>
+</FlowDocument>
+</Page>
+出力。
+この例では、
+< 等を、
+<lt/> という形に変換して、
+これをさらに XSLT して利用することを想定しています。
+(このサイトは、XML でドキュメントを記述して、XSLT で HTML 化しています。)
+<lt/><element>Page</element>
+<attribute>xmlns</attribute><attvalue>=
+"http://schemas.microsoft.com/winfx/2006/xaml/presentation"</attvalue>
+<attribute>xmlns:x</attribute><attvalue>=
+"http://schemas.microsoft.com/winfx/2006/xaml"</attvalue>
+<attribute>Background</attribute><attvalue>="White"</attvalue>
+<gt/>
+<lt/><element>FlowDocument</element><gt/>
+<lt/><element>Paragraph</element>
+<attribute>FontSize</attribute><attvalue>="32"</attvalue>
+<attribute>Foreground</attribute><attvalue>="Blue"</attvalue><gt/>
+Example
+<lt/>/<element>Paragraph</element><gt/>
+<lt/><element>Paragraph</element>
+<attribute>FontSize</attribute><attvalue>="24"</attvalue><gt/>
+This is an example of a 
+<lt/><element>Span</element>
+<attribute>FontStyle</attribute><attvalue>="Italic"</attvalue>
+<attribute>Foreground</attribute><attvalue>="Red"</attvalue><gt/>
+xaml
+<lt/>/<element>Span</element><gt/>
+application.
+<lt/>/<element>Paragraph</element><gt/>
+<lt/>/<element>FlowDocument</element><gt/>
+<lt/>/<element>Page</element><gt/>
+

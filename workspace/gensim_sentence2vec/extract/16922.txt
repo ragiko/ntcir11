@@ -1,0 +1,468 @@
+
+public JList(Object[] listData)
+指定された配列の要素を表示する JList を構築します。このコンストラクタは、ListModel コンストラクタに委譲します。
+パラメータ:listData - データモデルにロードされる Object の配列
+public JList()
+空のモデルで JList を構築します。
+メソッドの詳細
+getUI
+public ListUI getUI()
+このコンポーネントを描画する Look & Feel (L&F) オブジェクトを返します。
+戻り値:このコンポーネントを描画する ListUI オブジェクト
+setUI
+public void setUI(ListUI ui)
+このコンポーネントを描画する Look & Feel (L&F) オブジェクトを設定します。
+パラメータ:ui - ListUI L&F オブジェクト関連項目:UIDefaults.getUI(javax.swing.JComponent)
+updateUI
+public void updateUI()
+現在の Look & Feel からの値を持つ UI プロパティをリセットします。
+オーバーライド: クラス JComponent 内の updateUI
+関連項目:UIManager.getUI(javax.swing.JComponent)
+getUIClassID
+public String getUIClassID()
+Look & Feel (L&F) クラスの名前の構築に使用された接頭辞を返します。このクラスは、このコンポーネントを描画するのに使用されます。
+オーバーライド: クラス JComponent 内の getUIClassID
+戻り値:文字列「ListUI」関連項目:JComponent.getUIClassID(), 
+UIDefaults.getUI(javax.swing.JComponent)
+getPrototypeCellValue
+public Object getPrototypeCellValue()
+「プロトタイプセル」のセル幅を返します。他のすべてのリスト項目と同じ値を持つため、プロトタイプセルはセル幅の計算に使用されます。
+戻り値:prototypeCellValue プロパティの値関連項目:setPrototypeCellValue(java.lang.Object)
+setPrototypeCellValue
+public void setPrototypeCellValue(Object prototypeCellValue)
+fixedCellWidth および fixedCellHeight プロパティを計算します。インデックス 0 の cellRenderer を指定値に設定してから、レンダリングコンポーネントの優先サイズを計算します。リストが長すぎて JList が各セルの幅と高さを計算できず、他のセルと同じスペースを持つことがわかっているセルがある場合には、このプロパティが便利です。
+fixedCellWidth および fixedCellHeight プロパティをここで設定しても、prototypeCellValue だけで PropertyChangeEvent がトリガされることに注意してください。
+このプロパティの設定例を参照するには、上記のクラスの説明を参照してください。
+このプロパティのデフォルト値は null です。
+これは JavaBeans バウンドプロパティです。
+パラメータ:prototypeCellValue - fixedCellWidth および fixedCellHeight のベースとなる値関連項目:getPrototypeCellValue(), 
+setFixedCellWidth(int), 
+setFixedCellHeight(int), 
+Container.addPropertyChangeListener(java.beans.PropertyChangeListener)
+getFixedCellWidth
+public int getFixedCellWidth()
+固定セル幅の値を返します。固定セル幅の値とは、リスト要素から計算された値ではなく、fixedCellWidth プロパティで指定されている値です。
+戻り値:固定セル幅関連項目:setFixedCellWidth(int)
+setFixedCellWidth
+public void setFixedCellWidth(int width)
+リストにあるすべてのセルの幅を設定します。width が -1 の場合、各リスト要素の cellRenderer コンポーネントに getPreferredSize を適用することにより、セル幅が計算されます。
+このプロパティのデフォルト値は -1 です。
+これは JavaBeans バウンドプロパティです。
+パラメータ:width - ピクセル単位の、リスト内のすべてのセルの幅関連項目:getPrototypeCellValue(), 
+setFixedCellWidth(int), 
+Container.addPropertyChangeListener(java.beans.PropertyChangeListener)
+getFixedCellHeight
+public int getFixedCellHeight()
+固定セル高の値を返します。固定セル高の値とは、リスト要素から計算された値ではなく、fixedCellHeight プロパティで指定されている値です。
+戻り値:ピクセル単位の固定セル高関連項目:setFixedCellHeight(int)
+setFixedCellHeight
+public void setFixedCellHeight(int height)
+リストにあるすべてのセルの高さを設定します。height が -1 の場合、各リスト要素の cellRenderer コンポーネントに getPreferredSize を適用することにより、セルの高さが計算されます。
+このプロパティのデフォルト値は -1 です。
+これは JavaBeans バウンドプロパティです。
+パラメータ:height - リスト内のすべてのセルの高さをピクセル数で指定する整数関連項目:getPrototypeCellValue(), 
+setFixedCellWidth(int), 
+Container.addPropertyChangeListener(java.beans.PropertyChangeListener)
+getCellRenderer
+public ListCellRenderer getCellRenderer()
+リスト項目を描画するオブジェクトを返します。
+戻り値:ListCellRenderer関連項目:setCellRenderer(javax.swing.ListCellRenderer)
+setCellRenderer
+public void setCellRenderer(ListCellRenderer cellRenderer)
+リスト内の各セルを描画する委譲を設定します。prototypeCellValue が設定されていれば、fixedCellWidth および fixedCellHeight プロパティも設定されます。しかし、cellRenderer プロパティに対しては PropertyChangeEvent は 1 つだけ生成されます。
+このプロパティのデフォルト値は ListUI 委譲 (Look & Feel の実装) によって提供されます。
+セルレンダリングの設定例を参照するには、上記のクラスの説明を参照してください。
+これは JavaBeans バウンドプロパティです。
+パラメータ:cellRenderer - リスト内のセルを描画する ListCellRenderer関連項目:getCellRenderer()
+getSelectionForeground
+public Color getSelectionForeground()
+フォアグラウンドカラーの選択を返します。
+戻り値:フォアグラウンドプロパティの Color オブジェクト関連項目:setSelectionForeground(java.awt.Color), 
+setSelectionBackground(java.awt.Color)
+setSelectionForeground
+public void setSelectionForeground(Color selectionForeground)
+選択されたセルのフォアグラウンドカラーを設定します。セルレンダリングはこの色を使用して、選択されたセルのテキストとグラフィックスを描画します。
+このプロパティのデフォルト値は、Look & Feel の実装によって定義されます。
+これは JavaBeans バウンドプロパティです。
+パラメータ:selectionForeground - 選択されたリスト項目のフォアグラウンドで使用する Color関連項目:getSelectionForeground(), 
+setSelectionBackground(java.awt.Color), 
+JComponent.setForeground(java.awt.Color), 
+JComponent.setBackground(java.awt.Color), 
+JComponent.setFont(java.awt.Font)
+getSelectionBackground
+public Color getSelectionBackground()
+選択されたセルのバックグラウンドカラーを返します。
+戻り値:選択されたリスト項目のバックグラウンドで使用する Color関連項目:setSelectionBackground(java.awt.Color), 
+setSelectionForeground(java.awt.Color)
+setSelectionBackground
+public void setSelectionBackground(Color selectionBackground)
+選択されたセルのバックグラウンドカラーを設定します。セルレンダリングはこの色を使用して、選択されたセルを塗りつぶすことができます。
+このプロパティのデフォルト値は、Look & Feel の実装によって定義されます。
+これは JavaBeans バウンドプロパティです。
+パラメータ:selectionBackground - 選択されたセルのバックグラウンドで使用する Color関連項目:getSelectionBackground(), 
+setSelectionForeground(java.awt.Color), 
+JComponent.setForeground(java.awt.Color), 
+JComponent.setBackground(java.awt.Color), 
+JComponent.setFont(java.awt.Font)
+getVisibleRowCount
+public int getVisibleRowCount()
+可視行の適切な数を返します。
+戻り値:スクロールバーを使用せずに表示できる行の適切な数を示す整数関連項目:setVisibleRowCount(int)
+setVisibleRowCount
+public void setVisibleRowCount(int visibleRowCount)
+スクロールバーを使用せずに表示できるリスト内の行の適切な数を設定します。この値は、もっとも近い JViewport の上位オブジェクト (存在する場合のみ) によって決定されます。このプロパティ値は、JList の preferredScrollableViewportSize の値にのみ影響します。
+このプロパティのデフォルト値は 8 です。
+これは JavaBeans バウンドプロパティです。
+パラメータ:visibleRowCount - 可視行の適切な数を指定する整数関連項目:getVisibleRowCount(), 
+JComponent.getVisibleRect(), 
+JViewport
+getLayoutOrientation
+public int getLayoutOrientation()
+レイアウトがセルの単一の列の場合は JList.VERTICAL、コンテンツが垂直方向の次に水平方向の順に並ぶ「ニュースペーパースタイル」の場合は JList.VERTICAL_WRAP、コンテンツが水平方向の次に垂直方向の順に並ぶ「ニュースペーパースタイル」の場合は JList.HORIZONTAL_WRAP を返します。
+戻り値:layoutOrientation プロパティの値導入されたバージョン:
+1.4
+関連項目:setLayoutOrientation(int)
+setLayoutOrientation
+public void setLayoutOrientation(int layoutOrientation)
+リストのセルの配置方法を定義します。4 つのセルを持つ JList の場合、次の方法のどれかで配置できます。
+0
+1
+2
+3
+0  1
+2  3
+0  2
+1  3
+これらは次の値に対応します。
+値説明 
+セルは垂直方向に配置され、必要に応じて次の列へ折り返される。使用する行数は、0 より大きい場合 getVisibleRowCount で定義され、そうでない場合は JList の高さで指定される このプロパティのデフォルト値は JList.VERTICAL です。
+layoutOrientation が JList.HORIZONTAL_WRAP、JList.VERTICAL、または JList.VERTICAL_WRAP のどれでもない場合は、IllegalArgumentException がスローされます。
+パラメータ:layoutOrientation - 新しい orientation。JList.HORIZONTAL_WRAP、JList.VERTICAL、または JList.VERTICAL_WRAP のうちの 1 つ導入されたバージョン:
+1.4
+関連項目:getLayoutOrientation(), 
+setVisibleRowCount(int), 
+getScrollableTracksViewportHeight()
+getFirstVisibleIndex
+public int getFirstVisibleIndex()
+最初の可視セルのインデックスを返します。セルを「最初」であると見なすかどうかは componentOrientation プロパティによります。方向が、左から右への水平方向である場合、最初の可視セルはリストの左上隅になり、右から左への水平方向の場合は右上隅になります。どのセルも可視ではない場合やリストが空である場合には -1 を返します。返されたセルは部分的に可視でもかまいません。
+戻り値:最初の可視セルのインデックス関連項目:getLastVisibleIndex(), 
+JComponent.getVisibleRect()
+getLastVisibleIndex
+public int getLastVisibleIndex()
+最後の可視セルのインデックスを返します。セルを「最後」であると見なすかどうかは componentOrientation プロパティによります。方向が、左から右への水平方向である場合、最後の可視セルは JList の右下隅になり、右から左への水平方向の場合は左下隅になります。どのセルも可視ではない場合やリストが空である場合には -1 を返します。返されたセルは部分的に可視でもかまいません。
+戻り値:最後の可視セルのインデックス関連項目:getFirstVisibleIndex(), 
+JComponent.getVisibleRect()
+ensureIndexIsVisible
+public void ensureIndexIsVisible(int index)
+ビューポートをスクロールし、指定されたセルを完全に可視にします。このメソッドを有効にするには、JViewport 内で JList を表示する必要があります。
+パラメータ:index - 可視にするセルのインデックス関連項目:JComponent.scrollRectToVisible(java.awt.Rectangle), 
+JComponent.getVisibleRect()
+setDragEnabled
+public void setDragEnabled(boolean b)
+dragEnabled プロパティを設定します。このプロパティは、このコンポーネントの自動ドラッグ処理 (ドラッグ&ドロップの最初の処理) を有効にするために true になっている必要があります。transferHandler プロパティは、ドラッグで何でもできるように null 以外の値に設定する必要があります。dragEnabled プロパティのデフォルトの値は false です。
+自動ドラッグ処理が有効の場合、ほとんどの Look & Feel は、ユーザが選択のためにマウスボタンを押して、マウスを数ピクセル移動すると常にドラッグ&ドロップ操作が始まります。したがって、このプロパティを true に設定することにより、選択の動作に微妙な効果があります。
+一部の Look & Feel は自動ドラッグ&ドロップ操作をサポートしない場合があります。これらはこのプロパティを無視します。直接 TransferHandler の exportAsDrag メソッドを呼び出してコンポーネントを変更することにより、このような Look & Feel を操作することができます。
+パラメータ:b - dragEnabled プロパティに設定される値
+例外:
+HeadlessException - b が true の場合で GraphicsEnvironment.isHeadless() が true を返す場合導入されたバージョン:
+1.4
+関連項目:GraphicsEnvironment.isHeadless(), 
+getDragEnabled(), 
+JComponent.setTransferHandler(javax.swing.TransferHandler), 
+TransferHandler
+getDragEnabled
+public boolean getDragEnabled()
+dragEnabled プロパティを取得します。
+戻り値:dragEnabled プロパティの値導入されたバージョン:
+1.4
+関連項目:setDragEnabled(boolean)
+getNextMatch
+public int getNextMatch(String prefix,
+int startIndex,
+Position.Bias bias)
+接頭辞で始まる、次のリスト要素を返します。
+パラメータ:prefix - 一致をテストする文字列startIndex - 検索を開始するインデックスbias - 検索方向。Position.Bias.Forward または Position.Bias.Backward
+戻り値:接頭辞で始まる、次のリスト要素のインデックス。そうでない場合は -1
+例外:
+IllegalArgumentException - 接頭辞が null または startIndex が範囲外にある場合導入されたバージョン:
+1.4
+getToolTipText
+public String getToolTipText(MouseEvent event)
+JComponent の getToolTipText メソッドをオーバーライドして、テキストセットがある場合、レンダリングのヒントを使用できるようにします。
+注: JList がレンダリングのツールヒントを適切に表示できるようにするには、JList は ToolTipManager に登録済みのコンポーネントでなければいけません。これはコンストラクタで自動的に行われますが、あとで JList に setToolTipText(null) を通知すると、リストコンポーネントを登録解除するので、レンダリングからのヒントはそれ以上表示されません。
+オーバーライド: クラス JComponent 内の getToolTipText
+関連項目:JComponent.getToolTipText()
+locationToIndex
+public int locationToIndex(Point location)
+JList の座標上の点をその位置にあるセルのインデックスに変換します。セルが実際にその位置を含むかどうかを判定するには、このメソッドと getCellBounds を組み合わせて使用します。モデルが空の場合は、-1 を返します。
+パラメータ:location - JList に関連したセルの座標
+戻り値:整数 -- 指定位置のセルのインデックス、または -1
+indexToLocation
+public Point indexToLocation(int index)
+指定された項目の JList 座標における原点を返します。index が無効な場合は、null を返します。
+パラメータ:index - JList セルのインデックス
+戻り値:index で指定された番号のセルの原点
+getCellBounds
+public Rectangle getCellBounds(int index0,
+int index1)
+JList 座標で指定された項目範囲の境界を返します。インデックスが無効な場合は null を返します。
+パラメータ:index0 - 範囲内の最初の JList セルのインデックスindex1 - 範囲内の最後の JList セルのインデックス
+戻り値:インデックスで指定されたセルのピクセル単位の境界
+getModel
+public ListModel getModel()
+JList コンポーネントによって表示される項目のリストを保持するデータモデルを返します。
+戻り値:表示される項目のリストを提供する ListModel関連項目:setModel(javax.swing.ListModel)
+setModel
+public void setModel(ListModel model)
+リストの内容または「値」を表すモデルを設定し、PropertyChangeListener への通知後にリストの選択範囲をクリアします。
+これは JavaBeans バウンドプロパティです。
+パラメータ:model - 表示される項目のリストを提供する ListModel
+例外:
+IllegalArgumentException - model が null の場合関連項目:getModel()
+setListData
+public void setListData(Object[] listData)
+Object の配列から ListModel を構築し、setModel を適用します。
+パラメータ:listData - リストに表示する項目を保持する Object の配列関連項目:setModel(javax.swing.ListModel)
+setListData
+public void setListData(Vector<?> listData)
+Vector から ListModel を構築し、setModel を適用します。
+パラメータ:listData - リストに表示する項目を保持する Vector関連項目:setModel(javax.swing.ListModel)
+createSelectionModel
+protected ListSelectionModel createSelectionModel()
+DefaultListSelectionModel のインスタンスを返します。このメソッドは、コンストラクタが selectionModel プロパティを初期化するのに使用します。
+戻り値:この JList が使用する ListSelectionModel関連項目:setSelectionModel(javax.swing.ListSelectionModel), 
+DefaultListSelectionModel
+getSelectionModel
+public ListSelectionModel getSelectionModel()
+現在の選択モデルの値を返します。選択モデルは、単一選択、隣接した範囲の選択、および非隣接選択の作成タスクを処理します。
+戻り値:リスト選択を実装する ListSelectionModel関連項目:setSelectionModel(javax.swing.ListSelectionModel), 
+ListSelectionModel
+fireSelectionValueChanged
+protected void fireSelectionValueChanged(int firstIndex,
+int lastIndex,
+boolean isAdjusting)
+選択モデルが変更されたことを JList の ListSelectionListener に通知します。このメソッドは、ListSelectionEvent を selectionModel から、直接 JList に追加された ListSelectionListener に転送するために使用されます。
+パラメータ:firstIndex - 選択されている最初のインデックスlastIndex - 選択されている最後のインデックスisAdjusting - 複数の変更が行われた場合は true関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener), 
+removeListSelectionListener(javax.swing.event.ListSelectionListener), 
+EventListenerList
+addListSelectionListener
+public void addListSelectionListener(ListSelectionListener listener)
+選択が変更されるたびに通知されるリストにリスナーを追加します。JList に直接追加されるリスナーは、(ListSelectionModel の代わりに) ListSelectionEvent.getSource() (この JList) を持ちます。
+パラメータ:listener - 追加する ListSelectionListener関連項目:getSelectionModel(), 
+getListSelectionListeners()
+removeListSelectionListener
+public void removeListSelectionListener(ListSelectionListener listener)
+選択が変更されるたびに通知されるリスナーをリストから削除します。
+パラメータ:listener - 削除する ListSelectionListener関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener), 
+getSelectionModel()
+getListSelectionListeners
+public ListSelectionListener[] getListSelectionListeners()
+この JList に addListSelectionListener() で追加されたすべての ListSelectionListener の配列を返します。
+戻り値:追加されたすべての ListSelectionListener。追加されたリスナーがない場合は空の配列導入されたバージョン:
+1.4
+関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener)
+setSelectionModel
+public void setSelectionModel(ListSelectionModel selectionModel)
+リストの selectionModel を null ではない ListSelectionModel 実装に設定します。選択モデルは、単一選択、隣接した範囲の選択、および非隣接選択を作成するタスクを処理します。
+これは JavaBeans バウンドプロパティです。
+パラメータ:selectionModel - 選択を実装する ListSelectionModel
+例外:
+IllegalArgumentException - selectionModel が null の場合関連項目:getSelectionModel()
+setSelectionMode
+public void setSelectionMode(int selectionMode)
+単一項目選択または複数項目選択が可能かどうかを判定します。次の selectionMode 値を指定できます。  ListSelectionModel.SINGLE_SELECTION - 1 回に 1 つのリストインデックスのみが選択できます。このモードでは、setSelectionInterval および addSelectionInterval メソッドは同等となり、2 番目のインデックス引数のみが使用されます。 ListSelectionModel.SINGLE_INTERVAL_SELECTION - 連続するインデックス区間を 1 回に 1 つ選択できます。このモードでは、setSelectionInterval メソッドと addSelectionInterval メソッドは同等です。 ListSelectionModel.MULTIPLE_INTERVAL_SELECTION - このモードでは、選択対象に制限はありません。これがデフォルトです。 
+パラメータ:selectionMode - 可能な選択タイプを指定する整数関連項目:getSelectionMode()
+getSelectionMode
+public int getSelectionMode()
+単一項目選択または複数項目選択のどちらが許容されているかを返します。
+戻り値:selectionMode プロパティの値関連項目:setSelectionMode(int)
+getAnchorSelectionIndex
+public int getAnchorSelectionIndex()
+最後の addSelectionModel または setSelectionInterval 呼び出しにおける最初のインデックス引数を返します。selectionModel に委譲する簡易メソッドです。
+戻り値:最後の区間選択の先頭を示すインデックス関連項目:ListSelectionModel.getAnchorSelectionIndex(), 
+addSelectionInterval(int, int), 
+setSelectionInterval(int, int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+getLeadSelectionIndex
+public int getLeadSelectionIndex()
+最後の addSelectionInterval または setSelectionInterval 呼び出しにおける 2 番目のインデックス引数を返します。selectionModel に委譲する簡易メソッドです。
+戻り値:最後の区間選択の末尾を示すインデックス関連項目:ListSelectionModel.getLeadSelectionIndex(), 
+addSelectionInterval(int, int), 
+setSelectionInterval(int, int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+getMinSelectionIndex
+public int getMinSelectionIndex()
+選択されているセルの最小インデックスを返します。selectionModel に委譲する簡易メソッドです。
+戻り値:選択されているセルの最小インデックス関連項目:ListSelectionModel.getMinSelectionIndex(), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+getMaxSelectionIndex
+public int getMaxSelectionIndex()
+選択されているセルの最大インデックスを返します。selectionModel に委譲する簡易メソッドです。
+戻り値:選択されているセルの最大インデックス関連項目:ListSelectionModel.getMaxSelectionIndex(), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+isSelectedIndex
+public boolean isSelectedIndex(int index)
+指定されたインデックスが選択されている場合は true を返します。selectionModel に委譲する簡易メソッドです。
+パラメータ:index - 選択状態が照会されるインデックス
+戻り値:指定のインデックスが選択されている場合は true関連項目:ListSelectionModel.isSelectedIndex(int), 
+setSelectedIndex(int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+isSelectionEmpty
+public boolean isSelectionEmpty()
+何も選択されていない場合は true を返します。selectionModel に委譲する簡易メソッドです。
+戻り値:何も選択されていない場合は true関連項目:ListSelectionModel.isSelectionEmpty(), 
+clearSelection(), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+clearSelection
+public void clearSelection()
+選択をクリアします。このメソッドを呼び出したあとは、isSelectionEmpty は true を返します。selectionModel に委譲する簡易メソッドです。
+関連項目:ListSelectionModel.clearSelection(), 
+isSelectionEmpty(), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+setSelectionInterval
+public void setSelectionInterval(int anchor,
+int lead)
+指定された区間を選択します。anchor および lead インデックスが含まれます。anchor が lead より小さくなくてもかまいません。selectionModel に委譲する簡易メソッドです。anchor または leadが -1 の場合、DefaultListSelectionModel 実装は何も行いません。anchor または leadが -1 未満の場合、IndexOutOfBoundsException がスローされます。
+パラメータ:anchor - 選択する最初のインデックスlead - 選択する最後のインデックス
+例外:
+IndexOutOfBoundsException - anchor または lead が -1 未満の場合関連項目:ListSelectionModel.setSelectionInterval(int, int), 
+addSelectionInterval(int, int), 
+removeSelectionInterval(int, int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+addSelectionInterval
+public void addSelectionInterval(int anchor,
+int lead)
+指定された区間を現在の選択に加えます。先頭および最終インデックスが含まれます。先頭インデックスが最終インデックスより小さくなくてもかまいません。selectionModel に委譲する簡易メソッドです。anchor または leadが -1 の場合、DefaultListSelectionModel 実装は何も行いません。anchor または leadが -1 未満の場合、IndexOutOfBoundsException がスローされます。
+パラメータ:anchor - 選択に追加する最初のインデックスlead - 選択に追加する最後のインデックス
+例外:
+IndexOutOfBoundsException - anchor または lead が -1 未満の場合関連項目:ListSelectionModel.addSelectionInterval(int, int), 
+setSelectionInterval(int, int), 
+removeSelectionInterval(int, int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+removeSelectionInterval
+public void removeSelectionInterval(int index0,
+int index1)
+選択範囲を、指定された区間と現在の選択範囲との差集合に設定します。index0 および index1 インデックスが削除されます。index0 が index1 より小さくなくてもかまいません。selectionModel に委譲する簡易メソッドです。index0 または index1が -1 の場合、DefaultListSelectionModel 実装は何も行いません。index0 または index1が -1 未満の場合、IndexOutOfBoundsException がスローされます。
+パラメータ:index0 - 選択から削除する最初のインデックスindex1 - 選択から削除する最後のインデックス
+例外:
+IndexOutOfBoundsException - index0 または index1 が -1 未満の場合関連項目:ListSelectionModel.removeSelectionInterval(int, int), 
+setSelectionInterval(int, int), 
+addSelectionInterval(int, int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+setValueIsAdjusting
+public void setValueIsAdjusting(boolean b)
+データモデルの isAdjusting プロパティを true に設定し、すべての選択イベント (選択モードでリスト項目上をマウスでドラッグしている場合など) が完了した時点で単一イベントが生成されるようにします。
+パラメータ:b - プロパティ値の boolean 値関連項目:ListSelectionModel.setValueIsAdjusting(boolean)
+getValueIsAdjusting
+public boolean getValueIsAdjusting()
+データモデルの isAdjusting プロパティの値を返します。複数の変更が行われている場合には true を返します。
+戻り値:複数の選択変更が発生している場合 (リスト項目上をマウスでドラッグしている場合など) は true関連項目:ListSelectionModel.getValueIsAdjusting()
+getSelectedIndices
+public int[] getSelectedIndices()
+選択されているすべてのインデックスの昇順配列を返します。
+戻り値:選択されているすべてのインデックス (昇順)関連項目:removeSelectionInterval(int, int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+setSelectedIndex
+public void setSelectedIndex(int index)
+単一セルを選択します。
+パラメータ:index - 選択する単一セルのインデックス関連項目:ListSelectionModel.setSelectionInterval(int, int), 
+isSelectedIndex(int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+setSelectedIndices
+public void setSelectedIndices(int[] indices)
+セルのセットを選択します。
+パラメータ:indices - 選択するセルのインデックスの配列関連項目:ListSelectionModel.addSelectionInterval(int, int), 
+isSelectedIndex(int), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+getSelectedValues
+public Object[] getSelectedValues()
+選択されたセルの値の配列を返します。値はインデックスの昇順に並べられます。
+戻り値:選択された値。何も選択されていない場合は空のリスト関連項目:isSelectedIndex(int), 
+getModel(), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+getSelectedIndex
+public int getSelectedIndex()
+最初に選択されたインデックスを返すか、選択項目がない場合は -1 を返します。
+戻り値:getMinSelectionIndex の値関連項目:getMinSelectionIndex(), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+getSelectedValue
+public Object getSelectedValue()
+最初に選択されたインデックスを返すか、選択が空の場合は null を返します。
+戻り値:最初に選択された値関連項目:getMinSelectionIndex(), 
+getModel(), 
+addListSelectionListener(javax.swing.event.ListSelectionListener)
+setSelectedValue
+public void setSelectedValue(Object anObject,
+boolean shouldScroll)
+指定されたオブジェクトをリストから選択します。
+パラメータ:anObject - 選択するオブジェクトshouldScroll - オブジェクトが存在し、リストをスクロールして選択したオブジェクトを表示する場合は true。そうでない場合は false
+getPreferredScrollableViewportSize
+public Dimension getPreferredScrollableViewportSize()
+visibleRowCount の行を表示するために必要なビューポートのサイズを計算します。fixedCellWidth および fixedCellHeight プロパティが指定されている場合には、このサイズは明らかです。これらのプロパティ値は、prototypeCellValue プロパティによって暗黙に指定されることもあります。fixedCellWidth が指定されていない場合には、このサイズはもっとも幅の広いリスト要素を見つけることによって計算されます。fixedCellHeight が指定されていない場合には、次のようにしてヒューリスティックに決着されます。  モデルが空でなければ、先頭行の高さを visibleRowCount によって乗算します。 モデルが空であれば (JList.getModel().getSize() == 0 であれば)、可視行あたり 16 ピクセルを割り当て、幅に (fixedCellWidth が設定されていなければ) 256 ピクセルを割り当て、最善の結果を期待します。
+レイアウト方向が VERTICAL でない場合、getPreferredSize からの値を返します。現在の ListUI により、適切な値を返すよう getPreferredSize がオーバーライドされることが予想されます。
+定義:インタフェース Scrollable 内の getPreferredScrollableViewportSize
+戻り値:visibleRowCount 行の表示に必要なビューポートのサイズを含む寸法関連項目:getPreferredScrollableViewportSize(), 
+setPrototypeCellValue(java.lang.Object)
+getScrollableUnitIncrement
+public int getScrollableUnitIncrement(Rectangle visibleRect,
+int orientation,
+int direction)
+次または前の行 (垂直スクロール) または列 (水平スクロール) を表示するためにスクロールする距離を返します。
+水平方向のスクロールでは、リストが垂直方向に配置されている (orientation が VERTICAL) 場合、リストのフォントサイズが返されます。フォントが null の場合は 1 が返されます。
+visibleRect の値は、this.getVisibleRect() と同じでなければいけません。
+定義:インタフェース Scrollable 内の getScrollableUnitIncrement
+パラメータ:visibleRect - 可視矩形orientation - HORIZONTAL または VERTICALdirection - 0 以下の場合は上にスクロール、0 よりも大きい場合は下にスクロール
+戻り値:次または前の行を表示するためにスクロールする、ピクセル単位の距離
+例外:
+IllegalArgumentException - visibleRect が null の場合、あるいは orientation が SwingConstants.VERTICAL または SwingConstants.HORIZONTAL のどちらかでない場合関連項目:Scrollable.getScrollableUnitIncrement(java.awt.Rectangle, int, int)
+getScrollableBlockIncrement
+public int getScrollableBlockIncrement(Rectangle visibleRect,
+int orientation,
+int direction)
+次または前のブロックを表示するためにスクロールする距離を返します。垂直方向のスクロールには次のルールを使用します。 下にスクロールする (direction が 0 より大きい) 場合は、最後の可視要素が最初の完全な可視要素になる上にスクロールする場合は、最初の可視要素が最後の完全な可視要素になるリストが空の場合は、visibleRect.height 
+水平方向のスクロールには、リストが水平方向に配置されている場合 (orientation が VERTICAL_WRAP または HORIZONTAL_WRAP)、次のルールを使用します。 
+右にスクロールする (direction が 0 より大きい) 場合は、最後の可視要素が最初の完全な可視要素になる左にスクロールする場合は、最初の可視要素が最後の完全な可視要素になるリストが空の場合は、visibleRect.width
+リストが垂直方向に配置されている場合は、visibleRect.width を返します。
+visibleRect の値は、this.getVisibleRect() と同じでなければいけません。
+定義:インタフェース Scrollable 内の getScrollableBlockIncrement
+パラメータ:visibleRect - 可視矩形orientation - HORIZONTAL または VERTICALdirection - 0 以下の場合は上にスクロール、0 よりも大きい場合は下にスクロール
+戻り値:ブロックの増分量
+例外:
+IllegalArgumentException - visibleRect が null の場合、あるいは orientation が SwingConstants.VERTICAL または SwingConstants.HORIZONTAL のどちらかでない場合関連項目:Scrollable.getScrollableUnitIncrement(java.awt.Rectangle, int, int)
+getScrollableTracksViewportWidth
+public boolean getScrollableTracksViewportWidth()
+この JList が JViewport に表示され、ビューポートが JList の適切な幅よりも広い場合、またはレイアウト方向が HORIZONTAL_WRAP であり、可視行カウントが <= 0 の場合は true を返します。そうでない場合は false を返します。false の場合、ビューポートの幅を追跡しません。これにより、JViewport 自体が JScrollPane に組み込まれている場合、水平スクロールができるようになります。
+定義:インタフェース Scrollable 内の getScrollableTracksViewportWidth
+戻り値:ビューポートが JList の適切な幅よりも広い場合は true、そうでない場合は false関連項目:Scrollable.getScrollableTracksViewportWidth()
+getScrollableTracksViewportHeight
+public boolean getScrollableTracksViewportHeight()
+この JList が JViewport に表示され、ビューポートが JList の適切な高さよりも高い場合、またはレイアウト方向が VERTICAL_WRAP であり、可視行カウントが 0 以下の場合は true を返します。そうでない場合は false を返します。false の場合、ビューポートの高さを追跡しません。これにより、JViewport 自体が JScrollPane に組み込まれている場合、垂直スクロールができるようになります。
+定義:インタフェース Scrollable 内の getScrollableTracksViewportHeight
+戻り値:ビューポートが Jlist の適切な高さよりも高い場合は true、そうでない場合は false関連項目:Scrollable.getScrollableTracksViewportHeight()
+paramString
+protected String paramString()
+この JList の文字列表現を返します。このメソッドはデバッグ専用であり、返される文字列の内容および形式は実装によって異なります。返される文字列は空の場合がありますが、null にはなりません。
+オーバーライド: クラス JComponent 内の paramString
+戻り値:この JList の文字列表現
+getAccessibleContext
+public AccessibleContext getAccessibleContext()
+この JList に関連した AccessibleContext を返します。JList の場合、AccessibleContext は AccessibleJList の形式を取ります。必要に応じて新規の AccessibleJList インスタンスが作成されます。
+定義:インタフェース Accessible 内の getAccessibleContextオーバーライド: クラス JComponent 内の getAccessibleContext
+戻り値:この JList の AccessibleContext として機能する AccessibleJList
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM 2 PlatformStandard Ed. 5.0
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要:  入れ子 | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+バグの報告と機能のリクエストさらに詳しい API リファレンスおよび開発者ドキュメントについては、Java 2 SDK SE 開発者用ドキュメントを参照してください。開発者向けの詳細な解説、概念の概要、用語の定義、バグの回避策、およびコード実例が含まれています。Copyright 2004 Sun Microsystems, Inc. All rights reserved. Use is subject to license terms. Documentation Redistribution Policy も参照してください。
+JList (Java 2 Platform SE 5.0)

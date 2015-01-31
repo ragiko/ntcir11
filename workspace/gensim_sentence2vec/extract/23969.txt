@@ -1,0 +1,4 @@
+C++testには、約1,600個のコーディングルールが標準搭載されています。
+例えば、Scott Meyers氏の「Effective C++」や、 Sutter氏 と Alexandrescu氏 による「C++ Coding Standards」に記載されているベストプラクティスなど、C/C++のプログラムエキスパートのアイデアをベースとしたルールをはじめ、組込みソフトウェアに有効なMISRA(Motor Industry Software Reliability Association)や電気・通信システムに有効なEllemtel、統合攻撃戦闘機計画におけるプログラム品質向上コーディング標準であるJSF(Joint Strike Fighter Air)のコーディングルールセットなどがあります。
+C++testはC/C++ソースコードを静的に解析し、これらのルールに反するコードを検出します。
+静的解析 - 約1,600種類のコーディングルール -｜C++test −C/C++対応自動テストツール−｜テクマトリックス株式会社

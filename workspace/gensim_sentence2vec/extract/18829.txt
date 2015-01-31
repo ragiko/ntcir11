@@ -1,0 +1,98 @@
+1.はじめに
+プログラミング言語とはシステム化する対象物を抽象化し、コンピュータで処理可能なコードを記述するために用いる人工言語である。プログラミング言語はコンピュータの機械語と一対一の対応をもったアセンブラから始まり、コンパイラを用いて機械語に翻訳することを前提としたコンパイラ言語、インタプリタと呼ばれるプログラムがソースコードを解釈し実行するスクリプト言語と、記述できる抽象度を高める方向へと進化してきた。
+プログラミング言語はその存在理由から、より抽象度の高い記述が行えること、すばやい開発を行える事が求められる。抽象度の高い記述とは、プログラムがどういう処理を行うか(HOW)ではなく何の処理を行うか(WHAT)を記述しやすい構文、機能を持っていることを、すばやい開発とは記述性の高さ、コードの密度の高さ、バグの発生しにくい構文、機能を持っていることをさす。
+この抽象度の高い記述、すばやい開発を行う妨げになるのが記憶領域の管理である。記憶領域の動的確保を行う場合など、コンピュータの抽象化されていない部分を直接プログラマが操作する必要が生じる。記憶領域の操作は領域の不正アクセス、開放忘れによるメモリリークなどのバグと常に隣り合わせである。言語処理系の構文木など、複雑な参照が行われているデータ構造ではとくに記憶領域の開放が問題となる。
+これらの問題を解決するための機構がガベージコレクションである。ガベージコレクションは記憶領域の動的確保、開放を抽象化し、プログラマが明示的に管理を行う必要を減らす。本研究では、ガベージコレクションをLISPというプログラミング言語処理系に実装することにより、実装方法などの検討を行った。
+2.ガベージコレクション
+ガベージコレクション(GCと略す)はプログラミング言語処理系(以下言語処理系)の一部もしくはライブラリとして提供される、動的に確保した記憶領域のうち利用されていない記憶領域を自動的に回収し、再利用または開放を行う機構である。
+GCを導入することによりプログラマは手動での記憶領域の管理から開放される。
+2.1.ガベージコレクションの必要性
+GCは近年の言語処理系では必須の機能として提供されているが、この要因としては、
+言語処理系の提供する機能の高度化
+明示的な管理を行うと実現しにくいプログラミングスタイルの主流化
+コンピュータの高速、大容量化により、実行効率より開発効率が求められるようになった
+などが考えられる。
+2.1.1.例 : 例外
+例外とはプログラム実行中におこる不都合を処理するための分岐である。不都合は対処されもとの処理に戻ればよいが、ファイルやメモリなどの資源確保の失敗など取り返しのつかない不都合に対しては処理の継続をあきらめなければならない。その場合、それまでの処理で確保した資源の開放が問題となる。
+ここではGCの存在が例外を利用したプログラミングにどのような影響を与えるかを述べる。プログラムの例としてC++とJavaをあげ、例外を利用したプログラムとしてコンストラクタで例外を発生させるクラスを作成する。
+2.1.1.1.C++
+Figure 1.とFigure 2.はファイルを管理するクラスを利用したプログラムである。
+C++の標準ライブラリは初期設定では例外を発生させることは無いため、通常は例外を発生させないFigure 1.のようなプログラミングスタイルが主流であるが、ここではFigure 2.のように意図的に例外の発生を許可している。Figure 2.は全ての例外を捕捉してコンストラクタ外に例外が漏れないよう記述している。
+C++ではコンストラクタで例外が発生して処理が中断してしまった場合にデストラクタが呼び出されないという有名なバグが存在する。また、デストラクタで例外が発生した場合、例外クラスの中で例外が発生する場合も再現が難しいバグになる。例外クラスの中で例外が発生する代表的な例としては、bad_alloc例外が発生した状況で、例外オブジェクトを作成するためにnewを使い、再度bad_allocを発生させる場合などがある。これらのバグは発見することが難しい。
+このため、コンストラクタ、デストラクタの処理が例外により中断することは許されない。つまり、C++では例外安全(例外が発生しても処理が中断されないこと)なコンストラクタ、クラスを作成することが安全なプログラムを作成する必要条件である。これらのことから、C++は例外という機構を取り入れたがために例外を利用するための資源管理をプログラマに強いるようになってしまった。 
+これらは資源管理をプログラマが行う必要から生じる。GCが存在すればこのように資源の解放について注意を向けるコストが軽減される。
+#include <iostream>
+#include <fstream>
+#include <string>
+class file_io {
+private:
+std::ifstream *ifs_;
+std::ofstream *ofs_;
+bool is_fail_;
+public:
+file_io() : is_fail_(false), ifs_(NULL), ofs_(NULL) {}
+file_io(std::string input_file, std::string output_file)
+: is_fail_(false) , ifs_(NULL), ofs_(NULL)
+{
+ifs_ = new std::ifstream();
+ofs_ = new std::ofstream();
+if (ifs_ == NULL || ofs_ == NULL) {
+is_fail_ = true;
+return ;
+}
+ifs_->open(input_file.c_str());
+ofs_->open(output_file.c_str());
+if (ifs_->fail() || ofs_->fail()) {
+is_fail_ = true;
+}
+}
+~file_io() { delete ifs_; delete ofs_; }
+bool fail() { return is_fail_; }
+/* and more definitions ... */
+};
+int main(int argc, char **argv) {
+if (argc < 3) { return -1; }
+file_io fio = file_io(argv[1], argv[2]);
+std::cout << fio.fail() << std::endl;
+}
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <new> // new 演算子の例外発生を許可する
+class file_io {
+private:
+std::ifstream *ifs_;
+std::ofstream *ofs_;
+bool is_fail_;
+public:
+file_io() : is_fail_(false), ifs_(NULL), ofs_(NULL) {}
+file_io(std::string input_file, std::string output_file)
+: is_fail_(false) , ifs_(NULL), ofs_(NULL)
+{
+try {
+ifs_ = new std::ifstream();
+ofs_ = new std::ofstream();
+} catch (std::bad_alloc) {
+is_fail_ = true;
+return ;
+}
+// 例外を許可する
+ifs_->exceptions(std::ios_base::failbit);
+ofs_->exceptions(std::ios_base::failbit);
+try {
+ifs_->open(input_file.c_str());
+ofs_->open(output_file.c_str());
+} catch (std::ios_base::failure) {
+is_fail_ = true;
+}
+}
+~file_io() { delete ifs_; delete ofs_; }
+bool fail() { return is_fail_; }
+/* and more definitions ... */
+};
+int main(int argc, char **argv) {
+if (argc < 3) { return -1; }
+file_io fio = file_io(argv[1], argv[2]);
+std::cout << fio.fail() << std::endl;
+}
+ガベージコレクションの実装法と評価

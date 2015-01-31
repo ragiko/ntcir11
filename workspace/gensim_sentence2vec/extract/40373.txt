@@ -1,0 +1,132 @@
+
+説明 
+テーマやプラグインが特定のテーマ機能をサポートすることを許可します。テーマから呼ばれる場合、動作させるためにはテーマのfunctions.phpファイルの中で指定されなければなりません。アクションフック/enにより、プラグインからも呼び出し可能です。
+アクションフックによる場合は、after_setup_theme/enとなります。init/enアクションフックでは、機能によっては遅すぎることがあります。
+使い方 
+<?php add_theme_support( $feature, $arguments ); ?> 
+パラメータ 
+$feature
+(文字列) (必須) 追加する機能の名前。
+機能リスト:
+'post-formats'
+'post-thumbnails'
+'custom-background'
+'custom-header'
+'automatic-feed-links'
+'menus'
+'html5'
+初期値: なし
+$args
+(array) (optional) オプションの引数 (以下参照)。渡さなければ、デフォルトで trueです。
+初期値: true
+追加できる機能 
+投稿フォーマット 
+この機能は、テーマで投稿フォーマットをサポートします。この機能はVersion 3.1で利用可能になりました。子テーマ使用時、 add_theme_support( 'post-formats' ) は親テーマで定義されたフォーマットに、追加でなく、 上書き することに注意ください。
+固有のフォーマット(投稿フォーマットがサポートしているフォーマットを確認ください)を有効にするには、以下を使用ください。
+add_theme_support( 'post-formats', array( 'aside', 'gallery' ) );
+投稿に'quote'投稿フォーマットが割り当てられているかどうかチェックするには、以下を使用ください。
+// あなたのテーマのsingle.php、page.php、またはカスタム投稿タイプにて
+if ( has_post_format( 'quote' ) ) {
+echo 'これは quote です。';
+}
+投稿サムネイル 
+この機能は、テーマで投稿サムネイルをサポートします。この機能はVersion 2.9で利用可能になりました。オプションとして、この機能を有効にしたい投稿タイプの配列を第2引数で渡すことができることに注目ください。
+add_theme_support( 'post-thumbnails' );
+add_theme_support( 'post-thumbnails', array( 'post' ) );          // 投稿のみ
+add_theme_support( 'post-thumbnails', array( 'page' ) );          // 固定ページのみ
+add_theme_support( 'post-thumbnails', array( 'post', 'movie' ) ); // 投稿と動画
+この機能はinitフック起動前に呼ばれなければなりません。これは、functions.phpに直接置かれるか、after_setup_themeフックに割り当てられた関数内に置かれる必要があることを意味しています。カスタム投稿タイプ用には、register_post_typeもまた使用して、投稿サムネイルを加えることができます。
+テーマでサムネイルを表示するには、index.php、single.php、またはカスタムテンプレートで、以下を使用ください。
+the_post_thumbnail();
+表示前に投稿に割り当てられた投稿サムネイルの存在確認をするためには、以下を使用ください。
+if ( has_post_thumbnail() ) {
+the_post_thumbnail();
+}
+カスタム背景 
+この機能は、Version 3.4のテーマでカスタム背景をサポートします。
+add_theme_support('custom-background');
+デフォルトの引数を使用できることに注目ください:
+$defaults = array(
+'default-color'          => '',
+'default-image'          => '',
+'wp-head-callback'       => '_custom_background_cb',
+'admin-head-callback'    => '',
+'admin-preview-callback' => ''
+);
+add_theme_support( 'custom-background', $defaults );
+これに下位互換性を持たせるため、WordPressがVersion 3.4以上かどうか決めるためにこのチェックを使用できます。ですから、3.4への推移の間、いずれかを選択して使用することで両方の関数をサポートできます。
+global $wp_version;
+if ( version_compare( $wp_version, '3.4', '>=' ) ) {
+add_theme_support( 'custom-background' ); 
+} else {
+add_custom_background( $args );
+}
+カスタムヘッダー 
+この機能は、Version 3.4のテーマでカスタムヘッダーをサポートします。
+add_theme_support( 'custom-header' );
+デフォルトの引数を使用できることに注目ください:
+$defaults = array(
+'default-image'          => '',
+'random-default'         => false,
+'width'                  => 0,
+'height'                 => 0,
+'flex-height'            => false,
+'flex-width'             => false,
+'default-text-color'     => '',
+'header-text'            => true,
+'uploads'                => true,
+'wp-head-callback'       => '',
+'admin-head-callback'    => '',
+'admin-preview-callback' => '',
+);
+add_theme_support( 'custom-header', $defaults );
+これに下位互換性を持たせるため、WordPressがバージョン3.4以上かどうか決めるためにこのチェックを使用できます。ですから、3.4への推移の間、いずれかを選択して使用することで両方の関数をサポートできます。
+global $wp_version;
+if ( version_compare( $wp_version, '3.4', '>=' ) ) {
+add_theme_support( 'custom-header' );
+} else {
+add_custom_image_header( $wp_head_callback, $admin_head_callback, $admin_preview_callback );
+}
+フィードリンク 
+この機能は、headerでの、投稿とコメントのRSSフィードのリンクを有効にします。これは非推奨の automatic_feed_links() 関数の代わりに使用されるべきです。この機能はVersion 3.0で使用可能になりました。
+add_theme_support( 'automatic-feed-links' );
+HTML5 
+この機能は、コメントフォーム、検索フォーム、およびコメントリストでHTML5マークアップの使用を許可します。
+add_theme_support( 'html5', array( 'comment-list', 'comment-form', 'search-form', 'gallery', 'caption' ) );
+ギャラリーとキャプション 
+WordPressのVersion 3.9では、<figure>と<figcaption>要素を、ギャラリーへの出力をするための一般的な定義リストマークアップの代わりに使用するでしょう。本件について詳しくは、Make WordPress Coreの記事を参照ください。
+マルチサイト 
+マルチサイトのインストールで「アイキャッチ画像」メタボックスを表示するには、許可されたアップロードファイル形式の更新、ネットワーク管理者であること、アップロード設定、メディアアップロードボタンのオプションを確認ください。デフォルトは jpg jpeg png gif mp3 mov avi wmv midi mid pdfです。
+注記 
+次のパラメータは読み出し専用で、current_theme_supports()/enの文脈の中でのみ使用されるべきです。
+sidebars: 代わりにregister_sidebar()かregister_sidebars()を使用ください。
+menus: 代わりにregister_nav_menu()かregister_nav_menus()を使用ください。
+editor-style: 代わりにadd_editor_style()を使用ください。
+変更履歴 
+3.6: 'html5' 機能追加
+3.4: 'custom-background' 追加、およびadd_custom_background()非推奨
+3.4: 'custom-header' 追加、およびadd_custom_image_header()非推奨
+3.1: 'post-formats' 追加(Ticket #14746) 
+3.0: 'automatic-feed-links'追加、およびautomatic_feed_links()非推奨
+2.9: 'post-thumbnails' 機能導入
+ソースファイル 
+add_theme_support() は、wp-includes/theme.php にあります。
+外部リソース 
+WordPress Theme Support Generator
+関連 
+テーマサポート: 
+add_theme_support(),
+remove_theme_support(),
+current_theme_supports()
+機能: 
+sidebar, 
+menus, 
+post-formats, 
+post-thumbnails, 
+custom-background, 
+custom-header, 
+automatic-feed-links, 
+content_width, 
+editor-style,
+html5
+関数リファレンス/add theme support - WordPress Codex 日本語版

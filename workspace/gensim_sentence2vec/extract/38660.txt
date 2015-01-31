@@ -1,0 +1,33 @@
+MySQL 5.1で追加されたメジャーな機能の影に隠れた、地味だが便利な改善がある。それがスロークエリログに関する仕様である。MySQL 5.0まではスロークエリログは1秒未満のクエリを捕捉することが出来なかった。が、MySQL 5.1では1マイクロ秒までのクエリを記録できるようになっている。従って、0.5秒かかるけど大量に実行されてパフォーマンスに大きな影響を与えている！というようなクエリの発見が出来るようになった。1秒未満のクエリを追跡したい場合、例えば以下のような設定をする。
+[mysqld]
+slow_query_log=ON
+slow_query_log_file=mysql-slow.log
+long_query_time=0.1
+MySQL 5.0まではlog_slow_queryというオプションだったのが、MySQL 5.1ではslow_query_logというオプション名に変更されている。また、ON/OFFを切り替えるオプションとファイル名を指定するオプションが別になったので注意されたい。（より自然なオプション名になった？）旧オプション名も利用可能だが、そのままにしておくとエラーログに警告が記録される。将来的には旧オプション名は使えなくなる予定なので、早めに変更しておこう。
+long_query_timeには0秒も指定できる。この場合、全てのクエリが記録されることになる。それでは一般クエリログと同じではないか？と思うかも知れないが、一般クエリログはクエリがサーバへ送信された時点で記録されるのに対して、スロークエリログはクエリの実行が完了した時点で実行時間と共に記録されるところが異なる。しかし、0秒を指定すると大量のクエリが記録されてディスクを使い切ってしまうことになるので、実運用環境では現実的な数字を指定しなければならない。
+min_examined_row_limitという変数が追加されたのも見逃せない。この変数を指定すると、「○○○行以上の行をテーブルから読み込んだクエリをスロークエリログに記録する」という指定ができるようになる。多くの行を読み込むクエリは、潜在的にサーバ全体の性能を劣化させる危険性があるので、long_query_timeを少し大きめにしておいて、このオプションを併用しておくといいだろう。例えばmin_examined_row_limit=10000など。いずれの変数もアプリケーションの特性に合わせて調節して欲しい。
+余談だが、一般クエリログのオプション名もMySQL 5.1から変更されているので注意しよう。（log→general_log+general_log_file）
+また、MySQL 5.1においては、スロークエリログと一般クエリログをファイルではなくテーブルに記録できるようになった。その場合、my.cnfに以下の設定を追加する。
+[mysqld]
+log_output=TABLE
+そうすると、スロークエリログと一般クエリログがそれぞれmysql.slow_logおよびmysql.general_logというテーブルに記録されるようになる。これらのテーブルはCSVストレージエンジンを用いて作成されている。ちなみに、スロークエリログのテーブルは以下の様な定義になっている。
+mysql> show create table slow_log\G
+*************************** 1. row ***************************
+Table: slow_log
+Create Table: CREATE TABLE `slow_log` (
+`start_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+`user_host` mediumtext NOT NULL,
+`query_time` time NOT NULL,
+`lock_time` time NOT NULL,
+`rows_sent` int(11) NOT NULL,
+`rows_examined` int(11) NOT NULL,
+`db` varchar(512) NOT NULL,
+`last_insert_id` int(11) NOT NULL,
+`insert_id` int(11) NOT NULL,
+`server_id` int(11) NOT NULL,
+`sql_text` mediumtext NOT NULL
+) ENGINE=CSV DEFAULT CHARSET=utf8 COMMENT='Slow log'
+1 row in set (0.00 sec)
+テーブルに記録する利点は、情報をまとめやすいということだろう。集計などの操作がSQL文を用いて実施できるので、とても柔軟にスロークエリログを解析することができる。（これまでのようにmysqldumpslowコマンドを使わなくても良い。）
+ちなみに、商用の「Query Analyzer」を利用すると、スロークエリログを使わずにクエリの統計情報の解析をもっと楽ちんに行う事が出来る。手を掛けずに本格的にクエリのチューニングを行いたい場合にはQuery Analyzerの使用も検討するといいだろう。
+漢(オトコ)のコンピュータ道: MySQL 5.1のスロークエリログ

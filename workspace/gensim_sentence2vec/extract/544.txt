@@ -1,0 +1,17 @@
+ユーザは、随時、まだ購入していない ArcGIS for Desktop エクステンションの評価版を使用することができます。評価版は、一定期間無料です。はじめにエクステンションをインストールしてから、それらを認証します。評価対象のエクステンションをまだインストールしていない場合は、setup.exe プログラムを再実行し、インストールを変更するオプションを選択してから、インストールするエクステンションを指定します。必要なエクステンションをインストールした後、このトピックに記載のいずれかの方法を使用してエクステンションを評価することができます。一部のエクステンションは、単独使用の ArcGIS for Desktop 認証ファイルを使用して、評価版を認証できます。他のエクステンション、および同時使用ライセンスで認証されたすべてのエクステンションの場合は、Esri カスタマ サービスまたはお客様の地域の Esri 販売代理店にリクエストできる評価認証番号が必要です。
+単独使用の ArcGIS for Desktop ライセンスと同時に認証できる評価版の ArcGIS for Desktop エクステンション単独使用ライセンスを使用している場合は、通常の認証プロセス中に、次の ArcGIS for Desktop エクステンションを評価できます。
+ArcGIS 3D Analyst エクステンション
+ArcGIS Data Interoperability
+ArcGIS Geostatistical Analyst
+ArcGIS Network Analyst エクステンション
+ArcGIS Publisher
+ArcGIS Schematics
+ArcGIS Spatial Analyst エクステンション
+ArcGIS Tracking Analyst
+これらのエクステンションを評価できるようにするには、ソフトウェア認証ウィザードを使用します。[スタート]  [プログラム]  [ArcGIS]  [ArcGIS Administrator] の順に選択すると表示される ArcGIS Administrator からソフトウェア認証ウィザードを開始します。ArcGIS Administrator の [デスクトップ] フォルダをクリックします。いずれかの単独使用製品ライセンスを選択します。[今すぐ認証] をクリックします。ソフトウェア認証ウィザードが開きます。ウィザードの指示に従って、ArcGIS for Desktop を認証してください。[ソフトウェア エクステンションの認証] パネルが表示されたら、このトピックの 2 番目のリストのエクステンションに、Esri カスタマ サービスから受け取った評価認証番号(ある場合)を入力できます。[ソフトウェア エクステンションの評価] パネルが表示されたら、このトピックの最初のリストにあるエクステンションのいずれかを選択して評価できます。ウィザードの手順を完了して、ソフトウェアおよびエクステンションを認証します。 最初のインストール後にエクステンションを追加する方法の詳細については、「インストール コンポーネントの追加インストール」をご参照ください。
+評価認証番号が必要な ArcGIS for Desktop エクステンションEsri カスタマ サービス(米国のお客様)または Esri 製品の販売代理店(米国以外のお客様)へ評価認証番号を注文すると、次のエクステンションを評価できます。 ArcGIS Data Reviewer ArcGIS Workflow Manager
+ArcScan for ArcGISEsri Aeronautical SolutionEsri Business AnalystEsri Business Analyst Premium Esri Defense Mapping Esri Nautical SolutionEsri Production Mappingこれらのエクステンションは、所有している ArcGIS for Desktop ライセンスが単独使用か同時使用かにかかわらず、評価認証番号が必要です。
+エクステンションの評価認証番号を注文する方法 ArcGIS for Desktop 同時使用および特定の単独使用製品のエクステンションの評価認証番号を注文する方法:
+日本のお客様は、電子メールで gisinfo@esrij.com 宛てに、新しいキーコードを依頼してください。
+米国外の場合は、それぞれの地域の Esri 製品販売業者にお問い合わせください。販売業者の連絡先は、Esri の担当窓口(909-793-2853、内線 1-1235)または Web サイト(http://gis.esri.com/intldist/contactint.cfm)で確認することができます。
+ArcGIS Help 10.1 - ArcGIS for Desktop エクステンションの評価

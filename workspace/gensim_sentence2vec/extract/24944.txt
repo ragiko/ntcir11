@@ -1,0 +1,34 @@
+
+こんなケースを回避するtopicsです。
+対象ブラウザ:実装方法はCSSの「:last-child」を使用します。
+「:last-child」 はCSS 3のセレクタのため IEは適応対象外です。
+last-child:afterを使用する方法
+Creating Pipe-Separated Menus with Unordered Lists – exscale.seさんの方法で紹介されていた方法
+last-child:afterを使用して、最後の子要素のみcontentを追加しないようにしています。
+html
+[code language=”html”]
+<ul id="footer-navigation">
+<li><a href="#">Top</a></li>
+<li><a href="#">Valid XHTML</a></li>
+<li><a href="#">Valid CSS</a></li>
+<li><a href="#">Get Firefox</a></li>
+</ul>
+[/code]
+CSS
+[code language=”css”]
+#footer-navigation {
+margin-left: 0;
+padding-left: 0;
+list-style-type: none;
+}
+#footer-navigation li {
+display: inline;
+}
+#footer-navigation li:after {
+content: " | ";
+}
+#footer-navigation li:last-child:after {
+content: "";
+}
+[/code]
+メニューをpipe「|」で区切ったとき、最後にpipeを表示させない方法| LAGRANGE BLOG

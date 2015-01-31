@@ -1,0 +1,38 @@
+ 
+2.7.7 IS NULL条件
+IS NULL条件では、値式のNULL値がテストされます。
+値式の詳細は、第2.6節を参照してください。
+SQLでは、IS NULL条件がUNKNOWNと評価されることはありません。常にTRUEまたはFALSEになります。値式がNULLの場合、この条件はTRUEと評価されます。値式がNULLでない場合、この条件はFALSEと評価されます。
+特定の列にNULL値が含まれている行を取得するには、IS NULL条件を使用します。IS NULL条件は、行の特定の列がNULL値を持つかどうかをテストすることによって結果表に含まれる行が決まる問合せを構成する唯一の方法です。NOT LIKEまたは<>(等しくない)などの他の構成では、NULL値を持つ行は結果表に含まれません。
+例: IS NULL条件を使用した、NULL値に基づく行の取得
+次の例は、NULL値を持つ行を取得するにはIS NULL条件を使用する必要があることを示しています。
+SQL> -- The following query does not include rows that
+SQL> -- have null values in the MIDDLE_INITIAL column:
+SQL> --
+SQL> SELECT COUNT(*) FROM EMPLOYEES
+cont> WHERE NOT (MIDDLE_INITIAL = 'V');
+60
+1 row selected
+SQL> --
+SQL> -- To get a count of rows that have no values stored in
+SQL> -- the MIDDLE_INITIAL column, use an IS NULL predicate.
+SQL> --
+SQL> SELECT COUNT(*) FROM EMPLOYEES
+cont> WHERE MIDDLE_INITIAL IS NULL;
+36
+1 row selected
+2.7.8 LIKE条件
+LIKE条件では、文字列リテラルのパターン・マッチ検索が行われます。LIKE条件では大/小文字が区別されます。同じ文字の大/小文字は異なる文字とみなされます。
+LIKE条件では大/小文字が区別されるため、DEC Multinational Character Setの大文字で検索した結果に小文字は含まれません。その逆も同様です。たとえば、LIKE "&Ccedil;"とLIKE "&ccedil;"では、異なるレコードのセットが取得されます。
+LIKE条件では、DEC Multinational Character Setで使用される発音区別符号が区別されます。したがって、aはAと一致しますが、&aacute;、&agrave;、&auml;、&Aacute;、&Agrave;、&Acirc;などとは一致しません。
+スペイン語では、chとllは一意の単一の文字として処理されます。たとえば、ドメインが照合順番SPANISHで定義されている場合、LIKE "c%"ではcharは取得されませんが、catは取得されます。
+LIKE条件の形式は、次のとおりです。
+SQLでは、value-expr引数は文字列として解釈され、patternと比較されます。patternはテキスト・データ型の値式である必要があります。
+pattern内では、パーセント記号(%)、アンダースコア(_)およびエスケープ文字は特別な意味を持ちます。
+パーセント記号は、文字を含まないものも含め、任意の文字列を表します。パーセント記号はワイルドカード文字です。
+アンダースコアは、任意の単一の文字を表します。
+エスケープ文字を使用すると、SQLでワイルドカード文字はワールドカード文字自体と解釈され、ワイルドカード文字が含まれている文字列が検索されます。エスケープ文字の値は、1文字の長さである必要があります。 表2-33は、エスケープ文字で使用できる有効な文字シーケンスを示しています。
+表2-33 エスケープ文字シーケンス
+pattern内の文字 
+一致する文字 
+Oracle Rdb7

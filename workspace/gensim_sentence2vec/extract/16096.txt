@@ -1,0 +1,9 @@
+クライアント側でdc_rpc_callおよびdc_rpc_call_to内でサーバに要求を送信してからサーバから応答を受け取るまでの時間。
+dc_rpc_callおよびdc_rpc_call_toが成功した場合に取得します。
+同期応答型
+dc_rpc_callおよびdc_rpc_call_toの要求開始から応答を受け取るまでの時間。dc_rpc_callおよびdc_rpc_call_to内でサーバへの要求送信が失敗し,サーバへの要求送信をリトライした場合,リトライした時間も含みます。
+連鎖
+dc_rpc_callおよびdc_rpc_call_toの要求開始から応答を受け取るまでの時間。
+<発生件数>
+dc_rpc_callおよびdc_rpc_call_to発行回数
+システム統計情報

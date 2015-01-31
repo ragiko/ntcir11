@@ -1,0 +1,66 @@
+
+JSPページを作成する場合、HTML文としてのコメント、JSPとしてのコメント、Javaとしてのコメント、の3種類のコメントが最大で含まれる事になりますので、一度整理しておきます。
+HTML文としてのコメント
+JSPページ内ではHTML文を直接記述できますので、HTML文の構文に沿ったコメントを記述することも出来ます。HTML文の場合は次のように記述します。
+<!-- HTMLのコメント -->
+例えば次のようになります。
+<%@ page contentType="text/html;charset=Shift_JIS" %>
+<html>
+<head>
+<title>Hello World!</title>
+</head>
+<body>
+<!-- JSPのテストページです -->
+<h1>Hello World!</h1>
+<%
+out.println(new java.util.Date());
+%>
+</body>
+</html>
+JSPとしてのコメント
+JSPページ内にJSPとしてのコメントを記述することが出来ます。JSPではコメントは次のように定義されています。
+<%-- JSPのコメント --%>
+例えば次のようになります。
+<%@ page contentType="text/html;charset=Shift_JIS" %>
+<html>
+<head>
+<title>Hello World!</title>
+</head>
+<body>
+<!-- JSPのテストページです -->
+<h1>Hello World!</h1>
+<%-- 日付を出力します --%>
+<%
+out.println(new java.util.Date());
+%>
+</body>
+</html>
+HTML文としてのコメントとJSPとしてのコメントは同じようで大きな違いがあります。
+HTML文のコメントの場合は「コメントが記述されたHTML文」ですので、JSPページからサーブレットに変換される時にHTML文のコメントも「out.println()」によってクライアントに対して出力が行われます(出力されますがコメントですのでブラウザ上では表示されません。ブラウザに表示されたHTMLのソースを見るとコメントがあることが分かります)。
+それに対してJSPとしてのコメントはあくまでコメントですのでコメント自身がクライアントに出力されることはありません。その為、クライアントに出力したくないコメントを記述する場合にはJSPのコメントを使います。
+Javaとしてのコメント
+JSPページ内であってもスクリプトレット内はJavaの構文で記述する必要があります。そのためスクリプトレット内でコメントを記述する場合はJavaのコメントの構文に従って記述する必要があります。Javaではコメントは次のように定義されています。
+// Javaのコメント
+又は
+/*
+Javaのコメント
+*/
+「//」を使う場合にはその1行だけがコメントになります。「/* ... */」を使う場合には「/*」から「*/」までの間が全てコメントとなります。複数行に渡っても構いません。
+例えば次のようになります。
+<%@ page contentType="text/html;charset=Shift_JIS" %>
+<html>
+<head>
+<title>Hello World!</title>
+</head>
+<body>
+<!-- JSPのテストページです -->
+<h1>Hello World!</h1>
+<%-- 日付を出力します --%>
+<%
+// java.util.Dataを使います
+out.println(new java.util.Date());
+%>
+</body>
+</html>
+Javaにおけるコメントも出力結果には反映されません。
+コメントの記述 - スクリプティング - JSP入門

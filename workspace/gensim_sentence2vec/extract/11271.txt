@@ -1,0 +1,46 @@
+
+MySQLサーバに接続する
+MySQLのクエリを実行する
+文字列をエスケープする
+文字セットを変更する
+SELECTなどの結果セットの扱い方
+複数のデータベースに接続する
+[参考記事] MySQLで文字コードを指定する方法
+[参考記事] 日付型のフォーマットにスラッシュを使ってはいけません(文字コードによって値が変わる)
+MySQLサーバに接続する
+[参考記事] MySQLサーバに接続できるかどうかを確認する
+// データベースサーバへの接続を試みる
+if (!$con = @mysql_connect($server,DB_USERNAME,DB_PASSWORD)){
+print "Can not connect Server! host or username or password is wrong";
+exit;
+}
+// データベースへの接続を試みる
+if(!mysql_select_db(DB_DATABASE,$con)){
+print "Can not connect Database! database name is wrong";
+exit;
+}
+MySQLのクエリを実行する
+mysql_query(【SQL文】);
+このときの戻り値は、エラーの場合、falseを返します。
+成功した場合、結果セットを返すSQL文(SELECT、SHOW、DESCRIBE、EXPLAINなど)では、resource を返し、
+結果セットを返さないSQL文(DELETE、INSERT、REPLACE、UPDATEなど)では、trueを返します。
+エラーの場合エラーメッセージはmysql_error()、エラー番号はmysql_errno()で受け取れます。
+たとえばエラーが発生した場合に処理を停止して、SQLのエラーメッセージを表示させるには次のようにします。
+if(!mysql_query ($sql)){
+die(mysql_errno() . ':' . mysql_error());
+}
+if文は、空やブランクでもfalseと同様に扱いますが、SELECT文のmysql_queryの戻り値は結果が0件であってもResource idを返すので,
+次のようなコードでもSQL文でエラーが発生しない限りif文の中は通りません。
+if(!$resource = mysql_query (【結果がヒットしないSELECT文】)){
+die(mysql_errno() . ':' . mysql_error());
+}
+SELECT文によって返された行の数を知るには mysql_num_rows() を用います。
+また DELETE、INSERT、REPLACEまたはUPDATE文で変更された行の数を知るには mysql_affected_rows() を用います。
+INSERT文で挿入された自動採番(AUTO INCREMENT)の値を知るには mysql_insert_id() を用います。
+文字列をエスケープする
+INSERTやUPDATE文、WHERE句などで値をMySQLで実行できるようエスケープするにはmysql_real_escape_string()を使用します。
+エスケープする関数には、ほかに mysql_escape_string()がありますが、この関数はPHP5.3.0で非推奨になっています。
+mysql_real_escape_string()は現在の接続の文字セットで特殊文字をエスケープしますが、mysql_escape_string()は文字セットを考慮しません。
+このためエスケープにはmysql_escape_string()ではなく、mysql_real_escape_string()を使用するようにします。
+エスケープされる文字
+MySQL関数のまとめ - [サンプルコード/PHP] ぺんたん info

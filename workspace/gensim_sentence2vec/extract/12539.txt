@@ -1,0 +1,62 @@
+PDFビューワの需要
+特にiPadが登場してから需要が拡大したアプリとして、PDFビューワを挙げることができる。iPadの大きい画面はPDFを表示するのに最適であるし、これをもってiPadをビジネス分野に活用しようとする方も多いだろう。
+また、昨今の電子書籍の盛り上がりを受けて、書籍をPDFの形で配布することも多くなってきた。その場合も、適切なPDFビューワは欠かせない。もっとも、PDFにしただけで電子書籍と呼ぶのはあまりにも短絡的な話ではあるが。
+今回からは、PDFビューワの作り方を取り上げたいと思う。iOSの提供するPDF機能を使いながら作るのだが、これが一筋縄ではいかない。単純に画面に表示するだけならば、簡単である。PDFのページを画面に描画する機能はあるからだ。だが、PDF内部のテキストや画像にアクセスしようとすると、とたんに難しくなる。不可能ではない。PDFデータにアクセスするためのAPIは用意されている。だがそれを使って目的のデータを得るには、PDFフォーマットそのものへの理解が必要となってくる。
+つまり、iOSのPDF機能は、高レベルのレイヤーのものと低レベルのレイヤーのものとがあり、その中間は自分で埋めなくてはいけないという状態にあると言える。本連載では、その両方を取り上げよう。そのためには、PDFフォーマットの解説も含まれることになるだろう。少し複雑な話になると思うが、ご容赦願いたい。
+iOSのPDF機能
+iOSが提供するPDF機能は、Core Graphicsに含まれる。CGPDFで始まる関数群がそれだ。
+CGPDFを使ってPDFを取り扱う場合、2つのオブジェクトが中心となる。1つは、CGPDFDocumentと呼ばれるものだ。これは、PDFドキュメントを表すもので、1つのPDFファイルが1つのPDFドキュメントとなる。もう1つは、CGPDFPageと呼ばれるもので、こちらはページを表す。1つのPDFドキュメントには、複数のPDFページが含まれることになる。このように、PDFの処理の最小単位はページとなる。
+CGPDFDocumentを作成するには、CGPDFDocumentCreateWithURLという関数を使う。この関数に、PDFファイルのパスを渡してやればいい。作成したPDFドキュメントからページを取り出すには、まずCGPDFDocumentGetNumberOfPagesを使ってページ数を調べる。そして、CGPDFDocumentGetPageにページインデックスを指定することで、ページを取り出す事ができる。
+ページを取り出したら、それを画面に描画することができる。これには、CGContextDrawPDFPageというCGContext系の関数を使う。
+基本的には、これらを使えばビューワ機能は出来上がってしまうはずだ。
+では、実装してみよう。ビューワの基本的なスタイルとして、フリックで次のページへと移動できるようにする。この仕組みは、前回説明した画像ビューワのものを流用しよう。詳しくは、本連載の第30回から始まる「画像ビューワの作り方」を参照してほしい。
+まずはPDFドキュメントを作成しよう。これは、初期化処理の一環として行ってしまう。
+List 1.
+- (void)viewDidLoad
+{
+// PDFドキュメントの作成
+NSString*   path;
+NSURL*      url;
+path = [[NSBundle mainBundle] pathForResource:@"sample" ofType:@"pdf"];
+url = [NSURL fileURLWithPath:path];
+_document = CGPDFDocumentCreateWithURL((CFURLRef)url);
+...
+今回は、プロジェクトにあらかじめsample.pdfというファイルを追加しておいた。これのパスを取得し、CGPDFDocumentCreateWithURLを使ってCGPDFDocumentオブジェクトを作成する。
+次に、PDFページを表示することを考える。これは標準のビューではそのような機能を持つものがないので、自分で作ることにしよう。PDFViewという名前の、UIViewを継承したクラスを作る。このビューにPDFPageを設定し、描画させることにする。
+PDFViewを次のように宣言しよう。インスタンス変数として、CGPDFPageを持つようにする。
+List 2.
+@interface PDFView : UIView
+{
+CGPDFPageRef    _page;
+}
+// プロパティ
+@property (nonatomic) CGPDFPageRef page;
+@end
+そして描画を行うために、drawRect:メソッドを実装する。次のようなソースコードになる。
+List 3.
+- (void)drawRect:(CGRect)rect
+{
+// ページのチェック
+if (!_page) {
+return;
+}
+// グラフィックスコンテキストの取得
+CGContextRef    context;
+context = UIGraphicsGetCurrentContext();
+// 垂直方向に反転するアフィン変換の設定
+CGContextScaleCTM(context, 1.0f, -1.0f);
+CGContextTranslateCTM(context, 0, -CGRectGetHeight(rect));
+// ページ全体を表示するためのアフィン変換の設定
+CGAffineTransform   transform;
+transform = CGPDFPageGetDrawingTransform(_page, kCGPDFMediaBox, rect, 0, YES);
+CGContextConcatCTM(context, transform);
+// ページの描画
+CGContextDrawPDFPage(context, _page);
+}
+PDFの描画はCore Graphicsを使うために、まずグラフィックスコンテキストを取得する。そのまま描画を行うと上下が反転してしまうので、アフィン変換を使って座標をひっくり返しておく。
+そしてPDFの描画を行うのだが、ここではページ全体を表示できるように縮小させたい。そのために、CGPDFPageGetDrawingTransformという関数が用意されている。この関数を使うと、PDFページの指定したボックスを表示するための、CGAffineTransformを取得することができる。ここではボックスとしてkCGPDFMediaBoxを指定し、ページ全体を表示している。
+最後に、CGContextDrawPDFPageを呼べば、描画は完了だ。
+あとは、ユーザのフリック操作に合わせて適切にPDFPageを設定してやればいい。これは、_renewPagesというメソッドの中で行っている。基本的な流れは、画像ビューワの解説で行ったものと同じだ(「画像ビューワの作り方(2) - フリックによる画像の移動」)。
+ただし、1つ注意してほしいことがある。CGPDFDocumentGetPageを使って、ページインデックスを指定してページを取り出すのだが、このインデックスは1から始まる。ページインデックス0は存在しない。この点だけ注意してほしい。
+これで単純に表示するだけのPDFビューワは出来上がりだ。
+実践! iPhoneアプリ開発 (33) PDFビューワの作り方 (1) - PDFドキュメントの読み込みと表示 | マイナビニュース

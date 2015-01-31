@@ -1,0 +1,40 @@
+
+コーポレートサイトを制作する際、ページのタイトルを画像で表示させたり、投稿のカテゴリーごとにアイコンをつけたりすることがあります。
+条件分岐で振り分けたり、テンプレートを個別に制作することで対応することも可能ですが、できればHTMLやCSSで表示をコントロールできた方が私の心が安らかなので、カテゴリースラッグを取得してclass名に指定します。
+目次
+私がやりたかったこと
+テンプレートタグ<?php get_the_category(); ?>を使って取得
+何でこうなった?
+参考ページ
+私がやりたかったこと
+<div class="news">	
+<h1 class="page_title">おしらせ</h1>
+</div>
+1行目のclass名「news(カテゴリースラッグ)」と、2行目の見出しの中身「おしらせ(カテゴリー名)」を
+なんとかうまいこと取り出して、楽したい。
+後々カテゴリーが増えた時にも、CSSを追加すれば対応できるという安心感も確保したい。
+テンプレートタグ<?php get_the_category(); ?>を使って取得
+<?php 
+$cat = get_the_category();
+$cat = $cat[0];
+?>
+<div class="<?php echo $cat->category_nicename; ?>">	
+<h1 class="page_title"><?php echo $cat->cat_name; ?></h1>
+</div>
+これでOK。
+何でこうなった?
+get_the_category() はカテゴリーに関するいろいろな情報を持っているので、
+その情報の中から必要なものを選んで表示させているということみたいです。
+<div class="<?php echo $cat->category_nicename; ?>">	
+の「category_nicename」の部分を必要に応じて変更していくわけです。
+cat_ID – 記事のカテゴリーID。
+cat_name – 記事のカテゴリー名。
+category_nicename – 記事カテゴリーのカテゴリースラッグ。
+category_description – 記事のカテゴリー説明文。
+category_parent – 記事の親カテゴリーにあたるカテゴリーのID。親カテゴリーがない場合は「0」を返す。
+category_count -カテゴリーが使われている回数。
+テンプレートタグ/get the category – WordPress Codex 日本語版
+このような情報が取得できるので、便利に使っていきたいですね。
+参考ページ
+テンプレートタグ/get the category – WordPress Codex 日本語版
+» WordPressでカテゴリースラッグを取得する方法

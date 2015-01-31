@@ -1,0 +1,45 @@
+文字列から指定した部分を取得する
+文字列内の指定した範囲を文字列として取得するには、String.Substringメソッドを使います。Substringメソッドを使えば、Stringの指定した位置から指定した文字数分のStringを取得することができます。
+以下にSubstringメソッドを使用した具体例を幾つか紹介します。文字の位置はインデックスで指定しますが、先頭の文字のインデックスが 0 なので、n 文字目のインデックスは (n-1) になることに注意してください。
+Dim s As String = "あいうえお"
+'先頭から2文字を取得する。先頭の文字のインデックスは0。
+Dim s1 As String = s.Substring(0, 2)
+'「あい」となる
+'2文字目(インデックスは1)から3文字を取得する
+Dim s2 As String = s.Substring(1, 3)
+'「いうえ」となる
+'4文字目(インデックスは3)から最後まで取得する
+Dim s3 As String = s.Substring(3)
+'「えお」となる
+'文字列の長さより長い文字列を取得しようとしてみる
+'Dim s4 As String = s.Substring(0, 100)
+'例外ArgumentOutOfRangeExceptionが発生
+'文字列の長さより大きい開始位置を指定してみる
+'Dim s5 As String = s.Substring(100)
+'例外ArgumentOutOfRangeExceptionが発生
+'開始位置に負の数を指定してみる
+'Dim s6 As String = s.Substring(-1)
+'例外ArgumentOutOfRangeExceptionが発生
+string s = "あいうえお";
+//先頭から2文字を取得する。先頭の文字のインデックスは0。
+string s1 = s.Substring(0, 2);
+//「あい」となる
+//2文字目(インデックスは1)から3文字を取得する
+string s2 = s.Substring(1, 3);
+//「いうえ」となる
+//4文字目(インデックスは3)から最後まで取得する
+string s3 = s.Substring(3);
+//「えお」となる
+//文字列の長さより長い文字列を取得しようとしてみる
+//string s4 = s.Substring(0, 100);
+//例外ArgumentOutOfRangeExceptionが発生
+//文字列の長さより大きい開始位置を指定してみる
+//string s5 = s.Substring(100);
+//例外ArgumentOutOfRangeExceptionが発生
+//開始位置に負の数を指定してみる
+//string s6 = s.Substring(-1);
+//例外ArgumentOutOfRangeExceptionが発生
+VB.NETでは、Mid関数を使ってSubstringメソッドと同じことができます。また、文字列の先頭から指定した長さの文字列を返すLeft関数と、文字列の末尾から指定された長さの文字列を返すRight関数もあります。これらの関数に関しては、「C#でMid、Left、Right関数の代わりになるものは?」をご覧ください。
+サロゲートペアや結合文字列を含む文字列でも正しく部分文字列を取得する
+Substringメソッドのパラメータに指定する開始位置や文字列の長さは、Stringオブジェクトに含まれているCharオブジェクト(StringオブジェクトのCharsプロパティが返すChar型配列)の位置と数になります。よって、2つ以上のCharオブジェクトで1つの文字を表すサロゲートペア(代用対)や結合文字列(Combining Character Sequence、組み合わせ文字シーケンス)が含まれている場合は、Unicode文字の位置と長さを指定しても思ったような結果を得られません。
+文字列から指定した部分を取得する: .NET Tips: C#, VB.NET

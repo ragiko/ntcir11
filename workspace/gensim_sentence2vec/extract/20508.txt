@@ -1,0 +1,4 @@
+本発明によれば、上記課題を解決するために、複数のマッチング手法で算出した類似度間で重み付け演算処理を行う検出手段と重み付けの割合を画像の特徴量や実際に試行した結果から決定する手段を用いる。To solve the problem, a detection means for a weighted arithmetic processing among similarities calculated by a plurality of matching techniques, and a means of deciding a weighting ratio from characterizing volume of images and results of actual trialsare utilized. - 特許庁
+RBM手法を行うに際して、被害の大きさや損傷確率(寿命消費率)といった値を数値化処理して重み付けを行って簡単に割り出すことができるようにする。To easily calculate a value as the scale of a damage or defect probability (lifetime consumption rate) by operating digitization and weighting processing in performing an RBM method. - 特許庁
+本発明によれば、ガウス過程回帰という手法を用いたコンピュータの処理によって自動的に、その類似度を元に、過去に記録した経路情報が重み付けされる。According to the invention, route information recorded in the past can be automatically weighted by computer processing using a Gaussian process regression procedure on the basis of the similarity. - 特許庁
+重み付け手法の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

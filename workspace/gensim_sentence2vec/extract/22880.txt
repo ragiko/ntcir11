@@ -1,0 +1,89 @@
+今回の質問に対する回答では、ないのですが、
+直近の質問で、当方のコ−ドで、
+数式のコピ−がされ、
+循環参照エラーが出たということの、
+回避策と、
+日付指定による更新の際に、
+元のシ−ト Worksheets("AAA")
+で、行削除をしてデ−タを削除などした場合、
+転記先日付シ−トの更新の際、
+項目がダブってしまうことに対する、
+修正コ−ドを、提示します。
+............................ 転記先日付シ−トで、列挿入と列削除を行います。
+............................ 転記する列の範囲が不明でしたので、2列での仮コ−ドです。
+............................ 下記コ−ドを試される場合は、
+............................. Sheets("AAA")にある、実際の列数に合わせる必要があります。
+............................ ClearContents の方法を試したのですが、なぜか、
+............................ エラ−が出るみたいなので 、列挿入と列削除の方法にしました。
+Private Sub CommandButton1_Click()
+Dim Wh As Worksheet, Ws As Worksheet
+Dim Hiduke As Variant, Uwagaki As Integer
+Hiduke = Application.InputBox("入力する日付を入力してください", , Format(Date, "yyyy/m/d"))
+If Hiduke = "Boolean" Or Hiduke = False Or Hiduke = " " Then Exit Sub
+Do While Hiduke = ""
+Hiduke = Application.InputBox("日付が入力されてません。もう一度入力してください。", , Format(Date, "yyyy/m/d"))
+Loop
+For Each Wh In Worksheets
+If Wh.Name Like Format(Hiduke, "yymmdd") Then
+Uwagaki = MsgBox("上書きをしますか?", vbYesNo, "上書き確認")
+Select Case Uwagaki
+Case vbYes
+GoTo Syori
+Case vbNo
+Worksheets("AAA").AutoFilterMode = False
+Exit Sub
+Case Else
+Worksheets("AAA").AutoFilterMode = False
+Exit Sub
+End Select
+End If
+Next
+Application.ScreenUpdating = False
+Set Ws = Worksheets.Add(Before:=Worksheets("AAA"))
+Ws.Name = Format(Hiduke, "yymmdd")
+Syori:
+Application.CutCopyMode = False
+Worksheets(Format(Hiduke, "yymmdd")).Activate
+ActiveSheet.Range("A:B").Columns.Insert
+Worksheets("AAA").Activate
+Range("A1").AutoFilter Field:=1, Criteria1:=Format(Hiduke, "m""月""d""日""")
+Worksheets("AAA").AutoFilter.Range.SpecialCells(xlCellTypeVisible).Copy
+Worksheets(Format(Hiduke, "yymmdd")).Activate
+With ActiveSheet
+.Range("A2").Value = Hiduke
+.Range("A5").PasteSpecial Paste:=xlPasteValuesAndNumberFormats, _
+Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+.Columns("A:Z").EntireColumn.AutoFit
+End With
+Application.CutCopyMode = False
+Worksheets(Format(Hiduke, "yymmdd")).Activate
+Worksheets(Format(Hiduke, "yymmdd")).Range("C:D").Columns.Delete
+Worksheets("AAA").AutoFilterMode = False
+Worksheets("AAA").Activate
+Application.ScreenUpdating = True
+End Sub
+※
+.Range("A5").PasteSpecial xlPasteAll
+の部分を
+形式を選択して貼り付け - 値と数値の書式
+PasteSpecial Paste:=xlPasteValuesAndNumberFormats, Operation:=xlNone, SkipBlanks:= False, Transpose:=False
+としております。
+転記(抽出)直後に、抽出全領域を選択し、
+全選択セルの、数式のみ削除するという方法があれば、
+ご希望どおりだと思うのですが ......
+とりあえず、参考まで .......
+お急ぎの事だとは、思いますが、よりよい回答がでるまで、
+多少、待たれる事を、お勧めします。
+当方も、回答としてコ−ドを提示しましたが、
+何回も修正し、編集を繰り返しております。
+上記のコ−ドも、無駄が多く、
+もっとスリム化したいのですが、
+まだまだ未熟で、恥ずかしいかぎりです。
+閲覧者の中にも、コ−ドを見て試され、
+不具合などに気付かれ、
+回答しようと思われる方がいると思いますので .......
+質問者から回答者に、対して、
+一回だけですが、
+[補足] という形で、再質問ができますので、
+ご活用ください。
+抽出データのみをブックとして別保存したいのですが。。。 - Yahoo!知恵袋

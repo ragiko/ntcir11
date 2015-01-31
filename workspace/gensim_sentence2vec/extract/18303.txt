@@ -1,0 +1,298 @@
+matplotlibはPythonでグラフを描画するときなどに使われる標準的なライブラリです。
+画像ファイルを作るばかりでなく、簡単なアニメーションやインタラクティブなグラフを作ることも可能です。
+実際の例はmatplotlibサイトのギャラリーで見ることができます。
+matplotlib/gallery
+matplotlibは本家のサイトやどこかのブログにあるチュートリアルや例を描画してみるぶんには簡単なのですが、
+実際に自分でプロットするとなると基礎的な概念を理解していないと使いにくいライブラリでもあります。
+また、基礎的な概念を理解していないとドキュメントを参照する際にもどこを見て、どう実用すればいいのかわかりません。
+そこで、この記事ではそのあたりのmatplotlibの基礎を解説していきます。
+なお、Python自体の知識はある程度仮定していますが、matplotlib自体の実装に関わるようなことまでは解説しませんので
+Pythonの関数やクラス、モジュールなどがわかれば十分でしょう。
+描画するデータの作成にはnumpyを利用しています。
+なお、この記事はまだ書いてる途中です。今後もっと網羅的かつ手短にmatplotlibを把握できる記事にしていくつもりです。
+準備
+ここのサンプルコードを動かす上で予めいくつかモジュールを読み込んでおきます。
+import numpy as np
+import matplotlib.pyplot as plt
+サンプルコードを実際に手元で動かす場合には、これらのモジュールを読み込んでおいてください。
+なお以下のコードは
+Python: 2.7.6
+matplotlib: 1.3.1
+numpy: 1.8.0
+で実行しています。
+おすすめの環境はIPython Notebookを使うことです。
+その場合は、上のインポートは必要なく、
+%pylab inline --no-import-all
+をセルで実行してください。
+最も簡単な描画方法
+描画を一番手軽に行うために、matplotlibではデータを渡すだけで描画してくれる関数が多数用意されています。
+これらの関数は、matplotlib.pyplotモジュールから利用できます。
+sin関数を2次元平面に描画してみましょう。
+平面の折れ線グラフや散布図にはmatplotlib.pyplot.plot関数を使います。
+x = np.arange(-3, 3, .1)
+y = np.sin(x)
+plt.plot(x, y)
+見ての通りplot関数の第一引数がx軸で第二引数がy軸にあたります。
+散布図もやってみましょう。
+plot関数はデフォルトで折れ線グラフですが、3番目の引数でプロットの仕方を変えることができます。
+x = np.random.randn(30)
+y = np.sin(x) + np.random.randn(30)
+plt.plot(x, y, "o")  # "o"は小さい円(circle marker)
+色を赤に変えることもできます。
+x = np.random.randn(30)
+y = np.sin(x) + np.random.randn(30)
+plt.plot(x, y, "ro")  # "r"はredの省略
+どのような形や色が指定できるかはplot関数のドキュメントに詳しく書かれていますので、そちらを参照してください。
+他の例として、正規分布の従う乱数を元にヒストグラムを描画してみましょう。
+ヒストグラムにはmatplotlib.pyplot.hist関数を使います。
+plt.hist(np.random.randn(1000))
+あるいは、2次元の巨大な100x100行列を画像として可視化してみましょう。
+画像として見るには、matplotlib.pyplot.imshowを使います。
+plt.imshow(np.random.randn(100, 100))
+このように、matplotlib.pyplotモジュールの関数を使えば可視化したいデータを渡すだけで一行でグラフが描画できます。
+テキストや棒グラフなど、描画に関するドキュメントはpyplot apiから参照できます。
+もうちょっと複雑なグラフ
+データを実際に描画した部分以外に図にタイトルをつけたり、y軸の表示する幅を制限したりしたい場合があります。
+これもmatplotlib.pyplotモジュールにある関数で可能です。
+描画の直後にmatplotlib.pyplot.title関数を呼ぶことで図にタイトルがつきます。
+plt.imshow(np.random.randn(100, 100))
+plt.title("100x100 matrix")
+y軸の表示幅を変更するには、ylim関数を使います。
+先ほどのタイトル表示と同時に使ってみましょう。
+x = np.arange(0, 10, 0.1)
+y = np.exp(x)
+plt.plot(x, y)
+plt.title("exponential function: $ y = e^x $")
+plt.ylim(0, 5000)  # yを0-5000の範囲に限定
+タイトルの表示にLaTeXの数式も入れています。
+LaTeXの詳しい内容については、Text rendering with LaTeXを参照してください。
+複数のグラフを同一の領域に描画するには、単純に2度描画関数を呼ぶだけです。
+sin波とcos波を描画しつつ、y=-1とy=1の直線をhlines関数で描画しています。
+xmin, xmax = -np.pi, np.pi
+x = np.arange(xmin, xmax, 0.1)
+y_sin = np.sin(x)
+y_cos = np.cos(x)
+plt.plot(x, y_sin)
+plt.plot(x, y_cos)
+plt.hlines([-1, 1], xmin, xmax, linestyles="dashed")  # y=-1, 1に破線を描画
+plt.title(r"$\sin(x)$ and $\cos(x)$")
+plt.xlim(xmin, xmax)
+plt.ylim(-1.3, 1.3)
+これが求めたグラフの場合もあるでしょうが、sin波とcos波を別々に描画し、1つの図にしたい場合もあるでしょう。
+その場合はmatplotlib.pyplot.subplot関数を利用します。
+subplot関数は以下のように1つの図に収めたいプロットの行数・列数・プロットの番号を指定します。
+plt.subplot(行数, 列数, 何番目のプロットか)
+これで、先ほどのプロットを上下に分割してみましょう。
+上下に分割するので、行数が2になります。
+左右の分割はないので、列数は1です。
+# xとyの値は先ほどと共通
+# sinのプロット
+plt.subplot(2, 1, 1)
+plt.plot(x, y_sin)
+plt.title(r"$\sin x$")
+plt.xlim(xmin, xmax)
+plt.ylim(-1.3, 1.3)
+# cosのプロット
+plt.subplot(2, 1, 2)
+plt.plot(x, y_cos)
+plt.title(r"$\cos x$")
+plt.xlim(xmin, xmax)
+plt.ylim(-1.3, 1.3)
+plt.tight_layout()  # タイトルの被りを防ぐ
+また、subplot関数は引数が一桁の時にはsubplot(2, 1, 1)の代わりにsubplot(211)と短く書くこともできます。
+sin, cos, tan, sinh, cosh, tanhの6つを別々にプロットしてみましょう。
+プロットの番号が図の左から右へ進み、続いて上から下に進んでることが分かります。
+def plot_function_name(name, x=0, y=0):
+plt.text(x, y, name, alpha=0.3, size=25, ha="center", va="center")
+x = np.arange(-3, 3.01, 0.01) # 3.01
+plt.subplot(231)
+plot_function_name("1: sin")
+plt.plot(x, np.sin(x))
+plt.subplot(232)
+plot_function_name("2: cos")
+plt.plot(x, np.cos(x))
+plt.subplot(233)
+plot_function_name("3: tan")
+plt.plot(x, np.tan(x))
+plt.ylim(-1, 1)  # y軸が無限まで行ってしまうので制限
+plt.subplot(234)
+plot_function_name("4: sinh")
+plt.plot(x, np.sinh(x))
+plt.subplot(235)
+plot_function_name("5: cosh", x=0, y=6)
+plt.plot(x, np.cosh(x))
+plt.subplot(236)
+plot_function_name("6: tanh")
+plt.plot(x, np.tanh(x))
+オブジェクト指向なプロット
+IPythonやIPython Notebookを使ってインタラクティブに描画する際にはここまでで紹介したmatplotlib.pyplotモジュールの関数を利用するのが便利です。
+しかし、matplotlib.pyplotの関数を直接呼び出す方法では、描画している図が暗に行われているため、細かい設定を行うことが難しいです。
+そこで、より明示的な方法で描画ができるオブジェクト指向なインターフェースを使った方法を解説します。
+クラス
+matplotlibには描画に関連する多数のクラスがあります。
+今までの例では、クラスの概念は登場せず、意識することはありませんでした。
+しかしmatplotlib.pyplotモジュールの便利関数を用いることで、裏ではこれらを操作しています。
+まず、いくつかのクラスをここでざっくりと見てみましょう。
+すべてmatplotlibモジュール以下で定義されています。
+backend_bases
+FigureCanvasBase: 描画を担当するバックエンドの抽象基底クラス
+artist
+Artist: FigureCanvasへと描画される部品の抽象基底クラス
+figure
+Figure: 描画される部品を納めるコンテナクラス(Artistの派生クラス)
+axes
+Axes: ほとんどの図形を保持するコンテナクラス(Artistの派生クラス)
+また、以下の線や多面体やテキストなどの具体的な図形は、matplotlib.artist.Artistを直接的・間接的に継承しています。
+lines
+Line2D: 線を表すクラス(Artistの派生クラス)
+patches
+Patch: 面と境界をもつような図形のクラス(Artistの派生クラス)
+Ellipse: 楕円のクラス(Patchの派生クラス)
+Circle: 円のクラス(Ellipseの派生クラス)
+text
+Text: テキストを表すクラス(Artistの派生クラス)
+Annotation: 図の注釈を表すクラス(Textの派生クラス)
+axis
+Axis: x軸やy軸など軸を表すクラス(Artistの派生クラス)
+Tick: 軸の目盛やグリッド線などの抽象基底クラス(Artistの派生クラス)
+XAxis: x軸のクラス(Axisの派生クラス)
+YAxis: y軸のクラス(Axisの派生クラス)
+XTick: x軸の目盛・ラベル・グリッド線を表すクラス(Tickの派生クラス)
+YTick: y軸の目盛・ラベル・グリッド線を表すクラス(Tickの派生クラス)
+これらは分かりやすいものをいくつか選んで例示しているだけで、他にも色々な図形のクラスがあります。
+matplotlib.backend_bases.FigureCanvasBaseを継承したクラスがPDF出力の場合などなどフォーマット固有の描画を行い、
+matplotlib.axes.AxesはAxis・Tick・Line2D・Textなどの具体的な図形を包み座標系を与えます。
+クラスの使い方
+たくさんのクラスを紹介しましたが、これらを覚えて一つひとつ初期化していくような使い方はほとんどしません。
+先ほどと同様に、matplotlib.pyplotの関数を使って、これらのクラスをインスタンス化します。
+まずは描画の流れを説明します。
+matplotlib.pyplot.figure関数でFigureオブジェクト
+Figureオブジェクトのメソッド(.add_subplot, .add_axes)でAxesオブジェクトを作る。
+Axesオブジェクトのメソッド(.plot, .imshowなど)にデータを渡しプロットをする。
+必要ならば、Axesオブジェクトのメソッド(.set_ylimなど)でプロットを調節する。
+matplotlib.pyplotモジュールの関数を使ったときには、1番目のFigureオブジェクトを明示的に作る操作は必要はありませんでした。
+これは、matplotlibがplot関数などが呼ばれたときに自動的にFigureオブジェクトを作るためです。
+Axesオブジェクトのメソッドには、matplotlib.pyplotにある関数と同名のメソッドが準備されています。
+sin波とcos波の例で見てみましょう。
+x = np.arange(-3, 3, 0.01)
+y_sin = np.sin(x)
+y_cos = np.cos(x)
+# 1. Figureのインスタンスを生成
+fig = plt.figure()
+print("type(fig): {}".format(type(fig)))
+# 2. Axesのインスタンスを生成
+ax1 = fig.add_subplot(211)
+ax2 = fig.add_subplot(212)
+print("type(ax1): {}".format(type(ax1)))
+# 3. データを渡してプロット
+ax1.plot(x, y_sin)
+ax2.plot(x, y_cos)
+# 4. y軸の範囲を調節とグラフタイトル・ラベル付け
+ax1.set_ylim(-1.3, 1.3)
+ax2.set_ylim(-1.3, 1.3)
+ax1.set_title("$\sin x$")
+ax2.set_title("$\cos x$")
+ax1.set_xlabel("x")
+ax2.set_xlabel("x")
+fig.tight_layout()  # タイトルとラベルが被るのを解消
+オブジェクト指向前の例との違いとしては、
+Figureオブジェクトをplt.figure()で明示的に作った
+subplot(211)だったのがfig.add_subplot(211)のように明示的なFigureオブジェクトへの操作になった
+plot(x, y_sin)だったのがax1.plot(x, y_sin)のようにAxesオブジェクトのメソッド呼び出しになった
+ylimやtitle関数がset_ylimやset_titleなどset_がつくようになった
+などです。これで、一体今何を操作してるのかが明確になったと思います。
+matplotlib.pyplotモジュールの関数を直接使ったほうが手軽なので、ちょっとデータを見たい場合などには重宝します。
+しかし、現在のFigureオブジェクトが暗黙的に使われてしまうので、オブジェクト指向のAPIを用いたほうがFigureオブジェクトの取り回しがラクで、何か関数に渡したり、リストに複数のFigureオブジェクトを入れたりすることができます。
+以降の例では、オブジェクト指向のAPIを用います。
+もうチョット凝ったグラフ
+複数のグラフを描くとき、x軸やy軸をグラフ間で対応させたい時があります。
+そのような例を見てみましょう。
+n = 300
+x = np.random.randn(n)
+y1 = np.exp(x) + np.random.randn(n)
+y2 = np.exp(x) * 3 + np.random.randn(n)
+fig = plt.figure()
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122)
+ax1.plot(x, y1, ".")
+ax2.plot(x, y2, ".")
+このグラフは、左右のy軸の値が対応していません。値の大小関係などを論じたいときに不便です。
+add_subplotメソッドにsharexやshareyキーワード引数を渡すことで、それらのグラフのx軸・y軸を対応させることができます。
+fig = plt.figure()
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122, sharey=ax1)
+ax1.plot(x, y1, ".")
+ax2.plot(x, y2, ".")
+あるいは、全く別の種類のグラフ間でx軸を共有させることもできます。
+散布図のx軸方向のデータの分布を見るため、xの値のヒストグラムも同じ図に描画しています。
+さらに、add_axesメソッドにグラフの位置と高さの比を指定することで、ヒストグラムの方を散布図より小さめに描画しています。
+表示位置と比は(left, bottom, width, height)のように指定できます。
+n = 300
+x = np.random.randn(n)
+y = np.sin(x) + np.random.randn(n) * 0.3
+fig = plt.figure()
+# サブプロットを8:2で分割
+ax1 = fig.add_axes((0, 0.2, 1, 0.8))
+ax2 = fig.add_axes((0, 0, 1, 0.2), sharex=ax1)
+# 散布図のx軸のラベルとヒストグラムのy軸のラベルを非表示
+ax1.tick_params(labelbottom="off")
+ax2.tick_params(labelleft="off")
+ax1.plot(x, y, "x")
+ax2.hist(x, bins=20)
+凡例(legends)の付け方
+matplotlibではグラフに凡例をつけるにはplt.legend()関数を使います。
+凡例を実際にグラフへとプロットするにはまずartistとラベルの文字列を結びつける必要があります。
+その方法は主に以下の2通りがあります。
+プロットをする関数にlabel=キーワード引数を渡す
+plt.legend()関数でartistとラベルを対応付ける
+1. label=キーワード引数を使う場合
+プロットをする際にlabel=キーワード引数で結びつけるラベルを渡すことができます。
+結びつけたら、あとはplt.legend関数を呼び出すだけで凡例がグラフにプロットされます。
+x = np.linspace(0, 10)
+y_sin = np.sin(x)
+y_cos = np.cos(x)
+plt.plot(x, y_sin, label="sin")
+plt.plot(x, y_cos, label="cos")
+plt.legend()  # 凡例をグラフにプロット
+2. plt.legend()関数でartistとラベルを対応付ける
+plt.plot()関数はArtistクラスのインスタンスのリストを返します。
+これを受け取ってplt.legend()関数に渡すことでもラベルを結びつけることができます。
+p1, = plt.plot(x, y_sin)
+p2, = plt.plot(x, y_cos)
+plt.legend([p1, p2], ["sin", "cos"])
+以下のことが成立することを確かめておきましょう。
+assert isinstance(p1, matplotlib.artist.Artist)
+凡例の位置調節
+凡例の位置が他のプロットとかぶってしまう場合にはloc=キーワード引数を渡すことで
+好きな位置に移すことができます。
+プロットと被る
+x = np.random.randn(100)
+y1 = x + np.random.randn(100)
+y2 = x * 3 + np.random.randn(100)
+plt.plot(x, y1, "r.", label="label 1")
+plt.plot(x, y2, "k.", label="label 2")
+plt.legend()
+凡例の位置を左上(upper left)に置く
+plt.plot(x, y1, "r.", label="label 1")
+plt.plot(x, y2, "k.", label="label 2")
+plt.legend(loc="upper left")
+あるいは右下(lower right)に置く
+plt.plot(x, y1, "r.", label="label 1")
+plt.plot(x, y2, "k.", label="label 2")
+plt.legend(loc="lower right")
+プロットの仕方の調べ方
+こんないい感じのプロットがしたいというのが頭のなかにあるとき、どうやってそれをmatplotlibで実現したらいいでしょうか?
+どんなグラフになるのか見た目が想像できるときは、matplotlibのgalleryを見に行くのがオススメです。
+galleryで想像しているのに近いグラフが見つかったら、そのグラフをクリックするればそのコードを見ることができます。
+それを真似てコードを書くのが近道でしょう。
+あるいはグラフの名前がわかっているのなら、pyplot summaryで関数名を探すこともできます。
+ここでmatplotlib.pyplotモジュールの関数名がわかれば、オブジェクト指向スタイルにするのも容易です。
+軸の細かい指定だとか、細かい設定についてはAPIのページから対象のオブジェクトのメソッドなんかのドキュメントを探しに行くのがよいでしょう。IPythonでax.plot?などとしてドキュメントを対話環境から読むと素早く試すこともできます。
+また、How-Toではよくあるケースについて説明されていますので、サッと目を通しておくとよいでしょう。
+TODO
+グラフ例もっと
+tickのformatterの説明
+rcとか設定
+colormap
+gridspec
+matplotlib入門 - りんごがでている

@@ -1,0 +1,11 @@
+mysql> SHOW VARIABLES LIKE 'mroonga_action_on_fulltext_query_error';
++----------------------------------------+---------------+
+| Variable_name                          | Value         |
++----------------------------------------+---------------+
+| mroonga_action_on_fulltext_query_error | ERROR_AND_LOG |
++----------------------------------------+---------------+
+1 row in set (0.00 sec)
+5.2.2. mroonga_default_parser¶
+デフォルトの全文検索用パーサ。デフォルト値はconfigureの with-default-parser オプションで指定できます(無指定時は TokenBigram )。
+全文検索パーサーとして TokenBigramSplitSymbolAlphaDigit を使う例です。この例では body_index 全文検索インデックスは TokenBigramSplitSymbolAlphaDigit を使います。
+5.2. サーバ変数の一覧 &mdash; Mroonga v4.08 documentation

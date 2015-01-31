@@ -1,0 +1,18 @@
+この文書では、Firefox 4 以降および Gecko 2.0 以降ベースのアプリケーションで用いるユーザエージェント文字列について説明します。Gecko 2.0 での変更点について詳しくは Final User Agent string for Firefox 4 (blog 記事) をご覧ください。ユーザエージェントの検出に関する文書や Hacks の投稿もご覧ください。
+一般形
+Firefox 自身の UA 文字列は、4つの部品に分けられます:
+Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion
+Mozilla/5.0 はブラウザが Mozilla 互換であることを示す一般的なトークンであり、今日のほとんどすべてのブラウザで共通しています。
+platform はブラウザが動作しているネイティブプラットフォーム (例: Windows、Mac、Linux、または Android)、およびモバイル端末であるかを表します。Firefox OS 端末は単に "Mobile" となり、Web がプラットフォームです。platform は "; " (セミコロン) 区切りの複数トークンで構成されることがある点に注意してください。詳細や例については後述します。
+rv:geckoversion は、Gecko のリリースバージョンを示します (例: "17.0")。最近のブラウザでは geckoversion と firefoxversion が同じです。
+Gecko/geckotrail は、ブラウザが Gecko ベースであることを示します。
+デスクトップ版では、geckotrail は固定文字列 "20100101" です。
+Firefox/firefoxversion はブラウザが Firefox であることを示すとともに、バージョン番号を提供します (例: "17.0")。
+モバイル版は Firefox 10 より、geckotrail と firefoxversion が同じです。
+注記: Gecko ベースのブラウザ向けに推奨するスニッフィング法 (機能の検出を行う代わりにブラウザエンジンのスニッフィングを行わなければならない場合) は、"Gecko" および "rv:" の文字列が存在するかの検出です。これは、他ブラウザの一部に "like Gecko" というトークンが含まれるためです。
+Gecko ベースの他製品では下記 2 つの形式のいずれかであり、各トークンの意味は以下に記載した内容を除いて同じです:
+Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail appname/appversion
+Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion appname/appversion
+appname/appversion は、アプリケーションの名称とバージョンを示します。例えばこれは、"Camino/2.1.1" や "SeaMonkey/2.7.1" となります。
+Firefox/firefoxversion は、Firefox を想定する Web サイトと最大限の互換性を得るために一部の Gecko ベースのブラウザが組み入れる場合がある、省略可能な互換性トークンです。firefoxversion は一般的に、導入した Gecko のバージョンに相当する Firefox のリリースを表します。一部の Gecko ベースのブラウザはこのトークンを使用しないかもしれません。従って、スニッフィングの際は Firefox ではなく Gecko を探してください! このトークンを表示するかは、"general.useragent.compatMode.firefox" という真偽値の設定項目で制御できます。
+Gecko ユーザエージェント文字列リファレンス | MDN

@@ -1,0 +1,77 @@
+
+【ニコニコ動画】ニコニコ大百科の言葉をPCに覚えさせるとこうなる
+主にニコニコ動画で多用される事柄を網羅したニコニコ大百科は、確かに固有名詞の塊として IME の変換用辞書に適したデータの塊と云えるかも。
+ただ収録語数が多く手動で単語登録とかやってられないレベルだから、何かしらの自動化手段が欲しくなるのは自明の理。 
+上で紹介した動画では Ruby 使ってましたが、せっかくだから俺は Perl で書いてみるぜ!
+もし使いたい物好きな人がいたら、UTF-8 で保存する点にご注意を。 
+CPAN Module いくつか使ってるので、エラーが出たら足りないモジュールをインスコしてやってください。
+あと、このスクリプトで出力したデータもついでに置いときます: nico_dic.zip
+ちょっと追記。 
+愛用の ATOK 11 で読み込める一括登録用テキストファイルはシフト JIS か UTF-16 だけだったので、せっかくだから UTF-16 で出力するように変更。ついでの ZIP ファイルも更新。
+#!/usr/bin/perl 
+# ニコニコ大百科の記事から IME の単語登録用テキストを出力
+# http://dic.nicovideo.jp/
+use strict;
+use warnings;
+use utf8;
+use Encode ();
+use Lingua::JA::Regular::Unicode qw(katakana2hiragana);
+use URI;
+use Web::Scraper;
+use HTML::TreeBuilder::LibXML;
+use LWP::UserAgent;
+main();
+sub main {
+setup_encoding();
+$Web::Scraper::UserAgent = LWP::UserAgent->new(
+keep_alive => 1,
+cookie_jar => {},
+timeout => 15,
+);
+warn "索引を取得...\n";
+my $indexes = get_index();
+my $sc_words = scraper {
+process '//ul/ul/li', 'words[]' => 'TEXT';
+result qw(words);
+};
+# UTF-16LE の BOM を出力
+print STDOUT pack('C*', 0xFF, 0xFE);
+my $encoder = Encode::find_encoding('UTF-16LE');
+for my $index (@$indexes) {
+$index->{ch} =~ /(\p{Katakana})\((\d+)\)/ or next;
+my ($ch, $cnt) = ($1, $2);
+warn "索引 $ch (単語数: $cnt)の一覧を取得...\n";
+my $words = $sc_words->scrape($index->{href});
+for my $content (@$words) {
+$content =~ /\A(.*) \((.*)\) : / or next;
+my ($word, $kana) = ($1, $2);
+# 読みをひらがなに
+$kana =~ s/ヴ/う゛/g;
+$kana = katakana2hiragana($kana);
+# 読み仮名が 3 文字未満ならコメントアウトする
+if (length($kana) encode("!!");
+}
+print STDOUT $encoder->encode("$kana\t$word\t名詞\x0D\x0A");
+}
+}
+return 0;
+}
+sub setup_encoding {
+my $enc;
+if (eval { require Term::Encoding }) {
+$enc = Term::Encoding::term_encoding();
+}
+$enc ||= 'utf8';
+#binmode STDOUT, ":encoding($enc");
+binmode STDERR, ":encoding($enc)";
+return;
+}
+sub get_index {
+my $list_uri = URI->new('http://dic.nicovideo.jp/m/a/a');
+return scraper {
+process '//td/a', 'index[]' => +{ 'ch' => 'TEXT', 'href' => '@href' };
+result qw(index);
+}->scrape($list_uri);
+}
+__END__
+ニコニコ大百科辞書 - ぐま あーかいぶ

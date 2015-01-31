@@ -1,0 +1,1626 @@
+
+ヘッダーをスキップ
+Oracle Database 管理者ガイド10gリリース2(10.2)B19224-02
+目次
+索引
+17  パーティション表と索引の管理
+ここでは、パーティション表と索引の管理について説明します。この章の内容は、次のとおりです。
+パーティション表と索引の概要
+パーティション化の方法
+パーティション表の作成
+パーティション表のメンテナンス
+パーティション表の削除
+パーティション表および索引の例
+パーティション化された表および索引の情報の表示
+パーティション表と索引の概要
+今日の企業では、数百GBのデータ(数TBのデータになることも多い)を持つ業務上重要なデータベースが多く稼働しています。これらの企業には、大規模データベース(VLDB)のサポートおよびメンテナンスが要求されており、それらの要求を満たすような方法が必要になります。 
+VLDB要求を満たす1つの方法は、パーティション表および索引を作成し、それを使用することです。パーティション表では、データをパーティションと呼ばれる管理が容易な単位に分割できます。また、パーティション化によってパフォーマンスが向上します。これは、問合せの多くが、WHERE句に基づいて、要求された行を持たないパーティションをプルーニング(無視)できるためです。これにより、結果セットを生成するためにスキャンされるデータ量を減らすことができます。パーティションはさらに、より詳細なレベルで管理しパフォーマンスを向上させるために、サブパーティションに分割できます。索引も同様にパーティション化できます。
+各パーティションを専用セグメントに格納し、個別に管理できます。各パーティションは互いに独立して機能します。これにより、可用性やパフォーマンスのために適切にチューニング可能な構造を使用できます。 
+パラレル実行を使用している場合、パーティションはパラレル化のもう1つの手段を提供します。パーティション表および索引に対する操作は、表や索引の様々なパーティションに異なるパラレル実行サーバーを割り当てることによって並列に実行されます。
+表や索引のパーティションとサブパーティションは、すべてが同じ論理属性を共有します。たとえば、表中のすべてのパーティション(またはサブパーティション)は同じ列および制約定義を共有し、索引内のすべてのパーティション(またはサブパーティション)は同じ索引オプションを共有しています。ただし、それぞれが異なる物理属性(TABLESPACEなど)を持つことができます。 
+各表や索引のパーティション(またはサブパーティション)をそれぞれ別個の表領域に格納することは必須ではありませんが、利点があります。パーティションを別個の表領域に格納すると、次のことが可能になります。
+複数のパーティションでのデータ破損の可能性を低減する。
+各パーティションを個別にバックアップおよびリカバリする。
+パーティションとディスク・ドライブのマッピングを制御する(I/Oロードの均衡化に重要)。
+管理作業を軽減し、可用性とパフォーマンスを改善する。
+パーティション化は既存のアプリケーションに対して透過的で、標準データ操作言語(DML)文はパーティション表に対しても動作します。また、アプリケーションでは、DML内で拡張パーティション表名または索引名を使用して、パーティション化を利用するようにプログラミングできます。
+表に格納できるパーティションまたはサブパーティションの最大数は、1024000-1です。
+SQL*LoaderおよびImport/Export Utilityを使用すると、パーティション表に格納されるデータをロードまたはアンロードできます。これらのユーティリティでは、いずれもパーティションとサブパーティションが認識されます。
+関連項目
+この章のタスクを実行する前に、第14章「スキーマ・オブジェクトの領域の管理」を一読されることをお薦めします。
+パーティション化の詳細は、『Oracle Database概要』を参照してください。初めてパーティション表または索引を作成したり、パーティション表のメンテナンス操作を実行する場合は、このマニュアルの情報を検討することをお薦めします。
+パラレル実行の詳細は、『Oracle Databaseデータ・ウェアハウス・ガイド』および『Oracle Database概要』を参照してください。
+SQL*LoaderおよびImport/Export Utilityについては、『Oracle Databaseユーティリティ』を参照してください。 
+パーティション化の方法
+パーティション化には、次のような方法があります。
+レンジ・パーティション化
+ハッシュ・パーティション化
+リスト・パーティション化
+レンジ-ハッシュ・コンポジット・パーティション化
+レンジ-リスト・コンポジット・パーティション化
+表のみでなく索引もパーティション化できます。グローバル索引はレンジ・パーティション化またはハッシュ・パーティション化でき、どのタイプのパーティション表または非パーティション表にも定義できます。ローカル索引より多くのメンテナンスを必要とする場合があります。
+ローカル索引は、基礎となる表の構造を反映するように構成されています。ローカル索引は基礎となる表と同一レベルでパーティション化されます。つまり、基礎となる表と同じ列でパーティション化され、同数のパーティションまたはサブパーティションが作成され、基礎となる表の対応するパーティションと同じパーティション・バウンドが設定されます。ローカル索引の場合、索引パーティション化は、パーティションがメンテナンス・アクティビティの影響を受ける場合に自動的にメンテナンスされます。これにより、索引は、基礎となる表と同一レベルでパーティション化されている状態に保たれます。
+次の項では、要求に適したパーティション化の方法を決定する際に役立つ情報について説明します。
+レンジ・パーティション化を使用する場合
+ハッシュ・パーティション化を使用する場合
+リスト・パーティション化を使用する場合
+レンジ-ハッシュ・コンポジット・パーティション化を使用する場合
+レンジ-リスト・コンポジット・パーティション化を使用する場合
+レンジ・パーティション化を使用する場合
+レンジ・パーティション化を使用すると、列値の範囲に基づいて行をパーティションにマップできます。このタイプのパーティション化が役立つのは、年度の各月など、分散できる論理範囲を持つデータを取り扱う場合です。パフォーマンスは、範囲内にデータが均等に分散しているときに最高になります。不均等に分散しているために、レンジ・パーティション化によってパーティションのサイズに大きなばらつきが生じる場合は、他のいずれかのパーティション化方法を検討する必要があります。
+レンジ・パーティションを作成する場合は、次の情報を指定します。
+パーティション化の方法: レンジ
+パーティション化列
+パーティション・バウンドを識別するパーティション記述
+次の例では、四半期の売上ごとに1つずつ、4つのパーティションから構成される表を作成しています。パーティション化列はsale_year、sale_monthおよびsale_dayの各列で、その値は特定の行のパーティション化キーを構成します。VALUES LESS THAN句によってパーティション・バウンドが決定されます。各行のパーティション化キー値がこの句に指定された順序付きの値リストと比較され、値リストより小さい場合は、その行がパーティションに格納されます。各パーティションには名前(sales_q1、sales_q2、...)が付けられ、別個の表領域(tsa、tsb、...)に格納されます。
+CREATE TABLE sales
+( invoice_no NUMBER, 
+sale_year  INT NOT NULL,
+sale_month INT NOT NULL,
+sale_day   INT NOT NULL )
+PARTITION BY RANGE (sale_year, sale_month, sale_day)
+( PARTITION sales_q1 VALUES LESS THAN (1999, 04, 01) 
+TABLESPACE tsa,
+PARTITION sales_q2 VALUES LESS THAN (1999, 07, 01) 
+TABLESPACE tsb,
+PARTITION sales_q3 VALUES LESS THAN (1999, 10, 01) 
+TABLESPACE tsc,
+PARTITION sales_q4 VALUES LESS THAN (2000, 01, 01) 
+TABLESPACE tsd ); 
+たとえば、sale_year=1999、sale_month=8およびsale_day=1の行のパーティション化キーは(1999, 8, 1)となり、パーティションsales_q3に格納されます。
+関連項目
+「複数列パーティション化キーの使用」 
+ハッシュ・パーティション化を使用する場合
+ハッシュ・パーティション化を使用するのは、データ自体のレンジ・パーティション化は困難でも、パフォーマンス上および管理上の理由からパーティション化しようとする場合です。ハッシュ・パーティション化では、データは指定した数のパーティションに均等に分散されます。行は、パーティション化キーのハッシュ値に基づいてパーティションにマップされます。ハッシュ・パーティションを作成して使用すると、これらの均等サイズのパーティションをI/Oデバイス間に分散させて(ストライプ化)可用性とパフォーマンスを改善できるため、データ配置を高度にチューニングできます。
+ハッシュ・パーティションを作成するには、次の情報を指定します。
+パーティション化の方法: ハッシュ
+パーティション化列
+パーティション数または個々のパーティション記述
+次の例では、ハッシュ・パーティション表を作成しています。パーティション化列はidで、4つのパーティションが作成され、システム生成名が割り当てられて、4つの名前付き表領域(gear1、gear2、...)に配置されます。
+CREATE TABLE scubagear
+(id NUMBER,
+name VARCHAR2 (60))
+PARTITION BY HASH (id)
+PARTITIONS 4 
+STORE IN (gear1, gear2, gear3, gear4);
+関連項目
+「複数列パーティション化キーの使用」 
+リスト・パーティション化を使用する場合
+リスト・パーティション化を使用するのは、行がパーティションにマップされる方法を明示的に制御する必要がある場合です。パーティション化列に含まれる離散値のリストを、各パーティションの記述で指定できます。これは、レンジ・パーティション化やハッシュ・パーティション化と異なる点です。レンジ・パーティション化では値の範囲がパーティションと関連付けられており、ハッシュ・パーティション化ではパーティションに対する行のマッピングをユーザーが制御することはできません。
+リスト・パーティション化方法は、特に離散値に従ってデータ配分をモデル化するために設計されています。このモデル化は、次のような理由により、レンジ・パーティション化またはハッシュ・パーティション化では困難です。
+レンジ・パーティション化では、パーティション化列の値が自然な範囲にあることを想定しています。範囲外の値のパーティションをグループ化することはできません。
+ハッシュ・パーティション化では、システムのハッシュ関数を使用してデータが様々なパーティションに分散されるため、データの分散を制御できません。この場合も、パーティション化列の離散値を論理的にパーティションにグループ化することはできません。
+リスト・パーティション化では、順序付けも関連付けもされていないデータのセットをグループ化して、自然に編成できます。 
+レンジ・パーティション化およびハッシュ・パーティション化と異なり、リスト・パーティション化では複数列のパーティション化はサポートされていません。表がリスト・パーティション化されている場合、パーティション化キーはその表の単一の列のみで構成されています。リスト・パーティション化されていない場合、レンジ・パーティション化またはハッシュ・パーティション化できるすべての列はリスト・パーティション化できます。
+リスト・パーティションを作成する場合は、次の情報を指定します。
+パーティション化の方法: リスト
+パーティション化列
+パーティション記述。これには、リテラル値のリスト(値リスト)を指定します。リテラル値とは、パーティションに含む行を識別するパーティション化列の離散値です。
+次の例では、リスト・パーティション表を作成しています。ここでは、州のグループで構成されるリージョン別にパーティション化された表q1_sales_by_regionを作成します。
+CREATE TABLE q1_sales_by_region
+(deptno number, 
+deptname varchar2(20),
+quarterly_sales number(10, 2),
+state varchar2(2))
+PARTITION BY LIST (state)
+(PARTITION q1_northwest VALUES ('OR', 'WA'),
+PARTITION q1_southwest VALUES ('AZ', 'UT', 'NM'),
+PARTITION q1_northeast VALUES  ('NY', 'VM', 'NJ'),
+PARTITION q1_southeast VALUES ('FL', 'GA'),
+PARTITION q1_northcentral VALUES ('SD', 'WI'),
+PARTITION q1_southcentral VALUES ('OK', 'TX'));
+パーティションを記述する値リストの値と行のパーティション化列の値が合致するかどうかをチェックすることによって、その列の値を含む行がパーティションにマップされます。
+たとえば、いくつかのサンプル行が次のように挿入されます。
+(10, 'accounting', 100, 'WA')はパーティションq1_northwestにマップされます。
+(20, 'R&D', 150, 'OR')はパーティションq1_northwestにマップされます。
+(30, 'sales', 100, 'FL')はパーティションq1_southeastにマップされます。
+(40, 'HR', 10, 'TX')はパーティションq1_southwestにマップされます。
+(50, 'systems engineering', 10, 'CA')は表のどのパーティションにもマップされず、エラーになります。
+レンジ・パーティション化とは異なり、リスト・パーティション化の場合は、パーティション間の順序に明確な意味はありません。他のどのパーティションにもマップされない行について、マップ先となるデフォルト・パーティションを指定することもできます。前述の例でデフォルト・パーティションを指定すると、州CAはそのパーティションにマップされます。 
+レンジ-ハッシュ・コンポジット・パーティション化を使用する場合
+レンジ-ハッシュ・パーティション化では、データがレンジ方式でパーティション化され、各パーティション内ではハッシュ方式でサブパーティション化されます。これらのコンポジット・パーティションは、履歴データやストライプ化には理想的であり、レンジ・パーティション化とデータ配置が管理しやすくなるのみでなく、ハッシュ・パーティション化による並列性を利用できるという利点もあります。
+レンジ-ハッシュ・パーティションの作成時には、次の情報を指定します。
+パーティション化の方法: レンジ
+パーティション化列
+パーティション・バウンドを識別するパーティション記述
+サブパーティション化の方法: ハッシュ
+サブパーティション化列
+各パーティションのサブパーティション数またはサブパーティション記述
+次の文では、レンジ-ハッシュ・パーティション表が作成されます。この例では、それぞれ8個のサブパーティションを含む3個のレンジ・パーティションが作成されます。サブパーティションには名前が指定されていないため、システム生成名が割り当てられますが、STORE IN句によって指定した4つの表領域(ts1、...、ts4)に分散されます。
+CREATE TABLE scubagear (equipno NUMBER, equipname VARCHAR(32), price NUMBER)
+PARTITION BY RANGE (equipno) SUBPARTITION BY HASH(equipname)
+SUBPARTITIONS 8 STORE IN (ts1, ts2, ts3, ts4)
+(PARTITION p1 VALUES LESS THAN (1000),
+PARTITION p2 VALUES LESS THAN (2000),
+PARTITION p3 VALUES LESS THAN (MAXVALUE));
+レンジ-ハッシュ・パーティション表のパーティションは、そのデータをサブパーティションのセグメントに格納するための単なる論理構造です。パーティションの場合と同様に、これらのサブパーティションは同じ論理属性を共有します。レンジ・パーティション表内のレンジ・パーティションとは異なり、サブパーティションは所有パーティションと異なる物理属性を持つことはできません。同じ表領域に格納する必要はありません。
+レンジ-リスト・コンポジット・パーティション化を使用する場合
+レンジ-ハッシュ・コンポジット・パーティション化方法と同様に、レンジ-リスト・コンポジット・パーティション化方法では、2レベルの階層に基づいてパーティション化できます。最初のパーティション化レベルはレンジ・パーティション化と同様に値の範囲に基づき、第2レベルはリスト・パーティション化と同様に離散値に基づきます。この形式のコンポジット・パーティション化は履歴データに適していますが、順序付けも関連付けもされていない列値に基づいてデータ行をさらにグループ化できます。
+レンジ-リスト・パーティションの作成時には、次の情報を指定します。
+パーティション化の方法: レンジ
+パーティション化列
+パーティション・バウンドを識別するパーティション記述
+サブパーティション化の方法: リスト
+サブパーティション化列
+サブパーティション記述。これには、リテラル値のリスト(値リスト)を指定します。リテラル値とは、サブパーティションに含む行を識別するサブパーティション化列の離散値です。
+次の例は、レンジ-リスト・パーティション化の使用方法を示しています。この例では、製品の売上データを四半期別に追跡し、各四半期内では指定した州別にグループ化します。
+CREATE TABLE quarterly_regional_sales
+(deptno number, item_no varchar2(20),
+txn_date date, txn_amount number, state varchar2(2))
+TABLESPACE ts4
+PARTITION BY RANGE (txn_date)
+SUBPARTITION BY LIST (state)
+(PARTITION q1_1999 VALUES LESS THAN (TO_DATE('1-APR-1999','DD-MON-YYYY'))
+(SUBPARTITION q1_1999_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q1_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q1_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+SUBPARTITION q1_1999_southeast VALUES ('FL', 'GA'),
+SUBPARTITION q1_1999_northcentral VALUES ('SD', 'WI'),
+SUBPARTITION q1_1999_southcentral VALUES ('OK', 'TX')
+),
+PARTITION q2_1999 VALUES LESS THAN ( TO_DATE('1-JUL-1999','DD-MON-YYYY'))
+(SUBPARTITION q2_1999_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q2_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q2_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+SUBPARTITION q2_1999_southeast VALUES ('FL', 'GA'),
+SUBPARTITION q2_1999_northcentral VALUES ('SD', 'WI'),
+SUBPARTITION q2_1999_southcentral VALUES ('OK', 'TX')
+),
+PARTITION q3_1999 VALUES LESS THAN (TO_DATE('1-OCT-1999','DD-MON-YYYY'))
+(SUBPARTITION q3_1999_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q3_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q3_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+SUBPARTITION q3_1999_southeast VALUES ('FL', 'GA'),
+SUBPARTITION q3_1999_northcentral VALUES ('SD', 'WI'),
+SUBPARTITION q3_1999_southcentral VALUES ('OK', 'TX')
+),
+PARTITION q4_1999 VALUES LESS THAN ( TO_DATE('1-JAN-2000','DD-MON-YYYY'))
+(SUBPARTITION q4_1999_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q4_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q4_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+SUBPARTITION q4_1999_southeast VALUES ('FL', 'GA'),
+SUBPARTITION q4_1999_northcentral VALUES ('SD', 'WI'),
+SUBPARTITION q4_1999_southcentral VALUES ('OK', 'TX')
+)
+);
+行のパーティション化列の値が特定のパーティションの範囲に合致するかどうかをチェックすることによって、その列の値を含む行がパーティションにマップされます。行は、記述子の値リストにサブパーティション列の値と一致する値が含まれているサブパーティションを識別することによって、そのパーティション内のサブパーティションにマップされます。
+たとえば、いくつかのサンプル行が次のように挿入されます。
+(10, 4532130, '23-Jan-1999', 8934.10, 'WA')はサブパーティションq1_1999_northwestにマップされます。
+(20, 5671621, '15-May-1999', 49021.21, 'OR')はサブパーティションq2_1999_northwestにマップされます。
+(30, 9977612, ,'07-Sep-1999', 30987.90, 'FL')はサブパーティションq3_1999_southeastにマップされます。
+(40, 9977612, '29-Nov-1999', 67891.45, 'TX')はサブパーティションq4_1999_southcentralにマップされます。
+(40, 4532130, '5-Jan-2000', 897231.55, 'TX')は表のどのパーティションにもマップされず、エラーになります。
+(50, 5671621, '17-Dec-1999', 76123.35, 'CA')は表のどのサブパーティションにもマップされず、エラーになります。
+レンジ-リスト・パーティション表のパーティションは、そのデータをサブパーティションのセグメントに格納するための単なる論理構造です。リスト・サブパーティションの特性は、リスト・パーティションと同じです。リスト・パーティション化についてデフォルト・パーティションを指定するのと同様に、デフォルト・サブパーティションを指定できます。
+パーティション表の作成
+パーティション表または索引を作成する手順は、(第15章「表の管理」で説明されている)パーティション化されていない表や索引の場合とほとんど同じですが、パーティション化句を使用する点が異なります。指定するパーティション句と副次句は、パーティション化のタイプによって異なります。 
+LONGまたはLONG RAW列を持つ表を除き、通常の(ヒープ構成)表および索引構成表はどちらもパーティション化できます。パーティション表には、非パーティション・グローバル索引、レンジ・パーティション・グローバル索引またはハッシュ・パーティション・グローバル索引、およびローカル索引を作成できます。
+パーティション表を作成または変更する場合は、行移動句ENABLE ROW MOVEMENTまたはDISABLE ROW MOVEMENTを指定できます。この句は、対応するキーが更新された場合に、新規パーティションへの行の移行を使用可能または使用禁止にします。デフォルトの行移動句は、DISABLE ROW MOVEMENTです。
+次の項では、各種のパーティション表およびパーティション索引用にパーティションを作成する方法の詳細と例を示します。
+レンジ・パーティション表とグローバル索引の作成
+ハッシュ・パーティション表とグローバル索引の作成
+リスト・パーティション表の作成
+レンジ-ハッシュ・コンポジット・パーティション表の作成
+レンジ-リスト・コンポジット・パーティション表の作成
+サブパーティション・テンプレートを使用したコンポジット・パーティション表の記述
+複数列パーティション化キーの使用
+パーティション化された索引構成表の作成
+複数のブロック・サイズに関するパーティション化の制限
+関連項目
+パーティション表および索引の作成と変更に使用するパーティション化句の正確な構文、その使用制限、および表の作成と変更に必要な権限については、『Oracle Database SQLリファレンス』を参照してください。
+LOBを持つ列やLOBとして格納されているその他のオブジェクトを含むパーティション表の作成方法の詳細は、『Oracle Databaseアプリケーション開発者ガイド - ラージ・オブジェクト』を参照してください。
+オブジェクト型、ネストした表またはVARRAYを含む表の作成方法の詳細は、『Oracle Databaseアプリケーション開発者ガイド - オブジェクト・リレーショナル機能』を参照してください。
+レンジ・パーティション表とグローバル索引の作成
+表または索引をレンジ・パーティション化するには、CREATE TABLE文でPARTITION BY RANGE句を指定します。PARTITION句では個々のパーティション・レンジを識別し、PARTITION句のオプションの副次句では、パーティションのセグメントに固有の物理属性と他の属性を識別できます。パーティション・レベルで上書きされない場合、各パーティションはその基礎となる表の属性を継承します。
+レンジ・パーティション表の作成
+この例は、前述のレンジ・パーティション表の例をさらに複雑にしたものです。記憶域パラメータとLOGGING属性が表レベルで指定されています。これらの指定により、表自体に対して表領域レベルから継承された対応するデフォルトが置換され、その値がレンジ・パーティションによって継承されます。ただし、第1四半期には取引が少なかったため、パーティションsales_q1の記憶域属性は小さくなっています。ENABLE ROW MOVEMENT句が指定されているため、行が別のパーティションに格納されるようなキー値の更新が発生した場合は、その行を新規パーティションに移行できます。
+CREATE TABLE sales 
+( invoice_no NUMBER,
+sale_year  INT NOT NULL,
+sale_month INT NOT NULL,
+sale_day   INT NOT NULL )
+STORAGE (INITIAL 100K NEXT 50K) LOGGING 
+PARTITION BY RANGE ( sale_year, sale_month, sale_day)
+( PARTITION sales_q1 VALUES LESS THAN ( 1999, 04, 01 )
+TABLESPACE tsa STORAGE (INITIAL 20K, NEXT 10K),
+PARTITION sales_q2 VALUES LESS THAN ( 1999, 07, 01 )
+TABLESPACE tsb,
+PARTITION sales_q3 VALUES LESS THAN ( 1999, 10, 01 )
+TABLESPACE tsc,
+PARTITION sales q4 VALUES LESS THAN ( 2000, 01, 01 )
+TABLESPACE tsd)
+ENABLE ROW MOVEMENT;
+レンジ・パーティション化されたグローバル索引の作成
+レンジ・パーティション化されたグローバル索引の作成ルールは、レンジ・パーティション表の場合に似ています。次に、前述の例で作成された表のsales_monthに対して、レンジ・パーティション化されたグローバル索引を作成する例を示します。各索引パーティションには名前が指定されていますが、索引用のデフォルト表領域に格納されます。
+CREATE INDEX month_ix ON sales(sales_month)
+GLOBAL PARTITION BY RANGE(sales_month)
+(PARTITION pm1_ix VALUES LESS THAN (2)
+PARTITION pm2_ix VALUES LESS THAN (3)
+PARTITION pm3_ix VALUES LESS THAN (4)
+PARTITION pm4_ix VALUES LESS THAN (5)
+PARTITION pm5_ix VALUES LESS THAN (6)
+PARTITION pm6_ix VALUES LESS THAN (7)
+PARTITION pm7_ix VALUES LESS THAN (8)
+PARTITION pm8_ix VALUES LESS THAN (9)
+PARTITION pm9_ix VALUES LESS THAN (10)
+PARTITION pm10_ix VALUES LESS THAN (11)
+PARTITION pm11_ix VALUES LESS THAN (12)
+PARTITION pm12_ix VALUES LESS THAN (MAXVALUE));
+注意
+文字のソート順はキャラクタ・セットごとに異なるため、異なるキャラクタ・セットを使用しているデータベースの場合、キャラクタ列をパーティション化するときには注意してください。詳細は、『Oracle Databaseグローバリゼーション・サポート・ガイド』を参照してください。 
+ハッシュ・パーティション表とグローバル索引の作成
+ハッシュ・パーティション化する表を識別するには、CREATE TABLE文でPARTITION BY HASH句を指定します。PARTITIONS句を使用すると、作成するパーティション数、および必要に応じてそれを格納する表領域を指定できます。また、PARTITION句を使用して、個々のパーティションとその表領域に名前を付けることもできます。 
+ハッシュ・パーティションに指定できる属性は、TABLESPACEのみです。表のすべてのハッシュ・パーティションは、表レベルから継承される同じセグメント属性(TABLESPACE以外)を共有します。
+ハッシュ・パーティション表の作成
+次の例は、ハッシュ・パーティション表deptについて、2つの作成方法を示しています。最初の例ではパーティション数を指定していますが、システム生成名が割り当てられ、表のデフォルト表領域に格納されます。 
+CREATE TABLE dept (deptno NUMBER, deptname VARCHAR(32))
+PARTITION BY HASH(deptno) PARTITIONS 16;
+第2の例では、個々のパーティション名と、それぞれが格納される表領域が指定されています。各ハッシュ・パーティション(セグメント)の初期エクステント・サイズも、表レベルで明示的に指定されており、すべてのパーティションはこの属性を継承します。
+CREATE TABLE dept (deptno NUMBER, deptname VARCHAR(32))
+STORAGE (INITIAL 10K)
+PARTITION BY HASH(deptno)
+(PARTITION p1 TABLESPACE ts1, PARTITION p2 TABLESPACE ts2,
+PARTITION p3 TABLESPACE ts1, PARTITION p4 TABLESPACE ts3);
+この表にローカル索引を作成すると、その索引は基礎となる表と同一レベルでパーティション化されます。また、基礎となる表のメンテナンス操作が実行されると索引が自動的にメンテナンスされるように構成されます。次に、表dept上でローカル索引を作成する例を示します。 
+CREATE INDEX loc_dept_ix ON dept(deptno) LOCAL;
+必要に応じて、ハッシュ・パーティションと、ローカル索引パーティションが格納される表領域の名前を指定できます。指定しない場合は、対応するベース・パーティションの名前が索引パーティション名として使用され、索引パーティションは表パーティションと同じ表領域に格納されます。
+ハッシュ・パーティション化されたグローバル索引の作成
+マルチユーザーOLTP環境で、索引の少数のリーフ・ブロックに多くの競合が発生する場合は、ハッシュ・パーティション化されたグローバル索引によって索引のパフォーマンスを改善できます。索引のパーティション化キーとの等式およびIN述語を含む問合せにより、ハッシュ・パーティション化されたグローバル索引を効率的に使用できます。
+ハッシュ・パーティション化されたグローバル索引を作成するための構文は、ハッシュ・パーティション表に使用される構文に似ています。たとえば、次の文はハッシュ・パーティション化されたグローバル索引を作成します。
+CREATE INDEX hgidx ON tab (c1,c2,c3) GLOBAL
+PARTITION BY HASH (c1,c2)
+(PARTITION p1  TABLESPACE tbs_1,
+PARTITION p2  TABLESPACE tbs_2,
+PARTITION p3  TABLESPACE tbs_3,
+PARTITION p4  TABLESPACE tbs_4);
+リスト・パーティション表の作成
+リスト・パーティションを作成するためのセマンティクスは、レンジ・パーティションを作成するためのセマンティクスとほぼ同じです。ただし、リスト・パーティションを作成するには、CREATE TABLE文でPARTITION BY LIST句を指定し、PARTITION句にはリテラル値のリストを指定します。リテラル値とは、パーティションに含む行を識別するパーティション化列の離散値です。リスト・パーティション化の場合、パーティション化キーにはその表の単一の列の名前しか使用できません。
+リスト・パーティション化の場合にのみ、キーワードDEFAULTを使用してパーティションの値リストを記述できます。これにより、他のどのパーティションにもマップされない行を格納するパーティションが識別されます。
+レンジ・パーティションの場合と同様に、PARTITION句のオプションの副次句では、パーティションのセグメントに固有の物理属性と他の属性を識別できます。パーティション・レベルで上書きされない場合、各パーティションはその親表の属性を継承します。
+次の例では、表sales_by_regionを作成し、リスト方法を使用してその表をパーティション化しています。最初の2つのPARTITION句には物理属性を指定し、表レベルのデフォルトの属性を変更しています。他のPARTITION句には属性を指定していないため、これらのパーティションの物理属性は表レベルのデフォルト属性から継承されます。デフォルト・パーティションは指定されています。
+CREATE TABLE sales_by_region (item# INTEGER, qty INTEGER, 
+store_name VARCHAR(30), state_code VARCHAR(2),
+sale_date DATE)
+STORAGE(INITIAL 10K NEXT 20K) TABLESPACE tbs5 
+PARTITION BY LIST (state_code) 
+(
+PARTITION region_east
+VALUES ('MA','NY','CT','NH','ME','MD','VA','PA','NJ')
+STORAGE (INITIAL 20K NEXT 40K PCTINCREASE 50) 
+TABLESPACE tbs8,
+PARTITION region_west
+VALUES ('CA','AZ','NM','OR','WA','UT','NV','CO')
+NOLOGGING,
+PARTITION region_south
+VALUES ('TX','KY','TN','LA','MS','AR','AL','GA'),
+PARTITION region_central 
+VALUES ('OH','ND','SD','MO','IL','MI','IA'),
+PARTITION region_null
+VALUES (NULL),
+PARTITION region_unknown
+VALUES (DEFAULT)
+);
+レンジ-ハッシュ・コンポジット・パーティション表の作成
+レンジ-ハッシュ・パーティション表を作成するには、最初にCREATE TABLE文のPARTITION BY RANGE句を使用します。次に、PARTITION BY HASH句と同じ構文およびルールに従って、SUBPARTITION BY HASH句を指定します。その後に、個々のPARTITION句およびSUBPARTITIONまたはSUBPARTITIONS句と、オプションのSUBPARTITION TEMPLATE句を続けて指定します。
+レンジ・パーティションに指定した属性は、そのパーティションのすべてのサブパーティションに適用されます。レンジ・パーティションごとに異なる属性を指定できます。また、そのパーティションのサブパーティションが分散される表領域のリストが他のパーティションと異なる場合は、STORE IN句をパーティション・レベルで指定できます。次の例に、このすべての操作を示します。
+CREATE TABLE emp (deptno NUMBER, empname VARCHAR(32), grade NUMBER)   
+PARTITION BY RANGE(deptno) SUBPARTITION BY HASH(empname)
+SUBPARTITIONS 8 STORE IN (ts1, ts3, ts5, ts7)
+(PARTITION p1 VALUES LESS THAN (1000),
+PARTITION p2 VALUES LESS THAN (2000)
+STORE IN (ts2, ts4, ts6, ts8),
+PARTITION p3 VALUES LESS THAN (MAXVALUE)
+(SUBPARTITION p3_s1 TABLESPACE ts4,
+SUBPARTITION p3_s2 TABLESPACE ts5));
+サブパーティション・テンプレートを使用してコンポジット・パーティション表の指定を簡素化する方法は、「サブパーティション・テンプレートを使用したコンポジット・パーティション表の記述」を参照してください。
+次の文は、emp表に対して、索引セグメントが表領域ts7、ts8およびts9に分散するローカル索引の作成例を示しています。
+CREATE INDEX emp_ix ON emp(deptno)
+LOCAL STORE IN (ts7, ts8, ts9);
+このローカル索引は、次のように実表と同一レベルでパーティション化されます。
+実表と同数のパーティションから構成されます。
+各索引パーティションは、対応する実表のパーティションと同数のサブパーティションから構成されます。
+実表の特定サブパーティションの行に関する索引エントリは、索引の対応するサブパーティションに格納されます。
+レンジ-リスト・コンポジット・パーティション表の作成
+レンジ-リスト・パーティション化の概念は、もう1つのコンポジット・パーティション化方法であるレンジ-ハッシュ方法に似ていますが、この場合はサブパーティションをハッシュするのではなくリストするように指定します。具体的には、CREATE TABLE...PARTITION BY RANGE句の後に、PARTITION BY LIST句と同様の構文およびルールに従ってSUBPARTITION BY LIST句を指定します。その後に、個々のPARTITION句およびSUBPARTITION句と、オプションのSUBPARTITION TEMPLATE句を続けて指定します。
+コンポジット・パーティション表のレンジ・パーティションは、非コンポジット・レンジ・パーティション表の場合と同様に記述されます。このため、PARTITION句のオプションの副次句では、表領域など、パーティションのセグメントに固有の物理属性と他の属性を識別できます。パーティション・レベルで上書きされない場合、各パーティションはその基礎となる表の属性を継承します。
+リスト・サブパーティション記述は、SUBPARTITION句に非コンポジット・リスト・パーティションの場合と同様に記述されますが、指定できる物理属性は表領域(オプション)のみです。サブパーティションは、他のすべての物理属性をパーティション記述から継承します。
+次の例は、パーティション・レベルとサブパーティション・レベルで表領域を指定する表の作成方法を示しています。各パーティション内のサブパーティション数は異なり、デフォルト・サブパーティションを指定しています。
+CREATE TABLE sample_regional_sales
+(deptno number, item_no varchar2(20),
+txn_date date, txn_amount number, state varchar2(2))
+PARTITION BY RANGE (txn_date)
+SUBPARTITION BY LIST (state)
+(PARTITION q1_1999 VALUES LESS THAN (TO_DATE('1-APR-1999','DD-MON-YYYY'))
+TABLESPACE tbs_1
+(SUBPARTITION q1_1999_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q1_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q1_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+SUBPARTITION q1_1999_southeast VALUES ('FL', 'GA'),
+SUBPARTITION q1_others VALUES (DEFAULT) TABLESPACE tbs_4
+),
+PARTITION q2_1999 VALUES LESS THAN ( TO_DATE('1-JUL-1999','DD-MON-YYYY'))
+TABLESPACE tbs_2
+(SUBPARTITION q2_1999_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q2_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q2_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+SUBPARTITION q2_1999_southeast VALUES ('FL', 'GA'),
+SUBPARTITION q2_1999_northcentral VALUES ('SD', 'WI'),
+SUBPARTITION q2_1999_southcentral VALUES ('OK', 'TX')
+),
+PARTITION q3_1999 VALUES LESS THAN (TO_DATE('1-OCT-1999','DD-MON-YYYY'))
+TABLESPACE tbs_3
+(SUBPARTITION q3_1999_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q3_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q3_others VALUES (DEFAULT) TABLESPACE tbs_4
+),
+PARTITION q4_1999 VALUES LESS THAN ( TO_DATE('1-JAN-2000','DD-MON-YYYY'))
+TABLESPACE tbs_4
+);
+この例では、サブパーティション記述は次のようになります。
+すべてのサブパーティションは、表領域を除く物理属性を表領域レベルのデフォルトから継承します。これは、パーティションまたはサブパーティションに対して指定されている物理属性が表領域のみであるためです。表レベルの物理属性は指定されていないので、すべてのレベルで表領域レベルのデフォルトが継承されます。 
+パーティションq1_1999の最初の4つのサブパーティションは、すべてtbs_1に含まれていますが、サブパーティションq1_othersはtbs_4に格納されており、他のどのパーティションにもマップされない行がすべて含まれています。 
+パーティションq2_1999の6つのサブパーティションは、すべてtbs_2に格納されています。
+パーティションq3_1999の最初の2つのサブパーティションは、すべてtbs_3に含まれていますが、サブパーティションq3_othersはtbs_4に格納されており、他のどのパーティションにもマップされない行がすべて含まれています。
+パーティションq4_1999のサブパーティション記述はありません。このため、デフォルト・サブパーティションが1つ作成され、tbs_4に格納されます。このサブパーティションには、SYS_SUBPn形式のシステム生成名が使用されます。
+サブパーティション・テンプレートを使用してコンポジット・パーティション表の指定を簡素化する方法は、「サブパーティション・テンプレートを使用したコンポジット・パーティション表の記述」を参照してください。
+サブパーティション・テンプレートを使用したコンポジット・パーティション表の記述
+サブパーティション・テンプレートを使用すると、コンポジット・パーティション表にサブパーティションを作成できます。サブパーティション・テンプレートでは、表の各パーティションのサブパーティション記述子を指定する必要がないため、サブパーティションの指定が簡素化されます。かわりに、テンプレート内でサブパーティションを一度記述し、そのサブパーティション・テンプレートを表のすべてのパーティションに適用します。 
+サブパーティション・テンプレートは、パーティションのサブパーティション記述子が指定されていない場合に使用されます。サブパーティション記述子が指定されている場合は、そのパーティションのサブパーティション・テンプレートのかわりに使用されます。サブパーティション・テンプレートもパーティションのサブパーティション記述子も指定されていない場合は、デフォルト・サブパーティションが1つ作成されます。 
+レンジ-ハッシュ・パーティション表のサブパーティション・テンプレートの指定
+レンジ-ハッシュ・パーティション表の場合は、サブパーティション・テンプレートでサブパーティションの詳細を記述する方法と、ハッシュ・サブパーティションの数のみを指定する方法があります。 
+次の例では、サブパーティション・テンプレートを使用してレンジ-ハッシュ・パーティション表を作成しています。
+CREATE TABLE emp_sub_template (deptno NUMBER, empname VARCHAR(32), grade NUMBER)   
+PARTITION BY RANGE(deptno) SUBPARTITION BY HASH(empname)
+SUBPARTITION TEMPLATE
+(SUBPARTITION a TABLESPACE ts1,
+SUBPARTITION b TABLESPACE ts2,
+SUBPARTITION c TABLESPACE ts3,
+SUBPARTITION d TABLESPACE ts4
+)
+(PARTITION p1 VALUES LESS THAN (1000),
+PARTITION p2 VALUES LESS THAN (2000),
+PARTITION p3 VALUES LESS THAN (MAXVALUE)
+);
+この例では、次の表記述が生成されます。
+各パーティションには、サブパーティション・テンプレートに記述されているように4つのサブパーティションがあります。
+各サブパーティションには表領域が指定されています。あるサブパーティションの表領域をサブパーティション・テンプレートで指定する場合は、すべてのサブパーティション用に表領域を指定する必要があります。
+サブパーティション名は、パーティション名とサブパーティション名を次の書式で連結して生成されます。
+partition name_subpartition name
+次の問合せでは、サブパーティション名と表領域が表示されます。
+SQL> SELECT TABLESPACE_NAME, PARTITION_NAME, SUBPARTITION_NAME
+2  FROM DBA_TAB_SUBPARTITIONS WHERE TABLE_NAME='EMP_SUB_TEMPLATE'
+3  ORDER BY TABLESPACE_NAME;
+TABLESPACE_NAME PARTITION_NAME  SUBPARTITION_NAME
+--------------- --------------- ------------------
+TS1             P1              P1_A
+TS1             P2              P2_A
+TS1             P3              P3_A
+TS2             P1              P1_B
+TS2             P2              P2_B
+TS2             P3              P3_B
+TS3             P1              P1_C
+TS3             P2              P2_C
+TS3             P3              P3_C
+TS4             P1              P1_D
+TS4             P2              P2_D
+TS4             P3              P3_D
+12 rows selected.
+レンジ-リスト・パーティション表のサブパーティション・テンプレートの指定
+レンジ-リスト・パーティション表に関する次の例は、サブパーティション・テンプレートを使用して表領域間でデータをストライプ化する方法を示しています。この例で作成される表では、サブパーティションが垂直にストライプ化されています。これは、各パーティションのサブパーティションが同じ表領域にあることを意味します。
+CREATE TABLE stripe_regional_sales
+( deptno number, item_no varchar2(20),
+txn_date date, txn_amount number, state varchar2(2))
+PARTITION BY RANGE (txn_date)
+SUBPARTITION BY LIST (state)
+SUBPARTITION TEMPLATE 
+(SUBPARTITION northwest VALUES ('OR', 'WA') TABLESPACE tbs_1,
+SUBPARTITION southwest VALUES ('AZ', 'UT', 'NM') TABLESPACE tbs_2,
+SUBPARTITION northeast VALUES ('NY', 'VM', 'NJ') TABLESPACE tbs_3,
+SUBPARTITION southeast VALUES ('FL', 'GA') TABLESPACE tbs_4,
+SUBPARTITION midwest VALUES ('SD', 'WI') TABLESPACE tbs_5,
+SUBPARTITION south VALUES ('AL', 'AK') TABLESPACE tbs_6,
+SUBPARTITION others VALUES (DEFAULT ) TABLESPACE tbs_7
+)
+(PARTITION q1_1999 VALUES LESS THAN ( TO_DATE('01-APR-1999','DD-MON-YYYY')),
+PARTITION q2_1999 VALUES LESS THAN ( TO_DATE('01-JUL-1999','DD-MON-YYYY')),
+PARTITION q3_1999 VALUES LESS THAN ( TO_DATE('01-OCT-1999','DD-MON-YYYY')),
+PARTITION q4_1999 VALUES LESS THAN ( TO_DATE('1-JAN-2000','DD-MON-YYYY'))
+);
+パーティション・レベルで表領域を指定し(パーティションq1_1999にはtbs_1、パーティションq1_1999にはtbs_2、パーティションq3_1999にはtbs_3およびパーティションq4_1999にはtbs_4など)、サブパーティション・テンプレートで指定しないと、表は水平にストライプ化されます。すべてのサブパーティションは、所有パーティションの表領域に格納されます。 
+複数列パーティション化キーの使用
+レンジ・パーティション表およびハッシュ・パーティション表では、最大16個のパーティション化キー列を指定できます。複数列パーティション化を使用する必要があるのは、パーティション化キーが複数の列で構成され、後続列が先行列より細分化されたレベルを定義している場合です。最も一般的な使用例は、年、月および日の各列で構成される、分解されたDATEまたはTIMESTAMPキーです。
+複数列パーティション化キーの評価では、1番目の値で単一ターゲット・パーティションを一意に識別できない場合にのみ2番目の値が使用され、それ以降は、1番目と2番目で正しいパーティションが決定しない場合にのみ3番目の値が使用されるようになります。値による正しいパーティションの決定ができないのは、パーティション・バウンドがその値と完全に一致し、同じバウンドが次のパーティションに定義されている場合のみです。 したがって、複数列キーのすべての直前(n-1)の値が、パーティションの(n-1)バウンドと完全に一致する場合にのみ、n番目の列が調査されます。たとえば、2番目の列が評価されるのは、1番目の列がパーティションの境界値と完全に一致する場合のみです。すべての列値が、パーティションのすべてのバウンド値と完全に一致する場合は、その行がこのパーティションに収まらないと判断され、次のパーティションとの適合が検討されます。 
+非決定性境界定義(最低1つの列に対して同じ値を持つ連続するパーティション)の場合は、パーティションの境界値が、境界以下であることを表す包括的な値になります。これは、常に値が境界より小さいと考えられる決定性境界と対照的です。
+次の例は、3つの別々の列に実際のDATE情報(year、monthおよびdate)を格納した複数列レンジ・パーティション表に対する列の評価を示しています。パーティション化の細分化レベルは、四半期です。評価対象のパーティション表は、次のように作成されています。
+CREATE TABLE sales_demo (
+year          NUMBER, 
+month         NUMBER,
+day           NUMBER,
+amount_sold   NUMBER) 
+PARTITION BY RANGE (year,month) 
+(PARTITION before2001 VALUES LESS THAN (2001,1),
+PARTITION q1_2001    VALUES LESS THAN (2001,4),
+PARTITION q2_2001    VALUES LESS THAN (2001,7),
+PARTITION q3_2001    VALUES LESS THAN (2001,10),
+PARTITION q4_2001    VALUES LESS THAN (2002,1),
+PARTITION future     VALUES LESS THAN (MAXVALUE,0));
+REM  12-DEC-2000
+INSERT INTO sales_demo VALUES(2000,12,12, 1000);
+REM  17-MAR-2001
+INSERT INTO sales_demo VALUES(2001,3,17, 2000);
+REM  1-NOV-2001
+INSERT INTO sales_demo VALUES(2001,11,1, 5000);
+REM  1-JAN-2002
+INSERT INTO sales_demo VALUES(2002,1,1, 4000);
+年の値12-DEC-2000は、1番目のパーティションbefore2001を満たしているため、これ以上の評価は不要です。
+SELECT * FROM sales_demo PARTITION(before2001);
+YEAR      MONTH        DAY AMOUNT_SOLD
+---------- ---------- ---------- -----------
+2000         12         12        1000
+17-MAR-2001の情報は、パーティションq1_2001に格納されます。1番目のパーティション化キー列yearのみでは、正しいパーティションを決定できないため、2番目のパーティション化キー列monthが評価される必要があります。
+SELECT * FROM sales_demo PARTITION(q1_2001);
+YEAR      MONTH        DAY AMOUNT_SOLD
+---------- ---------- ---------- -----------
+2001          3         17        2000
+前のレコードと同じ決定ルールに従い、2番目の列monthによって、1-NOV-2001の正しいパーティションとして、パーティションq4_2001が決定されます。
+SELECT * FROM sales_demo PARTITION(q4_2001);
+YEAR      MONTH        DAY AMOUNT_SOLD
+---------- ---------- ---------- -----------
+2001         11          1        5000
+01-JAN-2002のパーティションは、futureパーティションを示すyear列のみの評価によって決定されます。
+SELECT * FROM sales_demo PARTITION(future);
+YEAR      MONTH        DAY AMOUNT_SOLD
+---------- ---------- ---------- -----------
+2002          1          1        4000
+パーティション・キー列の1つでMAXVALUEが検出されると、後続列のすべての値が意味を失います。つまり、この例で、(MAXVALUE,0)のバウンドを持つパーティションfutureの定義は、(MAXVALUE,100)のバウンドまたは(MAXVALUE,MAXVALUE)のバウンドと等価です。
+次の例は、supplier_parts表に複数列パーティション化を使用して、どのサプライヤがどの部品を納入するかという情報を格納する方法を示しています。いくつかのサプライヤが数十万の部品を納入する一方、他のサプライヤはごく少数の特別部品を納入する場合もあるため、同一サイズのパーティション内にデータを分散するためには、supplier_idに基づく表のパーティション化では不十分です。かわりに、(supplier_id, partnum)で表をパーティション化し、同一サイズのパーティション化を手動で実行します。
+CREATE TABLE supplier_parts (
+supplier_id      NUMBER, 
+partnum          NUMBER,
+price            NUMBER)
+PARTITION BY RANGE (supplier_id, partnum)
+(PARTITION p1 VALUES LESS THAN  (10,100),
+PARTITION p2 VALUES LESS THAN (10,200),
+PARTITION p3 VALUES LESS THAN (MAXVALUE,MAXVALUE));
+次の3つのレコードが表に挿入されます。
+INSERT INTO supplier_parts VALUES (5,5, 1000);
+INSERT INTO supplier_parts VALUES (5,150, 1000);
+INSERT INTO supplier_parts VALUES (10,100, 1000);
+最初の2つのレコードは、パーティションp1に挿入され、supplier_idによって一意に識別されます。ただし、3番目のレコードはパーティションp2に挿入されます。このレコードは、パーティションp1の範囲のすべての境界値と完全に一致するため、次のパーティションとの適合が検討されます。partnumの値は< 200の基準を満たしているため、パーティションp2に挿入されます。
+SELECT * FROM supplier_parts PARTITION (p1);
+SUPPLIER_ID    PARTNUM      PRICE
+----------- ---------- ----------
+5          5       1000
+5        150       1000
+SELECT * FROM supplier_parts PARTITION (p2);
+SUPPLIER_ID    PARTNUM      PRICE
+----------- ---------- ----------
+10       100       1000
+supplier_id < 10のすべての行は、partnumの値にかかわらず、パーティションp1に格納されます。列partnumが評価されるのはsupplier_id =10の場合のみです。対応する行は、パーティションp1、p2またはp3(partnum >=200の場合)に挿入されます。supplier_partsの範囲に対する同一サイズのパーティションを実現するには、supplier_idでレンジ・パーティション化され、partnumでハッシュ・サブパーティション化されたレンジ-ハッシュ・コンポジット・パーティション表を選択できます。
+複数列パーティション表にパーティション境界を定義するには、いくつかの規則に従う必要があります。たとえば、a、bおよびcの3列でレンジ・パーティション化された表を考えます。個々のパーティションは、次のような範囲の値を持ちます。
+P0(a0, b0, c0)
+P1(a1, b1, c1)
+P2(a2, b2, c2)
+
+Pn(an, bn, cn)
+各パーティションに設定する範囲の値は、次の規則に従う必要があります。
+a0はa1以下に、それ以降、a1はa2以下というように設定する必要があります。
+a0=a1の場合、b0はb1以下に設定する必要があります。a0 < a1の場合は、b0およびb1に任意の値を設定できます。b0=b1の場合、c0はc1以下に設定する必要があります。b0<b1の場合は、c0およびc1に任意の値を設定できます。以降も同様です。
+a1=a2の場合、b1はb2以下に設定する必要があります。a1<a2の場合は、b1およびb2に任意の値を設定できます。b1=b2の場合、c1はc2以下に設定する必要があります。b1<b2の場合は、c0およびc1に任意の値を設定できます。以降も同様です。
+パーティション表での表圧縮の使用
+ヒープ構成パーティション表では、表圧縮を使用して一部またはすべてのパーティションを圧縮できます。圧縮属性は、表領域、表または表のパーティションに対して宣言できます。圧縮属性が指定されていない場合は、その他の記憶域属性と同じように継承されます。
+次の例では、パーティションcosts_oldを圧縮したリスト・パーティション表を作成しています。この表およびその他すべてのパーティションの圧縮属性は、表領域レベルから継承されます。
+CREATE TABLE costs_demo (
+prod_id     NUMBER(6),    time_id     DATE, 
+unit_cost   NUMBER(10,2), unit_price  NUMBER(10,2))
+PARTITION BY RANGE (time_id)
+(PARTITION costs_old 
+VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,
+PARTITION costs_q1_2003 
+VALUES LESS THAN (TO_DATE('01-APR-2003', 'DD-MON-YYYY')),
+PARTITION costs_q2_2003
+VALUES LESS THAN (TO_DATE('01-JUN-2003', 'DD-MON-YYYY')),
+PARTITION costs_recent VALUES LESS THAN (MAXVALUE));
+パーティション索引でのキー圧縮の使用
+キー圧縮を使用して、Bツリー索引の一部またはすべてのパーティションを圧縮できます。キー圧縮を適用できるのは、Bツリー索引のみです。ビットマップ索引は、デフォルトで圧縮形式で格納されます。キー圧縮を使用した索引では、キー列の接頭辞が同じ値で繰り返し格納されないため、領域とI/Oが少なくてすみます。
+次の例では、最新のパーティション以外のすべてのパーティションを圧縮したローカル・パーティション索引を作成しています。
+CREATE INDEX i_cost1 ON costs_demo (prod_id) COMPRESS LOCAL
+(PARTITION costs_old, PARTITION costs_q1_2003, 
+PARTITION costs_q2_2003, PARTITION costs_recent NOCOMPRESS);
+COMPRESS(またはNOCOMPRESS)は、索引のサブパーティションに対して明示的に指定することはできません。指定したパーティションのすべての索引サブパーティションは、その親パーティションからキー圧縮設定を継承します。
+指定したパーティションのすべてのサブパーティションのキー圧縮属性を変更するには、最初にALTER INDEX...MODIFY PARTITION文を発行し、次にすべてのサブパーティションを再作成する必要があります。MODIFY PARTITION句によって、すべての索引サブパーティションにUNUSABLEのマークが設定されます。
+パーティション化された索引構成表の作成
+索引構成表では、レンジ・パーティション化方法、リスト・パーティション化方法またはハッシュ・パーティション化方法が使用できます。パーティション化された索引構成表を作成するセマンティクスは、通常の表を作成するセマンティクスとほぼ同じですが、次の点が異なります。
+索引構成表を作成するときは、ORGANIZATION INDEX句を指定し、さらに必要に応じてINCLUDING句およびOVERFLOW句を指定します。
+PARTITION句またはPARTITIONS句には、パーティション・レベルでオーバーフロー・セグメントの属性を指定できるOVERFLOW副次句を指定できます。 
+OVERFLOW句を指定すると、オーバーフロー・データ・セグメント自体が主キー索引セグメントと同一レベルでパーティション化されます。したがって、オーバーフローを指定してパーティション化された索引構成表では、各パーティションが索引セグメントとオーバーフロー・データ・セグメントを持っています。 
+索引構成表では、パーティション化列のセットは主キー列のサブセットであることが必要です。索引構成表の行はその表の主キー索引に格納されるため、パーティション化の基準が可用性に影響を及ぼします。パーティション化キーを主キーのサブセットとすることによって、単一パーティション内で主キーの一意性が確認されると行を挿入できます。これにより、パーティションの独立性が維持されます。 
+索引構成表上での2次索引のサポートは、通常の表に対するサポートとほぼ同じです。2次索引の論理的な性質により、索引構成表上のグローバル索引は、通常の表の場合はUNUSABLEマークが設定される特定の操作に対して使用可能のままです。 
+関連項目
+「索引構成表の管理」
+「パーティション表のメンテナンス」
+索引構成表の詳細は、『Oracle Database概要』を参照してください。
+レンジ・パーティション化された索引構成表の作成
+索引構成表とその2次索引は、レンジ・パーティション化方法でパーティション化できます。次の例では、レンジ・パーティション化された索引構成表salesが作成されます。INCLUDING句では、week_noより後の列がすべてオーバーフロー・セグメントに格納されるよう指定しています。各パーティションにはオーバーフロー・セグメントが1つあり、すべて同じ表領域に格納されます(overflow_here)。必要に応じて、個々のパーティション・レベルでOVERFLOW TABLESPACEを指定できます。その場合、一部またはすべてのオーバーフロー・セグメントに、別個のTABLESPACE属性を指定できます。
+CREATE TABLE sales(acct_no NUMBER(5), 
+acct_name CHAR(30), 
+amount_of_sale NUMBER(6), 
+week_no INTEGER,
+sale_details VARCHAR2(1000),
+PRIMARY KEY (acct_no, acct_name, week_no)) 
+ORGANIZATION INDEX 
+INCLUDING week_no
+OVERFLOW TABLESPACE overflow_here
+PARTITION BY RANGE (week_no)
+(PARTITION VALUES LESS THAN (5) 
+TABLESPACE ts1,
+PARTITION VALUES LESS THAN (9) 
+TABLESPACE ts2 OVERFLOW TABLESPACE overflow_ts2,
+...
+PARTITION VALUES LESS THAN (MAXVALUE) 
+TABLESPACE ts13);
+リスト・パーティション化された索引構成表の作成
+索引構成表をパーティション化する方法として、リスト・パーティション化方法を使用することもできます。次の例では、索引構成表salesがリスト・パーティション化方法でパーティション化されています。この例では、シード・データベースのサンプル・スキーマの一部であるexample表領域を使用しています。通常は、様々なパーティションに対して異なる表領域を指定します。
+CREATE TABLE sales(acct_no NUMBER(5), 
+acct_name CHAR(30), 
+amount_of_sale NUMBER(6), 
+week_no INTEGER,
+sale_details VARCHAR2(1000),
+PRIMARY KEY (acct_no, acct_name, week_no)) 
+ORGANIZATION INDEX 
+INCLUDING week_no
+OVERFLOW TABLESPACE example
+PARTITION BY LIST (week_no)
+(PARTITION VALUES (1, 2, 3, 4) 
+TABLESPACE example,
+PARTITION VALUES (5, 6, 7, 8) 
+TABLESPACE example OVERFLOW TABLESPACE example,
+PARTITION VALUES (DEFAULT) 
+TABLESPACE example);
+ハッシュ・パーティション化された索引構成表の作成
+索引構成表をパーティション化する方法として、ハッシュ・パーティション化方法を使用することもできます。次の例では、索引構成表salesがハッシュ・パーティション化方法でパーティション化されています。
+CREATE TABLE sales(acct_no NUMBER(5), 
+acct_name CHAR(30), 
+amount_of_sale NUMBER(6), 
+week_no INTEGER,
+sale_details VARCHAR2(1000),
+PRIMARY KEY (acct_no, acct_name, week_no)) 
+ORGANIZATION INDEX 
+INCLUDING week_no
+OVERFLOW
+PARTITION BY HASH (week_no)
+PARTITIONS 16
+STORE IN (ts1, ts2, ts3, ts4)
+OVERFLOW STORE IN (ts3, ts6, ts9);
+注意
+正しく設計されたハッシュ関数では、行がパーティション間でバランスよく分散されます。したがって、行の主キー列を更新すると、その行が別のパーティションに移動することがあります。変更可能なパーティション化キーを持つハッシュ・パーティション化された索引構成表を作成するときは、ENABLE ROW MOVEMENT句を明示的に指定することをお薦めします。デフォルトでは、ENABLE ROW MOVEMENTは使用禁止になっています。 
+複数のブロック・サイズに関するパーティション化の制限
+複数のブロック・サイズの表領域を持つデータベースにパーティション化されたオブジェクトを作成するときは、注意が必要です。このような表領域に格納されたパーティション・オブジェクトの記憶域には、いくつかの制限が適用されます。具体的には、次のエンティティのパーティションはすべて同じブロック・サイズの表領域内にあることが必要です。
+従来型の表
+索引
+索引構成表の主キー索引セグメント
+索引構成表のオーバーフロー・セグメント
+行外に格納されているLOB列
+したがって、次のことが必要になります。
+従来型の各表のパーティションはすべて同じブロック・サイズの表領域に格納する必要があります。
+各索引構成表では、主キー索引のパーティションはすべて同じブロック・サイズの表領域内にあることが必要です。また、オーバーフロー・パーティションもすべて同じブロック・サイズの表領域内にあることが必要です。ただし、索引パーティションとオーバーフロー・パーティションが異なるブロック・サイズの表領域にあってもかまいません。
+各索引(グローバルまたはローカル)の各パーティションは、同じブロック・サイズの表領域にあることが必要です。ただし、同じオブジェクトに対して定義されている異なる索引のパーティションは、異なるブロック・サイズの表領域にあってもかまいません。
+各LOB列の各パーティションは、同じブロック・サイズの表領域に格納する必要があります。ただし、異なるLOB列は異なるブロック・サイズの表領域に格納してもかまいません。
+パーティション表または索引を作成または変更するときに、各エンティティのパーティションおよびサブパーティションに対して表領域を明示的に指定する場合、その表領域はすべて同じブロック・サイズであることが必要です。また、エンティティに対して表領域を明示的に指定しない場合は、デフォルトで使用される表領域が同じブロック・サイズであることが必要です。このため、パーティション・オブジェクトの各レベルにおけるデフォルトの表領域に注意する必要があります。 
+パーティション表のメンテナンス
+ここでは、表と索引の両方について、パーティションとサブパーティションのメンテナンス操作の実行方法を説明します。
+表17-1は、表パーティション(またはサブパーティション)に対して実行できるメンテナンス操作と、パーティション化のタイプごとにそのメンテナンス操作の実行に使用するALTER TABLE文の特定の句を示しています。 
+表 17-1    ALTER TABLEによる表パーティションのメンテナンス操作 
+メンテナンス操作 
+レンジ 
+ハッシュ 
+リスト 
+コンポジット: レンジ/ハッシュ 
+コンポジット: レンジ/リスト 
+パーティションの追加 
+ADD PARTITION  
+ADD PARTITION  
+ADD PARTITION  
+ADD PARTITION 
+MODIFY PARTITION ...ADD SUBPARTITION 
+ADD PARTITION 
+MODIFY PARTITION ...ADD SUBPARTITION 
+パーティションの結合 
+N/A 
+COALESCE PARTITION  
+N/A 
+MODIFY PARTITION ...COALESCE SUBPARTITION 
+N/A 
+パーティションの削除 
+DROP PARTITION  
+N/A 
+DROP PARTITION  
+DROP PARTITION  
+DROP PARTITION 
+DROP SUBPARTITION  
+パーティションの交換 
+EXCHANGE PARTITION  
+EXCHANGE PARTITION  
+EXCHANGE PARTITION  
+EXCHANGE PARTITION 
+EXCHANGE SUBPARTITION  
+EXCHANGE PARTITION 
+EXCHANGE SUBPARTITION  
+パーティションのマージ 
+MERGE PARTITIONS  
+N/A 
+MERGE PARTITIONS  
+MERGE PARTITIONS  
+MERGE PARTITIONS 
+MERGE SUBPARTITIONS  
+デフォルト属性の変更 
+MODIFY DEFAULT ATTRIBUTES  
+MODIFY DEFAULT ATTRIBUTES  
+MODIFY DEFAULT ATTRIBUTES  
+MODIFY DEFAULT ATTRIBUTES 
+MODIFY DEFAULT ATTRIBUTES FOR PARTITION  
+MODIFY DEFAULT ATTRIBUTES 
+MODIFY DEFAULT ATTRIBUTES FOR PARTITION  
+パーティションの実属性の変更 
+MODIFY PARTITION  
+MODIFY PARTITION  
+MODIFY PARTITION  
+MODIFY PARTITION 
+MODIFY SUBPARTITION  
+MODIFY PARTITION 
+MODIFY SUBPARTITION  
+リスト・パーティションの変更: 値の追加 
+N/A 
+N/A 
+MODIFY PARTITION...ADD VALUES  
+N/A 
+MODIFY SUBPARTITION ...ADD VALUES 
+リスト・パーティションの変更: 値の削除 
+N/A 
+N/A 
+MODIFY PARTITION...DROP VALUES  
+N/A 
+MODIFY SUBPARTITION ...DROP VALUES 
+サブパーティション・テンプレートの変更 
+N/A 
+N/A 
+N/A 
+SET SUBPARTITION TEMPLATE  
+SET SUBPARTITION TEMPLATE  
+パーティションの移動 
+MOVE PARTITION  
+MOVE PARTITION  
+MOVE PARTITION  
+MOVE SUBPARTITION  
+MOVE SUBPARTITION  
+パーティションの名前変更 
+RENAME PARTITION  
+RENAME PARTITION  
+RENAME PARTITION  
+RENAME PARTITION 
+RENAME SUBPARTITION  
+RENAME PARTITION 
+RENAME SUBPARTITION  
+パーティションの分割 
+SPLIT PARTITION  
+N/A 
+SPLIT PARTITION  
+SPLIT PARTITION  
+SPLIT PARTITION
+SPLIT SUBPARTITION  
+パーティションの切捨て 
+TRUNCATE PARTITION  
+TRUNCATE PARTITION  
+TRUNCATE PARTITION  
+TRUNCATE PARTITION 
+TRUNCATE SUBPARTITION  
+TRUNCATE PARTITION 
+TRUNCATE SUBPARTITION  
+注意
+ビットマップ索引を持ち、現在は非圧縮パーティションのみが含まれているパーティション表に、表圧縮を使用した圧縮パーティションを初めて導入する場合は、次の操作が必要です。
+既存のビットマップ索引とビットマップ索引パーティションをすべて削除するか、UNUSABLEマークを付けます。
+表圧縮属性を設定します。
+索引を再作成します。
+これらのアクションは、パーティションにデータが含まれているかどうかや圧縮パーティションの導入操作からは独立しています。 
+これらのアクションは、Bツリー索引を持つパーティション表やパーティション化された索引構成表には適用されません。
+詳細は、『Oracle Databaseデータ・ウェアハウス・ガイド』を参照してください。 
+表17-2は、索引パーティションに対して実行できるメンテナンス操作と、各操作を実行できる索引のタイプ(グローバルまたはローカル)を示しています。メンテナンス操作には、ALTER INDEX句が示されています。
+グローバル索引は基礎となる表の構造を反映しません。パーティション化する場合は、レンジまたはハッシュ・パーティション化が有効です。パーティション化されたグローバル索引には、パーティション表に対して実行できるパーティション・メンテナンス操作の一部(すべてではありません)を実行できます。 
+ローカル索引は基礎となる表の構造を反映するため、表パーティションとサブパーティションがメンテナンス・アクティビティの影響を受ける場合にパーティション化は自動的にメンテナンスされます。したがって、ローカル索引のパーティションをメンテナンスする機会はそれほどなく、オプションも少数です。
+表 17-2    ALTER INDEXによる索引パーティションのメンテナンス操作 
+メンテナンス操作 
+索引のタイプ 
+索引パーティション化のタイプ 
+レンジ 
+ハッシュおよびリスト 
+コンポジット 
+索引パーティションの追加 
+グローバル 
+-  
+ADD PARTITION(ハッシュのみ) 
+- 
+ローカル 
+N/A 
+N/A 
+N/A 
+索引パーティションの削除 
+グローバル 
+DROP PARTITION  
+- 
+- 
+ローカル 
+N/A 
+N/A 
+N/A 
+索引パーティションのデフォルト属性の変更 
+グローバル 
+MODIFY DEFAULT ATTRIBUTES  
+- 
+- 
+ローカル 
+MODIFY DEFAULT ATTRIBUTES  
+MODIFY DEFAULT ATTRIBUTES  
+MODIFY DEFAULT ATTRIBUTES 
+MODIFY DEFAULT ATTRIBUTES FOR PARTITION  
+索引パーティションの実属性の変更 
+グローバル 
+MODIFY PARTITION  
+- 
+- 
+ローカル 
+MODIFY PARTITION  
+MODIFY PARTITION  
+MODIFY PARTITION 
+MODIFY SUBPARTITION  
+索引パーティションの再作成 
+グローバル 
+REBUILD PARTITION  
+- 
+- 
+ローカル 
+REBUILD PARTITION  
+REBUILD PARTITION  
+REBUILD SUBPARTITION  
+索引パーティションの名前変更 
+グローバル 
+RENAME PARTITION  
+- 
+- 
+ローカル 
+RENAME PARTITION  
+RENAME PARTITION  
+RENAME PARTITION 
+RENAME SUBPARTITION  
+索引パーティションの分割 
+グローバル 
+SPLIT PARTITION  
+- 
+- 
+ローカル 
+N/A 
+N/A 
+N/A 
+注意
+次の項では、パーティション表に対するメンテナンス操作について説明します。メンテナンス操作の影響を受ける索引または索引パーティションの使用可能性についての記述では、次のことを考慮してください。
+UNUSABLEでマークされる対象は、空ではない索引および索引パーティションのみです。これらが空である場合、USABLE/UNUSABLE状態は変更されません。
+後続のDMLで更新されるのは、USABLE状態の索引または索引パーティションのみです。
+索引の自動更新
+パーティション表および索引に対する個々のメンテナンス操作の説明に入る前に、ALTER TABLE文に指定できるUPDATE INDEXES句の効果を理解しておく必要があります。
+デフォルトでは、パーティション表のメンテナンス操作を実行すると、多くの場合、対応する索引または索引パーティションが無効になります(UNUSABLEマークが設定されます)。このような場合は、索引全体を再作成する必要があります。また、グローバル索引の場合は、そのパーティションのそれぞれを再作成する必要があります。メンテナンス操作に対して、ALTER TABLE文でUPDATE INDEXES句を指定することにより、このデフォルト動作を無効にできます。この句を指定すると、メンテナンス操作のデータ定義言語(DDL)文の実行時に索引が更新されます。この方法には、次のような利点があります。
+実表の操作と同時に索引が更新されます。後で個別に索引を再作成する必要はありません。 
+索引がUNUSABLEでマークされないため、索引の可用性が向上します。パーティションのDDLを実行している間でも索引は使用可能であり、表中の影響を受けないパーティションへのアクセスにも使用できます。
+索引を再作成するために、無効になっている索引の名前を検索する必要がありません。
+ローカル索引に対してオプションの句を使用すると、更新されたローカル索引とそのパーティションに物理特性および記憶域特性を指定できます。
+各ローカル索引の各パーティションに対して、物理属性、表領域およびロギングを指定できます。または、PARTITIONキーワードのみを指定して、データベースでパーティション属性を次のように更新することもできます。
+単一の表パーティションに対する操作の場合(MOVE PARTITION、SPLIT PARTITIONなど)、対応する索引パーティションは、影響を受けた索引パーティションの属性を継承する。新しい索引パーティションには名前を生成せず、この操作の結果作成された新しい索引パーティションは、対応する新しい表パーティションからその名前を継承する。
+MERGE PARTITION操作の場合、マージされたローカル索引パーティションは、マージされた表パーティションからその名前を継承し、ローカル索引からその属性を継承する。
+コンポジット・パーティション索引の場合は、各サブパーティションに表領域を指定できます。
+関連項目
+索引を更新する構文については、ALTER TABLEのupdate_all_indexes_clauseを参照してください。 
+UPDATE INDEXES句がサポートされているのは、次の操作です。
+ADD PARTITION | SUBPARTITION
+COALESCE PARTITION | SUBPARTITION
+DROP PARTITION | SUBPARTITION
+EXCHANGE PARTITION | SUBPARTITION
+MERGE PARTITION | SUBPARTITION
+MOVE PARTITION | SUBPARTITION
+SPLIT PARTITION | SUBPARTITION
+TRUNCATE PARTITION | SUBPARTITION
+SKIP_UNUSABLE_INDEXES初期化パラメータ
+SKIP_UNUSABLE_INDEXESは、リリース9.x以前ではセッション・パラメータでしたが、リリース10.x以降では初期化パラメータとなりました。デフォルト値はTRUEです。この設定によって、UNUSABLEでマークされた索引と索引パーティションのエラー・レポートが無効になります。使用禁止状態の要素を回避するための代替実行計画を選択しない場合は、このパラメータをFALSEに設定します。 
+索引の自動更新時の考慮点
+UPDATE INDEXESを指定するときは、次の点に注意してください。
+すでにUNUSABLEでマークされている索引が更新されるため、パーティションのDDL文の実行には時間がかかります。この時間は、索引を更新せずにDDL文を実行した後すべての索引を再作成した場合にかかる時間と比較する必要があります。一般に、パーティションのサイズが表のサイズの5%未満であれば、索引を更新したほうが処理時間は短くなります。
+DROP、TRUNCATEおよびEXCHANGEの各操作は、決して速くありません。前述したように、DDL実行後にすべての索引を再作成する場合にかかる時間と比較してください。 
+グローバル索引のある表を更新すると、次のようになります。
+索引は適切に更新されます。索引の更新がログに記録され、REDOレコードとUNDOレコードが生成されます。一方、グローバル索引全体を再作成する場合は、NOLOGGINGモードで実行できます。
+索引全体を手動で再作成すると、領域を有効に利用して索引サイズが縮小されるため、より効率的な索引になります。 
+UPDATE INDEXES句は、索引構成表ではサポートされていません。ただし、UPDATE GLOBAL INDEXES句を、DROP PARTITION、TRUNCATE PARTITION、およびEXCHANGE PARTITION操作とともに使用すると、索引構成表のグローバル索引を使用可能な状態に保つことができます。前述のリストにあるその他の操作については、索引構成表のグローバル索引は引き続き使用可能です。また、索引構成表のローカル索引パーティションは、MOVE PARTITION操作の後も使用可能です。
+パーティションの追加
+ここでは、新しいパーティションをパーティション表に追加する方法と、パーティションをほとんどのパーティション索引に追加できない理由について説明します。
+レンジ・パーティション表へのパーティションの追加
+ALTER TABLE ...ADD PARTITION文を使用すると、新しいパーティションが最後尾(既存の最後のパーティションの次の位置)に追加されます。パーティションを表の先頭または途中に追加する場合は、SPLIT PARTITION句を使用します。
+たとえば、salesという表があり、今月と過去12か月分のデータが含まれているとします。1999年1月1日に、1月用のパーティションを表領域tsxに追加します。
+ALTER TABLE sales 
+ADD PARTITION jan96 VALUES LESS THAN ( '01-FEB-1999' )
+TABLESPACE tsx;
+レンジ・パーティション表に関連付けられたローカル索引およびグローバル索引は、使用可能のままです。
+ハッシュ・パーティション表へのパーティションの追加
+ハッシュ・パーティション表にパーティションを追加すると、新しいパーティションには、ハッシュ関数で決定された既存のパーティション(データベースが選択)から再ハッシュされた行が移入されます。 
+次の文は、表scubagearにハッシュ・パーティションを追加する2つの方法を示しています。最初の文を選択すると、システムによって生成されたパーティション名を持つ新しいハッシュ・パーティションが追加され、表のデフォルト表領域に配置されます。第2の文でも新しいハッシュ・パーティションが追加されますが、そのパーティションは明示的にp_namedと命名され、表領域gear5に作成されます。
+ALTER TABLE scubagear ADD PARTITION;
+ALTER TABLE scubagear
+ADD PARTITION p_named TABLESPACE gear5;
+索引は、次の表に示すようにUNUSABLEにマークされる場合があります。
+表のタイプ 
+索引の動作 
+通常の表(ヒープ) 
+ALTER TABLE文の一部にUPDATE INDEXESを指定しないかぎり、次の操作が必要となります。
+新しいパーティションおよび行が再分散される元の既存パーティションのローカル索引はUNUSABLEでマークされるため、再作成する必要があります。 
+すべてのグローバル索引、またはパーティション化されたグローバル索引のすべてのパーティションにはUNUSABLEマークが付けられるため、それらを再作成する必要があります。
+索引構成表 
+ローカル索引については、ヒープ表の場合と同じように動作します。
+グローバル索引はすべて使用可能のままです。
+リスト・パーティション表へのパーティションの追加
+次の文は、リスト・パーティション表に新しいパーティションを追加する方法を示しています。この例では、追加するパーティションに物理属性およびNOLOGGINGを指定しています。
+ALTER TABLE q1_sales_by_region 
+ADD PARTITION q1_nonmainland VALUES ('HI', 'PR')
+STORAGE (INITIAL 20K NEXT 20K) TABLESPACE tbs_3
+NOLOGGING;
+追加するパーティションを記述するリテラル値のセットには、表の他のパーティションに存在しない値を指定する必要があります。 
+デフォルト・パーティションを持つリスト・パーティション表にはパーティションを追加できませんが、デフォルト・パーティションを分割することはできます。分割すると、実際には指定した値で定義される新しいパーティションが作成され、2番目のパーティションが引き続きデフォルト・パーティションとなります。
+リスト・パーティション表に関連付けられたローカル索引およびグローバル索引は、使用可能のままです。
+レンジ-ハッシュ・コンポジット・パーティション表へのパーティションの追加
+パーティションは、レンジ・パーティション・レベルとハッシュ・サブパーティション・レベルのどちらでも追加できます。
+レンジ-ハッシュ・コンポジット・パーティション表へのパーティションの追加
+レンジ-ハッシュ・パーティション表に新しいレンジ・パーティションを追加する方法は、すでに「レンジ・パーティション表へのパーティションの追加」で説明されています。また、SUBPARTITIONS句を指定して特定の数のサブパーティションを追加したり、SUBPARTITION句を指定して特定のサブパーティションを命名することができます。SUBPARTITIONS句またはSUBPARTITION句を指定しない場合、パーティションはサブパーティションに表レベルのデフォルトを継承します。
+次の例では、表salesにレンジ・パーティションq1_2000を追加しています。このパーティションには、2000年の第1四半期のデータが移入されます。表領域tbs5には、8個のサブパーティションが格納されます。サブパーティションには、表圧縮の使用を明示的に設定できません。この例では、サブパーティションは、パーティション・レベルの圧縮属性を継承し、圧縮形式で格納されます。
+ALTER TABLE sales ADD PARTITION q1_2000
+VALUES LESS THAN (2000, 04, 01) COMPRESS
+SUBPARTITIONS 8 STORE IN tbs5;
+レンジ-ハッシュ・パーティション表へのサブパーティションの追加
+レンジ-ハッシュ・パーティション表にハッシュ・サブパーティションを追加するには、ALTER TABLE文のMODIFY PARTITION ... ADD SUBPARTITION句を使用します。新しく追加したサブパーティションには、ハッシュ関数で決定されたのと同じパーティションの他のサブパーティションから再ハッシュされた行が移入されます。 
+次の例では、表領域us1に格納されている新しいハッシュ・サブパーティションus_loc5が、表divingのレンジ・パーティションlocations_usに追加されます。 
+ALTER TABLE diving MODIFY PARTITION locations_us
+ADD SUBPARTITION us_locs5 TABLESPACE us1;
+追加されて再ハッシュされたサブパーティションに対応する索引のパーティションは、UPDATE INDEXESを指定していないかぎり、再作成する必要があります。 
+レンジ-リスト・パーティション表へのパーティションの追加
+パーティションは、レンジ・パーティション・レベルとリスト・サブパーティション・レベルのどちらでも追加できます。
+レンジ-リスト・パーティション表へのパーティションの追加
+レンジ-リスト・パーティション表に新しいレンジ・パーティションを追加する方法は、すでに「レンジ・パーティション表へのパーティションの追加」で説明されています。ただし、SUBPARTITION句でサブパーティションの名前と値リストを指定できます。SUBPARTITION句を指定しないと、パーティションはサブパーティション・テンプレートを継承します。サブパーティション・テンプレートが存在しない場合は、デフォルト・サブパーティションが1つ作成されます。
+次の文は、レンジ-リスト方法によってパーティション化されているquarterly_regional_sales表に新しいパーティションを追加します。この新しいパーティションには新しい物理属性がいくつか指定されていますが、未指定の物理属性については表レベルのデフォルトが継承されます。
+ALTER TABLE quarterly_regional_sales 
+ADD PARTITION q1_2000 VALUES LESS THAN (TO_DATE('1-APR-2000','DD-MON-YYYY'))
+STORAGE (INITIAL 20K NEXT 20K) TABLESPACE ts3 NOLOGGING
+(
+SUBPARTITION q1_2000_northwest VALUES ('OR', 'WA'),
+SUBPARTITION q1_2000_southwest VALUES ('AZ', 'UT', 'NM'),
+SUBPARTITION q1_2000_northeast VALUES ('NY', 'VM', 'NJ'),
+SUBPARTITION q1_2000_southeast VALUES ('FL', 'GA'),
+SUBPARTITION q1_2000_northcentral VALUES ('SD', 'WI'),
+SUBPARTITION q1_2000_southcentral VALUES ('OK', 'TX')
+);
+レンジ-リスト・パーティション表へのサブパーティションの追加
+レンジ-リスト・パーティション表にリスト・サブパーティションを追加するには、ALTER TABLE文のMODIFY PARTITION ... ADD SUBPARTITION句を使用します。 
+次の文は、レンジ-リスト・パーティション表quarterly_regional_salesの既存のサブパーティション・セットに、新しいサブパーティションを追加します。新しいサブパーティションは、表領域ts2に作成されます。
+ALTER TABLE quarterly_regional_sales
+MODIFY PARTITION q1_1999 
+ADD SUBPARTITION q1_1999_south
+VALUES ('AR','MS','AL') tablespace ts2;
+索引パーティションの追加
+ローカル索引には、パーティションを明示的に追加できません。新しいパーティションをローカル索引に追加できるのは、パーティションをその基礎となる表に追加するときのみです。具体的には、表にローカル索引が定義されているときに、ALTER TABLE文を発行してパーティションを追加すると、それに対応するパーティションもローカル索引に追加されます。新しい索引パーティションには、データベースによって名前とデフォルトの物理記憶域属性が割り当てられますが、ADD PARTITION操作が完了した後にそれらを改名または変更できます。
+実際には、最初に索引のデフォルト属性を変更し、ADD PARTITION操作で索引パーティション用に新しい表領域を指定できます。たとえば、リスト・パーティション表q1_sales_by_regionのローカル索引q1_sales_by_region_locixが作成されているとします。 「リスト・パーティション表へのパーティションの追加」に示すように、新しいパーティションq1_nonmainlandを追加する前に次の文を発行している場合は、対応する索引パーティションが表領域tbs_4に作成されます。
+ALTER INDEX q1_sales_by_region_locix
+MODIFY DEFAULT ATTRIBUTES TABLESPACE tbs_4;
+それ以外の場合は、次の文を使用して、索引パーティションを追加した後にtbs_4に移動する必要があります。
+ALTER INDEX q1_sales_by_region_locix 
+REBUILD PARTITION q1_nonmainland TABLESPACE tbs_4;
+ALTER INDEXのADD PARTITION構文を使用して、ハッシュ・パーティション化されたグローバル索引にパーティションを追加できます。データベースによってハッシュ・パーティションが追加され、ハッシュ関数で決定されたとおりに、その索引の既存のハッシュ・パーティションから再ハッシュされた索引エントリが移入されます。 次の文は、「ハッシュ・パーティション化されたグローバル索引の作成」で示した索引hgidxに、パーティションを追加します。
+ALTER INDEX hgidx ADD PARTITION p5;
+最高位のパーティションのパーティション・バウンドは常にMAXVALUEであるため、レンジ・パーティション化されたグローバル索引にはパーティションを追加できません。最高位のパーティションを新しく追加する場合は、ALTER INDEX ...SPLIT PARTITION文を使用します。
+パーティションの結合
+パーティションを結合すると、ハッシュ・パーティション表またはハッシュ・パーティション索引のパーティション数や、レンジ-ハッシュ・パーティション表のサブパーティション数を減らすことができます。ハッシュ・パーティションを結合すると、その内容はハッシュ関数で決定された残りの1つ以上のパーティションに再分散されます。結合する特定のパーティションはデータベースによって選択され、その内容が再分散された後に削除されます。
+索引のパーティションは、次の表に示すようにUNUSABLEにマークされる場合があります。
+表のタイプ 
+索引の動作 
+通常の表(ヒープ) 
+ALTER TABLE文の一部にUPDATE INDEXESを指定しないかぎり、次の操作が必要となります。
+選択されたパーティションに対応するローカル索引のパーティションも削除されます。結合した側の1つ以上のパーティションに対応するローカル索引パーティションにはUNUSABLEマークが付けられるため、それらを再作成する必要があります。 
+すべてのグローバル索引、またはパーティション化されたグローバル索引のすべてのパーティションにはUNUSABLEマークが付けられるため、それらを再作成する必要があります。
+索引構成表 
+ヒープ索引について前述したように、ローカル索引にはUNUSABLEマークが付けられる場合があります。
+グローバル索引はすべて使用可能のままです。
+ハッシュ・パーティション表のパーティションの結合
+ALTER TABLE ...ハッシュ・パーティション表のパーティションを結合するには、COALESCE PARTITION文を使用します。次の文は、パーティションを結合することによって、表のパーティション数を1つ減らします。
+ALTER TABLE ouu1
+COALESCE PARTITION;
+レンジ-ハッシュ・パーティション表のサブパーティションの結合
+次の文は、パーティションus_locationsのサブパーティションの内容を、同じパーティション内にある残りの1つ以上のサブパーティション(ハッシュ関数で決定)に分散させます。 基本的に、この操作は、「レンジ-ハッシュ・パーティション表へのサブパーティションの追加」で説明したMODIFY PARTITION ... ADD SUBPARTITION句とは逆の効果を持ちます。
+ALTER TABLE diving MODIFY PARTITION us_locations
+COALESCE SUBPARTITION;
+ハッシュ・パーティション化されたグローバル索引の結合
+ALTER INDEXのCOALESCE PARTITION句を使用すると、ハッシュ・パーティション化されたグローバル索引の中の索引パーティション数を1つ減らすように指示できます。ハッシュ・パーティションの要件に基づき、結合するパーティションが選択されます。 次の文は、「ハッシュ・パーティション化されたグローバル索引の作成」で作成されたhgidx索引のパーティションの数を1つ減らします。
+ALTER INDEX hgidx COALESCE PARTITION;
+パーティションの削除
+レンジ・パーティション表、リスト・パーティション表またはレンジ-リスト・コンポジット・パーティション表からは、パーティションを削除できます。ハッシュ・パーティション表、またはレンジ-ハッシュ・パーティション表のハッシュ・サブパーティションでは、かわりに結合操作を実行する必要があります。
+表パーティションの削除
+次のいずれかの文を使用して、表のパーティションまたはサブパーティションを削除します。
+表パーティションを削除するには、ALTER TABLE ... DROP PARTITIONを使用します。
+レンジ-リスト・パーティション表のサブパーティションを削除するには、ALTER TABLE ... DROP SUBPARTITIONを使用します。
+パーティション内のデータを保つ場合は、DROP PARTITION文のかわりにMERGE PARTITION文を使用します。
+表にローカル索引が定義されている場合は、この文によって、ローカル索引から対応するパーティションまたはサブパーティションも削除されます。次のいずれかの条件に該当しないかぎり、すべてのグローバル索引、またはパーティション化されたグローバル索引のすべてのパーティションにはUNUSABLEマークが付けられます。
+UPDATE INDEXESを指定している場合(索引構成表には指定できません。 かわりに、UPDATE GLOBAL INDEXESを使用します。)
+削除する索引またはそのサブパーティションが空の場合
+注意
+表に1つしかないパーティションは削除できません。かわりに、その表を削除する必要があります。 
+ここでは、表パーティションの削除方法をいくつか示します。
+データとグローバル索引を含む表からのパーティションの削除
+パーティションにデータが含まれており、表でグローバル索引が1つ以上定義されている場合、表パーティションの削除には次のいずれかの方法を使用してください。
+方法1
+グローバル索引の更新を指定せずに、ALTER TABLE ...DROP PARTITION文を実行します。文の実行後、索引(または索引パーティション)にはUNUSABLEマークが付けられるため、グローバル索引を(パーティション化されているかどうかに関係なく)再作成する必要があります。次の文は、sales表からパーティションdec98を削除し、パーティション化されていないグローバル索引を再作成する例を示しています。
+ALTER TABLE sales DROP PARTITION dec98;
+ALTER INDEX sales_area_ix REBUILD;
+索引sales_area_ixがレンジ・パーティション化されたグローバル索引である場合は、そのすべてのパーティションを再作成する必要があります。1つの文で索引のすべてのパーティションを再作成することはできません。索引のパーティションごとに個別のREBUILD文を実行する必要があります。次の文は、索引パーティションjan99_ix、feb99_ix、mar99_ix、...、dec99_ixを再作成します。
+ALTER INDEX sales_area_ix REBUILD PARTITION jan99_ix;
+ALTER INDEX sales_area_ix REBUILD PARTITION feb99_ix;
+ALTER INDEX sales_area_ix REBUILD PARTITION mar99_ix;
+...
+ALTER INDEX sales_area_ix REBUILD PARTITION dec99_ix;
+削除するパーティションに、その表の全データの大部分が含まれるような大規模な表の場合には、この方法が最適です。
+方法2
+ALTER TABLE ... DROP PARTITION文を発行する前にDELETE文を発行し、パーティションからすべての行を削除します。DELETE文でグローバル索引が更新され、さらにトリガーが起動されて、REDOログおよびUNDOログが生成されます。 
+たとえば、パーティション・バウンド10,000の最初のパーティションを削除する場合は、次の文を発行します。
+DELETE FROM sales WHERE TRANSID < 10000;
+ALTER TABLE sales DROP PARTITION dec98;
+これは、小さい表の場合、または削除するパーティションにその表の全データのうちごく一部分のみが含まれるような大規模な表の場合に最適な方法です。
+方法3
+ALTER TABLE文でUPDATE INDEXESを指定します。これにより、パーティションの削除時にグローバル索引が更新されるようになります。
+ALTER TABLE sales DROP PARTITION dec98
+UPDATE INDEXES;
+データおよび参照整合性制約を含むパーティションの削除
+パーティションにデータおよび参照整合性制約が含まれる場合、表パーティションを削除するには次のいずれかの方法を使用します。この表にはローカル索引しかないため、索引を再作成する必要はありません。
+方法1
+整合性制約を使用禁止にし、ALTER TABLE ...DROP PARTITION文を発行してから、整合性制約を使用可能にします。
+ALTER TABLE sales
+DISABLE CONSTRAINT dname_sales1;
+ALTER TABLE sales DROP PARTITTION dec98;
+ALTER TABLE sales
+ENABLE CONSTRAINT dname_sales1;
+削除するパーティションに、その表の全データの大部分が含まれるような大規模な表の場合には、この方法が最適です。
+方法2
+ALTER TABLE ... DROP PARTITION文を発行する前にDELETE文を発行し、パーティションからすべての行を削除します。DELETE文によって参照整合性制約が適用され、さらにトリガーが起動されて、REDOログおよびUNDOログが生成されます。
+DELETE FROM sales WHERE TRANSID < 10000;
+ALTER TABLE sales DROP PARTITION dec94;
+これは、小さい表の場合、または削除するパーティションにその表の全データのごく一部分のみが含まれるような大規模な表の場合に最適な方法です。
+索引パーティションの削除
+ローカル索引のパーティションは、明示的には削除できません。ローカル索引のパーティションを削除できるのは、パーティションをその基礎である表から削除するときのみです。
+グローバル索引では、パーティションが空の場合にALTER INDEX ... DROP PARTITION文を発行して明示的に削除できます。ただし、グローバル索引のパーティションにデータが含まれている場合にそのパーティションを削除すると、次の最高位パーティションにUNUSABLEマークが付けられます。たとえば、索引パーティションP1を削除する場合に、P2が次の最高位パーティションであるとします。次の文を発行する必要があります。
+ALTER INDEX npr DROP PARTITION P1;
+ALTER INDEX npr REBUILD PARTITION P2;
+注意
+グローバル索引では、最高位のパーティションは削除できません。 
+パーティションの交換
+表およびパーティション(またはサブパーティション)のデータ・セグメントを交換することによって、パーティション(またはサブパーティション)を非パーティション表に変換したり、非パーティション表をパーティション表のパーティション(サブパーティション)に変換できます。また、ハッシュ・パーティション表からレンジ-ハッシュ・パーティション表のパーティションへの変換や、レンジ-ハッシュ・パーティション表のパーティションからハッシュ・パーティション表への変換も可能です。同様に、リスト・パーティション表からレンジ-リスト・パーティション表のパーティションへの変換や、レンジ-リスト・パーティション表のパーティションからリスト・パーティション表への変換も可能です。
+表のパーティションの交換は、非パーティション表を使用するアプリケーションがあり、その非パーティション表をパーティション表のパーティションに変換する場合に非常に役立ちます。たとえば、データ・ウェアハウス環境でパーティションを交換すると、既存のパーティション表に新しい増分データを高速にロードできます。一般に、データ・ウェアハウス環境のみでなくOLTP環境でも、パーティション表からの古いデータ・パーティションの交換は役立ちます。データは、実際に削除されることなくパーティション表からパージされ、後で別々にアーカイブされます。 
+パーティションを交換したときは、ロギング属性が保たれます。必要に応じて、ローカル索引の交換(INCLUDING INDEXES句)や行のマッピングが正しいかどうかの検証を実行するように(WITH VALIDATION句)指定できます。 
+注意
+パーティション交換操作に対してWITHOUT VALIDATIONを指定すると、データ・ディクショナリの更新のみが関係するため通常は操作が高速になります。ただし、交換操作に関与する表またはパーティション表に使用可能な主キーまたは一意制約がある場合、制約の整合性を維持するために、交換操作はWITH VALIDATIONを指定した場合と同じ方法で実行されます。
+この妥当性チェック・アクティビティによるオーバーヘッドを回避するために、制約ごとに次の文を発行してから、パーティション交換操作を実行します。    
+ALTER TABLE table_name      DISABLE CONSTRAINT constraint_name KEEP INDEX    
+交換後に、制約を使用可能にします。 
+データベースでは、UPDATE INDEXESを指定しないかぎり、パーティションを交換する表のグローバル索引またはすべてのグローバル索引パーティションにUNUSABLEマークが付けられます。交換する表のグローバル索引またはグローバル索引パーティションも使用不可能な状態になります (UPDATE INDEXESは、索引構成表には使用できません。 かわりに、UPDATE GLOBAL INDEXESを使用します)。
+関連項目
+「パーティション化された表および索引の情報の表示」
+トランスポータブル表領域の詳細は、「トランスポータブル表領域の使用: 使用例」を参照してください。
+レンジ・パーティション、ハッシュ・パーティションまたはリスト・パーティションの交換
+レンジ・パーティション表、ハッシュ・パーティション表またはリスト・パーティション表のパーティションと非パーティション表との間で交換するには、ALTER TABLE ...EXCHANGE PARTITION文を使用します。パーティションを非パーティション表に変換する例を次に示します。この例では、表stocksは、レンジ・パーティション、ハッシュ・パーティションまたはリスト・パーティションのいずれにも変換できます。
+ALTER TABLE stocks
+EXCHANGE PARTITION p3 WITH TABLE stock_table_3;
+ハッシュ・パーティション表とレンジ-ハッシュ・パーティションの交換
+この例では、ハッシュ・パーティション表をそのすべてのパーティションとともに、レンジ-ハッシュ・パーティション表のレンジ・パーティションおよびそのすべてのハッシュ・サブパーティションと交換します。次の例に、この操作を示します。
+最初に、ハッシュ・パーティション表を作成します。
+CREATE TABLE t1 (i NUMBER, j NUMBER)
+PARTITION BY HASH(i)
+(PARTITION p1, PARTITION p2);
+この表にデータを移入してから、次のようにレンジ-ハッシュ・パーティション表を作成します。
+CREATE TABLE t2 (i NUMBER, j NUMBER)
+PARTITION BY RANGE(j)
+SUBPARTITION BY HASH(i)
+(PARTITION p1 VALUES LESS THAN (10)
+SUBPARTITION t2_pls1
+SUBPARTITION t2_pls2,
+PARTITION p2 VALUES LESS THAN (20)
+SUBPARTITION t2_p2s1
+SUBPARTITION t2_p2s2));
+表t1のパーティション化キーが、表t2のサブパーティション化キーと同じである点に注意してください。
+t1のデータをt2に移行し、各行を検証するには、次の文を使用します。
+ALTER TABLE t2 EXCHANGE PARTITION p1 WITH TABLE t1
+WITH VALIDATION;
+レンジ-ハッシュ・パーティション表のサブパーティションの交換
+レンジ-ハッシュ・パーティション表のハッシュ・サブパーティションから非パーティション表への変換またはその逆の変換を行うには、ALTER TABLE ... EXCHANGE PARTITION文を使用します。次の例では、表salesのサブパーティションq3_1999_s1を非パーティション表q3_1999に変換しています。ローカル索引のパーティションは、q3_1999の対応する索引と交換されます。
+ALTER TABLE sales EXCHANGE SUBPARTITION q3_1999_s1
+WITH TABLE q3_1999 INCLUDING INDEXES;
+リスト・パーティション表とレンジ-リスト・パーティションの交換
+ALTER TABLE ... EXCHANGE PARTITION文のセマンティクスは、すでに「ハッシュ・パーティション表とレンジ-ハッシュ・パーティションの交換」で説明したものと同じです。前述の例では、CREATE TABLE文の構文を変更するのみで、それぞれリスト・パーティション表とレンジ-リスト・パーティション表を作成しました。関連するアクションも同じです。
+レンジ-リスト・パーティション表のサブパーティションの交換
+ALTER TABLE ... EXCHANGE SUBPARTITIONのセマンティクスは、すでに「レンジ-ハッシュ・パーティション表のサブパーティションの交換」で説明したものと同じです。
+パーティションのマージ
+2つのパーティションの内容を1つのパーティションにマージするには、ALTER TABLE ... MERGE PARTITION文を使用します。元の2つのパーティションは、対応するローカル索引とともに削除されます。 
+この文は、ハッシュ・パーティション表や、レンジ-ハッシュ・パーティション表のハッシュ・サブパーティションには使用できません。
+マージの対象となるパーティションまたはサブパーティションにデータが含まれている場合は、次の表に示すように、索引にはUNUSABLEマークが付けられます。
+表のタイプ 
+索引の動作 
+通常の表(ヒープ) 
+ALTER TABLE文の一部にUPDATE INDEXESを指定しないかぎり、次の操作が必要となります。
+マージされた対応するローカル索引パーティションまたはサブパーティションにはすべて、UNUSABLEマークが付けられます。 
+グローバル索引、またはパーティション化されたグローバル索引のすべてのパーティションにはUNUSABLEマークが付けられるため、それらを再作成する必要があります。
+索引構成表 
+マージされた対応するローカル索引パーティションにはすべて、UNUSABLEマークが付けられます。 
+グローバル索引はすべて使用可能のままです。
+レンジ・パーティションのマージ
+隣接する2つのレンジ・パーティションの内容は、1つのパーティションにマージできます。隣接していないレンジ・パーティションはマージできません。1つにマージされたパーティションは、マージ前の上位のパーティションのバウンドを継承します。 
+レンジ・パーティションをマージする理由の1つに、履歴データを大きなパーティションでオンライン化しておくことがあります。たとえば、日付別のパーティションがある場合、最も古いパーティションを週次のパーティションにロールアップし、さらに月次パーティションにロールアップできます。
+次のスクリプトは、レンジ・パーティションのマージ例を作成します。
+最初に、パーティション表を作成し、ローカル索引を作成します。
+-- Create a Table with four partitions each on its own tablespace
+-- Partitioned by range on the data column.
+--
+CREATE TABLE four_seasons
+( 
+one DATE,
+two VARCHAR2(60),
+three NUMBER
+)
+PARTITION  BY RANGE ( one ) 
+(
+PARTITION quarter_one 
+VALUES LESS THAN ( TO_DATE('01-apr-1998','dd-mon-yyyy'))
+TABLESPACE quarter_one,
+PARTITION quarter_two 
+VALUES LESS THAN ( TO_DATE('01-jul-1998','dd-mon-yyyy'))
+TABLESPACE quarter_two,
+PARTITION quarter_three
+VALUES LESS THAN ( TO_DATE('01-oct-1998','dd-mon-yyyy'))
+TABLESPACE quarter_three,
+PARTITION quarter_four
+VALUES LESS THAN ( TO_DATE('01-jan-1999','dd-mon-yyyy'))
+TABLESPACE quarter_four
+);
+-- 
+-- Create local PREFIXED index on Four_Seasons
+-- Prefixed because the leftmost columns of the index match the
+-- Partition key 
+--
+CREATE INDEX i_four_seasons_l ON four_seasons ( one,two ) 
+LOCAL ( 
+PARTITION i_quarter_one TABLESPACE i_quarter_one,
+PARTITION i_quarter_two TABLESPACE i_quarter_two,
+PARTITION i_quarter_three TABLESPACE i_quarter_three,
+PARTITION i_quarter_four TABLESPACE i_quarter_four
+);
+次に、各パーティションをマージします。
+--
+-- Merge the first two partitions 
+--
+ALTER TABLE four_seasons 
+MERGE PARTITIONS quarter_one, quarter_two INTO PARTITION quarter_two
+UPDATE INDEXES;
+前述の文からUPDATE INDEXES句を省略した場合は、影響を受けたパーティションのローカル索引を再作成する必要があります。
+-- Rebuild index for quarter_two, which has been marked unusable 
+-- because it has not had all of the data from Q1 added to it.
+-- Rebuilding the index will correct this.
+--
+ALTER TABLE four_seasons MODIFY PARTITION 
+quarter_two REBUILD UNUSABLE LOCAL INDEXES;
+リスト・パーティションのマージ
+リスト・パーティションでは、任意の2つのパーティションがマージできます。リスト・パーティション化ではパーティションの順序は想定されないため、レンジ・パーティションのようにマージするパーティションが隣接している必要はありません。マージされたパーティションは、元の2つのパーティションに含まれていたすべてのデータから構成されます。デフォルトのリスト・パーティションを他のパーティションとマージすると、マージされたパーティションがデフォルト・パーティションとなります。
+次の文は、リスト・パーティション化方法でパーティション化されている表の2つのパーティションを1つのパーティションにマージします。マージ後のパーティションは、表レベルのデフォルト属性から属性をすべて継承します。この文では、MAXEXTENTSが指定されています。
+ALTER TABLE q1_sales_by_region 
+MERGE PARTITIONS q1_northcentral, q1_southcentral 
+INTO PARTITION q1_central 
+STORAGE(MAXEXTENTS 20);
+元の2つのパーティションの値リストは、次のように指定されていました。
+PARTITION q1_northcentral VALUES ('SD','WI')
+PARTITION q1_southcentral VALUES ('OK','TX')
+マージされたsales_westパーティションの値リストは、これら2つのパーティションの値リストを結合したもので構成されます。具体的には次のようになります。 
+('SD','WI','OK','TX')
+レンジ-ハッシュ・パーティションのマージ
+レンジ-ハッシュ・パーティションをマージすると、サブパーティションは、SUBPARTITIONS nまたはSUBPARTITION句で指定した数のサブパーティションに再ハッシュされます。いずれも指定されていない場合は、表レベルのデフォルトが使用されます。
+1つのレンジ-ハッシュ・パーティションを分割する場合(「レンジ-ハッシュ・パーティションの分割」を参照)と2つのレンジ-ハッシュ・パーティションをマージする場合では、プロパティの継承が異なる点に注意してください。パーティションの分割では親が1つのみのため、新しいパーティションは元のパーティションのプロパティを継承できます。しかし、パーティションのマージでは親が2つあり、一方を犠牲にして他方からプロパティを継承することはできません。このため、パーティションには表レベルのデフォルトのプロパティが継承されます。
+次の例では、2つのレンジ-ハッシュ・パーティションをマージしています。
+ALTER TABLE all_seasons
+MERGE PARTITIONS quarter_1, quarter_2 INTO PARTITION quarter_2
+SUBPARTITIONS 8;
+レンジ-リスト・パーティションのマージ
+パーティションをレンジ・パーティション・レベルでマージし、サブパーティションをリスト・サブパーティション・レベルでマージできます。
+レンジ-リスト・パーティション表のパーティションのマージ
+レンジ-リスト・パーティション表のレンジ・パーティションをマージする方法は、すでに「レンジ・パーティションのマージ」で説明されています。ただし、2つのレンジ-リスト・パーティションをマージすると、マージされた新しいパーティションは、サブパーティション・テンプレートが存在していれば、そのテンプレートからサブパーティション記述を継承します。サブパーティション・テンプレートが存在しない場合は、新しいパーティション用にデフォルト・サブパーティションが1つ作成されます。
+次の文は、レンジ-リスト・パーティション表stripe_regional_salesの2つのパーティションをマージします。この表にはサブパーティション・テンプレートが存在します。 
+ALTER TABLE stripe_regional_sales
+MERGE PARTITIONS q1_1999, q2_1999 INTO PARTITION q1_q2_1999
+STORAGE(MAXEXTENTS 20);
+この新しいパーティションには新しい物理属性がいくつか指定されていますが、未指定の物理属性については表レベルのデフォルトが継承されます。マージされた新しいパーティションq1_q2_1999は、パーティションq2_1999の上限値と、表のサブパーティション・テンプレート記述からのサブパーティションの値リスト記述を継承します。
+マージされたパーティション内のデータは、両方のパーティションからのデータで構成されます。ただし、データベースでエラーが返される場合があります。これは、次の両方の条件が存在すると、データが新しいパーティションの外にマップされる場合があるためです。
+マージされたサブパーティションのリテラル値の一部が、サブパーティション・テンプレートに含まれていなかった場合
+サブパーティション・テンプレートにデフォルト・パーティションの定義が含まれていない場合 
+このエラー条件は、デフォルトのサブ・パーティション・テンプレートで常にデフォルト・パーティションを指定すると排除できます。
+レンジ-リスト・パーティション表のサブパーティションのマージ
+同じレンジ・パーティションに属している任意の2つのリスト・サブパーティションの内容をマージできます。マージされたサブパーティションの値リスト記述子には、マージ対象となったパーティションの値リストにあるすべてのリテラル値が含まれます。
+次の文は、レンジ-リスト方法を使用してパーティション化された表の2つのサブパーティションを、表領域ts4にある新しいサブパーティションにマージします。
+ALTER TABLE quarterly_regional_sales
+MERGE SUBPARTITIONS q1_1999_northwest, q1_1999_southwest
+INTO SUBPARTITION q1_1999_west
+TABLESPACE ts4;
+元の2つのパーティションの値リストは、次のように指定されていました。
+サブパーティションq1_1999_northwestは、('WA','OR')として記述されていました。
+サブパーティションq1_1999_southwestは、('AZ','NM','UT')として記述されていました。
+マージされたサブパーティションの値リストは、次のように、この2つのサブパーティションの値リストを結合したもので構成されます。
+サブパーティションq1_1999_westの値リストは、('WA','OR','AZ','NM','UT')として記述されます。
+マージされたサブパーティションが格納されている表領域と、サブパーティションの属性は、明示的に指定されたものを除きパーティション・レベルのデフォルト属性により決定されます。既存のサブパーティション名のいずれかが再利用されている場合、新しいサブパーティションは名前が再利用されているサブパーティションのサブパーティション属性を継承します。
+デフォルト属性の変更
+表またはコンポジット・パーティション表のパーティションのデフォルト属性は変更可能です。デフォルト属性を変更すると、新しい属性はその後に作成するパーティションまたはサブパーティションにのみ反映されます。パーティションまたはサブパーティションの作成時に値を指定して、デフォルト値を上書きすることもできます。 
+表のデフォルト属性の変更
+レンジ・パーティション、リスト・パーティションまたはハッシュ・パーティションに継承されるデフォルト属性を変更するには、ALTER TABLEのMODIFY DEFAULT ATTRIBUTES句を使用します。
+ハッシュ・パーティション表の場合、変更できる属性はTABLESPACEのみです。
+パーティションのデフォルト属性の変更
+サブパーティションの作成時に継承されるデフォルト属性を変更するには、ALTER TABLE ...MODIFY DEFAULT ATTRIBUTES FOR PARTITIONを使用します。次の文は、レンジ-ハッシュ・パーティション表emp内のパーティションp1について、今後作成するサブパーティションを格納するTABLESPACEを変更します。
+ALTER TABLE emp
+MODIFY DEFAULT ATTRIBUTES FOR PARTITION p1 TABLESPACE ts1;
+変更できる属性はTABLESPACEのみです。これは、レンジ-ハッシュ・パーティション表のすべてのサブパーティションは、この属性を除き、同じ属性を共有するためです。
+索引パーティションのデフォルト属性の変更
+表パーティションと同じ方法で、レンジ・パーティション化されたグローバル索引のパーティションに継承されるデフォルト属性を変更できます。同様に、パーティション表のローカル索引パーティションに継承されるデフォルト属性も変更できます。この場合は、ALTER INDEX ...MODIFY DEFAULT ATTRIBUTES文を使用します。 コンポジット・パーティション表のサブパーティションに継承されるデフォルト属性を変更する場合は、ALTER INDEX ... MODIFY DEFAULT ATTRIBUTES FOR PARTITION文を使用します。   
+パーティションの実属性の変更
+表または索引の既存パーティションの属性は変更可能です。 
+TABLESPACE属性は変更できません。 パーティションまたはサブパーティションを新しい表領域に移動するには、ALTER TABLESPACE ... MOVE PARTITION/SUBPARTITIONを使用します。
+レンジ・パーティションまたはリスト・パーティションの実属性の変更
+レンジ・パーティションまたはリスト・パーティションの既存の属性を変更するには、ALTER TABLE ... MODIFY PARTITION文を使用します。この文では、セグメント属性(TABLESPACEを除く)の変更、エクステントの割当てと割当て解除、ローカル索引パーティションへのUNUSABLEマークの設定、UNUSABLEマークが付いたローカル索引の再作成などが可能です。
+これがレンジ-ハッシュ・パーティション表のレンジ・パーティションの場合は、次のことに注意してください。
+エクステントを割り当てるか、割当てを解除する場合、このアクションは指定したパーティションのすべてのサブパーティションに対して実行されます。
+同様に、他の属性を変更すると、そのパーティションのすべてのサブパーティションで、対応する属性が変更されます。また、パーティション・レベルのデフォルト属性も変更されます。既存のサブパーティションの属性が変更されないようにするには、MODIFY DEFAULT ATTRIBUTES文のFOR PARTITION句を使用します。
+次に、パーティションの実属性を変更する操作の例をいくつか示します。
+次の例では、表salesのレンジ・パーティションsales_q1のMAXEXTENTS記憶域属性を変更しています。
+ALTER TABLE sales MODIFY PARTITION sales_q1
+STORAGE (MAXEXTENTS 10); 
+次の例では、レンジ-ハッシュ・パーティション表scubagear内にあるパーティションts1のすべてのローカル索引サブパーティションに、UNUSABLEマークが付けられます。
+ALTER TABLE scubagear MODIFY PARTITION ts1 UNUSABLE LOCAL INDEXES;
+ハッシュ・パーティションの実属性の変更
+ハッシュ・パーティションの属性も、ALTER TABLE ... MODIFY PARTITION文を使用して変更できます。ただし、個々のハッシュ・パーティションの物理属性はすべて同じ(TABLESPACEを除く)である必要があるため、変更できるのは次の属性に限定されます。
+新規エクステントの割当て
+未使用エクステントの割当て解除
+ローカル索引サブパーティションへのUNUSABLEマークの設定 
+UNUSABLEマークが付いたローカル索引サブパーティションの再作成
+次の例では、表deptのハッシュ・パーティションp1に関連付けられている、使用禁止状態のローカル索引パーティションを再作成しています。
+ALTER TABLE dept MODIFY PARTITION p1
+REBUILD UNUSABLE LOCAL INDEXES;
+サブパーティションの実属性の変更
+ALTER TABLEのMODIFY SUBPARTITION句を使用すると、前述したパーティションに対する操作と同じことを、特定のコンポジット・パーティション表のサブパーティション・レベルで実行できます。 次に例を示します。
+ALTER TABLE emp MODIFY SUBPARTITION p3_s1
+REBUILD UNUSABLE LOCAL INDEXES;
+索引パーティションの実属性の変更
+ALTER INDEXのMODIFY PARTITION句を使用すると、索引パーティションまたはそのサブパーティションの実属性を変更できます。適用されるルールは表パーティションの場合とほぼ同じですが、ALTER INDEXのMODIFY PARTITION句とは異なり、使用禁止状態の索引パーティションを再作成するための副次句はありません。ただし、索引パーティションまたはそのサブパーティションを結合するための副次句はあります。この場合、結合するとは、可能であれば索引ブロックをマージし、使用されなくなった索引ブロックを再利用のために解放することを意味します。
+また、MODIFY PARTITION句を使用して、ローカル索引のサブパーティションに対する記憶域の割当てや割当て解除、UNUSABLEマークの設定ができます。
+リスト・パーティションの変更: 値の追加
+リスト・パーティション化では、定義されている値リストに対してリテラル値を追加できます。
+リスト・パーティションに対する値の追加
+既存パーティションの値リストを拡張するには、ALTER TABLE文のMODIFY PARTITION ... ADD VALUES句を使用します。他のパーティションの値リストに含まれているリテラル値は追加できません。対応するローカル索引パーティションのパーティション値リストも、それに応じて拡張されます。グローバル索引、グローバル索引パーティションまたはローカル索引パーティションは使用可能のままです。
+次の文は、既存のパーティション・リストに状態コードの新しいセット('OK'、'KS')を追加します。
+ALTER TABLE sales_by_region
+MODIFY PARTITION region_south
+ADD VALUES ('OK', 'KS');
+デフォルト・パーティションがあると、他のパーティションに値を追加するときのパフォーマンスに影響する可能性があります。これは、リスト・パーティションに値を追加するために、追加する値がデフォルト・パーティションに存在しないかどうかをデータベースでチェックする必要があるためです。値のいずれかがデフォルト・パーティションに存在する場合は、エラーになります。
+注意
+データベースでは、追加するリテラル値に対応するデフォルト・パーティション内に行が存在するかどうかをチェックする問合せを実行します。したがって、対象の表にローカルな同一キー索引を作成することをお薦めします。これにより、問合せと操作全体の実行を高速化できます。 
+デフォルトのリスト・パーティションには値を追加できません。 
+リスト・サブパーティションに対する値の追加
+この操作は「リスト・パーティションの変更: 値の追加」で説明した操作と同じですが、MODIFY PARTITION句のかわりにMODIFY SUBPARTITION句を使用します。たとえば、サブパーティションq1_1999_southeastの値リスト内でリテラル値の範囲を拡張するには、次の文を使用します。
+ALTER TABLE quarterly_regional_sales
+MODIFY SUBPARTITION q1_1999_southeast
+ADD VALUES ('KS');
+所有パーティションの他のサブパーティションの値リストに含まれているリテラル値は追加できません。ただし、表の他のパーティションのサブパーティションの値リストにあるリテラル値と重複していてもかまいません。 
+リスト・パーティションの変更: 値の削除
+リスト・パーティション化では、定義されている値リストからリテラル値を削除できます。
+リスト・パーティションからの値の削除
+既存パーティションの値リストからリテラル値を削除するには、ALTER TABLE文のMODIFY PARTITION ... DROP VALUES句を使用します。この文を実行したときは必ずデータが検証されます。つまり、この文は、削除する値セットに対応するパーティション内に行が存在するかどうかをチェックします。行が存在するとエラー・メッセージが返され、文の実行は失敗します。必要に応じて、値を削除する前にDELETE文を実行して、対応する行を削除してください。
+注意
+この方法では、パーティションを記述している値リストからすべてのリテラル値を削除することはできません。 このためには、ALTER TABLE ... DROP PARTITION文を使用します。 
+対応するローカル索引パーティションのパーティション値リストには、新しい値リストが反映されます。グローバル索引、グローバル索引パーティションまたはローカル索引パーティションは使用可能のままです。
+次の例では、既存のパーティションの値リストから状態コードのセット('OK'および'KS')を削除しています。 
+ALTER TABLE sales_by_region
+MODIFY PARTITION region_south
+DROP VALUES ('OK', 'KS');
+注意
+データベースでは、削除するリテラル値に対応するパーティション内に行が存在するかどうかをチェックする問合せを実行します。したがって、対象の表にローカルな同一キー索引を作成することをお薦めします。これにより、問合せと操作全体の実行を高速化できます。 
+デフォルトのリスト・パーティションからは値を削除できません。
+リスト・サブパーティションからの値の削除
+この操作は「リスト・パーティションの変更: 値の削除」で説明した操作と同じですが、MODIFY PARTITION句のかわりにMODIFY SUBPARTITION句を使用します。たとえば、サブパーティションq1_1999_southeastの値リストからリテラル値のセットを削除するには、次の文を使用します。
+ALTER TABLE quarterly_regional_sales
+MODIFY SUBPARTITION q1_1999_southeast
+DROP VALUES ('KS');
+サブパーティション・テンプレートの変更
+コンポジット・パーティション表のサブパーティション・テンプレートを変更するには、新規のサブパーティション・テンプレートで置換します。サブパーティション・テンプレートを使用する以降の操作(ADD PARTITIONまたはMERGE PARTITIONSなど)では、新しいサブパーティション・テンプレートが使用されます。既存のサブパーティションが変更されることはありません。
+ALTER TABLE ...SET SUBPARTITION TEMPLATE文を使用して、新しいサブパーティション・テンプレートを指定します。 次に例を示します。
+ALTER TABLE emp_sub_template
+SET SUBPARTITION TEMPLATE
+(SUBPARTITION e TABLESPACE ts1,
+SUBPARTITION f TABLESPACE ts2,
+SUBPARTITION g TABLESPACE ts3,
+SUBPARTITION h TABLESPACE ts4
+);
+空のリストを指定すると、サブパーティション・テンプレートを削除できます。
+ALTER TABLE emp_sub_template
+SET SUBPARTITION TEMPLATE ( );
+パーティションの移動
+ALTER TABLE文のMOVE PARTITION句を使用すると、次のことができます。
+データの再クラスタ化による断片化の低減
+別の表領域へのパーティションの移動
+作成時間属性の変更
+表圧縮を使用した圧縮形式でのデータの格納
+一般に、ALTER TABLE/INDEX ... MODIFY PARTITION文を使用すると、パーティションの物理的な記憶域属性を1ステップで変更できます。しかし、TABLESPACEのように、MODIFY PARTITIONでは変更できない物理属性もあります。このような場合は、MOVE PARTITION句を使用します。表圧縮などの他の属性に対する変更は、その後割り当てられる記憶域にのみ影響を与え、既存のデータには影響しません。
+注意
+ALTER TABLE...MOVEコマンドでは、コマンドの実行中は実行対象となっているパーティションに対するDML操作が許可されません。 パーティションを移動して、そのパーティションに対するDML操作を可能な状態にしておくには、「パーティションのオンライン再定義」を参照してください。 
+移動するパーティションにデータが含まれている場合は、次の表のルールに従って、索引にUNUSABLEマークが付けられます。
+表のタイプ 
+索引の動作 
+通常の表(ヒープ) 
+ALTER TABLE文の一部にUPDATE INDEXESを指定しないかぎり、次の操作が必要となります。
+各ローカル索引内の対応するパーティションには、UNUSABLEマークが付けられます。したがって、MOVE PARTITIONを発行した後で、それらの索引パーティションを再作成する必要があります。 
+すべてのグローバル索引、またはパーティション化されたグローバル索引のすべてのパーティションにもUNUSABLEマークが付けられます。
+索引構成表 
+移動するパーティションに対して定義されているローカル索引またはグローバル索引は主キー・ベースの論理ROWIDであるため、使用可能のままです。しかし、これらのROWIDに対する推測情報は不適切になります。 
+表パーティションの移動
+パーティションを移動するには、MOVE PARTITION句を使用します。たとえば、I/Oのバランスを調整するために、最もアクティブなパーティションを専用ディスク上にある表領域に移動し、そのアクションをログに記録せず、データを圧縮する場合は、次の文を発行します。
+ALTER TABLE parts MOVE PARTITION depot2
+TABLESPACE ts094 NOLOGGING COMPRESS;
+この文は、新しい表領域を指定しなくても、常にパーティションの旧セグメントを削除し、新しいセグメントを作成します。 
+パーティション化された索引構成表のパーティションを移動する場合は、MOVE PARTITION句の一部にMAPPING TABLEを指定すると、マッピング表のパーティションが、表のパーティションとともに新しい位置に移動します。
+サブパーティションの移動
+次の文は、表のサブパーティション内にあるデータを移動する方法を示しています。この例では、PARALLEL句も指定されています。
+ALTER TABLE scuba_gear MOVE SUBPARTITION bcd_types 
+TABLESPACE tbs23 PARALLEL (DEGREE 2);
+索引のパーティションの移動
+通常の表に対してALTER TABLE ... MOVE PARTITION文を実行すると、グローバル索引のすべてのパーティションにUNUSABLEマークが付けられます。 この場合は、ALTER INDEX ... REBUILD PARTITION文を使用して各パーティションを個別に再作成することにより、索引全体を再作成できます。このような索引の再作成は、同時に実行できます。
+また、単に索引を削除して再作成するという方法もあります。 
+パーティションのオンライン再定義
+Oracle Databaseには、DMLに対するパーティションの可用性を大きく損なうことなく、パーティションを移動したりパーティションの物理構造に対するその他の変更を行うためのメカニズムが用意されています。このメカニズムは、表のオンライン再定義と呼ばれます。
+表の単一パーティションを再定義する方法の詳細は、「表のオンライン再定義」を参照してください。
+索引パーティションの再作成
+索引パーティションを再作成するのは、次のような場合です。
+領域をリカバリしてパフォーマンスを改善する場合
+メディア障害のために破損した索引パーティションを修復する場合
+SQL*LoaderまたはImport Utilityで基礎となる表パーティションをロードした後に、ローカル索引パーティションを再作成する場合
+UNUSABLEマークが付いている索引パーティションを再作成する場合 
+Bツリー索引に対してキー圧縮を使用可能にする場合
+ここでは、索引パーティションおよびサブパーティションを再作成する場合のオプションについて説明します。
+グローバル索引パーティションの再作成
+グローバル索引のパーティションを再作成するには、次の2つの方法があります。
+ALTER INDEX ... REBUILD PARTITION文を発行することによって、各パーティションを再作成する(再作成は同時実行可能)。
+一度グローバル索引全体を削除し、再作成する。この方法では表が1回しかスキャンされないため、最初の方法より効率的です。
+索引付きパーティション表に対するほとんどのメンテナンス操作では、DDL文にUPDATE INDEXESを指定することによって、索引の再作成が不要になります。
+ローカル索引パーティションの再作成
+ローカル索引を再作成するには、次のALTER INDEXまたはALTER TABLEを使用します。
+ALTER INDEX ...REBUILD PARTITION/SUBPARTITION
+この文は、索引のパーティションまたはサブパーティションを無条件で再作成します。
+ALTER TABLE ...MODIFY PARTITION/SUBPARTITION ...REBUILD UNUSABLE LOCAL INDEXES
+この文は指定された表のパーティションまたはサブパーティションで使用禁止状態の索引をすべて検索し、それらを再作成します。索引パーティションは、UNUSABLEマークが付いている場合にのみ再作成されます。
+ALTER INDEXを使用してパーティションを再作成する場合
+ALTER INDEX ...REBUILD PARTITION文は、1つの索引の1つのパーティションを再作成します。コンポジット・パーティション表には使用できません。このコマンドによって再作成されるのは、実在の物理セグメントのみです。索引を再作成するときは、パーティションを新しい表領域へ移動したり、属性を変更できます。
+コンポジット・パーティション表の場合は、ALTER INDEX ... REBUILD SUBPARTITIONを使用して、索引のサブパーティションを再作成します。サブパーティションを別の表領域に移動したり、PARALLEL句を指定できます。次の文は、表のローカル索引のサブパーティションを再作成し、索引サブパーティションを別の表領域に移動します。
+ALTER INDEX scuba
+REBUILD SUBPARTITION bcd_types
+TABLESPACE tbs23 PARALLEL (DEGREE 2);
+ALTER TABLEを使用して索引パーティションを再作成する場合
+ALTER TABLE ... MODIFY PARTITIONのREBUILD UNUSABLE LOCAL INDEXES句では、再作成する索引パーティションの新しい属性は指定できません。次の例では、表scubagearについて、使用禁止状態のローカル索引パーティションであるパーティションp1を検索し、再作成しています。
+ALTER TABLE scubagear
+MODIFY PARTITION p1 REBUILD UNUSABLE LOCAL INDEXES;
+使用禁止状態のローカル索引サブパーティションを再作成するために、同様の機能を持つALTER TABLE ... MODIFY SUBPARTITION句があります。 
+パーティションの名前変更
+表と索引のパーティションとサブパーティションは名前変更できます。パーティションの名前を変更する理由の1つは、別のメンテナンス操作でパーティションに割り当てられたデフォルトのシステム名のかわりに、意味のある名前を割り当てることです。
+表パーティションの名前変更
+レンジ・パーティション、ハッシュ・パーティションまたはリスト・パーティションの名前を変更するには、ALTER TABLE ... RENAME PARTITION文を使用します。 次に例を示します。
+ALTER TABLE scubagear RENAME PARTITION sys_p636 TO tanks;
+表のサブパーティションの名前変更
+同様に、表のサブパーティションにも新しい名前を割り当てることができます。この場合は、ALTER TABLE ...RENAME PARTITION構文を使用します。
+索引パーティションの名前変更
+索引パーティションおよびサブパーティションも同様に名前変更できますが、ALTER INDEX構文を使用します。
+索引パーティションの名前変更
+索引パーティションの名前を変更するには、ALTER INDEX ... RENAME PARTITION文を使用します。
+索引のサブパーティションの名前変更
+次の文は、基礎となる表にパーティションを追加した後で、システム生成名を持つサブパーティションの名前を変更する方法を示しています。
+ALTER INDEX scuba RENAME SUBPARTITION sys_subp3254 TO bcd_types;
+パーティションの分割
+パーティションの内容を2つの新しいパーティションに再分散させるには、ALTER TABLE文またはALTER INDEX文のSPLIT PARTITION句を使用します。パーティションのサイズが大きくなり、バックアップ、リカバリまたはメンテナンス操作に時間がかかる場合に、この方法を検討してください。また、SPLIT PARTITION句を使用してI/Oロードを再分散させることもできます。
+この句は、ハッシュ・パーティションまたはサブパーティションには使用できません。 
+分割するパーティションにデータが含まれている場合は、次の表に示すように、索引にUNUSABLEマークが付けられます。
+表のタイプ 
+索引の動作 
+通常の表(ヒープ) 
+ALTER TABLE文の一部にUPDATE INDEXESを指定しないかぎり、次の操作が必要となります。
+各ローカル索引内にある2つの新しいパーティションには、UNUSABLEマークが付けられます。 
+すべてのグローバル索引、またはパーティション化されたグローバル索引のすべてのパーティションにはUNUSABLEマークが付けられるため、それらを再作成する必要があります。
+索引構成表 
+各ローカル索引内にある2つの新しいパーティションには、UNUSABLEマークが付けられます。 
+グローバル索引はすべて使用可能のままです。
+レンジ・パーティション表のパーティションの分割
+レンジ・パーティションを分割するには、ALTER TABLE ...SPLIT PARTITION文を使用します。分割するパーティションの範囲内でパーティション化キー列の値を指定します。分割後の2つの新しいパーティションの一方には、元のパーティション内でパーティション化キー列の値が指定した値より下位にマップされる行がすべて含まれます。他方のパーティションには、パーティション化キー列の値が指定した値と同等または上位にマップされる行がすべて含まれます。    
+必要であれば、分割後の2つのパーティションに新しい属性を指定できます。表にローカル索引が定義されている場合は、この文によって、各ローカル索引内の対応するパーティションも分割されます。
+次の例では、表vet_catsにfee_katyというパーティションがあります。この表には、jaf1というローカル索引があります。この表には、vetというグローバル索引もあります。vetには、vet_partaとvet_partbという2つのパーティションがあります。 
+パーティションfee_katyを分割し、索引のパーティションを再作成するには、次の文を発行します。
+ALTER TABLE vet_cats SPLIT PARTITION 
+fee_katy at (100) INTO ( PARTITION
+fee_katy1 ..., PARTITION fee_katy2 ...);
+ALTER INDEX JAF1 REBUILD PARTITION fee_katy1;
+ALTER INDEX JAF1 REBUILD PARTITION fee_katy2;
+ALTER INDEX VET REBUILD PARTITION vet_parta;
+ALTER INDEX VET REBUILD PARTITION vet_partb;
+注意
+新しいパーティション名を指定しない場合は、SYS_Pnという形式の名前が割り当てられます。データ・ディクショナリを調べると、新しいローカル索引のパーティションに割り当てられた名前を確認できます。必要に応じて、それらの名前を変更できます。指定しなかった属性は、元のパーティションから継承されます。  
+リスト・パーティション表のパーティションの分割
+リスト・パーティションを分割するには、ALTER TABLE ...SPLIT PARTITION文を使用します。SPLIT PARTITION句によって、リテラル値の値リストを指定できます。このリストの値に対応するパーティション化キー値を持つ行が、1つのパーティションに挿入されます。元のパーティションの残りの行は、2番目のパーティションに挿入されます。その値リストには、元のパーティションの残りの値が含まれます。
+必要であれば、分割後の2つのパーティションに新しい属性を指定できます。 
+次の文は、region_eastパーティションを2つのパーティションに分割します。
+ALTER TABLE sales_by_region 
+SPLIT PARTITION region_east VALUES ('CT', 'MA', 'MD') 
+INTO 
+( PARTITION region_east_1 
+TABLESPACE tbs2,
+PARTITION region_east_2
+STORAGE (NEXT 2M PCTINCREASE 25)) 
+PARALLEL 5;
+元のregion_eastパーティションに対するリテラル値リストは、次のように指定されていました。
+PARTITION region_east VALUES ('MA','NY','CT','NH','ME','MD','VA','PA','NJ')
+2つの新しいパーティションのリテラル値リストは、次のようになります。
+region_east_1のリテラル値リストは、('CT','MA','MD')です。
+region_east_2には、残りのリテラル値のリスト('NY','NH','ME','VA','PA','NJ')が継承されます。
+個々のパーティションは、パーティション・レベルで指定された新しい物理属性を持ちます。この操作は、並列度5で実行されます。
+他のリスト・パーティションと同様に、デフォルトのリスト・パーティションを分割できます。デフォルト・パーティションを含むリスト・パーティション表にパーティションを追加する場合も、この操作が必要です。デフォルト・パーティションを分割すると、指定した値で定義される新しいパーティションが作成され、2番目のパーティションが引き続きデフォルト・パーティションとなります。
+次の例では、sales_by_regionのデフォルト・パーティションを分割して新しいパーティションを作成しています。
+ALTER TABLE sales_by_region 
+SPLIT PARTITION region_unknown VALUES ('MT', 'WY', 'ID') 
+INTO 
+( PARTITION region_wildwest,
+PARTITION region_unknown);
+レンジ-ハッシュ・パーティションの分割
+レンジ-ハッシュ・パーティションをマージする操作とは逆の操作です。レンジ-ハッシュ・パーティションを分割すると、新しいサブパーティションは、SUBPARTITIONS句またはSUBPARTITION句のいずれかで指定される数のサブパーティションに再ハッシュされます。これらの句が指定されていない場合は、分割されるパーティションから新しいパーティションにサブパーティションの数(および表領域)が継承されます。
+1つのレンジ-ハッシュ・パーティションを分割する場合と2つのレンジ-ハッシュ・パーティションをマージする場合では、プロパティの継承が異なる点に注意してください。パーティションの分割では親が1つのみのため、新しいパーティションは元のパーティションのプロパティを継承できます。しかし、パーティションのマージでは親が2つあり、一方を犠牲にして他方からプロパティを継承することはできません。このため、パーティションには表レベルのデフォルトのプロパティが継承されます。
+次の例では、1つのレンジ-ハッシュ・パーティションを分割しています。
+ALTER TABLE all_seasons SPLIT PARTITION quarter_1 
+AT (TO_DATE('16-dec-1997','dd-mon-yyyy'))
+INTO (PARTITION q1_1997_1 SUBPARTITIONS 4 STORE IN (ts1,ts3),
+PARTITION q1_1997_2);
+レンジ-リスト・パーティション表のパーティションの分割
+パーティションは、レンジ・パーティション・レベルとリスト・サブパーティション・レベルのどちらでも分割できます。
+レンジ-リスト・パーティションの分割
+レンジ-リスト・パーティション表のレンジ・パーティションを分割する操作は、「レンジ・パーティション表のパーティションの分割」で説明した操作と同様です。新しいパーティションについては、サブパーティションのリテラル値のリストを指定できません。新しいパーティションは、分割元のパーティションからサブパーティション記述を継承します。
+次の例では、quarterly_regional_sales表のq1_1999パーティションを分割しています。
+ALTER TABLE quarterly_regional_sales SPLIT PARTITION q1_1999
+AT (to_date('15-Feb-1999','dd-mon-yyyy'))
+INTO ( PARTITION q1_1999_jan_feb
+TABLESPACE ts1,
+PARTITION q1_1999_feb_mar
+STORAGE (NEXT 2M PCTINCREASE 25) TABLESPACE ts2) 
+PARALLEL 5;
+この操作により、パーティションq1_1999が2つのパーティションq1_1999_jan_febおよびq1_1999_feb_marに分割されます。どちらのパーティションも、元のパーティションからサブパーティション記述を継承します。個々のパーティションは、表領域など、パーティション・レベルで指定された新しい物理属性を持ちます。この新しい属性は、新しいパーティションのデフォルト属性となります。この操作は、並列度5で実行されます。
+ALTER TABLE ...SPLIT PARTITION文では、コンポジット・パーティション表のパーティションを分割して作成するサブパーティションの名前を指定できません。ただし、partition name_subpartition name形式の名前を持つ親パーティション内のサブパーティションの場合は、データベースにより新しく作成されたサブパーティション内で新しいパーティション名を使用して対応する名前が生成されます。他のすべてのサブパーティションには、SYS_SUBPn形式のシステム生成名が割り当てられます。システム生成名は、名前を指定しないで分割して作成したパーティションのサブパーティションにも割り当てられます。名前のないパーティションには、SYS_Pn形式のシステム生成名が割り当てられます。
+次の問合せでは、表quarterly_regional_salesに対する前述の分割操作で得られたサブパーティション名が表示されます。 この表には、表を「レンジ-リスト・コンポジット・パーティション化を使用する場合」で作成した後に各項で実行した他の操作の結果も反映されます。
+SELECT PARTITION_NAME, SUBPARTITION_NAME, TABLESPACE_NAME
+FROM DBA_TAB_SUBPARTITIONS
+WHERE TABLE_NAME='QUARTERLY_REGIONAL_SALES'
+ORDER BY PARTITION_NAME;
+PARTITION_NAME       SUBPARTITION_NAME              TABLESPACE_NAME
+-------------------- ------------------------------ ---------------
+Q1_1999_FEB_MAR      Q1_1999_FEB_MAR_WEST           TS2
+Q1_1999_FEB_MAR      Q1_1999_FEB_MAR_NORTHEAST      TS2
+Q1_1999_FEB_MAR      Q1_1999_FEB_MAR_SOUTHEAST      TS2
+Q1_1999_FEB_MAR      Q1_1999_FEB_MAR_NORTHCENTRAL   TS2
+Q1_1999_FEB_MAR      Q1_1999_FEB_MAR_SOUTHCENTRAL   TS2
+Q1_1999_FEB_MAR      Q1_1999_FEB_MAR_SOUTH          TS2
+Q1_1999_JAN_FEB      Q1_1999_JAN_FEB_WEST           TS1
+Q1_1999_JAN_FEB      Q1_1999_JAN_FEB_NORTHEAST      TS1
+Q1_1999_JAN_FEB      Q1_1999_JAN_FEB_SOUTHEAST      TS1
+Q1_1999_JAN_FEB      Q1_1999_JAN_FEB_NORTHCENTRAL   TS1
+Q1_1999_JAN_FEB      Q1_1999_JAN_FEB_SOUTHCENTRAL   TS1
+Q1_1999_JAN_FEB      Q1_1999_JAN_FEB_SOUTH          TS1
+Q1_2000              Q1_2000_NORTHWEST              TS3
+Q1_2000              Q1_2000_SOUTHWEST              TS3
+Q1_2000              Q1_2000_NORTHEAST              TS3
+Q1_2000              Q1_2000_SOUTHEAST              TS3
+Q1_2000              Q1_2000_NORTHCENTRAL           TS3
+Q1_2000              Q1_2000_SOUTHCENTRAL           TS3
+Q2_1999              Q2_1999_NORTHWEST              TS4
+Q2_1999              Q2_1999_SOUTHWEST              TS4
+Q2_1999              Q2_1999_NORTHEAST              TS4
+Q2_1999              Q2_1999_SOUTHEAST              TS4
+Q2_1999              Q2_1999_NORTHCENTRAL           TS4
+Q2_1999              Q2_1999_SOUTHCENTRAL           TS4
+Q3_1999              Q3_1999_NORTHWEST              TS4
+Q3_1999              Q3_1999_SOUTHWEST              TS4
+Q3_1999              Q3_1999_NORTHEAST              TS4
+Q3_1999              Q3_1999_SOUTHEAST              TS4
+Q3_1999              Q3_1999_NORTHCENTRAL           TS4
+Q3_1999              Q3_1999_SOUTHCENTRAL           TS4
+Q4_1999              Q4_1999_NORTHWEST              TS4
+Q4_1999              Q4_1999_SOUTHWEST              TS4
+Q4_1999              Q4_1999_NORTHEAST              TS4
+Q4_1999              Q4_1999_SOUTHEAST              TS4
+Q4_1999              Q4_1999_NORTHCENTRAL           TS4
+Q4_1999              Q4_1999_SOUTHCENTRAL           TS4
+36 rows selected.
+レンジ-リスト・サブパーティションの分割
+レンジ-リスト・パーティション表のリスト・サブパーティションを分割する操作は、「リスト・パーティション表のパーティションの分割」で説明した操作と同様ですが、PARTITIONではなくSUBPARTITIONの構文を使用します。たとえば、次の文はquarterly_regional_sales表のサブパーティションを分割します。
+ALTER TABLE quarterly_regional_sales SPLIT SUBPARTITION q2_1999_southwest
+VALUES ('UT') INTO
+( SUBPARTITION q2_1999_utah
+TABLESPACE ts2,
+SUBPARTITION q2_1999_southwest
+TABLESPACE ts3
+) 
+PARALLEL;
+この操作では、サブパーティションq2_1999_southwestが次の2つのサブパーティションに分割されます。 
+リテラル値のリスト('UT')を持つq2_1999_utah
+残りのリテラル値のリスト('AZ','NM')を持つq2_1999_southwest
+個々のサブパーティションは、分割対象となったサブパーティションから継承した新しい物理属性を持ちます。
+索引パーティションの分割
+ローカル索引のパーティションは、明示的に分割できません。ローカル索引のパーティションを分割できるのは、その基礎となる表パーティションを分割するときのみです。ただし、グローバル索引のパーティションは、次のような方法で分割できます。
+ALTER INDEX quon1 SPLIT 
+PARTITION canada AT ( 100 ) INTO 
+PARTITION canada1 ..., PARTITION canada2 ...);
+ALTER INDEX quon1 REBUILD PARTITION canada1;
+ALTER INDEX quon1 REBUILD PARTITION canada2;
+分割する索引には索引データが含まれていてもかまいません。また、元のパーティションで事前にUNUSABLEマークが付けられていないかぎり、分割されたパーティションで再作成する必要はありません。
+SPLIT PARTITIONおよびSPLIT SUBPARTITION操作の最適化
+Oracle Databaseでは、2つの新しいパーティションを作成し、分割対象となったパーティションの行を2つの新しいパーティションに再分散することで、SPLIT PARTITION操作が実装されます。この操作は、分割対象となったパーティションのすべての行をスキャンして、新しいパーティションに1行ずつ挿入する必要があるため高コストです。また、UPDATE INDEXES句を使用しない場合は、ローカル索引とグローバル索引の両方の再作成が必要になります。
+分割操作後に、新しいパーティションの1つに分割対象となったパーティションのすべての行が含まれ、他のパーティションに行がまったく含まれない場合があります。通常、これは表の最初のパーティションを分割する場合です。データベースでは、このような状況を検出して分割操作を最適化できます。この最適化により、分割操作がパーティション追加操作と同様に動作し、高速化されます。
+具体的には、データベースでは次の条件をすべて満たす場合に、SPLIT PARTITION操作を最適化し高速化できます。
+分割後の2つのパーティションの一方が空になる必要があります。
+分割後に空にならないパーティションの場合は、その記憶特性が分割対象となったパーティションと同じである必要があります。具体的には、次のようになります。
+コンポジット・パーティションを分割する場合、分割後に空にならない新しいパーティションの各サブパーティションの記憶特性は、分割対象となったパーティションのサブパーティションと同じである必要があります。
+分割対象となったパーティションにLOB列が含まれている場合、分割後に空にならない新しいパーティションの各LOB(サブ)パーティションの記憶特性は、分割対象となったパーティションのLOB(サブ)パーティションと同じである必要があります。
+オーバーフローのある索引構成表のパーティションを分割する場合、分割後に空にならない新しいパーティションの各オーバーフロー(サブ)パーティションの記憶特性は、分割対象となった各オーバーフロー(サブ)パーティションと同じである必要があります。
+マッピング表を持つ索引構成表のパーティションを分割する場合、分割後に空にならない新しいパーティションの各マッピング表(サブ)パーティションの記憶特性は、分割対象となった各マッピング表(サブ)パーティションと同じである必要があります。
+分割後にこれらの条件が満たされていれば、UPDATE INDEXES句を指定しなかった場合でも、すべてのグローバル索引は引き続き使用可能です。分割後の両方のパーティションに関連するローカル索引(サブ)パーティションは、分割前に使用可能だった場合は引き続き使用可能です。分割後の空でないパーティションに対応するローカル索引(サブ)パーティションは、分割元パーティションのローカル索引(サブ)パーティションと同じになります。
+SPLIT SUBPARTITION操作の場合も、同じ最適化が保持されます。
+パーティションの切捨て
+ALTER TABLE ...表パーティションからすべての行を切り捨てるには、TRUNCATE PARTITION文を使用します。パーティションの切捨てはパーティションの削除に似ていますが、パーティションが物理的に削除されるのではなく、そのデータが空になります。 
+索引パーティションの切捨てはできません。ただし、表にローカル索引が定義されている場合は、ALTER TABLE ...TRUNCATE PARTITION文を実行することで、各ローカル索引から対応するパーティションを切り捨てることができます。UPDATE INDEXESを指定する場合以外、すべてのグローバル索引にはUNUSABLEマークが付けられるため、それらを再作成する必要があります (索引構成表には、UPDATE INDEXESを使用できません。 かわりに、UPDATE GLOBAL INDEXESを使用してください)。
+表パーティションの切捨て
+ALTER TABLE ...表パーティションからすべての行を切り捨てるには、TRUNCATE PARTITION文を使用します。領域は再生してもしなくてもかまいません。 
+データおよびグローバル索引を含む表のパーティションの切捨て
+パーティションにデータとグローバル索引が含まれる場合、表パーティションを切り捨てるには次のいずれかの方法を使用します。
+方法1
+グローバル索引の更新を指定せずに、ALTER TABLE ...TRUNCATE PARTITION文を実行します。この例では、表salesにグローバル索引sales_area_ixがあり、それを再作成しています。 
+ALTER TABLE sales TRUNCATE PARTITION dec98;
+ALTER INDEX sales_area_ix REBUILD;
+切り捨てるパーティションに、その表の全データの大部分が含まれるような大規模な表の場合には、この方法が最適です。
+方法2
+ALTER TABLE ... TRUNCATE PARTITION文を発行する前にDELETE文を発行し、パーティションからすべての行を削除します。DELETE文でグローバル索引が更新され、さらにトリガーが起動されて、REDOログおよびUNDOログが生成されます。 
+たとえば、パーティション・バウンド10,000の最初のパーティションを切り捨てる場合は、次の文を発行します。
+DELETE FROM sales WHERE TRANSID < 10000;
+ALTER TABLE sales TRUNCATE PARTITION dec98;
+これは、小さい表の場合、または切り捨てるパーティションにその表の全データのごく一部分のみが含まれるような大規模な表の場合に最適な方法です。
+方法3
+ALTER TABLE文でUPDATE INDEXESを指定します。これにより、パーティションの切捨て時にグローバル索引も切り捨てられるようになります。
+ALTER TABLE sales TRUNCATE PARTITION dec98
+UPDATE INDEXES;
+データおよび参照整合性制約を含むパーティションの切捨て
+パーティションにデータおよび参照整合性制約が含まれる場合、表パーティションを切り捨てるには次のいずれかの方法を使用します。
+方法1
+整合性制約を使用禁止にし、ALTER TABLE ...TRUNCATE PARTITION文を発行してから、整合性制約を再び使用可能にします。
+ALTER TABLE sales
+DISABLE CONSTRAINT dname_sales1;
+ALTER TABLE sales TRUNCATE PARTITTION dec94;
+ALTER TABLE sales
+ENABLE CONSTRAINT dname_sales1;
+切り捨てるパーティションに、その表の全データの大部分が含まれるような大規模な表の場合には、この方法が最適です。
+方法2
+ALTER TABLE ... TRUNCATE PARTITION文を発行する前にDELETE文を発行し、パーティションからすべての行を削除します。DELETE文によって参照整合性制約が適用され、さらにトリガーが起動されて、REDOログおよびUNDOログが生成されます。
+注意
+パーティションの行をすべて削除する前にパーティションのNOLOGGING属性を設定する(ALTER TABLE ... TRUNCATE PARTITION ... NOLOGGING)ことにより、ロギングの量を大幅に削減できます。 
+DELETE FROM sales WHERE TRANSID < 10000;
+ALTER TABLE sales TRUNCATE PARTITION dec94;
+これは、小さい表の場合、または切り捨てるパーティションにその表の全データのごく一部分のみが含まれるような大規模な表の場合に最適な方法です。
+サブパーティションの切捨て
+コンポジット・パーティション表のサブパーティションからすべての行を切り捨てるには、ALTER TABLE ... TRUNCATE SUBPARTITION文を使用します。対応するローカル索引のサブパーティションも切り捨てられます。 
+次の文は、表のサブパーティション内にあるデータを切り捨てる方法を示しています。この例で、削除される行が占めていた領域は、表領域内の他のスキーマ・オブジェクトで使用可能になります。
+ALTER TABLE diving
+TRUNCATE SUBPARTITION us_locations
+DROP STORAGE;
+パーティション表の削除
+Oracle Databaseでは、非パーティション表と同様の方法でパーティション表に対してDROP TABLEコマンドで処理を行います。ただし、10gリリース2で導入されたPURGEキーワードを使用する場合は、例外が1つあります。
+リソース制約の発生を回避するために、パーティション表に対してDROP TABLE...PURGEコマンドを使用して、複数のトランザクションで表を削除します。各トランザクションでは、パーティションまたはサブパーティションのサブセットが削除されて、コミットされます。表は、最後のトランザクションの完了時に完全に削除されます。この動作は、DROP TABLEコマンドに対するいくつかの変更点とともに知っておく必要があります。 
+1つ目の変更点は、DROP TABLE...PURGEコマンドが失敗した場合は、訂正処理(ある場合)を実行した後、コマンドを再度実行できるという点です。コマンドは、失敗した時点から再開されます。
+2つ目の変更点は、DROP TABLE...PURGE文の実行中、次に示すデータ・ディクショナリ・ビューで、新規のSTATUS列にUNUSABLEの値が設定され、表が使用不可能であることがマーク付けされる点です。
+USER_TABLES, ALL_TABLES, DBA_TABLES
+USER_PART_TABLES, ALL_PART_TABLES, DBA_PART_TABLES
+USER_OBJECT_TABLES, ALL_OBJECT_TABLES, DBA_OBJECT_TABLES
+これらのビューのSTATUS列を問い合せることにより、UNUSABLEパーティション表をすべてリスト表示できます。
+DBA_TAB_PARTITIONSおよびDBA_TAB_SUBPARTITIONSなどの、パーティション化に関連する他のデータ・ディクショナリ・ビューに対して問合せを行い、UNUSABLE表に属する行を除外できます。 これらのビューの完全なリストは、「パーティション化された表および索引の情報の表示」を参照してください。
+UNUSABLEマークが付けられた表に対しては、DROP TABLE...PURGEコマンドのみを再度実行できます。これは、その前にDROP TABLE...PURGEコマンドが失敗している場合のみ実行可能です。UNUSABLE表に対してその他のコマンドを実行してもエラーになります。表は、削除操作が完了するまで、UNUSABLE状態のままになります。
+関連項目
+DROP TABLEコマンドの構文は、『Oracle Database SQLリファレンス』を参照してください。
+この項で説明したデータ・ディクショナリ・ビューの詳細は、『Oracle Databaseリファレンス』を参照してください。
+パーティション表および索引の例
+ここでは、履歴表での時間枠の移動についての例を示します。
+履歴表とは、ある期間にわたる企業の業務上の取引を記録したものです。履歴表は売上、小切手、注文などの基礎情報を含んでおり、実表になります。履歴表は、GROUP BY、AVERAGEまたはCOUNTなどの操作によって基礎情報から導出されるサマリー情報を取り込んだまとめ表にもなります。 
+多くの場合、履歴表の時間間隔は、ローリング・ウィンドウのようなものです。データベース管理者(DBA)は、最も古いトランザクションを記録する一連の行を定期的に削除し、最近のトランザクションを記録する一連の行に領域を割り当てます。たとえば、DBAは、1995年4月30日の業務終了時に、1994年4月のトランザクションの行(およびそれをサポートする索引項目)を削除し、1995年4月のトランザクションのために領域を割り当てます。
+ここで、具体的な例について考えてみます。今月分の注文と1年分の履歴データをまとめた13か月分のトランザクションを含む表orderがあるとします。この表には、月ごとにパーティションが1つあります。これら月ごとのパーティションにはorder_yymmという名前が付けられており、それらが格納されている表領域も同じ名前を持ちます。
+order表には2つのローカル索引が含まれています。1つはorder_ix_onumで、これは注文番号に対するローカルな一意の同一キー索引です。もう1つはorder_ix_suppで、これは業者番号に対するローカルな非同一キー索引です。ローカル索引のパーティション名には、基礎となる表と一致する接尾辞が付いています。また、顧客名を表すグローバルな一意索引、order_ix_custもあります。order_ix_custには、アルファベット3文字ごとに1つずつ、3つのパーティションが含まれています。このようなデータベースにおいて、1994年10月31日にorderの時間枠を変更するには、次の手順を実行します。
+最も古い時間間隔のデータのバックアップを作成します。
+ALTER TABLESPACE order_9310 BEGIN BACKUP;
+...
+ALTER TABLESPACE order_9310 END BACKUP;
+最も古い時間間隔のパーティションを削除します。
+ALTER TABLE order DROP PARTITION order_9310;
+最新の時間間隔のパーティションを追加します。
+ALTER TABLE order ADD PARTITION order_9411;
+グローバル索引のパーティションを再作成します。
+ALTER INDEX order_ix_cust REBUILD PARTITION order_ix_cust_AH;
+ALTER INDEX order_ix_cust REBUILD PARTITION order_ix_cust_IP;
+ALTER INDEX order_ix_cust REBUILD PARTITION order_ix_cust_QZ;
+通常、データベースは、ALTER TABLE ... DROP PARTITIONなどの個別のDDL文が別の操作(DML、DDLまたはユーティリティ)によって妨げられないようにするため、十分なロックを取得します。しかし、パーティションのメンテナンス操作に複数の手順が必要な場合、データベース管理者は、アプリケーション(またはその他のメンテナンス操作)によって、進行中の複数手順の操作が妨げられないように注意する必要があります。そのための方法を次にいくつか示します。
+明確に規定された時間帯に、ユーザー・レベルのアプリケーションをすべて停止する。
+すべてのアプリケーションで使用されているロールのアクセス権限を取り消して、表orderに誰もアクセスできないようにする。
+パーティション化された表および索引の情報の表示
+次のビューには、パーティション化された表および索引に固有の情報が表示されます。
+ビュー 
+説明 
+DBA_PART_TABLES 
+ALL_PART_TABLES 
+USER_PART_TABLES  
+DBAビューには、データベース内にあるすべてのパーティション表のパーティション化情報が表示されます。 ALLビューには、ユーザーがアクセス可能なすべてのパーティション表のパーティション化情報が表示されます。USERビューは、ユーザーが所有するパーティション表のパーティション化情報のみに制限されます。  
+DBA_TAB_PARTITIONS 
+ALL_TAB_PARTITIONS 
+USER_TAB_PARTITIONS  
+DBMS_STATSパッケージまたはANALYZE文で生成されるパーティション・レベルのパーティション化情報、パーティションの記憶域パラメータおよびパーティションの統計が表示されます。 
+DBA_TAB_SUBPARTITIONS 
+ALL_TAB_SUBPARTITIONS 
+USER_TAB_SUBPARTITIONS  
+DBMS_STATSパッケージまたはANALYZE文で生成されるサブパーティション・レベルのパーティション化情報、サブパーティションの記憶域パラメータおよびサブパーティションの統計が表示されます。  
+DBA_PART_KEY_COLUMNS 
+ALL_PART_KEY_COLUMNS 
+USER_PART_KEY_COLUMNS  
+パーティション表のパーティション化キー列が表示されます。  
+DBA_SUBPART_KEY_COLUMNS 
+ALL_SUBPART_KEY_COLUMNS 
+USER_SUBPART_KEY_COLUMNS  
+コンポジット・パーティション表のサブパーティション化キー列(およびコンポジット・パーティション表のローカル索引)が表示されます。  
+DBA_PART_COL_STATISTICS 
+ALL_PART_COL_STATISTICS 
+USER_PART_COL_STATISTICS  
+表のパーティションについて、列の統計およびヒストグラム情報が表示されます。  
+DBA_SUBPART_COL_STATISTICS 
+ALL_SUBPART_COL_STATISTICS 
+USER_SUBPART_COL_STATISTICS  
+表のサブパーティションについて、列の統計およびヒストグラム情報が表示されます。  
+DBA_PART_HISTOGRAMS 
+ALL_PART_HISTOGRAMS 
+USER_PART_HISTOGRAMS  
+表のパーティションのヒストグラムに関するヒストグラム・データ(各ヒストグラムのエンドポイント)が表示されます。  
+DBA_SUBPART_HISTOGRAMS 
+ALL_SUBPART_HISTOGRAMS 
+USER_SUBPART_HISTOGRAMS  
+表のサブパーティションのヒストグラムに関するヒストグラム・データ(各ヒストグラムのエンドポイント)が表示されます。  
+DBA_PART_INDEXES 
+ALL_PART_INDEXES 
+USER_PART_INDEXES  
+パーティション索引のパーティション化情報が表示されます。  
+DBA_IND_PARTITIONS 
+ALL_IND_PARTITIONS 
+USER_IND_PARTITIONS  
+索引パーティションについて、DBMS_STATSパッケージまたはANALYZE文で収集されたパーティション・レベルのパーティション化情報、パーティションの記憶域パラメータ、統計が表示されます。  
+DBA_IND_SUBPARTITIONS 
+ALL_IND_SUBPARTITIONS 
+USER_IND_SUBPARTITIONS  
+索引サブパーティションについて、DBMS_STATSパッケージまたはANALYZE文で収集されたパーティション・レベルのパーティション化情報、パーティションの記憶域パラメータ、統計が表示されます。 
+DBA_SUBPARTITION_TEMPLATES 
+ALL_SUBPARTITION_TEMPLATES 
+USER_SUBPARTITION_TEMPLATES  
+既存のサブパーティション・テンプレートに関する情報が表示されます。 
+関連項目
+これらのビューの詳細は、『Oracle Databaseリファレンス』を参照してください。
+ヒストグラムおよび表の統計生成の詳細は、『Oracle Databaseパフォーマンス・チューニング・ガイド』を参照してください。
+「表、索引およびクラスタの分析」
+Copyright &copy; 2006 Oracle Corporation. 
+All Rights Reserved.
+目次
+索引
+パーティション表と索引の管理

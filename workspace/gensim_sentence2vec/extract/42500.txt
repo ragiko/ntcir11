@@ -1,0 +1,178 @@
+
+所属・職龍谷大学理工学部情報メディア学科 助教
+学位京都大学博士(情報学)
+連絡先〒520-2194 大津市瀬田大江町横谷1-5龍谷大学瀬田学舎7号館 情報研究室14 (1F)
+E-mail: n a n j o (at) rins.ryukoku.ac.jp
+略歴  (bio.)
+1995.3高等学校 卒業
+1995.4〜1999.3京都大学 工学部 情報学科
+1999.4〜2001.3 京都大学大学院 情報学研究科 知能情報学専攻 修士課程
+2001.4〜2004.3 京都大学大学院 情報学研究科 知能情報学専攻 博士後期課程
+2004.4〜2007.3 龍谷大学 理工学部 情報メディア学科 助手
+2007.4〜 龍谷大学 理工学部 情報メディア学科 助教
+現在に至る
+(電子情報通信学会,日本音響学会,情報処理学会, IEEE, 日本バーチャルリアリティ学会 各会員) -- 会員番号
+研究活動
+研究テーマ
+話し言葉の音声認識・音声理解
+情報検索
+音声ドキュメント処理
+多言語音声処理
+非日常発話の頑健な処理
+音声認識を用いた会議録・議事録作成支援
+整形・言い換え・翻訳
+語学学習・教育支援
+主な業績(テーマ別)
+業績一覧はこちら
+話し言葉の音声認識・理解
+南條浩輝,古谷遼,西田昌史,"オープンソース音声認識エンジンJuliusへのベイズリスク最小化機能の実装と評価", 電子情報通信学会論文誌, Vol.J96-D, No.10, pp.2530-2539, 2013
+南條浩輝,河原達也,七里崇,"音声理解を指向したベイズリスク最小化枠組みに基づく音声認識." 電子情報通信学会論文誌,Vol.J91-D, No.5, pp.1314-1324, 2008.
+Hiroaki Nanjo, Teruhisa Misu, Tatsuya Kawahara. "Minimum Bayes-risk Decoding considering Word Significance for Information Retrieval System.", The 9th European Conf. on Speech Communication and Technology (INTERSPEECH 2005), pp.561--564, 2005. 
+Hiroaki Nanjo and Tatsuya Kawahara. "Language model and speaking rate adaptation for spontaneous presentation speech recognition." IEEE Trans. Speech & Audio Process., Vol.12, No.4, pp. 391--400, 2004.
+南條浩輝,加藤一臣,李晃伸,河原達也."大規模な日本語話し言葉データベースを用いた講演音声認識." 電子情報通信学会論文誌,Vol.J86-D-II, No.4, pp.450--459,2003.
+情報検索
+南條浩輝, 古谷遼,"ベイズリスク最小化音声認識の複数仮説を用いた音声検索", 情報処理学会研究報告 SLP-97-7, 2013
+古谷遼,七里崇,南條浩輝,"音声入力型情報検索におけるベイズリスク最小化音声認識のための単語重要度の自動推定", 情報処理学会論文誌,Vol.54, No.7, pp.1967-1977, 2013
+松尾宏規,西田昌史,古谷遼,南條浩輝,山本誠一,"ベイズリスク最小化音声認識に基づく大学情報検索システムの構築", 電子情報通信学会2011総合大会講演論文集, D-14-8, 2011 
+七里崇,南條浩輝, 吉見毅彦. "音声入力型情報検索における単語重要度推定のための統計的機械翻訳を用いた音声認識シミュレート",日本音響学会研究発表会講演論文集, 3-6-4, 春季, 2010.  (学生優秀発表賞)
+Takashi Shichiri, Hiroaki Nanjo and Takehiko Yoshimi. "Minimum Bayes-Risk Decoding with Presumed Word Significance for Speech Based Information Retrieval.", In Proc. IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP 2008), Vol., pp.1557-1560, 2008. 
+Takashi Shichiri, Hiroaki Nanjo, and Takehiko Yoshimi. "Automatic Estimation of Word Significance oriented for Speech-based Information Retrieval", Proceedings of The Third International Joint Conference on Natural Language Processing (IJCNLP 2008), pp.204-209, 2008. (Oral presentation)
+七里崇, 南條浩輝, 吉見毅彦."音声理解を指向した音声認識のための単語重要度の自動推定.", 情報処理学会研究報告 SLP-66-14 (NL-179-14),pp.79-84,2007. (学生奨励賞)
+Hiroaki Nanjo, Tatsuya Kawahara. "A New ASR Evaluation Measure and Minimum Bayes-risk Decoding for Open-domain Speech Understanding." In Proc. IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP 2005), Vol.1, pp.1053--1056, 2005.
+音声ドキュメント処理: 音声内容検索(SCR)
+西尾友宏,南條浩輝,吉見毅彦,"講演音声ドキュメント検索のための擬似適合性フィードバック",情報処理学会論文誌,Vol.55, No.5, pp.1573--1584, 2014
+秋葉友良,西崎博光,相川清明,胡新輝,伊藤慶明,河原達也,中川聖一,南條浩輝,山下洋一,"NTCIR-10 SpokenDoc-2 Spoken Content Retrieval タスクの結果と知見",日本音響学会研究発表会講演論文集, 3-8-6, 秋季 2014
+南條浩輝,弥永裕介,吉見毅彦."広域文書類似度と局所文書類似度を用いた講演音声ドキュメント検索", 情報処理学会論文誌, Vol.53, No.6, pp.1654--1662, 2012
+相川清明,秋葉友良,伊藤慶明,河原達也,中川聖一,南條浩輝,西崎博光,胡新輝,松井知子,山下洋一,"音声ドキュメント処理ワーキンググループ活動報告",情報処理学会研究報告,SLP-89-4, 2011.
+Hiroaki Nanjo, Yusuke Iyonaga and Takehiko Yoshimi, "Spoken Document Retrieval for Oral Presentations Integrating Global Document Similarities into Local Document Similarities", 11th International Congress on Spoken Language Processing (INTERSPEECH 2010 ICSLP), pp.1285--1288, 2010
+Koji Shigeyasu, Hiroaki Nanjo and Takehiko Yoshimi, "A Study of Indexing Units for Japanese Spoken Document Retrieval", 10th Western Pacific Acoustics Conference (WESPAC X), 2009
+Tomoyosi Akiba, Kiyoaki Aikawa, Yoshiaki Itoh, Tatsuya Kawahara, Hiroaki Nanjo, Hiromitsu Nishizaki, Norihito Yasuda, Yoichi Yamashita, and Katunobu Itou. "Construction of a test collection for spoken document retrieval from lecture audio data.", IPSJ-Journal, Vol.50. No.2, pp.501--513, 2009.
+Tomoyosi Akiba, Kiyoaki Aikawa, Yoshiaki Itoh, Tatsuya Kawahara, Hiroaki Nanjo, Hiromitsu Nishizaki, Norihito Yasuda, Yoichi Yamashita and Katunobu Itou. "Test Collections for Spoken Document Retrieval from Lecture Audio Data.", Proceedings of the Sixth International Conference on Language Resources and Evaluation (LREC 2008), 2008.
+音声ドキュメント処理: 音声検索語検出(STD)
+南條浩輝, 前田翔, 吉見毅彦,"音声検索語検出のためのクエリ拡張の検討", 情報処理学会研究報告 SLP-101-16, 2014.
+西崎博光,秋葉友良,相川清明,胡新輝,伊藤慶明,河原達也,中川聖一,南條浩輝,山下洋一,"NTCIR-10 SpokenDoc-2 Spoken Term Detection タスクの結果と知見",日本音響学会研究発表会講演論文集, 3-8-7, 秋季 2013
+伊藤慶明, 西崎博光, 中川聖一, 秋葉友良, 河原達也, 胡新輝, 南條浩輝, 松井知子, 山下洋一, 相川清明."音声中の検索語検出のためのテストコレクションの構築と分析",情報処理学会論文誌, Vol.54, No.2, pp.471-483, 2013
+Hiroaki Nanjo, Kazuyuki Noritake, Takehiko Yoshimi, "Spoken Document Retrieval Experiments for SpokenDocat Ryukoku University (RYSDT)", NTCIR-9 Meeting, 2011
+Kazuyuki Noritake, Hiroaki Nanjo and Takehiko Yoshimi, "Image Processing Filters for Line Detection-based Spoken Term Detection", In Proc. the 12th Annual Conference of the International Speech Communication Association (INTERSPEECH 2011), pp.2125--2128, 2011
+秋葉友良,西崎博光,相川清明,河原達也,松井知子,伊藤慶明,胡新輝,中川聖一,南條浩輝,山下洋一,"NTCIR-9 SpokenDoc: 音声検索語検出と音声ドキュメント検索の評価枠組の設計",情報処理学会研究報告,SLP-84-18, 2010
+西崎博光,胡新輝,南條浩輝,伊藤慶明,秋葉友良,河原達也,中川聖一,松井知子,山下洋一,相川清明,"Spoken Term Detection のためのテストコレクション構築とベースライン評価", 情報処理学会研究報告 SLP-81-13, NL-196-13, 2010
+Yoshiaki Itoh, Hiromitsu Nishizaki, Xinhui Hu, Hiroaki Nanjo, Tomoyosi Akiba, Tatsuya Kawahara, Seiichi Nakagawa, Tomoko Matsui, Yoichi Yamashita and Kiyoaki Aikawa, "Constructing Japanese Test Collections for Spoken Term Detection", 11th International Congress on Spoken Language Processing (INTERSPEECH 2010 ICSLP), pp.677-680, 2010
+多言語音声処理
+大村絵梨,南條浩輝."多言語音声の同時認識システムにおける翻訳モデルとスコア計算の高速化", 情報処理学会論文誌, Vol.53, No.10, pp.2349-2358, 2012
+大村絵梨,南條浩輝."英日同時通訳における英語および日本語の音声認識の検討",日本音響学会研究発表会講演論文集, 3-P-16, 春季 2012
+Eri Ohmura and Hiroaki Nanjo, "A Study of Translation Models and Score Calculation on Bilingual ASR Framework",  2010 Asia Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC 2010), pp.530-533, 2010
+Eri Ohmura and Hiroaki Nanjo, "Fast Calculation of Translation Model Score for Simultaneous Automatic Speech Recognition of Multilingual Audio Contents", the 20th International Congress on Acoustics (ICA 2010), 2010, N.R.
+大村絵梨,南條浩輝. "多言語音声の同時音声認識における翻訳モデルスコア計算の高速化",日本音響学会研究発表会講演論文集, 3-9-5, 秋季 2010.
+南條浩輝,"多言語音声の同時認識枠組みの提案", 情報処理学会論文誌(テクニカルノート),Vol.49, No.12, pp.4044-4048, 2008.
+Hiroaki Nanjo, Yuihchi Oku, and Takehiko Yoshimi. "Automatic Speech Recognition Framework for Multilingual Audio Contents", The 10th International Conference on Speech Communication and Technology (INTERSPEECH 2007 EUROSPEECH), pp.1445-1448, 2007. 
+非日常発話の頑健な処理
+柿野直人,福森隆寛,中山雅人,西浦敬信,南條浩輝,"Rahmonic とメルケプストラムを用いた叫び声検出における特徴ベクトルの次元数削減", 日本音響学会研究発表会講演論文集, 3-Q5-18, 春季 2014
+柿野直人,福森隆寛,中山雅人,西浦敬信,南條浩輝,"雑音環境下における叫び声検出のための特徴量次元数の削減",電子情報通信学会技術研究報告, Vol.113, No.452, SP2013-111, pp.21-22, 2014
+Hiroaki Nanjo, "Shouted Speech Processing for acoustic-based security system", International Institute of Noise Control Engineering, the 40th International Congress and Exposition on Noise Control Engineering (INTER-NOISE 2011), 2011. (invited) 
+Yasuki Nakano, Atsushi Tonomura, Hiroaki Nanjo and Takanobu Nishiura, "Emergency Shout Detection using SVM and Automatic Speech Recognition", International Institute of Noise Control Engineering, the 40th International Congress and Exposition on Noise Control Engineering (INTER-NOISE 2011), 2011.
+Hiroaki Nanjo, Hiroshi Kawano, Hiroki Mikami, Eri Ohmura and Takanobu Nishiura, "Shouting Speech Detection and Understanding for Acoustic-Based Security System", Journal of Information Assurance and Security (JIAS), Vol.5, Issue 4, pp.256-264, 2010.
+Hiroaki Nanjo, Takanobu Nishiura and Hiroshi Kawano, "Acoustic-based Security System: Towards Robust Understanding of Emergency Shout", In Proc. Fifth International Conference on Information Assurance and Security (IAS 2009), 2009, (Invited).
+南條浩輝,三上紘輝,川野弘,西浦敬信."音響防犯システムのための種々の環境下での叫び声認識の検討",日本音響学会研究発表会講演論文集, 3-Q-6, 春季 2009. 
+南條浩輝,三上紘輝,川野弘,西浦敬信."音響防犯システムのための叫び声認識の基礎的検討",日本音響学会研究発表会講演論文集, 1-11-18, 秋季 2008. 
+南條浩輝, 国松卓, 川野弘, 中山雅人, 西浦敬信."音響防犯システムのための叫び声の基礎的検討", 日本音響学会研究発表会講演論文集, 1-Q-17, 春季 2008.
+音声認識を用いた会議録・議事録作成支援/情報保障
+南條浩輝,堀智織 "初等中等教育の授業を対象とした音声認識の基礎的分析",日本音響学会研究発表会講演論文集, 2-P-32, 秋季 2013
+南條浩輝,谷奥大喜,"初等中等教育授業における教師発話の言語的特徴のモデル化のための学習データ選択方法の検討",FIT2013 第12回情報科学技術フォーラム講演論文集,E-031,pp.257-258, 2013
+南條浩輝,久木一平,和田祐樹,"初等中等教育における授業音声認識のための言語モデルの検討", 電子情報通信学会技術研究報告,SP2011-54, WIT2011-36,  2011.
+久木一平,南條浩輝,吉見毅彦."会議の情報保障における吹き出し型字幕の有用性の調査",情報処理学会創立50周年記念全国大会(第72回全国大会), 5U-4, 2010. 
+木村拓朗,南條浩輝, 吉見毅彦."吹き出し型字幕の読みやすさ向上のための改行・改ページの挿入",言語処理学会第16回年次大会(NLP2010)講演論文集, PA2-34, 2010. 
+Ayako Fujii, Hiroaki Nanjo and Takehiko Yoshimi, "Speech Balloon Captioning System for Meetings based on Automatic Speech Recognition", In Proc. 13th International Conference on Human-Computer Interaction (HCII 2009), pp.313--317, 2009.
+藤井絢子,南條浩輝,吉見毅彦, "会議の情報保障を目的とした吹き出し型字幕提示方式の検討", 情報処理学会研究報告 SLP-75-14,pp.75-82, 2009.
+Hiroaki Nanjo, Yuya Akita, and Tatsuya Kawahara. "Computer Assisted Speech Transcription System for Efficient Speech Archive" The 9th Western Pacific Acoustics Conference (WESPAC IX 2006), 2006. 
+整形・言い換え・翻訳
+南條浩輝,山本祐司,吉見毅彦."機械翻訳の品質向上のための対訳コーパスからの統計的前編集システムの自動構築", 情報処理学会論文誌, Vol.53, No.6, pp.1644--1653, 2012
+柴田誠, 南條浩輝, 吉見毅彦."英文の主節と副詞節の順序を保持した和訳のための前編集と後編集",言語処理学会第16回年次大会(NLP2010)講演論文集, PB2-9, 2010. 
+野口聡, 南條浩輝, 吉見毅彦."動詞の通常表現から敬語表現への換言",言語処理学会第13回年次大会(NLP2007)講演論文集, PC3-1, 2007.
+Yuya Akita, Masahiro Saikou, Hiroaki Nanjo, and Tatuya Kawahara. "Sentence Boundary Detection of Spontaneous Japanese using Statistical Language Model and Support Vector Machines" The 9th International Conference on Spoken Language Processing (INTERSPEECH 2006 ICSLP), pp.1033--1036, 2006.
+Kazuya Shitaoka, Hiroaki Nanjo, Tatsuya Kawahara. "Automatic Transformation of Lecture Transcription into Document Style using Statistical Framework." Int'l Conf. Spoken Language Processing (INTERSPEECH 2004 ICSLP),  pp.2169--2172, 2004.
+語学学習・教育支援
+上田翔太,吉見毅彦,南條浩輝,小谷克則,"日本人英語学習者の習熟度に応じた聴解難易度予測式の構築",教育システム情報学会誌(ショートノート),Vol.31, No.2, pp.203--207, 2014
+Katsunori Kotani, Takehiko Yoshimi, Hiroaki Nanjo and Hitoshi Isahara, "Corpus Materials for Constructing Learner Corpus Compiling Speaking, Writing, Listening, and Reading Data", Proceedings of the 13th International Conference on Intelligent Text Processing and Computational Linguistics, 2012. 
+Katsunori Kotani, Takehiko Yoshimi, Hiroaki Nanjo and Hitoshi Isahara, "Compiling Learner Corpus Data of Linguistic Output and Language Processing in Speaking, Listening, Writing, and Reading", Proceedings of The 5th International Joint Conference on Natural Language Processing (IJCNLP 2011),  pp.1418--1422, 2011. (Oral presentation)
+Katsunori Kotani, Takehiko Yoshimi, Hiroaki Nanjo and Hitoshi Isahara, "Statistical Analysis of a Learner Corpus Integrating Linguistic Outputand Language Processing Data in Speaking, Listening, Writing, and Reading", Corpora and Language Technologies in Teaching, Learning and Research, pp.21--28, 2011.
+坪田康,南條浩輝,壇辻正剛,吉見毅彦,"発話映像とスクリプトの自動同期を利用した外国語学習者音声の評価支援",日本音響学会研究発表会講演論文集, 1-7-1, 春季 2011
+坪田康,南條浩輝,壇辻正剛,吉見毅彦,"外国語学習・教育支援を目的とした学習者発話動画の自動字幕付与システムの検討", 電子情報通信学会技術研究報告,SP2010-25,2010
+坪田康,南條浩輝,壇辻正剛,吉見毅彦."日本の高校の英語CALLクラスにおける英語学習者音声の分析",日本音響学会研究発表会講演論文集, 3-9-2, 春季, 2010. 
+研究助成・共同研究
+学術研究助成基金助成金 基盤研究(C)(一般) 「快適なWeb検索のための検索用語の獲得支援に関する研究」(分担) 2013年度-2016年度. 
+学術研究助成基金助成金 基盤研究(C)(一般) 「初等中等教育における教育・学習支援のための音声言語処理の研究」(代表) 2012年度-2014年度. 
+独立行政法人情報通信研究機構との共同研究,2013年度
+学術研究助成基金助成金 基盤研究(C)(一般) 「音環境理解に基づく危険検知・警報システムの構築」(分担) 2011年度-2013年度. 
+科学研究費補助金 基盤研究(B)(一般) 「第2言語学習者のコーパスを利用した読解能力・作文能力の自動評価法に関する研究」(分担) 2010年度-2012年度. 
+民間企業との共同研究 2010年度--2011年度.
+科学研究費補助金 基盤研究(B)(一般) 「多層モデルの階層間密統合に基づく音声理解フレームワークの研究」(分担) 2009年度-2013年度. 
+科学研究費補助金 若手研究(B) 「多言語動画コンテンツへの字幕付与のための柔軟な音声言語処理」(代表) 2009年度-2011年度. 
+平成21年度シーズ発掘試験(A:発掘型) 「語句の重要度に基づく音声ドキュメント検索手法の開発」(代表) 2009年度. 
+平成20年度シーズ発掘試験(A:発掘型) 「ファジーマッチングに基づく多言語音声の同時認識方法の開発」(代表) 2008年度. 
+科学研究費補助金 基盤研究(C)(一般) 「心豊かなコミュニケーションを促進する質問作成支援システムの作成」(分担) 2008年度-2010年度. 
+科学研究費補助金 若手研究(B) 「高度な情報検索システムのための認識誤りの質に着目した音声認識戦略」(代表) 2006年度-2008年度. 
+龍谷大学 理工学学術研究助成基金 「講義アーカイブ・講演録・議事録作成のための音声認識と音声認識誤り修正支援ツールの構築」(代表) 2005年度
+龍谷大学 理工学学術研究助成基金 「講演・討論・ニュース音声の認識・理解ための音声言語処理」(代表) 2004年度.
+京都大学 若手リーダーシップ養成プログラム 「講演・討論音声の認識・理解ための音声言語処理」(代表) 2003年度.
+受賞 
+龍谷大学 2012年度発明新人奨励費, 2013年3月
+日本音響学会 粟屋潔学術奨励賞, 2009年3月 
+指導した学生の受賞等
+西尾友宏: 日本学生支援機構 第一種奨学金 特に優れた業績による返還免除(全額免除)平成25年度
+上田翔太: 日本学生支援機構 第一種奨学金 特に優れた業績による返還免除(半額免除)平成25年度
+古谷遼: 日本音響学会 学生優秀発表賞, 2013年9月 
+古谷遼: 日本学生支援機構 第一種奨学金 特に優れた業績による返還免除(半額免除)平成24年度
+西尾友宏: 日本音響学会関西支部 第15回関西支部若手研究者交流研究発表会 ベストコメンテーター賞,2012年12月
+大村絵梨: 日本学生支援機構 第一種奨学金 特に優れた業績による返還免除(半額免除)平成23年度
+久木一平: 日本音響学会関西支部 第13回関西支部若手研究者交流研究発表会 奨励賞, 2010年12月
+大村絵梨: 日本音響学会関西支部 第13回関西支部若手研究者交流研究発表会 奨励賞, 2010年12月
+七里崇: 日本音響学会 学生優秀発表賞, 2010年9月 
+七里崇: 情報処理学会音声言語情報処理研究会 学生奨励賞, 2007年5月 
+学会活動等
+2014.4〜情報処理学会音声言語情報処理研究会 幹事
+2013.6〜NTCIR-11 SpokenQuery&Docオーガナイザ
+2012.5〜情報処理学会音声言語情報処理研究会 音声・音響クラウドWG
+2012〜日本音響学会編集委員会 査読委員
+2011.8〜音声認識・対話講習会 講師
+2010.8.27〜電子情報通信学会 ソサイエティ論文誌編集委員会 査読委員
+履歴
+2013.7第37回 関西合同音声ゼミ 世話役
+2012.3〜2013.6NTCIR-10 SpokenDocオーガナイザ
+2011.10〜2013.2情報処理学会論文誌 「音声ドキュメント処理」特集号編集委員会 編集委員
+2011.4〜2013.4日本音響学会関西支部 会計幹事
+2011.3高度言語情報融合フォーラム 第2回 若手研究者フォーラム:音声言語処理について語ろう T1座長
+2011.3高度言語情報融合フォーラム 第2回 若手研究者フォーラム 実行委員
+2009.8音声認識・対話講習会 講師
+2009.7高度言語情報融合フォーラム 若手研究者フォーラム:音声言語処理について語ろう T3座長, T5副座長
+2008.4〜2012.3情報処理学会音声言語情報処理研究会 運営委員
+2008.7第27回 関西合同音声ゼミ 世話役
+2008.3〜2009.12IEEE SPS (Signal Processing Society) Kansai Chapter Secretary/Treasurer
+2007.9〜2009.2情報処理学会論文誌 「音声ドキュメント処理」特集号編集委員会 編集委員
+2007.4〜2008.3機械学会ロボティクス・メカトロニクス部門 関西地区技術委員会 幹事
+2007.3言語処理学会年次大会 実行委員
+2006.5〜2012.5情報処理学会音声言語情報処理研究会 音声ドキュメント処理WG 
+2004.8〜2008.8音声対話技術コンソーシアム(ISTC) 音声認識・対話講習会 講師
+2003.12〜2012.12日本音響学会関西支部 若手研究者交流研究発表会 実行委員
+2003.8連続音声認識コンソーシアム(CSRC) 音声認識講習会 講師
+教育活動
+担当(龍谷大学)
+情報メディア基礎セミナー(1年生前期) 2004--2012, 2014
+計算機基礎実習I(1年生前期)2004, 2005
+計算機基礎実習II(1年生後期) 2004, 2006--2014
+インターネットリテラシー(1年生後期) 2005, 2006
+線形代数・演習(2年生前期)  2004--2012, 2014
+データ構造とアルゴリズム・演習(2年生前期) 2006, 2011, 2012, 2014
+情報システム演習(3年生前期) 2005, 2006
+メディア工学演習(3年生前期) 2007--2012, 2014
+コラボレーション演習(3年生後期) 2005--2014
+セミナー 2006--2014
+科学技術英語 2006--2014
+特別研究 2006--2014
+リンク
+言語・音声メディア研究室
+龍谷大学
+理工学部・理工学研究科
+情報メディア学科
+京都大学 河原研究室
+京都大学 奥乃研究室
+Hiroaki NANJO

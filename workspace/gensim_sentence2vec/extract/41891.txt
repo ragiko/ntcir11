@@ -1,0 +1,40 @@
+
+public ListDataEvent(Object source,
+int type,
+int index0,
+int index1)
+ListDataEvent オブジェクトを構築します。
+パラメータ: source - 発生元の Object (通常は this)type - CONTENTS_CHANGED、INTERVAL_ADDED、または INTERVAL_REMOVED を指定する int 値index0 - 範囲の下限を指定する int 値index1 - 範囲の上限を指定する int 値
+メソッドの詳細
+getType
+public int getType()
+イベントのタイプを返します。返されるタイプは次のどれかになります。
+CONTENTS_CHANGED
+INTERVAL_ADDED
+INTERVAL_REMOVED
+戻り値: タイプの値を表す int 値
+getIndex0
+public int getIndex0()
+範囲の下限のインデックスを返します。単一の値の場合は、返される値は getIndex1() によって返される値と同じです。
+戻り値: 下限のインデックス値を表す int 値
+getIndex1
+public int getIndex1()
+範囲の上限のインデックスを返します。単一の値の場合は、返される値は getIndex0() によって返される値と同じです。
+戻り値: 上限のインデックス値を表す int 値
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM 2 PlatformStd. Ed. v1.3
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし
+概要:  内部クラス | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+バグや機能要求の報告 さらに詳しい API リファレンスおよび開発者ドキュメントについては、  Java 2 SDK SE Developer Documentation を参照してください。このドキュメントには、概念、用語の定義、回避策、 実用的なコード例など、開発者を対象にした詳細な解説が掲載されています。 Java、Java 2D、JDBC は、米国およびその他の国における米国 Sun Microsystems, Inc. の商標もしくは登録商標です。 Copyright 1993-2000 Sun Microsystems, Inc. 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.  All Rights Reserved.
+Java 2 Platform SE 1.3: クラス  ListDataEvent

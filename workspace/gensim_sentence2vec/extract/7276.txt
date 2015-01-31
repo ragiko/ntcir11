@@ -1,0 +1,31 @@
+
+2011/07/13 
+Graham Neubigさんが先日公開された発音推定プログラムprontronを使ってみました.prontron - PRONunciation percepTRONまずはデフォルトのモデルを試してみます../prontron.pl model/model.cand model/model.feat 京都きょうと漢字かんじ私わたくし未踏みふ今日いま生駒...
+d:id:nokuno
+テクノロジー
+NLP
+機械学習
+発音推定
+日本語
+prontron
+2011/07/11 
+by Graham Neubig
+English
+prontronは日本語の未知語発音推定プログラムです。構造化パーセプトロンを日本語の発音推定に使えるのではないかと思って作ってみました。もし興味があったら使ってみてください。
+ダウンロード
+使い方
+仕組み
+精度
+開発・TODO
+ダウンロード
+最新版:
+prontron 0.1
+開発版: @github...
+www.phontron.com
+テクノロジー
+機械学習
+nlp
+読み推定
+ツール
+あとで読む
+タグ「発音推定」を検索 - はてなブックマーク

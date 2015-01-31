@@ -1,0 +1,181 @@
+4.1節は、データから識別関数を直接的に構成するアプローチとして、
+最小二乗法
+フィッシャーの線形判別
+パーセプトロン
+が紹介されています。すべて線形識別モデルなので二次元なら直線、三次元なら平面、それ以上なら超平面で分離できる、つまり、線形分離可能なデータしか分類できない方法です。私が昔、機械学習を勉強していたときはこれがメインだったのでこっちのアプローチが一番自然な感じがして、ベイズ的なアプローチの方が新鮮に感じていました。ここで出てくるパーセプトロンは、Rosenblattが提案したやつでMinskyとPapertに「線形分離しかできないじゃないか!」と批判されたアルゴリズムですね。線形分離不可能なデータにも対応できるRumelhartの多層パーセプトロンは5章のニューラルネットワークに、サポートベクトルマシン(SVM)は下巻の7章に出てくるようです今回は、4.1.3の分類における最小二乗をPythonで実装してみます。分類するクラスがK個ある場合は、式(4.13)の形をしたK個の識別関数をクラスごとに用意して、入力xが与えられたときもっとも大きな値を出力する識別関数のクラスにxを分類するというアプローチです。たとえば、K=3で3クラスに分類する問題の場合は、
+のように3つ識別関数を用意します。クラスが増えるほど学習しなきゃならないパラメータwが増えます。これをまとめて行列で表すと式(4.14)。学習データ集合 {xn, tn} が与えられたとき、分類器の出力yと教師信号tの二乗和誤差関数 (4.15) を最小化するようにパラメータ行列Wを学習しろってのが今回の課題ですね。ここで、Xは訓練データをまとめた行列、Tは教師データをまとめた行列です。この全部行列にまとめてしまうというのは慣れるまで少し大変でした。何で二乗和誤差関数が(4.15)なんだろうと悩んでしまったのですが、K=3, D=2, N=3など具体例で行列の要素を全部書き下してみるとなるほどと納得できました(かなり手が疲れたけどね)。で、これを解くと、式(4.16)の二乗和誤差を最小にする解Wが得られ、これで識別関数の式(4.14)が得られました!では、プログラミングしてみます。まず、図4.4の左にあわせた感じで2クラスの分類をやってみました。wは (w_0, w_1, w_2) で3次元、xは (x_1, x_2) の二次元データなのですが、バイアスパラメータをまとめるために1を追加して (1, x_1, x_2)  のように三次元になります。データは、図4.4にあわせた適当な正規分布から生成しています。クラス1とクラス2の決定境界を表す直線の方程式は、y1(x)=y2(x)となる場合なので、整理するとのようにy=ax+bの形の直線の方程式になります。この直線の方程式が関数f()です。ただ、やっかいなことに教科書では、クラス1、クラス2のようにKは1から始まるのに対し、Pythonでは添え字は0から始まります。そんなわけで行列Wの添え字が下のように変化することに注意してください。Pythonの場合、1つ目の添え字(クラスを表す)が1引かれます。
+#coding:utf-8
+# 4.1.3 分類における最小二乗(p.182)
+import numpy as np
+from pylab import *
+import sys
+K = 2    # 2クラス分類
+N = 100  # データ数
+def f(x1, W_t):
+# 決定境界の直線の方程式
+a = - ((W_t[0,1]-W_t[1,1]) / (W_t[0,2]-W_t[1,2]))
+b = - (W_t[0,0]-W_t[1,0])/(W_t[0,2]-W_t[1,2])
+return a * x1 + b
+if __name__ == "__main__":
+# 訓練データを作成
+cls1 = []
+cls2 = []
+# データは正規分布に従って生成
+mean1 = [-1, 2]  # クラス1の平均
+mean2 = [1, -1]  # クラス2の平均
+cov = [[1.0,0.8], [0.8,1.0]]  # 共分散行列(全クラス共通)
+# ノイズなしデータ
+cls1.extend(np.random.multivariate_normal(mean1, cov, N/2))
+cls2.extend(np.random.multivariate_normal(mean2, cov, N/2))
+# データ行列Xを作成
+temp = vstack((cls1, cls2))
+temp2 = ones((N, 1))  # バイアスw_0用に1を追加
+X = hstack((temp2, temp))
+# ラベル行列T(1-of-K表記)を作成
+T = []
+for i in range(N/2):
+T.append(array([1, 0]))  # クラス1
+for i in range(N/2):
+T.append(array([0, 1]))  # クラス2
+T = array(T)
+# パラメータ行列Wを最小二乗法で計算(式4.16)
+X_t = np.transpose(X)
+temp = np.linalg.inv(np.dot(X_t, X))  # 行列の積はnp.dot(A, B)
+W = np.dot(np.dot(temp, X_t), T)
+W_t = np.transpose(W)
+print W_t
+# 訓練データを描画
+x1, x2 = np.transpose(np.array(cls1))
+plot(x1, x2, 'rx')
+x1, x2 = np.transpose(np.array(cls2))
+plot(x1, x2, 'bo')
+# 識別境界を描画
+x1 = np.linspace(-4, 8, 1000)
+x2 = [f(x, W_t) for x in x1]
+plot(x1, x2, 'g-')
+xlim(-4, 8)
+ylim(-8, 4)
+show()
+結果は、下のようになり、ちゃんと分類されていることがわかります。緑の線が最小二乗法で求めたパラメータ行列Wから求めた決定境界の直線です。次に、図4.4の右のようにノイズデータを混ぜてみます。
+#coding:utf-8
+# ノイズデータを混ぜてみた
+import numpy as np
+from pylab import *
+import sys
+K = 2    # 2クラス分類
+N = 100  # データ数
+def f(x1, W_t):
+# 決定境界の直線の方程式
+a = - ((W_t[0,1]-W_t[1,1]) / (W_t[0,2]-W_t[1,2]))
+b = - (W_t[0,0]-W_t[1,0])/(W_t[0,2]-W_t[1,2])
+return a * x1 + b
+if __name__ == "__main__":
+# 訓練データを作成
+cls1 = []
+cls2 = []
+mean1 = [-1, 2]  # クラス1の平均
+mean2 = [1, -1]  # クラス2の平均
+mean3 = [8, -6]  # クラス2のノイズデータの平均
+cov = [[1.0,0.8], [0.8,1.0]]  # 共分散行列(全クラス共通)
+# ノイズありデータ
+cls1.extend(np.random.multivariate_normal(mean1, cov, N/2))
+cls2.extend(np.random.multivariate_normal(mean2, cov, N/2-20))
+cls2.extend(np.random.multivariate_normal(mean3, cov, 20))  # 20個だけクラス2にノイズデータ追加
+# データ行列Xを作成
+temp = vstack((cls1, cls2))
+temp2 = ones((N, 1))  # バイアスw_0用に1を追加
+X = hstack((temp2, temp))
+# ラベル行列T(1-of-K表記)を作成
+T = []
+for i in range(N/2):
+T.append(array([1, 0]))  # クラス1
+for i in range(N/2):
+T.append(array([0, 1]))  # クラス2
+T = array(T)
+# パラメータ行列Wを最小二乗法で計算(式4.16)
+X_t = np.transpose(X)
+temp = np.linalg.inv(np.dot(X_t, X))  # 行列の積はnp.dot(A, B)
+W = np.dot(np.dot(temp, X_t), T)
+W_t = np.transpose(W)
+print W_t
+# 訓練データを描画
+x1, x2 = np.transpose(np.array(cls1))
+plot(x1, x2, 'rx')
+x1, x2 = np.transpose(np.array(cls2))
+plot(x1, x2, 'bo')
+# 識別境界を描画
+x1 = np.linspace(-4, 8, 1000)
+x2 = [f(x, W_t) for x in x1]
+plot(x1, x2, 'g-')
+xlim(-4, 8)
+ylim(-8, 4)
+show()
+結果は、最小二乗法は外れ値に対して頑健さに欠けていることがわかります。外れ値に対して頑健な方法としてロジスティック回帰やサポートベクトルマシンがあるようです。後で取り上げます。最後に、図4.5のように3クラスの場合を試して見ます。3クラスなので、クラス1とクラス2の間の決定境界を表すf1()とクラス2とクラス3の間の決定境界を表すf2()を用意しています(まとめられますが・・・)。
+#coding:utf-8
+# 図4.5 3クラス分類
+import numpy as np
+from pylab import *
+import sys
+K = 3    # 3クラス分類
+N = 150  # データ数
+def f1(x1, W_t):
+# クラス1とクラス2の決定境界の直線の方程式
+a = - ((W_t[0,1]-W_t[1,1]) / (W_t[0,2]-W_t[1,2]))
+b = - ((W_t[0,0]-W_t[1,0]) / (W_t[0,2]-W_t[1,2]))
+return a * x1 + b
+def f2(x1, W_t):
+# クラス2とクラス3の決定境界の直線の方程式
+a = - ((W_t[1,1]-W_t[2,1]) / (W_t[1,2]-W_t[2,2]))
+b = - ((W_t[1,0]-W_t[2,0]) / (W_t[1,2]-W_t[2,2]))
+return a * x1 + b
+if __name__ == "__main__":
+# 訓練データを作成
+cls1 = []
+cls2 = []
+cls3 = []
+mean1 = [-2, 2]  # クラス1の平均
+mean2 = [0, 0]   # クラス2の平均
+mean3 = [2, -2]  # クラス3の平均
+cov = [[1.0,0.8], [0.8,1.0]]  # 共分散行列(全クラス共通)
+# データを作成
+cls1.extend(np.random.multivariate_normal(mean1, cov, N/3))
+cls2.extend(np.random.multivariate_normal(mean2, cov, N/3))
+cls3.extend(np.random.multivariate_normal(mean3, cov, N/3))
+# データ行列Xを作成
+temp = vstack((cls1, cls2, cls3))
+temp2 = ones((N, 1))  # バイアスw_0用に1を追加
+X = hstack((temp2, temp))
+# ラベル行列Tを作成
+T = []
+for i in range(N/3):
+T.append(array([1, 0, 0]))
+for i in range(N/3):
+T.append(array([0, 1, 0]))
+for i in range(N/3):
+T.append(array([0, 0, 1]))
+T = array(T)
+# パラメータ行列Wを最小二乗法で計算
+X_t = np.transpose(X)
+temp = np.linalg.inv(np.dot(X_t, X))  # 行列の積はnp.dot(A, B)
+W = np.dot(np.dot(temp, X_t), T)
+W_t = np.transpose(W)
+print W_t
+# 訓練データを描画
+x1, x2 = np.transpose(np.array(cls1))
+plot(x1, x2, 'rx')
+x1, x2 = np.transpose(np.array(cls2))
+plot(x1, x2, 'g+')
+x1, x2 = np.transpose(np.array(cls3))
+plot(x1, x2, 'bo')
+# クラス1とクラス2の間の識別境界を描画
+x1 = np.linspace(-6, 6, 1000)
+x2 = [f1(x, W_t) for x in x1]
+plot(x1, x2, 'r-')
+# クラス2とクラス3の間の識別境界を描画
+x2 = [f2(x, W_t) for x in x1]
+plot(x1, x2, 'b-')
+xlim(-6, 6)
+ylim(-6, 6)
+show()
+結果は、となり、真ん中のクラス2がちゃんと分類できません。これもロジスティック回帰を使うとちゃんと分類できるようです。次回は、フィッシャーの線形判別を取り上げます。
+分類における最小二乗 - 人工知能に関する断創録

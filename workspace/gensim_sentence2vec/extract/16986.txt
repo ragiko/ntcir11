@@ -1,0 +1,226 @@
+はじめに
+最近,文脈指向プログラミング(COP: Context-Oriented Programming)[1]という新しいパラダイムに注目しています。ちなみに、COPにおける文脈とは、プログラムの実行時の環境や状況などを意味します。世の中には、文脈に依存して動作が変わるようなプログラムはたくさんあります。例えば、社外と社内の両方からアクセスされるサーバアプリケーションでは、社外からアクセスされた場合には、表示する情報を限定したり、特別なパスワードを要求したりする必要があるかもしれません。あるいは、社外や社内のサーバにアクセスするクライアントアプリケーションでは、社外にアクセスするときだけ、セキュアなコネクションを張る、といったことも考えられます。他にも、レスポンシブデザインのように表示対象がスマホやPCかによって、レイアウトアルゴリズムを切り替えたい、といったケースも考えられます。このようなプログラムを実装する場合、従来のプログラミング言語では、if文の嵐になってしまったり、あるいは、オブジェクト指向やデザインパターンを上手く活用した場合でさえ、関連する振る舞いが様々なクラスのメソッドに散らばって実装されたりするなど、見通しの悪いプログラムになりがちです。COPを用いると、より自然にエレガントな形で記述することができるようになります。
+PyContext: Pythonによる文脈指向プログラミング
+前置きはこれくらいにして、COPを使った具体的な例を紹介して行きましょう。Pythonには、PyContext[2]というCOPのフレームワークがあるので、今回はこれを使います。PyContextはPyPIに登録されているので、pipで簡単にインストールすることができます。ただ、残念ながら現在のPyContextは、継承関係を持つクラスに適用すると上手く動かないという問題があります。そこで、今回は筆者が作成したパッチをあてたものを使用します。パッチコードは本稿の付録に掲載しますので、ご自由にお使いくだだい。
+例1:Personクラス
+最初に紹介する例は、文献[1]にあるのを少しアレンジしたものです。以下のようにPerson, Employer, Employeeという3つの簡単なクラスを考えます。person.py::
+class Person(object):
+def __init__(self, name, address):
+self.name = name
+self.address = address
+def __str__(self):
+return "Name: " + self.name
+class Employer(Person):
+pass
+class Employee(Person):
+def __init__(self, name, address, employer):
+super(Employee, self).__init__(name, address)
+self.employer = employer
+Personは、名前(name)と住所(address)をメンバーとして備えています。また、__str__メソッドを実装していて、これは、自分の名前を整形した文字列として返します。EmployerとEmployeeは、Personから継承してそれぞれ定義します。Employeeはnameとaddressに加えて、employerをメンバーに持ちます。ここで、例えば、アドレス帳に出力する場合は、住所情報も載せ、それ以外の場合は名前だけにしたいなど、__str__メソッドで住所情報も出力したいケースが出てきたとします。普通に考えると、__str__メソッドの中で、何らかのグローバルな変数を参照して、処理を分岐させる、といった実装になるかと思います。COPでは、以下のように文脈に依存した処理を切り離して実装することができます。address_layer.py::
+from context import layers
+import person
+class Address(layers.Layer): pass
+class Person(Address, person.Person):
+@layers.instead
+def __str__(self, context):
+return context.proceed() + "; Address: " + self.address
+COPでは、文脈に依存した振る舞いの違いをレイヤという概念でくくりだします。上の例では、住所表示をするという文脈を、Addressというレイヤクラスとして定義しています。さらに、PyContextでは、レイヤクラスと元々のクラスの2つを継承したクラスを定義し、その中で振る舞いの差異を実装します。上の例の__str__メソッドがそれに該当します。@layers.insteadというアノテーションは、__str__メソッドが、もともとの__str__メソッドの実装の代わりとして呼び出されることを指示しています。さらに、__str__メソッドにcontextというパラメータが追加されていることに注目してください。context.proceed()によって、元々の__str__メソッドを呼び出すことができます。それでは、実際に動作を見てみましょう。
+>>> import person
+>>> import address_layer
+>>> p = person.Person('Suzuki', 'Tokyo')
+>>> print p
+Name: Suzuki
+住所表示の文脈で実行する場合、pythonのwith構文に、先ほど定義したAddressレイヤオブジェクトを指定します。
+>>> with address_layer.Address():
+...     print p
+...
+Name: Suzuki; Address: Tokyo
+ちゃんと、住所が表示されるようになりました。これだけではあまり面白くないので、雇用関係を表示するレイヤも追加してみましょう。Employeeオブジェクトの場合、その雇用者の情報も出力するような__str__メソッドのバリエーションを定義します。employment_layer.py::
+from context import layers
+import person
+class Employment(layers.Layer): pass
+class Employee(Employment, person.Employee):
+@layers.instead
+def __str__(self, context):
+return context.proceed() + "; [Employer] %s" % self.employer
+EmployerとEmployeeを定義して、試してみましょう。
+>>> import employment_layer
+>>> yer = person.Employer('Yamada', 'Osaka')
+>>> yee = person.Employee('Sasaki', 'Chiba', yer)
+>>> print yee
+Name: Sasaki
+>>> with employment_layer.Employment():
+...     print yee
+...
+Name: Sasaki; [Employer] Name: Yamada
+ちゃんと、雇用者の名前も表示されました。さらに、住所情報も合せて表示させてみましょう。以下のようにwithを入れ子にして、AddressとEmploymentのレイヤを指定します。
+>>> with employment_layer.Employment():
+...     with address_layer.Address():
+...             print yee
+...
+Name: Sasaki; Address: Chiba; [Employer] Name: Yamada; Address: Osaka
+雇用者の住所情報も同時に出力されていることに注目してください。
+例2: urlopenにリトライを追加する
+次に、もう少し実用的な例を紹介したいと思います。Pythonには、URLを指定してWeb上のリソースを取得するための手段を提供するurllibというライブラリがあります。
+>>> import urllib
+>>> f = urllib.urlopen("http://www.kompira.jp")
+>>> print f.read()
+サーバが一時的にビジー状態だったり、ダウンしたりしている場合、あるいは、不安定なネットワーク上では、コネクションの接続に失敗する可能性があります。そういう状況でも確実にアクセスをしたい場合には、接続エラーが起こっても、何秒か待ってリトライするという手法が一般に用いられます。このような処理を上記の例に実装するとしたら、urlopenの呼び出しにおける接続エラーの例外をハンドルし、何秒かsleepしたのち、再び、urlopenを呼び出すように変更してやるのが一般的でしょう。しかし、このやり方では、urlretrieveなど、別のメソッドでもリトライが必要な場合、いちいち同じ処理を記述しなくてはならなくなります。COPを使うと、スッキリと実現することができます。urllibモジュールは、より低レベルのhttplibモジュールのHTTPConnectionクラスのconnectメソッドを使って、urlopenなどを実装しているので、この部分の処理にレイヤを差し込むようにします。http_auto_retry.py::
+from context import layers
+import httplib
+import socket
+import time
+class HTTPAutoRetry(layers.Layer):
+def __init__(self, retry, interval=5):
+assert retry > 0
+self.retry = retry
+self.interval = interval
+class HTTPConnection(HTTPAutoRetry, httplib.HTTPConnection):
+@layers.instead
+def connect(self, context):
+retry = context.layer.retry
+interval = context.layer.interval
+for _ in range(retry):
+try:
+return context.proceed()
+except socket.error:
+print 'connection retry after %s seconds ...' % context.layer.interval
+time.sleep(context.layer.interval)
+raise e
+ここでは、HTTPAutoRetryというレイヤクラスを定義しています。このクラスは初期化のためのパラメータとして、リトライ回数(retry)、リトライ間隔(interval)を取り、それぞれメンバーとしてセットしています。connectメソッドの中からは、contextのlayer属性を参照することで、現在のレイヤオブジェクトを取得できます。上記の例では、これを用いてconnectメソッド中からretryとintervalの値を取得しています。それでは、実際に動かしてみましょう。
+>>> import urllib
+>>> from http_auto_retry import HTTPAutoRetry
+>>> def get():
+...     f = urllib.urlopen('http://www.kompira.jp:8080')
+...     return f.read()
+>>> get()
+Traceback (most recent call last):
+...(省略)...
+IOError: [Errno socket error] [Errno 111] Connection refused
+>>> with HTTPAutoRetry(3):
+...      get()
+...
+connection retry after 5 seconds ...
+connection retry after 5 seconds ...
+connection retry after 5 seconds ...
+Traceback (most recent call last):
+...(省略)...
+IOError: [Errno socket error] [Errno 111] Connection refused
+>>> with HTTPAutoRetry(2, 10):
+... 	 urllib.urlretrieve('http://www.kompira.jp:8080')
+...
+connection retry after 10 seconds ...
+connection retry after 10 seconds ...
+Traceback (most recent call last):
+...(省略)...
+IOError: [Errno socket error] [Errno 111] Connection refused
+このように、HTTPAutoRetryの文脈で呼び出されたHTTP接続は、すべて接続リトライを行うように振る舞いを変えることができました。
+まとめ
+今回は、比較的新しいプログラミングパラダイムである文脈指向プログラミングを紹介しました。最近のWebアプリケーションは、様々な環境やデバイスに対応できるように、複雑化していく一方です。COPはこのようなアプリを実装する上での強力な切り札となる可能性を持っていると思います。似たような技術としてアスペクト指向プログラミング(AOP: Aspect-Oriented Programming)があり、ご存じの方も多いと思いますが、COPは研究の系譜的にはAOPの後継にあたる技術のようです。個人的にはAOPよりもCOPの方がプログラマにとって扱い易い気がするので、今後、きちんとした実装が出てきたら、もっと一般に広まっていく技術なのではないでしょうか。Kompiraの開発に適用していける部分もかなり多いので、少しずつ活用していきたいと思います。
+付録:PyContextのパッチ
+PyContext-1.0で、継承を上手く扱えるように修正したパッチを掲載します。変更のポイントは以下のとおりです。
+新スタイルのクラスに対応
+子クラス側でレイヤが差し込まれた時に、親クラスにレイヤが定義済みだと、そちらに差し込まれてしまうのを修正
+レイヤのディスパッチ処理において、クラス継承をたどって、すべてのレイヤを合成する処理を追加
+--- /usr/lib/python2.6/site-packages/context/layers.py  2013-03-13 15:34:06.000000000 +0900
++++ layers.py   2013-03-13 15:36:26.491854687 +0900
+@@ -51,10 +51,10 @@
+context_stack = ContextStack()
+-class _Original:
++class _Original(object):
+pass
+-class Context:
++class Context(object):
+def __init__(self, target, name, finalfunc):
+self.target = target
+self.name = name
+@@ -136,9 +136,36 @@
+raise NotImplementedError, func.__layer__
+context.insert(func, layer, proceed)
+-def dispatch(self, name, args, kw):
++def compose_layers(base, name):
++    layers = {}
++
++    def _trav_old_style(cls):
++        for base in cls.__bases__:
++            for k in _trav_old_style(base):
++                yield k
++        yield cls
++
++    def _trav_new_style(cls):
++        if len(cls.__mro__) > 1:
++            for k in _trav_new_style(cls.__mro__[1]):
++                yield k
++        yield cls
++
++    if hasattr(base, '__mro__'):
++        g = _trav_new_style(base)
++    else:
++        g = _trav_old_style(base)
++
++    for cls in g:
++        try:
++            layers.update(cls.__dict__['__layers__'][name])
++        except KeyError:
++            continue
++    return layers
++
++def dispatch(cls, self, name, args, kw):
+#print "Invoking", name, "on", self
+-    layers = self.__layers__[name]
++    layers = compose_layers(cls, name)
+context = Context(self, name, layers[_Original])
+# build up evaluation chain: start with implicit layers,
+# starting with highest priority, per priority in the order
+@@ -156,6 +183,17 @@
+add_dispatch(context, layer, layers.get(type(layer)))
+return context.proceed(*args, **kw)
++def get_original(base, k):
++    try:
++        return base.__dict__[k]
++    except KeyError:
++        pass
++    for cls in base.__mro__:
++        try:
++           return cls.__dict__['__layers__'][k][_Original]
++        except KeyError:
++           continue
++    return getattr(base, k)
+class _MetaLayer(type):
+ignored = set(['__module__'])
+@@ -168,8 +206,8 @@
+layer = bases[0]
+base = bases[1]
+try:
+-            layers = base.__layers__
+-        except AttributeError:
++            layers = base.__dict__['__layers__']
++        except KeyError:
+layers = base.__layers__ = {}
+for k, v in dict.items():
+if k in cls.ignored:
+@@ -181,14 +219,14 @@
+# hack to make sure the name gets bound properly
+def make_dispatch(name=k):
+def _dispatch(self, *args, **kw):
+-                        return dispatch(self, name, args, kw)
++                        return dispatch(base, self, name, args, kw)
+return _dispatch
+-                layers[k] = { _Original:getattr(base, k) }
+-                base.__dict__[k] = make_dispatch()
++                layers[k] = { _Original: get_original(base, k) }
++                setattr(base, k, make_dispatch())
+layers[k][layer] = v
+return None
+-class Layer:
++class Layer(object):
+__metaclass__ = _MetaLayer
+priority = 0
+@@ -201,7 +239,7 @@
+def active(self):
+return False
+-class Disabled:
++class Disabled(object):
+def __init__(self, klass):
+self.klass = klass
+文脈指向プログラミングを試してみる - Kompira開発者ブログ

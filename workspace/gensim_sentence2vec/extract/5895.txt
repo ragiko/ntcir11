@@ -1,0 +1,4 @@
+次に、直接出現確率計算部12で、上記頻度から、見出し語に対する、説明文中の単語の出現確率を計算する。Then, by means of a direct appearance probability computing part 12, an appearance probability of words in the explanatory sentence for the lemmas is computed from the frequency. - 特許庁
+ウェブサイト100は、アクセス頻度の高いウェブページから、単語間類似度に基づいて、当該ウェブページに特徴的な単語を抽出する。Starting with the web page with the higher frequency of access, the web site 100 extracts words characteristic for the web pages according to the similarities among words. - 特許庁
+クラスタ単位重み計算部11は、クラスタごとにそのクラスタ内での単語の出現頻度に基づいて単語重みを計算する。A cluster unit weight calculation part 11 calculates word weight based on the appearance frequency of words in every cluster. - 特許庁
+「頻度語」に関連した英語例文の一覧(2ページ目) - Weblio英語例文検索

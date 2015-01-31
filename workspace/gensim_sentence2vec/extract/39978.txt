@@ -1,0 +1,170 @@
+
+Latent Topic Model (潜在的トピックモデル)
+東京大学 情報基盤センター助教 佐藤 一誠 (Issei Sato)
+URL: http://www.r.dl.itc.u-tokyo.ac.jp/~sato/
+1.はじめに
+近年、Topic modelと呼ばれる確率的潜在変数モデルが、機械学習とデータマイニングの境界分野で盛んに研究されています。また、Topic modelは、自然言語処理、画像処理、Web解析など様々な応用分野でも多くの適用例が報告されています。
+ここでは、Topic modelの研究に関する情報を紹介します。
+2.国際会議
+機械学習およびデータマイニングでは、主に国際会議で最先端の議論がされているため、主要国際会議を把握しておくことが重要です。Topic modelの研究では、主に以下の国際会議が重要視されています。
+Neural Information Processing Systems (NIPS)
+International Conference on Machine Learning (ICML)
+Knowledge Discovery and Data Mining (KDD)
+Conference on Uncertainty in Artificial Intelligence (UAI)
+また、最近では以下の国際会議も把握しておく必要があるようです。
+International conference on Artificial Intelligence and Statistics (AISTATS)
+Conference on Information and Knowledge Management (CIKM)  
+World Wide Web Conference (WWW)
+Web Search and Data Mining (WSDM)
+3.Latent Dirichlet Allocationの周辺の話題
+Topic modelは、もともと文書の確率的生成モデルとして提案されました。
+Topic modelでは、文書をBag of Words (BoW)と呼ばれる単語の順序関係を無視した頻度分布の生成過程をモデル化します。文書の生成モデルとしては、一見単純なモデルに思えますが、このBoW表現が、Topic modelを様々な応用分野へ導いたといっても過言ではありません。Topic modelによるモデル化は、このBoW表現をどのように各自の応用分野で適用するかがポイントになります。
+例えば、簡単な応用として購買データへの適用が考えられます。各ユーザーを文書、各ユーザーの購入した商品を単語だと思うことで、各ユーザーの購買データをBoW表現で表すことができます。
+応用例も含めた包括的なチュートリアルとしてKDD2011のチュートリアル [1]をチェックするのが良いかと思います。  
+ここでは、特に、Topic modelの重要なモデルであるLatent Dirichlet Allocation (LDA)に関して抑えておくべき最近の論文を紹介します。
+Topic modelの最初の論文として位置づける必要があるのは以下の論文です。
+Hofmann,UAI1999, Probabilistic Latent Semantic Analysis [2]
+Hofmann, SIGIR1999, Probabilistic Latent Semantic Indexing [3]
+この論文では、モデリングとしては、ほとんど同じモデルですが前者が理論、後者が応用という位置づけです。
+これらのモデルを階層ベイズモデルにより一般化したのが以下のLatent Dirichlet Allocationです。
+Blei+, JMLR2003, Latent Dirichlet Allocation [4]
+現在では、Topic modelと言えば、まずこの論文(LDA)が挙げられます。 
+Topic modelの研究では、このLDAに関する「学習アルゴリズムの研究」と「モデルの拡張の研究」の方向があります。まず、LDAの学習アルゴリズムについての情報を紹介します。
+上記の初期の論文では、変分ベイズ(Variational Bayes)法に基づく学習アルゴリズムが導出されています。変分ベイズ法に関する一般的な情報は以下の博士論文が詳しいです。
+Thesis: Matthew J. Beal, Variational Algorithms for Approximate Bayesian Inference [5]
+実際には、Topic modelの応用で、幅広く利用されている学習アルゴリズムは、以下で用いられているCollapsed Gibb samplerです。
+Grifﬁth+, PNAS2004, Finding Scientific Topic [6]
+このCollapsed Gibbs samplerは、変分ベイズ法に比べて実装が非常に容易なため、他の拡張モデルに対しても容易に適用することができます。実装の容易さから、このCollapsed Gibbs samplerにより、Topic modelが広まったと言っても過言ではありません。
+次に、変分ベイズ法を拡張した手法として、以下の周辺化変分ベイズ法があります。
+Teh+, NIPS2006, A Collapsed Variational Bayesian Inference Algorithm for Latent Dirichlet Allocation [7]
+周辺化変分ベイズ法は、タイトルからもわかるとおり、Collapsed Gibbs samplerの変分ベイズ版です。周辺化変分ベイズ法は、アルゴリズムの導出の仮定でテイラー展開の2次近似を行っています。実は、この2次近似を0次にした周辺化変分ベイズ法Zeroと呼ばれる手法の性能が良いことが以下で知られています。
+Asuncion+, UAI2009, On Smoothing and Inference for Topic Models [8]
+周辺化変分ベイズ法Zeroは、Collapsed Gibbs samplerと同程度に実装が容易な決定性アルゴリズムであるため、state-of-the-artと言えます。また、この論文では、LDAのDirichlet分布のパラメータに関する分析が実験的に行われています。Dirichlet分布のパラメータは性能に大きく依存するため、LDAを応用する上では必須の知識と言えます。また、同様にDirichlet分布のパラメータを分析した論文として以下の論文を把握しておく必要があります。
+Wallach+, NIPS2009, Rethinking LDA: Why Priors Matter [9]
+この論文では、Samplingに基づく、Dirichlet分布のパラメータ推定手法を提案しています。固定点反復法(決定性アルゴリズム)に基づく手法であれば、以下のテクニカルレポートを読むことが重要です。
+Minka, 2000, Estimating a Dirichlet distribution [10]
+Collapsed Gibbs samplerを用いる場合は、より効率的なsamplerが以下に提案されています。
+Porteou+, KDD2008, Fast Collapsed Gibbs Sampling For Latent Dirichlet Allocation [11]
+Yao+, KDD2009, Efficient Methods for Topic Model Inference on Streaming Document Collections [12]
+(Slide) Yao+, KDD2009, Efficient Methods for Topic Model Inference on Streaming Document Collections [13]
+基本的には、多項分布からのサンプリングを効率化する手法ですが、Yao+のKDD2009の論文は、サンプリングの時間およびメモリ使用率が、トピック数に線形にならず効率的なアルゴリズムになっており、現在Collapsed Gibbs samplerを用いるならばこの手法を採用するのがよいと思います。スライドが公開されているのでスライドを読むとアルゴリズムを理解しやすいと思います。
+上記の学習アルゴリズムは、データ全体に対して反復するのに対し、逐次的にデータを処理するオンライン学習も提案されています。
+Samplingに基づく方法として
+Canini+, AISTATS2009, Online Inference of Topics with Latent Dirichlet  Allocation [14]
+変分ベイズに基づく方法として
+Hoffman+,NIPS2010, Online Learning for Latent Dirichlet Allocation [15]
+Sato+,NIPS2010, Deterministic Single-pass Algorithm for LDA [16]
+があります。
+大規模データ対策として並列学習アルゴリズムは、
+Ihler+,  TKDE2009, Understanding Errors in Approximate Distributed Latent  Dirichlet Allocation [17]
+を読むことが重要です。LDAの並列化手法は、この論文の手法が基本となります。さらにこの論文では、並列化することによる近似の評価も行っていると言う点で優れた論文です。
+ほかの論文としては
+Asuncion+,  Statistical Methodology2011, Asynchronous Distributed Estimation of Topic Models for  Document Analysis [18]
+Smola,  VLDB2010, An Architecture for Parallel Topic Models [19]
+Newman+,  JMLR2009, Distributed Algorithms for Topic Models [20] 
+これらの論文はSamplingに基づく手法であり、変分ベイズ法に基づくもとのしては
+Zhai+,  WWW2012, Using Variational Inference and MapReduce  to Scale Topic Modeling [21]
+なお、上記の論文は2012年3月現在、まだweb上にないため、arXiv版のリンクを張りました。
+GPUを用いた手法としては以下があります。
+Masada+,IEA-AIE2009, Accelerating collapsed variational bayesian 
+inference for latent Dirichlet allocation with Nvidia CUDA compatible devices [22]
+Yan+, NIPS2009, Parallel Inference for Latent Dirichlet Allocation on
+Graphics Processing Units [23]
+4.Topic models-LDAの拡張モデル-
+応用例やLDAの拡張モデルは非常に多くの研究されているため、ここでは基本的なものを紹介します。
+LDAでは、トピック数を予め決めておく必要がありますが, 以下の論文ではBaysian Nonparametricsによりトピック数を決定するモデルが提案されています。
+Teh+,JASA2005, Hierarchical Dirichlet Processes [24]
+文書モデリングの拡張としては、トピック間の関係性をモデル化した以下の論文があります。
+Blei+, NIPS2006, Correlated Topic Models [25]
+文書に付与されたラベル情報を考慮したものとしては、以下の論文があります。
+Blei+,NIPS2007, Supervised Topic Models [26]
+単語の出現頻度の性質として、Power-lawの性質をモデル化した研究としては以下の研究があります。
+Sato+, KDD2010, Topic Models with Power-law using Pitman-Yor process [27]
+時系列文書をモデル化したものとしては
+Blei+, ICML2006, Dynamic Topic Models [28]
+Wang+, UAI2008, Continuous Time Dynamic Topic Models [29]
+があります。これらの方法は、時間のスケールが1つなのに対して、複数の時間スケールへ拡張したモデルとして以下の研究があります。
+Iwata+, KDD2010,  Online Multiscale Dynamic Topic Models [30] 
+これまで紹介した論文は、主に文書に関する研究でしたが、画像処理への応用も多く行われています。ここでは、過去の研究のリファレンスとなるような論文を1つ紹介します。
+Wang+, CVPR2009, Simultaneous Image Classification and Annotation [31]
+最後に、Topic modelの包括的なリンク集として以下の正田氏のリンク集がお勧めです。
+Topic model Links [32]
+5.ツール・ライブラリ
+LDAのBlei氏によって、いくつかのソフトが公開されています
+ソフトウェア [33]
+6.情報源
+Topic model mailing list [34]
+Topic modelのメーリングリストです (英語)。第一線の研究者が多く参加していますが、
+これから研究を始める研究者からの質問やソフトウェアの使い方、こんなソフト、データはないですか?などの簡単な質問にも丁寧に返事が返ってきたりと、フランクな雰囲気で議論が交わされています。
+7.主な研究室および研究者
+主な研究室をリストアップします。また、それぞれの研究室で重要な研究者を紹介します。ここで、重要というのはその研究者のPublication Listがさまざまなリソースへの情報源になっているということです。
+Machine Learning and LComputational Perception at Princeton University [35]
+Cambridge Machine Learning Group [36]
+MIT Cmputational Cognitive Science Group [37]
+Center for Machine Learning and Intelligent Systems at the University of California, Irvine [38]
+The Gatsby Computational Neuroscience Unit [39]
+The Machine Learning Department of Carnegie Mellon University [40]
+UC Berkeley [41]
+NTT CS Labs. [42]
+David M. Blei [43]
+Zoubin Ghahramani [44]
+Josh Tenenbaum [45]
+Max Welling [46]
+Yee Whye Teh [47]
+John Lafferty [48]
+Michael Jordan [49]
+Naonori Ueda [50]
+8.おわりに
+本稿では、Topic modelに関係するページやリソースを紹介しました。Topic modelは、モデリングの研究としては幅広く研究されているため、網羅するのは難しく、LDAに関する情報の提供を重視しました。LDAの性質を理解しておくことは、LDAを拡張する上でも非常に重要だと考えられます。本稿で提供した情報が、Topic modelに関心のある方々の一助になれば幸いです。
+[1]http://www.cs.princeton.edu/~blei/kdd-tutorial.pdf
+[2]http://www.cs.brown.edu/~th/papers/Hofmann-UAI99.pdf
+[3]http://www.cs.brown.edu/~th/papers/Hofmann-SIGIR99.pdf
+[4]http://www.cs.princeton.edu/~blei/papers/BleiNgJordan2003.pdf
+[5]http://www.cse.buffalo.edu/faculty/mbeal/thesis/
+[6]http://www.pnas.org/content/101/suppl.1/5228.full.pdf
+[7]http://books.nips.cc/papers/files/nips19/NIPS2006_0511.pdf
+[8]http://www.datalab.uci.edu/papers/uai_2009.pdf
+[9]http://people.cs.umass.edu/~wallach/publications/wallach09rethinking.pdf
+[10]http://research.microsoft.com/en-us/um/people/minka/papers/dirichlet/minka-dirichlet.pdf
+[11]http://www.ics.uci.edu/~newman/pubs/fastlda.pdf
+[12]http://people.cs.umass.edu/~mimno/papers/fast-topic-model.pdf
+[13]http://people.cs.umass.edu/~mimno/slides/fast-sparse-sampling.pdf
+[14]http://jmlr.csail.mit.edu/proceedings/papers/v5/canini09a/canini09a.pdf
+[15]http://www.cs.princeton.edu/~blei/papers/HoffmanBleiBach2010b.pdf
+[16]http://books.nips.cc/papers/files/nips23/NIPS2010_0800.pdf
+[17]http://www.ics.uci.edu/~ihler/papers/_tkde10.pdf
+[18]http://www.datalab.uci.edu/papers/async.pdf
+[19]http://www.vldb.org/pvldb/vldb2010/papers/R63.pdf
+[20]http://www.ics.uci.edu/~asuncion/pubs/JMLR_09.pdf
+[21]http://arxiv.org/abs/1107.3765
+[22]http://www.springerlink.com/content/1618291uv6x82p77/
+[23]http://books.nips.cc/papers/files/nips22/NIPS2009_0546.pdf
+[24]http://www.cs.berkeley.edu/~jordan/papers/hdp.pdf
+[25]http://www.cs.cmu.edu/~lafferty/pub/ctm.pdf
+[26]http://www.cs.princeton.edu/~blei/papers/BleiMcAuliffe2007.pdf
+[27]http://www.r.dl.itc.u-tokyo.ac.jp/~nakagawa/academic-res/SIGKDD2010.pdf
+[28]http://www.cs.princeton.edu/~blei/papers/BleiLafferty2006a.pdf
+[29]http://www.cs.princeton.edu/~blei/papers/WangBleiHeckerman2008.pdf
+[30]http://www.kecl.ntt.co.jp/csl/sirg/people/yasushi/mdtm.pdf
+[31]https://www.cs.princeton.edu/~blei/papers/WangBleiFeiFei2009.pdf
+[32]http://tmasada.wikispaces.com/Links+to+the+Papers+Related+to+Topic+Models
+[33]http://www.cs.princeton.edu/~blei/topicmodeling.html
+[34]https://lists.cs.princeton.edu/mailman/listinfo/topic-models
+[35]http://www.cs.princeton.edu/research/areas/mlearn
+[36]http://mlg.eng.cam.ac.uk/
+[37]http://cocosci.mit.edu/
+[38]http://cml.ics.uci.edu/
+[39]http://www.gatsby.ucl.ac.uk/
+[40]http://www.ml.cmu.edu/
+[41]http://www.eecs.berkeley.edu/Research/Areas/AI/
+[42]http://www.kecl.ntt.co.jp/rps/index.html
+[43]http://www.cs.princeton.edu/~blei/
+[44]http://mlg.eng.cam.ac.uk/zoubin/
+[45]http://web.mit.edu/cocosci/josh.html
+[46]http://www.ics.uci.edu/~welling/
+[47]http://www.gatsby.ucl.ac.uk/~ywteh/
+[48]http://www.cs.cmu.edu/~lafferty/
+[49]http://www.cs.berkeley.edu/~jordan/
+[50]http://www.kecl.ntt.co.jp/as/members/ueda/index-j.html
+このページの先頭へ
+Vol.27 No.3 (2012/05) Latent Topic Model (潜在的トピックモデル) | 人工知能学会 (The Japanese Society for Artificial Intelligence)

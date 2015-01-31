@@ -1,0 +1,41 @@
+
+科学研究費補助金 若手研究(B)
+読みやすさを考慮したリアルタイム字幕生成のための話し言葉処理手法の開発
+研究期間:2009〜2010
+課題番号:21700157
+研究代表者: 大野 誠寛(OHNO TOMOHIRO)
+名古屋大学・国際開発研究科・助教
+研究目的
+本研究では、講演や解説などに対して読みやすい字幕をリアルタイムに生成するため、
+その要素技術として、
+次の3つの話し言葉処理手法を開発することを目指します.
+これまでに開発した従来手法を高精度化した漸進的係り受け解析手法
+1.によって得られる構文構造に基づいた、読みやすい言葉への整形処理手法
+1.によって整形されたテキストを読みやすく表示するための改行処理手法
+研究計画
+本研究では、まず、平成21年度に、
+漸進的係り受け解析の高精度化
+字幕コーパスの構築と分析
+を並行して行う.
+次に、平成22年度では、初年度に開発した漸進的係り受け解析器から得られる
+係り受け構造と字幕コーパスの分析結果に基づいて、
+整形処理手法の開発
+改行処理手法の開発
+を順に実施する.
+研究成果
+学術雑誌
+Masaki Murata,Tomohiro Ohno,Shigeki Matsubara:Linefeed
+Insertion Rules for Improving Readability of Lecture Transcript,
+International Journal of Knowledge and Web Intelligence,査読有,
+Vol.1,No. 3/4,pp. 227-242,Jul. 2010.
+村田 匡輝,大野 誠寛,松原 茂樹: 読みやすい字幕生成のための講演テキストへの改行挿入,電子情報通信学会論文誌,Vol. J92-D,査読有,No. 9,pp. 1621-1631,Sep. 2009.
+Masashi Ito,Tomohiro Ohno,Shigeki Matsubara:Text-Style Conversion of Speech Transcript into Web Document for Lecture Archive,Journal of Advanced Computational Intelligence and Intelligent Informatics,査読有,Vol.13,No.4,pp. 499-505,Jul. 2009.
+国際会議
+Masaki Murata,Tomohiro Ohno,Shigeki Matsubara:Automatic Comma Insertion for Japanese Text Generation,In Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing (EMNLP2010),査読有,pp. 892-901,Oct. 2010.
+Tomohiro Ohno,Masaki Murata,Shigeki Matsubara: Linefeed Insertion into Japanese Spoken Monologue for Captioning,In Proceedings of Joint Conference of the 47th Annual Meeting of the Association for Computational Linguistics and the 4th International Joint Conference on Natural Language Processing of the Asian Federation of Natural Language Processing (ACL-IJCNLP2009),査読有,pp. 531-539,Aug. 2009.
+Masaki Murata,Tomohiro Ohno,Shigeki Matsubara:Automatic Linefeed Insertion for Improving Readability of Lecture Transcript,In Proceedings of the 2nd International Symposium on Intelligent Interactive Multimedia Systems and Services (IIMSS-2009),査読有,pp. 499-509,Jul. 2009.
+学会発表
+村田 匡輝,大野 誠寛,松原 茂樹:読点の用法的分類に基づく自動読点挿入,情報処理学会研究報告,Vol. 2010-SLP-81,No. 8,May. 2010.
+村田 匡輝,大野 誠寛,松原 茂樹:日本語テキストにおける読点位置の検出,言語処理学会第16回年次大会発表論文集,pp. 812-815,Mar. 2010.
+村田 匡輝,大野 誠寛,松原 茂樹:読みやすい字幕生成のための講演文への漸進的改行挿入,情報処理学会研究報告,Vol. 2009-SLP-76,No. 7,May. 2009.
+読みやすさを考慮したリアルタイム字幕生成のための話し言葉処理手法の開発

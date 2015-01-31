@@ -1,0 +1,101 @@
+SQLパズル
+products            specifications
+ID  Name            ID  spec_type  spec_detail
+--  ----------      --  ---------  -----------
+1  TV               1  Color      Blue
+2  Cellphone        1  Weight     20
+3  Laptop           2  Color      Blue
+4  DVD Player       2  Weight     20
+5  Radio            3  Color      Blue
+6  VCR              3  Weight     25
+4  Color      Blue
+4  Weight     20
+4  Height     10
+5  Color      Blue
+5  Weight     20
+6  Color      Blue
+6  Weight     20
+6  Height     10
+productsテーブルのIDをキーとして紐づく、
+specificationsテーブルの行が一致する、Nameの組み合わせを表示する。
+出力結果
+NAME1       NAME2
+----------  ---------
+TV          Cellphone
+TV          Radio
+Cellphone   Radio
+DVD Player  VCR
+こちらを参考にさせていただきました(英語)
+データ作成スクリプト
+create table products(ID,Name) as
+select 1,'TV'         from dual union all
+select 2,'Cellphone'  from dual union all
+select 3,'Laptop'     from dual union all
+select 4,'DVD Player' from dual union all
+select 5,'Radio'      from dual union all
+select 6,'VCR'        from dual;
+create table specifications(ID,spec_type,spec_detail) as
+select 1, 'Color' , 'Blue' from dual union all
+select 1, 'Weight', '20'   from dual union all
+select 2, 'Color' , 'Blue' from dual union all
+select 2, 'Weight', '20'   from dual union all
+select 3, 'Color' , 'Blue' from dual union all
+select 3, 'Weight', '25'   from dual union all
+select 4, 'Color' , 'Blue' from dual union all
+select 4, 'Weight', '20'   from dual union all
+select 4, 'Height', '10'   from dual union all
+select 5, 'Color' , 'Blue' from dual union all
+select 5, 'Weight', '20'   from dual union all
+select 6, 'Color' , 'Blue' from dual union all
+select 6, 'Weight', '20'   from dual union all
+select 6, 'Height', '10'   from dual;
+SQL
+--Dense_Rank within groupを使う方法
+with work as(
+select a.id,a.name,b.spec_type,b.spec_detail
+from products a,specifications b
+where a.id = b.ID)
+select a.name as name1,b.name as name2
+from work a,work b
+where a.id < b.id
+group by a.id,a.name,b.ID,b.name
+having count(case when a.spec_type   = b.spec_type
+and a.spec_detail = b.spec_detail
+then 1 end)
+= all(-1+Dense_Rank(null,null) within group(order by a.spec_type,a.spec_detail),
+-1+Dense_Rank(null,null) within group(order by b.spec_type,b.spec_detail));
+--件数をhaving句の条件にする方法
+with work as(
+select a.id,a.name,b.spec_type,b.spec_detail,
+count(*) over(partition by a.id) as cnt
+from products a,specifications b
+where a.id = b.ID)
+select a.name as name1,b.name as name2
+from work a,work b
+where a.id < b.id
+group by a.id,a.name,b.ID,b.name,a.cnt,b.cnt
+having count(case when a.spec_type   = b.spec_type
+and a.spec_detail = b.spec_detail
+then 1 end) = all(a.cnt,b.cnt)
+order by a.id,b.ID;
+--件数を内部結合の条件にする方法
+with work as(
+select a.id,a.name,b.spec_type,b.spec_detail,
+count(*) over(partition by a.id) as cnt
+from products a,specifications b
+where a.id = b.ID)
+select a.name as name1,b.name as name2
+from work a,work b
+where a.id < b.id
+and a.cnt = b.cnt
+and a.spec_type   = b.spec_type
+and a.spec_detail = b.spec_detail
+group by a.id,a.name,b.ID,b.name,a.cnt
+having count(*) = a.cnt
+order by a.ID,b.ID;
+解説
+件数を内部結合の条件にする方法が1番いいでしょう。
+3つの条件を全て、内部結合の条件にしてるからです。
+9-56 集合が等しい組み合わせを求める
+9-57 集合が等しい組み合わせを求める(複数列版)
+10-311 紐づく集合の一致を調べる

@@ -1,0 +1,20 @@
+説明
+端末上で対話的にDebianパッケージを管理する。dpkgコマンドのフロントエンドとして動作する。dselectコマンドを実行すると、メインメニューの選択画面が表示される。メニューを選択すると、さらにサブメニューが表示され、以後、対話的にパッケージのインストールや削除を行える。操作は、カーソルキー、スペースキー、Enterキー、画面上に表示されたショートカットキーなどで行う。
+使用例
+dselectを実行する。
+# dselect
+Debian `dselect' package handling frontend version 1.16.12 (i386).
+* 0. [A]ccess    Choose the access method to use.
+1. [U]pdate    Update list of available packages, if possible.
+2. [S]elect    Request which packages you want on your system.
+3. [I]nstall   Install and upgrade wanted packages.
+4. [C]onfig    Configure any packages that are unconfigured.
+5. [R]emove    Remove unwanted software.
+6. [Q]uit      Quit dselect.
+Move around with ^P and ^N, cursor keys, initial letters, or digits;
+Press <enter> to confirm selection.   ^L redraws screen.
+Copyright (C) 1994-1996 Ian Jackson.
+Copyright (C) 2000,2001 Wichert Akkerman.
+This is free software; see the GNU General Public License version 2 or
+later for copying conditions. There is NO warranty.
+Linuxコマンド集 - 【dselect】対話的にパッケージを管理する:ITpro

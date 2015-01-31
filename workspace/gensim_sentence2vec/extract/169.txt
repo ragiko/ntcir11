@@ -1,0 +1,15 @@
+
+定数vbWideと定数vbNarrowは、国別情報が中国、韓国、日本の場合に適用されます。引数vbKatakanaと引数vbHiraganaは、国別情報が日本の場合に適用されます。
+引数 string を指定したあとで、カンマ(,)を入力すると、次の引数 conversion で指定できる定数がリストに表示されます。
+サンプル
+次の例は、文字列を変換した結果を表示します。
+Sub Sample()
+Dim str As String
+str = "abcDEFGHI"
+MsgBox StrConv(str, vbUpperCase)    'ABCDEFGHIを表示します
+MsgBox StrConv(str, vbLowerCase)    'abcdefghiを表示します
+MsgBox StrConv(str, vbProperCase)   'Abcdefghiを表示します
+MsgBox StrConv(str, vbWide)         'abcDEFGHIを表示します
+MsgBox StrConv(str, vbNarrow)       'abcDEFGHIを表示します
+End Sub
+Office TANAKA - Excel VBA関数[StrConv関数]

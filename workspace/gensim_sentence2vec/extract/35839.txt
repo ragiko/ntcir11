@@ -1,0 +1,50 @@
+となることを表しています.
+水色の背景色で示した数字は,周辺分布と呼ばれ,例えばX=1の右端にある欄は,X=1でYがすべての値をとるときの確率の合計になっています.このようにして,右の欄はYの値が何であるかを問わずにXの値だけを指定したときの確率を表しています.
+これに対して,下端の水色の背景色で示した数字は,Xの値が何であるかを問わずにYの値だけを指定したときの確率を表しています.
+一般に,同時確率分布および周辺分布は,次の表3のような表で表され,
+P(X=xi , Y=yj )=pijは同時確率分布を表し,
+P(X=xi )=pi&middot;がXの周辺分布を
+P(Y=yj )=p&middot;jがYの周辺分布を表しています.
+周辺分布は,pi&middot; , p&middot;jのように,ドットを付けて表し,
+例えば
+P(X=x1 )=p11+p12+&hellip;+p1n=p1&middot;
+P(Y=y1 )=p11+p21+&hellip;+pm1=p&middot;1
+などとなります.
+表3
+XY
+y1
+y1
+&hellip;
+yn
+計P(X)
+x1
+p11
+p12
+&hellip;
+p1n
+p1&middot;
+x2
+p21
+p22
+&hellip;
+p2n
+p2&middot;
+&hellip;
+&hellip;
+&hellip;
+&hellip;
+&hellip;
+&hellip;
+xm
+pm1
+pm2
+&hellip;
+pmn
+pm&middot;
+計P(Y)
+p&middot;1
+p&middot;2
+&hellip;
+p&middot;n
+1
+同時確率分布

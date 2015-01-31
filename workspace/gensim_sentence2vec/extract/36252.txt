@@ -1,0 +1,11 @@
+1.Sobolev-Lieb-Thirring不等式を一般化し,重みの付いた形で不等式を証明した.またこの結果を用いて,更に重み付きL-^p Sobolev-Lieb-Thirring不等式が成り立つことを証明した.この重み付きL-^p Sobolev-Lieb-Thirring不等式の結果は,重みの付いていないL-^p不等式の形のものでも,従来には無かった新しい結果である.
+2.重み付きTriebel-Lizorkin空間において,ウェーブレットがgreedy基底を成すことを証明した.またこのことを用いて,重み付き空間の非線形近似による近似空間を決定した.これらのgreedy基底に関する結果は,信号解析や画像解析に応用できる可能性がある.
+3.重み付きのHerz空間のウェーブレットによる特徴付けを求めた.同様の重み付きRerz空間についてのベクトル値型の不等式については,Tang-Yangの結果があるが,彼等の結果における重み関数についての条件には誤りがある.そこで彼等の結果を修正した形で,重み付きのHerz空間のウェーブレットによる特徴付けを与えた.
+4.ポテンシャル付きの非線型楕円型方程式の解の減衰評価を重み付き関数空間で考察し,減衰評価に於ける重みのクラスをポテンシャルによって特徴付けた.また様々な分散型方程式の小振幅解の大域的存在に関する研究を行った.修正ブシネスク方程式,改良ブシネスク方程式,半相対論的ハートリー方程式を始めとする様々な分散型方程式の小振幅解の大域的存在を,対応する基本解の振動積分の評価に基づいて証明した.
+5.主要部がp調和作用素を含む準線形退化楕円型方程式において,右辺に強い非線形項を持つ場合における特異解の存在性やその性質を詳しく研究した.特に特異解において線型化された(退化楕円型)作用素の解析を行い,最小固有値の非負性とハーディー型不等式との間係などを明らかにした.
+1.We proved a weighted version of the Sobolev-Lieb-Thirring inequality. As an application we showed a weighted LP-Sobolev-Lieb-Thirring inequality which is a new result even in the non-weighted case.
+2.We proved that the wavelet basis is a greedy basis in weighted Triebel-Lizorkin spaces. As an application we determined the approximation spaces of the weighted Triebel-Lizorkin spaces by means of the non-linear approximation by wavelets.
+3.We proved a wavelet characterization of weighted Herz spaces. Tang and Yang showed a vector valued inequality in weighted Herz space although there are some mistakes in their condition on weights. We gave a correct condition on weights and proved the wavelet characterization.
+4.We studied the decay estimate of the solution of a non-linear elliptic partial differential equations with a potential. We characterize the class of weights in the decay estimate of the solution by the potential. We proved the global existence of a solution with small amplitude for several dispersive equations such as modified Boussinesq equations, improved Boussinesq equations and semi relativistic Hartree equations.
+5.We studied the existence of a singular solution and its property of a semilinear degenerate elliptic equation with p-harmonic operator in the principal term. In particular we investigated a linearized degenerate elliptic operator and proved the non-negativeness of the smallest eigenvalue and its relation to the Hardy type inequality.
+KAKEN - 重み付きソボレフ空間の特徴付けとその応用(16540133)

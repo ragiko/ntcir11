@@ -1,0 +1,65 @@
+
+(※)円の中に存在するかどうかのクエリ($geoWithinと$centerSphereの組み合わせ)だけは地球面上で計算できる
+所感
+マニュアルを基に整理してみましたが、非常に複雑です。。。
+特に、座標とGeoJSON、平面上と地球面上、これらの関係性が難しい!
+整理して初めて気づいたのですが、二つの多角形の重なりは、平面上では計算できないんですね($geoIntersectsが2dインデックスに対応していないため)。
+もしかしたら間違っているかもしれません。間違いを見つけたらどしどしご指摘ください。
+参考
+一番まとまっている本家のページ
+Geospatial Indexes and Queries
+クエリのオペレータ、条件、対象データがわかりやすく整理されています
+Geospatial Query Compatibility
+GeoJSONの仕様
+GeoJsonの仕様
+MongoDBの地理空間インデックス・クエリは結構複雑なので、整理してみました。
+### ドキュメントへの格納の仕方
+地理空間データの格納の方法は以下の二通り
+|            |座標|GeoJSON|
+|------------|------------|------------|
+|概要| 従来の、座標を表すデータ。主に平面上の点を扱うのに使う | 新しい、様々な形を表現できるデータ。主に地球面上の緯度経度を扱うのに使う。 |
+|サンプル|  `{loc:[10,20]}`| `{loc:{type:"Point",coordinates:[10,20]}}` |
+|  表現できる図形 |点|  点、直線、多角形、およびこれらの集合  |
+* `loc`の部分は任意の文字列にかえられます
+### クエリの種類
+クエリは以下の三種類
+||内包|重なり|近傍|
+|---------|----------|--------|-------|
+|オペレータ|`$geoWithin`|`$geoIntersects`|`$near`|
+|検索条件|GeoJSON-多角形、座標-四角、座標-多角形、座標-円、座標-地球上面の円|GeoJSON-点、GeoJSON-線、GeoJSON-多角形|GeoJSON-点と距離、座標-点と距離|
+|利用するインデックス|2dと2dsphereの両方(※)|2dsphereのみ|2dと2dsphereの両方|
+(※)インデックス無しでも計算可能
+### 検索条件
+クエリで利用できる検索条件は以下の通り
+|タイプ|図形|サンプル|
+|-----|-----|----|
+|GeoJSON|点|`$geometry :{ type : "Point" ,coordinates:[lon,lat]}`|
+|GeoJSON|直線|`$geometry :{ type : "LineString" ,coordinates:[[lon,lat],[lon,lat]]}`|
+|GeoJSON|多角形|`$geometry :{ type : "Polygon" ,coordinates:[[[lon,lat],[lon,lat],...]]}`|
+|GeoJSON|GeoJSONの集合|`$geometry :{ type : "GeometryCollection",geometries:[...]}`|
+|座標|点|`[x1, y1]`|
+|座標|四角|`$box : [[x1, y1], [x2, y2]]`|
+|座標|多角形|`$polygon : [[x1, y1],[x1, y2],[x2, y2],[x2, y1]]`|
+|座標|円|`$center : [[x1, y1], r]`|
+|座標|地球面上の円|` $centerSphere: [[x, y], radius]`|
+### インデックスの種類
+地理空間インデックスの種類は以下の二つ
+|            |2d|2dsphere|
+|-----------|------------|------------|
+| 対応データ       |  座標           |  座標とGeoJSON     |
+| クエリ       |  平面上で計算 (※)          |  地球面上で計算    |
+| 複合インデックス   |  2dインデックスの後に続くひとつのキーのみ複合インデックスにできる| 位置に関係なく、スカラインデックスと2dsphereインデックスで複合インデックスを作ることができる | 
+(※)円の中に存在するかどうかのクエリ(`$geoWithin`と`$centerSphere`の組み合わせ)だけは地球面上で計算できる
+### 所感
+マニュアルを基に整理してみましたが、非常に複雑です。。。
+特に、座標とGeoJSON、平面上と地球面上、これらの関係性が難しい!
+整理して初めて気づいたのですが、**二つの多角形の重なりは、平面上では計算できない**んですね($geoIntersectsが2dインデックスに対応していないため)。
+もしかしたら間違っているかもしれません。間違いを見つけたらどしどしご指摘ください。
+### 参考
+* 一番まとまっている本家のページ
+* [Geospatial Indexes and Queries](http://docs.mongodb.org/manual/applications/geospatial-indexes/)
+* クエリのオペレータ、条件、対象データがわかりやすく整理されています
+* [Geospatial Query Compatibility](http://docs.mongodb.org/manual/reference/operator/query-geospatial/#geospatial-query-compatibility-chart)
+* GeoJSONの仕様
+* [GeoJsonの仕様](http://geojson.org/geojson-spec.html)
+MongoDBの地理空間インデックス・クエリ整理 - Qiita

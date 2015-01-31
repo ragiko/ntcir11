@@ -1,0 +1,186 @@
+homebrewを使うならばpyenvでは必ずPython2を一つ目に設定すること(もしくはPython3を優先したMacでのRicty作成苦労話)
+Python, Mac
+結論
+homebrewではpythonコマンドがPython 2であるとしてスクリプトが組んであります。Home ? Homebrew/homebrew Wiki ? GitHubのでPython 3にすると、トラブルの原因になります。
+対策1
+タイトル通りに「pyenvでは必ずPython2を一つ目に設定する」。
+$ pyenv global 2.7.6 3.4.0
+対策2
+「pyenv local」コマンドを使えば、フォルダ内で使用するPythonのバージョンを指定できます。ので、Python2用の作業フォルダPython2内で
+~/Python2/: $ pyenv local 2.7.6 3.4.0 
+と設定しておく。
+とはいえ
+私はRubyistでありPythonistaではないので、Pythonをほとんど使いません。なので2だろうが3だろうがどうでもいいです。きっと対策2をしても、忘れてしまいます。ということで、対策1を講じておきます。では本編です。
+気付いた要因
+エディタ用のフォントにRictyというのがよいと聞きました。yascentur/Ricty ? GitHubただし、提供はライセンス的に問題がありうるとのこと。
+Ricty が SIL Open Font License Version 1.1 section 5 に違反する解釈ができるとの指摘を受け、万全を期すために Version 3.0.0 より TrueType フォントの配布を中止し、生成スクリプトのみの配布とさせていただいております。
+ということで作ってみようとしました。手順の要約は以下の引用通り。
+ファイルのダウンロード
+「Inconsolata」フォントのOpenType file、「Migu 1M」フォントのファイル、Rictyフォントを合成するためのスクリプトの3つが必要です。
+Inconsolata
+Miguフォント : M+とIPAの合成フォント
+yascentur/Ricty ? GitHub
+FontForgeのインストール
+FontForgeのインストールをターミナルで行います。
+brew install fontforge
+Rictyフォントの生成
+3つのフォントファイル「Inconsolata.otf」「migu-1m-bold.ttf」「migu-1m-regular.ttf」を、解凍した「Rictyフォント生成ファイル」のフォルダに入れます。続いて、ターミナルを使い、コマンドでRictyフォントを生成します。
+sh ricty_generator.sh Inconsolata.otf migu-1m-regular.ttf migu-1m-bold.ttf
+最高に見やすいプログラミング用フォントRictyの生成と使い方 - ウェブソク
+fontforgeのインストールができない
+結論から言ってしまうと、お分かりかと思いますが、pythonコマンドでPython 3が呼び出されていたことで、homebrewのfontforgeのインストールスクリプトの想定しているPython 2のスクリプトが動かなかったわけです。
+pyenv環境
+OS X Mavericks 10.9.2
+$ pyenv global 3.4.0 2.7.6 
+$ pyenv versions
+system
+* 2.7.6 (set by /Users/riocampos/.pyenv/version)
+* 3.4.0 (set by /Users/riocampos/.pyenv/version)
+つまり「python」コマンドがPythonバージョン3にリンクしている。
+$ python --version
+Python 3.4.0
+$ python2 --version
+Python 2.7.6
+$ python3 --version
+Python 3.4.0
+という状況です。
+インストールログ
+(ログ消しちゃったので、もう一度やり直しましたw)
+$ brew install fontforge
+==> Installing fontforge dependency: python
+==> Downloading https://downloads.sf.net/project/machomebrew/Bottles/python-2.7.
+Already downloaded: /Library/Caches/Homebrew/python-2.7.6.mavericks.bottle.1.tar.gz
+==> Pouring python-2.7.6.mavericks.bottle.1.tar.gz
+(いきなりここでPythonをインストールしてくることがおかしい)
+==> Caveats
+Setuptools and Pip have been installed. To update them
+pip install --upgrade setuptools
+pip install --upgrade pip
+You can install Python packages with
+pip install <package>
+They will install into the site-package directory
+/usr/local/lib/python2.7/site-packages
+See: https://github.com/Homebrew/homebrew/wiki/Homebrew-and-Python
+.app bundles were installed.
+Run `brew linkapps` to symlink these to /Applications.
+Warning: Could not link python. Unlinking...
+Error: The `brew link` step did not complete successfully
+The formula built, but is not symlinked into /usr/local
+You can try again using `brew link python'
+Possible conflicting files are:
+/usr/local/bin/pip2.7
+/usr/local/bin/pip2
+/usr/local/bin/pip
+==> /usr/local/Cellar/python/2.7.6/bin/python -s setup.py --no-user-cfg install 
+==> /usr/local/Cellar/python/2.7.6/bin/python -s setup.py --no-user-cfg install 
+==> Summary
+🍺  /usr/local/Cellar/python/2.7.6: 4632 files, 74M
+(homebrewでPython 2.7.6が入ってしまったが…pyenvで入れたpythonがいるのでlink出来ていない。つまり、以降で動作するpythonのバージョンは3.4.0。)
+==> Installing fontforge
+==> Downloading https://downloads.sourceforge.net/project/fontforge/fontforge-so
+Already downloaded: /Library/Caches/Homebrew/fontforge-20120731.tar.bz2
+==> Downloading https://gist.github.com/rubenfonseca/5078149/raw/98a812df4e8c50d
+Already downloaded: /Library/Caches/Homebrew/fontforge--patch-baa7d60f4c6e672180e66438ee675b4ee0fda5ce
+==> Patching
+patching file fontforge/startui.c
+Hunk #1 succeeded at 50 with fuzz 2.
+==> ./configure --prefix=/usr/local/Cellar/fontforge/20120731_1 --enable-double 
+==> make
+3 errors generated.
+make[1]: *** [python.lo] Error 1
+make[1]: *** Waiting for unfinished jobs....
+libtool: compile:  clang -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Carbon.framework/Frameworks -I/usr/local/Cellar/freetype/2.5.3_1/include/freetype2/ -I/usr/local/Cellar/freetype/2.5.3_1/include/freetype2 -I/usr/include/libxml2/ -I/Users/riocampos/.pyenv/versions/3.4.0/include/python3.4m -I../inc -I../inc -I. -I. -Wmissing-prototypes -Wunused -Wimplicit -Wreturn-type -Wparentheses -Wformat -Wchar-subscripts -DHAVE_CONFIG_H -DSHAREDIR=\"/usr/local/Cellar/fontforge/20120731_1/share/fontforge\" -DLIBDIR=\"/usr/local/Cellar/fontforge/20120731_1/lib\" -I/Users/riocampos/.pyenv/versions/3.4.0/include/python3.4m -DPREFIX=\"/usr/local/Cellar/fontforge/20120731_1\" -c savefont.c  -fno-common -DPIC -o .libs/savefont.o
+make: *** [fontforge] Error 2
+READ THIS: https://github.com/Homebrew/homebrew/wiki/troubleshooting
+These open issues may also help:
+fontforge: Update formula for 2.0 (https://github.com/Homebrew/homebrew/pull/27221)
+(Python 3なのでエラーが出てしまう。)
+brew doctor確認
+当初、末尾のメッセージ通り、formulaが更新されたせいでインストールできないのかと思いましたが、いろいろ探ってみたところ、brew doctorのメッセージが気になりました。
+$ brew doctor
+Warning: python is symlinked to python3
+This will confuse build scripts and in general lead to subtle breakage.
+Warning: "config" scripts exist outside your system or Homebrew directories.
+`./configure` scripts often look for *-config scripts to determine if
+software packages are installed, and what additional flags to use when
+compiling and linking.
+Having additional scripts in your path can confuse software installed via
+Homebrew if the config script overrides a system or Homebrew provided
+script of the same name. We found the following "config" scripts:
+/Users/riocampos/.pyenv/shims/python-config
+/Users/riocampos/.pyenv/shims/python2-config
+/Users/riocampos/.pyenv/shims/python2.7-config
+/Users/riocampos/.pyenv/shims/python3-config
+/Users/riocampos/.pyenv/shims/python3.4-config
+/Users/riocampos/.pyenv/shims/python3.4m-config
+Warning: You have unlinked kegs in your Cellar
+Leaving kegs unlinked can lead to build-trouble and cause brews that depend on
+those kegs to fail to run properly once built. Run `brew link` on these:
+python
+最初のWarningメッセージは、以前にもこれについて書いた(pyenvインストール - 別館 子子子子子子(ねこのここねこ))のですが、
+$ pyenv global 2.7.6 3.4.0
+と入れ替えてやれば問題なし、のはず。二つ目のWarningメッセージはpyenv作者「無視して。」なので無視。最後のWarningメッセージは、さきほども書いたように、要らないhomebrew版Pythonがインストールされ、それが使えない状況だよ、ということ。ということで、方針が決まりました。
+homebrew版Pythonのuninstall
+pyenvでバージョン2を優先するよう設定
+やり直してみる
+homebrewで入ってしまったPythonを削除
+$ brew uninstall python
+Uninstalling /usr/local/Cellar/python/2.7.6...
+Python2を優先
+$ pyenv global 2.7.6 3.4.0
+$ python --version
+Python 2.7.6
+fontforge再インストール
+$ brew install fontforge
+==> Downloading https://downloads.sourceforge.net/project/fontforge/fontforge-so
+Already downloaded: /Library/Caches/Homebrew/fontforge-20120731.tar.bz2
+==> Downloading https://gist.github.com/rubenfonseca/5078149/raw/98a812df4e8c50d
+Already downloaded: /Library/Caches/Homebrew/fontforge--patch-baa7d60f4c6e672180e66438ee675b4ee0fda5ce
+==> Patching
+patching file fontforge/startui.c
+Hunk #1 succeeded at 50 with fuzz 2.
+==> ./configure --prefix=/usr/local/Cellar/fontforge/20120731_1 --enable-double 
+==> make
+==> make install
+==> Caveats
+If you need Python to find the installed site-packages:
+mkdir -p ~/Library/Python/2.7/lib/python/site-packages
+echo '/usr/local/lib/python2.7/site-packages' >> ~/Library/Python/2.7/lib/python/site-packages/homebrew.pth
+==> Summary
+🍺  /usr/local/Cellar/fontforge/20120731_1: 365 files, 14M, built in 37 seconds
+インストールできました^^。
+Ricty生成
+ricty_generator.shはRicty生成専用スクリプトなので、上記のように全フォントを指定しなくても「auto」でOKです。
+$ sh ricty_generator.sh auto
+Ricty Generator 3.2.2
+Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
+This script is for generating ``Ricty'' font from Inconsolata and Migu 1M.
+It requires 2-5 minutes to generate Ricty. Owing to SIL Open Font License
+Version 1.1 section 5, it is PROHIBITED to distribute the generated font.
+Generate modified Inconsolata.
+Find ./Inconsolata.otf.
+Save Modified-Inconsolata-Regular.sfd.
+While making Inconsolata bold, wait a moment...
+Save Modified-Inconsolata-Bold.sfd.
+Generate modified Migu 1M.
+Find ./migu-1m-regular.ttf.
+While scaling migu-1m-regular.ttf, wait a little...
+Save Modified-migu-1m-regular.sfd.
+Find ./migu-1m-bold.ttf.
+While scaling migu-1m-bold.ttf, wait a little...
+Save Modified-migu-1m-bold.sfd.
+Generate Ricty.
+While merging Modified-Inconsolata-Regular.sfd with Modified-migu-1m-regular.sfd, wait a little more...
+Save Ricty-Regular.ttf.
+While merging Modified-Inconsolata-Bold.sfd with Modified-migu-1m-bold.sfd, wait a little more...
+Save Ricty-Bold.ttf.
+Remove temporary files.
+Generate RictyDiscord-Regular.ttf.
+Generate RictyDiscord-Bold.ttf.
+Succeeded to generate Ricty!
+できました。あとはRictyフォントをテキトーに使いましょうo(^^)o
+追記
+コメント頂いていたようです。いや brew --with-python fontforge しないと / homebrewを使うならばpyenvでは必ずPython2を一つ目に設定すること(もしくはPython3を優先したMacでのRicty作成苦労話) - http://t.co/OZxByZn9pY&mdash; Naoya Nakazawa (@n0ts) June 5, 2014どうも、homebrew pyenv + fontforge の組み合わせだと fontforge を --with-python でインストールできない、つまり Ricty をインストールできないので pyenv は使用しないようにした&mdash; Naoya Nakazawa (@n0ts) June 5, 2014さきほどの font forge の件、pyenv で system に切り替えると、brew install --with-python fontforge は大丈夫だった・・・なるほど・・・はまった・・・&mdash; Naoya Nakazawa (@n0ts) June 5, 2014ブログを書いた: Homebrew で pyenv を使っていると fontforge がインストールできない問題 http://t.co/EeYgoEW8hV&mdash; Naoya Nakazawa (@n0ts) June 6, 2014Homebrew で pyenv を使っていると fontforge がインストールできない問題 | Carpe Diem
+ツイートする
+Permalink | コメント(0) | トラックバック(0)  
+homebrewを使うならばpyenvでは必ずPython2を一つ目に設定すること(もしくはPython3を優先したMacでのRicty作成苦労話) - 別館 子子子子子子(ねこのここねこ)

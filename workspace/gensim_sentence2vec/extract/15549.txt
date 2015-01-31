@@ -1,0 +1,20 @@
+ちょっと前にやったPOSIX 文字クラスですが、これらはRubyでも活用できます。
+[:alnum:] 英数字 (Letter | Mark | Decimal_Number)
+[:alpha:] 英字 (Letter | Mark)
+[:ascii:] ASCIIに含まれる文字 (0000 - 007F)
+[:blank:] スペースとタブ (Space_Separator | 0009)
+[:cntrl:] 制御文字 (Control | Format | Unassigned | Private_Use | Surrogate)
+[:digit:] 数字 (Decimal_Number)
+[:graph:] 空白以外の表示可能な文字(つまり空白文字、制御文字、以外) (:^space: && ^Control && ^Unassigned && ^Surrogate)
+[:lower:] 小文字 (Lowercase_Letter)
+[:print:] 表示可能な文字(空白を含む) (:graph: | Space_Separator)
+[:punct:] 句読点 (Connector_Punctuation | Dash_Punctuation | Close_Punctuation | Final_Punctuation | Initial_Punctuation | Other_Punctuation | Open_Punctuation)
+[:space:] 空白、改行、復帰 (Space_Separator | Line_Separator | Paragraph_Separator | 0009 | 000A | 000B | 000C | 000D | 0085)
+[:upper:] 大文字 (Uppercase_Letter)
+[:xdigit:] 16進表記で使える文字 (0030 - 0039 | 0041 - 0046 | 0061 - 0066)
+[:word:] 単語構成文字 (Letter | Mark | Decimal_Number | Connector_Punctuation)
+正規表現の中で普通に使う事ができるので通常のキャプチャから一歩踏み込んだ条件を記述できます例えば句読点だけを変換したい場合
+"hoge , huga ; []".gsub(/[[:punct:]*]/, "!")
+#=> "hoge ! huga ! !!"
+と大分見通し良く書く事が出来ます
+Rubyでも文字列クラス使って正規表現を楽に書く - Bye Bye Moore

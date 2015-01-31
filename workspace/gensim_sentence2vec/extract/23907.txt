@@ -1,0 +1,121 @@
+プログラマーのための確率プログラミングとベイズ推定
+PythonとPyMCの使い方
+ベイズ推定(Bayesian method)は,確率推論のためのもっとも適切なアプローチであるにもかかわらず,書籍を読むとページ数も数式も多いので,あまり積極的に読もうとする読者は少ないのが現状である.典型的なベイズ推定の教科書では,最初の3章を使って確率の理論を説明し,それからベイズ推論とは何かを説明する.残念ながら多くのベイズモデルは解析的に解くことが困難であるため,読者が目にするのは簡単で人工的な例題ばかりになってしまう.そのため,ベイス推論と聞いても「だから何?」と思ってしまうのである.実際,著者の私がそう思っていたのだから.
+最近の機械学習のコンテストで良い成績を収めることができたので,私はこのトピックを復習しようと思い立った.
+私は数学には強い方である.しかしそれでも,例題や説明を読んで頭の中でまとめて,手法を理解するまでには,
+丸三日を費やした.たしかに,理論と実践の橋渡しをする参考書は少ない.しかし問題はそれだけではなかった.
+私が理解できなかったのは,ベイス推論の数学と,その確率計算をプログラミングすることに大きなギャップが
+あったからである.私が苦労したのだから,他の人にその苦労をさせるわけにはいかない.
+この本(iphythonのnotebook形式)は,そのギャップを埋めるものだと思っている.
+ベイズ推論がゴールなら,数学的な解説はそのための一つの方法にすぎない.
+計算機のパワーがこれだけ向上したのだから,確率プログラミングというもう一つの方法があってもいい.
+計算機を使うほうが,いちいち数式に惑わされないし,
+ベイズ推論にありがちな解析的に計算できないような数式を扱わなくてもすむ.
+つまり,計算機を使う方法なら一歩ずつ小さなジャンプを繰り返してゴールにたどり着ける.
+それに対して数学的な解説から入る方法では,
+ジャンプはいつも大きすぎて,時には目標とは違うところへ行ってしまうこともある.
+それに数学的な解説には,理解するにも十分な数学的な予備知識も要求される.
+ベイズ推論の入門書である本書「プログラマーのための確率プログラミングとベイズ推定」は,
+計算機を使って理解することを優先しており,数学的な理解はその次である.
+もちろん入門書によくあるように,数学は説明しない場合もある(入門書なのだから).
+十分な数学の知識がある読者は,数学に重点をおいている他の書籍を読んで好奇心を満たして欲しい.
+数学の知識には自信がないが興味のある読者や,
+数学には興味はなくベイズ推論の実践的な知識を得たい読者には,本書は最適で楽しめるはずである.
+本書ではPyMCを用いて確率プログラミングを説明する.その理由は二つある.
+1つ目は現時点でPyMCの中心的な情報源や解説はないことである.
+公式ドキュメントはベイズ推論と確率プログラミングについての知識を前提にしている.
+本書がきっかけでPyMCに興味を持ってもらえれば幸いである.
+2つ目は,Pythonの科学分野における最近の発展と普及度を考えれば,
+PyMCが中心的なツールになるのも時間の問題であると思うからである.
+PyMCは実行時にNumPyとSciPy(オプション)を必要とする.
+できるだけ実行環境に左右されないように,
+本書の例題はPyMC,NumPy,SciPy,Matplotlibだけに依存するようにしてある.
+目次
+(以下の各章は「nbviewer」nbviewer.ipython.org/ を使って見ることができる.これは読み取り専用であり,表示されるときにはすでに実行されてしまっている.
+各例題を対話的に実行したい場合には,githubからcloneして各自で試して欲しい.)
+まえがき(原文):なぜやるべきか.
+第1章:ベイズ推定入門(原文):
+ベイス推定の考え方と実際のやり方の入門.「確率プログラミングって何?」にも答える.例題には以下のものがある.
+テキストメッセージから人の行動の変化を推論する
+第2章:もう少しPyMCについて(原文):
+PyMCライブラリを用いて,例題をベイズ推定でモデル化する.どうやってベイズモデルを作ればよいだろう? 例題には以下のものがある..
+カンニングした学生の割合を求める.while avoiding liars.
+スペースシャトルチャレンジャー号の悲劇が起こる確率を求める
+第3章:MCMCの扉を開く(原文):
+MCMCをどのように扱うのかと,それを診断する方法を議論する.例題には以下のものがある.あります.
+混合モデルを用いたベイズクラスタリング
+第4章:語られぬ偉大な定理(原文)
+ここでは非常に有用で,かつ危険な定理である,大数の法則を説明する.例題には以下のものがある.
+Exploring a Kaggle dataset and the pitfalls of naive analysis
+How to sort Reddit comments from best to worst (not as easy as you think)
+第5章:手足を失う損失は?
+(原文):
+ここでは損失関数と,ベイズ推定でどうやって使うのかを説明する.例題には以下のものがある.
+Solving the Price is Right's Showdown
+Optimizing financial predictions
+Winning solution to the Kaggle Dark World's competition.
+第6章:Chapter 6: Getting our prior-ities straight(原文)
+おそらく最も重要な章.エキスパートの意見を利用して質問に答えるには.例題には以下のものがある.
+多腕バンディットとベイズバンディットの解
+データのサンプルサイズと事前分布の関係は?
+estimating financial unknowns using expert priors.
+We explore useful tips to be objective in analysis, and common pitfalls of priors. 
+Chapter X1: Bayesian Markov Models
+Chapter X2: Bayesian methods in Machine Learning 
+We explore how to resolve the overfitting problem plus popular ML methods. Also included are probablistic explainations of Ridge Regression and LASSO Regression.
+Bayesian spam filtering plus how to defeat Bayesian spam filtering
+Tim Saliman's winning solution to Kaggle's Don't Overfit problem 
+Chapter X3: More PyMC Hackery
+We explore the gritty details of PyMC. Examples include:
+Analysis on real-time GitHub repo stars and forks.
+Chapter X4: Troubleshooting and debugging
+もっとPyMCについて知りたい時には
+統計学者の意見交換場であるcross-validatedに,モデルや収束,PyMCに関する質問を投稿してほしい.
+本書の使い方
+本書を読む方法はいくつもある.おすすめの順に紹介しよう.
+一番のおすすめは,githubからcloneして.ipynbファイルをダウンロードする方法である.IPythonをインストールしてあれば,本書をブラウザで読みながらコードを実行することができる(いくつかの問題も試してみることもできる).これがおすすめの方法であるが,以下の実行環境を必要とする. 
+ipynbファイルを読むためにはIPython 0.13が必要である.IPythonはここからダウンロードできる.
+Linuxユーザーの場合,Numpy, Scipy, Matplotlib, PyMCをインストールするのは簡単だろう.Windowsユーザーの場合,コンパイル済みバイナリを利用するのが簡単かもしれない.
+styles/ ディレクトリには,便利な多くのファイル(.matplotlirc)がある.これらは本書のために設計されたのではなく,matplotlibとIPython notebookの初期設定をもっと使いやすくするものである.
+必須ではないが,IPython notebookを起動するときにオプション--pylab inlineをつけると,実行時のエラーがなくなるかもしれない.
+2. 2番目の方法は,ウェブサイトnbviewer.ipython.orgを利用して,ウェブブラウザでIPython nootebookを見る方法である.(例)
+本書が更新されたら,その内容も同時に更新される.上の目次から各章へリンクされている.
+3. PDFバージョンはまだない. PDFは本書を読むには最も適していない.PDFは対話的ではないからである.もしPDFがほしいなら,ブラウザの機能である「PDFへ印刷」を利用すればよい.
+インストールと設定
+もしIPython notebookをローカル環境で実行するなら(つまり上記の1番目の方法),以下のものをインストールする必要がある.
+IPython 0.13:ipynbファイルを見るために必要.ここからダウンロードできる.
+Linuxユーザーの場合,Numpy, Scipy, Matplotlib, PyMCをインストールするのは簡単だろう.Windowsユーザーの場合,コンパイル済みバイナリを利用するのが簡単かもしれない.
+必須ではないが,データマイニングの演習のためにおすすめするものは,PRAW と requestsである.
+styles/ ディレクトリには,便利な多くのファイル(.matplotlirc)がある.これらは本書のために設計されたのではなく,matplotlibとIPython notebookの初期設定をもっと使いやすくするものである.
+謝辞
+寄稿してくれた以下の方々に感謝する(時系列順).
+Cameron Davidson-Pilon
+Stef Gibson
+Vincent Ohprecio
+Lars Buitinck
+Paul Magwene 
+Matthias Bussonnier
+Jens Rantil
+y-p
+Ethan Brown
+Jonathan Whitmore
+Mattia Rigotti
+Colby Lemon
+Gustav W Delius
+Matthew Conlen 
+Jim Radford
+Vannessa Sabino
+Thomas Bratt
+Nisan Haramati
+Thomas Bratt
+Robert Grant
+Yaroslav Halchenko
+Alex Garel
+Pythonという偉大なプログラミング言語を開発したコミュニティーに感謝する.
+そして統計学という偉大な学問を生み出したコミュニティーにも感謝する.
+また,PyMCライブラリがなければ本書は存在していなかった.
+PyMCの中心的な開発者であるChris Fonnesbeck,Anand Patil,David Huard,John Salvatierに感謝する.
+最後にもう一つ.本書はIPython Notebookによってで生成されている.これはPythonで開発するための素晴らしいツールである.Notebookインターフェースを開発したIPythonコミュニティに感謝する.本書のIPython notebookのファイルは,すべてGitHubからダウンロードできる.
+問い合わせ先
+メインの著者であるCam Davidson-Pilonにコンタクトをとるならcam.davidson.pilon@gmail.comもしくは@cmrndpまで.
+

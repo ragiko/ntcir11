@@ -1,0 +1,149 @@
+[テキストマイニング]
+Clojureでテキストマイニングをしたい!という方がTLにいらっしゃったので、
+Clojureという言語とkuromojiという形態素解析器を用いたテキストマイニング入門の記事を書きます。
+この記事の通り手を動かすと、様々なテキスト、例えばアンケートの自由記述やブログ、twitterなどの文章に形態素解析を掛け、ワードカウントと呼ばれる、ある単語が何回出現しているのかを解析する手法を使えるようになります。これを利用し、出現単語を頻度順に並べてランキングを作るなどして、その文書の特徴を明らかにするなどが出来るようになります。
+ある程度コンピュータを使えることは求めますが、プログラミングの前提知識はさほど求めていません。そのため、所々天下りなところ(ここはとりあえずこうやってください!と説明無しの記述)もありますが、ご容赦ください。
+形態素解析とは?
+形態素解析とは、1.文を形態素という意味の最小単位に分割し、2.各形態素を原型に復元し、3.各形態素に品詞を付与する処理です。
+形態素とは何かを議論しだすと専門的になりますので、「文章を単語に分割する処理」だとざっくり認識して頂ければこの記事読むには十分です。
+原型復元とは、語形変化・活用している語を原型に復元する処理です。
+これもまた説明しだすと大変長くなるため、例えばワードカウントする際、「食べる」が何回出たか知りたいけれど、文章中には「食べる」以外にも「食べた」「食べない」などが出現するのでそれらを「食べる」にまとめてカウントしたいなどという時に使います。
+要件によっては原型復元を行わないケースもあります*1。
+品詞付与を行うことによって、文章から名詞だけを取り出したり形容詞だけを取り出したりなどが可能です。大抵の日本語の文章では、品詞を絞り込みせずにワードカウントを行うと助詞などが上位を占めることが殆どです。分析の目的にもよりますが、基本的に対象とする品詞は絞った方が良いでしょう。
+kuromojiとは?
+形態素解析をするためのツールです。形態素解析器と呼ばれます。
+本来であれば、形態素解析を行うには形態素解析器だけではなく、形態素解析器が文をどのようにして形態素に分割するか・品詞を割り当てるかなどの情報源である専用の辞書を用意しなければならないのですが、kuromojiは基本的にはオールインワンパッケージで、kuromoji一つあれば形態素解析が出来るという、初心者にはとても優しいツールです。
+clojureとは?
+神の言語です(キリッ。説明しだすと意味不明に長くなるので割愛します。神の言語だと認識すれば十分です。
+incanterとは?
+神の言語Clojure製の統計解析ライブラリです(キリッ。本稿ではグラフ描くときにちょこっとだけ用います。
+準備 -環境設定-
+Clojureを使うにはleiningenというビルドツールを用いるととっても簡単に環境構築が出来ます。
+Macでのleiningenインストール手順を書きます。
+1. ターミナルを開いて brew install leiningen と入力。
+2. おしまいはい!!Mac以外の環境は下記をご覧ください。
+windows版:http://antibayesian.hateblo.jp/entry/20120122/1327236946
+ubuntu版:http://antibayesian.hateblo.jp/entries/2011/07/30
+sublime textでClojureを書く:http://antibayesian.hateblo.jp/entry/20130501/1367406979
+インストール出来たら、ターミナルで lein new kuromoji と入力すると、kuromojiというフォルダが生成され、
+その中に色々環境が自動で良い感じに設定されています。
+そのフォルダの中にproject.cljというファイルがありますので、それを次のように丸ごと上書きして下さい
+(defproject kuromoji "0.1.0-SNAPSHOT"
+:description "kuromoji test"
+:url "http://example.com/FIXME"
+:license {:name "Eclipse Public License"
+:url "http://www.eclipse.org/legal/epl-v10.html"}
+:dependencies [[org.clojure/clojure "1.5.1"]
+[incanter "1.5.1"]
+[org.atilika.kuromoji/kuromoji "0.7.7"]]
+:repositories [["Atilika Open Source repository"
+"http://www.atilika.org/nexus/content/repositories/atilika"]]
+)
+他はどうでもいいですが、dependenciesとrepositoriesと書かれたところだけは弄らないで下さい。
+完全に天下りで申し訳ないですが、こうやるとkuromojiやincanterが自動でインストールされるので、とりあえず今はこういうお作法だと思ってスルーしてください。
+project.cljを書き換えたら、そのフォルダ内でlein replと打つと、dependenciesに書かれたファイルがインストールされて、準備万端になります。形態素解析に挑戦!
+環境構築が終わったら、そろそろプログラムを書いてみましょう。
+先程ターミナルでlein replとやったので、Clojureプログラミングが出来る状態になっていると思います。今利用可能な状態になっているREPLとは、コマンド打ったら即座にそのコマンドの結果を返してくれるものて、対話的環境と呼ばれています。REPLが動くかどうかちょっと次のテストをしてみましょう。もしここで何かエラーが発生していれば、leiningenかproject.cljの設定が何かおかしい可能性があります。
+おかしかったら、大抵の方は多分見てもわからないと思いますので、twitterなどで「なんかエラー吐いて辛いんだけど!」と騒ぐと、Lisperという人種はわらわら寄ってきて必要以上の熱心さで解決しようとしてくれるので、どんどん騒ぐと良いと思います。
+;clojure環境整ってるのかのテスト
+;kuromojiを使えるよう準備する処理
+(ns intro-kuromoji.tokenizer
+(:import [org.atilika.kuromoji Token Tokenizer]))
+;incanterを使えるよう準備する処理
+(use '(incanter core stats charts io))
+(+ 1 2 3 4 5 6 7 8 9 10)
+;>55と表示されます。+を何個も書かなくて良くて便利ですね
+(* (+ 1 2) (+ 3 4))
+>21と表示されます。先に中の括弧の中身が計算され、徐々に外の括弧の処理に移ります。ここではまず中の括弧(+ 1 2)が3になり、(+ 3 4)が7になり、結果、(* 3 7)で21となるわけです
+(view (bar-chart ["a" "b" "c"] [10 20 30]))
+;棒グラフが表示されます。このように簡単にデータを可視化することが出来ます
+;ファイル入出力
+;ファイル書き出し
+(spit "c:\\lein\\坊ちゃん.txt" "親譲の無鉄砲で小供の時から損ばかりしている。小学校に居る時分学校の二階から飛び降りて一週間ほど腰を抜ぬかした事がある")
+;ファイル読み込み
+(slurp "c:\\lein\\坊ちゃん.txt")
+;>親譲の無鉄砲で小供の時から損ばかりしている。小学校に居る時分学校の二階から飛び降りて一週間ほど腰を抜ぬかした事がある
+;と出力される。このように、ファイルの書き出しも読み込みも1行で簡単です
+ちゃんと動いてるようでしたら、いよいよREPLに次のプログラムをコピペして下さい。
+;kuromojiを使えるよう準備する処理
+(ns intro-kuromoji.tokenizer
+(:import [org.atilika.kuromoji Token Tokenizer]))
+;incanterを使えるよう準備する処理
+(use '(incanter core stats charts io))
+;形態素解析するための関数を定義。今後、この関数を呼び出して文を入れるだけで形態素解析出る!
+(defn morphological-analysis-sentence ;関数名
+[sentence] ;引数。形態素解析の対象となる文を受け取り、sentenceという名前を付けてあとで使いまわせるようにしている
+(let [^Tokenizer tokenizer (.build (Tokenizer/builder))] ;kuromojiのトークナイザ(形態素解析機能)をtokenizerという名前で呼び出せるようにする
+(doseq [^Token token (.tokenize tokenizer sentence)] ;文をkuromojiで形態素解析し、出てきた形態素と品詞などの情報を、一つ一つ取り出す
+(println (str (.getSurfaceForm token) "\t" (.getAllFeatures token)))))) ;取り出した原型復元済みの形態素と品詞などの情報を画面に表示する
+;形態素解析テスト
+(morphological-analysis-sentence "黒い大きな瞳の男の娘")
+;出力結果。このように出たら成功!
+>黒い    形容詞,自立,*,*,形容詞・アウオ段,基本形,黒い,クロイ,クロイ
+>大きな  連体詞,*,*,*,*,*,大きな,オオキナ,オーキナ
+>瞳      名詞,一般,*,*,*,*,瞳,ヒトミ,ヒトミ
+>の      助詞,連体化,*,*,*,*,の,ノ,ノ
+>男      名詞,一般,*,*,*,*,男,オトコ,オトコ
+>の      助詞,連体化,*,*,*,*,の,ノ,ノ
+>娘      名詞,一般,*,*,*,*,娘,ムスメ,ムスメ
+>nil
+と、このように形態素解析が出来ました!
+「黒い大きな瞳の男の娘」を好きなように変えて、形態素解析がうまくいくかどうか確認してみてください基本的な形態素解析が出来たので、今度は名詞だけに絞って取り出してみましょう。
+;名詞だけ抽出版
+(require '[clojure.string :as str]) ;文字列処理の便利機能を使えるように呼び出し
+(defn noun? [parts] (= "名詞" parts)) ;名詞かどうかをチェックする関数を作成
+(def not-nil? (complement nil?)) ;後述するフィルタ用の処理
+(defn morphological-analysis-sentence
+[sentence]
+(let [^Tokenizer tokenizer (.build (Tokenizer/builder))]
+(filter not-nil? ;値をフィルターかけて通ったものだけ抽出するという処理。ここではnilではないものだけを通す
+(for [^Token token (.tokenize tokenizer sentence)]
+(if (some noun? (str/split (.getPartOfSpeech token) #",")) ;ある形態素に付与されている複数の品詞情報の中に「名詞」が含まれているかチェック。含まれていたら形態素を渡し、含まれていなければnilという空っぽなものを渡して「名詞が入ってなかったよ」と示す
+(.getSurfaceForm token))))))
+(morphological-analysis-sentence "僕はウナギだし象は鼻が長い")
+;出力結果
+>("僕" "ウナギ" "象" "鼻")
+うまいこと名詞だけを抽出することが出来ました。
+これを利用してワードカウントしましょう!
+青空文庫から坊ちゃんのテキストを取得して一部分を切り出したものに坊ちゃん.txtとでも名前を付けて適当なフォルダに保存して下さい。
+ここではc:\leinフォルダに坊ちゃん.txtという名前で保存したとします。
+次のプログラムをコピペして下さい。
+(defn morphological-analysis-file
+[file]
+(let [^Tokenizer tokenizer (.build (Tokenizer/builder))]
+(filter not-nil?
+(for [^Token token (.tokenize tokenizer (slurp file))] ;環境動作テストでも紹介したslurpというファイルを読みだす関数を使っています
+(if (some noun? (str/split (.getPartOfSpeech token) #",")) 
+(.getSurfaceForm token))))))
+(def natume (morphological-analysis-file "c:\\lein\\坊ちゃん.txt"));後でもこの結果を使いまわす為、結果にnatumeという名前を付けて持っておく
+;>("親譲り" "無鉄砲" "供" "時" "損" "小学校" "時分" "学校" "二" "階" "一" "週間" "腰" "事" ...なんかたくさん
+ファイルからの形態素解析が成功しました。
+次に形態素をカウントして、頻度順に並べます。
+;ほぼ引用させて頂きました https://github.com/thanthese/count-word-frequencies/blob/master/count-words.clj
+(defn word-count [words]
+(reduce (fn [words word] (assoc words word (inc (get words word 0)))) ;ちょっと難しい処理なので、こうやれば頻度順に並び替え出来るんだなーってアレがそれですよ。
+{}
+words))
+(def wc_result (reverse (sort-by second (word-count natume))));ワードカウントした結果を頻度で昇順に並び替えたあとに逆順にして(つまり大きい順にして)、wc_resultという名前をつけて持っておく
+(def top10 (take 10 wc_result)) ;全ワードの中から頻度大きい順に10個取得して、それにtop10と名前を付けて持っておく
+(view (bar-chart (keys top10) (vals top10))) ;棒グラフで頻度ランキングトップ10の語を描画
+(save (bar-chart (keys top10) (vals top10)) "c:\\lein\\natume.png" :width 600) ;png形式で保存。横幅600ピクセルという指定を入れている
+;ついでにzipの法則(n番目に多く現れる単語は、1番多く現れる単語のn分の1の確率で現れる)が成立しているか確認してみる
+(def top100 (take 100 wc_result)) ;全ワードの中から頻度大きい順に10個取得して、それにtop10と名前を付けて持っておく
+(save (bar-chart (keys top100) (vals top100)) "c:\\lein\\natume_zip.png" :width 600)
+保存した画像は以下のようになります*2。
+というわけで、Clojureを使うととっても簡単に形態素解析やワードカウントが出来ました!
+是非皆さんもやってみてください。
+ご自分のtweetやブログ記事などでワードカウントを掛けて見れば、自分がどんなことについて多く呟いているのかなどがわかって面白いと思います。
+最後に私の鍵垢のツイートのワードカウント結果を表示して終わりたいと思います
+追記。
+kuromojiで良く使うメソッド一覧です。
+getAllFeatures、getAllFeaturesArray:トークンの全情報(品詞と読みと原型)を返します。後者は配列でくれます。
+getBaseForm:原型復元済みの形態素を返します
+getPartOfSpeech:品詞を返します
+getSurfaceForm:分かち書きした結果です。つまり原型復元してない状態です
+getReading:読みを返します
+isKnown、isUnknown:辞書に登録されているか否かを返します。本稿では説明しませんでしたが、実用する場合は辞書整備必要です
+*1:特定の活用形がどの程度発生するか知りたいときなど。例えば飲食店の評判がネガティブかポジティブかをテキストマイニングで明らかにしようとする時、未然形「～ない」を否定的表現と捉え、「食べる」と「食べない」、「またあの店に行く」と「またあの店に行かない」を分けて、前者をポジティブ、後者をネガティブ表現としてカウントするなど
+*2:アップしてから気付いたけど「の」が名詞に来てるの、なぜだ…
+Clojure/kuromojiでテキストマイニング入門 ～形態素解析からワードカウントまで～ - あんちべ!

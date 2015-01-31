@@ -1,0 +1,95 @@
+こんにちは。
+>全角の色々な記号を半角に揃えるという機能を付加したいと思った場合、
+全角のいろいろな記号を半角に揃えるというのは、やってみないとはっきりいえませんが、今、チェックして、文字コードをみる限りは、範囲は特定化できそうです。
+'アルファベット
+While .Execute(FindText:="[A-z]{1,}", _
+Wrap:=wdFindContinue, MatchWildcards:=True) = True
+Selection.Range.CharacterWidth = wdWidthHalfWidth
+t = t + 1
+Wend
+この部分の範囲、[A-z] ではなく、[!-～] とすれば、可能ではないかと思います。試していません。それは、Unicode 全角アルファベット・記号の中で、ANSIの文字と同じ部分の範囲です。しかし、完全ではないかもしれません。
+Unicode がベースになると、並びがバラバラになることがありますので、ややこしいのです。例えば、漢字の範囲は、JIS は[亜-熙]ですが、Unicode は、[一-龝] などとなります。並びが変わってしまいます。
+参考書としては、
+現行ですと、以下のような本があります。
+Office VBA Excel、Access以外は、WordとOutlook の日本語の解説書はほとんど手に入りません。需要が少ないといえばそれまでかもしれません。Excelの延長上では、Wordマクロは、ほとんど組めません。英文はある程度あるようですが、実際に本を手にとって見てみないと、役に立つか分からないのです。Amazonの読者書評も、プロやプロ級の人と、まったくの素人が併記してあるので、アテにならないのです。
+Wordで実践 やさしくて役に立つ「マクロ」事例集—2003/2002対応 
+http://www.amazon.co.jp/exec/obidos/ASIN/4774126 …
+著者:西上原 裕明
+オフィスの達人〈5〉VBA活用術
+http://www.amazon.co.jp/exec/obidos/ASIN/4839916 …
+著者:佐野 昂成
+私個人は、買おうとは思っていたのですが、両方も購入していません。それと、内容は古いかもしれませんが、未だにMicrosoft のWord VBAの教本が販売されていたような気がします。
+Microsoft のサポートサイトには、Word VBAのコードが相当量あるのと、Microsoft の Office プログラマーズガイド(入手はほとんど不可)を利用しています。
+また、サイトでは、
+Word mvps 
+http://word.mvps.org/FAQs/index.htm
+を利用しています。Wordは、未だ、Field Code を使いますので、さらにむつかしいです。内容は、古典的とさえいえます。
+なお、私の今回の元のコードは、2003年に、本の出版にも利用したいとは言われて快諾したのですが、その後、どうなったのか分かりません。
+この回答へのお礼
+御返事・御礼が遅れまして、大変失礼致しました。
+引き続いての御回答、ありがとうございます。
+Wordのマクロの参考書はやはり僅少な事、納得致しました。そんなにも世間での需要が無いというのは、意外でした。「Wordで実践...」は自分も先日買ってみたのですが、まだまだです。
+「全角の色々な記号を半角に揃える」は、意外に奥が深いというか、難しい話だった事を理解しました。以前は、環境の関係で、気軽にフリーウェアのツールで対処していたのですが、今は手が縛られている為に苦労しています。
+少しずつ、勉強してみたいと思います。ありがとうございます。  
+こんばんは。
+私は、もう少し複雑なものを、ここで発表していますが、検索したら出てくるとは思います。
+Excel用も出てくるはずです。質問の文章は、厳密に、WordなのかExcelなのか読み取れませんが、比較的コードが少ないWordを書いておきます。あくまでも私のオリジナルです。
+その前に、通常の文章の修正の場合は、本来、文字種の揺れの問題ですから、
+ツール−オプション−文章構成の詳細設定
+いくつかの揺れのチェック
+カタカナ設定−全角統一
+英文字設定−半角統一
+で、検出は出来るはずです。全角数字は、ここでは出させませんが、どこかに半角の数字を入れれば、出てくるはずです。
+以下は、Word用マクロとして、2003年に、雑誌社のサポートサイトで、私が発表したものを加工したものです。その後、あまり、内容については検証されていません。理由は、ここでは、もう少し複雑な質問が出ているからです。また、コードの変数の FChr, LChr は、本来はね必要ないのですが、ネットでは、半角カタカナが使えないので、以下のようにしました。
+試してみましたが、文書校正ツールに引っかからないようなので、出来ているように思います。
+>「Excelの関数を使えば良い」
+それは、何かの間違いだと思います。なお、Excelは、またコードが違います。
+Sub HankakuZenkaku()
+Dim t As Integer
+Dim myMsg As String
+Dim FChr As String
+Dim LChr As String
+Selection.HomeKey Unit:=wdStory '文書の先頭に
+On Error GoTo Errmsg:
+With Selection.Find
+.ClearFormatting
+.Text = ""
+.Replacement.Text = ""
+.MatchFuzzy = False
+'半角カタカナ
+FChr = Chr("&HA6") '半角ヲ
+LChr = Chr("&HDF")  '半角゜
+While .Execute(FindText:="[" & FChr & "-" & LChr & "]{1,}", _
+Wrap:=wdFindContinue, MatchWildcards:=True) = True
+Selection.Range.CharacterWidth = wdWidthFullWidth
+t = t + 1
+Wend
+'数字
+While .Execute(FindText:="[0-9]{1,}", _
+Wrap:=wdFindContinue, MatchWildcards:=True) = True
+Selection.Range.CharacterWidth = wdWidthHalfWidth
+t = t + 1
+Wend
+'アルファベット
+While .Execute(FindText:="[A-z]{1,}", _
+Wrap:=wdFindContinue, MatchWildcards:=True) = True
+Selection.Range.CharacterWidth = wdWidthHalfWidth
+t = t + 1
+Wend
+Selection.HomeKey Unit:=wdStory '文書の先頭に
+If t > 0 Then
+myMsg = t & "語、変換しました。"
+Else
+myMsg = "変換するべき文字はありませんでした。"
+End If
+MsgBox myMsg, vbInformation
+End With
+Exit Sub
+Errmsg:
+MsgBox "エラー!: " & Err.Description, vbExclamation
+End Sub
+この回答へのお礼
+御回答、ありがとうございました。
+先程、試行してみて、作動を確認しました。助かりました。
+これに、例えば、全角の色々な記号を半角に揃えるという機能を付加したいと思った場合、何を参考にすれば良く判るでしょうか... 先日来、Wordのマクロの参考書を探していますが、(Excelのそれに比べて)殆ど無い事を知って少し驚いているところです。もしも、良い参考書等が有れば、どうぞお教え下さい。  
+半角カナは全角カナに、全角英数字は半角英数字に、一気に置換したい - オフィス系ソフト - 教えて!goo

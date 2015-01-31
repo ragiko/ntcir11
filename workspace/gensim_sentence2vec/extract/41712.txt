@@ -1,0 +1,112 @@
+						C言語 アルファベットを辞書式順序に表示
+コマンドラインから入力した文章を単語単位で切り出し,総単語数と各単語の文字数を表示する
+C プログラム wordcut.c を書いてみます.単語の区切りは半角スペースとします.
+但し,文章の最後にピリオドは付けません.
+ソース wordcut.c の内容は次の通りです.
+------------------------------------- wordcut.c ---------------------------------------
+#include <stdio.h>
+#include <string.h>
+int main(int argc, char **argv)
+{
+printf("\nTotal %d words. Each word contains;\n", --argc); argv++;
+while (argc--) {
+printf("%20s: %2d letters.\n", *argv, strlen(*argv));
+argv++;
+}
+puts("");
+return 0;
+}
+------------------------------------- wordcut.c ---------------------------------------
+あまりにも簡単です.これをベースに次の課題を考えました.
+コマンドラインから入力した文章を単語単位で切り出します.
+次に,英単語をアルファベット順の辞書式順序 (lexicographic ordering) に並び替えます.
+並び替えた後,すべての英単語を画面に表示して下さい.
+並び替えのために多少の制限が必要になります.
+まず簡単のため,英単語は 'a' ～ 'z' の小文字26字からなる単語に限定します.
+ハイフンやピリオドといった特殊記号は一切含まないと仮定します.
+単語数の上限は 30,一単語の最大文字数は 20 と仮定します.
+そしてプログラム名は lexico.c とします.
+以下のようになれば,概ね正解です.表示の仕方は各自で工夫して下さい.
+> gcc -o lexico lexico.c
+> lexico this is an advanced programming class
+advanced
+an
+class
+is
+programming
+this
+これで何とかレポートの課題らしくなりました.
+だいたい40行～50行ぐらいのプログラムになります.
+皆さん頑張ってください.
+という課題が出まして、現在四苦八苦しております。
+以前にポインタを使用して選択ソートで数字を昇順に表示するという課題をやりまして数字を昇順に並び替えることはできます。
+分からないのは 1:アルファベットを辞書式順序に表示すること。
+2:英単語を単語単位に切り出す方法。
+の2点です。
+どなたかご教授頂けないでしょうか?よろしくお願いします。
+/*
+1:アルファベットを辞書式順序に表示すること。
+2:英単語を単語単位に切り出す方法。
+後先になりますが、2はwordcut.に既成のパターンが
+提示されており、殆どそのまま使えます。ここでは
+格納のため、個数と長さの許容の可否を検査すること
+と、printfを省く位の修正で流用しました。
+1は数字のソートと同じ枠組みでOKで、比較に
+関数strcmp()を用います。これは文字列の比較結果を
+辞書式で>,==,<を+.0,-で戻します。
+オフオーダー時の入替えで、文字列を直接入替える代り
+に、間接参照インデクスの入れ替えで済ませるように
+しました。データ本体がたとえば大きい構造体の場合
+インデクスだけの移動で済ませる効果があります。
+*/
+#include_<stdio.h>
+#include_<string.h>
+#define___MWD___30
+#define___LWD___20
+int_main(int_argc,_char_**argv){
+__char____word[MWD][LWD+1];
+__int_____kwd[MWD];
+__int_____iwd,jwd,nwd=0;
+__int_____ki,kj,kw;
+__int_____lwd;
+__char____*wrd;
+__//_入力文から単語を収集格納する
+__printf("\nTotal_%d_words._reordered_as_follows;\n",_--argc);_argv++;
+__while_(argc--)_{
+____wrd_=_*argv;
+____lwd_=_strlen(wrd);
+____if(lwd<=LWD_&&_nwd<MWD)_{
+______kwd[nwd]_=_nwd;
+______strcpy(word[nwd++],wrd);
+____}
+____argv++;
+__}
+__puts("");
+__//_収集した単語を辞書順に並べ替える
+__for(jwd=1;jwd<nwd;jwd++)_{
+____for(iwd=0;iwd<jwd;iwd++)_{
+______ki_=_kwd[iwd];_kj_=_kwd[jwd];
+______if(strcmp(word[ki],word[kj])>0)_{
+________kw=kwd[iwd];
+___________kwd[iwd]=kwd[jwd];
+____________________kwd[jwd]=kw;
+______}
+____}
+__}
+__for(iwd=0;iwd<nwd;iwd++)_{
+____kw_=_kwd[iwd];
+____puts(word[kw]);
+__}
+__return_0;
+}
+/*_出力:
+C:\test>test.exe_this_is_a_class_of_programming
+Total_6_words._reordered_as_follows;
+a
+class
+is
+of
+programming
+this
+*/
+C言語 アルファベットを辞書式順序に表示コマンドラインから入力した... - Yahoo!知恵袋

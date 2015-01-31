@@ -1,0 +1,90 @@
+自分の研究に間接的に使うことになって、最近勉強したのでメモ
+テキストセグメンテーションとは?
+自然言語処理の一種で、ブログなどの色々なトピックがごちゃまぜに書かれている非構造な文書を、ニュースのようにトピックごとに分割する手法です。
+例
+こんな感じに、段落ごとにコロコロとトピックが変わる節操のないブログが記事があったとします。
+旅行 
+旅行  
+スポーツ  
+仕事  
+スポーツ  
+旅行  
+旅行
+テキストセグメンテーションはこのような非構造な文書を、トピックが変わったところで分割してくれます。
+旅行
+旅行  
+スポーツ  
+仕事  
+スポーツ  
+旅行
+旅行  
+応用先
+ではテキストセグメンテーションができると何がうれしいのか?
+有望な応用先は、評判抽出、検索、要約といった他の自然言語処理の前処理に使用することです。自然言語処理の様々な手法は、1つ1つの文書に対して処理を行うように考えられていますが、あらかじめトピックごとに分割できていればより精度の高い処理ができるのです。
+例えば、先ほどのブログがあらかじめトピックごとに分けられている場合、スポーツについて検索するとスポーツの段落をピンポイントに見つけることができるようになります。
+個人的には、会議などの録音音声を音声認識してテキストに書き起こして、それをトピックごとに分割できると便利じゃないかと思っています。ほぼ大学での自分の研究なんですが。
+実際にどのように使われているのかはNTT技術ジャーナルにも載っています。
+TextTiling
+元論文
+Hearst, Marti A. TextTiling: A quantitative approach to discourse segmentation. Technical report, University of California, Berkeley, Sequoia, 1993.
+Hearst, Marti A. "TextTiling: Segmenting text into multi-paragraph subtopic passages." Computational linguistics 23.1 (1997): 33-64.
+仕組み
+テキストを単語tの並びであると考えて、いくつかの単語を連結した2つのブロックを左から右に動かしていき、コサイン類似度を計算します。コサイン類似度は単語の出現頻度などのベクトルで計算します。
+その類似度をグラフにプロットするとこのようになります。
+プロットの谷は左右のブロックの類似度が下がることを表しており(=使われる単語が変わった=トピックが変わった)、これを検出することで元の文書をトピックごとに分割することが可能になります。また、TextTilingはグラフにスムージングをかけて(緑のプロット)、谷の深さを表すdepth socre(赤のプロット)を計算することで単語スパースネスの問題に対処するように改良されています。
+TextTilingはテキストセグメンテーションの論文においてほとんど引用されており、古典のようなものです。最先端の手法と比べると性能は低くなりますが、比較的理解しやすく、処理が軽いという利点があります。
+発展形
+左右のブロックで比較する単語の意味が同じでも、異なる単語の場合は類似度が下がってしまうため、この問題に対処する手法が提案されています。
+特異値分解による次元圧縮
+別所 克人, 単語の概念ベクトルを用いたテキストセグメンテーション, 情報処理学会論文誌, 2001
+ウェブによる関連語の利用
+阿部 直人, 田邊 勝義, 奥田 英範, ウェブ検索を利用したテキストセグメンテーション法, データ工学ワークショップ論文集, 2007
+トピックモデル(LDA)の利用
+Riedl, Martin, and Chris Biemann. "How text segmentation algorithms gain from topic models." Proceedings of the 2012 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies. Association for Computational Linguistics, 2012.
+単語ベースでは他の手法に見劣りするTextTilingですが、単語の代わりにLDAによるトピックIDを使用することで最先端の手法並の性能になるとこの論文は報告しています。
+ツール
+オープンソースのnltkに実装があります。
+*ただし英文前提となっている実装なので日本語では使用できない
+C99
+元論文
+Choi, Freddy YY. "Advances in domain independent linear text segmentation." Proceedings of the 1st North American chapter of the Association for Computational Linguistics conference. Association for Computational Linguistics, 2000.
+仕組み
+ボトムアップ型であったTextTilingとは反対に、C99ではトップダウンにセグメンテーションを行います。
+文書Dを段落のような固まりSの並びと考えます。
+次に、Sの全ての組み合わせについてTextTilingのように単語頻度のベクトルでコサイン類似度を計算し、の行列を作成します。
+*図は元論文を参照してください
+当然、自分自身との類似度を表す対角線のの類似度が一番高くなるわけですが、隣接しているSとの類似度が高くなれば対角線上に類似度が高い正方形の領域が現れます。これを検出してトップダウンクラスタリングでまとめることで元の文書をトピックごとに分割することができます。
+C99は一般的にTextTilingより性能が良いとされているようです。
+発展形
+C99もTextTilingと同様に単語の類似度だけで計算するため単語スパースネスが問題となり、これに対処する手法が提案されています。
+トピックモデル(LDA)の利用
+Riedl, Martin, and Chris Biemann. "How text segmentation algorithms gain from topic models." Proceedings of the 2012 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies. Association for Computational Linguistics, 2012.
+ツール
+元々の配布サイトは閉鎖されてしまっているようですが、インターネットアーカイブに残っているようです。
+http://web.archive.org/web/20040810103924/http://www.cs.man.ac.uk/~mary/choif/software.html
+自分で試していないため、日本語が使えるかは分かりません。
+U00
+元論文
+内山将夫,井佐原均, 統計的手法による分野非依存のテキスト分割, 自然言語処理, 2001
+仕組み
+U00では、TextTiling, C99のようなコサイン類似度を利用して間接的にセグメンテーションを行うのではなく、統計的に最適なセグメンテーションを直接選択します。
+テキストをW、m個の区間からなる分割をとすると、テキストWから分割Sが選択される確率は以下のようにモデル化されます。
+この確率が最大になるように分割Sを選択することで最適なセグメンテーションが行われます。
+私の力不足でアルゴリズムの詳細部分を全て理解することはできていませんが、TextTiling、C99と同じ仮定を考えており、結局のところ同じ分割中に同じ単語が多く出現するようにテキストWを分割する最適なSを動的計画法(DP)で求めるようです。
+U00はTextTiling, C99よりもさらに良い性能だと報告されています。しかし、DPであるがゆえに計算量は多いようです。
+発展形
+U00でもLDAのトピックモデルによる拡張が提案されています。
+Misra, Hemant, et al. "Text segmentation via topic modeling: an analytical study." Proceedings of the 18th ACM conference on Information and knowledge management. ACM, 2009.
+ツール
+http://www2.nict.go.jp/univ-com/multi_trans/member/mutiyama/software.html
+試していませんが、READMEを見る限りChaSenの形態素解析を用いて日本語でも使えるそうです。
+TopicTiling
+元論文
+Riedl, Martin, and Chris Biemann. "Topictiling: a text segmentation algorithm based on lda." Proceedings of ACL 2012 Student Research Workshop. Association for Computational Linguistics, 2012.
+仕組み
+TextTilingにLDAのトピックモデルを使うところまではTextTilingの発展形で紹介したものと同じですが、TopicTilingはTextTilingの手法をもっと簡略化したものです。
+筆者らによると、トピックモデルを使用することで単語スパースネスの問題が解決できるため、TextTilingのスムージングが必要なくなり、全ての位置でdepth scoreを計算せずとも類似度の極小値だけでdepth scoreを求めるだけで十分ということのようです。
+筆者らの実験結果では最先端の性能を達成しており、計算量も抑えることができたと報告しています。
+まとめ
+Pythonで簡単にインストールできて日本語にも対応している実装があったら誰か教えてください(´・ω・`)
+テキストセグメンテーションの研究紹介 - Kesin's diary

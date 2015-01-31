@@ -1,0 +1,432 @@
+
+この研究会について : 
+以下, これまでとこれからのラインアップです. (※ 敬称等略. 所属は講演当時のものです)  
+交通アクセス
+【第29回・第30回 情報統計力学研究会】
+日時・場所: 平成26年7月30日 (水曜日) 午後3時00分〜 情報科学研究科棟8-11 セミナー室 
+講師: Yingying Xu (東京工業大学 総合理工学研究科 樺島研究室)
+題目: Bayesian signal reconstruction for 1-bit compressed sensing
+講演概要: 
+The 1-bit compressed sensing framework enables the recovery of a sparse
+vector x from the sign information of each entry of its linear transformation. Discarding
+the amplitude information can significantly reduce the amount of data, which is
+highly beneficial in practical applications.  We present a Bayesian
+approach to signal reconstruction for 1-bit compressed sensing, and analyze its typical
+performance using statistical mechanics. Utilizing the replica method, we show that
+the Bayesian approach enables better reconstruction than the L1-norm minimization
+approach, asymptotically saturating the performance obtained when the non-zero
+entries positions of the signal are known. We also test a message passing algorithm
+for signal reconstruction on the basis of belief propagation. The results of numerical
+experiments are consistent with those of the theoretical analysis.
+講師: 大関真之 (京都大学 情報学研究科)
+題目: 半教師ありクラスタリングの統計力学的性能評価
+講演概要: 
+高次元データを分類する素朴な手法として知られる教師なし学習の一例でもあるクラスタリング、
+その精度を高めるためにラベルが既についたデータを利用した教師あり学習の要素を加えて、
+半教師ありクラスタリングについて、その典型的性能評価を統計力学と呼ばれる物理学の処方箋に基づき行った.
+その性能を実際に達成するアルゴリズムを作る事が次に要求されることであるが、
+これについても近年注目を集めるメッセージ伝搬法を駆使する事で実現することがわかった.
+実際に半教師ありクラスタリングを実行する方法として、未分類データのラベルを隠れ変数ととらえて、
+EMアルゴリズムを適用することが考えられるが、メッセージ伝搬法による手法はEMアルゴリズムによる性能より有効であることがわかった.
+【第28回 情報統計力学研究会】
+日時・場所: 平成26年7月9日 (水曜日) 午後4時00分〜 情報科学研究科棟8-11 セミナー室 
+講師: Haiping Huang (東京工業大学 総合理工学研究科 樺島研究室)
+講演題目: Understanding low-density parity-check codes from a statistical physics perspective
+講演概要: 
+In this talk, I  provide a detailed quantitative  analysis of low-density parity-check (LDPC) codes, in terms of code optimization, 
+frozen glassy phase and improved decoding algorithms when no prior knowledge of channel statistics is assumed, under both replica symmetric 
+and first step replica symmetry breaking approximations. (1) By evaluating the entropy function at the Nishimori temperature, 
+we found that irregular code constructions have superior decoding performance compared to  the regular counterparts. 
+(2) For general temperatures, we show that the instability of the mean-field calculation takes place only after the entropy crisis, 
+suggesting the presence of a frozen glassy phase. (3) Without prior knowledge of the channel noise, a reinforced strategy on normal belief propagation 
+will boost the decoding threshold to a higher value than the belief propagation without  the reinforcement. 
+The complexity function characterizing the metastable state landscape in this situation is also computed and analyzed.
+[第27回 情報統計力学研究会]
+第201回 エンレイソウの会
+日時・場所: 平成26年6月25日 (水曜日) 午後4時30分〜 工学部A棟A1-17
+講師: Shraddha Sharma (Indian Institute of Technology, India) 
+講演題目: Quantum Fidelity: scaling and role of marginality
+詳細はエンレイソウの会へ / ポスター(pdf)
+[第26回 情報統計力学研究会]
+第199回 エンレイソウの会
+日時・場所: 平成26年6月11日 (水曜日) 午後4時30分〜 工学部A棟A1-17
+講師: Amit Dutta (Indian Institute of Technology, India) 
+講演題目: Quantum phase transitions and quantum fidelity
+詳細はエンレイソウの会へ / ポスター(pdf)
+【第25回 情報統計力学研究会】
+日時・場所: 平成25年8月28日 (水曜日) 午後4時30分〜 情報科学研究科棟8-11 セミナー室 
+講師: Anirban Chakraborti (Chair of Quantitative Finance, Ecole Centrale Paris, France)
+講演題目: An Econophysicist's way of studying the dynamic evolution of the market
+講演概要: 
+We first present empirical studies revealing the statistical properties of financial time series, 
+and the widely acknowledged stylized facts, which describe the returns of financial assets—fat tails, 
+volatility clustering, autocorrelation, etc. We then discuss in a pedagogical manner, with illustrations of 
+how the complex economic system (financial market) enriches the list of existing dynamical systems that 
+physicists have been studying for long. Finally, we present a perspective on correlation studies in the price time-series of stocks, 
+using (i) the minimum spanning tree approach and (ii) the multidimensional scaling tools. 
+The first is a method for finding a hierarchical arrangement of stocks by using correlations of asset returns. 
+With an appropriate metric, based on the correlation matrix, a fully connected graph is defined in which the nodes are companies, 
+or stocks, and the distances between them are obtained from the corresponding correlation coefficients. 
+The minimum spanning tree is generated from the graph by selecting the most important correlations and it is used to 
+identify clusters of companies. The second is a set of data analysis techniques that display the structure of distance-like data 
+as a geometrical picture, where again the distances between them are obtained from the corresponding correlation coefficients. 
+We then use clustering algorithms to identify clusters of companies. 
+The aim is to study the dynamical evolution of the correlations in the market.
+【第24回 情報統計力学研究会】
+日時・場所: 平成25年2月20日 (水曜日) 午後4時30分〜 情報科学研究科棟8-11 セミナー室
+講師: 大坪 洋介 (東京大学 新領域創成科学研究科 岡田研究室)
+講演題目: 量子揺らぎを用いた情報処理アルゴリズムの性能評価
+講演概要: 
+本セミナーでは以下のような2つの話をする. 両者は, 統計力学を通じて密接につながっている.
+1.シナプス抑圧を持つ連想記憶モデル
+我々がものを見たり, 聞いたり, 覚えたりすることができるのは, 脳に数十, 数百億個あるニューロンが
+複雑に信号伝達し合っているからだと考えられている. 本発表では, このような「覚えること」と「思い出すこと」が, 
+近年生理学実験によって発見されたニューロン間の伝達物質のダイナミクス(シナプス抑圧)を通じてどのように変化するかを, 
+神経回路モデルの数理的な解析によって明らかにする.
+参考文献
+[1] Y. Otsubo et al., J. Phys. Soc. Jpn., 79,2010
+[2] Y. Otsubo et al., J. Phys. Soc. Jpn., 80,2011
+2.量子揺らぎを用いた復号アルゴリズムの性能評価
+誤り訂正符合や携帯電話の通信方式のような情報処理課題は, 通信路ノイズなどを確率的に定式化し, ベイズ推定を用いて
+受信信号から原情報の復号アルゴリズムを考えることができる. このような復号アルゴリズムでは「熱揺らぎ」に対応するコントールパラメータ
+が通信路ノイズに一致するときに最も良い復号性能を持つ. 本発表では, このような復号アルゴリズムに「量子的な揺らぎ」を導入することで, 
+復号性能にどのような変化が生じるかを議論する. 
+参考文献
+[3] Y. Otsubo et al., Physical Review E, 86, 051138,2012 
+【第23回 情報統計力学研究会】
+日時・場所: 平成25年1月9日 (水曜日) 午後4時30分〜 情報科学研究科棟8-11 セミナー室 
+講師: 中田 行彦 (Bolyai Institute, University of Szeged, Hungary)
+講演題目: 細胞増殖過程を記述した微分方程式モデルとそのダイナミクス
+講演概要: 
+血液をはじめとして様々な生体組織において、分化細胞を生じさせる成体幹細胞(adult stem cells)が見つけられている。
+成体幹細胞はその自己再生能力と分化能力によって特徴付けられ、恒常状態では、自己再生能力によって幹細胞の枯渇を防ぐと共に、
+組織修復時には分化細胞を供給する。本研究では、微分方程式モデルの数理解析を通して、細胞生成系における幹細胞の成熟過程や恒常状態を維持するための
+制御機構の役割を議論する。また、状態依存型遅延微分方程式によって記述される、細胞の成熟度によって構造化された個体群モデルも紹介する。
+共同研究者:
+Tomas Alarcon (CRM, Spain), Philipp Getto (University of Dresden, German), 
+Anna Marciniak-Czochra (University of Heidelberg, German), Maria del Mar Vivanco (CIC bioGUNE, Spain)
+【第22回 情報統計力学研究会】
+日時・場所: 平成24年7月26日 (木曜日) 午後4時〜 情報科学研究科棟8-11 セミナー室 
+講師: 大関 真之 (京都大学 大学院情報学研究科)
+講演題目: 量子誤り訂正符号とスピングラスの相転移
+講演概要: 
+重ね合わせの原理により並列型の処理を行うことの出来る量子コンピュータ.
+この実装のためには、古典情報と同様に誤り訂正の技術が不可欠となる.
+その実現のためには、古典情報のように0から1へと反転する誤りだけでな
+く、重ね合わせの係数における歪みによる位相誤りの両者を訂正する必要がある.
+また誤りに対して頑強な符号形式の実現のためには多くの量子状態を用意して、情報
+の冗長化を必要とする.
+一考すると多体量子系を扱わなければならないように思われるが、訂正に必要な部分
+的量子状態だけを観測して、その観測結果に基づく推定の問題ととられることで、量
+子計算のモデルを扱うにもかかわらず、古典情報理論と同様の手法が適用できる誤り
+訂正符号が存在する.それがトーラス符号である.
+本講演では大規模な多体系の解析手段としての統計力学を生かした、トーラス符号の
+性能評価を行う一連の研究について紹介していく.いわば量子情報統計力学である.
+また今後の展望、問題点として、実装のために必要な情報の読み出しに残るいくつか
+の問題について議論をしたい.
+参考文献:
+[1] E. Dennis, A. Kitaev, A. Landahl, and J. Preskill, J. Math. Phys. 43 (2002) 4452.
+[2] H. Bombin, R. S. Andrist, M. Ohzeki, H. G. Katzgraber and M. Angel, Martin-Delgado, Phys. Rev. X 2, 021004 (2012).
+[3] M. Ohzeki, Phys. Rev. A 85, 060301(R) (2012).
+【第21回 情報統計力学研究会】
+日時・場所: 平成24年3月1日(木曜日) 午後4時〜  情報科学研究科棟8-11 セミナー室 
+講師: 鹿野 豊 (分子科学研究所)
+講演題目: 量子ウォークの現在までと今後の展望
+講演概要: 
+量子ウォークとは、ランダムウォークのモチーフを
+量子力学の中で定義したものとして数学的なトイモデル
+である。しかし、そこから見えてくる数学的、情報科学的
+性質は非常に豊かなものがあり、また物理的側面と
+しては量子物理シュミレーターとしての機能を有している。
+つまり、量子力学のダイナミクスを理解するのに
+適しているトイモデルともいえる。本セミナーでは、以下の
+事柄について時間の許す限りお話しする。
+1)ランダムウォークの基礎
+2)離散時間量子ウォーク&連続時間量子ウォークの定義
+3)量子ウォークの長時間ダイナミクス
+4)量子ウォークと量子シミュレーター
+5)離散時間量子ウォークとフラクタル
+6)今後の展望
+前提とする知識は初歩的な確率論の知識と線形代数である。
+量子力学については適宜補則をしながら、セミナーを進める。
+【第20回 情報統計力学研究会】
+日時・場所: 平成24年2月29日(水曜日) 午後4時〜  情報科学研究科棟8-11 セミナー室 
+講師: 大坪 洋介 (東京大学 新領域創成科学研究科 岡田研究室)
+講演題目: 統計力学を用いた神経回路モデルと誤り訂正符号の解析
+講演概要: 
+本セミナーでは,以下のような,情報統計力学を通した
+神経回路モデルの研究と,量子揺らぎを用いた情報処理の研究
+の2つを紹介させていただきたいと思います。
+1.シナプス抑圧を持つ連想記憶モデル
+我々がものを見たり,聞いたり,覚えたりすることができるのは,脳にに数十,数百億
+個あるニューロンが複雑に信号伝達をし合っているからだと考えられています。
+そこで本研究では,「覚えること」と「思い出すこと」を簡易にモデル化した
+神経回路モデルを用いています。
+本発表では,このような「覚えること」と「思い出すこと」が,
+近年発見されたニューロン間のダイナミクス(シナプス抑圧)
+を通じてどのように変化するか,についての数理的な研究を紹介いたします。
+2.量子揺らぎを用いた情報処理
+量子揺らぎは,最適化問題を解くためのアルゴリズムの中で提案されました。
+これは,エネルギーの障壁を超えるための「揺らぎ」である温度(熱揺らぎ)と
+非常によく似ています。
+ところで,熱揺らぎを適切に制御することで,
+画像修復や誤り訂正符号などの情報処理に対して良い復号性能
+を持つことが知られています。
+本研究では,代表的な誤り訂正符号のモデルを用いて
+量子揺らぎは情報復元に有効か否か,熱揺らぎを比べてどうか,ということを調べています。
+【第19回 情報統計力学研究会】
+日時・場所:  平成23年6月23日(木曜日) 午後4時45分〜 情報科学研究科棟8-11 セミナー室 
+講師: 山腰 智之 (北海道大学 大学院理学院数学専攻)
+講演題目: エルゴード理論入門
+講演概要: 
+エルゴード理論の入門としてBirkhoffのエルゴード定理を紹介する. この定理は系の時間平均が空間平均と一致する条件を述べたもので, エルゴード測度が中心的な役割をはたす. 
+どうして力学系で「測度」を使うのか, この定理はその疑問に答えてくれると思う. 
+【第18回 情報統計力学研究会】
+日時・場所:  平成23年5月16日(月曜日) 午後4時半〜 情報科学研究科棟8-11 セミナー室 ※ 震災により本年11月に延期. 
+講師: Bikas K. Chakrabarti (Saha Institute of Nuclear Physics, India)
+講演題目: Inequality reversal: effects of the savings propensity and correlated returns
+講演概要: 
+In the last decade, a large body of literature has been developed to explain the universal features of inequality 
+in terms of income and wealth. By now, it is established that the distributions of income and wealth in various economies 
+show a number of statistical regularities. There are several models to explain such static features of inequality in an unifying framework 
+and the kinetic exchange models, in particular, provide one such framework. Here we focus on the dynamic features of inequality. 
+In the process of development and growth, inequality in an economy in terms of income and wealth follows a particular pattern of rising 
+in the initial stage followed by an eventual fall. This inverted U-shaped curve is known as the Kuznets Curve.
+We examine the possibilities of such behavior of an economy in the context of a generalized kinetic exchange model. 
+It is shown that under some specific conditions, our model economy indeed shows inequality reversal.
+参考文献: 
+A.S. Chakrabarti and B.K. Chakrabarti, Physica A, 389 17 3572 (2010).
+【第17回 情報統計力学研究会】
+日時・場所:  平成23年3月3日(木曜日) 午後2時半〜 情報科学研究科棟8-11 セミナー室
+講師: 鹿野 豊 (東京工業大学 基礎物理学専攻 / MIT量子情報グループ)  
+講演題目: Introduction to Two-Vector Formalism 
+講演概要: 
+およそ1世紀前に誕生した量子力学は我々の生活の中にも使われていることが多い。
+しかし、その全体像の理解はいまだに乏しいのが現状である。その一つに測定による時間の不可逆性がある。
+この性質はミクロな現象を支配する物理学法則(例えば、ニュートン方程式やマクスウェル方程式)には
+知られていなかったものである。この問題を解決しようと提案された理論がAharonovらによって提唱されたTwo-Vector Formalismである。
+この理論は時間の可逆性を保った測定理論体系を作り上げることにより成功した。
+本セミナーでは、何故、今、このような問題を考えなければならないのか?というモチベーションとそのFormalismを簡単
+にではあるが説明する。この理論がどのように応用に活かされるのかを時間の許す限り説明させていただきたい。
+参考文献:
+日経サイエンス2009年10月号
+【第16回 情報統計力学研究会】
+日時・場所:  平成23年3月1日(火曜日) 午後5時〜 情報科学研究科棟8-11 セミナー室
+講師: 鈴木 正 (青山学院大学 理工学部 物理学科)
+講演題目: 相転移をまたぐ温度降下について
+講演概要: 水を冷やして氷にする場合など、相転移を越えて温度を下げるという
+状況は身の回りにありふれている。しかし、それを物理的に理解しよう
+という試みは、状況が本質的に非平衡であるために、これまであまり
+進んでいない。我々は時間に依存したギンツブルグ・ランダウ理論に
+基づいて相転移をまたぐ温度降下によって何が起こるかを調べている。
+セミナーでは先行研究と我々の試みについて紹介する。
+【第15回 情報統計力学研究会】
+日時・場所:  平成23年3月1日(火曜日) 午後4時〜 情報科学研究科棟8-11 セミナー室
+講師: Anirban Chakraborti (Quantitative Finance Group, Ecole Centrale Paris)  
+講演題目: Opinion formation in the kinetic exchange models
+講演概要: 
+In this talk I will present the minimal multi-agent model [LCCC, Phys. Rev.
+E 82, 056112 (2010)] for the collective dynamics of opinion formation in the
+society, which was based on the kinetic exchange dynamics studied in the
+context of income, money or wealth distributions in a society. This model
+has an intriguing spontaneous symmetry breaking transition to polarized
+opinion state starting from non-polarized opinion state. I will also briefly
+review the simple variants and extensions of this model that have been
+proposed recently by others.
+【第14回 情報統計力学研究会】
+日時・場所:  平成23年2月16日(水曜日) 午後4時〜 情報科学研究科棟8-11 セミナー室
+講師: 谷口 康祐 (北海道大学 大学院文学研究科 心理システム科学講座)  
+講演題目: 視覚的形態によるオブジェクト認知の処理過程 --- 心理物理学と認知心理学の観点から --- 
+講演概要: 
+心理学における視覚的オブジェクト認知の研究では,最初にオブジェクトをシーンから抽出する段階を経て,
+オブジェクトを再認する段階へと移行する階層的構造が仮定されている(例えばNakayama, He, & Shimojo, 1995)。
+このことから,オブジェクト認知には検出,識別,同定,カテゴリー化といった決定段階が考えられている。
+これは,心理物理学と認知心理学の2つのアプローチから得られた知見であり,それぞれのアプローチがオブジェクト認知の異なった側面を示している。
+心理物理学では,オブジェクトの高次の知覚表象について調べられ,認知心理学では,オブジェクトの同定やカテゴリー化,再認といって処理過程について調べられてきた。
+しかしながら,これらの知見についての統合的な研究はまだ十分に行われていない。
+そこで,オブジェクト認知において最も重要な視覚情報であると考えられる形態に焦点を当て,
+検出,識別,同定,カテゴリー化といったそれぞれの段階でどのような形態情報との関連が見出されるかを示す。
+【第13回 情報統計力学研究会】
+日時・場所:  平成22年9月29日(水曜日) 午前10時30分〜 情報科学研究科棟8-11 セミナー室
+講師: 矢吹 哲夫 (酪農学園大学 環境システム学部 生命環境学科)  
+講演題目: エントロピーの幅広い実践的応用 --- 光合成のエネルギー効率から地形多様性の解析まで ---
+講演概要: 
+熱統計力学の畑で生まれた エントロピー はその後 シャノンエントロピー の名で情報解析の手段として
+活用の途が見出され, 更に生物多様性を含め様々な多様性解析の手段として幅広い実践的応用に供されている. 
+本セミナーでは, 本来の熱力学的な指標としてのエントロピーの実践的な応用例の紹介と
+多様性解析としての実践的な応用例の紹介の両方を時間の許す範囲で行なう予定である. 
+具体的には以下の項目で話題提供を行ないたい.
+1) エネルギーの質の解析
+2) 様々な多様性解析
+【第12回 情報統計力学研究会】
+日時・場所:  平成22年5月28日(金曜日) 午後4時〜 情報科学研究科棟8-11 セミナー室
+講師: 今井 礼夢 (北海道大学 生命科学院 和多研究室)  
+講演題目: 新規音声時系列構造解析法を用いた種特異的さえずりパターンの解析
+講演概要: 
+音声コミュニケーションは様々な動物種において重要な情報伝達の手段の一つである。鳥類のうち約3000種を占める鳴禽類(ソングバード)の
+囀(さえず)りは求愛やテリトリー防衛の機能をもち、生得的ではなく学習によって獲得される。囀り学習は生まれ(遺伝情報)と育ち(生育環境)の
+両方の影響を受けるが、囀りを構成する時系列構造が実際にどのようにして獲得されるのかは十分に明らかにされていない。その理由の一つとして、
+音声時系列構造(音素の配列)を記述する手法が確立されていなかったことがある。個体発達に伴う音声時系列構造の変化を調べる為に、従来の音声解析法
+では音素一つ一つに符号化することでその時系列構造を表してきた。しかし、音素の符号化が容易な動物種・個体発達時期は極めて限定的であるため、
+既存の手法を用いた解析では特定の動物種・個体発達時期のみが研究対象となり得た。
+従来の音声解析法がもつこれらの問題点を解決するため、本研究では音素の符号化を必要としない新規の音声時系列構造解析法、
+Syllable Similarity Matrix(SSM)法を開発した。SSM法は音素の類似度と時系列順序を用いて囀り中の特定のパターンを抽出する方法である。
+このSSM法が既存の音声時系列構造解析法と比較して有用であることを示すため、複数種のソングバードを用いて種特異的な囀りパターンを
+抽出し分離可能かを検証した。
+【第11回 情報統計力学研究会】
+日時・場所:  平成21年8月24日(月曜日) 午後4時〜 情報科学研究科棟8-11 セミナー室
+講師: Anjan Kumar Chandra (サハ原子核物理学研究所 凝縮系理論物理学グループ) 
+講演題目: A Small World Network of Prime Numbers
+講演概要: 
+Prime had been a matter of interest for the mathematicians for a long time. 
+There had been a lot of research on these mysterious numbers. 
+According to Goldbach conjecture, any even number can be broken up as 
+the sum of two prime numbers: n = p + q. We construct a network by putting 
+a link between these pairs of primes but choosing only one pair for each 
+even with a probability (p-q)*alpha. From the study of average shortest 
+distance and clustering coefficient, we conclude that for alpha > -1.8 
+the network is of small world type and for alpha 
+【第10回 情報統計力学研究会】
+日時・場所:  平成22年3月26日(金曜日) 午後4時〜 情報科学研究科棟8-11 セミナー室
+講師: Bikas K. Chakrabarti (サハ原子核物理学研究所 凝縮系理論物理学グループ) 
+講演題目: Fractal Models of Earthquake Dynamics
+講演概要: 
+Our understanding of earthquakes is based on the theory
+of plate tectonics. Earthquake dynamics is the study of the
+interactions of plates (solid disjoint parts of the lithosphere)
+which produce seismic activity. Over the last about fifty years many
+models have come up which try to simulate seismic activity by
+mimicking plate plate interactions. The validity of a given model
+is subject to the compliance of the synthetic seismic activity it
+produces to the well known empirical laws which describe the
+statistical features of observed seismic activity. Here we present
+a review of two such models of earthquake dynamics with main focus
+on a relatively new model namely The Two Fractal Overlap Model.
+【第9回 情報統計力学研究会】
+日時・場所: 平成21年7月6日〜8日 北大百年記念館
+科研費特定領域研究「情報統計力学の深化と展開」研究会
+「情報統計力学の広がり: 量子・画像・そして展開」
+講演者とプログラム (DEX-SMIのHPヘ)
+【第8回 情報統計力学研究会】
+日時・場所:  平成20年7月29日(火曜日) 午後2時45分〜 情報科学研究科棟8-11 セミナー室
+講師: 小山 慎介 (Department of Statistics and Center for the Neural Basis of Cognition, Carnegie Mellon University)
+講演題目: State-space methods for real-time cortical control ofneuroprosthetic devices
+講演概要: 
+A number of important data analysis problems in neuroscience can be solved using statespace
+models. The optimal estimate of the state is its conditional expectation given the
+observation histories, but this expectation is computationally demanding when nonlinearities
+are present. Various authors have therefore used Gaussian approximations to
+posterior densities that appear in the formulation. In the first part of the presentation,
+we investigate this approach, showing that the errors introduced by the approximation
+are not compounded across time. We then consider second-order expansions, and show
+that they can provide second-order accuracy in state estimates — but that no additional
+accuracy is possible by higher-order approximations. We discuss implementation of these
+methods and illustrate by decoding multielectrode motor cortical data.
+In the second part of the presentation, we have developed real-time software which
+implements our decoding methods in conjunction with a brain-machine interface. We
+show results from an experiment in which a monkey controlled a computer cursor using
+neural signals processed with these methods.
+【第7回 情報統計力学研究会】
+日時・場所: 平成20年2月20日〜22日 北大学術交流会館
+科研費特定領域研究「情報統計力学の深化と展開」勉強会
+「疎結合系の統計物理」
+講演者とプログラム (DEX-SMIのHPへ)
+【第6回 情報統計力学研究会】
+日時・場所:  平成15年9月11日(水曜日) 午後3時〜 情報科学研究科棟8-11 セミナー室
+講師: 相田 敏明 (岡山大学 工学部情報工学科)
+講演題目: Extended Bayesian Statistical Inference and Renormalization Group
+講演概要: 
+ベイズ推定は, データ数が少ない場合でもシステムのパラメータを(確率的に)決定可能
+な, 有効な方法であることが知られています. このことは, 統計力学的概念である繰り
+込みの立場から, 自然に理解される事を示します. 次に, ベイズ推定に基づく予測誤差と,
+統計力学に於いて知られている 繰り込み群方程式 との関連を明らかにします. それ
+に基づきベイズ推定を自然な形で拡張し, 予測性能を改善する為のモデルの変更法と, そ
+の予測誤差のスケーリングについて議論します.
+【第3回・第4回・第5回 情報統計力学研究会】
+日時・場所:  平成15年6月23日(水曜日) 午後3時〜 情報科学研究科棟8-11 セミナー室
+講師: 中村 一尊 (慶應義塾大学 理工学部物理情報工学科)
+講演題目: 様々な通信路モデルでのギャラガー型線形符号の限界性能
+講演概要: 
+ギャラガー符号は1対1の通信において、現在最も高性能な誤り訂正符号であると知られている。この符
+号は線形符号の1種であり、復号にはビリーフ・プロパゲーションと呼ばれる確率近似アルゴリズムを用
+いる点が特徴である。統計物理学による計算結果や、情報理論による理論解析によると、この符号はある
+極限で通信路の理論限界であるシャノン限界を達成することが示されている。
+一方、通信路のモデルには基本的なもので、送信者が複数・受信者1の多元接続、その逆の送信者が1・
+受信者が複数のブロードキャストなど様々なものがある。本発表ではギャラガー型線形符号がこれら様々
+な通信路モデルにおいて、どのくらいの性能を持っているかを統計物理学の解析手法を用いて評価した結
+果について報告する。
+講師: 大平 徹 (ソニーコンピュータサイエンス研究所)
+講演題目: 量子観測とその周辺
+講演概要: 
+量子観測やその周辺の問題は近年の量子コンピュータや情報処理の高まりとともに関心を集めているがこ
+こでは以下の二つについて初歩的な結果ながら報告したい。
+(1) 量子観測と保存則
+量子観測の精度は不確定性原理などからも理論の根本的な課題のひとつであるが、ここでは保存則と測定
+精度の関連について考察したい。必ずしも特殊とはいえない保存側の存在によって量子観測の精度が限定
+されるという研究を紹介する。またこの精度の限界が条件の緩和によってどのように影響をうけるかにつ
+いての結果を話す。このような精度の限界が計算理論にどのような影響をおよぼすのかについての方向を
+考えたい。
+(2) 量子2準位システムにおける自己遅れ作用
+古典的な問題において遅れとノイズが「共鳴」現象を示す研究を続けてきたが、ここではこの問題の量子
+システムへの拡張を試みる。ラビ振動の現象に基づいて、振動的な外場を遅れた自己相互作用に置き換え
+たモデルを考えた。遅れが無い状態では振動する出現確率のダイナミクスがえられるが、遅れのある場合
+には複雑なダイナミクスが現れる。一方では遅れの調整によって振動をおさえて安定した出現確率を得ら
+れる可能性も存在する。
+講師: 佐塚 直也 (東京工業大学 理学部物理学科)
+講演題目: A Dynamical Structure of High Frequency Data for Yen Dollar Exchange Rate
+講演概要: 
+With the development of computer technology, it is now possible to follow the price change in real-time.
+Such the novelty of high frequency data has revealed the distinct properties, which can not be explained
+by low frequency data analysis so far. We also here present another evidence of the unique property of
+high frequency data.
+The purpose of this paper is to extract a common dynamical structure from the high frequency yendollar
+exchange rates, which has been traditionally regarded as one of the most unbiased and uncorrelated
+market time series. We analyze tick-by-tick data, most high frequency data available, of yen-dollar
+currency exchange rates focusing on two aspects.
+The first aspect is up down directional movement of prices. We show that a dynamical structure with
+non-linear trend can be observed in binarized data presenting the direction of up and down movement
+of prices, although it is not apparently seen from the price change itself. We also find that there exists a
+nontrivial structure in conditional probability of the high frequency binary data. The structure can be
+well captured by an extended non-linear logit model referring up to previous five states. This empirical
+result is consistent with dealers perceptions, which slowly changes with a time scale of few minutes.
+The other one is the state in which the price stays the same rate. We find that there is a rhythmic
+behavior in this state, which tends to take consecutive states for some fixed times. This characteristic
+feature is not observed in binary up down data. The model with noise and delay inspired from research
+of stochastic resonance can reproduce the rhythmic behavior well.
+It should be noted that such structure is one of the most vivid example of the high frequency data
+property, which has not been reported in the studies of low frequency data such as of the order of hoursor days.
+【第1回・第2回 情報統計力学研究会】
+日時・場所:  平成15年2月5日(水曜日) 午後3時〜 情報科学研究科棟8-11 セミナー室
+講師: 片山 克己 (東北大学 電気通信研究所)
+講演題目: Analysis of Sequence Processing Neural Network by Using Generating Function of Path-
+Integral Representation
+講演概要:
+We investigate storage capacity and retrieval property for a synchronous fully connected
+neural network with Q-states transfer functions which retrieves sequences of patterns, by an analytic
+method and also by numerical simulations. Because of asymmetry of interactions, it is difficult to use
+conventional methods of the equilibrium statistical mechanics in order to investigate the network. We
+then use a generating-function method of path-integral representation, and obtain equations for dynamical
+order parameters in the stationary state. We find that the network with Q-states monotonic transfer
+functions retrieves more sequences of patterns than that with a binary monotonic transfer function at
+zero temperature. In addition, we also clarify that the storage capacity and the retrieval property for
+the network with Q=2-states non-monotonic transfer functions.
+This work was performed in collaboration with Professor Tsuyoshi Horiguchi.
+講師: 大森 敏明 (東北大学 大学院情報科学研究科堀口研究室)
+講演題目: Oscillatory Phenomena in Neural Network Model of Hippocampal CA3 Region
+講演概要: 
+Theta and gamma oscillations observed in the hippocampus are considered to be associated
+with the memory function in the brain. However a mechanism of generation of the theta and the
+gamma oscillation is not clarified yet. In order to reveal the oscillatory phenomena in the hippocampus,
+we propose a hippocampal CA3 model with excitatory neurons and inhibitory neurons using Hodgkin-
+Huxley equations and investigate the oscillatory phenomena in the model [1]. Our model consists of
+two layers; one is a layer of excitatory neurons and the other a layer of inhibitory neurons. We assume
+inter-layer synaptic connections and also intra-layer synaptic connections. The results by numerical
+simulations show the theta oscillation or the gamma oscillation occurs on both layers for certain values
+of the synaptic strengths. We also find that the theta oscillation occurs on a layer while the gamma oscillation
+occurs on the other layer for other values of the synaptic strengths. We reveal that the synaptic
+strengths are an important factor for the generation of the theta and the gamma oscillation.
+[1] T. Omori and T. Horiguchi, Proceedings of the 9th International Conference on Neural Information
+Processing (ICONIP02), Vol. 3, 1597-1601 (2002).
+井上のHPへ
+北海道大学 大学院情報科学研究科 / 井上純一 (Jun-ichi Inoue)
+情報統計力学研究会@北大

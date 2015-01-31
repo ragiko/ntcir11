@@ -1,0 +1,20 @@
+お題:HTK学習用の転記テキストファイル(.PROMPTファイル)を作成する  &dagger;
+形式
+*/(ファイル番号)_(文番号) \t スペース区切りの単語 \t 音素間カンマ区切り(単語間スペース区切り)の発音 \t 開始時間[s] \t 終了時間[s] \t WAVファイルのパス
+例
+*/0001_0005	発表 し ます 	h,a,Q,py,o,H, sj,i, m,a,s,u, 	00005.549	00006.564	/home/CSJ/disc3/A01F0055/A01F0055.wav
+XSLTファイル
+makePROMPT.xsl
+出力される文字列の例
+0005	発表 し ます 	ハ,ッ,ピョ,ー, シ, マ,ス, 	00005.549	00006.564
+コアデータ以外のXMLファイルには、mora層までしかないので、モーラ単位で書き出してjavaプログラムで音素表記に変換します。
+実行
+音素・モーラ対応表を準備
+MoraPhonemeList.txt
+注意 : 長音記号「ー」は、ここでは独立した音素「H」として記述します
+コーパス加工用プログラム/ディレクトリをサーチしてXMLファイルのパスを取得する にしたがって、XMLパスファイル xmlfilelist.txt を作成しておきます。
+makePROMPT.xsl と xmlfilelist.txt と MoraPhonemeList.txt の入ったディレクトリで、HtkMakePromptCSJ.java を実行
+java HtkMakePromptCSJ xmlfilelist.txt result.PROMPT MoraPhonemeList.txt sjis
+最後の引数は MoraPhonemeList.txt の文字コード
+result.PROMPT ファイルができます。
+コーパスのXML解析 - Miyazawa’s Pukiwiki 公開版

@@ -1,0 +1,247 @@
+一連のフォームとして動作するように画面遷移を設定
+前回の前編では、下準備としてステップの名前と、そのステップに含まれる入力フォームの編集までを行いました。今回は、それらのステップを一連のフォームとして実際に動作するように、ステップ間の遷移をつなげていきます。
+進む方向のステップ:入力1入力2確認送信
+まずは入力ステップから確認、送信に向かう方向の遷移を設定します。
+次のステップを変える
+エラー時にはform要素のaction属性の値が次のステップとして反映されますが、エラーがなかったときに次に進むステップの指定はどこで行うか覚えているでしょうか?
+次のステップの指定
+<input type="hidden" name="step" value="confirm">
+この記述です。最初の入力ステップ( step )のここのvalue属性の値を、2と書き換えてください。これで、step#2に進むという指定になります。
+次のステップの指定を書き換えます
+<!-- BEGIN step -->
+<form action="" method="post">
+<!--#include file="/sample3/itemSelect.html" -->
+<input type="hidden" name="step" value="2">
+<input type="hidden" name="id" value="sample">
+<input type="submit" class="overlook" name="ACMS_POST_Form_Confirm" value="送信内容の確認">
+</form>
+<!-- END step -->
+step#2については、次は確認画面( step#confirm )に進めばよいので、書き換えは必要ありません。
+戻る方向のステップ:入力1入力2確認送信
+今度は入力ステップの途中や確認画面から、前のステップに戻る遷移を設定します。ここでは確認画面( step#confirm )の戻るボタンを参考にします。
+戻るボタンの記述
+<form action="" method="post">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="hidden" name="step" value="reapply">
+<input type="hidden" name="id" value="sample">
+<input type="submit" name="ACMS_POST_Form_Chain" value="戻って修正">
+</form>
+stepを書き換える
+次のステップにはreapplyが指定されていますが、今回のチュートリアルで再入力画面( step#reapply )は、入力ステップ2( step#2 )に変更されています。そして、確認画面( step#confirm )の直前は入力ステップ2( step#2 )が該当するので、これを2と書き換えましょう。
+また、これをコピーして、入力ステップ2( step#2 )にも貼付けてください。そのときの次のステップの指定は空欄になります。そのかわり、再入力などでURLに?step=2などの記述が加わっていたときのために、action属性に?step=と上書きの設定をしておきましょう。
+ステップ2( step#2 )から、入力ステップ1( step )へ戻るボタン
+<form action="?step=" method="post">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="hidden" name="step" value="">
+<input type="hidden" name="id" value="sample">
+<input type="submit" name="ACMS_POST_Form_Chain" value="戻って修正">
+</form>
+takeoverって?
+{takeover}と書かれたところには、前の画面で入力されていた情報が入ります。送信ボタンや戻るボタンと一緒に、前の画面での入力情報をtakeoverとしてを送ることで、フォームに入力を引き継いだり、入力した情報を送信することができます。
+最初の入力ステップの値を引き継ぐ
+この時点での動作を一通り確認してみましょう。画面遷移は思った通り動くでしょうか?今の状態だと確認画面( step#confirm )で、最初のステップに入力した情報が表示されないことに気づくと思います。
+これは、入力ステップ1( step )で入力された情報が入力ステップ2( step#2 )に引き継がれず、確認画面の時点では、入力ステップ1( step )の情報が消失してしまっているために起こります。
+そこで先ほど触れたtakeoverの記述を入力ステップ2( step#2 )に加えてみましょう。
+入力ステップ2の時点で、入力ステップ1の情報を引き継いでおく
+<!-- BEGIN step#2 -->
+<form action="?step=2" method="post">
+<!--#include file="/sample3/customerInfo.html" -->
+<input type="hidden" name="step" value="confirm">
+<input type="hidden" name="id" value="sample">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="submit" class="overlook" name="ACMS_POST_Form_Confirm" value="送信内容の確認">
+</form>
+<!-- END step#2 -->
+これで確認画面( step#confirm )まで、入力ステップ1( step )の情報が引き継がれるようになりました。
+これで入力ステップが分割できました
+動作の確認
+以上で編集は終わりです。最後にフォームが、想定通りの動作をしているか確認してみましょう。
+今回も完成品のサンプルコードを用意してありますので、うまくいかないひとは見比べてみてください。
+より使いこなすには
+今回は入力とエラー表示をひとつのステップ内で完結するように作成しました。しかし、このままだと再入力画面に補足的な情報を付け加えたいときなどに融通が利きません。
+複数ステップのときにも1つの入力画面ごとに再入力画面を設定したいときには、どうしたらよいでしょうか?また、サンキューページと組み合わせるとどうなるでしょうか?
+少し難しいかもしれませんが、今までの内容を駆使すれば実現することができます。ここまでの内容を試してみる演習をかねて、ぜひチャレンジしてみてください。
+今回の完成品のサンプルコード
+<!-- BEGIN_MODULE Form -->
+<!-- BEGIN step -->
+<form action="" method="post">
+<!--#include file="/sample3/itemSelect.html" -->
+<input type="hidden" name="step" value="2">
+<input type="hidden" name="id" value="sample">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="submit" class="overlook" name="ACMS_POST_Form_Confirm" value="送信内容の確認">
+</form>
+<!-- END step -->
+<!-- BEGIN step#2 -->
+<form action="?step=2" method="post">
+<table>
+<caption>
+ご注文の商品
+</caption><!-- BEGIN item1:veil -->
+<tr>
+<th>商品名1</th>
+<td>数量{item1}</td>
+</tr><!-- END item1:veil --><!-- BEGIN item2:veil -->
+<tr>
+<th>商品名2</th>
+<td>数量{item2}</td>
+</tr><!-- END item2:veil --><!-- BEGIN item3:veil -->
+<tr>
+<th>商品名3</th>
+<td>数量{item3}</td>
+</tr><!-- END item3:veil -->
+<tr>
+<th>ギフト用のラッピング</th>
+<td>{gift}</td>
+</tr>
+</table>
+<!--#include file="/sample3/customerInfo.html" -->
+<input type="hidden" name="step" value="confirm">
+<input type="hidden" name="id" value="sample">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="submit" class="overlook" name="ACMS_POST_Form_Confirm" value="送信内容の確認">
+</form>
+<form action="?step=" method="post">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="hidden" name="step" value="">
+<input type="hidden" name="id" value="sample">
+<input type="submit" name="ACMS_POST_Form_Chain" value="戻って修正">
+</form>
+<!-- END step#2 -->
+<!-- BEGIN step#confirm -->
+<table>
+<caption>
+ご注文の商品
+</caption><!-- BEGIN item1:veil -->
+<tr>
+<th>商品名1</th>
+<td>数量{item1}</td>
+</tr><!-- END item1:veil --><!-- BEGIN item2:veil -->
+<tr>
+<th>商品名2</th>
+<td>数量{item2}</td>
+</tr><!-- END item2:veil --><!-- BEGIN item3:veil -->
+<tr>
+<th>商品名3</th>
+<td>数量{item3}</td>
+</tr><!-- END item3:veil -->
+<tr>
+<th>ギフト用のラッピング</th>
+<td>{gift}</td>
+</tr>
+</table>
+<table>
+<caption>
+お客様の情報
+</caption>
+<tr>
+<th>お名前</th>
+<td>{name} {name[1]}</td>
+</tr>
+<tr>
+<th>フリガナ</th>
+<td>{ruby} {ruby[1]}</td>
+</tr>
+<tr>
+<th>郵便番号</th>
+<td><!-- BEGIN zip:loop --><!-- BEGIN glue -->&nbsp;-&nbsp;<!-- END glue -->{zip}<!-- END zip:loop --></td>
+</tr>
+<tr>
+<th>都道府県</th>
+<td>{prefecture}</td>
+</tr>
+<tr>
+<th>郡市区以降の住所</th>
+<td>{address}</td>
+</tr><!-- BEGIN building:veil -->
+<tr>
+<th>建物・部屋名</th>
+<td>{building}</td>
+</tr><!-- END building:veil -->
+<tr>
+<th>電話番号</th>
+<td><!-- BEGIN tel:loop --><!-- BEGIN glue -->&nbsp;-&nbsp;<!-- END glue -->{tel}<!-- END tel:loop --></td>
+</tr>
+<tr>
+<th>メールアドレス</th>
+<td>{mail}</td>
+</tr>
+</table>
+<form action="" method="post">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="hidden" name="step" value="result">
+<input type="hidden" name="id" value="sample">
+<input type="submit" name="ACMS_POST_Form_Submit" value="上記の内容で送信">
+</form>
+<form action="" method="post">
+<input type="hidden" name="takeover" value="{takeover}">
+<input type="hidden" name="step" value="2">
+<input type="hidden" name="id" value="sample">
+<input type="submit" name="ACMS_POST_Form_Chain" value="戻って修正">
+</form>
+<!-- END step#confirm -->
+<!-- BEGIN step#result -->
+<table>
+<caption>
+ご注文の商品
+</caption><!-- BEGIN item1:veil -->
+<tr>
+<th>商品名1</th>
+<td>数量{item1}</td>
+</tr><!-- END item1:veil --><!-- BEGIN item2:veil -->
+<tr>
+<th>商品名2</th>
+<td>数量{item2}</td>
+</tr><!-- END item2:veil --><!-- BEGIN item3:veil -->
+<tr>
+<th>商品名3</th>
+<td>数量{item3}</td>
+</tr><!-- END item3:veil -->
+<tr>
+<th>ギフト用のラッピング</th>
+<td>{gift}</td>
+</tr>
+</table>
+<table>
+<caption>
+お客様の情報
+</caption>
+<tr>
+<th>お名前</th>
+<td>{name} {name[1]}</td>
+</tr>
+<tr>
+<th>フリガナ</th>
+<td>{ruby} {ruby[1]}</td>
+</tr>
+<tr>
+<th>郵便番号</th>
+<td><!-- BEGIN zip:loop --><!-- BEGIN glue -->&nbsp;-&nbsp;<!-- END glue -->{zip}<!-- END zip:loop --></td>
+</tr>
+<tr>
+<th>都道府県</th>
+<td>{prefecture}</td>
+</tr>
+<tr>
+<th>郡市区以降の住所</th>
+<td>{address}</td>
+</tr><!-- BEGIN building:veil -->
+<tr>
+<th>建物・部屋名</th>
+<td>{building}</td>
+</tr><!-- END building:veil -->
+<tr>
+<th>電話番号</th>
+<td><!-- BEGIN tel:loop --><!-- BEGIN glue -->&nbsp;-&nbsp;<!-- END glue -->{tel}<!-- END tel:loop --></td>
+</tr>
+<tr>
+<th>メールアドレス</th>
+<td>{mail}</td>
+</tr>
+</table>
+<p>上記の内容で送信しました。</p>
+<!-- END step#result -->
+<!-- END_MODULE Form -->
+tag
+フォーム
+フォームの入力ステップを分割してみよう( 後編 ) | メールフォームの設定 | Tips | a-blog cms - Web制作者のためのCMS

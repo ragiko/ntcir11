@@ -1,0 +1,30 @@
+負荷のかかる処理を制限なしに並列化しても意味ない.処理の並列数を予測可能な場合は,当たりをつけて最適化するのもよいが,不明確な場合は,CPU数による制限が単純な1つの解になる.
+TL;DR
+CPU数に応じたバッファ長のChannelを使ってセマフォを実装する.
+実例
+mitchellh/gox
+goxはGo言語製のツールを並列コンパイルするツール.コンパイルの処理は重いため,デフォルトで並列処理数をCPU数で制限している.
+簡単な例
+例えば,以下のような単純な並列処理を考える.heavy()(重い処理)を並列で実行する.
+package main
+import (
+"fmt"
+"sync"
+"time"
+)
+func heavy(i int) {
+fmt.Println(i)
+time.Sleep(5 * time.Second)
+}
+func main() {
+var wg sync.WaitGroup
+for i := 0; i <= 100; i++ {
+wg.Add(1)
+go func(i int) {
+defer wg.Done()
+heavy(i)
+}(i)
+}
+wg.Wait()
+}
+Go言語でCPU数に応じて並列処理数を制限する  | SOTA

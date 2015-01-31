@@ -1,0 +1,61 @@
+テキストフィールドを選択してキーボードが出現した際に、キーボードによってそのテキストフィールドが隠されてしまうことがある。
+ググるとスクロールビューにテキストフィールドを載せて、必要な分だけスクロールビューのサイズを変え、さらにスクロールさせるという手法がよく出てくるような。
+それでもいいと思ったけど、スクロールさせるんじゃなくてビューの位置自体を上にあげる方法でやってみた。
+この方法だとスクロールビュー以外のビューでも動くしいいんじゃないかと。
+ViewControllerのヘッダファイルでデリゲートを<UIScrollViewDelegate,UITextFieldDelegate>と指定し、後で使うのでメンバ変数としてscrollViewとactiveFieldを宣言。スクロールビューは今回テキストフィールドを載せているビュー。スクロールビューじゃなくてもいい。activeFieldは選択されたテキストフィールドを代入し、位置の計算に用いる。
+ViewController.h
+//ViewController.h
+#import 
+@interface ViewController : UIViewController <UIScrollViewDelegate,UITextFieldDelegate> {
+IBOutlet UIScrollView *scrollView;    //今回はスクロールビューにテキストフィールドを載せているので
+UITextField *activeField;    //選択されたテキストフィールドを入れる    
+}
+@end
+実装ファイルではまずviewDidLoadでそのビューに載っているテキストフィールドを順に取得し、全てのdelegateプロパティにselfを代入する。
+keyboardWillShowの中では、キーボードのサイズとテキストフィールドの位置,サイズからビューの移動量を計算し、ビューをアニメーションで動かす。テキストフィールドがキーボードで隠れない位置にある場合は何もしない。
+textFieldShouldReturnでビューを元の位置にアニメーションさせて戻す。
+ViewController.m
+//ViewController.m
+- (void)viewDidLoad
+{
+...
+// 全テキストフィールドのdelegateにselfを代入
+// ※テキストフィールドをメンバ変数に入れている場合は、それぞれのテキストフィールドに対して、変数名.delegate = self;とすればいい。
+for (id v in self.view.subviews) {
+if([NSStringFromClass([v class]) isEqualToString:@"UITextField"]){
+((UITextField*)v).delegate = self;
+}
+}
+...
+}
+-(void)keyboardWillShow:(NSNotification*)note
+{
+// キーボードの表示完了時の場所と大きさを取得。
+CGRect keyboardFrameEnd = [[note.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+CGRect screenBounds = [[UIScreen mainScreen] bounds];
+float screenHeight = screenBounds.size.height;
+if((activeField.frame.origin.y + activeField.frame.size.height)>(screenHeight - keyboardFrameEnd.size.height - 20)){
+// テキストフィールドがキーボードで隠れるようなら	
+// 選択中のテキストフィールドの直ぐ下にキーボードの上端が付くように、スクロールビューの位置を上げる
+[UIView animateWithDuration:0.3
+animations:^{
+scrollView.frame = CGRectMake(0, screenHeight - activeField.frame.origin.y - activeField.frame.size.height - keyboardFrameEnd.size.height - 20, scrollView.frame.size.width,scrollView.frame.size.height);
+}];
+}
+}
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+// メンバ変数activeFieldに選択されたテキストフィールドを代入        
+activeField = textField;
+return YES;
+}
+- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+// viewのy座標を元に戻してキーボードをしまう
+[UIView animateWithDuration:0.2
+animations:^{
+scrollView.frame = CGRectMake(0, 0, scrollView.frame.size.width,scrollView.frame.size.height);
+}];
+[textField resignFirstResponder];
+return YES;
+}
+キーボードに合わせてビューを動かす処理は自動でやってくれたらいいのにね。
+【iOS】テキストフィールドがキーボードで隠れないように親ビューの位置をずらす - Morishin Tech Note

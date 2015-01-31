@@ -1,0 +1,32 @@
+SET CONSTRAINTS名前SET CONSTRAINTS -- 現在のトランザクションの制約検査のタイミングを設定する概要SET CONSTRAINTS { ALL | name [, ...] } { DEFERRED | IMMEDIATE }説明SET CONSTRAINTSは、現在のトランザクションにおける制約の検査方法を設定します。
+IMMEDIATE制約は、1つの文の実行が終わるごとに検査されます。
+DEFERRED制約は、トランザクションがコミットされるまで検査されません。
+全ての制約は、IMMEDIATEかDEFERREDのどちらかのモードを持ちます。
+制約にはその生成時点で、DEFERRABLE INITIALLY DEFERRED、DEFERRABLE INITIALLY IMMEDIATE、NOT DEFERRABLEの3つのうちのいずれかの性質が与えられます。
+3番目のNOT DEFERRABLE制約は、常にIMMEDIATEモードであり、SET CONSTRAINTSコマンドの影響を受けません。
+DEFERRABLE INITIALLY DEFERRED制約とDEFERRABLE INITIALLY IMMEDIATE制約の2つは、トランザクションを指定されたモードで開始しますが、トランザクション内でSET CONSTRAINTSを使用するとその振舞いを変更することができます。
+制約名のリストを持ったSET CONSTRAINTSが変更するのは、これらの制約のモードのみです
+(これらは全て遅延可能です)。
+制約名はそれぞれスキーマ修飾可能です。
+スキーマ名が指定されていない場合、最初に一致する名前を見つけ出すために現在のスキーマ検索パスが使用されます。
+SET CONSTRAINTS ALLは遅延可能な全ての制約のモードを変更します。
+制約のモードをDEFERREDからIMMEDIATEに変更した場合は、新しい制約モードが遡及的に有効になります。 
+つまりDEFERREDモードであればトランザクションの終了時に検査される未検査のデータ変更が、SET CONSTRAINTSコマンドの実行中に検査されます。
+もし、この時に何らかの制約違反があった場合、SET CONSTRAINTSは失敗します
+(そして、制約モードは変更されません)。
+したがって、SET CONSTRAINTSを利用すれば、トランザクションの特定の時点で強制的に制約の検査を実行することができます。
+現在UNIQUE、PRIMARY KEY、REFERENCES(外部キー)、EXCLUDE制約のみがこの設定の影響を受けます。
+NOT NULLおよびCHECK制約は、行が挿入または変更された時に(文の終了時ではありません)、常に即座に検査されます。
+DEFERRABLE宣言されていない一意性制約および排除制約も即座に検査されます。
+また、"制約トリガ"として宣言されたトリガの発行もこの設定により制御されます。
+これらは関連する制約が検査されるはずの時に同時に発行されます。
+注釈PostgreSQLでは、スキーマ内で制約名が一意となることを要求していません(テーブル単位での一意性を要求します)ので、指定した制約名に複数が一致する可能性があります。
+この場合SET CONSTRAINTSは一致するすべてに対して動作します。
+スキーマ修飾がない名前では、検索パス上のあるスキーマで1つまたは複数の一致があると、パス上で後に見つかったスキーマは無視されます。
+このコマンドが変更するのは、現在のトランザクション内の制約の動作のみです。
+したがって、トランザクションブロック(BEGIN/COMMITの間)の外部でこのコマンドが実行されても場合、何ら効果はありません。
+互換性このコマンドは、標準SQLで定義された動作に準拠しています。
+ただし、PostgreSQLではNOT NULLおよびCHECK制約に適用できないという制限があります。
+またPostgreSQLは非遅延一意性制約を、標準が提案する文の終わりにではなく、即座に検査します。
+前のページホーム次のページSET上に戻るSET ROLE
+SET CONSTRAINTS

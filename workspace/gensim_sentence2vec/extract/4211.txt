@@ -1,0 +1,84 @@
+(著者:菊地 宏司)
+今回はレコードの年次ごとの自動採番について紹介したいと思います。 顧客管理、物品管理など一意のIDを付けておきたい。しかも年ごとに番号を振りたいって事ありますよね。 そんな時に役立つJavaScriptを使った採番方法になります。
+フォームイメージ
+採番フォーマット
+日付が2014-04-20の場合
+14-00001,14-00002,14-00003
+フィールドの設定
+自動採番フィールドは「値の重複を禁止する」にチェックを入れる
+日付フィールドは「必須項目にする」にチェックを入れる
+ソースコード
+//新規作成画面の保存
+kintone.events.on('app.record.create.submit', function (event) {
+// 日付を取得し、2桁の年を取得する
+var dt = event['record']['日付']['value'];
+var dtyy = dt.substring( 0, 4 );
+var dtmin = dtyy + '-01-01';
+var dtmax = (parseInt(dtyy, 10) + 1) + '-01-01';
+// 設定された日付から最新の番号を取得する
+// クエリ文の設定
+var qryInfo ='/k/v1/records.json?app=' + kintone.app.getId()
++'&query=日付 >= "' + dtmin + '"'
++ ' and 日付 < "' + dtmax + '"'
++ ' order by 自動採番 desc limit 1';
+// リクエストを送信する
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.open('GET', encodeURI(qryInfo), false);
+xmlhttp.setRequestHeader('X-Requested-With' , 'XMLHttpRequest');
+xmlhttp.send();
+if (xmlhttp.status === 200){
+//レスポンスのレコードを取得
+var records = JSON.parse(xmlhttp.responseText).records;
+var record = records[0];
+// 対象レコードがあった場合
+if(records.length > 0){
+var autono = record['自動採番']['value'];
+autono = parseInt(autono.substring(3), 10) + 1;
+autono = '00000' + autono;
+autono = dt.substring(2,4) + '-' + autono.substring(autono.length - 5);
+event.record['自動採番']['value'] = autono;
+// 対象レコードがなかった場合
+}else{
+event.record['自動採番']['value'] = dt.substring(2,4) + '-00001';
+}
+}else{
+alert("レコードの取得でエラーが発生しました  - error:"+xmlhttp.status);
+}
+// 変更した内容でレコードを更新
+return event;
+});
+ソースコードの解説
+まず、クエリを使って対象年の一番新しいレコードを取得します。 クエリ文は次のようになります。
+日付 >= "2014-01-01" and 日付 < "2015-01-01" order by 自動採番 asc limit 1
+上記のクエリ文は、「日付が2014-01-01～2014-12-31のレコードを、自動採番で昇順(新しいID順)に並び替えした後の、1個目のレコード」という条件になります。 これで対象年の一番新しい自動採番のレコードが取得できました。
+// 対象レコードが あった場合
+if(records.length > 0){
+var autono = record['自動採番']['value'];
+autono = parseInt(autono.substring(3), 10) + 1;
+autono = '00000' + autono;
+autono = dt.substring(2,4) + '-' + autono.substring(autono.length - 5);
+event.record['自動採番']['value'] = autono;
+// 対象レコードが なかった場合
+}else{
+event.record['自動採番']['value'] = dt.substring(2,4) + '-00001';
+}
+こちらでは取得したレコードから採番処理を行います。 レコードがあった場合は取得したレコードの番号+1の番号をレコードがない場合は00001の番号を設定します。
+入力を制限する
+自動採番するのは新規レコード保存のみとしたいので、他の画面で編集できないようにします。 これは、以下のようにフィールドをdisabledとする事で実現できます。
+新規画面では自動採番フィールドを編集不可
+詳細の編集画面と一覧の編集画面では自動採番と日付のフィールドを編集不可
+// 新規作成画面を開いた時
+kintone.events.on('app.record.create.show', function (event){
+var record = event.record;
+record['自動採番']['disabled'] = true;
+return event;
+});
+// 編集画面を開いた時
+kintone.events.on(['app.record.edit.show', 'app.record.index.edit.show'], function (event){
+var record = event.record;
+record['自動採番']['disabled'] = true;
+record['日付']['disabled'] = true;
+return event;
+});
+このTipsは、2014年4月版で確認したものになります。 
+年次ごとの自動採番を行うワザ &ndash; cybozu.com developer network

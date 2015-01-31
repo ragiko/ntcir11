@@ -1,0 +1,66 @@
+一巡先を見る為にライブラリ始めました。
+怜-toki-
+C++ Template Meta Programming Library
+https://github.com/fimbul/toki
+ライブラリ自体に需要があるかは分かりませんが、基本的にプリプロセッサ無しで型コンテナやらメタ関数やらTMPやるときに役立ちそうだったり、参考になりそうだったり、その他ネタになりそうなものを実装していくつもりです。
+コードが他の人の参考になって、ゴミな部分は無視して、役に立ちそうなところはパクって頂けたらありがたいなと思います。
+今回は型コンテナの実装です。
+mplのvectorはプリプロセッサによって連番の部分特殊化を生成してランダムアクセスを実現しています。
+Variadic TemplatesのTemplate Parameter Packを使う以上現状ランダムアクセスの実現は不可能だと思うので、対数オーダーでの実装を目指します。
+template<class... Types>
+struct holder
+先頭要素からの距離に応じた対数オーダーで取り出す方針です。
+template<class>
+struct front_at_impl;
+template<class... Types2>
+struct front_at_impl<sequence<Types2...>>
+{
+template<class T>
+static T eval(Types2*..., T*, ...);
+};
+public:
+template<std::size_t N>
+using front_at = decltype(front_at_impl<make_sequence<N>>::eval(
+static_cast<typename std::remove_reference<Types>::type*>(nullptr)...)
+);
+make_sequenceはこの処理では対数オーダーでsequence<void, void, void, ...>とN-1個のvoidを持った型を生成しています。
+make_sequence<N, Type>でType型をN-1個持った型をsequnce型を生成します。Typeのデフォルト引数はvoidです。
+実装は概ね対数オーダーのindex_tupleと同じです。(https://github.com/fimbul/toki/blob/master/toki/sequence/sequence.hpp)
+N番目の要素を取り出すには、nullptrをTypes型のポインタにキャストしながら渡してやります。
+ポインタにする際に参照型等はエラーになるので外します。(CV修飾子やポインタ、参照の保持が難しくてまだ実装出来てません)
+front_at_implの中で、N-1番目の要素まではvoid型のポインタとなってTypes2に入り、Tに欲しい型が現れるのでTを返す関数としておき、decltypeするとN番目の型Tを得る事が出来ます。
+同様のテクニックを用いて非型パラメータも対数オーダーで取り出せます。
+以下はそのようなライブラリのコードです。型リストより余計なキャストもないので分かりやすいと思います。
+#ifndef TOKI_HOLDER_C_HOLDER_C_HPP
+#define TOKI_HOLDER_C_HOLDER_C_HPP
+#include <type_traits>
+namespace toki {
+template<class Type, Type... Args>
+struct holder_c
+{
+public:
+static constexpr std::size_t size = sizeof...(Args);
+static constexpr bool empty = size == 0;
+private:
+template<class>
+struct at_impl;
+template<class... Types>
+struct at_impl<sequence<Types...>>
+{
+static Type eval(Types..., Type Arg, ...)
+{
+return Arg;
+};
+};
+public:
+template<std::size_t N>
+static constexpr Type at()
+{
+return at_impl<make_sequence<N, Type>>::eval(Args...);
+}
+};
+} // end namespace toki
+#endif // ifndef TOKI_HOLDER_C_HOLDER_C_HPP
+make_sequenceを使ってsequence<Type, Type, Type, ...>を生成し、関数に渡すことでN-1個のType型のパラメータパックを引数型として展開してやり、その次の要素を名前付きで受け取って返します。
+(Types..., Type Arg, Rest...)といった、可変長単項可変長という引数リストで受け取るのがこのイディオムの特徴です。
+対数オーダーでTemplate Parameter Packから要素を取り出す - ここは匣

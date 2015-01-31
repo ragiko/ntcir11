@@ -1,0 +1,4 @@
+同じ抽象特徴に属する特徴に対応する特徴ニューロンの発火出力は、同じ抽象特徴ニューロンに入力される。The ignition output of the feature neuron corresponding to a feature pertaining to the same abstract feature is inputted to the same abstract feature neuron. - 特許庁
+この発火出力は、連想制御部22を介して事象ニューロン20に入力される。This ignition output is inputted through an associated control part 22 to the event neuron 20. - 特許庁
+抽象特徴ニューロンは、各特徴ニューロンからの入力を統合し、それら入力が当該事象のその抽象特徴に適合する場合に発火する。The abstract feature neuron merges inputs from the respective feature neurons and ignites when these inputs are suited to the abstract feature of that event. - 特許庁
+ニューロン発火の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

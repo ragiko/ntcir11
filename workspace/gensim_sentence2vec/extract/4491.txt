@@ -1,0 +1,48 @@
+例:検索によって文書を収集する   
+1  次のエージェントは、全文検索を使用して、「alpha」という単語か「string beta」という文字列を含むすべての文書を検索します。
+import lotus.domino.*;
+public class JavaAgent extends AgentBase {
+public void NotesMain() {
+try {
+Session session = getSession();
+AgentContext agentContext = 
+session.getAgentContext();
+// (Your code goes here) 
+Database db = agentContext.getCurrentDatabase();
+if (!db.isFTIndexed()) db.updateFTIndex(true);
+DocumentCollection dc = 
+db.FTSearch("alpha | \"string beta\"");
+Document doc = dc.getFirstDocument();
+while (doc != null) {
+System.out.println(
+doc.getItemValueString("Subject"));
+doc = dc.getNextDocument(); }
+} catch(Exception e) {
+e.printStackTrace();
+}
+}
+}
+2  次のエージェントは、Lotus Domino の式 @Contains を使用して、Subject アイテムに「Alpha」という単語が含まれている文書をすべて検索します。
+import lotus.domino.*;
+public class JavaAgent extends AgentBase {
+public void NotesMain() {
+try {
+Session session = getSession();
+AgentContext agentContext = 
+session.getAgentContext();
+// (Your code goes here) 
+Database db = agentContext.getCurrentDatabase();
+DocumentCollection dc = 
+db.search("@Contains(Subject; \"Alpha\")");
+Document doc = dc.getFirstDocument();
+while (doc != null) {
+System.out.println(
+doc.getItemValueString("Subject"));
+doc = dc.getNextDocument(); }
+} catch(NotesException e) {
+System.out.println(e.id + " " + e.text);
+e.printStackTrace();
+}
+}
+}
+Lotus Domino Designer 8 ヘルプ - 例:検索によって文書を収集する

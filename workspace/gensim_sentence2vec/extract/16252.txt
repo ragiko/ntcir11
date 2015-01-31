@@ -1,0 +1,44 @@
+
+# 概要
+Ruby の Custom MapReduce で Hive の ARRAY 型を扱う方法のひとつを説明
+# 結論
+eval で普通に展開できた.
+テストデータの質にもよると思うのですが,単純な数値文字列などは問題なく扱えると思われる.
+# 検証
+## Hive Table
+```sql
+CREATE TABLE IF NOT EXISTS array_table (
+arry ARRAY<STRING>
+);
+```
+## テストデータ
+```sql
+SELECT * FROM array_table LMIT 4;
+["5272256761", "33855233"]
+["6646871165", "33855233"]
+["5595443565", "33855233"]
+["6646856891", "33855233"]
+```
+## Custom MapReduce の Map スクリプト
+/tmp/map.rb として保存
+```rb
+#!/usr/bin/env ruby
+STDIN.each_line do |line|
+array = eval(line)  ## eval で展開
+puts "#{array[0]}\t#{array[1]}\n" ## array として扱えていることを確認
+end
+```
+## Custom MapReduce の実行
+```sql
+ADD FILE /tmp/map.rb;
+SELECT
+TRANSFORM(arry) USING 'map.rb'  AS clm1, clm2
+FROM
+array_table
+LIMIT 4;
+"5272256761" "33855233"
+"6646871165" "33855233"
+"5595443565" "33855233"
+"6646856891" "33855233"
+```
+Hive の ARRAY 型を Ruby の Custom MapReduce で扱う方法 - Qiita

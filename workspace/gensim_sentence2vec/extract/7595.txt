@@ -1,0 +1,25 @@
+
+ページスタックの管理とナビゲーション機能を提供するコンポーネント。画面上への出力はありません。
+例
+<ons-navigator animation="slide" var="app.navi">
+<ons-page>
+<ons-toolbar>
+<div class="center">Title</div>
+</ons-toolbar>
+<p style="text-align: center">
+<ons-button modifier="light" ng-click="app.navi.pushPage('page.html');">Push</ons-button>
+</p>
+</ons-page>
+</ons-navigator>
+<ons-template id="page.html">
+<ons-page>
+<ons-toolbar>
+<div class="center">Title</div>
+</ons-toolbar>
+<p style="text-align: center">
+<ons-button modifier="light" ng-click="app.navi.popPage('page.html');">Pop</ons-button>
+</p>
+</ons-page>
+</ons-template>
+属性
+コンポーネント一覧 | Onsen UI

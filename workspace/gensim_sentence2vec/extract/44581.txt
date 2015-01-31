@@ -1,0 +1,293 @@
+X線スペクトル解析の標準フレームワークであるxspecは、既存のモデルだけでなく、各サイトで開発/構築している独自モデルを入れてフィッティングに使用することができます。
+このページでは、とくに解析的な式で表現するのが難しいモデルで、スペクトルを数値テーブルとして与える方法(テーブルモデル)について、具体的な方法を紹介します。
+詳細な情報
+NASA/GSFCの、The File Format for XSPEC Table Modelsというドキュメントが、ひじょうに詳しくテーブルモデルの作り方を説明してくれているので、正しいことを知りたい場合はそちらを参照してください。
+基本的にMacintoshで作業していることを仮定しています。Linux/WIndowsユーザの人はMacintoshを買ってからこのページを読んでください。
+事前に必要な作業
+このwikiページで紹介しているモデルfits作成プログラムを動作させるためには、NASA/GSFCが公開しているcfitsioとCCFitsという、FITS形式をC/C++言語から操作するためのライブラリが必要です。
+勉強
+FITS形式については、
+http://fits.gsfc.nasa.gov/
+などで勉強してください。
+CCFitsは、pointerと参照渡しを多用するので、C++言語をかなりしっかり理解しないと、間違ったコードを書いてしまいます(C++自体の弱点なので、仕方ない。CCFitsがわるい訳ではない。Javaは最高)。
+自信がない人は事前に以下のページ(少なくとも全部一回目を通す)などを読んで勉強してください。
+http://www.geocities.jp/ky_webid/cpp/language/
+以後で出てくるvectorやvalarryというのは、C++言語の標準ライブラリ(STL)に含まれているデータコンテナクラスの名前です。C++/STLを知らない人はまず以下のwebなどを参考に、そちらを勉強してください。
+http://www.cppreference.com/wiki/stl/start
+http://www.cplusplus.com/reference/stl/
+http://www.sgi.com/tech/stl/
+cfitsioについては、山田くんが作ってくれたcfitsioによるFITSファイルの操作方法というページもあるので、C言語で操作したい場合はそちらも参照。
+cfitsioライブラリのインストール
+C言語からFITS形式を操作するためのライブラリです。
+cfitsioのページからソースコードをダウンロードしてください。
+ターミナルから、以下のコマンドを入力して、/usr/libと/usr/includeに、それぞれcfitioのライブラリとヘッダファイルをインストールしてください。
+cd cfitsio
+./configure --prefix=/usr
+make
+sudo make install
+CCFitsライブラリのインストール
+C++からFITS形式を扱うためのライブラリです。内部でcfitsioを利用する(つまりcfitsioに対するwrapperを提供している)ので、先にcfitsioをインストールしておいてください。
+APIリファレンスや、例題はCCFitsのドキュメントのページから見ることができます。Doxygenを使ってしっかりとドキュメンテーションがなされているので、cfitsioを生で使うよりも見通しよく、効率的に作業できるので、これからFITSライブラリを使うという人にはおすすめです。
+CCFitsのページからソースコードをダウンロードしてください。
+cd CCfits
+./configure --prefix=/usr
+make
+sudo make install
+モデルの構築
+モデル式の準備とROOTヒストグラムへのfilling
+今回は、magnetic CVの降着柱からのthermal bremsstrahlungスペクトルをモデル化する式を使いました。
+モデルのパラメータは、CV中のWhite Dwarfの質量Mだけです。
+各パラメータ(つまり、いろいろな質量M)についてC++でモデル式を数値積分し、x軸mass、y軸energy、z軸がphoton rateという次元をもつROOT/TH2Dスペクトルを作成しました。
+以下のFITSへの変換コードをみるとわかりますが、massは0.01Msunグリッドで0.2Msunから1.4Msunまで、energyは0.01keVから100keVまでを10000分割して計算しています。
+bremssのemissivityはapecコードをZ=1で用いています。
+少しサイエンスの解析の内容がからむので、この部分の実際のコードは論文が出てから公開します。
+ROOT形式から「xspec table model形式(FITS)」への変換
+概要
+ROOT2次元ヒストグラム(TH2D)からxspecのtable model形式への変換は、ほとんど決められた手順を間違えずにコード化するだけの話です。
+万が一(?)、他の方の参考になれば、と思って公開しておきます。
+基本的な作業の流れは、以下の4つのextensionをもつFITSファイルを作ることです。
+それぞれのextensionで、どういうheader keywordを追加するか、どういうcolumn/rowを追加するか、ということがThe File Format for XSPEC Table Modelsに書かれています。
+PRIMARY : プライマリHDU
+PARAMETERS : パラメータの設定をするHDU
+ENERGIES : エネルギーグリッドを設定するHDU
+SPECTRA : 各パラメータに対応するスペクトルを格納するHDU
+(注)モデル全体をスケールするnormalizationパラメータは、xspecが自動的に追加してくれます。
+コード
+#include <CCfits>
+#include <cmath>
+#include <sstream>
+#include <TApplication.h>
+#include <TFile.h>
+#include <TCanvas.h>
+#include <TH2D.h>
+#include <TAxis.h>
+#include <TStyle.h>
+#include <fstream>
+#include <TROOT.h>
+// The library is enclosed in a namespace.
+using namespace CCfits;
+using namespace std;
+int writeImage(TH2D* spec) {
+stringstream ss;
+/***************************************************
+* Primary Extension
+***************************************************/
+long naxis = 2;
+long naxes[2] = { 16, 16 };
+auto_ptr<FITS> pFits(0);
+string filename = "!ipbccool.fits";
+pFits.reset(new FITS(filename, USHORT_IMG, naxis, naxes));
+// references for clarity.
+long& vectorLength = naxes[0];
+long& numberOfRows = naxes[1];
+long nelements(1);
+nelements = accumulate(&naxes[0], &naxes[naxis], 1, multiplies<long> ());
+long fpixel(1);
+pFits->pHDU().addKey("HDUCLASS", "OGIP", "");
+pFits->pHDU().addKey("HDUCLAS1", "XSPEC TABLE MODEL", "");
+pFits->pHDU().addKey("HDUVERS", "1.0.0", "");
+pFits->pHDU().addKey("MODLNAME", "IPBCCOOL", "");
+pFits->pHDU().addKey("MODLUNIT", "ph cm-2 s-1", "");
+pFits->pHDU().addKey("REDSHIFT", false, "");
+pFits->pHDU().addKey("ADDMODEL", true, "");
+pFits->pHDU().addKey("MODLNAME", "IPBCCOOL", "");
+valarray<int> row(vectorLength);
+for (long j = 0; j < vectorLength; ++j) {
+row[j] = j;
+}
+valarray<int> array(nelements);
+for (int i = 0; i < numberOfRows; ++i) {
+array[slice(vectorLength * static_cast<int> (i), vectorLength, 1)] = row + i;
+}
+pFits->pHDU().write(fpixel, nelements, array);
+cout << "primary hdu done" << endl;
+/***************************************************
+* 2nd Extension : PARAMETERS
+***************************************************/
+int numberof_mass_bins = spec->GetXaxis()->GetNbins();
+String ext1_extensionname = "PARAMETERS";
+vector<String> ext1_columnname, ext1_columnformat, ext1_columnunit;
+ext1_columnname.push_back("NAME");
+ext1_columnformat.push_back("12A");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("METHOD");
+ext1_columnformat.push_back("J");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("INITIAL");
+ext1_columnformat.push_back("E");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("DELTA");
+ext1_columnformat.push_back("E");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("MINIMUM");
+ext1_columnformat.push_back("E");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("BOTTOM");
+ext1_columnformat.push_back("E");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("TOP");
+ext1_columnformat.push_back("E");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("MAXIMUM");
+ext1_columnformat.push_back("E");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("NUMBVALS");
+ext1_columnformat.push_back("J");
+ext1_columnunit.push_back("");
+ext1_columnname.push_back("VALUE");
+ss << numberof_mass_bins << "E";
+ext1_columnformat.push_back(ss.str().c_str());
+ext1_columnunit.push_back("");
+//create PARAMETERS extension (2nd extension)
+Table* extension_parameters = pFits->addTable(ext1_extensionname, 1, ext1_columnname, ext1_columnformat, ext1_columnunit, BinaryTbl, 1);
+extension_parameters->addKey("NINTPARM", 1, "");
+extension_parameters->addKey("NADDPARM", 0, "");
+extension_parameters->addKey("HDUCLASS", "OGIP", "");
+extension_parameters->addKey("HDUCLAS1", "XSPEC TABLE MODEL", "");
+extension_parameters->addKey("HDUCLAS2", "PARAMETERS", "");
+extension_parameters->addKey("HDUVERS", "1.0.0", "");
+vector<string> vector_names(1);
+vector_names[0] = (string("Mass"));
+extension_parameters->column("NAME").write(vector_names, 1);
+int methods[] = { 0 };
+extension_parameters->column("METHOD").write(methods, 1, 1);
+float initials[] = { 0.5 };
+extension_parameters->column("INITIAL").write(initials, 1, 1);
+float deltas[] = { 0.01 };
+extension_parameters->column("DELTA").write(deltas, 1, 1);
+float minimums[] = { 0.2 };
+extension_parameters->column("MINIMUM").write(minimums, 1, 1);
+float bottoms[] = { 0.2 };
+extension_parameters->column("BOTTOM").write(bottoms, 1, 1);
+float tops[] = { 1.4 };
+extension_parameters->column("TOP").write(tops, 1, 1);
+float maximums[] = { 1.4 };
+extension_parameters->column("MAXIMUM").write(maximums, 1, 1);
+int numbvals[] = { 121 };
+extension_parameters->column("NUMBVALS").write(numbvals, 1, 1);
+// Parameter Mass : 0.01Msun step
+vector<valarray<float> > vector_masses;
+vector_masses.push_back(valarray<float> (numberof_mass_bins));
+for (int i = 0; i < 121; i++) {
+vector_masses.at(0)[i] = (float) spec->GetXaxis()->GetBinCenter(i + 1);
+}
+extension_parameters->column("VALUE").writeArrays(vector_masses, 1);
+cout << "secondary hdu done" << endl;
+/***************************************************
+* 3rd Extension : ENERGIES
+***************************************************/
+int numberof_energy_bins = spec->GetYaxis()->GetNbins();
+String ext2_extensionname = "ENERGIES";
+vector<String> ext2_columnname, ext2_columnformat, ext2_columnunit;
+ext2_columnname.push_back("ENERG_LO");
+ext2_columnformat.push_back("E");
+ext2_columnunit.push_back("");
+ext2_columnname.push_back("ENERG_HI");
+ext2_columnformat.push_back("E");
+ext2_columnunit.push_back("");
+//create ENERGIES extension (3rd extension)
+Table* extension_energies = pFits->addTable(ext2_extensionname, 1, ext2_columnname, ext2_columnformat, ext2_columnunit, BinaryTbl, 1);
+extension_energies->addKey("HDUCLASS", "OGIP", "");
+extension_energies->addKey("HDUCLAS1", "XSPEC TABLE MODEL", "");
+extension_energies->addKey("HDUCLAS2", "ENERGIES", "");
+extension_energies->addKey("HDUVERS", "1.0.0", "");
+vector<float> energy_low, energy_high;
+for (int i = 0; i < numberof_energy_bins; i++) {
+energy_low.push_back(spec->GetYaxis()->GetBinLowEdge(i + 1));
+energy_high.push_back(spec->GetYaxis()->GetBinUpEdge(i + 1));
+}
+extension_energies->column("ENERG_LO").write(energy_low, 1);
+extension_energies->column("ENERG_HI").write(energy_high, 1);
+cout << "3rd hdu done" << endl;
+/***************************************************
+* 4th Extension : ENERGIES
+***************************************************/
+String ext3_extensionname = "SPECTRA";
+vector<String> ext3_columnname, ext3_columnformat, ext3_columnunit;
+ext3_columnname.push_back("PARAMVAL");
+ext3_columnformat.push_back("E");
+ext3_columnunit.push_back("");
+ext3_columnname.push_back("INTPSPEC");
+ss.str("");
+ss << numberof_energy_bins << "E";
+ext3_columnformat.push_back(ss.str().c_str());
+ext3_columnunit.push_back("");
+//create ENERGIES extension (3rd extension)
+Table* extension_spectra = pFits->addTable(ext3_extensionname, 1, ext3_columnname, ext3_columnformat, ext3_columnunit, BinaryTbl, 1);
+extension_spectra->addKey("HDUCLASS", "OGIP", "");
+extension_spectra->addKey("HDUCLAS1", "XSPEC TABLE MODEL", "");
+extension_spectra->addKey("HDUCLAS2", "MODEL SPECTRA", "");
+extension_spectra->addKey("HDUVERS", "1.0.0", "");
+vector<float> energy_bin_center;
+vector<valarray<float> > vector_spectra;
+for (int i = 0; i < numberof_mass_bins; i++) {
+energy_bin_center.push_back((float) spec->GetXaxis()->GetBinCenter(i + 1));
+vector_spectra.push_back(valarray<float> (numberof_energy_bins));
+for (int o = 0; o < numberof_energy_bins; o++) {
+(vector_spectra.at(i))[o] = (float) spec->GetBinContent(i + 1, o + 1);
+}
+}
+extension_spectra->column("PARAMVAL").write(energy_bin_center, 1);
+extension_spectra->column("INTPSPEC").writeArrays(vector_spectra, 1);
+cout << "4th hdu done" << endl;
+cout << "done" << endl;
+return 0;
+}
+int main(int argc, char* argv[]) {
+TApplication theApp("app", &argc, argv);
+FITS::setVerboseMode(true);
+string filename = "data/spec.root";
+TFile f(filename.c_str());
+TH2D* spec = (TH2D*) f.Get("spec");
+if (spec == NULL) {
+cout << filename << " not found..." << endl;
+exit(-1);
+}
+writeImage(spec);
+gROOT->ProcessLine(".q");
+theApp.Run();
+}
+コードの解説
+プライマリHDUはImage形式であることがFITSの仕様で決められているので、Imageになっていますが、今回はImageの中身は意味を持ちません。
+2nd extension以降は、BINTABLE形式のHDUにするように指定されているので、
+Table* extension_spectra = pFits->addTable(ext3_extensionname, 1, ext3_columnname, ext3_columnformat, ext3_columnunit, BinaryTbl, 1);
+などのようなメソッドで、fitsファイルインスタンスにtableを追加していきます。CCFitsの思想の問題で、tableをaddするまえに、どういうcolumnを持つかなどを指定するのが標準的なやり方になっているので、この行の前に、カラム名やカラムのformat(数値なのか文字列なのか、など)、カラムの単位をあらわすvectorをたくさん定義しています。
+スペクトルやパラメータグリッドをつめるcolumnは、1columnがfloatの配列を表すようなformatになっています。そのため、例えばスペクトルの場合は
+vector<valarray<float> > vector_spectra;
+のような、valarrayのvectorを定義して、
+for (int i = 0; i < numberof_mass_bins; i++) {
+energy_bin_center.push_back((float) spec->GetXaxis()->GetBinCenter(i + 1));
+vector_spectra.push_back(valarray<float> (numberof_energy_bins));
+for (int o = 0; o < numberof_energy_bins; o++) {
+(vector_spectra.at(i))[o] = (float) spec->GetBinContent(i + 1, o + 1);
+}
+}
+のようにして、あるmassの場合の一本のスペクトルをvalarrayに入れて、各massのvalarray群をvectorで管理しているようなイメージになります。
+columnに書き込むときは
+extension_spectra->column("INTPSPEC").writeArrays(vector_spectra, 1);
+などのように、Column::writeArray()メソッドを使用します。
+コンパイル
+以下のようなMakefileを用いてコンパイルしました。
+ROOTSYS=/usr/local/root_5.23.02
+ROOTCFLAGS := $(shell $(ROOTSYS)/bin/root-config --cflags)
+ROOTGLIBS  := $(shell $(ROOTSYS)/bin/root-config --glibs)
+CXXFLAGS    = -w $(ROOTCFLAGS)
+CXXLIBS     = $(ROOTGLIBS)
+all : builds/main
+builds/main : sources/main.cc
+g++ sources/main.cc -o builds/main -I/usr/include/CCFits $(CXXFLAGS) $(CXXLIBS) -lCCFits -lcfitsio
+実行
+(この例は、ROOTファイルがないと動作しませんが、ともかく)実行すると、ipbccool.fitsという名前のfitsファイルが生成されます。
+xspecでのフィッティング
+作成したテーブルモデルをxspecから使用するときは、modelとしてatable{ファイル名}という名前を与えます。他のかけ算モデルなどと合わせて使うこともできます。
+data ...
+respose ...
+arf ...
+backgrnd ...
+model wabs*atable{/home/yuasa/ip/model/ipbccool.fits}
+上の例では、wabsのnHと、ipbccoolのMass(WD質量、太陽質量単位)と、normalizationを入力するよう促されます。
+renormしてfitすると、best fitを決めようとしてくれます。
+画像:tvcol_wabs_ipbccool.png
+質問など
+質問などは、遠慮なく、このwikiページのノートを使うか、yuasa@junoまでお願いします。
+xspecで自分のモデルをテーブルとして入れる(xspec model atable original) - HongoWiki

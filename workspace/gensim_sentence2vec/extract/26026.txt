@@ -1,0 +1,71 @@
+
+姓名判断の設置 
+当サイトはリンクフリーです。リンクを張る場合はトップページをリンクするようにしてください。もしよろしければ、以下のアイコンをお使いください。
+「名付けと姓名判断」のアイコン
+姓名判断フォームをあなたのホームページに置くのは簡単です。
+コメントにはさまれた以下のHTMLソースをコピーし、そのままページの中に入れてください。
+但し、文字コードがUTF-8の場合は、「文字コードがUTF-8の場合の姓名判断フォーム」を利用してください。
+<!-- 姓名判断フォーム(ここから) -->
+<CENTER>
+<FORM ACTION="http://www.emusu.net/seimei/handan.cgi" TARGET="_blank" METHOD="GET">
+<A HREF="http://www.emusu.net/seimei/" TARGET="_blank">
+<IMG SRC="http://www.emusu.net/seimei/emusu.gif" ALT="名付けと姓名判断" BORDER="0" HSPACE="10"&gt</A>
+姓
+<INPUT TYPE="text" NAME="sei" SIZE="10">
+名
+<INPUT TYPE="text" NAME="mei" SIZE="10">
+性別
+<SELECT NAME="seibetu" SIZE="1">
+<OPTION VALUE="0">女
+<OPTION VALUE="1">男
+</SELECT>
+<p>
+<INPUT TYPE="submit" VALUE="姓名判断を行う">
+<INPUT TYPE="reset" VALUE="取り消し">
+</FORM>
+</CENTER>
+<!-- 姓名判断フォーム(ここまで) -->
+ホームページの文字コードがUTF-8の場合、以下のHTMLソースを使用してください。
+UTF-8のページかどうかは、IEであればページ上で右クリックして、「エンコード」により文字コードがわかります。
+代表的なサイトとしては、Ameba(アメーバ)はUTF-8なので、以下のHTMLを使うことで文字化けを解決することができます。
+<!-- 文字コードがUTF-8の場合の姓名判断フォーム(ここから) -->
+<CENTER>
+<FORM NAME="handan">
+<A HREF="http://www.emusu.net/seimei/" TARGET="_blank">
+<IMG SRC="http://www.emusu.net/seimei/emusu.gif" ALT="名付けと姓名判断" BORDER="0" HSPACE="10"&gt</A>
+姓
+<INPUT TYPE="text" NAME="sei" SIZE="10">
+名
+<INPUT TYPE="text" NAME="mei" SIZE="10">
+性別
+<SELECT NAME="seibetu" SIZE="1">
+<OPTION VALUE="0">女
+<OPTION VALUE="1">男
+</SELECT>
+<p>
+<INPUT TYPE="button" VALUE="姓名判断を行う" onClick="Submit();">
+<INPUT TYPE="reset" VALUE="取り消し">
+</FORM>
+<SCRIPT LANGUAGE="JavaScript" Type="text/javascript">
+<!--
+function Submit(){
+document.charset='EUC-JP';
+var obj = document.forms["handan"];
+obj.method = "get";
+obj.action = "http://www.emusu.net/seimei/handan.cgi";
+obj.target = "_blank";
+obj.submit();
+document.charset='UTF-8';
+}
+//-->
+</SCRIPT>
+</CENTER>
+<!-- 文字コードがUTF-8の場合の姓名判断フォーム(ここまで) -->
+これで、あなたのページは以下のように見えるはずです。このフォームを使用すれば、あなたのページから姓名判断を行うことができます。
+姓
+名
+性別
+画像の表示が遅くて気になる方は、このページの「名付けと姓名判断」のアイコンをダウンロードしてお使い下さい。
+不明な点がありましたら、以下までご連絡ください。
+E-mail:
+姓名判断の設置

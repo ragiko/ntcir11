@@ -1,0 +1,277 @@
+
+日本語フォントのセットアップ
+日本語フォントに何を使うべきか
+さて、いよいよ TeX Live で日本語を扱うための設定を行っていくわけですが、最初にまず、フォントに何を使うかを考えましょう。
+フォントの選択をする場合には、そのフォントの適用範囲に関しても考慮する必要があります。たとえば、出版関連の仕事をされていて、モリサワパスポート等のような、膨大、かつグリフ数の充実したフォントを持っている方の場合と、我々の大多数(もちろん僕もこれに属します)のように、フォントに多額の出費をするのがはばかられるような生活をしている人では、この辺りの事情は大分変わってきます。
+Adobe-Japan 1-X
+日本語フォントの収録文字数を知る目安が、そのフォントが Adobe-Japan 1-X のどの辺りに位置するのか、ということです。Adobe-Japan 1-X は、Adobe Systems 社が日本語組版目的に開発したコード体系で、Apple、NEC、富士通、IBM等の外字、共同通信の K-JIS や U-PRESS、写研 SK コード等にも対応しており、Unicode では区別されない異体字なども区別して、漢字を取り扱うことができます。Adobe-Japan 1-X の詳細に関しては、以下の論文を参照されることをお薦めします:
+『Adobe-Japan 1-6 と Unicode—異体字処理と文字コードの現実』:安岡孝一, 情報管理 48[8] (2005), pp.487-495. (JSTAGE で公開されている PDF ファイル)
+この論文の著者である安岡氏は、Adobe-Japan 1 収録の漢字を異体字毎に分類した PDF ファイルを公開されています:
+『Adobe-Japan1の漢字(部首画数順)』: http://coe21.zinbun.kyoto-u.ac.jp/~yasuoka/publications/Adobe-Japan1kanji.pdf
+Adobe Reader に付属する「小塚明朝 Pr6N-Regular」「小塚ゴシック Pr6N-Medium」は、現在最も収録文字数が多い Adobe-Japan 1-6 を(ほぼ)満たしています。Mac OS X に付属する「ヒラギノフォント」は、リリース当初はこれに準ずる Adobe-Japan 1-5 (Pro)、もしくは Adobe-Japan 1-4 を (Std) 満たしていましたが、現在のヒラギノフォントは Adobe-Japan 1-6 準拠となっています。
+書体
+これはあくまで僕の個人的印象ですが、小塚フォントにはやや癖があります。しかし、決して見苦しいものではなく、むしろその癖は見出しなどにおいていいアクセントになってくれるようです。こういう印象を得ているので、僕は普段は Linux 端末上での TeX / LaTeX 使用時には小塚フォントを常用しています。
+これに対してヒラギノフォントは、教科書体のような格調高さを感じます。書体も明朝・ゴシック合わせると6書体あるので、フォントマップで場所によるフォントの使い分けも細かく設定できます。ただし、特に小さな文字を使う場合には、小塚フォントと比較するとやや線が細いという印象も受けます。僕の場合は、教育目的の文書や書類を作成する場合には、Mac OS X 上の TeX / LaTeX でヒラギノフォントを埋め込んだ PDF を作成し、印刷などに供しています。
+ライセンスの問題
+フォントを使うときに注意しなければならないのが、このライセンスの問題です。フォントは一種の知的財産で、それを所有するということは、フォント供給者との間の契約条項に違反しない形態での利用権を得る、ということですから、
+そんなの持ってる人の勝手でしょ
+という理屈は通らないのです。
+建前
+前述の Adobe Reader 付属の小塚フォントや、Mac OS X 付属のヒラギノフォントの場合について調べてみると、小塚フォントは「Adobe Reader を用いた日本語文書の表示・印刷」、ヒラギノフォントは「Mac OS X 上での日本語文書の表示・印刷」に、その使用範囲が限定されているようです。
+特に TeX / LaTeX の場合、PDF 内にフォントを埋め込むことができますから、この使用範囲に関しては注意が必要です。フォントを埋め込んだファイルは、そのフォントがインストールされた端末上での閲覧・印刷(小塚フォントに関しては Adobe Reader による閲覧・印刷)に、その用途を限定しておくのが安全だと思われます。特に、作成した PDF を配布する場合には、この限定の範囲外となってしまう可能性があるので、配布する PDF には IPA フォント等の配布可能なフォントを埋め込むようにするか、あるいは日本語フォントを埋め込まないようにするか、いずれかの措置を講ずるのが安全だろうと思われます。
+ただし、モリサワフォントに関しては、モリサワのサイトのコンテンツである『製品情報 商業利用に関して』中の Q & A に、以下のような記述があります:
+Q4:モリサワフォントを使用して作成した成果物は、モリサワパスポートの契約期間終了後も使えますか?
+A:モリサワフォントを使用して作成した成果物が、例えば、アウトライン化もしくは画像化されたデータまたはフォントデータが埋め込まれたデータ(PDF等)のような、機器にインストールされた当該フォントデータ無しにその表示および出力が可能な形式によるもの、または、紙もしくはフイルム等の媒体に出力された成果物である場合には、契約終了後でも使用出来ます。
+契約期間中、終了後を問わず、モリサワフォントのライセンスを持たない方がその成果物を使用することも出来ます。
+これを書かれている通りに解釈するならば、モリサワのライセンスを得ている人が、フォントデータの埋め込まれた PDF ファイルを作成して公開・配布することは問題ない、ということになります。PDF へのフォント埋め込みに関してこのように明示されたのは、商用フォントではひょっとしたら初めてのことかもしれませんね。
+知的財産としてのフォントに対する弁理士の見解としては、以下の文書が、過去の経緯を含めて簡潔にまとめています:
+『著作権実務ガイドライン 3 ——著作物—— フォント・タイプフェイスの保護』:丸山温道,月刊「ぱてんと」59[1] (2006年1月10日発行),pp.24-6.
+特許庁の見解も以下に示しておきます:
+『タイプフェイスの保護』:特許庁,(社)発明協会アジア太平洋工業所有権センター,2009.
+本音、そして世間の実情は……
+とは言うものの、実際に、商用フォントを埋め込むことがそこまでシビアな著作権上の問題になるものなのでしょうか。また、問題にすべきものなのでしょうか。
+僕の身近にいる印刷媒体の関係者(この人はイラストレーターで、文字情報の流し込みを含む組版まで込みで仕事をしています)に聞くと、即座に「アウトライン」と返ってきます。文字情報が中心でない場合には、こういう解を選択すればいいのでしょう。しかし、アウトラインをかけるということは、文字情報を失うということですから、TeX / LaTeX の文書の場合にはこれは現実的ではありません。
+では、公に公開されている PDF 文書ではどのようになっているのでしょうか。たとえば、
+http://www.jpo.go.jp/shiryou/toushin/chousa/pdf/zaisanken/1905typeface_honpen.pdf
+これは、特許庁の外郭団体である一般財団法人 知的財産研究所が平成20年3月に出した「平成19年度特許庁産業財産権制度問題調査研究報告書 『タイプフェイスの保護のあり方に関する調査研究報告書』」という文書です。まさにそのものずばりの文書ですねえ。この文書を斜め読みしていると、pp.59 脚註にこのような記述を見つけました:
+108 本調査研究委員会においては、上述の問題のほかに、電子文書にフォントを埋め込み、インターネット等を介して当該文書を送受信することにより、当該文書を受け取ったユーザーにおいてその埋め込まれたフォントを使用することが可能となることから、こういった行為をも問題として採り上げるべきとの指摘もあった。しかしながら、国内アンケート調査及び国内ヒアリング調査結果からは、このような問題は顕在化しなかった。
+この記述を以て、フォント埋め込みに目くじらを立てられることはない、と断ずるのは、いささか拙速だと思います。しかし、ここで注目すべきなのは、この記述よりもむしろ、この PDF 文書で使用されているフォントに関して、です。Adobe Reader でプロパティを見ると……
+……列挙すると、
+DFP平成明朝体W5
+MS明朝
+MS Pゴシック
+が埋め込まれています。この文書だけではありません。先の特許庁の文書にも、同様に Microsoft Windows 添付のフォントが複数種埋め込まれています。
+実は、世間で公開されているほとんどの PDF 文書において、このように OS にバンドルされているフォントが埋め込まれています。おそらくこれらは、フォントの商用利用までが制限されているわけではない、という判断によるものだと思います。
+たしかに、紙媒体で使用したり、アウトラインをかけたかたちで利用することに関しては、たとえばヒラギノをバンドルしている Apple や、Microsoft Windows のバンドルフォントの版権を持つ Microsoft やリコー等は OK との判断をしているようです。しかし、フォントを埋め込むことは、それらと同じ商用利用の括りで同一視できるかどうか……これは、やはりグレーなところです。埋め込まれたフォントはフォントとしての電子的情報を残したかたちでファイル内に存在しているわけで、これは厳密に解釈するとファイルの複製と言えないこともないわけです。
+個人的意見を述べるなら、フォントが埋め込まれた PDF からフォントファイルを生成し、不法に用いるような輩が現れない限り、フォントの埋め込みに関しては問題ないものと考えています。また、そういう行為が為されたとき、その責めを負うのが、フォントファイルを「埋め込んだ側」か、「逆生成した側か」ということを考えると、「埋め込んだ側」に責めを向けるのはいささか問題があると言わざるを得ません。ですから、僕自身は、他人に渡すことのないファイルに対しては、比較的安易にフォントの埋め込みを行っていますし、それで法的問題が生じたことはありません。
+ですから、ここでは、自家用等の(二次利用でないと言い切れる使用状況下における)商用フォントの埋め込みと、著作権的にツッコまれる危険がないフォントの埋め込みの双方に関して、解説を行っていこうと思います。
+TeX Live から日本語フォントを参照できるようにする
+セットアップなしで使えるフォント
+2011年10月29日に、TeX Live 2011 の配布パッケージに "ipaex" がマージされました。このパッケージに収録されているファイルを以下に示します。
+texmf-dist/doc/fonts/ipaex/Copyright
+texmf-dist/doc/fonts/ipaex/README
+texmf-dist/fonts/map/dvipdfmx/ipaex/otf-ipa.map
+texmf-dist/fonts/map/dvipdfmx/ipaex/otf-ipaex.map
+texmf-dist/fonts/map/dvipdfmx/ipaex/ptex-ipa.map
+texmf-dist/fonts/map/dvipdfmx/ipaex/ptex-ipaex.map
+texmf-dist/fonts/truetype/public/ipaex/ipaexg.ttf
+texmf-dist/fonts/truetype/public/ipaex/ipaexm.ttf
+texmf-dist/fonts/truetype/public/ipaex/ipag.ttf
+texmf-dist/fonts/truetype/public/ipaex/ipam.ttf
+つまり、フォントそれ自身だけではなく、フォントマップもこのパッケージには含まれています。ついに TeX Live 2011 以降の TeX Live では default で IPA フォントが使える状態になった、ということですね。
+その後、これらのフォントマップは更に種類を増やし、また、便利な設定用スクリプトも収録されるようになりました。ここではそれらを使ったフォントマップの設定方法と、オリジナルのフォントマップを書き、使う手順について示していきましょう。
+texmf-local
+まず、日本語フォントが使えるようなセットアップを行っていきましょう。まず、TeX Live のインストールディレクトリを見てみます。
+$ ls -l /usr/local/texlive
+とすると、TeX Live 2014 が入っている 2014 というディレクトリと共に、texmf-local というディレクトリがあるのがお分かりでしょうか。
+google などでネット上のコンテンツを探すと、TeX Live の改変を行うのに、/usr/local/texlive/2014 内のファイルを直接書き換えている例を散見します。しかし、先に書いた通り、TeX Live は tlmgr というユーティリティでオンラインアップデートをかけることができます。このアップデートが、改変したファイルに対して適用されると、そのファイルの改変部は消えてしまうことになります。また、もし来年 TeX Live 2015 が出たとして、ここでこれから行うような改変をまたやり直す、というのは、あまり効率のいい話ではありません。
+こういう場合のために、TeX Live では /usr/local/texlive/texmf-local というディレクトリが用意されています。この中に追加する部分を構成しておけば、アップデート時に消えてしまうことや、次年度の TeX Live に改めて改変しなければならないような状況を回避することができます。
+また、TeX Live の新しい年度のリリース直後にしばしばあることなのですが、tlmgr によるシステム更新が上手くいかず、それ以降の更新が滞ったままになる場合があります。もちろん、原因をきちんと究明する(そしてそれを開発者にフィードバックする)のがベストなのは言うまでもありませんが、texmf-local を有効に活用している場合には、/usr/local/texlive/texmf-local/ をそのままにして /usr/local/texlive/2014 をばっさり消去再インストールシステム更新、という緊急措置を講ずることができます。これはあくまで副次的効果と言えるでしょうけれど、時間がないときにトラブルが発生した場合などに、こういうことができると助かるものです……
+小塚フォントのセットアップ
+フォントのインストール先は、
+/usr/local/texlive/texmf-local/fonts/
+です。僕の場合は、
+/usr/local/texlive/texmf-local/fonts/opentype/public/kozuka/
+というディレクトリを作成し、この中に小塚フォントのシンボリックリンクを張っています。
+小塚フォントは、僕のシステムの場合は、
+/opt/Adobe/Reader9/Resource/CIDFont/KozGoPr6N-Medium.otf
+/opt/Adobe/Reader9/Resource/CIDFont/KozMinPr6N-Regular.otf
+の二つです。ですから、
+$ sudo mkdir -p /usr/local/texlive/texmf-local/fonts/opentype/public/kozuka/
+$ cd /usr/local/texlive/texmf-local/fonts/opentype/public/kozuka/
+$ sudo ln -fs /opt/Adobe/Reader9/Resource/CIDFont/Koz*.otf ./
+のようにして、リンクを作成しておきます。
+尚、Linux 版の Adobe Reader(現在 Adobe は UNIX 系 OS の Adobe Reader は version 9 のままで開発を進めていて、これを書いている時点では私の手元の端末には version 9.5.5 が入っています)のパッケージには、どういうわけか KozGoPr6N-Medium.otf が入っていません。通常の Adobe Reader の使用時にですら、これが原因で、ゴシックが指定された文字列の表示がおかしくなることがあるので、僕は暫定的に同じ端末の Windows 版 Adobe Reader に添付される KozGoPr6N-Medium.otf を /opt/Adobe/Reader9/Resource/CIDFont/ にリンクして使用しています。
+許諾条項的にグレーなんじゃないか、という話もあるんですが、これで訴えられるんだったら訴えてみろやゴルァ……という感じですね。だって、小塚ゴシックが入っていないせいで、見出しが明朝になるだけならばまだしも、ゴシックの文字列が「・」の集合体になったりするし、これが先の小塚ゴシックのコピーでピタリと治まる、ということは、明らかに Linux 版の Adobe Reader が /opt/Adobe/Reader9/Resource/CIDFont/KozGoPr6N-Medium.otf の存在を前提にしている、ということでしょうから。
+ヒラギノフォントのセットアップ
+この場合も、
+/usr/local/texlive/texmf-local/fonts/opentype/public/hiragino/
+というディレクトリを作成し、この中にヒラギノフォントのシンボリックリンクを張っています。
+ヒラギノフォントの場合に注意しなければならないのは、元々のフォントファイルが日本語のファイル名になっていることです。そのままリンクを張ると、後々フォントマップの作成等で面倒なことになるので、
+$ sudo mkdir -p /usr/local/texlive/texmf-local/fonts/opentype/public/hiragino/
+$ cd /usr/local/texlive/texmf-local/fonts/opentype/public/hiragino/
+$ sudo ln -fs "/Library/Fonts/ヒラギノ明朝 Pro W3.otf" ./HiraMinPro-W3.otf 
+$ sudo ln -fs "/Library/Fonts/ヒラギノ明朝 Pro W6.otf" ./HiraMinPro-W6.otf
+$ sudo ln -fs "/Library/Fonts/ヒラギノ丸ゴ Pro W4.otf" ./HiraMaruPro-W4.otf
+$ sudo ln -fs "/Library/Fonts/ヒラギノ角ゴ Pro W3.otf" ./HiraKakuPro-W3.otf
+$ sudo ln -fs "/Library/Fonts/ヒラギノ角ゴ Pro W6.otf" ./HiraKakuPro-W6.otf
+$ sudo ln -fs "/Library/Fonts/ヒラギノ角ゴ Std W8.otf" ./HiraKakuStd-W8.otf
+のように、英字のファイル名にしてリンクしておきます。
+それ以外のフォントの場合
+上記以外のフォントを使用されたい場合も、/usr/local/texlive/texmf-local/fonts/ 以下にシンボリックリンク、もしくはフォントファイルを配置し、適切なフォントマップを用意して ls-R データベースを更新すれば、使用することができます。フォントは TrueType フォントも OpenType フォントも使用できますが、/usr/local/texlive/texmf-local/fonts/truetype と /usr/local/texlive/texmf-local/fonts/opentype というサブディレクトリを切って、その中に配置するといいでしょう(上の小塚フォント・ヒラギノフォントの場合はそうしています)。
+作業に一区切りが付いたら……
+TeX / LaTeX ではおなじみの、ls-R データベースの更新をしておきます。
+$ sudo mktexlsr
+もしくは、
+$ sudo texhash
+とすることで、ls-R データベースが更新されます。更新時のメッセージをよく見ていると、texmf-local 内にもちゃんとデータベースが作成・更新されていることが分かります。
+フォントを扱うユーティリティと統一的管理ユーティリティ
+フォントの設定、というからには、フォントを使うユーティリティがあって、それがこちらの希望のフォントを扱えるように設定する、ということでしょう。ところが、困ったことに、TeX / LaTeX 上でフォントを扱うソフトはひとつではありません。単純に DVI ファイルを処理するものを挙げても、
+dvips
+dvipdfmx
+xdvi (& pxdvi)
+pdftex
+……とあります。これらひとつひとつにフォントの設定を行うのはなかなかに大変です。
+この問題を解消するには、いくつかのフォントを扱うソフトに対して統一的に設定を行えるソフトが必要になるわけですが、まさに updmap というソフトがそれにあたります。
+updmap と updmap-sys
+updmap に関しては、『美文書作成入門』の c.5 updmap (pp.325) にシンプルな解説がありますので、ここではごく簡単に補足をしておきます。
+updmap は、dvips あるいは dvipdfmx 用に書かれたフォントマップを読み込み、それを反映させるかたちで、フォントを扱う種々のソフトに対する設定を行うことができます。ただし、updmap で設定した内容は ~/.texlive2013 以下に保持されます。つまり、updmap で設定した内容は、ユーザ個人にしか反映されません。
+システム全体の設定を行うためには、updmap-sys を使用します。updmap-sys の使い方は updmap と全く同じですが、設定内容は TeX Live のシステムそれ自体に反映されます。
+これらの設定の詳細に関しては以下のようなドキュメントが公開中されています:
+"updmap and kanji embedding": http://tug.org/texlive/updmap-kanji.html
+体系的、かつ実践的にまとめられていますので、英語はちょっと……という方も、じっくり目を通されることをお薦めします。
+kanji-config-updmap(-sys)
+実は、現行の TeX Live には updmap-sys のラッパーである perl スクリプト kanji-config-updmap(-sys)(当初は updmap-setup-kanji(-sys) という名称でした)が収録されています。これを使用すると、オプション等でミスをすることなしに、システムのデフォルトフォントセットを設定することができます。
+kanji-config-updmap(-sys) は、システムに収録されている "otf-" から始まる名前のフォントマップを読み込み、これをシステムのデフォルトセットとして登録することができます。たとえば、今手元のシステムを見てみると、
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/japanese-otf/otf-cktx.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/hiragino/otf-hiragino.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/hiragino/otf-up-hiragino.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/hiragino-pron/otf-hiragino-pron.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/hiragino-pron/otf-up-hiragino-pron.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/ipa/otf-ipa.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/ipa/otf-up-ipa.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/ipaex/otf-ipaex.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/ipaex/otf-up-ipaex.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/kozuka/otf-kozuka.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/kozuka/otf-up-kozuka.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/kozuka-pr6/otf-kozuka-pr6.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/kozuka-pr6/otf-up-kozuka-pr6.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/kozuka-pr6n/otf-kozuka-pr6n.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/kozuka-pr6n/otf-up-kozuka-pr6n.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/morisawa/otf-morisawa.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/morisawa/otf-up-morisawa.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/morisawa-pr6n/otf-morisawa-pr6n.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/morisawa-pr6n/otf-up-morisawa-pr6n.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/ms/otf-ms.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/ms/otf-up-ms.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/noEmbed/otf-noEmbed.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/noEmbed/otf-up-noEmbed.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/yu-osx/otf-up-yu-osx.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/yu-osx/otf-yu-osx.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/yu-win/otf-up-yu-win.map
+/usr/local/texlive/2014/texmf-dist/fonts/map/dvipdfmx/jfontmaps/yu-win/otf-yu-win.map
+……と、これだけ収録されています。
+これらの中からひとつを選択して、設定を行うわけですが、たとえばここでは otf-hiragino.map をデフォルトにするように設定してみましょう。設定は非常に簡単で、
+$ kanji-config-updmap hiragino
+と入力するだけです。フォントセットの名前は、頭の "otf-" を取った残りの部分を(拡張子を付けずに)指定します。
+コマンドを実行すると、ずらずらーっとメッセージが出てきますけれど、その中に、
+kanjiEmbed replacement string    : hiragino (/home/foo/.texlive2013/texmf-config/web2c/updmap.cfg)  kanjiVariant replacement string  :  (/home/foo/.texlive2013/texmf-config/web2c/updmap.cfg)
+というメッセージが出ています。このように、漢字の埋め込み用フォントが hiragino に設定されているわけです。
+次に、埋め込みをやめたい場合はどうするか、というと、
+$ kanji-config-updmap noEmbed
+と入力します。こうすると、otf-noEmbed.map の内容が反映され、
+kanjiEmbed replacement string    : noEmbed (/home/foo/.texlive2013/texmf-config/web2c/updmap.cfg)  kanjiVariant replacement string  :  (/home/foo/.texlive2013/texmf-config/web2c/updmap.cfg)
+のように、日本語フォントの埋め込みを行わないようにセッティングされます。
+updmap 同様、kanji-config-updmap も、設定した内容はユーザ個人にしか反映されません。システム全体の設定を行うためには、kanji-config-updmap-sys を使用します。kanji-config-updmap-sys の使い方は kanji-config-updmap と全く同じですが、設定内容は TeX Live のシステムそれ自体に反映されます。
+フォントマップの作成法
+フォントマップの作成に関しての詳細は『美文書作成入門』の第13章に説明がありますので、ここではふれません。前述のとおり、TeX Live 収録のフォントマップも充実しているので、新たにフォントマップを書く必要性はどんどん低くなっている状況です。ただし、後にふれるような理由で、自分でフォントマップを作成したい、という方もおられるかもしれませんので、ここでは僕が以前使っていた4種類のフォントマップにリンクしておきます。
+日本語フォントの埋め込みをしないフォントマップ
+小塚フォントを埋め込むフォントマップ
+ヒラギノフォントを埋め込むフォントマップ
+IPA ex 明朝 / ex ゴシックフォントを埋め込むフォントマップ
+埋め込みなしのフォントマップは、ptexlive のフォントマップを流用させていただいています。それ以外のフォントマップは『美文書作成入門』 pp.238-241 の記述を参考に作成しました。これらの4種類のフォントマップは OTF パッケージにも対応した内容にしてあります。上記4ファイルはいずれも dvipdfmx 用に書いていますので、
+$ sudo mkdir -p /usr/local/texlive/texmf-local/fonts/map/dvipdfmx/
+というディレクトリを作成して、このディレクトリ内にフォントマップを配置します。
+明示的なフォントマップの使い方
+上にリンクしたフォントファイルを、僕は結構長い間使っていました。というのも、当初 TeX Live にはこのようなフォントマップは収録されておらず、収録開始後も、フォントマップに /AJ16 オプションが付与されていない、等の不備があったためなのですが、現在ではそのような不具合もほぼ皆無なので、japanese-otf や jfontmaps に添付されるフォントマップを先のような方法で指定して使っています。
+そういうわけで、現在はあまりこのような使い方をされる方も多くないかもしれませんが、ここではフォントマップを明示的に指定して、DVI ファイルを処理する手順を書いておきます。一般的な TeX / LaTeX の処理に関しては、『美文書作成入門』等を御参照いただければよろしいかと思いますが、上記のようなフォントマップを使用する場合でも、そのプロセスは基本的には変わりません。
+$ platex foo.tex
+で、foo.tex から foo.dvi が作成されます。問題は、この DVI ファイルから最終的な出力ファイルを得るプロセスですが、ここでは例えば、
+$ dvipdfmx -f hiraginoEmbed.map foo.dvi
+のように、明示的にフォントマップを指定して dvipdfmx を起動します。そうすると、
+$ dvipdfmx -f hiraginoEmbed.map foo.dvi
+foo.dvi -> foo.pdf
+[1][2][3][4][5][6][7][8][9]
+231096 bytes written
+のようにメッセージが出て、foo.pdf が生成されます。
+お手元で使用されている TeX Live が古い(2011年9月14日以前)場合、"** WARNING ** 1 memory objects still allocated" という warning が出るかもしれません。これに関しては、
+http://www.tug.org/pipermail/tex-live/2011-June/029415.html
+で角藤氏が言及されていますが、開発者用のメッセージで無視してもさしつかえないもののようです。
+フリーフォントのみで埋め込みを行うには
+配布目的で、フリーフォントだけで埋め込みを行いたい、という場合があるかもしれません。また、論文や学会の proceedings の原稿を提出する際に、フォントの埋め込みを求められるケースがあるかもしれません(英語の場合だと、たとえば IEEE などは 煩いらしいですね)。ここではそのようなケースに関して触れておきます。
+まず、欧米文字に関してですが、これは基本的には TeX Live の default がフォント埋め込みになっているので、たとえば IEEE の場合だったら、URW ベースのフォントセットを指定してやればいいでしょう。詳細は『美文書作成入門』第12章「欧文フォント」を御参照いただきたいのですが、一番簡単かつ確実なのは New TX font package を使用することでしょう。
+厄介なのは日本語の文字の方です。TeX Live の豊富なフォントライブラリをあてにすることができないからですが、もし、そのファイルを受け取った全ての人が、日本語の表示に支障のない環境下で Adobe Reader で閲覧・印刷が可能であろうと思われるなら、フォントを埋め込まないのが一番安全でしょう。
+しかし、たとえば日本語未対応の gv や xpdf のユーザが多い場合や、日本語環境が十分整備されていない状況下でそのファイルを閲覧・印刷するであろう人がいる場合には、ちゃんと埋め込むべきフォントを埋め込まなければなりません。
+どんなフォントを用意しなければならないのか
+OTF パッケージが想定している日本語フォントは:
+ml or minl(明朝ライト、モリサワフォントの「リュウミンライト」に相当)
+mr or minr(明朝レギュラー、モリサワフォントの「リュウミンレギュラー」に相当)
+mb or minb(明朝ボールド、モリサワフォントの「太ミンA101」に相当)
+gr or gothr(ゴシックレギュラー、モリサワフォントの「中ゴシックBBB」に相当)
+gb or gothb(ゴシックボールド、モリサワフォントの「太ゴB101」に相当)
+gotheb(ゴシックエキストラボールド、モリサワフォントの「見出ゴMB31」に相当)
+mgr or mgothr(丸ゴシックレギュラー、モリサワフォントの「じゅん」に相当)
+です。このうち使用頻度の高い、
+明朝(モリサワフォントの「リュウミン」に相当)
+ゴシック(モリサワフォントの「中ゴシックBBB」に相当)
+太明朝(モリサワフォントの「太ミンA101」に相当)
+太ゴシック(モリサワフォントの「太ゴB101」に相当)
+丸ゴシック(モリサワフォントの「じゅん」に相当)
+計5種類に相当するフォントを用意すれば、ほとんどの場合に事は足りると考えていいでしょう。
+基本フォント
+基本となるフォント、すなわち明朝とゴシックですが、完全にフリーなものを求めるならば、IPA フォントが現実的な選択でしょう。IPA フォントの詳細は関しては、次章「IPA フォントに関して」を御参照下さい。
+IPA フォント以外にも、派生したフォントで使えるものがいくつかあります。後述する migu フォント / migmix フォントや Mobo / Moga フォントなどのように、部分的に IPA フォントや M+ フォントを用いたものがほとんどです。
+太ゴシック、丸ゴシック
+世間で出回っているフリーフォントを物色すると、明朝と比較して圧倒的にゴシックの方が多いようです。ですから、それらの中から太ゴシック、もしくは丸ゴシックに相当するものを探すということになります。
+先にふれた IPA / Takao フォントには、残念ながらウェイトのバリエーションがありません。dvipdfmx のフォントマップでは、"Bold" のオプションを付加することで、機械的に太くしたフォントを生成してくれますが、この機械的に生成された字体は埋め込まれない仕様になっています。
+TeX Live に収録されているフォントマップのうち、IPA フォントベースのフォントマップでは、これらのフォントは全て IPA フォントにアサインされています。ですから、そのままでは全て通常のゴシック体として出力されることになります。
+これらもフリーフォントで代替できないか、ということで、フリーで公開されているフォントを探してみると、太ゴシックとして 「MigMix2P ボールド」が使えそうです。MixMix フォントは M+ と IPA の合成フォントで、グリフ数の多いフリーフォントとしては珍しく、複数のウェイトを提供しているので、これは使えそうです。
+丸ゴシックとしては、当初、モトヤフォントの「NFモトヤシーダ1」の使用を検討していました。IPA ゴシックよりもやや丸みを帯びた美しいフォントです。モトヤフォントでは、この「NFモトヤシーダ1」に加え、「NFモトヤバーチ1」「NFモトヤアポロ1」の計3書体を、グリフの制限なし(ただしウエイトは各々1種類のみ)で無料公開しています。ダウンロードの際にメールマガジンへの登録が必要(ダウンロード後に解除可能)ですが、無料で TrueType フォント(「バーチ」は OpenType フォントも提供されています)を入手できます。
+また、株式会社モトヤは2010年9月に Open Handset Alliance (OHA) に参画する旨プレスリリースを出し、モトヤLシーダ3・モトヤLマルベリ3の2書体を Android  オープンソースプロジェクトに対しオープンソースライセンス (Apache License) で提供を始めました(ただし、これらの「モトヤL」フォントは、印刷用のフォントとは異なり、携帯機器に特化した軽量フォントだとのことですのでご注意下さい)。
+しかし、実際にこれらのフォントを dvipdfmx で埋め込んでみると、
+** NOTICE: This document contains `Preview & Print' only licensed font **
+……と怒られます。うーむ。作成した PDF ファイルを第三者に渡さず、自前のブラウズと印刷にのみ供するのであれば問題はないと思うのですが、ここでは安全に配布可能な PDF ファイル作成を目論んでいるので、モトヤフォント使用は諦めて「MigMix1M レギュラー」を使用することにします。他のゴシック体との差別化という意味ではやや弱いのですが、「和田研細丸ゴシック」を現在使用するというのは、フォントの質という意味では問題があると思うので(歴史的には極めて意義深いフォントですし、グリフの数も多く、CID 化もちゃんとされているのですが……)
+太明朝
+おそらく、フリーの日本語フォントを探していて、一番問題になるのは、この太明朝に相当するフォントでしょう。なかなか適当なものが見つからないのです。
+現状で実用に供することのできる太明朝のフォントというと、まずは "Y.Oz Vox" というサイトで公開されている MogaMincho フォントです(公開先リンク)。これらのフォントは M+ フォントと IPA フォントを合成したもので、ちゃんとボールド書体が含まれており、JIS 第四水準までカバーしています。
+最近は、Kindle や Kobo などの電子書籍において太明朝フォントのニーズが高まっているため、Fontforge 等を用いて IPA フォントを改変することで作られた太明朝フォントを目にすることが多くなってきました。それらの中でよく知られているものとして、ここでは KB明朝M を挙げておきます。Fontforge で太くしたフォントはあくまで代替品なのですが、太明朝が存在するだけでも恩恵は大きいので、機会がありましたら是非一度お試し下さい。
+基本フォント以外
+明朝ライト
+Bitstream Cyberbit フォントに関して簡単に説明しておきます。このフォントはその名の通り Bitstream Inc.(BITS) によって制作されたフォントですが、Unicode で用いることを考慮した国際化がされており、日本語文字も収録されています(日本語文字に関しては IPA から供与を受けているようです)。ライセンスに関しては、非商用目的に供する限りはフリーで、特筆すべきなのは、埋め込みに関してライセンス上で明示的にその使用を認めていることです。単独で用いるのには非常に線が細い明朝体ですが、ml or minl(明朝ライト、モリサワフォントの「リュウミンライト」に相当)として使用するのに適しているでしょう。縦書き用の句読点・記号が収録されていないのですが、選択肢のひとつとして知っておく意味はあるかもしれません。
+Bitstream Cyberbit フォントは、以下の URL から入手できます:
+http://ftp.netscape.com/pub/communicator/extras/fonts/windows/
+また、このフォントから派生した TITUS Cyberbit Basic font というフォントが存在しますが、この TITUS Cyberbit Basic font は漢字を割愛しているようです。
+ゴシックエキストラボールド
+ゴシックエキストラボールドとして使用できそうなフォントは、現在に至るまで探索継続中の状況なのですが、現時点では使えるフォントが見当たりません。FontForge を利用して、MigMix などのゴシック・ボールドのフォントを太らせることで代替品を自作することはできます。僕の場合は、太ゴシックとして使用している MigMix 2P ボールド を太らせたものを FontForge で作成し、これに MigMix 2P Ex ボールドと名前を付けて使用しています。
+どのようにフォントを使用するか
+基本5書体をフリーフォントで使えるようにする
+僕の場合は、Linux 上でこれらのフォントの埋め込みを行っています。僕の端末は xfstt で TrueType フォントを使用できるので、/usr/share/fonts/truetype 以下に適宜ディレクトリを作成して、そこに TrueType フォントを収容しています。
+TeX Live でこれらの TrueType フォントを使用される場合には、先の小塚フォントのセットアップの場合と同様に、
+/usr/local/texlive/texmf-local/fonts/opentype/public/
+にシンボリックリンクを張って、ls-R データベースを更新しておきます。
+フォントマップは、たとえばこんな風に(allfree.map)作成すればいいでしょう。注意することは、
+CID に対応していないフォントの場合は、適宜 /AJ16 オプションを使用する
+.ttc(TrueTypeCollection)の場合は、:0: などとして、束ねられた TrueType フォントの何番目を使用するのかを明示的に指定すること
+位でしょうか。たとえば、MogaExMincho Bold は mogamb.ttc に束ねられた4つのフォントの2つめなので、フォントマップでは頭に ":1:" を付ける必要があります(":0:" から始まるので、通常の数え方での2つめは「1番目」になることに注意)。
+もし可能であるならば、この新しいフォントマップの名前の頭に "otf-" の文字列を付与しておくといいかもしれません。こうしておくと、先の updmap-setup-kanji スクリプトを用いて、これらを TeX Live の標準日本語フォントとして利用することができます。
+実際に上で定義した5つのフォントを表示してみましょう。
+\documentclass{jsarticle}
+\usepackage[expert, deluxe]{otf}
+\begin{document}
+\noindent {\usekanji{JY1}{hmc}{m}{n} \Huge 漢字仮名交じり文の例:明朝}
+\noindent {\usekanji{JY1}{hmc}{bx}{n} \Huge 漢字仮名交じり文の例:太明朝}
+\noindent {\usekanji{JY1}{hgt}{m}{n} \Huge 漢字仮名交じり文の例:ゴシック}
+\noindent {\usekanji{JY1}{hgt}{bx}{n} \Huge 漢字仮名交じり文の例:太ゴシック}
+\noindent {\usekanji{JY1}{mg}{m}{n} \Huge 漢字仮名交じり文の例:丸ゴシック}
+\end{document}
+のように文書を作成します。これをたとえば foo.tex という名前で保存したら、
+$ platex foo.tex
+$ dvipdfmx -f allfree.map foo.dvi
+のように処理すると、以下のような出力が得られます:
+尚、これらの出力結果は、作成した PDF を 画面表示し、その画面のスクリーンショットから切り出したものです。直接出力ではありませんので念のため。
+基本7書体をフリーフォントで使えるようにする
+また、明朝ライトとゴシックエキストラボールドを加えた7書体に対応したフォントマップを以下に公開しておきます:allfree2.map。
+それでは、このマップを使用して7書体を表示するテストを行ってみましょう。
+\documentclass{jsarticle}
+\usepackage[expert, deluxe]{otf}
+\begin{document}
+\noindent {\usekanji{JY1}{hmc}{l}{n} \Huge 漢字仮名交じり文の例:細明朝}
+\noindent {\usekanji{JY1}{hmc}{m}{n} \Huge 漢字仮名交じり文の例:明朝}
+\noindent {\usekanji{JY1}{hmc}{bx}{n} \Huge 漢字仮名交じり文の例:太明朝}
+\noindent {\usekanji{JY1}{hgt}{m}{n} \Huge 漢字仮名交じり文の例:ゴシック}
+\noindent {\usekanji{JY1}{hgt}{bx}{n} \Huge 漢字仮名交じり文の例:太ゴシック}
+\noindent {\usekanji{JY1}{hgt}{eb}{n} \Huge 漢字仮名交じり文の例:極太ゴシック}
+\noindent {\usekanji{JY1}{mg}{m}{n} \Huge 漢字仮名交じり文の例:丸ゴシック}
+\end{document}
+というファイルを platex で処理した後に、dvipdfmx で allfree2.map を明示的に指定して PDF を作成すると、以下のようになります。
+日本語フォントのセットアップ

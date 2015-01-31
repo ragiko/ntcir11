@@ -1,0 +1,81 @@
+
+(学習メモ) MCMCサンプラー RStan を R から使う際のスクリプトの書き方
+「銀座で働くデータサイエンティストのブログ」掲載の例文 まとめ
+「銀座で働くデータサイエンティスト」さんが、分析モデル別に、 RStan のスクリプトを例文列挙してくださっていたので、今後の学習のために、インデックスを(勝手に m(_ _)m )貼らせていただききました!
+(リンク)「Stanで統計モデリングを学ぶ(3): ざっと「Stanで何ができるか」を眺めてみる」 
+1.正規線形モデル
+2.ロジスティック回帰 ・ プロビットモデル
+※ ロジスティック回帰の Stan スクリプトについては、以下も参考
+(リンク)サボタージュ禁止のおさぼり日記 「rstanでちょこちょこ」
+3.多項ロジットモデル
+4.ARモデル (時系列解析: 自己回帰モデル)
+5.GARCHモデル (時系列解析: 自己回帰分散不均一モデル)
+6.MAモデル (時系列解析: 移動平均モデル)
+(上記、画面横スクロールしないと全画面映らないため、以下にスクリプト全体を表示)
+7.ARMAモデル (時系列解析: 自己回帰移動平均モデル)
+8.K-平均法 (クラスタリング)
+9. 混合モデル
+10.LDAモデル ( 言語解析のトピックモデルほか Latent Dirichlet Allocation 潜在的ディレクレ配分法 ) 
+【ここから、以下のページ】
+「Stanで統計モデリングを学ぶ(4): とりあえず階層ベイズモデルを試してみる(基本編)」 
+11.階層ベイズモデル
+12.階層ベイズモデル(季節調整)
+(以上、リンクを貼らせていただきました m(_ _)m)
+【補足】 なお、 Stan コードを R の glmer() 関数から自動生成させて RStan をまわす方法もあるようです
+slide share  清水 裕士(広島大学)「MCMCでマルチレベルモデル」
+(リンク先)
+※ 上記 スライドシェアでは、 M-Plus を用いた MCMC 演算のスクリプトも掲載されています
+# (学習メモ) MCMCサンプラー _RStan_ を _R_ から使う際のスクリプトの書き方
+## 「銀座で働くデータサイエンティストのブログ」掲載の例文 まとめ
+# 「銀座で働くデータサイエンティスト」さんが、分析モデル別に、 _RStan_ のスクリプトを例文列挙してくださっていたので、今後の学習のために、インデックスを(勝手に m(_ _)m )貼らせていただききました!
+## [ (リンク)「Stanで統計モデリングを学ぶ(3): ざっと「Stanで何ができるか」を眺めてみる」 ](http://tjo.hatenablog.com/entry/2014/03/25/194605)
+![GINZA.1.png](https://qiita-image-store.s3.amazonaws.com/0/43487/d9d3f611-2149-df57-389c-1552ebce2282.png)
+# 1.正規線形モデル
+![seiki.senkei.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/874b2fae-888c-05b5-ee8f-e127a8fc5ab5.png)
+# 2.ロジスティック回帰 ・ プロビットモデル
+![logistics.or.probit.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/8c9c7854-81d9-6d4d-5cfd-e5d0882e7b48.png)
+#### ※ ロジスティック回帰の _Stan_ スクリプトについては、以下も参考
+### [ (リンク)サボタージュ禁止のおさぼり日記 「rstanでちょこちょこ」](http://aaaazzzz036.hatenablog.com/entry/2013/11/06/225417)
+![addition.logistics.modification.1.png](https://qiita-image-store.s3.amazonaws.com/0/43487/f0f910c4-47cf-4a90-72cb-022ae40a5b52.png)
+![addition.logistics.modification.2.png](https://qiita-image-store.s3.amazonaws.com/0/43487/83c74f9a-7654-ebd8-776d-de468552a75a.png)
+![addition.logistics.modification.3.png](https://qiita-image-store.s3.amazonaws.com/0/43487/cd966ba0-cc5b-0ca8-2a8b-a2c52fc9f396.png)
+# 3.多項ロジットモデル
+![takou.logit.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/2d2fbce8-8b59-a990-14e6-3699429a59f7.png)
+# 4.ARモデル (時系列解析: 自己回帰モデル)
+![AR.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/e90bce03-849f-e661-1517-14630098bd33.png)
+# 5.GARCHモデル (時系列解析: 自己回帰分散不均一モデル)
+![GARCH.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/157ddfe8-dbf4-5e3b-8337-e2e70a889a3a.png)
+# 6.MAモデル (時系列解析: 移動平均モデル)
+![MA.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/89e3e2d0-a83f-9f68-eb59-e5059f886a5a.png)
+### (上記、画面横スクロールしないと全画面映らないため、以下にスクリプト全体を表示)
+![MA.model.code.all.png](https://qiita-image-store.s3.amazonaws.com/0/43487/00c873a7-cb14-77b1-39cf-7f2ca40180b1.png)
+# 7.ARMAモデル (時系列解析: 自己回帰移動平均モデル)
+![ARMA.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/b83b328a-71c7-39ff-6f31-56cd385acf03.png)
+# 8.K-平均法 (クラスタリング)
+![k.means.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/639efc11-335f-e141-1374-c9727057afa4.png)
+# 9. 混合モデル
+![mix.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/dab41cca-7df5-a58b-39a8-d8066fbccc6d.png)
+# 10.LDAモデル ( 言語解析のトピックモデルほか _Latent Dirichlet Allocation_ 潜在的ディレクレ配分法 ) 
+![LDA.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/034cc9ff-be9d-a529-3d0e-9d3ec7084e8c.png)
+![LDA.model.code.all.png](https://qiita-image-store.s3.amazonaws.com/0/43487/c7ddc65c-93b9-9b8e-2ca1-4c29fdd53688.png)
+# 【ここから、以下のページ】
+## [ 「Stanで統計モデリングを学ぶ(4): とりあえず階層ベイズモデルを試してみる(基本編)」 ](http://tjo.hatenablog.com/entry/2014/05/01/190346)
+# 11.階層ベイズモデル
+![kaisouBayse.model.code.all.png](https://qiita-image-store.s3.amazonaws.com/0/43487/7ead277e-07ef-2c3c-d57f-193ca774535b.png)
+![kaisouBayse.model.code.allall.png](https://qiita-image-store.s3.amazonaws.com/0/43487/03a478bb-fce2-89c1-5b6e-29d9bfad176e.png)
+# 12.階層ベイズモデル(季節調整)
+![kaisouBayse.seasonal.adj.model.code.png](https://qiita-image-store.s3.amazonaws.com/0/43487/c45d95b5-aaf5-3f5e-e045-d86d0ddf3276.png)
+![kaisouBayse.seasonal.adj.model.code.all.png](https://qiita-image-store.s3.amazonaws.com/0/43487/490d4c17-a15a-7272-9498-577231dd4c67.png)
+![kaisouBayse.seasonal.adj.model.code.2.png](https://qiita-image-store.s3.amazonaws.com/0/43487/c9721463-a786-de05-e631-e08cdf3eed99.png)
+![kaisouBayse.seasonal.adj.model.code.2.all.png](https://qiita-image-store.s3.amazonaws.com/0/43487/1a599ffe-e66d-1682-cc62-e04fea765457.png)
+# (以上、リンクを貼らせていただきました m(_ _)m)
+# 【補足】 なお、 _Stan_ コードを _R_ の _glmer()_ 関数から自動生成させて _RStan_ をまわす方法もあるようです
+## _slide share_  清水 裕士(広島大学)「MCMCでマルチレベルモデル」
+## [ (リンク先)](http://www.slideshare.net/simizu706/mcmc-35634309) 
+![glmer2stan.png](https://qiita-image-store.s3.amazonaws.com/0/43487/40acdf73-9e14-72ac-7a10-76caf0f46732.png)
+![glmer2stan.2.png](https://qiita-image-store.s3.amazonaws.com/0/43487/c457c691-81bf-a7e1-a970-221574197cad.png)
+# ※ 上記 スライドシェアでは、 _M-Plus_ を用いた _MCMC_ 演算のスクリプトも掲載されています
+![glmer2stan.9.png](https://qiita-image-store.s3.amazonaws.com/0/43487/dc2733dc-43ac-e027-baf8-2f15733e1b3d.png)
+![glmer2stan.10.png](https://qiita-image-store.s3.amazonaws.com/0/43487/0df466e0-3456-231a-7e5f-281e05aaedd9.png)
+![glmer2stan.11.png](https://qiita-image-store.s3.amazonaws.com/0/43487/f4674ccc-0524-ac9d-9454-d7f957790e0f.png)
+【教材サイト 備忘録】RからMCMC ～RStanコード例文 分析モデル別 - Qiita

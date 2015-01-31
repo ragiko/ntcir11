@@ -1,0 +1,98 @@
+The IETF XML Registry
+本文書の状態
+本文書はインターネットコミュニティの為の、現状における最良の措置を定め、改善の為の議論や提案を求める。本文書の配布は無制限である。
+著作権表示
+Copyright (C) The Internet Society (2004).  All Rights Reserved.
+概要
+本文書は、名前空間、文書型定義宣言(DTD)、スキーマ、資源記述の枠組み(RDF)スキーマなどのような、拡張可能マーク附け言語(XML)に関連する物を扱うIETF標準の為の、IANAが管理するレジストリについて述べる。
+1. 序論
+この数年間に渡って、拡張可能マーク附け言語(XML) [W3C.REC-xml]は広く利用されるデータのマーク附けの手法となった。既にXML文書型定義宣言(DTD)、XML名前空間 [W3C.REC-xml-names]、XMLスキーマ [W3C.REC-xmlschema-1]を定義する標準を作成したいくつかのIETFワーキンググループが存在している。個々の技術は統一資源識別子(URI) [RFC2396]や、その他の標準化された識別子を様々な要素を識別するのに利用している。
+例えば、文書型定義宣言(DTD)を使ったいくつかの標準の中には、公開識別子の使用に先だって「よく知られている」システム識別子の方を選ぶ事が慣例となっている。とはいえ、それがシステム識別子を標準化しようと試みる価値よりもトラブルになる事は証明されている。それ故に、いくつかのIETF標準は、単に識別するがXML文書の為のDTDを解決しないという目的の為に、単純に解決不可能なURIを作成している、という事になってしまう。
+本文書は、文書の著者や実装者が、よく管理され、XML要素の為の信頼できる場所を持てるように、IANAが管理するXML要素識別子のレジストリを作成する事によって、それらの慣例を標準化し価値を高めようとしている。この標準の一部として、IANAは以下の物を管理する。
+文書の公的な表現
+登録時に提供されるならば、要素の為のURI
+公開識別子としてのURIのレジストリ
+登録者が特定のURIを要求しなかった場合、IANAは[RFC3553]に従う統一資源名(URN)を割り当てる。
+2. 専門用語
+本文書中に現れる "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", "OPTIONAL" というキーワードは、BCP 14, RFC 2119[RFC2119]に記述されている通りに解釈される。
+3. 登録可能な文書
+3.1. 割り当てられた・登録された URI
+このレジストリ中の(公開識別子を除く)全ての要素は、登録する為のURIを必要とする。登録者が割り当てられるURIを持つ事を望むなら、
+urn:ietf:params:xml:<class>:<id>
+という形式のURNが割り当てられる。<class>は登録される文書のタイプ(下記参照)である。<id>は、一意性と永続性を保つ為に、IANAが注意深く考えた様々な意味に基づいて、IANAによって生成される一意なIDである。注記: このタイプのURNが割り当てられる為には、登録される物はIETFの合意を得る処理を通過していなければならない。一般的に、これはRFCとして文書化されなければならないという事を意味する。RFC 3553 [RFC3553]に定められたURNの登録のテンプレートは第6章にある。
+IANAはまた、http://www.iana.org/assignments/ にある全てのIANAの登録された要素と同じ方法で、公的にアクセス可能なファイルスペースにある、全ての登録された要素を持つファイルサーバーを管理する。このサーバーは最低でもHTTPとFTPによるアクセスを提供する。ファイルサーバーのディレクトリ構造がIANAの責任にある間は、ファイルが<class>によって組織化され、個々のファイル名を<id>とする事を提案する。
+実装者は、存在するリソースやディレクトリ構造が変わらない事にプログラムが依存すべきでない、という事を警告される。いくつかのソフトウェアがDTDやスキーマを「オン・ザ・フライ」でダウンロードしようとする事は明確に認識している。だが、開発者はこうする事や、「スキーマダウンロード用のリポジトリ」としてIANAのネットワーク資源を参照しないタイミングを理解すべきである。これが、IANAがシステム識別子を登録・提供しない理由である。
+3.2. 登録可能なクラス
+IANAに登録出来るXMLの要素のリストは、以下の通りである。
+publicid
+DOCTYPE宣言やその他の外部参照を持つXML文書は、公開識別子やシステム識別子の両方により識別出来る。システム識別子はシステム固有の情報であり、XMLシステムの実体管理機構がファイルやメモリの場所を見つける事や、実体があるファイル中のポインターを見つける事を可能にする。システム識別子は、識別される実体のアクセスを制御するプログラムの実行を行なえる事にも留意すべきである。従って、それらは登録される要素では無い。多くの場合、システム識別子はURIとしても認識される。しかしながら、この場合にはURIは依然としてシステム依存の情報としてしか使われない。公開識別子もまたURIである場合、システム識別子がURIを持つ事は可能であるが、その副作用が既知の物で、受け入れ難い悪影響を及ぼさない事を理解していない限り、この方式は推奨されていない。
+公開識別子は様々なシステムやユーザー環境に渡って意味がある事を意図された名前である。一般的に、公開識別子はそれを割り当てた登録者が居る名前であり、よって公開識別子は一意で、二つの実体が同一の後悔識別子を持つ事が無い事が保証される。実際に、公開識別子は通常「正式公開識別子」[ISO.8879.1986]であるが、そのようにしなければいけないと制限されているわけではない。[RFC3151]によれば、
+公開識別子の文字(Extensible Markup Language (XML) 1.0 Second EditionのProduction 13によって定義されている)だけから成るどんな文字列も正当な公開識別子である。
+従って、文字セットの制限に従えば、公開識別子をURNとする事は正当である。
+ns
+XML 名前空間 [W3C.REC-xml-names]はURIによって名前付けをする。これらは実体の無い、機械解析可能な表現を持つ。従って、登録された文書は仕様書か、それを参照する物のどちらかになる。登録者によってURIが提供されない場合、IANAは'urn:ietf:params:xml:ns:<id>'にXML名前空間の名前を当てたURNが割り当てられる。
+schema
+XMLスキーマ [W3C.REC-xmlschema-1]もまたURIによって識別されるが、XMLスキーマの内容は機械解析可能である。IANAに登録される文書はXMLスキーマ文書である。IANAが割り当てるURNはスキーマのURIとして用いる事が出来、'urn:ietf:params:xml:schema:<id>'の形式を取る。
+rdfschema
+資源記述の枠組み(RDF) [W3C.CR-rdf-schema]は、連結グラフに基づいたデータモデルであるXMLの連なりである。メタデータの表現に用いられる。RDFは、URI間の関係に関する文法を表現するRDFのスキーマを利用する。これらの文法はURIによって識別される。IANAによって割り当てられたURNは識別する為のURIとして用いる事が出来、'urn:ietf:params:xml:rdfschema:<id>'の形式を取る。
+4. 登録手続き
+IANAがこれらの要素を自動化するプロセスを要求するか実装するまでの間、いかなる規格も、それぞれの文書のIANAに関する考察の章のリクエスト部を作らなければならない。リクエストは以下のテンプレートの様式でなければならない。
+URI
+XML要素を識別するURIもしくは公開識別子。登録者がIANAがURIを割り当てる事を要求しているなら、この欄は"please assign"と指定されるべきである。
+登録者連絡先
+登録される要素の登録者連絡先。理想的には、この欄は名前と、適切な物理的及びネットワーク上の連絡先になる。IETFが標準を策定した場合には、登録者はIESGが登録者となる。
+XML
+レジストリに実際に登録するXML。ファイルの始まりと終わりが明確でないならば、文書は"BEGIN"というテキストをファイルの始まりの印として使い、"END"というテキストをファイルの終わりの印として使う。IANAはリポジトリ中に保持されているファイルの中のこの2つの文字列の間(RFC Editorによって挿入される改ページやRFCの整形を除く)に、何かテキストを挿入する事ができる。
+5. セキュリティに関する考察
+IANAによって管理されている情報は信頼され、攻撃の対象となるだろう。XMLスキーマやDTDといったいくつかのケースでは、IANAによって管理される内容が直接ソフトウェアの内部に取り込まれる可能性がある。従って、インターネットにおける重要な参照場所に求められるセキュリティの予防処理を保守する為に、IANAによってより一層の注意が払われるべきである。
+この事項以外には、他のIANAのリポジトリからいかなるセキュリティに関する考察も発見されていない。
+6. IANA に関する考察事項
+本文書はIANAが(IESGの指示により)主として責任を負う、少々大きめのリポジトリを作成しようとしている。このレジストリを管理するのに必要とされる尽力の量は問題ではなく、逆に承認手順を取り囲む方針や手順はささいな事では無い。レジストリは先着順の原則に則るが、仕様書は必要とされる。IETFが一旦レジストリの経験を積んだら、これらの方針は変わる可能性がある。
+RFC 3553 [RFC3553]は、新しいレジストリが要求する名前が名前空間'urn:ietf:params'の配下に割り当てられ、またテンプレート中の空白の構造を指定しなければならない事を規定している。IANAはこの新しい副名前空間を作成し、管理する。
+レジストリ名:
+xml
+説明:
+本文書にはレジストリの仕様が含まれている。名前空間は1つの副名前空間<id>により組織化される。
+リポジトリ:
+上記のガイドラインに従って割り当てられる。
+インデックスの値:
+クラス名
+7. 引用した規格
+[ISO.8879.1986]
+International Organization for Standardization, "Information processing - Text and office systems - Standard generalized markup language (SGML)", ISO Standard 8879, 1986.
+[RFC2119]
+Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.
+[RFC2396]
+Berners-Lee, T., Fielding, R. and L. Masinter, "Uniform Resource Identifiers (URI): Generic Syntax", RFC 2396, August 1998.
+[RFC3151]
+Walsh, N., Cowan, J. and P. Grosso, "A URN Namespace for Public Identifiers", RFC 3151, August 2001.
+[RFC3553]
+Mealling, M., Masinter, L., Hardie, T. and G. Klyne, "An IETF URN Sub-namespace for Registered Protocol Parameters", BCP 73, RFC 3553, June 2003.
+[W3C.CR-rdf-schema]
+Brickley, D. and R. Guha, "Resource Description Framework (RDF) Schema Specification 1.0", W3C CR-rdf-schema, March 2000, <http://www.w3.org/TR/2000/CR-rdf-schema-20000327>.
+[W3C.REC-xml]
+Bray, T., Paoli, J., Sperberg-McQueen, C. and E. Maler, "Extensible Markup Language (XML) 1.0 (2nd ed)", W3C REC-xml, October 2000, <http://www.w3.org/TR/REC-xml>.
+[W3C.REC-xml-names]
+Bray, T., Hollander, D. and A. Layman, "Namespaces in XML", W3C REC-xml-names, January 1999, <http://www.w3.org/TR/REC-xml-names>.
+[W3C.REC-xmlschema-1]
+Thompson, H., Beech, D., Maloney, M. and N. Mendelsohn, "XML Schema Part 1: Structures", W3C REC-xmlschema-1, May 2001, <http://www.w3.org/TR/xmlschema-1/>.
+8. 知的所有権の声明
+IETFは、正当性及びいかなる知的所有権の範囲及び、実装や本文書に記述された技術の使用や、有効性如何に関わらずそのような権利に基づいたライセンスに関係すると主張される可能性があるその他の権利に関するいかなる見解も示さない。そのような権利を認める為のいかなる努力を表す物もまた同様である。IETFの標準化過程及び標準化関連の権利に関する手続きについての情報は、BCP-11に存在する。権利要求のコピーは出版及びの為に提供され、ライセンスの保証も提供される。また、一般的なライセンスを取得する試みの結果や、実装者やこの使用のユーザーによるそのような商業的な権利を使用する許可は、IETF事務局より取得する事が出来る。
+IETFは関係者には誰にでも、いかなる著作権、特許権・特許出願、その他のこの標準を実践する為に必要になる可能性がある技術をカバーする可能性がある所有権に関する諸注意を勧告する。その情報をIETFの事務局長宛に送って頂きたい。
+9. 著作者連絡先
+Michael Mealling
+VeriSign, Inc.
+Mountain View, CA
+USA
+EMail:
+michael@verisignlabs.com
+URI:
+http://www.research.verisignlabs.com
+10. Full Copyright Statement
+Copyright (C) The Internet Society (2004).  All Rights Reserved.
+This document and translations of it may be copied and furnished to others, and derivative works that comment on or otherwise explain it or assist in its implementation may be prepared, copied, published and distributed, in whole or in part, without restriction of any kind, provided that the above copyright notice and this paragraph are included on all such copies and derivative works.  However, this document itself may not be modified in any way, such as by removing the copyright notice or references to the Internet Society or other Internet organizations, except as needed for the purpose of developing Internet standards in which case the procedures for copyrights defined in the Internet Standards process must be followed, or as required to translate it into languages other than English. 
+The limited permissions granted above are perpetual and will not be revoked by the Internet Society or its successors or assignees. 
+This document and the information contained herein is provided on an "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. 
+承認
+RFC Editorの職務への財源は、現在Internet Societyによって提供されている。
+RFC3688: The IETF XML Registry

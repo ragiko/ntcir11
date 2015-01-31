@@ -1,0 +1,180 @@
+板垣 貴裕
+テキスト検索にもさまざまな方法があります。大量のテキストを検索するにはインデックスを使って検索したいところですが、どんな検索にも応えられるインデックスというものは、さすがに存在しません。それぞれのアプリケーションの条件に適したテキスト検索方法やインデックスの張り方を選んで行きましょう。
+今回説明するテキスト検索の方法の一覧を以下に挙げます。PostgreSQL ユーザが「全文テキスト検索」というと「単語単位の検索」を指すことが多いようです。また、「中間一致検索」が「あいまい検索」と呼ばれることもあるようです。用語が厳密な意味で使われないことも多いようなので、文脈には注意して解釈してください。
+「単語単位の検索」と「中間一致検索」では、追加のモジュールを導入することで日本語全文検索が可能なインデックスを作成できます。こちらは説明の後半で紹介します。以下、本記事の内容です。
+テキスト検索の方法
+完全一致検索
+前方一致検索
+後方一致検索
+中間一致検索
+正規表現による検索
+単語単位の検索
+比較
+中間一致検索と単語検索との結果の比較
+インデックス・サイズの比較
+まとめ
+また、以下の説明では、次のような id と body (本文) を持つ単純なテーブルを例にしています。
+CREATE TABLE documents (
+id serial PRIMARY KEY,
+body text
+);
+完全一致検索
+WHERE body = 'foo'
+完全一致検索では普通に = 演算子を使えます。ちなみに、PostgreSQL では NULL と空文字 '' はしっかり別の値として扱います。空文字は 「= ''」で、NULL は 「IS NULL」 で検索するようにしてください。
+完全一致検索でインデックスを使うには
+普通のインデックス (btree) を作成すれば、上記のクエリのままでインデックスを使うことができます。
+=# CREATE INDEX idx ON documents (body);
+=# EXPLAIN SELECT * FROM documents WHERE body = 'foo';
+QUERY PLAN
+------------------------------------
+Index Scan using idx on documents
+Index Cond: (body = 'foo'::text)
+もしテキストのサイズが大きい場合、テキスト全文をインデックス内に保持するのはもったいないので、ハッシュ値を関数インデックスにするとインデックスがコンパクトになります。コンパクトなインデックスが必要な場合、文字数が100文字程度を目安にハッシュ値方式も検討してみてください。全行が100文字のテキストの場合で比較すると、文字全体をインデックス化する場合と比べて、ハッシュ値では 15% 程度までサイズを減らせます。
+=# CREATE INDEX idx_hash ON documents (hashtext(body));
+=# EXPLAIN SELECT * FROM documents
+WHERE hashtext(body) = hashtext('foo')
+AND body = 'foo';    -- ハッシュ値重複に備えて二重チェック
+QUERY PLAN
+---------------------------------------------
+Index Scan using idx_hash on documents
+Index Cond: (hashtext(body) = 1955559433)
+Filter: (body = 'foo'::text)
+前方一致検索
+WHERE body LIKE 'foo%'
+型番号や郵便番号などのコード番号であれば、前方一致検索で十分な場合もあります。一方、長いテキストを検索する場合には、前方一致検索では不十分で、中間一致検索 が求められることが多いかもしれません。
+前方一致検索でインデックスを使うには
+普通のインデックス (btree) を作成します。ただし、注意点が幾つかあります。
+Cロケールを使う
+インデックスを使えるのはロケールがCの場合に限られます。
+Prepared Statement を使わない
+LIKE のキーワード側をバインド変数にすると、インデックスが使われません。例えば JDBC であれば prepareThreshold=0 に設定する必要があるかもしれません。
+(8.3 以前) ALTER COLUMN SET STATISTIC 100 を行う
+バージョン 8.3 以前では、LIKE 検索ではサンプリング係数が 100 以上でないと実行計画の品質が著しく低下します。default_statistics_target は 10 になっているので、LIKE 検索をする列に対して ALTER COLUMN STATISTIC 100 しておきましょう。ちなみに、8.4 では、本体の改善の効果により、デフォルトのままで特に問題ありません。
+もしテキストのサイズが大きい場合、最初の文字だけをインデックス内に保持するとサイズが節約できます。substring() 関数を使って、最初の100文字だけをインデックスに保持する例を示します。検索する際にも毎回 substring() が必要なことに注意してください。
+=# CREATE INDEX idx_headchars ON documents (substring(body, 0, 100));
+=# EXPLAIN SELECT * FROM documents
+WHERE substring(body, 0, 100) LIKE 'foo%' AND body LIKE 'foo%'
+QUERY PLAN
+----------------------------------------------------------
+Index Scan using idx_headchars on documents
+Index Cond: (("substring"(body, 0, 100) >= 'foo'::text)
+AND ("substring"(body, 0, 100) 
+後方一致検索
+WHERE body LIKE '%foo'
+後方一致検索を目にするケースはあまり無いような気がしますが、欧米式の住所の表記方法 (文字列の後半が広域を示す) 等で出番があるかもしれません。
+後方一致検索でインデックスを使うには
+普通にインデックスを作成するだけではインデックスによる検索はできません。ここで少し頭をひねって、後方一致検索を「前後反転させた文字列に対する前方一致検索」だと考えると、インデックスが使えるようになります。文字の順序を反転させる関数 reverse() を使い、その結果に対する関数インデックスを作成します。検索キーも reverse() する必要があることに注意してください。その他の注意や制約は前方一致検索と同じです。
+reverse() 関数は 9.1 以降は本体に組み込まれています。9.0 以前では、以下の例を参考に自作してみてください。
+-- 9.0 以前用
+=# CREATE FUNCTION reverse(text) RETURNS text AS
+$$
+SELECT array_to_string(array_agg(substring($1, i, 1)), '')
+FROM generate_series(length($1), 1, -1) AS i
+$$
+LANGUAGE sql IMMUTABLE;
+=# CREATE INDEX idx_reverse ON documents (reverse(body));
+=# EXPLAIN SELECT * FROM documents
+WHERE reverse(body) LIKE reverse('%foo');
+QUERY PLAN
+-----------------------------------------------
+Index Scan using idx_reverse on documents
+Index Cond: ((reverse(body) >= 'oof'::text)
+AND (reverse(body) 
+[注意] 上記の reverse() 関数は効率が悪いので、実際のシステムで利用する場合には C言語等で関数を作り直すことをお奨めします。
+中間一致検索
+WHERE body LIKE '%foo%'
+中間一致検索でインデックスを使うには
+通常のインデックス (btree) は使えませんが、PostgreSQL 9.1 以降であれば、contrib 内にある pg_trgm をインストールすることで、LIKE での中間一致検索でもインデックスを利用できます。gin または gist インデックスをベースにしているため、ストリーミング・レプリケーションにも対応しています。
+注意: 日本語文書をはじめ、英数字以外を含む文書を検索するには、pg_trgm の KEEPONLYALNUM オプションを OFF にしてモジュールをリビルドする必要があります。contrib/pg_trgm/trgm.h の #define をコメントアウトしてください。初期出荷状態では ON になっており、英数字以外を多く含む文書では、インデックスの効果が無いばかりか、むしろ性能が大幅に劣化します!
+=# CREATE EXTENSION pg_trgm;
+=# CREATE TABLE tbl (t text);
+=# INSERT INTO tbl (t) VALUES ('ABC DE'), ('あいう えお');
+=# CREATE INDEX idx ON tbl USING gin (t gin_trgm_ops);
+=# SET enable_seqscan = off;
+=# EXPLAIN (costs off) SELECT * FROM tbl WHERE t LIKE '%う え%';
+QUERY PLAN
+--------------------------------------------
+Bitmap Heap Scan on tbl
+Recheck Cond: (t ~~ '%う え%'::text)
+->  Bitmap Index Scan on idx
+Index Cond: (t ~~ '%う え%'::text)
+外部拡張モジュールをインストールするならば、"textsearch_senna" を使う方法があります。このモジュールは、組み込み型全文検索エンジンSenna と PostgreSQL を繋げる「糊」の役割です。LIKE を使った SQL を Senna のクエリに書き換えて、N-gram方式 のインデックスを使った検索を行います。PostgreSQL 9.0 以前でも利用できますが、ストリーミング・レプリケーションには対応していません。
+=# CREATE INDEX idx_senna ON documents USING senna (body like_ops);
+=# EXPLAIN SELECT * FROM documents WHERE body LIKE '%データベース%';
+QUERY PLAN
+------------------------------------------------------
+Bitmap Heap Scan on documents
+Recheck Cond: (body ~~ '%データベース%'::text)
+->  Bitmap Index Scan on idx_senna
+Index Cond: (body ~~ '%データベース%'::text)
+pg_trgm や textsearch_senna の最大の利点は、LIKE を使う SQL を書き換えずにインデックスが利用できるようになることでしょう。また、Prepared Statement を使ってもインデックスを利用することができます。ただ、どちらもインデックスのサイズは大きくなりがちなため、テキスト量にあわせて十分な物理メモリを用意しましょう。
+正規表現による検索
+WHERE body SIMILAR TO '%[F|f]oo%'
+WHERE body ~ '.*[F|f]oo.*'
+SIMILAR TO は SQL の正規表現を使った検索です。LIKE 表記と一般的な正規表現の表記とを混ぜ合わせたような構文です。一方、~ 演算子では一般的な正規表現の構文を使用します。
+正規表現による検索でインデックスを使うには
+できません。正規表現は条件の指定が柔軟なため、それに応えられるインデックスは存在しません。他の検索方式用のインデックスで大まかに絞り込んだ後、最後に正規表現でフィルタすることになるでしょう。
+単語単位の検索
+WHERE to_tsvector(body) @@ to_tsquery('foo')
+単語単位の検索では、まず文書と検索キーそれぞれを to_tsvector(), to_tsquery() 関数で単語に分割し、分割後の単語セットの重なり (@@演算子) を調べます。
+単語単位の検索による検索でインデックスを使うには
+tsvector 型に対する GIN または GiST インデックスを作成することで、インデックスを利用できます。GIN と GiST の使い分けについては、「PostgreSQL 文書 : 全文検索 - GiSTおよびGINインデックス種類」が参考になります。検索主体であれば GIN を選んでおけば良いでしょう。
+デフォルトのインストールで利用できるのは欧米言語のパーサのみであるため、日本語テキストを検索するには、さらに "textsearch_ja" モジュールを導入する必要があります。textsearch_ja のインストールについては、記事『PostgreSQL上にMediaWiki環境を構築 (2)』も参考にして下さい。
+=# CREATE INDEX idx_gin ON documents USING gin
+(to_tsvector('japanese', body));
+=# EXPLAIN SELECT * FROM documents WHERE to_tsvector('japanese', body)
+@@ to_tsquery('japanese', 'データベース');
+QUERY PLAN
+---------------------------------------------------------------
+Bitmap Heap Scan on documents
+Recheck Cond: (to_tsvector('japanese'::regconfig, body)
+@@ '''データベース'''::tsquery)
+->  Bitmap Index Scan on idx_gin
+Index Cond: (to_tsvector('japanese'::regconfig, body)
+@@ '''データベース'''::tsquery)
+以下の比較では、サンプルデータとして、Unix manコマンド用の日本語ドキュメントを利用させていただきました。アーカイブを展開後、連結したテキストを若干加工した後に、1行1テキストとして PostgreSQL に取り込みました。ロード前のテキストは UTF8 エンコーディングで 925 KB、ロード後の状態は以下のようになりました。平均文字数 35.87、全 12064 行の小規模なテキスト検索の例になります。
+=# SELECT pg_size_pretty(pg_relation_size('documents')) AS size,
+count(*), round(avg(length(body)), 2) AS avg,
+min(length(body)), max(length(body)) FROM documents;
+size   | count |  avg  | min | max
+---------+-------+-------+-----+-----
+1360 kB | 12064 | 35.87 |   1 | 244
+中間一致検索と単語検索との結果の比較
+データベースの全文検索では「検索漏れが無いこと」という要件が求められる場合があります。実際、中間一致検索と単語検索では以下のように結果行数に差が生じています。
+=# SELECT count(*) FROM documents WHERE body LIKE '%データベース%';
+count
+-------
+509
+=# SELECT count(*) FROM documents WHERE to_tsvector('japanese', body)
+@@ to_tsquery('japanese', 'データベース');
+count
+-------
+490
+どのようなパターンが検索漏れになるかを調べてみた結果を以下に示します。ご覧頂いて分かるように、単語検索で検索漏れになっているのは、「データベースシステム」や「データベーススーパーユーザ」のような連語に含まれる場合です。これは、textsearch_ja が利用している 形態素解析エンジン MeCab の特性です。連語の認識精度を高めるには、辞書のチューニングが必要になってきます。チューニング要素が多いため、形態素解析方式は、N-gram 方式と比べて扱いが難しいところがあります。
+=# SELECT * FROM documents WHERE body LIKE '%データベース%'
+EXCEPT SELECT * FROM documents WHERE to_tsvector('japanese', body)
+@@ to_tsquery('japanese',' データベース');
+id  |                                body
+------+---------------------------------------------------------------
+2693 | デフォルトデータベースサーバ上に、...
+3037 | initdbはデータベーススーパーユーザのパスワードを...
+5107 | 接続中のデータベースサーバホストです。
+5195 | データベースセッションユーザの名前です
+5202 | セッションユーザがデータベーススーパーユーザである場合は...
+6228 | データベーススーパーユーザはすべてのロールのすべての属性を...
+(中略)
+(19 rows)
+インデックス・サイズの比較
+精度の高い検索を行うには、インデックスが多くの情報を含む必要があり、その結果インデックスのサイズも大きくなると予想されます。実際に、列 documents.body に対して、テキスト検索用のインデックスを各種 作成してみました。
+=# CREATE INDEX idx_btree ON documents (body);
+=# CREATE INDEX idx_hash ON documents (hashtext(body));
+=# CREATE INDEX idx_gin ON documents USING gin
+(to_tsvector('japanese', body));
+=# CREATE INDEX idx_gist ON documents USING gist
+(to_tsvector('japanese', body));
+=# CREATE INDEX idx_senna ON documents USING senna (body like_ops);
+それぞれのインデックスは、以下のようなサイズになりました。結果は予想通り、検索精度の高いインデックスほど、サイズが大きい傾向があるようです。ただし、実際のデータの内容や量によって傾向はかなり異なってくると思われます。ここでの結果は「傾向」であり、実データで試してみることをお奨めします。
+名前
+説明
+サイズ
+

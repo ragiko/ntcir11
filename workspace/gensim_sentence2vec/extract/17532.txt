@@ -1,0 +1,67 @@
+
+空白のみの項目は やはり空文字列として扱われ、nullにはならない。nullを入れたい場合は以下のような工夫が必要。
+SAL POSITION( 36 : 42 ) ZONED(7,2),
+COMM POSITION( 43 : 49 ) CHAR "decode(:COMM, '',null, to_number(:COMM))",
+DEPTNO POSITION( 50 : 51 ) DECIMAL EXTERNAL
+と思っていたら、nullに変換してくれる方法が用意されていた(汗) [2007-12-28]
+SAL POSITION( 36 : 42 ) ZONED(7,2),
+COMM POSITION( 43 : 49 ) ZONED(7,2) NULLIF COMM=BLANKS,
+DEPTNO POSITION( 50 : 51 ) DECIMAL EXTERNAL
+NULLIFの後ろの条件が満たされるとnullになる。BLANKSは色々な空白を表す。「COMM="0000000"」とか「COMM=X'30303030303030'」とか「(43:44)="00"」(桁位置指定)とかも可。
+FIELDSで共通の区切り文字を指定する他に、項目毎に個別の終端文字を指定することも出来る。[2007-12-28]
+(
+EMPNO    TERMINATED BY ':',
+ENAME    TERMINATED BY '/',
+JOB      TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"',
+MGR      TERMINATED BY '#',
+HIREDATE TERMINATED BY '#' "TO_DATE(:HIREDATE,'YYYY/MM/DD HH24:MI:SS')",
+SAL      TERMINATED BY ';',
+COMM     TERMINATED BY ',',
+DEPTNO
+)
+個別の終端文字を指定しないと、FIELDSで指定した文字が終端文字として使われる。
+複数データ出力先
+「INTO TABLE 〜 (項目 …)」の組も複数指定することが出来る。[2007-12-28]
+データ出力先のテーブルは同一テーブルでもいいし別テーブルでもいい。
+ただ、項目群(フィールドリスト)は(特に何も指定しない場合は)入力ファイルの同一行内の続きとして扱われる。
+コントロールファイルの例:
+〜APPEND
+INTO TABLE table1 FIELDS TERMINATED BY ',' (t1col1, t1col2, t1col3)
+INTO TABLE table2 FIELDS TERMINATED BY ',' (t2col1, t2col2)
+データファイルの例:
+data1,data2,data3,data4,data5
+上記の例の場合、data1t1col1、data2t1col2、data3t1col3、data4t2col1、data5t2col2、という入り方をする。
+2つ目のフィールドリストの先頭の項目で桁位置を指定してやれば、データの位置をずらせる。[2007-12-28]
+コントロールファイルの例:
+〜APPEND
+INTO TABLE table1 FIELDS TERMINATED BY ',' (t1col1, t1col2, t1col3)
+INTO TABLE table2 FIELDS TERMINATED BY ','
+(
+t2col1 POSITION(1), --行の1桁目を指定
+t2col2               --続きの位置になる
+)
+この例の場合、data1t1col1、data2t1col2、data3t1col3(ここまでは同じ)、data1t2col1、data2t2col2、となる。
+それぞれのINTO TABLEの後ろにWHENを付けると、その条件を満たしたときだけデータ移送が行われる。[2007-12-28]
+全てのWHENで否定されると廃棄データ行きとなる。
+実行
+sqlldrの引数にコントロールファイルの名前を指定して実行する。
+Windowsの場合、バッチファイルを作っておくと便利。このファイルをダブルクリックするとロードが実行される。ネットワークドライブ上では駄目っぽかったけど。
+例)emp_load.bat:
+C:\oracle\ora92\BIN\SQLLDR ユーザー/パスワード@SID control=ctl/emp.ctl
+pause
+実行すると、バッチファイルと同じディレクトリにログファイルが出来る。
+C:\sample>tree /f
+フォルダ パスの一覧
+ボリューム シリアル番号は 71XYZ346 BYYY:9ZZZ です
+C:.
+emp.bad
+emp.log
+emp_load.bat
+ctl
+emp.ctl
+data
+emp.csv
+Oracle目次へ戻る /
+技術メモへ戻る
+メールの送信先:ひしだま
+SQL*Loaderメモ(Hishidama's sqlloader for Oracle9i Memo)

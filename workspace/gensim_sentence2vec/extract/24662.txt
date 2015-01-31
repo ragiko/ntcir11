@@ -1,0 +1,29 @@
+汎用検索ツリー (GiST: Generalized Search Tree) はディスク上に木構造の検索機能を実現する データ構造 と API である。 GiSTはB+木を一般化したもので、並列実行性能が高くリカバリが可能な高さがバランスされた検索木のフレームワークを提供する。 また、保存できるデータ型や検索クエリに制限が無い。
+GiSTは良く利用されるインデックス(B+木, R木, hB木, RD木 など)の実装に利用できる。 また、新しいデータ型に対して特化したインデックスを開発することも容易である。 ただし、GiST を使っても直接的には高さバランスではないツリー構造 (八分木やトライ木) を実装することはできない。 また、GiST は可逆および非可逆の圧縮をサポートしているが、各ノードのデータ型は同一でなければならない。 リーフにはノードとは異なる型を用いることもできる。
+データ型と木の配置だけではなく、クエリの検索条件(演算子)も拡張することができる。
+最も広く利用されているGiSTは、PostgreSQL 関係データベースにおける実装である。 また、Informix Universal Server でも外部ライブラリ libgist によってGiSTが利用できる。
+データベースの観点では、GiSTはソフトウェアの拡張性の一例である。 データベースに対して新しい木構造のインデックスを追加することが容易になる。 アプリケーションごとの様々なインデックスの設計に対応できるよう、コアシステムから数個の API が外部に公開されている。 GiST のフレームワークはディスク上のインデックス・ページのレイアウトを管理する。 検索、削除、ページ単位ロック、高い並列実行性能、クラッシュ・リカバリのためのログ先行書き込み (WAL) のアルゴリズムなどの機能もフレームワークにより提供される。 そのため、新しい木構造インデックスの製作者はデータベース・システムの内部構造に関する知識が無くても新機能の実装(例えば、データからどのように特徴量を抽出するか)に注力することができる。
+GiSTは、当初は厳密な検索だけを目的として設計されたが、近傍検索もできるよう拡張された。 また、巨大なデータセットから様々な形式で統計情報を取得することもできる。
+PostgreSQL の GIST の実装は、可変長キー、複合キー、並行性制御、リカバリをサポートしている。 これらの機能は GiST をベースとするインデックスにも継承される。 GiST を利用して開発されたいくつかの貢献モジュールが PostgreSQL に添付され、提供されている。 以下に例を挙げる:
+rtree_gist, btree_gist - R木やB木をGiSTで再実装したもの。
+intarray - 1次元のint4の配列に対するインデックス。
+tsearch2 - 全文検索インデックス。
+ltree - 木に似た構造を内包するデータ型の検索。
+hstore - キーと値の組を保存するデータ型。
+cube - 多次元の立方体。
+PostgreSQLのGiSTの実装はPostGIS (地理空間情報システム)やBioPostgres (バイオインフォマティクス) に利用されている。
+参考文献[編集]
+Joseph M. Hellerstein, Jeffrey F. Naughton and Avi Pfeffer. Generalized Search Trees for Database Systems. Proc. 21st Int'l Conf. on Very Large Data Bases, Zurich, September 1995, 562-573.
+Marcel Kornacker, C. Mohan and Joseph M. Hellerstein. Concurrency and Recovery in Generalized Search Trees. Proc. ACM SIGMOD Conf. on Management of Data, Tucson, AZ, May 1997, 62-72.
+Paul M. Aoki. Generalizing "Search" in Generalized Search Trees. Proc. 14th Int'l Conf. on Data Engineering, Orlando, FL, Feb. 1998, 380-389.
+Marcel Kornacker. High-Performance Generalized Search Trees, Proc. 24th Int'l Conf. on Very Large Data Bases, Edinburgh, Scotland, September 1999.
+Paul M. Aoki. How to Avoid Building DataBlades That Know the Value of Everything and the Cost of Nothing, Proc. 11th Int'l Conf. on Scientific and Statistical Database Management, Cleveland, OH, July 1999, 122-133.
+外部リンク[編集]
+GiST research project website
+PostgreSQL GiST Development
+GiSTインデックス (PostgreSQL文書)
+Developing PostgreSQL extension with GiST (ロシア語)
+GiST in PostgreSQL wiki
+PostGIS
+BioPostgres
+汎用検索ツリー - Wikipedia

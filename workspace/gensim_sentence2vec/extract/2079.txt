@@ -1,0 +1,55 @@
+使用手順  &dagger;
+まずminuitを定義。
+TMinuit minui(9);
+この9は変数の数。
+次に関数を定義してやる。FCNという。
+それから、
+minuit.SetFCN(function);
+で関数をセット。関数はパラメータに対してフィッティングの正しさの基準となる値(χ^2,Likelihoodなど)を返す。これが最小化(時に最大化)するようなパラメータを探し、良いところで収束する。収束した時の値などは、minuit.GetParameter()でとってこれる。
+それから、各変数のパラメータをセットする。たとえば
+minuit.DefineParameter(0, "x", 0.0, 1.0, -200.0, 200.0);
+なら、0番目のxという変数を0.0を初期値で、ステップは1.0、範囲は-200.0〜200.まで、という意味になる。
+もし変数を固定したいときには、
+minuit.FixParameter(0);
+とすれば良い。0は変数の番号。
+実際に実行するときには
+minuit.Migrad();
+でOK。この場合はMigradというアルゴリズムを使う。他にもMinosとかいろいろあるらしい。
+収束を見分ける  &dagger;
+フィッティングの結果は、本当の値に近いところに収束するはず。それを判断するためのひとつの基準がEDM(Estimated Distance to the Minimum)というもの。これがある基準よりも小さくなったときに収束したとみなす。
+逆に、これが基準をみたしていないときには、収束しなかったといえる。
+ディレクトリの中のファイルをリストとして取得する  &dagger;
+TStyle::OpenDirectory()など、ROOT内のファイルを扱う関数を使ってやってみる。
+vector<TString> get_file_list( TString dir_name , TString extention ){//{{{
+void *dir = gSystem->OpenDirectory( dir_name );
+if (!dir) {
+cerr << "error opening directory " <<  dir_name << endl;
+return 0;
+}   
+vector<TString> fname; 
+const char *ent;
+while( ( ent = gSystem->GetDirEntry( dir ) ) ){
+if( *ent == '.' ) continue;
+if( *ent == '..' ) continue;
+TString fn = Form("%s", ent );
+if( fn.EndsWith( extention ) ){
+fname.push_back( ent );
+}   
+}   
+return fname;
+} //}}}
+get_file_list( dir_name , extention )のdir_nameにディレクトリのパスを入れて、extentionに拡張子を入れたら、そのディレクトリにある、指定した拡張子のファイル名だけがvector<TString>として返ってくる。
+出力結果などをTexの形式にして出力しておきたい  &dagger;
+こまごました結果とか、表とかを出力しておきたい。そしてそれがtex形式ならなお良い場合があるので、適当にクラスを作った。MakeTex.h
+使い方は以下の通り。
+MakeTex *mt = new MakeTex();
+mt->SetTitle( "test" );
+mt->AddText( "\\section{aho no table}" );   //<- document部分に追記する。\は一個ではだめ
+mt->SetTableContent( 1 , 0 , "aho" ); //<-表を作りたいときはこれを使う。(行、列、テキスト)の順番に入力
+mt->SetTableContent( 0 , 1 , "baka" );
+mt->AddTable(); //<-表を追記する
+mt->MakeTexFile("aho.tex"); //<-ファイルを出力する
+delete mt;
+プリアンブルとかいろいろいじりたいときは、DefaultPreambleとかの中身をいじる。もっといじりたかったら、自分で適当に書き換える。
+結果はこんな感じのができる。MakeTex_test.ps
+ROOT - Arita Wiki

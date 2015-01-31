@@ -1,0 +1,46 @@
+
+Webデザインをしていると、HTML と CSS だけではできない表現ってありますよね。そんな時によく使うのが jQuery。今回は jQuery っていまいちよく分からない ... っていう人が、jQuery に少しでも親しんでもらえたらいいなーと思って、知ってる事をまとめてみました。なので jQuery 初心者さん向けの記事です。		
+とっても当たり前なんですけど、Web サイトは基本的に HTML で書かれていて、デザインは CSS で装飾されていますよね。最近では CSS3 の登場で、簡単なアニメーションも CSS で作れるようになりました。でもクライアントワークでは、まだまだ CSS3 を使える部分が限られているし、Webデザインに少し動きなどをつけたい時などは、まだまだ jQuery を活用する事も多いです。
+私は Javascript が苦手で、jQuery もどちらかというと苦手です …。なので、過去記事:クライアントワークでよくお世話になっているjQueryプラグインいろいろ で紹介したようなプラグインをよく使います。でもプラグインを使うにしても、少しくらいは jQuery について知らなければ、カスタマイズしたりできないし、Web制作をしていると、どうしても自分でコードを書かなくてはならない事はたくさんあります。
+jQuery についてよく質問をいただくので、私の知っている範囲でまとめてみました。HTML と CSS は分かるけど、jQuery っていまいちよく分からない … という人向けの記事です。
+Webデザイナーさん向けの jQuery 目次
+jQuery って何?
+jQuery を使うには?
+CSSと似ている jQuery の書き方
+いろんなセレクタの書き方
+いろんな jQuery のメソッド
+CSS、Attributes(属性)のメソッド
+補足:jQuery CSS メソッドの書き方
+メソッドチェーン
+Effects エフェクト系のメソッド
+Travaersing トラバース系のメソッド
+HTML、DOM … Manipulation(マニュピレーション)系のメソッド
+Events(イベント)系のメソッド
+$(document).ready(function(){ …
+$() と jQuery() は同じ
+サンプル:背景画像をアニメーションにする
+サンプル:ボックスを丸ごとリンクにして、画像もついでにバブルアップ
+サンプル:スクロールすると現れる、TOP へ戻る
+エラーの原因は HTML にあることも …
+1. jQuery って何?
+まず、そもそも jQuery とは何でしょう?jQuery は Javascript のライブラリのひとつです。ではライブラリとは何でしょう?
+ライブラリとは、あるスクリプトのよく使われる機能などを部品化して、簡単に使えるようにまとめたもの。Javascript  のライブラリである jQuery を使えば、複雑になりがちな Javascript のコードを書かかなくても、もっと簡単なコードで Javascript を実行することができるようになります!
+例えば、CSS で warning というクラスをつけた <p> タグ。その中のテキストカラーを赤くしたいとします。もちろん CSS で書けばいいんですけど、ここはガマンして読んでみてくださいね … Javascript の記事なので!純粋な … というか、ネイティブな Javascript でコードを書くと、以下のようになると思います。
+Javascript
+<script type="text/javascript">
+var targets = document.getElementsByTagName("p");
+for(i=0; targets.length; i++){
+if(targets[i].className === "warning"){
+targets[i].style.color = "red";
+}
+}
+</script>
+上記のコードでは、まず、HTML 内に記述されている <p> タグを、document.getElementsByTagName("p") で取得して、見つかった <p> タグの数だけ for 文でループ、その後 if 文でクラス名が warning の時だけ、カラーを red に …。結構めんどくさいです X(
+(最近では getElementsByClassName って使えるのかな?)
+でも jQuery を使うと、上記のような事がたった 1行でできてしまいます!
+Javascript
+$("p.warning").css( "color", "red" ); /* この1行だけ! */
+jQuery を使えば、複雑な Javascript のコードを書かなくても、簡単なコードで同じ事ができてしまうんです。イメージでいうと以下のような感じですね。
+jQueryのイメージ
+jQuery は、Javascript とコードを書く人の間に立って、通訳してくれる感じでしょうか(あくまでもイメージです)。もちろん jQuery でコードを書く上でも、Javascript の知識は必要になりますが、コーディングの部分で随分楽ができますね!
+CSSは分かるけど jQuery は苦手 … という人が jQuery に親しんでくれるといいなーと思って書きました

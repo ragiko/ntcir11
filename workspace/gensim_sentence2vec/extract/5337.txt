@@ -1,0 +1,83 @@
+翻訳
+リクエスト
+http://api.microsofttranslator.com/V2/Http.svc/Translate
+1回のリクエストに含められる文字は、スペースやマークアップを含めて1000文字までです。
+レスポンス
+<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/">こんにちは</string>
+サンプルコード
+顧客IDと顧客の秘密をパラメータに含め、認証URLへリクエストする。そしてアクセストークンを取得する。
+アクセストークンをHTTPヘッダに含め、APIのURLへリクエストする。そして翻訳結果を取得する。
+define( 'CLIENT_ID', 'xx' );      // 顧客ID
+define( 'CLIENT_SECRET', 'yy' );  // 顧客の秘密
+define( 'GRANT_TYPE', 'client_credentials' );
+define( 'SCOPE_URL', 'http://api.microsofttranslator.com' );
+define( 'AUTH_URL', 'https://datamarket.accesscontrol.windows.net/v2/OAuth2-13/' );
+$text = 'hello'; // 翻訳するテキスト
+$from = 'en';    // 翻訳するテキストの言語コード
+$to = 'ja';      // 翻訳結果のテキストの言語コード
+try
+{
+$accessToken = GetAccessTokens( GRANT_TYPE, SCOPE_URL, CLIENT_ID, CLIENT_SECRET, AUTH_URL );
+$authHeader = 'Authorization: Bearer '.$accessToken;
+$url = 'http://api.microsofttranslator.com/V2/Http.svc/Translate?'
+.http_build_query( compact( 'text', 'from', 'to' ) );
+$response = Request( $url, $authHeader );
+echo $response;
+}
+catch( Exception $e )
+{
+echo $e->getMessage();
+}
+function GetAccessTokens( $grant_type, $scope, $client_id, $client_secret, $auth_url )
+{
+$params = http_build_query(
+compact( 'grant_type', 'scope', 'client_id, 'client_secret' ) );
+$ch = curl_init();
+curl_setopt( $ch, CURLOPT_URL, $auth_url );
+curl_setopt( $ch, CURLOPT_POST, TRUE );
+curl_setopt( $ch, CURLOPT_POSTFIELDS, $params );
+curl_setopt( $ch, CURLOPT_RETURNTRANSFER, TRUE );
+curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
+$response = curl_exec( $ch );
+if( curl_errno( $ch ) )
+{
+throw new Exception( curl_error( $ch ) );
+}
+curl_close( $ch );
+$json = json_decode( $response );
+if( isset( $json->error ) )
+{
+throw new Exception( $json->error_description );
+}
+return $json->access_token;
+}
+function Request( $url, $authHeader )
+{
+$ch = curl_init();
+curl_setopt( $ch, CURLOPT_URL, $url );
+curl_setopt( $ch, CURLOPT_HTTPHEADER, array( $authHeader, 'Content-Type: text/xml' ) );
+curl_setopt( $ch, CURLOPT_RETURNTRANSFER, TRUE );
+curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
+$response = curl_exec( $ch );
+if( curl_errno( $ch ) )
+{
+throw new Exception( curl_error( $ch ) );
+}
+curl_close( $ch );
+return $response;
+}
+エラーコード
+認証に失敗した場合に返されるエラーコードの一覧は、ACS (Windows Azure Access Control Service) Error Codesにあります。
+まれにエラーコードもなく、次のようなレスポンスが返されることがあります。
+<html>
+<body>
+<h1>Argument Exception</h1>
+<p>Method: Translate()</p>
+<p>Parameter: </p>
+<p>Message: Signature verification of the incoming token failed.</p>
+<code></code>
+<p>message id=3817.V2_Rest.Translate.00000000</p>
+</body>
+</html>
+これはサービス側の問題のようです。Problem with Microsoft translator API - MSDN
+Microsoft Translator API プログラミング解説

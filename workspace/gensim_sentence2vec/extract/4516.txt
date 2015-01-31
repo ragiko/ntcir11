@@ -1,0 +1,63 @@
+_ 次世代シーケンサ  
+テクノロジー
+第0世代:スラブ
+第1世代:キャピラリー
+第2世代:pyrosequence (454), sequence by synthesis (Illumina, Helicos), sequence by ligation (Solid)
+レビュー:Nature Review Genetics, 11, 31-46 (2010)
+第3世代:SMRT (PacBio?), Q-dot FRET (Life Technology), nanopore (Oxford), Ion Torrent sequencing, DNA Transistor technology (Roche & IBM), 電顕
+レビュー:Nature Biotechnology, 28 (5), 426-428 (2010)
+IBMのプレスリリース
+英語のニュース
+ゲノム解読にかかったコスト
+2003年、ヒトゲノムプロジェクト、30億ドル、13年
+2007年、ベンターゲノム、7000万ドル、Sanger法
+2007年、ワトソンゲノム、100万ドル、454
+2009年、コンプリートゲノミクス、4000ドル
+2010年、グレン・クローズ、5万ドル、Illumina(6月から2万ドルに値下げ)
+DB
+生データ
+SRA
+ENA
+DRA
+アノテーション済みコンティグ配列
+GenBank
+EMBL
+DDBJ
+発現データ
+GEO
+ArrayExpress?
+DDBJ Omics Archive (DOR)
+Journal
+Standards in Genomic Sciences
+Figure 1     Phylogenetic tree
+Figure 2     Picture
+Table  1     Classification and general features
+Table  2     Genome sequencing project information
+Table  3     Genome statistics
+Figure 3     Graphical circular map of the genome
+Table  4     Number of genes associated with the general COG functional categories
+Tools
+Pipeline
+DDBJ Read Annotation Pipeline
+統合TV
+Buncher
+MiGAP
+統合TV
+R
+東京大学門田先生による詳細な使用法解説次世代版
+Reference Genome Mapping
+BLAT
+Maq
+bwa
+SSAHA2
+SOAP
+Bowtie (SAMtools)
+TopHat
+de novo Assembly
+velvet
+edena
+abyss
+まとめブログ
+NGS Alignment Programs
+NGS解析で使われるソフトのまとめ(お茶の水女子大、瀬々潤先生)
+AJACS20/sk2 - MotDB

@@ -1,0 +1,228 @@
+
+ちなみにHTMLの「form」って「interactive form」の略なんだそうです。interactive (インタラクティブ) は双方向という意味。
+form要素の中に「フォームの部品」をまとめよう
+<form>要素の中に、<label> <input>などの「フォームの部品」になる要素が入ります。
+下記のように部品を<form>〜</form>で囲みます。
+<form>
+<p>お名前:<input type="text" name="name"></p>
+<p>ご回答:
+<label><input type="radio" name="reply" value="回答1" checked> 回答1</label>
+<label><input type="radio" name="reply" value="回答2"> 回答2</label>
+<label><input type="radio" name="reply" value="回答3"> 回答3</label>
+</p>
+<p><input type="submit" value="送信する"> ※このページに戻ります。サンプルなので。</p>
+</form>
+プレビューはこちら。
+お名前:
+ご回答:
+回答1
+回答2
+回答3
+※このページに戻ります。サンプルなので。
+ただし、HTML5から部品を<form>の外に出す事も可能。記事の後半で紹介します。
+「action属性」で「送信先のURL」を指定しよう
+action属性 で情報を渡す 送信先 のファイル(プログラム)のURLを指定します。
+「action」はアクション。そのまんま、実行・作動という意味ですね。
+<form action="mailform.cgi" method="post">
+送信先のプログラムには、CGI や PHP などが用いられます。
+CGI や PHP については、前回の「[46] フォームでユーザにデータ送信してもらおう」で少し触れています。
+この action属性、HTML5から必須ではなくなりました。
+えっ! 無しでどうするの?と思ったら、action属性を省略すると、送信先はそのHTMLファイル自身になるそうです。
+action属性無しのサンプルを作ってみました。(別ウィンドウで開きます) 
+この記事後半の「target属性」のサンプルでも、送信先をHTMLファイルに指定しています。
+送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)
+には、この<form>要素の actionの指定を上書きする
+「formaction属性」があります。
+「method属性」で「送信方法」を指定しよう
+method属性 で 送信方法 を指定します。
+「method」はメソッド、方法、方式という意味。ここでは「HTTPメソッド」のことです。
+method="get"
+これがデフォルト。method属性を省略すると"get"になります。
+検索フォームでよく利用される方法です。getは「HTTP GET method」の略だそうです。
+<form action="mailform.cgi" method="get">
+<!--  省略しても同じです(method="get" になる)-->
+<form action="mailform.cgi">
+get の特徴
+クエリ(フォームの内容)が action属性で指定されたURLの後に「?」を付けて、その後にくっつけられて送信されるんだそうです。
+URLと連結されて送信されるので、データが URLの一部になるんだって。
+受け取ったサーバは「?」のところで分割し、クエリを URLのプログラムに渡すそうです。
+このようにデータがURLと繋がるので、長い (デカイ) データだと問題あり。検索キーワードなど、短いデータは得意だけど、容量の大きいデータ(長文のテキストや画像ファイルなど)は無理があるそうです。
+あと、URLと連結されるので、ユーザのPCにキャッシュで送信内容が残る場合があり、パスワードなど、キャッシュが残っちゃマズイものの送信には、get でなく post にするなどの気配りが必要だそうです。
+method属性が無い場合の動作をサンプルで確認していただけます。(別ウィンドウで開きます)
+適当な文字をタイプして送信した後、ブラウザのURL欄を見ると、
+「HTMLファイル名 ? name属性名 = タイプした文字列」になっている事が確認できます。 
+method="post"
+お問合せフォームなどで使われる送信方法です。postは「HTTP POST method」の略だそうです。
+<form action="mailform.cgi" method="post">
+post の特徴
+postでは、クエリはURLと連結されず、各データ自体が送信されます。
+なので容量の大きいデータの送信が可能。長文テキストやファイル送信の場合には、postのほうが良いのだそうです。
+また、get はURLと連結するのでキャッシュが残る場合があり、パスワードなど、キャッシュが残っちゃマズイものの送信には、postのほうが良いそうです。
+送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)
+には、この<form>要素の methodの指定を上書きする「formmethod属性」があります。
+HTTPメソッド(Hypertext Transfer Protocol Method)
+「get」や「post」はフォームだけのものではなく、ブラウザとサーバの間のやり取りの一般的な方法で、
+これをHTTPメソッドというのだそうです。
+(ブラウザからサーバへの要求はHTTPリクエスト、逆はHTTPレスポンスっていうんだって。)
+私たちがいつもウェブサイトを見ているときも、これを使っています。
+ブラウザはサーバに「get」メソッドを使ってウェブページの呼び出しを要求しているのだそうです。
+「get」は、サーバからブラウザにデータを返させる(ゲットする)、HTTPの最も基本的な動作だそうです。
+「post」は、getと逆に、ブラウザがサーバにデータを送信(投稿)するんだそうで、getと同じく、サーバはブラウザにデータを返すことができるって。
+get、post 以外にもメソッドはあります。ウィキペディアの「Hypertext Transfer Protocol - メソッド」をご覧ください。 
+※この他、フォームのmethod属性で、「put」「delete」も使えるらしいんです。
+put はファイルのアップロード、delete はデータの削除ですね。
+ですが、目的や使用方法がよくわからないので、ここでは触れません。(いつか詳細わかりましたらアップいたします。)
+「enctype属性」でデータ形式を「MIMEタイプ」で指定しよう
+enctype属性 で データ形式 を MIMEタイプで指定します。
+「enctype」は「encode type ( エンコードタイプ ) 」の略。MIMEタイプについてはこちら。
+「enctype属性」で指定できるMIMEタイプは、この3つです。
+application/x-www-form-urlencoded(URLエンコード)
+multipart/form-data(マルチパート形式)
+text/plain(プレーンなテキストデータ)
+enctype="application/x-www-form-urlencoded"
+これがデフォルト。enctype属性を省略するとコレになります。
+URLエンコード形式のMIMEタイプです。
+<form action="mailform.cgi" method="post">
+URLエンコード
+英数字以外の日本語文字や記号を、2桁の16進数に変換するエンコード形式。データをURLに繋げても問題が起こらないように、このように変換するんだそうです。長文のテキストや画像ファイルなどは、長くなり過ぎて不得意なんだそうです。
+2桁の16進数を「%」でつないで表示するので「パーセントエンコーディング」とも呼ばれます。
+ちなみに「エンコード」というカタカナを、この方式で表示すると、
+「%E3%82%A8%E3%83%B3%E3%82%B3%E3%83%BC%E3%83%89」になります(UTF-8で)。
+注意したいのは、<input type="file">でファイルを送信したいとき。
+enctype="multipart/form-data" に指定する必要あり。コレ重要。
+マルチパート形式のMIMEタイプです。 
+ファイル送信の場合は容量が大きく、通常のURLエンコードだと無理があるので、この形式を使うそうです。この場合「method="post"」にしておくことも忘れずに。
+(<input type="file">については、後日 <input>要素のところで詳細。)
+<form action="mailform.cgi" method="post" enctype="multipart/form-data">
+<input type="file" name="file_upload" size="30">
+<input type="submit" value="送信する">
+</form>
+マルチパート形式
+フォームの各項目ごとのデータを境界で区切って、それぞれが実データが送られる形式だそうで、
+ファイルのアップロードを伴う場合に使われます。
+送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)
+には、この<form>要素の enctypeの指定を上書きする「formenctype属性」があります。
+HTML5からの変更点
+form属性を使って部品を外に出せます
+HTML5からは、部品の要素が 必ずしも<form>要素の中に入ってなくてもOK!になったんです。これは画期的。フォームの構成上の自由度が大幅にアップします。
+まず「id属性」で<form>にID名をつけておきます。
+外に出す要素の「form属性」で、親であるべき<form>のID名を呼び出し、関連づけるんです。
+<form method="post" action="sample.cgi" id="example">
+<p>お名前:<input type="text" name="name"></p>
+<p>ご回答:
+<label><input type="radio" name="reply" value="回答1" checked>回答1</label>
+<label><input type="radio" name="reply" value="回答2">回答2</label>
+<label><input type="radio" name="reply" value="回答3">回答3</label>
+</p>
+</form>
+<!--出てる  -->
+<input type="submit" value="送信する" form="example">
+「form要素」の話の途中でいきなり「form属性」ってややこしいですが、これはHTML5から新しくできた属性です。<form>要素に使うんじゃなくて、中身の部品の要素に使いますよ。
+※ただし、新しい属性だけに、対応していないブラウザもあるので、どうしても使わなきゃならない状況じゃない限り、
+普通の使い方(form要素の中に部品を全部入れる)をしたほうがいい です。いまのところ。(2013年3月記)
+autocomplete属性が追加されました
+オートコンプリート(今までの入力履歴から入力を予測する)機能のオン、オフができます。
+デフォルトは「オン」なので、オフにしたいときだけ使う属性ですね。
+novalidate属性が追加されました
+バリデート(入力内容をチェックする)をオフにできます。
+HTML5からの部品用の新要素(&新属性)で、色々なバリデーション機能が、ブラウザのデフォルトで使用可能になったため。 
+action属性が必須じゃなくなりました 
+前バーションまでは必須だった「action属性」が、必須ではなくなったんですと。
+action属性無しだと、送信先はそのHTMLファイル自身になります。
+サンプルはこちら。
+accept属性が廃止されました
+これは、プログラム側が受け入れるMIMEタイプを指定する属性だったのですが、<form>要素では廃止されました。(<input>要素ではイキてます。) enctype属性で十分だってことかな…。
+<form>要素なしで部品だけ…ってのもアリ
+<form>要素は、内容を送信する事が前提なので、
+内容を送信する必要が無い場合は、<form>要素は不要です。
+単に表示したい内容(部品)を、そのまま<form>無しでHTML上に書きます。
+例えばこんな使い方。
+上のプレビューのソースはこちら。
+checked属性であらじかじめチェックしたり、disabled属性で使用不可にしたりしています。
+(checked属性, disabled属性 については、後日<input>要素で詳細。)
+動作確認済みブラウザ:
+<input type="checkbox" checked disabled> Chrome
+<input type="checkbox" checked disabled> Opera
+<input type="checkbox" checked disabled> Firefox
+<input type="checkbox" checked disabled> Safari
+<input type="checkbox" disabled> IE
+ただし、古いブラウザのNetscape Navigatorでは、部品は<form>要素の中に無いと表示されないそうです。(もうネスケを使ってる人もいないでしょうから関係ないかもだけどね。)
+form要素で使う属性一覧
+action="送信先のURL"
+フォームの内容を送る、送信先のファイル(プログラム)のURLを指定します。
+<form action="sample.cgi" method="post"> 
+※送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)に「formaction属性」が指定されたら、そちらが優先されます。
+method="post または get"
+フォーム内容の送信方法を指定します。
+デフォルトは「get」なので method属性を省略すると get になります。
+get:action属性で指定されたURLと連結されて送信(デフォルト)
+post:URLと連結されず送信。容量の多い場合に適す。
+<form action="sample.cgi" method="post">
+※送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)に「formmethod属性」が指定されたら、そちらが優先されます。
+enctype="送信時のデータ形式"
+送信時のデータ形式をMIMEタイプで指定します。
+デフォルトは「application/x-www-form-urlencoded」なので enctype属性を省略するとこれになります。
+application/x-www-form-urlencoded:URLエンコード (デフォルト)
+multipart/form-data:マルチパート形式 重要!<input type="file">を指定したら必ずコレ。(<input type="file">については後日詳細)
+text/plain:プレーンテキスト
+<form method="post" action="sample.cgi" enctype="multipart/form-data">
+※送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)に「formenctype属性」が指定されたら、そちらが優先されます。
+accept-charset="文字コード"
+送信時に使う「Shift_JIS」とか「UTF-8」の文字コードを指定します。
+文字コードについてはこちらを
+「[45-2] <meta charset=" ">の設定で文字コードを指定しよう」
+<form method="post" action="sample.cgi" accept-charset="UTF-8">
+novalidate(または「novalidate=""」「novalidate="novalidate"」 ) new 
+バリデーション(入力内容の妥当性のチェック)をオフにできます。
+HTML5の新しい要素や属性で、入力値の制約がいろいろできるようになり、送信時にこれらでバリデートするのがデフォルトになったんです。
+なので、それをオフにできる属性が生まれました。
+<form method="post" action="sample.cgi" novalidate>
+<p><b>必須</b>お名前:<input type="text" name="name" required></p>
+<p><b>必須</b>ご住所:<input type="text" name="name" required></p>
+<!--「required」は必須項目である事を指定する属性です。-->
+<p><input type="submit" value="送信する"> </p>
+</form>
+※送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)に「formnovalidate属性」が指定されたら、そちらが優先されます。
+autocomplete="on または off"  new 
+on がデフォルトなので、この属性を省略するとonになります。
+オートコンプリートとは、過去に入力したのを覚えてて、少し書けばその先を予測して候補を出してくるアレです。
+省略でONなので、OFF にしたいときしか使わない属性ですね。
+<form method="post" action="sample.cgi" autocomplete="off">
+name="フォームの名前"
+フォームに固有の名前をつけます。名前を付ける必要がある時に。
+複数のフォームがあるとき、各フォームに名前をつけていれば、Javascriptなどで操作したいフォームをコントロールできます。 
+<form method="post" action="sample.cgi" name="form1">
+target="_blank"(または「_self 」「_parent 」「_top」「ウィンドウ(フレーム)名」)
+処理結果を表示するウィンドウ(またはフレーム)を指定します。
+_blank :新規の(別の)ウィンドウに表示します
+_self: 	現在の(同じ)ウィンドウ(フレーム)に表示
+_parent:親になるウィンドウ(フレーム)に表示
+_top:フレームを解除してウィンドウ全体に表示
+ウィンドウ(フレーム)名:その名前のウィンドウ(フレーム)に表示
+<form method="get" action="smp47_t2.html" target="target_test">
+上のソースのプレビューです <input type="submit" value="送信する">
+<iframe src="smp47_t1.html" name="target_test" sandbox></iframe>
+</form>
+上のソースでは、インラインフレーム(詳細後日)に結果を表示しています。インラインフレームに name属性で「name="target_test"」と名前を付けておき、form の target属性でそれを指定すればOK。
+target属性の詳細は「[41] base でベースの URL を示そう」の後半をご覧ください。
+上のソースのプレビューです 
+※送信ボタン(<input>要素の type="submit" や type="image"と、<button type="submit">)に「formtarget属性」が指定されたら、そちらが優先されます。
+このほかグローバル属性も使います
+当然ながら、id, class, title, style などのグローバル属性も使えます。
+グローバル属性については、「[39] 全要素に使える「HTML5グローバル属性」を見てみよう」をご覧ください。
+HTML5のフォームサンプル
+HTML5での新要素を使ったサンプルを作りました。
+クリックするとサンプルHTMLで見られます。
+Sample46_HTML5のフォーム (サンプル)
+HTML5からの新要素は、今は Operaがほぼ対応しているようです。Chromeもまあまあ検討。
+また、IE10 onWin8 も対応しているそうです。
+Firefoxは、部分的に対応。
+Safari は、あんまり頑張っていないかんじ。
+(2013年3月記)
+次回予告
+いかがでしたか? <form>要素は、いわば「船長」みたいなものですかね。
+船長に間違った指令を出せば、乗員乗客(フォームのデータ)は行方不明…というわけで。
+次回は、<fieldset>要素と、その子要素になる<legend>を使ってみましょう。
+<fieldset>はフォームの部品群をグループとしてまとめる要素。<legend>でそのグループにタイトルをつけられます。
+フォームの部品を整理するための要素です。これを使うとCSSでレイアウトする時にも便利です。
+ほんっとにはじめてのHTML5:[47] form要素で「送信先」と「送信方法」を指定しよう

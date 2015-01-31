@@ -1,0 +1,114 @@
+GAE/jからYahooAPIの形態素解析を利用してみた
+GAE/j, YahooAPI, JDOM
+概要
+「形態素解析って何?」という方は、今ならウェールズ氏のどや顔も楽しめる、以下を参考にどうぞ。
+形態素解析 - Wikipedia
+さて、現在、twitterのbotをGAE/j上で作っている訳ですが、賢い応答をさせる為には文章の形態素解析を行う事が必要不可欠です。			 しかし、問題はそれをどう行うかです。自分で書くには、言語学の勉強から始めないといけませんし、ライブラリを使おうにもGAE/jにアップするにはサイズが大きすぎます。(もっとも、自力でライブラリを分割された事例もありますが……*1)
+何か他の方法は無いかと探しますと、実は有ります。それが、Yahoo!デベロッパーネットワークからWeb APIの形で提供されている、日本語形態素解析です。このサービスは、HTTPでリクエストを受け付け、XML形式で結果を返してくれます。
+Yahoo!デベロッパーネットワーク - テキスト解析 - 日本語形態素解析
+一方、GAE/jではHTTP又はHTTPSで外部サイトと通信できる、URL Fetch Java APIが提供されています。
+The URL Fetch Java API - Google App Engine - Google Code
+これらを組み合わせる事で、APIを通して別々のサービスが連携して働く、現代的なシステムが組めそうです。
+そういう訳で今回、GAE/jからYahooAPIを呼び出し、返されたXMLを処理して必要な情報を取り出す所までを、実際にやってみました。
+尚今回は、XMLの解析にJDOMを利用しました。こちらも、GAE/jで動かす場合にはほんの一手間必要となるので、合わせて記述します。
+YahooアプリケーションIDの登録
+APIを利用する為には、アプリケーションIDを発行して貰わないとなりません。また、その為には、YahooIDが必要となります。とりあえず、以下のページから登録を行いましょう。
+Yahoo!デベロッパーネットワーク - アプリケーションIDの登録
+アプリケーションID登録時、サイト情報なども記入できますが、今回は空欄で行きました。また今回の使い方では、OAuthも利用しません。
+JDOMの利用準備
+実際にAPIコールをする前に、下準備を全部終わらせましょう。以下のページから、JDOMライブラリを入手します。
+JDOM: Binaries
+ダウンロードしたファイルを適当な場所に展開したら、
+jdom.jar
+を現在のプロジェクトに追加しましょう。ローカル環境ではこれで動きますが、デプロイするとうまく動きません。これは、GAE/jの環境にJDOM内部で利用しているSAX parserが存在していない事が原因の様です。
+JDOMが使えない! - 悪あがきプログラマー
+この問題はリンク先に書いてある通り、適切なライブラリを追加で読み込む事で解決できます。以下のページから入手しましょう。
+Index of /dist/xml/xerces-j
+バージョンが沢山ありますが、自分は最新版と思われる Xerces-J-bin.2.9.0.zip を利用しました。これも任意の所に展開して、
+xercesImpl.jar
+をプロジェクトに追加しましょう。その他のjarは、今回の用途では必要ない様です。
+API呼び出し
+下準備が終わったら、早速YahooAPIを呼んでみます。まず先に、最終的にできあがったコードを載せます。
+public class CallYahooMAService {
+//API読み出し
+static public String[] CallAPI(String str){
+try {
+//APIコールの為のURL文字列を生成
+String appid = "ここに登録したIDを記入";
+StringBuilder urlstr = new StringBuilder("http://jlp.yahooapis.jp/MAService/V1/parse");
+urlstr.append("?appid=");
+urlstr.append(appid);
+urlstr.append("&sentence=");
+urlstr.append(java.net.URLEncoder.encode(str, "UTF-8"));
+urlstr.append("&results=ma");
+//APIコールを実行
+URL url = new URL(urlstr.toString());
+InputStream input = url.openStream();
+BufferedReader reader = new BufferedReader(new InputStreamReader(input,"UTF-8"));
+String line;
+StringBuilder xmlres = new StringBuilder();
+while ((line = reader.readLine()) != null) {
+xmlres.append(line);
+}
+reader.close();
+//ここにxml構文解析が来ます
+}catch (MalformedURLException e) {
+// ...
+} catch (IOException e) {
+// ...
+}
+// ...
+}
+}
+上から順番に見ていくと、この関数にはString型の引数としてstrが渡されています。これが、今回形態素解析を行ないたい文字列になります。
+static public String[] CallAPI(String str)
+次のブロックでは、YahooAPIを呼び出す為のURL文字列を生成しています。ここで注意して欲しいのは、解析文字列をURLEncodeするのを忘れない事です。これを忘れると、URLをうまく開けません。
+urlstr.append(java.net.URLEncoder.encode(str, "UTF-8"));
+今回はAPIに対して必須項目して与えていませんが、他にも幾つかのオプションを加える事ができます。どういったオプションがあるのかは、公式の資料*2を御覧ください。			 更に次のブロックで、GAE/jのURLフェッチを行っています。採用したのは、最も簡単に記述できる方法です*3。
+URL url = new URL(urlstr.toString());
+InputStream input = url.openStream();
+BufferedReader reader = new BufferedReader(new InputStreamReader(input,"UTF-8"));
+この結果は、BufferedReaderからwhile文でループしながら読み出します。
+StringBuilder xmlres = new StringBuilder();
+while ((line = reader.readLine()) != null) {
+xmlres.append(line);
+}
+尚、今回試した範囲ではYahooAPIからの返答は一行にまとめられていましたので、このループは必要無かったかもしれません。
+XML解析
+YahooAPIの応答は、前述の通りXMLです。これを解析する為に、JDOMを利用しました。JDOMはXML文書を簡単に取り扱うためのJava向けオープンソースライブラリです。
+ここでも先に、できあがったコードの該当部分を載せます。
+public class CallYahooMAService {
+//API読み出し
+static public String[] CallAPI(String str){
+try {
+//ここに形態素解析//
+//XML解析
+Document doc = new SAXBuilder().build(new StringReader(xmlres.toString()));
+Element root = doc.getRootElement();
+Namespace xmls = Namespace.getNamespace("","urn:yahoo:jp:jlp");
+List<Element> wordList = root.getChild("ma_result", xmls).getChild("word_list", xmls).getChildren("word", xmls);
+String[] resString = new String[wordList.size()];
+for(int i = 0; i < wordList.size(); i++){
+resString[i] = wordList.get(i).getChildText("surface", xmls);
+}
+return resString;
+}
+// ...
+catch (JDOMException e){
+// ...
+} catch (Exception e) {
+// ...
+}
+}
+}
+API呼び出しの結果、XML形式の文字列がxmlresに入っています。
+これに対してまず、文字列からjdom.Documentを生成し、そこからRootElementを取り出します。
+Document doc = new SAXBuilder().build(new StringReader(xmlres.toString()));
+Element root = doc.getRootElement();
+さて、ここでのポイントは次の一行です。取得したXMLには、namespaceが設定されています。これを適切に設定しないと、要素の取得が行えません。
+Namespace xmls = Namespace.getNamespace("","urn:yahoo:jp:jlp");
+namespaceを設定したら、あとはroot要素から必用な物を取り出していくだけです。正式な仕様は公式ページで確認して頂きたいのですが、基本的には<word>要素まで、一気に掘り進んで良いかと思います。
+List<Element> wordList = root.getChild("ma_result", xmls).getChild("word_list", xmls).getChildren("word", xmls);
+最後に、取得した<word>要素の各子要素から必用な情報を取り出します。<word>要素には、以下の子要素が含まれます。
+要素名内容
+GAE/jからYahooAPIの形態素解析を利用してみた - AjakuPanic のチラシの裏

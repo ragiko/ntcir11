@@ -1,0 +1,15 @@
+FindBugs を build.xml (Ant ビルドスクリプト) に組み入れるためにはまず、タスク定義を記述する必要があります。タスク定義は次のように記述します。:
+<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+タスク定義は、 findbugs 要素を build.xml 上に記述したとき、そのタスクの実行に使用されるクラスを指定します。タスク定義の記述をすれば、findbugs タスクを使ってターゲットを定義できます。次に示すのは、 Apache BCEL ライブラリーを分析する場合を想定した build.xml の記述例です。
+<property name="findbugs.home" value="/export/home/daveho/work/findbugs" />
+<target name="findbugs" depends="jar">
+<findbugs home="${findbugs.home}"
+output="xml"
+outputFile="bcel-fb.xml" >
+<auxClasspath path="${basedir}/lib/Regex.jar" />
+<sourcePath path="${basedir}/src/java" />
+<class location="${basedir}/bin/bcel.jar" />
+</findbugs>
+</target>
+findbugs 要素には、 home 属性が必須です。 FindBugs のインストールディレクトリーすなわち $FINDBUGS_HOME の値を設定します。2章FindBugs™ のインストール を参照してください。このターゲットは bcel.jar に対して FindBugs を実行します。この Jar ファイルは、 BCEL ビルドスクリプトによって作成されるものです。(上記のターゲットが「jar」ターゲットに依存している (depends) と設定することにより、 FindBugs が実行される前に当該ライブラリーが完全にコンパイルされていることを保証しています。) FindBugs の出力は、 XML 形式で bcel-fb.xml ファイルに保存されます。補助 Jar ファイル Regex.jar を aux classpath に記述しています。なぜなら、当該 Jar ファイルが BCEL メイン･ライブラリーから参照されるからです。source path を指定することで、保存されるバグデータに BCEL ソースコードへの正確な参照が記述されます。
+第6章 FindBugs™ Ant タスクの使用方法

@@ -1,0 +1,66 @@
+Revised: Feb./23rd/2003
+コンピュータは、入力されたデータを処理して出力するものです。データ入出力(I/O: Input/Output)は、そのデータ処理のロジック実装と同じく、重要な機能です。Javaでは、データI/Oはjava.ioパッケージ内のクラスとして実装され、これらのオブジェクトに対する入出力として実現します。Javaでは、目的毎に多数のクラスが定義されており、パフォーマンス、動作特性が異なります。
+ストリームついては、詳しく説明済みですが、ここではタスク指向の Tips としてまとめなおします。
+Q22. ファイルを表現するには?
+例えば、FileInputStreamのコンストラクタは三つあり、それぞれ引数として、パスを表す文字列、Fileオブジェクト、FileDescriptorオブジェクトをとります。また、ファイルに特化したストリームであるRandomAccessFileというクラスもあります。
+ストリームでファイルにアクセスするには、ネイティブのファイル・システムに対するAPIを実装する必要があります。しかし、ネイティブ・ファイル・システムに依存する内容をハード・コーディングすると、中間言語たるJavaの可搬性という特徴が失われてしまいます。つまり、Windowsでコンパイルしたバイト・コードがUNIX/Linux上で実行できなくなってしまうのです。
+この問題を解決するために、Javaではファイル・アクセスをプラットフォーム独立になるように抽象化するクラスを用意しています。
+文字列
+ファイルのパスを文字列で記述します。ディレクトリ階層を表現する場合は、区切り文字などにファイル・システム依存の表現が含まれることになります。
+Fileクラス
+システム上のパスを抽象化して表現します。つまり、具体的なファイルという実体を抽象化してストリームで取り扱うようにします。ネイティブのファイル・システムに依存しない実装が可能になります。
+FileDescriptorクラス
+ファイルを取り扱うための実装です。Fileを更に抽象化した概念であり、通常では無意味です。
+RandomAccessFileクラス
+ファイルに対してランダムアクセス可能なストリームです。通常のストリームは、ファイルに対しても、先頭から順番に検索するシーケンシャル(直線的)なアクセスだけしかできません。このストリームは、ファイル内の任意の場所(オフセット)から任意サイズを操作できます。
+ストリームの枠組みではFileクラス型オブジェクトを使って、ネイティブのファイル・システムを抽象化して可搬性を確保します。ストリームの枠組みから外れて、ランダムアクセスを利用する場合はRandomAccessFileを利用します。FileDescriptorは殆ど使われません。
+Q23. ストリームの基本的な使い方は?
+ストリームを単独で使うことは殆どなく、他のストリームのコンストラクタに引数として与えます。
+オブジェクトを他のオブジェクトにくるんでしまうことをラッピングと呼びます。ストリームも、ラッピングによって、要件を果たす適切な機能を実装することができます。
+例えば、ファイルからのテキスト入力の場合、FileReaderのread(), readLine()で読み込みますが、これらは読み出し毎にファイルアクセス、バイトの文字列変換、クローズを繰り返すので著しく効率が悪くなります。ディスクは細切れのレコードを繰り返し読むよりも、一定サイズのブロックを小数回読み込む方が効率的です。
+この問題を回避するために、バッファを持ったストリームでラップします。BufferedReaderの場合、コンストラクタはReader型オブジェクトを引数にとるので、Readerクラスのサブクラス型の任意のストリームを引数に持つことができます。
+// FileReaderストリームの作成
+FileReader fin = new FileReader("myText.txt");
+// BufferedReaderでfinをラップ
+BufferedReader bin = new BufferedReader(fin);
+これは通常、次のように書きます。
+Reader bin = new BufferedReader(
+new FileReader("myText.txt"));
+ここではReader型ストリームを例にとりましたが、ラッピングやバッファリングの特徴は、バイト・ストリーム、文字ストリーム供に共通です。次の例は、FileInputStreamをProgressInputStreamでラップし、更にBufferedInputStreamでラップしています。
+InputStream bin = new BufferedInputStream(
+new ProgressMonitorInputStream(myFrame, "読み込み中...",
+new FileInputStream("myData.dat")));
+ストリームは他のストリームでラップすることで機能拡張できます。バッファを持つストリームでラップする形を憶えてください。
+Q24. バイト・ストリームを文字ストリームに変換するには?
+全てのストリームは、最初はバイト・ストリームです。InputStreamReader/OutputStreamWriterで文字ストリームに変換します。
+リスト8は、ネットワークのSocketから入出力ストリームを取得し、文字ストリームに変換しています。尚、ソケットから入出力ストリームを取得するために、Socketクラスに定義されている、ストリームを生成するファクトリ・メソッドgetXxxStream()を使っています。このように、ストリームをファクトリ・メソッドで生成する実装は、Java 2コア・パッケージのいたるところで見られます。
+リスト8
+// "www.idg.co.jp/jw/"のポート80へのソケット
+Socket socket = new Socket("http://www.idg.co.jp/jw/", 80);
+// ソケットから入出力ストリームの取得
+InputStream sin = socket.getInputStream();
+OutputStream oin = socket.getOutputStream();
+// 文字ストリームへ変換
+Reader rin = new InputStreamReader(sin);
+Writer wout = new OutputStreamWriter(sout);
+// バッファリング
+BufferedReader in = new BufferedReader(rin);
+BufferedWriter out = new BufferedWriter(wout);
+リスト8で見たとおり、バイト・ストリームを文字ストリームに変換するには、InputStreamReader/OutputStreamWriterを使います。例えば、これらのサブクラスである、FileInputReader/FileOutputWriterは、InputStreamReader/OutputStreamWriterの引数にFileInputStream/FileOutputStreamを与えたものに過ぎません。
+Q25. 文字コードを指定するには?
+文字コードを指定するには、InputStreamReadrとOutputStreamWriterを使います。
+実は、InputStreamReaderとOutputStreamWriterの、引数が一つだけのコンストラクタでも、暗黙的にシステムのデフォルトの文字コードが使われていたのです。この場合は、Javaの内部コードであるUNICODEと、システムのデフォルト文字コード間で、自動的に変換されます。
+文字コードを明示的に指定するために、次のようなコンストラクタも定義されています。
+public InputStreamReader(InputStream in, String charsetName)
+throws UnsupportedEncodingException
+public OutputStreamWriter(OutputStream out, String charsetName)
+throws UnsupportedEncodingException
+それぞれ、第二引数に文字コードを指定します。J2SE 1.4では、java.nio.charsetパッケージに、文字セットを表すCharsetクラスも使えます。サポートされている文字コードのリストは、次のURLから得られます。
+http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html
+http://java.sun.com/j2se/1.4/ja/docs/ja/guide/intl/encoding.doc.html
+http://java.sun.com/j2se/1.3/ja/docs/ja/guide/intl/encoding.doc.html
+日本語が使える代表的な文字コードを、表3に挙げておきます。基本的には、IANAに登録された名前で指定することが推奨されます。
+表3. 代表的な日本語文字コード
+文字符号化方法説明
+UTF-8
+Java 入門 | ストリームの Tips and Tricks

@@ -1,0 +1,100 @@
+
+無料で日本語や中国語の音声合成(TTS、Text-to-Speech)を SAPI 5(Speech API 5)で使う方法
+必要なソフトウェア
+Microsoft .NET Framework 2.0 Service Pack 2(.NETは 2.0以上なら良い)
+Microsoft Speech Platform - Server Runtime (Version 10.1)
+Microsoft Speech Platform - Server Runtime Languages (Version 10.1)
+ダウンロードは下記から行なう。
+Microsoft .NET Framework 2.0 Service Pack 2
+NetFx20SP2_x86.exe
+※ Speech Platformをインストールした後は削除可能。
+Microsoft Speech Platform - Server Runtime (Version 10.1)
+Speech Platformのランタイム ライブラリ
+SpeechPlatformRuntime.msi
+※ ダブルクリックでインストールする。
+Microsoft Speech Platform - Server Runtime Languages (Version 10.1)
+必要な言語の TTS(Text-to-Speech)をダウンロードする。(MSSpeech_TTS_xx-xx_xxxxxx)
+※ MSSpeech_SR_xxは音声認識用。
+[Lang Packs]
+MSSpeech_TTS_ja-JP_Haruka.msi 9.4 MB (日本語、女性、はるか)
+MSSpeech_TTS_zh-CN_HuiHui.msi 24.7 MB (中国語(簡体)、女性、フェイフェイ)
+その他:
+MSSpeech_TTS_en-US_Helen.msi 9.7 MB (英語)
+MSSpeech_TTS_ko-KR_Heami.msi 18.5 MB (韓国語)
+※ ダブルクリックでインストールする。
+・Speech Platformのインストール容量
+音声合成のサンプル
+英語(XP付属の Microsoft Sam)
+Hello! This is a pen. Are you fine ?
+中国語(MSSpeech_TTS_zh-CN_HuiHui)
+弥好。弥好馬?我愛弥。我是中国人。
+日本語(MSSpeech_TTS_ja-JP_Haruka)
+こんにちは。お元気ですか?私は日本人です。
+裏技で SAPI 5.1として動作させる方法。
+レジストリを編集して Microsoft Speech Platformを SAPI 5.1アプリで認識出来るようにする。
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech Server\v10.0\Voices\Tokens
+の中身を
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens
+にコピーする。
+下記をコマンドラインで実行する(UACが有効な場合は管理者権限で実行する)
+reg COPY "HKLM\SOFTWARE\Microsoft\Speech Server\v10.0\Voices\Tokens" HKLM\SOFTWARE\Microsoft\Speech\Voices\Tokens /s /f
+※ "Speech Server"の間には空白があります。
+SpeechApp TTS音声再生アプリケーション
+・SpeechApp TTS音声再生アプリケーション
+.NETランタイムが無い場合はインストールでエラーが出てインストール出来ない。
+.NETランタイムが無い場合はエラーコード 2098. HRESULT 0x8002802Fが出てインストール出来ない。
+.NET Frameworkのまとめ
+.NET Framework 1.1は 1.0を含む。
+.NET Framework 2.0は 2.0だけ。
+.NET Framework 3.0は 2.0を含む。
+.NET Framework 3.5は 2.0、3.0を含む。
+以上から、.NETアプリケーションを動作させたい場合は .NET Framework 1.1と .NET Framework 3.5をインストールすれば好い。
+.NET Framework ダウンロード
+.NET Framework ダウンロード
+.NET Framework 3.0
+Microsoft .NET Framework Version 3.0 再頒布可能パッケージ 
+Windows Server 2003 および Windows XP 用 .NET Framework 3.0 Service Pack 2 の更新プログラム
+NDP30SP2-KB976570-x86.exe
+.NET Framework 2.0
+Microsoft .NET Framework Version 2.0 再頒布可能パッケージ 
+Microsoft .NET Framework 2.0 Service Pack 2
+サイレント インストールの方法
+NetFx20SP2_x86.exe /qb
+.NET Framework 1.1 再頒布可能パッケージ
+.NET Framework 1.1 再頒布可能パッケージ
+Microsoft .NET Framework 1.1 Service Pack 1
+.NET Frameworkのバージョンを整理する
+.NET Frameworkのバージョンを整理する
+nLiteで SAPIを削除した場合に必要なファイル(Windows XP)
+LTTS1033.LX_
+R1033TTS.LX_
+SAM.SD_
+SAM.SP_
+SAPI.CP_
+SAPI.DL_
+SAPI5.IN_
+SAPI5.inf
+SAPICPL.HL_
+SAPISVR.EX_
+SPCOMMON.DL_
+SPCPLUI.DL_
+SPEECH.CH_
+SPTTSENG.DL_
+※ インストール方法
+expand SAPI5.IN_ SAPI5.inf
+で
+SAPI5.inf
+を右クリックしてインストール。
+※みなさまの情報をお待ちします。
+関連するコンテンツ(この記事を読んだ人は、次の記事も読んでいます)
+音声合成エンジン(SAPI 5、TTS)を使用して入力した文字列を喋ります  SpeechApp Microsoft Speech API 5(SAPI 5)の Text-to-Speech(TTS)のアプリ
+HiraganaVoice 平仮名 五十音図 日語發音、ひらがな ぼいす  用鼠標単撃鍵盤 出来日語平假名發音 日語学習方便軟件!
+[HOME]
+|
+[BACK]
+リンクフリー(連絡不要、ただしトップページ以外はweb構成の変更で移動する場合があります)
+Copyright (c)
+2010  FREE WING,Y.Sakamoto
+Powered by 猫屋敷工房 & HTML Generator
+http://www.neko.ne.jp/~freewing/software/ms_sapi_tts/
+日本語や中国語等の音声合成(SAPI TTS)を無料で使う方法(Speech Platform Server Runtimeを裏技で SAPI 5.1として動作させる方法)

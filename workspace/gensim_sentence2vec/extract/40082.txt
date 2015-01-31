@@ -1,0 +1,62 @@
+
+Eclipseでのメニューや表示されるメッセージを日本語化するためのPleiadesプラグインを導入します。下記のURLから開始します。
+http://mergedoc.sourceforge.jp/
+PleiadesにはEclipse本体とセットになっているもの(Pleiades All in One)もあるのですが、今回はEclipseは別でインストールしていますのでPleiadesプラグインだけをダウンロードします。「Pleiades 本体ダウンロード」と書かれたブロックを見てください。
+「最新版」と書かれた右側の「1.3.4」リンクをクリックして下さい。ダウンロードが開始されますので任意の場所に保存して下さい。ダウンロードは以上で終了です。
+先程ダウンロードしたファイルは圧縮ファイルとなっています。ファイルを解凍しまず適当なディレクトリに保存して下さい。次のようなファイルが含まれていることが分かります。
+「readme」ディレクトリの中にある「readme_pleiades.txt」というテキストファイルを開いて下さい。このファイルの中にpleiadesプラグインのインストール方法や設定について記載されています。では順に作業を行っていきます。 
+まず展開したファイルに含まれている「plugins」と「features」のディレクトリをまるごとEclipseをインストールしたディレクトリにコピーします。 
+コピー先であるEclipseをインストールしたディレクトリには「plugins」と「features」のディレクトリが既に存在しています。
+その為、コピーを行うと次のようなダイアログが表示され上書きするかどうか確認されますので「はい」をクリックして下さい。 (使用しているOSによって表示の仕方は異なると思います)。
+コピー元のディレクトリに含まれていたファイルが、Eclipseをインストールしたディレクトリの中にあるコピー元と同じ名前のディレクトリの中にコピーされます。
+続いて「eclipse.ini」ファイルを編集します。Ecllipseをインストールしたディレクトリの中に「eclipse.ini」というファイルがありますのでテキストエディタで開いて下さい。
+内容は次のようになっています。
+-startup
+plugins/org.eclipse.equinox.launcher_1.2.0.v20110502.jar
+--launcher.library
+plugins/org.eclipse.equinox.launcher.win32.win32.x86_1.1.100.v20110502
+-product
+org.eclipse.epp.package.java.product
+--launcher.defaultAction
+openFile
+--launcher.XXMaxPermSize
+256M
+-showsplash
+org.eclipse.platform
+--launcher.XXMaxPermSize
+256m
+--launcher.defaultAction
+openFile
+-vmargs
+-Dosgi.requiredJavaVersion=1.5
+-Xms40m
+-Xmx384m
+最後に次の1行を追加して保存して下さい。
+-startup
+plugins/org.eclipse.equinox.launcher_1.2.0.v20110502.jar
+--launcher.library
+plugins/org.eclipse.equinox.launcher.win32.win32.x86_1.1.100.v20110502
+-product
+org.eclipse.epp.package.java.product
+--launcher.defaultAction
+openFile
+--launcher.XXMaxPermSize
+256M
+-showsplash
+org.eclipse.platform
+--launcher.XXMaxPermSize
+256m
+--launcher.defaultAction
+openFile
+-vmargs
+-Dosgi.requiredJavaVersion=1.5
+-Xms40m
+-Xmx384m
+-javaagent:plugins/jp.sourceforge.mergedoc.pleiades/pleiades.jar
+これで準備は完了です。
+ではEclipseを起動してみます。今までと同じように「eclipse.exe」をダブルクリックして起動すればいいのですが、Pleiadesを更新したり他のプラグインを追加・更新した場合は必ず起動オプションに「-clean」オプションを指定して起動して下さい。「-clean」を付けて起動すると現在の環境に合わせて次回以降の実行速度を Pleiades が最適化してくれるということです。なお通常より起動がかなり遅くなるため必要な時にだけ指定します。
+「-clean」を付けて起動するにはコマンドプロンプトを起動してからEclipseをインストールしたディレクトリに移動し「eclipse -clean」のように入力して実行すればいいのですが、「-clean」オプションを付けて起動するのに便利な「eclipse.exe -clean.cmd」というファイルがPleiadesをダウンロードし展開したファイルの中に含まれています。
+このファイルをEclipseをインストールしたディレクトリにコピーしておくと便利です。では起動してみます。今回はPleiadesを導入して初めての起動ですので「-clean」を付けて起動します。「eclipse.exe -clean.cmd」ファイルをダブルクリックして下さい。
+ワークスペースの指定ダイアログが表示されます。このダイアログも日本語化されています。「OK」ボタンを押してください。
+ワークベンチが表示されます。メニューなどが日本語になっていることが分かります。これでPleiadesプラグインの導入は完了です。
+Eclipseの日本語化のためにPleiadesプラグインの導入 - Eclipse入門

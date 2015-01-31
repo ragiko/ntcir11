@@ -1,0 +1,41 @@
+
+無料で使えるオープンなウェブブラウザ「Firefox」が登場してから今年でちょうど10年になるそうですが、そんな節目の年に、Firefoxを開発しているMozillaがウェブ開発者目線で作成し、開発者やデザイナーにこそ使ってほしいというウェブブラウザ「Firefox Developer Edition」をリリースしました。
+Firefox Developer Edition — Mozilla
+https://www.mozilla.org/ja/firefox/developer/
+Firefox Developer Editionはウェブ開発者のために作られたブラウザで、作成・テスト・サイズの変更といった開発のワークフローで必要とされる機能をすべて持っているものです。さらに、専用のアドオンをインストールすれば、Firefox Developer Editionを操作するだけで他のブラウザや端末上で動作しているコードの調査やデバックも可能になります。デザイナーにも優しい設計となっており、「レスポンシブデザインビュー」や「スタイルエディタ」といったアドオンの機能を組み合わせれば、画面サイズに合わせたレンダリング結果をその場で確認しながらCSSを編集したりも可能です。
+Firefox Developer Editionで使用できる主な開発ツールは以下の通り。
+WebIDE
+「WebIDE」を使えば、Firefox OSアプリの開発とデバッグがFirefox Developer Edition上で可能になります。シミュレータ上のデバッグはもちろんのこと、実機のデバッグもできるそうです。
+Web IDE - YouTube
+レスポンシブデザインビュー
+ウェブサイトはさまざまな画面サイズのPCやスマートフォン、タブレットといった端末上で見られるものなので、あらゆる画面サイズで表示してもサイトがきれいに表示されるように設計する必要があります。Firefox Developer Editionの「レスポンシブデザインビュー」機能を使えば、画面サイズを変更しながらサイトの表示テストが行えるので、わざわざブラウザのウィンドウサイズを変更したりする必要はなくなります。
+Responsive Design View - YouTube
+Valence
+ウェブ上のサービスやサイトはさまざまなブラウザや端末上で同じように表示されたり動作したりする必要があるわけですが、あらゆるブラウザや端末を準備して動作や表示の確認を行うのは非常に面倒なものです。そんな時に使えるのが、標準インストールされているアドオン「Valence」。あらゆるブラウザやOSでの開発や互換性のテストを効率よく行えるようになります。
+Valence - YouTube
+Web Audio エディタ
+「Web Audio エディタ」は、Web Audio APIで作成されるオーディオグラフをリアルタイムで調査でき、ノードが期待通りに接続しているかを簡単に確認できるアドオンです。
+Web Audio Editor - YouTube
+ページインスペクタ
+ウェブページで利用されているHTMLとCSSが簡単に確認でき、文書の構造やレイアウトの変更も可能なツールが「ページインスペクタ」です。
+Page Inspector - YouTube
+Webコンソール
+「Webコンソール」はウェブページに関するログが出力されるコンソールで、JavaScriptの実行も可能なのでウェブページのコンテンツを操作できるようになっています。
+Web Console - YouTube
+JavaScriptデバッガ
+ステップ実行によりJavaScriptコードの振る舞いを検証したり、状態を書き換えることでバグの発見と原因の特定が容易になるアドオンが「JavaScriptデバッガ」。
+Javascript Debugger - YouTube
+ネットワークモニタ
+ブラウザとサーバ間のすべての通信をモニタでき、通信時間・パラメータ・ヘッダといった各リクエストの詳細も見られるツールが「ネットワークモニタ」です。
+Network Monitor - YouTube
+スタイルエディタ
+ウェブページで利用されているCSSを編集できるツールが「スタイルエディタ」。新しくCSSを作成したり、既存のCSSをページに適用したりもできます。
+Style Editor - YouTube
+「Firefox Developer Edition」を新たにリリースしたMozillaですが、Demo StudioではFirefox10周年を記念して、北西航路をVRで楽しめるデモやUnreal Engine 4を使ってウェブ上でゲームを表示させるデモなども公開しています。
+・関連記事
+Firefox 33正式版リリース、スマホ版ではChromecastへの動画送信サポート - GIGAZINE
+Firefoxのタブを上ではなく左右に配置できるアドオン「VerticalTabs」レビュー - GIGAZINE
+累計30億ダウンロードされたFirefoxアドオンのベスト8 - GIGAZINE
+Firefox OSの次期バージョン2.0のスクリーンショットが登場、より洗練されたUIデザインに - GIGAZINE
+たった3800円で購入できるFirefox OSスマホの使い心地は一体どうなのか? - GIGAZINE
+ウェブ開発やデザインが超絶捗る開発者のためのウェブブラウザ「Firefox Developer Edition」が登場 - GIGAZINE

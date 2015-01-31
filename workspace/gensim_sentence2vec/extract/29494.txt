@@ -1,0 +1,26 @@
+
+簡単な棒グラフ(with boxを使う)
+複雑な棒グラフ(その1: with boxを使う)
+複雑な棒グラフ(その2: with historgramを使う)
+簡単な棒グラフ(with boxを使う)
+gnuplotで簡単な棒グラフを書く場合、plotのwith boxesオプションを使うと簡単にできます。
+以下に一つの例を示します。この例では以下のような仮想的なアンケート結果(result1.dat)をプロットすることを目指します。
+楽しかった  10
+まあまあ楽しかった  24
+普通  6
+余り楽しくなかった  4
+全然楽しくなかった  1
+以下のスクリプトで、棒グラフを得ることができます。
+plot "result1.dat" using 0:2:xtic(1) with boxes notitle
+このスクリプトでは、横軸にはデータファイルのコラム0(即ちデータの行数)、縦軸には2コラム目のデータを用いてグラフをプロットしています。usingの3番目にあるxtic(1)は、データの1コラム目をx軸のtic labelとして用いるという指示です。なお、xticの部分が、(xtic(1))のように全体がカッコで囲まれてはいないことに注意して下さい。
+これを実行すると、まだ余りかっこよくは無いですが、下のような出力が得られます。
+棒グラフの色などはset style fillを用いて調整します。例えば、以下のようにスクリプトに追加すると、グラフに色が塗られます。
+set style fill solid
+plot "result1.dat" using 0:2:xtic(1) with boxes notitle
+これだと一色になってしまって余計に分かりづらいので、set style fillの部分にborderを追加して、棒に枠も加えます。また、枠の太さはwith boxesの後にlinewidth(またはlw)を追加して変更できます。
+set style fill solid border lc rgb "black"
+plot "result1.dat" using 0:2:xtic(1) with boxes lw 2 notitle
+グラフの色はwith boxesの後にlinecolor(またはlc)を追加して変更できます(linecolorで塗られる色が変わると言うのは若干違和感がありますが、仕方ありません)。以下の例ではlight-cyanという薄い水色に変更しています。
+set style fill solid border lc rgb "black"
+plot "result1.dat" using 0:2:xtic(1) with boxes lw 2 lc rgb "light-cyan" notitle
+gnuplotで棒グラフを書く - 米澤進吾 ホームページ

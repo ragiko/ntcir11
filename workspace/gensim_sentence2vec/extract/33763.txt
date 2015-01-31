@@ -1,0 +1,300 @@
+右手に感情、左手に数値 - カバレッジを味方にしよう
+testing, TDD |   
+このエントリは、 TDD Advent Calendar 2011 の 7 日目の参加エントリです。前日は @sue445 さんの実録!TDD風景でした。
+しかし TDD Advent Calendar 2011 は、名エントリが多いですね……ハードルが上がり続けていて胃に穴があきそうです。私の言いたいことの多くは、既に @bleis さんのTDD の基礎体力と、TDD に対する想いや、 @shuji_w6e さんのTDDを学ぶべき10の理由で語られています。二つとも素晴らしいエントリなので、ぜひ読んでみてください。
+そろそろカバレッジについて一言いっておくか
+さて、今日書くのは、カバレッジについてです。 @bleis さんのエントリに以下のような記述があります。
+もう一度言いますが、TDD のテストは Developer Testing であって、品質保証を目的としたテストではありません。
+なので、例えばカバレッジだとかを TDD のテストに対して求めるのは多分違っている。
+あくまで、「不安を感じることができるようになるために」品質保証を目的としたテストを学ぶのがいいでしょう。
+もちろん、「TDD でカバレッジなんて取るな!」と言っているわけではありません。
+カバレッジを指針として使うのはアリでしょう*2。
+しかし、カバレッジ% を目指してテストを書くだとか、TDD やっていればカバレッジは 100% になるはずだからそうなっていないのは TDD ではない、というのは違うんじゃないかな、という話です。
+2:このパス通ってないけど大丈夫なんだっけ?と考えるための指針とか
+TDD の基礎体力と、TDD に対する想い
+そのとおりだと思います。では、カバレッジ(より正確には、ホワイトボックスのテストカバレッジ)と TDD の関係について、もうちょっと考えてみましょう。
+カバレッジの光と闇
+私はカバレッジに対して愛憎半ばした思いを抱いています。カバレッジは諸刃の剣というか、良い面と誤解されがちな面を併せ持っているからです。たとえば次のようなことを聞いたことはありませんか?
+元請け SIer に納品するための検修条件が JUnit のテストカバレッジ 100% だが、コンパイラを通すため仕組み上通すのが非常に難しいコード(SecurityException や IllegalAccessException の catch 節など)を書かざるを得ず、 100% にすることができずに詰んだ
+進捗会議でテストカバレッジの指標値の話になり「なぜ 100% じゃないの?」という質問に答えられなかった
+コンテクストを伴わない数字はどうしても一人歩きしてしまいがちです。特にカバレッジはパーセンテージで出すので、最も高い値は 100% です。 100 という数字には、良くも悪くも魔力があります。まるでカバレッジ 100% は 100 点みたいに見えますよね。
+しかし、カバレッジ 100% は 100 点ではありません。満点でもありません。 100% でも別に偉いわけではありません。
+カバレッジ 100% は、現在書かれているプロダクトコードに対して、テストコードが 100% カバーしているという事実を示しているだけです。書かれているコードに対するカバレッジであって、仕様に対するカバレッジではありません。不具合というものは、多くの場合、仕様の不理解に対して発生するものです。仕様を把握していない結果「書かれなかった」コードに対して、カバレッジ測定は無力です。ですから「カバレッジ 100% だから絶対にバグは無いし安心」などということは言えないのです。
+収穫逓減モデル
+ではカバレッジを測定するのは無意味なのでしょうか。そんなことはありません。カバレッジを測定することで現在どこがテストが少ないかを知ることができますし、CI でカバレッジレポートを出し始めた現場では「テストカバレッジを上げていくのはゲームみたいで面白い」という言葉も良く聞きます。
+私は、カバレッジは収穫逓減モデルであると考えます。カバレッジを測りだして 90% くらいまでは「旨味のある」時期が続き、 95% を超えたあたりから 100% に近づけるために大きなコストがかかる割には旨味が少なくなります。普段通りようが無いがコンパイルするために書かざるを得ないコードを、黒魔法を使って無理矢理通すなどの工夫がそれです。ユーザ価値とは全く無関係のカバレッジ 100% にするためのコードであり、本末転倒です。
+誰のためのカバレッジ?
+CI ツールは定期的にきれいなレポートを出してくれます。で、そのレポート、いつも見てますか?
+カバレッジは 100% といったキャッチーな数字ときれいな HTML のレポートも手伝って、営業ツール、管理ツールになってしまいがちです。管理ツールとしてのカバレッジに使われていませんか? 追い回されていませんか?
+カバレッジは自分のためではなく、上司や PM 、他の人に対して何らかの証明として出している感、ありませんか?
+カバレッジはひとりひとりの開発者を助けているんでしょうか?
+そろそろ本題に入りましょう
+カバレッジは自分のためではなく誰かのためのものだと思っていませんか?
+カバレッジを上手く使えば、自分のためのプログラミングツールとすることができます。
+@shuji_w6e さんのエントリTDDを学ぶべき10の理由に次のような一節があります。TDD の楽しさの本質を突いた言葉だと思います。
+9.たくさんコードを書ける
+プログラマであれば、コードをたくさん書きたいと思いませんか?
+TDDではテストコードを大量に書く事が求められますが、言い換えればたくさんのコードを書くことができるという事です。テストコードもプログラムですから、工夫して整理しなければメンテナンス性を損ないます。効果的なライブラリやツールを作成したりする事もできます。これらのコーディングはプロダクションコードのコーディングよりもずっと自由があるでしょう。
+プログラマであれば、コードを書くことは楽しい事です。TDDを導入すればたくさんコードを書けるようになります。
+TDDを学ぶべき10の理由
+私たちはプログラマです。怠惰、傲慢、短気を美徳とするプログラマは、身の回りをプログラミング可能にすることで、世界の見え方を変えることができます。カバレッジも、プログラミング対象にしましょう。
+欲しいのはレポートではなくデータ
+いつも見ている HTML のきれいなレポートは、カバレッジ測定のビューのひとつだと考えましょう。HTML レポートは自分以外の誰か、レポートを必要としている誰かに見せるためのビューです。カバレッジをもっと自分たちに近づけると、自分に対して必要なのは、どんなビューでしょうか。
+私にとって、プログラマとしての自分にとって欲しいビューは、自分が「ここは通っているはずだ」「このくらい通っているはずだ」という予測と、実際にどこが通っているかの差分です。欲しいのは分子分母で表される全体の視点ではなく、目の前のコード、自分の感覚と実際のギャップ制御のためのフィードバックです。
+つまり、いま必要なのは処理後のビューとしての HTML ではなく、カバレッジ解析の生データです。では生データはどうやったら取得できるでしょうか。
+『プログラマが知るべき 97 のこと』の 76 番目のエッセイ「コード分析ツールを利用する」に次のようにあります
+簡単なバグやちょっとした規則違反が、コンパイラでもIDEでも、lintツールでも検出できないということはあります。その検出のために、独自の静的チェッカーを作ることもできます。そういうと何やら難しそうですが、実際にはそうでもありません。ほとんどの言語、特に「動的」と言われる言語では、抽象構文ツリーやコンパイラツールが標準ライブラリの一部に含まれていて、誰でも使えるようになっているからです。開発に普段使用している言語の標準ライブラリにも、あまり使われないような片隅に、静的解析や動的テストに利用できる便利なものが隠れているかもしれません。よく調べてみる価値はあるでしょう。
+(中略)
+コードの品質向上にあたっては、テストだけに頼るのではなく、解析ツールも積極的に利用すべきでしょう。自らツールを作ることにも、恐れることなくぜひ挑戦してみてください。
+どうやら標準ライブラリや、定番となるライブラリまわりにヒントがありそうですね。いろいろなプログラミング言語の添付ライブラリやカバレッジ測定ツールに目を向けてみましょう。
+いろいろなプログラミング言語のライブラリ / ツールを調べてみる
+Ruby
+例えば、 Ruby を見てみましょう。Ruby1.9 には coverage というライブラリが添付されています。ドキュメントにはこうあります:
+まず測定対象のソースを用意します。
+# foo.rb
+s = 0
+10.times do |x|
+s += x
+end
+if s == 45
+p :ok
+else
+p :ng
+end
+以下のようにして測定を行います。
+require "coverage"
+Coverage.start
+require "foo"
+p Coverage.result # => {"foo.rb"=>[1, 1, 10, nil, nil, 1, 1, nil, 0, nil]}
+Coverage.result["foo.rb"]から得られる配列は各行の実行回数になっています。
+coverage
+カバレッジデータを Hash として簡単に取得できるようですね。
+なお、上記 coverage のグッドラッパーとしての simplecov も広く使われています。
+JavaScript
+JSCoverage は測定用コードを織り込むタイプのカバレッジ測定ツールです。最新版 (0.5.1) から使える "--no-browser" というオプションを使って測定用コードが挿入されたコードを生成した後にテストを実行すると、_$jscoverage というグローバル変数にカバレッジ測定データが格納されます。
+if (typeof(_$jscoverage) !== 'undefined') {
+for(var path in _$jscoverage) {  //=> "foo.js"
+if (_$jscoverage.hasOwnProperty(path)) {
+_$jscoverage[path];  //=> [,1,0,0,,1,1,,1,0,0,,,,1,0,0,,0]
+}
+}
+}
+PHP
+Xdebug2 にカバレッジ測定機能があるようです
+array xdebug_get_code_coverage()
+Returns code coverage information
+Returns a structure which contains information about which lines were executed in your script (including include files). The following example shows code coverage for one specific file:
+<?php
+xdebug_start_code_coverage();
+function a($a) {
+echo $a * 2.5;
+}
+function b($count) {
+for ($i = 0; $i < $count; $i++) {
+a($i + 0.17);
+}
+}
+b(6);
+b(10);
+var_dump(xdebug_get_code_coverage());
+?>  
+Returns:
+array
+'/home/httpd/html/test/xdebug/docs/xdebug_get_code_coverage.php' => 
+array
+5 => int 1
+6 => int 1
+7 => int 1
+9 => int 1
+10 => int 1
+11 => int 1
+12 => int 1
+13 => int 1
+15 => int 1
+16 => int 1
+18 => int 1
+Code Coverage Analysis
+Python
+Python の Coverage.py は Coverage API を備えています。
+import coverage
+cov = coverage.coverage()
+cov.start()
+# .. run your code ..
+cov.stop()
+cov.save()
+analysis2(morf)
+Analyze a module.
+morf is a module or a filename. It will be analyzed to determine its coverage statistics. The return value is a 5-tuple:
+The filename for the module.
+A list of line numbers of executable statements.
+A list of line numbers of excluded statements.
+A list of line numbers of statements not run (missing from execution).
+A readable formatted string of the missing line numbers.
+The analysis uses the source file itself and the current measured coverage data.
+Coverage API
+ここまで四つの言語のカバレッジ測定ライブラリをざっと見てきて気づくのは、大体は同じようなデータを持っているということです。ステートメントカバレッジの生データは、測定対象ファイルパスをキー、各行の実行回数の配列を値とする連想配列が多いようですね。
+自分のためのツールを作る
+では、簡単なツールを作ってみましょう。プログラマとしての私は、目の前のコードのどこがテストでカバーされていないかを知りたいです。取得したカバレッジの測定データを何らかのデータ形式で出力し、それを処理する側はコンソールで簡単に確認したり、最終的には Emacs で表示したいとします。
+データファイルの形式をどうするか
+いくつかのカバレッジツールを見てみると、中間ファイルとして json や yaml を出すものが多いように見受けられます。
+今回はどうしましょうか。私は『UNIX という考え方』を好んでいます。ですから、行指向、1行が独立した1データを表しているプレーンテキストを好みます。行指向であれば将来ストリームのように処理することも期待できます。
+ということで、今回は CSV にしてみます。各カラムはファイルパス、行番号、実行回数を表すとします。
+ruby で実装してみる
+コンセプトを明らかにするために、先ほどの ruby の小さいサンプルから csv を出してみることにします。
+foo.rb
+s = 0
+10.times do |x|
+s += x
+end
+if s == 45
+p :ok
+else
+p :ng
+end
+foo_test.rb
+require "coverage"
+Coverage.start
+require_relative "foo"
+Coverage.result.each do |path, stats|
+stats.each_with_index do |cnt, i|
+next if cnt.nil?
+puts "#cov:#{path},#{i+1},#{cnt}"
+end
+end
+出力
+$ ruby foo_test.rb | grep '^#cov' | awk -F: '{print $2}'
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb,1,1
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb,2,1
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb,3,10
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb,6,1
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb,7,1
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb,9,0
+$
+さあ、データができました。
+簡単なコンソール出力を作る
+まず足がかりとして、どの行が何回通ったかをコンソールに出す簡単なプログラムを作ってみます。
+simple_reporter.rb
+files = {}
+ARGF.each_line do |line|
+file_path, line_no, count = line.split(',')
+files[file_path] ||= []
+files[file_path][line_no.to_i] = count.to_i
+end
+files.each_pair do |fpath, stats|
+stats.shift  # fill gap between zero-origin and 1-origin
+puts "# #{fpath}"
+IO.readlines(fpath).zip(stats).each do |line, cnt|
+puts "%5s  %s"%[(cnt || '-'), line]
+end
+end
+出力
+$ ruby foo_test.rb | grep '^#cov' | awk -F: '{print $2}' | ruby simple_reporter.rb
+# /Users/takuto/work/git-sandbox/writings/hatena/foo.rb
+1  s = 0
+1  10.times do |x|
+10    s += x
+-  end
+-  
+1  if s == 45
+1    p :ok
+-  else
+0    p :ng
+-  end
+$
+通ってない行だけをハイライトしたい
+先ほどの simple_reporter.rb の出力を見てみて感じるのは、プログラマとしては各行が何回通ったかはそれほど興味が無くて、それよりも知りたいのは「実行されてない行はどこか」だけだということです。行の実行回数を出すのはやめて、一回も実行されていない行だけに注目することにします。
+colored_reporter.rb
+require 'rubygems'
+require 'term/ansicolor'
+c = Term::ANSIColor
+files = {}
+ARGF.each_line do |line|
+file_path, line_no, count = line.split(',')
+files[file_path] ||= []
+files[file_path][line_no.to_i] = count.to_i
+end
+files.each_pair do |fpath, stats|
+stats.shift  # fill gap between zero-origin and 1-origin
+puts "# #{fpath}"
+IO.readlines(fpath).zip(stats).each_with_index do |(line, cnt), i|
+line_with_num = ("%5s  %s"%[i+1, line]).chomp
+if cnt == 0
+puts c.on_red(line_with_num)
+else
+puts line_with_num
+end
+end
+end
+出力
+$ ruby foo_test.rb | grep '^#cov' | awk -F: '{print $2}' | ruby colored_reporter.rb
+# /Users/takuto/work/git-sandbox/writings/hatena/foo.rb
+1  s = 0
+2  10.times do |x|
+3    s += x
+4  end
+5  
+6  if s == 45
+7    p :ok
+8  else
+9    p :ng           <-- この行が赤くハイライトされる(画像じゃないとわからないですね…)
+10  end
+$
+いざ Emacs へ
+emacs で先ほどの colored_reporter のように、通ってない行だけ色を付けたいとします。車輪の再実装をすることなく既存の何かにつなげたいとすると、何がいいでしょうか。まず私が思い浮かべたのは flymake です。 flymake が解釈できるフォーマットといえば、 gcc がコンパイルエラーなどのときに出力する形式が考えられます。早速作ってみましょう。
+gcc_reporter.rb
+files = {}
+ARGF.each_line do |line|
+file_path, line_no, count = line.split(',')
+files[file_path] ||= []
+files[file_path][line_no.to_i] = count.to_i
+end
+files.each_pair do |fpath, stats|
+stats.shift  # fill gap between zero-origin and 1-origin
+puts ("=" * 80)
+puts fpath
+puts ("=" * 80)
+IO.readlines(fpath).zip(stats).each_with_index do |(line, cnt), i|
+puts "%5s  %s"%["#{fpath}:#{i+1}:", line] if cnt == 0
+end
+end
+出力
+$ ruby foo_test.rb | grep '^#cov' | awk -F: '{print $2}' | ruby gcc_reporter.rb
+================================================================================
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb
+================================================================================
+/Users/takuto/work/git-sandbox/writings/hatena/foo.rb:9:    p :ng
+$
+coverage_flymake.sh
+MY_RUBY_PATH=~/.rvm/rubies/ruby-1.9.3-p0/bin/
+$MY_RUBY_PATH/ruby foo_test.rb | grep '^#cov' | awk -F: '{print $2}' | $MY_RUBY_PATH/ruby gcc_reporter.rb
+flymake に設定
+(require 'flymake)
+(load "flymake-cursor")
+(set-face-background 'flymake-errline "red4")
+(set-face-background 'flymake-warnline "dark slate blue")
+(defun flymake-coverlay-init ()
+(list "~/work/git-sandbox/writings/hatena/coverage_flymake.sh"))
+(setq flymake-allowed-file-name-masks
+(cons '(".+\\.rb$"
+flymake-coverlay-init
+flymake-simple-cleanup
+flymake-get-real-file-name)
+flymake-allowed-file-name-masks))
+(add-hook
+'ruby-mode-hook
+'(lambda ()
+(if (not (null buffer-file-name)) (flymake-mode))))
+でもハイライトのタイミングは自分で制御したい
+flymake でのハイライトはまあまあ上手くはいったのですが、プログラマとしての自分はわがままで、カバレッジ表示のタイミングは常に行いたいというものではなく、自分が知りたいタイミングでハイライトしたいということに気がつきました。
+結局私は(あまり慣れない) emacs-lisp で開いているバッファに対してテストがカバーしてない行のハイライトをトグルできるプログラムを書いたのでした。せっかくなので el-expectations を使って TDD で emacs-lisp の開発を行ってみました。成果は github に上げてあります。
+http://github.com/twada/coverlay.el
+だんだんと仕組みが大きくなってきましたね。私の試みはひとまずここで終了です。
+私はこの coverlay.el をつかって日々の開発を行っています。今年春に Shibuya.js でデモを行ったのも、実はこの coverlay.el (の前身) でした。
+おわりに
+TDD はあなたのためにあります。不安を克服し、テストを使って自信を持って開発を前に進めていくのが TDD です。
+TDD にとってテストの RED/GREEN は自信の下支えであり、プログラマとしての感情の源でもあります。そしていったんカバレッジが自分の道具箱に入ると、テストの RED/GREEN と同じくらい、カバレッジがプログラマにとって有用なフィードバックになります。
+管理ツールではなく、開発ツールとして。受動的にではなく、能動的に。カバレッジを毛嫌いするのではなく、開発者としてカバレッジを従え、カバレッジと共に歩みましょう。
+道具に使われるのではなく、道具を使いましょう。数値に使われるのではなく、数値を使いましょう。
+自分を取り巻く対象をプログラミング対象にしましょう。もし面倒くさいと思うことがあったら、それをプログラミング対象にしてしまうと、面白さが面倒臭さを上回るかもしれませんよ ;-)
+ツイートする
+右手に感情、左手に数値 - カバレッジを味方にしよう - t-wadaの日記

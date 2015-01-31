@@ -1,0 +1,74 @@
+[リンク集]
+分子遺伝学関連リンク集
+塩基・アミノ酸配列を扱う分子遺伝学関連のリンク集。
+オンラインリソース
+BLAST
+配列データベースからの相同性検索。
+FASTA
+同上。
+SSEARCH
+同上。
+SQmatch
+正規表現で相同性検索。
+GeneFisher
+PCR用プライマー設計補助サイト。
+ソフトウェア
+Phred
+オートシーケンサからの出力波形を解析して配列を出力するプログラム。波形から配列のQuality値を算出することが可能。
+ClustalW
+累進法を採用したmultiple sequence alignment software。
+PRRN
+これもmultiple sequence alignment software。累進法に反復改善法を組み合わせている。出力は良いが演算は多い。
+SAGA
+これもmultiple sequence alignment software。累進法に、遺伝的アルゴリズムによる改善法を組み合わせている。演算量多し。
+MAFFT
+高速フーリエ変換を応用して大量のデータを高速に処理するmultiple sequence alignment software。
+Muscle
+高速でreasonableな結果を出すmultiple sequence alignment software。
+HMMer
+アミノ酸配列に対して隠れマルコフモデルに基づく相同性検索やprofile alignmentを行うソフト。
+Infernal
+rRNA/tRNAをコードしている領域の塩基配列に対して相同性検索やprofile alignmentを行うソフト。
+Gblocks
+multiple sequence alignmentからalignmentの信頼性の低い座位を探し出して除去するためのソフト。
+trimAl
+Gblocksを発展させてパラメータ自動設定機能を充実させたようなもの。
+CAP
+二つの配列を類似部分で接続するプログラム。
+Phrap
+二つ以上の配列を類似部分で接続するプログラム。PhredによるQuality値を考慮することができる。
+BioEdit
+Windows用のmultiple sequence alignment editor。ClustalWが同梱されており、プログラム内から呼び出してアライメントが可能。ABI/SCF形式の波形解析もできる。系統解析ソフトもいくつか付いており、これだけで十分という人もいる。
+SeaView
+multiple sequence alignment editor。WindowsだけでなくMac、UNIXでも動作する。アライメントにはClustalWを採用している。
+SeqPup
+multiple sequence alignment editor。C++版とJava版がある。
+GeneAlign
+multiple sequence alignment editor。ClustalWを呼び出す。Javaプログラム。
+Jalview
+Javaプログラムなmultiple sequence alignment editor。アライメントのクオリティを図示してくれる。ただし私の環境でデフォルト設定ではプロポーショナルフォントになっているようで表示がおかしかった。カラー表示にすると正常に表示された。
+Sequence Analysis
+Java製のPrimerデザイン支援用ソフト。
+ESPript
+multiple sequence alignmentをPostScript出力してくれるソフトウェア。
+BoxShade
+multiple sequence alignmentをPostScript出力してくれるソフトウェア。
+DNArates
+サイトごとの塩基置換速度を求めるプログラム。
+EMBOSS
+塩基配列操作ユーティリティの詰め合わせ。Windows版はここ。
+ncbitools
+NCBIのプログラムとか色々。BLASTも入っている。
+FASTA
+著名なホモロジーサーチプログラム。
+ReadSeq
+塩基配列フォーマット相互変換プログラム。
+BioPerl
+主に配列操作用のPerlモジュール集。
+BioRuby
+同じくRubyモジュール集。
+BioPython
+同じくPythonモジュール集。
+BioJava
+同じくJavaクラス集。
+分子遺伝学関連 - Life is fifthdimension.

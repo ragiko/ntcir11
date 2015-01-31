@@ -1,0 +1,94 @@
+文章から名詞を抽出して出現回数を数える
+python
+こちらのエントリを参考にさせていただいて、文章から名詞を抽出して出現回数を数えるスクリプトを作成しました。
+YahooWebAPI"日本語形態素解析"を使って日本語文をひらがなに変換、索引用語のソートに利用 | Object Design Blog
+http://www.my-notebook.net/python/yahooapi-keitaiso.html
+Yahoo開発者登録して、AppID取得
+Yahooアカウント作成
+アプリケーションIDの登録
+サンプルのappidを、登録時に取得できたアプリケーションIDに置き換える。
+BeautifulSoupインストール
+この解析にはBeautifulSoupが必要。
+実行マシンであるWindowsマシンだとeasy_installによる適用がうまくいかなかったので、サイトからアーカイブ取得して展開、setup.pyを実行する形をとった。
+http://www.crummy.com/software/BeautifulSoup/download/3.x/
+>setup.py install
+running install
+running build
+running build_py
+creating build
+creating build\lib
+copying BeautifulSoup.py -> build\lib
+copying BeautifulSoupTests.py -> build\lib
+running install_lib
+copying build\lib\BeautifulSoup.py -> C:\Python25\Lib\site-packages
+copying build\lib\BeautifulSoupTests.py -> C:\Python25\Lib\site-packages
+byte-compiling C:\Python25\Lib\site-packages\BeautifulSoup.py to BeautifulSoup.pyc
+byte-compiling C:\Python25\Lib\site-packages\BeautifulSoupTests.py to BeautifulSoupTests.pyc
+running install_egg_info
+Writing C:\Python25\Lib\site-packages\BeautifulSoup-3.2.0-py2.5.egg-info
+ソースと実行結果
+名詞出現回数数え上げサンプル:yomi.py
+# -*- coding: utf_8 -*-
+from urllib import urlopen, quote_plus, urlencode
+from BeautifulSoup import BeautifulSoup
+import urllib
+import codecs
+#pageurl='http://api.jlp.yahoo.co.jp/MAService/V1/parse'
+pageurl='http://jlp.yahooapis.jp/MAService/V1/parse'
+appid='set your appid'
+def countword(text,dict={},appid=appid,results='ma',filter=''):
+text=text.encode('utf-8')
+postdata= {
+'appid': appid,
+'sentence' : text,
+'results' : results,
+'response' : 'surface,pos',
+'filter' : filter}
+params=urllib.urlencode(postdata)
+f = urllib.urlopen(pageurl, params)
+soup = BeautifulSoup(f.read())
+readings=soup('surface')
+for yomi in readings :
+pos = yomi.nextSibling.string
+if pos == u'名詞':
+s = yomi.string
+if not dict.has_key(s):
+dict[s] = 0
+dict[s] = dict[s] + 1
+return dict
+if __name__ == '__main__':
+f=codecs.open('wordlist.txt','r','shift_jis')
+dict = {}
+for line in f.readlines() :
+word=line.rstrip()
+dict=countword(word, dict)
+for k in dict.keys():
+print (k+'->'+str(dict[k])).encode('shift_jis')
+wordlist.txt
+わが輩は猫である
+名前はまだない
+寿限無寿限無五劫の擦り切れ
+海砂利水魚
+長靴を履いた猫
+海千山千
+実行結果
+>yomi.py
+水魚->1
+寿限無->2
+名前->1
+わが輩->1
+猫->2
+砂利->1
+海千山千->1
+長靴->1
+五->1
+海->1
+劫->1
+擦り切れ->1
+参考にしました。
+YahooWebAPI"日本語形態素解析"を使って日本語文をひらがなに変換、索引用語のソートに利用 | Object Design Blog
+http://www.my-notebook.net/python/yahooapi-keitaiso.html
+Yahoo!デベロッパーネットワーク - テキスト解析 - 日本語形態素解析
+http://developer.yahoo.co.jp/webapi/jlp/ma/v1/parse.html
+Permalink | コメント(0) | トラックバック(0) | 01:28   
+文章から名詞を抽出して出現回数を数える - qnzm.log(クニジマログ)

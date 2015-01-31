@@ -1,0 +1,145 @@
+
+ビジネス翻訳最先端
+【第10回】 ふるい分け〜感度・特異度と陽性的中率〜
+和光大学人間関係学部 野中 浩一
+1.1回の試験で実力など分かるでしょうか
+翻訳学校のクラスで何か課題を出していただくと、その人の能力について、確かに1回でもおよその見当はつくものですが、もちろん万全ではありません。人間が人間を評価するのは簡単なことではありません。
+世の中にはかなり短い文章を題材にした「あなたの翻訳力を診断!」という宣伝も見かけます。いったいそれはどのくらい正確に「当たる」のでしょうか? もしこの1回の「検査」で翻訳希望者をふるい分け(screening)するとしたら、「私の実力が正当に評価されない!」と憤慨される方もいらっしゃるかもしれません。逆に本当はまだ力不足なのに、合格になってしまう人もいるでしょう。
+問題文A
+本当の実力
+合計
+あり
+なし
+試験
+合格
+a
+c
+a+c
+不合格
+b
+d
+b+d
+合 計
+a+b
+c+d
+a+b+c+d
+「本当の実力」の有無の判定は現実には難しいですが、神様には分かるものとしてみましょう。それに対して、ふるい分け検査(screening
+test)に相当する問題文Aによる試験の結果をもとにして「合格」「不合格」の判定をするとします。そうすると、組み合わせとしては、上記の表の4通りが存在することになります(表中のa,b,c,d)。このうち、aとdは、それぞれ実力を反映した試験結果ですから「当たり」です。これに対して、bは本当は実力があるのに検査の判定が否定的な「はずれ」ですから、偽陰性(false
+negative)、ということになります。もう一つのcは、実力がないのに合格してしまう「はずれ」であり、偽陽性(false
+positive)に相当します。
+なお、ここでの「ぎようせい」は「偽陽性」と書いてください。一部の日本語フロントプロセッサでは「擬陽性」か「疑陽性」しか登録されていないため、混乱するおそれがあります。実際、一部の辞書には、疑陽性偽陽性と同じ意味の語句として収録されていますが、擬陽性はツベルクリン反応において、陽性と陰性の中間の反応を示す呼称でした(ただし、最近ではこの呼び名は使われなくなっています)。つまり、false
+positiveの「誤って陽性と判定したもの」(偽陽性)とは違う意味であり、実際の使用頻度を考えても、翻訳では偽陽性がほとんどでしょうから、お使いの日本語変換用辞書に「偽陽性」「偽陰性」を登録しておくとよいと思います。
+2.スクリーニング検査の基本用語
+さて、スクリーニング検査には必ず登場する用語があります。まずはsensitivity(感度)とspecificity(特異度)です。先ほどの表で言えば、感度はa/(a+b)に相当し、つまり、本当の実力がある人のどのくらいの割合が検査で陽性に判定されるかを示します。特異度のほうは、d/(c+d)で、これは本当は実力がない人のどのくらいの割合をただしく陰性に判定するかを示しています。もちろん、理想的な検査法では、感度も特異度とも1(100%)になるのが望ましいわけです。いずれにせよ、この2つの指標は、検査法に固有の特性であることに注意してください。
+この他に、predictive value positive(検査陽性的中率)という指標も登場します。これは、検査が陽性であった例のうち、本当に真の該当者である者がどのくらいいるかを示します。実際の検査(試験)では、この指標のほうが関心が高いかもしれません。先の表でいえば、a/(a+c)に相当することになります。さて、この値は、感度と特異度が分かっていれば一定になるものでしょうか? 
+3.prevalenceが問題
+答えは否。実は集団の中で真の該当者がどのくらいいるかにも左右されるのです。具体的に示してみましょう。この試験問題の感度と特異度はどちらも0.9(90%)だと仮定して、100人の集団の実力者割合が5割のときと、1割のときとを考えてみましょう。
+【実力者割合が5割のとき】
+問題文A
+本当の実力
+合計
+あり
+なし
+試験
+合格
+45
+5
+50
+不合格
+5
+45
+50
+合 計
+50
+50
+100
+【実力者割合が1割のとき】
+問題文A
+本当の実力
+合計
+あり
+なし
+試験
+合格
+9
+9
+18
+不合格
+1
+81
+82
+合 計
+10
+90
+100
+どちらの表でも、ちゃんと感度と特異度が同じになっていることを確認してください。そのうえで、検査陽性的中率を見ると、前者では45/50(=90%)、後者では9/18(=50%)になっていることがわかります。一般に集団における真の該当者の割合(疾患を対象とするときは有病者割合prevalence)が低くなると、この検査陽性的中率も低下します。逆に言えば、有病割合の低い疾患にこの検査を適用すると、「歩留まり」が悪くなる傾向が生じます。翻訳会社が優秀な翻訳者を探そうとしてスクリーニングのための試験を実施しても、集団のなかの優秀な翻訳者の割合が低ければ、試験で合格になってもそのうちで使える人の割合は低くなるということです(検査合格者の絶対数も減りますが、そればかりでなく検査合格者に占める真の実力者の割合も低下するわけです)。
+もちろんこれの裏返しとして、predictive
+value negativeという指標も考えられます。これらが、検査法の特性(感度、特異度)だけでなく、集団の特性(有病割合)にも左右されることに注意しておきましょう。
+4.次回のための例題
+さて、スクリーニング検査に関する基本用語はこのくらいですが、以下の抄録の文章、意味は了解できるでしょうか? 
+STUDY OBJECTIVE: This study was conducted
+to prospectively measure the accuracy
+of
+serum progesterone levels to detect
+ectopic
+pregnancy. 
+METHODS: Seven hundred sixteen symptomatic
+first-trimester emergency department
+patients
+with abdominal pain or vaginal bleeding
+at
+a tertiary care military teaching hospital
+had progesterone levels measured by
+radioimmunoassay
+with results unavailable to the treating
+physician. All patients were monitored
+until
+a criterion standard diagnosis of intrauterine
+pregnancy or ectopic pregnancy was
+confirmed.
+RESULTS: A 14-month derivation phase
+(n=399)
+used receiver operating characteristic
+curve
+testing to select a cutoff value of
+progesterone
+less than 22 ng/mL. A 12-month validation
+phase (n=317) then retested this cutoff
+value.
+Combining both phases, there were 434
+(61%)
+viable intrauterine pregnancies, 229
+(32%)
+nonviable intrauterine pregnancies,
+and 52
+(7. 3%) ectopic pregnancies, of which
+17
+were ruptured. Sensitivity, specificity,
+positive predictive values, and negative
+predictive values (95% confidence
+intervals)
+for progesterone levels less than 22
+ng/mL
+to detect ectopic pregnancy were 100%
+(94%
+to 100%), 27% (23% to 30%), 10% (7%
+to 12%),
+and 100% (98% to 100%), respectively.
+CONCLUSION: Given similar disease prevalence,
+roughly one fourth (178/716) of symptomatic
+patients can be classified as low risk
+(0%,
+95% confidence interval 0 to 2%) for
+having
+an ectopic pregnancy using a progesterone
+cutoff of 22 ng/mL. Whether implementation
+of rapid progesterone testing can safely
+expedite care and reduce the need for
+urgent
+diagnostic evaluation or admission
+remains
+to be determined.
+最近、ROCcurveという用語を以前よりよく見かけるようになりました。その基本的な考え方は理解しておく必要がありそうです。解説は次回に。
+連載の各回に飛ぶ  第1回 第2回 第3回 第4回 第5回 第6回 第7回 第8回 第9回 第10回 第11回
+月刊「eとらんす」2001年6月号より
+ビジネス翻訳最先端 メディカル・バイオ編

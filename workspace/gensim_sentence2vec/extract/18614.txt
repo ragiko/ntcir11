@@ -1,0 +1,387 @@
+
+この文書はRFC3194の日本語訳(和訳)です。
+この文書の翻訳内容の正確さは保障できないため、
+正確な知識を求める方は原文を参照してください。
+翻訳者はこの文書によって読者が被り得る如何なる損害の責任をも負いません。
+この翻訳内容に誤りがある場合、訂正版の公開や、
+誤りの指摘は適切です。
+この文書の配布は元のRFC同様に無制限です。
+Network Working Group                                          A. Durand
+Request for Comments: 3194                              SUN Microsystems
+Updates: 1715                                                 C. Huitema
+Category: Informational                                        Microsoft
+November 2001
+The Host-Density Ratio for Address Assignment Efficiency:
+An update on the H ratio
+アドレス割当効率のためのホスト密度比率:
+H比率の更新
+Status of this Memo
+この文書の状態
+This memo provides information for the Internet community.  It does
+not specify an Internet standard of any kind.  Distribution of this
+memo is unlimited.
+このメモはインターネット共同体のための情報を供給します。これはインター
+ネット標準を指定しません。このメモの配布は無制限です。
+Copyright Notice
+著作権表示
+Copyright (C) The Internet Society (2001).  All Rights Reserved.
+Abstract
+概要
+This document provides an update on the "H ratio" defined in RFC
+1715.  It defines a new ratio which the authors claim is easier to
+understand.
+この文書はRFC 1715で定義された「H比率」の更新を供給します。これは著
+者が理解することがより容易であると主張する新しい比率を定義します。
+1. Evaluating the efficiency of address allocation
+1. アドレス割当効率の評価
+A naive observer might assume that the number of addressable objects
+in an addressing plan is a linear function of the size of the
+address.  If this were true, a telephone numbering plan based on 10
+digits would be able to number 10 billion telephones, and the IPv4 32
+bit addresses would be adequate for numbering 4 billion computers
+(using the American English definition of a billion, i.e. one
+thousand millions.) We all know that this is not correct: the 10
+digit plan is stressed today, and it handles only a few hundred
+million telephones in North America; the Internet registries have
+started to implement increasingly restrictive allocation policies
+when there were only a few tens of million computers on the Internet.
+世間知らずのオブザーバーがアドレス計画でのアドレス可能なオブジェクト
+の数がアドレスの大きさに比例すると想定するかもしれません。もしこれが
+本当なら、10桁の電話番号計画で100億の電話に番号を付けることが可
+能であり、IPv4の32ビットアドレスは40億のコンピュータに対して
+十分番号付けが可能であろう。我々はすべてこれが正しくないことを知って
+います:10桁計画は今日緊迫していて、これは北アメリカでただ数億の電
+話だけを処理します;インターネットレジストリは、インターネットにただ
+数千万のコンピュータだけがあった時に、割当を制限する割当ポリシーを実
+行し始めました。
+Addressing plans are typically organized as a hierarchy: in
+telephony, the first digits will designate a region, the next digits
+will designate an exchange, and the last digits will designate a
+subscriber within this exchange; in computer networks, the most
+significant bits will designate an address range allocated to a
+network provider, the next bits will designate the network of an
+organization served by that provider, and then the subnet to which
+the individual computers are connected.  At each level of the
+hierarchy, one has to provide some margins:  one has to allocate more
+digits to the region code than the current number of regions would
+necessitate, and more bits in a subnet than strictly required by the
+number of computers.  The number of elements in any given level of
+the   hierarchy will change over time, due to growth and mobility.
+If the current allocation is exceeded, one has to engage in
+renumbering, which is painful and expensive.  In short, trying to
+squeeze too many objects into a hierarchical address space increases
+the level of pain endured by operators and subscribers.
+アドレス計画が一般に階層化されます:電話で最初の桁は地域を指定するで
+しょう、次の桁は交換機を指定するでしょう、そして最後の桁は、この交換
+機内の、加入者を指定するでしょう。コンピュータ・ネットワークで、最上
+位ビットはネットワークプロバイダに充てられたアドレス範囲を指定するで
+しょう、次のビットはそのプロバイダに接続した組織のネットワークを指定
+するでしょう、そして次に個別のコンピュータが繋がっているサブネットを
+指定するでしょう。それぞれの階層のレベルで、若干のマージンを供給しな
+ければなりません:地域コードは、現在の地域数の必要より多く割当てられ、
+サブネットではコンピュータ数によって必要とされるより多くのビット桁を
+割り当てなければなりません。階層のレベルを与えられた要素の数は、時間
+がたつと成長と移動により変化するでしょう。もし現在の割当を超えたなら、
+番号を付け直さなければならず、これは骨が折れる作業で高価です。要する
+に、階層的なアドレス空間の中にあまりに多くのオブジェクトを詰め込もう
+とすることはオペレーターと加入者に与える苦痛のレベルを増やします。
+Back in 1993, when we were debating the revision of the Internet
+Protocol, we wondered what the acceptable ratio of utilization was of
+a given addressing plan.  Coming out with such a ratio was useful to
+assess how many computers could be connected to the Internet with the
+current 32-bit addresses, as well as to decide the size of the next
+generation addresses.  The second point is now decided, with 128-bits
+addresses for IPv6, but the first question is still relevant:
+knowing the capacity of the current address plan will help us predict
+the date at which this capacity will be exceeded.
+1993年より前に、我々がインターネット・プロトコルの修正を議論して
+いた時、アドレス計画で利用できる比率が何であるか疑問をもちました。こ
+のような比率を言うことは、次世代のアドレスの大きさを決めるためと同様
+に、現在の32ビットのアドレスでいくつのコンピュータがインターネット
+に接続し得たか検査するために有用でした。2番目の点は、IPv6の
+128ビットのアドレスで、今決定されています、しかし最初の質問はまだ
+適切です:現在のアドレス計画の容量を超えるであろう日付を予測するのを
+手助けするでしょう。
+Participants in the IPNG debates initially measured the efficiency of
+address allocation by simply dividing the number of allocated
+addresses by the size of the address space.  This is a simple
+measure, but it is largely dependent on the size of the address
+space.  Loss of efficiency at each level of a hierarchical plan has a
+multiplicative effect; for example, 50% efficiency at each stage of a
+three level hierarchy results in a overall efficiency of 12.5%.  If
+we want a "pain level indicator", we have to use a ratio that takes
+into account these multiplicative effects.
+IPNG議論の関係者が、最初、割当てたアドレスの数をアドレス空間の大きさ
+で割ることでアドレス割当の効率を測りました。これは単純な方法ですが、
+アドレス空間の大きさに依存しています。階層的な計画で、各階層の効率の
+損失が掛け算で効きます;例えば、3階層の各階層で50%の効率であれば、
+全体で12.5%の効率になります。もし我々が「苦痛度合表示」を欲するな
+ら、我々はこれらの乗法の効果を考慮に入れる比率を使わなければなりません。
+The "H-Ratio" defined in RFC 1715 proposed to measure the efficiency
+of address allocation as the ratio of the base 10 logarithm of the
+number of allocated addresses to the size of the address in bits.
+This provides an address size independent ratio, but the definition
+of the H ratio results in values in the range of 0.0 to 0.30103, with
+typical values ranging from 0.20 to 0.28.  Experience has shown that
+these numbers are difficult to explain to others; it would be easier
+to say that "your address bits are used to 83% of their H-Density",
+and then explain what the H-Density is, than to say "you are hitting
+a H ratio of 0.25" and then explain what exactly the range is.
+RFC 1715で定義された「H比率」は、割り当てられたアドレスの数の10を
+基とした対数と、アドレスの大きさのビット数の比率として、アドレス割り
+当ての効率を計測することを提案しました。これはアドレス大きさに依存し
+ない比率を供給しますが、H比率の定義は、範囲が0.0から0.30103
+で、一般的な値が0.20から0.28になります。経験によってこれらの数
+を他の人たちに説明することが難しいことがわかりました;「H比率が
+0.25である」と言って次に比率の限界が何かを説明することより、
+「H密度でアドレスビットが83%に使われてる」と言って次にH密度を説
+明する方が容易です。
+This memo introduces the Host Density ratio or "HD-Ratio", a proposed
+replacement for the H-Ratio defined in RFC 1715.  The HD values range
+from 0 to 1, and are generally expressed as percentage points; the
+authors believe that this new formulation is easier to understand and
+more expressive than the H-Ratio.
+このメモはホスト密度比率あるいは「HD比率」を紹介します、RFC1715で定
+義したH比率の取替えが提案されます。HD値は0から1の範囲で、一般に
+パーセントで表記されます;著者はこの新しい形式が理解がより容易で、
+H比率より表情豊かであると信じます。
+2. Definition of the HD-ratio
+2. HD比率の定義
+When considering an addressing plan to allocate objects, the host
+density ratio HD is defined as follow:
+オブジェクトに割り当てるアドレス計画を考える時、ホスト密度比率HDが
+以下の様に定義されます:
+log(number of allocated objects)
+log(アドレスを割当てたオブジェクトの数)
+HD = ------------------------------------------
+log(maximum number of allocatable objects)
+log(アドレスを割当てられるオブジェクトの最大数)
+This ratio is defined for any number of allocatable objects greater
+than 1 and any number of allocated objects greater or equal than 1
+and less than or equal the maximum number of allocatable objects.
+The ratio is usually presented as a percentage, e.g. 70%.  It varies
+between 0 (0%), when there is just one allocation, and 1 (100%), when
+there is one object allocated to each available address.  Note that
+for the calculation of the HD-ratio, one can use any base for the
+logarithm as long as it is the same for both the numerator and the
+denominator.
+この比率は割当て可能なオブジェクトの数が2以上で、割当てられたオブジェ
+クトの数が1以上で、割当てられたオブジェクトの数が割当て可能なオブジェ
+クトの数の最大数以下の場合に定義されます。比率は通常パーセンテージ、
+例えば70%として表示されます。これは、1つのオブジェクトにのみアド
+レスが割当てられているときに0(0%)で、全てのアドレスにオブジェク
+トが割当てられているときに1(100%)です。HD比率の計算の際に、
+基数は分子と分母で同じである限りどんなものでもよいことに注意してくだ
+さい。
+The HD-ratio can, in most cases, be derived from the H ratio by the
+formula:
+HD比率は、たいていの場合、公式によってH比率から得ることができます:
+H
+HD = --------
+log10(2)
+3. Using the HD-ratio as an indicator of the pain level
+3. HD比率を苦痛度合表示として用いる
+In order to assess whether the H-Ratio was a good predictor of the
+"pain level" caused by a specific efficiency, RFC1715 used several
+examples of networks that had reached their capacity limit.  These
+could be for example telephone networks at the point when they
+decided to add digits to their numbering plans, or computer networks
+at the point when their addressing capabilities were perceived as
+stretched beyond practical limits.  The idea behind these examples is
+that network managers would delay renumbering or changing the network
+protocol until it became just too painful; the ratio just before the
+change is thus a good predictor of what can be achieved in practice.
+The examples were the following:
+H比率が、効率に対する「痛みレベル」の良い指針かどうか査定するために、
+RFC1715は容量限界に達したネットワークのいくつかの例を使いました。これ
+らの例は、電話番号計画で桁数を増やしたとき、コンピュータ・ネットワー
+クでアドレスの数が限界を超えたと認識されたときです。これらの例の背後
+にある考えは、ネットワーク管理者があまりにも苦痛になるまで、ネットワー
+クプロトコルの番号の付け直しや変更を延ばすであろうということです;変
+更の直前の比率は、実際は達成できる事の良い指針です。例は次の通りです:
+* Adding one digit to all French telephone numbers, moving from 8
+digits to 9, when the number of phones reached a threshold of 1.0
+E+7.
+* すべてのフランスの電話番号に1桁加える、電話番号の数が1.0 E+7に達し
+た時、8桁から9桁に変更。
+log(1.0E+7)
+HD(FrenchTelephone8digit) = ----------- = 0.8750 = 87.5%
+log(1.0E+8)
+log(1.0E+7)
+HD(FrenchTelephone9digit) = ----------- = 0.7778 = 77.8%
+log(1.0E+9)
+* Expanding the number of areas in the US telephone system, making
+the phone number effectively 10 digits long instead of "9.2" (the
+second digit of area codes used to be limited to 0 or 1) for about
+1.0 E+8 subscribers.
+* 合衆国の電話システムのエリア数を拡大し、1.0 E+8の加入者に対して、
+電話番号を"9.2"(エリアコードの2桁目は0か1に制限される)から10桁
+にする。
+log(1.0E+8)
+HD(USTelephone9.2digit) = ------------ = 0.8696 = 87.0 %
+log(9.5E+9)
+log(1.0E+8)
+HD(USTelephone10digit)  = ------------ = 0.8000 = 80.0 %
+log(1E+10)
+* The globally-connected physics/space science DECnet (Phase IV)
+stopped growing at about 15K nodes (i.e. new nodes were hidden) in a
+16 bit address space.
+* グローバルに結ばれた物理学/宇宙科学のDECnet(第4段階)が16ビッ
+トのアドレス空間で15Kノードで成長がストップした(すなわち新しいノー
+ドが表に出なくなった)。
+log(15000)
+HD(DecNET IV) = ---------- = 0.8670 = 86.7 %
+log(2^16)
+From those examples, we can note that these addressing systems
+reached their limits for very close values of the HD-ratio.  We can
+use the same examples to confirm that the definition of the HD-ratio
+as a quotient of logarithms results in better prediction than the
+direct quotient of allocated objects over size of the address space.
+In our three examples, the direct quotients were 10%, 3.2% and 22.8%,
+three very different numbers that don't lead to any obvious
+generalization.  The examples suggest an HD-ratio value on the order
+of 85% and above correspond to a high pain level, at which operators
+are ready to make drastic decisions.
+これらの例から、アドレスシステムが限界に近づいた場合のHD比率が非常
+に近い値を取ることを指摘できます。同じ例から、アドレスを割当てた数を
+アドレスう空間の大きさで割るより、ログを取った結果をHD比率がよりよ
+い予想を示すことを確認できます。この3つの例で、直接割った値は、
+10%と3.2%と22.8%で、3つの非常に異なる数から明白な一般論を
+導けません。この例は、85%程度のHD比率値がオペレーターに徹底的な
+決定を行う痛みレベルであることを示唆しています。
+We can also examine our examples and hypothesize that the operators
+who renumbered their networks tried to reach, after the renumbering,
+a pain level that was easily supported.  The HD-ratio of the French
+or US network immediately after renumbering was 78% and 80%,
+respectively.  This suggests that values of 80% or less corresponds
+to comfortable trade-offs between pain and efficiency.
+この例の調査から、リナンバリングを行うオペレータは、容易に対応できる
+痛みのレベルになる様に、リナンバリングを行うのだと仮定できます。フラ
+ンスと合衆国のネットワークがリナンバリングを行った後のHD比率はそれ
+ぞれ78%と80%でした。これは80%かこれより少し少ない値が痛みと
+効率の間の適度なトレードオフに対応することを示唆します。
+4. Using the HD-ratio to evaluate the capacity of addressing plans
+4. アドレス計画の容量を評価するためにHD比率を使う
+Directly using the HD-ratio makes it easy to evaluate the density of
+allocated objects.  Evaluating how well an addressing plan will scale
+requires the reverse calculation.  We have seen in section 3.1 that
+an HD-ratio lower than 80% is manageable, and that HD-ratios higher
+than 87% are hard to sustain.  This should enable us to compute the
+acceptable and "practical maximum" number of objects that can be
+allocated given a specific address size, using the formula:
+直接HD比率を使うとアドレスを割り当てられたオブジェクトの密度を評価
+することを容易にします。アドレス計画がどれほど使えるかを評価するには、
+逆の計算が必要です。3.1章で80%より低いHD比率が処理しやすく、
+87%より高いHD比率が持続が困難なのを見ました。これから、与えられ
+たアドレスの大きさからオブジェクトに割当できる、許容できる、又は、
+「実用的な最大限」を、以下の公式を使って計算できます:
+number allocatable of objects
+= exp( HD x log(maximum number allocatable of objects))
+= (maximum number allocatable of objects)^HD
+割当て可能なオブジェクトの番号数
+= exp( HD x log(オブジェクトに割当できる番号の最大数))
+= (オブジェクトに割当できる番号の最大数)^HD
+The following table provides example values for a 9-digit telephone
+plan, a 10-digit telephone plan, and the 32-bit IPv4 Internet:
+次のテーブルは9桁の電話計画と10桁の電話計画と32ビットのIPv4
+インターネットの例値を提供します:
+Very  Practical
+Reasonable  Painful  Painful    Maximum
+とても     実用的
+合理的     苦痛     苦痛     最大値
+HD=80%   HD=85%   HD=86%     HD=87%
+---------------------------------------------------------
+9-digits plan           16 M     45 M     55 M       68 M
+10-digits plan         100 M    316 M    400 M      500 M
+32-bits addresses       51 M    154 M    192 M      240 M
+Note: 1M = 1,000,000
+Indeed, the practical maximum depends on the level of pain that the
+users and providers are willing to accept.  We may very well end up
+with more than 154M allocated IPv4 addresses in the next years, if we
+are willing to accept the pain.
+実際の、実用的な最大限はユーザーとプロバイダが受け入れできる痛みのレ
+ベルに依存します。もし痛みを我慢するならば、我々は来年154M以上の
+IPv4アドレスの割当を得るかもしれません。
+5. Security considerations
+5. セキュリティの考察
+This document has no security implications.
+この文書はセキュリティをほのめかしません。
+6. IANA Considerations
+6. IANAの考察
+This memo does not request any IANA action.
+このメモはIANAの行動を求めません。
+7. Author addresses
+7. 著者のアドレス
+Alain Durand
+SUN Microsystems, Inc
+901 San Antonio Road MPK17-202
+Palo Alto, CA 94303-4900
+USA
+EMail: Alain.Durand@sun.com
+Christian Huitema
+Microsoft Corporation
+One Microsoft Way Redmond, WA 98052-6399
+USA
+EMail: huitema@microsoft.com
+8. Acknowledgment
+8. 謝辞
+The authors would like to thank Jean Daniau for his kind support
+during the elaboration of the HD formula.
+著者は、HD公式の推敲の親切なサポートに対してJean Daniauに感謝しま
+す。
+9. References
+9. 参考文献
+[RFC1715] Huitema, C., "The H Ratio for Address Assignment
+Efficiency", RFC 1715, November 1994.
+[IANAV4]  INTERNET PROTOCOL V4 ADDRESS SPACE, maintained by the IANA,
+http://www.iana.org/assignments/ipv4-address-space
+[DMNSRV]  Internet Domain Survey, Internet Software Consortium,
+http://www.isc.org/ds/
+[NETSZR]  Netsizer, Telcordia Technologies, http://www.netsizer.com/
+10. Full Copyright Statement
+10.  著作権表示全文
+Copyright (C) The Internet Society (2001).  All Rights Reserved.
+著作権(C)インターネット学会(2001)。すべての権利は保留される。
+This document and translations of it may be copied and furnished to
+others, and derivative works that comment on or otherwise explain it
+or assist in its implementation may be prepared, copied, published
+and distributed, in whole or in part, without restriction of any
+kind, provided that the above copyright notice and this paragraph are
+included on all such copies and derivative works.  However, this
+document itself may not be modified in any way, such as by removing
+the copyright notice or references to the Internet Society or other
+Internet organizations, except as needed for the purpose of
+developing Internet standards in which case the procedures for
+copyrights defined in the Internet Standards process must be
+followed, or as required to translate it into languages other than
+English.
+上記著作権表示とこの段落が全ての複写や派生的な仕事につけられていれば、
+この文書と翻訳は複写や他者への提供ができ、そしてコメントや説明や実装
+を支援する派生的な仕事のためにこの文書の全部か一部を制約なく複写や出
+版や配布できます。しかし、この文書自身は、英語以外の言葉への翻訳やイ
+ンターネット標準を開発する目的で必要な場合以外は、インターネット学会
+や他のインターネット組織は著作権表示や参照を削除されるような変更がで
+きません、インターネット標準を開発する場合はインターネット標準化プロ
+セスで定義された著作権の手順に従われます。
+The limited permissions granted above are perpetual and will not be
+revoked by the Internet Society or its successors or assigns.
+上に与えられた限定された許可は永久で、インターネット学会やその後継者
+や譲渡者によって無効にされません。
+This document and the information contained herein is provided on an
+"AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
+TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+この文書とここに含む情報は無保証で供給され、そしてインターネット学会
+とインターネット技術標準化タスクフォースは、特別にも暗黙にも、この情
+報の利用が権利を侵害しないことや商業利用や特別の目的への利用に適当で
+ある事の保障を含め、すべての保証を拒否します。
+Acknowledgement
+謝辞
+Funding for the RFC Editor function is currently provided by the
+Internet Society.
+RFCエディタ機能のための資金供給が現在インターネット学会によって
+供給されます。
+[]Japanese translation by Ishida So
+RFC3194 アドレス割当効率のためのホスト密度比率:H比率の更新

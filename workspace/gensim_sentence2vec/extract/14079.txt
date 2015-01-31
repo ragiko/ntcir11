@@ -1,0 +1,103 @@
+
+高解像度融解曲線分析(High Resolution Melting :HRM)と遺伝子スキャニング(Gene Scanning)の紹介
+高解像度融解(High Resolution Melting:HRM)曲線分析は、新規の均質でかつクローズドな反応容器内で実施可能な、PCR後の増幅産物を解析する方法で、ゲノム研究者がゲノムの多様性(SNPs、変異、メチレーション)を分析することを可能としています。この方法は、従来よりも二重鎖DNAの加温変性過程からより詳細で沢山の情報を引き出すことが可能で、標準的な融解曲線分析よりもパワフルなツールです。
+HRMのキーとなる応用例は遺伝子スキャニングです。遺伝子スキャニングとはシークエンスを行なうのと同時、もしくはそれに先立って、PCR増幅産物中の既知または未知の多様性を探索することです。PCR産物中の変異はDNA融解曲線の形の差異から高解像度融解曲線分析を行なうことで検出が可能となります。新世代のDNA結合色素とハイエンドな機器システム、精妙な解析ソフトウェアのコンビネーションにより、これらの融解曲線の微妙な差異を検出することが可能で、潜在する遺伝子配列群についての情報を引き出すことができます。
+HRM PCR Master 試薬とLightCycler&reg;480システムに特化した遺伝子スキャニングソフトウェアが追加されたことで、ロシュ アプライドサイエンスは、リアルタイムPCRに基づく完全に統合された、しかも多検体に対応したマルチウェルプレート上での方法論を提供できるようになりました。 
+遺伝子スキャニングにおけるHRMの有用性
+高解像度融解曲線分析法は、従来から行なわれている再現性に富まない(ゲルによる)変異スクリーニング法(例:dHPLC)、特に、PCR後に異なる分析機器で増幅産物の多様性スクリーニングが必要となるような方法と比較して、非常に安価で多検体処理に簡単に対応することのできる高感度で特異性の高い方法です。
+高解像度融解曲線分析を行なうことで、たった一種類の高解像度色素だけで、様々な増幅産物の未知の配列多様性がスクリーニング可能となりました。目的遺伝子特異的な多様性に対応した対立遺伝子特異的なプライマーもしくはプローブは必要ありません。また、フラグメント内の多様性の位置にかかわらず検出が可能です。.
+増幅反応は、比較可能なDNA量、つまり、Cp値がだいたい同じであることが必要不可欠ですが、PCR反応自体のパーフォーマンスもオンラインでチェックすることができます。但し、初期鋳型DNAの質(例:抽出方法、保存状態)や量には注意を払う必要性があります。 
+LightCycler&reg;480 遺伝子スキャニングワークフロー
+高解像度融解曲線分析による遺伝子スキャニングには一般的に以下のようなことが必要となります: 
+専用のDNA色素:PCRを阻害することなく高濃度、飽和状態で機能する為、ホモもしくはヘテロデュウプレックスDNAを均質に染色することが可能です。
+適切な検出機器:上記の色素に適切な励起、蛍光波長を放射もしくは検出することができ、蛍光取得速度も速く、傑出した温度均質性能を発揮する機器が必要です。
+ソフトウェア:融解曲線の形を認識、分析できるアルゴリズムと似た形の融解曲線をグルーピングできるようなソフトウェアが必要です。 
+上記の総ての必須項目をLightCycler&reg;480 HRM/遺伝子スキャニング関連製品は満たしています。
+LightCycler&reg;480を使用した遺伝子スキャニング実験では、 サンプルDNAはまず最初に、
+LightCycler&reg;480 High Resolution Melting Master 
+に入っている専用の飽和型DNA色素とともに増幅されます。その次に、高速のデータ取得機能を使用して融解曲線が描かれ、最終的に
+LightCycler&reg;480 Gene Scanning 
+ソフトウェアモジュール
+によって解析されます。
+LightCycler&reg;480 遺伝子スキャニングソフトウェアは最も正確な高解像度融解曲線を得る為に特別に開発されました。解析は3つのステップにより行われます(図1参照): 
+1.ノーマリゼーション(補正): 総てのサンプルについて融解前(初期蛍光)と融解後(終期蛍光)を一律にします(各サンプルで最も高い蛍光値を100%、最も低い蛍光値を0%とします)。.
+2.温度シフティング:総ての二重鎖DNAが完全に変性するポイントへ補正された融解曲線を温度軸方向にシフトします。ヘテロ接合体のSNPsを含むサンプルは、融解曲線の形の違いによって簡単に野生型から区別することができます。
+3.ディファレンスプロット:融解曲線の形の差異は、更にリファレンスと決めた曲線から個々のサンプルの曲線を縦軸(蛍光値)方向で引き算することにより解析されます。この作業は、自動的に似た融解曲線をグルーピングし、各々のサンプルをクラス分けすることを補助します(例:ホモ接合体とヘテロ接合体を向かい合わせる)。
+変異型サンプルがリファレンスに対して比較される場合、変異による融解曲線の変化が視認化されます。原理的には、HRM実験は、一つのサンプルについてホモ接合体、ヘテロ接合体のアレリックバリアントの両方を検出することが可能です。最も重要なのは、ヒトサンプルからのヘテロ接合体のDNAは、ホモ接合体DNAよりも低温度において単鎖に分離し始めるヘテロデュウプレックスを形成することにあります。個々の配列に依存して、異なるホモ接合体もあるケースでは識別可能な融解曲線を描く場合もあります。それらの融解曲線は形の差異が生じているというよりはむしろ、「野生型」と比較して、温度軸(x-軸)に沿ってずれているように観察されます(「増幅例」、下図3参照)。もし、異なるホモ接合体(野生型のホモと変異型のホモなど)が十分に識別できない場合には、既知(野生型もしくは変異型)のホモ接合体をスパイクすることにより識別が可能となります。
+図1 LightCycler&reg;480 遺伝子スキャニングソフトウェアアルゴリズムを使用した解析ステップ。ヘテロ接合体サンプルをホモ接合体(野生型and/or 変異型)サンプルから分離する為の遺伝子スキャニングソフトウェアアルゴリズム。ヒトMDR1遺伝子における既知のSNP (CT) がモデルケースとして示されています。このデータは
+LightCycler&reg;480 High Resolution Melting Master 
+を用いて得られた106bpのPCR産物を解析しています。各計算のステップの詳細については本文を御覧下さい。
+Roche Applied ScienceのHigh Resolution Melting関連製品案内
+HRM実験を行なうにあたって総てを網羅する為にロシュアプライドサイエンスは以下のような製品を提供しております: 
+製品名
+Cat.No.
+説明
+LightCycler&reg; 480 High Resolution Melting Master 
+4 909 631 
+最適化済み 2x濃度 PCRマスターミックス(新規HRM色素含有) 
+LightCycler&reg; 480 Gene Scanning ソフトウェア
+5 103 908 
+高解像度での融解曲線分析法に基づいたジーンスキャニングを行うためのLightCycler&reg;
+480 専用ソフトウエアモジュール
+2x 濃度の
+LightCycler&reg;480 High Resolution Melting Master
+はMgCl2を含有していない反応緩衝液中にFastStart Taq DNAポリメラーゼと新規高解像度融解色素が含まれています。 このマスターはGCリッチ配列の増幅能を向上させるような添加物(例:DNSO)にも対応しています。別添で、必要であればMg2+濃度を最適化できるように25 mM MgCl2 溶液も付属しています。
+どうしてLightCycler&reg; 480システムがGene Scanningのプラットフォームとして有用なのでしょうか?
+LightCycler&reg;480システムは現在唯一のHRMに基づく遺伝子スキャニングプラットホーム全般に対応したプレートタイプのリアルタイムPCR機器です。ハードウェア、ソフトウェアと新規蛍光色素を含有したHRMマスターミックス試薬は、この新規アプリケーションをサポートするために最高の性能を発揮できるように計画的に開発、デザインされています。完璧な遺伝子スキャニング実験が最大384サンプル同時に一台の機器で実施可能です。その他の機器を使用することなく、LightCycler&reg;480システムのみでPCR後解析を実施可能です。 
+個々の製品は以下のような利点があります:
+LightCycler&reg; 480 High Resolution Master
+使用色素は増幅酵素に対して無毒性であるためPCRを阻害しません。
+自動化にも対応しており、様々なハンドリングに対しても安定で堅牢です。
+LightCycler&reg; 480 Gene Scanning ソフトウェア
+多様性が本当に無いのかどうかを確認できるように検出感度を変更できるようになっています。
+LightCycler&reg;480のその他の解析機能(例:PCRの特異性チェックのためのTm分析、PCR効率のチェックのためのCp値決定)に簡単にアクセスできるようになっています。 
+応用例
+下記の総ての実験は、LightCycler&reg;480、
+LightCycler&reg;480 High Resolution Melting Master
+を用いて行なっています。解析も
+LightCycler&reg;480 Gene Scanning ソフトウェア
+を使用しています。
+前提として、ヒトゲノムDNAは個々の提供者からの血液から抽出精製しました。またPCRは三重測定にて行ないました。解析は、各サンプルと野生型とわかっているサンプル間の蛍光の差異を上述の3つのステップにて行ないました。 
+例 1: ヘテロ接合体のスクリーニングのための増幅産物融解 
+例 2: 増幅産物融解によるホモ接合体の識別 
+例 3: 複雑なパターンのHRM解析による遺伝子多様性の検出 
+例 4: プローブを用いない2つの隣接したSNPsのディプロタイピング 
+例 5: 非標識プローブを用いた隣接したSNPsのディプロタイピング 
+例1:ヘテロ接合体のスクリーニングのための増幅産物融解
+図 2 高解像度融解曲線分析によるホモ接合体とヘテロ接合体サンプルの分離: (A)96サンプルの異なる血液サンプルからHRM色素存在下でG  T 変異を含むヒトADD1遺伝子(フラグメントサイズ:163bp) を増幅。(B)ホモ接合体(野生型もしくは変異型:青)サンプルととヘテロ接合体サンプル(赤)間での蛍光シグナルの差異のディファレンスプロット解析
+例 2:増幅産物融解によるホモ接合体の識別
+図3高解像度融解曲線分析による野生型と異なる配列間の分離:(A)96サンプルの異なる血液サンプルからHRM色素存在下でG  T 変異を含むヒトLPLH3遺伝子(フラグメントサイズ:163bp) を増幅。(B)野生型(緑)サンプルとヘテロ接合体サンプル(青)間での蛍光シグナルの差異のディファレンスプロット解析
+例 3:複雑なパターンのHRM解析による遺伝子多様性の検出
+図4 219 bp のヒトMBL-2遺伝子フラグメントについてHRM解析を行い、主要4種類の遺伝子サブグループ(青、赤、緑、オリーブ色)が識別でき、同様に少数の副次的なジェノタイプ(橙食、赤紫)が識別できました。
+例 4:プローブを用いない2つの隣接したSNPsのディプロタイピン
+図5 高解像度融解によるハプロタイプ(隣接するSNPs )の分離: (A) フラグメント長136bpのヒトTNF alpha遺伝子のSNP-1:rs10489266 (AG)とSNP-2:
+rs1234315 (CT)を調べました。
+Analysis with the LightCycler&reg; 480 Gene Scanning
+ソフトウェア
+により、両位置においてホモ接合体であるサンプル(緑、赤)とヘテロ接合体(一箇所のみ(青、シアン)もしくは両位置についてヘテロ(桃色))を識別することができました。
+例 5:非標識プローブを用いた隣接したSNPsのディプロタイピング
+図6非標識プローブを用いた隣接したSNPsのディプロタイピング上記の29bpの非標識オリゴヌクレオチドの存在下で図5と同じサンプルについて融解曲線を描かせました。LightCycler&reg;480 Tm calling モジュールを用いて融解ピークのパターンの解析を行いました。この場合はプローブの解離を観察することになりますので、図5における増幅産物融解よりも低い温度領域でこの融解は行なわれます。ホモもしくはヘテロ接合体の各々のグループ内で更に細かく識別するために、増幅産物自体の融解から得られる結果以外に、プローブの存在下でプローブの融解から得られる結果を示しています。 
+参考文献
+Biochemica 01/07
+Novel Methods for High-Performance Melting Curve Analysis Using the
+LightCycler&reg; 480 System 
+Nature Methods 01/07 
+技術についての論文/科学的背景についての情報 
+von Ahsen, N. Two for typing: homogeneous combined
+single-nucleotide polymorphism scanning and genotyping. Clin Chem 51,
+1761-1762 (2005).
+Herrmann, M.G., Durtschi, J.D., Bromley, L.K., Wittwer, C.T. &
+Voelkerding, K.V. Amplicon DNA melting analysis for mutation scanning
+and genotyping: cross-platform comparison of instruments and dyes. Clin
+Chem 52, 494-503 (2006).
+Dujols V, Kusukawa N, McKinney JT, Dobrowolsky SF, Wittwer CT. High-resolution
+melting analysis for scanning and genotyping., in Real Time PCR. Tevfik
+D, ed., Taylor and Francis, Abingdon, 2006.
+Reed GH, Wittwer CT. Sensitivity and specificity of single-nucleotide
+polymorphism scanning by high-resolution melting analysis. Clin Chem.
+2004;50:1748-54.
+Reischl, U. (2006). "Melting of the ribosomal RNA gene reveals
+bacterial species identity: a step toward a new rapid test in clinical
+microbiology." Clin Chem 52(11): 1985-7. 
+This website contains information on products which is targeted to a wide range of audiences and could contain product details or information otherwise not accessible or valid in your country. Please be aware that we do not take any responsibility for accessing such information which may not comply with any valid legal process, regulation, registration or usage in the country of your origin.
+製品情報 | LightCycler480 | ゲノミクスシステムズ | 製品情報 | ロシュ・アプライド・サイエンス 研究用試薬機器および工業用バルク試薬

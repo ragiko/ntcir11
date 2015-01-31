@@ -1,0 +1,35 @@
+
+sitepoint から「本当にjQueryが必要ですか?」とタイトルのついた3本の記事を紹介します。
+Do You Really Need jQuery?
+Native JavaScript Equivalents of jQuery Methods: the DOM and Forms
+Native JavaScript Equivalents of jQuery Methods: Events, Ajax and Utilities
+言うまでもなく著者の Craig Buckler さん の趣旨は、「jQueryを使うのは止めよう」ではありません。ネイティブ関数で代替えできるのは、古い IE のサポートが必要なく、ごく簡単なケースに限られます。その代わりに得るものは「速さ」です。そこで、どの程度「速い」のかを所々 jsperf の結果で補ってみたいと思います。
+また JavaScript 初学者の人も、jQuery が内部でどう苦労しているのか知るのも良いと思います。私自身の勉強も兼ね、その他の情報も色々と補っていますので、良かったら見ていって下さい  。
+jQueryが必要な理由
+まずは1本目の「Do You Really Need jQuery?」から、導入部分です。著者は以下の6つを挙げています。
+同じ HTML でも、ドキュメントツリーの構造は各ブラウザによって異なります。そのため、DOM の巡回と操作に関して、ブラウザ間の相違に注意しなければなりません。例えば Firefox では、スペースや改行の ホワイトスペースノード を(正しく)DOM 中に構築しますが、IE6 はそうではありません。このため node.firstChild が返すノードが同じであると仮定することは出来ません。jQuery はこういったブラウザ間の違いを吸収してくれます。
+Ajax は多くのブラウザでネイティブにサポートされていますが、マイクロソフトが XMLHttpRequest を最初に実装したにもかかわらず、IE では ActiveX のコントロールが使われます。
+IE のイベントモデルは他のブラウザと異なりますし、またそういったブラウザ間でも互いに矛盾する点があったりします。
+CSS2.1 のサポート状況が大きく異なります。
+アニメーションは、各ブラウザの異なるボックスモデルやフォームのコントロール、iframe(IE6 は、セレクトボックスと iframe が z-index を無視する ため、ページ中のどの要素よりも一番上になります)を扱う時に、特に難しくなります。
+Firebug や Firefox のエラーコンソールが出現する以前は、開発ツールが貧弱でした。IE でエラーをモーダルボックスで表示させるのが、ブラウザに唯一ビルトインされたツールだったのです。
+最後の 6. は「今さら既知の問題でつまずいて時間をムダにすることはないよネ」ということだと思います。
+いずれにしても著者は jQuery を 暖かい毛布 や ライフジャケット に例えていて、こういったクロスブラウザの抱える問題点を知らなくても、快適に使えるメリットは認めています。
+一方「必要のない理由」として、使わない機能(jQuery 1.8 からはカスタムビルドが可能 なようですが)で肥大化したファイルを読み込むのがムダ、所詮 jQuery も JavaScript で書かれているのだから代替えは可能、というのが著者の趣旨です。
+これに対し 82 のコメント(既にクローズされてます)が寄せられていて、賛否で言えば「否」が多数なのですが、次稿以降で具体的なコードや高速化の数値が出て来ると「賛」が多数派になります  。
+DOM セレクタ
+jQuery では、CSS のセレクタを使って DOM ノードの検索を次のようにします。
+var n = $("article#first p.summary");
+同じことをネイティブ関数では次のようにします。
+var n = document.querySelectorAll("article#first p.summary");
+document.querySelectorAll は、すべてのモダンブラウザと IE8(CSS2.1 のセレクタまでですが)で使えます。jQuery ではさらに複雑なセレクタも使えるよう追加されたコードもあるのですが、大部分は $() の内部でラップされた document.querySelectorAll が働きます。
+類似のネイティブ関数には次の様なものがあります。
+document.querySelector(selector) − セレクタに合致する最初のノードだけを抽出します。IE8 以上のブラウザで動作 します。
+document.getElementById(idname) − ID 名で定まるただ1つのノードを抽出します。
+document.getElementsByTagName(tagname) − タグ名にマッチする要素のノード集合を抽出します。
+document.getElementsByClassName(class) − 特定のクラスが指定された要素のノード集合を抽出します。IE9 以上のブラウザで動作 します。
+「ノードの集合」は NodeList オブジェクト(IE8 では HTMLCollection が、W3C のワーキングドラフト では classList)で、単なる配列ではありません。これについては forEach の項で解説します。
+さて元記事では、これらの代替えを含めた速度比較が紹介されています。
+code
+time
+そのコード、本当にjQueryが必要ですか?ネイティブ関数の代替Tips集 | ゆっくりと…

@@ -1,0 +1,16 @@
+ちょっとdsPICに脱線してみました。
+クロック、メモリのリソースに限度のあるCPUに最適なADPCM CODEC*1だと言うことで実装してみました。
+以下からDownloadできますhttp://briefcase.yahoo.co.jp/bc/lynxeyed2008/
+[dsPIC]->[IMA_ADPCM]
+概要
+SDCardからADPCMストリームを読み出し、関数ADPCMDecoder()へ4bitずつ受け渡し(return値:(unsigned int)16bit PCM)
+ADPCMDecorder()関数にdsPICのハードウェア乗算器を使ってみた(__builtin_muluu)
+Timer3 interruptにより44.1kHzの周期でTimer2/PWM(PWM:RB8 & RB9 pin)へ変換後のPCMデータを受け渡し。
+dsPICからの出力音声はdsPIC30のクロック性能上、分解能9bit
+なお、ヘッダ読み込みなどFAT関連のプログラムはバグったのでコメントアウトしてます。(ぉぃ
+かなりノイジーな音になってますorz
+これはPWMとtimer3の値のバランスが悪いためだと思われます。
+なお、stereo ADPCMの情報を収集するのに苦労しましたがここに具体的に記述されていて助かりました。1チャネルごとに4byteずつ使っているんですね。
+また、アクアプラス社から出ているP/ECE向けのADPCMデコーダのdsPICバージョンも併せて製作中です。
+デコード情報など貴重な情報をSawa氏から頂戴致しました。深く感謝申し上げます。
+44.1kHz stereo IMA/DVI ADPCM Decoder - Lynx-EyEDの電音鍵盤 新館

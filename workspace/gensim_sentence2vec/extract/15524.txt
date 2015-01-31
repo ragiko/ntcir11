@@ -1,0 +1,76 @@
+Java 2つの日付の差を求める
+Java で、2 つの日付の差を求めるサンプルプログラムを紹介します。
+サンプルプログラムでは比較対象の日付が、文字列( yyyy/MM/dd )の場合、java.util.Date の場合に対応しています。
+日付の差を求める計算方法は以下となります。
+最初に 2 つの日付を long 値に変換します。
+※この long 値は 1970 年 1 月 1 日 00:00:00 GMT からの経過ミリ秒数となります。
+次にその差を求めます。
+上記の計算で出た数量を 1 日の時間で割ることで日付の差を求めることができます。
+※1 日 (24 時間) は、86,400,000 ミリ秒です。
+サンプルソース
+/**
+* 2つの日付の差を求めます。
+* 日付文字列 strDate1 - strDate2 が何日かを返します。
+* 
+* @param strDate1    日付文字列 yyyy/MM/dd
+* @param strDate2    日付文字列 yyyy/MM/dd
+* @return    2つの日付の差
+* @throws ParseException 日付フォーマットが不正な場合
+*/
+public static int differenceDays(String strDate1,String strDate2) 
+throws ParseException {
+Date date1 = DateFormat.getDateInstance().parse(strDate1);
+Date date2 = DateFormat.getDateInstance().parse(strDate2);
+return differenceDays(date1,date2);
+}
+/**
+* 2つの日付の差を求めます。
+* java.util.Date 型の日付 date1 - date2 が何日かを返します。
+* 
+* 計算方法は以下となります。
+* 1.最初に2つの日付を long 値に変換します。
+*  ※この long 値は 1970 年 1 月 1 日 00:00:00 GMT からの
+*  経過ミリ秒数となります。
+* 2.次にその差を求めます。
+* 3.上記の計算で出た数量を 1 日の時間で割ることで
+*  日付の差を求めることができます。
+*  ※1 日 ( 24 時間) は、86,400,000 ミリ秒です。
+* 
+* @param date1    日付 java.util.Date
+* @param date2    日付 java.util.Date
+* @return    2つの日付の差
+*/
+public static int differenceDays(Date date1,Date date2) {
+long datetime1 = date1.getTime();
+long datetime2 = date2.getTime();
+long one_date_time = 1000 * 60 * 60 * 24;
+long diffDays = (datetime1 - datetime2) / one_date_time;
+return (int)diffDays; 
+}
+実行
+実行例
+public static void main(String[] args) {
+int ret = differenceDays("2008/6/2","2008/6/1");
+System.out.println("結果1 = "+ret);
+ret = differenceDays("2008/6/1","2008/6/3");
+System.out.println("結果2 = "+ret);
+// 5月の日数は31日
+ret = differenceDays("2008/6/1","2008/5/1");
+System.out.println("結果3 = "+ret);
+// 6月の日数は30日
+ret = differenceDays("2008/7/1","2008/6/1");
+System.out.println("結果4 = "+ret);
+// 2008年は閏年のため2月の月末日付は29日
+ret = differenceDays("2008/3/1","2008/2/28");
+System.out.println("結果5 = "+ret);
+}
+実行結果
+結果1 = 1
+結果2 = -2
+結果3 = 31
+結果4 = 30
+結果5 = 2
+2つの日付の差を求める方法は比較的簡単ですが、月数の差を求める場合は少し難易度があがります。参考までに以下ご覧ください。
+「Java 2つの日付の月数の差を求める」
+このサンプルプログラムは Chat&Messenger の「カレンダー・スケジュール管理機能」で実際に利用しています。
+Java 2つの日付の差を求める / Chat&Messenger

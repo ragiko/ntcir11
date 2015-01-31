@@ -1,0 +1,198 @@
+こんにちは、開発・運用部の川口です。
+最近は僕個人として繁忙期を過ぎたので今のうちにと技術検証に明け暮れている毎日を過ごしています。今まで機能のみを知っていてなかなか手が出せなかった多くの機能に触れていくたびに新たな発見が有り、「もっと早く検証していれば楽ができたのに・・・」と思うことしきりです。
+さて、現在検証しているのはAmazonAutoScaling機能についてです。発表当時は話題になり多くの人が実際にスケーリング機能を試したようですがここ最近での検証・実証例が少なく、
+2010/08/1以降に行われたAPIバージョンアップ以降の日本語の情報は特に少なかった為ので今回の検証を行いました。なお、以降の検証内容に関する説明については基本的に「EC2インスタンスをAPI経由で操作できる程度のAWS経験者」を基準としていますので基礎的な説明はいくつか省かせていただいています。
+なお、EC2の「X.509 証明書」は既に設定済みであることを前提としています。
+export EC2_PRIVATE_KEY=$AWS_CONFIG_HOME/pk-XXXXXXXXXXXXXXXXXXXXXXXX.pem
+export EC2_CERT=$AWS_CONFIG_HOME/cert-XXXXXXXXXXXXXXXXXXXXXXXX.pem
+1.APIを準備する
+まずは各種APIツールをセットアップしていきましょう。AWSでは多くの機能がまだManagementConsoleから利用できないためAPIツールによる操作は慣れておく必要がありますね。
+(既に設定されている方や他の方法を取られている方は読み飛ばしてください)
+Amazon AutoScaling API Tools
+Amazon CloudWatch API Tools
+AutoScaling API
+$ mkdir /usr/local/ec2-api-tools
+$ cd /usr/local/ec2-api-tools
+$ wget http://ec2-downloads.s3.amazonaws.com/AutoScaling-2010-08-01.zip
+$ unzip AutoScaling-1.0.33.1
+CloudWatch API
+$ cd /usr/local/ec2-api-tools
+$ wget http://ec2-downloads.s3.amazonaws.com/CloudWatch-2010-08-01.zip
+$ unzip CloudWatch-2010-08-01.zip
+2.証明書ファイルを作成する
+API通信用に証明書ファイルを作成する必要があります。AutoScaling-API、CloudWatch-APIのどちらかの
+展開ディレクトリの配下にある「credential-file-path.template」を利用しましょう。
+(中身は同じですので兼用できます)
+$ cd /usr/local/ec2-api-tools/
+$ cp AutoScaling-1.0.33.1/credential-file-path.template ./credential-file
+$ chmod 600 credential-file
+$ vi credential-file
+======================================
+AWSAccessKeyId=<Write your AWS access ID>
+AWSSecretKey=<Write your AWS secret key>
+======================================
+※ここのアクセスキーは「アカウント」「セキュリティ証明書」ページより取得したキーを入力してください 。
+3.APIを利用出来るようにする
+API証明書ファイルを定義します
+export AWS_CREDENTIAL_FILE=/usr/local/ec2-api-tools/credential-file
+auto-scaling-api
+export AWS_AUTO_SCALING_HOME=/usr/local/ec2-api-tools/AutoScaling-1.0.33.1
+export AWS_AUTO_SCALING_URL=https://autoscaling.us-east-1.amazonaws.com
+export PATH=$PATH:$AWS_AUTO_SCALING_HOME/bin
+CloudWatch
+export AWS_CLOUDWATCH_HOME=/usr/local/ec2-api-tools/CloudWatch-1.0.9.5
+export PATH=$PATH:$AWS_CLOUDWATCH_HOME/bin
+export EC2_REGION=us-east-1
+AutoScaling・CloudWatchコマンドが利用出来る状態になっていることを確認します。
+下記のコマンドを入力してそれぞれ実行可能コマンドの一覧が表示されることを確認して下さい。
+$ as-cmd
+Command Name                                Description
+------------                                -----------
+as-create-auto-scaling-group                Create a new auto scaling group
+as-create-launch-config                     Create a new launch config
+as-create-or-update-trigger                 Creates a new trigger or updates an existing trigger.
+(省略)
+$ mon-cmd
+Command Name                       Description
+------------                       -----------
+help
+mon-delete-alarms                  Delete alarms
+mon-describe-alarm-history         Describe alarm history
+mon-describe-alarms                Describe alarms fully.
+(省略)
+4.AMI・Elastic Load Balancer(以下、ELB)を準備する
+実際に動作させるにはAPI以外に準備しなくてはならないものがあります。
+スケールアウト時に起動されるAMI
+起動されるインスタンスのセキュリティグループ
+起動されるインスタンスのキーペア
+インスタンスが登録されるELB
+キーペア・セキュリティグループの作成
+特に難しい点は無いと思いますので省略します。
+詳細が不明な方は下記リンクからドキュメントを参照してください。
+Amazon Elastic Compute Cloud (EC2) Documentation
+(セキュリティグループはHTTP用に80番ポートを開けておいてください)
+AMI作成の設定
+簡単にhttpdのみをインストールしておきます。スケールアウト時にhttpdが起動する設定を忘れないようにしましょう。
+「http://ec2-99-99-999-99.compute-1.amazonaws.com/index.php」でアクセスできるように設定、確認ができたらAMI化してください。
+(‘ifconfig’は分散状況を確認するために出力しています)
+$ yum install -y httpd
+$ yum install php
+$ chkconfig httpd on
+$ vi /var/www/html/index.php
+======================================
+<?php
+echo system('ifconfig');
+======================================
+既に必要なAMIがある方はこのAMI化作業は必要ありません。
+AMI化したらAMI-IDをメモして作成したインスタンスはterminateしてください。
+ELBの準備
+ELB作成については特に注意点はありません。
+後述する手順で自動的に最初のインスタンスが立ち上がるのでこの時点ではインスタンスを配下に設定しないでください。
+今回の例ではHealthCheckに作成した[index.php]へ80番ポートでアクセスするようにしておきます。
+5.AutoScalingを設定する
+ここからようやくスケーリング設定になります。全部で4つの設定で1つのスケーリング設定になり、順番に設定していく必要があります。
+Amazon Launch Config
+起動されるインスタンスに関する設定をします。
+ここでは使用するAMIやキー等通常のインスタンス作成と同様の項目を設定します。
+(コマンド)
+$ as-create-launch-config MyLC --image-id ami-XXXXXXXX --key scale-key --group scale-test --instance-type t1.micro
+OK-Created launch config
+(オプション)
+特に説明の必要がなさそうなので詳細は省略します。作成したAMI-ID、セキュリティグループ、スケール時に起動するインスタンスタイプを決定してください。
+Auto Scaling Group
+スケーリング時の基本設定を行います。
+$ as-create-auto-scaling-group MyScaleGroup --launch-configuration MyLC 
+--availability-zones us-east-1a --min-size 1 --max-size 3 --load-balancers MyLB
+OK-Created AutoScalingGroup
+ここで設定する「min-size(最低起動数)」が’1以上’である場合、設定した瞬間にmin-size数のインスタンスが起動されるので注意が必要です。
+Auto Scaling Policy
+スケーリング時の動作を指定します。実行時に返される値は次の設定で利用するので忘れずにコピーしておきましょう。
+(コマンド)
+$ as-put-scaling-policy MyScaleOutPolicy --auto-scaling-group MyScaleGroup --adjustment=1 --type ChangeInCapacity
+arn:aws:autoscaling:us-east-1:754870667011:scalingPolicy:77737eb0-9a36-4846-9fca-45c9073ab3a6:autoScalingGroupName/MyScaleGroup:policyName/MyScaleOutPolicy
+(オプション)
+* auto-scaling-group
+* [Auto Scaling Group]名を指定する
+* adjustment
+* スケーリングによって変動するインスタンス数の値
+* 下記の’type’によって[インスタンス数]か[インスタンス割合]に変わる
+* type
+* ‘adjustment’で指定した値に対する項目を設定
+* [ExactCapacity][ChangeInCapacity][PercentChangeInCapacity](詳細は現在調査中)
+* ‘ChangeInCapacity’で指定したmin-max数値内での数値で変動するのでこれが最適っぽい?
+Metric Alarm
+負荷を受けた際にスケーリング条件を指定します。実質的なスケールアウトのトリガーとなっており、今まで利用されていた「as-create-or-update-trigger」コマンドは「非推奨」となっているようです。
+(ちなみにこのコマンドはCloudWatch-APIに含まれます)
+(コマンド)
+$ mon-put-metric-alarm HighCPUAlarm 
+--comparison-operator GreaterThanThreshold 
+--metric-name CPUUtilization 
+--namespace "AWS/EC2" 
+--period 60 
+--statistic Average 
+--threshold 60 
+--evaluation-periods 1 
+--dimensions "AutoScalingGroupName=MyScaleGroup" 
+--alarm-actions arn:aws:autoscaling:us-east-1:754870667011:scalingPolicy:df6ebf9a-6ecb-4da9-9d2e-4d8d2d2859e1:autoScalingGroupName/MyScaleGroup:policyName/MyScaleOutPolicy
+OK-Created Alarm
+(オプション)
+* comparison-operator
+* 「閾値」に対する「測定値」の不等号を設定します
+* [GreaterThanOrEqualToThreshold(<=)][GreaterThanThreshold(<)][LessThanThreshold(>)][LessThanOrEqualToThreshold(>=)]
+* metric-name
+* 「閾値」に利用する項目(CloudWatchの計測値なので実際インスタンスの計測値ではない点に注意)
+* [CPUUtilization][NetworkIn][NetworkOut][DiskReadBytes][DiskWriteBytes][DiskReadOps][DiskWriteOps]
+* period
+* CloudWatchによる監視間隔
+* 単位は秒。60区切りで指定可能(60未満や100などの数値はエラー)
+* statistic
+* 複数の計測値に対する「測定値」算出方法(ELB等配下で複数インスタンス起動時などで利用)
+* [SampleCount][Average][Sum][Minimum][Maximum]
+* threshold
+* CloudWatchが対象とする閾値
+* 恐らく全てパーセントで指定(詳細不明)
+* evaluation-periods
+* 閾値オーバーが観測された場合のトリガー発動回数
+* [period:60, evaluation-periods:3]が指定されていた場合は最初の閾値オーバーから180秒目に発動する
+* alarm-actions
+* [Auto Scaling Policy]で返された値を設定する
+# 負荷テスト
+実際に負荷をかけてスケールアウトされることを確認します。
+今回は「jmeter」によるHTTPリクエストによる負荷をかけて検証してみたところ無事に起動するはずです。
+(CPUUtilization(CPU利用率)’を利用しているため内部でストレスツールやプログラムを動かしても良いです)
+スケールイン
+これだけでは増えたらそのまま稼動し続けてしまいます。負荷が減ってきたらインスタンスが減っていくようにスケールインも設定しておきましょう。
+まずはポリシーを作成します。
+$ as-put-scaling-policy MyScaleInPolicy --auto-scaling-group MyScaleGroup 
+--adjustment=-1 --type ChangeInCapacity
+続いてトリガーです。
+$ mon-put-metric-alarm LowCPUAlarm 
+--comparison-operator LessThanThreshold 
+--metric-name CPUUtilization 
+--namespace "AWS/EC2" 
+--period 60 
+--statistic Average 
+--threshold 10 
+--evaluation-periods 1 
+--dimensions "AutoScalingGroupName=MyScaleGroup" 
+--alarm-actions arn:aws:autoscaling:us-east-1:754870667011:scalingPolicy:df6ebf9a-6ecb-4da9-9d2e-4d8d2d2859e1:autoScalingGroupName/MyScaleGroup:policyName/MyScaleInPolicy
+スケールアウト時と違うのは[as-put-scaling-policy:--adujustment=-1]と[mon-put-metric-alarm:--threshold 10]です
+この設定後に負荷を減らすと自動的にインスタンスが削除されることが確認できるかと思います。
+※ちなみにこの時スケールインによってインスタンスは’stop’ではなく’terminate’されます
+オマケ
+AmazonAutoScalingにはスケジュール機能が既に実装されています。
+この機能はスケジュールでscaling-groupの内容を変更する事ができ、これを利用することで
+予め負荷が高まることが予想される時間帯に事前にインスタンスを増やしておくことが出来ます。
+例えば[2011/1/13/ AM 10:00]オープンのサイトがあるとした場合は下記の様に設定をしておきます。
+(グリニッジ標準で指定する必要がある為時差9時間を含んで設定する必要がある点について注意)
+(コマンド)
+$ as-put-scheduled-update-group-action MyScheduleScaleOut --auto-scaling-group MyScaleGroup --time 2011-01-13T00:30:00Z --min-size 5 --max-size 10
+$ as-put-scheduled-update-group-action MyScheduleScaleIn-first --auto-scaling-group MyScaleGroup --time 2011-01-13T03:00:00Z --min-size 2 --max-size 3
+$ as-put-scheduled-update-group-action MyScheduleScaleIn-second --auto-scaling-group MyScaleGroup --time 2011-01-13T05:00:00Z --min-size 1 --max-size 3
+オープン30分前から念の為に[min-size 5]として5インスタンスが起動しておき、更に負荷に合わせて最大10インスタンスまでスケールアウト、
+サイトの性質上オープン直後に数時間で負荷が下がる傾向にある事がわかっていたので2時間後から徐々にスケールインさせる予定を立てています。
+まとめ
+現状ではus-east限定?([mon-put-metric-alarm]コマンドを別リージョンで実行するとエラーになる)(2011/01/17 追記:policyのリージョンとCloudWatchのリージョンで異なる状態で試していたためにエラーとなっていました。両リージョンを合わせると正常に動作することを確認できました)
+いくつか詳細や条件が不明なオプションがあるので調査中です。とはいえ今までは複雑な設定やソフト・ハード両面での負担が大きかったスケールアウトがこんなに簡単に実装出来るのは凄いですね。
+アプリやインフラでのチューニングだけではやはり負荷というのは捌ききれない場合も多いので上手く活用出来ればより可用性の高いシステム運用が実現出来るのではないかと思います。
+AmazonAutoScaling機能について «  サーバーワークス エンジニアブログ

@@ -1,0 +1,217 @@
+前回の続きです。数字を日本語で読むようにしてみました。  ファイルのダウンロード先はこの記事の最後に書いてあります。利用法は前回書いたとおりです。現時点でUbuntu13.10で使われているGnome orcaのバージョンは3.10.1なので、今回のパッチはこのバージョン向けのものです。他のバージョンで動くかどうか分かりません。Ubuntu以外で動くことはFedora 19で確認しましたが、speechdispatcherfactory.pyやen_dictの場所はシステム毎に確認する必要があります。またPython3用のMeCabモジュールもインストールしておく必要があります。  日本語の中の数字の読みの規則を明文化していくと、ほんとに複雑なことを頭の中で処理しながら日本人が生きていることを思い知らされます。漢数字に算用数字、漢数字でも位取り表記で使ったり、さらに万進数の位の漢字に算用数字をくっつけた折衷表記をしたり、その算用数字は整数だけでなく小数を使ったりもします。  それだけでなく読み方も大変です。本や匹など助数詞が後ろに付くと、数字は促音化したりしなかったり、助数詞の方は濁音になったり、半濁音になったり、ならなかったり、規則的な傾向はあるのだけれど、覚えなくてはならない例外がいくつもあります。四はヨンなのか、ヨなのか、シなのか、助数詞によって使い分けています。七もそうです。九もそうです。  そういう日本語の複雑な数字の読みをGnome Orca のespeakで発音できるようにプログラムを作ってみました。日本語のスクリーンリーダーや、日本語の音声合成ソフトでは当たり前の機能ですが、いざ作ってみるといろいろ面倒でした。  作っている間ずっと考えていたのは、こういうのは一人のプログラマが個人的に読み方を決めてはいけないなということです。日本語を普段使っている人なら違和感のある表現もいろいろくみ取って理解してもらえますが、それに期待して手抜きしたものが、日本語学習者にそれが本来の形だと思い込まれても困ります。また音声ガイドという性質上、一般的な日本人の日本語よりも、アナウンサーの日本語を手本にすべきだと考えました。  面白かったので、実験的にいろいろなことをしています。具体的には次の読みをできるようにしてみました。    ・数字と助数詞によって起きる発音の変化は『NHKことばのハンドブック』の第5章の表を手本とする。     ・算用数字の直後の英字の列は単位でないかを確認し、そうならばカタカナ表記に置き換えて読む。     ・コロンで区切った2桁:2桁:2桁の数値は時刻とする。     ・スラッシュで区切った4桁/2桁/2桁の数値は日付とする。ハイフンで区切られた同様の日付は直後に時刻があるときだけ日付とする。これに関連して、括弧で囲まれた曜日を表す1文字の漢字を常に曜日として読み上げる。     ・ハイフンや2つ以上のピリオドでつながれた算用数字は一字ずつ読む。     ・電話番号、郵便番号だとはっきり分かるものはハイフンを「ノ」と読む。     ・コンマによる桁区切りは3桁だけでなく4桁区切りにも対応する。     ・位を表す漢字と位取りの数字の組み合わせの読みは、万の位以上や小数の算用数字にも対応する。算用数字と組み合わせる位の漢字は万進数に限らず、百万や千などの位に対応する。このとき本来の値で読み替える。     ・整数の左側、小数部分の右側にある桁埋めの「0」は読み上げない。     ・16進数と2進数の接頭語として0xと0bを認識し、ついでに読み終わった後に十進数での値も読み上げる。     ・URLに現れるパーセントエンコードは16進数数字として読み上げず、デコードして文字として読み上げる。  eSpeakの方ですが、jaの作り方は分かりましたが、他にもファイルをインストールしないといけなくなるので、今回もen_dictの置き換えだけにします。前回は、音声表記をローマ字に変えた方が細かな発音指定ができるんじゃないかなと考えていまいしたが、結局カタカナの方が都合がいいことに気がつきました。漢字仮名交じり文からカタカナにするだけでも情報をたくさんそぎ落としてしまっているのに、これをアルファベットにしたら、文中の英単語と日本語との区別ができなくなってしまいます。意外にこの区別は便利です。そういうわけで、今回もカタカナで作っています。ほんの少し、「ンム」を[m]、「ング」を[ng]を表すように変えてみました。なお日本語の中の無声音化は、eSpeak側で記述するルールで対応できるかもしれませんが、まだ理解できていないので今回はやっていません。     アーカイブに入れてあるkatakanize.pyは動作の確認ができるように、標準入力の1行をespeakで解釈できる形式で出力するようにしています。次のコマンドでキーボードからの入力を読み上げてくれます。なお以前はちょっと書き換えれば、python2で動くようにしていましたが、python3のみで動きます。  python3 katakanize.py|espeak
+また、test.txtにutf-8の文字コードで日本語を1行書いておくと、次のコマンドでwavファイルを作ります。 
+cat test.txt|python3 katakanize.py|espeak -wtest.wav
+ダウンロード:orca-3.10.1-espeak-jp_003.zip 
+更新履歴
+コンマの区切りが思ったようになっていなかったので修正しました。2013/12/13
+テスト用のコードを入れたままにしていたので修正しました。2013/12/16
+毎年恒例のOpen JTalkのクリスマスのバージョンアップが今年も行われました。今まで通りにできるかどうか確認してみました。   Ubuntu 13.10  まずubuntu 13.10 64ビット版と32ビット版でやってみました。以前のバージョンのhts_engine_API-1.07には64ビット環境ではhtsvoiceファイルのデータの読み込みに問題があって、ここで公開していたパッチをあてたりしないとうまくいきませんでしたが、今回は確かに修正なしでビルドできました。  実際の手順ですが、Open JTalk からhts_engine_API-1.08.tar.gz、open_jtalk-1.07.tar.gzそして、hts_voice_nitech_jp_atr503_m001-1.05.tar.gzの3つのファイルをダウンロードします。  hts_engine_API-1.08、次にopen_jtalk-1.07に対して、それぞれ展開し、フォルダ内で、お決まりの次のコマンドを実行します。   ./configure 
+make
+sudo make install
+インストール先やopen_jtalkの辞書の文字コードなどを変えるときは、./configure のオプションを使います。 
+標準では、実行ファイルは/usr/local/binに、辞書は/usr/local/dicに入ります。hts_voice_nitech_jp_atr503_m001-1.05.tar.gzファイル内のhtsvoiceファイルはこれに合わせて、分かりやすく/usr/local/voice/に置きます。
+簡単な動作確認は次のようにします。test.txtに1行書いて、辞書の文字コードと同じエンコードでドキュメントフォルダーなど適当なところに保存します。標準では辞書のエンコードははEUC-JPですね。そしてtext.txtを保存した場所で次のコマンドを実行すれば、同じ場所に音声ファイルが作成されるはずです。
+open_jtalk -x /usr/local/dic -m /usr/local/voice/nitech_jp_atr503_m001.htsvoice -z 6000 -ow out.wav test.txt 
+ただ、当初からの問題ですが、標準のhtsvoice音響モデルファイルm001で長文を読ませると、やはり不安定になります。以下に示すどのような環境でのビルドでもこの問題は出てきます。mei_normalなど他の音響モデルでは別に問題にはなりません。
+このm001が不安定になる問題の回避策としてOpen JTalk [ja.nishimotz.com]でjpcommon_label.cの修正が示されていますが、今回のバージョンで対応する変更箇所は以下のとおりになります。
+diff -ru open_jtalk-1.07_original/jpcommon/jpcommon_label.c open_jtalk-1.07/jpcommon/jpcommon_label.c
+--- open_jtalk-1.07_original/jpcommon/jpcommon_label.c	2013-12-24 23:25:41 +0900
++++ open_jtalk-1.07/jpcommon/jpcommon_label.c	2013-12-26 00:29:04 +0900
+@@ -296,6 +296,7 @@
+if (index == a)
+break;
+}
++   if (i > 3) i = 3;
+return i;
+}
+@@ -395,6 +396,7 @@
+for (i = 0, index = m->next; index != NULL; index = index->next)
+i++;
++   if (i > 10) i = 10;
+return index_mora_in_utterance(m) + i;
+}
+ 
+Windows 8.1 (64ビット)でもビルドできるか試してみました。
+VC++
+まず、マイクロソフトのVC++でやってみました。VC++は最新の「Visual Studio Express 2013 for Windows Desktop」の無料で使えるExpressエディションのもので試しました。結果は、通常のビルドは問題ありませんでした。
+Express版は次のリンク先からダウンロードして、インストールします。手順はリンク先に書いてあるので、ここでは割愛します。
+Microsoft Visual Studio Express 2013 for Windows Desktop 
+VC++インストール後、64ビットOSではhts_engine_API-1.08.tar.gzとopen_jtalk-1.07.tar.gzを展開したそれぞれのフォルダ内で、次のコマンドを実行すれば、ビルドできます。インストール先は標準設定でc:\open_jtalkになります。
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+nmake -f Makefile.mak
+nmake -f Makefile.mak install
+※32ビットWindowsの場合はProgram Files (x86)をProgram Filesにする。 
+hts_voice_nitech_jp_atr503_m001-1.05.tar.gzの中にあるhtsvoiceファイルがc:\open_jtalk\voiceフォルダに入れてあるとすると、次のようなコマンドで確認できます。Ubuntuでやったときと違い、これだけで音声を発します。
+echo こんにちは >test.txt
+c:\open_jtalk\bin\open_jtalk -x c:\open_jtalk\dic -m c:\open_jtalk\voice\nitech_jp_atr503_m001.htsvoice -z 6000 test.txt
+このExpress版には、64ビットアプリケーションをビルドするためにクロスコンパイラも付属しています。しかしこの機能を使って64ビットアプリケーションを作るには修正が必要でした。
+まず、hts_engine_API-1.08についてですが、これは前も指摘したことがあるwaveOutOpenに関連する修正です。
+diff -ru hts_engine_API-1.08_original/lib/HTS_audio.c hts_engine_API-1.08/lib/HTS_audio.c
+--- hts_engine_API-1.08_original/lib/HTS_audio.c	2013-12-24 23:22:44 +0900
++++ hts_engine_API-1.08/lib/HTS_audio.c	2013-12-28 16:11:17 +0900
+@@ -85,7 +85,7 @@
+} HTS_AudioInterface;
+/* HTS_AudioInterface_callback_function: callback function from audio device */
+-static void CALLBACK HTS_AudioInterface_callback_function(HWAVEOUT hwaveout, UINT msg, DWORD user_data, DWORD param1, DWORD param2)
++static void CALLBACK HTS_AudioInterface_callback_function(HWAVEOUT hwaveout, UINT msg, DWORD_PTR user_data, DWORD_PTR param1, DWORD_PTR param2)
+{
+WAVEHDR *wavehdr = (WAVEHDR *) param1;
+HTS_AudioInterface *audio_interface = (HTS_AudioInterface *) user_data;
+@@ -177,7 +177,7 @@
+audio_interface->waveformatex.nBlockAlign = AUDIO_CHANNEL * audio_interface->waveformatex.wBitsPerSample / 8;
+audio_interface->waveformatex.nAvgBytesPerSec = sampling_frequency * audio_interface->waveformatex.nBlockAlign;
+/* open */
+-   result = waveOutOpen(&audio_interface->hwaveout, WAVE_MAPPER, &audio_interface->waveformatex, (DWORD) HTS_AudioInterface_callback_function, (DWORD) audio_interface, CALLBACK_FUNCTION);
++   result = waveOutOpen(&audio_interface->hwaveout, WAVE_MAPPER, &audio_interface->waveformatex, (DWORD_PTR) HTS_AudioInterface_callback_function, (DWORD_PTR) audio_interface, CALLBACK_FUNCTION);
+if (result != MMSYSERR_NOERROR) {
+HTS_error(0, "hts_engine: Failed to open your output audio_interface device to play waveform.\n");
+HTS_free(audio_interface);
+一方、open_jtalk-1.07ではMeCabの以下の部分です。これは以前から知られているMeCabの修正です。「MeCab を MinGW-w64 でビルド。ついでに、Java バインディングもビルド」 を参考にC++らしい型キャストにしてみました。 
+diff -ru open_jtalk-1.07_original/mecab/src/feature_index.cpp open_jtalk-1.07/mecab/src/feature_index.cpp
+--- open_jtalk-1.07_original/mecab/src/feature_index.cpp	2013-12-11 14:56:19 +0900
++++ open_jtalk-1.07/mecab/src/feature_index.cpp	2013-12-30 23:18:15 +0900
+@@ -353,7 +353,7 @@
+if (!r) goto NEXT;
+os_ << r;
+} break;
+-            case 't':  os_ << (size_t)path->rnode->char_type;     break;
++            case 't':  os_ << static_cast<unsigned int>(path->rnode->char_type);     break;
+case 'u':  os_ << ufeature; break;
+default:
+CHECK_DIE(false) << "unknown meta char: " <<  *p;
+diff -ru open_jtalk-1.07_original/mecab/src/writer.cpp open_jtalk-1.07/mecab/src/writer.cpp
+--- open_jtalk-1.07_original/mecab/src/writer.cpp	2013-12-11 14:56:22 +0900
++++ open_jtalk-1.07/mecab/src/writer.cpp	2013-12-30 23:16:25 +0900
+@@ -257,7 +257,7 @@
+// input sentence
+case 'S': os->write(lattice->sentence(), lattice->size()); break;
+// sentence length
+-          case 'L': *os << lattice->size(); break;
++          case 'L': *os << static_cast<unsigned int>(lattice->size()); break;
+// morph
+case 'm': os->write(node->surface, node->length); break;
+case 'M': os->write(reinterpret_cast
+これらの修正を行った後、hts_engine_APIから順にそれぞれの展開したフォルダ内で次のコマンドを実行するとビルドできました。 
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd64 
+nmake -f Makefile.mak 
+nmake -f Makefile.mak install
+必要性はほとんどないでしょうが、Program Files (x86) をProgram Filesに書き換えれば、32ビットパソコンでとりあえず64ビットの実行ファイルを作ることができます(もちろん実行はできませんが)。ただし、辞書のコンパイルのとき、作成したばかりの64ビット向けのコマンドを実行しようとしてエラーを出すので、辞書は32ビットのコマンドで作るか公式サイトからダウンロードしてくる必要があります。
+ 
+Windows 8.1上の Cygwin, Mingw 
+cygwin、mingwでもビルドしてみました。Mingwは以前mingw-get-instで作った環境ではうまくできたのですが、再現性を確保するために、現在の mingw-get-setupを使って環境を作ろうとしましたが、どうしても作れませんでした。仕方がないので、cygwinでmingwのコンパイラを使って作りました。
+前提となる、Cygwinの環境作りですが、Cygwinのサイトから、setup-x86.exeかsetup-x86_64.exeをダウンロードして、インストールします。詳しいインストールの仕方はここでは割愛します。ダウンロード先にある説明を読むか、割と新しいマイナビニュースの記事などを参考にしてください。今回のビルドを行うには、最低、makeとgcc-coreとgcc-g++の3つのパッケージが必要です。またmingwでコンパイルを行う場合は、さらに対応するgccとg++を入れます。具体的には、32ビットアプリケーションに必要なのがmingw64-i686-gcc-coreとmingw64-i686-gcc-g++で、64ビットアプリケーション向けはmingw64-x86_64-gcc-coreとmingw64-x86_64-gcc-g++です。
+まず、Cygwinのコンパイラを使った場合ですが、32ビットアプリケーションを作る場合はソースの修正は必要ありませんでした。しかし64ビットアプリケーションを作るときは、コンパイルは何事もなく完了するのですが、実行すると異常終了しました。原因は上記VC++と同様で、hts_engine_API-1.08のファイルに上記の修正をします。一方のopen_jtalk-1.07のファイルに関しては修正は必要ありませんでした。
+hts_engine_API-1.08とopen_jtalk-1.07とそれぞれの展開した先で次のコマンドを実行します。
+./configure
+make
+make install
+なお、文字コードは標準ではEUCになってしまいますが、WindowsではシフトJISの方が今でもなにかと都合がいいので、open_jtalk-1.07をビルドするときは、./configure –with-charset=SHIFT_JISとした方がいいかもしれません。
+次に、Mingw向けのビルドです。これは少し修正が必要でした。
+64ビットアプリケーションを作る場合、hts_engine_API-1.08のファイルに上記の修正が必要でした。そしてopen_jtalk-1.07のファイルはCygwinと違って、Windowsのときと同様の修正が必要でした。
+※下の打ち消し線の部分の代わりの記事は、下方の「追記(2014/02/01)」のところ書いています。
+さらに、これは32ビット向けの場合も含めて、open_jtalk-1.07のファイルのMeCabの部分にあるプリプロセッサ命令の定数__CYGWIN__を__MINGW32__を置き換えます。これは完全な解決法ではありません。本来は一つ一つ確認して是非を確認すべきですし、置き換えではなく、条件文に__MINGW32__の項目を追加したほうがいいのですが、とりあえずうまくうまくいきました。
+実際には、open_jtalk-1.07/mecab/src に入って次のコマンドで一気に置き換えました。
+find . -type f | xargs sed -i 's/__CYGWIN__/__MINGW32__/g'
+それから、ビルド中の辞書のコンパイルにおいて、生成したばかりの実行ファイルを使いますが、このときdllが見つからずにコンパイルが止まってしまいます。それを防ぐために、予めパスに追加しておきます。
+32ピットアプリケーションを作るときは、こんな感じ、
+export PATH=$PATH:/usr/i686-w64-mingw32/sys-root/mingw/bin
+64ピットアプリケーションを作るときは、こんな感じです。
+export PATH=$PATH:/usr/x86_64-w64-mingw32/sys-root/mingw/bin
+準備が整ったら、今までと同じように、hts_engine_API-1.08から先に展開したそれぞれのフォルダ内で以下のコマンドを実行します。以下に示すのは64ビットアプリケーションを作る例です。32ビットの場合はそれぞれの=の後はi686-w64-mingw32にします。
+./configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32
+make
+make install
+ここで作られた実行ファイルは残念ながらlibstdc++-6.dllやlibgcc_s_seh-1.dllもしくはlibgcc_s_sjlj-1.dllが必要になっています。これを静的リンクにする方法はあるみたいですが、よくわからなかったので、今回そこまでできませんでした。
+(2014.01.11追記) configure を実行する前に、C コンパイラを次のように定義するとスタティックリンクになります。
+export CC="x86_64-w64-mingw32-gcc -static"
+なおこれは64bitアプリケーションを作る場合です。32ビットアプリケーションはi686-w64-mingw32-gccに置き換えます。できた実行ファイルは今回13126kBととても大きくなりましたが、stripコマンドでスリムにすると1159kBになりました。(追記終わり)
+ 
+以前Windowsでのビルドをやってくれるバッチファイルを作りました(「open jtalk 1.06 を VS2012で ビルドするバッチ」)。特に設定を変えなければ、今回のものもビルドできました。そのままでもよかったのですが、上記で紹介したパッチを含めて、いくつかの細かな修正をしたものを今回新しく作りました。使い方は以前と同じなので、こちらで確認ください。上に示したようにがシフトJIS向けのビルドは上記のたった三行でビルド可能なので、あくまでも参考までにご使用ください。
+ダウンロード:openjtalk_buildbatch-005.zip 
+(MD5: 7789eb6a3270eefbadaf827df6028417)
+最後に、Open JTalkとともに、MMDAgentも更新がありました。その関連アーカイブのMMDAgent_Example-1.4.zipにmeiのhtsvoiceファイルが入りました。これを手に入れるために、今年の初めに旧形式からの変換器htsvconvを作ったわけですが、確認したらバイナリ的に同一のものなので、htscnvの変換結果は正解ということで、いいですね。
+追記(2014/02/01)
+mingwへの対応があまりにも大雑把なので修正しておきます。今回のopen_jtalkで使われているMeCabのバージョンは最新のものの一つ前の0.994です。0.99系列でWindows版のMeCabはユニコード正式対応になったのですが、このときの大幅な変更により、mingwでまともなコンパイルができなくなってしまいました。この問題はまだ解決はしていません。一番有益な情報は、mecab-develメーリングリストの97番の投稿です。
+MeCabのmingwに関する現状はそうなのですが、open_jtalkに使われているMeCabはちょっと事情が違います。open_jtalkの辞書はまだユニコード対応ではなく、UTF-8を含むマルチバイト文字コードのままなので、ユニコード対応部分を丸ごとすっ飛ばしても関係ありません。それを簡潔に、cygwinのコンパイラ向けの回避策をそのまま使って実現したのが、前回の__CYGWIN__を__MINGW32__による置換というわけです。
+自分がmingwでのコンパイルに興味がなかったので、深く掘り下げませんでした。でも、やはりこれは手抜き過ぎる解決策です。最小限の変更箇所のパッチを作ってみました。open_jtalk-1.07_mingw.patch
+diff -ru open_jtalk-1.07.orig/mecab/src/common.h open_jtalk-1.07/mecab/src/common.h
+--- open_jtalk-1.07.orig/mecab/src/common.h	2013-12-11 14:56:17 +0900
++++ open_jtalk-1.07/mecab/src/common.h	2014-02-01 17:20:15 +0900
+@@ -144,7 +144,7 @@
+#define EXIT_SUCCESS 0
+#endif
+-#if defined(_WIN32) && !defined(__CYGWIN__)
++#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
+#define WPATH(path) (MeCab::Utf8ToWide(path).c_str())
+#else
+#define WPATH(path) (path)
+diff -ru open_jtalk-1.07.orig/mecab/src/thread.h open_jtalk-1.07/mecab/src/thread.h
+--- open_jtalk-1.07.orig/mecab/src/thread.h	2013-12-11 14:56:21 +0900
++++ open_jtalk-1.07/mecab/src/thread.h	2014-02-01 17:20:15 +0900
+@@ -85,13 +85,20 @@
+namespace MeCab {
++#ifdef __MINGW32__
++#if defined(__i386__) && !defined(__x86_64) && !defined(__SSE2__)
++#undef YieldProcessor
++#define YieldProcessor() __asm__ __volatile__("rep; nop")
++#endif
++#endif
++
+#if (defined(_WIN32) && !defined(__CYGWIN__))
+#undef atomic_add
+#undef compare_and_swap
+#undef yield_processor
+#define atomic_add(a, b) ::InterlockedExchangeAdd(a, b)
+#define compare_and_swap(a, b, c)  ::InterlockedCompareExchange(a, c, b)
+-#define yield_processor() ::YieldProcessor()
++#define yield_processor() YieldProcessor()
+#define HAVE_ATOMIC_OPS 1
+#endif
+diff -ru open_jtalk-1.07.orig/mecab/src/winmain.h open_jtalk-1.07/mecab/src/winmain.h
+--- open_jtalk-1.07.orig/mecab/src/winmain.h	2013-12-11 14:56:23 +0900
++++ open_jtalk-1.07/mecab/src/winmain.h	2014-02-01 17:20:16 +0900
+@@ -46,7 +46,7 @@
+/* for Open JTalk
+#if defined(_WIN32) || defined(__CYGWIN__)
+*/
+-#if defined(_WIN32) && !defined(__CYGWIN__) /* for Open JTalk */
++#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__) /* for Open JTalk */
+#include 
+#include 
+diff -ru open_jtalk-1.07.orig/mecab-naist-jdic/Makefile.in open_jtalk-1.07/mecab-naist-jdic/Makefile.in
+--- open_jtalk-1.07.orig/mecab-naist-jdic/Makefile.in	2013-12-24 23:26:07 +0900
++++ open_jtalk-1.07/mecab-naist-jdic/Makefile.in	2014-02-01 17:20:16 +0900
+@@ -349,7 +349,7 @@
+char.bin matrix.bin sys.dic unk.dic: naist-jdic.csv matrix.def left-id.def rewrite.def pos-id.def right-id.def char.def unk.def feature.def
+-	../mecab/src/mecab-dict-index -d . -o . -f EUC-JP -t @MECAB_CHARSET@
++#	../mecab/src/mecab-dict-index -d . -o . -f EUC-JP -t @MECAB_CHARSET@
+clean:
+rm -f char.bin matrix.bin sys.dic unk.dic
+このパッチには、4つのファイルの修正が入っています。1つ目と3つ目は、ユニコード関連のコードを回避するための部分です。2番目はmecab-develの投稿で指摘されていた部分ですが、YieldProcessor()に関する修正です。二カ所に分かれていますが、最初のものはヘッダファイルでのマクロの定義がおかしかったので再定義している部分です。次の部分は、YieldProcessorマクロの内容がコンパイラに定義されている関数のときは問題ないのですが、マクロの内容がインラインアセンブラのときに起きる不具合への対策です。4つ目のファイルの修正は、辞書のコンパイルを行わないようにするだけのものです。これがあるとmakeが止まってしまうのでその回避です。辞書はここで生成されないので、open_jtalkのサイトから文字コードにあったものをダウンロードしてくる必要があります。
+このパッチを当ててビルドするスクリプトは次のようになります。面倒なので変数を使って書いていますが、charsetに文字コード名、archにmingwのシステム名です。下の例だと32ビット向けに文字コードutf-8のコードが生成されます。インストールされる場所はprefix変数が示しているbinフォルダなどです。下記スクリプトでは上記のパッチを次の名前とし、open_jtalk-1.07_mingw.patchとして記述しています。上記の64ビット向けのopen_jtalk-1.07_x64.patchを持ってきて、2カ所のコメントを外せば64ビット向けのビルドもできます。
+#!/usr/bin/env bash
+charset=UTF_8
+arch=i686-w64-mingw32
+#arch=x86_64-w64-mingw32
+export CC="$arch-gcc -static"
+host="--host=$arch"
+prefix="--prefix=/usr/$arch"
+hpath="--with-hts-engine-header-path=/usr/$arch/include"
+lpath="--with-hts-engine-library-path=/usr/$arch/lib"
+rm -r hts_engine_API-1.08
+tar zxvf hts_engine_API-1.08.tar.gz
+cd hts_engine_API-1.08
+./configure $host $prefix
+make
+make install
+cd ..
+rm -r open_jtalk-1.07
+tar zxvf open_jtalk-1.07.tar.gz
+patch -p0<open_jtalk-1.07_mingw.patch
+#patch -p0<open_jtalk-1.07_x64.patch
+cd open_jtalk-1.07
+./configure $host $prefix $hpath $lpath --with-charset=$charset
+make
+make install
+2つのmake installの先頭に「sudo 」を付ければ、Mingw-w64をインストールしたUbuntuでも使えます。
+takayanの雑記帳

@@ -1,0 +1,151 @@
+この例では、GPU ベースの LDPC 復号器 System object を使用して通信システム シミュレーションを高速化する方法を示します。この例では、ブロードキャスティング、双方向サービス、ニュース ギャザリングおよびその他のブロードバンド衛星活用 (DVB-S.2) のための ETSI (欧州電気通信標準化機構) EN 302 307 規格の一部をモデル化することによる性能の向上について説明します [1]。DVB-S.2 システムのシミュレートで System object を使用する場合の詳細は、「こちらの例」を参照してください。GPU ベースの LDPC 復号器を使用するには、Parallel Computing Toolbox™ のユーザー ライセンスが必要です。
+はじめにLDPC 復号化アルゴリズムは計算に時間がかかり、DVB-S.2 シミュレーションで費やされる大部分を占めます。comm.gpu.LDPCDecoder System object を使用して GPU で復号化アルゴリズムを実行すると、シミュレーションの実行時間が著しく短縮されます。この例では、CPU ベースの LDPC 復号器 (comm.LDPCDecodercomm.LDPCDecoder) と GPU ベースの LDPC 復号器 (comm.gpu.LDPCDecodercomm.gpu.LDPCDecoder) をそれぞれ 1 度使用し、DVB-S.2 システムをシミュレートして速度 (実行時間) のベンチマークを得ます。また、GPU を使用する場合の復号化の性能に低下がないことを示すために、両方のバージョンのビット誤り率を求めます。fprintf(...
+'DVB-S.2 Digital Video Broadcast Standard Bit Error Rate Simulation\n\n');
+fprintf(...
+'Performance comparison of CPU- and GPU- accelerated decoders.\n');
+DVB-S.2 Digital Video Broadcast Standard Bit Error Rate Simulation
+Performance comparison of CPU- and GPU- accelerated decoders.
+GPU 存在検知この例では、GPU を照会して、Parallel Computing Toolbox のユーザー ライセンスとサポート対象 GPU の存在を検出します。GPU または Parallel Computing Toolbox が使用不可能な場合は、CPU のみのシミュレーションを実行できます。try
+%Query the GPU
+dev = parallel.gpu.GPUDevice.current;
+%Print out information about the GPU that was found
+fprintf(...
+'GPU detected (%s, %d multiprocessors, Compute Capability %s)\n',...
+dev.Name, dev.MultiprocessorCount, dev.ComputeCapability);
+%Include a GPU-based simulation.
+doGPU = true;
+catch %#ok<CTCH>
+%The GPU is not supported or not present, or the Parallel Computing
+%Toolbox was not present and licensed. Consider a CPU-only simulation.
+inp = input(['***NOTE: GPU not detected. ', ...
+'Continue with CPU-only simulation? [Y]/N '], 's');
+if strcmpi(inp, 'y') || isempty(inp)
+doGPU = false;
+else
+return;
+end
+end
+GPU detected (Tesla C2075, 14 multiprocessors, Compute Capability 2.0)
+初期化関数 getParamsDVBS2Demo.mgetParamsDVBS2Demo.m は、以下のパラメーターが指定されている DVB-S.2 システムのコンフィギュレーション情報を保持する構造体 dvb を生成します。続いて、dvb 構造体に基づき、System object の作成と構成を行います。createSimObjDVBS2Demo.mcreateSimObjDVBS2Demo.m スクリプトは DVB-S.2 システムで使用される大部分の System object を構築し、dvb 構造体に基づいて System object を構成します。次に、CPU ベースの LDPC 復号器 System object と GPU ベースの LDPC 復号器 System object の両方を、完全に等しく作成して構成します。%DVB-S.2 System Parameters
+subsystemType = 'QPSK 1/2';    % Constellation and LDPC code rate
+EsNodB        = 0.75;          % Energy per symbol to noise PSD ratio in dB
+numFrames     = 10;            % Number of frames to simulate
+maxNumLDPCIterations = 50;     % LDPC Decoder iterations
+dvb = getParamsDVBS2Demo(subsystemType, EsNodB, maxNumLDPCIterations);
+%Create and configure the BCH Encoder and Decoder, Interleaver,
+%Deinterleaver, Modulator, Demodulator, AWGN Channel.
+createSimObjDVBS2Demo;
+%Construct the LDPC Encoder
+hLDPCEnc = comm.LDPCEncoder(dvb.LDPCParityCheckMatrix);
+%Construct the LDPC Decoder System objects
+%LDPC Decoder Configuration
+ldpcPropertyValuePairs = { ...
+'MaximumIterationCount' , dvb.LDPCNumIterations, ...
+'ParityCheckMatrix' , dvb.LDPCParityCheckMatrix, ...
+'DecisionMethod' , 'Hard Decision', ...
+'IterationTerminationCondition' , 'Maximum iteration count', ...
+'OutputValue' , 'Information part'};
+%Construct the LDPC Decoder System objects (CPU and GPU versions)
+hLDPCDecoder        = comm.LDPCDecoder(ldpcPropertyValuePairs{:});
+if doGPU
+hgpuLDPCDecoder   = comm.gpu.LDPCDecoder(ldpcPropertyValuePairs{:});
+end
+%Create an ErrorRate object to analyze the differences in bit error rate
+%between the CPU and GPU.
+hBER           = comm.ErrorRate;
+CPU と GPU の性能比較この例では、最初に CPU ベースの LDPC 復号器 System object を使用し、次に GPU ベースの LDPC 復号器 System object を使用して DVB-S.2 システムをシミュレートします。システムからいくつかのデータ フレームを渡してシステムの総シミュレーション時間を測定し、LDPC 復号器ごとのシステム ベンチマークを得ます。最初のデータ フレームはシミュレーション初期化時間が長くかかるため、ベンチマークの計算から除外されます。フレームごとおよび平均のシステム シミュレーション時間はコマンド ウィンドウに表示されます。システムのビット誤り率 (BER) もコマンド ウィンドウに表示され、CPU ベースと GPU ベースの両方の LDPC 復号器で同じ BER が実現されることが示されます。if doGPU
+architectures = 2;
+else
+architectures = 1;
+end
+%Initialize run time results vectors
+runtime = zeros(architectures, numFrames);
+avgtime = zeros(1, architectures);
+%Seed the random number generator used for the channel and message
+%creation.  This will allow a fair BER comparison between CPU and GPU.
+%Cache the original random stream to restore later.
+original_rs = RandStream.getGlobalStream;
+rs = RandStream.create('mrg32k3a', 'seed', 25);
+RandStream.setGlobalStream(rs);
+%Loop for each processing unit - CPU and GPU
+for ii=1:architectures,
+%Do some initial setup for the execution loop
+if (ii==1)
+arch = 'CPU';
+dec = hLDPCDecoder; %Use CPU LDPC Decoder
+else
+arch = 'GPU';
+dec = hgpuLDPCDecoder;%Use GPU LDPC Decoder
+end
+%Reset the Error Rate object
+reset(hBER);
+%Reset the random stream
+rs.reset;
+%Notice to the user that DVB-S.2 simulation is beginning.
+fprintf(['\nUsing ' arch '-based LDPC Decoder:\n']);
+dels = repmat('\b', 1, fprintf('  Initializing ...'));
+%Main simulation loop.
+%Run numFrames+1 times and ignore the first frame (which has
+%initialization overhead) for the run time calculation. Use the first
+%run for the BER
+%calculation.
+for rr=1:(numFrames+1)
+%Start timer
+ts = tic;
+%***Create an input Message***%
+msg = zeros(hBCHEnc.MessageLength, 1);
+msg(1:dvb.NumInfoBitsPerCodeword) = ...
+logical(randi([0 1], dvb.NumInfoBitsPerCodeword, 1));
+%***Transmit***%
+bchencOut   = step(hBCHEnc, msg);
+ldpcencOut  = step(hLDPCEnc, bchencOut);
+xlvrOut     = step(hIntrlv, ldpcencOut);
+modOut      = step(hMod, xlvrOut);
+%***Corrupt with noise***%
+chanOut     = step(hChan, modOut);
+%***Receive***%
+demodOut    = step(hDemod, chanOut);
+dexlvrOut   = step(hDeintrlv, demodOut);
+%Use whichever LDPC Decoder was set above.
+ldpcdecOut  = step(dec, dexlvrOut);
+bchdecOut   = step(hBCHDec, ldpcdecOut);
+%***Compute BER ***%
+%Calculate BER at output of LDPC, not BCH.
+ber         = step(hBER, logical(bchencOut), ldpcdecOut);
+%Stop timer
+runtime(ii, rr) = toc(ts);
+%Don't report the first frame with the initialization overhead.
+if (rr > 1),
+fprintf(dels);
+newCharsToDelete = fprintf('  Frame %d decode : %.2f sec', ...
+rr-1, runtime(ii,rr));
+dels = repmat('\b', 1, newCharsToDelete);
+end
+end %end of running a frame through the DVB-S.2 system.
+%Report the run time results to the Command Window.
+fprintf(dels); % Delete the last line printed out.
+%Calculate the average run time. Don't include frame 1 because it
+%includes some System object initialization time.
+avgtime(ii) = mean(runtime(ii, 2:end));
+fprintf('  %d frames decoded, %.2f sec/frame\n', numFrames, avgtime(ii));
+fprintf('  Bit error rate: %g \n', ber(1) );
+end %architecture loop
+%Reset the random stream to the cached object
+RandStream.setGlobalStream(original_rs);
+Using CPU-based LDPC Decoder:
+10 frames decoded, 0.90 sec/frame
+Bit error rate: 0.00785634 
+Using GPU-based LDPC Decoder:
+10 frames decoded, 0.15 sec/frame
+Bit error rate: 0.00785634 
+前述のコードと類似したコードを使用してビット誤り率の測定がオフラインで行われました。GPU および CPU ベースの LDPC 復号器のビット誤り率性能は、このプロットで確認できるように等しくなります。
+まとめGPU を使用した場合、GPU LDPC 復号器では、CPU LDPC復号器を使用する DVB-S.2 システムに比べ平均的な実行時間に応じた高速化が示されました。if ~doGPU
+fprintf('\n*** GPU not present ***\n\n');
+else
+%Calculate system-wide speedup
+fprintf(['\nFull system simulation runs %.2f times faster using ' ...
+'the GPU-based LDPC Decoder.\n\n'], avgtime(1)/avgtime(2));
+end
+Full system simulation runs 6.00 times faster using the GPU-based LDPC Decoder.
+付録この例では次のスクリプトと補助関数が使用されています。getParamsDVBS2Demo.mgetParamsDVBS2Demo.mcreateSimObjDVBS2DemoDVBS2Demo.mcreateSimObjDVBS2DemoDVBS2Demo.m参考文献ETSI Standard EN 302 307 V1.1.1:Digital Video Broadcasting (DVB); Second generation framing structure, channel coding and modulation systems for Broadcasting, Interactive Services, New Gathering and other broadband satellite applications (DVB-S.2), European Telecommunications Standards Institute, Valbonne, France, 2005-03.
+GPU ベースの LDPC 復号器 System Object を使用した DVB-S.2 システム シミュレーション - MATLAB & Simulink Example - MathWorks 日本

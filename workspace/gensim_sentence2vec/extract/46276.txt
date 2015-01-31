@@ -1,0 +1,224 @@
+
+クエリーに関するチュートリアル(1):基本的なパス
+NeoCoreのクエリー(照会)言語は非常にパワフルで、XMLデータをさまざまな方法で選択、変換、ソート、および出力することができます。
+このチュートリアルでは、小規模な野球統計データベース(ここからダウンロード)を使って、基本的なクエリーを書く方法について説明します。このzipファイルを解凍して、そこに含まれるBaseballStats.xmlをNeoCoreコンソールで保存します([Database 
+Access]タブの[Database login]オプションと[Store]オプションを使用します)。このファイルには4つの文書が含まれ、それぞれの文書には、1人のプレーヤーの年ごとのバッティングおよびピッチングの統計が示されています。このファイルを保存したら、以下の任意のクエリーをコンソールの[Query]ページにカットアンドペーストすることができます。 
+さて、NeoCoreで何ができるかを例示しましょう。 
+コード
+for $p in /ND/player 
+return 
+<p n={string($p/@name)}> 
+<y>{count(distinct-values($p/batting/@year 
+union $p/pitching/@year))}</y> 
+<d>{sum($p/batting/doubles)}</d> 
+<t>{sum($p/batting/triples)}</t> 
+<h>{sum($p/batting/homers)}</h> 
+</p> 
+sortby (h descending)
+このクエリーは、データベース内の各プレーヤーのXML文書を作成し、そこには(ホームラン数に応じて降順にソートされた)選手の名前、現役でプレーした年数、および現役通算の数字が含まれます。
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+<p n="Hank Aaron">      
+<y>23</y>  
+<d>624</d>  
+<t>98</t>  
+<h>755</h>  
+</p> 
+<p n="Babe Ruth">      
+<y>22</y>  
+<d>506</d>  
+<t>136</t>  
+<h>714</h>  
+</p> 
+<p n="Willie Mays">      
+<y>22</y>  
+<d>523</d>  
+<t>140</t>  
+<h>660</h>  
+</p> 
+<p n="Barry Bonds">      
+<y>18</y>  
+<d>536</d>  
+<t>74</t>  
+<h>658</h>  
+</p> 
+</Query-Results>
+ここで、結果が「Query-Results」タグの対の中にまとめられることに注意してください。(これはクエリーの場合です。他のNeoCoreコマンドは別のタグを使用します。)さらに、結果文書が常にXML宣言で始まることにも注意してください
+クエリーでは、XMLデータを選択し、値を抽出して操作し、出力の中に新しいXML構造を作成するなどの柔軟な操作が可能です。機能はもっと豊富ですが、オードブルとしては、このくらいで十分でしょう。
+このようなクエリーについて学習するうえで、まず、基本的な式を見ていきましょう。式によって、XMLフラグメント、ストリング、整数、または倍精度浮動小数点数からなるシーケンスを戻すことができます。
+すべては/NDから始まる
+このデータベースに格納される各文書の最上位エレメントは、常に「ND」です。文書が格納されるときには、これが追加されます。それぞれの文書には、別個のNDエレメントがあります。このNDエレメントの下に、文書が子として格納され、それに加えて、管理情報が入る「MetaData」が存在します。
+エレメントのパス 
+基本的な式は、次のようなパスです。 
+コード
+/ND/player/batting/homers 
+概念的には、このパスはデータベースに以下の事柄を指示します。
+「ND」という最上位エレメントをすべて見つける。 
+それぞれの「/ND」エレメントごとに、 「player」という子エレメントをすべて見つける。 
+それぞれの「/ND/player」エレメントごとに、「batting」という子エレメントをすべて見つける。
+それぞれの「/ND/player/batting」エレメントごとに、「homer」(ホームラン)という子エレメントをすべて見つける。
+式の結果として、このシーケンスをXML文書にフォーマットして戻す。 
+結果は、たとえば以下のようになります。 
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+<homers>16</homers> 
+<homers>25</homers> 
+<homers>24</homers> 
+... some lines skipped 
+<homers>20</homers> 
+<homers>12</homers> 
+<homers>10</homers> 
+</Query-Results>
+1つのパス式によって戻されるシーケンス内の複数の結果の順序は、NeoCoreクエリー言語では定義されません。シーケンスの順序を変更するには、「sortby」文節を使用できます。 
+属性の選択 
+属性を選択するには、名前の前にプレフィックス「@」を付けます。たとえば、 
+コード
+/ND/player/@name
+こうすれば、「Babe Ruth」(ベーブ・ルース)、「Hank Aaron」(ハンク・アーロン)などが属性として戻されます。 
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+<player name="Barry Bonds"></player> 
+<player name="Willie Mays"></player> 
+<player name="Babe Ruth"></player> 
+<player name="Hank Aaron"></player> 
+</Query-Results>
+このクエリーでは属性を選択したため、これらの属性の親エレメントもまた、出力に含まれました。 
+その他のステップ 
+あるノード(エレメントまたは属性)の親は「..」として参照され、現在のノードは「.」として参照されます。パスの中で「/」ではなく「//」を使用すると、子孫ノード、つまり、現在のノードの下にあるすべての深さのノードを検索します。
+コード
+/ND//hits
+以下のように、パスの先頭で子孫を指定することもできます。 
+コード
+//hits
+以下のように、子孫として属性を指定することもできます。
+コード
+//@team
+条件付きパス: 述部
+式の結果のサブセットを条件付きで選択するには、述部を使用します。
+これは大括弧で囲まれたブール式で、以下のように、式の中の任意の場所で使用できます。
+コード
+/ND/player[@name="Babe Ruth"]
+これによって、以下のように、「name」という属性のストリング値が「Babe Ruth」であるすべての「/ND/player」エレメントが戻されます。 
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+<player name="Babe Ruth"> 
+<bats>L</bats> 
+<throws>L</throws> 
+<birth-date>2/6/1895</birth-date> 
+<year-started>1914</year-started> 
+<batting year="1914" team="BOS" 
+league="AL"> 
+<games>5</games> 
+<batting-average>.200</batting-average> 
+<at-bats>10</at-bats> 
+<runs>1</runs> 
+<hits>2</hits> 
+<doubles>1</doubles> 
+<triples>0</triples> 
+... and so on 
+</Query-Results>
+述部で比較するために、演算子=、!=、<、>、<=、または>=を使用できます。 
+定数は、ストリング、整数、または浮動小数点数が可能です。必要であれば、比較対象の定数の型(タイプ)に適合させるために、ノードの値が変換されます。
+述部の中のパス式は、元の式から見て相対的に適用されます(ただし、述部内のパス式を「/」で始める場合はこの限りではありませんが、こうすることは推奨されません)。パス内で複数の述部を使用できます。さらに、and/or演算子や括弧を使用して、複数のブール式を結合することができます。
+コード
+/ND/player[@name="Babe Ruth"] 
+/batting[@year < 1930 and (homers > 40 or rbis > 
+100)]
+比較のオペランドが値のシーケンスを評価する場合には、いずれかの値が比較を満たすと、比較が真になります。以下のクエリーでは、 
+コード
+/ND/player[batting/homers >= 60]
+副次式「batting/homers」は、各「player」文書の値のシーケンスを評価し、いずれかの値(いずれかの年のホームラン数)が60以上であれば、そのプレーヤーが選択されます。 
+述部式には、必ずしも比較を含める必要はありません。パスだけが単独で指定される場合、そのパスのノードが存在するかどうかを検査します。
+コード
+/ND/player[pitching]/@name
+以下のクエリーは、4人のプレーヤーのうち、1人の@name属性を選択します。 
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+<player name="Babe Ruth"></player> 
+</Query-Results>
+算術演算
+また、式の中で算術演算を行うこともできます。一般的な演算子(+、-、*)を使用できますが、割り算の場合、スラッシュではなく「div」を使用します(スラッシュはパスの分離文字であるため)。割り算の整数剰余を得るには、「mod」演算子を使用します。算術演算では、それぞれのコンテキストノードごとに、演算子の両側にオペランドが厳密に1つずつ存在する必要があります。 
+コード
+/ND/player/batting[doubles + 2*triples + 
+3*homers >= 200]
+この結果として、以下で始まる結果が戻されます。 
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+<batting year="2001" team="SF" league="NL"> 
+<games>153</games> 
+<batting-average>.328</batting-average> 
+<at-bats>476</at-bats> 
+<runs>129</runs> 
+<hits>156</hits> 
+<doubles>32</doubles> 
+<triples>2</triples> 
+<homers>73</homers> 
+<rbis>137</rbis> 
+... etc. ... 
+</Query-Results>
+上記のクエリーの場合、指定された名前の子、つまり「doubles」(二塁打)、「triples」(三塁打)、「homers」(ホームラン) 
+がそれぞれの「batting」エレメントの下に1つだけ存在するため、正常に機能します。しかし、次のクエリーはエラーになります。 
+コード
+/ND/player/batting/hits div /ND/player/batting/at-bats
+「div」演算の各オペランドが、複数エレメントを含むシーケンスを戻すため、このクエリーによって以下のようなエラー文書が戻されます(クエリーの実行にJavaまたはC++ APIを使用している場合、例外がスローされます)。
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Error> 
+<Name> Operation Failed 
+</Name> 
+<Message> Operands of 
+arithmetic operations must have no more than one value 
+apiece </Message> 
+<Exception-Number> 8 
+</Exception-Number> 
+</Error>
+関数 
+このほかにも、興味深い操作を実行する役立つ関数がたくさんあります。たとえば、 
+count、max、min、avg: エレメントの数、最大値または最小値、シーケンスの平均値を戻します 
+integer、double、string: 指定された型に値を変換します 
+contains、starts-with、ends-with: あるストリングが別のストリングに含まれるかどうかを検査します 
+以下の例では、(エレメントのストリング値を整数に変換する) integer関数、および(渡された整数シーケンス内の最大値を見つける) max関数を使用します。 
+コード
+max(integer(/ND/player[@name="Barry 
+Bonds"]/batting/homers))
+結果として、バリー・ボンズが1シーズンに打ったホームランの最大数が戻されます。 
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+73 
+</Query-Results> 
+以下は、副次ストリングを検査する関数を使ったクエリーの例です。 
+コード
+string(/ND/player/@name)[contains(., "y")]
+これによって、以下のように、「y」を含むすべてのプレーヤーの名前が出力されます。 
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+Barry Bonds 
+Willie Mays 
+</Query-Results>
+最後の例として、次の式を見てください。 
+コード
+count(/ND/player/batting[homers > avg(double(/ND/player/batting[at-bats 
+>= 400]/homers))])
+これはやや複雑です。まず、at-bats (打席数)が400以上のすべてのプレーヤーに関する、すべてのシーズンにわたる平均ホームラン数を算出し、それを倍精度浮動小数点数に変換します。 
+コード
+avg(double(/ND/player/batting[at-bats >= 
+400]/homers))
+次に、この副次式の結果を使って、ホームラン数(homers)がこの平均を超えるバッティング記録を選択します。 
+コード
+/ND/player/batting[homers > {上記の式}]
+最後に、エレメント数をカウントして結果シーケンスに戻します。結果はこうなります。
+コード
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Query-Results> 
+39 
+</Query-Results>
+このほかにも、反復、ソート、XML構築などの複雑かつパワフルな操作が可能です。これらについては、別のチュートリアルで説明します。
+チュートリアル ～JAVA編(6):クエリーの基本1 -基本的なパス式～ | XMLデータベース(XML DB) 総合サイト | XMLDB.JP

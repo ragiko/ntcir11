@@ -1,0 +1,135 @@
+
+概要
+使用制限と要件
+距離行列リクエスト
+距離行列レスポンス
+結果
+ステータス コード
+結果の解析
+概要
+Google の距離行列サービスは、複数の出発地と目的地の間を指定の交通手段で移動した場合の距離と所要時間を計算します。
+このサービスは、ルートの詳細は返しません。ポリラインやテキストによるルート説明といったルート情報は、単一の出発地と単一の目的地を ルート サービスに渡すことによって取得できます。
+使用制限と要件
+割り当て
+距離行列サービスには、以下の使用制限が適用されます:
+1 回のリクエストで、出発地 25 か所まで、目的地 25 か所まで
+1 回のリクエストで、要素 100 個まで(出発地 x 目的地)
+単位時間あたりのリクエスト数にも制限があります。一定の期間においてリクエストの合計要素数が多すぎると、OVER_QUERY_LIMIT レスポンス コードが返されます。
+Google マップの表示
+距離行列サービスは、最終的に Google マップに情報を表示することを目的としてのみ使用できます。たとえば、指定の所要時間に収まる出発地と目的地のペアを特定したい場合、最終的にリクエストの結果を Google マップに表示することが必要です。このサービスを、Google マップに表示することなく利用することは禁止されています。
+距離行列リクエスト
+距離行列サービスへのアクセスは、Google Maps API が外部サーバーへの呼び出しを行う必要があるため、非同期に行われます。したがって結果を処理するためには、コールバック メソッドを渡してリクエストの完了時に実行する必要があります。
+距離行列サービスにアクセスするには、コード内で google.maps.DistanceMatrixService オブジェクトを使用します。DistanceMatrixService.getDistanceMatrix() メソッドで、距離行列サービスへのリクエストを開始します。このとき、出発地、目的地、交通手段を格納するオブジェクト リテラルと、レスポンスの受け取り時に実行するコールバック メソッドを渡します。
+var origin1 = new google.maps.LatLng(55.930385, -3.118425);
+var origin2 = "Greenwich, England";
+var destinationA = "Stockholm, Sweden";
+var destinationB = new google.maps.LatLng(50.087692, 14.421150);
+var service = new google.maps.DistanceMatrixService();
+service.getDistanceMatrix(
+{
+origins: [origin1, origin2],
+destinations: [destinationA, destinationB],
+travelMode: google.maps.TravelMode.DRIVING,
+avoidHighways: false,
+avoidTolls: false
+}, callback);
+function callback(response, status) {
+// See Parsing the Results for
+// the basics of a callback function.
+}
+例を表示(distance-matrix.html)
+サービスに渡すオブジェクト リテラルには次のフィールドがあります:
+origins(必須): 距離や時間の計算に使用する 1 つまたは複数の出発地の住所文字列または google.maps.LatLng オブジェクトが格納されます。
+destinations(必須): 距離や時間の計算に使用する 1 つまたは複数の目的地の住所文字列または google.maps.LatLng オブジェクトが格納されます。
+travelMode(省略可能): ルート計算に使用する交通手段を指定します。有効な値は次のとおりです。
+google.maps.TravelMode.DRIVING(デフォルト): 道路網を利用した標準の運転ルートです。
+google.maps.TravelMode.WALKING: 歩行者専用道路と歩道を使用した徒歩ルートをリクエストします(利用できる場合)。
+google.maps.TravelMode.BICYCLING は自転車専用道路と優先道路を使用する自転車ルートをリクエストします(現時点では米国およびカナダの都市部でのみ利用できます)。
+unitSystem(省略可能): 距離の表示に使用する単位系。有効な値は次のとおりです:
+google.maps.UnitSystem.METRIC(デフォルト)
+google.maps.UnitSystem.IMPERIAL
+avoidHighways(省略可能): true に設定した場合、出発地から目的地の間のルートは可能な限り高速道路を避けて計算されます。
+avoidTolls(省略可能): true に設定した場合、地点間のルートは可能な限り有料道路を避けて計算されます。
+距離行列レスポンス
+距離行列サービスの呼び出しが正常に完了すると、DistanceMatrixResponse オブジェクトと DistanceMatrixStatus オブジェクトが返されます。各オブジェクトは、リクエストで指定したコールバック関数に渡されます。
+DistanceMatrixResponse オブジェクトには、ルートが計算できた出発地と目的地のペアごとに、移動距離と所要時間の情報が格納されます。
+{
+"origin_addresses": [ "Greenwich, Greater London, UK", "13 Great Carleton Square, Edinburgh, City of Edinburgh EH16 4, UK" ],
+"destination_addresses": [ "Stockholm County, Sweden", "Dlouhá 609/2, 110 00 Praha-Staré Město, Česká republika" ],
+"rows": [ {
+"elements": [ {
+"status": "OK",
+"duration": {
+"value": 70778,
+"text": "19 hours 40 mins"
+},
+"distance": {
+"value": 1887508,
+"text": "1173 mi"
+}
+}, {
+"status": "OK",
+"duration": {
+"value": 44476,
+"text": "12 hours 21 mins"
+},
+"distance": {
+"value": 1262780,
+"text": "785 mi"
+}
+} ]
+}, {
+"elements": [ {
+"status": "OK",
+"duration": {
+"value": 96000,
+"text": "1 day 3 hours"
+},
+"distance": {
+"value": 2566737,
+"text": "1595 mi"
+}
+}, {
+"status": "OK",
+"duration": {
+"value": 69698,
+"text": "19 hours 22 mins"
+},
+"distance": {
+"value": 1942009,
+"text": "1207 mi"
+}
+} ]
+} ]
+}
+距離行列の結果
+レスポンスでサポートされるフィールドを以下に説明します。
+originAddresses: 距離行列リクエストの origins フィールドで渡した位置が格納されます。住所はジオコーディングされて返されます。
+destinationAddresses: destinations フィールドで渡した位置が格納されます。ジオコーディングされて返されます。
+rows: DistanceMatrixResponseRow オブジェクトを示し、1 つの行が 1 つの出発地に対応します。
+elements: rows の子で、各行の出発地に対して目的地を組み合わせてペアを形成します。出発地/目的地ペアごとに、ステータス、距離、所要時間の情報が格納されます。
+各 element の distance フィールドと duration フィールドには、value フィールド(常にメートルまたは秒単位)と text フィールド(判読性の高い情報)の両方が含まれています。距離の text 値の単位系は、リクエストの unitSystem で指定できます(デフォルトはメートル法)。
+ステータス コード
+距離行列レスポンスには、要素ごとのステータスに加え、レスポンス全体のステータス コードも含まれています。
+レスポンスのステータス コード
+DistanceMatrixResponse に適用されるステータス コードは、DistanceMatrixStatus オブジェクトで渡されます。以下のステータス コードがあります:
+OK: リクエストが有効であることを示します。すべての出発地/目的地ペアのルートが見つからなかった場合もこのステータスが返されます。要素レベルのステータス情報については、要素のステータス コードを参照してください。
+INVALID_REQUEST: 指定したリクエストが無効であることを示します。このステータスは、必須フィールドが指定されていない場合に返されることがあります。上記のサポートされるフィールドの一覧をご覧ください。
+MAX_ELEMENTS_EXCEEDED: 出発地と目的地を掛け合わせた数がクエリあたりの上限を超えていることを示します。
+MAX_DIMENSIONS_EXCEEDED: リクエストにおいて、25 か所を超える出発地、あるいは 25 か所を超える目的地が指定されていることを示します。
+OVER_QUERY_LIMIT: 一定の期間内にアプリケーションから送信されたリクエストの合計要素数が多すぎることを示します。しばらく待ってからもう一度試すと、リクエストが正常に処理されます。
+REQUEST_DENIED: 距離行列サービスの使用がウェブページによって拒否されたことを示します。
+UNKNOWN_ERROR: サーバー エラーが原因で距離行列リクエストを処理できなかったことを示します。もう一度実行すると、リクエストが正常に処理される可能性があります。
+要素のステータス コード
+DistanceMatrixElement オブジェクトには、以下のステータス コードが適用されます:
+NOT_FOUND: このペアの出発地と目的地の少なくともどちらかがジオコーディングできなかったことを示します。
+OK: レスポンスには有効な結果が含まれています。
+ZERO_RESULTS: 出発地と目的地の間にルートが見つからなかったことを示します。
+結果の解析
+DistanceMatrixResponse オブジェクトには、リクエストで渡した出発地ごとに 1 つの row が格納されます。各行には、当該出発地と指定目的地のペアごとに element フィールドが格納されます。
+function callback(response, status) {
+if (status == google.maps.DistanceMatrixStatus.OK) {
+var origins = response.originAddresses;
+var destinations = response.destinationAddresses;
+for (var i = 0; i 
+距離行列サービス - Google Maps JavaScript API v3 &mdash; Google Developers

@@ -1,0 +1,8 @@
+分散型電源によるマイクログリッドシステムの開発(その1)ー小規模実験システムによる負荷追従制御技術の開発ー
+第84号2006年10月
+森野仁夫、沼田茂生、傳田篤
+技術研究所の実験棟を対象に、マイクロガスタービン、ガスエンジン、鉛蓄電池、太陽光発電の4種の分散型電源からなる小規模なマイクログリッド試験設備を構築し、既存の電力系統と協調性をもったマイクログリッドシステムの実現を目指して、複数分散型電源による負荷追従制御技術の開発を行った。開発では、分散型電源の有効電力の周波数応答特性を計測し、各分散型電源の負荷追従特性を明らかにした。また、2種類の制御方法によって、実負荷を対象とした有効電力の負荷追従制御実験を行い、連系点における買電電力一定制御を実現し、連系点の電力潮流に関して3分間同時同量±3%の制御目標を達成した。
+Research and Development of a Micro-Grid System Using Distributed Power Supplies(Part1)-Development of Load Follow-up Control Technology by a Small Experiment System-
+by Kimio Morino, Shigeo Numata and Atsushi Denda
+We constructed a small-scale micro-grid test bed consisting of four kinds of distributed power supplies, a micro gas turbine, a gas engine, a lead acid battery, and photovoltaic cells. The bed was constructed in an experimental building of the institute of technology. With the goal of developing a micro-grid system that can coordinate with existing power systems, we developed load follow-up control technology using multiple distributed power supplies.During research and development, we measured the frequency response characteristics of the active power of each distributed power supply by means of sinusoidal power references and clarified their load follow-up characteristics. In addition, we performed load follow-up control experiments by using a true active power load with two kinds of control methods. We achieved purchase power constant control at the connecting point of the micro-grid, and achieved the power current control target, ±3% the same amount simultaneously for three minutes.
+分散型電源によるマイクログリッドシステムの開発(その1)/研究所報一覧(清水建設研究報告)−清水建設

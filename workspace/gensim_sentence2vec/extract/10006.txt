@@ -1,0 +1,61 @@
+数値演算のアルゴリズムは、基本的には数値を要素とするコンテナを対象に処理を行います。実際には、
+数値以外に対して使うこともできますが、そのような使い方をすることはあまりないと思います。
+他のSTLアルゴリズムとは異なり、数値演算のアルゴリズムは、numeric
+というヘッダファイルをインクルードして使います。
+accumulate()
+accumulate()は、指定された範囲内の要素を、順番に+演算子を使って
+加算していきます。第3引数に初期値を与え、結果は戻り値で返されます。
+#include <numeric>
+#include <vector>
+#include <iostream>
+int main()
+{
+using namespace std;
+vector<int> nums;
+for(int i = 0; i < 10; ++i )
+{
+nums.push_back( i );
+}
+// 合計を求める
+int sum = accumulate( nums.begin(), nums.end(), 0 );
+// 結果を出力
+cout << sum << endl;
+return 0;
+}
+結果は45になります。簡単ですね。accumulate()は、非常に単純なアルゴリズムのようですが、+演算子を
+使うということをわざわざ書いたことに意味があります。つまり、+演算子がオーバーロードされていれば、
+それに応じた動作になるということです。例えば、上の例でvectorに収められている型が、他のクラスの
+とき、そのクラスが+演算子をオーバーロードしていれば、問題なくaccumulate()が使える訳です。文字の連結
+操作に応用することもできますね。
+inner_product()
+inner_product()は、指定された2つの範囲の各要素を、*演算子で乗算
+します。乗算した結果は、その直前の乗算結果に加算されていきます。最終的な加算結果が戻り値として返り
+ます。式で書けば、
+value = value + param1 * param2
+となります。2つの要素がparam1とparam2、valueの初期値を第4引数で指定します。
+#include <numeric>
+#include <vector>
+#include <iostream>
+int main()
+{
+using namespace std;
+vector<int> nums;
+for(int i = 0; i < 10; ++i )
+{
+nums.push_back( i );
+}
+// 各要素を乗算した結果を計算する
+int sum = inner_product( nums.begin(), nums.end(), nums.begin(), 0 );
+// 結果を出力
+cout << sum << endl;
+return 0;
+}
+数学が得意な人は、上のプログラムで内積を求められることが分かると思います。具体的な式を書けば、
+0 + (1*1) + (2*2) + (3*3) + (4*4) + ・・・ + (9*9)
+となります。
+partial_sum()
+partial_sum()は、指定された範囲の要素を、一定の規則に従って計算
+し、結果を別の範囲に格納していきます。計算内容は、直前までに計算された結果に、今回の要素の値を加算
+したものを、指定された位置に格納するというものです。分かりにくいですが、次のプログラムと実行結果を
+見れば、すぐに分かると思います。
+C++編(標準ライブラリ) 第23章 数値演算のアルゴリズム

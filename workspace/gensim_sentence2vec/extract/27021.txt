@@ -1,0 +1,36 @@
+
+前置(++a)と後置(a++)の違い
+インクリメント演算子とデクリメント演算子には2種類の書き方があります。
+前置を++a(--a)、後置をa++(a--)といいます。
+前置と後置では演算のタイミングが違います。
+前置(++a、--a)
+変数aの参照より先に演算を行ないます。
+a = 1;
+x = ++a //1をaに足した後、xの値を代入する
+//結果
+x = 2
+後置(a++、a--)
+変数aの参照より後に演算を行ないます。
+a = 1;
+x = a++; //aをxに代入した後、aに1を足す
+//結果
+x = 1
+<例題>
+複合代入演算子を使って「g = 40、g = g + 10」の計算式を記述してみます。
+<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>計算の演算子</title>
+</head>
+<body>
+<script type="text/javascript">
+g  = 40;
+g += 10 //g = g + 10;
+document.write(g);
+</script>
+</body>
+</html>
+ツイートする
+Permalink | コメント(0) | トラックバック(0) | 00:37 
+【JavaScript】計算の演算子 - MAXIMUM.PROの日記

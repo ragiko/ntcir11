@@ -1,0 +1,35 @@
+
+しかし、MeCabのデフォルトでは、26文字以上は、16文字ずつに分割されてしまう。
+26文字の場合
+% mecab
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmno abcdefghijklmno abcdefghijklmno abcdefghijklmno 名詞-普通名詞-一般
+pqrstuvwxyz     pqrstuvwxyz     pqrstuvwxyz     pqrstuvwxyz     名詞-普通名詞-一般
+EOS
+25文字の場合
+% mecab
+abcdefghijklmnopqrstuvwxy
+abcdefghijklmnopqrstuvwxy       abcdefghijklmnopqrstuvwxy       abcdefghijklmnopqrstuvwxy       abcdefghijklmnopqrstuvwxy      名詞-普通名詞-一般
+EOS
+長い未知語をグルーピングする方法
+未知語を26文字以上でグルーピングさせるためには、以下のようにソースのDEFAULT_MAX_GROUPING_SIZEの値を書き換えて、ビルドする必要がある。
+src/common.h
+#define DEFAULT_MAX_GROUPING_SIZE 24  65535
+src/tokenizer.cpp
+//max_grouping_size_ = param.template get<size_t>("max-grouping-size");
+max_grouping_size_ = 0;
+if (max_grouping_size_ == 0) {
+max_grouping_size_ = DEFAULT_MAX_GROUPING_SIZE;
+}
+Note: max_grouping_size_は、src/tagger.cppで24にハードコーディングされているため、通常、DEFAULT_MAX_GROUPING_SIZEが適用されない模様。
+実行結果
+以下のように、26文字であっても分割されないようになった。
+% mecab
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz  abcdefghijklmnopqrstuvwxyz  abcdefghijklmnopqrstuvwxyz  abcdefghijklmnopqrstuvwxyz  名詞-普通 名詞-一般
+EOS
+参考
+MeCabをソースからインストールする方法
+http://mecab.googlecode.com/svn/trunk/mecab/doc/learn.html
+http://mecab.googlecode.com/svn/trunk/mecab/doc/unk.html
+MeCabで未知語を長いサイズで区切る方法 - CreateField

@@ -1,0 +1,23 @@
+cvThreshold関数による2値化は画素全体に対して差無く閾値処理を施しているが、輪郭を際立たせるためには他の方法が必要だ。適応的2値化は全体ではなく現在対象になっている画素の近傍の輝度値の平均に対して閾値処理を施すものだ。適応的2値化はOpenCVではcvAdaptiveThresholdを使う。
+OpenCVUtil.binarize
+#define DEFAULT_ADAPTIVE_TH_SIZE 25
+#define DEFAULT_ADAPTIVE_TH_DELTA 10
++ (IplImage*)binarize:(IplImage*)src threshold:(int)threshold
+{
+IplImage *tmp = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
+IplImage *bin = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
+/*	カラー画像を濃淡画像に変換  */
+cvCvtColor(src, tmp, CV_BGR2GRAY);
+/* 平滑化 */
+cvSmooth(tmp, bin, CV_MEDIAN, 3);
+cvCopy(bin, tmp);
+/*適応的に閾値処理で2値化*/
+cvAdaptiveThreshold(tmp, bin, 128, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, DEFAULT_ADAPTIVE_TH_SIZE, DEFAULT_ADAPTIVE_TH_DELTA);
+cvReleaseImage(&tmp);
+return bin;
+}
+実行結果
+先日のcvThresholdを使った2値化に比べて対象の輪郭や文字が際立っているのが分かるだろう。(画像の状態特に輝度が偏っている画像等は逆に上手くいかない場合もある)
+ツイートする
+Permalink | コメント(0) | トラックバック(0)  
+適応的2値化処理 - Kazzzの日記

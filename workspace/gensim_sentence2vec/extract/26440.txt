@@ -1,0 +1,7 @@
+拡張子がtxtのファイルからhogeを検索
+$ grep "hoge" *.txt
+<P>または<p>のある行数を表示
+$ grep -ci "<p>" index.shtml
+httpdのプロセス情報を得る
+$ ps aux | grep "httpd"
+Linuxコマンド集 - 【 grep 】 文字列を検索する:ITpro

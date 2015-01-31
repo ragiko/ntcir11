@@ -1,0 +1,377 @@
+
+サウンドプログラミング2
+科目名: メディアネットワーク実験IIA(2014年〜)
+対象: メディアネットワークコース3年目
+日時: 10月29日(水) - 10月30日(木)13:00〜18:00
+場所: M棟1階計算機室
+レポート提出締切: 11月5日(火)13:00
+レポート提出先: 情報エレクトロニクス棟6階6-08
+連絡先: 青木 直史(Tel: 706-6532)(E-mail: aoki@ime.ist.hokudai.ac.jp)
+目的
+音はマルチメディアコンテンツを構成する重要な要素である.本実験は,MATLABによるプログラミングを通して,サウンド処理に対する理解を深めることを目的としている.
+1.はじめに
+MATLABは,Mファイルと呼ばれるテキストファイルにプログラムを記述し,これを一括して実行させることができるようになっている.本実験は,下記のMファイルを実行しながら進めるものとする.なお,音を確認する場合はヘッドフォンを使うこと.
+2.実験1:スペクトログラム
+1.sine_step.wavは1秒ごとに周波数が500Hzずつ大きくなっていくサイン波である.ex01.mを実行し,スペクトログラムを表示しなさい.スペクトログラムを観察することで,時間の経過とともに音がどのように変化していくか考察しなさい.
+% ex01.m
+clear;
+fs=8000;
+bits=16;
+s=wavread('sine_step.wav');
+window_size=512;
+shift_size=64;
+[S,time,frequency]=spectrogram(s,fs,bits,window_size,shift_size);
+imagesc(time,frequency,S);
+colormap(flipud(gray)); 
+set(gca,'ytick',[0:500:4000]);
+set(gca,'xtick',[0:1:9]);
+axis([0 9 0 4000]);
+axis xy;
+なお,このプログラムは,次に示すspectrogram関数を利用している.
+function [S,time,frequency]=spectrogram(s,fs,bits,window_size,shift_size)
+length_of_s=length(s);
+number_of_frame=floor((length_of_s-(window_size-shift_size))/shift_size);
+N=window_size;
+x=zeros(1,N);
+w=Hanning_window(N);
+S=zeros(N/2+1,number_of_frame);
+for frame=1:number_of_frame,
+offset=shift_size*(frame-1);
+for n=1:N,
+x(n)=s(offset+n)*w(n);
+end
+X=fft(x,N);
+for k=1:N/2+1,
+S(k,frame)=20*log10(1+abs(X(k)));
+end
+end
+time=zeros(1,number_of_frame);
+for frame=1:number_of_frame,
+time(frame)=(window_size/2)/fs+(frame-1)*(shift_size)/fs;
+end
+frequency=zeros(1,N/2+1);
+for k=1:N/2+1,
+frequency(k)=(k-1)*fs/N;
+end
+フーリエ変換によって求めることができるのは,あくまでも窓によって切り取られた一部の波形の周波数特性にすぎない.時間の経過とともに変化する音の場合,周波数特性は刻一刻と変化するため,周波数特性の時間変化を調べるには,窓を少しずつずらしながら周波数分析を繰り返す必要がある.
+こうした周波数特性の時間変化を観察するのに利用されているのが「スペクトログラム」である.図1に示すように,スペクトログラムは,窓を少しずつずらしながら周波数分析を行い,横軸を時間,縦軸を周波数として,周波数特性を濃淡表示したものになっている.
+図1.スペクトログラムの表示
+図2は,1秒ごとに周波数が500Hzずつ大きくなっていくサイン波のスペクトログラムである.
+図2.スペクトログラム
+2.スペクトログラムは,時間分解能と周波数分解のどちらに注目するかによって,「広帯域スペクトログラム」と「狭帯域スペクトログラム」のふたつに分類できる.窓の大きさを変化させるとスペクトログラムがどのように変化するか確認しなさい.
+3.実験2:ディジタルフィルタ
+ディジタルフィルタを音データに適用すると,本来の周波数特性が変化し,結果として音色が変化する.ディジタルフィルタはFIRフィルタとIIRフィルタに大別されるが,ここではIIRフィルタを取り上げ,いくつかの具体例について調べてみよう.
+1.ex02.mを実行し,白色雑音を生成しなさい.
+% ex02.m
+clear;
+fs=8000;
+bits=16;
+length_of_s=8000;
+s=zeros(1,length_of_s);
+time=zeros(1,length_of_s);
+gain=0.5;
+for n=1:length_of_s,
+s(n)=(rand*2-1)*gain;
+time(n)=(n-1)/fs;
+end
+plot(time,s);
+axis([0 0.016 -1 1]);
+sound(s,fs);
+wavwrite(s,fs,bits,'ex02.wav');
+2.ex03.mを実行し,白色雑音に対してIIRフィルタをかけ,処理前後の音を聞き比べなさい.波形と周波数特性を調べ,このフィルタの特性について考察せよ.
+% ex03.m
+clear;
+fs=8000;
+bits=16;
+x=wavread('ex02.wav');
+length_of_x=length(x);
+y=zeros(1,length_of_x);
+fc=1000/fs;
+Q=1/sqrt(2);
+[b,a]=IIR_LPF(fc,Q);
+I=2;
+J=2;
+for n=1:length_of_x,
+for m=1:J+1,
+if n-m+1>0
+y(n)=y(n)+b(m)*x(n-m+1);
+end
+end
+for m=2:I+1,
+if n-m+1>0
+y(n)=y(n)-a(m)*y(n-m+1);
+end
+end
+end
+sound(x,fs);
+pause(2);
+sound(y,fs);
+wavwrite(y,fs,bits,'ex03.wav');
+なお,このプログラムは,次に示すIIR_LPF関数を利用している.
+function [b,a]=IIR_LPF(fc,Q)
+fc=tan(pi*fc)/(2*pi);
+a(1)=1+2*pi*fc/Q+4*pi*pi*fc*fc;
+a(2)=(8*pi*pi*fc*fc-2)/a(1);
+a(3)=(1-2*pi*fc/Q+4*pi*pi*fc*fc)/a(1);
+b(1)=4*pi*pi*fc*fc/a(1);
+b(2)=8*pi*pi*fc*fc/a(1);
+b(3)=4*pi*pi*fc*fc/a(1);
+a(1)=1;
+図3に,このフィルタのブロック図を示す.なお,フィルタ係数はIIR_LPF関数によって,つぎのように計算されている.
+a=[1.0000 -0.9428 0.3333];
+b=[0.0976 0.1953 0.0976];
+図3.IIRフィルタのブロック図
+3.ex04.mを実行し,白色雑音に対してIIRフィルタをかけ,処理前後の音を聞き比べなさい.波形と周波数特性を調べ,このフィルタの特性について考察せよ.
+% ex04.m
+clear;
+fs=8000;
+bits=16;
+x=wavread('ex02.wav');
+length_of_x=length(x);
+y=zeros(1,length_of_x);
+fc=1000/fs;
+Q=2;
+[b,a]=IIR_Resonator(fc,Q);
+I=2;
+J=2;
+for n=1:length_of_x,
+for m=1:J+1,
+if n-m+1>0
+y(n)=y(n)+b(m)*x(n-m+1);
+end
+end
+for m=2:I+1,
+if n-m+1>0
+y(n)=y(n)-a(m)*y(n-m+1);
+end
+end
+end
+sound(x,fs);
+pause(2);
+sound(y,fs);
+wavwrite(y,fs,bits,'ex04.wav');
+なお,このプログラムは,次に示すIIR_Resonator関数を利用している.
+function [b,a]=IIR_Resonator(fc,Q)
+fc=tan(pi*fc)/(2*pi);
+a(1)=1+2*pi*fc/Q+4*pi*pi*fc*fc;
+a(2)=(8*pi*pi*fc*fc-2)/a(1);
+a(3)=(1-2*pi*fc/Q+4*pi*pi*fc*fc)/a(1);
+b(1)=2*pi*fc/Q/a(1);
+b(2)=0;
+b(3)=-2*pi*fc/Q/a(1);
+a(1)=1;
+図4に,このフィルタのブロック図を示す.なお,フィルタ係数はIIR_Resonator関数によって,つぎのように計算されている.
+a=[1.0000 -1.2018 0.6996];
+b=[0.1502 0.0000 -0.1502];
+図4.IIRフィルタのブロック図
+4.実験3:楽器音の特徴
+実験1では,サイン波の音の特徴について調べてみた.ここでは,そのほかの音としてピアノの音を取り上げ,音の特徴について調べてみよう.
+1.ex05.mを実行し,ピアノの音のスペクトログラムを表示しなさい.スペクトログラムを観察することで,時間の経過とともに音がどのように変化していくか考察しなさい.
+% ex05.m
+clear;
+fs=8000;
+bits=16;
+s=wavread('piano.wav');
+window_size=512;
+shift_size=64;
+[S,time,frequency]=spectrogram(s,fs,bits,window_size,shift_size);
+imagesc(time,frequency,S);
+colormap(flipud(gray)); 
+set(gca,'ytick',[0:500:4000]);
+set(gca,'xtick',[0:0.5:5]);
+axis([0 5 0 4000]);
+axis xy;
+5.実験4:楽器音の合成
+図5に示すように,ピアノの音は減衰音であり,時間の経過とともに時間エンベロープはしだいに小さくなっていく.また,図6に示すように,スペクトログラムを観察すると,高域の倍音からしだいに減衰していくことがわかる.
+図5.ピアノの時間エンベロープ
+図6.ピアノのスペクトログラム
+こうした音を人工的に作り出すには,周波数特性や時間エンベロープといった音の特徴を適切に再現することが重要なポイントになる.
+図7に示すように、時間エンベロープはADSRと呼ばれるパラメータによってコントロールすることが一般的である.アタックタイム,ディケイタイム,サステインレベル,リリースタイムという4種類のパラメータを調整することで、さまざまな楽器音を再現することができる.
+図7.ADSR
+1.ex06.mを実行し,ピアノの音を合成しなさい.パラメータを変化させると音がどのように変化するか確認しなさい.
+% ex06.m
+clear;
+fs=44100;
+bits=16;
+length_of_s=fs*2;
+s0=zeros(1,length_of_s);
+f0=440;
+t0=fs/f0;
+m=0;
+for n=1:length_of_s,
+s0(n)=1-2*m/t0;
+m=m+1;
+if m>=t0
+m=0;
+end
+end
+fc=440/fs;
+Q=1/sqrt(2);
+[b,a]=IIR_LPF(fc,Q);
+s1=zeros(1,length_of_s);
+I=2;
+J=2;
+for n=1:length_of_s,
+for m=1:J+1,
+if n-m+1>0
+s1(n)=s1(n)+b(m)*s0(n-m+1);
+end
+end
+for m=2:I+1,
+if n-m+1>0
+s1(n)=s1(n)-a(m)*s1(n-m+1);
+end
+end
+end
+A=0;
+D=fs*1;
+S=0;
+R=fs*1;
+gate=fs*1;
+duration=fs*2;
+e=ADSR(A,D,S,R,gate,duration);
+gain = 1.5;
+for n=1:length_of_s,
+s1(n)=s1(n)*e(n)*gain;
+end
+for n=1:fs*0.01,
+s1(n)=s1(n)*(n-1)/(fs*0.01);
+s1(length_of_s-n+1)=s1(length_of_s-n+1)*(n-1)/(fs*0.01);
+end
+sound(s1,fs);
+wavwrite(s1,fs,bits,'ex06.wav');
+なお,このプログラムは,次に示すADSR関数を利用している.
+function e=ADSR(A,D,S,R,gate,duration)
+e=zeros(1,duration);
+if A~=0
+for n=1:A,
+e(n)=1-exp(-5*(n-1)/A);
+end
+end
+if D~=0
+for n=A+1:gate,
+e(n)=S+(1-S)*exp(-5*(n-1-A)/D);
+end
+else
+for n=A+1:gate,
+e(n)=S;
+end  
+end
+if R~=0
+for n=gate+1:duration,
+e(n)=e(gate)*exp(-5*(n-gate+2)/R);
+end
+end
+6.実験5:音声の特徴
+実験3では,ピアノの音の特徴について調べてみた.ここでは,そのほかの音として音声を取り上げ,音の特徴について調べてみよう.
+1.ex07.mを実行し,音声のスペクトログラムを表示しなさい.スペクトログラムを観察することで,時間の経過とともに音がどのように変化していくか考察しなさい.
+% ex07.m
+clear;
+fs=8000;
+bits=16;
+s=wavread('speech.wav');
+window_size=512;
+shift_size=64;
+[S,time,frequency]=spectrogram(s,fs,bits,window_size,shift_size);
+imagesc(time,frequency,S);
+colormap(flipud(gray)); 
+set(gca,'ytick',[0:500:4000]);
+set(gca,'xtick',[0:0.2:1.6]);
+axis([0 1.6 0 4000]);
+axis xy;
+7.実験6:音声合成
+図8と図9に示すように,特定の周波数成分が強調されているのが音声の特徴になっている.こうした帯域はフォルマントと呼ばれ,周波数の低いものから順番に,第1フォルマント(F1)、第2フォルマント(F2)、第3フォルマント(F3)、第4フォルマント(F4)と名前がつけられている.
+図8.音声の狭帯域スペクトログラム
+図9.音声の広帯域スペクトログラム
+図10に示すように,それぞれのフォルマントをBPFとしてとらえると,音声の周波数エンベロープは複数のBPFを組み合わせたものとして解釈することができる.
+図10.音声の周波数エンベロープ
+図11に示すように,フォルマントは音声によって異なる.こうした周波数エンベロープの特徴が音声の種類を識別するための重要な手がかりになっている.
+図11.音声の周波数エンベロープ:(a) ア, (b) イ, (c) ウ, (d) エ, (e) オ
+1.ex08.mを実行し,音声を合成しなさい.パラメータを変化させると音がどのように変化するか確認しなさい.
+% ex08.m
+clear;
+fs=44100;
+bits=16;
+length_of_s=fs*2;
+s0=zeros(1,length_of_s);
+f0=100;
+t0=fs/f0;
+m=0;
+for n=1:length_of_s,
+s0(n)=1-2*m/t0;
+m=m+1;
+if m>=t0
+m=0;
+end
+end
+fc=800/fs;
+Q=800/100;
+[b,a]=IIR_Resonator(fc,Q);
+s1=zeros(1,length_of_s);
+s2=zeros(1,length_of_s);
+I=2;
+J=2;
+for n=1:length_of_s,
+for m=1:J+1,
+if n-m+1>0
+s1(n)=s1(n)+b(m)*s0(n-m+1);
+end
+end
+for m=2:I+1,
+if n-m+1>0
+s1(n)=s1(n)-a(m)*s1(n-m+1);
+end
+end
+end
+for n=1:length_of_s,
+s2(n)=s2(n)+s1(n);
+s1(n)=0;
+end
+fc=1200/fs;
+Q=1200/100;
+[b,a]=IIR_Resonator(fc,Q);
+I=2;
+J=2;
+for n=1:length_of_s,
+for m=1:J+1,
+if n-m+1>0
+s1(n)=s1(n)+b(m)*s0(n-m+1);
+end
+end
+for m=2:I+1,
+if n-m+1>0
+s1(n)=s1(n)-a(m)*s1(n-m+1);
+end
+end
+end
+for n=1:length_of_s,
+s2(n)=s2(n)+s1(n);
+s1(n)=0;
+end    
+gain = 1.5;
+for n=1:length_of_s,
+s2(n)=s2(n)*gain;
+end
+for n=1:fs*0.01,
+s2(n)=s2(n)*(n-1)/(fs*0.01);
+s2(length_of_s-n+1)=s2(length_of_s-n+1)*(n-1)/(fs*0.01);
+end
+sound(s2,fs);
+wavwrite(s2,fs,bits,'ex08.wav');
+8.レポートについて
+下記3点についてレポートを書きなさい.締め切りは11月5日(水)とする.
+1.広帯域スペクトログラムと狭帯域スペクトログラムの特徴について具体的な例をあげて説明しなさい.(5点)
+2.楽器音または音声を生成する方法について調査し,具体的な例をあげて説明しなさい.(5点)
+3.現実の音をお手本として,できる限りリアルな音を生成することを目標として,MATLABのプログラムを作成しなさい.また,どのように音を生成したか,プログラムの内容について具体的に説明しなさい.プログラムと音データについてはメールで提出すること.(10点)
+9.創成課題
+1.楽器音または音声を生成するMATLABのプログラムを作成しなさい.現実の音をお手本として,できる限りリアルな音を生成することをコンテストの課題とします.
+2.創成課題の成果発表に向けて,プレゼンテーションのための資料を作成しなさい.どのように音を生成したか,デモをまじえ具体的な説明があるものを評価します.優秀な作品は表彰します.
+参考文献
+青木 直史, ``ゼロからはじめる音響学,'' 講談社, 2014.
+青木 直史, ``サウンドプログラミング入門 - 音響合成の基本とC言語による実装 - ,'' 技術評論社, 2013.
+青木 直史, ``C言語ではじめる音のプログラミング - サウンドエフェクトの信号処理 - ,'' オーム社, 2008.
+青木 直史, ``ディジタル・サウンド処理入門 - 音のプログラミングとMATLAB(Octave・Scilab)における実際 - ,'' CQ出版社,
+2006.
+Last Modified: October 1 12:00 JST 2014 by Naofumi Aoki
+E-mail: aoki@ime.ist.hokudai.ac.jp
+サウンドプログラミング2

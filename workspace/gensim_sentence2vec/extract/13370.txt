@@ -1,0 +1,43 @@
+HoudiniはRGBカラーランプと浮動小数点(スプライン)ランプをサポートしています。カラーランプは、長さに沿ってカラーを徐々に変化させ、浮動小数点ランプは曲線を描きながら値を変化させていきます。
+既存のポイントを選択するには、ランプの下にある矢印のハンドルをクリックします。
+ランプ領域をクリックすれば、そこに新しいポイントが作成されます。
+ポイントを選択して削除ボタンをクリックするとポイントが削除されます。
+ポイントのハンドルを左右にドラッグすると位置を変更できます。
+スプラインランプ内で、丸いハンドルを上下にドラッグするとポイントの値が変わります。
+ランプ下のPositionとValueコントロールを使えば、選択したポイントの位置や値を正確に編集できます。
+Interpolationポップアップメニューで、選択したポイントと次のポイント間の値の補間方法を制御します。
+Hideコントロールボタンをクリックすれば、スライダーが非表示になり、ランプのみが表示されます。
+エクスプレッションでランプパラメータの値を読むには、chramp, chrampt, chrampfファンクションを使います。
+現在の時間でのランプの値を読むには:
+chramp(ramp_path, position, component_index)
+ramp_pathには読みたいランプパラメータのパス、positionは読みたいランプの位置(0から1で指定)。カラーランプでは、component_indexも指定する必要があります。赤 = 0, 緑 = 1, 青 = 2を意味します。スプラインランプでは、3つ目の引数には0を使います。
+chramptは指定した時間でのランプの値を読みます。chrampfは指定したフレームでのランプの値を読みます。
+ランプパラメータの値を読むには:
+パラメータを意味するhou.Parmオブジェクトの参照を取得します。
+オブジェクトのtupleメソッドをコールして、hou.ParmTupleの値を取得します。
+ParmTupleオブジェクトでeval, evalAsRamp, evalAsRampAtFrameのどれかをコールして、hou.Rampオブジェクトを取得します。
+ParmオブジェクトのparmTemplateメソッドをコールしてパラメータに関するメタデータ(つまりデフォルト値)を含んだhou.RampParmTemplateオブジェクトを取得することもできます。
+# Grab a reference to a ramp parameter. 
+# This is a hou.Parm object just like any
+# other parameter.
+>>> r = hou.parm("/obj/my_character/gradient")
+>>> r
+<hou.Parm gradient in /obj/my_character>
+# Get "parm tuple" for this parameter, and
+# evaluate it at the current time. Whereas
+# evaluating a floating-point parameter would
+# return a float value, and evaluting a
+# textbox would return a string, evaluating
+# a ramp parameter returns a hou.Ramp object.
+>>> ramp = r.eval()
+>>> ramp
+<hou.Ramp is_color=True num_keys=2 ... >
+# You can then use the lookup() method to
+# get a value from the ramp. This returns
+# a tuple or float depending on the type
+# of ramp.
+>>> ramp.isColor()
+True
+>>> ramp.lookup(0.5)
+(0.1, 0.5, 0.8)
+ランプパラメータ

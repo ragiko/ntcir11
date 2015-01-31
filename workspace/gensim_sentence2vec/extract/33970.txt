@@ -1,0 +1,4 @@
+式以下で指定された問題の最小値を見つけます。minxf(x) such that x1<x<x2.x、x1、x2 はスカラーです。f(x) はスカラーを返す関数です。
+x = fminbnd(fun,x1,x2)x = fminbnd(fun,x1,x2,options)x = fminbnd(problem)[x,fval] = fminbnd(...)[x,fval,exitflag] = fminbnd(...)[x,fval,exitflag,output] = fminbnd(...)
+x = fminbnd(fun,x1,x2) は、区間 x1 < x < x2 において、fun に記述されているスカラー値関数の局所的最小値である値 x を返します。fun はファイルへの関数ハンドルか、無名関数のいずれかです。x = fminbnd(fun,x1,x2,options) は、options 構造体に指定する最適化オプションを使って最小化します。optimset を使用してこれらのオプションを設定してください。x = fminbnd(problem) は、problem の最小値を求めます。ここで、problem は「入力引数」に説明されている構造体です。「作業のエクスポート」で説明されているように、最適化アプリケーションから問題をエクスポートして problem 構造体を作成します。[x,fval] = fminbnd(...) は、解 x において、fun で計算された目的関数の値を返します。[x,fval,exitflag] = fminbnd(...) は、fminbnd の終了条件を記述する値 exitflag を返します。[x,fval,exitflag,output] = fminbnd(...) は最適化の情報を含む構造体 output を返します。
+固定区間上で 1 変数からなる関数の最小値を探索します。 - MATLAB fminbnd - MathWorks 日本

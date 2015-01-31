@@ -1,0 +1,108 @@
+WordPressのカスタム分類(タクソノミー)にはhierarchicalという、カテゴリーのような親子関係(階層)を持たせる第3パラメータがあります。今回は、上記の設定で親子関係をもたせたカスタム分類(タクソノミー)のタームを、親>子のように親子で並べる方法のメモです。
+※カスタム分類(タクソノミー)だと長いので、以下省略して「タクソノミー」と記述します。
+やりたいこと
+タクソノミーに階層をもたせ、タームに親子関係をもたせたい
+投稿記事に属している上記のタクソノミーのタームたちを、親>子の順番できちんと並べたい。
+タームが複数選択されていた場合も、親>子・親>子のように順番に並べるようにしたい。
+上記に書いてあることそのまんまでひねりなし。やりたいことは非常にシンプルなので、Wordpressの関数でパパっと出来そうなものですが…。
+このような形で表示させたい。上記のように、選択されたタームは複数あるとします。
+実装
+タクソノミーの生成、設定
+タクソノミーの生成にプラグインを使ってもいいですが、テストがてら下記のコードをfunctions.phpに記載し、タクソノミーを作ってみます。
+function add_custom_taxonomies() {
+register_taxonomy(
+'food', //タクソノミー名。例では[food]とします
+'post', //例では通常の投稿タイプを使います
+array(
+'public' => true,
+'show_ui' => true,
+'hierarchical' => true, //trueで階層を持つ
+'label' => '食べ物',
+'query_var' => true,
+'rewrite' => true
+)
+);
+}
+add_action('init', 'add_custom_taxonomies', 0);
+WordPressの標準の関数だけだと、複数選択したタームの[親>子]表示は出来ない?
+こんな単純そうなことが、タクソノミーを使って実装しようと思うと意外と出来ない…!get_termsやget_the_term_listを使えば、指定したタクソノミーのタームを取得することができますが、そもそもこれらの関数には親と子を順番に並べて出力する仕様がありません。
+たとえば、親と子が1:1ずつだったり、選択する親が1つのみという規則があれば色々とやりようがあるようなのですが、今回の仕様は親も子も複数選択されている場合の想定なので、Wordpressの既存の関数のみではなかなかうまくいきません…。
+実装できるのは左側、今回やりたいのは右側
+DBから値を引っ張り出して配列を作る
+既存の関数だとこれ以上どうしようもないので、DBの値を使用します。wp_term_taxonomyテーブルのparentが親子関係を見るフィールドなので、それぞれのカテゴリidに紐づくparent値(親カテゴリid値)を配列に組み込みます。
+コード
+functions.phpにメソッドを追加
+function getRootTaxonomies($terms=null){
+$rootterms = array();
+if(isset($terms))
+{
+foreach($terms as $k=>$v){
+if($v->parent === 0){
+$rootterms[] = $v;
+}
+}
+foreach($rootterms as $k=>$v)
+{
+foreach($terms as $sk=>$sv){
+if( $v->term_id === $sv->parent){
+$rootterms[$k]->children[] = $sv;
+}
+}
+}
+}
+return $rootterms;
+}
+親に子が紐づく形で配列を返します。子は親のchildrenの中に格納されます。
+タームの親子関係を表示したい場所(single.php等のループ内・外)に追加
+<?php
+$parents = getRootTaxonomies( get_the_terms( $post->ID,"food"), "0" );
+foreach($parents as $pv){
+echo "<ul>\n";
+echo '<li><a href="/food/'.$pv->slug.'">'.$pv->name.'</a></li>'."\n";
+echo "<li><ul>\n";
+foreach($pv->children as $ck=>$cv){
+echo '<li><a
+href="/food/'.$cv->slug.'">'.$cv->name.'</a></li>'."\n";
+}
+echo "</ul></li>\n";
+echo "</ul>\n";
+}
+?>
+get_the_terms_listのようにリンクを自動で生成しないので、echoに必要な要素を記述する必要があります。上記のサンプルはulの入れ子になるようになっています。
+タームの各リンクは、タームのスラッグを元に構成します。taxonomyへのパーマリンクにarchivesなどのディレクトリ以下に設定している場合は、/food/となっている部分を/archives/food/と頭から記述する必要があるので注意してください。
+なお、各タームへのアーカイブリンクが必要ない場合は各aタグを削除すればOKです。
+タームの表示の順番を好きな順番に変更したい
+無事表示されたのも束の間、タームを好きな順番に並び替えて表示させたいと思うのが人の性。タームに限らずカテゴリーも、好きなように並べたいなぁと思う時は一度はあるかと思います。
+パラメータの並び替え引数の確認
+WordPressの並び替えの引数(orederby)は、昇順、降順、ID名、名前…と色々ありますが、簡単に好きな順に並び替え出来る方法はありません。
+スラッグの先頭に数字を付けて好きな順番に並べる方法もありますが、数が多ければ多いほど面倒ですし、今後のことを考えるとプラグインを使用するのが賢明かなと思います。
+プラグイン
+以下のプラグインを入れると、MovableTypeのカテゴリのようにドラッグアンドドロップで好きなように入れ替えできるのでオススメ。よく使用する2つをご紹介します。
+PS Taxonomy Expander
+Category Order and Taxonomy Terms Order
+両方共、カテゴリー・タームの順番を変更出来ます。PS Taxonomy Expanderはそれ意外にも機能がありますので、どちらを使うかはケースバイケースで。
+プラグインで設定した並び順通りにカテゴリー/タームを反映させたい
+プラグインで並び替えを設定しているのに、投稿記事を見てみるとうまく反映されてないと思います。そんな時は以下のコードをfunctions.phpに追記します。
+function terms($a, $b){
+if ( intval($a->term_order) == intval($b->term_order)) {
+return 0;
+}
+return (intval($a->term_order) < intval($b->term_order)) ? -1 : 1;
+}
+function terms_sort($terms, $object_ids, $taxonomies, $args){
+if(!is_admin()){
+usort($terms , "terms");
+}
+return $terms;
+}
+add_filter('wp_get_object_terms','terms_sort',99,4);
+コード参照元:gist:5625795 tkc49 GitHub
+上記コードでは何をしてるかというと、上記で説明したプラグインを有効化するとtermsテーブルにterm_orderというカラムが作成されます。wp_get_object_termsフィルターで取得したtermsの中に上記プラグインで追加されたterm_orderの値が取得できるので、その値を使ってPHP側でソートをしています。
+【WordPress】記事に設定したカスタムタクソノミーのタームの並び順を好きな並び順にする方法
+get_the_termsには並び替えの引数がなく、wp_get_post_termsの引数で制御してもうまく並び替えが出来なかったため、大変助かりました。
+参考サイトSpecial Thanks!
+@kojika17本記事の配列を書くにあたり大変お世話になりました
+WordPressで投稿した記事のカスタム分類(タクソノミー)からタームの親を取得する – LIG親1:子1表示
+hierarchical - Custom taxonomy,get_the_terms,listing in order of parent > child - WordPress Development Stack Exchange親1:子1:孫1のケース
+the_taxonomiesで苦戦していたら、get_the_term_listというのがあった – kosukekato.com
+[WordPress]カスタムタクソノミーに親子関係(階層)を持たせ、複数選択したタームの並び順を親>子の順番に表示する | tipsBear

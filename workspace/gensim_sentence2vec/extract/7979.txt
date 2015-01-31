@@ -1,0 +1,10 @@
+var lightboxId = "quick-view-arc-touch-bluetooth-mouse";var iframeSelector = "#zbox-" + lightboxId + " .module.iframe";var iframeSRC = $(iframeSelector).attr("id");var box = zbox.createBox("quick-view-arc-touch-bluetooth-mouse");if(box){ 
+if($(iframeSelector).length > 0 & iframeSRC != "")
+{
+box.onShow.addHandler( function() {$(iframeSelector + ' a#open').click();});
+box.onHide.addHandler( function() {$(iframeSelector + ' a#close').click();});
+}
+if(dep.utils.getUrlHash() == lightboxId)
+box.show();
+}else{$("#" + lightboxId).remove();}
+コンピューター マウス、ワイヤレス マウス、Bluetooth マウス | Microsoft Hardware

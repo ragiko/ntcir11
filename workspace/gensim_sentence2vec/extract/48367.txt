@@ -1,0 +1,16 @@
+wget http://ftp.postgresql.org/pub/source/v9.2.4/postgresql-9.2.4.tar.bz2
+cd postgresql-9.2.4/
+./configure --with-readline \
+--with-libs=/usr/local/Cellar/readline/6.2.4/lib \
+--with-libs=/usr/local/lib \
+--with-libs=/usr/local/opt/openssl/lib \
+--with-includes=/usr/local/Cellar/readline/6.2.4/include/readline \
+--with-includes=/usr/local/Cellar/ossp-uuid/1.6.2/include \
+--with-includes=/usr/local/Cellar/openssl/1.0.1e/include/openssl \
+--enable-thread-safety \
+--with-bonjour --with-gssapi --with-krb5 --with-openssl \
+--with-libxml --with-libxslt --with-ossp-uuid --with-python \
+--with-perl --with-openssl ARCHFLAGS='-arch x86_64'
+make
+sudo make install
+PostgreSQLでバイグラムの全文検索環境をインストール@Mac - Qiita

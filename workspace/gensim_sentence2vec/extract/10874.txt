@@ -1,0 +1,21 @@
+
+エラー処理概要
+SOAPリクエストが成功した場合、スポンサードサーチ APIは HTTP 200 OKというレスポンスコードとSOAPのレスポンスを返します。
+SOAPリクエストの処理中にエラーが発生した場合、スポンサードサーチAPIはエラーコードが含まれるメッセージを返します。詳しくはError, ErrorDetailを確認してください。
+レスポンスサンプル
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ns1:getResponse>
+<ns1:error>
+<ns1:code>0011</ns1:code>
+<ns1:message>not login for apiAccountId</ns1:message>
+<ns1:detail>
+<ns1:requestKey>apiAccountId</ns1:requestKey>
+<ns1:requestValue>aaaaaaaaaaa</ns1:requestValue>
+</ns1:detail>
+</ns1:error>
+</ns1:getResponse>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+ページトップ
+ドキュメント スポンサードサーチAPI ver.5.1 APIリファレンス その他 SOAPエラーコード | Developer Center

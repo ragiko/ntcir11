@@ -1,0 +1,36 @@
+
+第5回 Pacemakerを運用してみよう!［保守運用編(2)］
+リソースが故障した場合どうなるの?
+Pacemakerのプロセス故障が起きた場合はどうなるの?
+まとめ
+2011年5月12日:Linux-HA Japan 岡和田拓也
+第4回 Pacemakerを運用してみよう!［保守運用編(1)］
+はじめに
+ネットワーク故障が起こった場合どうなるの?
+2011年4月28日:Linux-HA Japan 岡和田拓也
+第3回 Pacemakerでいろいろ設定してみよう!［構築応用編］ 
+スプリットブレインって?
+STONITH
+sfex
+VIPcheck
+まとめ
+2011年4月14日:Linux-HA Japan 松尾隆利
+第2回 Pacemakerをインストールしてみよう!［構築基本編］
+はじめに
+Pacemakerのインストール
+クラスタ制御機能(Heartbeat)の設定
+リソース制御機能(Pacemaker)の設定
+まとめ
+2011年3月31日:Linux-HA Japan 三井一能
+第1回 Pacemakerの歴史を見てみよう!
+はじめに
+HAクラスタって?
+Pacemakerの基本機能って?
+Pacemakerってどうやって生まれてきたの?
+Linux-HA Japanプロジェクトって?
+2011年3月18日:Linux-HA Japan 田中崇幸
+Linux-HA Japan
+Linux上で高可用クラスタシステムを構築するための部品として,オープンソースのクラスタリソースマネージャ,クラスタ通信レイヤ,ブロックデバイス複製,その他,さまざまなアプリケーションに対応するための数多くのリソースエージェントなどを,日本国内向けに維持管理,支援等を行っているプロジェクトです。
+URL:
+http://linux-ha.sourceforge.jp/
+Pacemakerでかんたんクラスタリング体験してみよう!:連載｜gihyo.jp … 技術評論社

@@ -1,0 +1,18 @@
+
+これまで、GPUimageのフィルタの作成方法を調べてきました。
+BradLarson / GPUImageのBuilt-in filtersにフィルタ一覧はあるものの、記述の方法がここを読んだだけでは理解し切れなかったため、今回はフィルタ処理の結果と記述例を纏めてみました。
+過去の記事はこちらからご覧ください。
+はじめてのカメラアプリ vol.2 フィルター編 GPUImageでフィルター処理!
+はじめてのカメラアプリ vol.3 フィルター編 GPUImageで画像を合成!
+はじめてのカメラアプリ vol.4 フィルター編 GPUImageのFilterGroup
+フィルタのパターン一覧
+フィルタ適応部分記述例
+適応前
+GPUImageSepiaFilter
+GPUImageSepiaFilter *sepiaFilter = [[GPUImageSepiaFilter alloc] init];
+[imagePicture addTarget:sepiaFilter];
+// フィルターを実行
+[imagePicture processImage];
+// フィルターから画像を取得
+UIImage *outputImage = [sepiaFilter imageFromCurrentlyProcessedOutput];
+はじめてのカメラアプリ vol.6 フィルター編 GPUimageフィルタ パターン検証 | iDEA CLOUD/dev

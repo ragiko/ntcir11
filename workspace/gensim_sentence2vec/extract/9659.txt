@@ -1,0 +1,114 @@
+フリーの iOS 向け音声認識/音声合成ライブラリ『OpenEars』の使い方
+ライブラリ, iOS, Objective-C
+OpenEars は Politepix 社より提供されているフリーの iOS 向け音声認識/音声合成(Text to Speech, TTS)ライブラリです。
+OpenEars
+話した言葉を認識したり、入力した文字列を読み上げたり(mac の say コマンドみたいなもの)することができます。
+試してみたところ超簡単に使えたので、自分のアプリに OpenEars を導入する方法を紹介します。
+音声合成の導入方法
+フレームワーク追加、ヘッダインポートといった一般的なライブラリの導入手順をのぞけば、基本的にはメソッドを1つ呼ぶだけで導入できます。
+1. フレームワークをプロジェクトに追加
+解凍したフォルダ配下にあるFrameworkフォルダごとプロジェクトに追加します。フォルダには OpenEars.framework、Slt.framework ほか、言語モデルや辞書が入っています。
+また、依存フレームワークである
+AVFoundation.framework
+AudioToolbox.framework
+をプロジェクトに追加しておきます。
+2. ヘッダをインポート
+#import <Slt/Slt.h>
+#import <OpenEars/FliteController.h>
+3. オブジェクトを生成
+FliteController, Slt オブジェクトを生成します。
+プロパティを定義しておき、
+@property (strong, nonatomic) FliteController *fliteController;
+@property (strong, nonatomic) Slt *slt;
+alloc / init します。
+self.fliteController = [[FliteController alloc] init];
+self.slt = [[Slt alloc] init];
+4. say: メソッドをコール
+あとは音声合成で発声させたい文字列を渡して say: メソッドをコールするだけです。
+[self.fliteController say:@"Hello world!" withVoice:self.slt];
+(補足その1)日本語を発声させる
+OpenEars (少なくとも上記の使い方では)日本語には対応していませんが、ローマ字的に文字列を渡すことでそれっぽくすることはできます。
+[self.fliteController say:@"Ai ou es apuri kaihatsu. Tatsujinn no recipe hyaku. Hatsubai chuu" withVoice:self.slt];
+(補足その2)声を変える
+Bitbucket に openearsextras というリポジトリがあり、ここに声を変えるためのデータ(.framework として提供されている)が置いてあります。
+たとえば上記では SLT.framework を用いましたが、openearsextras の中にある Awb.framework を用いると、男性の声で読み上げられます。
+品質について
+音声合成の品質は、英語の場合でも「そこそこ」です。抑揚が変。まだドキュメントを詳しく読んでないのですが、細かいチューニングができるようになっているかもしれません。
+音声認識の導入方法
+本ブログに VocalKitの使い方 という記事がありますが、執筆時から3年近く経っているので、内容が古くなっている可能性があります。VocalKit のリポジトリも2年以上更新されていません。
+この OpenEars は VocalKit と同様に音声認識エンジンとして CMU Sphinx を使用しているので、その代替になりそうです。
+実装方法は下記の通り。音響モデルや言語辞書の設定があったり、音声認識の各種ステータスを受け取るためにプロトコルの実装が必要だったりして一見煩雑ですが、要は startListeningWith〜 メソッドを呼んで認識結果を受け取るだけ(発話の検出とかは勝手にやってくれる)なので、とてもシンプルです。
+(※2014.1.30追記)
+本記事にあるコードはOpenEars最新バージョンにおいてビルドエラーが起きる箇所があります。最新版での実装方法については下記記事もご参照ください。
+OpenEars 1.6で音声認識を行う - Over&Out その後
+1. フレームワークをプロジェクトに追加
+ここは音声合成と同様です。
+2. ヘッダをインポート
+#import <OpenEars/LanguageModelGenerator.h>
+#import <OpenEars/PocketsphinxController.h>
+3. プロトコルへの準拠
+@interface で、音声認識の各種ステータスを受け取るための OpenEarsEventsObserverDelegate への準拠を宣言しておき、
+<OpenEarsEventsObserverDelegate>
+各種メソッドを実装します。
+- (void)pocketsphinxDidReceiveHypothesis:(NSString *)hypothesis
+recognitionScore:(NSString *)recognitionScore
+utteranceID:(NSString *)utteranceID
+{
+NSLog(@"The received hypothesis is %@ with a score of %@ and an ID of %@",
+hypothesis, recognitionScore, utteranceID);
+}
+OpenEarsEventsObserverDelegate プロトコルには多くのメソッドが定義されていますが、全部 optional なので、とりあえず認識結果を受け取るための上記メソッドを実装しておくだけでも雰囲気はつかめるかと思います。
+4. オブジェクトを生成
+各種プロパティを定義しておき、
+@property (strong, nonatomic) NSString *lmPath;
+@property (strong, nonatomic) NSString *dicPath;
+@property (strong, nonatomic) PocketsphinxController *pocketsphinxController;
+@property (strong, nonatomic) OpenEarsEventsObserver *openEarsEventsObserver;
+言語モデル/辞書のパスと、各種オブジェクトを保持しておきます。delegate プロパティのセットも忘れずに。
+NSString *resorcePath = [[NSBundle mainBundle] resourcePath];
+self.lmPath = [NSString stringWithFormat:@"%@/%@", resorcePath, @"OpenEars1.languagemodel"];
+self.dicPath = [NSString stringWithFormat:@"%@/%@", resorcePath, @"OpenEars1.dic"];
+self.pocketsphinxController = [[PocketsphinxController alloc] init];
+self.openEarsEventsObserver = [[OpenEarsEventsObserver alloc] init];
+[self.openEarsEventsObserver setDelegate:self];
+5. 認識スタート
+startListeningWithLanguageModelAtPath: メソッドをコールすると音声入力がスタートし、あとは勝手に発話を検出(一定レベルの音声入力を検出して発話開始と判定、一定時間の空白を検出して発話終了と判定)して認識してくれます。
+- (void)startListening {
+[self.pocketsphinxController startListeningWithLanguageModelAtPath:self.lmPath
+dictionaryAtPath:self.dicPath
+languageModelIsJSGF:NO];
+}
+発話を検出するたびに認識処理が走り、手順3で実装した pocketsphinxDidReceiveHypothesis:recognitionScore:utteranceID: が呼ばれます。Hypothesis が候補の文字列、recognitionScore はそのスコアです。
+(補足その1)認識終了
+stopListening メソッドを呼ぶと認識処理(音声入力の待ち受けと、認識処理)が終了します。
+[self.pocketsphinxController stopListening];
+(補足その2)言語モデルの動的生成
+LanguageModelGenerator を用いると、認識したい言葉の配列から言語モデルを動的に生成することができます。
+認識したい言葉(単語/フレーズ)の配列を生成し、
+NSArray *words = @[
+@"SUNDAY",
+@"MONDAY",
+@"TUESDAY",
+@"WEDNESDAY",
+@"THURSDAY",
+@"FRIDAY",
+@"SATURDAY",
+@"QUIDNUNC",
+@"CHANGE MODEL",
+];
+generateLanguageModelFromArray:withFilesNamed: メソッドをコールします。
+LanguageModelGenerator *lmGenerator = [[LanguageModelGenerator alloc] init];
+NSError *error = [lmGenerator generateLanguageModelFromArray:words
+withFilesNamed:@"OpenEarsDynamicGrammar"];
+if (error.code != noErr) {
+NSLog(@"Error: %@",[error localizedDescription]);
+}
+else {
+NSDictionary *languageGeneratorResults = [error userInfo];
+self.lmPath = [languageGeneratorResults objectForKey:@"LMPath"];
+self.dicPath = [languageGeneratorResults objectForKey:@"DictionaryPath"];
+}
+NSError の userInfo に処理結果が入っている、というのはちょっと変な感じがしますが。。
+ツイートする
+Permalink | コメント(0) | 12:38   
+フリーの iOS 向け音声認識/音声合成ライブラリ『OpenEars』の使い方 - Over&Out その後

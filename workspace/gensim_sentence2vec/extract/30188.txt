@@ -1,0 +1,56 @@
+全裸botのzenrize処理を改良した
+Python, Twitter
+現時点ではこんなカンジ。
+def zenrize(self, sentence):
+postdata = {
+'appid'    : self.appid,
+'sentence' : sentence.encode('utf-8'),
+}
+params = urllib.urlencode(postdata)
+result = urllib.urlopen(self.url, params)
+tree = ElementTree.XML(result.read())
+# 係り受け解析の結果を利用し、適切な挿入箇所を判定する
+text = ''
+chunk_list = tree.find('{urn:yahoo:jp:jlp:DAService}Result').find('{urn:yahoo:jp:jlp:DAService}ChunkList')
+for chunk in chunk_list.findall('{urn:yahoo:jp:jlp:DAService}Chunk'):
+morphem_list = chunk.find('{urn:yahoo:jp:jlp:DAService}MorphemList')
+# 動詞が含まれている文節の前に「全裸で」を挿入する
+if u'動詞' in [morphem.find('{urn:yahoo:jp:jlp:DAService}POS').text for morphem in morphem_list]:
+# 動詞接続助詞 文節切れて 動詞 と繋がる場合をどうにかしたい
+# 例:帰ってくる
+text += u'全裸で'.encode('utf-8')
+else:
+# 動詞がなくても「名詞+助動詞する」を捕捉する
+for i in range(len(morphem_list) - 1):
+if u'名詞' == morphem_list[i].find('{urn:yahoo:jp:jlp:DAService}POS').text and u'助動詞する' == morphem_list[i + 1].find('{urn:yahoo:jp:jlp:DAService}Feature').text.split(',')[1]:
+text += u'全裸で'.encode('utf-8')
+break
+# 形態素を繋げ直す
+for morphem in morphem_list:
+text += morphem.find('{urn:yahoo:jp:jlp:DAService}Surface').text.encode('utf-8')
+return text
+Yahoo!日本語係り受け解析APIを使う場合、例えば「信じられない」という言葉を解析すると、以下のようになる。
+動詞,一段,文語基本形,信じ,しんじ,信じ
+助動詞,助動詞一段,文語基本形,られ,られ,られ
+動詞,カ五,連用タ接続,ない,な,な
+バカ正直に動詞の前に「全裸で」をつけていると、「全裸で信じられない」としたいところを「全裸で信じられ全裸でない」と変換されてしまう。
+ので、「動詞を含む文節の直前に1つだけ挿入する」となるように変更した。
+もう一点、「出社した」という言葉に対して「全裸で出社した」に変換させたい、という要望が(自分の中で)あった。
+係り受け解析APIによる解析では、「出社した」は以下のようになる。
+名詞,名サ自,*,出社,しゅっしゃ,出社
+助動詞,助動詞する,連用ゴザイ接続,し,し,し
+助動詞,助動詞た,基本形,た,た,た
+動詞が含まれない。
+が、この手の「信用する」「改善する」といった言葉は、「名詞助動詞する」と繋がっていくパターンなので、それを検出した場合も全裸にすることにした。
+残る問題は、「帰ってくる」といった、動詞が繋がっているが文節が分かれるパターン。
+動詞,ラ五,連用テ接続,帰っ,かえ,帰
+助詞,接続助詞,*,て,て,て
+動詞,カ変,基本形,くる,く,く
+というように、文節は別々なので、このままでは「全裸で帰って全裸でくる」になってしまう。これをどうにかして「全裸で帰ってくる」にしたい。
+『「動詞接続助詞」で終わる文節動詞で始まる文節』を検出して除外するようにすればいいのかな…?
+しかしただでさえif文のオンパレードでゴチャゴチャしているのに、さらにゴチャゴチャしてしまう。
+キレイに書く方法を考えたい。
+あと、「**なう」も場合によって(?)動詞とみなされてしまうことがあるようなので、ここも例外として処理した方がよさそうw
+ツイートする
+Permalink | コメント(0) | トラックバック(3) | 08:29  
+全裸botのzenrize処理を改良した - すぎゃーんメモ

@@ -1,0 +1,55 @@
+自然共役事前分布②:ポアソン分布とガンマ分布  &dagger;
+講義では、事前分布と尤度がポアソン分布に従う例として、サッカーJリーグの各チームの一試合辺り得点分布を挙げました。
+プレシーズンマッチ5試合の結果のように、事前分布が平均1.38、分散0.85のポアソン分布に従うとき、ガンマ分布Γ(2.24, 162)となる(α=2.24、λ=1.62)。
+x <- seq(0,10,by=0.01)
+par(family="HiraMaruProN-W4")
+plot(x, dgamma(x, shape=2.24, scale=1.62), type="l", lwd=2, ylim=c(0,0.6), xlab="得点", ylab="確率")
+一方、2013年のJリーグ一チーム一試合あたりの得点は平均1.44、分散1.38のポアソン分布に従う事がわかっており、これをガンマ分布で表すとΓ(1.50, 1.04)となります(α=1.50、λ=1.04)。
+curve(dgamma(x, shape=1.50, scale=1.04), type="l", lwd=2, col="red", add=TRUE)
+すると事後分布は、Γ(2.74, 2.66)となる。
+curve(dgamma(x, shape=2.74, scale=2.66), type="l", lwd=2, col="blue", add=TRUE)
+legend(7,.5,c("事前分布","尤度関数","事後分布"), col=c("black","red","blue"),lwd=c(2,2,2))
+自然共役事前分布④:正規分布のベイズ推定(平均未知・分散未知)  &dagger;
+事後正規分布(平均と分散)の推定
+# 事前分布の平均と標準偏差
+mu0 <- 6.00 # 平均
+sig0 <- 13.62 # 標準偏差
+# 尤度関数の平均と標準偏差及びサンプル数
+xvar <- 5.42 # 平均
+tau <- rgamma(1, shape=1, rate=1)
+sig <- sqrt(1/tau)
+n <- 3 # サンプル数
+# 事後分布の平均と標準偏差及び精度
+mu1 <- ((mu0/sig0^2)+(n*xvar/sig^2))/((1/sig0^2)+(n/sig^2))
+tau <- (1/sig0^2)+(n/sig^2)
+sig1 <- sqrt(1/tau)
+ベイズ更新による事後平均と事後分散(標準偏差)の推定
+# 事前分布の平均と標準偏差
+mu0 <- 6.00 # 平均
+sig0 <- 13.62 # 標準偏差
+# 尤度関数の平均と標準偏差及びサンプル数
+xvar <- 5.42 # 平均
+tau <- rgamma(1, shape=1, rate=1)
+sig <- sqrt(1/tau)
+n <- 3 # サンプル数
+# ベイズ更新の繰り返し回数
+n.update <- 100
+for(i in 1:n.update){
+mu1 <- ((mu0/sig0^2)+(n*xvar/sig^2))/((1/sig0^2)+(n/sig^2))
+tau <- (1/sig0^2)+(n/sig^2)
+sig1 <- sqrt(1/tau)
+if(i==1){post.mu<-mu1; post.sig<-sig1}
+if(i>1){post.mu <- c(post.mu,mu1)
+post.sig <- c(post.sig,sig1)}
+# print(mu1)
+mu0 <- mu1
+sig0 <- sig1
+}
+# 事後平均を表示
+par(family="HiraMaruProN-W4", mfrow=c(2,1))
+plot(post.mu, type="b", xlab="更新回数", ylab="事後平均")
+plot(post.sig, type="b", xlab="更新回数", ylab="事後標準偏差")
+# 最後の10回分を表示
+tail(post.mu, 10)
+tail(post.sig, 10)
+ベイズ統計演習2014_2 - Pukiwiki

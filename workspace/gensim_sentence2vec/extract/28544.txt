@@ -1,0 +1,135 @@
+このエントリは Ruby on Rails Advent Calendar 2014 の 7 日目のエントリです。
+前日は seri_k さんの「Turbolinksさんと上手く付き合う10の方法」でした。
+お詫び
+WIP です。公開期限に間に合わない可能性があるため、まだ途中ですが先に公開してしまいました。
+サンプルコード等を後ほど追記する予定です。  12/08 18:10 追記しました。
+Rails のファットモデル問題
+Rails で構築したアプリケーションが大規模になり機能が増えていくにつれてモデルが大きくなり、そのうち手がつけられなくなる問題は古くから指摘されています。これについてはもはや詳細を述べるまでもないと思うので割愛しますが、この問題は 2014 年になった今でも多くの開発チームを悩ませていると感じています*1。
+このエントリでは、普段 Rails を業務で使いながら OO 厨、デザパタ厨、DDD 厨、モデリング厨という"プログラマの麻疹*2を一通り経験した僕がいろいろなドメインロジックの実装方法を模索した結果と感想をまとめてみようと思います。
+SQL アンチパターンの「マジックビーンズ」アンチパターン
+書籍「SQL アンチパターン」ではモデルが ActiveRecord そのものであるというフレームワークのあり方がまさにアンチパターンとして紹介されています。先日、この書籍の読書会でこのアンチパターンについて発表したので、そのときの資料を紹介しておきます。
+特に ActiveRecord は DB だけでなくフォームとも密結合である点、アンチパターンに陥らないための現実的な落とし所などについて簡単に紹介しています。
+このエントリではこれらについてもう少し詳細にご説明したいと思います。
+例(2014/12/08 18:10 追記)
+このエントリではブログシステムのようなアプリケーションで「記事にコメントする」というユースケースを例として扱います。
+仮にArticleおよびCommentというモデルがあったとすると、特に何も考えなければコントローラに以下のような実装があらわれるでしょう。
+# POST /article/1/comments
+def create
+# ..略..
+Comment.create(article: @article, content: 'コメント内容', user: current_user)
+# ..略..
+end
+このような ActiveRecord::Base に実装されている公開 CRUD メソッドをコントローラで利用するとテーブル構造が容易にアプリケーション層まで流出してしまっていてよい実装とは言えません。そこでこの処理をモデルクラスに隠ぺいして実装の詳細をアプリケーション層から見えないようにすると思います。
+app/controllers/comments_controller.rb
+# POST /article/1/comments
+def create
+# ..略..
+@article.add_comment('コメント内容', current_user)
+# ..略..
+end
+app/models/article.rb
+class Article < ActiveRecord::Base
+def add_comment(content, user)
+Comment.create(article: self, content: content, user: user)
+end
+end
+しかし、これでは前述したようにシステムの大規模化にともなってモデルクラスがどんどん大きくなっていきます。
+これをどのように実装するとよくなるか、いろいろな方法を検討していきます。
+対策1: ActiveSupport::Concern で見た目の複雑度を下げる
+Rails の強みを最大限に生かしつつ、現実的な範囲で複雑性を下げていくのは、モデルに実装されたメソッドをモジュールに逃がすことです。Rails にはActiveSupport::Concernという便利なモジュールがあるのでこれをextendしたモジュールに責務ごとにメソッドを実装してそれを各モデルにincludeすればアプリケーション全体の見通しはよくなります。
+これは他の手段に対して比較的安全な手段といえるでしょう。
+app/models/article.rb
+class Article < ActiveRecord::Base
+include Article::Commentable
+end
+app/models/article/commentable.rb
+module Article::Commentable
+extend ActiveSupport::Concern
+def add_comment(content, user)
+Comment.create(article: self, content: content, user: user)
+end
+end
+この場合、コントローラの実装は直接モデルにメソッドを実装する場合と変わりません。
+メリット
+Rails の規約に最も素直に従う実装手法なのでハマりどころが少ない。
+上記の理由により基本的に Rails や利用している Gem のバージョンアップ等の影響を受けにくい。
+コントローラの実装は変わらないので既存のアプリケーションのリファクタリング手法としても使える。*3
+デメリット
+あくまで見た目の複雑性が下がっているだけであり、実体としては巨大なモデルが出来る上がることに変わりない。つまり本質的には何も解決してない。
+巨大なオブジェクトができるわけなのでメソッド名の命名にそれなりに気を使う必要がある。異なるコンテキストで同じメソッド名を使うといったことができない。
+対策2: サービスオブジェクトを利用する
+2 つ目の方法はサービスオブジェクトを持ち込む方法です。これについては昨年の Rails Advent Calendar で書きました。
+Railsでサービスとフォームを導入してみる話 - assertInstanceOf('Engineer', $a_suenami)
+複数のモデルにまたがる処理をサービスとしてまとめ、専用のクラスを作成します。
+以下にサンプルを示します。
+app/controllers/comments_controller.rb
+# POST /article/1/comments
+def create
+# ..略..
+CommentAdditionService.execute(@article, 'コメント内容', current_user)
+# ..略..
+end
+app/services/comment_addition_service.rb
+class CommentAdditionService
+def self.execute(article, content, user)
+Comment.create(article: article, content: content, user: user)
+end
+end
+app/models/article.rb
+class Article < ActiveRecord::Base
+end
+メリット
+サービスとは手続き的な処理をまとめたものに他ならず設計の難易度が比較的低いため、プログラマのレベルにばらつきがあっても極端にひどいコードになりにくい。
+サービスは基本的にステートレスであるため状態に依存した不具合は混入されにくい。またテストも書きやすい。
+デメリット
+設計の難易度が高くないことの裏返しであるが、それほどレベルの高くないプログラマが多くいるとサービスクラスだらけになりドメインモデル貧血症に容易に陥る。
+このアンチパターンに陥ると単にコントローラにあった処理がサービスクラスに移動するだけになる。*4
+「サービス」というデザインパターンは PofEAA のサービスとエリック・エヴァンスの DDD におけるドメインサービスがあり、チーム内で認識を合わせておかないとそのレイヤーの役割がまったく違うものになる。
+対策3: DCI ( Data Context Interaction )
+対策1 の派生として DCI を用いるという手もあります。DCI とは何かという説明はここでは割愛しますのでご存知でない方はぐぐってください。
+ざっくり言うと、あるエンティティの存在そのものとそのエンティティのあるコンテキストにおける振る舞いを分離し、アプリケーションの設計をドメインエキスパートやプロダクトオーナーのメンタルモデルに近づけようとする設計手法です。
+サンプルだと以下のような感じです。本来 DCI はドメインの語彙で書かれるものなのでロールの実装内に永続化層へのアクセスがあるのは好ましくないのですが、このあたりは Rails を使う際の妥協ポイントかと個人的には考えています。
+app/models/article.rb
+class Article < ActiveRecord::Base
+end
+app/models/user.rb
+class User < ActiveRecord::Base
+end
+app/roles/user/comment_user.rb
+module User::CommentUser
+def add(content, to:)
+Comment.create(article: to, content: content, user: self)
+end
+end
+app/roles/cotenxts/comment_addition_context.rb
+class CommentAdditionContext
+def initialize(article, content, user)
+@article = article
+@content = content
+@user    = user
+@user.extend(User::CommentUser)
+end
+def execute
+@user.add(@content, to: @article)
+end
+end
+app/controllers/comments_controller.rb
+# POST /article/1/comments
+def create
+# ..略..
+context = CommentAdditionContext.new(@article, 'コメント内容', current_user)
+context.execute
+# ..略..
+end
+コメントを追加する処理をUserのロールとして実装しました。これによりコンテキスト内の実装はユーザのメンタルモデルに近い語彙で表現されており、それらの知識がコントローラからは隠ぺいされました。コントローラは単にコンテキストをexecuteするだけとなります。
+メリット
+コンテキストごとにロールが与えるため、異なるロールであれば同名の振る舞い(=メソッド)を持つことが許される。
+対策1 の問題が解消される。
+コンテキスト、ロール、ロールに実装されるメソッドの名前はユーザのメンタルモデルにある語彙が選ばれる。それはユビキタス言語を構築していることに等しい。
+デメリット
+モジュールの extend が動的に行われるため、性能上の懸念がある。
+DCI は一時期流行した気がするが最近はあまり聞かなくなったし、あまりメジャーにはならなかった?
+DCI はユーザのメンタルモデルをコードとして表現することが本来の目的であり、ドメインエキスパート/プロダクトオーナーとの対話が必要となる。そのため、設計の難易度は非常に高い。
+その他
+「エリック・エヴァンスのドメイン駆動設計」に感銘を受けて Rails に頼ることなく PORO ( Plain Old Ruby Object )でドメインモデルを構築しようと思ったこともありますし、永続化層とのインターフェースとしてリポジトリパターンを適用しようと思ったこともありましたが、Rails の流儀から外れすぎてしまうとどうしてもうまくいかず途中で断念しました。
+Rails でドメインロジックの実装方法まとめ - assertInstanceOf('Engineer', $a_suenami)

@@ -1,0 +1,92 @@
+
+また、これ以外にも、gcc,perl,nkf,patch などのツールが必要です。perlについては、
+バージョン5.0以降のものが推奨されます。
+なお、今回は、全文検索システムを Vine Linux 1.1 上に構築します。付属の
+rpmパッケージを使用して、これらのツールをあらかじめインストール
+しておきます。
+kakasi や namazu などは、rpmのパッケージで提供されていますが、ここでは、
+それらのパッケージは使わず、ソースファイルから構築することにします。
+パッケージがインストールされている場合は、
+# rpm -e パッケージ名
+で削除しておきます。
+KAKASI
+日本語文書は、英語とは異なり、単語ごとにスペースで区切られておらず、また
+接続詞や助詞が単語に付随して記述されているため、どこまでの文字が単語を
+構成しているのかを判断することができません。
+そこで、文章の前後関係などを考慮し、もとの文章から意味をなす単語群に分割する
+処理(トークン化)を行う必要があります。この処理を文書フィルタリングと呼びます。
+文書フィルタリングを行うプログラムを、文書フィルタと呼びますが、代表的なもの
+には、Kakasi と Chasen があります。文書フィルタは形態素処理という処理によって
+行われますが、Kakasi は最長一致法、Chasen は形態素解析を用いています。
+ここでは、Kakasi に分かち書きパッチを当てたものをインストールします。
+上記のURL
+ftp://ftp.kusastro.kyoto-u.ac.jp/pub/baba/wais/old/より、
+kakasi-2.2.5.tar.gz と kakasi-ext.tar.gz をダウンロードし、
+以下のように解凍・展開します。
+% tar xvfz kakasi-2.2.5.tar.gz
+% tar xvfz kakasi-ext.tar.gz
+また、kakasiで用いる辞書kakasidict.940620.gz をダウンロードし、
+展開しておきます。
+% gunzip kakasidict.940620.gz
+次に kakasi に対して、kakasi-ext に含まれる分かち書きパッチを当てます。
+kakasi-2.2.5/src ディレクトリに移動して、以下のように行います。
+% cd kakasi-2.2.5/src
+% patch 
+また、先程、展開した辞書を kakasi-2.2.5/src ディレクトリに kakasidict という
+名前でコピーしておきます。
+% cp ../../kakasidict.940620 ./kakasidict
+次に Makefile を編集します。デフォルトのコンパイラが cc になっているので、
+gcc に変更します。
+Makefile を編集
+変更前
+CC=cc
+変更後
+CC=gcc
+次に、root で /usr/local/lib に kakasi ディレクトリを作成します。
+% su
+Password:
+# mkdir /usr/local/lib/kakasi
+# exit
+その後、以下のようにしてソースコードをコンパイルし、インストールします。
+% make
+% su
+Password:
+# make install
+以上で kakasi のインストールは終了です。
+Chasen
+Chasen は、奈良先端科学技術大学院大学で開発された文書フィルタであり、
+形態素解析と呼ばれるアルゴリズムを使用して、形態素処理を行います。
+以下のURL
+http://cl.aist-nara.ac.jp/lab/nlt/chasen/
+より、chasen-sys2.02-ipadic2.1.tar.gz をダウンロードし、以下のように
+解凍・展開し、ディレクトリを移動します。
+% tar xvfz chasen-sys2.02-ipadic2.1.tar.gz
+% cd chasen-2.02
+次に、Makefile を編集します。必要に応じて BINDIR,LIBDIR,CC,CFLAGS などの
+項目を編集します。変更後、ソースファイルをコンパイルするためmakeを実行します。
+% make
+次に、システム辞書を作成するため、
+% make dic
+を実行します。
+コンパイル及び辞書の作成が正常に終了したら、以下のようにインストールします。
+% su
+Password:
+# make install
+このとき、
+make[1]: [install] Error 1 (ignored)
+というようなメッセージが出力されるかもしれないが無視してかまいません。
+以上で Chasen のインストールは終了です。
+また、ユーザ専用の chasenrc ファイルを利用するには,chasen-2.02/dic/chasenrc
+をユーザのホームディレクトリに .chasenrc という名前でコピーし、カスタマイズ
+して使用します。
+Namazu本体をインストールします。Namazuのホームページ
+http://www.namazu.org
+より、namazu-1.3.0.11.tar.gz をダウンロードし、解凍・展開し、ディレクトリを
+移動します。
+% tar xvfz namazu-1.3.0.11.tar.gz
+% cd namazu-1.3.0.11/src
+その後、プラットフォームに対応した Makefile を作成するため、configure
+スクリプトを実行します。
+% ./configure
+その後、Makefile を編集します。主な変更点を以下に示します。
+Namazu

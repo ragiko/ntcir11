@@ -1,0 +1,4 @@
+このトピックでは、WCF-Custom アダプタおよび WCF-CustomIsolated アダプタを使用して、動作拡張機能、バインド要素拡張機能、およびバインド拡張機能の 3 つの WCF 機能拡張ポイントを有効にする方法について説明します。これを行うには、まず WCF 機能拡張ポイントを実装するアセンブリをグローバル アセンブリ キャッシュ (GAC) にインストールし、コンピューターの machine.config ファイルを変更した後に、BizTalk Server 管理コンソールを使用して WCF-Custom アダプターまたは WCF-CustomIsolated アダプターを構成します。
+WCF 機能拡張ポイントの詳細については、「WCF の拡張」 (http://go.microsoft.com/fwlink/?LinkId=86380) を参照してください。
+WCF 機能拡張ポイントを有効にする方法の詳細については、「SDK Sample: Using Custom Binding Extensions with the WCF-Custom Adapters」 (http://go.microsoft.com/fwlink/?LinkId=65185) を参照してください。
+WCF アダプターを使用して WCF 機能拡張ポイントを有効にする方法

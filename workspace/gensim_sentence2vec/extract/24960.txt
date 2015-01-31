@@ -1,0 +1,24 @@
+「エレメントの最後の子を取得」サンプルコード
+<html>
+<head>
+<title>element.lastChild - エレメントの最後の子を取得</title>
+</head>
+<body>
+<!--エレメントの最後の子を取得のサンプル-->
+<div id="sample">
+<span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span></div>
+<script type="text/javascript">
+function findElement() {
+var element = document.getElementById("sample");
+var child = element.lastChild;
+alert(child.innerHTML);
+}
+</script>
+<button onclick="findElement()">最後の子を取得</button>
+</body>
+</html>
+element.lastChild - エレメントの最後の子を取得 - JavaScriptリファレンス

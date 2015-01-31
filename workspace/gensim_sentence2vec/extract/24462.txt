@@ -1,0 +1,35 @@
+不整地移動を行うロボットには,地形を見る「目」が必要です.
+レーザーを使った3次元計測装置等が広く使われていますが,
+光を使ったセンサでは障害物の裏側が死角になります.
+「部分的に得られた3次元情報」と「過去に得た知識」を利用して死角の形状を推定する,賢い視覚情報処理について考えます.
+飛行機,ヘリコプターに代表される飛行ビークル(Aerial Vehicle)には,
+着陸のための降着装置(Undercarriage, Landing Gear)が搭載されていますが,
+不整地に着陸することは困難です.そこで,複数の能動的に駆動できる脚を使って,
+不整地に適応して着地できるようなシステムを提案しています.
+飛行可能な不整地適応脚システムのモデル(2011年度)
+土居隆宏, 宮田和典, 笹川敬正, 多田隈建二郎, 
+"飛行ロボットの脚型対地適応システムの研究",
+日本ロボット学会学術講演会'09予稿集, 1E1-06, September,2009
+宮田和典,笹川敬正,土居隆宏,多田隈建二郎,
+"飛行ビークルのための多脚型対地適応システムの研究" - 一脚モデルの動作試験 -,
+ロボティクス・メカトロニクス講演会'10予稿集, 1A2-C22, June, 2010.
+Takahiro Doi, Kazunori Miyata, Takamasa Sasagawa, and Kenjiro Tadakuma,
+''Multi-Leg System for Aerial Vehicles'',
+International Conference on Advanced Mechatronics 2010,2C3-4, October 4-6, 2010.
+Kazunori Miyata, Takamasa Sasagawa, Takahiro Doi, and Kenjiro Tadakuma,
+''A Study of Leg-Type Landing Gear for Aerial Vehicles - Development of One Leg Model -'',Journal of Robotics and Mechatronics, Vol.23, No.2, pp.266-270, 2011.
+笹川敬正, 宮田和典,,土居隆宏 ,多田隈建二郎,
+``飛行ビークルのための多脚型対地適応システムの研究
+- 二脚モデルの動作試験 -'',
+,ロボティクス・メカトロニクス講演会'11予稿集, 1A2-O01, May, 2011.
+桒田知明, 土居隆宏,多田隈 建二郎,
+``飛行ビークルのための省自由度対地適応機構の研究'',
+第12回計測自動制御学会 システムインテグレーション部門講演会2011予稿集,1M2-1,2011年,December, 1M2-1
+Takahiro Doi, Kazunori Miyata, Takamasa Sasagawa and Kenjiro Tadakuma,
+``Multi-Leg System for Aerial Vehicles'',
+Journal of Robotics and Mechatronics, Vol.24, No.1,pp.174-179, 2012.
+土居 隆宏,多田隈 建二郎,
+``飛行ビークルのための多脚型対地適応システムの研究
+—飛行可能な三脚モデルの開発—'',
+ロボティクス・メカトロニクス講演会'12予稿集, 2A2-I08, May, 2012.
+Research / doilab@KIT

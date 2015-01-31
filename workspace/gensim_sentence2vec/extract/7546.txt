@@ -1,0 +1,426 @@
+
+GCCでインラインアセンブリを使用
+する方法と留意点等 for x86  (1999〜2006年10回改訂、2006年1月22日と2011年3月22日に注意を追加、最終更新日2011年3月22日) 
+文: A.
+SAITOH
+<s-akira at users.sourceforge.net>  home
+※システム名、CPU名は一般に開発会社の登録商標です。 
+以下の情報はあまり過度に信用しないで下さい。より正確な情報は、asやgccのinfoから得て下さい。 
+個々のプロセッサ命令の解説はここでは述べません。そのような技術資料は、インテルやAMDのウェブ
+サイトのdeveloper向けのページからpdf形式で入手できます。 
+以下の文及びプログラム例の運用結果に関して、筆者は一切責任を負いません。
+参考文献 
+[0] D. Stancevic, K. Scheibler, J. Leto, Linux
+Assembly, http://linuxassembly.org/
+[1] 蒲地輝尚 著 『はじめて読むMASM』, アスキー (1988)
+[2] 村瀬康治 監修 蒲地輝尚 著 『はじめて読む8086』, アスキー
+(1987)
+[3] Linux magazine 2001年11月号 藤沢敏喜 執筆 プログラミング工房
+第23回 ステップアップC言語『asm ()文』, アスキー
+[4] トランジスタ技術の過去の多くの記事, CQ出版
+[5] インターフェースの過去の多くの記事, CQ出版
+[6] K6 Perfect Book, ソフトバンク, Oct. 1998
+[7] Intel Architecture Software Developer's Manual,
+Intel Corporation, http://developer.intel.com/design/mmx/manuals/
+[8] AMD-K6プロセッサ データシート, 日本AMD, Advanced Micro Devices,
+Inc. 
+[9] AMD社製プロセッサ識別方法, 日本AMD, http://www.amd.com/japan/
+[10] Using the GNU Compiler Collection (GCC), Free Software
+Foundation, Inc. http://gcc.gnu.org/onlinedocs/gcc-3.2.1/gcc/index.html
+目次
+x86_64ユーザー向けの注意
+x86インラインアセンブリ 
+インラインアセンブリ構文 レ
+ジスタ 一括りの書き方 数値 関数 メモ 型と命令末尾 グローバル変数 ローカル変数 関数の引数 関数の例(不定長ビットリバーサル) 
+x86拡張インラインアセンブリ 
+拡張インラインアセンブリ構文 ConstraintとModifierの
+表 引数や変数との対応付け コー
+ド内でのレジスタ表記 関数例(整数の積1) 関
+数例(整数の積2) 関数例(実数の積) 関
+数例(2進数で出力) ※Linuxのwriteシステムコール 
+SIMDに関する追記 
+SIMDのチェック MMXを使った例(ベクト
+ル引き算) 3D Now!を使った例(除算推定値) 
+※x86_64ユーザ向け
+の注意
+x86_64向けに -m64 スイッチが標準で設定されたgccでここに載っているプログラム例(仮に
+hoge.cとする)をコンパイルする際には、-m32 オプションが必要である。
+このようにしないと、64/32ビット命令が混在したアセンブリ
+コードが出力
+され、予期しない
+結果になる。例えば、関数の引数の項の例では、-m32
+がないとセグメンテーションフォルト
+が起きる。
+[akira@localhost asmtests]$ gcc -m486 asm_argument_test.c
+[akira@localhost asmtests]$ ./a.out 
+セグメンテーション違反です
+[akira@localhost asmtests]$ gcc -m32 asm_argument_test.c
+[akira@localhost asmtests]$ ./a.out 
+-2
+[akira@localhost asmtests]$
+インラインアセンブリの構文 
+1:構文
+intel形式では、
+asm {命令 dest source};
+であったが、GASがAT&T形式なので、GCCでは 
+asm
+("命令 source,dest");
+としてdestとsourceを逆に書くこと。 
+','を忘れぬように。
+なお、 asm
+が他の語と競合する可能性があれば、__asm__(" ");と書いた方が良い。 
+また、GCCの最適化によってもasm文の位置が変わらないようにするには、 
+asm volatile (" ");   や   asm
+__volatile__ (" "); 
+あるいは  __asm__ __volatile__ (" "); 
+というようにvolatileを併用する。 
+これは主に、繰り返し文の中に入れ込みたいときに使う。最適化オプション(-O2 等) 
+を指定してコンパイルするときはvolatileを付けると無難である。 
+アセンブリコードの中では、コメント文は下のように'#'に続けて
+記述する。 
+asm (" movl %eax,%edi
+#comment 
+movl %edi,%edx #Move
+Data. 
+xor  %edi,%edi
+#this is XOR. 
+");
+アセンブリコードの#を使ったコメント文では日本語は使用を避け
+るべきである。
+アセンブリコード "..." の外でのコメント文 /*...*/ の中では日本語も可能。
+ラベルについては、C言語の関数やラベルと名前が衝突しないように名づける。
+2:レジスタ
+レジスタは、%マークを付けて、 
+%eax や %ebp と書くこと。 
+また、レジスタの指しているアドレスのメモリは、 
+intel形式では[eax]であったが、 
+AT&T形式では、(%eax)である。 
+さらに、オフセットが val であるとき、 
+intel形式では[eax+val]であったが、 
+AT&T形式では、val(%eax)である。 
+AT&T形式で、val(a,b,c)と書くと、 
+intel形式の[a + b * c + val]と等価である。 
+例えば、int型の配列 array
+の%eax番目の数は、intが4bytesなので、 
+array(,%eax,4) 
+である。 
+メモリの参照の書き方の違い 
+oインテル形式  section:[base + index*scale +
+displacement] 
+o AT&T形式   
+section:displacement(base, index, scale) 
+3:一括り
+引用符で括った複数の命令を一つの括弧内に書く場合は、 
+最後の命令を除いて、文毎に"\n\t"が必要。 
+例えば、 
+asm ("foo: ");  
+/*hogehoge*/ 
+asm ("  movl $12,%eax "); 
+asm ("  imul $3,%eax ");
+は、一括りにして
+asm ("foo:
+\n\t"   /*hogehoge*/ 
+"  movl $12,%eax \n\t" 
+"  imul $3,%eax ");
+と書いても良い。 
+また、一組の引用符の中にたくさん命令を書いても良
+い。
+asm (" 
+foo:     #hogehoge 
+movl
+$12,%eax 
+imul
+$3,%eax 
+");
+命令が多いときは最後の書き方が美しいであろう。 
+改行する代わりに ; を使うこともできる。
+asm ("foo:; movl
+$12,%eax; imul $3,%eax");
+4:数値 
+数値は先頭に$マークを付けること。$4や$0xa03fと書く。 
+例えば、 
+asm ("foo: \n\t" 
+" movl $0x1f2f,%eax \n\t" 
+" ret "); 
+extern int foo (void);
+と書くとfooでは、0x1f2fを%eaxに代入し、手続きか
+ら復帰する。 
+つまり、%eaxの内容0x1f2fをreturnする関数
+foo が実現される。
+5:関数
+上の例のように、非拡張asm文を使ってC言語の関数を作るときは、asm文中に 
+関数名にしたいラベルを書き、リターンしたい値を%eax(浮動小数点数は%st) 
+に置いた後、retをする。その後改めて関数をexternで宣言する。勿論、関数 
+名はラベルと同じにする。 
+なお、asm文中のretは手続きからの復帰命令であるが、C言語
+のreturn 
+命令であると思って差し支えない。 
+整数もしくはポインタを返す場合は、その値を%eaxに入れてからretする。 
+浮動小数点数を返すときは、FPUのある普通のx86プロセッサでは値を浮動小 
+数点レジスタスタックの先頭(%st(0)。単に%stと記述しても良い。)に積んで 
+からretする。(古いプロセッサでFPUがないときは%eaxを使う。) 
+ここで浮動小数点数を返す例を示す。 
+/*非拡張asm文での関数例
+asm_ffunc_test.c*/ 
+#include <stdio.h> 
+double a = 1.234; 
+/*実数を%stにロードして返すだけ*/ 
+asm ("foo:; fldl a; ret"); 
+extern double foo(void);
+int main () 
+{ 
+printf("%g\n", foo()); 
+return 0; 
+}
+実行結果 
+[akira@localhost mypage]$ gcc
+asm_ffunc_test.c 
+[akira@localhost mypage]$
+./a.out 
+1.234 
+[akira@localhost mypage]$
+拡張asm文で書くのが通常であり、非拡張asm文で関数を作るこ
+とはまずない。 
+引数については後述する。 
+6:メモ
+コンパイルしたときに最適化などでasm文の位置が入れ替えられることが多いので、 
+一組の引用符の中に命令を全て書いたり、上の例のように括弧の中に"\n\t"を用いて 
+つらつら記述する方が良い。 
+命令毎にasm文を書いた場合、意図したように動かないことが多い。 
+しかし、いずれにしても、%ebxや%ecx、%ebpなどは、イ
+ンラインアセンブリの最初に
+退避させ、最後に元に戻しておくべきである。これを怠るとまともに動かない。 
+ただし、スタックに積もうとしてもうまくいかないことがある。このときは、後述の
+グローバル変数に退避させてごまかす方法もあるが、最良の方法は拡張インラインア
+センブリの構文で書いてコンパイラ任せにすることであろう。 
+7:命令の
+末尾 
+movやpush、pop、lea など命令はいずれも、 
+byte、word、longwordのデータ型でレジスタ等を扱う場合に、それぞれ 
+movb, movw, movl や pushb, pushw, pushl と命令末尾を使い分けること。
+8:グローバル変数
+グローバル変数は、asm文の中からもそのまま簡単に使用できる。 
+int foo_global;
+asm ("movl $12,foo_global"); 
+asm ("movl foo_global,%eax");
+などなど。
+9:ローカル変数
+ローカル変数は、x86系では、%ebpを用いてアクセスする。 
+例えばint型は4bytesなので、以下の例では、変数は書いた順に、 
+-4(%ebp)、-8(%ebp)、-12(%ebp) ...となる。 
+ただ通常、変数を使う際の労力を減らす為に拡張インラインアセンブリを使う。 
+/*ローカル変数テストプログラム
+asm_local_test.c*/ 
+#include <stdio.h>
+void foo (void) 
+{ 
+int a,b,c; 
+/*aは-4(%ebp)、bは-8(%ebp)、cは-12(%ebp)*/ 
+asm ("movl $1,-4(%ebp)"); 
+asm ("movl $2,-8(%ebp)"); 
+asm ("movl $3,-12(%ebp)"); 
+printf ("%d %d %d\n", a,b,c); 
+return; 
+} 
+int main () 
+{ 
+foo(); 
+return 0; 
+}
+実行結果 
+[akira@localhost mypage]$ gcc
+asm_local_test.c 
+[akira@localhost mypage]$
+./a.out 
+1 2 3 
+[akira@localhost mypage]$ 
+(注意)
+この様に拡張でないasm文で%ebpを使う際、オプティマイズオプション -O を付けるとまともに 
+動かないことがある。
+10:関数の引数
+x86系では関数の引数は、スタックポインタ(%esp)やフレームポインタ(%ebp)を用いて
+アクセスできる。しかし、プログラムの中でスタックの状態を意識しつつコーディングせ 
+ねばならない。骨が折れるので、普通は拡張インラインアセンブリを使う。 
+詳しくは、参考文献やインテルの配布しているpdfマニュアルを参照されたし。 
+ここで敢えて非拡張asm文を用いた整数の掛け算の例を示す。 
+/*引数テストプログラム
+asm_argument_test.c*/
+#include <stdio.h>
+void foo (int a, int b)
+{
+int c;
+/*ここでは、aは8(%ebp)、bは12(%ebp)、cは-4(%ebp)*/
+asm volatile("movl 8(%ebp),%edi  \n\t"
+"subl 12(%ebp),%edi \n\t"
+"movl %edi,-4(%ebp)     ");
+/* c=a-b を表示*/
+printf ("%d\n", c);
+}
+int main ()
+{
+foo (3, 5);
+return 0;
+} 
+実行結果 
+[akira@localhost mypage]$ gcc
+asm_argument_test.c 
+[akira@localhost mypage]$
+./a.out 
+-2 
+[akira@localhost mypage]$
+%espのメモ  
+(a) なお、%espを使って、 
+asm ("foo: \n\t" 
+" movl 4(%esp),%eax \n\t" 
+" ret "); 
+extern int foo (int a);
+と書くと、4(%esp)つまり引数 a を%eaxに代入し、その%eaxの内容でreturnする関数
+foo が
+実現される。 引数が foo (int
+a,int b,int c,... )と増えても同様に、 各
+々、
+4(%esp)、8(%esp)、12(%esp)、 ... でアクセスできる。
+ただし、push命令後には退避したバイト数分%espの値が減るので、例えばpushlを3回実行す
+ると引数 a にアクセスするには 16(%esp) を使うことになる。(4 + バイト数4 × 3 = 16)
+(b)
+このように%espの値を使う方法で引数を扱うと複雑で間違えやすいため、通常は、%ebpを
+pushして退避し、続いて%ebpに%espの値を
+コピーして、それ以降は引数にアクセスするには
+%ebpの値[これは、pushする前の時点の-4(%esp)に等しい]を基準に使うようにする。retする
+前にはleave命令を実行し、%ebpにコピーしていた値
+を%espに戻し、退避していた%ebpをpop
+しておく。
+従って、上の例は以下のようにも書ける。
+asm("foo:               
+\n\t"
+"pushl 
+%ebp         \n\t"
+"movl   %esp,%ebp    \n\t"
+/* ここでは引数 a は8(%ebp) */
+"movl   8(%ebp),%eax \n\t"  
+"leavel             
+\n\t"
+/* ここでleavelは、
+*   movl   %ebp,%esp
+*   popl   %ebp     
+* と同じ操作である
+*/
+"ret                
+\n\t");
+extern int foo (int a);
+関数がfoo(int a, int b, int c)ならば、引数には左から順に8(%ebp)、12(%ebp)、
+16(%ebp)
+でアクセスする。
+11:関数例(不定長ビットリバーサル) 
+具体的に、前項の(a)の方法で意味のある関数を作成してみる。 
+この関数は 10110001 を 10001101 と、反対から読んで返す、ビットリバースであ
+る。 
+ただし、続きに示した通常のCで書いたコードの方が分かり易い。
+注意:これは不定長のビットリバーサルであり、FFTで使われる固定長のものとは異なる。
+/*
+インラインアセンブリを用いたビットリバーサル。
+10011 --> 11001 とビット列を逆さに配置する。
+不定長であり、見つかった最初の1以降でのビットリバーサルである。
+pushl/popl 命令後には、バイトサイズ4だけ%espの値が減/増する点に注意。
+3回 pushl/poplしているので、バイトサイズ12だけ%espの値が変化している。
+*/
+__asm__ (
+"btrv:                
+\n\t"
+"  pushl 
+%ebx            \n\t"
+"  pushl 
+%ecx            \n\t"
+"  pushl 
+%edx            \n\t"
+/****srcを%ecxにロード。16(%esp)になっているのは pushl 3回の後だから*/
+"  movl  16(%esp),%ecx    \n\t"
+/****%ecxをbit scan reverseして1のビットを見つけ番号を%edxに入れる***/
+"  bsr   %ecx,%edx        \n\t"
+/****%eaxを0にする***************************************************/
+"  xor   %eax,%eax      
+\n\t"
+/****%ecxが0ならば0を返す********************************************/
+"  jecxz retv         
+\n\t"
+"btrb:             
+\n\t"
+/****%ecxをbit scan forwardして1のビットを見つけ番号を%ebxに入れる***/
+"  bsf   %ecx,%ebx      
+\n\t"
+/****%ecxの中の上の操作で見つかったビットを0にする*******************/
+"  btr   %ebx,%ecx        \n\t"
+/****最後尾の1であるビット番号から今最前列の1であるビット番号を引く**/
+"  neg  
+%ebx             \n\t"
+"  add   %edx,%ebx        \n\t"
+/****その値の位置のビットを1にする***********************************/
+"  bts   %ebx,%eax        \n\t"
+/****もし%ecxが0であれば%eaxを返す***********************************/
+"  jecxz retv          
+\n\t"
+/****もし%ecxに1のビットが残っていれば繰り返し***********************/
+"  jmp   btrb       
+\n\t"
+"retv:             
+\n\t"
+"  popl   %edx        
+\n\t"
+"  popl   %ecx       
+\n\t"
+"  popl   %ebx      
+\n\t"
+/****ret means return %eax*******************************************/
+" 
+ret               
+\n\t"
+);
+/*bit reverse 10011 --> 11001*/
+extern int btrv (int src);
+C言語で書くと次のようになる。
+もう一度書くが、これは不定長のビットリバーサルであり、FFTに使う固定長のものではない。
+int btrv (int src) 
+{ 
+int dst = 0; 
+while (1) 
+{ 
+dst += src & 1; 
+src >>= 1; 
+if (!src) break; 
+dst <<= 1; 
+} 
+return dst;
+}
+ページの目次へ戻る 
+拡張インラインアセンブリに関して for x86 
+12:構
+文 
+拡張インラインアセンブリの構文は以下のようである。
+asm
+(アセンブリコード : 出力オペランド : 入力オペランド :
+破壊レジスタ);
+より細かくみると、次のようになっている。
+asm
+("アセンブリコード" : "指定文字列"  (出力先変数)
+: "指定文字列"  (入力用の式や変数) : "内容が破損するので退避したいレジスタ");
+"指定文字列"は、続く括弧でくくった式に、どのようなレジスタやメモリを割
+り当てるかを決める。これは 
+下の表の左側に示した文字列 (正確にはModifiersと
+Constraints) であり、表の右側に説明を付記した。
+また、"アセンブリコード"によって内容が破損してしまうレジスタを3番目の
+: の後に書いておくと、その 
+レジスタの内容が事前に退避、事後に復帰されるようにコンパイラが自動でコード生成してくれる。これによっ 
+て、"アセンブリコード"はレジスタの退避、復帰を省いて書くことができる。 
+なお、出力と入力、コードによって破損するレジスタは何れも省略可能である。省
+略する場合、その部分は空 
+白にしておく。曖昧でなければ : も省略可能である。 
+13:Constraint
+and Modifier 
+出力先と入力元に使われるレジスタ指定には、1文字の指定文字もしくはその頭に修飾文字を加えた文字列が 
+使われる。 
+ただし、出力先には、"=r"というように修飾文字 '=' を付ける決まりである。 
+386系のレジスタや定
+数、メモリに対応した指定文字の抜粋 
+(公式には Constraint、つまり制限子とい
+う。詳しくは、gccのinfo[10]のConstraintsの項目を参照。)
+gccのx86インラインアセンブリに関して

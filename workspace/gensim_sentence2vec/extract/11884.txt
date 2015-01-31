@@ -1,0 +1,112 @@
+
+ロジスティック回帰で、 結果をもたらした要因重要度ランク付け
+組み込みデータ Titanic をつかった実例
+【概要】
+- Rに最初から入っているサンプルデータのひとつに、 Titanic  号沈没事故( 1912年4月14日 ) の 死亡者・生存者 の 個人プロファイル属性別 の人数集計データがあります。
+- そのデータを解析して、以下のプロファイル別の分析結果をはじきだすために、今回は、ロジスティック回帰 という手法を使ってみました。
+【今回の分析で得られる出力グラフ】
+(グラフの意味)
+Titanic 号の生死を分けた乗客・乗員のプロファイル属性要因は大きい順に、以下のとおりであった
+(1) 性別 (男性 or 女性)
+(2) 客室等級 (3等客室であった or でなかった)
+(3) 乗員該否 (乗員であった or 乗客であった)
+(4) 客室等級 (2等客室であった or でなかった)
+(5) 年齢 (成人であった or でなかった)
+(グラフの意味)
+Titanic 号の生死を分けた乗客・乗員のプロファイル属性要因は大きい順に、以下のとおりであった
+(1) 女性の生存率は、男性の11.25倍 だった
+(2) 乗員の生存率は、乗客の0.42 倍だった ※乗員の生存確率は乗客の半分以下だった
+(3) 2等客室の乗客の生存率は、それ以外の乗客の0.36倍だった 
+(4) 成人の生存率は、未成年者の0.35倍だった ※未成年者の方が生存率が高かった
+(5) 3等客室の乗客の生存率は、それ以外の乗客の0.17倍だった 
+【参考にさせていただいたウェブサイト】
+(1)  なんとなくな Developer のメモ (記事)「R でロジスティック回帰とオッズ比の算出 - glm, MCMClogit」
+理論 及び Rスクリプト
+(2)  kguの日記  「ロジスティック回帰で予測」
+(3)  スライドシェア @horihorioさん ロジスティック回帰の考え方・使い方  
+(4)  TERADATA社 マーケターのためのデータマイニング・ヒッチハイクガイド(第10回目記事)  
+(5)  統計解析道具箱 「ロジスティック回帰分析 オッズ比の解釈」
+(6)  大阪大学 兼清 道雄氏 ロジスティック回帰分析～理論編  
+1. データ読込み
+## , , Age = Child, Survived = No
+## 
+##       Sex
+## Class  Male Female
+##   1st     0      0
+##   2nd     0      0
+##   3rd    35     17
+##   Crew    0      0
+## 
+## , , Age = Adult, Survived = No
+## 
+##       Sex
+## Class  Male Female
+##   1st   118      4
+##   2nd   154     13
+##   3rd   387     89
+##   Crew  670      3
+## 
+## , , Age = Child, Survived = Yes
+## 
+##       Sex
+## Class  Male Female
+##   1st     5      1
+##   2nd    11     13
+##   3rd    13     14
+##   Crew    0      0
+## 
+## , , Age = Adult, Survived = Yes
+## 
+##       Sex
+## Class  Male Female
+##   1st    57    140
+##   2nd    14     80
+##   3rd    75     76
+##   Crew  192     20
+data.df <- as.data.frame(Titanic)
+attach(data.df)
+titanic <- data.frame( Survive=rep(Survived, Freq), Class=rep(Class, Freq), Sex=rep(Sex, Freq), Age=rep(Age,Freq) )
+print(nrow(titanic)); print(head(titanic, 20)); print(tail(titanic,20))
+##    Survive Class  Sex   Age
+## 1       No   3rd Male Child
+## 2       No   3rd Male Child
+## 3       No   3rd Male Child
+## 4       No   3rd Male Child
+## 5       No   3rd Male Child
+## 6       No   3rd Male Child
+## 7       No   3rd Male Child
+## 8       No   3rd Male Child
+## 9       No   3rd Male Child
+## 10      No   3rd Male Child
+## 11      No   3rd Male Child
+## 12      No   3rd Male Child
+## 13      No   3rd Male Child
+## 14      No   3rd Male Child
+## 15      No   3rd Male Child
+## 16      No   3rd Male Child
+## 17      No   3rd Male Child
+## 18      No   3rd Male Child
+## 19      No   3rd Male Child
+## 20      No   3rd Male Child
+##      Survive Class    Sex   Age
+## 2182     Yes  Crew Female Adult
+## 2183     Yes  Crew Female Adult
+## 2184     Yes  Crew Female Adult
+## 2185     Yes  Crew Female Adult
+## 2186     Yes  Crew Female Adult
+## 2187     Yes  Crew Female Adult
+## 2188     Yes  Crew Female Adult
+## 2189     Yes  Crew Female Adult
+## 2190     Yes  Crew Female Adult
+## 2191     Yes  Crew Female Adult
+## 2192     Yes  Crew Female Adult
+## 2193     Yes  Crew Female Adult
+## 2194     Yes  Crew Female Adult
+## 2195     Yes  Crew Female Adult
+## 2196     Yes  Crew Female Adult
+## 2197     Yes  Crew Female Adult
+## 2198     Yes  Crew Female Adult
+## 2199     Yes  Crew Female Adult
+## 2200     Yes  Crew Female Adult
+## 2201     Yes  Crew Female Adult
+R - ロジスティック回帰で結果をもたらした要因重要度 ランク付け - Qiita

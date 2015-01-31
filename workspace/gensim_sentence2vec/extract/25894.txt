@@ -1,0 +1,82 @@
+
+第7回演習:解答例
+演習課題
+(1)キーボードから入力した数値をファイルに保存するプログラムを作成せよ.
+#include <stdio.h>
+void main()
+{
+float a;
+char filename[] = "test.txt";
+FILE *fp;
+printf("Please input number : ");scanf("%f",&a);
+fp = fopen(filename,"w");
+if(fp == NULL){
+printf("Can't open %s",filename);
+return;
+}
+fprintf(fp,"%f",a);
+fclose(fp);
+}
+(2)上問で作ったファイルに保存された数値を読み込み,画面に表示するプログラムを作成せよ.]
+#include <stdio.h>
+void main()
+{
+float a;
+char filename[]="test.txt";
+FILE *fp;
+fp = fopen(filename,"r");	
+if(fp == NULL){
+printf("Can't open %s",filename);
+return;
+}
+fscanf(fp,"%f",&a);
+printf("a=%0.2f",a);
+fclose(fp);
+}
+(3)角度を0度から360度まで1度ずつ変えたときの,sinの値を各行に出力するプログラムを作成せよ.計算上,円周率はpi=3.141とする.
+#include <stdio.h>
+#include <math.h>
+void main()
+{
+int i;
+float pi=3.141;
+char filename[] = "sin.csv";
+FILE *fp;
+fp = fopen(filename,"w");
+if(fp == NULL){
+printf("Can't open %s",filename);
+return;
+}
+for(i=0;i<360;i++){
+fprintf(fp,"%f&yen;n",sin(i/180.0*pi));
+}
+fclose(fp);	
+}
+(4)角度を0度から360度まで変えたときの,sinやcos, tanなどの値を各行に出力するプログラムを作成せよ.
+ファイル名は,"sin_cos_tan.csv"としよう.ファイル名の末尾に .csv (拡張子と呼ぶ)をつけると,Excelで簡単に開くことができる.
+sin(), cos()などの算術関数を使う際には #include<math.h> を書くこと.
+結果の例: 
+0.000000
+0.017452
+0.034898
+....
+#include <stdio.h>
+#include <math.h>
+void main()
+{
+int i;
+float pi=3.141;
+char filename[] = "sin_cos_tan.csv";
+FILE *fp;
+fp = fopen(filename,"w");
+if(fp == NULL){
+printf("Can't open %s",filename);
+return;
+}
+for(i=0;i<360;i++){
+fprintf(fp,"%f,%f,%f,&yen;n",sin(i/180.0*pi),cos(i/180.0*pi),tan(i/180.0*pi));
+}
+fclose(fp);
+}
+-
+第7回演習:解答例

@@ -1,0 +1,332 @@
+
+e-docs >  
+WebLogic Server >
+WebLogic JDBC プログラマーズ ガイド  
+> WebLogic JDBC のコンフィグレーションと管理
+WebLogic JDBC プログラマーズ ガイド
+WebLogic JDBC のコンフィグレーションと管理
+WebLogic Server Administration Console を使用して、JDBC などの WebLogic Server の機能を有効化したり、コンフィグレーションやモニタを行ったりできます。 
+以下の節では、JDBC 接続コンポーネントのプログラミング方法について説明します。
+接続プールのコンフィグレーションと使い方
+アプリケーション スコープの JDBC 接続プール
+マルチプールのコンフィグレーションと使い方
+DataSource のコンフィグレーションと使い方
+詳細については、以下を参照してください。
+『管理者ガイド』の「JDBC 接続の管理」。Administration Console およびコマンド ライン インタフェースを使用して、接続をコンフィグレーションおよび管理する方法について説明します。 
+Administration Console オンラインヘルプ。Administration Console を使用して特定のコンフィグレーション タスクを行う方法について説明します。
+接続プールのコンフィグレーションと使い方
+接続プールとは、データベースへの同一の JDBC 接続の集まりです。データベースへの接続は、接続プールを登録すると実行されます。この実行は、WebLogic Server の起動時または実行時に動的に行われます。アプリケーションはプールから接続を「借り」、使用後に接続を閉じることでプールに接続を返します。接続プールの概要も参照してください。
+接続プールを使用するメリット
+接続プールには、数多くの性能およびアプリケーション設計上の利点があります。
+接続プールの使用は、データベースへのアクセスが必要になるたびにクライアント別に新しい接続を確立するよりもはるかに効率的です。 
+アプリケーションで DBMS パスワードなどの詳細をハードコード化する必要がありません。 
+DBMS への接続数を制限できます。DBMS への接続数に対するライセンス制限を管理する場合に便利です。
+アプリケーションのコードを変更せずに、使用中の DBMS を変更できます。
+接続プールのコンフィグレーションの属性は Administration Console オンライン ヘルプで定義されます。WebLogic Server の実行中に接続プールをプログラムで作成する場合に使用できる API もあります。接続プールの動的作成を参照してください。 コマンド ラインを使用することもできます。『管理者ガイド』の「WebLogic Server コマンドライン インタフェース リファレンス」を参照してください。 
+起動時の接続プールの作成
+起動 (静的) 接続プールを作成するには、Administration Console で属性とパーミッションを定義してから、WebLogic Server を起動します。WebLogic Server は、起動処理中にデータベースに対する JDBC 接続を開き、接続をプールに追加します。 
+Administration Console で接続プールを設定するには、左ペインに表示されるナビゲーション ツリーでサービスと JDBC ノードを展開し、接続プールを選択します。右ペインには、既存の接続プールのリストが表示されます。 [新しい JDBC Connection Pool のコンフィグレーション] テキスト リンクをクリックして、接続プールを作成します。
+手順説明、および接続プール属性の説明については、Administration Console オンライン ヘルプ (Administration Console の右上の疑問符をクリックしたときに表示される) を参照してください。詳細については、『管理者ガイド』の「JDBC 接続の管理」を参照してください。
+正しい接続数によるサーバのロックアップの回避
+アプリケーションで、接続プールから接続を取得しようとしたが使用できる接続がない場合、使用できる接続がないという旨の例外が送出されます。 接続プールでは、接続要求のキューは作成されません。 このエラーを避けるには、接続プールのサイズを接続要求の最大負荷に対応できるサイズに拡大するようにしてください。
+Administration Console で接続プールの最大接続数を設定するには、左ペインのナビゲーション ツリーを展開して [サービス｜JDBC｜接続プール] ノードを表示し、接続プールを選択します。次に右ペインで、[コンフィグレーション｜接続] タブを選択して、[最大容量] の値を指定します。
+接続プールのコンフィグレーションにおけるデータベース パスワード
+接続プールを作成する場合、一般にはデータベースへの接続用として、1 つ以上のパスワードを組み込みます。 オープン文字列を使用して、XA を有効にする場合は、パスワードを 2 つ使用できます。 パスワードは、名前と値のペアとして [プロパティ] フィールドに入力するか、名前と値をそれぞれ対応するフィールドに入力します。
+[パスワード]。 このフィールドを使用して、データベース パスワードを設定します。物理的なデータベース接続を作成した時点で、2 層 JDBC ドライバに送る [プロパティ] で定義されたパスワードの値がすべてオーバーライドされます。値は、config.xml ファイルで暗号化 (JDBCConnectionPool タグの Password 属性として保存) され、Administration Console では表示されなくなります。 
+[オープン文字列のパスワード]。 このフィールドを使用して、WebLogic Server のトランザクション マネージャがデータベース接続を開くときに使用するオープン文字列内にパスワードを設定します。 この値によって、[プロパティ] フィールド内のオープン文字列の一部として定義されたすべてのパスワードがオーバーライドされます。値は、config.xml ファイルで暗号化 (JDBCConnectionPool タグの XAPassword 属性として保存) され、Administration Console では表示されなくなります。 実行時に、WebLogic Server はこのフィールドで指定されたオープン文字列を再構築します。 [プロパティ] フィールドのオープン文字列は、次のフォーマットにする必要があります。
+openString=Oracle_XA+Acc=P/userName/+SesTm=177+DB=demoPool+Threads=true=Sqlnet=dvi0+logDir=
+userName の後、パスワードは表示されなくなります。 
+接続プールを初めてコンフィグレーションするときに [プロパティ] フィールドにパスワードを指定した場合、次の起動時に WebLogic Server は、パスワードを Properties 文字列から取り除き、その値を暗号化して Password の値として設定します。接続プールの Password 属性に値が指定されている場合、WebLogic Server は値を変更しません。ただし、Password 属性の値は Properties 文字列内のパスワード値をオーバーライドします。 この動作は、オープン文字列の一部として定義するすべてのパスワードに対して同じように適用されます。 たとえば、接続プールを初めてコンフィグレーションするときに次のプロパティを指定したとします。
+user=scott;password=tiger;openString=Oracle_XA+Acc=p/scott/tiger+SesTm=177+db=jtaXaPool+Threads=true+Sqlnet=lcs817+logDir=.+dbgFl=0x15;server=lcs817
+WebLogic Server を次に起動すると、データベース パスワードは [パスワード] 属性に、オープン文字列内のパスワードは [オープン文字列のパスワード] 属性に送られ、[プロパティ] フィールドには次の値が残ります。
+user=scott;openString=Oracle_XA+Acc=p/scott/+SesTm=177+db=jtaXaPool+Threads=true+Sqlnet=lcs817+logDir=.+dbgFl=0x15;server=lcs817
+[パスワード] または [オープン文字列のパスワード] 属性の値が確定したら、これらの属性の値は [プロパティ] フィールドのそれぞれの値をオーバーライドします。前述の例で説明すると、tiger2 をデータベース パスワードとして [プロパティ] 属性に指定した場合、WebLogic Server はこの値を無視し、暗号化された [パスワード] 属性の現在の値である tiger をデータベース パスワードとして使い続けます。データベース パスワードを変更するには、[パスワード] 属性を変更しなければなりません。
+注意:	 [パスワード] と [オープン文字列のパスワード] の値は、同じでなくてもかまいません。 
+接続プールの制限事項
+接続プールを使用する場合、データベース接続プロパティを変更する DBMS 固有の SQL コードや、WebLogic Server および JDBC ドライバでは認識されない SQL コードを実行することが可能です。 接続が接続プールに戻されたときに、接続の特性が有効な状態に戻らない場合があります。 たとえば、Sybase DBMS では、set rowcount 3 select * from y という文を使用すると、接続から返される行は最大で 3 行です。 この接続が接続プールに戻されて再利用される際、選択しているテーブルが 500 行だったとしても、クライアントに返されるのは 3 行のみとなります。 ほとんどの場合は、同じ結果を実現でき、WebLogic Server または JDBC ドライバによって接続がリセットされる標準の (DBMS 固有でない) SQL コードが用意されています。 この例であれば、set rowcount の代わりにsetMaxRows() を使用できます。
+接続を変更する DBMS 固有の SQL コードを使用する場合は、接続プールに戻す前に接続を適切な状態に設定しなおす必要があります。
+JDBC 接続プールの接続の更新に関する注意事項
+更新プロセスで置換できない不良なデータベース接続が見つかると、そのプロセスは現在のサイクルを停止します。 残っている壊れた接続は、接続プールから削除されません。 それらの接続は、新しい接続で置換できるまで接続プールに留まります。 この動作設計は、DBMS がアクセス不能な場合にシステムのサイクルを利用してデータベース接続を更新することによるパフォーマンスの低下を防止するためでした。
+更新プロセスでは、アプリケーション コードで現在使用されている接続をテストまたは更新することはできません。 テストされるのは、現時点で予約されていない接続だけです。 したがって、たとえ見つかった不良接続を置換できる場合であっても、アプリケーションが接続を要求している場合には更新サイクルで接続プールのすべての接続がテストされることはありません。
+更新プロセスでは使用されていない接続しかテストされないので、一部の接続はまったくテストされることがない、ということも考えられます。 testConnsOnReserve を有効にしない限りは、クライアントは常に壊れた接続を取得するリスクを負います。 実際に、たとえアプリケーションに渡される前に接続がテストを受けていても、その接続はテストの成功の直後に不良化することがあります。 
+JDBC接続プールのテスト機能の強化
+WebLogic Server 7.0SP5 では、プールされた接続に対するデータベース接続テストの機能を改良するために、JDBC 接続プールに以下の属性が追加されました。
+CountOfTestFailuresTillFlush-指定する回数のテストが失敗した後で接続プール内のすべての接続を閉じ、それ以上データベース テストを行うことで発生する遅延を最小限に抑えます。 データベース接続消失後の接続テストでの遅延を最小限に抑える.を参照してください。
+CountOfRefreshFailuresTillDisable-指定する回数のテストが失敗した後で接続プールを無効にし、データベースの障害発生後に接続要求を処理する際の遅延を最小限に抑えます。 接続テスト失敗後の接続要求の遅延を最小限に抑える.を参照してください。
+データベース接続消失後の接続テストでの遅延を最小限に抑える
+DBMS への接続が一時的にでも失われると、接続プール内の一部または全部の JDBC 接続は停止した状態になります。 接続プールが予約時に接続をテストするようにコンフィグレーションされている場合 (推奨)、アプリケーションがデータベース接続を要求すると、WebLogic Server は接続をテストします。接続が停止していることを検出すると、要求に応じるためにその接続を新しい接続で置き換えます。 通常、DBMS がオンラインに復帰すると更新処理が行われます。 ただし、特定の状況や失敗の状態によっては、停止した接続をテストすると長い遅延が発生することがあります。 この遅延は、接続プール内の停止した接続ごとに発生し、すべての接続が置き換えられるまで続きます。 
+停止したデータベース接続のテスト中に発生する遅延を最小限に抑えるために、接続プールで CountOfTestFailuresTillFlush 属性を設定できます。 この接続を設定する場合、WebLogic Server では、テストが指定された回数続けて失敗すると、接続プール内のすべての接続を停止した状態と見なして、接続プール内のすべての接続を閉じます。 
+アプリケーションが接続を要求したときに、接続プールは停止した接続のテストを最初に行わずに、接続を作成することができます。 この動作により、接続プールがフラッシュされた後は、接続要求の遅延を最小限に抑えられます。 
+CountOfTestFailuresTillFlush 属性は config.xml ファイルの JDBCConnectionPool エントリ内に指定します。 TestConnectionsOnReserve も true に設定する必要があります。 次に例を示します。
+<JDBCConnectionPool   CapacityIncrement="1"   DriverName="com.pointbase.xa.xaDataSource"   InitialCapacity="2" MaxCapacity="10"   Name="demoXAPool" Password="password"  Properties="user=examples;    DatabaseName=jdbc:pointbase:server://localhost/demo"   Targets="examplesServer"   TestConnectionsOnReserve="true"  CountOfTestFailuresTillFlush="1"  URL="jdbc:pointbase:server://localhost/demo" /> 
+注意:	 CountOfTestFailuresTillFlush 属性は、Administration Console では使用できません。
+ネットワークに小さな障害が発生したり、ファイアウォールが唯一のソケットまたは接続を停止することがよくある場合は、テストの失敗数を 2 または 3 に設定することができます。ただし、データベースの可用性の問題を解決した場合は、値を 1 に設定すると最良のパフォーマンスが得られます。
+接続テスト失敗後の接続要求の遅延を最小限に抑える
+DBMS が使用不能になると、接続プールは接続要求に応じようとして、永続的にテストを行い、停止した接続を置き換えようとします。 接続プールはデータベースが使用可能になるとすぐに反応できるため、この動作は有益です。 ただし、停止したデータベース接続のテストはネットワークがタイムアウトするまで行われることがあり、その結果クライアントで遅延が発生します。
+データベースが使用できない場合にクライアント アプリケーションで発生する遅延を最小限に抑えるために、接続プールで CountOfRefreshFailuresTillDisable 属性を設定できます。 この属性を設定すると、WebLogic Server は、停止した接続の置き換えに特定の回数続けて失敗した後、接続プールを無効にします。 アプリケーションが無効な接続プールの接続を要求した場合、WebLogic Server は直ちに ConnectDisabledException を送出して、クライアントに接続が使用できないことを通知します。
+この方法で無効になった接続プールに対して、WebLogic Server は定期的に更新処理を実行します。 更新処理によって新しいデータベース接続が正常に作成されると、WebLogic Server は接続プールを再び有効にします。 weblogic.Admin ENABLE_POOL コマンドを使用して、接続プールを手動で最有効化することもできます。 
+CountOfRefreshFailuresTillDisable 属性は config.xml ファイルの JDBCConnectionPool エントリ内に指定します。 TestConnectionsOnReserve も true に設定する必要があります。 次に例を示します。
+<JDBCConnectionPool   CapacityIncrement="1"   DriverName="com.pointbase.xa.xaDataSource"   InitialCapacity="2" MaxCapacity="10"   Name="demoXAPool" Password="password"  Properties="user=examples;    DatabaseName=jdbc:pointbase:server://localhost/demo"   Targets="examplesServer"   TestConnectionsOnReserve="true"  CountOfRefreshFailuresTillDisable="1"  URL="jdbc:pointbase:server://localhost/demo" /> 
+注意:	 CountOfRefreshFailuresTillDisable 属性は、Administration Console では使用できません。
+ネットワークに小さな障害が発生したり、ファイアウォールが唯一のソケットまたは接続を停止することがよくある場合は、更新の失敗数を 2 または 3 に設定することができます。ただし、値を 1 に設定すると最良のパフォーマンスが得られます。
+secondsToTrustAnIdlePoolConnection を使用して接続要求の遅延を最小限に抑える
+大量のトラフィック発生時にデータベース接続をテストすると、アプリケーションのパフォーマンスが低下するおそれがあります。 接続テストへの影響を最小限に抑えるために、JDBC 接続プールのコンフィグレーションで secondsToTrustAnIdlePoolConnection 接続プロパティを設定して、最近使用された、またはテストされたデータベース接続の有効性を信頼することで、接続テストを省略できます。
+使用する接続プールが、予約時に接続をテストするようにコンフィグレーションされている場合 (推奨)、アプリケーションがデータベース接続を要求すると、WebLogic Server ではそのデータベース接続をテストしてからアプリケーションに渡します。 ただし、接続がテストされたか正常に使用されて接続プールに返されたときから、secondsToTrustAnIdlePoolConnection で指定された時間が経過するまでの間に行われた要求については、接続をアプリケーションに渡す前の接続テストが省略されます。
+使用する接続プールが、プール内で使用可能な接続を定期的にテストするようにコンフィグレーションされている場合 (RefreshMinutes を指定)、正常に使用されて接続プールに返された接続については、secondsToTrustAnIdlePoolConnection で指定された時間内の接続テストが同様に省略されます。
+secondsToTrustAnIdlePoolConnection を設定するには、Administration Console の [JDBC 接続プール｜コンフィグレーション｜一般] タブにあるプロパティのリストに secondsToTrustAnIdlePoolConnection を追加します。 Administration Console オンライン ヘルプの「[JDBC 接続プール] --> [コンフィグレーション] --> [一般]」を参照してください。 また、このプロパティは config.xml ファイルで直接設定することもできます。 次に例を示します。
+<JDBCConnectionPool   CapacityIncrement="1"   DriverName="com.pointbase.xa.xaDataSource"   InitialCapacity="2" MaxCapacity="10"   Name="demoXAPool" Password="password"  Properties="user=examples;    secondsToTrustAnIdlePoolConnection=15;    DatabaseName=jdbc:pointbase:server://localhost/demo"   Targets="examplesServer"   TestConnectionsOnReserve="true"  TestTableName="SYSTABLES"  URL="jdbc:pointbase:server://localhost/demo" /> 
+secondsToTrustAnIdlePoolConnection は、(特に大量のトラフィック発生時の) データベース接続テストによる遅延を最小限に抑えることにより、アプリケーションのパフォーマンスを向上できるチューニング機能です。 ただし、値を高く設定しすぎると、接続テストの有効性が低くなることがあります。 適切な値は、使用する環境と接続の切断が発生しやすいかどうかによって決まります。
+接続プールの動的作成 
+JDBCConnectionPool 管理 MBean は WebLogic Server 管理アーキテクチャ (JMX) の一部として提供されます。 JDBCConnectionPool MBean を使用して、Java アプリケーションの内部から、接続プールを動的に作成、およびコンフィグレーションできます。すなわち、クライアント、またはサーバ アプリケーション コードを使用して、既に実行中の WebLogic Server で接続プールを作成できます。 
+WebLogic Server コマンド ライン インタフェースで CREATE_POOL コマンドを使用しても、接続プールを動的に作成できます。 『管理者ガイド』の「CREATE_POOL」を参照してください。
+JDBCConnectionPool 管理 MBean を使用して接続プールを動的に作成するには、次の手順に従います。
+必要なパッケージをインポートします。
+JNDI ツリーで、管理 MBeanHome をルックアップします。
+サーバ MBean を取得します。
+接続プール MBean を作成します。
+接続プールのプロパティを設定します。
+対象を追加します。
+DataSource オブジェクトを作成します。
+注意:	 動的に作成した接続プールでは必ず、動的に作成した DataSource オブジェクトを使用します。DataSource を終了するには、これが特定の接続プールに関連付けられている必要があります。また、WebLogic Server 中の DataSource オブジェクトと接続プールの間は、1 対 1 の関係になっています。したがって、接続プールに対応して使用する DataSource の作成が必要です。
+JDBCConnectionPool MBean を使用して接続プールを作成すると、サーバ コンフィグレーションに接続プールが追加され、サーバを起動/停止した後も、引き続き有効になります。接続プールを持続させる必要がない場合は、プログラムで削除します。
+また、動的に作成した接続プールは一時的に無効にすることができます。無効にすると、プール中のどの接続でもデータベース サーバとの通信がサスペンドされます。いったん無効にしたプールを再度有効にすると、各接続ではプールを無効にした時点と同じ状態が復元されるため、クライアントは中断された地点からデータベースの操作を続行できます。 
+MBean を使用して WebLogic Server を管理する方法については、『WebLogic JMX Service プログラマーズ ガイド』を参照してください。 JDBCConnectionPool MBean の詳細については、WebLogic クラスの Javadoc を参照してください。
+動的接続プールのサンプル コード
+接続プールを動的に作成するときの各手順を実行するコード サンプルを以下の節で示します。
+パッケージをインポートする
+import java.sql.*;import java.util.*;import javax.naming.Context;import javax.sql.DataSource;import weblogic.jndi.Environment;import weblogic.management.configuration.JDBCConnectionPoolMBean;import weblogic.management.runtime.JDBCConnectionPoolRuntimeMBean;import weblogic.management.configuration.JDBCDataSourceMBean;import weblogic.management.configuration.ServerMBean;import weblogic.management.MBeanHome;import weblogic.management.WebLogicObjectName;
+管理 MBeanHome をルックアップする
+mbeanHome = (MBeanHome)ctx.lookup(MBeanHome.ADMIN_JNDI_NAME);
+サーバ MBean を取得する
+serverMBean = (ServerMBean)mbeanHome.getAdminMBean(serverName, "Server");//Server MBean の WebLogic オブジェクト名を作成する//JDBCConnectionPoolRuntime MBean の名前を作成する場合に使用WebLogicObjectName pname = new WebLogicObjectName("server1", "ServerRuntime", mbeanHome.getDomainName(),"server1");//JDBCConnectionPoolRuntime MBean の WebLogic オブジェクト名を作成する//JDBCConnectionPoolRuntime MBean の名前を作成する場合に使用するWebLogicObjectName oname = new WebLogicObjectName(cpName, "JDBCConnectionPoolRuntime", mbeanHome.getDomainName(),"server1", pname);JDBCConnectionPoolRuntimeMBean cprmb = (JDBCConnectionPoolRuntimeMBean)mbeanHome.getMBean(oname);
+接続プール MBean を作成する
+// ConnectionPool MBean の作成  cpMBean = (JDBCConnectionPoolMBean)mbeanHome.createAdminMBean(    cpName, "JDBCConnectionPool",        mbeanHome.getDomainName());
+接続プール プロパティを設定する
+Properties pros = new Properties();  pros.put("user", "scott");    pros.put("server", "lcdbnt1");
+// DataSource 属性の設定  cpMBean.setURL("jdbc:weblogic:oracle");  cpMBean.setDriverName("weblogic.jdbc.oci.Driver");  cpMBean.setProperties(pros);  cpMBean.setPassword("tiger");  cpMBean.setLoginDelaySeconds(1);  cpMBean.setInitialCapacity(1);  cpMBean.setMaxCapacity(10);  cpMBean.setCapacityIncrement(1);  cpMBean.setShrinkingEnabled(true);  cpMBean.setShrinkPeriodMinutes(10);  cpMBean.setRefreshMinutes(10);  cpMBean.setTestTableName("dual");
+注意:	 この例では、[プロパティ] にユーザ名とサーバ名で指定する代わりに、setPassword(String) メソッドを使ってデータベース パスワードを設定します。 setPassword(String) メソッドを使用すると、WebLogic Server は config.xml ファイル中のパスワード、および管理コンソールに表示されるパスワードを暗号化します。 このメソッドを使用して、config.xml ファイル中でデータベース パスワードをクリア テキストで格納するのを避けるようにお勧めします。
+対象を追加する
+cpMBean.addTarget(serverMBean);
+DataSource を作成する
+public void createDataSource() throws SQLException {  try {    // コンテキストの取得    Environment env = new Environment();    env.setProviderUrl(url);    env.setSecurityPrincipal(userName);    env.setSecurityCredentials(password);    ctx = env.getInitialContext();
+// DataSource  MBean の作成      dsMBeans = (JDBCDataSourceMBean)mbeanHome.createAdminMBean(        cpName, "JDBCDataSource",        mbeanHome.getDomainName());
+// DataSource 属性の設定      dsMBeans.setJNDIName(cpJNDIName);      dsMBeans.setPoolName(cpName);
+// DataSource の起動      dsMBeans.addTarget(serverMBean);
+} catch (Exception ex) {      ex.printStackTrace();    throw new SQLException(ex.toString());
+}
+}
+動的接続プールと DataSource を削除する
+動的に作成した接続プールを削除する方法を以下のコード サンプルで示します。動的に作成した接続プールは削除しない限り、サーバを停止/再起動した後も、有効です。
+public void deleteConnectionPool() throws SQLException {  try {    // 動的に作成した接続プールをサーバから削除    cpMBean.removeTarget(serverMBean);    // 動的に作成した接続プールをコンフィグレーションから削除    mbeanHome.deleteMBean(cpMBean);  } catch (Exception ex) {    throw new SQLException(ex.toString());  }}
+public void deleteDataSource() throws SQLException {
+try {
+// 動的に作成した DataSource をサーバから削除
+dsMBeans.removeTarget(serverMBean);
+// 動的に作成した DataSource をコンフィグレーションから削除
+mbeanHome.deleteMBean(dsMBeans);
+} catch (Exception ex) {
+throw new SQLException(ex.toString());
+}
+}
+接続プールの管理
+JDBCConnectionPool と JDBCConnectionPoolRuntime の MBean には、接続プールを管理し、これに関する情報を収集するためのメソッドがあります。メソッドの目的は以下のとおりです。 
+プールに関する情報を取得します。
+接続プールを無効にして、そこからクライアントが接続を取得できないようにします。
+無効にされているプールを有効にします。
+未使用の接続を解放して、指定された最小サイズまでプールを縮小します。
+プールをリフレッシュします (接続をクローズして再び開く)。
+プールを停止します。
+JDBCConnectionPool MBean と JDBCConnectionPoolRuntime MBean によって、weblogic.jdbc.common.JdbcServices と weblogic.jdbc.common.Pool は非推奨の機能として置き換えられています。
+JDBCConnectionPool MBean で使用できるメソッドの詳細については、Javadoc を参照してください。 JDBCConnectionPoolRuntime MBean の詳細については、Javadoc を参照してください。
+プールに関する情報の取得
+boolean x = JDBCConnectionPoolRuntimeMBean.poolExists(cpName);
+props = JDBCConnectionPoolRuntimeMBean.getProperties();
+poolExists() メソッドは、指定された名前の接続プールが WebLogic Server に存在するかどうかを調べます。このメソッドを使用すると、動的接続プールが既に作成されているかどうかを調べ、作成する動的接続プールに固有の名前を付けることができます。 
+getProperties() メソッドは、接続プールのプロパティを取得します。 
+接続プールの無効化
+JDBCConnectionPoolRuntimeMBean.disableDroppingUsers()
+JDBCConnectionPoolRuntimeMBean.disableFreezingUsers()
+JDBCConnectionPoolRuntimeMBean.enable()
+接続プールを一時的に無効にして、クライアントがそのプールから接続を取得するのを防ぐことができます。接続プールを有効または無効にできるのは、「system」ユーザか、またはそのプールに関連付けられている ACL によって「admin」パーミッションが与えられたユーザだけです。 
+disableFreezingUsers() を呼び出すと、プールの接続を現在使っているクライアントは中断状態に置かれます。データベース サーバと通信しようとすると、例外が送出されます。ただし、クライアントは接続プールが無効になっている間に自分の接続をクローズできます。その場合、接続はプールに返され、プールが有効になるまでは別のクライアントから予約することはできません。 
+disableDroppingUsers() を使用すると、接続プールが無効になるだけでなく、そのプールに対するクライアントの JDBC 接続が破棄されます。その接続で行われるトランザクションはすべてロールバックされ、その接続が接続プールに返されます。クライアントの JDBC 接続コンテキストは無効になります。 
+disableFreezingUsers() で無効にしたプールを再び有効にした場合、使用中だった各接続の JDBC 接続状態はその接続プールが無効にされたときと同じなので、クライアントはちょうど中断したところから JDBC 操作を続行できます。 
+さらに、weblogic.Admin クラスの disable_pool コマンドと enable_pool コマンドを使用して、プールを無効にしたり有効にしたりできます。 
+接続プールの縮小
+JDBCConnectionPoolRuntimeMBean.shrink()
+接続プールは、プール内の接続の初期数と最大数を定義する一連のプロパティ (initialCapacity と maxCapacity) と、接続がすべて使用中のときにプールに追加される接続の数を定義するプロパティ (capacityIncrement) を備えています。プールがその最大容量に達すると、最大数の接続が開くことになり、プールを縮小しない限りそれらの接続は開いたままになります。 
+接続の使用がピークを過ぎれば、接続プールから接続をいくつか削除して、WebLogic Server と DBMS のリソースを解放してもかまいません。 
+接続プールの停止
+JDBCConnectionPoolRuntimeMBean.shutdownSoft()
+JDBCConnectionPoolRuntimeMBean.shutdownHard()
+これらのメソッドは、接続プールを破棄します。接続はクローズされてプールから削除され、プールに残っている接続がなくなればプールは消滅します。接続プールを破棄できるのは、「system」ユーザか、またはそのプールに関連付けられている ACL によって「admin」パーミッションが与えられたユーザだけです。 
+shutdownSoft() は、接続がプールに返されるのを待って、それらの接続をクローズします。 
+shutdownHard() メソッドは、すべての接続を即座に破棄します。プールから取得した接続を使っているクライアントは、shutdownHard() が呼び出された後で接続を使おうとすると、例外を受け取ることになります。 
+さらに、weblogic.Admin クラスの destroy_pool コマンドを使って、プールを破棄することもできます。 
+プールのリセット
+JDBCConnectionPoolRuntimeMBean.reset()
+接続プールは、定期的に、あるいは接続が予約または解放されるたびに接続をテストするようにコンフィグレーションすることができます。WebLogic Server がプール接続の一貫性を自動的に保てるようにすることで、DBMS 接続に関する問題の大半は防げるはずです。さらに、WebLogic には、アプリケーションから呼び出してプール内のすべての接続、またはプールから予約した単一の接続をリフレッシュできるメソッドが用意されています。 
+JDBCConnectionPoolRuntimeMBean.reset() メソッドは、接続プール内に割り当てられている接続をすべてクローズしてから開き直します。これは、たとえば、DBMS が再起動されたあとに必要になることがあります。接続プール内の 1 つの接続が失敗した場合は、プール内のすべての接続が不良であることが往々にしてあります。 
+接続プールをリセットするには、以下のいずれかの方法を使用します。
+Administration Console 
+weblogic.Admin コマンド。管理者 (管理特権を持ったユーザ) として接続プールをリセットします。次にそのパターンを示します。 
+$ java weblogic.Admin WebLogicURL RESET_POOL poolName system passwd
+コマンドラインからこの方法を使うことはめったにないかもしれません。他にも、次に説明するようにプログラムを使用したより効率的な方法があります。 
+クライアント アプリケーションにある JDBCConnectionPoolRuntimeMBean の reset() メソッド 
+最後のケースは、行うべき作業が最も多くなりますが、その反面、最初の 2 つの方法よりも柔軟性があります。次に、reset() メソッドを使用してプールをリセットする方法を示します。
+try ブロックの中で、DBMS への有効な接続が存在する限りどのような状況でも必ず成功する SQL 文を使用して、接続プールの接続をテストします。 たとえば、「select 1 from dual」という SQL 文は、Oracle DBMS の場合には必ず成功します。 
+SQLException を取得します。 
+catch ブロックの中で reset() メソッドを呼び出します。 
+weblogic.jdbc.common.JdbcServices と weblogic.jdbc.common.Pool クラス (非推奨) の使用
+旧バージョンの WebLogic Server には、プログラム上で接続プールの作成や管理のための次のクラスが組み込まれていました。 weblogic.jdbc.common.JdbcServices and weblogic.jdbc.common.Pool.これらのクラスは非推奨となっています。 これらのクラスは現在でも利用できますが、代わりに JDBCConnectionPool MBean を使用して、接続プールを動的に作成、および管理することをお勧めします。 
+JDBCConnectionPool MBean を使用して、管理対象のサーバ上の接続プールを作成、または変更すると、JMX サービスにより管理サーバに変更が直ちに通知されます。 weblogic.jdbc.common.JdbcServices と weblogic.jdbc.common.Pool を使用して、接続プールを作成、または変更すると、次のアクションは管理サーバには伝達されません。
+停止
+取り出し
+更新
+有効化
+無効化
+これらのアクションを実行すると、関連する接続プールを使用した管理対象サーバ上のアプリケーションが失敗することがあります。
+weblogic.jdbc.common.JdbcServices と weblogic.jdbc.common.Pool の詳細については、WebLogic Server バージョン 6.1 の『WebLogic JDBC プログラマーズ ガイド』の「WebLogic JDBC のコンフィグレーションと管理」を参照してください。
+アプリケーション スコープの JDBC 接続プール
+エンタープライズ アプリケーションをパッケージ化するときに、weblogic-application.xml 補足デプロイメント記述子を含めることができます。この記述子を使用して、アプリケーション スコーピングをコンフィグレーションします。 weblogic-application.xmlファイルでは、エンタープライズ アプリケーションをデプロイするときに作成される JDBC 接続プールをコンフィグレーションできます。
+接続プールのインスタンスは、アプリケーションのインスタンスごとに作成されます。 つまり、プールのインスタンスは、アプリケーションの対象となっている各ノード上のアプリケーションで作成されます。 プールのサイズを検討する場合は、この点に留意してください。
+この方法で作成された接続プールは「アプリケーション スコープの接続プール」(アプリケーション スコープ プール、アプリケーション ローカル プール、または ローカル プール) と呼ばれ、そのエンタープライズ アプリケーションに対してだけスコーピングされます。 つまり、各接続プールがエンタープライズ アプリケーションごとに分離されます。 
+アプリケーション スコーピング、およびアプリケーション スコープ リソースの詳細については、以下を参照してください。
+『WebLogic Server アプリケーションの開発』の「weblogic-application.xml デプロイメント記述子の要素」
+『WebLogic Server アプリケーションの開発』の「エンタープライズ アプリケーションのパッケージ化」 
+『WebLogic Server アプリケーションの開発』の「2 フェーズ デプロイメント」
+マルチプールのコンフィグレーションと使い方
+マルチプールは「プールのプール」です。まず接続プールを作成し、次に Administration Console または WebLogic 管理 API を使用してマルチプールを作成した後、マルチプールに接続プールを割り当てることにより、マルチプールを作成します。
+Administration Console を使用してマルチプールを作成する手順については、Administration Console オンライン ヘルプを参照してください。 JDBCMultiPoolMBean の詳細については、WebLogic Server Javadoc を参照してください。
+マルチプールの機能
+マルチプールとは、接続プールのプールです。 特定の接続プール内のすべての接続は、同じデータベース、同じユーザ、同じ接続プロパティを使って作成されます。つまり、それらは単一のデータベースに関連付けられます。 しかし、マルチプール内の接続プールには、それぞれ異なる DBMS を関連付けることができます。 
+マルチプールのデータベース接続はローカル トランザクションでのみ使用されます。分散トランザクションでの使用は、WebLogic Server ではサポートされていません。
+マルチプール アルゴリズムの選択
+マルチプールを設定する前に、その主要な目的、つまり高可用性またはロード バランシングのいずれかを指定する必要があります。アルゴリズムは、各自のニーズに合わせて選択できます。
+高可用性
+高可用性アルゴリズムでは、接続プールの順序付けされたリストを提供します。通常、このタイプのマルチプールへのすべての接続リクエストは、リストの最初のプールによって処理されます。このプールを通したデータベース接続が失敗すると、そのリストの次のプールから順番に接続が選択されます。
+注意:	 マルチプール内の接続プールに対して TestConnectionsOnReserve=true を設定することで、リスト内の次の接続プールにフェイルオーバするタイミングをマルチプールが決定できるようにする必要があります。
+デフォルトでは、接続プール内のすべての接続が使用中の場合、高可用性アルゴリズムを備えたマルチプールではリスト内の次のプールから接続が提供されることはありません。これは、接続プールの容量を設定できるようにするためです。 このシナリオでフェイルオーバを有効にするには、マルチプールのコンフィグレーションで FailoverRequestIfBusy 属性を true に設定します。 詳細については、マルチプールの使用されている接続プールのフェイルオーバの有効化を参照してください。
+ロード バランシング
+ロード バランシング マルチプールへの接続リクエストは、リスト内の任意の接続プールから処理されます。プールはリストの順に追加され、ラウンドロビン方式でアクセスされます。 アプリケーションが接続を要求すると、マルチプールはリスト内の次の接続プールから接続を提供しようとします。
+マルチプールのフェイルオーバの拡張
+WebLogic Server 7.0SP5 では、マルチプールに以下の拡張が施されました。
+マルチプール内で自動的に無効化されている (非アクティブな) 接続プールに接続を要求しないようにするための、接続要求の転送の改良。 接続プールが失敗したときの接続要求の転送の改良.を参照してください。
+マルチプール内の失敗した接続プールが回復したときの自動フェイルバック。 マルチプール内の失敗した接続プールが回復するときの自動的な再有効化.を参照してください。
+マルチプール内の使用中の接続プールのフェイルオーバ。 マルチプールの使用されている接続プールのフェイルオーバの有効化.を参照してください。
+高可用性アルゴリズムを備えたマルチプールのフェイルオーバ コールバック。 コールバックによるマルチプールのフェイルオーバの制御.を参照してください。
+マルチプール (アルゴリズムはどちらでも同じ) のフェイルバック コールバック コールバックによるマルチプールのフェイルバックの制御.を参照してください。
+接続プールが失敗したときの接続要求の転送の改良
+マルチプール内の接続プールが失敗したときのパフォーマンスを向上させるために、WebLogic Server はプールの接続が接続テストに失敗したときにその接続プールを自動的に無効にします。 接続プールが無効化された後、WebLogic Server は接続要求をアプリケーションからその接続プールに転送しません。 その代わりに、接続要求はマルチプールのリストにある次に利用可能な接続プールに転送されます。
+この機能を利用するには、マルチプールのすべての接続プールで接続プール テスト オプションがコンフィグレーションされていなければなりません (特に TestTableName と TestConnectionsOnReserve)。 
+マルチプールに対してコールバック ハンドラが登録されている場合、WebLogic Server はリストの次の接続プールにフェイルオーバする前にコールバック ハンドラを呼び出します。 詳細については、コールバックによるマルチプールのフェイルオーバの制御を参照してください。 
+マルチプール内の失敗した接続プールが回復するときの自動的な再有効化
+接続が接続テストに失敗したことが原因で接続プールが自動的に無効化された後、WebLogic Server は定期的に無効化された接続プールの接続をテストして接続プール (または基盤のデータベース) がいつ再び利用可能になるのかを判断します。 接続プールが利用可能になると、WebLogic Server は自動的に接続プールを再び有効化し、マルチプールのアルゴリズムと、接続プールのリストにおける位置に基づいて、その接続プールへの接続要求の転送を再開します。
+マルチプールで自動的に無効化されている接続プールが WebLogic Server によってチェックされる頻度を制御するには、config.xml ファイルのマルチプールのコンフィグレーションに HealthCheckFrequencySeconds 属性の値を追加します。 次に例を示します。
+<JDBCMultiPool AlgorithmType="High-Availability" Name="demoMultiPool" PoolList="demoPool2,demoPool" HealthCheckFrequencySeconds="240" Targets="examplesServer" />
+注意:	 この属性は、Administration Console では表示されません。 この機能を実装するには、config.xml ファイルのマルチプールのコンフィグレーションに手動でこの属性を追加する必要があります。
+WebLogic Server は、無効化されている各接続プールの接続テストを、指定された期間は行いません。 デフォルト値は、300 秒です。 値を指定しない場合、自動的に無効化された接続プールは 300 秒おきにテストされます。
+この機能を利用するには、マルチプールのすべての接続プールで接続プール テスト オプションがコンフィグレーションされていなければなりません (特に TestTableName と TestConnectionsOnReserve)。 
+手動で無効化された接続プールについては、WebLogic Server はテストと自動的な再有効化を行いません。 テストするのは、自動的に無効化された接続プールだけです。
+マルチプールに対してコールバック ハンドラが登録されている場合、WebLogic Server は接続プールを再び有効にする前にコールバック ハンドラを呼び出します。 詳細については、コールバックによるマルチプールのフェイルバックの制御を参照してください。 
+マルチプールの使用されている接続プールのフェイルオーバの有効化
+デフォルトでは、マルチプールのアルゴリズムが高可用性である場合、データベース接続に対する要求の数がマルチプールの現在の接続プールで利用可能な接続の数を超えると、それ以降の接続要求が失敗します。
+現在の接続プールのすべての接続が使用中のときにマルチプールがフェイルオーバするようにするには、config.xml ファイルのマルチプールのコンフィグレーションで FailoverRequestIfBusy 属性の値を設定する必要があります。 true に設定すると、現在の接続プールのすべての接続が使用中のときに、接続に対するアプリケーションの要求がマルチプールの次の利用可能な接続プールに転送されます。 false (デフォルト) に設定した場合、接続要求はフェイルオーバされません。 
+FailoverRequestIfBusy 属性を config.xml ファイルに追加した後、マルチプールのエントリは次のようになります。
+<JDBCMultiPool AlgorithmType="High-Availability" Name="demoMultiPool" PoolList="demoPool2,demoPool" FailoverRequestIfBusy="true" Targets="examplesServer" />
+注意:	 FailoverRequestIfBusy 属性は、Administration Console では表示されません。 この機能を実装するには、config.xml ファイルのマルチプールのコンフィグレーションに手動でこの属性を追加する必要があります。
+ConnectionPoolFailoverCallbackHandler がマルチプールのコンフィグレーションに含まれている場合、WebLogic Server はフェイルオーバの前にコールバック ハンドラを呼び出します。 詳細については、コールバックによるマルチプールのフェイルオーバの制御を参照してください。
+コールバックによるマルチプールのフェイルオーバの制御
+WebLogic Server にはコールバック ハンドラを登録できます。コールバック ハンドラは、高可用性アルゴリズムのマルチプールが、その中の JDBC 接続プールからリストの次の接続プールにどのタイミングで接続要求をフェイルオーバするかを制御します。 
+コールバック ハンドラを使用するとフェイルオーバを行うかどうか、および行う場合にいつ行うのかを制御できるので、フェイルオーバの前にシステム上の他の準備 (データベースの準備や高可用性フレームワームとの通信) を行うことができます。
+コールバック ハンドラは、config.xml ファイルにあるマルチプールの属性を介して、マルチプールごとに登録されます。 したがって、コールバック ハンドラはコールバックを適用するマルチプールごとに登録する必要があります。 マルチプールごとに異なるコールバック ハンドラを登録することもできます。
+コールバック ハンドラの要件
+マルチプール内のフェイルオーバとフェイルバックを制御するために使用するコールバック ハンドラには、weblogic.jdbc.extensions.ConnectionPoolFailoverCallback インタフェースの実装が必要です。 マルチプールがリスト内の次の接続プールにフェイルオーバする必要があるとき、または以前に無効化された接続プールが利用可能になるときに、WebLogic Server は ConnectionPoolFailoverCallback インタフェースの allowPoolFailover() メソッドを呼び出し、3 つのパラメータ currPool、nextPool、および opcode (いずれも定義は後述) の値を渡します。 その後、WebLogic Server はコールバック ハンドラからの戻り値を待ってからタスクを完了します。
+アプリケーションは、下記に定義するように OK、RETRY_CURRENT、または DONOT_FAILOVER を返す必要があります。アプリケーションでは、フェイルオーバとフェイルバックのケースを処理します。
+詳細については、weblogic.jdbc.extensions.ConnectionPoolFailoverCallback インタフェースの Javadoc を参照してください。 
+注意:	 フェイルオーバのコールバック ハンドラは省略可能です。マルチプールのコンフィグレーションでコールバック ハンドラが指定されていない場合、WebLogic Server はフェイルオーバか、無効化されている接続プールを再び有効にする処理に進みます。
+コールバック ハンドラのコンフィグレーション
+フェイルオーバおよびフェイルバック機能に関連するマルチプールのコンフィグレーション属性には、以下の 2 つがあります。 
+ConnectionPoolFailoverCallbackHandler-マルチプールのフェイルオーバ コールバック ハンドラを登録するには、この属性の値を config.xml ファイルのマルチプールのコンフィグレーションに追加します。 値は、com.bea.samples.wls.jdbc.MultiPoolFailoverCallbackApplication のような絶対名でなければなりません。 
+HealthCheckFrequencySeconds-WebLogic Server がマルチプールで無効化されている (非アクティブな) 接続プールをチェックして利用可能かどうかを確認する頻度を制御するには、この属性の値を config.xml ファイルのマルチプールのコンフィグレーションに追加します。 詳細については、マルチプール内の失敗した接続プールが回復するときの自動的な再有効化を参照してください。
+これらの属性を config.xml ファイルに追加した後、マルチプールのエントリは次のようになります。
+<JDBCMultiPool AlgorithmType="High-Availability" Name="demoMultiPool" ConnectionPoolFailoverCallbackHandler="com.bea.samples.wls.jdbc.MultiPoolFailoverCallbackApplication"PoolList="demoPool2,demoPool" HealthCheckFrequencySeconds="120" Targets="examplesServer" />
+注意:	 これらの属性は、Administration Console では表示されません。 この機能を実装するには、config.xml ファイルのマルチプールのコンフィグレーションに手動でこれらの属性を追加する必要があります。
+仕組み-フェイルオーバ
+WebLogic Server は、現在の接続プールが接続テストに失敗したとき、または FailoverRequestIfBusy が有効になっている場合で現在の接続プールのすべての接続が使用中のときに、リスト内の次の接続プールに接続要求をフェイルオーバしようとします。 
+コールバック機能を有効にするには、config.xml ファイルのマルチプール コンフィグレーションの ConnectionPoolFailoverCallbackHandler 属性を使用してコールバック ハンドラを Weblogic Server に登録します。 
+高可用性アルゴリズムの場合、接続要求に対してリスト内の最初の接続プールから接続が提供されます。 最初の接続プールの接続が接続テストに失敗すると、WebLogic Server はその接続プールに非アクティブのマークを付け、それを無効化します。 コールバック ハンドラが登録されている場合、WebLogic Server は以下の情報を渡してコールバック ハンドラを呼び出し、下記のいずれかの戻り値を待ちます。
+currPool-フェイルオーバの場合、これはデータベース接続を提供するために現在使用されている接続プールの名前です。 これは、「フェイルオーバ元」の接続プールです。
+nextPool-マルチプールでリストされている次に利用可能な接続プールの名前です。 フェイルオーバの場合、これは「フェイルオーバ先」の接続プールです。
+opcode-呼び出しの理由を示す、以下のいずれかのコードです。 
+OPCODE_CURR_POOL_DEAD-WebLogic Server が現在の接続プールを非アクティブと判断し、無効化しました。 
+OPCODE_CURR_POOL_BUSY-接続プールのすべてのデータベース接続が使用中です (マルチプールのコンフィグレーションで FailoverIfBusy=true が設定されている必要がある。 マルチプールの使用されている接続プールのフェイルオーバの有効化を参照)。
+フェイルオーバは、接続要求と同期の関係にあります。 フェイルオーバは、WebLogic Server が接続要求を満たそうとしているときにのみ行われます。 
+コールバック ハンドラからの戻り値は、以下の 3 つのオプションのいずれかを示します。
+OK-処理を進めます。 この場合、リストの次の接続プールにフェイルオーバすることを意味します。
+RETRY_CURRENT-現在の接続プールで接続要求を再試行します。
+DONOT_FAILOVER-現在の接続要求を再試行せず、フェイルオーバを行いません。 weblogic.jdbc.extensions.PoolUnavailableSQLException が送出されます。 
+WebLogic Server は、コールバック ハンドラから返された値に基づいて動作します。
+2 番目の接続プールが失敗した場合、マルチプール内に次に利用可能な接続プールがあれば WebLogic Server はそれに対してフェイルオーバを試み、前回のフェイルオーバと同じようにコールバック ハンドラを再び呼び出します。
+注意:	 接続プールが手動で無効化されている場合、WebLogic Server はコールバック ハンドラを呼び出しません。
+ロード バランシング アルゴリズムのマルチプールの場合、WebLogic Server は接続プールが無効化されているときにコールバック ハンドラを呼び出しません。 ただし、無効化されている接続プールを再び有効化するときにはコールバック ハンドラを呼び出します。 詳細については、次の節を参照してください。
+コールバックによるマルチプールのフェイルバックの制御
+マルチプールのフェイルオーバ コールバック ハンドラを登録すると、WebLogic Server は自動的に無効化された接続プールを再び有効化するときに同じコールバック ハンドラを呼び出します。 コールバックを使用すると無効化されている接続プールが再び有効化されるかどうか、および有効化される場合はいつ有効化されるかを制御できるので、接続プールの再有効化の前にシステム上の他の準備 (データベースの準備や高可用性フレームワームとの通信) を行うことができます。
+コールバック ハンドラは、config.xml ファイルにあるマルチプールの属性を介して、マルチプールごとに登録されます。 したがって、コールバック ハンドラはコールバックを適用するマルチプールごとに登録する必要があります。 マルチプールごとに異なるコールバック ハンドラを登録することもできます。
+コールバック ハンドラの詳細については、以下の節を参照してください。
+コールバック ハンドラの要件
+コールバック ハンドラのコンフィグレーション
+仕組み-フェイルバック
+WebLogic Server は、自動的に無効化されているマルチプール内の接続プールの状態を定期的にチェックします (マルチプール内の失敗した接続プールが回復するときの自動的な再有効化を参照)。 無効化されている接続プールが利用可能になり、フェイルオーバ コールバック ハンドラが登録されている場合、WebLogic Server は以下の情報を渡してコールバック ハンドラを呼び出し、戻り値を待ちます。
+currPool-フェイルバックの場合、これは以前に無効化され、現在は利用可能で再有効化できる接続プールの名前です。 
+nextPool-フェイルバックの場合、これは null です。
+opcode-呼び出しの理由を示す、以下のいずれかのコードです。 フェイルバックの場合、コードは常に OPCODE_REENABLE_CURR_POOL です。このコードは、currPool の接続プールが現時点で利用可能であることを示します。
+フェイルバック (無効化されている接続プールの自動的な再有効化) は、フェイルオーバとは異なります。フェイルオーバは接続要求と同期的な関係にありますが、フェイルオーバは非同期です。 
+コールバック ハンドラは、以下のいずれかの値を返します。
+OK-処理を進めます。 この場合は、指定された接続プールを再び有効化することを意味します。 WebLogic Server は、マルチプールのアルゴリズムと、接続プールのリストにおける位置に基づいて、その接続プールへの接続要求の転送を再開します。
+DONOT_FAILOVER-currPool の接続プールを再有効化しません。 使用中の接続プールから引き続き接続要求に対処します。
+WebLogic Server は、コールバック ハンドラから返された値に基づいて動作します。
+コールバック ハンドラが DONOT_FAILOVER を返す場合、WebLogic Server はマルチプール コンフィグレーションの HealthCheckFrequencySeconds 属性で決められたとおりに次のテスト サイクルで接続プールを再び有効化しようとし、そのプロセスの過程でコールバック ハンドラを呼び出します。
+マルチプールで接続プールがリストされる順序はとても重要です。 高可用性アルゴリズムのマルチプールは常に、接続プールのリストの最初に利用可能な接続プールから接続要求に対応しようとします。 以下のシナリオを検討してください。
+MultiPool_1 は高可用性アルゴリズムを使用し、ConnectionPoolFailoverCallbackHandler が登録されていて、3 つの接続プール CP1、CP2、および CP3 をこの順序で保持しています。 
+CP1 が無効になり、MultiPool_1 は接続要求を CP2 にフェイルオーバします。 
+次に CP2 が無効になり、MultiPool_1 は接続要求を CP3 にフェイルオーバします。 
+しばらくして、CP1 が再び利用可能になり、コールバック ハンドラによって WebLogic Server が接続プールを再有効化できるようになります。 それ以降の接続要求には、CP1 から接続が提供されるようになります。これは、CP1 がマルチプールで最初にリストされている接続プールであるためです。
+CP2 が続いて利用可能になり、コールバック ハンドラが WebLogic Server による接続プールの再有効化を可能にしても、接続要求は引き続き CP1 から接続を提供されます。これは、CP1 が接続プールのリストで CP2 より前に位置しているためです。
+マルチプール フェイルオーバの制限事項と要件
+WebLogic Server はマルチプール用の高可用性アルゴリズムを備えており、接続プールで障害 (データベース管理システムのクラッシュなど) が発生しても、システムをそのまま稼動させることができます。 ただし、システムをコンフィグレーションするときには以下の制限と要件を考慮する必要があります。
+フェイルオーバを有効にするための予約時の接続のテスト
+接続プールでは、いつデータベース接続が失われたかを識別するために TestConnectionsOnReserve 機能を使用します。 接続は、アプリケーションによって予約されるまで、自動的にはテストされません。 マルチプール内の接続プールに TestConnectionsOnReserve=true を設定する必要があります。 この機能をオンにすると、各接続はアプリケーションに戻される前にテストされます。これは、高可用性アルゴリズムにおいて不可欠な処理です。 高可用性アルゴリズムでは、マルチプール内の次の接続プールにフェイルオーバするタイミングが、予約時の接続テストの結果に基づいて決定されます。 テストが失敗すると、接続プールによって接続が再作成されます。 この再作成にも失敗すると、マルチプールが次の接続プールにフェイルオーバします。マルチプールのフェイルオーバの拡張の詳細については、マルチプールのフェイルオーバの拡張を参照してください。
+使用中の接続ではフェイルオーバは行われない
+予約後に接続が失敗する可能性もありますが、これについてはアプリケーションで処理する必要があります。 WebLogic Server では、アプリケーションで使用中に失敗した接続をフェイルオーバさせることはできません。 接続の使用中に障害が発生した場合は、トランザクションをやり直す必要があり、こうした障害が処理できるようにコーディングしておく必要があります。
+DataSource のコンフィグレーションと使い方
+接続プールやマルチプールと同様に、DataSource オブジェクトは Administration Console または WebLogic 管理 API を使用して作成できます。DataSource オブジェクトを定義して、トランザクション サービスを有効または無効にできます。DataSource のプール名属性を定義する前に、接続プールとマルチプールをコンフィグレーションします。 
+DataSource オブジェクトを JNDI と組み合わせると、データベースへの接続を提供する接続プールにアクセスできます。個々の DataSource は、1 つの接続プール、またはマルチプールを参照できます。ただし、単一の接続プールを使用する複数の DataSource を定義できます。これにより、同じデータベースを共有するトランザクション対応 DataSource オブジェクトとトランザクション非対応 DataSource オブジェクトの両方を定義できます。
+WebLogic Server では、2 種類の DataSource オブジェクトがサポートされます。
+DataSource (ローカル トランザクションのみ)
+TxDataSource (分散トランザクション)
+アプリケーションで次のいずれかの基準が該当する場合は、WebLogic Server で TxDataSource を使用してください。
+Java Transaction API (JTA) を使用している
+WebLogic Server EJB コンテナを使用して、トランザクションを管理している
+単一のトランザクション中に、何度もデータベースが更新されている
+TxDataSource の使い方、およびコンフィグレーションの方法については、『管理者ガイド』の「接続プール、マルチプール、およびデータソースの JDBC コンフィグレーション ガイドライン」を参照してください。
+アプリケーションで DataSource を使用して、接続プールからデータベース接続を取得する (推奨) 場合は、アプリケーションを実行する前に、Administration Console で DataSource 定義します。 DataSource の作成手順については、Administration Console オンライン ヘルプを参照してください。 TxDataSource の作成手順については、Administration Console オンライン ヘルプを参照してください。
+DataSource オブジェクトにアクセスするパッケージのインポート
+アプリケーションで DataSource オブジェクトを使用するには、以下のクラスをクライアント コードにインポートします。
+import java.sql.*;import java.util.*;import javax.naming.*;
+DataSource を使用したクライアント接続の取得
+JDBC クライアントから接続を取得するには、以下のコードに示すように、Java Naming and Directory Interface (JDNI) ルックアップを使用して DataSource オブジェクトを見つけます。 
+Context ctx = null;  Hashtable ht = new Hashtable();  ht.put(Context.INITIAL_CONTEXT_FACTORY,         "weblogic.jndi.WLInitialContextFactory");  ht.put(Context.PROVIDER_URL,         "t3://hostname:port");
+try {    ctx = new InitialContext(ht);    javax.sql.DataSource ds      = (javax.sql.DataSource) ctx.lookup ("myJtsDataSource");   java.sql.Connection conn = ds.getConnection();
+// これで conn オブジェクトを使用して// 文を作成し、結果セットを検索できる
+Statement stmt = conn.createStatement();stmt.execute("select * from someTable");ResultSet rs = stmt.getResultSet();
+// 終了したら文と接続オブジェクトをクローズする
+stmt.close();   conn.close(); }  catch (NamingException e) {// エラー発生  }  finally {    try {ctx.close();}  catch (Exception e) {// エラー発生    }  }
+(使用する WebLogic Server に合わせて適切な hostname と port 番号に置き換えます。)
+注意:	 上のコードでは、JNDI コンテキストを取得するためにいくつかの使用可能なプロシージャが使用されています。JNDI の詳細については、『WebLogic JNDI プログラマーズ ガイド』を参照してください。
+コード例
+WebLogic Server の samples/examples/jdbc/datasource ディレクトリに収められている DataSource コード例を参照してください。
+JDBC データ ソース ファクトリ
+WebLogic Server では、JDBC データ ソース リソースを、リソース ファクトリとして WebLogic Server JNDI ツリーにバインドできます。 その後、EJB デプロイメント記述子のリソース ファクトリ参照を、実行中の WebLogic Server の利用可能なリソース ファクトリにマップすると、接続プールから接続を取得できます。 
+JDBC データ ソース ファクトリの作成、および使用については、『WebLogic エンタープライズ JavaBeans プログラマーズ ガイド』の「リソース ファクトリ」を参照してください。
+WebLogic JDBC のコンフィグレーションと管理

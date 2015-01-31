@@ -1,0 +1,106 @@
+English
+これはJava実装の京都言語モデルツールキット(Kylm)のホームページです。
+Kylmに以下のような機能が揃っています:
+様々な言語モデルを比較するツール
+文字ベースの未知語モデルを構築する機能
+Kneser-Ney、Modified Kneser-Ney、Witten-Bell、Good-Turingなどの平滑化
+OpenFstやKyfdなどで利用できるWFST形式での出力
+ダウンロード
+仕様
+CountNgrams
+CrossEntropy
+FAQ
+開発情報
+ダウンロード・インストール
+最新版: Kylm 0.0.7
+ソースコードはgithubにて。
+プログラム仕様
+CountNgrams
+コーパスから平滑化されたn-gramモデルを構築するプログラムです。
+使用例: java -cp kylm.jar kylm.main.CountNgrams training.txt model.arpa
+N-gramモデルオプション:
+-n:         n-gramオーダ [デフォルト: 3]
+-trim:      指定頻度以下のn-gramを削除する(例: 0:1:1)
+-name:      モデルの名前(モデル比較の時に用いる)
+-smoothuni: 1-gramの平滑化を行う
+記号・語彙オプション:
+-vocab:     語彙の入力ファイル
+-startsym:  文開始記号 [デフォルト: <s>]
+-termsym:   文終了記号 [デフォルト: </s>]
+-vocabout:  語彙の出力ファイル
+-ukcutoff:  指定頻度以下の単語を未知語とする [デフォルト: 0]
+-uksym:     未知語記号 [デフォルト: <unk>]
+-ukexpand:  未知語を展開する
+-ukmodel:   未知語のモデルを作る。複数指定可。他のモデルを含めるモデルは
+最後に指定。
+指定形式: 「記号:文字語彙サイズ[:正規表現(.*)][:オーダ(2)][:平滑化(wb)]
+クラスオプション
+-classes:   単語クラス指定ファイル (形式:「クラス 単語 [確率]」)
+平滑化オプション [デフォルト: kn]
+-ml:        最尤推定
+-gt:        Good-Turing平滑化
+-wb:        Witten-Bell平滑化
+-abs:       絶対平滑化
+-kn:        Kneser-Ney平滑化
+-mkn:       Modified Kneser-Ney平滑化(Chen & Goodman)
+出力オプション [デフォルト: arpa]
+-bin:       バイナリ出力
+-wfst:      重み付き有限状態トランスデューサー(WFST)出力
+-arpa:      ARPA形式テキスト出力
+-neginf:    バックオフ値がないn-gramに使うバックオフ値 [デフォルト: null, 例: -99]
+その他のオプション
+-debug:     出力するデバッグ情報のレベル [デフォルト: 0]
+CrossEntropy
+テストデータを利用して、言語モデルのクロスエントロピーを計算します。
+Usage: java -cp kylm.jar kylm.main.CrossEntropy [OPTIONS] test.txt
+Example: CrossEntropy -arpa model1.arpa:model2.arpa test.txt
+-arpa:  ARPA形式のモデルファイル (model1.arpa:model2.arpa)
+-bin:   バイナリ形式のモデルファイル (model3.bin:model4.bin)
+-debug: 出力する情報:0=文章, 1=文, 2=単語 [デフォルト: 0]
+Kylm API
+FAQ
+未知語に対応できるモデルの作り方は?
+一番簡単なやりかたは「-smoothuni」オプションを利用することです。これによりモデルunigramでも平滑化されるので、残りの確率が未知語に割り当てられます。
+もう1つのやり方は「-ukcutoff 1」を設定することです(1の代わりに違う整数も利用可)。これだと1以下の頻度を持つ単語は未知語として扱われるため、ある程度の確率が未知語に割り当てられることが保証されます。
+開発情報
+リーダー
+Graham Neubig
+プロジェクト参加者
+Xuchen Yao
+他の開発者は歓迎します。
+ご興味があればkylm@までご連絡ください。 
+GNU Lesser General Public Licenseに従って利用、再配布できます。
+バージョン歴
+予定機能
+Pitman-Yorモデル
+Latent Dirichlet Allocation
+Good-Turing平滑化のための線形回帰
+モデルの線形補間
+クラスの自動獲得
+Ver. 0.0.7 (4/21/2012)
+Modified Kneser-Neyのパラメータを推定するのに十分なデータがない場合に警告を出すように改良(ご指摘いただいたDinu John氏に感謝します)
+Ver. 0.0.6 (5/21/2010)
+語彙を人手で設定し、その語彙が学習データに現れずにテストデータのみに現れた場合のクラッシュを修正した(ご指摘いただいたZhonghua Qu氏に感謝します)
+Ver. 0.0.5 (11/25/2009)
+文開始記号と文終了記号のバグを修正(ご指摘いただいた谷口徹氏に感謝します)
+Ver. 0.0.4 (11/13/2009)
+クラス言語モデルのサポート
+1-gramの平滑化
+異なった文開始記号と文終了記号が利用可能に
+Modified Kneser-Ney平滑化
+未知語モデルのバグを修正
+Version 0.0.3 (6/22/2009)
+スピードとメモリ量の効率化
+未知語のための文字ベースモデル化
+バグの修正
+Version 0.0.2 (5/28/2009)
+n-gramの頻度制限を指定する機能を追加
+語彙入力ファイルが利用可能
+WFST出力
+マニュアルの拡大
+Version 0.0.1
+CountNgramsとCrossEntropyの初リリース
+Maximum Likelihood, Good-Turing, Witten-Bell, Kneser-Ney平滑化
+ARPA/バイナリの入出力
+JUnitによる回帰テスト
+Kylm - 京都言語モデルツールキット

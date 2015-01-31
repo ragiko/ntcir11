@@ -1,0 +1,133 @@
+IDS10-J. 一文字を構成するデータを分割しない
+過去のソフトウェアでは、文字列を構成する文字は8ビットであると想定していることが多い(Java のbyte 型)。Java 言語では文字列を構成する文字は16ビットである(Java の char 型)。残念ながら、byte 型、char 型のいずれも、すべての Unicode 文字を表現することはできない。多くの場合、文字列は UTF-8 エンコーディングで扱われる。UTF-8 では、1文字のサイズは可変長である。
+Java の文字列は文字型データの配列あるいはバイト型データの配列として保存されるが、1文字を表すデータは byte 型や char 型データ1個ではなく、2つ以上の並びで表現されることがある。char 型や byte 型の配列を分割すると、多バイト文字を表すデータを分割してしまう危険がある。
+補助文字、多バイト文字、結合文字(他の文字を変化させる文字)の存在を考慮しないと、攻撃者によって入力検査を回避されてしまうかもしれない。したがって、1文字を表現するバイトの並びを分割してはならない。
+多バイト文字
+1文字の表現に2バイト以上必要となる文字セットでは、多バイト文字エンコーディングが使われる。たとえば、日本語文字エンコーディングの一つである Shift-JIS は多バイト文字エンコーディングであり、最大2バイトで1文字を表現している(先頭バイトと末尾バイト)。
+Byte Type
+範囲
+2バイト文字の末尾バイトの値の範囲は、1バイト文字の範囲や2バイト文字の先頭バイトの値の範囲とオーバラップしている。多バイト文字がバッファの境界で分断されると、分断されない場合とは異なる解釈をされる可能性がある。このような違いが発生する原因は、文字を構成するバイトデータを多義的に解釈できるからである[Phillips 2005]。
+補助文字
+Java API 仕様[API 2006] の Character クラスの説明には、「Unicode 文字表現」について以下のように記されている。
+char データ型(Character オブジェクトにカプセル化される値)は、本来の Unicode 仕様に基づいている。Unicode 仕様は、固定幅16ビットエンティティーとして定義されている。Unicode 標準は、16ビット以上の表現を必要とする文字を許容するように変更された。適正な「コードポイント」の範囲は、現在 U+0000 〜 U+10FFFF であり、「Unicode スカラー値」として知られている。
+Java 2 プラットフォームは、char 配列、String クラスおよび StringBuffer クラスで UTF-16 表現を使う。UTF-16 表現では、補助文字は char 値のペアとして表現され、「上位サロゲート」範囲(\uD800-\uDBFF)からの最初の値と、「下位サロゲート」範囲(\uDC00-\uDFFF)からの第2の値から構成される。
+int 値は、補助コードポイントを含むすべての Unicode コードポイントを表す。int の下位(最下位)21ビットは、Unicode コードポイントを表すために使用され、上位(最上位)11ビットはゼロである必要がある。特に指定されないかぎり、補助文字とサロゲート char 値に関する動作は次のとおりである。
+char 値だけを受け入れるメソッドは補助文字に対応できない。これらのメソッドはサロゲート範囲の char 値を未定義の文字として扱う。たとえば、「\uD840」という値に下位サロゲート値が続く場合には文字を表しているが、Character.isLetter('\uD840') は false を返す
+int 値を受け入れるメソッドは、補助文字を含むすべての Unicode 文字に対応する。たとえば、Character.isLetter(0x2F81A) は、コードポイント値が文字(CJK統合漢字)を表すため、true を返す
+違反コード (read() メソッド)
+以下のコード例は、ソケットからデータを最大1024バイト読み込み、読み込んだデータを String 型データとして再構成しようとしている。「FIO10-J. read() を使って配列にデータを読み込むときには配列への読み込みが意図した通りに行われたことを確認する」で推奨されているように、while ループを使ってバイトデータを読み込んでいる。ソケットから読み込んだデータが1024バイト以上ある場合には例外を投げる。これにより、信頼できない入力の読込みでメモリを使い果たすことを防止している。
+public final int MAX_SIZE = 1024;
+public String readBytes(Socket socket) throws IOException {
+InputStream in = socket.getInputStream();
+byte[] data = new byte[MAX_SIZE+1];
+int offset = 0;
+int bytesRead = 0;
+String str = new String();
+while ((bytesRead = in.read(data, offset, data.length - offset)) != -1) {
+offset += bytesRead;
+str += new String(data, offset, data.length - offset, "UTF-8");
+if (offset >= data.length) {
+throw new IOException("Too much input");
+}
+}
+in.close();
+return str;
+}
+このコードでは、多バイトエンコーディングで表現された文字の区切りとループの繰り返しによるデータの区切りとの間に不一致が起こる可能性を考慮していない。read() 呼出しで読み込んだデータの最後のバイトが多バイト文字の先頭バイトである場合、末尾バイトは while ループの次の繰り返しまで読み込まれない。しかし、ループの中で String が生成される間に多バイトエンコーディングは分割されてしまう。その結果、多バイトエンコーディングが誤解釈されてしまう。
+適合コード (read() メソッド)
+以下の適合コードでは、すべてのデータを読み込んでから文字列を生成している。
+public final int MAX_SIZE = 1024;
+public String readBytes(Socket socket) throws IOException {
+InputStream in = socket.getInputStream();
+byte[] data = new byte[MAX_SIZE+1];
+int offset = 0;
+int bytesRead = 0;
+while ((bytesRead = in.read(data, offset, data.length - offset)) != -1) {
+offset += bytesRead;
+if (offset >= data.length) {
+throw new IOException("Too much input");
+}
+}
+String str = new String(data, "UTF-8");
+in.close();
+return str;
+}
+すべてのデータを読み込んでから文字列を生成することで、多バイト文字がバッファをまたいで分割されるのを回避している。
+適合コード (Reader クラス)
+以下の適合コードでは、InputStream ではなく Reader を使用している。Reader クラスはデータを読み込みながらバイトデータから文字列に変換するため、多バイト文字を分割する危険がない。ソケットに1024バイトではなく1024文字を超えるデータがある場合、このコードは処理を中断する。
+public final int MAX_SIZE = 1024;
+public String readBytes(Socket socket) throws IOException {
+InputStream in = socket.getInputStream();
+Reader r = new InputStreamReader(in, "UTF-8");
+char[] data = new char[MAX_SIZE+1];
+int offset = 0;
+int charsRead = 0;
+String str = new String(data);
+while ((charsRead = r.read(data, offset, data.length - offset)) != -1) {
+offset += charsRead;
+str += new String(data, offset, data.length - offset);
+if (offset >= data.length) {
+throw new IOException("Too much input");
+}
+}
+in.close();
+return str;
+}
+違反コード (部分文字列)
+以下のコード例では、string の先頭何文字かを削除しようとしている。しかし、Character.isLetter() は補助文字や結合文字に対応していないため、適切な処理が行われない[Hornig 2007]。
+// 補助文字や結合文字があると正しく処理できない
+public static String trim_bad1(String string) {
+char ch;
+int i;
+for (i = 0; i < string.length(); i += 1) {
+ch = string.charAt(i);
+if (!Character.isLetter(ch)) {
+break;
+}
+}
+return string.substring(i);
+}
+違反コード (部分文字列)
+以下のコード例では、String.codePointAt() メソッドを使うことで前述のコードの問題を解決しようとしている。String.codePointAt() メソッドの引数は int である。補助文字は正しく処理できるが、結合文字は正しく処理できない[Hornig 2007]。
+// 結合文字があると正しく処理できない
+public static String trim_bad2(String string) {
+int ch;
+int i;
+for (i = 0; i < string.length(); i += Character.charCount(ch)) {
+ch = string.codePointAt(i);
+if (!Character.isLetter(ch)) {
+break;
+}
+} 
+return string.substring(i);
+}
+適合コード (部分文字列)
+以下の適合コードは補助文字、結合文字どちらも正しく処理する[Hornig 2007]。Java API [API 2006] の java.text.BreakIterator クラスの説明には以下のように書かれている。
+BreakIterator クラスは、テキスト内の境界の位置を見つけるメソッドを実装している。BreakIterator のインスタンスは現在の位置を維持し、テキストをスキャンして境界が発生する文字のインデックスを返す。
+返される境界は、補助文字、結合文字シーケンス、または合字クラスタの境界になる場合がある。たとえば、アクセント付きの文字は、基準文字と発音区別符号として格納されている場合がある。
+public static String trim_good(String string) {
+BreakIterator iter = BreakIterator.getCharacterInstance();
+iter.setText(string);
+int i;
+for (i = iter.first(); i != BreakIterator.DONE; i = iter.next()) {
+int ch = string.codePointAt(i);
+if (!Character.isLetter(ch)) {
+break;
+}    
+}
+if (i == BreakIterator.DONE) { // 最初あるいは最後のテキスト境界
+return ""; // 入力が空白あるいは多バイト文字の第一バイトのみ
+} else {
+return string.substring(i);
+}
+}
+検索やソート処理においてロケールに依存した String データの比較を行う場合は java.text.Collator クラスを使う。
+リスク評価
+補助文字や結合文字を適切に扱わなければ、予期せぬ動作が発生する可能性がある。
+ルール 
+深刻度 
+可能性 
+修正コスト 
+優先度 
+レベル 
+IDS10-J. 一文字を構成するデータを分割しない

@@ -1,0 +1,17 @@
+ むかしJavascriptで時計なんか作るのは大変面倒だった記憶があるんですが、今はもうjQueryライブラリーで結構簡単にできてしまって驚きです。HTML5とセットになって更に便利になってゆくと考えるとかつての苦労が嘘のようであります。 何秒というような時間経過を測ったりするのだったら、timersというライブラリーがあったので紹介。結構よくできてます。 
+時間スタートの命令処理
+jQuery(<対象オブジェクト>).everyTime(<ミリ秒数>,'<関数名(省略可)>',<関数命令>);指定秒ごとに処理を繰り替えしてくれます。繰り返す処理はいつものようにこのメソッドの中に入れ子にしてやるだけで大丈夫。感覚的にeachとかにちょっと似ている感じです。この関数を実行させるとずっと永遠にループするので、この関数を実行したら今度はあるところで時間をストップさせます。
+時間をストップさせる
+jQuery(<対象オブジェクト>).stopTime('<関数名(省略可)>');
+上記で指定した関数名を指定してストップさせます。適当な条件文の中で停止するという感じになると思います。var i=0;
+var lim=30;
+jQuery(document).everyTime(1000,'timer01',function(){
+i++;
+if(i>=lim) jQuery(document).stopTime('timer01');
+jQuery('.sample01').text(i);
+});
+一定時間経過後に実行する処理
+jQuery(<対象オブジェクト>).oneTime(<ミリ秒数>,<関数命令>); 一定期間後の一回処理はこの関数を用いると便利です。これも終了時の処理を入れ子にしておくだけでOK。jQuery(document).oneTime(5000,function(){
+jQuery('.sample').text('停止');
+});上記の例では<span class="sample"></span>に指定秒後に書き出すといったものです。使い方もすこぶる簡単で、<script type="text/javascript" src="js/jquery-1.4.3.min.js"></script><script type="text/javascript" src="js/jquery.timers.js"></script>と二つセットで呼んでやって、上記の命令文をどっかに書けばOKです。 ここのページで見つけました。サンプルもシンプルでいいです。http://s-ej.com/sample/jqp/jqp0004/
+jQueryのtimersプラグイン - omnioo lab.

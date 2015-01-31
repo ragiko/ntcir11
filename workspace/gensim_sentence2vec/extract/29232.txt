@@ -1,0 +1,200 @@
+
+第98章 クリップボード その4
+今回は、画面(スクリーン)全体の画像をクリップボードに送り、かつ
+自分のクライアント領域にそのBMPを表示するプログラムを作ります。
+画面全体の画像からビットマップを作るにはどうしたらよいのでしょうか。
+まず、スクリーンのhdcを取得します。
+これは、CreateDCで作ります。第47章ですでに解説してあります。
+また、CreateDCで作ったhdcは不要になったらDeletDCで破棄します。
+ReleaseDCではないので注意してください。
+次にこのhdcと互換性のあるメモリデバイスコンテキストを作ります。
+さらに、hdcと互換性のあるビットマップを作成します(CreateCompatibleBitmap)。
+メモリデバイスコンテキストにこのビットマップを選択します。
+BitBltでhdcをメモリデバイスコンテキストに転送します。
+必要に応じてビットマップをクリップボードに転送します。
+メモリデバイスコンテキストや、スクリーンのデバイスコンテキストを破棄します。
+もし、ビットマップをクリップボードに転送したのならこれを
+破棄してはいけません。
+メニューから「スクリーンをコピーせよ」との指令が来たら
+これらの一連の動作を実行すれば良いことになります。
+では、スクリーン全体の画像を自分のクライアント領域に描画するには
+どうしたらよいでしょうか。
+これは、簡単です。WM_PAINTメッセージのところで作業を行います。
+以前にリソースのBMPを表示するプログラムを作りましたがこれと同じです。
+(第26章)
+hBitmapはこのメッセージのところで取得するのではなくすでに上の作業で
+取得しているので簡単です。もし、hBitmapがまだ有効でないときは
+何もせずにDefWindowProcに返します。
+さて、これで画面全体の画像をクリップボードに転送してなおかつ
+自分のクライアント領域にこれを表示するプログラムの出来上がりです。
+では、プログラムを見ていくことにします。
+// bmp01.rcの一部
+// 自分で作るときの注意はいつもと同じです
+///////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+MYMENU MENU DISCARDABLE 
+BEGIN
+POPUP "ファイル(&F)"
+BEGIN
+MENUITEM "終了(&X)",                    IDM_END
+END
+MENUITEM "画面コピー(&C)",              IDM_GET
+END
+単なる、メニューのリソースです。
+//	    bmp01.cpp
+#define STRICT
+#include <windows.h>
+#include "resource.h"
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+BOOL InitApp(HINSTANCE);
+BOOL InitInstance(HINSTANCE, int);
+char szClassName[] = "bmp01";        //ウィンドウクラス
+int WINAPI WinMain(HINSTANCE hCurInst, HINSTANCE hPrevInst,
+LPSTR lpsCmdLine, int nCmdShow)
+{
+MSG msg;
+if (!InitApp(hCurInst))
+return FALSE;
+if (!InitInstance(hCurInst, nCmdShow)) 
+return FALSE;
+while (GetMessage(&msg, NULL, 0, 0)) {
+TranslateMessage(&msg);
+DispatchMessage(&msg);
+}
+return msg.wParam;
+}
+いつもと同じです。
+//ウィンドウ・クラスの登録
+BOOL InitApp(HINSTANCE hInst)
+{
+WNDCLASSEX wc;
+wc.cbSize = sizeof(WNDCLASSEX);
+wc.style = CS_HREDRAW | CS_VREDRAW;
+wc.lpfnWndProc = WndProc;    //プロシージャ名
+wc.cbClsExtra = 0;
+wc.cbWndExtra = 0;
+wc.hInstance = hInst;        //インスタンス
+wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+wc.lpszMenuName = "MYMENU";    //メニュー名
+wc.lpszClassName = (LPCSTR)szClassName;
+wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+return (RegisterClassEx(&wc));
+}
+いつもと同じです。メニュー名を忘れないでください。
+//ウィンドウの生成
+BOOL InitInstance(HINSTANCE hInst, int nCmdShow)
+{
+HWND hWnd;
+hWnd = CreateWindow(szClassName,
+"猫でもわかるクリップボード",//タイトルバーにこの名前が表示されます
+WS_OVERLAPPEDWINDOW,//ウィンドウの種類
+CW_USEDEFAULT,    //X座標
+CW_USEDEFAULT,    //Y座標
+CW_USEDEFAULT,    //幅
+CW_USEDEFAULT,    //高さ
+NULL,//親ウィンドウのハンドル、親を作るときはNULL
+NULL,//メニューハンドル、クラスメニューを使うときはNULL
+hInst,//インスタンスハンドル
+NULL);
+if (!hWnd)
+return FALSE;
+ShowWindow(hWnd, nCmdShow);
+UpdateWindow(hWnd);
+return TRUE;
+}
+これも、いつもと変わり映えしません。
+//ウィンドウプロシージャ
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+int id;
+static RECT rc;
+HDC hdc, hdcScreen, hdc_mem, hdc_mem_screen;
+static HBITMAP hBitmap;
+static int wx, wy;
+PAINTSTRUCT ps;
+switch (msg) {
+case WM_CREATE:
+wx = GetSystemMetrics(SM_CXSCREEN);
+wy = GetSystemMetrics(SM_CYSCREEN);
+break;
+case WM_PAINT:
+if (hBitmap) {
+hdc = BeginPaint(hWnd, &ps);
+hdc_mem = CreateCompatibleDC(hdc);
+SelectObject(hdc_mem, hBitmap);
+BitBlt(hdc, 0, 0, wx, wy, hdc_mem, 0, 0, SRCCOPY);
+DeleteDC(hdc_mem);
+EndPaint(hWnd, &ps);
+} else {
+return DefWindowProc(hWnd, msg, wp, lp);
+}
+break;
+case WM_COMMAND:
+switch (LOWORD(wp)) {
+case IDM_END:
+SendMessage(hWnd, WM_CLOSE, 0, 0);
+break;
+case IDM_GET:
+GetClientRect(hWnd, &rc);
+ShowWindow(hWnd, SW_HIDE);
+Sleep(500);
+hdcScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
+hdc_mem_screen = CreateCompatibleDC(hdcScreen);
+hBitmap = CreateCompatibleBitmap(hdcScreen, wx, wy);
+SelectObject(hdc_mem_screen, hBitmap);
+BitBlt(hdc_mem_screen, 0, 0, wx, wy, hdcScreen, 0, 0, SRCCOPY);
+if(OpenClipboard(hWnd) != 0) {
+EmptyClipboard();
+SetClipboardData(CF_BITMAP, hBitmap);
+CloseClipboard();
+}
+DeleteDC(hdc_mem_screen);
+DeleteDC(hdcScreen);
+ShowWindow(hWnd, SW_SHOWNORMAL);
+break;
+}
+break;
+case WM_CLOSE:
+id = MessageBox(hWnd,
+(LPCSTR)"終了してもよいですか",
+(LPCSTR)"終了確認",
+MB_YESNO | MB_ICONQUESTION);
+if (id == IDYES) {
+DestroyWindow(hWnd);
+}
+break;
+case WM_DESTROY:
+PostQuitMessage(0);
+break;
+default:
+return (DefWindowProc(hWnd, msg, wp, lp));
+}
+return 0L;
+}
+WM_CREATEメッセージのところで、画面全体の大きさを取得しています。
+これは、途中で変わることがないのでこのメッセージのところで取得しておいた
+方が便利です。
+WM_PAINTメッセージのところでhBitmapをクライアント領域に
+描画します(hBitmapが有効なときのみ)。先にも書いたようにリソースの
+ビットマップを表示するときと全く同じ方法です。
+メニューからIDM_GETが選択されたら、最初に書いた方法で
+hBitmapを作ります。そしてクリップボードに転送します。
+このhBitmapはWM_PAINTのところでも使うのでstatic宣言しています。
+なお、当たり前ですが画面全体の画像をビットマップにするとき
+自分自身のウィンドウが見えていては都合が悪いので一時的に
+ShowWindow関数を使って消えてもらっています。
+今回は、WM_PAINTメッセージの処理をしているのでウィンドウの大きさを
+変えたり、他のウィンドウの陰に隠されたりしてもクライアント領域の
+画像は消滅しません。
+[SDK Index]
+[総合Index]
+[Previous Chapter]
+[Next Chapter]
+Update Jan/04/1998 By Y.Kumei
+当ホーム・ページの一部または全部を無断で複写、複製、
+転載あるいはコンピュータ等のファイルに保存することを禁じます。
+第98章

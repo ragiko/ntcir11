@@ -1,0 +1,29 @@
+研究内容概要
+センサネットワークグループでは,多種・多量のセンサデータを提供する基盤として無線センサネットワークを活用するために,無線センサネットワークの共有インフラ化する研究に取り組んでいます.近年,携帯電話等に組み込まれたセンサを活用することでセンサデータを利用する情報システムが急増してきました.実世界の状態をより精細にシステムが把握する方法として,センサノードと呼ばれる,センサを搭載した小型コンピュータを環境内に設置し,無線通信でセンサデータを送信する無線センサネットワークに期待が集まり,実用化されはじめてきました.
+しかし,従来の無線センサネットワーク共有は特定のシステムに占有利用される設計となっており,システム開発毎に無線センサネットワークを設置する必要があり,システム全体の開発コストを押し上げる要因となっていました.
+そこで,本研究グループでは無線センサネットワークを共有インフラ化することを目的とし,無線センサネットワークのための自己適応ミドルウェアに関する研究に取り組んでいます.
+無線センサネットワークを共有化する自己適応ミドルウェア
+無線センサネットワークを共有インフラ化する場合,ミドルウェアは個々のアプリケーションが期待する品質(観測精度等)を満たすことが求められます.一方でネットワークを構成するセンサノードは,CPU,メモリ,通信帯域,バッテリ共に通常のコンピュータと比べて乏しく,限られた資源制約下で各アプリケーションの品質を保証する必要があります.そこで,個々のアプリケーションの資源消費量を抑えるために,アプリケーションが要求する観測品質を最小限で満たすように観測品質を調整するセンサモデルや,使用するセンサノードを最小限だけ選択する手法を提案しています.また,複数のアプリケーション実行に対応するために,アプリケーション間に対して公平に使用するセンサノードを割り当てる手法を提案しています.WSNアプリケーションは実行環境の変化に合わせて品質が変化するため,これらの手法は自己適応性を備えることが求められます.
+研究トピックの紹介
+観測感度を調整可能なセンサモデル
+多数のアプリケーションによって無線センサネットワークを共有化する場合,データ流通量が増大する.スケーラビリティを向上させるためには,個々のアプリケーションが期待する観測品質を落とさない範囲内で,可能な限り消費資源量を低減することが重要となる.従来では,センサノードの感度を必要最小限に抑えることで過剰な通信を抑える手法が提案されてきた.その中の一つにバイナリセンサモデルがある.バイナリセンサモデルは,センサの計測値に対して,閾値を超えたか否かを表す2値にマップすることで擬似的にセンサの感度を落とすことでデータ通信量を低減する.しかし,従来のバイナリセンサモデルでは感度の細かな調整ができず,アプリケーションに期待される観測品質に併せて個々のノードの感度を調整することが困難であった.そこで本研究では,ノードの感度を細かに調整可能なセンサモデルであるN-aryセンサモデルを提案した.N-aryセンサモデルは,バイナリセンサモデルを一般化し,センサの計測値をN値にマップする.このアリティNの値を調整することで個々のノードの感度を調整することが可能となる.さらに,アプリケーションへ期待される観測品質に併せて個々のノードのアリティNを設定する設定手法を提案した.個別にアリティNを適切に設定することで,アプリケーションが期待する観測品質を満たしつつ,データ流通量を抑えることができる.
+地理制約に基づく自己適応センサノード選択手法
+無線センサネットワークでは,各センサの消費電力量を抑えるために観測に用いるセンサ数を制限する手法が有効である.観測精度を低下させずにセンサ数を減少させるには,センサ毎に期待される観測精度などの有効性を評価し,適切なセンサの組み合わせを選択する必要がある.しかし,全てのセンサの組み合わせを評価すると,処理量が膨大となるため計算時間が増加してしまう.本論文では,処理量を低減した上で観測精度の高いセンサの組み合わせを選択する手法を提案する.本手法では追跡対象の一定範囲内にあるセンサ群から使用するセンサの組み合わせを選択する.広すぎる範囲から選択を行う場合,センサに期待される観測精度は向上する反面,処理量が増加する.逆に,狭すぎる範囲から選択を行う場合にはセンサの観測精度が低下してしまう.そこで,適切な範囲の広さに影響を与える要因を求め,環境に応じた適切な範囲の広さを求める.これにより,精度と処理量のトレードオフを適切に取ることが可能となる.
+複数のタスクに対するセンサノード割り当て手法
+無線センサネットワークはユビキタスコンピューティングの基盤として期待されている.今後,無線センサネットワークが大規模化・多目的化し,ネットワークに要求や優先度が異なった様々な種類のタスクが投入されることが考えられる.各タスクは実際にネットワークを構成しているセンサに指示を与えることで実行されるが,複数タスクの要求に沿ったセンサとタスク間の割当ては自明では無い.本研究ではまず,無線センサネットワークに存在する種々の制約を盛り込み,これらの問題を最適化問題として定式化を行う.定式化した問題に対し解の上限を与える事で,現在まで提案されてきた様々な発見的手法をより詳しく比較する事が可能になる.また,問題の性質を利用し,より効率の良い新たなアルゴリズムを提案する事も可能となる.簡単に言うと,本研究の目標は図中の小人(各タスクの割当てを決定する)を賢くすることである.
+無線センサネットワークによる観測結果に対する異常値の自動訂正手法
+無線センサネットワークでは,観測対象に関する高精度な観測結果を,効率よく,可能な限り長い期間提供することが目的となる.しかし,無線センサネットワークによる計測は,システムの状態や物理環境からの影響を受けやすく,計測結果に頻繁に異常値が含まれる.この異常値の混入によって,計測結果の正確さは失われてしまう.そこで本研究では,無線センサネットワークによる観測結果の信頼性を高めるために,異常値をシステムによって自動的に検出・訂正するフレームワークを提案する.異常値の訂正方法は,異常値の種類によって異なるため,本フレームワークでは,異常値の発生頻度やその連続性から,異常値の種類を自動で判別する.さらに,異常値の判別パターンを実行時に学習することで,異常値の判別精度を高める.これらの手法を用いることで,ネットワーク内の各ノードの判別・訂正動作を実行時に最適化し,長期間にわたって高精度な観測結果を提供することを可能とする.
+研究成果
+主な発表文献
+Valentina Baljak, Tei Kenji and Shinichi Honiden: "Fault Classification and Model Learning from Sensory Readings - Framework for Fault Tolerance in Wireless Sensor Networks", IEEE 8th International Conference on Intelligent Sensors, Sensor Networks and Information Processing (ISSNIP'13), April 2013.
+Valentina Baljak, Tei Kenji, Shinichi Honiden: "Faults in Sensory Readings: Classification and Model Learning", Sensors & Transducers, Vol.18, 177-187, January 2013.
+Valentina Baljak, Marius Tudor Benea, Amal El Fallah Seghrouchni, Cedric Herpson, , Shinichi Honiden, Thi Thuy Nga Nguyen, Andrei Olaru, Ryo Shimizu, Kenji Tei, Susumu Toriumi: "S-CLAIM: An Agent-based Programming Language for AmI, A Smart-Room Case Study", Procedia Computer Science, Vol.10, 30-37, 2012.
+Ehsan Warriach, Kenji Tei, Tuan Anh Nguyen, Marco Aiello: "A Hybrid Fault Detection Approach for Context-aware Wireless Sensor Networks", The 9th IEEE International Conference on Mobile Ad hoc and Sensor Systems (IEEE MASS2012), October 2012.
+Valentina Baljak, Kenji Tei, and Shinichi Honiden: "Classification of Faults in Sensor Readings with Statistical Pattern Recognition", The Sixth International Conference on Sensor Technologies and Applications (SENSORCOMM 2012), August 2012.
+Valantina Baljak, Marius Tudor Benea, Amal El Fallah Seghrouchni, Cedric Herpson, Shinichi Honiden, Thi Thuy Nga Nguyen, Andrei Olaru, RyoShimizu, Kenji Tei and Susumu Toriumi: "S-CLAIM: An Agent-based Programming language for AmI, A Smart-Room Case Study", The 3rd International Conference on Ambient Systems, Networks and Technologies (ANT-2012), August 2012.
+Ehsan Warriach, Kenji Tei, Tuan Anh Nguyen, Marco Aiello: "Fault Detection in Wireless Sensor Networks: a Hybrid Approach", Poster session of the 11th ACM/IEEE Conference on Information Processing in Sensor Networks (IPSN'12), April 2012.
+Susumu Toriumi, Shinichi Honiden: "Assignment of Sensors for Multiple Tasks Using Path Information", 9th IEEE/IFIP International Conference on Embedded and Ubiquitous Computing (EUC-2011), 120-127, October 2011
+Themistoklis Bourdenas, Kenji Tei, Shinichi Honiden and Morris Sloman: "Autonomic Role and Mission Allocation Framework for Wireless Sensor Networks", Fifth IEEE International Conference on Self-Adaptive and Self-Organizing Systems (SASO'11), October 3 - October 7, 2011.
+鄭 顕志,中里 彦俊,深澤 良彰,本位田 真一: "無線センサネットワークにおける対象追跡の分解能を調整可能なセンサモデル", 電気情報通信学会論文誌, Vol.J94-B(No.10), pp. 1351 -- 1362, 2011年10月
+鳥海晋, 本位田真一, "経路情報を用いた複数タスクへのセンサ割当&rdquo;情報処理学会論文誌特集「マルチメディア,分散,協調とモバイルシステム」Vol.52, No.3, 2011年3月.
+無線センサネットワーク | 本位田研究室

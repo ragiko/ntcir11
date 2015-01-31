@@ -1,0 +1,22 @@
+
+実務で利用するなら、アドホックな分析には Pig を多用、毎晩実行するような定型処理だけガッツリとチューニングした Java プログラムを利用、といった風に使い分けるのが現実的かと思います。
+Pig を使うための準備をする
+パッケージの追加
+Debian / Ubuntu を開発環境に使っていることを前提にします。 Cloudera の CDH3 のリポジトリを利用するのが最も手軽かと思います。
+Debian の場合こうします。
+# 公開鍵の追加
+curl -s http://archive.cloudera.com/debian/archive.key | sudo apt-key add -
+# ソースリストの記述
+sudo vim /etc/apt/sources.list.d/cdh3.list 
+# deb     http://archive.cloudera.com/debian squeeze-cdh3 contrib
+# deb-src http://archive.cloudera.com/debian squeeze-cdh3 contrib
+sudo apt-get update
+sudo apt-get install hadoop-pig
+Pig にはテスト目的のローカルモード、分散実行用の Hadoop モードといったものがあり、開発のためにはまずローカルモードでジョブが普通に実行できる状態を目指します。
+Java のインストール
+GNU/Linux ディストリビューションには OpenJDK などが用意されているかとは思いますが、 Pig のために Oracle JDK を公式サイトからダウンロードします。
+あなたとJAVA, 今すぐダウンロード
+ちなみに筆者はプログラミング言語環境について以前にも書いたように /opt に入れますので /opt/java/jdk/current/bin あたりにパスを通し、また JAVA_HOME などの環境変数も適切に設定します。
+動作確認をする
+きちんと動作するかどうかの確認には Pig のチュートリアルを実行してみるのが良いでしょう。
+Apache Pig で大規模データセットを分散処理する - Qiita

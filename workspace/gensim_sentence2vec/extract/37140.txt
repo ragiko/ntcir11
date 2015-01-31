@@ -1,0 +1,106 @@
+例外処理基本
+javaには例外処理という機能があります。C++にもありますが、javaの方がよりその機能を強化しています。
+例外処理とは、簡単に言えば、不正な動作を行ったときに警告をする機能です。
+もし、例外処理がないとしたら
+/**
+* 生まれ年から年齢を計算するクラス(2005年度版)
+* @param year 生まれ年
+*/
+int birthYearToAge(int year){
+if(year > 2005){//そんなやつはいない!
+return -1;	//とりあえず-1でも返しておくか・・・
+}
+return 2005-year;
+}
+ということになりますが、この場合birthYearToAgeを使う人は「不正な値を入力した場合、-1が返ってくる」というルールを覚えていなければ行けません。そして、-1が返って来た時の処理を書いておかなければいけません。
+覚えていればいいのですが、たまに忘れてしまうことがあります。というか、忘れます。よく忘れます。自分で作った関数でも1年もすれば間違いなく忘れているでしょう。
+一方例外処理を使うと忘れることなく不正な値を入力したときの処理を書くことが出来ます。
+/**
+* 未来時間を入れたときの例外
+*/
+class FutureYearException extends Exception{
+//中身はなくてもOk
+}
+・・・
+/**
+* 生まれ年から年齢を計算するクラス(2005年度版)
+* @param year 生まれ年
+*/
+int birthYearToAge(int year)throws FutureYearException{
+if(year > 2005){//そんなやつはいない!
+throw new FutureYearException();	//未来の時間を入れましたよ!という例外を投げる
+}
+return 2005-year;
+}
+このように書くことで、もし、yearが2005以上の値だった場合FutureYearExceptionというクラスが
+例外クラスとしてこのメソッドを呼び出した側に投げられます。
+ちなみに、throwというキーワードからも分かるように、例外が発生したときExceptionが送られてくることを
+「例外が投げられた」といいます。
+さて、このような場合、
+int a = birthYearToAge(1976);	//コンパイルエラー
+という書き方は出来ません。かならず、try～catchフレーズで囲む必要があります。
+try{
+int year=2112;
+int age = birthYearToAge(year);	//ドラえもんは今何歳かな・・・
+System.out.println(year+"年生まれの人の年齢は"+age+"才ですよ");
+}catch(FutureYearException e){
+//FutureYearExceptionが投げられたときの処理
+System.out.println("未来に生まれる人の年齢は計算できません・・・");
+}finally{
+//例外があってもなくても必ず行う処理
+System.out.println("処理終わり");
+}
+$ java ExceptionTest
+未来に生まれる人の年齢は計算できません・・・ 残念!ドラえもんの年齢は分からない!
+処理終わり
+RuntimeException
+さて、例外が投げられる場合、必ずtry-catchを書かなければいけませんでした。
+しかしながら、実際には例外は発生するものの、いちいちtry-catchを書くのが面倒な場合があります。
+たとえば、
+String name = null;
+name.size();	//nullにアクセス!例外が発生してしまう!
+のような場合、NullPointerExceptionが発生しますが、この例外はインスタンスを使う以上いつでもどこでも起こりうるもので、インスタンスを使うたびにtry-catchで囲むのは大変面倒です。
+ところが、実際にはtry-catchを書かなくてもコンパイルエラーは発生しません。
+もちろん実行すると・・・
+$ java ExceptionTest
+Exception in thread "main" java.lang.NullPointerException	
+at src.ExceptionTest.main(ExceptionTest.java:18)	NullPointerException発生
+と、例外が発生してプログラムは停止します。
+このように、様々な場所で発生する危険性があるものの、いちいち例外が発生したときの処理を書くほどのものでもない場合、RuntimeExceptionというExceptionを継承した例外が投げられます。
+RuntimeExceptionはcatchしなくてよい例外と覚えればよいでしょう。
+RuntimeExceptionには、NullPointerExceptionの他に
+ArrayIndexOutOfBoundsException
+NoSuchElementException
+などがあります。
+Exceptionの設計方針
+Exceptionクラスを自分で作る場合には、まずRuntimeExceptionか通常のExceptionかを考える必要があります。
+基本的には、
+もし、その例外が発生したときに、必ず対応してほしい場合はExceptionクラスを使う
+通常は発生しない例外で、いちいち対応するのが面倒だけど、場所によっては発生したときに処理をしたい例外
+と使い分けるといいでしょう。
+なお、それ以外にも重要な問題が発生し、すぐにでもプログラムを停止しなければいけないような場合に投げるものとして、Errorがあります。
+ただし、Errorはシステムが投げるべき場合が多いのであまり考慮する必要はありません。
+課題
+マトリックスクラスへの例外追加
+マトリックスクラスに以下のような例外を付加してみましょう。
+Matrixクラスで発生するすべての例外の親となる例外
+逆行列が求められないときに発生する例外
+存在しない要素にアクセスしようとしたときに発生する例外
+かけ算を行うのに十分な行数または列数が存在しないときに発生する例外
+その他必要と思われる例外
+ただし、いくつかの例外をまとめてしまってもかまいません。
+なお、RuntimeException,Exceptionのどちらにするかをよく考えてから実装しましょう。
+ブラウザクラスへの例外追加
+ブラウザクラスに以下のような例外を付加してみましょう。
+ネットにつなげなかったときに発生する例外
+NotFoundのときに発生する例外
+サーバが見つからなかったときの例外
+その他ネット接続時に発生する例外
+ただし、いくつかの例外をまとめてしまってもかまいません。
+なお、RuntimeException,Exceptionのどちらにするかをよく考えてから実装しましょう。
+最後に
+例外は分かりづらく一見面倒くさいですが、
+上手に使えばコーディングにおいて非常に強力な効果を持ちますので
+積極的に使い方になれるようにしてください。
+戻る
+例外処理で間違い探し

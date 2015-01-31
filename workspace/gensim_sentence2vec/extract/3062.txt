@@ -1,0 +1,48 @@
+はじめまして。
+現在地域の様々な業種の店舗を集めたポータルサイトを運営しております。
+カスタム投稿タイプで「グルメ」、「ビューティー」、「ライフ」、「イベント」と大きく4つに分け、
+サイドバーには常に『新着情報』としてターム「newshop」を指定した5件を表示させておきたいと考えています。
+『新着情報』は新しい店舗情報が追加でもされない限り表示順が変更されることはありません。
+ですが「グルメ」で検索をしたところ正常に「グルメ」の検索結果は表示されているのですが、何故か『新着情報』にもターム「newshop」を無視した「グルメ」の検索結果が表示されてしまいます。
+その他フリーワード「ラーメン」で検索をしても『新着情報』部分も「ラーメン」の検索結果が表示されてしまいます。
+どのようにすれば検索結果の影響を受けずに『新着情報』は正常の表示を維持できるのでしょうか?
+ご教示の程よろしくお願いいたします。
+下記に現在使用しているコードを記します。
+検索結果表示(メインコンテンツ)
+<ul>
+<?php query_posts($query_string. '&order=ASC&orderby=menu_order'); ?>
+<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+<li class="list-cont">
+<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+</li>
+<?php endwhile; endif; ?>
+</ul>
+新着情報(サイドバー)
+<?php
+$myQuery = new WP_Query();
+$param = array(
+'posts_per_page' => '5',
+'tax_query' => array(
+array(
+'taxonomy' => 'new_shop',
+'terms' => array( 'newshop' ),
+'field' => 'slug',
+'operator' => 'IN',
+),
+),
+'post_type' => array('gourmet','beauty','life','event'),
+'post_status' => 'publish',
+'orderby' => 'rand',
+'order' => 'ASC'
+);
+$myQuery->query($param);
+?>
+<?php if($myQuery->have_posts()): while($myQuery->have_posts()) : $myQuery->the_post(); ?>
+<ul>
+<li>
+<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+</li>
+</ul>
+<?php endwhile; endif; ?>
+以上、よろしくお願いいたします。
+WordPress › フォーラム » WP_Query、query_postsを設置した際の検索結果表示の影響

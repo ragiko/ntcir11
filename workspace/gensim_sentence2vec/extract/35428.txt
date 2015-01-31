@@ -1,0 +1,17 @@
+border-radius() 角丸
+Compass/border-radius
+書式: border-radius($radius)
+$radius(角丸の半径):値を指定しない場合は、デフォルトの 5px になる( $default-border-radius: 5px )
+値が1つ:一括指定
+値が2つ: 左上と右下 右上と左下
+値が3つ: 左上 右上と左下 右下
+値が4つ: 左上 右上 右下 左下
+//一括指定
+.simple   { @include border-radius(10px); } 
+// 左上と右下 右上と左下 
+.compound { @include border-radius(4px 8px); } 
+//左上 右上と左下 右下
+.crazy1    { @include border-radius(4px 10px 20px);}  
+// 左上 右上 右下 左下
+.crazy2    { @include border-radius(1px 3px 5px 7px)}
+Compass のミックスイン | Web Design Leaves

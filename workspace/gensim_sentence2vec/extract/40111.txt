@@ -1,0 +1,19 @@
+
+同一ジャンルソフト記事
+同じ「P/PC・Win Mobile」ジャンルのソフト記事を読む
+NEWS
+(09/02/10 17:55)
+連絡先・予定表データの同期サービスGoogle SyncがWindows Mobileに対応
+母艦PCとの同期処理を必要とせず、連絡先・予定表を直接Googleと同期可能
+「ActiveSync」での設定画面
+米Google Inc.は9日(現地時間)、同社製WebサービスGmailGoogle カレンダーのデータを各種携帯デバイスと同期できるWebサービスGoogle Syncが、Windows MobileおよびiPhoneに対応したことを発表した。本サービスはベータ版として提供されており、今のところWindows Mobileで同期できるデータは、Gmailの連絡先とGoogle カレンダーに登録した予定の2つだけとなっている。
+Windows Mobile端末で本サービスを利用すると、母艦PCとUSBケーブルなどで同期することなしに、インターネット回線を通じて直接Googleのサービスとデータを同期可能になる。なお、初めて同期する際に既存の連絡帳・予定表のデータは消えてしまうので注意。
+本サービスを利用するには、端末上の「ActiveSync」でサーバーの構成の設定を行う必要がある。本設定はウィザード形式になっており、まず最初の画面で、サーバーアドレス欄へm.google.comと入力する。このサーバーは暗号化(SSL)が必要というチェックはONのままにしておこう。次に、ユーザー名欄へGmailのメールアドレス、パスワード欄へGmailのパスワードを入力しよう。最後に、同期するデータとして連絡先予定表にチェックを入れれば設定は終了だ。
+GmailやGoogle カレンダー上で追加した連絡先や予定をWindows Mobile端末へ反映させたり、逆にWindows Mobile端末で編集したデータをGmailやGoogle カレンダーへ反映することが可能。「ActiveSync」の設定を変更すれば、定期的に自動で同期することも可能で、時間帯によって同期間隔を変えることもできる。
+また、本サービスはGoogle Appsにも対応しており、独自ドメインで運用しているGmailやGoogle カレンダーでも利用可能。ただし、その際はあらかじめGoogle Apps上でGoogle Syncを有効にしておく必要がある。
+Google Mobile - Sync
+http://www.google.com/mobile/default/sync.html
+Official Google Mobile Blog: Google Sync Beta for iPhone, WinMo and SyncML Phones
+http://googlemobile.blogspot.com/2009/02/google-sync-beta-for-iphone-winmo-and.html
+(柳 英俊)
+窓の杜 - 【NEWS】連絡先・予定表データの同期サービス“Google Sync”がWindows Mobileに対応

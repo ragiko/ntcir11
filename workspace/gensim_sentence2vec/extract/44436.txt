@@ -1,0 +1,6 @@
+Cadence Design Systemsは4月29日(現地時間)、GLOBALFOUNDRIES(GF)と20/14nmプロセス向けに分類されたパターンデータを提供するために協業したと発表した。
+GFは、Cadenceのパターン分類技術「Pattern Classification Solution」、および「Pattern Matching Solution」を使用することで、歩留りおよび予測性を向上するために不可欠なDFM(Design For Manufacturing)作業を4倍加速させたとしている。
+また、Cadenceのパターン分類テクノロジを使用し、数十万件の歩留り低下要因、プロセスのホットスポット、およびシリコン不良を容易に利用できるパターンライブラリに分類。「Cadence Pattern Search and Matching Analysis(CPA)」は、 Cadence Litho Physical Analyzer、Cadence Physical Verification System、Virtuosoカスタム・アナログおよびEncounter Digital Implementation(EDI) Systemの統合ソリューションに組み込まれており、これにより、GFのユーザーは、EncounterおよびVirtuoso環境の中で、in-designのエンジンとパターンライブラリによる自動修正機能を柔軟に活用することができるようになるという。すでに、フルチップでのサインオフとの相関性が高いことから、先端ノードでのチップの製造において成果を上げていると両社は説明する。
+また、同DFMフローは、Cadenceのカスタム、デジタル、およびフルチップサインオフフローにシームレスに統合されているため、GFのユーザーは、容易に同フローを使用することが可能なほか、パターンマッチングベースのDRC+をVirtuoso Layout Suiteに統合することで、構築しながら修正する(correct-by-construction)といったメソドロジの実現が可能となり、不良パターンを高精度に回避し、自動修正できるようになるという。
+さらにEDI Systemは、新たなDRCやDRC+の違反を生じることなく、DRC+の違反を100%の精度で迅速に検出・修正することが可能であり、すでに複数の28nmプロセスの設計で実績をあげているという。
+CadenceとGF、20/14nmノードにおいてDFMサインオフ改善のため協業 | マイナビニュース

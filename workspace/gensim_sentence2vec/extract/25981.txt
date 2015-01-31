@@ -1,0 +1,111 @@
+
+cMake と Visual Studio 2008を使う方法 
+まずCMakeのGUIを起動し、ソースフォルダを選択しインストール先のフォルダを追加し、 "設定"をクリックしてください。CMakeはジェネレータを選択するように求められます - FreeCADのお勧めは "Visual Studio 9 2008"です。
+"次へ"ボタンをクリックした後、LibPackを見つけることができないため、CMakeはエラーを出力します。 "FREECAD_LIBPACK_DIR"変数にどこにLibpackフォルダがあるかを手動で選択する必要があります。その後、もう一度 "設定"をクリックする必要があります。configureが行われた後、 "Generate"をクリックしてください。cMakeの作業を終了後、それを閉じることができます。
+Visual Studioを使用する前に、我々は(最初に構築する際に、一度だけこれを行う必要がある)システムパスにlibpackを追加する必要があります。あなたは "Panel>>System>>Advanced System Settings"をたどる必要があります。"System properties"ダイアログで、 "Advanced"タブの下に"Environment Variables"ボタンがあります。それをクリックしてください。それをクリックした後、パスにlibpackを追加します。他のパス変数とは";"で区別します。
+次にVisual Studio 2008 を起動する必要があります。Visual C++ Express2008でも同様に動作します。ビルドの前に、binフォルダを libpack¥bin フォルダから、(cMakeで生成された)binフォルダにコピーするのは良い手順です。
+この後、"File >> Open >> Project/Solution"をたどってください。cMakeのビルドで生成されたファイルから、FreeCAD_Trunk.slnを開く必要があります。それを開いたら、ツールバーにある3つのポップアップメニューがあるでしょう。それらの一つは"Debug"になっています。これを"Release"に切り替えます。"Build >> Build Solution"を実行します (もしくは F7キーを押します) 。このプロセスにはかなりの時間がかかります。
+それが終了したら、"Debug >> Start without Debugging"を実行します。ポップアップウィンドウに、exeファイルを選択するように求められます。 "Executable File Name" の下にあるポップアップメニューをクリックし、"Browse"を選択します。ソースファイルがあるbinフォルダに移動し、FreeCAD.exeを選択します。
+作業完了です!
+コマンドラインビルド 
+ここではコマンドラインからFreeCADを構築する例を示します。:
+rem @echo off
+rem   Build script, uses vcbuild to completetly build FreeCAD
+rem update trunc
+d:
+cd "D:\_Projekte\FreeCAD\FreeCAD_0.9"
+"C:\Program Files (x86)\Subversion\bin\svn.exe" update 
+rem  set the aprobiated Variables here or outside in the system
+set PATH=C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem
+set INCLUDE=
+set LIB=
+rem Register VS Build programms
+call "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat"
+rem Set Standard include paths
+set INCLUDE=%INCLUDE%;%FrameworkSDKDir%\include
+set INCLUDE=%INCLUDE%;C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include
+rem Set lib Pathes
+set LIB=%LIB%;C:\Program Files\Microsoft SDKs\Windows\v6.0A\Lib
+set LIB=%LIB%;%PROGRAMFILES%\Microsoft Visual Studio\VC98\Lib
+rem Start the Visuall Studio build process
+"C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcpackages\vcbuild.exe" "D:\_Projekte\FreeCAD FreeCAD_0.9_build\FreeCAD_trunk.sln" /useenv
+以前のバージョンのビルド 
+LibPackの使用 
+FreeCADのコンパイルを簡単にするために、我々はすべての必要なライブラリのコレクションを提供しています。それは、LibPackと呼ばれています。あなたはそれをSourceForgeの ダウンロードページ で見つけることができます。
+あなたは、以下の環境変数を設定する必要があります。:
+FREECADLIB = "D:\Wherever\LIBPACK"
+QTDIR = "%FREECADLIB%"
+%FREECADLIB%\ bin"および"%FREECADLIB%\ dll"の場所を、システムPATH変数に追加します。Windowsは再帰的に環境変数を置き換えないので、"%FREECADLIB%"をパス名で付け替える必要があることに留意してください。
+Visual Studioでのディレクトリセットアップ 
+Visual Studioの幾つかのサーチパスをセットする必要があります。
+これらを変更するには、ToolsOptionsDirectory とメニューをたどります。
+Includes 
+以下のサーチパスをincludeパスのサーチリストに追加します。
+ %FREECADLIB%\include
+ %FREECADLIB%\include\Python
+ %FREECADLIB%\include\boost
+ %FREECADLIB%\include\xercesc
+ %FREECADLIB%\include\OpenCascade
+ %FREECADLIB%\include\OpenCV
+ %FREECADLIB%\include\Coin
+ %FREECADLIB%\include\SoQt
+ %FREECADLIB%\include\QT
+ %FREECADLIB%\include\QT\Qt3Support
+ %FREECADLIB%\include\QT\QtCore
+ %FREECADLIB%\include\QT\QtGui
+ %FREECADLIB%\include\QT\QtNetwork
+ %FREECADLIB%\include\QT\QtOpenGL
+ %FREECADLIB%\include\QT\QtSvg
+ %FREECADLIB%\include\QT\QtUiTools
+ %FREECADLIB%\include\QT\QtXml
+ %FREECADLIB%\include\Gts
+ %FREECADLIB%\include\zlib
+Libs 
+以下のサーチパスをlibパスのサーチリストに追加します。
+ %FREECADLIB%\lib
+Executables 
+以下のサーチパスをexecutableパスのサーチリストに追加します。
+ %FREECADLIB%\bin
+TortoiseSVN バイナリをインストールしたディレクトリ、 普段は "C:\Programm Files\TortoiseSVN\bin", これは SubWVRev.exe が Subversionからバージョン番号を抽出する分散ビルドの時に必要です 。
+Pythonの必要性 
+コンパイル時にいくつかのPythonスクリプトが実行されます。そのため、PythonインタプリタはOS上で動作しなければいけません。それを確認するには、コマンドボックスを使用します。Pythonのライブラリが正しくインストールされていない場合は、"python.exeを見つけることができません"といったエラーメッセージが表示されます。あなたはLibPackを使用する場合もbinディレクトリでpython.exeを使用することができます。
+VC8での注意事項 
+VC6とVC8ではバージョンが異なるため、VC8でプロジェクトをビルドする場合、WildMagicライブラリのリンク情報を変更する必要があります。両方のバージョンは"LIBPACK/DLL"で提供されています。AppMeshのプロジェクトのプロパティで、wm.dllのライブラリ名をVC8バージョンに変更します。DebugとReleaseの構成で、それを変えることを忘れないでください。
+コンパイル 
+すべての前提条件に適合させたあとは、コンパイルはVC内でマウスクリックするだけでできると思います。
+コンパイル後 
+すべての前提条件に適合した後、コンパイルは - うまくいけば - VCではでマウスクリックのみで実行できます。:
+python.exe and python_d.exe from LIBPACK/bin
+python25.dll and python25_d.dll from LIBPACK/bin
+python25.zip from LIBPACK/bin
+make a copy of Python25.zip and rename it to Python25_d.zip
+QtCore4.dll from LIBPACK/bin
+QtGui4.dll from LIBPACK/bin
+boost_signals-vc80-mt-1_34_1.dll from LIBPACK/bin
+boost_program_options-vc80-mt-1_34_1.dll from LIBPACK/bin
+xerces-c_2_8.dll from LIBPACK/bin
+zlib1.dll from LIBPACK/bin
+coin2.dll from LIBPACK/bin
+soqt1.dll from LIBPACK/bin
+QtOpenGL4.dll from LIBPACK/bin
+QtNetwork4.dll from LIBPACK/bin
+QtSvg4.dll from LIBPACK/bin
+QtXml4.dll from LIBPACK/bin
+バージョン2.5よりも古いPythonを使用したLibPackを使っている場合、さらに2つのファイルをコピーする必要があります。:
+zlib.pyd and zlib_d.pyd from LIBPACK/bin/lib. This is needed by python to open the zipped python library.
+_sre.pyd and _sre_d.pyd from LIBPACK/bin/lib. This is needed by python for the built in help system.
+Pythonエラーで実行できない場合は、zlib*.pyd ファイルの一つが不足しています。
+その他のもの 
+ソースコードのドキュメントを構築する場合は、 DoxyGenが必要です。
+インストーラパッケージを作成するには WIXが必要です。
+コンパイル時にいくつかのPythonスクリプトが実行されます。そのため、Pythonインタプリタが適切に動作する必要があります。
+詳細は ソース内の"README.Linux"にも記載があります。
+まずはじめに、Qt Designer用のFreeCADのすべてのカスタムヴィジェットを提供するQtプラグインを構築すべきです。ソースファイルは以下にあります。
+//src/Tools/plugins/widget//.
+これまでのところ我々は、makefileを提供していません。しかし、以下を実行すると、 
+qmake plugin.pro
+makefileが作成されます。これを実行後、makeを実行するとライブラリが作成されます。 
+//libFreeCAD_widgets.so//.
+このライブラリをQt Designerに認識させるために、以下の場所にファイルをコピーする必要があります。
+//$QTDIR/plugin/designer//.
+CompileOnWindows/jp - FreeCAD Documentation

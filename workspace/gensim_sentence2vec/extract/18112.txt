@@ -1,0 +1,112 @@
+
+運用コマンドレファレンス Vol.1
+show interfaces (100BASE-FX)【AX3640S】
+イーサネットの情報を表示します。
+［入力形式］
+show interfaces gigabitethernet <nif no.>/<port no.> [detail]
+［入力モード］
+一般ユーザモードおよび装置管理者モード
+［パラメータ］
+gigabitethernet
+最大回線速度が1Gbit/sのイーサネットインタフェースを指定します。
+<nif no.>/<port no.>
+NIF番号およびポート番号を指定します。指定できる値の範囲は,「パラメータに指定できる値」を参照してください。
+detail
+詳細な統計情報を表示します。
+本パラメータ省略時の動作
+詳細統計情報を表示しません。
+［実行例1］
+100BASE-FXのNIF情報,ポートのdetail情報の実行例を次の図に示します。
+図15-3 100BASE-FX指定実行結果画面
+> show interfaces gigabitethernet 0/5
+Date 20XX/09/21 20:04:01 UTC
+NIF0:                                                                       1
+Port5: active up  100BASE-FX full    0012.e238.1e4f                         2
+SFP connect                                                         
+Time-since-last-status-change:0:01:37                               
+Bandwidth:100000kbps  Average out:99Mbps  Average in:99Mbps         
+Peak out:100Mbps at 02:27:07  Peak in:100Mbps at 02:27:07           
+Output rate:      98.7Mbps       8152pps                            
+Input  rate:      98.7Mbps       8152pps                            3
+Flow control send   :on                                             
+Flow control receive:off                                            
+TPID:8100                                                           
+Frame size:1518 Octets  retry:0  Interface name:geth0/5             
+description:test lab area network                                   
+<Out octets/packets counter>       <In octets/packets counter>      
+Octets       :         1047409796  Octets       :         1047409796
+All packets  :             692139  All packets  :             6921394
+Unicast packets        :   395827  Unicast packets        :   395808
+Multicast packets      :   120794  Multicast packets      :   120794
+Broadcast packets      :   175181  Broadcast packets      :   175200
+Pause packets          :      337  Pause packets          :      337
+<Out line error counter>                                            
+Late collision         :        0  Defer indication       :        0
+Single collision       :        0  Excessive deferral     :        05
+Multiple collisions    :        0  Excessive collisions   :        0
+Error frames           :        0                                   
+<In line error counter>                                             
+CRC errors             :        0  Symbol errors          :        0
+Fragments              :        0  Short frames           :        06
+Jabber                 :        0  Long frames            :        0
+Error frames           :        0                                   
+<Line fault counter>                                                
+Link down              :        0  Signal detect errors   :        0
+TX fault               :        0  Transceiver notconnect :        07
+Link down in operational state                            :        0
+Signal detect errors in operational state                 :        0
+Transceiver notconnect in operational state               :        0
+>
+NIF情報
+ポートsummary情報
+ポートdetail情報
+送信/受信統計情報
+送信系エラー統計情報
+受信系エラー統計情報
+障害統計情報
+［実行例2］
+100BASE-FXのNIF情報,ポートのdetail情報,詳細な統計情報の実行例を次の図に示します。
+図15-4 100BASE-FX詳細統計情報指定実行結果画面
+> show interfaces gigabitethernet 0/5 detail
+Date 20XX/09/21 20:04:01 UTC
+NIF0:                                                                       1
+Port5: active up  100BASE-FX full    0012.e238.1e4f                         2
+SFP connect                                                         
+Time-since-last-status-change:0:01:46                               
+Bandwidth:100000kbps  Average out:99Mbps  Average in:99Mbps         
+Peak out:100Mbps at 02:27:07  Peak in:100Mbps at 02:27:07           
+Output rate:      98.7Mbps       8154pps                            3
+Input  rate:      98.7Mbps       8154pps                            
+Flow control send   :on                                             
+Flow control receive:off                                            
+TPID:8100                                                           
+Frame size:1518 Octets  retry:0  Interface name:geth0/5             
+description:test lab area network                                   
+<Out octets/packets counter>       <In octets/packets counter>      
+Octets       :         1159555594  Octets       :         1159555594
+All packets  :             766246  All packets  :             766246
+Unicast packets        :   469898  Unicast packets        :   469879
+Multicast packets      :   120794  Multicast packets      :   120794
+Broadcast packets      :   175181  Broadcast packets      :   175200
+Pause packets          :      373  Pause packets          :      3734
+64 packets             :      373  64 packets             :      373
+65-127 packets         :        0  65-127 packets         :        0
+128-255 packets        :        0  128-255 packets        :        0
+256-511 packets        :        0  256-511 packets        :        0
+512-1023 packets       :        0  512-1023 packets       :        0
+1024-1518 packets      :   765873  1024-1518 packets      :   765873
+:
+:
+>
+NIF情報
+ポートsummary情報
+ポートdetail情報
+送信/受信統計情報
+［実行例1,2の表示説明］
+100BASE-FXのNIF情報,ポートのdetail情報と統計情報の表示項目の説明を次の表に示します。
+表15-5 100BASE-FXのNIF情報表示
+表示項目
+表示内容
+詳細情報
+意味
+show interfaces (100BASE-FX)【AX3640S】

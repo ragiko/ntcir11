@@ -1,0 +1,126 @@
+
+索引:セクション 3
+索引:  J
+ベージの最後
+jsy$cnv_next_word(3jsy)
+名前
+jsy$cnv_next_word,jsy$cnv_prev_word,jsy$cnv_shorten_clause,
+jsy$cnv_extend_clause,jsy$cnv_clause_hiragana, jsy$cnv_clause_katakana,
+jsy$cnv_clause_full,jsy$cnv_clause_half, jsy$cnv_clause_symbol,
+jsy$cnv_clause_noconvert - 文節変換ルーチン
+形式
+#include <jsy/jsysts.h>
+int jsy$cnv_next_word(clause_no)
+int jsy$cnv_prev_word(clause_no)
+int jsy$cnv_shorten_clause(clause_no)
+int jsy$cnv_extend_clause(close_no)
+int jsy$cnv_clause_hiragana(clause_no)
+int jsy$cnv_clause_katakana(clause_no)
+int jsy$cnv_clause_full(clause_no)
+int jsy$cnv_clause_half(clause_no)
+int jsy$cnv_clause_symbol(clause_no)
+int jsy$cnv_clause_noconvert(clause_no)
+int clause_no;
+機能説明
+指定した文節や文節の自立語に対し各種の変換を行うルーチンです。変換後の文字
+列は変換ルーチンの内部バッファに格納します。この文字列は jsy$cnv_get_kanji
+ルーチンによりユーザに返されます。
+<引数>
+clause_no   文節の番号を指定します。1以上 jsy$cnv_get_kanji ルーチンが返す
+文節数以下を指定します。
+jsy$cnv_next_word
+自立語の次候補を採用して新しい漢字文字列を作ります。このとき,指定した
+文節以降の文も解析し直すため,文節数や文節の区切りが前と異なることがあ
+りますので注意してください。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_ROUNDK	  先頭の候補にもどりました(正常終了)。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+jsy$cnv_prev_word
+自立語の前候補を採用して新しい漢字文字列を作ります。次候補の変換では自
+動的に文節の縮小を行いますが,前候補の変換で縮小前の候補を取り出すこと
+はできません。縮小前の自立語を再び取り出すためには,文節を拡大したのち
+次候補の変換を行ってください。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+jsy$cnv_shorten_clause
+文節の読みの長さを縮小したあと,解析し直して新しい漢字文字列を作りま
+す。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_CANNOTCNV  文節を縮小すると変換できません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+jsy$cnv_extend_clause
+文節の読みの長さを伸長したあと,解析し直して新しい漢字文字列を作りま
+す。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_CANNOTCNV  文節を拡大すると変換できません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+jsy$cnv_clause_hiragana
+ひらがなに変換します。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+jsy$cnv_clause_katakana
+カタカナに変換します。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+jsy$cnv_clause_full
+全角文字に変換します。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+jsy$cnv_clause_half
+半角文字に変換します。ただし,入力時に全角で入力されたものは変換しませ
+ん。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+jsy$cnv_clause_symbol
+特殊記号に変換します。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+jsy$cnv_clause_noconvert
+変換開始ルーチンで入力した読み文字列そのものを漢字文字列に組み込みま
+す。
+<戻り値>
+SS$_NORMAL	  正常終了
+JSY$_INVCALL	  ルーチンの呼び出し順序が正しくありません。変換開始ルーチン
+を呼び出した後に呼び出してください。
+JSY$_INVCLSNUM  文節番号の指定が正しくありません。
+JSY$_CNVINTERR  変換ルーチンの内部エラーが起きました。
+索引:セクション 3
+索引:  J
+ページの先頭
+jsy$cnv_next_word(3jsy)

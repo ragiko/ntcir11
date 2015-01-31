@@ -1,0 +1,8 @@
+
+上記のようにIneligible Devicesとなり実機が選択できなくなる現象ですが、カッコ内にdeployment targetとある場合は、実機のOSバージョンとTARGETSのターゲットOSバージョンが不適切なことが原因です。
+[TARGETS]->[Build Settings]->[Deployment]->[iOS Deployment Targert]項目を実機のOSバージョンに対応したTARGETSのOSバージョンに設定すれば解決できます。
+ちなみに、上記画像の例は、iOS Deployment TargertがiOS8のTARGETS(スキーム)で、iOS7.xを載せたiPhone5を選択しようとした場合です。
+<補足>
+Ineligible Devices (OS version)の場合は、以下を参照してください。
+Xcode6で実機が認識されずにIneligible Devices (OS version)になる場合の対処
+Xcode6で実機が認識されずにIneligible Devices (deployment target)になる場合の対処 | makotton.com

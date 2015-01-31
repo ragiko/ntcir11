@@ -1,0 +1,155 @@
+[Ruby][自然言語処理]出現頻度と連接頻度に基づく専門用語抽出
+この前の続き。先週の週末にやるつもりだったけど、暇がなかった。
+MeCabで区切った単語を再びつなげる - Seeking for my unique color.
+前回の流れとしては
+専門用語を一つの単語として取ってくるのは難しい
+MeCabを使うと細かくなりすぎる
+専門用語には名詞のsequenceが多そう
+じゃあ、名詞つなげてみればいいんじゃね?
+ということで名詞を繋げてみるだけというところをやりました(それだけ。。。)。id:niamさんがコメントしてくださったように"出現頻度と連接頻度に基づく専門用語抽出",自然言語処理, 2003を使うと専門用語らしさ(?)のようなスコア付けができるようなので、それをやってみることにしました。とりあえずp6のLR(CN)のところまでを実装。あとはスコア付けの関数を2つくらい用意して、評価指標の関数を用意すれば、という感じです。
+# -*- coding: utf-8 -*-
+# implementation for this paper
+# http://www.r.dl.itc.u-tokyo.ac.jp/~nakagawa/academic-res/jnlp10-1.pdf
+class Term
+def initialize(technical_word)
+@technical_word = technical_word
+@simple_term = technical_word.flatten.uniq # 単名詞
+end
+def print(word)
+return "[#{t.stop_sharp_ldn(word).uniq.map{|i| "[" + i.join(", ") + "]"}.join(", ")}]"
+end
+def stop_sharp_ldn(word) # wordの左側のところを取ってこさせる
+result = []
+@technical_word.each{|array|
+tmp = []
+if array.index(word) > 0
+array.each{|i|
+if word != i
+tmp.push i
+else
+tmp.push i
+break
+end
+}
+result.push tmp
+end
+}
+return result
+end
+def stop_sharp_rdn(word) # wordの右側のところを取ってこさせる
+result = []
+@technical_word.each{|array|
+tmp = []
+flag = false
+array.each{|i|
+if word == i
+flag = true
+tmp.push i
+elsif flag
+tmp.push i
+end
+}
+result.push tmp
+}
+result.delete([word])
+return result
+end
+def sharp_ldn(word) # #LDN(N)
+return stop_sharp_ldn(word).uniq.length
+end
+def sharp_rdn(word) # #RDN(N)
+return stop_sharp_rdn(word).uniq.length
+end
+def sharp_ln(word) # #LN(N)
+return stop_sharp_ldn(word).length
+end
+def sharp_rn(word) # #RN(N)
+return stop_sharp_rdn(word).length
+end
+def lr(words) # LR(CN)
+result = 1
+words.each{|word|
+result *= (sharp_ln(word) + 1) * (sharp_rn(word) + 1)
+}
+result = result ** (1.0 / (2 * words.length))
+end
+end
+technical_word = [["トライグラム", "統計"], 
+["トライグラム"], 
+["単語", "トライグラム"], 
+["クラス", "トライグラム"], 
+["単語", "トライグラム"], 
+["トライグラム"],
+["トライグラム", "抽出"],
+["単語", "トライグラム", "統計"],
+["トライグラム"],
+["文字", "トライグラム"]
+]
+t = Term.new(technical_word)
+puts "[#{t.stop_sharp_ldn("トライグラム").map{|i| "[" + i.join(", ") + "]"}.join(", ")}]"
+puts "[#{t.stop_sharp_rdn("トライグラム").map{|i| "[" + i.join(", ") + "]"}.join(", ")}]"
+puts "#LDN(トライグラム) = #{t.sharp_ldn("トライグラム")}"
+puts "#RDN(トライグラム) = #{t.sharp_rdn("トライグラム")}"
+puts "#LN(トライグラム) = #{t.sharp_ln("トライグラム")}"
+puts "#RN(トライグラム) = #{t.sharp_rn("トライグラム")}"
+puts "LR(トライグラム) = #{t.lr(["トライグラム"])}"
+実行結果。
+/Users/syou6162/ruby% ruby term_extraction.rb
+[[単語, トライグラム], [クラス, トライグラム], [単語, トライグラム], [単語, トライグラム], [文字, トライグラム]]
+[[トライグラム, 統計], [トライグラム, 抽出], [トライグラム, 統計]]
+#LDN(トライグラム) = 3
+#RDN(トライグラム) = 2
+#LN(トライグラム) = 5
+#RN(トライグラム) = 3
+LR(トライグラム) = 4.89897948556636
+あとこれに投げるようのMeCabからのラッパーも書かないといけないなー。ということで書いた。
+# -*- coding: utf-8 -*-
+require 'MeCab'
+require 'pp'
+class MeCabWrapper
+def initialize(mecab)
+@mecab = mecab
+@extraction = []
+end
+def add_text(text)
+n = @mecab.parseToNode(text) 
+list = Array.new
+prev_word = ""
+prev_pos = ""
+tmp = []
+while n do
+f = n.feature.split(/,/) 
+if /名詞/ =~ f[0]
+tmp.push n.surface
+else
+if prev_pos == "名詞"
+list.push tmp # これまでが名詞のsequenceだったら、つっこむ
+tmp = []
+end
+end
+prev_word = n.surface
+prev_pos = f[0]
+n = n.next
+end 
+@extraction = list
+end
+end
+mw = MeCabWrapper.new(MeCab::Tagger.new("-Ochasen"))
+sentence = "梅雨時期梅雨時期だけあって、今日今日今日はちょっとじめじめしてますね。明日今日はさらっとしてほしいです。" # 名詞のsequenceができるようにめちゃくちゃにして作った
+mw.add_text(sentence)
+pp mw
+実行結果。配列の配列ができて準備が整った感じ。
+#<MeCabWrapper:0x4ad24c
+@extraction=
+[["\346\242\205\351\233\250",
+"\346\231\202\346\234\237",
+"\346\242\205\351\233\250",
+"\346\231\202\346\234\237"],
+["\344\273\212\346\227\245",
+"\344\273\212\346\227\245",
+"\344\273\212\346\227\245"],
+["\346\230\216\346\227\245", "\344\273\212\346\227\245"]],
+@mecab=#<MeCab::Tagger:0x4ad274 @__swigtype__="_p_MeCab__Tagger">>
+ツイートする
+Permalink | コメント(0) | トラックバック(2) | 11:50   
+2009-05-20 - Seeking for my unique color.

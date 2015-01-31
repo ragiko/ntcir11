@@ -1,0 +1,186 @@
+PostgreSQL で設定されている外部キーの一覧を取得する
+メモです。
+SELECT table_schema
+, table_name
+, constraint_name
+FROM information_schema.table_constraints
+WHERE constraint_type = 'FOREIGN KEY';
+さらに次のようにすると
+解除するための SQLが生成できます。
+SELECT 'ALTER TABLE ' || table_schema || '.' || table_name
+|| ' DROP CONSTRAINT ' || constraint_name || ';'
+FROM information_schema.table_constraints
+WHERE constraint_type = 'FOREIGN KEY';
+PostgreSQL Study (5)
+今回はディレクトリ編の最後、ログなどのデータが格納されるディレクトリについて。
+とはいえパッケージでインストールしているので
+Ubuntu ベースの話になります。
+Ubuntu では基本的にログファイルは /var/log の直下か 配下にパッケージ名のディレクトリで格納されます。 
+PostgreSQL の場合
+/var/lib/postgresql
+になります。
+/var/log/postgresql
+設定ファイルやデータのディレクトリのように
+データベースクラスタのサブディレクトリはありません。
+/var/log/postgresql
+の直下にログファイルがあります。
+$ ls -F /var/log/postgresql
+/var/log/postgresql/postgresql-9.1-main.log
+代わりにログファイルのファイル名に
+"9.1-main" のようにデータベースクラスタと同じキーワードが入っています。
+(ログファイル名は設定で変更できます)
+PostgreSQL Study (4)
+今回はテーブルなどのデータが格納されるディレクトリについて。
+とはいえパッケージでインストールしているので
+Ubuntu ベースの話になります。
+Ubuntu では、/var/lib/postgresql 以下に格納されます。
+/var/lib/postgresql
+Ubuntu の場合、このディレクトリの直下には
+前々回の設定ファイルと同様に
+データベースクラスタごとのサブディレクトリがあります。
+/var/lib/postgresql/9.1/main
+$ ls -F /var/lib/postgresql
+9.1/
+$ ls -F /var/lib/postgresql/9.1
+main/
+$ ls -F /var/lib/postgresql/9.1/main
+base/          pg_stat_tmp/  postmaster.opts
+global/        pg_subtrans/  postmaster.pid
+pg_clog/       pg_tblspc/    server.crt@
+pg_multixact/  pg_twophase/  server.key@
+pg_notify/     PG_VERSION
+pg_serial/     pg_xlog/
+PostgreSQL Study (3)
+今回はコマンド(実行ファイル)が格納されるディレクトリについて。
+とはいえパッケージでインストールしているので
+Ubuntu ベースの話になります。
+initdb や vacuumdb、psql など
+PostgreSQL の主なコマンドは
+以下のディレクトリに格納されます。
+/usr/lib/postgresql/9.1/bin
+$ ls -F /usr/lib/postgresql/9.1/bin
+clusterdb*   pg_basebackup*   pg_upgrade*
+createdb*    pg_controldata*  postgres*
+createlang*  pg_ctl*          postmaster@
+createuser*  pg_dump*         psql*
+dropdb*      pg_dumpall*      reindexdb*
+droplang*    pg_resetxlog*    vacuumdb*
+dropuser*    pg_restore*
+initdb*      pg_test_fsync*
+複数のバージョンが 1 つのマシンで稼動することがあるため
+コマンドも複数のバージョンが格納できるように
+サブディレクトリが分かれます。
+ただ、実際は /usr/lib/postgresql/9.1/bin には
+パスが通っておらず
+/usr/bin 以下にあるリンクファイルを起動することになります。
+/usr/bin
+$ ls -F /usr/bin
+(PostgreSQL 関連のみ抜粋)
+clusterdb@   pg_basebackup@     pg_lsclusters@
+createdb@    pg_config@         pg_restore@
+createlang@  pg_createcluster@  pg_upgradecluster@
+createuser@  pg_ctlcluster@     psql@
+dropdb@      pg_dropcluster@    reindexdb@
+droplang@    pg_dump@           vacuumdb@
+dropuser@    pg_dumpall@        vacuumlo@
+このように /usr/bin/ 以下のコマンドはリンクになっています。
+(例外として initdb はリンクがありません)
+$ readlink -f /usr/bin/vacuumdb
+/usr/share/postgresql-common/pg_wrapper
+また、各コマンドは直接 /usr/lib/postgresql/9.1/bin 以下の
+ファイルにリンクするのではなく
+以下のファイルにリンクしています。
+/usr/share/postgresql-common/pg_wrapper
+pg_wrapper は Perl のスクリプトです。
+$ file /usr/share/postgresql-common/pg_wrapper
+/usr/share/postgresql-common/pg_wrapper: Perl script, ASCII text executable
+前述したように 1つのマシン内で複数のバージョンが稼動することができるため
+一旦この pg_wrapper で、コマンドを受けて、環境変数などから適切なバージョンの
+コマンドを起動するようになっているわけです。
+PostgreSQL Study (2)
+今回は設定ファイルが格納されるディレクトリについて。
+とはいえパッケージでインストールしているので
+Ubuntu ベースの話になります。
+Ubuntu では基本的に /etc の直下か
+配下にパッケージ名のディレクトリで格納されます。
+/etc/postgresql
+ただし PostgreSQL の場合 /etc/postgresql の下には
+(インストール時点では)
+9.1 というサブディレクトリしかなく
+さらにその中には main というサブディレクトリしかありません。
+/etc/postgresql/9.1/main
+そして /etc/postgresql/9.1/main の下に
+設定ファイルが格納されています。
+$ ls -F /etc/postgresql/9.1/main/
+environment  pg_hba.conf    postgresql.conf
+pg_ctl.conf  pg_ident.conf  start.conf
+この 9.1/main ですが、
+これらは PostgreSQL のデータベースクラスタを示しています。
+[参考サイト]
+データベースクラスタの作成 - PostgreSQL 9.1.5文書
+データベースクラスタは、ロールやテーブルスペースを共有するデータベースの塊です。
+Ubuntu では、1つのサーバ内に複数のデータベースクラスタを作成できるように
+あらかじめ設定ファイルなどのディレクトリにデータベースクラスタの
+サブディレクトリを作成してくれているわけです。
+パッケージのインストール時に
+データベースクラスタを作成してくれるため
+1つしかデータベースクラスタを使用しない場合でも
+最初から 9.1/main のようにデータベースクラスタを識別するディレクトリになっています。
+ちなみにインストール時にデータベースクラスタを自動で作成しないディストリビューションや
+コンパイルしてインストールした場合や、追加でデータベースクラスタを作成する場合は
+上記参考サイトに記載してあるように initdb コマンドを使用して
+データベースクラスタを作成します。
+$ initdb -D /usr/lib/postgresql/9.1/main
+PostgreSQL Study (1)
+PostgreSQL を基本的なことから再確認していきます。
+使用する環境は
+Ubuntu12.10 で PostgreSQL は 9.1 です。
+今回はパッケージのインストールなので
+かなり Ubuntu 寄りの話になります。
+(Ubuntu 好きなので・・・)
+まず、Ubuntu12.10 で [OpenSSH Server] のみを選択して
+インストールした環境の場合
+postgresql パッケージを apt-get すると
+次のパッケージがインストールされます。
+postgresql
+postgresql-9.1
+postgresql-common
+postgresql-client-9.1
+postgresql-client-common
+libpq5
+sgml-base
+xml-core
+libxml2:i386
+ssl-cert
+sgml-base など PostgreSQL 専用じゃないパッケージ以外もあるので
+それらは先にインストールしてしまいます。
+$ sudo apt-get install sgml-base xml-core libxml2 ssl-cert
+この状態で postgresql パッケージをインストールします。
+$ sudo apt-get install postgresql
+すると、次のパッケージが入ります。
+postgresql
+postgresql-9.1
+postgresql-common
+postgresql-client-9.1
+postgresql-client-common
+libpq5
+このとき、次のディレクトリが作成されます。
+/etc/postgresql
+/etc/postgresql-common
+/run/postgresql
+/usr/share/postgresql
+/usr/share/postgresql-common
+/var/cache/postgresql
+/var/lib/postgresql
+/var/log/postgresql
+次のディレクトリにファイルやサブディレクトリが格納されます。
+/usr/bin
+/usr/lib
+/usr/sbin
+/usr/share/doc
+/usr/share/man
+postgresql パッケージのインストール時に
+追加されたファイルとディレクトリの一覧は
+こちらを参照してください。
+次回は、主なディレクトリについて見ていきます。
+Studio ODIN - blog風小ネタ集 > PostgreSQL

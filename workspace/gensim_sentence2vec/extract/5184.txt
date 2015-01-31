@@ -1,0 +1,263 @@
+
+説明 
+get_posts の最も適切な使い方は、パラメータに基づいて投稿データを作成することです。最近の投稿あるいはパラメータに一致した投稿を取得します。複数のループを作成するのに get_posts を使用する事もできます。ただしこの場合は new WP_Query を使用して WP_Query を直接参照するほうが好ましいでしょう。
+get_pages とパラメータが似ていますが実装方法はかなり異なっており、適切に使う必要があります。get_posts は WP_Query を使用していますが、get_pages はデータベースに直接クエリを投げます。それぞれ実装の差異を反映したパラメータになっています。
+query_posts も WP_Query を使用していますが、グローバル変数 $wp_query を書き換えてメインループを直接変更しているので、使う場合は注意してください。一方、get_posts は新しい WP_Query オブジェクトを参照するため、メインループに影響を与えません。
+メインクエリが実行される前に変更したい場合は、pre_get_posts フックを使用することができます。ページの中で、いくつかのパラメータで指定した投稿データを呼び出したい場合は、get_posts が最適でしょう。
+使い方 
+<?php $posts_array = get_posts( $args ); ?>
+デフォルトの使い方
+<?php $args = array(
+'posts_per_page'   => 5,
+'offset'           => 0,
+'category'         => '',
+'orderby'          => 'post_date',
+'order'            => 'DESC',
+'include'          => '',
+'exclude'          => '',
+'meta_key'         => '',
+'meta_value'       => '',
+'post_type'        => 'post',
+'post_mime_type'   => '',
+'post_parent'      => '',
+'post_status'      => 'publish',
+'suppress_filters' => true ); ?>
+注: 'numberposts' または 'posts_per_page' のいずれかが利用できます。
+パラメータ 
+この関数で使えるパラメータについては、WP_Query をごらんください。
+パラメータの使い方の例は、get_pages() をごらんください。
+get_posts() は WP_Query クラスを利用して投稿を取得します。この関数で使えるパラメータについては、WP_Query ドキュメンテーションのthe parameters section をごらんください。
+注意:  get_posts は 'suppress_filters' => true をデフォルトとします。一方、query_posts() はデフォルトでフィルタを適用するので、WPML のようにクエリを変更するプラグインを使う場合はややこしく感じるかもしれません。また、'suppress_filters' が true の場合でも、pre_get_posts に追加されたフィルターは適用されます。'posts_*' と 'comment_feed_*' に追加されたフィルターのみ、抑制されます。
+注意:  category パラメータではカテゴリー名ではなくカテゴリー ID を指定する必要があります。
+注意:  category パラメータはコンマ区切りの複数カテゴリー ID でもかまいません。これは、get_posts() 関数が 'category' パラメータを 'cat' として WP_Query に直接渡すからです。
+'orderby'
+(文字列) (オプション) 取得した投稿をソートする
+初期値: 'date'
+'none' - 順序無し (Version 2.8 で利用可能)
+'ID' - 投稿 ID。パラメータ名は大文字
+'author' - 作成者
+'title' - タイトル
+'date' - 日付
+'modified' - 更新日
+'parent' - 親ページの ID
+'rand' - ランダム
+'comment_count' - コメント数 (Version 2.9 で利用可能)
+'menu_order' - ページ順序。固定ページ (ページ属性で指定する) やアタッチメント (メディア投稿ダイアログの数値) で使われるが、'menu_order' 値 (デフォルトは 0) を持つ任意の投稿タイプで使用可能。
+'meta_value' - クエリに 'meta_key=keyname' がある場合のみ有効。並べ替えはアルファベット順なので語句の場合は良いが、数字の場合は予想外の結果 (たとえば 1, 3, 4, 6, 34, 56 を期待するかもしれないが、1, 3, 34, 4, 56, 6 のようになる) になることがある。
+'meta_value_num' - メタフィールドの値。(Version 2.8 で利用可能)。クエリに 'meta_key=keyname' がある場合のみ有効。'meta_value' の項に記載の数字での並べ替えを行う。
+'post__in' - 'include' パラメータで渡したものと同じ順序に一致。
+注: get_pages() は 'orderly' ではなく、'sort_column' を使用します。また get_pages() は 'post_' を前置します: 'author, date, modified, parent, title, excerpt, content'
+'post_mime_type'
+(文字列 / 配列) (オプション) mime types の一覧またはコンマ区切り
+初期値: なし
+返り値 
+(配列)  WP_Post オブジェクトのリスト。
+get_pages() と異なり、get_posts() は適切なコンテキスト(管理者の場合、など)では private ページを返します。 (参考: Andreas Kirsch, WordPress Hacking II, January 24, 2009-- accessed 2012-11-09.)
+用例 
+オフセットのあるリストの生成 
+フロントページで 1 件だけ表示し、カテゴリーID が 1 の投稿を表示したい場合、下記のようにします。
+<ul>
+<?php
+$args = array( 'posts_per_page' => 5, 'offset'=> 1, 'category' => 1 );
+$myposts = get_posts( $args );
+foreach ( $myposts as $post ) : setup_postdata( $post ); ?>
+<li>
+<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+</li>
+<?php endforeach; 
+wp_reset_postdata();?>
+</ul>
+注: 2件以上の記事がないカテゴリで上記のクエリを使うと何も表示されません。
+前後の投稿へのリンクがある投稿 
+前後の投稿へのリンクがある投稿を作成することができます。
+下記のようにします。
+<?php
+$postlist = get_posts( 'sort_column=menu_order&sort_order=asc' );
+$posts = array();
+foreach ( $postlist as $post ) {
+$posts[] += $post->ID;
+}
+$current = array_search( get_the_ID(), $posts );
+$prevID = $posts[$current-1];
+$nextID = $posts[$current+1];
+?>
+<div class="navigation">
+<?php if ( !empty( $prevID ) ): ?>
+<div class="alignleft">
+<a href="<?php echo get_permalink( $prevID ); ?>"
+title="<?php echo get_the_title( $prevID ); ?>">Previous</a>
+</div>
+<?php endif;
+if ( !empty( $nextID ) ): ?>
+<div class="alignright">
+<a href="<?php echo get_permalink( $nextID ); ?>"
+title="<?php echo get_the_title( $nextID ); ?>">Next</a>
+</div>
+<?php endif; ?>
+</div><!-- .navigation -->
+オフセットのリセット 
+ループの後で、foreach 実行前の記事が必要な場合は、以下のように記述します。
+<ul>
+<?php
+global $post;
+$args = array( 'posts_per_page' => 5, 'offset'=> 1, 'category' => 1 );
+$myposts = get_posts( $args );
+foreach ( $myposts as $post ) : 
+setup_postdata( $post ); ?>
+<li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
+<?php endforeach;
+wp_reset_postdata(); ?>
+</ul>
+全記事データにアクセスする 
+get_posts では、デフォルトの状態では利用できない記事データが一部あります。the_content() のコンテンツや ID などです。内部関数 setup_postdata() に、引数として $post 配列を与えることで解決できます。
+<?php
+$args = array( 'posts_per_page' => 3 );
+$lastposts = get_posts( $args );
+foreach ( $lastposts as $post ) :
+setup_postdata( $post ); ?>
+<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+<?php the_content(); ?>
+<?php endforeach; 
+wp_reset_postdata(); ?>
+setup_postdata() を呼び出さずに投稿 ID またはコンテンツにアクセスしたり、(the posts table に蓄積されている)任意の投稿データにアクセスするには、$post->COLUMN を使用できます。ここで COLUMN はデータのテーブルカラム名です。したがって、$post->ID は ID、 $post->post_content はコンテンツ、といった具合です。データを表示/出力するには、以下のように PHP echo コマンドを使用します。
+<?php echo $post->ID; ?>
+最近の投稿をタイトル順に並べる 
+Tアルファベット順に昇順で最近の 10 件を表示するには、以下のコードで投稿日、タイトル、抜粋を表示します。
+<?php
+$args = array( 'posts_per_page' => 10, 'order'=> 'ASC', 'orderby' => 'title' );
+$postslist = get_posts( $args );
+foreach ( $postslist as $post ) :
+setup_postdata( $post ); ?> 
+<div>
+<?php the_date(); ?>
+<br />
+<?php the_title(); ?>   
+<?php the_excerpt(); ?>
+</div>
+<?php
+endforeach; 
+wp_reset_postdata();
+?>
+ランダムに表示する 
+orderby パラメータに rand を指定して MySQL RAND() 関数を使用して最近の 5 件をランダムに表示します。
+<ul>
+<?php
+$args = array( 'posts_per_page' => 5, 'orderby' => 'rand' );
+$rand_posts = get_posts( $args );
+foreach ( $rand_posts as $post ) : 
+setup_postdata( $post ); ?>
+<li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
+<?php endforeach; 
+wp_reset_postdata(); ?>
+</ul>
+添付ファイルを全て表示する 
+テンプレートの Loops 外に記述します。
+<?php
+$args = array( 'post_type' => 'attachment', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null ); 
+$attachments = get_posts( $args );
+if ( $attachments ) {
+foreach ( $attachments as $post ) {
+setup_postdata( $post );
+the_title();
+the_attachment_link( $post->ID, false );
+the_excerpt();
+}
+wp_reset_postdata();
+}
+?>
+現在の記事の添付ファイルを表示する 
+ループ内($post->ID が利用できるところ)に記述します。
+<?php
+$args = array( 'post_type' => 'attachment', 'posts_per_page' => -1, 'post_status' =>'any', 'post_parent' => $post->ID ); 
+$attachments = get_posts( $args );
+if ( $attachments ) {
+foreach ( $attachments as $attachment ) {
+echo apply_filters( 'the_title' , $attachment->post_title );
+the_attachment_link( $attachment->ID , false );
+}
+}
+?>
+スラッグをもとに投稿を取得する 
+投稿スラッグをもとに投稿 ID を取得できます。
+<?php
+$the_slug = 'my-slug';
+$args=array(
+'name' => $the_slug,
+'post_type' => 'post',
+'post_status' => 'publish',
+'posts_per_page' => 1
+);
+$my_posts = get_posts( $args );
+if( $my_posts ) {
+echo 'ID on the first post found ' . $my_posts[0]->ID;
+}
+?>
+タクソノミーパラメータ 
+特定のタクソノミーと関連する投稿を表示します。カスタム投稿タイプに対して登録されたタクソノミーを指定した場合、'category' ではなく代わりに '{custom_taxonomy_name}'(カスタムタクソノミー名)を使って下さい。例えば、"genre"(ジャンル)というタクソノミーがあり、"jazz" というジャンルに分類された投稿のみを表示したい時は以下のコードを使います。
+<?php
+$args = array(
+'posts_per_page' => 8,
+'orderby' => 'rand',
+'post_type' => 'albums',
+'genre' => 'jazz',
+'post_status' => 'publish'
+);
+$show_albums = get_posts( $args );
+?>
+以下の例では、"tax_query" を使い、"genre" カスタムタクソノミーの "jazz" に分類された投稿のみを取得します。
+$args = array(
+'tax_query' => array(
+array(
+'taxonomy' => 'genre',
+'field' => 'slug',
+'terms' => 'jazz'
+)
+)
+);
+$postslist = get_posts( $args );
+他の例については、WP_Query ドキュメンテーションの タクソノミーパラメータのセクションをご覧ください。
+カスタムフィールドパラメータ 
+あるカスタムフィールドと関連する投稿のみを表示します。以下の例では、"meta_query" を使い、"product" 投稿タイプで "featured" というメタキーが "yes" という値を持つ投稿を取得します。:
+$args = array(
+'post_type' => 'product',
+'meta_query' => array(
+array(
+'key' => 'featured',
+'value' => 'yes',
+)
+)
+);
+$postslist = get_posts( $args );
+他の例については、WP_Query ドキュメンテーションの カスタムフィールドパラメータのセクションをご覧ください。
+変更履歴
+1.2.0 以降
+ソースファイル
+get_posts() は wp-includes/post.php にあります。
+関連 
+最新英語版: WordPress Codex » Template Tags/get posts (最新版との差分)
+記事
+記事: ループ - WordPress ループ内でのクエリの使い方に関する基本的な概要。
+記事: クエリ概要 - どのクエリが WordPress を生成するのかが決定される方法についての説明。
+記事: フックを使ったクエリのカスタマイズ
+記事: カスタムセレクトクエリを使った投稿の表示 /en
+記事: 高度なタクソノミークエリの生成 /en
+記事: オフセットとページネーションを活用したカスタムクエリ /en
+コード・ドキュメンテーション
+クラス:  WP_Query - WP_Query クラスの詳細な全容
+オブジェクト: $wpdb - $wpdb オブジェクトの使い方全容
+関数:  get_query_var()
+関数:  query_posts()  - 追加のカスタムクエリを作成
+関数: get_post() - 項目の ID を取得しデータベース内にあるその投稿のレコードを返す
+関数: get_posts() - 投稿の配列を返すことに特化した関数
+関数: get_pages() - ページの配列を返すことに特化した関数
+関数: have posts() - クエリが投稿を返すか否かを判断する条件関数
+関数: the_post() - クエリ後に自動的にループを設定する
+関数:  rewind_posts() - 現状のループをリセットする
+関数: setup_postdata() - ループ内で個別の結果を得るためのクエリデータを設定する
+関数: wp_reset_postdata() - 直前のクエリを復元する (通常はループ内の別のループの後に用いられる)
+関数: wp_reset_query()
+関数: is_main_query() - 変更されるクエリがメインのクエリであることを確認する
+アクションフック: pre_get_posts - WordPressクエリが実行される前に変更する
+アクションフック: the_post - post クエリの後で post オブジェクトを変更する
+フィルターフック: found_posts - WP_Query オブジェクトの found_posts 値を変更する
+テンプレートタグ/get posts - WordPress Codex 日本語版

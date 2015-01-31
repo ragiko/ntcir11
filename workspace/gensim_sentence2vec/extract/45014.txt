@@ -1,0 +1,117 @@
+from gensim.models import word2vec
+import re, pprint
+def pp(obj):
+pp = pprint.PrettyPrinter(indent=4, width=160)
+str = pp.pformat(obj)
+return re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x"+x.group(1), 16)), str)
+data = word2vec.Text8Corpus('owakati2.heibon.txt')
+model = word2vec.Word2Vec(data, size=200)
+out = model.most_similar(positive=u'苦労'])
+print(pp(out))
+model.cosine( ) 関数 と model.analogy()関数は、print( pp(  ) ) でもうまくいかない
+以下、 model.cosine( ) 日本語文字列 出力失敗
+u()関数 で、unicode文字列オブジェクトを引数に渡すと、エラーになる
+u()関数 をとって、str型オブジェクトにすると、メソッドは実行成功するが、str型なので日本語文字列出力できない
+以下、 model.analogy()関数 日本語文字列 出力失敗
+positive ワード と negative ワードの単語を、u( )関数 から外すと、演算処理は成功する。
+しかし、unicode文字でなく、str型オブジェクトになってしまうため、日本語文字列は出力されない。
+( 以下も同様 )
+【 検証 】 日本語出力 成功した model.most_similar関数 の演算精度
+( テキストデータの単語数)
+72,078語 ( 7万2千語 )
+意味空間上の足し引き 演算結果は、精度向上の工夫が必要 (モデル生成時のパラメータやサンプル数?)
+# _**most_similar( )**_ **関数は、** _**print( pp(  ) )**_ 関数で和文文字列 出力成功
+# ( 以下、実行例 )
+### 1. 和文テキストファイル   **※ _mecab_ を使って分かち書き加工済み**
+####( ファイル名: _**owakati2.heibon.txt**_ )
+![2.png](https://qiita-image-store.s3.amazonaws.com/0/43487/840e37b8-f5b7-bbcc-6d38-a81781d12711.png)
+### 2. 実行スクリプト ※ _word2vec_ 解析
+####( ファイル名: _**test.py**_ )
+```{python:test.py}
+# !/usr/bin/env python
+# -*- coding:utf-8 -*-
+from gensim.models import word2vec
+import re, pprint
+def pp(obj):
+pp = pprint.PrettyPrinter(indent=4, width=160)
+str = pp.pformat(obj)
+return re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x"+x.group(1), 16)), str)
+data = word2vec.Text8Corpus('owakati2.heibon.txt')
+model = word2vec.Word2Vec(data, size=200)
+out = model.most_similar(positive=u'苦労'])
+print(pp(out[1]))
+print(pp(out[2]))
+```
+![1.png](https://qiita-image-store.s3.amazonaws.com/0/43487/06df184d-bd52-c8c5-f1f2-4d15aef9fe51.png)
+### スクリプト・ファイル _**test.py**_ 実行
+```{terminal:terminal}
+python2.7 test.py
+```
+### ( 日本語出力 成功 ! )
+![3.png](https://qiita-image-store.s3.amazonaws.com/0/43487/37f8b367-5b2c-b204-f481-9677d1a3a48c.png)
+# ( スクリプト・ファイルを書き換えてみる )
+#### ※ _out[1]_ , _out[2]_ ではなく、 _out_ リスト型オブジェクト全体を出力
+```{python:test.py}
+# !/usr/bin/env python
+# -*- coding:utf-8 -*-
+from gensim.models import word2vec
+import re, pprint
+def pp(obj):
+pp = pprint.PrettyPrinter(indent=4, width=160)
+str = pp.pformat(obj)
+return re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x"+x.group(1), 16)), str)
+data = word2vec.Text8Corpus('owakati2.heibon.txt')
+model = word2vec.Word2Vec(data, size=200)
+out = model.most_similar(positive=u'苦労'])
+print(pp(out))
+```
+![4.png](https://qiita-image-store.s3.amazonaws.com/0/43487/a4985be7-d916-acb4-29e2-8d5560f5c140.png)
+### ( 日本語出力 成功 ! )
+```{terminal:terminal}
+python2.7 test.py
+```
+![5.png](https://qiita-image-store.s3.amazonaws.com/0/43487/8209699c-24a3-8a7e-5d03-1d3bb3a32cd7.png)
+# ( 対話型インタプリタ画面への直接 打ち込みでも成功 )
+```{terminal:terminal}
+from gensim.models import word2vec
+import re, pprint
+def pp(obj):
+pp = pprint.PrettyPrinter(indent=4, width=160)
+str = pp.pformat(obj)
+return re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x"+x.group(1), 16)), str)
+data = word2vec.Text8Corpus('owakati2.heibon.txt')
+model = word2vec.Word2Vec(data, size=200)
+out = model.most_similar(positive=u'苦労'])
+print(pp(out))
+```
+![6.png](https://qiita-image-store.s3.amazonaws.com/0/43487/149a8ada-1798-044d-ed64-74a08e8fbffa.png)
+# _**model.cosine( )**_ 関数 と _**model.analogy()関数**_は、_**print( pp(  ) )**_ でもうまくいかない
+## 以下、 _**model.cosine( )**_ 日本語文字列 出力失敗 
+#### _u()関数_ で、unicode文字列オブジェクトを引数に渡すと、エラーになる
+![AA.png](https://qiita-image-store.s3.amazonaws.com/0/43487/51074b4d-4372-0dc4-41ab-e675430d568c.png)
+#### _u()関数_ をとって、str型オブジェクトにすると、メソッドは実行成功するが、str型なので日本語文字列出力できない
+![BB.png](https://qiita-image-store.s3.amazonaws.com/0/43487/af67143c-836a-5105-f410-804e40aef2c6.png)
+=======================================================================================
+## 以下、 _**model.analogy()関数**_ 日本語文字列 出力失敗 
+![7.error.png](https://qiita-image-store.s3.amazonaws.com/0/43487/04c54454-2540-29bb-c20d-39b6af84bd5a.png)
+![8.error.png](https://qiita-image-store.s3.amazonaws.com/0/43487/ad076b10-01eb-9f07-4222-16e03ef2c730.png)
+![9.error.png](https://qiita-image-store.s3.amazonaws.com/0/43487/17f9e68f-1110-360e-9f6e-7a36f27ac040.png)
+#### _positive_ ワード と _negative_ ワードの単語を、_u( )関数_ から外すと、演算処理は成功する。
+#### しかし、unicode文字でなく、str型オブジェクトになってしまうため、日本語文字列は出力されない。
+![10.error.png](https://qiita-image-store.s3.amazonaws.com/0/43487/404effff-dd71-2ffd-b1ad-57d15b96fc9c.png)
+##### ( 以下も同様 )
+![A.png](https://qiita-image-store.s3.amazonaws.com/0/43487/1bc41e03-7751-1f8e-0494-0bff45b3b195.png)
+![B.png](https://qiita-image-store.s3.amazonaws.com/0/43487/32c61d6b-4b10-3f3d-6cc7-58165ed5387c.png)
+========================================================================================
+# 【 検証 】 日本語出力 成功した _**model.most_similar関数**_ の演算精度
+### ( テキストデータの単語数)
+#### _**72,078語**_ ( 7万2千語 )
+![1.png](https://qiita-image-store.s3.amazonaws.com/0/43487/e726b9bb-8c04-ebad-3f83-b658ec88521e.png)
+### 意味空間上の足し引き 演算結果は、精度向上の工夫が必要 (モデル生成時のパラメータやサンプル数?)
+![1.png](https://qiita-image-store.s3.amazonaws.com/0/43487/8aa74159-b0af-e407-bbad-8a98e54bac5b.png)
+![1.5.png](https://qiita-image-store.s3.amazonaws.com/0/43487/340a7369-57e3-a0f3-76c7-5c447d8d97ce.png)
+![2.png](https://qiita-image-store.s3.amazonaws.com/0/43487/68574f67-3d73-2028-2399-7f313fe285c4.png)
+![3.png](https://qiita-image-store.s3.amazonaws.com/0/43487/5548725e-91d4-9533-8a94-89db064e0756.png)
+![4.png](https://qiita-image-store.s3.amazonaws.com/0/43487/1253cf2b-494a-b28b-9034-244c289628dc.png)
+![5.png](https://qiita-image-store.s3.amazonaws.com/0/43487/66b269ae-eecc-3f5c-0c53-cb7517cc7ea6.png)
+【Python 2.7】和文テキストでword2vec関数 複数ためす ～print( pp( )) で、解析出力オブジェクトを日本語文字出力できる 関数とできない関数に2分される - Qiita

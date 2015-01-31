@@ -1,0 +1,403 @@
+ PHPでTDD&CIワークショップ、Jenkins + PHP の各種プラグインパート資料
+22:59 |  
+はじめに
+この資料は「PHPでTDD&CIワークショップ」 http://atnd.org/events/16626 で @yamashiro が発表するための資料だよ。ワークショップ参加者じゃなくても記事読むだけで完結するようには書いてあるよ。概要としては、Jenkins を使って PHP のウンコレガシーなコードをいかに綺麗にして行くかということを説明する。自画自賛だけど PHPMD とか PHPCPD の使い方の説明の資料としてもそこそこイケてる資料になってると思いました。まる。この記事に書かれてることは、割とTemplate for Jenkins Jobs for PHP Projectsとかぶってるけど、プラグインを絞ってあるのと、一個一個のプラグインについて解説、また実際にエラーが起きたときにどうすればいいのか書くよ。
+Java と Jenkins のインストールとJENKINS_HOME
+ワークショップでは Java と Jenkins は参加者はインストールしてきてねという話になっていたはずだが、簡単に Java と Jenkins のインストール、起動について説明する。
+Java のインストール
+ググれカス(や、説明しだすと割とだるいっていうか…)。Oracleのサイトから適当にやればいいんじゃないですかね。
+Jenkins のインストール
+一番簡単なのは、http://mirrors.jenkins-ci.org/war/latest/ で war を取得して、java -jar jenkins.war で起動して終了
+Jenkins の起動の確認と JENKINS_HOME の確認
+ブラウザで http://localhost:8080 をひらいてjenkins氏の顔が見えたら成功
+Top 画面で「Jenkinsの管理」-[システムの設定] で表示される[ホームディレクトリ]が、以降の説明で言うところの JENKINS_HOME とする
+以下でコマンドラインでいろいろ説明するので、環境変数 JENKINS_HOME を指定しておいたほうがいい
+Jenkins の高度というか細かいインストール方法はググれ公式wiki、yumでインストールしてる5分で出来るJenkins導入 とか参照以下の説明では、jenkinsを localhost:8080 で起動してることを前提としているが、他のサーバーにあったり、ポートをかえてたりする場合は読み替えること。
+各種 PHP 周りのツールのインストール
+PHP 周りのツールをインストールするために、皆様おなじみの PEAR コマンドを使ってがっとインストロールをします。すでに入ってるようなものは適宜、フォースでやらなくていいコマンドを感じてやらなくていいです。フォースを感じてください。
+pear channel-discover pear.phing.info
+pear channel-discover pear.pdepend.org
+pear channel-discover pear.phpmd.org
+pear channel-discover pear.phpunit.de
+pear channel-discover components.ez.no
+pear channel-discover pear.symfony-project.com
+pear install phing/phing
+pear install pdepend/PHP_Depend
+pear install phpmd/PHP_PMD
+pear install phpunit/phpcpd
+pear install PHPDocumentor
+pear install --alldeps phpunit/PHPUnit
+いれているツールは、あとでも説明するが以下の通り
+Phing (Java の Apache Ant というビルドツールの PHP クローン)
+PHP_Depend (実は今回はこれの説明はしないが、下で説明するPHPMDが依存してるので。パッケージ間の依存性とかを調べられるツール)
+PHPMD (PHPのコードのクソいけてない部分を探すツール)
+PHPCPD (PHPのコードのアホコピペ重複部分を探すツール)
+PHPDocumentor (コメントからPHPDocを出力するためのツール)
+PHPUnit (言わずとしれた PHP のテストツール)
+ツールに対応した Jenkins プラグインのインストール
+Jenkins プラグインのインストールは、Jenkinsの画面からもできるが、今回は簡素化のために jenkins-cli というコマンドラインから jenkins をいじる仕組みを使う。決して画面からのインストロールの説明がめんどくさかったわけではない。断じてない。決してない。一応、画面からのインストール方法も簡単に説明しておくと、Jenkinsのホームから[Jenkinsの管理]-[プラグインの管理]-[利用可能]タブを表示して表示されるプラグイン一覧から必要なプラグインのチェックボックスを入れ、一番下の「インストール」ボタンをクリックする。コマンドラインからの場合、下記のコマンドを実行して欲しい。最初の wget は、自分の jenkinsサーバーから jenkins-cli.jar をダウンロードしている。すでにどこかに置いてあったらそれを使えばいい。また、wget は適宜、curlとかに読み替えること。え。Windowsでjenkinsの人?いるの?Jenkins+PHP+Windowsとか茨の道っすなー。Windowsの人は手動でダウンロードすればいいんじゃね。多分。jenkins-cli.jar を使って各種プラグインをjenkinsにインストロールして、最後に jenkins を再起動している。
+wget -O jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar
+java -jar jenkins-cli.jar -s http://localhost:8080 install-plugin phing
+java -jar jenkins-cli.jar -s http://localhost:8080 install-plugin dry
+java -jar jenkins-cli.jar -s http://localhost:8080 install-plugin pmd
+java -jar jenkins-cli.jar -s http://localhost:8080 install-plugin clover
+java -jar jenkins-cli.jar -s http://localhost:8080 safe-restart
+インストロールしているプラグインは以下のとおり。PHPUnit のプラグインがないように見えるのは、PHPUnit は jenkins が標準でサポートしている JUnit 形式の xml を出力するから
+phing (Phingを Jenkins からキックするためのプラグイン)
+dry (PHPCPD の結果を jenkins から見るためのプラグイン。なんで phpcpdって名前のプラグインじゃないのか小一時間ほど(ry )
+pmd (PHPMD の結果を jenkins から見るためのプラグイン。ちなみに pmd という java のツールと互換性のある xml を PHPMD が出力する)
+cloverphp (cloverというxdebugで出力されたカバレッジ情報を表示するためのツールのプラグイン。ワークショップの間に説明できるか怪しい…)
+サンプルのジョブの新規作成とサンプルのコードの
+続いて、すでに僕が用意した Jenkins ジョブのダウンロードして配置と、これも僕が用意した各種ツール、Jenkinsプラグインの表示を確認するための準備を行う。今回、テスト用なのでジョブの名前はci_workshop_jobという名前としよう。まずは新規ジョブの作成。Jenkinsはジョブの存在などをどう判断するかというと、$JENKINS_HOME/jobs/<job_name>/ というフォルダがあって、その下に config.xml というファイルがあればジョブと見なされる(と思うよ。間違ってたらさぼてんまんさんのツッコミがあるはず!)。ジョブの設定のGUIで設定した項目は、config.xmlに書かかれているよ。この仕組を知っておけば、スクリプトでconfig.xmlのテンプレートを新しいジョブの場所にコピーして、新しいジョブのconfig.xml の内容をsedとかで書き換えてを個々のジョブ固有の値に変更して、さくっとジョブを作ることができるよ!話を戻して、Jenkinsのこの規定通りにサンプルのジョブを持ってこよう。と、こっから先の記事を書こうと思ったんだけど、まったくWindowsの人のことを考えていなかったよ。Windowsの人はコマンドがやってることを適当に読み替えて実行してください。分かるっしょ。きっと。多分。git 入ってる人の場合
+cd $JENKINS_HOME/jobs/
+git clone git://github.com/yamashiro/ci_workshop_job.git
+java -jar jenkins-cli.jar -s http://localhost:8080 reload-configuration
+入ってない人の場合(tmpは適当なディレクトリ)
+cd ~/tmp 
+wget -O ci_workshop_job.tar.gz https://github.com/yamashiro/ci_workshop_job/tarball/master	
+tar zxvf ci_workshop_job.tar.gz
+mv yamashiro-ci_workshop_job-3b7fcfc $JENKINS_HOME/jobs/ci_workshop_job/
+java -jar jenkins-cli.jar -s http://localhost:8080 reload-configuration
+この状態でジェンキンスの画面を見て、以下のように、ci_workshop_job というジョブが作られていれば成功である。この状態ではジョブは有効になっていないので、ジョブのリンクをクリックして、「ビルド実行」をクリックしてジョブを有効にしつつビルドを実行してみる。ビルド実行した結果が黄色くなりそのリンクを踏んだ結果が以下のようになっていれば最初の第一歩は成功
+サンプルのジョブの説明と build.xml との比較、ツールが何をするか
+次にサンプルのジョブの説明とサンプルの build.xml との比較を説明していく。build.xml は buildツールである Phing が用いる実行のための設定ファイルである。jenkins のジョブの設定を確認するには、各ジョブの画面から[設定]リンクをクリックすれば良い。
+Phing の設定
+jenkinsのビルドで Phing を使うという設定は、設定画面中段、ビルドの項目にPhingの呼び出しという項目で行われている(画面は「高度な設定」を押した後の表示)。いちから新しくビルド対象を作るときは、ビルド手順の追加から [Ant の呼び出し]や[シェルの実行]などを選ぶ。このときに Phing のプラグインが足されていれば[Phingの実行]が選択することができる。これまでのワークショップの手順をやった結果、$JENKINS_HOME/jobs/ci_workshop_job/workspace/build.xmlがあるはずである。現在、Phingの設定の[ビルドファイル]が空であるが、デフォルトでworkspaceのbuild.xmlという名前のファイルを使うからである。ファイル名などを変えたいときは、この設定をいじる。また、ターゲットも空であるが、空である場合、build.xmlの
+<project name="ci_workshop" basedir="." default="all">
+の default というターゲットが選ばれる。jenkinsでターゲットを指定したい場合はここの設定項目で設定する。ターゲットの詳しい説明については省く。Phingのドキュメントを読んでくだしあ。ちなみに今回のbuild.xmlには、all という全てのターゲットに依存、つまり全てのターゲットに依存したタスクが用意されていて、全ての後述する phpcpd や phpmd のタスクが全て実行される。
+<target name="all" depends="phpcpd,phpmd,phpunit,phpdoc">
+</target>
+最後に、プロパティという項目があるが、これは build.xml 内に、
+<property name="outputDir" value="."/>
+という項目があって、今回の例では phpunitの結果の出力先を決めているのだが、このプロパティを Jenkins で動かすときだけ上書きたいと言った場合に使う。
+PHPCPD の設定と build.xml
+PHPCPDはコードの重複をチェックするためのツールである。具体的には以下の画面の[重複コード:2個の警告]をクリックすると次のようにコードが重複してる箇所がわかる。さらにリンクをクリックするとコードのどの箇所かもJenkinsの画面で見ることができる。build.xml は以下のとおりになっている。
+<target name="phpcpd">
+<phpcpd minTokens="10">
+<fileset dir="./phpfiles/">
+<include name="**/**/*.php"/>
+</fileset>
+<formatter type="pmd"
+outfile="${outputDir}/cpd.xml"/>
+</phpcpd>
+</target>
+build.xml内の各項目については細かく説明しないが、filesetなどで対象とするファイルを指定したりする。なので、このファイルだけは除外したいとかは、fileset内にexcludeなどを指定して設定する。PHPCPD の設定はdryプラグインが正しくインストールされていればビルド後の処理の[重複コード分析の集計]で行う集計するファイルの設定は、build.xmlのphpcpdタスク中にある formatter の outputfile と合わせる。重要度の閾値の設定は、PHPCPDが出力するエラーのファイルには、
+<duplication lines="18" tokens="44">
+<file path="/Users/Shared/Jenkins/Home/jobs/ci_workshop_job/workspace/./phpfiles/Foo.php" line="8"/>
+というように重複してる行数と、重複してるトークン数が出力されるのだが、このlineの数をどういうようなしきい値で警告とするかという設定である。Highは赤、Normalは黄色で表示される。高度な設定の内容はあまり俺も把握してないので省略。誰か教えてくれw
+PHPMD の設定と build.xml
+PHPMDはコード内の使われていない変数を警告したり、複雑すぎるクラスを警告したりする。具体的には以下の画面の[PMD:3個の警告]のリンクをクリックして次のようにルールにあっていない警告を表示できる。僕が一番使うのは「警告」タブでファイル一覧を表示させてさらに各ファイルのエラーの箇所を見るこの場合だと、パラメーターとして渡されているのにメソッド内で使っていないのでエラーになっている。build.xml は以下のとおりになっている。
+<target name="phpmd">
+<phpmd rulesets="ruleset.xml">
+<fileset dir="./phpfiles">
+<exclude name="exclude.php"/>
+</fileset>
+<formatter type="xml"
+outfile="${outputDir}/pmd.xml"/>
+</phpmd>
+</target>
+<phpmd rulesets="rulesets.xml">というのがポイントでどのPHPMDのルールを使うのかを設定している。rulesets.xml は以下のようになっている。
+<?xml version="1.0"?>
+<ruleset name="Hyper mANAGE PHPMD ruleset"
+xmlns="http://pmd.sf.net/ruleset/1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+http://pmd.sf.net/ruleset_xml_schema.xsd"
+xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+<rule ref="rulesets/codesize.xml">
+<exclude name="TooManyMethods" />
+</rule>
+<rule ref="rulesets/codesize.xml/TooManyMethods">
+<properties>
+<property name="maxmethods" value="15" />
+</properties>
+</rule>
+<rule ref="rulesets/design.xml" />
+<rule ref="rulesets/naming.xml">
+<exclude name="ShortVariable" />
+<exclude name="LongVariable" />
+</rule>
+<rule ref="rulesets/unusedcode.xml" />
+</ruleset>
+基本的にはPHPMDで用意してあるルールセットを読み込んでるだけだが、ShortVariableの警告などは出るとうざいので、excludeで指定してある。細かい設定などの説明はしないが、ここでは、TooManyMethodsの警告のメソッド数のしきい値なども行なっている。自分で作成したルールの設定などもここで行う。PHPMD の設定はpmdプラグインが正しくインストールされていればビルド後の処理の[PMD警告の集計]で行う集計するファイルの設定は、formatterのoutputfileと合わせる。高度な設定の内容はあまり俺も把握してないので省略。誰か教えてくれw
+PHPUnit の設定と build.xml
+PHPUnit はいわずもがな、自動テストをして、その結果を出力する。具体的には以下の画面の[テスト結果]のリンクをクリックして次のように失敗したテストを表示できる。リンクをたどれば失敗したテストの詳細な項目を表示できるbuild.xml は以下のとおりになっている。
+<target name="phpunit">
+<phpunit>
+<formatter type="xml" outfile="${outputDir}/phpunit.xml"/>
+<batchtest>
+<fileset dir="./phpfiles/">
+<include name="**/*Test.php"/>
+</fileset>
+</batchtest>
+</phpunit>
+</target>
+PHPUnit の設定は Jenkins にデフォルトで入ってる JUnit の項目を設定すればよい。ビルド後の処理の[JUnitテスト結果の集計]で行う。テスト結果XMLの設定は、formatterのoutputfileと合わせる。
+PHPDoc の表示と build.xml
+PHPDoc は、PHPファイルに
+/**
+* このクラスはほげほげをするクラスです
+* @author yamahsiro
+*/
+class HogeHoge {
+と書いておくとそれを HTML 形式に整形してくれるツールである。出力された HTML を Jenkins氏から見せるには、Javadocの出力として処理してしまおう。build.xml は以下のとおりになっている。
+<target name="phpdoc">
+<mkdir dir="phpdoc" />
+<phpdoc title="API Documentation"
+destdir="./phpdoc"
+output="HTML:Smarty:PHP">
+<fileset dir="./phpfiles">
+</fileset>
+</phpdoc>
+</target>
+PHPDocumentor によって出力される先の設定を、Jenkinsでデフォルトで入っている Javadoc の項目を設定すればよい。ビルド後の処理の[Javadocの保存]で行う。ここでの設定項目と、destdir をあわせる。この結果、PHPDocumentorで出力されたファイルが、各ジョブのリンクの[ドキュメント]でリンクされることになる。ただし、urlにjavadocが入る気持ち悪い仕様になるが。
+エラーの解消方法について
+ここまで説明した各ツール、プラグインで出てきたエラーを実際に解消して行こう。ちなみに、手を入れるファイルには全てテストが存在している。もし、テストのないコードでPHPCPDの警告やPHPMDの警告がある場合は、先にテストを書いてから手を入れるのが正しいレガシーコードとの戦い方と言えよう。修正するにあたっては、実は Jenkins は直接は利用しない。というかこれからの修正ではあまり Jenkins は利用しない。本来は、Jenkins は日々動いていて、例えばコミットのたびにテストやPHPMDが動くようにして、動作しないコードや、警告がでるようなコードを検知するために使うからだ。今回は、テスト用に Jenkins の workspace には直接ファイルを置くようにしたが、本来であれば、SCMからファイルを取ってきて、かつ、SCMの変更を検知してテストやPHPMDのビルドを行うほうが良いと思われる。SCMの設定とビルドの設定は[ソースコード管理システム]と[ビルド・トリガ]で行う。Jenkinsのプラグインを入れることでgitやmercurialなどといったSCMを使うことができる。繰り返し書くが、以下の説明ではワークショップの簡素化のため直接 Jenkins の workspace をいじっているが、本来は Jenkins の workspace は直接いじらないで、例えばローカルの開発環境で落ちてるテストを修正し、ローカルで確認し、コミットし、そのコミットをトリガとして Jenkins のビルドが走るということを理解しておいて欲しい。
+PHPUnitの修正
+何はともあれ、テストが落ちている状態はまずいので、いの一番にテストを修正する。今回の例では以下のテストが落ちている。
+/** @test */
+public function plusSimple2() {
+$this->assertSame(3, $this->foo->plus(1, 2));
+}
+plusというメソッドは、その名のとおり足し算、つまり、1+2=3という処理をするメソッドのつもりである。エラーの内容は以下のとおりに Jenkins で表示されている。
+FooTest::plusSimple2
+Failed asserting that <integer:2> is identical to <integer:3>.
+3を予期していたのに、2が実際には返ってきたと言われている。テストを実行するために、workspaceに移動してPHPUnitコマンドを実行しよう。
+cd $JENKINS_HOME/jobs/ci_workshop_job/workspace/phpfiles
+phpunit FooTest.php
+そうすると以下のような表示になるはずである。
+PHPUnit 3.5.13 by Sebastian Bergmann.
+.F.
+Time: 0 seconds, Memory: 5.25Mb
+There was 1 failure:
+1) FooTest::plusSimple2
+Failed asserting that <integer:2> is identical to <integer:3>.
+/Users/Shared/Jenkins/Home/jobs/ci_workshop_job/workspace/phpfiles/FooTest.php:17
+FAILURES!
+Tests: 3, Assertions: 7, Failures: 1.
+Foo.phpのplusメソッドを見ると
+function plus($a, $b) { 
+return $a * $b;
+}
+となっている。単純な話でplusなハズなのに、掛け算になっている。Foo.php の該当の箇所の * を + に変えて再度 PHPUnit のコマンドを実行しよう。
+cd $JENKINS_HOME/jobs/ci_workshop_job/workspace/phpfiles
+phpunit FooTest.php
+今度は 
+OK (3 tests, 7 assertions)
+と全てのテストが通ったことを確認できるだろう。(本来であればこのコードをコミットしてJenkinsが動作するのを待つが)この状態で Jenkins を動かすと、テストのエラーが無くなっており、結果画面が青くなっていることが確認できるだろう。
+PHPCPD のしきい値の設定と警告の修正
+次に、PHPCPDの警告を消そう。その前に、このプロジェクトでは PHPCPD の警告がでたらエラーとしよう。つまり先程の画面のように青い画面にはならないようにしよう。そのためには PHPCPD の高度な設定画面で、[ビルド結果の閾値]を設定しよう。おのおの High がいくつあったら、とか Normal があったらーとか、新規に増えたらーとか細かく設定できるが、単純に「全ての合計が0より多いとき」という設定をおすすめする。閑話休題。レガシーと戦っているんだとしたら、PHPCPDとか後で説明するPHPMDの警告が0になるのは遠い未来かもしれない。だとしたら例えば閾値をある程度の数で設定するのがいい。あまりに多すぎて見向きもされない指標は意味がない。あるいは、新しく作り出す hoge/ フォルダ以下は警告0を目指すというのもアリだ(僕のプロジェクトではそうだ)。その場合は hoge フォルダ以下だけを実行するジョブを作るのがいいと思う。さてこの状態で Jenkins を再度ビルドすると黄色くなるはずである。今度は PHPCPD の警告を消そう。消す前にJenkins以外から警告を見るようにしよう(なんどもなんども言うが本来はJenkinsのワークスペースでは作業しない)。PHPCPDのコマンドを直接叩いてもいいのだが、閾値の情報とかを分散させないためにも、Phing経由で PHPCPD を叩いてみよう。
+cd $JENKINS_HOME/jobs/ci_workshop_job/workspace/
+phing phpcpd
+何をしているかというと、phing にデフォルトのbuild.xml内のphpcpdタスクを実行せよという命令を行っている。Foo.phpが以下のとおりになっていて、
+class Foo {
+function thisIsCopyAndPastePrograming($val) {
+$val = $val + 1;
+if ($val === 1) {
+return "1";
+} else if ($val === 2) {
+return "2";
+} else if ($val === 3) {
+return "3";
+} else if ($val === 4) {
+return "4";
+} else if ($val === 5) {
+return "5";
+} else if ($val === 6) {
+return "6";
+} else if ($val === 7) {
+return "7";
+}
+return "Foo";
+}
+Hoo.phpが以下になっていて
+class Hoge {
+function thisIsCopyAndPastePrograming($val) {
+if ($val === 1) {
+return "1";
+} else if ($val === 2) {
+return "2";
+} else if ($val === 3) {
+return "3";
+} else if ($val === 4) {
+return "4";
+} else if ($val === 5) {
+return "5";
+} else if ($val === 6) {
+return "6";
+} else if ($val === 7) {
+return "7";
+}
+return "Hoge";
+}
+結果として、buidl.xmlのoutputfileの設定通りにcpd.xmlというファイルが出来上がっているので確認すると
+<duplication lines="12" tokens="41">
+<file path="/Users/Shared/Jenkins/Home/jobs/ci_workshop_job/workspace/./phpfiles/Foo.php" line="11"/>
+<file path="/Users/Shared/Jenkins/Home/jobs/ci_workshop_job/workspace/./phpfiles/Hoge.php" line="4"/>
+<codefragment>		if ($val === 1) {
+return "1";
+} else if ($val === 2) {
+return "2";
+} else if ($val === 3) {
+return "3";
+} else if ($val === 4) {
+return "4";
+} else if ($val === 5) {
+return "5";
+} else if ($val === 6) {
+return "6";
+</codefragment>
+</duplication>
+というような出力になっているハズである。Jenkinsの画面でも確認できうるように、Foo.phpの11行目からとHoge.phpの4行目からが12行重複してるという出力である。これを修正しよう。PHPCPDの修正は僕はあんまりパターンがなくて楽なんじゃないかと思う。新しいファイルに共通してる処理を書くか、重複してる二つ以上のコードの親クラスが同一なのであれば、そのコードを親コードに持っていき、元のコードからそれを呼び出すようにすればいいと思う。今回の場合は、例えば次のようなコード IntToStr.php というようなファイルを用意し、
+class IntToStr {
+static function intToStrBetween1_7($val) {
+if ($val === 1) {
+return "1";
+} else if ($val === 2) {
+return "2";
+} else if ($val === 3) {
+return "3";
+} else if ($val === 4) {
+return "4";
+} else if ($val === 5) {
+return "5";
+} else if ($val === 6) {
+return "6";
+} else if ($val === 7) {
+return "7";
+}
+}
+}
+Foo.php と Hoge.php で require_once  して呼び出すように変更すればよい
+require_once 'IntToStr.php';
+class Foo {
+function thisIsCopyAndPastePrograming($val) {
+$val = $val + 1;
+$val = IntToStr::intToStrBetween1_7($val);
+return $val ? $val : "Foo"; 
+}
+この時、例えば「$val = $val + 1;」の行をミスして書くのを忘れてしまったとしよう。その場合でもFooTest.phpとHogeTest.phpというPHPUnitのテストがあり、エラーになるので安心して重複コードを減らすというリファクタリングを行うことができる。修正が終わったらテストを動かし、phpunit.xmlを確認しエラーが0になってるのを確認しよう。重ね重ね言うが今回はworkspaceで作業しているが通常であれば、エラーがないことを確認し、コミットし、Jenkinsで確認しよう。
+cd $JENKINS_HOME/jobs/ci_workshop_job/workspace/
+phing phpunit
+この状態で Jenkins を動かすと、PHPCPDのエラーが無くなり、結果画面が青くなっていることが確認できるだろう。余談であるが、実装が増えたので本来であれば、IntToStr.php に対するテストを書き、もともとのHogeTest.phpとFooTest.phpはリファクタリングすべきだと考える。しかし、テストをリファクタリングしたときにテストが正しいことを証明するにはどうしたらいいんですかね。テストのテストが(ry
+PHPMD のしきい値の設定とUsedParameter警告の修正、pmd出力形式の変更
+次に、PHPMDの警告を消そう。その前に、このプロジェクトでは PHPMD の警告がでたらエラーとしよう。つまり先程の画面のように青い画面にはならないようにしよう。その設定は、さきほどの PHPCPD の設定とほぼ一緒なので、詳しい設定の方法ははぶく。PMDの高度な設定で[ビルド結果の閾値]で全ての合計の閾値を0にしよう。PHPMDの警告は沢山種類があるので、変更方法を全て説明はしないが、例えばUnusedFormalParameterのエラーは、Parameterに渡されてる変数をメソッド内で使っていないというエラーなので以下のエラーが出るメソッド
+function hasUnUsedParameterMethod($unuseParameter, $useParameter) {
+return $useParameter;
+}
+から、使ってないパラメーターを削除すれば良い。
+function hasUnUsedParameterMethod($useParameter) {
+return $useParameter;
+}
+この状態で phpmd を phing 経由で実行すると
+cd $JENKINS_HOME/jobs/ci_workshop_job/workspace/
+phing phpcpd
+pmd.xmlにエラーが出力されている。が、pmd.xml は割と見づらいし、通常のプロジェクトであると警告の数が多くなることが多いので、実行環境によって、pmdの出力形式が変わるようにしよう。build.xmlの先頭のほうに pmdformat というプロパティを足そう。
+<property name="outputDir" value="."/>
+<property name="pmdformat" value="html"/>
+次に、phpmd の formatter を pmdformatを使うように書き換えよう
+<formatter type="${pmdformat}"
+outfile="${outputDir}/pmd.${pmdformat}"/>
+これで「phing phpmd」を実行すると、workspaceにpmd.htmlが出力される。割と人間には見やすくなったはずである。UnusedFormalParameterの警告は無くなっているのが分かるであろう。ただ、JenkinsのPMDプラグインではhtml形式では扱えないので、プロパティの設定を以下のようにpmdformat=xmlと上書きしよう。ここでテストを実行するとエラーになるので、
+cd $JENKINS_HOME/jobs/ci_workshop_job/workspace/
+phing phpunit
+テストファイルのほうも修正しておく。で、通常であればコミットしておこう。
+CyclomaticComplexity 警告の修正
+次の警告は、Hoge.phpがCyclomaticComplexityと言われて怒られている。これはコードが複雑すぎるという警告である。この警告やメソッド内の実行パスの多さを警告するNPathComplexityなどの警告は、例えば if文や for文をメソッドに切り出したり、クラス化して委譲するのがいいと思う。やり方はいくつかあるね。Hoge.phpは以下のとおりになっている。
+function complexMethod($array) {
+foreach($array as $val) {
+if ($val === 3) {
+if (true) {
+if (true) {}
+if (true) {}
+return $val;
+}
+}
+}
+if (true) { while (false) { if (true) {} } }
+if (true) { while (false) { if (true) {} } }
+return "complexMethod";
+}
+とりあえずfor文をメソッド化して呼び出す方式に変えてみよう
+function complexMethod($array) {
+$val = $this->foreachMethod($array);
+if (true) { while (false) { if (true) {} } }
+if (true) { while (false) { if (true) {} } }
+return $val ? $val : "complexMethod";
+}
+private function foreachMethod($array) {
+foreach($array as $val) {
+if ($val === 3) {
+if (true) {
+if (true) {}
+if (true) {}
+return $val;
+}
+}
+}
+}
+これで、CyclomaticComplexityの警告は消えたはずである。これもテストを実行して確認しよう。本来であればコミットしておこう。
+TooManyMethodsの警告を消す(@SuppressWarningsバージョン)
+さて最後にTooManyMethodsの警告を消そう。TooManyMethodsの警告が出ているのはCommonUtilである。CommonUtilは共通で使われるUtilなので、TooManyMethodsなのはしょうがないとしよう。なので警告を無視するようにしよう。@SuppressWarningsというアノテーションを使えば警告を無視することができる。TooManyMethodsはクラスにつく警告なのでクラスのコメントに、UnusedFormalParameterを無視したかったらメソッドにつく警告なのでメソッドのコメントに入れる。具体的には以下のとおりとなる。
+/**
+* @SuppressWarnings(PHPMD.TooManyMethods)
+*
+*/
+class CommonUtil {
+function hoge1() {}
+これで TooManyMethods のエラーが消え、全てのテストエラー、PHPCPDの警告、PHPMDの警告が消え、ジョブの状態が青い状態になったはずである。
+xdebug のインストールと設定、cloverでのカバレッジ率の表示
+さて、みなさん、プロダクトがテストツールとかでテストできるようになってきたらカバレッジ率はかりたいよね。普通そうですよね。僕はそうだ。xdegug と clover というプラグインを使えば Jenkins でカバレッジ率を表示することができる。まずは xdebug のインストール方法だが環境によって色々だし、ググれカスとしか…wpeclでインストールするのがいいんじゃないでしょうか。あるいは普通にソースからもってきてビルドするか。Windowsはdllがあるような。php.iniでxdebugのsoなり、dllを読み込む設定を書く/usr/local/lib/php.ini とか、/etc/php.iniとかC:\Xampp\php\php.ini をzend_extension = "/usr/lib/php/extensions/no-debug-non-zts-20090626/xdebug.so" なり、zend_extension = "C:\xampp\php\xdebug.dll" を足せばいいよ。そして、build.xmlを書き換えて、PHPUnitでのテストの前にCoverage情報の事前出力とcoverageのformatをすれば良いけど、キューピー3分間クッキングのように、すでに coverage_build.xml というのを用意してある。coverage_build.xml を使えるように Phing の設定を書き換える。coverage_build.xmlの内容は以下のとおり。
+<target name="phpunit">
+<mkdir dir="clover" />
+<coverage-setup database="${outputDir}/coverage.db">
+<fileset dir="./phpfiles/">
+<exclude name="**/*Test.php"/>
+</fileset>
+</coverage-setup>
+<phpunit codecoverage="true">
+<formatter type="xml" outfile="${outputDir}/phpunit.xml"/>
+<formatter type="clover" outfile="clover.xml"/>
+<batchtest>
+<fileset dir="./phpfiles/">
+<include name="**/*Test.php"/>
+</fileset>
+</batchtest>
+</phpunit>
+<coverage-report outfile="clover.xml">
+<report todir="clover" />
+</coverage-report>
+</target>
+coverage-setupでカバレッジを取得するファイル群の事前情報を取得し、phpunitタスクのcodecoverage="true"でPHPUnitでカバレッジ情報を収集するようにし、     <formatter type="clover" outfile="clover.xml"/>でcolover.xmlにclover形式でファイルを出力し、coverage-reportでレポートファイルをcloverディレクトリに出力するという設定がしてある。この出力されたファイルを集計できるように、Jenkinsでcloverプラグインの設定を行う。coverage_build.xml に書いた outfile と report の todir の設定を使って、[Clover カバレッジレポートを集計]の設定を下記のように行う。これでジョブを実行すると、各ジョブのメニューに、 [Clover HTMLカバレッジレポート]のリンクが表示され、クリックするとカバレッジ率が表示される。余談だけど、カバレッジ率ってあんまり高いものを目指してもダメだと思うんですよ。だけど、とうぜんカバレッジ率が高いほうがいい。だから少しづつしきい値を高くしていってだんだん高くならないと警告とするとか、カバレッジ率を取得して、plotっていうJenkinsプラグインがあるので、カバレッジ率の変化を表示するといいんじゃないでしょうか。
+小ネタ
+なんかだらっと小ネタ書いてくよ
+PHPUnit での実行と Phing で phpunit を全部動かしたときの動作が違う件
+PHPUnitでのテストは通るんだけど、Phingでphpunitタスクを動かしたら通らないとか、逆のケースとかあるよ。例えば僕がPHPUnitでは通るのに、Phingで通らなくてはまったのは global な値を見てるときに、PHP CLIのバグくさいんだけど、global で参照しようとしても見えなくて、個々のテストファイルに global $hoge; とか書くとテスト通るとか…あるいは逆にPhingでは通るのに、PHPUnitで個々のテストするとダメ…とかは、他のテストで require_once されてて、そのおかげでテストが通るとかいうパターン。これらをどうにかするには、jobを細かくするのがいいと思っている。このドキュメントでも書いたけど、JenkinsはCUIからも触りやすいので、jenkins-cliとかあるし、設定ファイルは config.xml というのをいじればいいだけだし、新しい作業をするときにはスクリプトで新しい job をつくるといいと思うよ。
+共通ファイルとかだけ PHPMD のルールを変える
+TooManyMethods の警告を消すって説明のところで @SuppressWarnings を入れるっていう説明をしたよね。共通ファイルとかは @SuppressWarnings で事足りると思うんだけど、Testファイルとかって、コードの綺麗さとか考えないじゃない。その場合は、phpmdのタスクを分けてルールファイルをわければいいと思うよ。build.xml で
+<target name="phpmd">
+<phpmd rulesets="ruleset.xml">
+<fileset dir="./phpfiles">
+<exclude name="exclude.php"/>
+<exclude name="**/**/*Test.php"/>
+</fileset>
+<formatter type="xml"
+outfile="${outputDir}/pmd.xml"/>
+</phpmd>
+</target>
+<target name="phpmd_testfile">
+<phpmd rulesets="ruleset_testfile.xml">
+<fileset dir="./phpfiles">
+<include name="**/**/*Test.php"/>
+</fileset>
+<formatter type="xml"
+outfile="${outputDir}/pmd_testfile.xml"/>
+</phpmd>
+</target>
+みたいな感じで。ポイントはルールファイルが違うってことと、outfileが違うこと。ちなみに Jenkins の PMD の設定で、pmdファイルの設定を今回の例ではpmd*.xmlにしてあるから、このbuild.xmlの設定でうまく動くよ。
+ステージング環境にデプロイして Selenium とかでテスト
+これ、僕のプロジェクトではできてないので妄想なんだけど、CI のプロセスの中に、テスト通ったら、ステージング環境とかにデプロイして Selenium とかで結合テストとかするとかできるよ。Phing使ってもいいし、別のビルドツール使ってもいいし。割とそっから先は PHP 関係ないかも。
+PHPMD でプロジェクト独自のルールを書く
+長くなるので後で別エントリにする。基本はruleset に新しいルールの設定を書き、新しいRuleクラスを作る。それで完了。既存のルールのクラスを見れば割と簡単
+ツイートする
+PHPでTDD&CIワークショップ、Jenkins + PHP の各種プラグインパート資料 - Yamashiro0217の日記

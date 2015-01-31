@@ -1,0 +1,76 @@
+JDBC標準パラメータ・マーカーの変換
+JDBCドライバは、SQL文を発行して翻訳する前に、JDBC標準パラメータ・マーカー(?)をOracleスタイルのパラメータ・マーカー(形式は:b<n>)に内部で変換します。パラメータ・マーカーの命名形式は:b<n>になります。nは、JDBC PreparedStatementでの(?)マーカーの位置を指定する増分番号です。たとえば、UPDATE employees SET salary = salary * ? WHERE employee_id = ? PreparedStatement文の場合、最初のパラメータ・マーカー(?)は:b1、2番目のパラメータ・マーカー(?)は:b2になります。変換後、ドライバは次の問合せをサーバーに送信して、翻訳を行います。
+UPDATE employees SET salary = salary * :b1 WHERE employee_id = :b2
+パラメータ・マーカーとしての"?"を含む問合せは、processEscapesプロパティの値をFALSEに変更すると、接続翻訳フェーズで失敗することに注意してください。翻訳が正常に行われるようにするには、processEscapesプロパティのデフォルト値のままにしておく必要があります。
+パラメータ・マーカーの変換を行うと、翻訳時に発生したパラメータの変更をドライバが自動的に並び替える場合に役立ちます。変換中に、サーバーにカスタム翻訳を登録する必要がある場合、Oracle形式のパラメータ・マーカーのバージョンから登録してください。そのバージョンで、サーバーは文を受信します。JDBC形式のパラメータ・マーカーのバージョンからは登録しないでください。また、カスタム翻訳では、元の問合せのパラメータ・マーカーと同じ数のOracleスタイルのパラメータ・マーカーが必要です。
+サポートされているJDBC APIの詳細は、第8章「JDBCアプリケーションのSQL翻訳のAPIリファレンス」を参照してください。
+翻訳したOracle言語問合せの実行
+JDBC標準パラメータ・マーカーがOracleスタイルのパラメータ・マーカーに変換されると、ドライバは、問合せをOracle言語に翻訳するためにサーバーに対してラウンドトリップを行います。翻訳された問合せをサーバーが受信すると、パラメータの並替えがドライバによって透過的に処理され、問合せは通常の問合せとして実行されます。
+翻訳ができないために問合せの翻訳が不可になる場合、サーバーは、DBMS_SQL_TRANSLATOR.ATTR_RAISE_TRANSLATION_ERRORプロファイル属性の値に基づき、エラーを発生するか、NULLを戻すことができます。サーバーがNULLを戻す場合、翻訳されていない元の問合せが、ドライバによって翻訳される問合せとみなされて実行されます。
+ドライバは、ローカル・キャッシュに翻訳を保持して、今後のラウンドトリップを保存します。
+JDBCドライバは、DBMS_SQL_TRANSLATOR.ATTR_RAISE_TRANSLATION_ERROR属性のいずれかの値により設定される翻訳エラー(翻訳ができないために問合せが翻訳できない場合)をサポートできます。ただし、この値は、接続が確立される前にサーバー上で設定する必要があります。セッション中にこの属性の値を変更すると、動作の一貫性が保たれない場合があるので、セッション中はこの属性の値を反転しないことをお薦めします。TRANSLATE_SQLプロシージャの詳細は、『Oracle Database PL/SQLパッケージおよびタイプ・リファレンス』を参照してください。
+エラー翻訳
+SQLExceptionが問合せ実行時にスローされた場合、ドライバは、サーバーに透過的に移動し、例外をOracleコードから元のベンダー固有のコードに翻訳します。結果として生じるSQLExceptionには、ベンダー固有のコードとSQLSTATE、およびOracle固有のSQLExceptionが原因として存在します。
+問合せ翻訳と同様に、サーバーにカスタム・エラー翻訳を登録して、その翻訳を標準翻訳よりも優先にすることもできます。DBMS_SQL_TRANSLATOR.ATTR_RAISE_TRANSLATION_ERROR属性のカスタム・エラー翻訳と問合せ翻訳に対する効果は同じです。
+エラーは、サーバーへの接続が確立された後でしか翻訳されないことに注意してください。そのため、サーバーへの接続が確立される前に発生するエラーの場合、エラー・メッセージの翻訳が使用されます。
+JDBCドライバを使用したSQL翻訳
+例4-1に、SQL翻訳でのJDBCドライバの使用方法を示します。最初に、次のようにCREATE SQL TRANSLATION PROFILE権限をHRに付与する必要があります。
+conn system/manager;
+grant create sql translation profile to HR;
+exit
+HRとしてデータベースに接続し、次のSQL文を実行します。
+drop table sample_tab;
+create table sample_tab (c1 number, c2 varchar2(100));
+insert into sample_tab values (1, 'A');
+insert into sample_tab values (1, 'A');
+insert into sample_tab values (1, 'A');
+commit;
+exec dbms_sql_translator.drop_profile('FOO');
+exec  dbms_sql_translator.create_profile('FOO');
+exec  dbms_sql_translator.register_sql_translation('FOO','select row of select c1, c2 from sample_tab 
+where c1=:b1 and c2=:b2','select c1, c2 from sample_tab where c1=:b1 and c2=:b2');
+JDBC標準パラメータ・マーカーを使用するSQL文を翻訳する次のプログラムを実行できます。
+例4-1 JDBCドライバを使用したOracle以外のSQL文のOracle SQL言語への翻訳
+public class SQLTransPstmt 
+{
+static String url="jdbc:oracle:thin:@localhost:5521:jvx1";
+static String user="HR", pwd="hr";  
+static String PROFILE = "FOO";
+static String primitiveSql = "select row of select c1, c2 from sample_tab where c1=? and c2=?";
+// Note that this query contains JDBC style parameter markers
+// But the preceding custom translation registered in SQL is using Oracle style markers
+public static void main(String[] args) throws Exception
+{       
+OracleDataSource ods = new OracleDataSource();
+ods.setURL(url);
+Properties props = new Properties();
+props.put("user", user);
+props.put("password", pwd);
+// The Following connection property makes the connection translating    
+props.put(OracleConnection.CONNECTION_PROPERTY_SQL_TRANSLATION_PROFILE, PROFILE);
+ods.setConnectionProperties(props);
+Connection conn = ods.getConnection();
+System.out.println("connection for SQL translation: "+conn);
+try{
+// Any statements created using a translating connection are
+// automatically translating. If you want to get a non-translating
+// statement out of a translating connection please have a look at
+// the oracle.jdbc.OracleTranslatingConnection Interface.
+// Refer to "OracleTranslatingConnection Interface"
+// for more information
+PreparedStatement trStmt = conn.prepareStatement(primitiveSql);
+trStmt.setInt(1, 1);
+trStmt.setString(2, "A");      
+System.out.println("executeQuery for: "+primitiveSql);
+ResultSet trRs = trStmt.executeQuery();
+while (trRs.next())
+System.out.println("C1:"+trRs.getInt(1)+", C2:"+trRs.getString(2));
+trRs.close();
+trStmt.close();
+}catch (Exception e) {
+e.printStackTrace();
+}
+conn.close();
+}
+}
+JDBCアプリケーションとODBCアプリケーションのSQL翻訳

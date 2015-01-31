@@ -1,0 +1,2 @@
+(1)%5c probability%5c density%5c%5c%5chspace{30}f(x,%5cmu,%5csigma)= {%5clarge%5cfrac{1}{%5csqrt{2%5cpi}%5csigma x}e^{-%5cfrac{1}{2}%5cleft(%5cfrac{ln(x)-%5cmu}{%5csigma}%5cright)^2}}%5c%5c(2)%5cqquad lower%5c cumulative%5c distribution%5c%5c%5chspace{30}P(x,%5cmu,%5csigma)={%5clarge%5cint_{%5csmall 0}^{%5chspace{25}%5csmall x}}f(t,%5cmu,%5csigma)dt%5c%5c(3)%5cqquad upper%5c cumulative%5c distribution%5c%5c%5chspace{30}Q(x,%5cmu,%5csigma)={%5clarge%5cint_{%5csmall x}^{%5chspace{25}%5csmall%5cinfty}}f(t,%5cmu,%5csigma)dt%5c%5c">
+対数正規分布(グラフ) - 高精度計算サイト

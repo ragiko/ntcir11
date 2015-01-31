@@ -1,0 +1,150 @@
+Pythonで音声信号処理(2011/05/14)の第19回目。今回は、音声認識の特徴量としてよく見かけるメル周波数ケプストラム係数(Mel-Frequency Cepstrum Coefficients)を求めてみました。いわゆるMFCCです。MFCCはケプストラム(2012/2/11)と同じく声道特性を表す特徴量です。ケプストラムとMFCCの違いはMFCCが人間の音声知覚の特徴を考慮していることです。メルという言葉がそれを表しています。MFCCの抽出手順をまとめると
+プリエンファシスフィルタで波形の高域成分を強調する
+窓関数をかけた後にFFTして振幅スペクトルを求める
+振幅スペクトルにメルフィルタバンクをかけて圧縮する
+上記の圧縮した数値列を信号とみなして離散コサイン変換する
+得られたケプストラムの低次成分がMFCC
+となります。私が参考にしたコードは振幅スペクトルを使ってたけど、Wikipediaの説明を見るとパワーと書いてある。パワースペクトルの方がいいのかな?ケプストラム分析と違うのは
+振幅スペクトルにメルフィルタバンクをかけて圧縮する
+ケプストラム領域に移すのにフーリエ変換ではなく、離散コサイン変換を使う
+の2点であとはだいたい一緒のようです。というわけでこの手順にそってPythonで実装していきたいと思います。mfcc.py
+音声信号
+まず、音声信号を用意します。ケプストラム分析で使った「あ」の音の中心の定常部分をロードします。音声を再生するには、audioタグをサポートしたブラウザが必要です。
+#coding:utf-8
+import wave
+import numpy as np
+from pylab import *
+def wavread(filename):
+wf = wave.open(filename, "r")
+fs = wf.getframerate()
+x = wf.readframes(wf.getnframes())
+x = np.frombuffer(x, dtype="int16") / 32768.0  # (-1, 1)に正規化
+wf.close()
+return x, float(fs)
+if __name__ == "__main__":
+# 音声をロード
+wav, fs = wavread("a.wav")
+t = np.arange(0.0, len(wav) / fs, 1/fs)
+# 音声波形の中心部分を切り出す
+center = len(wav) / 2  # 中心のサンプル番号
+cuttime = 0.04         # 切り出す長さ [s]
+wavdata = wav[center - cuttime/2*fs : center + cuttime/2*fs]
+time = t[center - cuttime/2*fs : center + cuttime/2*fs]
+# 波形をプロット
+plot(time * 1000, wavdata)
+xlabel("time [ms]")
+ylabel("amplitude")
+savefig("waveform.png")
+show()
+実行結果は、
+プリエンファシスフィルタ
+次にスペクトルの高域成分を強調するプリエンファシスフィルタ(pre-emphasis filter)をかけます。高域成分を強調することで声道特徴がはっきり出るため使った方がよいとのこと。プリエンファシスフィルタの定義は、ここで、x(n)は音声波形データ、pはプリエンファシス係数。0.97を使うことが多いとのこと。上記の式は、フィルタ係数が [1.0, -p] のFIRフィルタ(2011/10/23)と同じです。FIRフィルタの定義式に上のフィルタ係数を代入するとプリエンファシスフィルタの式と同じになることが確認できます。Pythonだとlfilter()を使って下のように実装できます。
+import scipy.signal
+def preEmphasis(signal, p):
+"""プリエンファシスフィルタ"""
+# 係数 (1.0, -p) のFIRフィルタを作成
+return scipy.signal.lfilter([1.0, -p], 1, signal)
+# プリエンファシスフィルタをかける
+p = 0.97         # プリエンファシス係数
+signal = preEmphasis(signal, p)
+実際にプリエンファシスフィルタをかけた波形とそのスペクトルを表示してみました。左上がもとの波形、右上がフィルタをかけた波形。左下がもとの波形のスペクトル、右下がフィルタをかけた波形のスペクトルです。プリエンファシスフィルタをかけることで高域成分が強調されているのがよくわかります。
+振幅スペクトル
+次にプリエンファシスフィルタをかけた波形にハミング窓をかけてからFFTして振幅スペクトルを求めます。さっきのはハミング窓かけてませんでした。
+# ハミング窓をかける
+hammingWindow = np.hamming(len(signal))
+signal = signal * hammingWindow
+# 振幅スペクトルを求める
+nfft = 2048  # FFTのサンプル数
+spec = np.abs(np.fft.fft(signal, nfft))[:nfft/2]
+fscale = np.fft.fftfreq(nfft, d = 1.0 / fs)[:nfft/2]
+# プロット
+plot(fscale, spec)
+xlabel("frequency [Hz]")
+ylabel("amplitude spectrum")
+savefig("spectrum.png")
+show()
+メルフィルタバンクの作成
+次、メルフィルタバンクを作成します。フィルタバンクというのはバンドパスフィルタ(2011/10/30)を複数並べたものです。ここでは、三角形のバンドパスフィルタをオーバーラップさせながら並べます。三角形のバンドパスフィルタの数をチャネル数と呼びます。ここでただのフィルタバンクではなく、メルがつくのが特徴です。メル尺度は、人間の音声知覚を反映した周波数軸で単位はmelです。低周波ほど間隔が狭く、高周波ほど間隔が広くなっています。どうやら人間は低周波なら細かい音の高さの違いがわかるけれど、高周波になるほど音の高さの違いがわからなくなるようです。詳しい説明は参考文献にゆずるとしてHzとmelを相互変換する関数を実装します。
+def hz2mel(f):
+"""Hzをmelに変換"""
+return 1127.01048 * np.log(f / 700.0 + 1.0)
+def mel2hz(m):
+"""melをhzに変換"""
+return 700.0 * (np.exp(m / 1127.01048) - 1.0)
+メルフィルタバンクは、バンドパスフィルタの三角窓がメル尺度上で等間隔になるように配置されます。メル尺度上で等間隔にならべたフィルタをHz尺度に戻すと高周波になるほど幅が広い三角形になります。下の図のようなイメージです。メルフィルタバンクを作る関数です。
+def melFilterBank(fs, nfft, numChannels):
+"""メルフィルタバンクを作成"""
+# ナイキスト周波数(Hz)
+fmax = fs / 2
+# ナイキスト周波数(mel)
+melmax = hz2mel(fmax)
+# 周波数インデックスの最大数
+nmax = nfft / 2
+# 周波数解像度(周波数インデックス1あたりのHz幅)
+df = fs / nfft
+# メル尺度における各フィルタの中心周波数を求める
+dmel = melmax / (numChannels + 1)
+melcenters = np.arange(1, numChannels + 1) * dmel
+# 各フィルタの中心周波数をHzに変換
+fcenters = mel2hz(melcenters)
+# 各フィルタの中心周波数を周波数インデックスに変換
+indexcenter = np.round(fcenters / df)
+# 各フィルタの開始位置のインデックス
+indexstart = np.hstack(([0], indexcenter[0:numChannels - 1]))
+# 各フィルタの終了位置のインデックス
+indexstop = np.hstack((indexcenter[1:numChannels], [nmax]))
+filterbank = np.zeros((numChannels, nmax))
+for c in np.arange(0, numChannels):
+# 三角フィルタの左の直線の傾きから点を求める
+increment= 1.0 / (indexcenter[c] - indexstart[c])
+for i in np.arange(indexstart[c], indexcenter[c]):
+filterbank[c, i] = (i - indexstart[c]) * increment
+# 三角フィルタの右の直線の傾きから点を求める
+decrement = 1.0 / (indexstop[c] - indexcenter[c])
+for i in np.arange(indexcenter[c], indexstop[c]):
+filterbank[c, i] = 1.0 - ((i - indexcenter[c]) * decrement)
+return filterbank, fcenters
+# メルフィルタバンクを作成
+numChannels = 20  # メルフィルタバンクのチャネル数
+df = fs / nfft   # 周波数解像度(周波数インデックス1あたりのHz幅)
+filterbank, fcenters = melFilterBank(fs, nfft, numChannels)
+# メルフィルタバンクのプロット
+for c in np.arange(0, numChannels):
+plot(np.arange(0, nfft / 2) * df, filterbank[c])
+savefig("melfilterbank.png")
+show()
+ここで戻り値のfilterbankは行列です。各行が1つのバンドパスフィルタ(三角形)にあたります。音声認識では、20個のバンドパスフィルタを使うことが多いそうです。つまり、20チャネルのフィルタバンクです。また、列数は、FFTのサンプル数(nfft)を2048にしているので、ナイキスト周波数までの半分をとると1024になります。
+print filterbank.shape
+とやると(20, 1024)が返ってきます。
+メルフィルタバンクをかける
+次に、先の振幅スペクトルにメルフィルタバンクをかけます。振幅スペクトルに対してメルフィルタバンクの各フィルタをかけ、フィルタ後の振幅を足し合わせて対数をとります。言葉で書くとややこしいんだけれどコードだとはっきりします。
+# 振幅スペクトルに対してフィルタバンクの各フィルタをかけ、
+# 振幅の和の対数をとる
+mspec = []
+for c in np.arange(0, numChannels):
+mspec.append(np.log10(sum(spec * filterbank[c])))
+mspec = np.array(mspec)
+実は、forループで書かなくても下のように行列のかけ算を使うともっと簡潔にかけます。フィルタをかけて振幅を足し合わせるというのは内積で表せるためです。
+# 振幅スペクトルにメルフィルタバンクを適用
+mspec = np.log10(np.dot(spec, filterbank.T))
+どっちの方法でも同じ結果になります。これをすると振幅スペクトルがメルフィルタバンクのチャネル数と同じ次元に圧縮されます。今回は、チャネル数20なので20次元のデータになります。元の対数振幅スペクトルとメルフィルタバンクで20次元データをプロットしてみると下のようになります。
+# 元の振幅スペクトルとフィルタバンクをかけて圧縮したスペクトルを表示
+subplot(211)
+plot(fscale, np.log10(spec))
+xlabel("frequency")
+xlim(0, 25000)
+subplot(212)
+plot(fcenters, mspec, "o-")
+xlabel("frequency")
+xlim(0, 25000)
+show()
+離散コサイン変換
+最後にこの20次元のデータを離散コサイン変換してケプストラム領域に移します。ケプストラム分析だとフーリエ変換で戻してましたけれど、MFCCの場合は離散コサイン変換を使うとのこと。ここら辺がなぜなのか理解できてません。というか離散コサイン変換が何なのかも勉強中です・・・
+# 離散コサイン変換
+ceps = scipy.fftpack.realtransforms.dct(mspec, type=2, norm="ortho", axis=-1)
+# 低次成分からnceps個の係数を返す
+return ceps[:nceps]
+離散コサイン変換の結果から低次の成分を取り出したものがMFCCです。大体、12次までとることが多いとのこと。なので、nceps=12です。上の音声データだと
+[ 2.51895741 -0.39441998  0.16150014  0.17564364 -0.72552876 -0.73787793
+-0.16415795  0.07149698  0.24680304  0.02212086 -0.34275272 -0.29347927]という結果になりました。うーん、一応それっぽい数値が出てきたけどこれであっているのかな?今回は、勉強のために自分で実装してみましたが、実際は、HTKやSPTK(2012/8/5)のような既存ツールを使えばそこそこ簡単に抽出できます。たぶんこのコードは実験では使いません(笑)もし間違いがありましたら、コメント欄でぜひ教えてください!よろしくお願いします。
+メル周波数ケプストラム係数(MFCC) - 人工知能に関する断創録

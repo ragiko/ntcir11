@@ -1,0 +1,26 @@
+h = bodeplot(sys)bodeplot(sys)bodeplot(sys1,sys2,...)bodeplot(AX,...)bodeplot(..., plotoptions)bodeplot(sys,w)
+説明h = bodeplot(sys) は、「動的システム モデル」 sys のボードのゲインと位相をプロットし、プロット ハンドル h をプロットに返します。getoptions と setoptions コマンドを使ってプロットをカスタマイズするためにこのハンドルを使用することができます。bodeplot(sys) はモデル sys のボード線図を描画します。周波数範囲と点数は自動的に選択されます。bodeplot(sys1,sys2,...) は、複数のモデル sys1、sys2、...のボード線図を 1 つのプロット上に描画します。各モデルに対して、色、ライン スタイル、およびマーカーを次のように設定することができます。 bodeplot(sys1,'r',sys2,'y--',sys3,'gx')
+bodeplot(AX,...) は、ハンドル AX をもつ座標軸内にプロットします。 bodeplot(..., plotoptions) は、plotoptions で指定されたオプションでボード線図をプロットします。次のように入力するとhelp bodeoptions 
+使用できるプロット オプションの一覧が得られます。PhaseMatchingFreq と PhaseMatchingValue の各オプションを使用する位相マッチングの例は、「例 2」を参照してください。bodeplot(sys,w) は、w によって指定される周波数のボード線図を描画します。w = {wmin,wmax} の場合、ボード線図は wmin から wmax までの周波数 (rad/TimeUnit 単位、TimeUnit は sys の TimeUnit プロパティで指定される、入力動的システムの時間単位) に対して描画されます。w が、ユーザーが rad/TimeUnit で指定した周波数のベクトル w である場合、その指定周波数に対するボード線図が描画されます。対数間隔の周波数ベクトルを作成するためには、logspace を参照してください。 
+例例 1プロット ハンドルを使用して、ボード線図のオプションを変更します。sys = rss(5);
+h = bodeplot(sys);
+% Change units to Hz and make phase plot invisible
+setoptions(h,'FreqUnits','Hz','PhaseVisible','off');
+例 2プロパティ PhaseMatchingFreq と PhaseMatchingValue は、指定周波数での位相を指定するために使用できるパラメーターです。たとえば、次のコマンドを入力します。sys = tf(1,[1 1]); 
+h = bodeplot(sys) % This displays a Bode plot.
+次のコードを使用して、750° の位相を 1 rad/s に合わせます。 p = getoptions(h); 
+p.PhaseMatching = 'on'; 
+p.PhaseMatchingFreq = 1; 
+p.PhaseMatchingValue = 750; % Set the phase to 750 degrees at 1 
+% rad/s.
+setoptions(h,p); % Update the Bode plot.
+最初のボード線図は、1rad/s の周波数で -45 度の位相です。1 rad/s で位相が約 750 度になるように位相マッチング オプションを設定すると、2 番目のボード線図が出力されます。ただし、位相の取り得る値は -45 + N*360 であることに注意してください。ただし、N は整数なので、プロットは可能な位相の中で最も近い値、つまり 675 度 (計算式は 2*360 - 45 = 675) に設定されます。例 3次数 2 および 6 の同定された状態空間モデルの周波数応答と 2 つの標準偏差信頼領域を比較します。load iddata1
+sys1 = n4sid(z1, 2) % discrete-time IDSS model of order 2
+sys2 = n4sid(z1, 6) % discrete-time IDSS model of order 6両方のモデルは、データを約 76%近似します。しかし、sys2 の周波数応答が、特にプロットに示されるようにナイキスト周波数に近づくと、不確かさが高まります。w = linspace(8,10*pi,256);
+h = bodeplot(sys1,sys2,w);
+setoptions(h, 'PhaseMatching', 'on', 'ConfidenceRegionNumberSD', 2);右クリックしてコンテキスト メニューを表示し、[特性] > [信頼領域] を選択して信頼領域の特性をオンにします。例 4入力/出力データから同定されたパラメトリック モデルの周波数応答を、同じデータを使用して同定された nonparametric モデルと比較します。データに基づいて、パラメトリック モデルとノンパラメトリック モデルを同定します。 load iddata2 z2;
+w = linspace(0,10*pi,128);
+sys_np = spa(z2,[],w);
+sys_p = tfest(z2,2);spa と tfest には System Identification Toolbox™ ソフトウェアが必要です。sys_np はノンパラメトリックと同定されたモデルです。sys_p はパラメトリックと同定されたモデルです。両方のシステムを含むボード線図を作成します。opt = bodeoptions;  opt.PhaseMatching = 'on';
+bodeplot(sys_np,sys_p,w, opt);
+追加のプロット カスタマイズ オプションを使用してボード周波数応答をプロットする - MATLAB bodeplot - MathWorks 日本

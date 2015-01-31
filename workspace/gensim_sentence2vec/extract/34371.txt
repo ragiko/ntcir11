@@ -1,0 +1,54 @@
+
+3文字以上でも同様です。1文字の場合をUnigram、2文字の場合をBigram、3文字の場合をTrigramと呼びます。
+文字数が多くなれば多くなるほど、文字の組み合わせが増えるので、索引に必要なメモリ領域が増えていきます。その半面、検索するときには、索引の時点でより多くマッチするかどうか調べられるので、素早く検索できる可能性が高くなるでしょう。
+N-gram Indexの実装
+では、N-gram Indexを実装しましょう。先ほどのプログラムの37行目「末尾3」というコメントの次行以降に下記のプログラムを追加してください。
+<script type="text/javascript">
+function getNGramHash(text, n) {
+var hash = [];
+for (var i = 0; i < text.length+1-n; i++) {
+var index = text.substring(i, i+n);
+if (hash[index] == undefined) { hash[index] = []; }
+hash[index].push(i);
+}
+return hash;
+}
+function UnigramIndex(text_id) {
+var n = 1;
+var text = getStringById(text_id);
+var index_hash = getNGramHash(text, n);
+this.find = function(str) {
+var index_str = str.substring(0,n);
+var index_item = index_hash[index_str];
+for (var i = 0; i < index_item.length; i++) {
+var index = index_item[i];
+var isFound = true;
+for(var j = 0; j < str.length; j++) {
+if(str.charAt(j) != text.charAt(index + j)) {
+isFound = false;
+break;
+}
+}
+if (isFound) { return index; }
+}
+}
+}
+var unigram_index_hash = [];
+function getUnigramIndex(text_id) {
+return unigram_index_hash[text_id];
+}
+function setUnigramIndex(text_id) {
+unigram_index_hash[text_id] = new UnigramIndex(text_id);
+}
+window.onload = function() {
+setUnigramIndex('area1');
+}
+function findTextAreaUnigram(text_id, search_id) {
+var text = getStringById(text_id);
+var unigram_index = getUnigramIndex(text_id);
+var search = getStringById(search_id);
+alert(unigram_index.find(search));
+}
+</script>
+<input type="button" onClick="findTextAreaUnigram('area1','search');" value="findUnigram">
+コーディングに役立つ! アルゴリズムの基本(7):文字列の中から効率良くキーワードを探し出せ (4/4) - @IT

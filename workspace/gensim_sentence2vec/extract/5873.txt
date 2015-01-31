@@ -1,0 +1,15 @@
+自宅サーバーで公開しているサイトを自宅パソコンのブラウザから閲覧しようとしても、通常のURLでは閲覧できません。
+自宅サーバーで公開しているサイトを自宅パソコンのブラウザで閲覧する時は、自宅サーバーのIPアドレスとサイトが置いてあるフォルダを組み合わせたURLにアクセスしなければなりません。
+例:192.168.1.11の自宅サーバーで公開しているサイトを閲覧する時のURL
+例:http://192.168.1.11/kurohama/public_html/
+このURLを外部からアクセスした時と同じURLで閲覧可能にするのがhostsファイルです。
+自宅サーバーで公開しているサイトを自宅パソコンのブラウザで見た時に以下のURLで閲覧できるようにします。
+http://kurohama.net/
+http://www.kurohama.net/
+1.hostsファイルはパソコンの中の以下の場所にあります。
+Windows XPの場合
+C:/WINDOWS/system32/drivers/etc/hosts
+Windows Vistaの場合
+C:/Windows/System32/drivers/etc/hosts
+hostsには拡張子がありません。hosts.iniといったファイルが見つかることもありますが、ここで編集するのは拡張子のないhostsです。
+hostsファイルの書き方

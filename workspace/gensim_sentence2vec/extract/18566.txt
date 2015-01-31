@@ -1,0 +1,24 @@
+・エラーコードは何でしょうか?
+エラーコードが分かれば問題解決の手掛かりになります。
+以下の手順でエラーコードを確認してください。
+1) スタート>コントロールパネル>システムとメンテナンス>Windows Update でWindows Update画面が表示されます。
+2) 画面左側にある 更新履歴の表示 をクリックします。
+3) 更新の履歴画面で Windows Vista 用 Media Center の累積的な更新プログラム (KB974306) をダブルクリックします。
+4) 次の画面の エラーの詳細に表示される8桁のエラーコード(例えば 80073712) を確認してください。
+・こちらから手動でDownload/Installしても同じでしょうか?
+32bit版 : 
+http://www.microsoft.com/downloads/details.aspx?FamilyID=6edafe94-8a39-46a3-aca3-3c2e2a4545f7&DisplayLang=ja
+64bit版 : 
+http://www.microsoft.com/downloads/details.aspx?FamilyID=1c556e02-2f0b-447c-8df1-d1d808a1d2ac&DisplayLang=ja
+スタート>コントロールパネル>システムとメンテナンス>システム で システム画面が表示されます。
+システムの下、システムの種類に 32 ビット オペレーティングシステム あるいは 64 ビット オペレーティングシステム と表示されます。
+ダメな場合は、Safe ModeでDownloadした更新Programを実行してみてはどうでしょうか。
+・どうしても問題解決しない場合には、Windows Update サポート
+を利用してはどうでしょうか。
+無償で何度も電子メールサポートをうけることができます。
+「ご連絡までの時間 : 3営業日」とあります。
+https://support.microsoft.com/oas/default.aspx?gprid=6527&st=1
+【 電子メール サポート、オンライン受付
+問い合わせ手順(Windows Update 版) 】
+http://support.microsoft.com/default.aspx/gp/wumailsupport
+KB974306が更新されない - マイクロソフト コミュニティ

@@ -1,0 +1,3 @@
+本論文では,効率的ランダム射影を利用した画像蓄積法を大域3次元画像データの蓄積に適用する.大域画像蓄積の方法の1つとして,辞書にデータを蓄積し,入力画像との整合を最近傍によって探索する手法がある.この手法では,入力画像の次元数が大きくなると最近傍法による探索に時間が掛ることになる.そこで,ランダム射影によってデータの次元を圧縮し探索処理の高速化を計る.また,認識精度を評価し,ランダム射影による圧縮次元の下限を評価する.
+In this paper, we develop a fast algorithm for random-projection-based global registration. By generating many transformed images from the reference, the nearest neighbour based image registration detects the transformation which establishes the best matching from generated transformations. To reduce computational cost of the nearest nighbour search without significant loss of accuracy, we first use random projection. To reduce computational complexity of random projection, we second use spectrum-spreading technique and circular convolution.
+

@@ -1,0 +1,520 @@
+
+AS/400各種コマンド
+目 次 
+このページではAS/400を操作する上でよく使われるコマンドを紹介します。
+権限のないユーザーでは使用できないコマンドもあります。
+コマンドのくわしい使い方を調べるには、コマンド+F4キーでプロンプト画面を表示させて下さい。
+日常操作コマンド
+CHGJOB   JOBの変更
+該当のジョブに関連付けられた印刷装置、出力待ち行列、ジョブ日付など、ジョブの変更をします。
+ジョブとは、サインオンからサインオフまで、あるいは、サブミットの単位をいいます。
+例−1:ジョブのOUTQを2パーツ用の出力待ち行列に変更
+CHGJOB OUTQ(QPRINT2)
+例−2:ジョブの日付を2002年10月23日に変更
+CHGJOB  DATE(021023)
+DSPMSG   メッセージ表示
+例−1:その端末ジョブへのメッセージを表示
+DSPMSG
+例−2:操作員メッセージの表示
+DSPMSG  QSYSOPR 
+パラメータOUTPUT(*PRINT)をつけると、印刷待ち行列へ出力されます。
+PWRDWNSYS  パワーダウン
+システム電源の遮断をします。
+例:
+PWRDWNSYS  *IMMED
+即時処理で、終結処理が開始され、パワーオフとなります。(参考:GO POWER)
+SBMJOB  背景部へジョブのサブミット(投入)
+背景部で実行するバッチジョブを投入します。
+例−1:プログラムPGM1を背景部に投入
+SBMJOB  CMD(CALL PGM1)
+例−2:プログラムPGM2は13時20分に開始するようスケジュールされます。
+SBMJOB  CMD(CALL PGM2 PARM(AAA)) SCDTIME(132000)
+SNDMSG  メッセージ送信
+表示装置から別の表示装置へ「即時メッセージ」を送信します。
+例:
+SNDMSG MSG('MSG-TEXT....') TOUSR(USER1)
+SNDBRKMSG  中断メッセージ送信
+メッセージを1つまたは複数のワークステーション・メッセージ待ち行列に送ります。
+このコマンドによって,即時メッセージは常に中断モードで転送されます。
+メッセージを受け取ると,メッセージ待ち行列の転送モード,重大度,および中断処理プロ
+グラムの設定にかかわりなく,そのメッセージ用の
+DSPMSG 画面が表示されます。
+例:
+SNDBRKMSG MSG('MSG-TEXT....') TOUSR(USER1)
+WRKACTJOB 活動ジョブの処理
+例:
+WRKACTJOB
+活動中のジョブの一覧が表示され、権限があれば強制終了などをさせることができます。
+WRKCFGSTS  構成状況処理 
+回線や装置の構成状況の処理をします。
+WRKDEVD  AAA***  AAAで始まる装置記述の処理
+装置記述の処理をします。
+例:
+装置記述の処理                                 
+システム :   S1234567
+位置指定 . . . . . . .                開始文字                                
+オプションを入力して,実行キーを押してください。                              
+2= 変更         3= コピー   4= 削除   5= 表示   6= 印刷   7= 名前の変更     
+8= 状況の処理   9= ソースの検索                                             
+OPT   装置       タイプ         テキスト                                        
+PRTKB       5553        S1234567 の装置が作成された。                    
+PRTKB4      5553        S1234567 の装置が作成された。                    
+終り 
+パラメーターまたはコマンド                                                    
+===>                                                                          
+F3= 終了      F4=プロンプト   F5= 最新表示   F6= 作成   F9=コマンド の複写          
+F12= 取消し   F14= 状況処理                                                   
+WRKJOB   ジョブに関する処理
+ジョブに関する作業をします。以下のようなメニューが表示され処理を選択できます。
+1. ジョブ状況属性の表示 
+2. ジョブ定義属性の表示 
+3. ジョブ実行属性の表示(活動状態の場合)
+4. スプール・ファイルの処理 
+10. ジョブ・ログの表示(活動状態またはジョブ待ち行列上の場合)
+11. 呼出しスタックの表示(活動状態の場合)
+12. ロックの処理(活動状態の場合) 
+13. ライブラリー・リストの表示(活動状態の場合)
+14. オープンされたファイルの表示(活動状態の場合)
+15. ファイル一時変更の表示(活動状態の場合)
+16. コミットメント制御状況の表示(活動状態の場合)
+注:活動状態とはジョブが実行中の場合をいう。
+WRKOUTQ QPRINT   出力待ち行列の処理
+QPRINTの一覧を表示し、オプションにより以下のような処理をします。(参考:WRKSPLF)
+1= 送信 2= 変更 3= 保留 4= 削除 5= 表示
+6= 解放 7= メッセージ 8= 属性 9= 印刷状況の処理
+WRKSBMJOB バッチ投入ジョブの処理
+バッチとして背景部に投入したジョブの処理をします。
+待ち行列の状態をみたり、実行中の状態をみたり、印刷出力を表示させたりできます。
+WRKSPLF   スプール・ファイル処理
+自分ジョブのすべてのスプールファイルの処理を行います。
+WRKOUTQと似ていますが、印刷装置/待ち行列がどれであっても、自分のものは全て表示します。
+WRKWTR   書出しプログラムの処理
+各々の印刷装置に対応した書出しプログラム(WTR)の開始、終了、保留、開放、メッセージ表示などの処理をします。
+例−1:全ての印刷装置の処理
+WRTWTR
+例−2:PRTで始まる印刷装置の処理
+WRTWTR  PRT*
+システム開発・保守
+ADDLIBLE  ライブラリーリストに追加
+ライブラリーリストに指定ライブラリーを追加します。
+例−1:WRKLIBをリストの先頭に追加
+ADDLIBLE  WRKLIB
+例−2:WRKLBをリストの最後に追加
+ADDLIBLE  WRKLIB *LAST
+例−3:WRKLBをライブラリーQTEMPの後に追加
+ADDLIBLE  WRKLIB POSITION(*AFTER QTEMP)
+CHGJOB ジョブの変更
+該当ジョブに関連付けられた印刷装置、出力待ち行列、ジョブ日付など、ジョブの変更をします。
+例−1:出力待ち行列変更
+CHGJOB OUTQ(QPRINT2)
+例ー2:ジョブ日付とジョブスイッチ(いわゆるUPSI)の変更
+CHGJOB DATE(001025) SWS(01010000) 
+CHGPF  物理ファイル変更
+メンバーの最大数、メンバーのサイズ(初期値、増分、増分追加回数)などを変更します。
+例:
+CHGPF FILE(WRKLIB/420) SIZE(30000 4000 5)
+この例では、初期サイズをレコード30、000件分、追加サイズを4、000件分、追加回数を5回に
+変更しています。省略値はそれぞれ、10,000件、1,000件、3回です。
+CHGPFM   物理ファイルメンバー変更
+メンバータイプ、テキストなどの変更をします。
+CLRPFM   物理ファイルクリア
+物理ファイルのメンバーのレコードを0件の状態にします。
+ファイルの削除や、メンバーの削除ではありません。
+メンバーの削除コマンドはRMVMです。
+例:
+CLRPFM  FILE(M420)
+CMPPFM   ファイルの比較
+ファイルのメンバー同士の比較を行います。
+例:
+CMPPFM  NEWFILE(WRKLIB/NEW1)  NEWMBR(MBR1)
+-
+OLDFILE(WRKLIB/OLD1)  OLDMBR(MBR1)   OUTPUT(*PRINT)
+OUTPUTは*(画面)、*PRINT(印刷),*OUTFILE(ファイル)が
+選択できます。
+CPYF   ファイルのコピー
+ファイル・コピーをします。次のような組合せがあります。
+物理/論理ファイル   物理ファイル/外部装置
+テープ/FD        物理ファイル/外部装置
+ソース/データファイル  外部装置/外部装置
+例−1:ファイルM420のコピーを作っています。
+CPYF FROMFILE(M420) TOFILE(WRKLIB/M420S)
+CRTFILE(*YES)
+例−2:ファイルM420の16進表示での印刷をしています。
+CPYF FROMFILE(M420) TOFILE(*PRINT) OUTFMT(*HEX)
+例−3:ソースファイルのメンバーM420をファイルM420へコピーしています。
+CPYF FROMFILE(WRKLIB/QDATSRC) TOFILE(WRKLIB/M420)
+FROMMBR(M420) -
+MBROPT(*REPLACE) FMTOPT(*CVTSRC) 
+CPYSRCPF  ソースファイルのコピー
+例:
+CPYSRCF FROMFILE(NKKSRC/QLBLSRC) TOFILE(WRKLIB/QCBLLESRC)
+FROMMBR(CONV*) -
+TOMBR(CONV) MBROPT(*ADD) 
+CONVで始まる全てのソースメンバー(複数)をCONVという1個のメンバーとして、コピーしています。
+CRTBNDCBL   ILE−COBOLのコンパイル
+例:
+CRTBNDCBL PGM(WRKLIB/LM420B) SRCFILE(WRKLIB/QCBLLESRC)
+CRTCLPGM CLプログラムのコンパイル
+例:JOBM420というメンバーのコンパイル
+CRTCLPGM PGM(WRKLIB/JOBM420) SRCFILE(WRKLIB/QCLSRC)
+CRTDSPF 画面ファイルの作成
+例:
+CRTDSPF FILE(WRKLIB/RM420S) SRCFILE(WRKLIB/QDDSSRC)
+画面ファイルRM420Sを作成しています。
+CRTLF   論理ファイルの作成
+例:
+CRTLF FILE(WRKLIB/M420L02) SRCFILE(WRKLIB/QDDSSRC)
+論理ファイルM420L02を作成しています。
+基礎になる物理ファイルがライブラリー・リストに存在していなければなりません。
+CRTPF   物理ファイルの作成
+例:
+CRTPF FILE(WRKLIB/M420) SRCFILE(WRKLIB/QDDSSRC) 
+物理ファイルM420を作成しています。
+CRTPRTF   印刷ファイルの作成
+例−1:標準ページ仕様で作成
+CRTPRTF FILE(WRKLIB/LM420P) SRCFILE(WRKLIB/QDDSSRC)
+印刷ファイルLM420Pを標準ページ仕様で作成しています。
+標準:1ページ66行、132桁、カラムピッチ10文字/インチ、オーバーフロー行60
+例−2:ページ仕様を変えて作成
+CRTPRTF FILE(QTEMP/LM420P) SRCFILE(WRKLIB/QDDSSRC)
+- 
+PAGESIZE(66 198) CPI(15) OVRFLW(62)
+1ページ66行、198桁、カラムピッチ15文字/インチ、オーバーフロー行62で
+作成しています。
+CRTRPGPGM   RPGⅢのコンパイル
+例−1:RM420のコンパイル
+CRTRPGPGM PGM(WRKLIB/RM420) SRCFILE(WRKLIB/QRPGSRC)
+例−2:10進データエラー検出無視の場合
+CRTRPGPGM PGM(QTEMP/RM420) SRCFILE(WRKLIB/QRPGSRC)
+IGNDECERR(*YES) 
+RPGでは10進データとして解釈できないデータがあった場合、(例えば、IFで数値とブランクを比較した場合、
+10進データエラーになる)、そうであっても無視して実行を続けさせることができます。
+CVTRPGSRC   RPGⅢをRPGⅣ(ILE−RPG)に変換
+RPGⅢをRPGⅣ(ILE−RPG)に変換します。
+例:
+CVTRPGSRC FROMFILE(WRKLIB/QRPGSRC) FROMMBR(AAA)
+TOFILE(WRKLIB/QRPGLESRC) 
+変換の記録をいれるための、ソースファイルQRNCVTLGが別に必要です。
+このソースファイルのレコード長さは210197バイトです。
+このファイルはライブラリーQGPLQRPGLEにQARNCVTLGのファイル名であるので、
+自分のライブラリーへQRNCVTLGとしてコピーして使用することをお勧めします。
+注:RPGⅣからRPGⅢへの逆変換はできません。
+DLTF ファイル削除
+例:M420の削除
+DLTF FILE(WRKLIB/M420)
+物理ファイル、論理ファイル、画面ファイル、印刷ファイルなどを削除します。
+注:その物理ファイルを基礎としている論理ファイルがあるときは、その物理ファイルは
+削除できません。一度論理ファイルを全て削除してから、物理ファイルを削除します。
+DLTOVR 一時変更取消。
+例−1:FILE1の一時変更取消
+DLTOVR  FILE(FILE1)
+一時変更はOVRDBFコマンドで行います。
+例−2:全ての一時変更を取消
+DLTOVR FILE(*ALL)
+DSPDBR   データベース関係表示
+例:
+ファイルの仕様、所在などデータベースの情報を表示します。
+物理ファイルの場合は、それを基礎としている論理ファイルも表示します。
+次のような表示がえられます。
+(抜粋)
+仕様                                                                
+ファイルのタイプ . . . . . . . . . . . . . :             物理     
+ファイル . . . . . . . . . . . . . . . . . :            M420      
+ライブラリー . . . . . . . . . . . . . . :            WRKLIB    
+メンバー . . . . . . . . . . . . . . . . :            *NONE     
+レコード様式 . . . . . . . . . . . . . . :            *NONE     
+従属ファイルの数 . . . . . . . . . . . . :                2     
+指定した ファイル に従属する ファイル                                             
+従属ファイル          ライブラリー       従属性       JREF     制約          
+M420L01            WRKLIB        データ                                
+M420L02            WRKLIB        データ                                
+DSPFD   ファイル記述の表示 
+キーの情報などアクセスパスの情報やメンバー個別のレコード数、サイズなどファイル
+記述を表示します。
+例:
+DSPFD FILE(M420)
+DSPFFD   ファイル・フィールド記述表示
+ファイルのフィールドレイアウトの記述を表示します。
+例:
+DSPFFD FILE(M420)
+(抜粋)
+次のような表示がえられます。OUTPUTパラメータを指定すれば、ファイルに出力することもできます。
+フィールド・レベル情報                                                     
+データ       フィールド  バッファー    バッファー        フィールド   欄の       
+フィールド     タイプ        長      長       位置          使用法   見出し     
+TKSTS      CHAR            1       1         1         共用     状態      
+フィールド・テキスト . . . . . . . . . . :   状態                      
+コード化文字セット識別コード   . . . . . :    290                      
+TKTKNO     CHAR            5       5         2         共用     得意先№  
+フィールド・テキスト . . . . . . . . . . :   得意先№                  
+コード化文字セット識別コード   . . . . . :    290                      
+TKNMKJ      混用          42      42         7         共用     得意先名  
+フィールド・テキスト . . . . . . . . . . :   得意先名                  
+コード化文字セット識別コード   . . . . . :   5026                      
+TKNMKN     CHAR           20      20        49         共用     得意先カ  
+フィールド・テキスト . . . . . . . . . . :   得意先カナ名              
+DSPOBJD   オブジェクト記述の表示
+テキストなどユーザー定義の情報、作成情報、変更/使用状況情報、保管復元情報などを
+表示します。プログラムやファイルの素性を調べるのに便利です。
+例:
+DSPOBJD OBJ(M420) OBJTYPE(*FILE)
+DSPOVR   一時変更表示
+OVRDBF,OVRPRTF,OVRDSPFなどによる一時変更を表示します。
+例:
+DSPOVR  FILE(*ALL)
+DSPPFM   物理ファイルメンバー表示
+物理ファイルのメンバーのレコードデータを表示します。F10キーを押すと、16進表示に切り替わります。
+例:
+DSPPFM FILE(M420)
+EDTLIBL   ライブラリー・リスト編集
+ライブラリー・リストの編集画面により順番変更、リストへの追加、リストからの除去などを行います。
+例:
+EDTLIBL
+ライブラリー・リスト編集                            
+新規/変更情報を入力して,実行キーを押してください。                        
+ライブラリーを追加するためには,名前と必要な順序番号を入力してください。  
+ライブラリーを取り除くためには,ライブラリー名をスペースにしてください。  
+ライブラリーの位置を変更するためには,新しい順序番号を入力してください。  
+順序                       順序                      順序                  
+番号     ライブラリー      番号     ライブラリー     番号     ライブラリー 
+010      _________       120                       230                   
+020      QTEMP             130                       240                   
+030      WRKLIB            140                       250                   
+040      QGPL              150                                             
+050      QEVX              160                                             
+060      RPGTOOL           170                                             
+070                        180                                             
+080                        190                                             
+090                        200                                             
+100                        210                                             
+110                        220                                             
+F3= 終了    F5= 最新表示    F12= 取消し                                      
+バージョンによっては項目数が増えています。
+ENDDBG   デバッグモード終了
+STRDBGで開始したデバッグ・セッションのモードを終了させます。
+ENDS36
+STRS36で開始したS/36エミュレーション・モードを終了させます。
+OVRDBF   データベース一時変更
+例:
+OVRDBF FILE(SYSIN) TOFILE(WRKLIB/QDATSRC) MBR(DATA1) 
+プログラムのSYSINというファイルを一時的に、WRKLIB/QDATSRCの
+ソースファイルのメンバーDATA1に変更しています。
+RCLACTGRP   リサイクル活動化グループ
+活動化グループの資源を再利用できるようにします。
+例:
+RCLACTGRP  ACTGRP(*ELIGIBLE)
+RCLRSC   資源再利用
+使用される予定のない、メモリーやファイルを再利用できるようにします。
+例:
+RCLRSC OPTION(*ABNORMAL) 
+RGZPFM   物理ファイル・メンバー再編成
+物理ファイルのメンバーから削除レコードを除去し、ファイルの再編成をします。
+これにより、レコードの読取りの効率が向上します。よく更新されるファイルは通常、朝一番でこの処理をします。
+例:WRKLIBのファイルM420を再編成
+RGZPFM FILE(WRKLIB/M420)
+SLTCMD   コマンドの選択表示
+コマンドの一覧画面を表示し、選択します。選択すると、そのコマンドのプロンプト画面が表示されます。
+例:CRTで始まるコマンドを選択表示
+SLTCMD CMD(CRT*)
+CRT*のかわりに*ALLとすると全てのコマンドが選択表示されます。
+STRDBG   デバッグ開始
+例:ライブラリーWRKLIBのプログラムPGM1のデバックを開始します。
+STRISDB PGM(WRKLIB/PGM1) UPDPROD(*YES) INVPGM(*NO)
+PGM1のデバッグを開始しています。UPDPROD(*YES)は*PRODタイプの
+ライブラリーのファイルを更新できるように指定しています。
+STRDFU   データ・ファイル・ユーティリティー(DFU)の開始
+DFUを開始させます。
+例:
+STRDFU
+STRISDB   ISDBデバッガーの開始
+ソース表示型のISDBデバッガーを開始させます。
+RPG,CL,CBLのタイプのみ利用できます。統合言語環境(ILE)の言語には使用できません。
+例:
+STRISDB WRKLIB/PGM1 *YES *NO
+STRPDM   プログラム開発管理機能(PDM)ユーティリティー開始
+PDMを開始させます。
+例:
+STRPDM
+STRQRY    QUERY開始
+QRYを開始させます。
+例:
+STRQRY
+STRSDA   画面設計援助(SDA)ユーティリティーの開始
+SDAを開始させます。
+例:
+STRSDA
+STRS36   システム /36環境セッション開始
+システム /36環境のエミュレーション・モードを開始します。
+例:
+STRS36
+UPDDTA 一時プログラムでのデータ更新
+DFUの一時プログラムでのデータ更新を行ないます。
+例:
+UPDDTA FILE(WRKLIB/M420)
+上記コマンドで次のような画面が表示されます。
+ファイル中のデータ処理                         モード  . . :    変更         
+様式  . . . . :   M420R                        ファイル  . :   M420          
+得意先№ :     11110                                                         
+状態 :                                                                       
+得意先名 :      得意先110・・・・・・・・・・・・・;                     
+得意先カナ名 : トクイサキ110-----------;                                          
+TEL :       03-1111-1100                                                  
+担当営業№ :   1111                                                          
+フラグ :                                                                     
+売上実績 :           10000                                                   
+F3= 終了                F5= 最新表示             F6= 様式の選択               
+F9= 挿入                F10= 入力                F11= 変更                    
+保管・復旧
+CRTSAVF 保管ファイル作成
+ライブラリー全体を、1個の保管ファイルに入れることができます。
+ただし、保管ファイルを作成しただけでは、保管(save)したことにはなりません。
+例:
+CRTSAVF FILE(WRKLIB/SAV001) TEXT('SAVE-FILE
+2000.10') 
+保管ファイルSAV001を作成しています。保管ファイルの削除はDLTFコマンドです。
+DSPLIB ライブラリーの内容表示
+例−1:WRKLIBの画面への表示
+DSPLIB LIB(WRKLIB)
+例−2:印刷の形での出力。
+DSPLIB LIB(WRKLIB) OUTPUT(*PRINT)
+DSPTAP テープ内容の表示
+テープ内容のボリューム・ラベルおよびデータ・ファイル・ラベル、または、保管した各オブジェクトの
+要約情報を表示します。
+例−1:ラベル表示
+DSPTAP DEV(TAP01)
+例−2:ブジェクトの要約情報を表示
+DSPTAP DEV(TAP01) DATA(*SAVRST)
+テープ装置は、ほとんどの場合、TAP01,TAP02,...のように識別名がつけられています。
+INZTAP テープの初期化
+テープの初期化を行います。
+例:
+INZTAP DEV(TAP01) NEWVOL(AAA) NEWOWNID(BBB)
+CHECK(*NO) DENSITY(*QIC120) 
+テープの密度は、テープ装置のハードの性能に依存します。
+SAVLIB ライブラリーの保管
+ライブラリーを保管します。
+例−1:WRKLIBの保管
+SAVLIB LIB(WRKLIB) DEV(TAP01) 
+例−2:複数のライブラリーの保管
+SAVLIB LIB(AALIB BBLIB CCLIB) DEV(TAP01)
+例−3:保管ファイルへの保管
+SAVLIB LIB(WRKLIB) DEV(*SAVF) SAVF(SVLIB/SAV001)
+保管はテープ装置だけでなく、「保管ファイル」という特殊なファイルへ保管することもできます。
+SAVOBJ オブジェクトの保管
+オブジェクトを個別に保管します。
+例−1:オブジェクトM420の保管
+SAVOBJ OBJ(M420) LIB(WRKLIB) DEV(TAP01)
+例−2:AAAで始まるオブジェクト全ての保管
+SAVOBJ OBJ(AAA*)
+例ー3:全オブジェクトの保管ファイルへの保管
+SAVOBJ OBJ(*ALL) DEV(*SAVF) SAVF(SVLIB/SAV001)
+RSTLIB ライブラリーの復元
+例−1:TAP01からWRKLIBの復元、WRKLIBへ
+RSTLIB SAVLIB(WRKLIB) DEV(TAP01)
+例−2:TAP01からWRKLIBの復元、TOLIBへ
+RSTLIB SAVLIB(WRKLIB) DEV(TAP01) RSTLIB(TOLIB)
+例−3:復元先に存在しないオブジェクトのみ復元
+RSTLIB SAVLIB(WRKLIB) DEV(TAP01) OPTION(*NEW)
+RSTLIB(TOLIB)
+例−4:保管ファイルからのオブジェクト復元
+RSTLIB SAVLIB(WRKLIB) DEV(*SAVF) SAVF(SVLIB/SAV001)
+RSTOBJ 保管されたオブジェクトの復元
+例−1:TAP01からオブジェクトM420の復元
+RSTOBJ OBJ(M420) SAVLIB(WRKLIB) DEV(TAP01)
+例−2:TAP01から復元先に存在しない,AAAで始まる名のオブジェクトのみ復元
+RSTOBJ OBJ(AAA*) SAVLIB(WRKLIB) DEV(TAP01)
+OPTION(*NEW)
+例−3:TAP01から復元先に存在しない、AAAで始まる名のオブジェクトをTOLIBへ復元。
+RSTOBJ OBJ(AAA*) SAVLIB(WRKLIB) DEV(TAP01)
+OPTION(*NEW) RSTLIB(TOLIB)
+FTPを利用した保管ファイルの交換
+E−mailの添付ファイルとftpを利用して保管ファイルを保管・転送・復元します。
+以下の例ではライブラリーTRNLIBを転送しています。
+AS/400(A)
+手順1 
+PCファイル
+手順2 E−mail(添付ファイル)
+AS/400(B)
+手順3 
+PCファイル
+手順1:保管ファイルをPCにダウンロード
+1)DOS窓を開き、FTPモードに入ります。
+2)予め用意してある保管ファイルをPCにダウンロードします。
+C:\>ftp  -n             
+ftp> open  172.16.0.30
+connected to 172.16.0.30
+220 - QTCP AT 172.16.0.30.
+220   CONNECTIONWILL CLOSE IF IDLE MORE THAN 5 MINUTES
+ftp>  user  qpgmr  qpgmr
+331   ENTER PASSWORD.
+230   QPGMR LOGED ON.
+ftp>  bin
+200   REPRESENTATION TYPE IS BINARY IMAGE.
+ftp>  get wrklib/trnlib.trnlib a:\trnlib.bin
+200   PORT SUBCOMMAND SUCCESSFUL.
+150   RETRIEVING MEMBER TRNLIB IN FILE TRNLIB IN LIBRARY WRKLIB.
+250   FILE TRANSFER COMPLETED SUCCESSFULLY.
+41712 bytes recieved in 8.83 seconds(4.72 kbytes/sec)
+ftp>  bye
+221   QUIT SUBCOMMNAD
+DOSのftpコマンドで指定するインターネットのアドレスは、WRKTCPSTSコマンドで取得できます。
+WRKTCPSTS  *IFC
+TCP/IP インターフェース状況の処理                         
+システム :   S1234567
+オプションを入力して,実行キーを押してください。                               
+5= 明細の表示   8= 関連経路の表示   9= 開始   10= 終了   12= 構成状況の処理  
+14=マルチキャスト・グループ の表示                                                     
+OPT  インターネット・アドレス    ネットワーク・アドレス      回線記述    インターフェース状況       
+127.0.0.1        127.0.0.0        *LOOPBACK    活動中                     
+172.16.0.30      172.16.0.0       ETHERLINE    活動中                     
+手順2:E−mailに添付して転送。
+省略します。
+手順3:PCからAS/400にアップロード
+1)前準備として、空の保管ファイルを用意しておきます。
+2)FTPモードに入り、ダウンロードの個所のgetコマンドの代わりに、putコマンドを使用します。
+ftp>  put  a:¥trnlib.bin  wrklib/trnlib.trnlib 
+注1: a:¥trnlib.bin ・・・で¥を省略するとうまくいかないことがあります。
+注2: ウィルスセキュリティチェックが稼動していると get/put のコマンドがインターセプトされてしまうことがあります。
+環境設定
+CLRLIB ライブラリーのクリア
+オブジェクトを0件にします。
+例:
+CLRLIB LIB(WRKLIB)
+CRTLIB ライブラリーの作成
+例−1:テスト用ライブラリーの作成
+CRTLIB LIB(WRKLIB) TYPE(*TEST) TEXT('FOR
+PROJECT AAA') 
+例−2:本番用ライブラリーの作成
+CRTLIB LIB(PRDLIB) TYPE(*PROD) TEXT('FOR
+PROJECT BBB') 
+CRTSRCPF ソースファイル作成
+例−1:RPGⅢ用ソースファイルの作成
+CRTSRCPF FILE(WRKLIB/QRPGSRC) IGCDTA(*YES)
+TEXT('RPGⅢ用') 
+例−2:RPGⅣ用ソースファイルの作成
+CRTSRCPF FILE(WRKLIB/QRPGLESRC) RCDLEN(112)
+IGCDTA(*YES) TEXT(' RPG用 ')
+DLTLIB ライブラリー削除
+例:WRKLIBの削除
+DLTLIB  LIB(WRKLIB)
+GO CLEANUP   終結処理設定メニュー
+終結処理設定のメニューを表示します。JOBLOGなどの保存期間の設定などができます。
+どうかすると、AS/400導入時からのJOBOLOGが、けされないままになっていたりすることが
+あるので、一度はチェックしておいて下さい。
+GO POWER   電源オンおよび電源オフ・タスク
+電源オンおよび電源オフ・タスクメニュー呼出。週単位の電源オンオフのスケジュールの設定ができます。
+例:
+GO POWER
+WRKDEVD   装置記述の処理
+装置記述の処理画面の呼出
+例−1:全ての記述の処理
+WRKDEVD  DEVD(*ALL)
+例−2:QPADEVで始まる全ての装置記述の処理
+WRKDEVD  DEVD(QPADEV*) 
+WRKCFGSTS   構成状況の処理
+装置構成状況の表示・変更・削除などができます。AS/400では装置は原則、プラグアンドプレイです。
+例
+WRKCFGSTS  CFGTYPE(*DEV)
+目次
+(C)COPYRIGHT ISHIOKA KATSUHIDE 2000,2011
+コマンド

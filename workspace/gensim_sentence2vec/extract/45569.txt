@@ -1,0 +1,68 @@
+
+Emacs Lisp 入門の最後に設定やちょっとしたコマンドを作るのに役に立ちそうな基本的な関数、変数などを紹介します。
+ファイルパス関連
+buffer-file-name
+カレントバッファーのファイルパスが格納された変数です。
+expand-file-name
+~, 相対パスなどを展開し、絶対パスを取得します。
+(expand-file-name "~/.emacs.d/init.el") ;; "d:/home/.emacs.d/init.el"
+(expand-file-name ".abbrev_defs" "~/")  ;; "d:/home/.abbrev_defs" 
+;; 2 番目の引数省略時はカレントディレクトリー
+file-name-directory
+ファイルパスからディレクトリーのパスを取得します。
+(file-name-directory "d:/home/.emacs.d/init.el")    ;; "d:/home/.emacs.d/"
+file-name-nondirectory
+ファイルパスからディレクトリーパスを取り除いたファイル名を取得します。
+(file-name-nondirectory "d:/home/.emacs.d/init.el") ;; "init.el"
+file-name-extension
+ファイルパスから拡張子を取得します。
+(file-name-extension "d:/home/.emacs.d/init.el")    ;; "el"
+file-name-sans-extension
+ファイルパスから拡張子を取り除いたファイル名を取得します。
+(file-name-sans-extension "d:/home/.emacs.d/init.el")    ;; "d:/home/.emacs.d/init"
+文字列操作
+concat
+文字列の結合です
+(concat "Hello " "world") ;; "Hello world"
+format
+最初に紹介しましたが、 C の printf の書式で文字列を作成します。
+書式について詳しくはマニュアルをご覧ください
+GNU Emacs Lisp リファレンス・マニュアル: 4. 文字列と文字
+(format "%s %d %f" "foo" 3 1.5) ;; "foo 3 1.500000"
+(global-set-key (kbd "<S-f7>") '(lambda ()
+(interactive)
+(compile (format "gcc %s" buffer-file-name))))    
+format-time-string
+現在の時間を指定した書式で文字列にします。
+書式について詳しくはマニュアルをご覧ください
+GNU Emacs Lisp リファレンスマニュアル: 37. オペレーティングシステムとのインターフェイス
+(format-time-string "%Y/%m/%d %H:%M:%S") ;; "2014/05/14 01:53:03"
+(format-time-string "%x") ;; "2014/05/14"
+insert
+カレントのカーソル位置に文字列を挿入します。
+(global-set-key "\C-o" '(lambda ()
+(interactive)
+(insert "\t")))
+正規表現
+正規表現のマッチ判定には string-match を使います。
+(string-match REGEXP STRING &optional START)
+string-match 自体を設定で使うことはあまりないと思いますが、
+設定に記述した正規表現のパターンなどを *scratch* バッファーで確認で確認できます。
+(string-match "^\"\\(.*\\)\", \\([0-9]+\\) 行目: \\(警告\\|エラー\\)"
+"\"foo.cpp\", 34 行目: 警告") ;; C-j
+0
+マッチ判定後、 () で指定した文字列を取得したい場合は match-string を使用します。
+(match-string NUM &optional STRING)
+(match-string 2 "\"foo.cpp\", 34 行目: 警告")
+"34"
+次は ?
+Emacs Lisp 入門は今回で終了です。
+環境設定に絞った elisp の入門を書きましたが、実はこれだけで十分だと思って書いたものではありません。
+Emacs の醍醐味は elisp を使って自分の欲しい機能を追加したり、
+自在にカスタマイズしたりできるようになることです。
+この入門が取っ掛かりになり、 elisp にもっと興味を持ってもらえたらと思います。
+次は、 elisp をもっと知り、 Emacs を自在にカスタマイズして、
+自分の Emacs を愛車ならぬ"愛 Emacs"になるよう仕上げていって下さい。
+さらに Emacs を身につけるためには個人的には以下の書籍がお勧めです。
+私も最初はこれで elisp 覚えました。
+設定に役立つ基本関数 - 環境設定のための Emacs Lisp 入門 - プログラマーズ雑記帳

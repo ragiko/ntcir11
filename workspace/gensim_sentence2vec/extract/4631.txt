@@ -1,0 +1,3 @@
+実時間タスクの解の精度を調節することにより過負荷や突発事態においても高いミッション達成能力を確保できるインプリサイス実時間スケジューリングの方式について考察しその有効性を論ずる.
+An imprecise scheduling algorithm, which select tasks and adjust their precision in terms of contribution to the mission of a system, is proposed and discussed.
+

@@ -1,0 +1,13 @@
+wwwなしに正規化するときは、次のように記述する。
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^www\.example\.com [NC]
+RewriteRule ^(.*)$ http://example.com/$1 [R=301,L]
+おまけで、サブドメイン名も含めてすべてを「www」ありに正規化するときは次のように記述する(wwwあり以外のドメイン名が、すべてwwwありに正規化される)。
+RewriteEngine on
+RewriteCond %{HTTP_HOST} !^www\.example\.com$ [NC]
+RewriteRule ^(.*)$ http://www.example.com/$1 [R=301,L]
+IPアドレス分散はSEOとは呼ばない 意識する意味がない (SEMアドバイザーの揺さBrain!)
+SEO業者が主張する「IPアドレス分散がSEOに効果がある」というのは、健全なウェブ担当者にはまったく関係のない、意識する意味もないトピックであるという記事を以前にピックアップした。こちらの記事では、IPアドレス分散をしたからといってそれが自然なリンクになることはないと指摘している。
+「IPアドレス分散によるSEO」を強調する人間は、自分がまっとうなSEOに取り組んでいないことを公然と宣言しているようなものだと、早く気がついてほしい。
+次のページへ
+薄っぺらすぎるコンテンツは、グーグルの検索結果から排除する など10+2記事(海外&国内SEO情報) | 海外&国内SEO情報ウォッチ | Web担当者Forum

@@ -1,0 +1,97 @@
+
+※空欄は、評価していないことを示します。
+※上記データは例で、後述で上記データを今回はランダムで生成します。
+こんなユーザーの映画に対する評価データがあったとして、このデータを元に評価が似ているユーザーを捜します。
+分析対象のデータを生成する
+通常は(Amazonなどの)サイトで収集している評価情報や購買情報を使って分析を行いますが、
+今回は利用可能なデータが手元にないため、プログラムでランダムデータを生成します。
+以下のようにJavaプログラムで、ユーザーの映画評価データを作成しました。
+/** ユーザー一覧 */
+protected static String[] userNames  = {"林", "伊藤", "大原", "柳沢", "久保", "大内", "斉藤"};
+/** 映画一覧 */
+protected static String[] movieNames = {"パイレーツinブリリアン", "滝の中で", "スターウエアーズ", "サンバでGO", "世界の端でアイっと叫ぶ", "ここはどこ"};
+/**
+* 生データをランダムに生成するメソッド
+*/
+private static Map<String, Map<String, Integer>> createRawData() {
+// Map<ユーザー名, Map<映画名, 評価>>
+Map<String, Map<String, Integer>> rawDataMap = new HashMap<String, Map<String,Integer>>();
+// ユーザー毎のループ
+for (int i = 0; i < userNames.length; i++) {
+String userName = userNames[i];
+Map<String, Integer> movieScoreMap = new HashMap<String, Integer>();
+rawDataMap.put(userName, movieScoreMap);
+// 映画毎のループ
+for (int jj = 0; jj < movieNames.length; jj++) {
+String movieName = movieNames[jj];
+// 70%の確率で映画を評価していることにする
+if (Math.random() > 0.3) {
+// 評価は1〜10の間の値をランダムに設定する
+int score = (int)(Math.random() * 10) + 1;
+movieScoreMap.put(movieName, score);
+}
+}
+}
+return rawDataMap;   
+}
+これで分析対象データの作成が出来ました。
+ユークリッド距離を用いた類似度の計測
+上記で作成したデータを元に、評価が似ているユーザーを探す(=類似度の高いユーザーを捜す)ことをしていきます。
+今回利用する類似度計測は、ユークリッド距離というものです。
+ユークリッド距離とは、例えば以下の2つの映画の評価に対して、それぞれのユーザーが評価している状態をプロットします。
+この表で点と点が近い(=距離が近い)ユーザーが、類似度が高いという判断をします。
+上記は2個の映画を軸とした2次元ですが、X個の映画を軸としたX次元での距離を測ることで、各ユーザー感の距離を計測でき、
+距離がより短いユーザー同士が類似度が高いという判断が出来ます。
+ユークリッド距離を計測する為に以下のメソッドを定義します。
+/**
+* 類似度を計測するメソッド。
+* 
+* @param prefs 分析対象データ
+* @param person1 対象者1
+* @param person2 対象者2
+* @return 類似度
+*/
+protected double simDistance(Map<String, Map<String, Integer>>prefs, String person1, String person2) {
+// ユークリッド距離で判定する
+// 2人とも評価しているアイテムリストを生成する
+List<String> movieList = new ArrayList<String>();
+Set<String> user1MovieList = rawDataMap.get(person1).keySet();
+Set<String> user2MovieList = rawDataMap.get(person2).keySet();
+for (String movie : user1MovieList) {
+if (user2MovieList.contains(movie)) {
+movieList.add(movie);
+}
+}
+// もし2人に共通のアイテムが無ければ、類似性なしと判断する
+if (movieList.size() == 0) {
+return 0.0;
+}
+// 全ての差の平方根を足し合わせる
+Map<String, Integer> user1Map = rawDataMap.get(person1);
+Map<String, Integer> user2Map = rawDataMap.get(person2);
+double sumOfSquares = 0.0;
+for (String movie : movieList) {
+sumOfSquares += Math.sqrt(Math.abs(user1Map.get(movie) - user2Map.get(movie)));
+}
+// 数値が大きいほど類似性が高いことにしたいので、逆数を取る。
+// その際にゼロ除算しないように+1する。
+return 1 / (1 + sumOfSquares);
+}
+こんな感じで、引数で受けた2ユーザーの類似度を計測することが出来ます。
+このメソッドの場合、0.0〜1.0の間の値を取り、1.0に近ければ近いほど類似しているという判断を行うことが出来ます。
+実際に類似度を計測してみる
+上記で定義したユークリッド距離計算のメソッドを使ってみます。こんな感じで使います。
+double sim = recommend.simDistance(rawDataMap, "林", "伊藤");
+System.out.println("sim: " + sim);
+(出力結果例)
+sim: 0.25
+これで林さんと伊藤さんの類似度を計測することが出来ました。林さんと他の人の類似度を計測することで、
+林さんにより近い人を見つけることが出来ます。
+参考資料
+この記事では、以下の書籍の内容を参考にしております。良き情報に感謝です。
+- Amazon:集合知プログラミング
+最後に
+類似度の計測には色々な方法が合りますが、今回はユークリッド距離を用いた計測方法を紹介させて頂きました。
+類似度計測でどれを選ぶべきかは、アプリケーションごとに異なるようなので色々と試してみて、制作したいアプリに合ったアルゴリズムを選定すると良いかと思います。
+最後までご覧頂きましてありがとうございました。
+

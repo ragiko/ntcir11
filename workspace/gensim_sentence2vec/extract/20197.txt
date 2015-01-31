@@ -1,0 +1,38 @@
+
+max-widthプロパティは、ボックスの最大幅を指定します。
+widthプロパティでwidth: 90%;などとし、横幅が可変するリキッドレイアウトを作成した場合に、max-widthプロパティと合わせて使うことでウィンドウサイズを極端に大きくした場合に横幅が広がり過ぎて著しく可読性が落ちてしまうのを防ぐ事ができます。
+尚、IE6はmax-widthプロパティに対応していません。
+対応させるには、JSを使ったりIE独自拡張のexpressionを使った方法やCSSだけで実現する方法など色々有るので、下記のサイトなどを参考に試してみて自分に合った方法を使うといいと思います。
+IE6でもCSSのみでmax-widthを実現する | CSS-EBLOG
+IE6でmin-width,max-widthを実装する:CSS | Tech de Go
+min-width,max-width,min-height,max-heightをIEで使えるようにするjavascript[to-R]
+対応ブラウザ
+プロパティの解説
+値
+<長さ>｜<パーセント>｜none｜inherit
+初期値
+none
+適用される要素
+全ての要素(非置換インライン要素及びテーブルの列・列グループ要素は除く)
+継承
+しません
+パーセント値
+包含ブロックの幅に対する割合
+メディア
+visual
+値の解説
+<長さ>
+幅を長さの単位で指定します(300pxとか)。尚、マイナス値は不正です。
+<パーセント>
+包含ブロックの幅に対する割合を指定します。尚、マイナス値は不正です。
+none
+幅に対して制限をしません。
+max-widthのサンプル
+div#contents {
+width: 90%;
+max-width: 1000px;
+}
+<div id="contents">
+<p>コンテンツが入ります</p>
+</div>
+max-width｜プロパティ｜CSS HappyLife ZERO

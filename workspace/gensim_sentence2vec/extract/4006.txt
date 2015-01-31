@@ -1,0 +1,83 @@
+
+目次
+【Unity】MMDモデルを使ってボールを蹴って物体を壊すゲームを作ろう!
+その1
+その2
+その3
+その4
+その5
+その6(完結)
+MMDモデルにモーションを付けよう
+モーションのインストール
+その2の続きになります。
+モーションはAssetStoreにあるUnity製のものをお借りしようと思います。
+WindowAsset Storeを開きます。左上の検索窓にLocomotionを入力します。
+Mechanim Locomotion Start Kitをimportします。
+importが完了するとAssets内にlocomotionフォルダが出来ています。
+Animatorの作成
+こっからがややこしく、つまづきやすい所だと思います。
+ゲームのキャラでしたら、立ち止まっている時は足を止め、
+動く時は歩き出し、さらに速度を上げると走りだすというのが自然だと思います。
+3Dモデルにそのようなアニメーションを付けるためにanimatorを作成します。
+createAnimator Controllerを選択しanimatorファイルを作成します。
+名前はAnimatorSetupとしました。
+待機アニメーションを作成
+ダブルクリックしてAnimatorSetupを開きます。
+Any Stateというものが鎮座していますが、それはほっておいて、
+右クリックcreate stateemptyを選択し、New stateを作成します。
+new stateを選択し、名前をIdleにし、Motionにもidleを選択しましょう。
+(ここで選択したMotionのidleはLocomotionで用意されたidleです。)
+stateのidleをダブルクリックしましょう。するとpreview画面を含んだ画面が表示されます。
+再生ボタンを押下するとidleアニメーションをするキャラクターを見ることが出来ます。
+そこにその1で作成した権太君をD&Dしてみましょう。
+キャラクターが謎のオッサンから権太に変わり、再生ボタンを押すと権太君がアニメーションするのが見れると思います。
+これで待機アニメーションが完成です。
+その3につづく
+キリが少し悪いのですが、またここで分割させてください。
+その3では行動アニメーションを作っていきます。
+## 目次
+【Unity】MMDモデルを使ってボールを蹴って物体を壊すゲームを作ろう!
+[その1](http://qiita.com/kuuki_yomenaio/items/07a3214eb518c21a10b1)
+[その2](http://qiita.com/kuuki_yomenaio/items/0b0cac2846a4ffef514d)
+[その3](http://qiita.com/kuuki_yomenaio/items/f9be3083afc19fb0f86c)
+[その4](http://qiita.com/kuuki_yomenaio/items/33cc2d234f3394bd0eab)
+[その5](http://qiita.com/kuuki_yomenaio/items/95f54a7404d71c80cbaf)
+[その6(完結)](http://qiita.com/kuuki_yomenaio/items/03ed5212de0a93f0de13)
+## MMDモデルにモーションを付けよう
+###モーションのインストール
+[その2](http://qiita.com/kuuki_yomenaio/items/0b0cac2846a4ffef514d)の続きになります。
+モーションはAssetStoreにあるUnity製のものをお借りしようと思います。
+WindowAsset Storeを開きます。左上の検索窓にLocomotionを入力します。
+Mechanim Locomotion Start Kitをimportします。
+![スクリーンショット 2014-03-27 21.29.35.png](https://qiita-image-store.s3.amazonaws.com/0/26453/6b8a49b2-ac99-6704-c541-b5497082e658.png)
+importが完了するとAssets内にlocomotionフォルダが出来ています。
+![スクリーンショット 2014-03-27 21.30.29.png](https://qiita-image-store.s3.amazonaws.com/0/26453/5a10e1f3-8c1a-f25c-b702-2d4bfc1a16c5.png)
+### Animatorの作成
+こっからがややこしく、つまづきやすい所だと思います。
+ゲームのキャラでしたら、立ち止まっている時は足を止め、
+動く時は歩き出し、さらに速度を上げると走りだすというのが自然だと思います。
+3Dモデルにそのようなアニメーションを付けるためにanimatorを作成します。
+createAnimator Controllerを選択しanimatorファイルを作成します。
+名前はAnimatorSetupとしました。
+![スクリーンショット 2014-03-27 21.34.48.png](https://qiita-image-store.s3.amazonaws.com/0/26453/fb64598f-e959-e47f-5e18-b82ceca0ef31.png)
+![スクリーンショット 2014-03-27 21.34.59.png](https://qiita-image-store.s3.amazonaws.com/0/26453/67ab4d05-401e-af6f-6c4d-6af693e9045a.png)
+#### 待機アニメーションを作成
+ダブルクリックしてAnimatorSetupを開きます。
+![スクリーンショット 2014-03-27 21.36.17.png](https://qiita-image-store.s3.amazonaws.com/0/26453/2839acd7-4917-4b93-915f-4537767bde9e.png)
+Any Stateというものが鎮座していますが、それはほっておいて、
+右クリックcreate stateemptyを選択し、New stateを作成します。
+![スクリーンショット 2014-03-27 21.36.45.png](https://qiita-image-store.s3.amazonaws.com/0/26453/06c4c136-839a-b114-1a03-ba9792944ea0.png)
+new stateを選択し、名前をIdleにし、Motionにもidleを選択しましょう。
+(ここで選択したMotionのidleはLocomotionで用意されたidleです。)
+![スクリーンショット 2014-03-27 21.37.34.png](https://qiita-image-store.s3.amazonaws.com/0/26453/a315333a-d8f4-4e50-7c86-b9a80f3cc6c1.png)
+![スクリーンショット 2014-03-27 21.37.46.png](https://qiita-image-store.s3.amazonaws.com/0/26453/3d641b4a-ba51-c202-3ded-619b9ef5ab60.png)
+stateのidleをダブルクリックしましょう。するとpreview画面を含んだ画面が表示されます。
+再生ボタンを押下するとidleアニメーションをするキャラクターを見ることが出来ます。
+そこにその1で作成した権太君をD&Dしてみましょう。
+キャラクターが謎のオッサンから権太に変わり、再生ボタンを押すと権太君がアニメーションするのが見れると思います。
+![スクリーンショット 2014-03-27 21.39.08.png](https://qiita-image-store.s3.amazonaws.com/0/26453/f738eebc-4547-4e3c-0e5f-e6df7d8da77a.png)
+これで待機アニメーションが完成です。
+## その3につづく
+キリが少し悪いのですが、またここで分割させてください。
+[その3](http://qiita.com/kuuki_yomenaio/items/f9be3083afc19fb0f86c)では行動アニメーションを作っていきます。
+Unity3D - 【Unity】MMDモデルを使ってボールを蹴って物体を壊すゲームを作ろう!その2【基礎】 - Qiita

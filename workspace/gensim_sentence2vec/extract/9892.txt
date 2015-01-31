@@ -1,0 +1,102 @@
+
+こんにちは!新しい物好きなエンジニアのツカノです。Vert.xがますます面白いところに入ってきましたが、今回は久しぶりのNettyシリーズです。Vert.xは通信周りにNettyを利用しており、その仕組みを理解する上でも良いかと思います。前回シリーズを掲載した後、Nettyの世界では大きな変化がありました。ついにNettyのメジャーパージョンアップであるNetty4がリリースされました。Netty4ではパッケージ名から変わっており、直接的な互換性もありません(パッケージ名やクラス名を置き替えることで、ある程度移行できます)。そのくらい大きく変わっています。Netty4については今後触れますが、今回は前回シリーズに引き続き、Netty3について解説します。さて、まずは前回シリーズの復習から。前回のシリーズでは、こんなことを説明しました。
+導入編 Nettyを使ったサーバの実装方法説明
+導入編2 Nettyを使ったクライアントの実装方法説明
+導入編3 Pipelineを中心に説明
+用意されたライブラリを使ってNettyを使うための基礎は分かったと思いますが、今回はNettyの醍醐味である「オリジナルプロトコルの実装」を行って見たいと思います。現在執筆中の状態になっている「Netty in Action」では「ADVANCED TOPICS」となっていますが、個人的には「これがやりたいからNettyを使いたい」と考えているくらい、利用価値が高いと思っています。前回シリーズでEchoServerを利用した際に、Nettyが標準で用意しているStringEncoderやStringDecoderを使いました。オリジナルプロトコルを実装するために、Encoder/Decoderを自作するのが今回のゴールです。
+オリジナルプロトコルの仕様
+多くのシステムでは、利用するユーザの情報を扱っていると思います。オリジナルのバイナリプロトコルを使って、クライアントからサーバに対してユーザ情報を送信する処理をNettyを利用して実装します。
+TCPを利用し、データ部分に以下の内容を設定して送信するプロトコルです。エンディアンはビッグエンディアンとします。
+メッセージ長(4byteの数値)
+ユーザID(8byteの数値)
+ユーザ名のbyte長(4byteの数値)
+ユーザ名(任意byteの文字列)
+ユーザの年齢(4byteの数値)
+ちなみに、ユーザIDが文字列でないのは、longを使いたかったからです^^;
+ユーザ名は任意の長さなので、「ユーザ名のbyte長」で長さが分かるようにしています。
+このユーザ情報をJavaのエンティティクラスにすると、以下のようになります。「メッセージ長」「ユーザ名のbyte長」といったbyte長関係はNetty側で吸収してくれるため、エンティティクラスの属性には不要です。
+package netty_sample;
+public class UserInfo {
+private long id;
+private String name;
+private int age;
+public UserInfo(long id, String name, int age) {
+this.id = id;
+this.name = name;
+this.age = age;
+}
+public long getId() {
+return id;
+}
+public String getName() {
+return name;
+}
+public int getAge() {
+return age;
+}
+@Override
+public String toString() {
+return "id=" + this.id + ", name=" + this.name + ", age=" + this.age;
+}
+}
+Encoderの自作方法
+さて、まずはEncoderを自作してみます。Encoderはクライアント側で動作し、エンティティクラスをNettyのChannelBufferに変換するのが役割です。UserInfoのEncoderは以下のように作ります。
+package netty_sample;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+public class MyProtocolEncoder extends OneToOneEncoder { // 1
+@Override
+protected Object encode(ChannelHandlerContext ctx, Channel channel,
+Object msg) throws Exception { // 2
+if (!(msg instanceof UserInfo)) { // 3
+return msg;
+}
+UserInfo info = (UserInfo) msg;
+ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(); // 4
+// IDの変換 // 5
+buffer.writeLong(info.getId());
+// Nameの変換 // 6
+byte[] byteName = info.getName().getBytes("UTF-8");
+buffer.writeInt(byteName.length);
+buffer.writeBytes(byteName);
+// Ageの変換 // 7
+buffer.writeInt(info.getAge());
+return buffer; // 8
+}
+}
+それでは、コードの説明をします。1 OneToOneEncoderを継承します。OneToOneEncoderは1エンティティを1メッセージに変換するためのEncoderです。2 エンティティをChannelBufferに変換するメソッド「encode」を実装します。3 encodeメソッドの引数に指定されたエンティティ(msg)が、期待したクラス(UserInfo)の場合に変換処理を行います。エンティティ(msg)が期待したクラス(UserInfo)でない場合は、エンティティ(msg)をそのまま返します。4 ChannelBufferを取得します。ここでは、可変サイズのDynamicChannelBufferを使っています。5 long型(8byte)データであるIDをChannelBufferに変換します。long型のデータを変換する場合には、ChannelBuffer#writeLongを使ってください。すると、Netty側で8byteの値としてChannelBufferに変換します。
+ChannelBufferに変換するには「set型名」「write型名」のメソッドを使うことができますが、基本的には「write型名」の方を使ってください。理由については、次回解説します。6 String型(任意byte)データであるNameを変換します。Nameは可変長なので、byte長とセットでwriteしています。「writeString」はなく、byte配列にしてから「writeBytes」してください。7 int型(4byte)データであるAgeを変換します。もう予想が付くと思いますが、ChannelBuffer#writeIntを使います。8 変換後のChannelBufferを返します。
+Decoderの自作方法
+続いて、Decoderを自作してみます。Decoderはサーバ側で動作し、ChannelBufferをエンティティクラスに変換するのが役割です。UserInfoのDecoderは以下のように作ります。
+package netty_sample;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+public class MyProtocolDecoder extends OneToOneDecoder { // 1
+@Override
+protected Object decode(ChannelHandlerContext ctx, Channel channel,
+Object msg) throws Exception { // 2
+if (!(msg instanceof ChannelBuffer)) { // 3
+return msg;
+}
+ChannelBuffer buffer = (ChannelBuffer) msg;
+// ID 4
+long id = buffer.readLong();
+// Name 5
+int length = buffer.readInt();
+byte[] byteName = new byte[length];
+buffer.readBytes(byteName);
+String name = new String(byteName, "UTF-8");
+// Age 6
+int age = buffer.readInt();
+UserInfo info = new UserInfo(id, name, age);
+return info; // 7
+}
+}
+それでは、コードの説明をします。1 OneToOneDecoderを継承します。OneToOneDecoderは1メッセージを1エンティティに変換するためのDecoderです。2 ChannelBufferをエンティティに変換するメソッド「decode」を実装します。3 encodeメソッドの引数に指定されたエンティティ(msg)が、期待したクラス(ChannelBuffer)の場合に変換処理を行います。エンティティ(msg)が期待したクラス(ChannelBuffer)でない場合は、エンティティ(msg)をそのまま返します。4 long型(8byte)データであるIDをChannelBufferから取得します。long型のデータを取得する場合には、ChannelBuffer#readLongを使ってください。すると、long型(8byte)として取得します。
+ChannelBufferに変換するには「get型名」「read型名」のメソッドを使うことができますが、基本的には「read型名」の方を使ってください。理由については、次回解説します。5 String型(任意byte)データであるNameを変換します。Nameは可変長なので、byte長と同じ長さのbyte配列生成し、そこに値を入れてからStringに変換しています。6 int型(4byte)データであるAgeを取得します。もう予想が付くと思いますが、ChannelBuffer#readIntを使います。7 変換後のUserInfoを返します。
+オリジナルの通信プロトコルを実装してみよう(Netty 実践編1) - Taste of Tech Topics

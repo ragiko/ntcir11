@@ -1,0 +1,392 @@
+皆さんこんにちは
+お元気ですか。私は元気です。今回は混合ガウスモデルと呼ばれるクラスタリング手法を解説したいと思います。まず手順ですが、今回は
+1.負担率の計算
+2.クラスタのパラメータの更新①負担率の計算
+あるデータのラベルが出る確率というのはこの形で計算できます。あるデータのラベルの確率は以下の式で計算することができます。
+//Estep
+ublas::vector<double> temp_vect(distribution_number); //計算結果を一時的に保存
+for(int i = 0; i < N;i++){
+long double denominator = 0.0;
+for(int j = 0; j < distribution_number; j++){
+temp_gaussian[j] = Gaussian(input_data[i],distribution[j].mean,distribution[j].cov,distribution[j].inv_cov,distribution[j].det);
+denominator += pi[j] * temp_gaussian[j];
+}
+for(int j = 0; j < distribution_number; j++){
+gamma[i][j] = pi[j] * temp_gaussian[j] / denominator;
+}
+}
+②クラスタのパラメータ更新対数尤度関数この対数尤度関数をそれぞれのパラメータで偏微分した情報を利用してパラメータ更新します。
+式は以下の通りの手順に分割されます。これを元にして偏微分を行い、更新式を作ります。混合係数
+平均
+分散
+対数尤度関数を打ち切りの判定に使ってもいいかもしれません。
+//MStep
+for(int k = 0; k < distribution_number; k++){
+double Nk = 0.0;
+for(int i = 0; i < N; i++){
+Nk += gamma[i][k];
+}
+for(int i = 0; i < distribution_number; i++){
+distribution[k].mean[i] = 0.0;
+}
+for(int i = 0; i < N; i++){
+distribution[k].mean += gamma[i][k] * input_data[i];
+}
+distribution[k].mean /= Nk;
+for(int i = 0; i < N; i++){
+vect_temp = input_data[i] - distribution[k].mean;
+ublas::matrix<double> mat(dimension,1);
+for(int j = 0; j < dimension; j++){
+mat(j,0) = vect_temp[j];
+}
+distribution[k].cov += gamma[i][k] * prod(mat,trans(mat));
+}
+distribution[k].cov = distribution[k].cov * (1/Nk);
+pi[k] = Nk / N;
+}
+GaussianMixtureModel.hpp
+#pragma once
+#include <iostream>
+#include <math.h>
+#include <vector>
+#include <stdlib.h>
+#include <algorithm>
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include "linear_algebra.hpp"
+#define NDEBUG
+using namespace boost::numeric;
+using namespace std;
+template<class X>
+class GaussianDistribution{
+public:
+ublas::vector<X> mean;
+ublas::matrix<X> cov;
+ublas::matrix<X> inv_cov;
+X det;
+};
+class GaussianMixtureModel{
+public:
+GaussianDistribution<double> distribution[100]; //他
+std::vector<ublas::vector<double> > input_data; //入力データ
+int N; //データの数
+ublas::vector<double> mean; //正規化時の平均
+ublas::vector<double> std; //正規化時の標準偏差
+double pi[100]; //混合係数
+int distribution_number; //正規分布の数
+int dimension; //次元数(ベクトル)
+std::vector<std::vector<double> > gamma;
+//計算用データ保存位置
+double gaussian_temp1;
+void SetParameter(int number);
+double Likelihood();
+void Training(std::vector<ublas::vector<double> > &input); //トレーニング
+void Scale();//ベクトルのスケール
+void Scale(std::vector<ublas::vector<double> > &test_data);//ベクトルのスケール
+void OutPutParam(); //出力
+ublas::vector<int> Predict(std::vector<ublas::vector<double> > test_data);//予測(新しいデータを投入)
+void Setting();
+void ReCalcParam(); //逆行列と行列式を再計算
+//多変量ガウス分布の確率密度関数を求める
+double Gaussian(ublas::vector<double> &data,ublas::vector<double> &mean,ublas::matrix<double> &cov,matrix<double> &inv_cov,double det);
+};
+GaussianMixtureModel.cpp
+#include "GaussianMixtureModel.hpp"
+//平均1,分散0にする。-infの防止
+void GaussianMixtureModel::Scale(){
+mean.resize(dimension);
+for(int i = 0; i < dimension; i++){
+double sum = 0.0;
+for(int j = 0; j < N; j++){
+sum += input_data[j][i];
+}
+mean[i] = sum / N;
+}
+std.resize(dimension);
+for(int i = 0; i < dimension; i++){
+double sum = 0.0;
+for(int j = 0; j < N; j++){
+sum += pow(input_data[j][i] - mean[i],2);
+}
+std[i] = sqrt(sum / N);
+}
+for(int i = 0; i < dimension; i++){
+for(int j = 0; j < N; j++){
+input_data[j][i] = (input_data[j][i] - mean[i]) / std[i];
+}
+}
+}
+void GaussianMixtureModel::Scale(std::vector<ublas::vector<double> > &test_data){
+for(int i = 0; i < dimension; i++){
+for(int j = 0; j < N; j++){
+test_data[j][i] = (test_data[j][i] - mean[i]) / std[i];
+}
+}
+}
+//多変量正規分布の式、高速化を目指してメモを中心に実装
+double GaussianMixtureModel::Gaussian(ublas::vector<double> &data,ublas::vector<double> &mean,ublas::matrix<double> &cov,matrix<double>& inv_cov,double det){
+ublas::vector<double> minus_data_mean = data - mean;
+double temp1 = 1.0 / (pow((2.0 * M_PI),(dimension / 2.0)));
+double temp2 = 1.0 / pow(det,0.5);
+double temp3 = - 0.5 * inner_prod(prod(minus_data_mean,inv_cov),minus_data_mean);
+return temp1 * temp2 * exp(temp3);
+}
+//パラメータセット用の関数
+void GaussianMixtureModel::SetParameter(int number){
+distribution_number = number;
+}
+//初期化を行うメンバ関数
+void GaussianMixtureModel::Setting(){
+srand((unsigned)time(NULL)); 
+//混合係数の初期化
+double sum = 0.0;
+for(int i = 0; i < distribution_number; i++){
+pi[i] = (double)rand()/RAND_MAX;
+sum += pi[i];
+}
+for(int i = 0; i < distribution_number; i++){
+pi[i] /= sum;
+cout << pi[i] << endl;
+}
+//平均の初期化
+for(int i = 0; i < distribution_number; i++){
+ublas::vector<double> vect(dimension);
+for(int j = 0; j < dimension; j++){
+vect[j] = (double)rand()/RAND_MAX;
+vect[j] = 0.5;
+}
+distribution[i].mean = vect;
+}
+//共分散行列を初期化
+for(int i = 0; i < distribution_number; i++){
+ublas::matrix<double> mat(dimension,dimension);
+for(int j = 0; j < mat.size1(); j++){
+for(int k = 0; k < mat.size2(); k++){
+mat(j,k) = (j == k) ? 1.0 : 0.0;
+}
+}
+distribution[i].cov = mat;
+}
+gaussian_temp1 = 1.0 / (pow((2.0 * M_PI),(dimension / 2.0)));
+}
+//何度も使いまわす行列式、逆行列は先に計算する
+void GaussianMixtureModel::ReCalcParam(){
+for(int i = 0; i < distribution_number;i++){
+distribution[i].det = determinant(distribution[i].cov);
+distribution[i].inv_cov = invert(distribution[i].cov);
+}
+}
+//対数尤度の計算
+double GaussianMixtureModel::Likelihood(){
+//対数尤度関数
+double sum = 0.0;
+for(int i = 0; i < N; i++){
+long double temp = 0.0;
+for(int j = 0; j < distribution_number; j++){
+temp += pi[j] * Gaussian(input_data[i],distribution[j].mean,distribution[j].cov,distribution[j].inv_cov,distribution[j].det);
+}
+sum += log(temp);
+}
+return sum;
+}
+//平均
+void GaussianMixtureModel::OutPutParam(){
+for(int i = 0; i < distribution_number; i++){
+cout << "正規分布" << i << "のパラメータ" << endl;
+cout << pi[i] << endl;
+cout << distribution[i].mean << endl;
+cout << distribution[i].cov << endl;
+}
+}
+void GaussianMixtureModel::Training(std::vector<ublas::vector<double> > &input){
+input_data = input;
+N = input_data.size();
+dimension = input_data[0].size();
+gamma.resize(N);
+for(int i = 0; i < N; i++){
+gamma[i].resize(dimension);
+}
+Setting();
+Scale();
+cout << input_data[0] << endl;
+ReCalcParam();
+double like = Likelihood();
+ublas::vector<double> vect_temp(input_data[0].size()); //
+ublas::vector<double> temp_gaussian(distribution_number); //各データの確率の計算結果を一時的に保存
+//OutPutParam();
+int cnt = 0;
+while(1){
+cout << cnt << " " << like << endl;
+//Estep
+ublas::vector<double> temp_vect(distribution_number); //計算結果を一時的に保存
+for(int i = 0; i < N;i++){
+long double denominator = 0.0;
+for(int j = 0; j < distribution_number; j++){
+temp_gaussian[j] = Gaussian(input_data[i],distribution[j].mean,distribution[j].cov,distribution[j].inv_cov,distribution[j].det);
+denominator += pi[j] * temp_gaussian[j];
+}
+for(int j = 0; j < distribution_number; j++){
+gamma[i][j] = pi[j] * temp_gaussian[j] / denominator;
+}
+}
+//MStep
+for(int k = 0; k < distribution_number; k++){
+double Nk = 0.0;
+for(int i = 0; i < N; i++){
+Nk += gamma[i][k];
+}
+for(int i = 0; i < distribution_number; i++){
+distribution[k].mean[i] = 0.0;
+}
+for(int i = 0; i < N; i++){
+distribution[k].mean += gamma[i][k] * input_data[i];
+}
+distribution[k].mean /= Nk;
+for(int i = 0; i < N; i++){
+vect_temp = input_data[i] - distribution[k].mean;
+ublas::matrix<double> mat(dimension,1);
+for(int j = 0; j < dimension; j++){
+mat(j,0) = vect_temp[j];
+}
+distribution[k].cov += gamma[i][k] * prod(mat,trans(mat));
+}
+distribution[k].cov = distribution[k].cov * (1/Nk);
+pi[k] = Nk / N;
+}
+OutPutParam();
+cnt++;
+ReCalcParam();
+double new_like = Likelihood();
+double diff = new_like - like;
+if(cnt == 200){
+break;
+}
+like = new_like;
+}
+}
+ublas::vector<int> GaussianMixtureModel::Predict(std::vector<ublas::vector<double> > test_data){
+ublas::vector<int> result(test_data.size());
+Scale(test_data);
+for(int i = 0; i < test_data.size(); i++){
+double max = -100000000000.0;
+int now_distribution = 0;
+for(int j = 0; j < distribution_number; j++){
+double per = pi[j] * Gaussian(test_data[i],distribution[j].mean,distribution[j].cov,distribution[j].inv_cov,distribution[j].det);
+if(per > max){
+max = per;
+now_distribution = j;
+}
+}
+result[i] = now_distribution;
+}
+return result;
+}
+linear_algebra.hpp
+行列式と逆行列を計算する。
+#pragma once
+#include <iostream>
+#include <math.h>
+#include <stdlib.h>
+#include <algorithm>
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/lu.hpp>
+#include <boost/numeric/ublas/triangular.hpp>
+#include <boost/numeric/ublas/fwd.hpp>
+#define NDEBUG
+using namespace boost::numeric::ublas;
+//行列の演算
+template <typename T>
+matrix<T> linear_pow(matrix<T> &mat,int time){
+matrix<T> result(mat);
+for(int i = 0; i < time-1; i++){
+result = prod(result,mat);
+}
+return result;
+}
+#undef BOOST_UBLAS_TYPE_CHECK
+#define BOOST_UBLAS_TYPE_CHECK 0
+template <typename T>
+matrix<T> invert(const matrix<T>& m)
+throw (std::invalid_argument) {
+typedef matrix<T> m_t;
+m_t a(m);
+m_t b(identity_matrix<T>(m.size1()));
+permutation_matrix<std::size_t> pm(m.size1());
+if (lu_factorize(a,pm) != 0)
+throw std::invalid_argument(std::string("No inverse exists."));
+lu_substitute(a,pm,b);
+return b;
+}
+//行列式
+template<typename T>
+double determinant(matrix<T> &mat){
+matrix<T> lu(mat);
+permutation_matrix<> pm(mat.size1());
+lu_factorize(lu,pm);
+double det(1);
+for (permutation_matrix<>::size_type i = 0; i < pm.size(); i++) {
+det *= (i == pm(i)) ? +lu(i, i) : -lu(i, i);
+}
+return det;
+}
+main.cpp
+#include <iostream>
+#include <vector>
+#include <math.h>
+#include <string>
+#include <fstream>
+#include <stdlib.h>
+#include <algorithm>
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <boost/algorithm/string.hpp>
+#include "./GaussianMixtureModel.hpp"
+using namespace boost::numeric;
+//faithful.txtを読み込む
+void fileread(std::vector<ublas::vector<double> > &input){
+std::ifstream ifs("faithful.txt");
+std::string str;
+ublas::vector<double> vect(2);
+while(getline(ifs,str)){
+std::vector<std::string> v;
+boost::algorithm::split(v, str, boost::is_any_of(" "));
+for(int i = 0; i < v.size();i++){
+std::stringstream ss;
+double temp;
+ss << v[i];
+ss >> temp;
+vect[i] = temp;
+}
+input.push_back(vect);
+}
+}
+//結果を出力する
+void outputFile(std::vector<ublas::vector<double> > &input,ublas::vector<int> &predict){
+std::vector<std::vector<ublas::vector<double> > > data(2);
+for(int i = 0; i < predict.size(); i++){
+data[predict[i]].push_back(input[i]);
+cout << predict[i] << endl;
+}
+for(int i = 0; i < data.size(); i++){
+for(int j = 0; j < data[i].size(); j++){
+cout << data[i][j][0] << " " << data[i][j][1] << endl; 
+}
+cout << endl << endl;
+}
+}
+int main(void){
+GaussianMixtureModel gmm;
+gmm.SetParameter(2); //クラスタ数
+std::vector<ublas::vector<double> > input;
+fileread(input);
+gmm.Training(input);
+ublas::vector<int> predict_vector = gmm.Predict(input);
+outputFile(input, predict_vector);
+}
+混合ガウスモデルをC++で実装した(Gaussian Mixture Model) - のんびりしているエンジニアの日記

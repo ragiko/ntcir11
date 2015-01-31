@@ -1,0 +1,274 @@
+
+任意サイズの配列を返すユーザー定義関数
+以下のようにして,任意サイズの配列を返すユーザー定義関数を作ることができる.
+module matrix
+contains
+function square(dimin) !各要素の二乗を返す関数
+real,dimension(:,:):: dimin
+real,dimension(size(dimin,1),size(dimin,2))::square ! sizeが配列宣言文で使えるのだ
+square=dimin*dimin
+end function
+end module
+program main
+use matrix
+real,dimension(2,3)::a,b
+do j=1,3
+do i=1,2
+b(i,j)=i+(j-1)*10
+enddo
+enddo
+a=square(b)
+print *,a
+end program
+役立つ文字列操作関数
+やっとFortranの文字操作関数も,少しは使えるようになったか.
+名称説明出力使用例len文字列の長さを整数で返す整数len_trim末尾の空白を除いた文字列の長さを整数で返す整数trim末尾の空白を削除文字列プログラム character cv*4,cg*8      cv='u '; cg=trim(cv)//'.grd'; print *,cg結果 u.grdrepeat文字列の連結文字列repeat('o',10)adjust文字列の先頭空白を除いて左に寄せるadjustr文字列の最後の空白を除いて右に寄せる
+indexSTRING中のSUBSTRINGの最初の場所
+rindex
+STRING中のSUBSTRINGの最後の場所
+leg文字列が大きいか同じかLGE(STRING_A,STRING_B)
+lgt文字列が大きいかLGT(STRING_A,STRING_B)
+lle文字列が小さいか同じかLLE(STRING_A,STRING_B
+llt文字列が小さいか LLT(STRING_A,STRING_B)
+scan
+文字列の中にSETの文字があるかどうかを調べる
+verify
+Fortran 90の文字列処理はFortran 77に比べるとはるーかに良くなっているが,やはりもっと新しい言語(RubyだとかC#だとか)に比べると,とっても見劣りする.問題の源は,文字変数の長さを最初に定義しなくてはならないことで,allocate も文字変数(文字変数の配列ではなく)には使えない.もっともこれはFortran
+2000転じて2005?で改善される予定.当面は文字列を十分大きく宣言はしておき,実際に使うところはtrimやlen_trimで規定する,というのがよさそうである.
+条件判定
+条件判定
+==, >,  <, >=, <=, /= が利用できる。if の後にはカッコが必要。多分条件のand(or)は,.and. (.or.) と書かなくてはならなく,C風の&& (||) は使えない模様.
+select case (), case (), case default, endselect
+一つの変数について複数の条件分岐があるならば,if then, else if でつながずに,select case を使う.
+select case (ctaper)
+case ('hanning')
+taper=0.5*(1-cos(2*pi*taper/isz))
+case ('hamming')
+taper=0.54-0.46*cos(2*pi*taper/isz)
+case default
+stop 'invalid ctaper='
+endselect
+where,elsewhere,endwhere
+条件を満たす配列要素に対する演算。強力なのでなるべく使用すること
+real dim1(10)
+do i=1,10; dim1(i)=i-5; enddo
+where(dim1>0) dim2=dim1+1
+where(dim1< 0) dim2="abs(dim1)" endwhere
+繰り返し構造
+do, enddo
+do i=1,10
+.........
+enddo
+do while, enddo
+do while(i<10) ......... enddo 
+exit/cycle
+ループから抜けるには、exit文を使うことができる。最内側ループから抜けるには,"exit" のみでよく,そうでない場合には次項で説明するdo構造名を使う.
+文条件が一つであれば、exit文ではなく、do while を使うのも,より可読性が増すのでお奨め。ループから抜ける目的でgoto文を使ってはならない。
+do i=1:1000
+read(31,rec=irec,iostat=ierrd)
+if (ierrd/=0) exit !データがもう無いなどでエラーになったらループを抜ける.
+enddo
+ループの途中で、ループの最後に実行を飛ばすには、cycle 文を使う。
+do構造名
+do構造名を使うことで、多重ループにおいて任意のloopから抜けさせる
+ことができる。do構造名は下のloop1,loop2で、do 文とenddo文の両方に
+付ける必要がある。
+loop1: do j=1,3
+loop2: do i=1,3
+if (i==2) exit loop1
+enddo loop2
+enddo loop1
+配列に対する動的メモリー割り当てallocatable,allocate,deallocate
+宣言部で、
+real x1(:,:),y1(:,:)
+allocatable :: x1,y1
+real, allocatable :: x2(:,:),y2(:,:)
+real, allocatable(:,:) :: x2,y2
+と宣言して、動的にメモリーを確保する配列であることを明示する。実際のメモリーの確保は、allocate文で行う。
+n=2; m=3;
+allocate (x(n,m),y(n,m),stat=ier)
+if (ier/=0) then
+write(*,*) 'fail to allocate stat=',ier; stop
+endif
+などとする。メモリーを解放(allocateの反対)はdeallocate文で行う。
+deallocate (x,y,stat=ier)
+if (ier/=0) then
+write(*,*) 'fail to deallocate stat=',ier; stop
+endif
+allocate/deallocateの機能をうまく利用すると、作業配列をmainで宣言する必要が無いなどのメリットがある。
+しかしデバッグが困難になる場合もある。例えば、deallocateした後で、その配列を使用すると、'access violation' などのエラーが生じる。また、配列の大きさが実行時に定まるので、一般に配列の領域外参照を行っていることを、コンパイラが検出するのは困難であろう。
+したがって、allocate/deallocateの機能は便利ではあるが取り扱いには十分注意することが必要である。
+Module
+Fortran90ではModuleというものを使って,再利用なプログラムの部品をつくりやすくなっている.例えば,test.f90というメインプログラムと,それで利用されるmoduleであるpackage1.f90というファイルの中身が次のようになっているとする.大事なことは,main program で配列宣言すらしていなくても,moduleで宣言されている配列を使えるということである.moduleはまだあまり使いこなすにいたっていないが,非常に強力である.どの情報をmoduleの外とやりとりし,どの情報をmoduleの中だけで使うかは細かく決めることができる.
+!----- test.f90 の中身
+program test
+use package1
+call package1_ini(3)
+call package1_run
+end program
+!----- package1.f90 の中身
+module package1
+implicit none
+private                                ! private属性をdefaultに
+integer,save,allocatable::dim1(:)
+public :: package1_ini, package1_run ! 外部から使用可
+!
+contains
+subroutine package1_ini(nsz)              ! 初期化サブルーチン
+integer::ier,nsz
+allocate (dim1(nsz),stat=ier)
+if (ier/=0) then
+write(*,*) '*package1_ini* fail to allocate stat=',ier; stop
+endif
+dim1=1 !実際にはもっと複雑な初期値を与える.
+end subroutine package1_ini
+!
+subroutine package1_run()            ! 実行サブルーチン
+integer::ier
+write(*,*) dim1 !実際にはもっと複雑な処理をする.
+end subroutine package1_run
+!
+end module package1
+変数や配列の共有にmodule(common文は使用しない)
+複数のプログラム単位間で配列や変数を共有するのに,moduleを使うことができる(下の例参照).なお同様の機能はcommon文でも実現できるが,common文は解決困難なエラーの原因となりやすいので使用しないこと.
+module defpara
+real,parameter::undef=-1.e+10
+integer,parameter::nsz=2,msz=3
+real::dim(nsz,msz)
+end module defpara
+program test
+use defpara         ! use 文はimplicit文よりも前(要は一番前)
+implicit none       
+print *,undef 
+print *,dim
+print *,size(dim)
+print *,shape(dim)
+stop
+end program
+構造体 structure
+構造体とは,複数のデーターを一つの名前に集約するものである.例えば,名前と体重・身長のデータは次のようにまとめることができる.構造体を用いない場合は,name, weight, height という別々な配列を定義し,それが個人をあらわすデータであるということを,プログラムをする際に覚えておかなくてはならないが,structure を使うことで個人を表すデータであることが明示的になる.またサブルーチンなどへの引渡しでも,別々な配列を引き渡すのではなく,structure を渡せばよいので楽である.なお,structureの型宣言で,allocatable や大きさ引継ぎ配列(Character*(*)を含め)を使うことはできないので,配列要素がいくつまで使われるか不明な場合は,大きめに宣言しておくことになる.structureの宣言は原則としてmoduleで行うべきである.そこでこのドキュメントでは,構造体の解説をmoduleの解説の後にしている.
+module defstrct
+structure /bodydata/         !構造体の型の定義
+character(LEN=20):: name
+real:: height, weight
+end structure
+end module
+program test
+use defstrct                 !構造体の型が定義されているmoduleの利用を宣言
+integer,parameter::nsz=10
+record /bodydata/ bdata(nsz) !構造体の実体の定義
+bdata(1).name='hogehoge'     !構造体への代入
+bdata(1).height=160.
+bdata(1).weight=70.
+call test1(bdata,nsz)
+end program
+subroutine test1(bdata,nsz)
+use defstrct
+record /bodydata/ bdata(nsz) !構造体の型が定義されているmoduleの利用を宣言
+write(*,*) bdata(1)
+end subroutine
+上の例は構造体の基本を分かりやすくするために,単純な場合を示したので,ありがたみを実感できなかっただろう.可視化ソフトのGradsを使ったことがある人なら,そのctl file の情報を次のような構造体にまとめられると考えれば,ありがたみが実感できるかと思う.
+structure /gradsctl/
+character(LEN=256)::grdname,title,options,varname(100),varexpl(100)
+character(LEN=6)::xctl, yctl, zctl, tctl !'linear'か'levels'
+character(LEN=32)::tstrt,tstp
+real::undef
+integer::xsz,ysz,zsz,tsz,tstrtno,tstpno,vars,varz(100)
+integer::xdf(1000),ydf(1000),zdf(1000)
+end structure
+構造体 TYPE
+Structureと同様の機能を,TYPEを使っても実現できる.例えば,上の名前と身長・体重の例であれば,次のようになる.TYPEとSTRUCTUREとをどう使い分けるべきなのかは,よく分からない.TYPE であれば,intentを指定できるようだから,intentを指定したいのであれば,TYPEの方が良いようだ.STRUCTUREの実体の宣言であるrecord文ではintentは指定できなかったので.しかしSTRUCTUREにも何らかのメリットがなければ,それが用意されている理由が分からない.
+module defstrct
+type bodydata         !構造体の型の定義
+character(LEN=20):: name
+real:: height, weight
+end type bodydata
+end module
+program test
+use defstrct                 !構造体の型が定義されているmoduleの利用を宣言
+integer,parameter::nsz=10
+type(bodydata) :: bdata(nsz) !構造体の実体の定義
+bdata(1)%name='hogehoge'     !構造体への代入
+bdata(1)%height=160.
+bdata(1)%weight=70.
+call test1(bdata,nsz)
+end program
+subroutine test1(bdata,nsz)
+use defstrct
+type(bodydata),intent(in):: bdata(nsz) !構造体の型が定義されているmoduleの利用を宣言
+write(*,*) bdata(1)
+end subroutine
+デバック(Intel Fortran)
+debug option
+デバックをする場合には
+ifort -check -traceback xxxx.f90
+と,check option と traceback option をつけよう.check option は,実行時に様々なチェックを行うことを,traceback
+option はメッセージに行番号を示すことを意味する.
+segmentation fault に ulimit -s umlimited 
+Intel Fortran V8.xでは,それ以前のバージョンよりも多くの stack (メモリーの利用方法の一種)
+を使用する.このため,stack が足りなくなると,プログラム実行中にsegmentation
+fault や signal 11 というエラーを出して,プログラムが終了する.この場合,プログラムを走らせる前に,コマンド・ラインから,
+シェルがbashの場合は ulimit -s umlimited を,シェルがcshの場合は limit
+stacksize unlimited 実行して,スタックサイズを増やすと良い.
+segmentation fault そのほか
+segmentation fault エラーが出て,上の方法でスタックを増やしても状況が変わらないのであれば,たいていの場合はメモリーの領域外を参照しているなどのエラーである.まずエラーが出る場所を,サブルーチン⇒ループ⇒特定の場所,というように,print
+文を用いて絞り込んで行こう.つまり,怪しい行の前後にprint *,'A', print
+*,'B'などを置き,例えば,'A'だけが出力されるのなら,まさにそこが問題の場所だということが分かる.このように,問題を特定の行にまで絞りこめたら,原因を探るためにさらにprint文で情報を取得して,何が原因であるのかをよく考えよう.
+デバッグにプリプロセッサーを使おう
+新しく書いたプログラムはそのままでは普通は動かないので,デバッグが必要である.文法エラーは通常すぐ取れるので,デバッグの本体は,実行時エラーをどう取るかということになる.実行時エラーを取るには,プログラムの挙動を把握することが必要で,そのために特別な条件で出力させたりということを行う.このデバッグ用の計算は,通常デバッグが終われば不要となる.そういう作業を簡単にするのがプリプロセッサーで,intel
+fortran 自由形式の場合,拡張子がF90である場合に,プリプロセッサーを適用される.例えば,
+program test
+#ifdef debug
+print *,'debug print'
+#endif
+end 
+というプログラムでは,ifort -Ddebug test.F90 とすると,#ifdef debug ～ #endif の間が,コンパイラによって解釈され,この場合はそこにあるprint文が生きる.一方単に
+ifort test.F90とすると #ifdef debug ～ #endif の間はコンパイラによって無視される.なお,#は行頭から始まらなくてはならない.また,上の例では,debugが定義されているかどうか(ifdef)によってコンパイラの解釈が変わったが,プリプロセッサに特定の値を渡すこともできる.例えば,
+program test
+#if debug==1
+print *,'debug is 1'
+#endif
+#if debug==2
+print *,'debug is 2'
+#endif
+end 
+に対して,ifort -Ddebug=1 test.F90とすれば上の#if文が,debugに2を指定すれば下の#if文がコンパイラによって解釈される.また愛用のプリプロセッサーの使用法は,test用のmainを#ifdef
+～ #endifで囲ってしまうことである.ちょっと複雑なプログラムだと,部品の一つ一つをテストしながら組んで行くことになる.部品それぞれをテストするのに,その部品にtest用のmain
+program を付けて試すのが,効率が良い.このテスト用mainは,完成した部品には無いことになってないと困る.なぜなら,mainはリンクするプログラム中に一つしか許容されないからである.そこで,mainを#ifdef
+debug～ #endifの中に入れてしまえば,debugを指定すればそのmainが利用でき,debugを指定しなければmainはなかったことになるのである.とっても便利!
+てこずったエラー
+read(cbuf,*,err=99) cstring, noとして,数値がよみこめなかったら,エラーに行くようにしておいたら,cbuf の中身が数値でなくても,数値として読めてしまう場合があった.対処法⇒数値として読めても,物理的に適正な範囲に収まっているかどうかをチェック. 
+Digital Visual Fortran V.5 (win)で where 文を大きな配列に使うと,segmentation error となることがある.対処法⇒where文の利用には気をつける. 
+Digital Visual Fortran V.5 (win)で大きな直接探査ファイル(access=direct)を使うと,正常にアクセスできるバイト数が整数で表現される範囲に限定される.Dec Fortran (for alpha)ではこういう問題はなかった.対処法⇒form='binary'を使う.
+プログラム書法(programing style)
+良いプログラミングスタイルを採用することで、プログラムのわかりやすさ(可読性、readability)を向上させ、メインテナンスの手間と間違いを減らすことができる。結果として、早く研究を進めることができる。研究の速さは特に、国際的な競争の激しい分野では非常に重要である。
+基本的に心がけることは以下の 4 点である.
+わかりやすく(readability) 
+高速化(必要があれば)
+最低必要なコメントをつける(文字コードの違いによる不都合を避けるために,英語が望ましい) 
+メモリーの使用量は自分の使っているシステムの限界に近い場合は気を付ける。 
+より具体的に注意するべきことは次の通り
+Goto 文は決して使用しない 
+主program, subroutine, if then block, where block, select case block, do loop, while loop 内では2文字分字下げをする。字下げをしていないプログラムは他人に見てもらえないし,頼まれた方も字下げしてから見るからまず字下げしてというべきである.例えば,次のようね.
+program main
+integer,parameter::nmx=10
+integer::n
+do n=1,10
+if (
+enddo
+end program
+文番号は使わない.復習:loop から抜けるgoto 文番号はexit文.文番号が付くfomrat文は使わず,write/read文に直接書式を書く. 
+common は使わない.moduleを使う.
+継続行の&は行末だけではなく,行頭にも付ける. 
+コメントには!を使って,*やcは使わない.!を使う. subroutine に引き渡される変数に intent(in), intent(out), intent(inout)の属性を付ける.また,implicit
+noneを使う. 
+複数のプログラムで使う subroutine はなるべく、本体のプログラム とは切り離したファイルにして,微妙にちがう
+subroutineの増殖を防ぐ。なお,サブルーチンにする場合は,繰り返し作業を行う場合である。特に論理的に独立性の高い作業はサブルーチンにする.また,関連subroutine/functionを集めて,module
+にまとめる. 共通の作業をするsubroutineの入出力仕様が変化する場合には、 version 管理を行う。例えば以下のようにする call sub1(, , ,'ver1') subroutine sub1(, , ,cver) character cver*4 if (cver.ne.'ver1') then  print *,'cver=',cver,' is not ver1'  stop endif
+ありそうな問題は,それが生じたらエラーメッセージを出して止まるようにする.このエラーメッセージは止まった簡単な理由と,必ずどのサブルーチンで止まっているのかが分かるようにする.例えば,
+write(*,*) '*sub1* im is zero',stop
+参考資料
+気象庁でのFortran90 コーディングルール
+上のコーディングルールで禁じている,subroutine渡し時の配列形状の変更は本研究室では行ってよい.データ解析では,空間が何次元であっても,空間方向と時間方向の2方向のみが本質的な違いを持つ場合が多い.このような処理を容易にするために,dim(im,jm,km,tsz)とx,y,z,t配列を読み込んて厚さや緯度に応じた重み付けをした後に,EOF解析などでは,dm(im*jm*km,tsz)の配列とすることは実用上よくある.
+Digital Fortran 和文オンラインドキュメント(リンク切れ)
+

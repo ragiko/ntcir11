@@ -1,0 +1,3 @@
+
+<input type="image" src="//image.orange-book.com/web/images/navi/login/lbl_login.png" onclick="if(typeof(submitformsubmitted) == 'undefined'){$(this).parents('form:first').attr('action','https://order.orange-book.com/admin/common/obwcm04010/quicklogin/wait_lock:1?sid=32ge1k8n3p0148k1511hileqk2');changeAllEnable();$(this).parents('form:first').submit();$('*').css('cursor','wait');$.blockUI({message:'
+リス(株)の取り扱い商品|オレンジブック.Com - 工場・作業現場のプロツール総合サイト

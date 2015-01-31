@@ -1,0 +1,65 @@
+
+正規表現 (regular expression) は特別な文字列(すなわち、文字の集合)で、他の文字列中の文字のパターンにマッチするという性質を持っています。Microsummary generator は、正規表現を用いて、generator がどのように Microsummary を生成するかを知っているページを特定します。その正規表現は、そのページの URL にマッチするパターンです。
+このチュートリアルでは、URL にマッチする正規表現をどのように作成するべきかを eBay のオークションアイテムのページを例にして説明します。チュートリアルを最後まで読むことで、あなたは正規表現についての基本を知り、URL にマッチする正規表現の作成方法を理解することになるでしょう。
+正規表現の詳細なドキュメントについては、JavaScript/Reference:Global_Objects:RegExp を参照してください。Microsummary generator の作成方法を学ぶには、Creating a Microsummaryを参照してください。
+URL 入門
+eBay におけるオークションアイテムのページの URL は、他の多くのサイトと同様に、たいてい "http://" から始まり、ドメイン名、ファイルパス、そして、いくつかのクエリパラメータを含んでいます。以下に、eBay におけるオークションアイテムのページのURLを示します。
+http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=280018439106
+この URL では、ドメイン名は "cgi.ebay.com" 、ファイルパスは "/ws/eBayISAPI.dll" 、クエリパラメータは "?ViewItem&item=280018439106" です。
+eBay URL にマッチさせる方法
+この URL を正規表現でマッチさせるには、URL の文字にマッチする正規表現を記述する必要があります。ほとんどの場合、URL の文字と同じ文字を正規表現として記述することができます。例えば、以下の正規表現は ～見た目通りに～ URL の最初にマッチします。
+http://
+しかし、いくつかの文字は正規表現において特別な性質を持っています。例えば、ピリオド (.) はどんな文字にもマッチし、【訳注: 厳密にいうと、改行文字にはマッチしません。】ピリオドとそれに続くアスタリスク (.*) はどんな文字の組み合わせにもマッチします。そのような文字が URL に現れて、それらを正規表現にマッチさせたいときは、それらの文字の前にバックスラッシュ (\) をつけてそれらをエスケープしなければなりません。
+ここに、今回の例の URL にマッチする正規表現を示します。
+http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem&item=280018439106
+それはほとんど URL と同じに見えます。唯一の違いは、正規表現において特別な意味を持っているピリオドとクエスチョンマークの前にバックスラッシュがあることです。
+URL の最初からマッチさせる方法
+この表現はその URL にマッチする一方で、その URL をクエリパラメータに含む URL にもマッチします。例えば、
+http://www.example.com/redirect.php?url=http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=280018439106
+それは恐らく期待されるものではないでしょう。なぜなら、今回の例の URL を含む URL は恐らくオークションアイテムのページそのものではないだろうからです。作成中の正規表現を今回の例の URL で始まる URL に制限するには、その正規表現の前にキャレット (^) を記述します。
+^http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem&item=280018439106
+キャレットが正規表現の最初の文字であるとき、その正規表現がマッチするべき文字列は、先頭になければなりません。今、作成中の正規表現の前にキャレットを置いたので、それは最初から例の URL のように見える URL にしか正しくマッチしないでしょう。
+複数の URL にマッチさせる方法
+しかし、この表現はまだ単一のオークションアイテムのページの URL にマッチするだけです。それは他のどんなオークションアイテムにもマッチしないでしょう。これを他のアイテムにもマッチさせるには、特定のアイテムにマッチするユニークな部分を削除しなければなりません。それによって、全てのアイテムに共通する部分だけを残しておくのです。
+どの部分がユニークなもので、どの部分が共通なものなのかを見分けるには、他のアイテムのページの URL をいくつか見てください。
+http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=130017517168
+http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=290019763032
+http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=170019463424
+これらの例に基づくと、ユニークな部分は URL の最後のアイテムナンバーであり、そして、他の全ての部分は全ての URL に共通しているように見えます。よって、アイテムナンバーを削除し、下記の正規表現を残します。
+^http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem&item=
+クエリパラメータのバリエーションに対応する方法
+今、この正規表現は 4 つの例の URL 全てにマッチしています。それは恐らく他のオークションアイテムの URL ページにもマッチするでしょう。しかし、それをより完璧に近づけるには、クエリパラメータの考えられ得るバリエーションに対応するべきです。
+名前付きのクエリパラメータは <name>=<value> という形の文字列です。その <name> と <value> は任意の文字列です。例に挙げた URL では、"item=280018439106" が唯一のそのようなパラメータです。しかし、 URL はアンパサンド (&) によって区切られる複数の名前付きのパラメータを含むことができます。そのパラメータはどんな順番でも現れます。ですから、"item" パラメータの順番は必然的のようにさえ思われますが、それは "ViewItem" の隣にはきちんと現れないかもしれません。
+例えば、以下は、同じオークションアイテムの等しく妥当な URL です。
+http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&foo=bar&item=170019463424
+クエリパラメータのこれらのバリエーションに対応するには、"ViewItem&" と "item=" の間にピリオドとそれに続いたアスタリスク (.*) を挿入します。そうすることによって、この 2 つの文字列の間に現れるどんな文字列にもマッチするようになります。
+^http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem&.*item=
+ピリオドとそれに続いたアスタリスクは、どんな文字列の組み合わせにもマッチします。文字列が全く含まれていなくてもマッチするので、もし、"ViewItem&" と "item=" がお互いに隣り合っていても(今回の例の URL のように)、それらの間に文字列があるときと同じようにきちんとマッチします。
+もう 1 つの eBay URL にマッチさせる方法
+現段階の正規表現は出現順に関わらない複数のクエリパラメータを含むオークションアイテム URL にマッチします。しかし、eBay は、いくつかのケース(例:検索結果のページ)において、異なった形の URL を使っています。同じアイテムを示す異なった形の URL の例を挙げます。
+http://cgi.ebay.com/Mozilla-Firefox-logo-1-inch-pin-badge-button-browser_W0QQitemZ280018439106QQihZ018QQcategoryZ2036QQcmdZViewItem
+これらの URL に対応するために、2 つ目の正規表現を作成することができます。前と同じように、URL をユニークな部分と共通の部分に区別するべきです。
+この形のいくつかの他の URL を示します。
+http://cgi.ebay.com/Firefox-2002-DVD_W0QQitemZ130017517168QQihZ003QQcategoryZ617QQcmdZViewItem
+http://cgi.ebay.com/AHM-HO-SCALE-FIREFOX-TANK-CAR_W0QQitemZ290019763032QQihZ019QQcategoryZ19130QQcmdZViewItem
+http://cgi.ebay.com/Inuyasha-anime-pin-of-Kirara-Kilala-firefox_W0QQitemZ170019463424QQihZ007QQcategoryZ39557QQcmdZViewItem
+これらの例に基づくと、URL は全て "http://cgi.ebay.com/" で始まり、 "QQitemZ" という文字列を含み、その後にアイテムナンバーが続き、そして、"QQcmdZViewItem" という文字列で終わっています。よって、これらの URL にマッチする正規表現を作成すると、以下のようになるでしょう。
+^http://cgi\.ebay\.com/.*QQitemZ.*QQcmdZViewItem
+この正規表現においては、.* を 2 回使っています。というのも、オークションアイテム URL の間に、変化する文字列が現れるかもしれない 2 つの場所があるからです。
+HTTPS URL の取り扱い
+注記: eBay はこれを使用していませんが、しばしば、ひとつのサイトでセキュアでない URL とセキュアな URL の両方のページが用意されるでしょう。例えば、以下の URL は両方とも同じページであると考えられます。
+http://www.example.com/index.html
+https://www.example.com/index.html
+ひとつの正規表現で両方のページをマッチさせるには、正規表現を"https" で始め、クエスチョンマーク (?) を文字列の後に追加します。例えば、
+^https?://www\.example\.com/index\.html
+クエスチョンマークは直前の文字の 0 回か 1 回の繰り返しにマッチします。ですから、その正規表現は "s" を含む文字列、"https" にマッチしますし、"s" を含まない文字列にもマッチします。
+終わりに
+もし、これらの正規表現の両方を eBay のオークションアイテムページのための microsummary generator に含めるならば、その generator は まさしく 全ての eBay のオークションアイテムページに(少なくとも、今まで見てきたページの全てに!)適用されるでしょう。
+generator は XML なので、小なり (<) 、大なり (>) 、そして、アンパサンド (&) のような特別な文字はそれらと同様の意味を持つ文字参照(順に、<, >, and &)に置き換えることによってエスケープする必要があることに注意してください。
+このチュートリアルで作成した正規表現で、エスケープしなければならない XML の特別な文字はアンパサンドだけです。 eBay のオークションアイテムページの <pages> セクションはこのようになります。
+<pages>
+<include>^http://cgi\.ebay\.com/.*QQitemZ.*QQcmdZViewItem</include>
+<include>^http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem&.*item=</include>
+</pages>
+これらの正規表現が動作するか確かめたいときは、 eBay のオークションアイテムの microsummary generator が page of example generators からインストール可能です。
+microsummary generator のための正規表現を作成する | MDN

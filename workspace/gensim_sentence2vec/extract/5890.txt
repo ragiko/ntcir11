@@ -1,0 +1,2 @@
+static posfreq mostFrequent(uInt gramLen, const std::string & str, const std::vector<uInt> & weights);
+

@@ -1,0 +1,9 @@
+(Windows 2003のみ) Web Server 6.1 SP6で、lganalyz.exeアプリケーション・エラーによりレポート生成が失敗します。
+回避策:
+Webサーバー・マシンにログインします。
+WSinstall\bin\https\httpadmin\binに移動します。
+flexanlg utilコマンドを実行して、レポートを取得します(例: C:/Sun/WEBSER~1.1/extras/flexanlg/flexanlg -F -n jwsoffice -x -i C:/Sun/WEBSER~1.1/HTTPS-~2/logs/access -c hnrfeuok -t s5m5h10 -l c+5h5 -p ctl)
+注意:
+上記のコマンドはひと続きの行で入力してください。
+jwsofficeを、使用しているホスト名またはIPアドレスに置き換えます。出力をHTMLファイルにエクスポートし、ブラウザを使用してそれを表示することもできます。flexanlgユーティリティの詳細は、次を参照してください: Sun Java System Web Server 6.1 SP12管理者ガイド。
+既知の問題点

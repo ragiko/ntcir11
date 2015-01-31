@@ -1,0 +1,188 @@
+Eclipselinkで自動作成されるテーブルのカラムの並び順をなんとかしたい。			java, jpa |   			
+ddl-generation | EclipseLink 2.5.x Java Persistence API (JPA) Extensions Reference
+Eclipselinkの機能で、最初のDBアクセス時、エンティティの内容から、テーブルを作成してくれる機能があります。*1 なのですが、これで作られるテーブルのカラム、並び順が(ほぼ)ランダムなんです…。*2
+エンティティの抽象基底クラス AbstractUpdatableEntity 
+/** 更新可能entityの抽象クラス */
+@MappedSuperclass
+public abstract class AbstractUpdatableEntity implements Serializable {
+private static final long serialVersionUID = 1L;
+/** ID */
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+public Long id;
+/** 変更時間 */
+@Column(nullable = false)
+@Temporal(TemporalType.TIMESTAMP)
+public Date modified;
+/** 作成時間 */
+@Column(updatable = false, nullable = false)
+@Temporal(TemporalType.TIMESTAMP)
+public Date created;
+@Override
+public String toString() {
+return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+}
+}
+実装クラス Account
+/** アカウント */
+@Entity
+@Table(indexes = { @Index(columnList = "LOGINNAME"), @Index(columnList = "MAIL"), @Index(columnList = "STATUS") })
+public class Account extends AbstractUpdatableEntity {
+private static final long serialVersionUID = 1L;
+/** 名前最大長 */
+public static final int NAME_LENGTH_MAX = 32;
+/** メールアドレス最大長 */
+public static final int MAIL_LENGTH_MAX = 64;
+/** アカウント名最大長 */
+public static final int LOGIN_NAME_LENGTH_MAX = 64;
+// -------------------------------------------------- [field]
+/** 社員番号 */
+@Column(nullable = false, unique = true)
+public Integer number;
+/** 姓 */
+@Column(length = NAME_LENGTH_MAX, nullable = false)
+public String lastName;
+/** 名 */
+@Column(length = NAME_LENGTH_MAX, nullable = false)
+public String firstName;
+/** ログイン用アカウント名 */
+@Column(length = LOGIN_NAME_LENGTH_MAX, nullable = false)
+public String loginName;
+/** メールアドレス */
+@Column(length = MAIL_LENGTH_MAX, nullable = false)
+public String mail;
+/** アカウント状態 */
+@Column(length = 8, nullable = false)
+@Enumerated(EnumType.STRING)
+public AccountStatusType status;
+@ManyToOne
+public Department department;
+/** 権限グループ */
+@ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
+@JoinTable(name = "ACCOUNT_AUTHORITY", joinColumns = @JoinColumn(name = "ACCOUNT_ID"), inverseJoinColumns = @JoinColumn(name = "AUTHORITY_ID"))
+public List<Authority> authorities;
+// -------------------------------------------------- [inner class]
+/** アカウントの状態 */
+public static enum AccountStatusType {
+ACTIVE, SUSPENDED, RETIRED;
+}
+}
+persistence.xml
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
+<persistence-unit name="dbsetting" transaction-type="RESOURCE_LOCAL">
+<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+<class>test.entity.Account</class>
+<class>test.entity.Admin</class>
+<class>test.entity.Authority</class>
+<class>test.entity.Department</class>
+<properties>
+<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/testdb" />
+<property name="javax.persistence.jdbc.user" value="user" />
+<property name="javax.persistence.jdbc.password" value="xxxxxx" />
+<!-- DDL Generate -->
+<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+<property name="eclipselink.application-location" value="ddl" />
+<property name="eclipselink.create-ddl-jdbc-file-name" value="createdb.sql" />
+<property name="eclipselink.drop-ddl-jdbc-file-name" value="dropdb.sql" />
+<property name="eclipselink.ddl-generation.output-mode" value="both" />
+</properties>
+</persistence-unit>
+</persistence>
+上記で作られた、accountテーブルのcreate文
+CREATE TABLE `account` (
+`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+`CREATED` datetime NOT NULL,
+`FIRSTNAME` varchar(32) NOT NULL,
+`LASTNAME` varchar(32) NOT NULL,
+`LOGINNAME` varchar(64) NOT NULL,
+`MAIL` varchar(64) NOT NULL,
+`MODIFIED` datetime NOT NULL,
+`NUMBER` int(11) NOT NULL,
+`STATUS` varchar(8) NOT NULL,
+`DEPARTMENT_ID` bigint(20) DEFAULT NULL,
+PRIMARY KEY (`ID`),
+UNIQUE KEY `NUMBER` (`NUMBER`),
+KEY `INDEX_ACCOUNT_LOGINNAME` (`LOGINNAME`),
+KEY `INDEX_ACCOUNT_MAIL` (`MAIL`),
+KEY `INDEX_ACCOUNT_STATUS` (`STATUS`),
+KEY `FK_ACCOUNT_DEPARTMENT_ID` (`DEPARTMENT_ID`),
+CONSTRAINT `FK_ACCOUNT_DEPARTMENT_ID` FOREIGN KEY (`DEPARTMENT_ID`) REFERENCES `department` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+見事にバラバラな並びですねー…。
+java ee - JPA and order of columns in the database - Stack Overflow
+public void MyCustomizer implements DescriptorCustomizer {
+public void customize(ClassDescriptor descriptor) {
+descriptor.getMappingForAttributeName("name").setWeight(2);
+}
+}
+StackOverflowを調べて、上記記述に辿り着きました。 DescriptorCustomizer実装クラスを作り、ClassDescriptorクラスから、カラム情報DatabaseMappingを取り出して、それに重み付けを行う、と。
+でも、実際それだけじゃダメで、ClassDescriptorの中のshouldOrderMappingsをtrueに設定しないと、カラム情報のソートが行われないのです。*3
+実際の重み付け実装クラス OrderCustomizer
+/** テーブルのカラム並び順カスタマイズ */
+public class OrderCustomizer implements DescriptorCustomizer {
+@Override
+public void customize(ClassDescriptor descriptor) throws Exception {
+descriptor.setShouldOrderMappings(true);
+List<DatabaseMapping> mappings = descriptor.getMappings();
+Field[] fieldArray = descriptor.getJavaClass().getFields();
+addWeight(fieldArray, mappings);
+}
+/** 
+* データベースのカラムに、フィールドと同じ順番の重みを付けます
+* 
+* @param fieldArray
+* @param mappings
+*/
+protected void addWeight(Field[] fieldArray, List<DatabaseMapping> mappings) {
+Map<String, Integer> fieldOrderMap = toFieldOrderMap(fieldArray);
+for (DatabaseMapping mapping : mappings) {
+String key = mapping.getAttributeName().toUpperCase();
+int weight = Objects.fromNullable(fieldOrderMap.get(key)).or(Integer.MAX_VALUE);
+mapping.setWeight(weight);
+}
+}
+/** 
+* フィールド名をキー、順番が値の連想配列を返します
+* 
+* @param fieldArray フィールドの配列
+* @return
+*/
+protected Map<String, Integer> toFieldOrderMap(final Field[] fieldArray) {
+Map<String, Integer> map = new HashMap<>();
+for (int i = 0; i < fieldArray.length; i++) {
+Field field = fieldArray[i];
+String fieldKey = field.getName().toUpperCase();
+map.put(fieldKey, i);
+}
+return map;
+}
+}
+上記クラスを、@Customizerでエンティティに付与すればいいのですが*4、親クラスに設定しても効くみたいなので、自分は、抽象基底クラスに付与しています。
+/** 更新可能entityの抽象クラス */
+@MappedSuperclass
+@Customizer(OrderCustomizer.class)
+public abstract class AbstractUpdatableEntity implements Serializable {
+上記のようにして、作られた、accountテーブルのcreate文
+CREATE TABLE `account` (
+`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+`NUMBER` int(11) NOT NULL,
+`LASTNAME` varchar(32) NOT NULL,
+`FIRSTNAME` varchar(32) NOT NULL,
+`LOGINNAME` varchar(64) NOT NULL,
+`MAIL` varchar(64) NOT NULL,
+`STATUS` varchar(8) NOT NULL,
+`DEPARTMENT_ID` bigint(20) DEFAULT NULL,
+`MODIFIED` datetime NOT NULL,
+`CREATED` datetime NOT NULL,
+PRIMARY KEY (`ID`),
+UNIQUE KEY `NUMBER` (`NUMBER`),
+KEY `INDEX_ACCOUNT_LOGINNAME` (`LOGINNAME`),
+KEY `INDEX_ACCOUNT_MAIL` (`MAIL`),
+KEY `INDEX_ACCOUNT_STATUS` (`STATUS`),
+KEY `FK_ACCOUNT_DEPARTMENT_ID` (`DEPARTMENT_ID`),
+CONSTRAINT `FK_ACCOUNT_DEPARTMENT_ID` FOREIGN KEY (`DEPARTMENT_ID`) REFERENCES `department` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+ある程度まともな並びになりましたねー…。
+Eclipselinkで自動作成されるテーブルのカラムの並び順をなんとかしたい。 - ひとり開発日記。 - プログラマの秘密のあれこれ

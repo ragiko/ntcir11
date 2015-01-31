@@ -1,0 +1,142 @@
+Stan Reference が分厚くて皆さんのやる気をそぎまくってる様ですね. そんな忙しい皆さんのためにStan Referenceを超要約してみました. これを理解できれば7割オッケーです.
+ベイズの定理
+ベイズの定理は次の通り
+\[
+f(\theta|Y) = \frac{f(Y|\theta)f(\theta)}{\int f(Y|\theta)f(\theta) d\theta}
+\] 分母は定数なので実際は \[
+f(\theta|Y) = \frac{1}{C}f(Y|\theta)f(\theta)
+\] と書くことができます.分子の情報だけで事後分布からのランダムサンプルを得る方法がMCMC法でした.
+ここで右辺の対数をとると \[
+\log f(Y|\theta) + \log f(\theta) - C^{\prime} \\
+= \sum_i \log f(y_i|\theta) + \log f(\theta) - C^\prime
+\] となります.ただし定数\(C\)の対数は依然として定数なのでそれを改めて\(C^\prime\)と書きました.
+Stanではこの\(y_i\)をdataブロックに\(\theta\)をparametersブロックに,\(\sum_i \log f(y_i|\theta) + \log f(\theta)\)をmodelブロックに書く事でモデルを表現します.
+increment_log_prob
+事前情報の無いコイントス問題をStanで書いてみましょう.なお差し当たっては簡単のためデータは直接モデルに書き込むことにします.
+library(rstan)
+## Loading required package: Rcpp
+## Loading required package: inline
+## 
+## Attaching package: 'inline'
+## 
+## The following object is masked from 'package:Rcpp':
+## 
+##     registerPlugin
+## 
+## rstan (Version 2.4.0, packaged: 2014-07-21 17:16:17 UTC, GitRev: c995bc8b9d67)
+stancode = "
+parameters{
+real<lower=0,upper=1> p;
+}
+model{
+real loglik;
+loglik <- 0;
+loglik <- loglik + uniform_log(p,0,1);
+loglik <- loglik + bernoulli_log(1,p); #1 means observation
+increment_log_prob(loglik);
+}
+"
+fit <- stan(model_code=stancode)
+hist(extract(fit)$p)
+うまく行ってますね.上記は観測値がただひとつでそれが\(1\)だった例です.
+Stanではincrement_log_probの引数にベイズの定理の右辺の分子の対数を渡すことで各パラメタの事後分布を得ます.
+同様に観測値の各点対数尤度を足し合わせることで学習させるデータを増やす事ができます.
+stancode = "
+parameters{
+real<lower=0,upper=1> p;
+}
+model{
+real loglik;
+loglik <- 0;
+loglik <- loglik + uniform_log(p,0,1);
+loglik <- loglik + bernoulli_log(1,p); #1st obs
+loglik <- loglik + bernoulli_log(0,p); #2nd obs
+loglik <- loglik + bernoulli_log(1,p); #3rd obs
+increment_log_prob(loglik);
+}
+"
+fit <- stan(model_code=stancode)
+hist(extract(fit)$p)
+これも上手く推定できているみたいです.でも毎回loglikという変数に再帰代入するこの書き方は若干冗長にも見えます.
+実は関数increment_log_probは繰り返し呼び出すことで,引数の累積和を用いて事後分布を推定してくれます.
+stancode = "
+parameters{
+real<lower=0,upper=1> p;
+}
+model{
+increment_log_prob(uniform_log(p,0,1)); #prior
+increment_log_prob(bernoulli_log(1,p)); #1st obs
+increment_log_prob(bernoulli_log(0,p)); #2nd obs
+increment_log_prob(bernoulli_log(1,p)); #3rd obs
+}
+"
+fit <- stan(model_code=stancode)
+hist(extract(fit)$p)
+前の例と同じ結果が得られました.
+sampling statement
+それでもまだ冗長です.もっとシンプルに書きたい.
+シンプルにするにはincrement_log_prob( uniform_log(p,0,1) )と同値な表現p ~ uniform(0,1) を用いるのがベストです.これをsampling statementと呼びます.書き換えてみると
+stancode = "
+parameters{
+real<lower=0,upper=1> p;
+}
+model{
+p ~ uniform(0,1); #prior
+1 ~ bernoulli(p); #1st obs
+0 ~ bernoulli(p); #2nd obs
+1 ~ bernoulli(p); #3rd obs
+}
+"
+fit <- stan(model_code=stancode)
+hist(extract(fit)$p)
+大分直感的になりました.increment_log_probの理解はとても重要ですが,普段はこのsampling statementを用いてモデルを記述していきます.
+初見でやりがちなエラー
+dat.list <- list(y=c(1,0,1),N=3)
+stancode = "
+data{
+int N;
+vector[N] y;
+}
+parameters{
+real<lower=0,upper=1> p;
+}
+model{
+p ~ uniform(0,1); # prior
+y ~ bernoulli(p); # y : 3-dimentional real vector
+}
+"
+fit <- stan(model_code=stancode,data=dat.list)
+## 
+## TRANSLATING MODEL 'stancode' FROM Stan CODE TO C++ CODE NOW.
+## Error: failed to parse Stan model 'stancode' with error message:
+## EXPECTATION FAILURE - DIAGNOSTIC(S) FROM PARSER:
+## 
+## no matches for function name="bernoulli_log"
+##     arg 0 type=vector
+##     arg 1 type=real
+## available function signatures for bernoulli_log:
+## 0.  bernoulli_log(int, real) : real
+## 1.  bernoulli_log(int, real[1]) : real
+## 2.  bernoulli_log(int, vector) : real
+## 3.  bernoulli_log(int, row vector) : real
+## 4.  bernoulli_log(int[1], real) : real
+## 5.  bernoulli_log(int[1], real[1]) : real
+## 6.  bernoulli_log(int[1], vector) : real
+## 7.  bernoulli_log(int[1], row vector) : real
+## unknown distribution=bernoulli
+## 
+## 
+## LOCATION OF PARSING ERROR (line = 11, position = 20):
+## 
+## PARSED:
+## 
+## model{
+##   p ~ uniform(0,1); # prior
+##   y ~ bernoulli(p);
+## 
+## EXPECTED: <eps> BUT FOUND: 
+## 
+##  # y : 3-dimentional real vector
+## }
+なんかエラーが出てきました.これはbernourlli(y,p)の第一引数が実数ではなくて整数を引数にとる事が原因だったみたいです.Stanでは実数と整数を厳密に使い分けるのでRからデータを渡す際には注意が必要です.ちなみに実数と整数はリテラルも別々に持っていてそれぞれ1.0,1と書きます.注意注意
+超要約 Stan Reference

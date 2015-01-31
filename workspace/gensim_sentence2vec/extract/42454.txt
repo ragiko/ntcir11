@@ -1,0 +1,16 @@
+オプション設定
+上記のサンプルはオプションを一切設定せず、デフォルトのままです。デフォルトのオプション設定では、ほとんどが英語表記になっていますので、日本人ユーザのために日本語表記に変える部分を中心に記載します。
+詳細は、(英語ですが)本家ページをご参照ください。 http://api.jqueryui.com/datepicker/
+ここでの設定値
+$('#Date').datepicker({
+dateFormat: 'yy/mm/dd (DD)',
+yearSuffix: '年',
+showMonthAfterYear: true,
+monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+dayNames: ['日', '月', '火', '水', '木', '金', '土'],
+dayNamesMin: ['日', '月', '火', '水', '木', '金', '土'],
+minDate: new Date(),
+maxDate: '+0d',
+hideIfNoPrevNext: true
+});
+jQuery Datepickerのデフォルト日付 | ENTEREAL/エンタリアル

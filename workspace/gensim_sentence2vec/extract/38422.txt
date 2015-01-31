@@ -1,0 +1,22 @@
+
+JyAM's PC Audio: Digital input can't act as a digital copy
+PCのディジタル録音はディジタルコピーじゃない
+MDで録音したAMラジオ放送をWAVもしくはMP3に変換しようと思い、
+ATRAC -> WAV, MP3の変換方法を模索したのが事の起こり。
+当初はNetMDドライヴの購入を検討したのだが、
+高価だったり付属ソフトにプロテクトがかかっていたりOpenMGの管理が厳密だったりでボツ。
+やはりS/PDIF入力でなんとかしようと方針転換。
+サウンドカードを購入して一件落着と思っていたら、
+WaveSpectraというソフトを知り泥沼(^^;
+以下、そのリポート。
+使用したハードウェア
+USB Audio ProcessorはONKYO SE-U55。
+サウンドカードはCMI8738-6CHチップを使用したS/PDIF入出力装備の3,000円程度の製品。
+エキスパート志向なやつ:) やはりエキスパート志向な製品だった:):)
+テストトーンCDを作成する
+コンピュータで計算して生成したトーンを納めたCD-Rを作成。
+右上のCD-Rがそれ。下のヤツは20年前に購入したテストトーンCD。
+これが今や、自宅のPCで簡単に作れちゃう(^^;
+トーン生成はefu氏のWaveGene v1.20で行った。efu氏に感謝。
+作成したトーン。
+JyAM's PC Audio: Digital input can't act as a digital copy

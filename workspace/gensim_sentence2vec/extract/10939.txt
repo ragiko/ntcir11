@@ -1,0 +1,78 @@
+
+山口県立大学 | 看護学部 | 中澤 港 | 疫学
+疫学第4回:標本抽出法/誤差とその制御
+テキスト第17章,第10章に該当する範囲。
+講義時に使ったプレゼンテーションは,OpenOffice.org Impress形式(13.8 KB),Microsoft Powerpoint 97/2000形式(39.9 KB),またはAdobe Acrobat Reader形式(141.8 KB)で参照可能です。
+1.標本抽出法
+標本抽出法とは?
+疫学調査で得られた結果を適用したい集団(介入研究でいう参照集団にあたる。統計的に考えるならば母集団)の全数を調査する悉皆調査(全数調査ともいう)は実施されないことが多い。その代わりに,集団全体を代表する適当なサイズの標本(サンプル)をうまく選んで標本調査を行う。如何にうまく集団全体を代表するような標本を選ぶかという目的で考案された方法が標本抽出法である。
+なぜ標本抽出を行うのか?
+悉皆調査には欠点がある。
+費用と時間がかかる。調査研究費は無限でないし,無駄に時間をかけるべきではない。
+集団全員から合意を得るのは難しいし,負担が大きい。必要のない負担はかけるべきでない。
+1人当たりの調査精度が落ちる。
+集団には多様性がある(完全に均質な対象なら1例でいい)。
+それゆえ,「代表性をもった部分」を標本として全体から抽出する作業が必要。標本が母集団の性質を反映していることを期待して,標本の性質から母集団の性質を推測する「統計学的推測(statistical inference)」を行う。
+記述疫学では母集団がわからないと無意味だが,分析疫学では人類に広く通用しそうな要因と結果の関係に関心がある場合が多く,必ずしも母集団が明確でない(母集団としては全人類を暗に仮定する)標本もありうる。
+どんな種類のサンプルがあるか?
+"A Dictionary of Epidemiology 4th Ed."によると,標本には次のような種類がある。
+地域サンプル(area sample):母集団の全数がわからないとき,全地域をグリッドなどでいくつかに区分し,各区域に番号を振って乱数で対象区域を選び出し,各区域から第2段階のサンプルを選ぶもの。
+集落サンプル(cluster sample):個人でなく集団を単位としたサンプル。
+鷲掴みサンプル(grab sample):便宜的サンプルともいう。非確率的サンプル。一般に代表性はない。
+確率サンプル(probability sample):すべての個人が既知の確率に従って選ばれるサンプル。時間的にも空間的にも母集団を代表する性質をもつ。
+標本抽出法のいろいろ(テキスト「疫学」表17.1参照)
+確率サンプリング:確率サンプルを抽出するには,まず母集団の構成員に番号をつけたリストを作成する。
+単純無作為抽出(simple random sampling):,乱数を使って標本として抽出する番号を決める。図17.3のようにしてもいいが,統計ソフトRでrank(runif(n))でも十分。
+系統抽出(systematic sampling):乱数を使って1人目の番号を決め,そこからは等間隔に抽出する。
+層別抽出(stratified sampling):層化抽出ともいう。母集団をいくつかの層に分け,各層から一定の割合で単純無作為抽出か系統抽出する。
+重複抽出:各層の個体数が不明なときは層別抽出できないので,まず単純無作為抽出して得られた標本を層別して各層の大きさを推定し,層別抽出しなおす。
+多段抽出(multistage sampling):県市町村世帯個人というふうに多段階に抽出。各段階は上のどれか。
+集束抽出(cluster sampling):多段抽出の1つ。集落抽出。集団を単位として抽出。選ばれた集団は全数調査。
+確率比例抽出(PPS):多段抽出の1つ。均質なブロックに分け,サイズに比例した確率でブロック抽出
+非確率サンプリング(統計的推測には使えない)
+割当サンプリング(quota sampling)=母集団をいくつかの群に分け,各群に何人かずつ標本を割り当てる。
+目的サンプリング=求めたい情報をもっている人からとる
+偶然サンプリング=行き当たりばったり
+雪玉サンプリング=キーインフォーマントに適当な人を挙げて貰う
+標本サイズの計算(テキスト「疫学」表17.2を参照)
+適当なサンプルサイズは,母集団の均質性,サブグループ数,母集団のパラメータ推定に求めたい正確さ,注目している現象の出現頻度,予算などで変わる(前回説明したように,処理群と対照群を比較するデザインなら,結果としてみる指標値に期待される差と有意水準(本当は差がないのに間違って差があるとしてしまう確率,通常5%),検出力(1から本当は差があるのに見逃してしまう確率を引いた値,通常80%か90%)から正規分布を使って計算できる。)。
+目的によって計算式が異なる(下記の例は有意水準5%,検出力90%の場合。検出力80%なら1.28のところが0.84となる)
+2つの集団の平均値の差を調べる場合:予測される標本平均がm1,
+m2,標本分散がd1,d2なら,標本サイズは
+2つの集団の罹患率の差を調べる場合:2つの集団で予測される罹患率がそれぞれr1,r2なら,標本サイズは
+2つの集団の比率の差を調べる場合:期待される比率をp1,p2とすると,標本サイズは
+2.誤差とその制御
+誤差とは?
+誤差=真値との差
+標本誤差と非標本誤差
+標本誤差=標本抽出の偶然変動に伴う母集団の真値との差(標本サイズが大きいほど小さい)
+非標本誤差=標本誤差以外の誤差(例えば不適切な標本抽出による誤差)
+ランダムな誤差と系統的な誤差
+ランダムな誤差=偶然誤差
+標本誤差はランダムな誤差である
+非標本誤差にはランダムな誤差も系統的な誤差もありうる。どちらか区別することが必要
+ランダムな誤差が小さい=精度(precision)が高い
+系統的な誤差=バイアス
+研究デザイン,データ収集,分析,レビュー,出版など,研究のさまざまな段階で起こりうる
+系統的な誤差が小さい=正確さ(accuracy)が高い
+バイアスとは?
+バイアス(bias)とは,一般に真値からの偏り,つまり系統的な誤差を指す。"A Dictionary of Epidemiology 4th Ed."によれば次の通り(括弧内は私訳,下線は中澤が付した)
+Deviation of results or inferences from the truth, or processes leading to such deviation.  Any trend in the collection, analysis, interpretation, publication, or review of data that can lead to conclusions that are systematically different from the truth.  Among the ways in which deviation from the truth can occur, are the following:【結果または推論の真実からのズレ,またはそのようなズレにつながる過程。データ収集,分析,解釈,出版,またはデータのレビューにおける傾向で,真実とは系統的に異なった結論につながりうるものすべて。真実からのズレが起こりうるやり方には,次のようなものがある:】
+1. Systematic (one-sided) variation of measurements from the true values (syn: systematic error)【1.真の値からの測定値の系統的な(片側に偏った)ばらつき。(同義語:系統誤差)】
+2. Variation of statistical summary measures (means, rates, measures of association, etc.) from their true values as a result of systematic variation of measurements, other flaws in data collection, or flaws in study design or analysis.【2.測定の系統的なばらつきやデータ収集におけるその他の欠陥,または研究デザインあるいは分析における欠陥の結果としての,統計的要約尺度(平均,率,関連性の尺度等)の真値からのばらつき。】
+3. Deviation of inferences from the truth as a result of flaws in study design, data collection, or the analysis or interpretation of results.【3.研究デザイン,データ収集,または分析や結果の解釈における欠陥の結果としての,真実からの推論のズレ】
+4. A tendency of procedures (in study design, data collection, analysis, interpretation, review, or publication) to yield results or conclusions that depart from the truth.【4.真実から離れた結果や結論を産み出す(研究デザイン,データ収集,分析,解釈,レビューまたは出版における)手続きの傾向】
+5. Prejudice leading to the conscious or unconscious selection of study procedures that depart from the truth in a particular direction or to one-sidedness in the interpretation of results.【5.特定の方向において真実とはかけ離れた研究手続きを意識的にせよ無意識にせよ選んでしまうことや,あるいは結果の解釈において片側に偏ってしまうことにつながる先入観,】
+The term bias does not necessarily carry an imputation of prejudice or other subjective factor, such as the experimenter's desire for a particular outcome.  This differs from conventional usage, in which bias refers to a partisan point of view.【バイアスという語は,必ずしも先入観あるいは特定の結果を実験者が望むといった他の主観的要因を意味しない。この点は,バイアスという語が党派的な視点で触れられるような保守的な用法とは異なっている。】
+バイアスの種類
+選択バイアス(selection bias):観察する集団が母集団を正しく代表していないときに起こる偏り。Neymanバイアス,Berksonバイアス,ケースコントロール研究での診断バイアス,非協力者バイアス・積極協力者バイアス・自己選択バイアス,ケースコントロール研究での発見兆候バイアスなど。
+情報バイアス(information bias):観察するときに得られる情報が正しくないために起こる偏り。思い出しバイアス(リコールバイアス),曝露疑いバイアス,家族情報バイアス,コホート研究での診断バイアス,コホート研究での発見兆候バイアスなど。
+交絡バイアス(confounding bias):分析疫学で起こる特殊な偏り。要因と疾病の両方と関連する交絡因子の存在によって起こる。例えば,飲酒と肺がんの関連をみる研究で,喫煙は飲酒とも肺がんとも関連するので交絡因子である。この場合,飲酒と肺がんに因果関係がなくても,層別解析あるいは多変量解析によって喫煙を制御しなければ関連があるように見える。
+バイアスの制御
+無作為化(randomization):介入研究において治療群(処理群)と対照群に交絡因子の偏りが起こらないように,対象となる母集団から2群(多群のこともある)を無作為に選び出す。その結果,介入以外の条件を均質化することができる。倫理面の配慮が必要(無作為化の場合に限らないが)。
+マッチング(matching):症例対照研究において交絡因子の条件が似るように対照群を選ぶこと。ペア単位のマッチング(対応のあるマッチング)と集団単位のマッチング(非対応のマッチング)があるが,可能なら前者が望ましい。
+層化(stratification):交絡因子のカテゴリ別に解析すること。解析段階での交絡の制御法の1つ。
+標準化(standardization):2つ以上の集団で頻度などの指標値を比較するときに,基準集団を定めて交絡因子の影響を調整する方法。直接法と間接法がある。層化と同様,解析段階での交絡の制御法の1つ。
+Correspondence to: minato@ypu.jp.
+リンクと引用について
+疫学第4回:標本抽出法/誤差とその制御

@@ -1,0 +1,53 @@
+
+下記リストは、ここから押さえておくべきポイントです。
+データの先頭と末尾にSYSEXの開始と終了の目印がある
+コマンドでデバイス側で実行するハンドラー関数を指定
+Firmata 仕様で定義されたコマンドを指定。この値を見てArduinoは処理を切り替える
+実は、johnny-fiveモジュールを使ってArduinoとシリアル通信を確立直後に、裏側でこの仕組みが動いています。具体的には、SYSEXの「CAPABILITY_QUERY(0x6B)」コマンドでピンの情報を取得した後、「ready」イベントを発火させています。
+SYSEXはどう使うべきなのか
+ここで、Arduinoに任意の処理を実行させるために2つアプローチが考えられます。
+しかしながら、Node.jsでArduinoを操作する場合、執筆時点では後者を選ばざるを得ません。理由はjohnny-fiveが依存しているnpmモジュール「firmata」が知らないコマンドを伝達しない実装になっているためです。
+よって、STRING_DATAを使いつつ、送信した文字列で処理を切り替えるアプローチを取ります。johnny-fiveからSTRING_DATAコマンドを送信する方法は次回に解説します。今回は、STRING_DATAコマンドから呼び出される関数を実装します。
+回路作成
+前回と同様、ブレッドボードを使わず、パーツをつなぐだけです。赤外線センサーをデジタルピンの11番に、赤外線LEDをデジタルピンの12番に結線します。
+JavaScriptで赤外線情報を読み取る
+前述の通り、JavaScriptではマイクロ秒単位でON/OFFの変化を判定することが困難なので、赤外線情報を読み取る作業は、スケッチとArduino IDEの「シリアルモニタ」機能で完結させます。ここで得たON/OFF情報は、後の赤外線信号を発生させるときに、そのまま利用します。
+読み取り用スケッチ
+読み取り用スケッチは次のようになります。
+#define IR_RECV_PIN      11
+#define IR_TIMEOUT_USEC  100000
+void setup()
+{
+Serial.begin(57600);
+pinMode(IR_RECV_PIN, INPUT);
+}
+void loop()
+{
+static int           previousBit      = HIGH;
+int                  currentBit       = digitalRead(IR_RECV_PIN);
+static unsigned long previousTimeUSec = 0;
+unsigned long        currentTimeUSec  = 0;
+unsigned long        elapsedTimeUSec  = 0;
+if ( currentBit == previousBit ) {
+return;
+}
+currentTimeUSec = micros();
+elapsedTimeUSec = currentTimeUSec - previousTimeUSec;
+if (elapsedTimeUSec < IR_TIMEOUT_USEC) {
+Serial.print(elapsedTimeUSec);
+Serial.print(", ");
+} else {
+Serial.println("");
+}
+// update
+previousBit      = currentBit;
+previousTimeUSec = currentTimeUSec;
+}
+ヘッダー部分
+1行目で赤外線センサーを接続するピンを指定します。今回はデジタル11番ピンです。2行目は、1回目の信号と2回目の信号を区別するための時間です。OFF状態を100ミリ秒以上継続する信号がなかったので、経験則でこの値を指定しています。
+setup関数
+Arduinoボードでスケッチを実行したとき、最初に1回だけ実行される関数です。シリアル通信の転送速度を指定し、利用するピンを読み取りモードに設定しています。
+loop関数
+メインの処理をここに記述します。繰り返し実行される関数です。実行するたびに赤外線センサーの値を読み取ります。loop関数が前回実行された時と今回とで赤外線のON/OFF状態に変化があったのかをチェックし、変化があったときに継続時間を出力しています。
+このスケッチを動かして、赤外線の情報を出力してみましょう。プログラムを起動するまで手順は、以前StandardFirmataをアップロードしたときと同じです。Arduino IDEで左上の「検証」ボタンを押してコンパイルした後、「マイコンボードに書き込む」ボタンを押します。
+Arduinoで始めるWeb技術者のためのIoT入門(4):JavaScriptで家電を操作するための赤外線信号の基礎知識 (2/3) - @IT

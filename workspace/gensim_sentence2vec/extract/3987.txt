@@ -1,0 +1,46 @@
+
+PostgreSQL integer等の数値項目をあいまい検索(LIKE検索)する
+これまでinteger等の数値項目を
+あいまい検索(Like検索)する機会がなかったのですが、
+「数値の頭3桁で検索したい」というような依頼がありました。
+普通にLIKEで検索すれば良いかと思ったのですが、エラーが発生しました。
+以下のエラーになります。
+「
+ERROR:  operator does not exist: integer ~~ unknown
+LINE 6: test_id like ‘%3169%’
+^
+HINT:  No operator matches the given name and argument type(s). You might need to add explicit type casts.
+」
+エラーを発生させない為に型変換を行います。
+integer等の数値項目はcast関数でTEXT型に変換してからあいまい検索(LIKE検索)する
+PostgreSQLでinteger等の数値項目をあいまい検索(LIKE検索)するには、
+型の変換が必要です。
+型の変換はcast関数を用いて行います。cast関数でTEXT型に変換します。
+integer等の数値項目をあいまい検索(LIKE検索)するとエラーが発生する
+select test_id from test_table where test_id like '%3169%' limit 10;
+結果:
+ERROR:  operator does not exist: integer ~~ unknown
+LINE 6: test_id like '%3169%'
+^
+HINT:  No operator matches the given name and argument type(s). You might need to add explicit type casts.
+例1.integer等の数値項目をcast関数でTEXT型に変換してから全文一致であいまい検索(LIKE検索)する
+select test_id from test_table
+where cast(test_id as text) like '%3169%' limit 10;
+結果:
+13169
+31692
+31693
+31694
+integer等の数値項目をcast関数でTEXT型に変換してから前方一致であいまい検索(LIKE検索)する
+前方一致の場合は頭の「%」を除きます。
+select test_id from test_table
+where cast(test_id as text) like '3169%' limit 10;
+結果:
+31692
+31693
+31694
+PostgreSQLの計算処理の負荷はかかるとは思いますが、結構便利です。
+そこそこデータが入っている場合、頭3桁で検索したいというような依頼はあると思います。
+PostgreSQL自体にも関数がたくさんあり、有用な関数もたくさんあります。
+プログラムで処理すべきかPostgreSQLの関数で処理すべきか、使い分けが必要ですが、利用していきたい所です。
+PostgreSQL integer等の数値項目をあいまい検索(LIKE検索)する | RoguMe

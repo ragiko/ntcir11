@@ -1,0 +1,5 @@
+オプションで指定する。
+vim -o aaa.txt bbb.txt 横分割
+vim -O aaa.txt bbb.txt 縦分割
+vim -p aaa.txt bbb.txt  タブで開く
+[vim] 起動時に複数ファイルを分割・タブで開く方法 - Qiita

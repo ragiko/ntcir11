@@ -1,0 +1,19 @@
+2.2 Oracle Database 11gの構成
+この項に記載されているベスト・プラクティスは、『Oracle Database高可用性概要』で説明されている、次のOracle Databaseリリース11gアーキテクチャに適用されます。
+Oracle Database
+Oracleクラスタウェアを使用したOracle Database
+Oracle Real Application Clusters(Oracle RAC)を使用したOracle Database
+拡張クラスタ上のOracle RACを使用したOracle Database
+Oracle Data Guardを使用したOracle Database
+OracleクラスタウェアとData Guardを使用したOracle Database
+Oracle RACとOracle Data Guardを使用したOracle Database
+Oracle Streamsを使用したOracle Database
+Oracle Data Guardの構成では、この項の推奨事項は、プライマリ・データベースとスタンバイ・データベースのどちらでも同じです。停止時間の削減または回避、破損リスクの低減、およびリカバリ・パフォーマンスの向上を図るには、これらのプラクティスを採用する必要があります。
+この項には、データベースを構成するための一般的なベスト・プラクティスが含まれます。
+高可用性および高速リカバリのための推奨事項
+管理性向上のための推奨事項
+2.2.1.1 ARCHIVELOGモードの有効化
+ARCHIVELOGモードでは、オンラインでのデータベース・バックアップが可能です。リストアされている時点より後の時点にデータベースをリカバリするには、このモードで運用する必要があります。Oracle Data Guardやフラッシュバック・データベースなどの機能を使用する場合、本番データベースはARCHIVELOGモードで実行する必要があります。
+2.2.1.2 REDOログ・ファイルおよびグループの適切なサイズ構成
+Oracleログの多重化を使用して、データ領域およびフラッシュ・リカバリ領域の各REDOグループに複数のREDOログ・メンバーを作成します。これにより、REDOログに関連する障害(いずれかのメンバーのディスク障害やI/O障害、またはオペレーティング・システム・コマンドにより間違ってメンバーを削除するといったユーザー・エラー)からデータを保護できます。少なくとも1つのREDOログ・メンバーが使用できれば、インスタンスは継続して動作できます。
+Oracle Database 11gの構成

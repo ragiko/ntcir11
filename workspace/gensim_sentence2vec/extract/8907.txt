@@ -1,0 +1,6 @@
+
+数多くの企業で、期間ベースの収益の見越計算が必要とされています。このため、収益は、請求伝票が登録された転記期間ではなく、サービスが提供された転記期間で認識される必要があります。収益認識機能を使用すると、請求プロセスから収益認識を切り離すことによって、この要求を満たすことができます。
+SAP CRM サービスのビジネスプロセスのデータは SAP ERP Central Component (SAP ECC) の内部指図に自動的に転送されるため、SAP ECC で結果分析を使用することが可能になります。
+注意
+SAP CRM の収益認識は SAP CRM のサービス契約に適用され、技術的には、SAP ECC の販売管理コンポーネント (SD) の収益認識とは関係ありません。技術的には、結果分析が SAP ECC コンポーネント CO-PC で使用されます。
+Revenue Recognition for Service Contracts with SAP ECC Integrati - SAP Library

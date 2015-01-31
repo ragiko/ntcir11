@@ -1,0 +1,50 @@
+
+拡張カードの取り付け
+Windows95のインストールが完了したので、次に拡張カードをインストールする。
+てんこ盛り
+何やかんやで買い込んだ拡張カードを、可能な限り付けることにする。AT M/Bでは1枚しか付けられなかった大きなカード(Monster3DII、CineMaster)もここぞとばかり取り付けてしまう。
+AGP : ATI XPERT98 (8MB)
+PCI #1 : Monster3DII (8MB)
+PCI #2 : CineMaster (DVD Decorder)
+PCI #3 : Broadway Beginner (Capture)
+PCI #4 : Corega FastEther PCI-TX (100BASE-TX)
+PCI #5 : -
+ISA #1 : Power Capture/V SE
+ISA #2 : SB AWE64
+構成は上のような状態とした。当初はSCSI H/Aを取り付けようかと思っていたが、別のマシンでCD-Rと共に元気で動いているし、Power
+Capture/V SEは以前うまく動作しなかったので、今回はこちらを選んだ。
+拡張カードは1枚ずつインストールした方がいいだろうなとは思いつつ、枚数が枚数なだけに、一々電源を抜いて、マウス、キーボードを抜いて、ケースを引っ張り出すのも面倒なので、一気に全部取り付けてみた。
+電源ON
+さて電源を入れてみる。すると、Windows95が認識したのは、マザーボードリソースとか、フロッピーディスクコントローラであった。まだ全部済んでいなかったのである。慌てて拡張カードは認識しても、ドライバのインストールは全てキャンセルにした。さらに再起動してもまだ、通信ポートだとかを認識している。何も認識しなくなるのを確認してからカード類を付けなくてはいけなかった。
+また電源を入れると、今度はキャラクタモードの文字化け状態で止まった。かすかに読める部分には、nwlink.vxd、nwredir.vxd、nscl.vxd、vredir.vxd、ndis.vxd、ndis2sup.vxd、vnetbios.vxdなどが読めるので、どうやらネットワーク関係をキャンセルしたためにエラーが出たようである。スペースキーを押すと動作は進行し、「nmnp32.dllを読み込めずNetWare、Microsoft
+Networkは利用できない」旨のメッセージが出て、Windows95は立ち上がった。もうシステム関係のデバイスは全て認識したようである。、
+また再起動してみる。先程の文字化けメッセージはそのままで、その後まず認識されたのは、PCI
+Multimedia Video Deviceである。これでは、Monster3DIIなのかBroadwayなのか、あるいはCineMasterなのか分からない。とりあえず、Monster3DIIのCD-ROMを入れてみるが、ドライバは見付からないという。どうやら違うようである。今度はCineMasterのFDを入れてみる。が、これも違う。BroadwayのFDを入れてみる。今度はやっとBroadway
+MPEG Capture/Compressionと表示され、ドライバが見付かったとのメッセージ。あ〜面倒臭い。
+次にまたPCI Multimedia Video Deviceが見付かったとのメッセージ。だからそれじゃ分かんねぇって言うのに。でも今度は一発でCineMasterが当たった。ドライバをインストールすると、ここで再起動の要求。
+再起動すると、また見付かったのはPCI Multimedia Video Device。もう残るはMonster3DIIだと決めつけてCD-ROMを入れてみるがドライバは見付からないという。Power
+CaptureはPnPじゃないし。とりあえず、ドライバのインストールはキャンセル。
+次に出てきたのはSoundBlasterAWE64関連。CreativeのFDとWindows95のCD-ROMでインストール。Windows95が起動した。
+ここで一旦再起動してみる。もう新しく認識するものは無い。Monster3DIIのCD-ROMを入れると、ドライバがインストールされるのではなく、インストール方法が表示された。忘れていた。デバイスマネージャでその他のデバイスに入っているPCI
+Multimedia Video Deviceのプロパティから、ドライバのタブでドライバの更新を選ぶのだった。これで場所をCD-ROMのwin95にすると、Diamond
+Monster 3D II Acceleratorと表示され、ドライバが見付かる。ドライバのインストールが完了すると再起動を要求される。
+さて次はちょいと面倒なCorega FastEther PCI-TXである。何が面倒かというと、自動認識されるPCI
+Fast Ethernet DECchip 21140 Based Adapterのドライバでは動作しないので、事前にドライバFDに含まれるbatファイルを実行しておく必要があるのである。batの中身は、
+@echo off
+REM ************************************************************
+REM INST95.BAT REM Version 1.0 pl 1
+REM *************************************************************
+if exist %windir%\inf\netpci.inf move /Y %windir%\inf\netpci.inf %windir%\inf\netpci.org
+> nul
+if exist %windir%\inf\netcokk.inf move /Y %windir%\inf\netcokk.inf %windir%\inf\netcokk.org
+> nul
+nd3to95
+マニュアル通りではないが、また外すのも面倒なので、まずデバイスマネージャ上でPCI
+Fast Ethernet DECchip 21140 Based Adapterを削除する。ここで再起動は一旦キャンセルして、batを実行してから再起動する。すると今度は、corega
+FastEther PCI-TX Ethernet Adapterとして認識される。で、Windows95のCD-ROMを要求するが、実はそこにはドライバは無くドライバFDにある。なお、ネットワーク関連のファイルのためまたWindows95のCD-ROMは必要である。あとはネットワーク関連の設定をして完了。
+残るは問題のPower Captureである。ハードウェアウィザードを起動して、手動でFDからデバイスを選択するが、やはりIRQ10がSoundBlasterのIDE
+controllerに使用されているためか、使用可能な設定が空欄になってしまう。どうせ使ってもいないので、IDE
+controllerは使用不可にし、IRQも15に変更しておく。またハードウェアウィザードから操作すると、今度は使用可能な設定が表示される(IRQ10、I/O=1F20-1F2F,0F20-0F2F)。一旦電源が落ちるので、電源を入れ、アプリケーションをインストールする。
+しかし、Capture MapperでドライバをBroadwayからConopusに変え、Video Commanderを起動し、プレビューをチェックしてVHSビデオからの映像を見ていると、キャプチャをスタートさせる以前にまた不正な処理だとかで落ちてしまった。せっかくIntel純正環境に変えたのに。最新のドライバではない方がうまく動作する場合もありますよ、とメールもいただいたが、何だかなぁ。もうBroadwayが復活したし。
+最初に戻る
+

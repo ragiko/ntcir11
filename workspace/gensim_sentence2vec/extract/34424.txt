@@ -1,0 +1,69 @@
+=begin
+実装のたたき台があるとなおよいかとおもいます。
+まずRubyで同等の処理をするコードを書いてみるというのはどうでしょう。
+妥当であれば、取り込まれたり、あるいは高速化のためにCで書きなおされたりするかもしれません。
+=end
+=begin
+Rubyで実装してみました。あまりコストとか速度は気にしていないので速度は気にせず。
+class Array
+def sample(n=1)
+if block_given?
+self.size.times.map do |i|
+Array.new(yield(self[i]), self[i])
+end.flatten.sample(n)
+else
+n == 1 ? self[rand(self.size)] : Array.new(n){ self[rand(self.size)] }
+end
+end
+end
+# -- テスト
+def a
+[1,2,3].sample { |v| v*100 }
+end
+def b
+[1,2,3].sample { |v| v*100 }
+end
+ary = 100.times.map{a}
+bry = 100.times.map{b}
+result_a = {}
+ary.each do |i|
+result_a[i] ||= 0
+result_a[i] += 1
+end
+result_b = {}
+bry.each do |i|
+result_b[i] ||= 0
+result_b[i] += 1
+end
+# aは i*10の重みあり。 bは重みなし。 {i => 出現回数}
+p result_a #=> {2=>31, 3=>56, 1=>13}
+p result_b #=> {2=>37, 3=>45, 1=>18}
+# -- sora_h
+=end
+=begin
+ミスがあったので訂正。
+# -- テスト
+def a
+[1,2,3].sample { |v| v*100 }
+end
+def b
+[1,2,3].sample { |v| v }
+end
+ary = 100.times.map{a}
+bry = 100.times.map{b}
+result_a = {}
+ary.each do |i|
+result_a[i] ||= 0
+result_a[i] += 1
+end
+result_b = {}
+bry.each do |i|
+result_b[i] ||= 0
+result_b[i] += 1
+end
+# aは i*10の重みあり。 bは重みなし。 {i => 出現回数}
+p result_a #=> {3=>56, 1=>13, 2=>31}
+p result_b #=> {2=>34, 3=>46, 1=>20}
+# -- sora_h
+=end
+Feature #4147: Array#sample で重みを指定したい - ruby-trunk - Ruby Issue Tracking System

@@ -1,0 +1,169 @@
+ 岩渕 俊樹、乾 敏郎
+京都大学 大学院情報学研究科
+DOI:10.14931/bsd.1122 原稿受付日:2012年5月15日 原稿完成日:2013年2月3日
+担当編集委員:入來 篤史(独立行政法人理化学研究所 脳科学総合研究センター)
+英語名:lexicon 独:Lexikon 仏:lexique 
+同義語:語彙目録、心的語彙、心内語彙、心的辞書、心内辞書、心的語彙目録、心内語彙目録、mental lexicon、mental dictionary 
+脳科学における語彙とは、個人の脳内に記憶された語に関する知識の総体を指す。一般的な用法と区別するため、単に語彙という代わりにメンタル・レキシコン(mental lexicon)という用語を用いることも多い。メンタル・レキシコンには心的語彙、心内語彙、心的辞書、心内辞書など多くの訳語が存在する。
+語彙とは
+私たちは非常にたくさんの語(word)をほとんど無自覚に覚えている。たとえば、英語の母語話者は高校卒業時点で平均60,000語ほどの語彙量を持つと推定される[1]。あらゆる句(phrase)や文(sentence)は語を文法的なルールに従って組み合わせることで構築される。このことからも、語に関する知識が言語を用いる上で重要であることは疑う余地がない。 
+このように語は言語表現の基本的な要素であるが、一般的に「語」といわれるものの多くはそれ自体が内部構造を持っていて、より小さな要素へと分解され得る。たとえば「おみそしる」という語は「お」と「みそしる」の2つの部分に分けることができ、さらに「みそしる」は「みそ」と「しる」の2つの部分に分けられる、といった具合である。上のような分解を繰り返して意味的に最小となった単位のことを形態素(morpheme)と呼ぶ。語は単一の形態素、あるいは複数の形態素の結合から成る。ちなみに言語的音声の最小単位を音素(phoneme)と呼ぶが、形態素はひとつ以上の音素から構成される。 
+健常者は状況に応じて多彩な語を使い分けることができるが、使用し得る全ての語がその人の脳に記憶されているかどうかは定かでない。たとえば、「おみそしる」は単語として記憶されているのだろうか。それとも「お」と「みそしる」が別々に記憶されており、それらを脳内でオンライン的に組み合わせることで「おみそしる」という表現が形成されるのだろうか。この種の問題は言語研究におけるホットな話題のひとつであり、今も多くの研究者によって議論されている。そこで、メンタル・レキシコンに記憶されている個々の要素を指す場合は語彙項目(lexical item/lexical entry)という用語を使用し、語あるいは形態素といった用語と区別することにする。語彙項目には形態素や語、イディオムなどがリストされ得る。 
+ある語彙項目が適切に使用されるには、それがどんな音素の組み合わせから構成されるか(音韻情報、phonological information)、どういう意味に対応するか(意味情報、semantic information)、どのような形態素の構成を持つか(形態情報、morphological information)、そして文や句を構成する時にどういう規則に従うか(統語情報、syntactic information)といった情報が少なくとも必要である。ある語彙項目の知識が脳内にあるということは、これらの情報が適切な関係づけの下で保持されていることを意味している。こうした相互に関連する知識の総体が語彙、すなわちメンタル・レキシコンである。
+語彙情報へのアクセス
+ことばを発したり理解したりするには基本的に語彙情報に対するアクセスが不可欠である。この語彙アクセスがどうやって実現されるかは、ことばに対する応答や発話といった行動を詳細に分析することで間接的に調べられる。行動に基づく語彙アクセスの研究はメンタル・レキシコンの特性を調べる上で中心的な意義を担ってきた。以下では語彙アクセスに関する心理学的知見やモデル研究を紹介する。 
+影響する要因
+語彙の認識や理解に関する心理学的研究は以前から盛んに行われてきており、単語によってアクセスのしやすさが異なるということが分かっている。このような違いを生む要因としては出現頻度(word frequency)や親密度(word familiarity)といったものがある。使用される頻度が高かったり親密度が高かったりする単語ほど、処理に要する時間は短くなる[2][3]。 
+こうした知見を得るための手法としては、たとえば言語理解中の眼球運動計測が挙げられる。この手法では、ある語に対する実験被験者の注視時間が長いほど意味的処理に時間がかかっているのだと解釈される[4]。ほかには語彙判断課題(lexical decision task)と呼ばれる実験的方法もある。これは実験の被験者に文字列を提示し、それが単語であるか非単語であるかを迅速にボタン押しで判断させるものである。語彙判断課題においては出現頻度が高い単語に対するほど反応が早く、かつ正確になる[5]。こうした出現頻度効果は提示された語の理解だけでなく、それを実際に発音する課題においても観察される。また、単語を瞬間的に提示したときの認知閾(認知に要する最低の提示時間)は出現頻度の対数と直線関係があることも報告されている[6]。 
+また、同じ単語であっても文脈(コンテクスト)的な効果によって処理に要する時間は変化する。 Tulvingら[7]は9語から成る英語の文を作成し、その文末の語を瞬間的に提示して認知させる実験を行った。被験者には文脈情報として、先行する文中の語が0、2、4、8語のいずれかだけ提示される。この実験の結果、より多くの文脈が与えられるほど正答率が向上することが明らかとなった。これは単語認知における文脈効果(context effect)の一種である。 
+視覚的な認知過程における単語優位効果(word superiority effect)[8]も広い意味での文脈効果であるといえる。この効果は以下のようなものである——ある文字列を被験者に瞬間提示したのち、そこに含まれていた文字を2択で判断させる課題を考えてもらいたい。2択の文字がKとDだとすると、文字列が単語(例.WORDやWORK)の場合にランダム文字列(例.ORWD)の場合よりも正答率が上がる。これは単語という文脈に埋め込まれることで文字の検出率が上昇することを意味する。これが単語優位効果である。 
+そのほか、ターゲットとなる単語(プローブともいう)の理解が直前に別の単語(プライム)などを提示することによって促進されたり抑制されたりする現象も知られている。これは語彙的プライミング効果(lexical priming effect)と呼ばれるもので、ターゲットに対して語彙判断課題などを行うことで測定する。たとえばプライムとターゲットのあいだに意味的関連がある場合、ターゲットの理解は促進されることが知られている[9]。
+語彙アクセスのモデル
+単語認知に関するモデル
+ロゴジェン・モデル
+ことばを見聞きしたとき、われわれは苦も無く語彙情報にアクセスして意味を理解する。こうした単語認知研究の初期における重要なモデルとして、Mortonのロゴジェン・モデル(logogen model)[10]がある。このモデルではメンタル・レキシコンの構成ユニットはロゴジェンと呼ばれ、個々の単語に対応する。ロゴジェンは感覚入力(たとえば単語の視覚刺激)に対して応答するが、この応答値がある閾値を超えたときにのみ「対応する単語が認識された」ものとする。さらに、ロゴジェンは単語の使用頻度や文脈の効果を受け、それによって閾値が低下するという特徴を持つ。以上がロゴジェン・モデルの概要である。このモデルは出現頻度効果や文脈効果による語彙アクセスへの影響をある程度定量的に説明することができる。 
+相互活性化モデル
+ロゴジェン・モデルに続く重要な単語認知モデルとしては、相互活性化(interactive activation: IA)モデル[11]が挙げられる。IAモデルは特徴レベル・文字レベル・単語レベルの3つの階層から成るニューラルネットワーク・モデルである。ロゴジェン・モデルとは異なり、IAモデルには上述した3つのレベルごとに構成ユニットが存在する。たとえば垂直な線分に対応する特徴ユニット、Aの文字ユニット、CATの単語ユニットなどがそれぞれの層を構成するのである。特徴ユニットは、対応する特徴を含む文字ユニットに対しては興奮性の、そうでない文字ユニットには抑制性の結合を持つ。文字ユニットと単語ユニットは相互に結合しており、前者の文字が後者の単語に含まれる場合(例.TとTIME)には両者の結合は興奮性、そうでない場合には抑制性である。また単語レベルのユニット間には強い相互抑制が存在する。IAモデルではこれらの結合を通じてレベル内およびレベル間の相互作用が生じる。単語の視覚入力を最初に受けるのは特徴ユニットであるが、レベル間の結合があるためにその後の処理は各階層で並列的に進行する。またIAモデルの構成ユニットは閾値を持たないが、入力と合う特定の単語ユニットが最も強く活動することで単語認知が実現される。IAモデルもロゴジェン・モデルと同様、頻度や文脈による単語認知の促進効果を再現することが可能である。さらに高次(単語レベル)から低次(文字レベル)へのフィードバックを組み込むことで、先述した単語優位効果も説明できるようになっている。 
+コホートモデル
+単語の聴覚的認知に関してはコホート(Cohort)・モデル[12]と呼ばれる概念モデルが有名である。このモデルが提唱する枠組みでは、単語の聴覚的認知は以下3つのステージに大別される。単語(例.stack)が聴覚的に入力されると、1)最初の100−150ミリ秒時点での音素系列(例.sta-)と合致する単語表現(例.stab、stack、stagger…)がまず全て活性化され、2)継起する音や文脈に基づいて候補が絞られていき、3)最終的にひとつの単語(stack)が特定される。この最初に活性化される単語群を語頭コホート(word-initial cohort)という。コホートとはもともとローマの歩兵隊を指すことばであり、単語の大群が徐々に選択されていく過程を軍隊の行進になぞらえているのである。
+コホート・モデルは、たとえば以下の実験によって支持される。この実験では被験者にcaptain(船長)あるいはcaptive(捕虜)のような語が音声で提示されていき、その途中で視覚的に表示される語の語彙判断が求められた。このとき、音声が「capt-」の時点で視覚刺激が提示されると、captainおよびcaptiveと意味的に関連する「boat(船)」「guard(看守)」といった語に対する反応が促進されたのである。これは語彙的プライミング効果の一種であり、聴覚提示が「capt-」の時点ではcaptainとcaptiveが共に活性化されていることを示唆するものといえる。McClellandとElmanの提案したTRACE [13]というニューラルネットワーク・モデルはコホート・モデルの枠組みと合致しており、聴覚提示される単語が複数の候補から徐々に選択されていく過程をシミュレートすることができる。
+音読・発話に関するモデル
+二重経路カスケード・モデル
+上で見てきた単語の視覚認知モデルは、文字列の視覚的形状をもとに語彙情報へ直接アクセスすることを通常のやり方として仮定していた。しかし非単語であっても、「ワクホ」や「trisk」のような文字列は容易に発音できる。つまり視覚的な文字列を音韻情報へとある規則に従って変換するような経路は脳内に存在しているのだと考えられる。こうした背景に基づき、Coltheartらは音読過程の二重経路カスケード・モデル(dual-route cascaded model)[14]を提案した。このモデルでは非単語を読むときには語彙情報を介さず、書記素‐音素対応規則(grapheme-phoneme correspondence rule)に従って文字列を音素に変換するという過程を経る。この過程は音声読み(phonetic reading)ともいわれる。一方で語彙情報へのアクセスを介して音素に変換するプロセスもあり、規則に従わない例外的な発音をする単語(例.家来、yacht)はこの経路のみで処理される。こちらの過程は全語読み(whole-word reading)という。 
+並列分散処理モデル
+SeidenbergとMcClellandの並列分散処理モデル(parallel distributed processing model)[15]も、非単語や例外的発音の音読を説明することができる。このモデルの際立った特徴はそもそもメンタル・レキシコンの存在を仮定しないという点にある。これまで言及した他のモデルでは語彙項目を単一のユニットで表象していたが、並列分散処理モデルでは語の意味情報・音韻情報・書字情報が3つのユニット群に分散され、これら3つのユニット群は中間層を介して互いに異なるユニット群と結合している。この特徴的な三角形の構造から本モデルはトライアングル・モデルとも呼ばれる。このモデルは綴りと発音などの正しい組み合わせを学習することができるが、その場合も特定の文字や音を表象するような単一ユニットは存在せず、特定の入力に対してユニット群が特定の活性化パターンを示すようになるだけである。二重経路カスケード・モデルとトライアングル・モデルは共に音読過程をある程度うまく説明することができるが、どちらが実際の脳内機構とより合致しているかについては今なお議論が続いている。 
+言語産出モデル
+最後にLeveltの言語産出モデル[16]を紹介する。言語産出過程の具体的な例として、絵画中に描かれた対象が何であるかを呼称する課題を考えてみよう。まず提示された絵に対応する概念が産出すべきメッセージとして活性化される。続いて、このメッセージが対応するレンマ(lemma)を活性化する。レンマとは語彙項目の意味的・統語的な情報である。たとえば英語のHORSEに対応するレンマが活性化されると、それが可算名詞であること、単数形ないし複数形であること、といった情報が利用可能となる。ここまでが言語産出における語彙選択(lexical selection)の過程である。選択されたレンマは引き続いて形態的・音韻的に符号化される。たとえばHORSEの複数形は2つの形態素から構成されるものであるが、これらのそれぞれについて<horse> と<iz>のような音韻コード(phonological code)が検索される。音韻コードは音素の系列であり、音節(syllable)へ統合されたり強勢(stress)パターンが付与されたりといった処理を受ける。これらの処理を音韻的符号化(phonological encoding)という。このプロセスの出力は抽象的な音韻表象であり、音韻語(phonological word)と呼ばれる。音韻語は音声的符号化(phonetic encoding)の過程を経て調音スコア(articulatory score)として出力される。最後にこの調音スコアの指示に基づいて調音器官(舌や唇など)が動かされ、実際に音声が発せられる。
+神経基盤
+近年 Voxel based morphometry を用いた実験により、語彙量の多い人ほど左縁上回の灰白質密度が高いというデータが報告されている[17]。しかしながら、この事実は語彙情報のすべてがこの部位に表象されているということを意味しない。長年の失語症研究で語彙処理に関連する障害は数多く報告されてきたが、損傷部位によって障害される機能はさまざまである。以下では語彙が脳内でどのように処理されるかについて簡単に述べる。 
+音声的な語彙の処理
+左上側頭回の中部から後部にかける領域はウェルニッケ野と呼ばれるが、この領域を含む脳の損傷はウェルニッケ失語を引き起こす。ウェルニッケ失語では音声言語の理解が大きく損なわれ、また聴覚提示された単語の復唱も困難となる。発話は流暢で文法的だが、しばしば単語の使用に誤りが見られる。 
+一方、筆談によるコミュニケーションや発話には問題がないにも関わらず、単語が聴覚提示されると全く分からず復唱もできない、という障害もある。これは純粋語聾(pure word deafness)と呼ばれる。純粋語聾は音声による単語認識ができなくなるが、文字や口の動きをもとに意味を理解することはできる。つまり純粋語聾では語彙項目の聴覚的表象だけが選択的に損なわれるのだと考えられる。純粋語聾は聴覚野からウェルニッケ野への入力が損傷されることで起こる[18]ことから、単語の聴覚的表象はウェルニッケ野に保持されていると考えられる。 
+それに対し、ウェルニッケ野の周縁領域が損傷されると超皮質性感覚失語(transcortical sensory aphasia)の症状を示すようになる。超皮質性感覚失語では、絵に描かれた対象を呼称したり、書かれた単語を音読したり、聴覚提示された単語を復唱したりすることはできるが、耳で聞いた単語の意味を理解することができない[19]。従って超皮質性感覚失語では語彙項目の聴覚的表象そのものは損なわれておらず、音声に基づく語彙アクセスの能力が障害されるのだといえる。 
+左側頭葉の損傷では物体や人名の呼称ができなくなるケースもあるが、この場合には損傷される部位によって障害されるカテゴリーが異なるということが知られている。絵に描かれた対象を患者に呼称させる実験から、人名は左側頭極の、動物名は左下側頭回の、道具名は左後部下側頭回および後頭頭頂側頭接合部の障害により、最も成績が低下していることが明らかとなった[20]。ただし、これらの患者では単語の持つ意味や概念自体は保持されていたと考えられる。というのも、たとえば彼らはスカンクの絵を見て「近づくとひどい臭いを出す動物で、白黒で…」といった内容を答えることはできたからである。つまりこれらの障害においては、単語の意味を適切な音韻表現に変換する機能が損なわれていたのではないかと考えられる。ちなみに、動詞の生成は側頭葉でなく、ブローカ野を含む周辺の左前頭葉損傷により障害される[21]。ただしこうした関連領野の違いが名詞と動詞という文法的な区別を反映しているかどうかは慎重に検討される必要がある。 
+視覚的な語彙の処理
+単語の読みには全語読みと音声読みの2種類があることは先に述べた。失読症の研究から、これらの読みは特異的に障害され得ることが知られている。全語読みの障害は表層性失読(surface dyslexia)といい、音声読みの障害は音韻性失読(phonological dyslexia)という。全語読みと音声読みは異なる神経機構によって支えられている。脳損傷研究および脳機能イメージング研究によって、全語読みには左紡錘状回が関連していることが明らかとなっている[22][23]。左紡錘状回は非単語の文字列によっても賦活されるが、前部に行くほど単語に対する選択性が強くなる[24]。左紡錘状回において単語文字列に選択的に応答する領域は視覚性単語形状領域(visual word form area)と呼ばれる。単語の視覚的表象はこの領域にあると考えられる。これに対し、音声読みでは左縁上回、左上側頭回、および左下前頭回(ブローカ野)といった領域が活動する[25]。これは先述した二重経路カスケード・モデルにおいて、書記素‐音素の変換に当たる機能がこれらの神経機構によって実現されることを示唆している。
+意味の脳内ネットワーク
+単語の意味を理解するとはどういうことだろうか。この問題に関しては2つの対立する理論的立場が存在する。ひとつは、単語の意味は脳内の感覚・運動システムにおける過去の経験の表象が再活性化されることで理解されるとする立場である。それに対してもう一方の立場では、運動や感覚のモダリティに依存しない抽象化された意味知識が脳内に組織されていると考える。 
+脳機能イメージングによる幾つかのデータは前者の立場を支持している。たとえば、異なる身体部位の動作を表す動詞(例.噛む、蹴る)を読むときは、それらの各身体部位(例.顏、脚)を制御する運動野の領域が活動するという報告がある[26]。これは動作動詞の理解が運動システムを駆動することで実現されるという仮説と矛盾しない。 
+一方で、動作動詞の理解は視覚や運動といったモダリティ固有の神経回路には依存しないという研究も存在する[27]。これによると、単語の意味は左側頭葉、左頭頂葉および左前頭前野のモダリティ非依存な神経システムにおいて理解される。また意味認知症(semantic dementia)の研究に基づき、モダリティに依存しない意味情報のハブが側頭葉前部にあるという提案も為されている[28]。 
+しかし現時点において、上述した2つの立場のいずれかを棄却するような決定的な証拠はない。意味記憶が前頭葉、側頭葉、頭頂葉といった広い領域に分散して表現されていることはおそらく確かであるが、意味の表象や処理に関する詳細な脳内機構については更なる研究の進展を待たねばならない。
+関連項目
+言語 
+言語発達 
+概念形成 
+失語症 
+失読症
+参考文献
+G A Miller The Science of Words. Scientific Americal Library, New York:1991 
+D A Balota, J I Chumbley
+Are lexical decisions a good measure of lexical access? The role of word frequency in the neglected decision stage. 
+J Exp Psychol Hum Percept Perform: 1984, 10(3);340-57 [PubMed:6242411]
+[WorldCat.org]
+C M Connine, J Mullennix, E Shernoff, J Yelen
+Word familiarity and frequency in visual and auditory word recognition. 
+J Exp Psychol Learn Mem Cogn: 1990, 16(6);1084-96 [PubMed:2148581]
+[WorldCat.org]
+M A Just, P A Carpenter
+A theory of reading: from eye fixations to comprehension. 
+Psychol Rev: 1980, 87(4);329-54 [PubMed:7413885]
+[WorldCat.org]
+Y Hino, S J Lupker
+Effects of word frequency and spelling-to-sound regularity in naming with and without preceding lexical decision. 
+J Exp Psychol Hum Percept Perform: 2000, 26(1);166-83 [PubMed:10696612]
+[WorldCat.org]
+R L SOLOMON, D H HOWES
+Word frequency, personal values, and visual duration thresholds. 
+Psychol Rev: 1951, 58(4);256-70 [PubMed:14864763]
+[WorldCat.org]
+E TULVING, G MANDLER, R BAUMAL
+INTERACTION OF TWO SOURCES OF INFORMATION IN TACHISTOSCOPIC WORD RECOGNITION. 
+Can J Psychol: 1964, 18();62-71 [PubMed:14129483]
+[WorldCat.org]
+G M Reicher
+Perceptual recognition as a function of meaninfulness of stimulus material. 
+J Exp Psychol: 1969, 81(2);275-80 [PubMed:5811803]
+[WorldCat.org]
+D E Meyer, R W Schvaneveldt
+Facilitation in recognizing pairs of words: evidence of a dependence between retrieval operations. 
+J Exp Psychol: 1971, 90(2);227-34 [PubMed:5134329]
+[WorldCat.org]
+J Morton Interaction of information in word recognition. Psychol Rev:1983, 76();165-178 
+D E Rumelhart, J L McClelland
+An interactive activation model of context effects in letter perception: Part 2. The contextual enhancement effect and some tests and extensions of the model. 
+Psychol Rev: 1982, 89(1);60-94 [PubMed:7058229]
+[WorldCat.org]
+W D Marslen-Wilson
+Functional parallelism in spoken word-recognition. 
+Cognition: 1987, 25(1-2);71-102 [PubMed:3581730]
+[WorldCat.org]
+J L McClelland, J L Elman
+The TRACE model of speech perception. 
+Cogn Psychol: 1986, 18(1);1-86 [PubMed:3753912]
+[WorldCat.org]
+M Coltheart, K Rastle, C Perry, R Langdon, J Ziegler
+DRC: a dual route cascaded model of visual word recognition and reading aloud. 
+Psychol Rev: 2001, 108(1);204-56 [PubMed:11212628]
+[WorldCat.org]
+M S Seidenberg, J L McClelland
+A distributed, developmental model of word recognition and naming. 
+Psychol Rev: 1989, 96(4);523-68 [PubMed:2798649]
+[WorldCat.org]
+W J Levelt
+Spoken word production: a theory of lexical access. 
+Proc. Natl. Acad. Sci. U.S.A.: 2001, 98(23);13464-71 [PubMed:11698690]
+[WorldCat.org]
+[DOI]
+D W Green, J Crinion, C J Price
+Exploring cross-linguistic vocabulary effects on brain structures using voxel-based morphometry. 
+Biling (Camb Engl): 2007, 10(2);189-199 [PubMed:18418473]
+[WorldCat.org]
+D Poepple Pure word deafness and the bilateral processing of the speech code.  Cogn Sci: 2001, 25();679-693 
+D Boatman, B Gordon, J Hart, O Selnes, D Miglioretti, F Lenz
+Transcortical sensory aphasia: revisited and revised. 
+Brain: 2000, 123 ( Pt 8)();1634-42 [PubMed:10908193]
+[WorldCat.org]
+H Damasio, T J Grabowski, D Tranel, R D Hichwa, A R Damasio
+A neural basis for lexical retrieval. 
+Nature: 1996, 380(6574);499-505 [PubMed:8606767]
+[WorldCat.org]
+[DOI]
+A R Damasio, D Tranel
+Nouns and verbs are retrieved with differently distributed neural systems. 
+Proc. Natl. Acad. Sci. U.S.A.: 1993, 90(11);4957-60 [PubMed:8506341]
+[WorldCat.org]
+Chao Liu, Wu-Tian Zhang, Yi-Yuan Tang, Xiao-Qin Mai, Hsuan-Chih Chen, Twila Tardif, Yue-Jia Luo
+The Visual Word Form Area: evidence from an fMRI study of implicit processing of Chinese characters. 
+Neuroimage: 2008, 40(3);1350-61 [PubMed:18272399]
+[WorldCat.org]
+[DOI]
+Yasuhisa Sakurai, Atsuhiko Yagishita, Yasushi Goto, Hiroshi Ohtsu, Toru Mannen
+Fusiform type alexia: pure alexia for words in contrast to posterior occipital type pure alexia for letters. 
+J. Neurol. Sci.: 2006, 247(1);81-92 [PubMed:16720031]
+[WorldCat.org]
+[DOI]
+Fabien Vinckier, Stanislas Dehaene, Antoinette Jobert, Jean Philippe Dubus, Mariano Sigman, Laurent Cohen
+Hierarchical coding of letter strings in the ventral stream: dissecting the inner organization of the visual word-form system. 
+Neuron: 2007, 55(1);143-56 [PubMed:17610823]
+[WorldCat.org]
+[DOI]
+G Jobard, F Crivello, N Tzourio-Mazoyer
+Evaluation of the dual route theory of reading: a metanalysis of 35 neuroimaging studies. 
+Neuroimage: 2003, 20(2);693-712 [PubMed:14568445]
+[WorldCat.org]
+[DOI]
+Olaf Hauk, Ingrid Johnsrude, Friedemann Pulvermüller
+Somatotopic representation of action words in human motor and premotor cortex. 
+Neuron: 2004, 41(2);301-7 [PubMed:14741110]
+[WorldCat.org]
+Marina Bedny, Alfonso Caramazza
+Perception, action, and word meanings in the human brain: the case from action verbs. 
+Ann. N. Y. Acad. Sci.: 2011, 1224();81-95 [PubMed:21486297]
+[WorldCat.org]
+[DOI]
+Karalyn Patterson, Peter J Nestor, Timothy T Rogers
+Where do you know what you know? The representation of semantic knowledge in the human brain. 
+Nat. Rev. Neurosci.: 2007, 8(12);976-87 [PubMed:18026167]
+[WorldCat.org]
+[DOI]
+語彙 - 脳科学辞典

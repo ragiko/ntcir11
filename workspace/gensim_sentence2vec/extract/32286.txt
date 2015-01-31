@@ -1,0 +1,134 @@
+						短時間フーリエ変換について
+短時間フーリエ変換をライブラリFFTWを用いて行いたいと思っております。
+具体的にはサンプリング周波数5kHz、30sec、150000点の1次元実数データを、窓長256点で128点ずつずらしながらフーリエ変換を行い、行を時間、列を周波数としてパワースペクトルをファイルに保存したいのですが(分解能をfHzとしたとき0からfHzごとにパワースペクトルの時間変化を縦方向「に並べたい)、その場合単純に128点ずらした位置から256点の数値をFFT関数に入力していき、結果を並べていくだけでよいのでしょうか?
+またコードを書いたのですが、関数に256点ごとの処理をさせるため、どのようにin,outのポインタを渡したらよいか教えて頂きたいです。よろしくお願いします。
+#include<stdio.h>
+#include<math.h>
+#include<fftw3.h>
+#define MAX 150000
+#define L 256
+int main ()
+{
+FILE *fp,*fp2;
+int i,N,m;
+double *Y; 
+double s,t,u,v;
+fftw_complex *in, *out;
+fftw_plan p;
+/////////ファイルオープン///////////
+(省略)
+///////////////////////////////
+if( ( Y=(double *)malloc(MAX) ) == NULL) {
+fprintf(stderr, "Can't allocate memory.\n");
+exit(-1);
+}
+i=0;
+while ( fscanf(fp,"%lf",&Y[i]) != EOF && i < MAX ){
+i++;
+}
+N=i;
+fclose(fp);
+in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N); //ライブラリFFTW中のメモリ確保関数
+out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
+/* Set input data */
+for(i=0;i<N;i+=L/2){ /////128点ずつずらす
+for(m=i; m<(i+L/2); i++){
+in[i][0]=Y[i];
+in[i][1]=0.0;
+}
+//////////FFT関数(第3,4引数は変換、逆変換の選択と計算アルゴリズムの種類)
+p = fftw_plan_dft_1d(L, in, out, FFTW_FORWARD, FFTW_ESTIMATE); fftw_execute(p); 
+/* output the result */ 
+for(m=i; m<(i+L/2); i++){
+s = out[i][0]; 
+t = out[i][1]; 
+u = sqrt(s*s + t*t);
+v = atan2(s,t);
+fprintf(fp2,"%lf, ", v);
+}
+fprintf(fp2,"\n");
+}
+fftw_destroy_plan(p);
+fftw_free(in); 
+fftw_free(out);
+fclose(fp2);
+free(Y);
+補足後半の2つのfor文はL/2ではなくLです。それから、i++ではなくm++でした。申し訳ありません。
+for(m=i; m<(i+L); m++){
+/*
+勝手に読み易さを追求して、いろいろ手直ししました。
+その過程で、あれこれバグ(と思うもの)を見つけ、
+修正し、コメントしたりしました。
+ソースは「整理」して書いたほうが理解し易いし、
+何がまずいかを見つけやすくなるでしょう(賛成?)
+あとは、実行してデバッグして下さい。楽しみですね。
+*/
+#include_<stdio.h>
+#include_<math.h>
+#include_<fftw3.h>
+#define___MAX___150000
+#define___LFL___256
+#define___LHF___128
+typedef___fftw_complex__CMPLX
+typedef___fftw_plan_____PLAN
+int_main_(){
+__FILE____*fpi;_//_入力ファイル
+__FILE____*fpo;_//_出力ファイル
+__int_____npt;__//_対象波形全点数
+__int_____ipt;__//_全点バッファインデクス
+__int_____jpt;__//_窓バッファインデクス
+__double__*yt;__//_波形データ
+__double__x,y;__//_FFT_変換後の実数、虚数
+__double__A,v;__//_複素周波数の振幅、位相
+__CMPLX___*ipt;_//_FFT_関数への入力バッファ
+__CMPLX___*opt;_//_FFT_関数の出力バッファ
+__PLAN____p;
+__/////////ファイルオープン///////////
+__(省略)
+__///////////////////////////////
+__if((yt=(double*)malloc(MAX))==NULL){
+____fprintf(stderr,"Can't_allocate_memory.\n");
+____exit(-1);
+__}
+__npt=0;
+__while(fscanf(fpi,"%lf",&yt[npt])!=EOF){
+____if(++npt==MAX)_break;
+__}
+__fclose(fpi);
+__//ライブラリFFTW中のメモリ確保関数(256)
+__ipt_=_(CMPLX*)fftw_malloc(sizeof(CMPLX)*LFL);//@
+__opt_=_(CMPLX*)fftw_malloc(sizeof(CMPLX)*LFL);//@
+__if(ipt==NULL_||_opt==NULL)_{//@_用心
+____fclose(fpo);_exit(-1);
+__}
+__//_Set_input_data_:128点ずつずらして256点を使う
+__for(ipt=0;ipt<npt-LHF;ipt+=LHF){
+____for(jpt=0;jpt<LFL;jpt++){
+______ipt[jpt][0]_=_yt[ipt+jpt];_//@_これで128重ね
+______ipt[jpt][1]_=_0.0;
+____}
+____//_FFT関数:第3,4引数は変換、逆変換の選択と
+____//_計算アルゴリズムの種類
+____p_=_fftw_plan_dft_1d(LFL,ipt,opt,
+______________________FFTW_FORWARD,FFTW_ESTIMATE);
+____fftw_execute(p);
+____/*_output_the_result_*/
+____for(jpt=0;jpt<LFL;jpt++){
+______x_=_opt[jpt][0];____//_実数分
+______y_=_opt[jpt][1];____//_虚数分
+______A_=_sqrt(x*x+y*y);__//_強さ:スペクトル
+____//v_=_atan2(x,y);_//@__引数が逆
+______v_=_atan2(y,x);_____//_これ、要りますか?
+____//fprintf(fpo,"%f,",v);_//@_"lf"_'f'
+______fprintf(fpo,"%f,",A);_vは位相、Aが絶対値
+____}
+____fprintf(fpo,"\n");
+__}
+__fftw_destroy_plan(p);
+__fftw_free(ipt);
+__fftw_free(opt);
+__fclose(fpo);
+__free(yt);
+__return_0;
+}
+短時間フーリエ変換について短時間フーリエ変換をライブ... - Yahoo!知恵袋

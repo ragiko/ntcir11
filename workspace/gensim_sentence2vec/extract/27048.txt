@@ -1,0 +1,14 @@
+学習データを使った判別  &dagger;
+leisureデータを学習データとテストデータに分け、学習データを使って求めた分類木にテストデータを当てはめて判別する。
+leisure.train <- leisure[1:round(nrow(leisure)/2),]
+leisure.test <- leisure[(round(nrow(leisure)/2)+1):nrow(leisure),]
+leisure.tree3 <-  rpart(jisha.c~gend.c+age.c+dwell.c+person.c+repeat.c+
+shizen.c+kaimono.c+bunka.c+sonota.c+budget.c,data=leisure.train, 
+parms=list(split='information'), method="class")
+summary(leisure.tree3)
+plot(leisure.tree3)
+text(leisure.tree3, use.=T)
+plotcp(leisure.tree3)
+leisure.tree3.pr <-  predict(leisure.tree3, newdata=leisure.test, type="class")
+table(leisure.test$jisha.c,leisure.tree3.pr)
+dm_R_mvpart - Pukiwiki

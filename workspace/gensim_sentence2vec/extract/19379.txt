@@ -1,0 +1,237 @@
+
+Java開発者のためのGroovyスタイルと言語機能のガイドライン
+ 印刷 			
+メール			
+詳細
+カテゴリ: Groovy		
+最終更新日:2013年7月12日(金)01:11	
+セミコロンは不要
+C / C++ / C# / Javaを使っていた人はセミコロンをつけていました。Groovyは99%のJavaの構文をサポートしているため、JavaコードをGroovyのプログラムに簡単に貼り付けることができてしまいます。そうすると山のようなセミコロンがあちらこちらに現れます。しかし、、、Groovyではセミコロンは必須ではなく省略することができ、さらに言えばそれらを削除すべきです。
+returnキーワードは必須ではない
+Groovymにおいてreturnキーワードは必須ではなく、メソッドの最後の式の評価結果がメソッドの返値となります。returnを省略すると短いメソッドやクロージャにおいてより簡潔になります。
+String toString() { return "a server" }
+String toString() { "a server" }
+変数を利用して繰り返し出てくるようなの場合ではあまり見た目がよくありません。
+def props() {
+def m1 = [a: 1, b: 2]
+m2 = m1.findAll { k, v -> v % 2 == 0 }
+m2.c = 3
+m2
+}
+このような場合は、最後の式の前に改行を入れたり、明示的にreturnを入れたりすることで可読性を向上させることができます。実際の型ではなくdefキーワードを利用している場合、最後の式が返されることに驚く場合があります。よって通常はvoidや型を指定しておいたほうが良いでしょう。
+if/elseやtry/catchのような文も値を返すことができます。
+def foo(n) {
+if(n == 1) {
+"Roshan"
+} else {
+"Dawrani"
+}
+}
+assert foo(1) == "Roshan"
+assert foo(2) == "Dawrani"
+Defと型
+Groovyにおいてdefを利用すると実際の型はObjectになります。よってdefで定義した変数にはどんなオブジェクトでも代入でき、返値にdefを指定したメソッドではどんなオブジェクトでも返すことができます。
+パラメータの型を指定しないメソッドの場合、defは省略することができます。
+void doSomething(param1, param2) { }
+しかし、このドキュメントの最後に記載する通り、コードの良いドキュメンテーションとして、またIDEのコード補完の利用、Groovyコンパイラの静的型チェックや静的コンパイルの活用のため、パラメータの型は指定しておいたほうが良いでしょう。
+また、コンストラクタのdefも省略することができます。
+class MyClass {
+MyClass() {}
+}
+デフォルトで Public
+デフォルトでGroovyはクラスとメソッドはPublicであるものとして扱います。よってPublicなものに対してはPublic修飾子を付ける必要はありません。Publicでないものに対してのみ可視性の修飾子を付けてください。
+パッケージスコープはデフォルトではサポートしていません。しかし特別なGroovyのアノテーションである@PackageScopeをつけることによりパッケージスコープの可視性をサポートしています。
+class Server {
+@PackageScope Cluster cluster
+}
+括弧の省略
+Groovyではトップレベルの式の括弧を省略することができます。
+println "Hello"
+method a, b
+Groovyのeachによる繰り返しメカニズムなど、クロージャがメソッド呼び出しの最後のパラメータの場合、閉じ括弧の外にクロージャをおいたり、括弧を省略することができます。
+list.each( { println it } )
+list.each(){ println it }
+list.each  { println it }
+通常は3番目の記法が好まれます。
+しかし、ネストされたメソッド呼び出しや右辺の代入などがある場合、括弧の省略ができません。
+def foo(n) { n }
+println foo 1 // won't work
+def m = foo 1
+クラスはファーストクラス市民
+JavaのinstanceofのようにGroovyでは.classのサフィックスは必要ありません。
+connection.doPost(BASE_URI + "/modify.hqu", params, ResourcesResponse.class)
+は次のように記載することができます。
+connection.doPost("${BASE_URI}/modify.hqu", params, ResourcesResponse)
+ゲッターとセッター
+Groovyではゲッターとセッターの形はプロパティと呼ばれ、アクセスしたりセットするためのショートカット構文が提供されフィールドにアクセスするような記法が利用できます。
+resourceGroup.getResourcePrototype().getName() == SERVER_TYPE_NAME
+resourceGroup.resourcePrototype.name == SERVER_TYPE_NAME
+resourcePrototype.setName("something")
+resourcePrototype.name = "something"
+GroovyによってBeanを書く場合(POGO:Plain Old Groovy Objectsと呼ばれる)、フィールド、ゲッター/セッターを自分で書く必要はありません。Groovyコンパイラが自動的に行います。
+class Person {
+private String name
+String getName() { return name }
+void setName(String name) { this.name = name }
+}
+は単純に次のように簡略化できます。
+class Person {
+String name
+}
+上記の通り、可視性の修飾子のないフィールドは、Groovyコンパイラによってプライベートフィールドとゲッター/セッターが生成されます。POGOをJavaから利用する場合、ゲッターとセッターが存在し通常通りに利用できます。
+また、ゲッターとセッターで独自の処理を行いたい場合はそれらを自分で作成して提供することでコンパイラはそのロジックを利用します。
+名前付きパラメータとデフォルトコンストラクタによるBeanの初期化
+class Server {
+String name
+Cluster cluster
+}
+のようなBeanに対し初期化を行うさい、セッターを順次呼び出すのではなく、名前付きパラメータとデフォルトコンストラクタを使って次のように記載することができます。
+def server = new Server(name: "Obelix", cluster: aCluster)
+内部的には最初にデフォルトコンストラクタが呼ばれ、セッターが順次呼び出されます。
+with()を利用して 同じBeanに対して繰り返し処理を行う
+名前付きパラメータとデフォルトコンストラクタを利用して新しいインスタンスを作成することは出来ました。しかし、既存のインスタンスを更新する場合はどうでしょうか。serverというプリフィクスを繰り返し付けなければならないのでしょうか。いいえ、Groovyはすべてのオブジェクトにwith()メソッドを追加しています。
+server.name = application.name
+server.status = status
+server.sessionCount = 3
+server.start()
+server.stop()
+は
+server.with {
+name = application.name
+status = status
+sessionCount = 3
+start()
+stop()
+}
+のように記載することができます。
+Equalsと==
+Javaの==はGroovyの is() メソッドで、Groovyの == はequlas()です!
+オブジェクトの参照を比較するには、==ではなく、a.is(b)を使ってください。
+しかし、equals()による比較よりもGroovyの==を使うほうが好ましいです。Groovyの==は左辺または右辺がnullでもNullPointerExceptionを回避します。
+status != null && status.equals(ControlConstants.STATUS_COMPLETED)
+ではなく
+status == ControlConstants.STATUS_COMPLETED
+としてください。
+GString(式埋め込み、マルチライン)
+文字列と変数の結合はよく行われますが、Javaではたくさんのダブルクォートと+記号、改行のための\nが必要になります。式埋め込み(GString)を使えば簡単に見た目よく行うことができます。
+throw new Exception("Unable to convert resource: ${resource}")
+中括弧のなかは変数だけでなく、どのような式でも記載することができます。単純な変数や、変数.プロパティのような形の場合、中括弧を省略することができます。
+throw new Exception("Unable to convert resource: $resource")
+${-> resource }のクロージャ記法を利用することによって遅延評価を行うことができます。
+int i = 3
+def s1 = "i's value is: ${i}"
+def s2 = "i's value is: ${-> i}"
+i++
+assert s1 == "i's value is: 3" // eagerly evaluated, takes the value on creation
+assert s2 == "i's value is: 4" // lazily evaluated, takes the new value into account
+長い式の結合の場合、Javaでは
+throw new PluginException("Failed to execute command list-applications:" +
+" The group with name " +
+parameterMap.groupname[0] +
+" is not compatible group of type " +
+SERVER_TYPE_NAME)
+のようになりますが、\を使うことで文字列を続けることができます。(マルチライン文字列ではありません)
+throw new PluginException("Failed to execute command list-applications: \
+The group with name ${parameterMap.groupname[0]} \
+is not compatible group of type ${SERVER_TYPE_NAME}")
+または3つのクォートでマルチライン文字列を使うことができます。
+throw new PluginException("""Failed to execute command list-applications:
+The group with name ${parameterMap.groupname[0]}
+is not compatible group of type ${SERVER_TYPE_NAME)}""")
+マルチライン文字列の左側のインデントを.stripIndent()を呼ぶことによって削除することができます。
+また、Groovyではシングルクォートとダブルクォートで挙動が異なります。シングルクォートは常にJavaのStringを生成し式埋め込みは使えません。ダブルクォートの場合JavaのString、もしくは式埋め込みがある場合はGStringを生成します。
+マルチライン文字列においても、ダブルクォートの場合GString、シングルクォートの場合Stringを生成します。
+正規表現パターンを書きたい場合、スラッシュ記法を使ってください。
+assert "foooo/baaaaar" ==~ /fo+\/ba+r/
+スラッシュ記法の利点はバックスラッシュ2つによるエスケープが不要になり正規表現をシンプルにすることができます。
+データ構造を作るためのネイティブ構文
+Groovyはリスト、マップ、正規表現、レンジといったデータ構造を作るためのネイティブ構文を提供します。
+def list = [1, 4, 6, 9]
+// デフォルトではキーはStringになり、クォートする必要はありません。
+// 変数やオブジェクトをキーとして利用したい場合 [(variableStateAcronym): stateName] のように括弧で囲んでください。
+def map = [CA: 'California', MI: 'Michigan']
+def range = 10..20
+def pattern = ~/fo*/
+// add()と等価
+list << 5
+// contains()を呼び出す
+assert 4 in list
+assert 5 in list
+assert 15 in range
+// subscript notation
+assert list[1] == 4
+// 新しいキーバリューのペアを追加
+map << [WA: 'Washington']
+// subscript notation
+assert map['CA'] == 'California'
+// プロパティ記法
+assert map.WA == 'Washington'
+// ストリングに対しmatches()を実行
+assert 'foo' =~ pattern
+Groovy Development Kit
+データ構造に続き、コレクションに対し繰り返しを行うとき、Groovyはeach, find, findAll, every, collect, injectといった様々なメソッドをJavaのコアデータ構造に追加しています。特にString、File、Stream、Collectionには便利なメソッドがたくさん追加されています。
+http://groovy.codehaus.org/groovy-jdk/
+強力なSwitch
+C言語のようなプリミティブしか受け付けないものとは異なり、GroovyのSwitchはとても強力です。
+def x = 1.23
+def result = ""
+switch (x) {
+case "foo": result = "found foo"
+// lets fall through
+case "bar": result += "bar"
+case [4, 5, 6, 'inList']:
+result = "list"
+break
+case 12..30:
+result = "range"
+break
+case Integer:
+result = "integer"
+break
+case Number:
+result = "number"
+break
+default: result = "default"
+}
+assert result == "number"
+isCase()メソッドで評価します。
+インポートエイリアス
+Javaでは、異なるパッケージで同じ名前のクラスを利用しようとすると、片方は完全修飾名でアクセスしなければなりませんでした。Groovyではそのような場合に対し、インポートエイリアス機能を提供します。
+import java.util.List as juList
+import java.awt.List as aList
+import java.awt.WindowConstants as WC
+Groovyにおける真偽
+すべてのオブジェクトはbooleanの値に「強制」することができます。null, void, 空の値はfalseと評価され、そうでない場合はtrueと評価されます。
+よって if (name != null && name.length > 0) {}は単純にif (name) {}と書くことができます。これはwhile, if, 三項演算子、Elvis演算子などでも利用できます。
+また、Groovyの真偽はオブジェクトにboolean asBoolean()メソッドを実装することによってカスタマイズすることができます。
+セーフグラフナビゲーション
+Javaでは深いノードグラフにアクセスしようとした時、nullチェックが必要でかなり複雑なif文となっていました。
+if (order != null) {
+if (order.getCustomer() != null) {
+if (order.getCustomer().getAddress() != null) {
+System.out.println(order.getCustomer().getAddress());
+}
+}
+}
+Groovyでは「?.」演算子を利用することで次のように簡略化できます。
+println order?.customer?.address
+コールチェインのどこかの要素がnullの場合、評価結果の値はnullとなります。
+Assert
+パラメータ、返値、そのたの値をチェックするのにassert文を使うことができます。Javaのassertと異なり、アクティベート不要で常にチェックを行います。
+GroovyのPower Assert文により各中間状態など詳細に出力されます。
+デフォルト値のためのElvis演算子
+Elvis演算子は三項演算子の特別な形で、デフォルト値を設定するための簡便な方法です。
+デフォルト値を設定するために次のようにする場合があります。
+def result = name != null ? name : "Unknown"
+Groovyの場合は次のように書くことができます。
+def result = name ?: "Unknown"
+Catch any Exception
+例外は補足したいが、例外の中身には興味が無い場合、次のように書くことができます。
+try {
+// ...
+} catch (any) {
+// something bad happens
+}
+型省略についてのアドバイス
+パブリックAPIなど他人が利用するようなコードを書く場合、明示的に型を記載したほうが良いでしょう。強力な規約となり引数の型誤りを防ぐことができます。またコードの良いドキュメンテーションとなり、IDEのコード補完を利用できます。プライベートメソッドなど自分だけが使うようなコードの場合や、IDEが容易に推論できるような場合はどちらを使うか自由に決めても構いません。
+だらだら備忘録 - Java開発者のためのGroovyスタイルと言語機能のガイドライン

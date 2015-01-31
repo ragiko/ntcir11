@@ -1,0 +1,156 @@
+多種多様な構成のサーバーを Ansible で管理する場合、単一のベストプラクティスツリーに押し込むのは管理が大変すぎて現実的ではないなとおもい、どうしたものかなと悩んでいました。で、最近やっとこれかなという構成ができたので共有してみます。
+何が問題か?
+ロールには共用できるものとできないものがある、それがいっしょこたに混ざるのが嫌
+無理に共用できるようにと変数を多用するととても管理が大変。変数も覚えられないし、テストが大変
+読み込むファイルのパスが大元のymlからの相対パスであり、include ではディレクトリ階層での整理が難しい
+-l で対象サーバーを絞り込んでも全てのタスクが表示され、skipped, skipped, skipped と関係ない task 表示がターミナルが埋まって見づらい
+そして、たどり着いたオレオレベストプラクティス
+まとめて管理したいサーバーグループ毎にベストプラクティスツリーを作り、共用可能な、共用したいロールをその外に出すという構成です。次のような Playbook となります。
+- hosts: all
+sudo: yes
+vars_files:
+- ../vars/common.yml # 共通変数
+- ../private_vars/common.yml # リポジトリにコミットしない共通変数
+roles:
+- ../common-roles/base # 共通処理の role は外側にある
+- ../common-roles/iptables
+- { role: ../common-roles/apache24, httpd_service_name: "httpd", httpd_mpm: "worker" }
+- apache-config
+- snmp
+- users
+.
+common-roles/
+base/
+defaults/
+main.yml
+files/
+...
+...
+handlers/
+main.yml
+templates/
+...
+...
+tasks/
+main.yml
+role-A/
+:
+role-B/
+:
+service-A/
+group_vars/
+all
+development
+production
+staging
+host_vars/
+host1
+hosts-development
+hosts-staging
+hosts-production
+roles/
+role-X/
+defaults//
+files/
+handlers/
+meta/
+tasks/
+templates/
+role-Y/
+defaults/
+files/
+handlers/
+meta/
+tasks/
+templates/
+site.yml
+private_vars/
+common.yml
+vars/
+common.yml
+:
+インベントリファイルは実行時に指定するので一つのファイルにすることもできますが、シンプルに保ちたいのでそれぞれのディレクトリに置きます。
+全サーバーに対して ansible コマンドで何か実行したい場合もあるかとは思いますが、そんな時でも ansible なら実行権限をつけたスクリプトなどをインベントリファイルとして指定すればその出力を使ってくれるので、各ディレクトリのファイルをマージするスクリプトを指定してあげれば解決です。ファイル名も hosts-development, hosts-staging, hosts-production などルールがあれば、そのスクリプトも単純化できます。
+いかがでしょうか、もっと良い方法があるよとか、私はこうやってるとかコメントいただけると幸いです。
+多種多様な構成のサーバーを Ansible で管理する場合、単一のベストプラクティスツリーに押し込むのは管理が大変すぎて現実的ではないなとおもい、どうしたものかなと悩んでいました。で、最近やっとこれかなという構成ができたので共有してみます。
+## 何が問題か?
+* ロールには共用できるものとできないものがある、それがいっしょこたに混ざるのが嫌
+* 無理に共用できるようにと変数を多用するととても管理が大変。変数も覚えられないし、テストが大変
+* 読み込むファイルのパスが大元のymlからの相対パスであり、`include` ではディレクトリ階層での整理が難しい
+* `-l` で対象サーバーを絞り込んでも全てのタスクが表示され、skipped, skipped, skipped と関係ない task 表示がターミナルが埋まって見づらい
+## そして、たどり着いたオレオレベストプラクティス
+まとめて管理したいサーバーグループ毎にベストプラクティスツリーを作り、共用可能な、共用したいロールをその外に出すという構成です。次のような Playbook となります。
+```yaml:site.yml
+- hosts: all
+sudo: yes
+vars_files:
+- ../vars/common.yml # 共通変数
+- ../private_vars/common.yml # リポジトリにコミットしない共通変数
+roles:
+- ../common-roles/base # 共通処理の role は外側にある
+- ../common-roles/iptables
+- { role: ../common-roles/apache24, httpd_service_name: "httpd", httpd_mpm: "worker" }
+- apache-config
+- snmp
+- users
+```
+心置き無く汎用性のないロール、タスクを書くことができ、共用可能なものは多重に管理する必要がありません。
+変数は site.yml のあるディレクトリの host_vars や group_vars の値を外の共通 role でも参照可能です。
+全体は次のような感じ
+```
+.
+common-roles/
+base/
+defaults/
+main.yml
+files/
+...
+...
+handlers/
+main.yml
+templates/
+...
+...
+tasks/
+main.yml
+role-A/
+:
+role-B/
+:
+service-A/
+group_vars/
+all
+development
+production
+staging
+host_vars/
+host1
+hosts-development
+hosts-staging
+hosts-production
+roles/
+role-X/
+defaults//
+files/
+handlers/
+meta/
+tasks/
+templates/
+role-Y/
+defaults/
+files/
+handlers/
+meta/
+tasks/
+templates/
+site.yml
+private_vars/
+common.yml
+vars/
+common.yml
+:
+```
+インベントリファイルは実行時に指定するので一つのファイルにすることもできますが、シンプルに保ちたいのでそれぞれのディレクトリに置きます。
+全サーバーに対して ansible コマンドで何か実行したい場合もあるかとは思いますが、そんな時でも ansible なら実行権限をつけたスクリプトなどをインベントリファイルとして指定すればその出力を使ってくれるので、各ディレクトリのファイルをマージするスクリプトを指定してあげれば解決です。ファイル名も hosts-development, hosts-staging, hosts-production などルールがあれば、そのスクリプトも単純化できます。
+いかがでしょうか、もっと良い方法があるよとか、私はこうやってるとかコメントいただけると幸いです。
+Ansible オレオレベストプラクティス - Qiita

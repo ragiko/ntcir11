@@ -1,0 +1,7 @@
+
+Deprecated:  Assigning the return value of new by reference is deprecated in /home/vuser06/3/9/0060393/www.kyouei-kc.co.jp/ph_search/extlib/adodb/adodb.inc.php on line 890
+Deprecated:  Assigning the return value of new by reference is deprecated in /home/vuser06/3/9/0060393/www.kyouei-kc.co.jp/ph_search/extlib/adodb/adodb.inc.php on line 1915
+Deprecated:  Assigning the return value of new by reference is deprecated in /home/vuser06/3/9/0060393/www.kyouei-kc.co.jp/ph_search/extlib/adodb/adodb.inc.php on line 1987
+Deprecated:  Function split() is deprecated in /home/vuser06/3/9/0060393/www.kyouei-kc.co.jp/ph_search/extlib/adodb/drivers/adodb-postgres64.inc.php on line 654
+Fatal error:  Call to a member function MoveNext() on a non-object in /home/vuser06/3/9/0060393/www.kyouei-kc.co.jp/ph_search/include/db.php on line 46
+

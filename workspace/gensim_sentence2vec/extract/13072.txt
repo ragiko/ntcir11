@@ -1,0 +1,21 @@
+
+書誌情報
+播磨裕太,安倍広多,石橋勇人,松浦敏雄,Skip Graphをベースとした高速な挿入と検索が可能な構造化オーバレイの提案,信学技報 Vol. 112 No. 393 (IN2012-148),pp.57--62 (2013-1).
+研究会プログラム
+ほぼ同じ内容で,若干評価を追加したものを「高速な挿入と検索が可能なSkip Graphの改良」で発表しています.
+Abstract
+本稿では,構造化オーバーレイネットワークの1つであるSkip graphに対して,ノードの挿入時間と検索時間の双方を改善する手法を提案する.Skip graphは複数レベルの双方向連結リストから構成されるが,提案手法では(1)各連結リストにおいて左右のポインタに加え,左方向の複数のノードへのポインタを保持する,(2)各レベルの経路表に上位レベルの連結リストの情報も格納する,といった技法を用いる.提案手法はシミュレーションによって有効性を確認した.
+In this paper, we propose techniques to improve insertion and lookup
+time of skip graphs, a kind of structured overlay network that consist
+of multiple levels of doubly-linked lists.  We introduce several
+techniques such as (1) each node maintains multiple pointers for
+leftward nodes in addition to the immediate left and right pointers,
+and (2) a routing table at each level maintains the information about
+the linked lists at the next higher level.  The effectiveness of the
+method was experimentally confirmed by simulations.
+ダウンロード
+電子情報通信学会のページ
+プレゼンテーション
+発表風景
+<研究業績へ
+Skip Graphをベースとした高速な挿入と検索が可能な構造化オーバレイの提案 - Research

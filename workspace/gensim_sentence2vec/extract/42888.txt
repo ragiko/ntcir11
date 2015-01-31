@@ -1,0 +1,20 @@
+try { 例外をスローする可能性のある処理 
+} 
+try節では例外をスローする可能性のある処理を{ }で囲みます。try節で囲まれた処理の中で例外が発生した場合、Java実行時環境は該当する例外ハンドラが書かれていないか捜しにいきます。 
+catch (例外クラス型 引数名) { 例外処理(例外ハンドラ) } 
+catch節ではスローされた例外に対する処理を行う例外ハンドラを記載します。スローされた例外オブジェクトとcatch節に記載された例外クラス型が合致した場合、Java実行時環境はそのcatch節の例外ハンドラを実行します。catch節に記載された引数名を利用して該当する例外オブジェクトの情報を参照することもできます。 
+finally { 最後に必ず実行される処理 } 
+finally節は例外が発生するしないにかかわらず必ず実行したい処理を記載する時に使用します。例えばファイルオープン処理を行う場合、オープン処理が成功する・成功しないにかかわらずファイルクローズ処理を行わなければならないとします。そのような時にfinally節にファイルクローズ処理を記載します。finally節は必須項目ではありません。 
+class ExException5{
+public static void main (String[] args) {
+try {  //(1)try節
+int x = Integer.parseInt(args[0]);
+System.out.println("答えは" + (100/x));
+} catch(ArithmeticException e) {  //(2)catch節
+System.err.println("エラー" + e.getMessage());
+} finally {  //(3)finally節
+System.out.println("This program was finished.");
+}
+}
+}
+Javaの道:例外(2.try、catch、finally)

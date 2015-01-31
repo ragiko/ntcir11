@@ -1,0 +1,31 @@
+[R] 二元配置分散分析(繰り返しのない場合)
+Rで一元配置分散分析を行なうときには oneway.test() を使えばいいけど、二元配置のときには SAS の PROC GLM のように線形モデルからの結果を分散分析表として吐き出すような感じ。線形モデルのバイブルである Kutner et al. "Applied Linear Statistical Models" (5th Ed) の成長ホルモンデータ(23章)を使ってやってみる。要因A(gender)は2水準、要因B(depress)は3水準ある。データの読み出しはテキストのウェブサイトから。
+> gh <- read.table("http://apps.csom.umn.edu/Nachtsheim/5th/KutnerData/Chapter%2023%20Data%20Sets/CH23TA01.txt")
+> names(gh) <- c("b.growth","gender","depress","rep")
+> attach(gh)
+> gender <- factor(gender); depress <- factor(depress)
+> interaction.plot(depress,gender,b.growth,type="b",pch=c(16,17),col=c(4,2),xlab="Bone Development",ylab="Change in Growth Rate")
+> anova(lm(b.growth ~ gender * depress))
+Df Sum Sq Mean Sq F value   Pr(>F)   
+gender          1 0.0029  0.0029  0.0176 0.897785   
+depress         2 4.3960  2.1980 13.5262 0.002713 **
+gender:depress  2 0.0754  0.0377  0.2321 0.798034   
+Residuals       8 1.3000  0.1625                    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+lm() 内のモデルのなかで要因間に * を使うとその交互作用も含まれる(Y ~ A + B + A:B でも同じ)。さらに要因を加えれば三元配置になるし、共変量の項を入れれば共分散分析になる。ただし、上の anova() での出力結果は Type I の平方和を用いたもの。Type III(または Type II)の結果が欲しい場合には car パッケージの Anova() を使うといい。このとき要因には contrasts で contr.sum または contr.helmert を指定する。
+> library(car)
+> Anova(lm(b.growth ~ gender * depress,contrasts=list(gender=contr.sum,depress=contr.sum)),type='III')
+Anova Table (Type III tests)
+Response: b.growth
+Sum Sq Df  F value    Pr(>F)    
+(Intercept)    34.680  1 213.4154 4.729e-07 ***
+gender          0.120  1   0.7385  0.415160    
+depress         4.190  2  12.8914  0.003145 ** 
+gender:depress  0.075  2   0.2321  0.798034    
+Residuals       1.300  8                       
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> detach(gh)
+SASを使ってるひとなら分かってるだろうけど、Type I, II, III の違いについてはこの辺を参照のこと。それぞれ一長一短があって、統計を専門にやっているひとたちでもどれを使うかは意見の分かれるところ。
+2005-08-20 - Action Potentials: 閾値以下

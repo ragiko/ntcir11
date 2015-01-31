@@ -1,0 +1,233 @@
+
+Sample 21
+近傍平滑化フィルター
+いわゆる局所平均化フィルタ
+DownLoad
+Command1
+Text1(0)〜Text1(8)
+Picture1
+Picture2
+Picture3
+をフォームに貼り付けて、以下のコードを、フォームのソースコードへコピーして貼り付けてください。
+Picture2 にお好きな画像を貼り付ければ実行できます。
+VB4以降であれば、問題なく実行可能なはずです。
+Option Explicit  
+Private Declare Function   StretchBlt  Lib "gdi32" _      
+(ByVal hdc  As Long, ByVal x      
+As Long, _      
+ByVal y  As Long, ByVal nWidth      
+As Long, _      
+ByVal nHeight  As Long, ByVal hSrcDC      
+As Long, _      
+ByVal xSrc  As Long, ByVal ySrc      
+As Long, _      
+ByVal nSrcWidth  As Long, ByVal nSrcHeight      
+As Long, _      
+ByVal dwRop  As Long)  As Long      
+Private Declare Function   GetPixel  Lib "gdi32" _      
+(ByVal hdc  As Long, _      
+ByVal x  As Long, _      
+ByVal y  As Long)  As Long      
+Private Declare Function   SetPixelV  Lib "gdi32" _      
+(ByVal hdc  As Long, _      
+ByVal x  As Long, _      
+ByVal y  As Long, _      
+ByVal crColor  As Long)      
+As Long      
+'mask(9)の中身はこんな並び     
+' 1, 1, 1, _      
+1, 1, 1, _      
+1, 1, 1      
+Private mask(8)  As Long      
+'Longの方が若干高速なので...     
+'--------------------------------------------------------------     
+Private   Sub Command1_Click()      
+Dim i  As Integer      
+'ループカウント     
+'     
+'マウスポインターを砂時計にする     
+Screen.MousePointer = 11      
+'画像データのサイズに合わせる     
+Picture1.Height = Picture2.Height      
+Picture1.Width = Picture2.Width      
+'     
+'9個の位置のフィルター値を設定する     
+'     
+For i = 0  To 8      
+Call SetFiler9(i, CInt(Text1(i).Text))      
+Next i      
+'平滑フィルターの実行     
+Call export_EffAverage(Picture2.hdc, _      
+Picture1.hdc, _      
+0, _      
+0, _      
+Picture1.ScaleWidth, _      
+Picture1.ScaleHeight)     
+'出力後の再描画     
+Picture1.Refresh     
+'     
+'一部分を拡大して表示する     
+'     
+'=========================================== 
+'ここから2000年11月22日修正 
+Call StretchBlt(Picture3.hdc,  
+_ 
+0, 0, _ 
+Picture3.ScaleWidth \ 2, Picture3.ScaleHeight, _ 
+Picture1.hdc, _ 
+0, 0, _ 
+Picture3.ScaleWidth \ 4, Picture3.ScaleHeight \ 2, _ 
+vbSrcCopy) 
+Call StretchBlt(Picture3.hdc,  
+_ 
+Picture3.ScaleWidth \ 2, 0, _ 
+Picture3.ScaleWidth, Picture3.ScaleHeight, _ 
+Picture2.hdc, _ 
+0, 0, _ 
+Picture3.ScaleWidth \ 2, Picture3.ScaleHeight \ 2, _ 
+vbSrcCopy) 
+'ここまで2000年11月22日修正 
+'ダウンロードできるサンプルには、反映されてません。 
+'=========================================== 
+'拡大部分の再描画    
+Picture3.Refresh     
+'マウスポインターを通常に     
+Screen.MousePointer = 0      
+End Sub      
+'--------------------------------------------------------------     
+Private Sub Form_Load()      
+Dim i  As Integer      
+'ループカウンタ     
+'===========================================
+'2000年11月22日修正
+Me.ScaleMode = vbPixels 'ピクセル
+'===========================================     
+'初期設定(サンプルということで...)    
+Picture1.AutoSize = False      
+Picture1.AutoRedraw = True      
+Picture1.BorderStyle = 0      
+Picture1.ScaleMode = vbPixels  'ピクセル      
+Picture2.AutoSize = True      
+Picture2.AutoRedraw = True      
+Picture2.BorderStyle = 0      
+Picture2.ScaleMode = vbPixels  'ピクセル      
+Picture3.AutoSize = False      
+Picture3.AutoRedraw = True      
+Picture3.BorderStyle = 0      
+Picture3.ScaleMode = vbPixels   'ピクセル     
+'     
+'     
+For i = 0  To Text1.Count - 1      
+Text1(i).Enabled = False      
+Text1(i).Text = "1"      
+Next i      
+'重みをつける、重みが不要であればここを1にしてください。     
+'1 にする場合は、export_EffAverage() にも手を加える必要があります。     
+Text1(4).Text = "4"      
+End Sub      
+'--------------------------------------------------------------     
+' RGB値をR,G,Bに分割する      
+'--------------------------------------------------------------      
+Private Sub RGB2R_G_B(ByVal lngRGB      
+As Long, _      
+ByRef lngR  As Long, _      
+ByRef lngG  As Long, _      
+ByRef lngB  As Long)     
+lngR = lngRGB  And &HFF&      
+lngG = (lngRGB  And &HFF00&) \ &H100      
+lngB = (lngRGB  And &HFF0000) \ &H10000      
+'B     
+End Sub      
+'--------------------------------------------------------------     
+'フィルターの値をセットする     
+'--------------------------------------------------------------     
+Private Sub SetFiler9(index  As Integer, p  As     
+Integer)     
+mask(index) = p      
+End Sub      
+'--------------------------------------------------------------     
+' 平滑化フィルター      
+'      
+' わかりやすくするため、最適化していません。      
+'--------------------------------------------------------------      
+Private Function export_EffAverage(ByVal imghDC&, _      
+ByVal outhDC&, _      
+ByVal x1&, _      
+ByVal y1&, _      
+ByVal x2&, _      
+ByVal y2&)  As Boolean      
+Dim sadr  As Long      
+'mask用のカウント     
+Dim x&, y  As Long      
+'ループ用     
+Dim xx&, yy  As Long      
+'RGB計算用     
+Dim lngR  As      
+Long, lngG  As Long, lngB  As Long      
+'RGB分解用     
+Dim col  As Long      
+Dim colR&, colG&, colB  As Long      
+Dim tcolR&, tcolG&, tcolB      
+As Long      
+'     
+For y = y1  To y2      
+'         
+For x = x1      
+To x2      
+'3x3 のサイズに対してフィルターを使用します。     
+For yy = 0      
+To 2      
+For xx = 0  To 2      
+'---------------------------     
+' 画像の色を読込む      
+'    ---------------------------     
+'   取得した色をRGB分解します('-')     
+' 分解してから計算しないとちゃんとした結果はできませんです。     
+Call  RGB2R_G_B(GetPixel(imghDC, x + xx - 1, y + yy - 1), colR, colG, colB)      
+'指定フィルターを使用する     
+' 分解したものを、前回のものと足していきます     
+lngR = lngR + colR * mask(sadr)      
+lngG = lngG + colG * mask(sadr)      
+lngB = lngB + colB * mask(sadr)      
+sadr = sadr + 1      
+Next xx, yy      
+'     
+'取得した値の平均をとります     
+'----------------------------------------------     
+'(平均を求める計算は、処理速度を優先しています。     
+' 画質を優先する場合は、変更してください。)      
+'----------------------------------------------     
+'111     
+'141 の場合は、12を重みとして使用します(12で割る)     
+'111     
+'     
+'111     
+'111 の場合は、普通に 9で割ります。     
+'111     
+'     
+'     
+'画素の平均を画素値として使用する     
+'abs を使用して、絶対値にします      
+tcolR = Abs(lngR \ 12)   
+'tcolR = Abs(lngR /9)      
+tcolG = Abs(lngG \ 12)   
+'tcolG = Abs(lngG /9)      
+tcolB = Abs(lngB \ 12)   
+'tcolB = Abs(lngB /9)      
+col = RGB(tcolR, tcolG, tcolB)      
+'画像の色情報を書込む     
+Call     
+SetPixelV(outhDC, x, y, col&)      
+'初期化     
+sadr = 0      
+lngR = 0      
+lngG = 0      
+lngB = 0      
+'     
+DoEvents     
+Next      
+x     
+Next y      
+export_EffAverage =  True     
+End Function
+Sample 21 近傍平滑化フィルター

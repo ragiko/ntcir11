@@ -1,0 +1,237 @@
+
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM PlatformStandard Ed. 6
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要: 入れ子 | フィールド | コンストラクタ | メソッド
+詳細: フィールド | コンストラクタ | メソッド
+javax.swing
+インタフェース ListSelectionModel
+既知の実装クラスの一覧: DefaultListSelectionModel
+public interface ListSelectionModel
+固定のインデックスを持つ値のリストを表示するコンポーネントの、現在の選択状態を表します。選択状態は区間のセットとしてモデル化され、各区間は選択されたリスト要素の連続範囲を表します。選択された区間のセットを変更するメソッドはすべて、閉じた区間を表す index0 と index1 を 1 組とするインデックスをとります。 つまり、区間には index0 と index1 の両方が含まれます。
+関連項目:DefaultListSelectionModel
+フィールドの概要
+static int
+MULTIPLE_INTERVAL_SELECTION
+selectionMode プロパティーの値です。
+static int
+SINGLE_INTERVAL_SELECTION
+selectionMode プロパティーの値です。
+static int
+SINGLE_SELECTION
+selectionMode プロパティーの値です。
+メソッドの概要
+void
+addListSelectionListener(ListSelectionListener x)
+選択範囲の変更が通知されるリスナーをリストに追加します。
+void
+addSelectionInterval(int index0,
+int index1)
+選択範囲を、現在の選択範囲と index0 以上 index1 以下のインデックスの示す範囲との和集合に変更します。
+void
+clearSelection()
+選択範囲を空のセットに変更します。
+int
+getAnchorSelectionIndex()
+setSelectionInterval()、addSelectionInterval()、または removeSelectionInterval() の直前の呼び出しから、最初のインデックス引数を返します。
+int
+getLeadSelectionIndex()
+setSelectionInterval()、addSelectionInterval()、または removeSelectionInterval() の直前の呼び出しから、2 番目のインデックス引数を返します。
+int
+getMaxSelectionIndex()
+最後に選択されたインデックスを返すか、選択範囲が空の場合に -1 を返します。
+int
+getMinSelectionIndex()
+最初に選択されたインデックスを返すか、選択範囲が空の場合に -1 を返します。
+int
+getSelectionMode()
+現在の選択モードを返します。
+boolean
+getValueIsAdjusting()
+選択に一連の変更を適用中である場合に true を返します。
+void
+insertIndexInterval(int index,
+int length,
+boolean before)
+index の前/後から始まる length インデックスを挿入します。
+boolean
+isSelectedIndex(int index)
+指定のインデックスが選択されている場合に true を返します。
+boolean
+isSelectionEmpty()
+インデックスが選択されていない場合に true を返します。
+void
+removeIndexInterval(int index0,
+int index1)
+選択モデルから、index0 と index1 を両端として含む区間のインデックスを削除します。
+void
+removeListSelectionListener(ListSelectionListener x)
+選択範囲の変更が通知されるリスナーをリストから削除します。
+void
+removeSelectionInterval(int index0,
+int index1)
+選択範囲を、現在の選択範囲と index0 以上 index1 以下のインデックスの示す範囲との差集合に変更します。
+void
+setAnchorSelectionIndex(int index)
+選択範囲のアンカーインデックスを設定します。
+void
+setLeadSelectionIndex(int index)
+選択範囲のリードインデックスを設定します。
+void
+setSelectionInterval(int index0,
+int index1)
+選択範囲を index0 以上 index1 以下に変更します。
+void
+setSelectionMode(int selectionMode)
+選択モードを設定します。
+void
+setValueIsAdjusting(boolean valueIsAdjusting)
+選択に対する複数の変更を 1 つの変更の一部であると見なすかどうかを指定する、valueIsAdjusting プロパティーを設定します。
+フィールドの詳細
+SINGLE_SELECTION
+static final int SINGLE_SELECTION
+selectionMode プロパティーの値です。リストインデックスを 1 回に 1 つ選択します。
+関連項目:setSelectionMode(int), 
+定数フィールド値
+SINGLE_INTERVAL_SELECTION
+static final int SINGLE_INTERVAL_SELECTION
+selectionMode プロパティーの値です。インデックスの連続範囲を 1 回に 1 つ選択します。
+関連項目:setSelectionMode(int), 
+定数フィールド値
+MULTIPLE_INTERVAL_SELECTION
+static final int MULTIPLE_INTERVAL_SELECTION
+selectionMode プロパティーの値です。インデックスの連続範囲を 1 回に 1 つ以上選択します。
+関連項目:setSelectionMode(int), 
+定数フィールド値
+メソッドの詳細
+setSelectionInterval
+void setSelectionInterval(int index0,
+int index1)
+選択範囲を index0 以上 index1 以下に変更します。index0 は index1 以下でなくてもかまいません。  
+SINGLE_SELECTION 選択モードでは、2 番目のインデックスだけが使用されます。  
+これによって現在の選択範囲が変更される場合には、各 ListSelectionListener に変更が通知されます。
+パラメータ:index0 - 区間の一方の端の値index1 - 区間の他方の端の値関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener)
+addSelectionInterval
+void addSelectionInterval(int index0,
+int index1)
+選択範囲を、現在の選択範囲と index0 以上 index1 以下のインデックスの示す範囲との和集合に変更します。index0 は index1 以下でなくてもかまいません。  
+SINGLE_SELECTION 選択モードでは、これは setSelectionInterval の呼び出しと同等で、2 番目のインデックスだけが使用されます。SINGLE_INTERVAL_SELECTION 選択モードでは、このメソッドは、指定された間隔が既存の選択範囲に隣接していたりオーバーラップしていたりしないかぎり setSelectionInterval と同様に動作するため、選択範囲を拡張する目的で使用できます。  
+これによって現在の選択範囲が変更される場合には、各 ListSelectionListener に変更が通知されます。
+パラメータ:index0 - 区間の一方の端の値index1 - 区間の他方の端の値関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener), 
+setSelectionInterval(int, int)
+removeSelectionInterval
+void removeSelectionInterval(int index0,
+int index1)
+選択範囲を、現在の選択範囲と index0 以上 index1 以下のインデックスの示す範囲との差集合に変更します。index0 は index1 以下でなくてもかまいません。  
+SINGLE_INTERVAL_SELECTION 選択モードでは、削除によって 2 つのセクションが生成される場合、削除範囲が選択範囲の末尾 (値が大きいほうの端) まで拡張されます。たとえば選択範囲が 0 〜 10 である場合、ユーザーが任意の順序でインデックス 5、6 を指定すると、結果として得られる選択範囲は 0 〜 4 になります。  
+これによって現在の選択範囲が変更される場合には、各 ListSelectionListener に変更が通知されます。
+パラメータ:index0 - 区間の一方の端の値index1 - 区間の他方の端の値関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener)
+getMinSelectionIndex
+int getMinSelectionIndex()
+最初に選択されたインデックスを返すか、選択範囲が空の場合に -1 を返します。
+getMaxSelectionIndex
+int getMaxSelectionIndex()
+最後に選択されたインデックスを返すか、選択範囲が空の場合に -1 を返します。
+isSelectedIndex
+boolean isSelectedIndex(int index)
+指定のインデックスが選択されている場合に true を返します。
+getAnchorSelectionIndex
+int getAnchorSelectionIndex()
+setSelectionInterval()、addSelectionInterval()、または removeSelectionInterval() の直前の呼び出しから、最初のインデックス引数を返します。直前の index0 が「アンカー」、直前の index1 が「リード」と見なされます。インタフェースによっては、これらのインデックスが特別に表示されます。 たとえば Windows95 では、リードインデックスが黄色い点線の輪郭で表示されます。
+関連項目:getLeadSelectionIndex(), 
+setSelectionInterval(int, int), 
+addSelectionInterval(int, int)
+setAnchorSelectionIndex
+void setAnchorSelectionIndex(int index)
+選択範囲のアンカーインデックスを設定します。
+関連項目:getAnchorSelectionIndex()
+getLeadSelectionIndex
+int getLeadSelectionIndex()
+setSelectionInterval()、addSelectionInterval()、または removeSelectionInterval() の直前の呼び出しから、2 番目のインデックス引数を返します。
+関連項目:getAnchorSelectionIndex(), 
+setSelectionInterval(int, int), 
+addSelectionInterval(int, int)
+setLeadSelectionIndex
+void setLeadSelectionIndex(int index)
+選択範囲のリードインデックスを設定します。
+関連項目:getLeadSelectionIndex()
+clearSelection
+void clearSelection()
+選択範囲を空のセットに変更します。これによって現在の選択範囲が変更される場合には、各 ListSelectionListener に通知します。
+関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener)
+isSelectionEmpty
+boolean isSelectionEmpty()
+インデックスが選択されていない場合に true を返します。
+insertIndexInterval
+void insertIndexInterval(int index,
+int length,
+boolean before)
+index の前/後から始まる length インデックスを挿入します。通常、このメソッドは、データモデル内の対応する変更に選択モデルを同期させるために呼び出されます。
+removeIndexInterval
+void removeIndexInterval(int index0,
+int index1)
+選択モデルから、index0 と index1 を両端として含む区間のインデックスを削除します。通常、このメソッドは、データモデル内の対応する変更に選択モデルを同期させるために呼び出されます。
+setValueIsAdjusting
+void setValueIsAdjusting(boolean valueIsAdjusting)
+選択に対する複数の変更を 1 つの変更の一部であると見なすかどうかを指定する、valueIsAdjusting プロパティーを設定します。このプロパティーの値を使って、生成された ListSelectionEvent の valueIsAdjusting プロパティーを初期化できます。  
+たとえば、ユーザーのドラッグに応じて選択が更新される場合、このプロパティーの値は、ドラッグの開始時には true、終了時には false に設定できます。ドラッグ中、リスナーは、valueIsAdjusting プロパティーの値が true に設定されたイベントを受信します。ドラッグの終了時、変更がファイナライズされると、リスナーが受信するイベントのプロパティーの値は false になります。リスナーは、変更がファイナライズされたときにだけ更新を実行したい場合、このパターンを使用できます。  
+このプロパティーの値を true に設定すると、1 回の変更の一部と見なされる一連の変更がスタートします。プロパティーの値を false に戻すと、選択全体の変更 (選択があった場合) を記述する、valueIsAdjusting プロパティーの値が false に設定されたイベントが送信されます。
+パラメータ:valueIsAdjusting - プロパティーの変更後の値関連項目:getValueIsAdjusting(), 
+ListSelectionEvent.getValueIsAdjusting()
+getValueIsAdjusting
+boolean getValueIsAdjusting()
+選択に一連の変更を適用中である場合に true を返します。
+戻り値:選択に一連の変更を適用中である場合は true関連項目:setValueIsAdjusting(boolean)
+setSelectionMode
+void setSelectionMode(int selectionMode)
+選択モードを設定します。使用可能な選択モードは、次のリストのとおりです。
+ListSelectionModel.SINGLE_SELECTION - 1 回に 1 つのリストインデックスのみを選択できます。このモードでは、setSelectionInterval メソッドと addSelectionInterval メソッドは同等であり、どちらも現在の選択を、2 番目の引数で表されるインデックス (「リードインデックス」) で置き換えます。
+ListSelectionModel.SINGLE_INTERVAL_SELECTION - 1 回に 1 つの連続区間のみを選択できます。このモードでは、addSelectionInterval は、指定された間隔が既存の選択範囲に隣接していたりオーバーラップしていたりしないかぎり setSelectionInterval と同様に動作するため (現在の選択を置き換える)、選択範囲を拡張する目的で使用できます。
+ListSelectionModel.MULTIPLE_INTERVAL_SELECTION - このモードでは、選択対象に制限はありません。
+例外:
+IllegalArgumentException - 許可された選択モードでない場合関連項目:getSelectionMode()
+getSelectionMode
+int getSelectionMode()
+現在の選択モードを返します。
+戻り値:現在の選択モード関連項目:setSelectionMode(int)
+addListSelectionListener
+void addListSelectionListener(ListSelectionListener x)
+選択範囲の変更が通知されるリスナーをリストに追加します。
+パラメータ:x - ListSelectionListener関連項目:removeListSelectionListener(javax.swing.event.ListSelectionListener), 
+setSelectionInterval(int, int), 
+addSelectionInterval(int, int), 
+removeSelectionInterval(int, int), 
+clearSelection(), 
+insertIndexInterval(int, int, boolean), 
+removeIndexInterval(int, int)
+removeListSelectionListener
+void removeListSelectionListener(ListSelectionListener x)
+選択範囲の変更が通知されるリスナーをリストから削除します。
+パラメータ:x - ListSelectionListener関連項目:addListSelectionListener(javax.swing.event.ListSelectionListener)
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM PlatformStandard Ed. 6
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要: 入れ子 | フィールド | コンストラクタ | メソッド
+詳細: フィールド | コンストラクタ | メソッド
+バグの報告と機能のリクエストさらに詳しい API リファレンスおよび開発者ドキュメントについては、Java SE 開発者用ドキュメントを参照してください。開発者向けの詳細な解説、概念の概要、用語の定義、バグの回避策、およびコード実例が含まれています。Copyright 2006 Sun Microsystems, Inc. All rights reserved. Use is subject to license terms. Documentation Redistribution Policy も参照してください。
+ListSelectionModel (Java Platform SE 6)

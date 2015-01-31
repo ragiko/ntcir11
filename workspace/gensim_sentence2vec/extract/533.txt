@@ -1,0 +1,50 @@
+
+Rolland によれば、自然言語や非定型的な図が情報システムのプロセスモデルを表現するために使われてきた。また、ソフトウェア工学においては、より形式的なプロセスモデルが使われてきた。これについては、[Armenise1993][8]、[Curtis1992][9]、[Finkelstein1994][10]でも解説されている。そのような形式的プロセスモデルはプログラミング言語と関連しており、次のような対応がある:
+Smalltalk
+E3 [Finkelstein1994][10]
+Prolog
+EPOS [Jacherri1992][11]
+Oikos [Ambriola1991][12]
+PEASE [Finkelstein1994][10]
+PS-Algol
+PWI [Finkelstein1994][10]
+ビジネスプロセスモデリング[編集]
+ビジネスプロセスモデリング(英: Business process modeling、BPM)は、企業のプロセスの現状と将来を表現する活動であり、それにより現状のプロセスへの理解が深まり改善が生み出される。BPM はアナリストやマネージャがプロセスの効率化や高品質化を目指して行う。BPM によるプロセスの効率化にはITが関わる場合が多い。
+改善されたビジネスプロセスを実施に移行させる際には変革管理が必要となる。技術革新とともに、BPMによるモデルを完全に実行可能にできる可能性が高まってきている。
+ビジネスプロセスモデリングはビジネスプロセス管理 (BPM) において、重要な役割を担う。どちらも同じ頭字語(BPM)となるため、両者を混同することがある。
+BPM で使われる標準モデリング言語には以下のものがある[13]。
+Business Process Modeling Notation(BPMN)
+Bussiness Process Execution Language(BPEL)
+統一モデリング言語(UML)
+Web Services Choreography Description(WS-CDL)
+モデル駆動型アーキテクチャやサービス指向アーキテクチャといった技術がビジネスプロセスモデリングと関連している。
+BPM はエンタープライズアーキテクチャのプロセス的側面を扱う。企業全体のシステム(データアーキテクチャ、組織構造、戦略など)におけるビジネスプロセスは企業改革に大きな意味を持つ。例えば、企業の合併において、両企業のビジネスプロセスを詳細に分析することで業務上冗長な部分を効果的に特定できる。ビジネスプロセスモデリングはビジネスプロセス・リエンジニアリング (BPR) にとっても、シックス・シグマのような継続的改善手法にとっても重要である。
+関連項目[編集]
+ビジネスプロセス管理
+BPMN
+BPEL
+統一モデリング言語
+ドメイン固有言語
+モデル駆動工学
+プロセスアーキテクチャ
+XPDL
+プロセス・モデリング
+外部リンク[編集]
+Business Modeling Forum
+Why Combine Business Process Reengineering with Object Oriented Analysis?
+Business Process Modeling and Standardization
+脚注[編集]
+^ a b c d e C. Rolland. A Comprehensive View of Process Engineering. Proceedings of the 10th International Conference CAiSE'98, B. Lecture Notes in Computer Science 1413, Pernici, C. Thanos (Eds), Springer. Pisa, Italy, June 1998
+^ C. Rolland. Modeling the Requirements Engineering Process, 3rd European-Japanese Seminar on Information Modelling and Knowledge Bases, Budapest, Hungary, June 1993.
+^ M. Dowson. Iteration in the Software Process, Proc 9th Int. Conf. on Software Engineering, 1988.
+^ P. H. Feiler, W. S. Humphrey. Software Process Development and Enactment: Concepts and Definitions, Proc. 2nd Int. Conf. on "Software Process", 1993.
+^ C. Fernström, L. Ohlsson, Integration Needs in Process Enacted Environments, Proc. 1st Int. Conf. on the Software Process, IEEE computer Society Press, October 1991.
+^ C. Rolland, N. Prakash, A. Benjamen. A Multi-Model View of Process Modelling. Requirements Engineering. Volume 4, Number 4. Springer-Verlag London Ltd , 1999
+^ A. F. Harmsen, J. N. Brinkkemper, J. L. H. Oei; Situational Method Engineering for information Systems Project Approaches, Int. IFIP WG8. 1 Conf. in CRIS series: Methods and associated Tools for the Information Systems Life Cycle (A-55), North Holland (Pub. ), 1994.
+^ P. Armenise, S. Bandinelli, C. Ghezzi, A. Morzenti, A survey and assessment of software process representation formalisms Int. Journal of Software Engineering and Knowledge Engineering, Vol. 3, No. 3, 1993.
+^ B. Curtis, M. Kellner, J. Over, Process Modeling, Communications of ACM, vol 35 n°9, september 1992, pp 75-90.
+^ a b c d A. Finkelstein, J. Kramer, B. Nuseibeh (eds). Software process modelling and technology. Wiley, New York, 1994
+^ L. Jacherri, J. O. Larseon, R. Conradi, Software Process Modelling and Evolution in EPOS, in Proc. of the 4th Int. Conf. on Software Engineering and Knowledge Engineering (SEKE'92), Capri, Italy, 1992, pp574-589.
+^ V; Ambriola, M. L. Jaccheri, Definition and Enactment of Oikos software entities, Proc. of the First European Workshop on Software Process Modeling, Milan, Italy, 1991
+^ Business Modeling FAQ. 2007年2月6日閲覧。
+プロセスモデル - Wikipedia

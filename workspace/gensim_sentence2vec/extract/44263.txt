@@ -1,0 +1,56 @@
+ インフラの継続的デリバリー
+事前に断っておくがここでいう「インフラ」はレイヤ的には OS より上の話。
+少し前に  GitHub 時代のデプロイ戦略 - naoyaのはてなダイアリー で、GitHub を介したデプロイを実践しているということを紹介した。普段の開発を Pull Request ベースでやっているので、デプロイもまた Pull Request を契機に実行させると色々捗る、という話。
+このプラクティスの対象領域をインフラにまで拡大してみました、というのが今回の話。
+DNS レコードを Pull Request を merge した契機に自動で更新
+AWS を利用している場合、ドメインの管理も Amazon Route 53 を使うといろいろと都合がいい。
+Route 53 での DNS レコードの更新はこれまでブラウザから操作していた。これだと誰がいつ作業したかわからないし履歴もトラックしづらい。また変更確定前に事前レビューするのにも向いてない。
+そこで roadworker を使う。roadworker は Route 53 の DNS レコード設定を ruby の DSL で書けるようにするツール。裏では Route 53 と API で通信する。
+roadworker を使うと、以下のようにレコードを Ruby のファイルで書ける。(GitHub から引用)
+hosted_zone "winebarrel.jp." do
+rrset "winebarrel.jp.", "A" do
+ttl 300
+resource_records(
+"127.0.0.1",
+"127.0.0.2"
+)
+end
+rrset "winebarrel.jp.", "MX" do
+ttl 300
+resource_records(
+"10 mx.winebarrel.jp",
+"10 mx2.winebarrel.jp"
+)
+end
+end
+こうして「DNSレコードの現在の状態」がコードになったので、あとはいつも通り Git と GitHub のフローに乗せることができる。ファイルの更新には Pull Request を使い、コードレビューする。万歳。
+更に、Route 53 への設定の適用すなわち roadworker の実行は CircleCI に任せる。Pull Request が master に merge されたら自動で roadwork コマンドを実行するようにする。テストフェーズで dry run するようにすれば、万が一 Ruby コードが壊れていてもそれを検知できる。
+dependencies:
+pre:
+- bundle install:
+timeout: 600
+test:
+post:
+- bundle exec roadwork --dry-run --apply
+deployment:
+master:
+branch: master
+commands:
+- bundle exec roadwork --apply
+実行を CircleCI に任せれば (Git にファイルの更新履歴が残るだけでなく) 実行履歴のログも残せるし、ステータスを Slack に通知するのも簡単。
+DNS レコードを書き換える、というと「えーと、どうやるんだっけ? インフラ担当お願い」ということになりがちだが、これで、前例に倣って Pull Request を投げて merge するだけですべてが実行される、ということになった。
+以上は最近 KAIZEN platform Inc. に入社した glidenote さんのお仕事である。グッジョブ
+Chef の適用も CircleCI 経由で、そして ChatOps
+アプリケーションのデプロイを Pull Request をマージするタイミングで実行するという考え方を DNS 変更にも適用したのが先の例。同様に「もう Chef でのインフラの変更も全部同じようにやっちゃえよ」ということで mdoi がやったった。
+(ここでは簡易的に master に merge したらと書いているけど、実際にはデプロイ用のブランチが別にあったりとちょっと設計は異なる)
+Chef のクックブックのサーバーへの適用には knife-solo を使っているが、それを CircleCI に実行させる。CircleCI には ssh の秘密鍵をセキュアに渡せる仕組みがあるので、認証周りの心配も特に必要ない。CircleCI に実行を任せることで、毎回の実行ログをそのまま残せるのは先の DNS の例に同じくで、とても良い。
+インフラに実際にコードを適用するのは、クックブック変更 Pull Request の merge 契機だとさすがにアグレッシブすぎるので、冒頭でも紹介した以前の記事に同じく、デプロイ用の Pull Request を使う方法を採用している。インフラに最新のクックブックを適用したいな、と思ったら deployment/qa-proxy など、デプロイ用のブランチに Pull Request を作って merge する。すると CircleCI が動き出して対象システムに Chef 適用を始める。
+ここまで来たら、例によって ChatOps。
+インフラへの変更適用もチャットからやってしまえばよい。これで、複数の担当者が同時にインフラに適用する、なんてことも自然と防ぐことができる。
+インフラを自動で更新なんていうとえらくリスクの高いことをやっているように聞こえるが、実際には手元で knife solo していたのを CircleCI に実行させているだけであり、このプロセスに移行することによるリスクの増化はない。
+「Merge pull request」ボタンに作用を集約させる
+こうして、システム構成の変更などの作用を PullRequest + CircleCI によるオペレーションに集約させる、というのはなかなか良いプラクティスである。
+単に Pull Request を送って変更しましょうね、だけでも十分に恩恵はあるのだけど、実際に何かしらの変更実行のトリガが「Merge pull Request ボタンを押す」というボタンに紐づけられると意識しなくても自然と Pull Request を送っておこうという考え方になる。DNS に変更を加えたい  Pull Request をマージしたら (※ 実際には master に変更があったら)  変更処理が自動で行われる  じゃ、プルリク作るか、という具合。
+こうして結果的に、何をやるにも緑のボタンを押すだけ、すなわちワンクリップデプロイの仕組みが構築できた。Infrastructure as Code を推し進めて、インフラも CI して、ワンクリックデプロイ  継続的デリバリーの実践である。
+Permalink | コメント(0) | トラックバック(0) | 08:39
+インフラの継続的デリバリー - naoyaのはてなダイアリー

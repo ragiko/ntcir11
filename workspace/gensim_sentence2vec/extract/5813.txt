@@ -1,0 +1,31 @@
+
+説明
+指定したパターンで文字列を分割します。
+分割数を設定した場合,設定した個数までの分割を行います。
+文字列を省略した場合,$_が対象になります。
+パターンを省略した場合,空白文字(/\s+/)で分割します。
+パターンには正規表現を使うことができます。
+使用例
+#!/usr/bin/perl
+use strict;
+use warnings;
+my $data = 'Alpha,Bravo,Charlie,Delta,Echo';
+my @items = split /,/, $data;
+foreach my $item (@items) {
+print $item, "\n";
+}
+#!/usr/bin/perl
+use strict;
+use warnings;
+my $data = 'key=aaa=bbb';
+# 分割数の指定あり
+my ($key, $val) = split /=/, $data, 2; 
+print $key, "\n"; # key
+print $val, "\n"; # aaa=bbb
+print "\n";
+# 分割数の指定なし
+my ($key2, $val2) = split /=/, $data; 
+print $key2, "\n"; # key
+print $val2, "\n"; # aaa
+print "\n";
+Perlリファレンス - split:ITpro

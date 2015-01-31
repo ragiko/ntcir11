@@ -1,0 +1,7 @@
+
+『Global Optimization Toolbox による最適化』
+数式処理システム Maple で動く実践的最適化アプリケーション
+大域的最適化の利点
+Maple 9.5 より標準で用意されている Optimization パッケージには、局所探索用のアルゴリズムが実装されています。局所探索では、目的関数の1階・2階の微分係数により極値を探索していきます。
+Global Optimization Toolbox による大域的な最適解探索では、複数の極値を持つような領域上の目的関数に対する最適解も探し出せます。Maple 9.5 で用意されている標準の Optimization パッケージと比較してみましょう。
+Global Optimization Toolbox:大域的最適化の利点 : 数式処理・数式モデル設計環境 Maple:サイバネット

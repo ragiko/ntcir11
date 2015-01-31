@@ -1,0 +1,92 @@
+蟆主ⅦHaxe3縺ァ縺ッ縲√ヱ繧ソ繝シ繝ウ繝槭ャ繝√Φ繧ー縺ョ縺溘a縺ョ讖溯縺瑚ソス蜉れました。ここでは、以下のデータ構造を用いてさまざま構文を紹介していきます。
+enum Tree<T> {
+Leaf(v:T);
+Node(l:Tree<T>, r:Tree<T>);
+}
+パターンマッチングの基本:
+パターンは上から下へとマッチングされる。入力とマッチする一番上のパターンの式が実行される。"_"はすべてとマッチする。このため、case _:はdefaultと同じ。
+列挙型(enum)のマッチングHaxe2では、列挙型はその構成子(コンストラクタ)によってマッチングすることができました。Haxe3のパターンマッチングではさらに深くマッチングすることができます。
+var myTree = Node(Leaf("foo"), Node(Leaf("bar"), Leaf("foobar")));
+var match = switch(myTree) {
+// すべてのLeefにマッチ
+case Leaf(_): "0";        
+// r = LeafのNodeにマッチ
+case Node(_, Leaf(_)): "1";
+//  rがl = Leaf("bar")であるNodeのNodeにマッチ
+case Node(_, Node(Leaf("bar"), _)): "2";
+// 全てにマッチ
+case _: "3";
+}
+trace(match); // 2
+パターンマッチングでは、各caseを上から下へとチェックしていき、最初に入力とマッチするものを見つけます。パターンマッチングに慣れていない人は、以下の各caseについての解釈の説明を読んでください。
+case Leaf(_): 					myTreeはNodeなのでマッチしない。case Node(_, Leaf(_)): 			myTreeの内の右側に木はLeefではなくNodeなのでマッチしない。case Node(_, Node(Leaf("bar"), _)):	マッチする。case _: 						前の行でマッチしているので、チェックされない。
+変数の捕捉マッチングの際に、値に識別子を割り当てることが可能です。
+var myTree = Node(Leaf("foo"), Node(Leaf("bar"), Leaf("foobar")));
+var name = switch(myTree) {
+case Leaf(s): s;
+case Node(Leaf(s), _): s;
+case _: "none";
+}
+trace(name); // foo
+このswitch文は次のような結果になります。
+myTreeがLeafなら、その名前が返るmyTreeがNodeでその左側の要素がLeafならば、Leafの名前が返る(上記はここにマッチするので"foo"が返る)それ以外では"none"が返る
+変数の捕捉には、=を使用することも可能です。
+var node = switch(myTree) {
+case Node(leafNode = Leaf("foo"), _): leafNode;
+case x: x;
+}
+trace(node); // Leaf(foo)
+case Node(leafNode = Leaf("foo"), _):では、leafNodeにはLeaf("foo")にマッチした値が割り当てられて返ります。それ以外では、case xがcase _と同じようにマッチするため、myTree自身が返ります。
+構造体のマッチング匿名の構造体に対してもマッチングが行えます。
+var myStructure = { name: "haxe", rating: "awesome" };
+var value = switch(myStructure) {
+case { name: "haxe", rating: "poor" } : throw false;
+case { rating: "awesome", name: n } : n;
+case _: "no awesome language found";
+}
+trace(value); // haxe
+二番目のcaseでは、ratingがawesomeだった際にnameフィールドがnに代入されるということに気を付けてください。もちろん、構造体をツリーに配置して、列挙型のマッチングと合わせて使用することもできます。
+クラスインスタンスでは、親クラスのフィールドに対してマッチングできないという制限があります。
+配列のマッチング
+配列は長さを固定してマッチすることが出来ます。
+var myArray = [1, 6];
+var match = switch(myArray) {
+case [2, _]: "0";
+case [_, 6]: "1";
+case []: "2";
+case [_, _, _]: "3";
+case _: "4";
+}
+trace(match); // 1
+array[0]が_、array[1]が6にマッチするため、1を出力します。
+ORパターン
+|演算子をパターン中のあらゆるところで使用できます。:
+var match = switch(7) {
+case 4 | 1: "0";
+case 6 | 7: "1";
+case _: "2";
+}
+trace(match); // 1
+ORパターンで、変数の捕捉をする場合、同じ変数を子パターンの両方で使用しなければなりません。
+ガード
+case ... if(条件):構文をつかうことでさらに条件を絞り込むことが出来ます。
+var myArray = [7, 6];
+var s = switch(myArray) {
+case [a, b] if (b > a):
+b + ">" +a;
+case [a, b]:
+b + "<=" +a;
+case _: "found something else";
+}
+trace(s); // 6<=7
+最初のケースで、ガード条件if (b > a)が付加されています。このケースはif条件を通過した場合のみ選択されます。条件を通過しなければ、次のケースへとマッチングを続行します。
+複数の値でのマッチング
+複数の値でマッチングを行う場合に配列の構文を使用することが出来ます。
+var s = switch [1, false, "foo"] {
+case [1, false, "bar"]: "0";
+case [_, true, _]: "1";
+case [_, false, _]: "2";
+}
+trace(s); // 2
+配列のマッチングと良く似ていますが以下の点で異なります。要素の数は固定。値全体をcase xのように配列として取得できない (case _は可能)
+繝代ち繝シ繝ウ繝槭ャ繝√Φ繧ー - Haxe

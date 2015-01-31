@@ -1,0 +1,3 @@
+
+>新規にDBを作成しますが>文字コードの選択基準ってなんでしょうか?>>ちなみにDBサーバはUnixでJavaアプリから接続されます。キャラクタ・セットの事かな?以下のサイトの「第2章 キャラクタ・セットの決め方」なんかは分かりやすいと思います。http://otndnld.oracle.co.jp/skillup/oracle9i/1_1/index.html
+Oracle Technology Network (OTN) Japan - 掲示板 : 文字コードの選定基準 ...

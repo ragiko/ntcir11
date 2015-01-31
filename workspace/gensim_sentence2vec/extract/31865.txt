@@ -1,0 +1,42 @@
+ [機械学習] トピックモデル関係の論文メモ
+最近読んだトピックモデル関係の論文のざっとしたメモ。内容については間違って理解しているところも多々あると思います。
+(追記 12/24) 最後のほうに論文を読む基礎となる文献を追加しました。
+Efficient Methods for Topic Model Inference on Streaming Document Collections (KDD 2009)
+論文の話は2つあって一つ目がSparseLDAというCollapsed Gibbs samplerの省メモリかつ高速な方法の提案と2つ目はオンラインで文章が入力されるような場合において訓練データと新規データをどう使うかという戦略について述べて実験している。
+Collapsed Gibbs samplerを高速化しようという論文はPorteous et al.(KDD 2008)でも述べられているけどそれよりも2倍ぐらい高速(通常のCollapsed Gibbs samplerの20倍)かつ省メモリというのがSparseLDAの売り。方法については3.4で述べられているけど基本的にはLDAにおいて単語-トピックカウントの行列がほとんど0であることを利用している。
+Modeling Social Annotation Data with Content Relevance using a Topic Model (NIPS 2009)
+Social Bookmarkのような文章+annotationがついたデータの生成モデルを考えようという話。
+ただ、Social Bookmarkは「あとで読む」みたいなトピックとは関係しないアノテーションが含まれるのでその部分をうまいことモデル化する。
+文章の生成モデルのところはLDAとほぼおなじで、その後アノテーションを生成するときにトピックを文章のクラスの経験分布から生成する(例えば文章にトピック1の単語が2つ、トピック2の単語が3つ、トピック3の単語が5つ含まれる場合、各トピックの選択確率は(2/10,3/10,5/10)となる)。つぎにアノテーションが関係するかしないかをベルヌーイ分布により選択し、関係しない場合はトピックによらない多項分布から、そうでないときはトピックに応じた多項分布から生成する。
+推論方法はGibbs samplingを使っている。
+Supervised topic models (NIPS 2007)
+LDAのモデルにおいて各文章に教師データがついているようなモデルについての論文
+文章の生成モデルはLDAと同じで、つぎに文章のクラスの経験分布とパラメータηの内積を平均とした正規分布からresponceをつくる。
+文章とresponceが与えられた元で学習を行うのがこの論文の話。推論は変分ベイズを使う。
+このままだと回帰にしか使えないが一般化線形モデルを利用することによってラベルのような離散値の出力にも対応できるというのが論文2.3で述べられている
+実装はhttp://www.cs.princeton.edu/~chongw/slda/にある。
+Named Entitiy Recognition in Query (SIGIR 2009)
+Named Entity(固有表現)をモデル化するという話 + 教師データを用いるためにLDAを拡張したWS(Weak Supervised)-LDAという方法を考えたという話
+WS-LDAは(LDAのモデルの確率値)+λ*(文章の経験分布と教師データのクラスラベルの値と内積をとったもの)を目的とする。λ=0のときは単なるLDAになる。そうでないときに関しては4.2.2のE-stepの式をみるとわかるが文章のトピック帰属確率の通常の変分ベイズの更新式に教師データの影響を足した形で更新することになる。
+Dirichlet-Bernoulli Alignment: A Generative Model for Multi-Class Multi-Label Multi-Instance Corpora (NIPS 2009)
+webページの分類みたいなことを考えるとページは複数のテキスト、画像などから構成され(Multi Instance)、スポーツ、政治などの複数のクラスないしはトピックを持つ(Multi-Class)、その場合分類でのラベル付も複数のラベルとなりえる(Multi Label)。このようなMulti-Class Multi-Label Multi-Instanceの問題を考えている論文。
+データの生成モデルを次のようにする。
+for M個のインスタンスを次のように生成
+クラスzを一つ選択する
+p(x|z)に従いインスタンスを生成する
+M個のインスタンスのクラスに基づきp(y|z_{1:M})からラベルyを生成する
+ラベルとデータが与えられた時の推論アルゴリズムとしては変分ベイズを用いる。
+追記:(12/24)
+上記の論文を読む上で基本となるLDA関係の文献を挙げておく
+Latent Dirichlet allocation (JMLR 2003)
+LDAのオリジナル論文。ジャーナル版であるため会議の論文では省略されがちなほかのモデルとの関係性や推論方法に関して詳しく述べられている。推論には変分ベイズを用いている
+Finding scientific topics (PNAS 2004)
+LDAをギブスサンプラーを用いて推論しようという話が乗っている論文。更新式の導出は丁寧ではないので Wikipeidaの説明 (http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation)を見ることをお勧めする。
+余談ではあるがこの論文が載ったPNASは学術雑誌としてはNature,Scienceの次ぐらいに位置している非常に権威のある論文誌である。
+A collapsed variational Bayesian inference algorithm for latent Dirichlet Allocation (NIPS 2007)
+LDAの変分ベイズでの推論方法を工夫するともっと精度がよくなりますよという話。この話の内容に触れると変分ベイズについて話さなければならないので具体的なところは論文を見てください。
+On Smoothing and Inference for Topic Models (UAI 2009)
+上記3つの推論アルゴリズムとCVB0という方法をいろいろなデータセットに対して比較している実験。また、LDA系の論文を読むとハイパーパラメータに関してパラメータから推定するというものと決めうちで与えるというものの2種類あるが実際ハイパーパラメータの学習を行うことによりどの程度精度が変わるかについても実験している。実験結果を見ると結構ハイパーパラメータの学習が結果に影響してくることがわかる。
+ほかにもトピック数を変えたときなどの実験も行っており、どの推論方法を選ぶべきかの指針となる。
+Permalink | コメント(0) | トラックバック(1) | 22:54 
+[機械学習] トピックモデル関係の論文メモ - tsubosakaの日記

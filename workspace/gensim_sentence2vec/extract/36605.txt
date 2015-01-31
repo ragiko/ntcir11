@@ -1,0 +1,42 @@
+フォームに必要な HTML コードを書く前に、エンドユーザからどの様なタイプのデータが送られてくる事を期待するか、どの様なルールが適用されるべきかを決定します。
+モデルクラスはこれらの情報を記録するために使用することができます。
+モデルは モデル の節で定義されているように、ユーザの入力を保持し、入力の検証を行う中心的な場所です。
+ユーザの入力をどのように扱うかによって、二つのタイプのモデルを作成することができます。
+もしユーザの入力が収集され、使用された後に破棄される場合は、 フォームモデル を作成します。
+もしユーザの入力が収集され、データベースへ保存される場合は、代わりに アクティブレコード を使います。
+両方のモデルは CModel という基底クラスを共有しており、この基底クラスがフォームによって必要とされる共通のインタフェースを定義しています。
+注意: この章では例としてフォームモデルを主に扱いますが、アクティブレコード に対しても同じことが適用可能です。
+1. モデルクラスの定義 ¶
+以下では、ログインページでユーザの入力を収集するために使用される LoginForm モデルクラスを作成します。
+ログインで扱う情報は認証時にのみ必要で、保存される必要はありませんので、LoginForm のモデルはフォームモデルとして作成します。
+3つの属性が LoginForm の中で宣言されています: $username, $password, そして $rememberMeです。
+これらはユーザの入力したユーザ名とパスワード、そして、ユーザがログイン状態を維持したいかどうかのオプションを保持するために用いられます。
+$rememberMe は、デフォルトで false になっているので、ログインフォームに表示される対応するオプションは、初期状態ではチェックされてない状態となります。
+情報: ここでは、これらのメンバ変数を普通のプロパティと区別するために、プロパティと呼ばずに 属性 (attribute) と呼びます。
+属性は主に、ユーザの入力やデータベースのデータを保持するために用いられるプロパティです。
+2. 検証ルールの宣言 ¶
+ユーザが入力を送信してモデルが値を受け取ったら、私たちはその値を使用する前に、それが正しい値であるかどうかを確認する必要があります。
+この確認は、一連のルールに対して入力を検証する (Validate) ことによってに実行されます。
+検証ルールは rules() メソッドの中で定義します。このメソッドはルールの構成を配列として返さなければいけません。
+class LoginForm extends CFormModel
+{
+public $username;
+public $password;
+public $rememberMe=false;
+private $_identity;
+public function rules()
+{
+return array(
+array('username, password', 'required'),
+array('rememberMe', 'boolean'),
+array('password', 'authenticate'),
+);
+}
+public function authenticate($attribute,$params)
+{
+$this->_identity=new UserIdentity($this->username,$this->password);
+if(!$this->_identity->authenticate())
+$this->addError('password','Incorrect username or password.');
+}
+}
+フォームを使う: モデルの作成 | The Definitive Guide to Yii | Yii PHP Framework

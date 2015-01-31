@@ -1,0 +1,15 @@
+IEEE Spectrumがプログラミング言語人気ランキングを公開している(Interactive: The Top Programming Languages、Slashdot)。
+ランキングは150以上の言語からGoogleでの検索結果が少ないものを除外し、残った49言語についてGoogle検索、Googleトレンド、Twitter、GitHub(新規作成、アクティブ)、Stack Overflow(質問、閲覧)、Reddit、Hacker News、Career Builder、Dice、IEEE Xplore Digital Libraryの12ソースからデータを取得。ソースごとに重み付けを加えて作成されている。
+総合で1位となったのはJavaで、2位以下はC、C++、Python、C#が続く。Javaはトレンド、求人、オープンソースの全カテゴリでそれぞれ1位となっており、使用目的別でも組み込み以外(Web、モバイル、エンタープライズ/デスクトップ)でそれぞれ1位となっている。「Edit Ranking」をクリックすると、各ソースの重み付けを変えた独自のランキングを作成することも可能だ。
+総合ランキング1位～10位は下記の通り。
+Java
+C
+C++
+Python
+C#
+PHP
+Javascript
+Ruby
+R
+MATLAB
+IEEE Spectrumのプログラミング言語ランキング、総合1位はJava | スラッシュドット・ジャパン デベロッパー

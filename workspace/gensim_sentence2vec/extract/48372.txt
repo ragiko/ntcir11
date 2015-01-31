@@ -1,0 +1,2259 @@
+
+これらのライブラリを使いたい場合は、groongaをインストールする前にライブラリをインストールしてください。
+ソースからビルド
+groongaはGNUビルドシステムを使っています。以下は一番簡単なビルド手順です:
+% wget http://packages.groonga.org/source/groonga/groonga−2.0.5.tar.gz
+% tar xvzf groonga−2.0.5.tar.gz
+% cd groonga−2.0.5
+% ./configure
+% make
+% sudo make install
+After the above steps, /reference/executables/groonga is found in /usr/local/bin/groonga.
+デフォルトのビルドでもうまく動くでしょうが、 configure のときにgroongaをカスタマイズすることができます。
+以下、それぞれの手順の詳細を説明します。
+configure
+まず configure を実行します。重要な configure のオプションは以下の通りです:
+−−prefix=PATH
+インストール先となるディレクトリを指定します。groonga関連のファイルは ${PATH}/ ディレクトリ以下にインストールされます。
+The default is /usr/local. In this case, /reference/executables/groonga is installed into /usr/local/bin/groonga.
+以下はシステム全体にgroongaをインストールするのではなく、ユーザーが個人で使う目的で ~/local にインストールする例です:
+% ./configure −−prefix=$HOME/local
+−−localstatedir=PATH
+ログファイル、PIDファイル、データベースなど頻繁に変更されるファイルを置くディレクトリを指定します。たとえば、ログファイルは ${PATH}/log/groonga.log に置かれます。
+デフォルトは /usr/local/var です。
+以下は頻繁に変更されるファイルをシステム全体で使う領域である /var に置く例です:
+% ./configure −−localstatedir=/var
+−−with−log−path=PATH
+ログファイルのデフォルトのパスを指定します。ログファイルのデフォルトのパスは /executables/groonga の −−log−path コマンドラインオプションで変更できます。そのため、このオプションはそんなに重要なビルドオプションではありません。少し便利にするためのオプションです。
+デフォルトは /usr/local/var/log/groonga.log です。 /usr/local/var の部分は −−localestatedir オプションで変更できます。
+以下はログファイルを共有しているNFSディレクトリ /nfs/log/groonga.log に置く例です:
+% ./configure −−with−log−path=/nfs/log/groonga.log
+−−with−default−encoding=ENCODING
+デフォルトのエンコーディングを指定します。有効なエンコーディングは euc_jp 、 sjis 、 utf8 、 latin1 、 koi8r 、 none です。
+デフォルトは utf−8 です。
+以下はデフォルトのエンコーディングとしてShift_JISを使う例です:
+% ./configure −−with−default−encoding=sjis
+−−with−match−escalation−threshold=NUMBER
+マッチ演算でエスカレーションをするかどうかのデフォルトの閾値を指定します。この閾値については match−escalation−threshold を参照してください。−1はマッチ演算でエスカレーションしないという意味です。
+デフォルトは0です。
+以下はデフォルトではマッチエスカレーションをしないという例です:
+% ./configure −−with−match−escalation−threshold=−1
+−−with−zlib
+zlibを使ってカラム値を圧縮する機能を有効にします。
+デフォルトでは無効です。
+以下はzlibを使ってカラム値を圧縮する機能を有効にする例です:
+% ./configure −−with−zlib
+−−with−lzo
+LZOを使ってカラム値を圧縮する機能を有効にします。
+デフォルトでは無効です。
+以下はLZOを使ってカラム値を圧縮する機能を有効にする例です:
+% ./configure −−with−lzo
+−−with−message−pack=MESSAGE_PACK_INSTALL_PREFIX
+MessagePackがどこにインストールされているかを指定します。MessagePackを −−prefix=/usr という configure オプションでインストールしていない場合は、MessagePackをビルドするときに指定したパスをこのオプションで指定してください。
+もし、MessagePackを −−prefix=$HOME/local という configure オプションでインストールした場合は、groongaの configure では −−with−message−pack=$HOME/local と指定してください。
+デフォルトは /usr です。
+以下はMessagePackが −−prefix=$HOME/local という configure オプションでインストールされている場合の例です:
+% ./configure −−with−message−pack=$HOME/local
+−−with−munin−plugins
+groonga用のMuninプラグインをインストールします。プラグインは ${PREFIX}/share/groonga/munin/plugins/ 以下にインストールされます。
+デフォルトではプラグインはインストールされません。
+以下はgroonga用のMuninプラグインをインストールする例です:
+% ./configure −−with−munin−plugins
+−−with−package−platform=PLATFORM
+initスクリプトなどプラットフォーム依存のシステム管理ファイルをインストールします。利用可能なプラットフォームは redhat と fedora です。 redhat はRed HatおよびCentOSなどのRed Hatクローンのディストリビューション用です。 fedora はFedora用です。
+デフォルトではシステム管理ファイルはインストールされません。
+以下はCentOS用のシステム管理ファイルをインストールする例です:
+% ./configure −−with−package−platform=redhat
+−−help
+すべての configure オプションを表示します。
+make
+configure が成功したら make でgroongaをビルドします:
+% make
+マルチコアCPUを使っている場合は −j オプションを使うとより速くmakeを実行できます。もし、4コアのCPUを使っている場合は、 −j4 オプションを使うともっと速くビルドできます:
+% make −j4
+make で何かエラーが発生した場合は、そのエラーをレポートしてください: /contribution/report
+make install
+これでビルドしたgroongaをインストールできます!:
+% sudo make install
+${PREFIX} への書き込み権限がある場合は sudo を使う必要はありません。例えば、 −−prefix=$HOME/local と指定した場合です。この場合は make install を使ってください:
+% make install
+コミュニティ 
+groongaに関する情報を共有するための場所がいくつかあります。あなたの参加をお待ちしています!
+メーリングリスト
+groongaに関する話題を扱うメーリングリストがあります。 
+For English speakers
+groonga-talk AT lists DOT sourceforge DOT net
+For Japanese speakers
+groonga-dev AT lists DOT sourceforge DOT jp
+チュートリアル 
+基本的な操作
+groongaには、Cのライブラリとして使用する方法と、groonga実行ファイルを通して使用する方法があります。本チュートリアルでは、groonga実行ファイルを使用する方法について説明します。groonga実行ファイルを使って、データベースの作成・操作・サーバの起動・サーバへの接続などの操作が行えます。
+データベースの作成
+groongaユーザへの第一歩はデータベースの作成です。まずは以下の書式をご覧ください。
+書式:
+groonga −n DB_PATH
+−n オプションは、データベースの作成を指示します。DB_PATHは、新しく作成するデータベースのパスを指定します。データベースは複数のファイルによって構成されるため、正確には、データベースの入り口となるファイルのパスとして使用されます。また、データベースを構成する他のファイルについては、DB_PATHがパスのプレフィックスとして使用されます。指定されたパスにファイルが存在しているときは失敗するので注意してください。
+上記のコマンドは、データベースを作成してから、コマンドの入力を受け付ける対話モードに入ります。Ctrlキーを押しながらdキーを押すと、対話モードから抜けることができます。
+実行例:
+% groonga −n /tmp/groonga−databases/introduction.db
+データベースを作成に成功すれば、/tmp/groonga−databases以下にデータベースを構成するファイルが配置されます。
+データベースの操作
+以下の書式は、既存のデータベースを操作する方法を示しています。
+書式:
+groonga DB_PATH [COMMAND]
+DB_PATHには操作対象のデータベースを指定します。指定したデータベースが存在しないときは失敗します。
+COMMAND が指定された場合、COMMAND を実行した後、実行結果を返します。指定されなかった場合には、対話モードに入ります。対話モードでは、標準入力からコマンドを読み込み、順次実行します。本チュートリアルでは、対話モードを主に使用します。
+それでは、 /reference/commands/status コマンドを実行して、groongaの実行状態を確認してみましょう。
+実行例:
+% groonga /tmp/groonga−databases/introduction.db
+status
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   {
+#     "uptime": 0,
+#     "max_command_version": 2,
+#     "n_queries": 0,
+#     "cache_hit_rate": 0.0,
+#     "version": "2.0.2−28−g74fc93a",
+#     "alloc_count": 130,
+#     "command_version": 1,
+#     "starttime": 1337566844,
+#     "default_command_version": 1
+#   }
+# ]
+以上のように、コマンドの実行結果は基本的にjson形式の配列として返却されます。配列の先頭には、エラーコードや実行時間などの情報が入ります。2番目の要素には、指示された操作の実行結果が入ります。
+コマンドの書式
+データベースを操作するコマンドには、以下の書式で引数を与えます。:
+Form_1: COMMAND VALUE_1 VALUE_2 ..
+Form_2: COMMAND −−NAME_1 VALUE_1 −−NAME_2 VALUE_2 ..
+書式1では値を適切な順番で渡す必要があります。このような引数は、位置によって値の意味が決まるため、位置固定引数などと呼ばれることもあります。
+書式2では値を名前と一緒に渡します。そのため、任意の順序で引数を指定することができます。このような引数は、名前付き引数やキーワード引数と呼ばれることもあります。
+空白や特殊な記号(ダブルクォート、シングルクォート、および丸括弧)を含む値を指定したいときは、シングルクォート(')かダブルクォート(")で値を囲むようにしてください。
+詳しくは、 /reference/executables/groonga のコマンドの項を参考にしてください。
+主なコマンド
+/reference/commands/status
+groongaプロセスの状態を表示します。
+/reference/commands/table_list
+データベースに定義されているテーブルのリストを表示します。
+/reference/commands/column_list
+テーブルに定義されているカラムのリストを表示します。
+/reference/commands/table_create
+データベースにテーブルを追加します。
+/reference/commands/column_create
+テーブルにカラムを追加します。
+/reference/commands/select
+テーブルに含まれるレコードを検索して表示します。
+/reference/commands/load
+テーブルにレコードを挿入します。
+テーブルの作成
+/reference/commands/table_create コマンドを使用してテーブルを作成します。
+groongaのテーブルには基本的に主キーが必要であり、テーブルを作成する際には型と格納方法も併せて指定する必要があります。
+型には数値や文字列などがあります。ここではデータの種類を表しているものという程度に考えてください。詳細は /reference/type に記述されています。主キーの格納方法は、主キーを条件とする検索にかかる時間や、前方一致検索の可否などを左右します。こちらも後で説明します。
+それでは、テーブルを作成してみましょう。以下の例では、主キーのあるテーブルを作成します。 name 引数はテーブルの引数を指定します。 flags 引数は主キーの格納方法を指定するために使っています。 key_type 引数は主キーの型を指定します。
+実行例:
+table_create −−name Site −−flags TABLE_HASH_KEY −−key_type ShortText
+# [
+#   [
+#     0,
+#     1342583420.16362,
+#     0.0770280361175537
+#   ],
+#   true
+# ]
+実行結果の第2要素は、操作が成功したことを示しています。
+テーブルの表示
+/reference/commands/select コマンドを用いて、テーブルの中身を表示することができます。
+実行例:
+select −−table Site
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ],
+#       [
+#         2,
+#         "http://example.net/",
+#         "brazil",
+#         ".net",
+#         "",
+#         [],
+#         "128487316x502920929",
+#         "test record 2."
+#       ],
+#       [
+#         3,
+#         "http://example.com/",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record three."
+#       ],
+#       [
+#         4,
+#         "http://example.net/afr",
+#         "usa",
+#         ".net",
+#         "",
+#         [],
+#         "0x0",
+#         "test record four."
+#       ],
+#       [
+#         5,
+#         "http://example.org/aba",
+#         "korea",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test record five."
+#       ],
+#       [
+#         6,
+#         "http://example.com/rab",
+#         "china",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test test record six."
+#       ],
+#       [
+#         7,
+#         "http://example.net/atv",
+#         "china",
+#         ".net",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test record seven."
+#       ],
+#       [
+#         8,
+#         "http://example.org/gat",
+#         "usa",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record eight."
+#       ],
+#       [
+#         9,
+#         "http://example.com/vdw",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record nine."
+#       ]
+#     ]
+#   ]
+# ]
+/reference/commands/select にテーブル名のみを指定すると、指定したテーブルの中身を10件まで表示します。実行結果の[0]はテーブルに含まれるレコードの数を示しています。今回は何も登録されていないため0件です。レコード数の次に表示されている配列はテーブルの構成を示しています。["_id","Uint32"]はUInt32型の値を持つ_idという名前のカラム、["_key","ShortText"]はShortText型の値を持つ_keyという名前のカラムをそれぞれ表しています。
+/commands/table_create コマンドで作成したテーブルには、最初から_id, _keyという2つのカラムがあります。_idはgroongaが自動的に付与するID番号が格納されるカラムです。_keyは主キーが格納されるカラムです。これらのカラム名を変更することはできません。
+カラムの作成
+/reference/commands/column_create コマンドを用いて、カラムを作成することができます。
+それでは、カラムを作成してみましょう。以下の例では、新しいカラムをSiteテーブルに追加します。 table 引数はテーブルの名前を指定します。 name 引数は新しいカラムの名前を指定します。 type 引数はカラムに格納する値の型を指定します。
+実行例:
+column_create −−table Site −−name title −−type ShortText
+# [
+#   [
+#     0,
+#     1342584190.15707,
+#     0.0806183815002441
+#   ],
+#   true
+# ]
+select −−table Site
+# [
+#   [
+#     0,
+#     1342584642.15339,
+#     0.0175399780273438
+#   ],
+#   [
+#     [
+#       [
+#         0
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ]
+#     ]
+#   ]
+# ]
+データのロード
+/reference/commands/load コマンドは、JSON形式のレコードを受け取り、テーブルに格納します。
+以下の例では9つのレコードをSiteテーブルに格納します。
+実行例:
+load −−table Site
+[
+{"_key":"http://example.org/","title":"This is test record 1!"},
+{"_key":"http://example.net/","title":"test record 2."},
+{"_key":"http://example.com/","title":"test test record three."},
+{"_key":"http://example.net/afr","title":"test record four."},
+{"_key":"http://example.org/aba","title":"test test test record five."},
+{"_key":"http://example.com/rab","title":"test test test test record six."},
+{"_key":"http://example.net/atv","title":"test test test record seven."},
+{"_key":"http://example.org/gat","title":"test test record eight."},
+{"_key":"http://example.com/vdw","title":"test test record nine."},
+]
+# [[0, 1337566253.89858, 0.000355720520019531], 9]
+実行結果の第2要素はロードされたレコードの数を示しています。上記の操作では、すべてのレコードを問題なくロードできています。
+念のため、データが入っていることを確認してみましょう。
+実行例:
+select −−table Site
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ],
+#       [
+#         2,
+#         "http://example.net/",
+#         "brazil",
+#         ".net",
+#         "",
+#         [],
+#         "128487316x502920929",
+#         "test record 2."
+#       ],
+#       [
+#         3,
+#         "http://example.com/",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record three."
+#       ],
+#       [
+#         4,
+#         "http://example.net/afr",
+#         "usa",
+#         ".net",
+#         "",
+#         [],
+#         "0x0",
+#         "test record four."
+#       ],
+#       [
+#         5,
+#         "http://example.org/aba",
+#         "korea",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test record five."
+#       ],
+#       [
+#         6,
+#         "http://example.com/rab",
+#         "china",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test test record six."
+#       ],
+#       [
+#         7,
+#         "http://example.net/atv",
+#         "china",
+#         ".net",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test record seven."
+#       ],
+#       [
+#         8,
+#         "http://example.org/gat",
+#         "usa",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record eight."
+#       ],
+#       [
+#         9,
+#         "http://example.com/vdw",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record nine."
+#       ]
+#     ]
+#   ]
+# ]
+レコードの取得
+/reference/commands/select コマンドを用いて、テーブルの中身を表示することができます。
+query 引数を使って検索条件が指定された場合、 /reference/commands/select コマンドは検索条件に適合するレコードを検索し、検索結果を出力します。
+それでは、IDを指定してレコードを取り出してみましょう。以下の例では、Siteテーブルの先頭レコードを取り出します。正確には、 query 引数を使って _id カラムに1が格納されているレコードを要求しています。
+実行例:
+select −−table Site −−query _id:1
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ]
+#     ]
+#   ]
+# ]
+次に、主キーを指定してレコードを取り出してみましょう。以下の例では、主キーが "http://example.org/" のキーを取り出します。正確には、 query 引数を使って _key カラムに "http://example.org/" が格納されているレコードを要求しています。
+実行例:
+select −−table Site −−query '_key:"http://example.org/"'
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ]
+#     ]
+#   ]
+# ]
+全文検索用の語彙表の作成
+そろそろ全文検索の使い方について見ていきましょう。
+groongaでは転置インデックスを使って高速な全文検索を実現しています。そのため、まずは転置インデックスとして用いるテーブルを作成する必要があります。テーブルの内容は、文書に含まれる単語やN−gramなどの索引語を主キーとして、各カラムに索引語の位置情報を格納するという構成になります。結果として、主キーのカラムは全文検索における語彙表の役割を果たします。
+以下の例では、Termsという名前のテーブルを転置インデックスの語彙表として作成しています。索引語を格納するため、主キーの型はShortTextです。
+実行例:
+table_create −−name Terms −−flags TABLE_PAT_KEY|KEY_NORMALIZE −−key_type ShortText −−default_tokenizer TokenBigram
+# [
+#   [
+#     0,
+#     1342584881.91118,
+#     0.0449278354644775
+#   ],
+#   true
+# ]
+/reference/commands/table_create には多くの引数が指定されているものの、本チュートリアルではすべてを理解する必要はありません。以下に簡単な説明を述べますが、読み飛ばしてもらってかまいません。
+TABLE_PAT_KEYフラグは、主キーをパトリシア木に格納することを指示しています。KEY_NORMALIZEフラグは、索引語を正規化して登録することを指示しています。 default_tokenizer 引数には、検索対象の文書をトークナイズする方式を指定するようになっています。上記の例では、一般的にN−gramと呼ばれるインデックス方式に対応するTokenBigramを指定しています。
+全文検索用のインデックスカラムの作成
+次に必要なのは、インデックス型のカラムを作成することです。このカラムは、関連付けられたカラムに対する全文検索に利用されます。つまり、全文検索を行いたいカラムに対してインデックスを作成することに相当します。
+それでは、インデックスカラムを作成してみましょう。以下の例では、Siteテーブルのカラムに対するインデックスカラムを作成します。それでは、Siteテーブルのtitleカラムを全文検索の対象とするべく、インデックス型のカラムを作成してみましょう。
+実行例:
+column_create −−table Terms −−name blog_title −−flags COLUMN_INDEX|WITH_POSITION −−type Site −−source title
+# [
+#   [
+#     0,
+#     1342584989.76649,
+#     0.120017290115356
+#   ],
+#   true
+# ]
+table 引数は語彙表を指定し、 name 引数はインデックスカラムを指定します。また、 type 引数はインデックスの対象となるテーブルを指定し、 source 引数はインデックスの対象となるカラムを指定します。COLUMN_INDEXフラグはインデックスカラムの作成を指示し、WITH_POSITIONフラグは各索引語の位置情報をインデックスに含めることを指示します。一般的な全文検索インデックスを作成したいときは、COLUMN_INDEX|WITH_POSITIONを指定してください。索引語の位置情報については、本チュートリアルでは触れません。
+ノート
+語彙表とインデックスカラムを作成するタイミングは、データをロードする前後のどちらでも問題ありません。データをロードした後でインデックスを作成し、さらに新しいデータをロードすることもできます。インデックスの作成を指示したタイミングでレコードが既に存在するときは、静的にインデックスを作成します。一方、インデックスを作成した後で追加されたレコードについては、動的にインデックスを更新します。
+全文検索
+インデックスを作成したことにより、 /reference/commands/select コマンドによる全文検索が可能になります。
+全文検索のクエリは query 引数により指定することができます。以下の例では、titleカラムに "this" という文字列が含まれているレコードを検索します。 query 引数に含まれる '@' は、全文検索を指示しています。語彙表の作成において KEY_NORMALIZE フラグを指定したときは、全角・半角や大文字・小文字などの違いが吸収されることに注意してください。
+実行例:
+select −−table Site −−query title:@this
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ]
+#     ]
+#   ]
+# ]
+上記の例では、"This" という単語を含む先頭レコードのみが検索条件に適合します。
+/reference/commands/select コマンドには、 match_columns という引数が存在します。このパラメータはデフォルトで検索対象にするカラムを指定するもので、カラム名を指定しない検索条件にのみ適用されます。 [1]
+"−−match_columns title" と "−−query this" の組み合わせを指定すると、 "−−query title:@this" を指定したときと同じ検索条件になります。
+実行例:
+select −−table Site −−match_columns title −−query this
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ]
+#     ]
+#   ]
+# ]
+出力カラムの指定
+/reference/commands/select コマンドにおいて output_columns 引数を用いることで、検索結果に含めるカラムを指定することができます。複数のカラムを指定するときは、カンマ(,)区切りでカラムを列挙します。
+実行例:
+select −−table Site −−output_columns _key,title,_score −−query title:@test
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ],
+#         [
+#           "_score",
+#           "Int32"
+#         ]
+#       ],
+#       [
+#         "http://example.org/",
+#         "This is test record 1!",
+#         1
+#       ],
+#       [
+#         "http://example.net/",
+#         "test record 2.",
+#         1
+#       ],
+#       [
+#         "http://example.com/",
+#         "test test record three.",
+#         2
+#       ],
+#       [
+#         "http://example.net/afr",
+#         "test record four.",
+#         1
+#       ],
+#       [
+#         "http://example.org/aba",
+#         "test test test record five.",
+#         3
+#       ],
+#       [
+#         "http://example.com/rab",
+#         "test test test test record six.",
+#         4
+#       ],
+#       [
+#         "http://example.net/atv",
+#         "test test test record seven.",
+#         3
+#       ],
+#       [
+#         "http://example.org/gat",
+#         "test test record eight.",
+#         2
+#       ],
+#       [
+#         "http://example.com/vdw",
+#         "test test record nine.",
+#         2
+#       ]
+#     ]
+#   ]
+# ]
+上記の例では、_scoreカラムを含む3つのカラムを指定しています。_scoreカラムはgroongaの検索結果に含まれるカラムであり、全文検索の条件に合致するレコードほど高い数値が入ります。
+表示範囲指定
+/reference/commands/select コマンドにおいて offset 引数と limit 引数を用いることで、検索結果の一部のみを表示することができます。大量の検索結果を分割してページ単位で表示したい場合などに有用です。
+offset 引数には、検索結果における始点を指定します。検索結果の1件目が必要な場合、 offset 引数を省略するか、0を指定するようにしてください。 limit 引数には、検索結果の表示件数を指定します。
+実行例:
+select −−table Site −−offset 0 −−limit 3
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ],
+#       [
+#         2,
+#         "http://example.net/",
+#         "brazil",
+#         ".net",
+#         "",
+#         [],
+#         "128487316x502920929",
+#         "test record 2."
+#       ],
+#       [
+#         3,
+#         "http://example.com/",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record three."
+#       ]
+#     ]
+#   ]
+# ]
+select −−table Site −−offset 3 −−limit 3
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         4,
+#         "http://example.net/afr",
+#         "usa",
+#         ".net",
+#         "",
+#         [],
+#         "0x0",
+#         "test record four."
+#       ],
+#       [
+#         5,
+#         "http://example.org/aba",
+#         "korea",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test record five."
+#       ],
+#       [
+#         6,
+#         "http://example.com/rab",
+#         "china",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test test record six."
+#       ]
+#     ]
+#   ]
+# ]
+select −−table Site −−offset 7 −−limit 3
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         8,
+#         "http://example.org/gat",
+#         "usa",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record eight."
+#       ],
+#       [
+#         9,
+#         "http://example.com/vdw",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record nine."
+#       ]
+#     ]
+#   ]
+# ]
+検索結果の並べ替え
+/reference/commands/select コマンドに sortby 引数を渡すことにより、検索結果を並べ替えることができます。
+sortby 引数には、整列の基準として用いるカラムを指定します。検索結果は指定したカラムの値が昇順になるように並べ替えられます。 sortby 引数の中でカラム名の前にハイフン(−)を付けることにより、降順に並べ替えることもできます。
+以下の例では、Siteテーブルのレコードを逆順に表示しています。
+実行例:
+select −−table Site −−sortby −_id
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         9,
+#         "http://example.com/vdw",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record nine."
+#       ],
+#       [
+#         8,
+#         "http://example.org/gat",
+#         "usa",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record eight."
+#       ],
+#       [
+#         7,
+#         "http://example.net/atv",
+#         "china",
+#         ".net",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test record seven."
+#       ],
+#       [
+#         6,
+#         "http://example.com/rab",
+#         "china",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test test record six."
+#       ],
+#       [
+#         5,
+#         "http://example.org/aba",
+#         "korea",
+#         ".org",
+#         "",
+#         [],
+#         "0x0",
+#         "test test test record five."
+#       ],
+#       [
+#         4,
+#         "http://example.net/afr",
+#         "usa",
+#         ".net",
+#         "",
+#         [],
+#         "0x0",
+#         "test record four."
+#       ],
+#       [
+#         3,
+#         "http://example.com/",
+#         "japan",
+#         ".com",
+#         "",
+#         [],
+#         "0x0",
+#         "test test record three."
+#       ],
+#       [
+#         2,
+#         "http://example.net/",
+#         "brazil",
+#         ".net",
+#         "",
+#         [],
+#         "128487316x502920929",
+#         "test record 2."
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ]
+#     ]
+#   ]
+# ]
+次の例では、_scoreカラムを整列の基準とすることにより、検索結果のランキングをおこなっています。検索結果はクエリとの関連性が高い順に並べ替えられます。
+実行例:
+select −−table Site −−query title:@test −−output_columns _id,_score,title −−sortby −_score
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_score",
+#           "Int32"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         6,
+#         4,
+#         "test test test test record six."
+#       ],
+#       [
+#         5,
+#         3,
+#         "test test test record five."
+#       ],
+#       [
+#         7,
+#         3,
+#         "test test test record seven."
+#       ],
+#       [
+#         8,
+#         2,
+#         "test test record eight."
+#       ],
+#       [
+#         3,
+#         2,
+#         "test test record three."
+#       ],
+#       [
+#         9,
+#         2,
+#         "test test record nine."
+#       ],
+#       [
+#         1,
+#         1,
+#         "This is test record 1!"
+#       ],
+#       [
+#         4,
+#         1,
+#         "test record four."
+#       ],
+#       [
+#         2,
+#         1,
+#         "test record 2."
+#       ]
+#     ]
+#   ]
+# ]
+整列の基準となるカラムを複数指定したいときは、カンマ(,)区切りでカラムを列挙します。複数のカラムを指定したときは、最初のカラムを基準として整列した後、最初のカラムに同じ値が格納されているレコードを次のカラムを基準として整列します。
+実行例:
+select −−table Site −−query title:@test −−output_columns _id,_score,title −−sortby −_score,_id
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_score",
+#           "Int32"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         6,
+#         4,
+#         "test test test test record six."
+#       ],
+#       [
+#         5,
+#         3,
+#         "test test test record five."
+#       ],
+#       [
+#         7,
+#         3,
+#         "test test test record seven."
+#       ],
+#       [
+#         3,
+#         2,
+#         "test test record three."
+#       ],
+#       [
+#         8,
+#         2,
+#         "test test record eight."
+#       ],
+#       [
+#         9,
+#         2,
+#         "test test record nine."
+#       ],
+#       [
+#         1,
+#         1,
+#         "This is test record 1!"
+#       ],
+#       [
+#         2,
+#         1,
+#         "test record 2."
+#       ],
+#       [
+#         4,
+#         1,
+#         "test record four."
+#       ]
+#     ]
+#   ]
+# ]
+脚注
+リモートアクセス
+groongaをサーバとして起動することにより、ネットワークを介してデータベースにアクセスできるようになります。groongaがサポートしているプロトコルは、groongaの専用プロトコルであるgqtp、memcachedバイナリプロトコル、HTTPの三種類です。
+groonga専用プロトコル(gqtp)
+gqtpサーバの起動
+groongaには、専用のプロトコルであるgqtpが存在します。gqtpを用いることにより、データベースへとリモートアクセスすることができます。以下の書式はgqtpサーバの起動方法を示しています。
+書式:
+groonga [−p PORT_NUMBER] −s DB_PATH
+−s オプションはgroongaをサーバとして起動するためのオプションです。DB_PATHには既存のデータベースのパスを指定します。 −p オプションとその引数により、サーバのポート番号を指定することができます。ポート番号を省略した場合は10041が使用されます。
+以下のコマンドにより、デフォルトのポート番号で待ち受けるサーバを起動することができます。サーバは指定されたデータベースへの操作を受け付けます。
+実行例:
+% groonga −s /tmp/groonga−databases/introduction.db
+Ctrl−c
+%
+gqtpデーモンの起動
+gqtpサーバはデーモンとして起動することができます。オプションとして、 −s の代わりに −d を与えてください。
+書式:
+groonga [−p PORT_NUMBER] −d DB_PATH
+groongaをデーモンとして起動したときは、デーモンのプロセスIDが表示されます。以下の例では、12345というプロセスIDが表示されています。サーバとして起動した場合と同様に、指定されたデータベースへの操作を受け付けます。
+実行例:
+% groonga −d /tmp/groonga−databases/introduction.db
+12345
+%
+gqtpサーバへの接続
+gqtpサーバに接続するクライアントは、以下のように起動します。
+書式:
+groonga [−p PORT_NUMBER] −c [HOST_NAME_OR_IP_ADDRESS]
+上記のコマンドによって起動されたクライアントは、サーバとの接続に成功すると対話モードに入ります。HOST_NAME_OR_IP_ADDRESSにはサーバのホスト名もしくはIPアドレスを指定します。HOST_NAME_OR_IP_ADDRESSが省略されたときは"localhost"をサーバのホスト名として採用します。また、 −p オプションとその引数により、サーバのポート番号を指定することができます。ポート番号を省略した場合は10041が使用されます。
+実行例:
+% groonga −c
+status
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   {
+#     "uptime": 0,
+#     "max_command_version": 2,
+#     "n_queries": 0,
+#     "cache_hit_rate": 0.0,
+#     "version": "2.0.2−28−g74fc93a",
+#     "alloc_count": 130,
+#     "command_version": 1,
+#     "starttime": 1337566849,
+#     "default_command_version": 1
+#   }
+# ]
+> ctrl−d
+%
+対話モードでは、標準入力からコマンドを読み込んで順次実行します。
+gqtpサーバの終了
+gqtpサーバを終了する安全は方法は、クライアントを起動して /reference/commands/shutdown を発行することです。
+実行例:
+% groonga −c
+> shutdown
+%
+memcachedバイナリプロトコル
+groongaはmemcachedバイナリプロトコルをサポートしています。以下の書式はmemcachedバイナリプロトコルのサーバをデーモンとして起動する方法を示しています。
+書式:
+groonga [−p PORT_NUMBER] −d −−protocol memcached DB_PATH
+−−protocol オプションとその引数により、サーバのプロトコルを指定することができます。"memcached"はmemcachedバイナリプロトコルを示しています。
+HTTP
+HTTPサーバの起動
+groongaはHTTPをサポートしています。以下の書式はHTTPサーバをデーモンとして起動する方法を示しています。
+書式:
+groonga [−p PORT_NUMBER] −d −−protocol http DB_PATH
+−−protocol オプションとその引数により、サーバのプロトコルを指定することができます。"http"はHTTPサーバの起動を指示しています。
+以下のコマンドは、ポート番号80で待ち受けるHTTPサーバをデーモンとして起動します。
+実行例:
+% groonga −p 80 −d −−protocol http /tmp/groonga−databases/introduction.db
+%
+HTTPサーバへのコマンド送信
+groongaがHTTPサーバとして起動されているときは、/d/COMMAND_NAME というURLにアクセスすることにより、コマンドを実行することができます。コマンドの引数は、HTTPのGETパラメータとして渡します。引数の書式は "?NAME_1=VALUE_1&NAME_2=VALUE_2&..." となります。
+以下の例は、HTTPサーバに対するコマンドの送り方を示しています。
+実行例:
+http://HOST_NAME_OR_IP_ADDRESS[:PORT_NUMBER]/d/status
+Executed command:
+status
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   {
+#     "uptime": 0,
+#     "max_command_version": 2,
+#     "n_queries": 0,
+#     "cache_hit_rate": 0.0,
+#     "version": "2.0.2−28−g74fc93a",
+#     "alloc_count": 131,
+#     "command_version": 1,
+#     "starttime": 1337566849,
+#     "default_command_version": 1
+#   }
+# ]
+http://HOST_NAME_OR_IP_ADDRESS[:PORT_NUMBER]/d/select?table=Site&query=title:@this
+Executed command:
+select −−table Site −−query title:@this
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "country",
+#           "SiteCountry"
+#         ],
+#         [
+#           "domain",
+#           "SiteDomain"
+#         ],
+#         [
+#           "link",
+#           "Site"
+#         ],
+#         [
+#           "links",
+#           "Site"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         "japan",
+#         ".org",
+#         "http://example.net/",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         "128452975x503157902",
+#         "This is test record 1!"
+#       ]
+#     ]
+#   ]
+# ]
+ブラウザベースの管理ツール
+groongaをHTTPサーバとして起動しているときは、ブラウザベースの管理ツールを使うことにより、データベースを簡単に管理することができます。管理ツールを使いたいときは、ブラウザを使って http://HOST_NAME_OR_IP_ADDRESS[:PORT_NUMBER]/ へとアクセスしてください。管理ツールの使用には、JavaScriptの実行が有効になっている必要があります。
+セキュリティ
+groongaのサーバには認証機能がありません。誰でもデータベースの内容を閲覧・修正することができます。iptablesなどを用いてアクセス元IPアドレスを制限することを推奨します。
+いろいろなデータの保存
+groongaは全文検索エンジンを起源として独自のカラムストアを持つに至るわけですが、索引語や文書を保存するだけでなく、数値や文字列、日時や経緯度など、いろいろなデータを保存することができます。本チュートリアルでは、groongaで保存できるデータの種類、およびに保存の方法を説明します。
+データの種類
+groongaにおいて利用できる基本型は、真偽値、数値、文字列、日時、経緯度の5種類に大別できます。基本型において、数値は整数・浮動小数点数の違い、符号の有無と割り当てるビット数によって細分化できるほか、文字列は長さの上限によって細分化できます。また、経緯度には測地系による分類があります。詳しくは /reference/type を参照してください。
+拡張型としては、別テーブルを参照するための情報であるテーブル参照を保存することができます。また、基本型もしくはテーブル参照を複数まとめて保存できるように、ベクターカラムをサポートしています。
+それでは、本チュートリアルで使用するテーブルを作成しておきましょう。
+実行例:
+table_create −−name ToyBox −−flags TABLE_HASH_KEY −−key_type ShortText
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+真偽値
+ブール型は真偽値(true/false)を表現するための型です。ブール型のカラムを作成するには、 /reference/commands/column_create コマンドの type 引数に Bool を指定します。ブール型のデフォルト値はfalseです。
+以下の例では、ブール型のカラムを作成し、3つのレコードを追加します。3番目のレコードについては、値を省略しているため、デフォルト値が格納されます。
+実行例:
+column_create −−table ToyBox −−name is_animal −−type Bool
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load −−table ToyBox
+[
+{"_key":"Monkey","is_animal":true}
+{"_key":"Flower","is_animal":false}
+{"_key":"Block"}
+]
+# [[0, 1337566253.89858, 0.000355720520019531], 3]
+select −−table ToyBox −−output_columns _key,is_animal
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         3
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "is_animal",
+#           "Bool"
+#         ]
+#       ],
+#       [
+#         "Monkey",
+#         true
+#       ],
+#       [
+#         "Flower",
+#         false
+#       ],
+#       [
+#         "Block",
+#         false
+#       ]
+#     ]
+#   ]
+# ]
+数値
+数値型は、整数と浮動小数点数に分けることができます。整数は、符号付き整数と符号なし整数に分けることができるだけでなく、割り当てるビット数によっても分けることができます。割り当てるビット数を大きくすると、カラムのサイズは大きくなってしまいますが、表現できる整数の範囲を大きくすることができます。詳しくは /reference/type を参照してください。数値型のデフォルト値はいずれも0です。
+以下の例では、Int8型のカラムとFloat型のカラムを作成し、既存のレコードを更新します。weightカラムについては、指定した値が問題なく格納されています。一方、priceカラムに指定した小数については、小数点以下を切り捨てた値が格納されています。また、表現できる範囲を超える値を格納しようとした2番目のレコードについては、指定した値とは異なる値が格納されています。このように、表現できる範囲を超える値を指定すると、操作後の値は未定義になるので注意してください。
+実行例:
+column_create −−table ToyBox −−name price −−type Int8
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+column_create −−table ToyBox −−name weight −−type Float
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load −−table ToyBox
+[
+{"_key":"Monkey","price":15.9}
+{"_key":"Flower","price":200,"weight":0.13}
+{"_key":"Block","weight":25.7}
+]
+# [[0, 1337566253.89858, 0.000355720520019531], 3]
+select −−table ToyBox −−output_columns _key,price,weight
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         3
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "price",
+#           "Int8"
+#         ],
+#         [
+#           "weight",
+#           "Float"
+#         ]
+#       ],
+#       [
+#         "Monkey",
+#         15,
+#         0.0
+#       ],
+#       [
+#         "Flower",
+#         −56,
+#         0.13
+#       ],
+#       [
+#         "Block",
+#         0,
+#         25.7
+#       ]
+#     ]
+#   ]
+# ]
+文字列
+文字列型は、長さの上限によって分けることができます。詳しくは /reference/type を参照してください。文字列型のデフォルト値は長さ0の文字列です。
+以下の例では、ShortText型のカラムを作成し、IDが1と2のレコードを更新します。更新しないレコードについては、デフォルト値のままとなります。
+実行例:
+column_create −−table ToyBox −−name name −−type ShortText
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load −−table ToyBox
+[
+{"_key":"Monkey","name":"Grease"}
+{"_key":"Flower","name":"Rose"}
+]
+# [[0, 1337566253.89858, 0.000355720520019531], 2]
+select −−table ToyBox −−output_columns _key,name
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         3
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "name",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         "Monkey",
+#         "Grease"
+#       ],
+#       [
+#         "Flower",
+#         "Rose"
+#       ],
+#       [
+#         "Block",
+#         ""
+#       ]
+#     ]
+#   ]
+# ]
+日時
+日時を表現するための型はTimeです。内部では1970年1月1日0時0分0秒を基準とする経過時間をマイクロ秒単位で表現します。符号付きの整数を用いるため、1970年以前の日時も表現することができます。内部表現はマイクロ秒単位の整数ですが、 /reference/commands/load コマンドおよび /reference/commands/select コマンドでは、経過秒数による指定・表示となります。デフォルト値は1970年1月1日0時0分0秒のことを表す0.0です。
+以下の例では、Time型のカラムを作成し、IDが2と3のレコードを更新します。更新しないレコードについては、デフォルト値のままとなります。
+実行例:
+column_create −−table ToyBox −−name time −−type Time
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load −−table ToyBox
+[
+{"_key":"Flower","time":1234567890.1234569999}
+{"_key":"Block","time":−1234567890}
+]
+# [[0, 1337566253.89858, 0.000355720520019531], 2]
+select −−table ToyBox −−output_columns _key,time
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         3
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "time",
+#           "Time"
+#         ]
+#       ],
+#       [
+#         "Monkey",
+#         0.0
+#       ],
+#       [
+#         "Flower",
+#         1234567890.12346
+#       ],
+#       [
+#         "Block",
+#         −1234567890.0
+#       ]
+#     ]
+#   ]
+# ]
+経緯度
+経緯度を表現するための型は、測地系によって分けることができます。詳しくは /reference/type を参照してください。経緯度の指定・表示には、以下に示す形式の文字列を使います。
+小数点を含んでいなければミリ秒表記、小数点を含んでいれば度数表記として扱われます。ミリ秒表記と度数表記を混ぜたときの動作は未定義なので注意してください。経度と緯度の区切りとしては、'x' のほかに ',' を使うことができます。経緯度のデフォルト値は "0x0" です。
+以下の例では、世界測地系を用いるWGS84GeoPoint型のカラムを作成し、IDが1と3のレコードを更新します。更新しないレコードについては、デフォルト値のままとなります。
+実行例:
+column_create −−table ToyBox −−name location −−type WGS84GeoPoint
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load −−table ToyBox
+[
+{"_key":"Monkey","location":"128452975x503157902"}
+{"_key":"Block","location":"35.6813819x139.7660839"}
+]
+# [[0, 1337566253.89858, 0.000355720520019531], 2]
+select −−table ToyBox −−output_columns _key,location
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         3
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "location",
+#           "WGS84GeoPoint"
+#         ]
+#       ],
+#       [
+#         "Monkey",
+#         "128452975x503157902"
+#       ],
+#       [
+#         "Flower",
+#         "0x0"
+#       ],
+#       [
+#         "Block",
+#         "128452975x503157902"
+#       ]
+#     ]
+#   ]
+# ]
+テーブル参照
+groongaでは、テーブル参照のカラム、すなわち関連付けたテーブルを参照するカラムを作成できます。より正確には、カラム作成時に参照先となるテーブルとの関連付けをおこない、参照先テーブルにおけるレコードIDを格納しておくことにより、参照先のレコードにアクセスできるようにします。
+You can specify a column in the associated table to the output_columns parameter of a /reference/commands/select command. The format is "Src.Dest" where Src is the name of the reference column and Dest is the name of the target column. If only the reference column is specified, it is handled as "Src._key". Note that if a reference does not point to a valid record, a /reference/commands/select command outputs the default value of the target column.
+ここでは、先のチュートリアルで作成したSiteテーブルにlinkという新たなカラムを作成し、サイト間のリンク関係を保存できるようにしてみましょう。
+実行例:
+column_create −−table Site −−name link −−type Site
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load −−table Site
+[{"_key":"http://example.org/","link":"http://example.net/"}]
+select −−table Site −−output_columns _key,title,link._key,link.title −−query title:@this
+# [[0, 1337566253.89858, 0.000355720520019531], 1]
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ],
+#         [
+#           "link._key",
+#           "ShortText"
+#         ],
+#         [
+#           "link.title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         "http://example.org/",
+#         "This is test record 1!",
+#         "http://example.net/",
+#         "test record 2."
+#       ]
+#     ]
+#   ]
+# ]
+The type parameter of the /reference/commands/column_create command specifies the table to be associated with the reference column. In this example, the reference column is associated with the own table. Then, the /reference/commands/load command registers a link from "- http://example.org" to "http://example.net". Note that a reference column requires the primary key, not the ID, of the record to be referred to. After that, the link is confirmed by the /reference/commands/select command. In this case, the primary key and the title of the referred record are output because link._key and link.title are specified to the output_columns parameter.
+ベクターカラム
+/reference/commands/column_create コマンドでカラムを作成するとき、 flags 引数にCOLUMN_VECTORフラグを指定すると、 type 引数に指定した型の配列を格納するカラムになります。このようなカラムのことは、ベクターカラムと呼びます。ベクターカラムは、各レコードに複数の値を格納できるため、一対多の参照関係を表すのに便利です。
+さきほどテーブル参照の例として作成したカラムでは、各サイトに一つのリンクしか保存できませんでした。通常は一つのサイトから多くのサイトにリンクが張られているので、これでは残念な仕様になってしまいます。そこで、ベクターカラムを使って、複数のリンクを保存できるようにしてみましょう。
+実行例:
+column_create −−table Site −−name links −−flags COLUMN_VECTOR −−type Site
+# [[0, 1337566253.89858, 0.000355720520019531], true]
+load −−table Site
+[{"_key":"http://example.org/","links":["http://example.net/","http://example.org/","http://example.com/"]}]
+select −−table Site −−output_columns _key,title,links._key,links.title −−query title:@this
+# [[0, 1337566253.89858, 0.000355720520019531], 1]
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "title",
+#           "ShortText"
+#         ],
+#         [
+#           "links._key",
+#           "ShortText"
+#         ],
+#         [
+#           "links.title",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         "http://example.org/",
+#         "This is test record 1!",
+#         [
+#           "http://example.net/",
+#           "http://example.org/",
+#           "http://example.com/"
+#         ],
+#         [
+#           "test record 2.",
+#           "This is test record 1!",
+#           "test test record three."
+#         ]
+#       ]
+#     ]
+#   ]
+# ]
+新たなカラムにはSiteテーブルに対する参照の配列を格納するので、 type 引数にSiteを指定するとともに、 flags 引数にCOLUMN_VECTORフラグを指定しています。次に、 /reference/commands/load による更新では、 "- http://example.org/" から "http://example.net/" へのリンクに加えて、 "http://example.org/" と "http://example.com/" へのリンクも登録しています。そして、最後にリンクの内容を確認しています。この例では、 output_columns 引数に links._key と links.title を指定しているので、参照先の主キーとタイトルをそれぞれ配列にしたものが表示されています。
+さまざまな検索条件の指定
+groongaは、JavaScriptに似た文法での条件絞込や、計算した値を用いたソートを行うことができます。また、位置情報(緯度・経度)を用いた絞込・ソートを行うことができます。
+JavaScriptに似た文法での絞込・全文検索
+selectコマンドのfilterパラメータは、queryパラメータと同様に、レコードの検索条件を指定します。filterパラメータとqueryパラメータが異なる点は、filterパラメータには、JavaScriptの式に似た文法で条件を指定する点です。
+実行例:
+select −−table Site −−filter "_id <= 1" −−output_columns _id,_key
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         1
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/"
+#       ]
+#     ]
+#   ]
+# ]
+ここで、filterパラメータには
+_id <= 1
+という条件を指定しています。この場合は_idの値が1以下のレコードが検索結果として得られます。
+また、&& や || を使って、条件のAND・OR指定をすることもできます。
+実行例:
+select −−table Site −−filter "_id >= 4 && _id <= 6" −−output_columns _id,_key
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         3
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         4,
+#         "http://example.net/afr"
+#       ],
+#       [
+#         5,
+#         "http://example.org/aba"
+#       ],
+#       [
+#         6,
+#         "http://example.com/rab"
+#       ]
+#     ]
+#   ]
+# ]
+select −−table Site −−filter "_id <= 2 || _id >= 7" −−output_columns _id,_key
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         5
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ]
+#       ],
+#       [
+#         1,
+#         "http://example.org/"
+#       ],
+#       [
+#         2,
+#         "http://example.net/"
+#       ],
+#       [
+#         7,
+#         "http://example.net/atv"
+#       ],
+#       [
+#         8,
+#         "http://example.org/gat"
+#       ],
+#       [
+#         9,
+#         "http://example.com/vdw"
+#       ]
+#     ]
+#   ]
+# ]
+queryパラメータとfilterパラメータを同時に指定すると、両者の条件をともに満たすレコードが結果として返ります。
+scorerを利用したソート
+selectコマンドのscorerパラメータは、 全文検索を行った結果の各レコードに対して処理を行うためのパラメータです。
+filterパラメータと同様に、 JavaScriptの式に似たな文法で様々な条件を指定することができます。
+実行例:
+select −−table Site −−filter "1" −−scorer "_score = rand()" −−output_columns _id,_key,_score −−sortby _score
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "_score",
+#           "Int32"
+#         ]
+#       ],
+#       [
+#         6,
+#         "http://example.com/rab",
+#         424238335
+#       ],
+#       [
+#         9,
+#         "http://example.com/vdw",
+#         596516649
+#       ],
+#       [
+#         7,
+#         "http://example.net/atv",
+#         719885386
+#       ],
+#       [
+#         2,
+#         "http://example.net/",
+#         846930886
+#       ],
+#       [
+#         8,
+#         "http://example.org/gat",
+#         1649760492
+#       ],
+#       [
+#         3,
+#         "http://example.com/",
+#         1681692777
+#       ],
+#       [
+#         4,
+#         "http://example.net/afr",
+#         1714636915
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         1804289383
+#       ],
+#       [
+#         5,
+#         "http://example.org/aba",
+#         1957747793
+#       ]
+#     ]
+#   ]
+# ]
+select −−table Site −−filter "1" −−scorer "_score = rand()" −−output_columns _id,_key,_score −−sortby _score
+# [
+#   [
+#     0,
+#     1337566253.89858,
+#     0.000355720520019531
+#   ],
+#   [
+#     [
+#       [
+#         9
+#       ],
+#       [
+#         [
+#           "_id",
+#           "UInt32"
+#         ],
+#         [
+#           "_key",
+#           "ShortText"
+#         ],
+#         [
+#           "_score",
+#           "Int32"
+#         ]
+#       ],
+#       [
+#         4,
+#         "http://example.net/afr",
+#         783368690
+#       ],
+#       [
+#         2,
+#         "http://example.net/",
+#         1025202362
+#       ],
+#       [
+#         5,
+#         "http://example.org/aba",
+#         1102520059
+#       ],
+#       [
+#         1,
+#         "http://example.org/",
+#         1189641421
+#       ],
+#       [
+#         3,
+#         "http://example.com/",
+#         1350490027
+#       ],
+#       [
+#         8,
+#         "http://example.org/gat",
+#         1365180540
+#       ],
+#       [
+#         9,
+#         "http://example.com/vdw",
+#         1540383426
+#       ],
+#       [
+#         7,
+#         "http://example.net/atv",
+#         1967513926
+#       ],
+#       [
+#         6,
+#         "http://example.com/rab",
+#         2044897763
+#       ]
+#     ]
+#   ]
+# ]
+検索結果には、'_score'という名前の、全文検索のスコアが代入されている仮想的なカラムが付与されることをチュートリアル中ソートの項目で説明しました。
+上記の実行例では、scorerパラメータに
+_score = rand()
+という条件を指定しています。ここでは、rand()という乱数を返す関数を用いて、全文検索のスコアを乱数で上書きしています。
+sortbyパラメータには、
+_score
+を指定しています。これは、スコア順に昇順にソートすることを意味しています。
+よって、上記のクエリは実行されるたびに検索結果の並び順がランダムに変わります。
+位置情報を用いた絞込・ソート
+groongaでは、位置情報(経緯度)を保存することができます。また、保存した経緯度を用いて絞込やソートができます。
+位置情報を保存するためのカラムの型として、TokyoGeoPoint/WGS84GeoPointの2つの型があります。前者は日本測地系、後者は世界測地系(WGS84相当)の経緯度を保存します。
+経緯度は以下のいずれかの形式の文字列として指定します。
+sourCEntral - GROONGA

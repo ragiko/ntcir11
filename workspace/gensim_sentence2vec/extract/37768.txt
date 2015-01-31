@@ -1,0 +1,73 @@
+この投稿は現実逃避アドベントカレンダー2013の4日目の記事です。
+2日目の記事でBing APIを使ってフェッチしたhtmlを使うので、2日目を先に読んでおくと理解しやすいです。
+本稿を3行でまとめる
+scikit-learnというPythonのライブラリを調べた
+2日目で保存したhtml内の語のtf-idfを計算した
+語とtfidfのマッピングを確認した
+参考
+scikit-learn公式、テキストの素性抽出ドキュメント
+scikit-learnを使ってTweet中の単語のtfidf計算
+完成品
+https://github.com/katryo/tfidf_with_sklearn
+Fork me!
+理論
+tfidfの定義
+tf-idfは tf * idf の値。あるドキュメント(文書)集合において、あるドキュメントの、ある単語につけられる。tf-idfが高い語は重要と考えることができる。情報検索において、語への重みづけに使える。
+tf (Term Frequency)は その単語 (Term) の、そのドキュメントでの出現回数 / そのドキュメントで出現したすべての単語の総数 。単語がその文書で何度も使われていると大きくなる。
+idf (Inverse Document Frequency)はdfの逆数。ただし実際には計算しやすくするようにlogで対数を取る。なので log(1/df) となる。logの底は普通2だが、別にeでも10でもよい。はず。
+df (Document Frequency)は その単語が出現したドキュメントの数 / 全ドキュメント数 。単語が広いトピックで用いられていると大きくなる。「は」や「を」、英語だと is や that などで非常に大きくなる。あるドキュメント集合の、ある単語につけられる値。
+scikit-learnでの、テキストからの素性抽出
+scikit-learn公式、テキストの素性抽出ドキュメントの内容を一部訳しながら、自分なりの理解を加えて説明する。
+scikit-learnでテキストから素性を抽出するとき、3つの処理が必要になる。
+tokenizing: テキストをbag-of-wordsに変換する。英語の場合はホワイトスペースで分割してから記号などノイズを除去するだけでOKだが、日本語でやる場合、MeCabやKyTeaのような形態素解析器を使う。scikit-learnには日本語の形態素解析器は入っていないので、この処理が別に必要になる。
+counting: 個々のドキュメントごとに、それぞれの語の出現頻度を数える。
+normalizing and weighting: 正規化と重みづけ。語の出現頻度とドキュメント内の語の数とドキュメント数でtf-idfを計算して、さらにそれを使いやすい値に変換する。
+scikit-learnでは以上3つの手順をまとめて vectorization つまり「ベクトル化」と呼んでいる。後で登場するTfidfVectorizerは3つの手順すべてを行える。すでに途中まで手順を終えているなら、途中からの計算もできるし、途中までの計算もできる。
+ちなみにscikit-learnはbag-of-wordsだけでなく、2つ以上の語の連続に着目したn-gramでのtfidf計算もできるが今回はやらない。
+CountVectorizer
+sklearn.feature_extraction.textにいるCountVectorizerは、tokenizingとcountingができる。Countingの結果はベクトルで表現されているのでVectorizer。
+公式ドキュメントではこの箇所で説明されている。
+TfidfTransformer
+同じくsklearn.feature_extraction.textにあるTfidfTransformerはnormalizingを受け持つ。fit_transformメソッドで、ただの「ドキュメントごとの語の出現頻度」をもとにtfidfを計算して、さらに正規化までしてくれる。公式ドキュメントではここ。
+TfidfVectorizer
+CountVectorizerとTfidfTransformerの機能を併せ持つ存在。まさに三位一体、トリニティフォーム。生テキストから素性抽出するときはこれを使うと便利。
+実際に使ってみた
+tfidfの高い語を見てみる
+ここからが本題。8つのクエリで取得した400のWebページ内の語、36934種類。これらのなかから、「出現したドキュメントでtfidfが0.1より大きな語」をprintする。
+まずtfidfの計算はかなり高コストなので、tfidfを計算したあと、結果をpickle化しておこう。
+import utils
+import constants
+import pickle
+import os
+from sklearn.feature_extraction.text import TfidfVectorizer
+def is_bigger_than_min_tfidf(term, terms, tfidfs):
+'''
+[term for term in terms if is_bigger_than_min_tfidf(term, terms, tfidfs)]で使う
+list化した、語たちのtfidfの値のなかから、順番に当てる関数。
+tfidfの値がMIN_TFIDFよりも大きければTrueを返す
+'''
+if tfidfs[terms.index(term)] > constants.MIN_TFIDF:
+return True
+return False
+def tfidf(pages):
+# analyzerは文字列を入れると文字列のlistが返る関数
+vectorizer = TfidfVectorizer(analyzer=utils.stems, min_df=1, max_df=50)
+corpus = [page.text for page in pages]
+x = vectorizer.fit_transform(corpus)
+#  ここから下は返す値と関係ない。tfidfの高い語がどんなものか見てみたかっただけ
+terms = vectorizer.get_feature_names()
+tfidfs = x.toarray()[constants.DOC_NUM]
+print([term for term in terms if is_bigger_than_min_tfidf(term, terms, tfidfs)])
+print('合計%i種類の単語が%iページから見つかりました。' % (len(terms), len(pages)))
+return x, vectorizer  # xはtfidf_resultとしてmainで受け取る
+if __name__ == '__main__':
+utils.go_to_fetched_pages_dir()
+pages = utils.load_all_html_files()  # pagesはhtmlをフェッチしてtextにセットずみ
+tfidf_result, vectorizer = tfidf(pages)  # tfidf_resultはtfidf関数のx
+pkl_tfidf_result_path = os.path.join('..', constants.TFIDF_RESULT_PKL_FILENAME)
+pkl_tfidf_vectorizer_path = os.path.join('..', constants.TFIDF_VECTORIZER_PKL_FILENAME)
+with open(pkl_tfidf_result_path, 'wb') as f:
+pickle.dump(tfidf_result, f)
+with open(pkl_tfidf_vectorizer_path, 'wb') as f:
+pickle.dump(vectorizer, f)
+MachineLearning -  scikit-learnでtf-idfを計算する - Qiita

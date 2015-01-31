@@ -1,0 +1,43 @@
+
+4.1 問合せの概要
+Oracle Textの基本的な問合せでは、問合せ式を入力します。式は、通常はワードで、演算子を併用する場合と併用しない場合があります。式を満たすすべてのドキュメント(事前に索引付け済)が、各ドキュメントの関連性スコアとともに戻ります。スコアは、結果セット内のドキュメントを順序付けするために使用することができます。
+Oracle Textの問合せを発行するには、SQLのSELECT文を使用します。作成する索引のタイプに応じて、WHERE句にCONTAINS演算子またはCATSEARCH演算子のいずれかを使用します。これらの演算子は、PL/SQLカーソル内など、SELECT文を使用できる状況であれば、いつでもプログラムで使用できます。
+CTXRULE索引を使用してドキュメントを分類するには、MATCHES演算子を使用します。
+4.1.1 CONTAINSによる問合せ
+CONTEXT索引タイプを作成する場合は、CONTAINS演算子を使用して問合せを発行する必要があります。大量のまとまったドキュメントのコレクションを索引付けするには、CONTEXT索引タイプが最適です。
+CONTAINS演算子では、複数の演算子を使用して検索条件を定義できます。これらの演算子によって、論理、近接、ファジー、ステミング、シソーラスおよびワイルド・カードの各検索を発行できます。また、適切に構成された索引を使用すると、HTMLやXMLのような内部構造を持つドキュメントに対してセクション検索を発行することもできます。
+CONTAINSでは、ABOUT演算子を使用して、ドキュメント・テーマを検索できます。
+4.1.1.1 CONTAINS SQL例
+SELECT文では、CONTAINS演算子を使用してWHERE句で問合せを指定します。また、ヒットリストのヒットごとにスコアを戻すには、SCORE演算子を指定します。次の例では、問合せの発行方法を示します。
+SELECT SCORE(1), title from news WHERE CONTAINS(text, 'oracle', 1) > 0;
+次のように、ORDER BY句を使用して、結果を最も高いスコアのドキュメントから最も低いスコアのドキュメントに順序付けることができます。
+SELECT SCORE(1), title from news
+WHERE CONTAINS(text, 'oracle', 1) > 0
+ORDER BY SCORE(1) DESC;
+CONTAINS演算子の後には、> 0構文が必要です。この構文は、CONTAINS演算子によって戻されるスコアの値が、戻される行に対してゼロより大きい必要があることを指定します。
+SELECT文でSCORE演算子がコールされた場合、CONTAINS演算子は、前述の例の3番目のパラメータで、スコア・ラベルの値を参照する必要があります。
+4.1.1.2 CONTAINS PL/SQL例
+PL/SQLアプリケーションでは、カーソルを使用して問合せ結果をフェッチできます。
+次の例では、CONTAINS問合せをNEWS表に対して発行し、ワードoracleを含むすべての記事を検索します。ヒットしたもののうち上位10個のタイトルとスコアが出力されます。
+declare
+rowno number := 0;
+begin
+for c1 in (SELECT SCORE(1) score, title FROM news
+WHERE CONTAINS(text, 'oracle', 1) > 0
+ORDER BY SCORE(1) DESC)
+loop
+rowno := rowno + 1;
+dbms_output.put_line(c1.title||': '||c1.score);
+exit when rowno = 10;
+end loop;
+end;
+この例では、カーソルFORループを使用して、ヒットしたもののうち上位10個を取り出します。SCORE演算子の戻り値に対して、別名scoreが宣言されています。カーソル・ドット表記法を使用して、スコアとタイトルが標準出力に出力されます。
+4.1.1.3 CONTAINSによる構造化問合せ
+構造化問合せは複合問合せとも呼ばれ、テキスト列を問い合せるCONTAINS述語と、構造化データ列を問い合せる別の述語を持つ問合せです。
+構造化問合せを発行するには、SELECT文のWHERE条件に構造化句を指定します。
+たとえば、次のSELECT文は、1997年10月1日以降に書かれた、ワードoracleを含む記事をすべて検索します。
+SELECT SCORE(1), title, issue_date from news
+WHERE CONTAINS(text, 'oracle', 1) > 0
+AND issue_date >= ('01-OCT-97')
+ORDER BY SCORE(1) DESC;
+Oracle Textでの問合せ

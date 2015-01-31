@@ -1,0 +1,140 @@
+
+PHP はエクステンションによってその機能を拡張できます。
+私は今、PHP からの認証方法を各種検討中なのですが、先日 AD へ問い合わせる方法として LDAP を検討しました。
+今回はもうひとつの方法として、OS の機能 (すなわち LSA) に任せる方法もあるのではないか、
+そしてそのほうがセキュリティ上も良いのではないかと考えています。
+これを利用するには、PHP のエクステンションを実装するのが一番簡単なように思えます。
+そこで今回は PHP エクステンションを開発する方法をまとめます。
+準備
+Visual Studio なり Windows SDK なり、Windows の DLL のビルド環境を準備します。
+これは普通に Win32 の DLL がビルドできれば OK です。
+もし DLL の作成方法がわからない場合は、当サイトの「Windows プログラミング入門 - 単純な DLL の作成」
+などをご覧ください。
+次にターゲットとなる PHP のバージョンのソースコードを入手します。
+私の環境では PHP 5.2.5 だったので (かなり古いです...)、PHP 5.2.5 のソースコードを入手します。
+> php -v
+PHP 5.2.5 (cli) (built: Nov  8 2007 23:18:51)
+Copyright (c) 1997-2007 The PHP Group
+Zend Engine v2.2.0, Copyright (c) 1998-2007 Zend Technologies
+私は C:\src\php\php-5.2.5 以下に展開しましたので、パスについては必要に応じて読み替えてください。
+環境設定
+インクルードパス
+環境設定で以下をインクルードパスに含めます。
+C:\src\php\php-5.2.5
+C:\src\php\php-5.2.5\TSRM
+C:\src\php\php-5.2.5\Zend
+C:\src\php\php-5.2.5\regex
+C:\src\php\php-5.2.5\main
+私はコマンドラインから設定するために、以下を実行しました。
+> SET PHPSRC=C:\src\php\php-5.2.5
+> SET INCLUDE=%INCLUDE%;%PHPSRC%;%PHPSRC%\TSRM;%PHPSRC%\Zend;%PHPSRC%\regex;%PHPSRC%\main
+ライブラリパス
+ライブラリは PHP のランタイムのインストールディレクトリ以下にあります。
+私は PHP を C:\php 以下にインストールしています。C:\php\dev に開発に必要なライブラリがありますので、
+環境変数 LIB に C:\php\dev を追加します。
+私はコマンドラインから設定するために、以下を実行しました。
+> SET LIB=%LIB%;C:\php\dev
+開発時には php5ts.lib をリンクしてください。
+プリプロセッサ定数定義
+PHP_WIN32
+ZEND_WIN32
+ZTS=1
+ZEND_DEBUG=0
+私は makefile を編集しました。下記の makefile をみてください。
+また、%PHPSRC%\Zend 内の zend_config.w32.h にて次の行をコメントアウトしないとビルドできませんでした。
+#define vsnprintf _vsnprintf
+この問題は常に発生するのか新しい環境で解決しているのか未確認です。
+とりあえず、ビルド時に vsnprintf などのエラーが出たらこの点を思い出してください。
+それでは簡単な PHP エクステンションを作成してみましょう。
+テスト目的ですから、非常に単純なものにします。 エクステンション dll 名は、
+php_keicode1.dll として、その中に keicode_test という名前の関数を定義します。
+これによって、次のような PHP コード (これを test.php とします) を実行すると...
+<?php
+echo keicode_test();
+?>
+次のような結果となるようにします。
+> php test.php
+Hello World!
+>
+すなわち、keicode_test() を実行すると "Hello World!" という文字列が返る、というわけです。
+ヘッダファイル
+次の内容を php_keicode1.h として保存します。
+#pragma once
+#include "zend_config.w32.h"
+#include "php.h"
+ZEND_FUNCTION(keicode_test);
+次の内容を php_keicode1.cpp として保存します。
+#include "php_keicode1.h"
+zend_function_entry keicode1_ext_functions[] = {
+PHP_FE(keicode_test, NULL)
+{NULL, NULL, NULL}
+};
+zend_module_entry keicode1_ext_module_entry = {
+STANDARD_MODULE_HEADER,
+"keicode.com Test PHP Extension",
+keicode1_ext_functions,
+NULL, NULL, NULL, NULL, NULL,
+"1.0",
+STANDARD_MODULE_PROPERTIES
+};
+ZEND_GET_MODULE(keicode1_ext);
+PHP_FUNCTION(keicode_test) {
+RETURN_STRING( "Hello World!", 1);
+}
+makefile は次の通りです。
+TARGETNAME=php_keicode1
+OUTDIR=.\chk
+ALL : "$(OUTDIR)\$(TARGETNAME).dll"
+inst: 
+@copy "$(OUTDIR)\$(TARGETNAME).dll" C:\php\ext
+"$(OUTDIR)" :
+if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+CPP_PROJ=\
+/MT\
+/W3\
+/Fo"$(OUTDIR)\\"\
+/Fd"$(OUTDIR)\\"\
+/c\
+/DPHP_WIN32\
+/DZEND_WIN32\
+/DZTS=1\
+/DZEND_DEBUG=0\
+/DWIN32
+LINK32=link.exe
+LINK32_FLAGS=\
+php5ts.lib\
+/subsystem:windows\
+/pdb:"$(OUTDIR)\$(TARGETNAME).pdb"\
+/debug\
+/RELEASE\
+/out:"$(OUTDIR)\$(TARGETNAME).dll"\
+/DLL
+#	/FORCE:MULTIPLE
+LINK32_OBJS= \
+"$(OUTDIR)\$(TARGETNAME).obj" "resource.res"
+"$(OUTDIR)\$(TARGETNAME).dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+$(LINK32) $(LINK32_FLAGS) $(LINK32_OBJS)
+.c{$(OUTDIR)}.obj::
+$(CPP) $(CPP_PROJ) $<
+.cpp{$(OUTDIR)}.obj::
+$(CPP) $(CPP_PROJ) $<
+リソースファイル resource.res をリンクしていますが、これはあってもなくても構いません。
+私は Visual Studio で作りバージョン情報だけ入れておきました。(Visual Studio を持っていないのでしたら、
+ResEdit なり何を使って作っても構いません。ここでは作り方は割愛します)
+ビルド
+SDK のコマンドプロンプトから nmake すると、
+サブディレクトリ chk に php_keicode1.dll が作成されます。
+> nmake -a
+Microsoft (R) Program Maintenance Utility Version 9.00.30729.01
+Copyright (C) Microsoft Corporation.  All rights reserved.
+if not exist ".\chk/" mkdir ".\chk"
+cl  /MT /W3 /Fo".\chk\\" /Fd".\chk\\" /c /DPHP_WIN32 /DZEND_WIN32 /DZ
+...
+Creating library .\chk\php_keicode1.lib and object .\chk\php_keicode1.exp
+>
+インストール
+作成された php_keicode1.dll を C:\php\ext 内にコピーします。
+そして、php.ini に次の行を追加して、php_keicode1.dll を有効化します。
+extension=php_keicode1.dl
+以上で、上記のように test.php を実行可能となりました。
+単純な PHP エクステンションの開発方法 - Web/DB プログラミング徹底解説

@@ -1,0 +1,217 @@
+
+(注意:旧版は、Matlab R2102で問題が生じます。対応版の入手は、ご相談下さい。(2012年4月30日))
+STRAIGHTの概要
+STRAIGHTは、音声のピッチや声質、体の大きさなどの様々な属性を操作するためのツールです。
+自然音声とほとんど区別できない高い品質を実現するために、
+STRAIGHTは、聴覚モデルと信号処理の最新の成果を取り入れて進化し続けています。
+2007年に森勢将雅 氏(現在:山梨大学)
+が発明したTANDEMに基づいて、STRAIGHTが根本的に再構築されてTANDEM-STRAIGHTとなりました。
+(先行して公開している
+e-SocietyによるSTRAIGHTのC言語版につづいて、
+2009年1月からTANDEM-STRAIGHTのMatlab版、2009年11月から
+Matlab非依存のアプリケーションが利用できるようになりました。これらの入手に関しては、
+大学等の窓口(河原@和歌山大学)
+と、
+企業等の窓口(山本@関西TLO)
+とが用意されていますので、そちらにお問い合わせ下さい。)
+STRAIGHTは、音声知覚の研究用のツールとして開発されました。
+1930年代から本格化した膨大な音声知覚研究の蓄積を活かして、その延長上に新しい研究を積み上げることができるように、
+音源とフィルタという概念に基づいた構造としています。
+STRAIGHTは、ATR 
+人間情報通信研究所で発明され、聴覚の計算論の研究の中核的な技術として
+科学技術振興事業団のCRESTの一である
+『聴覚脳プロジェクト』
+の下で研究が進められてきました。現在も、
+国内外の数多くの研究プロジェクトの基盤技術として利用されています。
+(STRAIGHTの引用状況は、例えば
+Google scholarの著者情報をご覧下さい。)
+イベント/情報
+これからのイベント
+日本音響学会2014年春季研究発表会で
+「時変多属性任意事例数モーフィング」の応用について発表します。(2014.3.11)
+過去のイベント
+第100回の音楽情報科学研究会でモーフィングの重要な拡張について発表しました。(2013.8.31-9.2)
+ICASSP2013で、時間分解能の高い高速F0抽出法を発表しました。(30 May, 2013)
+イエナ大学(独)のワークショップの招待講演で発表しました。(26-27 April, 2013)
+エジンバラ(英)のワークショップ
+LISTA workshop, Edinburough, 2-3 May 2012
+の招待講演で発表しました。
+京都で開催された
+ICASSP2012のスペシャルセッション
+(SS-L9: Advances in singing-voice synthesis, transformation, and application)
+で発表しました。
+(プレゼンテーションの資料等をリンクしました (2012.4.6))
+情報処理学会 音楽情報科学研究会 スペシャルセッション「歌声情報処理最前線!!」
+で発表(
+USTREAMへのリンク)
+しました(2012.2.3)
+用いた資料やムービを
+「歌声情報処理最前線!!」歌声のテクスチャに信号処理はどう迫るか
+のページにリンクしました。
+TANDEM-STRAIGHTの技術情報が、
+SADHANA, Academy Proceedings in Engineering Sciencesの電子版
+に掲載されました。(2011.11)
+周期性に起因する変動の影響を受けない、瞬時周波数計算法をICASSP2011で発表しました。(2011.5.27)
+説明用のムービー等
+STRAIGHTを中心に、音声コミュニケーションの拡張に関するワークショップを開催しました。(20011.3.7:東京:上智大学)
+第1回 歌声ワークショップを開催しました。(東大 本郷キャンパス 工学部6号館:2010.10.1-2)
+TANDEM-STRAIGHTの動作を紹介するムービー
+を作成しました。
+SSW7
+のチュートリアルでの説明をリンクしました。(2010.9.22-24)
+CrestMuse最終シンポジウム(関西学院大学 関西学院会館:2010.9.13)
+情報処理学会 音楽情報科学研究会(夏シンポ2010)イベント企画 
+スペシャルセッション「歌声情報処理最前線!」 (2010.7.28-30)
+ニコニコ生放送で動画中継された内容(提供: ニコニコ学術チャンネル、撮影: 伊予柑様) 
+私の出番は2:32:00辺りからです。参加者になったつもりで視聴したところ、私の説明は早口過ぎでした。(
+発表資料、
+使ったスライド)
+2009.10月の聴覚研究会で、TANDEM-STRAIGHT with GUIを使った講演を行いました。(2009.10.8-9)
+日本音響学会秋季研究発表会の招待講演(2009.9.16)の
+「ムービーで理解する、パワースペクトル、瞬時周波数、群遅延」で使ったDVDを公開しました。
+元々は、legacy-STRAIGHTの紹介用です。サイズが796MBですので、ご注意下さい。
+TANDEM-STRAIGHTとリアルタイムモーフィングインタフェースを
+8月22日のCrestMuseシンポジウムで発表/デモしました。
+(プログラム)(2008.8.22)
+11月10日の領域シンポジウムにおいて、
+応用システムを展示しました。
+STRAIGHTで出来ること (デモなど)
+TANDEM-STRAIGHT with GUI (ムービー)2009.12.3
+低周波雑音の除去とF0軌跡の自動追跡を利用した、音声の分析から合成まで
+分析からモーフィングまで
+モーフィング用GUIを端点の設定に用いた刺激連続体の合成
+有声/無声境界の対話的編集
+TANDEM-STRAIGHTを利用したモーフィングを、モーフィング率が時間とともに変化する場合に拡張しました
+(ムービー) MatlabによるGUIを用いた時変モーフィングのデモ (12 MB)
+(詳細はICASSP2009)
+TANDEM-STRAIGHTのデモ
+(ムービー) MatlabによるGUIを用いたパラメタ操作 (11 MB)
+(ビデオ) TANDEM-STRAIGHTそして、その先へ(24 MB)
+(平成20年度CrestMuseビデオより抜粋)
+2007.3/26 音声研究会
+単独発声された5母音だけを用いて音声変換する技術を発表しました。
+元の音声「楽しんでる?」、
+別の話者が発声した「あ、い、う、え、お」、
+変換された音声「楽しんでる?」、
+2006.12/19 
+文部科学省リーディングプロジェクトe-Society 基盤ソフトウェアの総合開発 の
+シンポジウム2006
+リアルタイムで動作するSTRAIGHTをデモしました。
+(デモムービー:)
+(
+Acoutic Science and Technologyの論文へのリンク)
+2006.10/26 CrestMuseプロジェクト の
+第一回シンポジウム
+歌手の声質と歌い回しのモーフィングを対話的に体験できるデモを出展しました。
+(デモの画面:)
+2005.4/23〜8/15 日本科学未来館の特別企画展
+『恋愛物語展 − どうして一人ではいられないの?−』への出展作品
+STRAIGHT を用いた感情モーフィングのデモ(Flashムービー)
+(説明)
+2004.6 のNIME'04併設のコンピュータ音楽のコンテスト(RENCON'04)への参加作品
+STRAIGHTを用いて合成された合唱
+この作品は、合成音声を用いた作品中、最も高い評価を受けました。
+2001.2 の音声,音楽音響,音楽情報科学研究会のデモから
+( 関連資料のページ )   
+STRAIGHTにより作成された5声部の演奏 と素材
+(男声 ,
+女声)
+2000.3 の聴覚研究会資料/信学技報用に作成したEGGデータベースより
+原音声「コーヒーにミルクを入れますか?」(女性、44100Hz sampling)    
+合成音声:同一F0、
+F0:2倍、周波数軸:1.25倍、
+F0:3倍、周波数軸:1.44倍、
+F0:0.5倍、周波数軸:0.8倍
+STRAIGHTで出来ること (利用者、研究協力者による発表等)
+STRAIGHTを利用/引用している発表のリスト(作成中)
+。これらの幾つかについて、補足します。
+STRAIGHT関連資料 (抜粋)
+TANDEM-STRAIGHT以降
+Hideki Kawahara, Masanori Morise, Toru Takahashi, Ryuichi Nisimura, Toshio Irino, Hideki Banno,
+Tandem-STRAIGHT: A temporally stable power spectral representation for periodic signals and applications to interference-free spectrum, F0, and aperiodicity estimation,
+Proc. ICASSP 2008, Las Vegas,pp.3933-3936(2008) 
+DOI: 10.1109/ICASSP.2008.4518514
+森勢 将雅、高橋 徹、入野 俊夫、河原 英紀、分析時刻に依存しない周期信号のパワースペクトル推定法を用いた音声分析、電子情報通信学会、Vol.J92-A,No.3,pp.163-171,Mar. 2009.
+H. Kawaahra, R. Nisimura, T. Irino, M. Morise, T. Takahashi, B. Banno, Temporally variable multi-aspect auditory morphing enabling extrapolation without objective and perceptual breakdown, Proc. ICASSP, Taipei, Taiwan, 19-24 (2009).
+DOI: 10.1109/ICASSP.2009.4960481
+河原英紀:音声モーフィングの背景と可能性、音声言語医学、50(2), pp.131-135, (2009). [解説]
+河原、森勢:TANDEM-STRAIGHTと音声モーフィング:感情音声と歌唱研究への応用、音声研究、Vol.13, No.1, pp.29-39 (2009) [解説]
+Hideki Kawahara, Toru Takahashi, Masanori Morise and Hideki Banno: Development of exploratory research tools based on TANDEM-STRAIGHT, Proc. APSIPA, Sapporo, pp.111-120 (2009).
+Hideki Kawahara : Exploration of the other aspect of Vocoder revisited, -- A-Z STRAIGHT, TANDEM-STRAIGHT and morphing --, 7th ISCA Speech Synthesis Workshop (SSW7), Kyoto Japan, 22 September, 2010.
+Hideki Kawahara, In search of perceptually relevant speech representations, - STRAIGHT, TANDEM-STRAIGHT and beyond -,
+NCSP2011 (Plenary Talk)
+Hideki Kawahara, Toshio Irino and Masanori Morise,
+An interference-free representation of instantaneous frequency of periodic signals and its application to F0 extraction,
+Proc. ICASSP 2011, pp.5420-5423, May 2011.
+赤桐隼人,森勢将雅,入野俊夫,河原英紀, ``スペクトルピークを強調したF0適応型スペクトル包絡抽出法の最適化と評価,'' 電子情報通信学会 論文誌A,Vol.J94-A, No.8, pp.557-567, 2011.
+TANDEM-STRAIGHT以前
+河原英紀:``聴覚の情景分析が生んだ高品質VOCODER: STRAIGHT''、日本音響学会誌、54巻、7号、pp.521-526 
+(1998.7). 
+STRAIGHTとその背景である『聴覚の情景分析』の関連を説明した資料。最初のGUI版のSTRAIGHTに対応した説明がなされている。
+Hideki Kawahara, Ikuyo Masuda-Kasuse and Alain de Cheveigne:   Restructuring
+speech representations using a pitch-adaptive time-frequency   smoothing
+and an instantaneous-frequency-based F0 extraction:   Possible role of a
+reptitive structure in sounds, Speech Communication,   27, pp.187-207 (1999).
+1998,1999年度SpeechCommunication誌の最優秀論文賞受賞論文.最初のGUI版のSTRAIGHTに対応している。なお,1999年9月以降のSTRAIGHTは音源情報抽出部分が変更されている。 
+Hideki Kawahara, Haruhiro Katayose, Alain de Cheveigne, Roy   D.
+Patterson:  Fixed Point Analysis of Frequency to Instantaneous   Frequency
+Mapping for  Accurate Estimation of F0 and Periodicity   , Proc. EUROSPEECH'99,
+Volume  6, Page 2781-2784 (1999).
+現在のSTRAIGHTに用いられている基本周波数抽出方法を提案した国際会議論文。   
+河原英紀, Parham Zolfaghari, Alain de Cheveigne, Roy D. Patterson:  
+周波数から瞬時周波数への写像の不動点を用いた音源情報の抽出について、信学技報、SP99-40、(1999.7).
+現在のSTRAIGHTに用いられている基本周波数抽出方法についての比較的詳しい資料。 (草稿:pdf版)    
+河原 英紀、阿竹 義徳:音声の群遅延特性に基づく声門閉止等のイベント抽出について、信学技報、SP99-171、(2000.3).  (草稿:pdf版)    
+河原 英紀、Parham Zolfaghari: 群遅延を利用した音声の駆動情報の多重解像度表現について、信学技報、EA2000-35(2000.8)
+イベント抽出法をエッジ検出としてとらえ、持続時間をS/Nととらえる方法を提案。 (草稿:pdf版)    
+河原 英紀、Parham Zolfaghari:不動点に基づく音源情報抽出法の評価について,聴覚研究会資料,(2000.9)
+昨年提案した現在のSTRAIGHTに用いられている基本周波数抽出法に関する性能評価。非常に高い性能を示すと共に、現在のSTRAIGHTの実装が性能を殺していることを指摘,音講論の資料を聴覚研究会向けに書き換え拡張したもの (草稿:pdf版)    
+河原 英紀:「聴覚脳プロジェクト」におけるウェーブレットの応用と展開,応用数理学会,(2000.10)
+これは,番外編.プロジェクトの中でウェーブレットがいかに重要な役割を果たしているかを紹介. (草稿:pdf版)    (当日の発表に用いたプレゼンテーションのpdf版 .フォントが少し変になっています)   
+河原英紀,片寄晴弘:「音声分析変換合成システムSTRAIGHTを用いたスキャットの生成について」,信学技報,SP2000-148, 
+pp.43-50 (2001.2)
+STRAIGHTをパラ言語情報や非言語情報の研究に応用する一つの構想の提案(
+草稿:pdf )
+Hideki Kawahara, Yoshinori Atake and Parham Zolfaghari: Accurate
+vocal event detection method based on a fixed-point to weighted   average
+group delay, ICSLP-2000, Beijing, pp.664-667 2000 
+Parham Zolfaghari, Yoshinori Atake, Kiyohiro Shikano, Hideki   Kawahara:
+Investigation of analysis and synthesis parameters   of STRAIGHT by subjective
+evaluation, ICSLP-2000, Beijin
+H. Kawahara and P Zolfaghari: Systematic F0 glitches around   vowel
+nasal transitions, EUROSPEECH'2001, pp.2459-2462, 2001.
+H. Kawahara, Jo Estill and O. Fujimura: Aperiodicity extraction 
+and control using mixed mode excitation and group delay manipulation   for 
+a high quality speech analysis, modification and synthesis   system STRAIGHT,
+MAVEBA 2001, Sept.13-15, Firentze Italy, 2001.
+Hideki Kawahara, Parham Zolfaghari and Alain de Cheveigne, "On F0 Trajectory for very high-quality speech manipulation" ICSLP'2002, (2002).
+Hideki Kawahara and Hisami Matsui: AUDITORY MORPHING BASED
+ON AN ELASTIC PERCEPTUAL DISTANCE METRIC IN AN INTERFERENCE-FREE
+TIME-FREQUENCY REPRESENTATION, Proc. ICASSP'2003, vol.I, pp.256-259,
+2003. 
+Hisami Matsui, Hideki Kawahara,
+Investigation of Emotionally Morphed Speech Perception and its Structure Using a High Quality Speech Manipulation System
+Prod. Eurospeech'03, pp. 2113-2116, 2003.
+Hideki Kawahara: Exemplar-based Voice Quality Analysis and Control
+using a High Quality Auditory Morphing Procedure based on STRAIGHT, 
+VOQUAL'03, ISCA Tutorial and Research Workshop, Geneva, August 27-29, 2003, pp.109-114.
+Hideki Kawahara, Hideki Banno, Toshio Irino and Parham Zolfaghari,
+ALGORITHM AMALGAM: 
+Morphing waveform based methods, sinusoidal models and STRAIGHT,
+Proc. ICASSP'2004, Montreal Canada, pp.13-16 (2004)
+Hideki Kawahara, Alain de Cheveigne, Hideki Banno, Toru Takahashi and Toshio Irino,
+Nearly Defect-free F0 Trajectory Extraction for Expressive Speech Modifications based on STRAIGHT,
+Proc. Interspeech2005, Lisboa, pp.537-540, Sept. 2005.
+Hideki Kawahara: STRAIGHT, Exploration of the other aspect of VOCODER:
+Perceptually isomorphic decomposition of speech sounds,
+Acoustic Science and Technology, Vol.27, No.6, pp.349-353 (2006) 
+(link to PDF page)
+Hideki Kawahara, Osamu Fujimura and Yasuyuki Konparu,
+Voice as Artistic Expression in Noh, presented at the Joint Meeting of ASA and ASJ, Honolulu 2006
+(link to the lay language paper on ASA press room)
+Hideki Banno, Hiroaki Hata, Masanori Morise, Toru Takahashi, Toshio Irino and Hideki Kawahara,
+"Implementation of realtime STRAIGHT speech manipulation system: Report on its first implementation,"
+Acoustic Science and Technology, Vol.28, pp.140-146 (2007)
+(link to PDF page)
+質問やコメントは河原(kawahara@sys.wakayama-u.ac.jp)まで
+STRAIGHT information (Japanese)

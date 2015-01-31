@@ -1,0 +1,122 @@
+
+下準備
+マクロコード
+Sub 段落番号置換()
+' 段落番号置換マクロ
+' 作成日 03/08/23 作成者 岡田
+'------------------------------------------------------------------------------
+' 文書中の【####】を検索し、####を連番に置き換えます。
+' ####は任意の4桁の数字です。
+'------------------------------------------------------------------------------
+Dim AddStr
+Dim Num
+Dim Flg_Conv
+Dim Msg_Title
+Msg_Title = "おしらせ"
+Num = 1
+Flg_Conv = 0
+Set myRange = ActiveDocument.Range()
+With myRange.Find
+.ClearFormatting
+.Text = "【^#^#^#^#】"
+.Replacement.Text = ""
+.Forward = True
+.Wrap = wdFindStop
+.Format = False
+.MatchCase = False
+.MatchWholeWord = True
+.MatchByte = False
+.MatchAllWordForms = False
+.MatchSoundsLike = False
+.MatchWildcards = False
+.MatchFuzzy = False
+Do While .Execute = True
+With .Parent
+Flg_Conv = 1
+.Delete
+AddStr = "【" + StrConv(Format(Num,
+"0000"), vbWide) + "】"
+.Font.Reset
+.InsertAfter (AddStr)
+.Move
+End With
+Num = Num + 1
+Loop
+End With
+If Flg_Conv = 1 Then
+MsgBox StrConv(Num - 1, vbWide) + "個の段落番号を置換しました。",
+, Msg_Title
+Else
+MsgBox "段落番号が見あたりません。",
+, Msg_Title
+End If
+End Sub
+このマクロコード(赤文字)をすべて選択し
+右クリックメニューから「コピー」を選択します。 
+マクロの登録
+Step 1 
+まず、Word97を起動します。
+次に、「Alt」キーと「F11」キーを同時に押して
+左の画面(Microsoft Visual Basic)を開き
+「Normal」の上で右クリックしてください。
+Step 2 
+右クリックメニューの「挿入」「標準モジュール」を選択します。
+Step 3 
+赤枠内のコード入力画面が表示されます。
+Step 4 
+コード入力画面内を右クリックして
+メニューの「貼り付け」を選択します。
+Step 5  
+下準備のときにコピーしておいたマクロコードが貼り付けられます。
+これでマクロが登録されました。
+「Alt」キーと「F11」キーを同時に押して
+画面(Microsoft Visual Basic)を閉じてください。
+次に、登録したマクロをワンタッチで実行するために、
+Word97のメニュー上に専用のボタンを作ります。
+マクロボタンの作成
+Step 6 
+まず、Word97の「ツール」「ユーザー設定」を選択します。
+Step 7 
+「コマンド」タブを選択し
+「マクロ」「段落番号置換」を選びます。
+Step 8 
+「段落番号置換」をドラッグして、
+Word97メニュー上の好きな位置に移動します。
+Step 9 
+このように「段落番号置換」ボタンが作成されます。
+Step 10
+「閉じる」ボタンを押します。
+マクロの実行
+Step 11
+段落番号置換を実行してみます。
+明細書中の段落番号を入れたい場所に
+【####】の文字列を入れます。
+####は任意の4桁の数値(半角または全角)です。
+この例では【0000】を入れました。
+Step 12
+Step9の「段落番号置換」ボタンを押すと
+自動的に連番が振られます。
+その他 (マクロボタンの長い名前が気になる人は、好きな名前に変更してみましょう)
+Step 13
+Step6 と同じ手順で「ユーザー設定」画面を開き
+「コマンドタブ」を選択します。 
+Step 14
+Word97 メニューの「段落番号置換」ボタンをクリックします。 
+Step 15
+「選択したボタンの編集」をクリックします。 
+Step 16
+「名前」を選択します。
+Step 17
+好きな名前に変更します。
+左の例では、「段落番号置換」にしています。
+Step 18
+Word97 メニュー上のマクロボタンの名前が変更されました。
+Step 19
+「閉じる」ボタンを押して
+「ユーザー設定」画面を閉じます。
+マクロコードのテキストファイルが必要な方は ここ をクリックしてください。
+マクロの削除手順を知りたい方は ここ をクリックしてください。 
+その他のマクロをご覧になりたい方は ここ をクリックしてください。 
+Minoru Okada
+2003.9.2 
+明細書段落番号自動置換マクロとその登録手順 (Word97)

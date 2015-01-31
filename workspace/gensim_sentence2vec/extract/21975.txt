@@ -1,0 +1,24 @@
+自己紹介  &dagger;
+名前は岩淵勇樹、ニックネームはButchi(ぶっち)です。
+CGやメディアアート作品を見る/作ることや、電子音楽(Last.fm参照)が好物です。
+公式サイトhttp://butchi.jp/
+「ICON」に載ってる画像が私の大体を表しています。幾つかリンクを貼ってあります。
+過去の発表文献もなるべく多く載せているので、よかったらのぞいてください。
+MathematicaのFourier  &dagger;
+MATLABのfftと同じ離散フーリエ変換をする場合には(恐らく)FourierParameters? -> {1, -1}にする。
+例: {1, 2, 3, 4}をフーリエ変換する
+Mathematica:
+li = {1, 2, 3, 4};
+Fourier[li, FourierParameters -> {1, -1}]
+出力
+{10. + 0. I, -2. + 2. I, -2. + 0. I, -2. - 2. I}
+MATLAB:
+li=[1 2 3 4];
+fft(li)
+出力
+10.0000  -2.0000 + 2.0000i  -2.0000  -2.0000 - 2.0000i
+MathematicaのデフォルトのFourierParameters?は{0,1}で、この場合
+li = {1, 2, 3, 4};
+Fourier[li]
+{5. + 0. I, -1. - 1. I, -1. + 0. I, -1. + 1. I}
+butchi/2011年5月 - MeRL Diary Public

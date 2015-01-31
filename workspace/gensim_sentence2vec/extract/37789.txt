@@ -1,0 +1,118 @@
+ボックスフィルタは、画像を平滑化するメディアンフィルタ、マックスフィルタ、ミニマムフィルタ、ぼかしフィルタを持つフィルタです。
+これらは入力画面の指定領域内の全画素に対して、注目画素を中心とした3×3近傍の局所領域内の画素データをソートし、メディアンフィルタならば中間値、マックスフィルタならば最高値、ミニマムフィルタなら最小値に画素データを置き換えるフィルタです。また、ぼかしフィルターは、3×3近傍の局所領域内の平均値をとるフィルタです。
+ここでは、画像のノイズを除去するスムージングフィルタとして、有効なメディアンフィルタを実行します。
+原画
+メディアンフィルタの比較
+メディアンフィルタ3×3 			メディアンフィルタ10×10
+ライブラリ関数
+MVCFLT2_MEDIAN
+int  WINAPI MvcFlt2_BoxFiltering( HANDLE hDst, HANDLE hSrcA, RECT* rcDst, 
+RECT* rcSrcA, int iX, int iY, int iAx, int iAy, int mode )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst			ボックスフィルタリング後画像
+hSrcA			ボックスフィルタリング元画像
+rcDst			処理範囲hDst
+rcSrcA			処理範囲hSrcA
+iX			フィルターサイズ(Col..行)
+iY			フィルターサイズ(row..列)
+iAx			アンカーX
+iAy			アンカーY
+mode			モード	
+MVCFLT2_MEDIAN		メディアン
+MVCFLT2_MAXF		マックスフィルター
+MVCFLT2_MINF		ミニマムフィルター
+MVCFLT2_BLUR		ぼかし
+説明
+選択範囲内の画面に対し、ボックスフィルタ処理を行います。modeによって4種類のフィルタ−処理が行えます。
+選択範囲内の画面に対し、メディアンフィルタ処理を行います。
+例)iX = 3, iY = 3の場合
+下図のような係数(3×3)を考えていることになり、iAx = 1, iAy = 1とすれば(1,1)成分を使用する近傍の中心とする。
+メディアン ・・・ ノイズ除去	マックスフィルター	 ・・・ コントラスト強める
+ぼかし   ・・・ ぼかす		ミニマムフィルター	 ・・・ コントラスト弱める
+(0,0)       (0,1)        (0,2)
+(1,0)       (1,1)        (1,2)
+(2,0)       (2,1)        (2,2)
+ソースコード
+/////////////////////////////////////////////////////////////////////////////// //
+//Median.cpp : メディアンフィルター
+//
+//////////////////////////////////////////////////////////////////////////////
+#include "stdafx.h"
+#include <windows.h>
+#include <stdio.h>
+#include <math.h>
+#include <conio.h>
+#include "MvcFlt2.h"
+#include "MvcDib.h"
+#include "MvcUtil.h"
+#include "MicroViewer.h"
+#include <algorithm> // for std::swap
+char *img_name = "/Image/Filter/Median.bmp";	// 画像ファイル名
+char text1[256];							// 結果表示用テキストバッファ
+DWORD dwTime;
+int main(int argc, char* argv[])
+{
+RECT rcP = {-1, -1, -1, -1};
+int Width ,Height;
+int iX, iY, iAx, iAy;
+iX =3;
+iY =3;
+iAx=1;
+iAy=1;
+if(MvcFlt2_Init() != 0)
+{
+printf("MvcFlt2 初期化処理エラー\n");
+exit(1);
+}
+if(MvcUtil_Init() != 0)
+{
+printf("MvcUtil 初期化処理エラー\n");
+exit(1);
+}
+//	HANDLE Input = mvLoadFromFile();
+HANDLE Input = mvLoadFromFile(img_name);		// 画像を読み込む
+MvViewer Viewer1 = mvCreate("入力画像表示");	// ビュアーを作る
+mvShow(Viewer1, Input);						// 入力画像を表示する
+// mvGetRect(Viewer1, &rcP);						// 検索範囲の設定
+// 出力用の画像を作る
+Width  = MvcDib_GetXsize(Input);
+Height = MvcDib_GetYsize(Input);
+rcP.top    = 0;
+rcP.bottom = Height -1;
+rcP.left   = 0;
+rcP.right  = Width -1;
+HANDLE Output = MvcDib_Create(Width, Height, 1, 4);  // 画像処理エリアの確保
+MvcDib_GrayFromColor(Output, Input, 0);         // カラーからグレー変換
+MvViewer Viewer2 = mvCreate("濃淡画像表示");	// ビュアーを作る
+mvShow(Viewer2, Output);						// 濃淡画像を表示する
+// 処理時間計測開始
+Vstart_timer();
+MvcFlt2_BoxFiltering(Output, Output, &rcP, &rcP, iX, iY, iAx, iAy, MVCFLT2_MEDIAN);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+MvViewer Viewer3 = mvCreate("メディアン");      // ビュアーを作る
+mvShow(Viewer3, Output);						// 濃淡画像を表示する
+printf("\n【メディアンフィルター 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, "メディアン  : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+sprintf(text1, "フィルター行列 3×3 ");
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 35,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer3));
+printf("\n キー入力すると終了します\n");
+mvWait();
+MvcFlt2_Fini();
+MvcUtil_Fini();	
+// ビュアーを破棄
+mvDestroy(Viewer1);
+mvDestroy(Viewer2);
+mvDestroy(Viewer3);
+// 画像メモリの開放
+MvcDib_Destroy(Input);
+MvcDib_Destroy(Output);
+return 0;
+}
+Copyright 2007 The Micro Vision, CO.,LTD.
+メディアンフィルタ

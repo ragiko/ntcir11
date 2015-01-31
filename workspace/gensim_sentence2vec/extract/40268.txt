@@ -1,0 +1,281 @@
+
+解像度を下げてもあまりスコアが上昇していない。(なお、640x480、16bit、Athlonでのスコアは4680)
+これはドライバーのせいなのか仕様なのかさらに検証する必要がある。
+2) 3DMARK2001SE Build330
+1. 1024×768 32ビットカラー Pure T&L使用
+左側の結果がRadeon9000 PCI、右側の結果がGeForce4MX440 PCIである。
+3DMark Score
+3945 3D marks
+3999 3D marks
+Game1 - Car Chase - Low Detail
+53.7 fps
+94.3 fps
+Game1 - Car Chase - High Detail
+31.2 fps
+38.3 fps
+Game2 - Dragothic - Low Detail
+57.0 fps
+49.0 fps
+Game2 - Dragothic - High Detail
+33.7 fps
+19.2 fps
+Game3 - Lobby - Low Detail
+61.8 fps
+75.4 fps
+Game3 - Lobby - High Detail
+30.0 fps
+33.2 fps
+Game4 - Nature
+16.1 fps
+N/A
+Fill Rate (Single-Texturing)
+283.6 MTexels/s
+440.9 MTexel/s
+Fill Rate (Multi-Texturing)
+969.9 MTexels/s
+833.5 MTexel/s
+High Polygon Count (1 Light)
+12.7 MTriangles/s
+17.7 MTriangles/s
+High Polygon Count (8 Light)
+4.3 MTriangles/s
+6.5 MTriangles/s
+Environment Bump Mapping
+62.6 fps
+N/A
+DOT3 Bump Mapping
+28.7 fps
+32.5 fps
+Vertex Shader
+29.8 fps
+4.2 fps
+Pixel Shader
+42.8 fps
+N/A
+Advanced Pixel Shader
+43.2 fps
+N/A
+Point Sprites
+7.2 MSprites/s
+9.3 MSprites/s
+ついにPCIグラフィックカードでも3DMARK2001SEのテストを全て実行できるようになりました(感動の涙。
+GeForce4MX440 PCIのほうがRadeon9000 PCIよりも特にGame1で差がついており、Game4を実行できない
+にも関わらず二つともほぼ同スコアである。
+2. 640×480 32ビットカラー Pure T&L使用
+Radeon9000 PCIのみ。
+3DMark Score
+5756 3D marks
+Game1 - Car Chase - Low Detail
+77.5 fps
+Game1 - Car Chase - High Detail
+40.4 fps
+Game2 - Dragothic - Low Detail
+84.3 fps
+Game2 - Dragothic - High Detail
+44.1 fps
+Game3 - Lobby - Low Detail
+98.5 fps
+Game3 - Lobby - High Detail
+45.3 fps
+Game4 - Nature
+27.8 fps
+Fill Rate (Single-Texturing)
+295.9 MTexels/s
+Fill Rate (Multi-Texturing)
+962.9 MTexels/s
+High Polygon Count (1 Light)
+13.5 MTriangles/s
+High Polygon Count (8 Light)
+4.4 MTriangles/s
+Environment Bump Mapping
+106.6 fps
+DOT3 Bump Mapping
+55.5 fps
+Vertex Shader
+38.5 fps
+Pixel Shader
+84.4 fps
+Advanced Pixel Shader
+66.6 fps
+Point Sprites
+10.9 MSprites/s
+640x480においては3DMARK2001SEのスコアのほうが3DMARK2000のスコアよりもずっと高いという非常に珍しい現象が起こった。
+(3) SeriousSam The Second Encounter (ver1.07 OpenGL)
+このゲームの結果は実行するごとに結果がそこそこばらつくことに注意してもらいたい。
+DEMO 〜The Elephant Atrium〜
+シングルプレイ時のデモである。グラフィックはNormal設定。
+左側の結果がRadeon9000 PCI、右側の結果がGeForce4MX440 PCIである。
+1024x768 16bit Average
+64.7 fps
+65.7 fps
+Max
+216.7 fps
+130.0 fps
+Min
+31.5 fps
+43.4 fps
+1024x768 32bit Average
+58.0 fps
+55.5 fps
+Max
+159.4 fps
+102.4 fps
+Min
+29.5 fps
+37.8 fps
+平均はほぼ同じだが、最低フレームレートがGeForce4MX440 PCIのほうがずっと高く
+ゲームの快適さはGeForce4MX440 PCIのほうが上であろう。
+グラフィック設定をSpeedにした場合。(Radeon9000 PCIのみ)
+800x600 16bit Average
+77.1 fps
+Max
+249.6 fps
+Min
+40.3 fps
+800x600 32bit Average
+73.8 fps
+Max
+220.2 fps
+Min
+38.5 fps
+1024x768 16bit Average
+72.0 fps
+Max
+225.0 fps
+Min
+38.3 fps
+1024x768 32bit Average
+63.6 fps
+Max
+212.1 fps
+Min
+35.0 fps
+多少設定を落とさないと快適には遊べないものと思われる。
+DEMO 〜The Grand Cathedral〜
+マルチプレイ時のデモであり、COOPデモであるため重い。グラフィック設定はSpeed。
+左側の結果がRadeon9000 PCI、右側の結果がGeForce4MX440 PCIである。
+1024x768 16bit Average
+35.3 fps
+44.5 fps
+Max
+161.7 fps
+93.3 fps
+Min
+19.7 fps
+29.8 fps
+1024x768 32bit Average
+41.4 fps
+38.6 fps
+Max
+173.2 fps
+76.1 fps
+Min
+22.8 fps
+26.9 fps
+最低フレームがかなり低く、設定をだいぶ落とさないとまともに遊べないのではないかと思われる。
+(4) Quake3 Arena ver 1.30 DEMO001 TIMEDEMO
+OpenGLを用いている。またグラフィック設定は一番重くなるように設定してある。
+右側の結果がRadeon9000 PCI、右側の結果がGeForce4MX440 PCIである。
+800x600 16bit
+92.5 fps
+107.7 fps
+800x600 32bit
+90.0 fps
+94.6 fps
+1024x768 16bit
+88.7 fps
+91.3 fps
+1024x768 32bit
+68.9 fps
+76.2 fps
+1280x1024 16bit
+61.0 fps
+72.0 fps
+1280x1024 32bit
+39.1 fps
+57.3 fps
+1280x1024から一気にfpsが低下している。
+(5) UT2003 DEMO版 BenchMark
+DirectX8.0に対応したゲームであり、非常に重い。
+左側の結果がRadeon9000 PCI、右側の結果がGeForce4MX440 PCIである。
+なお、とるのめんどくさいのでGeForce4MX440 PCIでの640x480での結果はない。
+FlyBy
+Flyby MAP1
+640x480 Average
+63.1 fps
+Max
+277.1 fps
+Min
+14.1 fps
+1024x768 Average
+31.3 fps
+56.0 fps
+Max
+116.1 fps
+144.5 fps
+Min
+7.1 fps
+40.78 fps
+Flyby MAP2
+640x480 Average
+121.4 fps
+Max
+345.4 fps
+Min
+59.35 fps
+1024x768 Average
+65.6 fps
+81.0 fps
+Max
+208.7 fps
+273.8 fps
+Min
+19.0 fps
+38.1 fps
+BotMatch
+BotMatch MAP1
+640x480 Average
+36.2 fps
+Max
+68.3 fps
+Min
+13.3 fps
+1024x768 Average
+21.3 fps
+31.8 fps
+Max
+61.7 fps
+68.6 fps
+Min
+5.9 fps
+14.3 fps
+BotMatch MAP2
+640x480 Average
+41.4 fps
+Max
+118.3 fps
+Min
+20.7 fps
+1024x768 Average
+34.1 fps
+39.1 fps
+Max
+120.1 fps
+122.7 fps
+Min
+10.1 fps
+19.4 fps
+Radeon9000 PCiでは設定をだいぶ落とさないと快適にはできないだろう。
+GeForce4MX440 PCIではそこそこ遊べるのではないかと思う。
+(6) その他
+解像度は2048x1536、32bitcolorでリフレッシュレートが85Hz出せて、その設定でDVD再生も正常にできたので
+2Dまわりは問題ないと思う。DVI出力は液晶を持っていないので調べられません。(汗
+ただ、Radeon9000 PCI&GeForce4MX440 PCI使用時にMonsterTVを使用したときに、
+TV画面がコマ落ちしていた(帯域不足?)ので、キャプチャーをやろうとしている人は注意が必要だと思う。 
+***まとめ***
+AGPスロットが使えるマシンにわざわざこれを導入する必要はないが、PCIのグラフィックカードしか使えないという人に対しては
+有効なアップグレード手段ではないかと思われる思う。
+ただ、私のIntel i845Eマザー(GA-8IEX)とIntel i815Eマザー(GA-6IEM)では、BIOSの設定を初期設定にしても、ドライバーを導入
+するとOS、ドライバーのバージョンに関係なく起動時にフリーズした(ちなみにK7S5A(SiS735)、友人のマザー(SiS650)では問題なく
+動作した)ので、マザーとの相性が出る可能性があると思う。
+Radeon9000 PCI&GeForce4MX440 PCIの性能

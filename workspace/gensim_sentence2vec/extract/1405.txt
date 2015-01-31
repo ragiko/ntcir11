@@ -1,0 +1,246 @@
+ 
+クラスの型
+WSClistData
+メソッド関数仕様
+WSClistData 関数の説明 
+書式        WSClistData()
+機能        WSClistData クラスのデフォルトのコンストラクタです。
+リストデータのインスタンスを一つ作成します。
+処理    
+引数        なし。
+返値      リストデータのインスタンスへのポインタ
+注意    
+サンプル 
+WSClistData  listdata;
+long data1 = 100;
+long data2 = 200;
+//データを記憶させます。
+listdata.add((void*)data1);
+listdata.add((void*)data2);
+//データを取り出します。
+long d1 = (long)listdata[0];
+long d2 = (long)listdata[1];
+//指定した位置のデータを置き換えます。
+long data3 = 300;
+long data4 = 400;
+listdata.setData(0,(void*)data3);
+listdata.setData(1,(void*)data4);
+//getData でデータの取り出しを行うと、次のようになります。
+long d1 = (long)listdata.getData(0);
+long d2 = (long)listdata.getData(1);
+//データの数を取得するには、次のようにします。
+long num = listdata.getNum();
+//指定したデータを消すには、次のようにします。
+listdata.del((void*)400);
+//指定した位置のデータを消すには、次のようにします。
+listdata.delPos(0);
+//データ一括でを消すには、次のようにします。
+listdata.clear();
+WSClistData 関数の説明 
+書式        WSClistData(long segment_size)
+機能        引数にセグメントを指定するコンストラクタです。
+セグメントサイズは、リスト構造体の内部で利用される領域を
+拡張する単位です。一度にたくさんのデータを保持する場合や、
+データの出し入れが多い場合には、セグメントサイズを大きく
+すると、パフォーマンスが良くなります。
+セグメントサイズは1〜256の間で指定します。
+デフォルトは 128 です。
+0以下または256以上を指定した場合は、256とみなされます。
+処理    
+引数         
+(in)long segment_size    セグメントサイズ 
+返値      リストデータのインスタンスへのポインタ
+注意    セグメントサイズにマイナスの値、0、256 以上を指定すると、
+256 として扱われます。
+サンプル 
+//データバッファサイズ64 としてリストを作成します。
+//64サイズ単位にリストが拡張されます。
+WSClistData  indexdata(64);
+add 関数の説明 
+書式        long add(void* data,long pos = -1)
+機能        リストの任意の位置にデータを追加する関数です。
+データの挿入位置 (pos) を指定しない場合、
+または、-1 を指定した場合は、データの末尾に追加されます。
+位置を指定した場合には、その位置にデータが挿入されます。
+先頭に追加する場合は0を指定します。
+指定した位置が保持しているデータ個数よりも大きい場合は、
+リストの末尾に追加されます。
+処理    指定されたデータを内部で管理しているデータ領域に追加します。
+引数         
+(in)void* data    追加したいデータ 
+(in)long pos   挿入位置(指定しない場合は、末尾) 
+返値      WS_NO_ERR= 正常、それ以外はエラー。
+注意    指定した位置が、保持しているデータ個数よりも大きい場合は、
+リストの末尾に追加されます。
+サンプル    WSClistData() を参照してください。
+setData 関数の説明 
+書式        void setData(long pos,void* data)
+機能         指定した位置のデータを、引数に指定するデータと
+置き換える関数です。
+指定した位置にデータがない場合は無視されます。
+処理    
+引数         
+(in)long pos    入れ換えたいデータの位置(先頭は0) 
+(in)void*  data  データ  
+返値      なし。
+注意    指定した位置にデータが無い場合は、無視されます。
+サンプル    WSClistData() を参照してください。
+getData 関数の説明 
+書式        void* getData(long pos)
+機能        指定した位置のデータを取得する関数です。
+データ位置は先頭を0とし、保持しているデータ数-1までの
+範囲を指定します。-1 を指定すると、末尾のデータを返します。
+指定した位置にデータが存在しない場合は NULL が返されます。
+処理    
+引数         
+(in)long pos   データの位置(先頭は0) 
+返値      保持しているデータ
+注意    指定した位置にデータが存在しない場合は NULL が返されます。
+サンプル    WSClistData() を参照してください。
+getNum 関数の説明 
+書式        long getNum()
+機能        リストデータが保持するデータの個数を取得する関数です。
+処理    
+引数        なし。
+返値      保持しているデータの個数
+注意    
+サンプル    WSClistData() を参照してください。
+getBuf 関数の説明 
+書式        void** getBuf()
+機能        リストデータが保持するデータ領域を取得する関数です。
+処理    
+引数        なし。
+返値      データ領域
+注意    返された領域を解放してはいけません。
+サンプル    
+WSClistData  listdata;
+long data1 = 100;
+long data2 = 200;
+long data3 = 300;
+//データを記憶させます。
+listdata.add((void*)data1);
+listdata.add((void*)data2);
+listdata.add((void*)data3);
+//内部のバッファを取得します。
+void** ptr =  listdata.getBuf();
+//バッファからデータを取り出してみます。
+long d1 = (long)(ptr[0]); //data1 の 100
+long d2 = (long)(ptr[1]); //data2 の 200
+long d3 = (long)(ptr[2]); //data3 の 300
+del 関数の説明 
+書式        long del(void* data)
+機能        指定したデータ値を持つ項目を、リストから削除する関数です。
+指定した値が複数存在する場合は、先頭の1個だけが削除されます。
+処理    
+引数         
+(in)void* data   削除したいデータ 
+返値      削除成功の場合は0、存在しない場合は−1。
+注意    複数存在する場合は、最も先頭に近いものから順に削除されて
+いきます。
+サンプル 
+WSClistData  listdata;
+long data1 = 100;
+long data2 = 200;
+long data3 = 300;
+//データを記憶させます。
+listdata.add((void*)data1);
+listdata.add((void*)data2);
+listdata.add((void*)data3);
+//指定したデータを消すには、次のようにします。
+listdata.del((void*)200);
+//指定したデータを消すには、次のようにします。
+listdata.delPos(1);
+//データ一括でを消すには、次のようにします。
+listdata.clear();
+delPos 関数の説明 
+書式        long delPos(long pos)
+機能        指定した位置のデータをリストから削除する関数です。
+位置に -1 を指定すると、末尾のデータを指定したとみなします。
+処理    
+引数         
+(in)long pos   削除したいデータの位置(先頭は0) 
+返値      削除成功の場合は0、存在しない場合は−1。
+注意    
+サンプル    del() を参照してください。
+clear 関数の説明 
+書式        void clear()
+機能        保持しているデータをクリアする関数です。
+リストの保持するデータの個数は0となります。                 
+処理    
+引数        なし。 
+返値      なし。
+注意    
+サンプル    del() を参照してください。
+= オペレータの説明
+書式        WSClistData & operator = (WSClistData& src)
+機能        リストデータをコピーする演算子です。
+処理    
+引数         
+(in)WSClistData& src   コピーしたいリストデータ 
+返値      
+注意    
+サンプル 
+WSClistData  listdata;
+long data1 = 100;
+long data2 = 200;
+long data3 = 300;
+//データを記憶させます。
+listdata.add((void*)data1);
+listdata.add((void*)data2);
+listdata.add((void*)data3);
+//リストをコピーするには、次のようにします。
+WSClistData  listdata2;
+listdata2 = listdata;
+［］オペレータの説明
+書式        void* & operator［］(long pos)
+機能        リストデータを配列の様に取り扱うためのオペレータです。
+データの先頭位置を0とし、データの個数-1までの範囲を
+添字として指定できます。
+処理    
+引数         
+(in)long pos   データの位置(先頭は0) 
+返値      データ
+注意    
+サンプル    WSClistData() を参照してください。
+getTopData 関数の説明 
+書式        void* getTopData()
+機能        リストの先頭データを取得する関数です。
+getData(0) と同じ結果になります。
+先頭にデータが存在しない場合は NULL が返されます。
+処理    getData(0) と同じです。
+引数        なし。 
+返値      先頭のデータ
+注意    データが存在しない場合は NULL が返されます。
+サンプル 
+WSClistData  listdata;
+long data1 = 100;
+long data2 = 200;
+long data3 = 300;
+//データを記憶させます。
+listdata.add((void*)data1);
+listdata.add((void*)data2);
+listdata.add((void*)data3);
+//リストの先頭のデータを取得するには、次のようにします。
+long tval = (long)listdata.getTopData();
+getBottomData 関数の説明 
+書式        void* getBottomData()
+機能        リストの末尾データを取得する関数です。
+getData(-1) と同じ結果になります。
+リストの末尾にデータが存在しない場合は NULL が返されます。
+処理    getData(-1) と同じです。
+引数        なし。 
+返値      最後尾のデータ
+注意    データが存在しない場合は NULL が返されます。
+サンプル 
+WSClistData  listdata;
+long data1 = 100;
+long data2 = 200;
+long data3 = 300;
+//データを記憶させます。
+listdata.add((void*)data1);
+listdata.add((void*)data2);
+listdata.add((void*)data3);
+//リストの末尾のデータを取得するには、次のようにします。
+long bval = (long)listdata.getBottomData();
+Document Release 3.90  For Use with WideStudio/MWT Release 3.90, Summer 2005 
+WideStudio/MWT Class Reference

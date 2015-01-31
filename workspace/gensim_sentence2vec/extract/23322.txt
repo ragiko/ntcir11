@@ -1,0 +1,10 @@
+ヒトの高次脳機能である感性の識別手法として感性フラクタル次元解析法(EFAM:Emotion Fractal Analysis Method)がある. EFAMは,時間経過に伴う特徴量の変化により,学習時から3分程度で識別率が低下する問題がある.
+そこで本研究では,脳波のフラクタル次元と近赤外分光法のOxy-Hb濃度との相関性に着目し,
+正準相関分析を基にした解析法を提案し,この問題の解決を試みる.また,被験者2名に2感性想起実験を実施し,提案手法とEFAMの比較を行った.
+その結果,識別率12.90% 向上と,正準変量同士の相関係数よる識別の信頼性評価の可能性が示唆された. 
+EFAM (Emotion Fractal Analysis Method) is the method to analyze Kansei based on the fractal property of EEG.
+EFAM has a problem that is the reduction of indentification rate after about three minutes of earning time.
+Thus, in this study we attempt to solve this problem by means of proposing an analysis method based on 
+canonical correlation analysis and focusing on the relativity between the fractal dimension of EEG signals and hemodynamics measured by NIRS(Near-Infrared Spectroscopy).
+As a result, the identification average rate increased 12.90%. The result suggests that the reliability evaluation of identification is possible by the correlation between the canonical variates.
+研究会 - 脳波とヘモダイナミズムの相関性に着目した解析手法の提案

@@ -1,0 +1,71 @@
+概要
+Twitter4JはTwitterが用意している様々なAPIを叩けるJavaのライブラリ。
+本稿ではTwitter4jのSearchAPI、StreamingAPIの2つを使って、Tweetを収集します。
+収集することが目的なので、投稿とかタイムラインとかに関するAPIは扱いません。
+導入
+公式サイトからjarを落としてクラスパスを通す。
+Twitter4Jの公式サイト
+http://twitter4j.org/ja/index.html
+Mavenも利用できる。下記はセントラルリポジトリを利用した場合の記述。
+<dependency>
+<groupId>org.twitter4j</groupId>
+<artifactId>twitter4j-core</artifactId>
+<version>[2.2,)</version>
+</dependency>
+セントタルレポジトリは遅れて反映される場合もあるので、確実に最新のを使いたい場合はhttp://twitter4j.org/maven2のレポジトリを見ると良いらしい。
+JavaDocは下記。
+Twitter4J JavaDoc
+http://twitter4j.org/ja/javadoc/index.html
+SearchAPIを使ってみる
+SearchAPIはTweet本文に出現する単語を検索したり、投稿したユーザ名で検索したり、位置情報で検索したり等、いろいろできる。
+まずは普通に単語を検索。
+// 初期化
+Twitter twitter = new TwitterFactory().getInstance();
+Query query = new Query();
+// 検索ワードをセット(試しにバルスを検索)
+query.setQuery("バルス");
+// 検索実行
+QueryResult result = twitter.search(query);
+System.out.println("ヒット数 : " + result.getTweets().size());
+// 検索結果を見てみる
+for (Tweet tweet : result.getTweets()) {
+// 本文
+System.out.println(tweet.getText());
+// 発言したユーザ
+System.out.println(tweet.getFromUser());
+// 発言した日時
+System.out.println(tweet.getCreatedAt());
+// 他、取れる値はJavaDoc参照
+// http://twitter4j.org/ja/javadoc/twitter4j/Tweet.html
+}
+サンプルコード全文
+こんな感じでさらっと検索ができる。
+ページングして検索してみる
+デフォルトだと結果は15件しか取れないので、rpp(1回でに取得するTweet数)やpage(ページ番号)を指定してもっと取ってみる。
+// 初期化
+Twitter twitter = new TwitterFactory().getInstance();
+Query query = new Query();
+// 検索ワードをセット(試しにhttpを検索)
+query.setQuery("http");
+// 1度のリクエストで取得するTweetの数(100が最大)
+query.setRpp(100);
+// 最大1500件(15ページ)なので15回ループ
+for (int i = 1; i <= 15; i++) {
+// ページ指定
+query.setPage(i);
+// 検索実行
+QueryResult result = twitter.search(query);
+// 取ったテキストを表示
+for (Tweet tweet : result.getTweets()) {
+System.out.println(tweet.getText());
+}
+// たまに次ページあるのに100件取れないことがあるから
+// 95件以上あったら次ページを確認しに行くことにする
+if (result.getTweets().size() < 95)
+break;
+// 連続でリクエストすると怒られるので3秒起きにしておく
+Thread.sleep(3000);
+}
+サンプルコード全文
+これで最大1500件のTweetが取れる。「バルス」とか「あけおめ」みたいな音速で流れるTweetは追い切れないけど、任意のハッシュタグを監視するくらいならこれでいける。
+Twitter4JでTweetを収集してみる | mwSoft

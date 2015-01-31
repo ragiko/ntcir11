@@ -1,0 +1,240 @@
+
+ 
+トランザクションサービスのコンポーネント 
+オブジェクト指向トランザクションは、トランザクションマネージャ (
+これもオブジェクトです) 
+によって管理されるトランザクションオブジェクトに代表されます。ABAP
+プログラムについては、トランザクションマネージャがトランザクションサービスに相当します。
+CL_OS_SYSTEM
+トランザクションマネージャを作成するには、システムサービスの汎用クラス CL_OS_SYSTEM
+の静的メソッドGET_TRANSACTION_MANAGER 
+が必要です。トランザクションモードは、このクラスのメソッドINIT_AND_SET_MODES
+で設定されます。
+IF_OS_TRANSACTION_MANAGER
+とIF_OS_TRANSACTION
+ABAP 
+プログラムでは、クラス参照変数を使用してトランザクションマネージャとトランザクションを処理しません。代わりに、インタフェースIF_OS_TRANSACTION_MANAGER
+および
+IF_OS_TRANSACTION 
+を使用してトランザクションマネージャとトランザクションにアクセスします
+(
+例を参照)
+。
+システムサービスの関連メソッド
+システムサービスのクラス CL_OS_SYSTEM 
+のコンポーネントのほとんどは、オブジェクトサービスによって内部的に使用されます。オブジェクト指向トランザクションを明示的に処理するには、アプリケーションプログラムで 2
+つのメソッドを使用する必要があります。
+INIT_AND_SET_MODES
+この静的メソッドは、オブジェクトサービス全体を初期化して必要なサービスオブジェクトを作成します。INIT_AND_SET_MODES
+は、ABAP
+プログラムごとに一度だけ実行されます。追加で呼出を行うと、例外が発生します。 
+INIT_AND_SET_MODES 
+は、最上位トランザクションのトランザクションモードを設定するために、トランザクションサービスと関連して使用されます。データ型グループ OSCON
+の定数 OSCON_TRUE
+または OSCON_FALSE
+を、入力パラメータI_EXTERNAL_COMMIT
+に渡す必要があります。OSCON_TRUE
+が渡されると、プログラムで COMMIT WORK
+を明示的に定義する必要がある互換性モードが設定されます。一方、OSCON_FALSE
+が渡されると、明示的に COMMIT WORK
+を使用できないオブジェクト指向トランザクションモードが設定されます。互換性モードが設定されると、最上位トランザクションが暗黙的に作成され、開始されます。プログラムのその他のトランザクションは、すべてこのトランザクション内にネストされます。
+更新モードは、OS_DMODE 
+型の別の入力パラメータI_UPDATE_MODE 
+で制御されます。入力パラメータには、非同期更新用のOSCON_DMODE_DEFAULT
+または
+OSCON_DMODE_UPDATE_TASK
+、直接更新用の
+OSCON_DMODE_DIRECT
+、ローカル更新用の
+OSCON_DMODE_LOCAL
+、および同期更新用の
+OSCON_DMODE_UPDATE_TASK_SYNC 
+があります。OSCON_DMODE_LOCAL
+と
+OSCON_DMODE_UPDATE_TASK_SYNC 
+は、互換性モードでは ABAP
+の COMMIT WORK
+AND WAIT 
+文と SET UPDATE
+TASK LOCAL 
+文を使って設定できるため、オブジェクト指向トランザクションモードでのみ使用されます。ローカル更新または直接更新を選択すると、トランザクションを開始するときに SET
+UPDATE TASK LOCAL 
+文が暗黙的に実行されます。
+INIT_AND_SET_MODES 
+は、オブジェクトサービスのクラスにデフォルト値を使って最初にアクセスするときに暗黙的に実行されます (
+非同期更新を使用する互換性モード)
+。INIT_AND_SET_MODES
+を明示的に実行する場合は、効力のある暗黙的な呼出の前に行う必要があります
+(
+これで暗黙的な呼出が行われなくなります)
+。
+GET_TRANSACTION_MANAGER
+この静的メソッドによって、トランザクションマネージャへの参照を含んだ
+IF_OS_TRANSACTION_MANAGER 
+型のリターンパラメータRESULT 
+が返されます。トランザクションマネージャは、オブジェクトサービスを初期化するときに作成されます。
+トランザクションマネージャのメソッド
+トランザクションマネージャは、ABAP 
+プログラムのオブジェクト指向トランザクションを管理し、インタフェース
+IF_OS_TRANSACTION_MANAGER 
+から実行されます。
+IF_OS_TRANSACTION_MANAGER~CREATE_TRANSACTION
+トランザクションを作成し、IF_OS_TRANSACTION 
+型のリターンパラメータRESULT 
+でトランザクションへの参照を返します。
+IF_OS_TRANSACTION_MANAGER~GET_CURRENT_TRANSACTION
+IF_OS_TRANSACTION 
+型のリターンパラメータ RESULT 
+で現在のトランザクションへの参照を返します。
+IF_OS_TRANSACTION_MANAGER~GET_TOP_TRANSACTION
+IF_OS_TRANSACTION 
+型のリターンパラメータ RESULT 
+で、最上位トランザクションへの参照を返します。
+トランザクションのメソッド
+トランザクションは、インタフェース IF_OS_TRANSACTION 
+から実行されます。
+IF_OS_TRANSACTION~START
+トランザクションを開始します。最上位トランザクションが存在しない場合は、このトランザクションが最上位トランザクションになります。最上位トランザクションが存在する場合は、このトランザクションがサブトランザクションになります。トランザクションを開始するには、そのステータスがOSCON_TSTATUS_NEW
+であることが必要です。こうして、各トランザクションはプログラムごとに一度しか開始できないようになっています。END
+メソッドで終了したトランザクションをもう一度開始することはできません。これは、END
+によってプログラムでトランザクションオブジェクトが無効化されるためです。新しいトランザクションを開始する必要がありますが、同じ参照変数は再使用できます。 
+START
+メソッドと END
+メソッドの間に COMMIT WORK
+文を挿入することはできません。
+IF_OS_TRANSACTION~END
+トランザクションを終了します。永続オブジェクトに対する変更は、最上位トランザクションの COMMIT WORK
+または
+ROLLBACK WORK 
+まで保存されます。トランザクションが最上位トランザクションである場合は、END
+に到達した時点で COMMIT WORK
+が暗黙的にトリガされます。これによって、永続オブジェクトが更新されて無効化されます。永続オブジェクトに再度アクセスすると、そのオブジェクトがデータベースからロードされます。
+IF_OS_TRANSACTION~UNDO
+トランザクションを終了します。トランザクションで永続オブジェクトに対して行われた変更が取り消され、オブジェクトがトランザクション前のステータスに戻ります。トランザクションがオブジェクト指向の最上位トランザクションである場合は、UNDO
+を実行すると ROLLBACK WORK
+が暗黙的にトリガされます。
+IF_OS_TRANSACTION~END_AND_CHAIN
+トランザクションを終了し、ただちに新しいトランザクションを開始します。トランザクションがオブジェクト指向の最上位トランザクションである場合は、変更された永続オブジェクトがデータベースに書き込まれますが、このオブジェクトは無効化されません。IF_OS_TRANSACTION
+型のリターンパラメータ RESULT
+によって、現在のトランザクションへの参照が返されます。
+IF_OS_TRANSACTION~UNDO_AND_CHAIN
+トランザクションで永続オブジェクトに対して行われた変更を取り消して、新しいトランザクションを開始します。IF_OS_TRANSACTION
+型のリターンパラメータ RESULT
+によって、現在のトランザクションへの参照が返されます。
+IF_OS_TRANSACTION~REGISTER_CHECK_AGENT
+オブジェクトをチェックエージェントとして登録します。これは、トランザクションが終了する前にチェックの目的でトランザクションによって呼び出されます。このようなオブジェクトへのインタフェース参照が、IF_OS_CHECK
+型の入力パラメータ I_CHECK_AGENT
+に渡されます。
+IF_OS_TRANSACTION~GET_STATUS
+OS_STATUS 
+型のリターンコード RESULT 
+によって、トランザクションのステータスが返されます。返される可能性のある値
+(
+データ型グループ OSCON
+の定数) 
+は以下のとおりです。
+キ 
+OSCON_TSTATUS_NEW
+トランザクションはまだ開始されていません。このステータスのトランザクションは、START 
+でのみ開始することができます。
+キ 
+OSCON_TSTATUS_RUNNING
+トランザクションが開始されて現在有効です。
+キ 
+OSCON_TSTATUS_END_REQ
+トランザクションが IF_OS_TRANSACTION~END 
+で終了し、現在チェックエージェントを開始しているか、またはイベントハンドラを待っています。
+キ 
+OSCON_TSTATUS_FIN_SUCCESS
+トランザクションが IF_OS_TRANSACTION~END 
+で正常に終了しました。
+キ 
+OSCON_TSTATUS_FIN_UNDO
+トランザクションが IF_OS_TRANSACTION~UNDO 
+で終了し、永続オブジェクトがその初期ステータスに戻りました。
+キ 
+OSCON_TSTATUS_FIN_ABORT
+トランザクションが IF_OS_TRANSACTION~UNDO 
+で終了しましたが、永続オブジェクトがその初期ステータスに戻りませんでした。
+IF_OS_TRANSACTION~SET_MODE_UNDO_RELEVANT
+たとえばパフォーマンス上の理由から、トランザクションを開始する前に UNDO 
+メカニズムを無効にするために使用します。これは、OS_BOOLEAN
+型のオプションの入力パラメータ
+I_UNDO_RELEVANT 
+に値 OSCON_FALSE
+を渡すことによって行われます。デフォルト値は OSCON_TRUE
+です。これによって、変更の前に永続オブジェクトの初期ステータスを保存する必要がなくなります。互換性モードでは、最上位トランザクションで UNDO
+メカニズムが無効になります。そうしない場合、UNDO
+メカニズムは、このメソッドを使って明示的に無効にされない限り有効となります。 
+UNDO
+メカニズムが無効になっているトランザクションでIF_OS_TRANSACTION~UNDO
+を呼び出すと、トランザクションのステータスがOSCON_TSTATUS_FIN_ABORT
+になります。
+IF_OS_TRANSACTION~SET_MODE_UPDATE
+更新モードを設定する目的で、永続オブジェクトにアクセスする前に、最上位トランザクションに対して一度だけ使用することができます。これは互換性モードでのみ必要です。通常、互換性モードでは、非同期更新で永続オブジェクトに最初にアクセスする際に、暗黙的に更新モードが設定されます
+(
+永続オブジェクトと COMMIT WORK 
+を参照)
+。オブジェクト指向トランザクションにはこのメソッドは不要です。これは、最上位トランザクションの更新モードが
+CL_OS_SYSTEM=>INIT_AND_SET_MODES 
+によって、または ABAP
+ワークベンチでオブジェクト指向トランザクションが作成される際に明示的に設定されるためです。
+OS_DMODE 
+型の入力パラメータ I_UPDATE_MODE 
+が取りうる値は、非同期更新用の OSCON_DMODE_DEFAULT 
+またはOSCON_DMODE_UPDATE_TASK
+、直接更新用の OSCON_DMODE_DIRECT
+、ローカル更新用の OSCON_DMODE_LOCAL
+、および同期更新用のOSCON_DMODE_UPDATE_TASK_SYNC
+です。OSCON_DMODE_LOCAL
+と
+OSCON_DMODE_UPDATE_TASK_SYNC 
+は、互換性モードでは ABAP
+の COMMIT WORK
+AND WAIT 
+文と SET UPDATE
+TASK LOCAL 
+文を使って設定できるため、オブジェクト指向トランザクションモードでのみ使用されます。
+ローカル更新または直接更新を選択すると、トランザクションを開始するときに SET UPDATE TASK
+LOCAL 
+文が暗黙的に実行されます。
+IF_OS_TRANSACTION~GET_MODES
+出力パラメータに現在のトランザクションの属性を設定します。出力パラメータには、OS_BOOLEAN
+型の
+E_UNDO_RELEVANT
+、OS_BOOLEAN
+型の
+E_CHAINED
+、OS_DMODE
+型の
+E_UPDATE_MODE_TYPE
+、および OS_BOOLEAN
+型の
+E_EXTERNAL_COMMIT 
+があります。
+トランザクションのイベント
+IF_OS_TRANSACTION~SAVE_REQUESTED
+このイベントは、最上位トランザクションが END 
+で終了する際に、変更された永続オブジェクトのクラスエージェントによって変更が記録される前にトリガされます。暗黙的に更新モジュールを使用するクラスエージェントについては、CALL
+FUNCTION IN UPDATE TASK 
+を使って更新モジュールが登録される前にこのイベントがトリガされます。このイベントによって、セルフプログラミングされた変更メソッドを持つクラスエージェントに対し、永続オブジェクトへの変更を記録するタイミングが定義されます。
+IF_OS_TRANSACTION~SAVE_PREPARED
+このイベントは、最上位トランザクションが END 
+で終了する際に、変更された永続オブジェクトのクラスエージェントが変更を記録した後にトリガされます。暗黙的に更新モジュールを使用するクラスエージェントについては、CALL
+FUNCTION IN UPDATE TASK 
+を使って更新モジュールが登録された後にこのイベントがトリガされます。このイベントによって、セルフプログラミングされた変更メソッドを持つクラスエージェントに対し、オブジェクト内のデータベーステーブルへの変更を記録するタイミングが定義されます。
+IF_OS_TRANSACTION~FINISHED
+このイベントは、トランザクションが実際に終了するときにトリガされます。終了の手段が END
+か UNDO
+であるかは関係ありません。OS_STATUS
+型の出力パラメータによって、トランザクションがどのように終了したかがわかります
+(
+前述の GET_STATUS
+メソッドを参照)
+。
+ 
+ 
+ 
+ 
+ 
+SAP ライブラリ - ABAP - オブジェクトサービス

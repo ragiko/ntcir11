@@ -1,0 +1,3 @@
+本稿は光CDMAを用いた無指向性反射方式による室内赤外線無線通信を考え、光拡散符号の不完全な直交性と拡散反射通信路における符号間干渉(?S?)のビット誤り率(BER)への影響を調べる。さらに、拡散符号としては光直交符号(OOC)とprime符号、光変調方式としてはOn-Off-Keying(OOK)とパルス位置変調(PPM)を考え、それぞれの組合せの下でのBERを解析する。
+In this paper, we consider the use of optical CDMA for indoor infrared wireless communications with diffuse links and investigate the effect of spreading sequence and inter-symbol interference(ISI)on the bit error rate(BER). We compare the BER between On-Off-keying(OOK)and pulse position modulation(PPM)and between optical orthogonal code(OOC)and prime code.
+

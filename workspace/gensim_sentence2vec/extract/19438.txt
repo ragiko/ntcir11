@@ -1,0 +1,72 @@
+
+概要
+ZEQUOシリーズスイッチにてトラフィックセグメンテーションを設定する。
+トラフィックセグメンテーションを設定し、通信可能なポートを制限する。
+構成例
+設定の大まかな流れ
+(1)Port1-8で受信したデータはPort1-8,17-24へ転送可能に設定する。
+(2)Port9-16で受信したデータはPort9-24へ転送可能に設定する。
+(3)Port17-24で受信したデータは全てのポートへ転送可能に設定する。
+設定手順
+手順1.
+PCとスイッチングハブをツイストペアケーブルとコンソールケーブルで接続し、ハイパーターミナルにて設定画面を表示します。
+(コンソールポートでの設定画面の表示方法については、設定例『スイッチングハブのコンソールポートへの接続方法』を参照)
+手順2.
+ログイン画面にて、UserNameとPassWord(初期状態はどちらもmanager)を入力して設定画面にログインします。(図1参照)
+手順3.
+ZEQUO 6400のポート1〜8にトラフィックセグメンテーションを設定します。
+Z6400:admin#の後に以下のようにコマンドを入力します。
+Z6400:admin#config traffic_segmentation 1-8 forward_list 1-8,17-24
+コマンドが正しく入力されると以下のように表示されます。
+Command: config traffic_segmentation 1-8 forward_list 1-8,17-24
+Success.
+続いてポート9〜16、ポート17〜24にトラフィックセグメンテーションを設定します。
+Z6400:admin#config traffic_segmentation 9-16 forward_list 9-24
+Command:config traffic_segmentation 9-16 forward_list 9-24
+Success.
+Z6400:admin#config traffic_segmentation 17-24 forward_list all
+Command:config traffic_segmentation 17-24 forward_list all
+Success.
+手順4.
+ZEQUO 6400に設定したトラフィックセグメンテーションを確認します。
+Z6400:admin#show traffic_segmentation
+Command: show traffic_segmentation
+Traffic Segmentation Table
+Port  Forward Portlist
+----  ------------------------------------------------------------------------
+1      1-8,17-24
+2      1-8,17-24
+3      1-8,17-24
+4      1-8,17-24
+5      1-8,17-24
+6      1-8,17-24
+7      1-8,17-24
+8      1-8,17-24
+9      9-24
+10     9-24
+11     9-24
+12     9-24
+13     9-24
+14     9-24
+15     9-24
+16     9-24
+17     1-28
+18     1-28
+19     1-28
+20     1-28
+21     1-28
+22     1-28
+23     1-28
+24     1-28
+25     1-28
+26     1-28
+27     1-28
+28     1-28
+手順5.
+全ての設定が完了したら、設定を保存します。
+Z6400:admin#save
+Command:save
+Saving all configurations to NV-RAM.......... Done.
+手順6.
+グループ間の通信が正しく制御されているか確認してください。
+ZEQUOシリーズトラフィックセグメンテーション設定手順｜パナソニックESネットワークス株式会社｜Panasonic

@@ -1,0 +1,32 @@
+
+AF PHBでは、各クラスごとにDSCP値の下位3ビットで表される廃棄優先度
+に応じてパケットの廃棄処理を行います。具体的には、高:110、中:100、
+低:010 のそれぞれの廃棄優先度ごとにパケットをキューに積むことがで
+きるキューサイズの閾値が決まっています。低の場合は、パケットを追
+加しようとするキューのキューサイズがqueue lengthコマンドで設定し
+たキュー長の100%になっている場合にパケットを廃棄し、中、高の順に
+廃棄するキューサイズが小さくなります。
+キューサイズの閾値は、キュー長に対する割合(%)として表します。また、
+高と中については閾値はqueue lengthコマンドで任意に設定できます。
+デフォルトでは中が75%、高が50%となります。
+クラス  キュー               
+キューに積まれるパケット          高、中、低          中、低        低
+キューサイズの閾値                               50%         75%         100%
+廃棄優先度                                        高          中          低
+AF PHBとClass Selector PHBが混在するクラスでは、Class Selector
+PHB のクラス内での廃棄優先度はAF PHBのlowの場合と同等です。
+DiffServベースQoS設定は、クラス分けのためのフィルタを設定する
+queue class filterコマンドでCLASSパラメータにクラス番号(1-8)の代
+わりに"dscp"を設定します。
+DiffServベースQoSは、LANインタフェース及びLANインタフェース上に設
+定されたPPPoEインタフェースとトンネルインタフェースでのみ機能しま
+す。
+コマンド仕様
+クラス分けのためのフィルタ設定
+[書式]
+queue class filter NUM CLASS [cos=COS] ip SRC_ADDR [DEST_ADDR [PROTOCOL [SRC_PORT [DEST_PORT]]]]
+queue class filter NUM precedence [mapping=PREC:CLASS[,PREC:CLASS...]] [cos=COS] ip SRC_ADDR [DEST_ADDR [PROTOCOL [SRC_PORT [DEST_PORT]]]]
+queue class filter NUM dscp [cos=COS] ip SRC_ADDR [DEST_ADDR [PROTOCOL [SRC_PORT [DEST_PORT]]]]
+no queue class filter NUM [...]
+[設定値]
+DiffServベースQoS

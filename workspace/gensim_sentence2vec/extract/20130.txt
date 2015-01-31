@@ -1,0 +1,50 @@
+現在進行中のプロジェクト
+量子インテリジェントシステムとその応用
+概要:
+1994年の量子力学に基づいた量子アルゴリズムの成功以来,量子情報科学の研究が脚光を浴び,量子情報概念を基盤としたインテリジェントシステム(Quantum Inspired Intelligent System:QIS)研究(量子力学と情報科学との接点研究)が活性化している.このQISは現在の計算知能システムの性能を凌駕しうるものとして期待されているが,それを具体的に示した研究例はまだまだ数少なく,本研究室のこのプロジェクトはその先駆例の一つである.例えば,本研究室では,ニューロン状態に量子重ね合わせ並びに量子計算概念を導入した量子ビットニューロンを構築してそれらを基本素子とするニューラルネットワーク(量子ビットニューラルネットワーク)を構成し,Nビットパリティチェック問題や画像圧縮復元などの画像処理問題,倒立振り子の振り上げ制御などの実問題を通して量子概念を導入しない既存の情報処理手法と比較検討してきた.その結果,QIS手法は従来手法をはるかに凌駕する性能を持ちうるシステムを構築ができることを明らかにしてきた.本研究では,量子ビットニューラルネットワークのさらなる精緻化と応用拡大を行うとともに,その他のQISとして,量子進化アルゴリズム研究とそれを用いたイノベイティブな画像処理などの応用開発を行っている.
+代表的な公表成果:
+N.Matsui, H.Nishimura, and T.Isokawa,  "Qubit Neural Network: Its Performance and Applications," in T.Nitta  ed., Complex-Valued Neural Networks: Utilizing High-Dimensional Parameters,  Information Science Reference (IGI Global), Hershey, New York, chapter XIII  (pp.325-351), 2009.
+松井伸之,「量子ニューロコンピューティング」, システム制御情報学会誌 システム/制御/情報  52 / 5 , pp.169-174, 2008
+松井,幸田,西村,「量子描像ニューラルネットワーク」,ニューラルネットワーク計算知能,第5章(pp.90-113), 森北出版, 2006
+四元数ニューラルネットワークモデルとその応用
+概要:
+近年,複素数に基づくニューラルネットワーク(NN)に関して,その基礎理論から工学応用に渡る幅広い分野において様々な研究が行われている.さらに,複素数よりも高次元の数体系である四元数をNNに導入する試みも行われている.四元数は4成分からなる超複素数であり,三次元空間における幾何学変換の記述に適しているために,物理学やコンピュータグラフィックスの分野で用いられている.四元数を導入したNNは,3次元空間における情報処理や色彩情報処理において,従来NNと比較してより効率的な処理の実現が期待できる.
+本研究では,四元数を導入したNNについてその基本特性から応用に渡り解析を行っている.応用事例の一つとして,低照明下にて撮影した画像から色情報を復元するカラーナイトビジョンシステムを構築している.現在は,相互結合型のNNであるホップフィールド型のNNについてその性能の調査や学習アルゴリズムの提案を行っている.
+代表的な公表成果:
+T.Isokawa, N.Matsui, and  H.Nishimura, "Quaternionic Neural Networks: Fundamental Properties and  Applications," in T.Nitta ed., Complex-Valued Neural Networks: Utilizing  High-Dimensional Parameters, Information Science Reference (IGI Global),  Hershey, New York, chapter XVI (pp.411-439), 2009.
+H.Kusamichi, T.Isokawa, N.Matsui, Y.Ogawa, and K.Maeda, "A New Scheme  for Color Night Vision by Quaternion Neural Network," Proceeding of the  2nd International Conference on Autonomous Robots and Agents(ICARA2004),  pp.101-106, Palmerston North, NewZealand, Dec. 13-15, 2004.
+胃X線画像からの腫瘍部位検出
+概要:
+MRI (Magnetic Resonance  Imaging)やCT (Computed Tomography)など医用画像技術の発展はめざましく,近年,体の大半の部位の検査に広く使われている.しかし胃や腸などの消化器官に関しては,今なお,X線造影が主に用いられている.これは他の手法と比較して,コストが安く,検査の方法が簡便という利点を有しているためである.この場合,正確に病変を発見するにはX線検査技師や医師の能力に大きく依存する.能力に依存せず,また大量の検査を行った際の技師や医師の負担軽減やヒューマンエラーを回避をするためには,X線写真からの腫瘍候補の自動検出を行いうるCAD (Computer Aided Diagnosis)がX線検査支援システムとして必要不可欠である.
+本研究では,胃X線二重造影画像を対象とした腫瘍部位の自動検出手法の開発を行っている.
+代表的な公表成果:
+T.Minemoto, S.Odama,  A.Saitoh, T.Isokawa, N.Kamiura, H.Nishimura, S.Ono, and N.Matsui,  "Detection of Tumors on Stomach Wall in X-ray Images," Proceedings of  IEEE World Congress on Computational Intelligence (WCCI2010), pp.1159-1163,  Barcelona, Spain, July 18-23, 2010.
+昆虫神経細胞における三次元形態の再構成
+概要:
+神経細胞の形態は,その応答特性・伝達特性を決定する要素であり,神経細胞の機能を明らかにするためには,細胞内の生化学反応・細胞膜の電気的特性と同様に形態情報を正確に測定することが重要である.近年,神経細胞の形態については,共焦点レーザ顕微鏡によりサブミクロンの単位で三次元樹状突起を詳細に計測できるようになり,また細胞の応答特性についても,従来からの電気的計測に加えて光学的手法により時空間的な伝播特性を測定することが可能となっている.このような計測手法の発展に対して計測された結果・知見を統合し,ダイナミクスを含めた解析を進めていく方法については,未だ十分に整備されているとは言えず,計測結果が十分に活用されていないのが現状である.
+本研究では,共焦点レーザ顕微鏡より得られた共焦点画像から神経細胞の樹状突起形状を自動的に抽出する手法を提案し,この手法をカイコガ触角葉における局所介在細胞に適用している.さらに,得られた形態情報を神経細胞シミュレータNEURONのモデルファイルに変換する機能を実現することにより,電気的伝播特性の解析を行うことが可能となっている.
+代表的な公表成果:
+T.Yamasaki, T.Isokawa,  N.Matsui, H.Ikeno and R.Kanzaki, "Reconstruction and simulation for  three-dimensional morphological structure of insect neurons,"  Neurocomputing, vol.69, no.10-12, pp.1043-1047, 2006.
+礒川悌次郎, 山﨑貴之, 関 洋一, 松井伸之, 池野英利, 神﨑亮平, "共焦点レーザ顕微鏡画像に基づく昆虫神経細胞構造の再構築," 電子情報通信学会論文誌,  vol.J89-D, no.8, pp.1877-1886, 2006.
+非同期セルオートマトンに基づくナノコンピュータ
+概要:
+近年,分子を配列させることにより回路を構成し分子の相互作用によりその回路を動作させることに成功しており,数十年以内にはナノテクノロジーによる高集積度・低消費電力のコンピュータであるナノコンピュータが実現可能であると考えられている.ナノコンピュータに最適なアーキテクチャについては,同一種類の素子が均質かつ局所的に接続されている構造が適していると考えられる.このような構造に最も適した計算モデルとして,セルオートマトン(CA)が挙げられる.CAはセルと呼ばれる同一種類の有限状態オートマトンが規則的に配置されており,各セルはその近傍のセルと局所的に接続されるという構造を持っている.各セルの状態の更新はセル自身及び近傍セルの状態を入力とする遷移規則により行われる.このような背景から,近年CAを基盤としたナノコンピュータの計算手法,回路構成手法が検討されている.
+本研究では,各セルが非同期的に更新されるセルオートマトンについて,より単純なセルによる演算実現や耐故障化能力についてのモデルを提案している.また,セルオートマトン状の振る舞いを示す実際の有機分子について,シミュレータを作成し,その計算モデルを創り出す試みも行っている.
+代表的な公表成果:
+T.Isokawa, F.Peper,  S.Kowada, N.Kamiura, and N.Matsui, "A Defect Localization Scheme for  Cellular Nanocomputers," New Generation Computing, Vol.27, No.2,  pp.85-105, 2009.
+Y.Takada, T.Isokawa, F.Peper, and N.Matsui, "Construction Universality  in Purely Asynchronous Cellular Automata," Journal of Computer and System  Sciences, vol.72, no.8, pp.1368-1385, 2006.
+終了・休止中のプロジェクト
+自己組織化マップによる白血病診断支援システム
+概要:
+リンパ腫,多発性骨髄腫等の白血病は造血器腫瘍として分類される血液疾患であり,それらの早期発見は治療のための極めて重要な第一歩となる.一般に,地域の医院に属する家庭医が造血器腫瘍に起因する症状を発見した場合,大規模医療機関に連絡し,血液専門内科医による診断結果を待つ.これには治療開始までに長時間を要するので,地域医院でも利用可能な造血器腫瘍罹患者検出支援システムが家庭医,血液専門医の双方から切望されている.また,家庭医が使用することを前提とするのであれば,そのシステムに入力するデータとしては,地域医院でも比較的簡単に入手できるスクリーニング検査結果が適している.
+本研究では,造血器腫瘍をモデルとして取り上げ,医療データベース向きのスクリーニングデータ識別方法を提案した.識別手法としては,ニューラルネットワークの一つである自己組織化マップを改良したブロック学習型自己組織化マップ(BMSOM)を用いた.BMSOMにより,検査データの更新や追加に容易に追随できることを明らかにした.
+代表的な公表成果:
+N.Kamiura, H.Tanii,  A.Ohtsuka, T.Isokawa, and N.Matsui, "Classification for Data of  Hametopoietic Tumor Patients with Fast Block-Matching-Based Self-Organizing Map  Learning in Dynamic Environments," Journal of Japan Society for Fuzzy and  Intelligent Informatics, vol.20, no.1, pp.66-78, 2008.
+A.Ohtsuka, H.Tanii, N.Kamiura, T.Isokawa, and N.Matsui,  "Self-Organizing Map Based Data Detection of Hematopoietic Tumors,"  IEICE Transaction on Fundamental of Electronics, Communications and Computer  Sciences, vol.E90-A, no.6, pp.1170-1179, 2007.
+ニューラルネットワークによる白血球分類診断支援システム
+概要:
+血液検査において,血液中における各種白血球の分類を行い,その存在比率を算出することは,病因特定や病状の経過観察において有効に用いられる情報の一つである.これらの白血球の分類をするためには,検査技師が血液標本を顕微鏡下で白血球を捜し出し,形態学的特徴に基づいて分類することにより行われる.この検査手法を手動で行うには,多くの時間を必要とし,また,専門的知識や熟練した技術が必要になる.そのため,分類を自動化する手法が強く望まれる.
+本研究では,白血球画像より形状情報や色彩情報等の特徴値を抽出し分類する手法を提案した.ここで,白血球には非典型的な血球が多数存在し,統計的識別関数だけで分類することが困難であるため,分類手法として非線形な識別を行うことが可能である階層型ニューラルネットワークを利用した.その結果として,総合的に高い認識率による分類を行うことができた.
+公表成果:
+山崎貴之, 礒川悌次郎, 松井伸之, 岡本稔, 小枝徳晃, "ニューラルネットワークを用いた白血球画像の自動分類," 第47回システム制御情報学会研究発表講演会講演論文集, pp.629-630, May 2003.
+研究プロジェクト | 情報基礎研究グループ 兵庫県立大学大学院工学研究科電気系工学専攻電子情報工学部門

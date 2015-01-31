@@ -1,0 +1,110 @@
+Skill = Struct.new(:command, :name, :kana, :frame)
+class Skill
+define_method :to_s do
+<<-EOS
+--------------------------
+コマンド     = #{command}
+名前         = #{name}
+カナ         = #{kana}
+発生フレーム = #{frame}
+--------------------------
+EOS
+end
+end
+src = DATA.read
+skills = src.split("\n").each_with_object([]) do |line, skills|
+_, command, name, kana, frame = */([0-9]+[PK]?)\|(.+)\|(.+)\|(\d+)/.match(line)
+skills << Skill.new(command, name, kana, frame)
+end
+puts skills
+__END__
+236P|波動拳|はどうけん|11
+214K|竜巻旋風脚|たつまきせんぷうきゃく|11
+623P|昇竜拳|しょうりゅうけん|4
+--------------------------
+コマンド     = 236P
+名前         = 波動拳
+カナ         = はどうけん
+発生フレーム = 11
+--------------------------
+--------------------------
+コマンド     = 214K
+名前         = 竜巻旋風脚
+カナ         = たつまきせんぷうきゃく
+発生フレーム = 11
+--------------------------
+--------------------------
+コマンド     = 623P
+名前         = 昇竜拳
+カナ         = しょうりゅうけん
+発生フレーム = 4
+--------------------------
+Skill = Struct.new(:command, :name, :kana, :frame)
+class Skill
+define_method :to_s do
+<<-EOS
+--------------------------
+コマンド     = #{command}
+名前         = #{name}
+カナ         = #{kana}
+発生フレーム = #{frame}
+--------------------------
+EOS
+end
+end
+src = DATA.read
+skills = src.split("\n").each_with_object([]) do |line, skills|
+_, command, name, kana, frame = */
+([0-9]+[PK]?) # コマンド
+\|
+(.+)          # 名前
+\|
+(.+)          # カナ
+\|
+(\d+)         # 発生フレーム
+/x.match(line)
+skills << Skill.new(command, name, kana, frame)
+end
+puts skills
+__END__
+236P|波動拳|はどうけん|11
+214K|竜巻旋風脚|たつまきせんぷうきゃく|11
+623P|昇竜拳|しょうりゅうけん|4
+Skill = Struct.new(:command, :name, :kana, :frame)
+class Skill
+define_method :to_s do
+<<-EOS
+--------------------------
+コマンド     = #{command}
+名前         = #{name}
+カナ         = #{kana}
+発生フレーム = #{frame}
+--------------------------
+EOS
+end
+end
+module SkillRegexps
+COMMAND = '([0-9]+[PK]?)'
+NAME = '(.+)'
+KANA = '(.+)'
+FRAME = '(\d+)'
+end
+src = DATA.read
+skills = src.split("\n").each_with_object([]) do |line, skills|
+_, command, name, kana, frame = */
+#{SkillRegexps::COMMAND}
+\|
+#{SkillRegexps::NAME}
+\|
+#{SkillRegexps::KANA}
+\|
+#{SkillRegexps::FRAME}
+/x.match(line)
+skills << Skill.new(command, name, kana, frame)
+end
+puts skills
+__END__
+236P|波動拳|はどうけん|11
+214K|竜巻旋風脚|たつまきせんぷうきゃく|11
+623P|昇竜拳|しょうりゅうけん|4
+デザインパターン - 「正規表現が読みやすくてもいいじゃない」 Composed Regex パターン - Qiita

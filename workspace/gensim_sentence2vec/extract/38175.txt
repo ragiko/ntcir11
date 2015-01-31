@@ -1,0 +1,18 @@
+説明
+オペレーター hamming_distancehamming_distanceHammingDistancehamming_distanceHammingDistanceHammingDistance は、2 つの領域間の hamming 
+距離を返します。hamming 距離とは、異なる領域のピクセル数 (
+DistanceDistanceDistanceDistanceDistancedistance) であり、1 つの領域には含まれるが他の領域には含まれないピクセル数です。:
+Distance = |Regions1 intersection ~Regions2| +
+|Regions2 intersection ~Regions1|
+パラメーター SimilaritySimilaritySimilaritySimilaritySimilaritysimilarity は、hamming 距離 
+DistanceDistanceDistanceDistanceDistancedistance に基づいて 2 つの領域間の相似性を記述します。:
+Similarity = ( 1 - Distance ) / ( |Regions1| + |Regions2| )
+両方の領域が空ならば、SimilaritySimilaritySimilaritySimilaritySimilaritysimilarity は 0 に設定されます。両方の入力パラメーターから同じインデックスをもつ領域が常に比較されます。
+注意
+両方の入力パラメーターで同数の領域が入力されなければなりません。
+パラレル化情報
+マルチスレッドタイプ: リエントラント(非排他なオペレーターと並列に動作)
+マルチスレッドスコープ: グローバル(他のスレッドから呼び出される可能性あり)
+tupleレベルで自動的に並列演算処理を実施
+パラメーター
+hamming_distance [HALCONオペレーターリファレンス / Version 11.0.3]

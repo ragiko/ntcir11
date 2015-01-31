@@ -1,0 +1,106 @@
+2012/11/21 猫も茶を飲むSigilでepubを作ろう(4) 縦書きとか右から左とか
+参考)Amazon Kindleストアを利用すれば自費出版が無料でとても簡単に出来る!
+Kindleで自費出版をしてみる際にはWord形式でも書籍の投稿ができるのですが、まだ試験段階であるため不具合が発生する可能性も否定できません。
+そこで一般的に使用されているepub形式で作成します。
+日本語で本を書くなら縦書き右開きになるでしょう。しかしわりとこれを実現するのに苦労します。以下にテンプレを掲載したいと思います。
+参考)備忘録(電子書籍と出版に関する事柄) 縦書きを試す
+ちなみに「Kindle Paperwhite Previewer」にて電子ファイルを確認した際修正事項が見つかった場合、同じファイル名で再度(複数回)登録しようとするとエラーになる可能性があります。登録ファイル名は「ファイル名00X.epub」など通し番号でバージョン管理するようにします。
+1.キンドル出版の投稿手順
+以下サイトさまが参考になります。準備が必要なのは「電子書籍本体(ePubファイル)」とカテゴリー(最大2)、キーワード(最大7)、表紙画像(長辺最低1000ピクセル[2500ピクセル推奨]。縦横比1,6。tiffもしくはjpg)
+2012/12/19 ビギっとり 日本Kindleダイレクト・パブリッシングで電子自費出版をePub形式で簡単に行う方法
+2.Sigilの導入と投稿ファイルの初期設定
+①Sigilをインストールします。
+http://code.google.com/p/sigil/
+②Sigilを起動し、メニューバーの「ツール」 – 「Metadata Editor」を選択。言語に「日本語」を選択します。
+③左サイドバーに「Section0001.xhtml」というファイルが出来ているので、中央部にて「Section0001.xhtml」タブを選択して、メニューバーより「表示」 – 「コードビュー」を選択します。
+表示されたソースコードにて、以下のように記述します。
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+<meta content="text/css" http-equiv="content-style-type" />
+<link href="../Styles/Style0001.css" rel="stylesheet" title="縦組" type="text/css" />
+<title></title>
+</head>
+<body>
+<h2>&nbsp;犬は山田</h2>
+<p>sだd</p>
+</body>
+</html>
+ピンク文字が追記する部分です。青い文字は動作確認のためだけなので適当にどうぞ。青い文字部分はメニューバーより「表示」 – 「ブックビュー」で本を書くように(タグ付けしないで)記述していくことができます。
+③左サイドバーより「Styles」フォルダーがあるので右クリック「空のスタイルシートを追加」を選択します。すると「Style001.css」というファイルが「Styles」フォルダ内に新規作成されます。
+④「Style0001.css」に以下のように記述します。表示スタイルを記述するコードになります。細かいデザインを行うには後で調整していきます。
+@charset "utf-8";
+* {
+line-height: 150%;
+}
+@font-face {
+font-family: "ipamp";
+src: url(../Fonts/ipamp.ttf);
+}
+body{
+font-family: "ipamp";
+writing-mode: vertical-rl;
+line-break: normal;
+-epub-writing-mode: vertical-rl;
+-webkit-writing-mode: vertical-rl;
+-epub-line-break: normal;
+-webkit-line-break: normal;
+}
+p{
+margin: 0;
+}
+h2{
+margin-left:3rem;
+margin-top:3rem;
+}
+これを追加すると「Sigil」上で縦書きにはなったかとは思いますが、文字が横に寝てしまいます。
+Sigilでは適切に縦書き設定を行ってもSigil内で縦書きをうまくプレビューできません。なのでこれでいいんです。
+④左サイドメニューで「Fonts」というフォルダがあるので右クリック「既存のファイルを追加」を選択します。
+追加対象はフォントファイル「ipamp.ttf」になります。@MS明朝でもよいのですが、環境依存になる可能性もあるので念のため組み込んでおきます。
+ipamp  <- 拡張子をtxtからttfに替えてください
+元はSOURCEFORGE.JPにあります。左記サイトより「opfc-ModuleHP-1.1.1_withIPAFonts.tar.gz」ダウンロードし解凍するとfontsフォルダ内に入っています。
+⑤左サイドバーより「content.opt」を選択し、以下のように編集します。
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">
+<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+<dc:identifier id="BookId" opf:scheme="UUID">urn:uuid:4b0b4bc9-e281-4eeb-91c2-f6688ee2f4ce</dc:identifier>
+<dc:language>ja</dc:language>
+<dc:date opf:event="modification">2013-01-04</dc:date>
+<meta content="0.6.2" name="Sigil version"/>
+</metadata>
+<manifest>
+<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+<item href="Text/Section0001.xhtml" id="Section0001.xhtml" media-type="application/xhtml+xml"/>
+<item href="Styles/Style0001.css" id="Style0001.css" media-type="text/css"/>
+<item href="Fonts/ipamp.ttf" id="ipamp.ttf" media-type="application/x-font-ttf"/>
+</manifest>
+<spine page-progression-direction="rtl" toc="ncx">
+<itemref idref="Section0001.xhtml"/>
+</spine>
+<guide>
+<reference href="Text/nav.html" title="Table Of Contents" type="toc"/>
+</guide>
+</package>
+ピンク文字が追記する部分です。
+⑥メニューより「ファイル」 – 「名前をつけて保存」で保存します。
+⑦編集結果を確認します。よく使われるのがFirefoxプラグインのEPUBReaderなのですが、これは簡易的にEpubファイルの中身を見るだけのツールなので、縦書きになっているかの確認はできません。
+Google Chromeのアドオンである「Chrome Readium」を使用します。導入後Readiumライブラリに、上記で保存したファイルを追加することで確認できます。
+<- Chrome起動後、Readiumを選択
+<- 右上の+マークをクリック
+縦書きになってます。
+表紙画像の付け方
+①左サイドバーの「Images」フォルダを選択し、右クリック「既存のファイルを追加」で画像を追加します。ファイル名は日本語でなく英数字にします。
+②再度左サイドバーより「Images」より追加した画像を選択し、右クリック「セマンティクスを追加」 – 「表紙の画像」を選択します。
+タイトルや著者名の付け方
+メニューバーより「ツール」 – 「Metadata Editor」を選択します。
+NCX目次の付け方
+①インデックスをはりたい各章のタイトルをドラッグして選択し、メニューバーにある<h2>(より細分化したいときは<h3>～<h5>)ボタンを押す。
+②メニューバーより「Generate Table of Contents」ボタンを押すと自動的に生成します
+目次の付け方
+NCX目次(Sigil右サイドバーに表示されるメニュー)ではなく、Kindlesの書棚に投稿する(自費出版する)際に、実際の配布ファイルを確認できるツールである「Kindle Paperwhite Previewer」にて「目次」項で表示できる目次のことをさします。
+①インデックスをはりたい各章のタイトルをドラッグして選択し、「ツール」- 「index」 – 「Add to IndexEditor」を選択すると、目次にインデックスが追加されていきます。
+②すべて貼り終わったら「ツール」- 「index」 – 「Create Index」を選択すると、左サイドバーの「Text」に「」index.xhtml」という目次ファイルが作成されます。
+③順番がおかしくなっている場合があるので、ブックビューやコードビューに切り替えながら編集し、「Text」 – 「index.xhtml」を選択後右クリックを選択したら「セマンティクスを追加」 – 「目次」を選択します。
+電子書籍作成ソフトSigilを使用して縦書きで見栄えの良い本を作成する方法

@@ -1,0 +1,40 @@
+サブストリングとは、ストリング内の一部を構成する連続した文字です。 例えば、ストリング「abc」のサブストリングは、「」、「a」、「ab」、「abc」、「b」、「bc」、「c」です。ストリング内のサブストリングは ActionScript のメソッドを使用して抽出できます。
+パターンは、ActionScript ではストリングまたは正規表現によって定義されます。 例えば、次の正規表現は、文字 A、B、C の後に数字が続く特定のパターンを定義します (スラッシュは正規表現の区切り記号です)。
+/ABC\d/
+ActionScript には、ストリング内のパターンを検索し、一致するパターンが見つかった場合に、置換サブストリングと置き換えるメソッドが用意されています。 それらのメソッドについては、次のセクションで説明します。
+正規表現を使用すると複雑なパターンを定義できます。 詳しくは、正規表現の使用を参照してください。
+substr() と substring() メソッドは似ています。いずれもストリング内のサブストリングを戻り値として返すメソッドです。 また、指定するパラメータは 2 つであり、 どちらのメソッドでも、最初のパラメータは、与えられたストリングの開始文字の位置です。 しかし、substr() メソッドの場合はサブストリングの長さを第 2 パラメータで指定するのに対し、substring() メソッドの場合はサブストリングの終了位置を第 2 パラメータで指定します(終了位置にある文字そのものは戻り値に含まれません)。2 つのメソッドの違いを確認できる例を次に示します。 
+var str:String = "Hello from Paris, Texas!!!"; 
+trace(str.substr(11,15)); // output: Paris, Texas!!! 
+trace(str.substring(11,15)); // output: Pari
+slice() メソッドの機能は、substring() メソッドに似ています。2 つの負でない整数をパラメータとして与えた場合、両方のメソッドは完全に同じ働きをします。 しかし、slice() メソッドではパラメータに負の整数を指定することもでき、その場合は、ストリングの末尾を基準として文字の位置を指定したことになります。例を次に示します。
+var str:String = "Hello from Paris, Texas!!!"; 
+trace(str.slice(11,15)); // output: Pari 
+trace(str.slice(-3,-1)); // output: !! 
+trace(str.slice(-3,26)); // output: !!! 
+trace(str.slice(-3,str.length)); // output: !!! 
+trace(str.slice(-8,-3)); // output: Texas
+slice() メソッドのパラメータには、負でない整数と負の整数を組み合わせて指定できます。
+次の例に示すように、indexOf() と lastIndexOf() メソッドを使用して、ストリング内の一致するサブストリングの位置を特定することができます。
+var str:String = "The moon, the stars, the sea, the land"; 
+trace(str.indexOf("the")); // output: 10
+indexOf() メソッドでは大文字と小文字が区別されます。
+次のように第 2 パラメータを指定すると、ストリング内で検索を開始する位置を示すことができます。
+var str:String = "The moon, the stars, the sea, the land" 
+trace(str.indexOf("the", 11)); // output: 21
+lastIndexOf() は、ストリング内に一致するサブストリングが最後に出現する位置を検索するメソッドです。
+var str:String = "The moon, the stars, the sea, the land" 
+trace(str.lastIndexOf("the")); // output: 30
+lastIndexOf() メソッドで次のように第 2 パラメータを指定すると、ストリング内の指定したインデックス位置から先頭に向かって(右から左へ)検索が実行されます。
+var str:String = "The moon, the stars, the sea, the land" 
+trace(str.lastIndexOf("the", 29)); // output: 21
+split() メソッドを使用して、区切り記号に基づいて分割されたサブストリングの配列を作成できます。例えば、カンマ区切りやタブ区切りのデータを含んだストリングを複数のストリングに分割できます。
+次の例では、アンパサンド (&) を区切り文字としてストリングを分割し、サブストリングの配列を作成します。
+var queryStr:String = "first=joe&last=cheng&title=manager&StartDate=3/6/65"; 
+var params:Array = queryStr.split("&", 2); // params == ["first=joe","last=cheng"]
+split() メソッドの第 2 パラメータはオプションで、返される配列の最大サイズを指定します。
+区切り文字には、次のように正規表現を指定することもできます。 
+var str:String = "Give me\t5." 
+var a:Array = str.split(/\s+/); // a == ["Give","me","5."]
+詳しくは、正規表現の使用および『ActionScript 3.0 言語およびコンポーネントリファレンス』を参照してください。
+Adobe ActionScript 3.0 * ストリング内のサブストリングとパターンの検索

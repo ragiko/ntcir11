@@ -1,0 +1,99 @@
+\documentstyle[12pt]{jarticle}
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+{\huge 2~1~0~0 年度~~卒~~業~~論~~文}
+\vspace*{3.5cm}
+{\LARGE\bf 人工知能に関する研究} %  自分の研究テーマに置き換える
+\vspace*{3cm}
+{\large 2100年3月6日}  %  提出日
+\vspace*{3cm}
+{\large 情報通信システム学科}
+{\large (学籍番号:*****)}%  自分の学籍番号
+\vspace*{5mm}
+{\Large 和~歌~山~~太~郎}  %  自分の名前
+\vspace*{6cm}
+{\large 和歌山大学システム工学部}
+\end{center}
+\newpage 
+\setcounter{page}{1}
+\section*{概要}
+研究論文の内容について、500 - 600 字程度でまとめる。
+この概要を読めば、大体どういうことを研究したのかがわかるように書く。
+具体的には、どういう問題について、どのような研究を行って、その結果どのような
+結論が得られたか、というポイントについて簡潔にまとめる。
+\newpage
+\section*{目次}
+%\begin{center}
+\begin{description}
+\item[]\mbox{}\hfill 頁
+\item[]第1章 はじめに\hfill $\cdots\cdots$~~3
+\begin{description}
+\item[]1.1 研究の背景\hfill $\cdots\cdots$~~3
+\item[]1.2 研究の目的\hfill $\cdots\cdots$~~4
+\item[]1.3 本論文の構成\hfill $\cdots\cdots$~~5
+\end{description}
+\item[]第2章 準備\hfill $\cdots\cdots$~~6
+\item[]第3章 本論\hfill $\cdots\cdots$~~11
+\begin{description}
+\item[]3.1 問題提起\hfill $\cdots\cdots$~~11
+\item[]3.2 研究の説明\hfill $\cdots\cdots$~~13
+\end{description}
+\item[]第4章 考察\hfill $\cdots\cdots$~~18
+\item[]第5章 結論\hfill $\cdots\cdots$~~20
+\item[]参考文献 \hfill $\cdots\cdots$~~21
+\item[]付録 \hfill $\cdots\cdots$~~22
+\end{description}
+%\end{center}
+\newpage 
+% 以下、章の名前は各自適当に変えてもよい
+\section{はじめに}
+研究の背景・動機・目的などを述べる。
+\subsection{研究の背景}
+研究の背景については、自分が行った研究分野において、
+これまでどのような研究が行われてきたかを、
+文献などを参考にして記述する。なお、文献の引用は
+以下のように書く。
+「.... 問題解決にはさまざまな探索法が用いられている \cite{長尾}。
+このうち、ゲームにおける探索戦略としては α-β 法 \cite{実近} がある。...」
+\subsection{研究の目的}
+研究の動機・目的については、上述した背景の下で、
+自分がどのような問題意識の下で本研究を行おうとするのか、
+研究の目的は何かといったことを記述する。
+\subsection{本論文の構成}
+(書き方の例)
+本論文では、人工知能のアルゴリズムについて研究を行う。
+本論文の以下の構成は次のようになっている。
+第2章では、本論文で使用する諸概念について述べる。
+第3章では、人工知能の探索問題に対して、α-β-γ 法のアルゴリズムを提案し、
+第4章では、提案されたアルゴリズムの評価を行う。
+最後に、第5章で本論文の結論を述べる。
+なお、付録として α-β-γ アルゴリズムのプログラムと実行結果を加えた。
+\section{準備}  
+この論文で使う概念や用語の定義を説明する。
+\section{本論}  
+\subsection{問題提起} 
+本研究で対象とする問題は何かを説明する。
+\subsection{研究の説明} 
+上記問題に対して、本研究ではどのような手法により、
+どう問題を解いたのかを説明する。
+\section{考察} 
+本研究について、客観的な評価・考察を行う。
+%\newpage 
+\section{結論}
+本研究で何を明らかにしたのか、また、
+今後の課題としてどのような問題があるのか、
+といったことをまとめる。
+\newpage 
+\section*{付録}
+プログラムや実行結果など、
+本論を補足する上で必要と思われるものがあれば付録としてつける
+(なければつけなくてよい)。
+\newpage 
+%% 参考文献
+\begin{thebibliography}{}
+\bibitem{長尾} 長尾真:知識と推論,岩波講座ソフトウェア科学14 (1988). 
+\bibitem{実近} 実近憲昭: ゲームと AI,人工知能学会誌 vol.5, pp.527-537, 1990.
+\end{thebibliography}
+\end{document}
+

@@ -1,0 +1,6 @@
+
+[SerializableAttribute]
+public class List<T> : IList<T>, ICollection<T>, 
+IList, ICollection, IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, 
+IEnumerable
+List(T) クラス (System.Collections.Generic)

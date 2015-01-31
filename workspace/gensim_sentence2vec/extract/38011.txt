@@ -1,0 +1,117 @@
+韻律について、少し書きます。
+韻律とは、音の規則性を示すものです。古典語(ギリシア、ラテン語)の場合は、音の規則は、音節の長短の配置によって、成り立っています。韻を踏む、といった場合の韻とは、意味が違います。
+このHPでとりあげている、Ilias、Odyssey、Metamorphoses、Aeneidのいずれも、The
+dactylic hexameterと呼ばれる韻律にしたがってつくられたものです。
+音節(syllable)
+・音節の切り方
+(1)  音節の数は母音の数に一致する。語中の1子音は後続母音につき、最後の1子音のみが後続母音につく    pa-ter, aes-tas
+3子音以上のときは、2子音が前につき、1子音が後続子音につく  sanc-tus
+(2)  ただし、「閉鎖音+流音」は分離しない        te-ne-brae
+(3)  合成語は、構成要素にしたがって切る        post-e-a
+・音節の長短
+長音節
+(1)  長母音、もしくは二重母音を含む音節
+(2)  短母音であってもその音節が「閉じている場合」
+=短母音の後ろに、2つ以上の子音、複子音(ラテン語では、x、z、ギリシア語ではψ、ξ、ζ)が連続している場合(ただし、2つの子音が「黙音+流音」の場合は、長短いずれにもなりうる)
+単音節
+長音節でない場合
+hiatusの際の変化
+・Elision 省音 
+語の最後の短母音は、次の単語が母音で始まる時省略される。
+例外(絶対に省略されない) 
+ἅ 
+τά  τί 
+τι  ὅτι 
+ἄρχι  μέχρι 
+περί  -ι(呼格) 全てのsg.dat. pl.  –ί(副詞の語尾)
+ὅ  τό  πρό  -αο  -οιο  υ
+・Correption(epic correption) 
+語尾の長母音、二重母音は次の単語が母音で始まる時、短くなる。
+例   πλάγχθη,
+ἐπεί Τροίης
+-  
+U U  -   - - 
+・synizesis(συνίζησις)
+語中で、隣接するニ母音を、韻律上の必要から、一音節のように発音すること。文字の上では、変化はない。二語間で起こることもある。
+・crasis(κρᾶσις)
+ニ語間で約音が行われ、一語のようになること。
+・Consonantalization(ι、υ) 子音化
+他の母音の前で、ι、υが子音化(y、w)される。
+ギリシアの詩の多くは、あるパターンのστίχος(行)が延々と続く形をとる(κατὰ στίχος)
+ヘクサメトロス(The dactylic hexameter)
+Homerの詩の韻律は、the dactylic(時に、heroic) hexameterと呼ばれ、ギリシアの詩行において、最もよく現れる。
+ダクテュロス(dactyl)(「長・短・短− U U」となる音節群)を単位(ギリシア語でメトロンmetron)として、6つ(ギリシア語でヘクスhex)繰り返してできた行を、繰り返す。
+− U U | − U U | − U U | − U U | − U U | −×‖
+このダクテュロスは、スポンダイオス(spondee)(「長・長 −−」)で置き換えることが許されるので、
+− U U | − U U | − U U | − U U | − U U | −×‖
+−      −    −    −    −
+も可能となる。第6脚は、catalecticとなっている。
+The dactylic hexameterにおいて、イクトゥス(ictus =verse accent)は、それぞれの脚の最初の部分にある。客の最初の長の音節の位置をprinceps、二つの短い音節をbicepsという。
+更に、次のような規則が加わる。
+(1) 3番目のメトロンの内部の、「長・」の後、若しくは、「長・短・」の後に、単語の終わりが必ず といってもよいくらいに来る。このような位置をcaesura(「切れ目」)という。
+−U
+U | −U U | −/ U U | −U U | −U U | −×‖ (masculine caesura)
+−U U | −U U | −U / U | −U U | −U U |−×‖ (feminine caesura)
+(2) 第3脚と、第4脚のprincepsの後のcaesuraを、penthemimeral、hepthemimeralという。
+(3) 4番目のメトロンの終わりに、単語の終わりが来る場合、bucolic diaeresisという。
+このbucolic diaeresisの手前では、スポンダイオスが避けられる傾向にある。
+− U U | − U U | − U U | −
+U U / − U U | −×‖
+−      −      −            
+− 
+(4) 5番目のメトロンでは、スポンダイオスは原則的に避けられている。(5番目のメトロンがスポンダイオス
+になった行をspondeiazonという)
+− U U | − U U | − U U | − U U | − U U | −×‖ 
+−     −     −    −
+エレゲイアの韻律 The Elegiac Couplet(distich) 
+2行1連の繰り返しからなる。Δίστιχον(greek)からdistich(2行組)と呼ばれる。
+1行目は上述のヘクサメトロスと全く同じで、2行目は二つのhemiepes cola(エポスの半分の意味)からなる。
+− UU | − UU | − UU | − UU / − UU | −× ‖
+−      −    −    −    −
+−U U −U U  −/−U U  −U U  −‖
+−     −      
+2行目は、pentameterと呼ばれる。
+2つのhemiepesの間は必ずcaesuraによって分けられる。また、後半のhemiepesは、スポンダイオスは許されない。   
+The Iambic trimeter
+Iambic
+metron(× - U -)を3つ繰り返した形となっている。
+× - U - ×| - U| - × - U - ‖
+penthemimeral caesuraもしくは、hepthemimeral caesuraが必ず来る。
+最初の4つのprincepsの位置は、単音節2つに取って代わられることがある。(resolution)
+× - U - ×| - U| - × - U – ‖
+UU   UU     UU   UU  
+The trochaic tetrameter (catalectic)
+- U - × - U - ×|  - U - × - U - ‖
+The Iambic tetrameter catalectic
+× - U - × - U -| ×| - U – U - - ‖
+The Anapaestic tetrameter catalectic
+-  -  -  -｜-  -  -  -｜-  -  -  -｜UU -  -｜
+UU   UU    UU    UU    UU   UU     
+The anapaetic metron
+-  -  -  -｜
+UU   UU
+period(eng.) 文
+strophe(eng.) 節
+verse(eng.)
+versus(latin) στίχος(greek) 行 
+colon(eng.) コーロン
+(リズム単位)
+metra(eng.) μέτρον(greek)メトロン
+詩の一行にいくつのmetraが配置されるかによって、monometros、dimetros、trimetros、tetrametros、pentametros、hexametrosというふうに呼ぶ。
+foot(eng.) pes(latin) πούς(greek) 脚
+catalectic(eng.) 
+欠節語句の、最後の部分に音節を欠く
+- long  U short  
+×anceps(長短いずれでも可)
+hiatus 母音連続、母音衝突
+enjambment
+文法的な切れ目は行末と一致しない。重要な単語を次の行の先頭において、その直後で文を終えること。
+Epos ἔπος(叙事詩)
+ホメーロスと、ヘーシオドスに始まるジャンルを総称して、エポスという。共に、ヘクサメトロスを用いて作品をつくった。
+ホメーロスに始まる狭義の叙事詩(英雄叙事詩)とヘーシオドスの流れを汲む作品を「教訓詩」(didactic poetry)と区別することもある。
+penthemimeral、hepthemimeral
+hemi-meral(脚の半分)
+1  2   3  4  5   6  7   8   9 
+− U U | − U U | −/ U U | −/ U U | − U U | −×
+上につけた番号によって、それぞれpent-、hept-となっている
+韻律

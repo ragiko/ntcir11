@@ -1,0 +1,280 @@
+
+生成文法用語解説
+小野隆啓
+(2000年3月25日更新)
+生成文法というと、化学方程式のような図が出てきたり、αやβ、はたまたφなんて文字が出てきて、どう発音するのかすらよくわからない文字をちりばめたややこしそうな定義ばかり出てくる理論、というイメージがあると思います。確かに、専門書などでは、専門にしている者ですら閉口するようなややこしい定義が出てきます。
+それにはそれの意味があるのですが、ここでは、そんなややこしい定義は二の次にして、イメージを理解していただくことを目標とし、解説いたします。かのアインシュタインも、まずは「イメージありき」だったようで、彼が量子力学に対して肯定的な考え方をもてなかったのは、量子力学の主張のイメージがとらえられなかったからだそうです。大切なのはイメージで、細かな定義はその後についてくればいいのです。
+Chomsky理論の多くの用語解説はいくつかの図書ですでに行われています。以下にすでに存在するものをあげておきます。
+『生成文法用語辞典』(1993)、安藤貞雄・小野隆啓共著、大修館書店、\2,472.
+『チョムスキー理論辞典』(1992)、原口庄輔・中村 捷編、研究社、\5,000.
+しかし、Chomskyの理論は「生もの」です。すぐ古くなり「悪く?」なってしまいます。ですから、上の2冊はもちろん参考にはなるのですが、すでに現時点では古くなっており、特にChomsky(1995)以後で用いられている新しい用語は、当然出ていません。インターネットの良いところは、印刷された本とは異なり、常にupdate
+できることです。古くなったものも大切ですから、そのまま残しておき、どんどん新しいものを追加していくことが肝要です。
+このマークをつけたものは更新されたときに新しく追加された項目を意味します.
+このホームページでは少しづつではありますが、新しい用語の解説をしていきたいと思いますが、上で述べたようにChomsky理論は「生もの」ですから,ご注意下さい.このページは常に未完成です。ご意見や,［これじゃ,まだわからない］と思われるものがありましたら,是非ご連絡ください。
+(t_ono@kufs.ac.jp)
+agree
+Chomsky(1998:14)の用語.語彙項目(Lexical Item: LI)であるαと他の要素β内の素性Fを一定の領域内である種の関係を確立する操作.例えば一致(agreement)や格照合(Case-checking)のような操作のこと.ようは,2つの要素が一つになる際に,一つになっていい要素かどうかを判断する機構と考えればよい.例えば,theとwentがmergeしようとしても,agreeによりそのmergeが拒否されることになる.
+articulatory-perceptual (A-P)
+Chomsky (1992:3)の用語.言語とそれを実際に使用する運用機構(performance
+system)とのインターフェイスの1つで,音声の調音・知覚に関する情報を扱う.つまり,感覚運動機構(sensorimotor
+system)へのインターフェイス.言語は音声をその伝達方式の一つに持っている.音声は脳により耳や口などと情報をやりとりするわけで,言語の音の情報を脳と結びつける接点のことを意味する.
+attract
+Chomsky(1991:422, 1995:297)の用語.ある素性が要素を引きつけること.Moveが自らの要請のために移動する操作であるのに対し,移動の原因が移動する要素の外部にあるとする考え方.例えば,上昇構文(raising
+construction)において(e.g., [ e ] seems [John to be sick] John
+seems [ t to be sick]),補文の主語が主節の主語位置に上昇する操作は,Moveの考え方では,補部の主語が持っている格(主格)を照合するために,格が照合される位置に補文の主語自らが上昇するということになる.一方,attractの考え方では,補文の主語は,主節の時制要素Tが持つD素性,つまり,英語の時制文は主語を必要とする,というGB理論における拡大投射原理(Extended
+Projection Principle)の要請(EPP feature)により引きつけられることになる.
+bare output condition
+Chomsky(1995:221)の用語.インターフェイスの外部,つまり運用機能(performance
+system)の要請からインターフェイスの派生に課せられる条件.Legibility Conditionと同一の概念。
+bare phrase structure
+句構造の節点に表示されている範疇を,個々の語彙要素の素性の一つとし,範疇を表すラベルを用いないで表記する句構造のこと.例えば,the
+bookは,ミニマリスト以前の理論ではaのような,ミニマリストの理論ではbのような表示となる.
+a.   DP          b.     the
+｜              / ＼
+D'              the   book
+/＼
+D   NP
+｜   ｜
+the   N'
+｜
+N
+｜
+book
+初めて生成文法を学ぶ方も、伝統的な生成文法を学んでこられた方も、上のbのような構造はきわめて理解しにくいものだと思います。なぜこんなに様変わりしてしまったのかと疑問に思われることと思います。これには、ミニマリストの基本的な考え方が根底に流れているのです。ミニマリストでは文の生成はnumerationから始まるとされています。このnumerationの中には文を形成するのに必要な語彙要素LI(lexical
+item)のみが含まれています。Inclusiveness Conditionという条件があり、numerationから派生を経て最終的に生成される構造、LF(Logical
+Form)に至るまでに、numerationに含まれていない要素を導入してはならない、ということを規定しています。したがって、numeration内にない要素は派生の途中では出てこないのです。numerationは単語の一種の集合ですから、DPとかN'などの範疇は入っていません。すると、上のaのような構造で用いられているDP,
+D', D, NP, N', Nなどの範疇はnumerationに入っていないわけですから、派生の途中から入ってきたことになり、Inclusiveness
+Conditionに違反していることになり、aのような構造は形成できないことになります。
+broadly L-related position
+Chomsky(1993a:28-29)の用語.主要部headに他の要素が付加された場合,その位置を指す.narrowly-L-relatedに対する.L-relatedのLはlexicalのL.
+checking(照合)
+Chomsky(1993a:12)の用語.2つの要素間において素性の一致が見られた場合,それらの要素が合法的要素(legitimate
+object)であると決定する操作.例えば,GB理論においては,統率のもと格付与詞から名詞に格が付与されるものとしていたが,ミニマリストアプローチでは,名詞が持つ格の素性と時制要素などが持つ格の素性とを照合させる.格以外にもwh素性や時制に関する素性などが照合される.
+checking domain(照合領域)
+主要部αの非補部領域(residue of α)とほぼ同一の領域であるが,非補部領域に存在する要素に含まれる要素は照合領域には入らない.αの指定部,あるいはαに付加された部分のこと.
+これはChomsky(1981)など,いわゆるGB理論時代に格の照合がSpec-head Agreementで行われていた時代の「残りかす」のようなものです.GB理論の時代には格付与に不統一がありました.対格(accusative)(目的格(objective
+Case)と同じ)の格付与は他動詞や前置詞に統率されていること,とされていたのに対し,主格(nominative
+Case)の場合はSpec-head agreementで行われていました.その後この不統一を改め,いずれの格もSpec-headで照合されるというように変わりました.そのため今までにはなかったAgrO(Object
+Agreement)などという奇妙な機能範疇があたらに導入されました.統一するためには導入せざるを得なかったわけです(どんなに不自然でも)。いずれの格もAgrという機能範疇を介在して照合されるとなったわけです.このように仮定すると以下のような構造で格の照合が起こることになりました。
+AgrSP
+/   ＼
+DPsub   AgrS'
+｜    /   ＼
+John AgrS   TP
+｜
+T'
+/   ＼
+T     AgrOP
+/     ＼
+DPobj  
+AgrO'
+｜   /    ＼
+Mary AgrO
+VP
+/   ＼
+V     DP
+｜    ｜
+hit    t
+目的語のMaryはLFでSpec-AgrOに上昇すると考えられていましたので上のような構造になるのです。この構造だと主語のJohnも目的語のMaryもAgrS,
+AgrOとそれぞれSpec-headの関係にあり、統一的に格照合が行われるとされたわけです。このSpec-headの構造においてSpecの位置、あるいはその範囲を照合領域としたわけです。
+しかし、いくら統一のためとはいえ、こんな不自然なものが生き残れるはずがありません。Chomsky(1998)では結局議論されることはなくなりました。checking
+domainなど用いずAgreeという操作で格の照合は行われます。(Agree)
+CFC core functional category
+complement domain(補部領域)
+Chomsky(1993a:11)の用語.ある主要部の領域(domain)内において,主要部とθ関係を持つ要素の集合のこと.下の構造では,Tの補部領域はVPである.
+TP
+/  ＼
+DP      T'
+/ ＼
+T   VP
+conceptual-intentional (C-I)
+Chomsky(1992:3)の用語.言語とそれを実際に使用する運用機構(performance system)とのインターフェイスの1つで,概念・意図に関する情報を扱う.つまり,意味論(談話,語用論を含む)とのインターフェイス.
+converge(収束)
+完全解釈の原理 (full interpretation: FI) を満たしている要素のみで構築されている構造物が生成された場合,その派生は収束したという.また,一つの表示が
+PFとLFの両方で収束した場合を指すこともある.
+copy theory of movement
+移動を,コピーの一種と見なす考え方.例えば,Who did you see?の場合,ミニマリスト以前の理論では,whoはseeの目的語の位置から移動し,痕跡(trace)を残すと考えられているが,ミニマリストではWho
+did you see who?のように,コピー操作が関与していると考えている.
+core functional category(中核的機能範疇)
+Chomsky(1998:15)の用語.機能範疇(functional category)にはT(Tense), C(Complementizer),
+D(Determiner), v(small v)などがあるが,この中でC, T, vだけをこのように呼び,区別している.
+このことは,機能範疇Dが他の機能範疇とは別物で,同一には扱えないのではないかということを意味しているようです.Dが機能範疇であるという仮定や、v
+などという得体の知れない範疇はこれからの理論展開の中ではたして生き残れるのでしょうかねえ。
+crash(崩壊/破綻)
+完全解釈の原理(full interpretation: FI) を満たしていない要素が表示内に残っている場合,その派生は崩壊(破定)したと言う.
+DA(admissible derivations) 計算機構により生成される派生の部分集合で,経済性の原理(economy
+condition)を満たしている派生のこと.収束した派生が,容認可能な派生とは限らない.DAはDCの部分集合である.
+DC (convergent derivations) 計算機構により生成される派生の部分集合で,完全解釈の原理(full
+interpretation)を満たしている派生のこと.
+derivation(派生)
+計算機構 (computational system) で生成される構造物のこと.派生物.
+derivational approach vs representational
+approach(派生的アプローチ対表示的アプローチ)
+計算機構が派生的,つまり,Move αなどの適用により形成されるものなのか,単に表示に対して解釈が与えられるものなのか,という問題.例えば,受動態の形成を例に取ってみよう.John
+was hit.という文章の生成において,もとは [ e ] was hit John.というような構造から,Move
+αを適用して,Johnを主語の位置の空範疇(empty category: e)に移動して生成すると,これは派生的アプローチで受動文を生成したことになる.これに対して,表示的アプローチでは,最初からJohn
+was hit t.という文を形成しておき,この構造をもとに,Johnと痕跡 t
+を関連づける規則で解釈し,必要な意味解釈を行うというもの.
+displacement
+要素(単語)が,意味解釈を受ける位置とは異なる位置に移動されていること.例えば,受動態の主語は,本来目的語の位置にあったものが,ある理由で主語の位置に移動している.このような場合,目的語はdisplaceしていると言う.他にも,wh疑問文の時のwh語が文頭に移動する現象,話題化,難易構文(tough-construction),フランス語やイタリア語などロマンス語系言語見られる接辞化(criticization)など.
+動詞の目的語の名詞句は動詞とともに解釈されるべきで、英語なら動詞の直後というのが一番自然な位置でしょう。にもかかわらずwh疑問文の時には、つまり目的語が例えばwhatになった場合、文頭に移動しなければならないというとはとても不自然なことですね。これがimperfectionの一つです。
+domain
+Chomsky(1993a:11)の用語.照合領域(checking domain)を決定する際の下位概念.主要部αの領域とは,αの最大投射に支配される全ての範疇である.例えば、以下のように,Tの領域とは,Tの最大投射TPに支配される全ての範囲なので,主語のDPを始めVPもそれ以下の構造も全てTの領域内にあることになる.
+TP DP   T' T VP
+economy condition
+派生は最も少ない統語操作のもの(つまり,労力の少ないもの(=least effort))が優先され,表示は出来るだけ少ない要素をからなるべきである,ということを規定した条件.
+edge(周縁)
+Chomsky(1998; 1999)の用語.phase(phase)の指定部と主要部に付加された要素のこと.例えば,補文標識Cを例に取ると,Cによりattractされたwh語はCの指定部を形成するので,Cのedgeに位置することになる.wh語の循環適用を説明するために現時点では不可欠な概念である.(Phase
+Impenetrability Condition)
+EPP
+feature(EPP素性)
+主要部(head)が指定部に句範疇(phrasal category)を要求する素性のこと.例えば,時制TはEPP素性を持つのでTの指定部に名詞句を取り,これが主語となる.補文標識CがEPP素性を持つので,wh語をCの指定部に取ることが可能となる.
+formal feature(FF)
+統語的素性のことで,computational systemで認識され,moveなどの引き金(trigger)になる素性のこと.例えば,時制要素Tは強い範疇素性(strong
+categorial feature)を持っているので,overt componentでその素性が照合されなければならず,そのためmoveを誘発し,vP内の主語であるDPがTの指定部となる.
+full interpretation (FI)
+Chomsky(1986a:98)の用語.PFとLFにおいては,すべての要素が適切な解釈を受けなければならないという原理.
+global economy
+Collins(1997:4)の用語.CollinsがChomsky(1991)などで提案されたeconomy principleを自分の提案するeconomy
+principle(local economy)と区別するために用いた用語.派生の経済性をはかる際に,派生全体でのコストをカウントする原理.
+greed
+要素αが移動するのは,α自身の何らかの要素が照合されなければならないからであるとする条件.自らが,自らの認可のために移動すること.
+guiding ideas
+理論構築の方向性を決定する基礎方針.Chomsky(1981)のleading idea,Chomsky(1991:418)のguide
+lineと同様の概念.
+imperfection
+人間の言語は不完全な部分を持っており,一見意味のない要素(superflous element)や操作(superfluous
+operation)を含んでいる.例えば前者であれば虚辞(expletive)の存在であり,後者であればwh移動などの移動操作である.
+inclusiveness condition
+CHLはいかなる要素をも導入しないという条件.つまり,要素が導入されるのはnumerationにおいてだけであって,numerationに存在しない要素は派生の途中で導入されないということ.この条件により,base
+phrase structureの概念が出てくる.つまり,numerationの段階では範疇という要素そのものが存在していないので,節点に範疇表示をすることが不可能となり,bare
+phrase structureにならざるを得なくなる.
+interpretability
+素性が解釈可能であること.例えば,[plural]という素性は,LFでは+interpretableではあるが,PFでは-interpretableである.
+label
+mergeあるいはmoveにより要素が結合されて形成される新しい要素の表示のこと.例えば,theとbookがmergeにより結合されthe
+bookという句が形成されるが,その句の表示のことで,{the,{the,book}}における最初のtheのこと.
+last resort (condition)
+moveが適用されるのは,それが適用されないと適正な構造が形成されないときのみであることを規定した条件.
+least effort (condition)
+economy condition
+legibility condition
+Chomsky(1998:9)の用語.言語要素は言語外の認知機構が解釈可能な形式でなければならないという条件.
+legitimate object 解釈を受けることのできる要素のこと.Chomsky(1995)などではBare
+Output Conditionと呼ばれていたもの.
+言語の機構は脳の中にあることは明らかでしょう。そうすると、言語の機構で形成されたものは、脳の他の部分により解釈されなければなりません。例えば、言語の音声の情報は解釈され発音のために、運動機能に伝達されなければなりません。そうなれば、言語の機能が形成するものは、脳の他の部分が解釈できるような形式になっていなければなりません。したがって、言語の機構は、その外部からある種の条件を課せられていることになります。一つの比喩としては、コンピュータの情報はフロッピーなどに書き込まれますが、人間の頭に直接フロッピーを差し込んだところで、そのフロッピーの情報が読みとれるわけではありませんし、逆にフロッピーは人間の脳の情報を読むこともできないわけです。つまり、フロッピーの情報は人間の脳にとってlegibleではないわけです。
+lexical array
+Chomsky(1998:13)の用語.従来のnumerationと同じ概念.
+numeration
+local economy
+Collins(1997:4)の用語.派生の途中で,ある操作が適用されるかどうかを決定するのは,その操作が適用される要素の情報でのみ決定されるという原理.(global
+economy)
+local merge
+Chomsky(1998:27)の用語.mergeされる要素が,牽引するもの(attractor)に可能な限り接近してmergeされる操作.
+merge
+統語的要素(syntactic object(SO))を結合し,新しい投射を形成する操作.
+Chomsky(1995:)の用語。2つの構成素(単語)を結合して、より大きな構成素を形成する操作のこと。numeration(語彙算出表)内の要素を2つ取り出し、結合させて上位の構成素を作ります。例えば、αとβがある場合、両者を融合させると、どちらかの要素が投射(project)し、両者を直接支配する構成要素γが作られます。具体的には、αとβに、それぞれ
+the と book を考えてみましょう。the は限定詞なので Determiner の D、book
+は名詞なので Noun の N です。融合により、この両者が直接構成要素となる新しい範疇γができるわけです。the
+の方が投射するとγは D' になり、book の方が投射すると N' になります。
+この融合という操作が導入されたことで、X-bar理論 (X-bar Theory) も必要なくなりました。今まで、Chomskyの理論が変形性生文法と呼ばれていた頃から、「the
+book の樹形図の書き方はわかりました。下の(1a)でいいんでしょ。では、books
+とか、John、he の場合はどう書くのですか?それぞれ(1b), (1c), (1d) でいいのでしょうか?」というような質問をよく受けました。
+(1)a.   NP      b.  NP  
+/＼        ｜
+Det   N'         N'
+｜   ｜        ｜
+the  N          N  
+｜       ｜                 
+book      books  
+minimalist program
+Chomsky(1991)で提案された経済性の原理 (economy principles)の概念を発展させたもので,人間言語の普遍文法にはすべての機構や操作を最小にするという特徴が備わっているという概念.
+minimal link condition
+ある位置に要素を移動する際は,最もその位置に近い要素を選ぶ,とする条件.
+move
+伝統的には,句構造標識内のある範疇を別の位置に移動する操作のこと.Chomsky(1998:14)では,moveはmergeとagreeの複合操作であるとされている.
+numeration(語彙算出表)
+辞書の任意の要素からなる集合体のことで,計算機構(computational system)の入力となるもの.
+Chomsky(1995:225)の用語。特定の文や句を生成するために必要な語彙項目(lexical
+item)を列挙したもので、単語の集合と考えればいいでしょう。ただし、音形を持つ単語以外に、時制要素(tense)や一致要素(agreement)なども含まれます。
+語彙項目は、(LI,i)という一般形式で指定されています。LI はlexical
+itemの、またi はindexの頭文字をとったもので、計数としておきます。このindexで表される数字は、指定された語彙項目が、何回計算機構(computational
+system)によりアクセスされるかの、回数を示すものです。例えば、He said that
+he would come. という文では、代名詞heが2回用いられています。この場合、heは(he,2)と表記されるわけです。この文の語彙算出表は次のようになります。
+((he,2), (said,1), (that,1), (would,1), (come,1), (T,2))
+heと時制要素Tのみが2回用いられているので、計数が2になっています。計算機構は、この語彙算出表に示されている語彙項目のみを、指定された回数だけアクセスして文や句を形成します。語彙算出表に記載されていない語彙項目を用いたり、計数で指定された回数以上に、あるいは以下でのアクセスは許されません。計数が0になるまでアクセスは継続されなければなりません。語彙算出表内にあるすべての語彙の計数が0になった場合、計算機構の進行は止まります。つまり、文の生成が完了するわけです。
+計数indexは、束縛理論(Binding Theory)やコントロール理論(Control Theory)
+で用いられる、個のアイデンティティを表す指標を意味するindexとはまったく異なるものです。計算機構がアクセスする回数を指定した、単なる計数です。
+Chomsky(1995)などで示されている最小主義アプローチ(Minimalist Approach)
+では、D構造(D-structure)やS構造(S-structure)はありません。あえて無理をして言えば、語彙算出表はD構造と似た役割を果たすことになります。ただし、D構造のようにすでに構造を持っているわけではありませんので、D構造とは本質的に異なるものです。
+語彙算出表がなぜ必要なのかという理由の一つに、虚辞(expletive)を含んだ文の生成があります。There
+is a book on the desk.という文を考えてみましょう。虚辞のthereはLFにおいて削除されると考えられていますから、この文もLF
+ではA book is on the desk.というものになります。すると、このLFを得るために、2つの派生が考えられることになります。一つはthereを含む文と、もう一つはthereを含まないものです。派生の経済性原理(economy
+principle)からいうと、余分なthereを含んでいる派生は排除されることになります。これでは、there
+構文が存在しなくなってしまいます。そこで、虚辞を含んだ語彙算出表と、虚辞を含まない語彙算出表がそれぞれ別々にあると考えれば、この問題は解決するわけです。
+Chomsky(1998), "Minimalist Inquiries: the Framework"では、numerationの代わりにLexical
+Array (LA)という用語が用いられています。上で見てきたnumerationという用語の意味するところは、内部構造を持たない語彙項目の集合でした。しかし、arrayという語を用いたと言うことは、この語arrayが「配列」のような意味ですので、単なる集合(set)ではなくて、内部構造(internal
+structure)を持つ構造物であるような感じを与えます。するとせっかくD構造という表示レベルを排除したのに、実質的にはD構造とよく似た構造を仮定しているかのように見えます。しかし、この点をChomsky自身に確認しましたところ、"No
+internal structure is assumed: an LA is just a set of lexical items."であるとの回答を得ました。したがって、用語としてはarrayという語を使っていますが、あくまで「集合」の意味でしか使っておらず、基本的に従来の概念と変わっていないと言うことです。
+optimal(ity)
+「最適」を意味するもので,いくつかの表示の中から,一定の基準を満たしているものを最適なものとして採用するという考え方.
+pair-merge
+Chomsky(1998:23)の用語.付加(adjunction)に関与するmergeのこと.(merge,
+local merge, pure merge, set-merge)
+phase
+Chomsky(1998:20)の用語.spell-outが行われる単位としてCPとvPをphaseと呼ぶ.統語操作が適用される範囲のことで,伝統的なcycle(循環)とよく似た概念.Chomsky(1999)では,CPとv*Pが仮定されている.また,phaseをweak
+phaseとstrong phaseに下位分類している.(weak phase,
+strong phase)
+Phase
+Impenetrability Condition(PIC)(位相不可侵条件)
+Chomsky(1998;1999)の用語.強位相(strong phase)内にある要素は,その外部からアクセスする事は出来ないというもの.伝統的なcycle(循環)の考え方と同じもの.例えば,(i)のようにphase(PH)が2つある構造を考えてみる.
+(i) [PH1 . . . α . . .[PH2
+. . . β . . . ]]
+αが要素を引きつける能力,つまりattractの能力を持つ要素であると仮定すると,αはβをattractできないことを規定した条件である.具体的には(ii)を考えてみよう.
+(ii) a. T seems [PH that John is sick]
+α           β
+b. *John T seems [PH that t is sick]
+(iia)で,時制要素Tをα,埋め込み文の主語Johnをβとすると,Johnはthat節,つまりphaseであるCP内にあり,その外にあるattractの能力を持つTによりMoveを発動されないことになる.つまり,(iib)のような非文の生成が阻止されるのである.
+もっとも,これだけでは埋め込み文からの抜き出し(extraction)はいかなる場合にも不可能になってしまい,Who
+do you think John met t ?のような文も生成できなくなってしまう.そこで,phaseの周縁部(edge)(edge)と主要部(head)を(i)のβからは除外する特別条項を設けている.Chomsky(1998)とChomsky(1999)の定義を示しておく.
+(iii) In phase α with head H, the domain of H is not accessible
+to operations outside α, but only H and its edge.
+(iv) The domain of H is not accessible to operations outside HP,
+but only H and its edge.
+Who do you think John met t ?を例に取って考えてみよう.埋め込み文でCがmergeされた構造(v)が生成される.
+(v) C [TP John met who ]
+CのEPP素性(EPP feature)が強いためwhoは移動され(vi)の構造を形成する.
+(vi) [CP who C [TP John
+met t ]]
+CPはphaseで,whoの位置はedgeにあたり,Cがheadである.この構造にさらに上位の要素がmergeされ(vii)の構造が形成される.
+(vii) [CP C<+WH>
+[TP you do think [CP who
+C [TP John met t ]]]]
+主節のCは,<+WH>の素性を持っており,EPP素性が強いので,attractすることが出来る.埋め込み文のwhoの位置はedgeであるため,主節のCからアクセス可能となり,whoが移動され,最終的に求める文が形成されることになる.
+Principles and Parameters (P&P) model
+Chomsky (1981) 以降の Chomsky 理論のこと.
+procrastinate
+moveの適用は出来る限り先延ばしせよ,という原理.
+pure merge
+Collins(1997:3)やChomsky(1998:16)の用語.numerationから要素を選択しmergeさせる場合をいう.moveの操作おいて生じるmergeと区別する概念.(merge,
+local merge, pair-merge, set-merge)
+residue of α(非補部領域)
+Chomsky(1993a:11)の用語.ある主要部の領域(domain)から補部領域(complement
+domain)を除いた残りの領域のこと.
+set-merge
+Chomsky(1998:23)の用語.一般的なmergeのことで,mergeするいずれかの要素がprojectする場合をいう.(merge,
+local merge, pair-merge, pure merge)
+specificity
+言語能力(language faculty) がミニマリスト的な特徴を持っているという点で,他の認知機構とは異なるものであるということ.
+spell-out
+numerationLFの途中で,音韻素性のみを取り出し,PFへの派生を開始する操作.ミニマリストの初期にはspell-outが一度しか起こらないとする,伝統的な生成文法の考え方であったが,Uriagereka(1997)などでは,複数回に分けてspell-outが行われるという,いわゆるmultiple
+spell-outという考え方が出てきている.Chomsky(1998:20)でもmultiple spell-outの考え方を導入し,spell-outはphase単位に行われる,とする提案がなされている.
+strong derivational approach
+派生(derivation)と表示(representation)の両方を用いるChomskyなどの理論に対して、Epstein,
+Groat, Kawashima, & Kitahara(1998)のように、表示のレベルを用いず派生のみで構造の構築と解釈を行う理論のこと。
+surface effects on interpretation
+表層構造における意味解釈に関する効果のこと.標準理論では意味は深層構造で決定されると仮定されていたが,表層構造においてのみ解釈可能な意味情報もあることが確認された.
+前のページに戻る
+英米語学科ホームページ
+京都外国語大学ホームページ
+

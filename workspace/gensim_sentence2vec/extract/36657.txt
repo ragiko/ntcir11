@@ -1,0 +1,15 @@
+
+などのメタ情報がhead要素内で定義されています。このようなプロパティと値の組み合わせ -- つまりメタ情報 -- のうち、値がURIであるものはlink要素で示し、そうでないものをmeta要素で示します。(上の例ではスタイルシートと目次ページのメタ情報をlink要素で示します。)
+meta情報のプロパティは普通はname属性に記述しますが、HTTPレスポンスヘッダとして送信されるべきものはhttp-equiv属性に記述します。meta情報の値はcontent属性に記述します。
+文字コードを示す
+Shift_JIS
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+EUC-JP
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+ISO-2022-JP (JIS)
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-2022-JP">
+UTF-8
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+HTML文書の文字コードを示します。HTML文書中で日本語が現れる部分より前に指定してください。
+content="text/html;" charset="Shift_JIS"ではないので気をつけてください。
+meta要素 -- HTML 4.01リファレンス

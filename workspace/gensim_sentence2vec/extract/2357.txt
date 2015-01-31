@@ -1,0 +1,28 @@
+さて、題材は3行×4列固定の転記でしたが、これだけでは応用が効きませんね。同じ範囲の転記でもいろいろな書き方があります。
+転記範囲の左上と右下の位置を番号で指定する方法
+Option Explicit
+Sub TEST5()
+Dim S1 As Worksheet, S2 As Worksheet
+Set S1 = Worksheets("Sheet1")
+Set S2 = Worksheets("Sheet2")
+' 1行1列ズラせて転記
+S2.Range(S2.Cells(2, 2), S2.Cells(4, 5)).Value = _
+S1.Range(S1.Cells(1, 1), S1.Cells(3, 4)).Value
+End Sub
+Rangeオブジェクトは、カッコ内にセル範囲を示す文字列を指定する他、Cellsプロパティを併用してセル範囲の左上セル、右下セルを指定させて矩形のセル範囲とすることができます。
+シートオブジェクトを明示する場合は、Range,Cellsともに同じものを記述する必要があります。
+左上起点で行数、列数を指定する方法
+Option Explicit
+Sub TEST5()
+Dim S1 As Worksheet, S2 As Worksheet
+Set S1 = Worksheets("Sheet1")
+Set S2 = Worksheets("Sheet2")
+S2.Range("B2").Resize(3, 4).Value = S1.Range("A1").Resize(3, 4).Value
+End Sub
+Sub TEST6()
+Dim S1 As Worksheet, S2 As Worksheet
+Set S1 = Worksheets("Sheet1")
+Set S2 = Worksheets("Sheet2")
+S2.Cells(2, 2).Resize(3, 4).Value = S1.Cells(1, 1).Resize(3, 4).Value
+End Sub
+VBA基本(セル範囲が不定(可変)の場合は)

@@ -1,0 +1,126 @@
+[機械学習]bit vector + popcntでバイナリ素性のk-NN分類器を高速化する
+こんばんは @sleepy_yoshi です.Machine Learning Advent Calendar 2012 の11日目を担当します.サモア時間ではまだ12月11日なので間に合いましたね.今日はバイナリ素性ベクトルの内積計算にSSE4.2のpopcnt命令を用いて高速化することでk-NN分類器を高速化する話について書きます.
+このブログでは普段である調で書いていますが,今日はなんとなくですます調で書きます.
+k-NN (k Nearest Neighbor) 分類器はラベルを予測したい事例に対して,訓練データとして与えられたラベル付き事例集合の中からk近傍の事例のラベルを用いて予測する,という分類器です.k近傍を求めるために,訓練データに含まれる事例全てに対する類似度を計算する必要があります.類似度には様々な尺度が利用されますが,ここでは内積とします.そのためk個の近傍を発見するためには,入力の素性ベクトルに対する各事例の素性ベクトルの内積を計算する必要があります.
+k-NNの高速化は長年研究されており,例えばkd-treeのようなデータ構造を利用したり,LSHのように近似計算により高速化するアプローチやGPUを用いたものもありますが,今回はCPUにおける内積計算の高速化に取り組むことにします.
+今日紹介する基本アイディアは下図のとおりです.この図で今日話したいことが集約されています.
+このように実数特徴ベクトルの場合には,各要素同士の積を計算して和を求めることによって内積を計算します.しかし,バイナリ素性の場合にはとりうる値は{0,1}のみなのでビット列で素性ベクトルを表現することができます.
+ビット列で表現されたことにより素性ベクトルの各要素の積は,ビット列同士の論理積 (AND) で計算できます.最後に1が立っているビットを数えれば内積の値を計算することができます.最後のビット数を数えるところでSIMD拡張命令のpopcntを使って高速化しようというのがアイディアです.			といっても新しいアイディアではなく,既に他のブログ[1]で紹介されていますし,文献[2]にもあるように,ハミング距離の計算高速化などに使われています*1.
+SSE4.2とPOPCNTについて
+SSEはStreaming SIMD Extensions の略だそうで,C少し複雑な処理を1命令で書くことができるCPUの拡張命令です.これ以上詳しくはわかっていません.SSE4.2でpopcntが追加されました.竹迫さんの資料[3]によると64bit popcntが一番速そうなので,それを利用することにしました.
+まず,popcntを使えるかどうか確認します.Linuxでお手持ちのCPUでsse4.2が利用可能かを調べるためには /proc/cpuinfo を眺めるとわかります.
+% cat /proc/cpuinfo
+...
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good
+xtopology nonstop_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt lahf_lm ida tpr_shadow vnmi flexpriority ept vpid
+b
+...
+sse4_2とpopcntが書かれていますね.これがあれば多分大丈夫です.
+popcntの利用方法
+popcntを使ってみます.こんなソースコードを書きました.64bitのpopcntは _mm_popcnt_u64はuint64_t を利用すればよさそうです.
+こんなソースコードを書いてみました.
+#include <iostream>
+#include <cstdint>
+#include <cstdlib>
+#include <vector>
+#include <smmintrin.h>
+size_t
+popcount (std::vector<uint64_t> &x_vec)
+{
+size_t c = 0;
+for (int i = 0; i < (int)x_vec.size(); i++) {
+c += _mm_popcnt_u64( x_vec[ i ] );
+}
+return c;
+}
+int
+main (int argc, char *argv[])
+{
+std::vector<uint64_t> x_vec;
+x_vec.push_back( (uint64_t) 1 );
+x_vec.push_back( (uint64_t) 1 );
+std::cout << popcount( x_vec ) << std::endl;
+return 0;
+}
+以下のとおりコンパイルしました.コンパイルオプションに-msse4.2と-std=c++0xを追加する必要があるようです.
+% g++ -O2 -Wall -msse4.2 -std=c++0x pop.cpp
+実行してみます.00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000001が2つなので2ビットだけ立っているはずです.
+% ./a.out
+2
+どうやらちゃんと動いているようです.これでpopcntが使えるようになりました.
+bit k-NN (+ popcnt) の実装
+k-NNの実装では内積計算のところを以下のように書きました.あとはLIBSVMフォーマットの入力データを想定しているのですが,そこからuint64_tのビットベクトルに変換する,というところ以外は通常のk-NN実装と同じです.詳しくはGitHubのソースコードをご参照ください.
+size_t
+BitKNN::popcount (std::vector<uint64_t> &x_vec)
+{
+size_t c = 0;
+for (int i = 0; i < (int)x_vec.size(); i++) {
+c += _mm_popcnt_u64( x_vec[ i ] );
+}
+return c;
+}
+size_t
+BitKNN::inner_prod (std::vector<uint64_t> &x_vec1, std::vector<uint64_t> &x_vec2)
+{
+/*
+if (x_vec1.size() != x_vec2.size()) {
+std::cerr << "ERROR: The size of two vectors are inconsistent." << std::endl;
+exit(1);
+}
+*/
+size_t c = 0;
+for (int i = 0; i < (int)x_vec1.size(); i++) {
+uint64_t x = x_vec1[ i ] & x_vec2[ i ];
+c += _mm_popcnt_u64( x );
+}
+return c;
+}
+実験
+本実装によってどれくらい速くなるのか実験をしてみました.今回は分類精度云々ではなく速度が問題なので,以下の条件に従ってバイナリ素性の人工データを生成して利用しました.
+事例数: 1,000事例, 10,000事例
+訓練データ:テストデータは80%:20%
+ベクトル次元数: 100次元 (a),1,000次元 (b), 10,000次元 (c)
+非ゼロ素性率: 10% (1), 25% (2), 50% (3), 75% (4), 100% (5)
+なお,()内の記号はグラフのx軸の名称に利用します.以上の組み合わせ30通りについて,テストデータを分類するためにかかった時間を計測しました.時間の計測にはgettimeofday(2)を利用しました.
+ベースライン手法としては素性ベクトルを素性IDと素性値のペアの配列をstd::pair<int, float>の配列で表現し,内積計算には各要素の積の和を求める内積計算にしました.高次元スパースな素性ベクトルになるとこちらの方が有利になるはずです.
+実験に利用したマシン環境は以下のとおりです.
+CPU: Intel Core i7 950 (3.07GHz)
+Memory: 24GB
+OS: Debian Linux (kernel 2.6.32-5)
+gcc: 4.4.5 -O3オプションでコンパイル
+各10回計測を行い,計測値の標準偏差をエラーバーとして平均値をプロットしました.
+結果は以下のとおりです.y軸は対数スケールにしました.グラフのx軸の目盛りは上記実験条件の組み合わせを表しています.たとえばa1は100次元10%,b3は1,000次元50%です.
+1,000事例
+10,000事例
+以下の結果が確認できました.
+(1) 基本的にbit vector + popcntの方が速い
+(2) 事例数を変えても,時間スケールが変わるだけで関係はそのまま
+(3) 非ゼロ素性率100%の場合 (a5, b5, c5),時間が著しく短くなる
+(4) bit vector + popcntでは時間が事例数に依存
+(5) std::pair<int, float>では非ゼロ素性数だけではなく,次元数にも依存
+それぞれの結果に対して簡単に考察してみます.
+(1) 期待通りです.ただし,非ゼロ要素が100%の場合はほぼ同じ値になっています.これについては(3)で考察します.
+(2) も期待通りです.時間スケールだけ変化したので,どうやら実験は正しく行われているようです.
+(3) さてこれが面白い結果でした.なぜこうなったのでしょうか.今回はバイナリ素性なので非ゼロ要素が100%ということはすなわち全事例の全素性値が1という状態になります.すると全ての内積の結果が等しくなり,k-NNの途中で行われているmax計算のif文も全て最初以外はtrueになりません.このことから,分岐予測が効いているのではないかと予想しています.プロファイルを取っていないのであくまで予想です.
+(4) これも当たり前です.bit vector表現では非ゼロ素性数ではなく,素性次元数だけビット列を確保しているので,bit vector + popcntでは事例数のみに比例するはずです.
+(5) 今回のstd::pair<int, float>同士の内積計算は二本の配列を線形探索のノリで走査して内積を取っているので,実際の要素数だけでなく,どれだけ同じfidを持つ素性が出現するかということにも依存します (積が行われると両方の配列のポインタが進むため).素性次元数が増えるとヒット率が下がるため,コストが増えています.
+ツール
+本実装のソースコードをGitHubにあります.k-NNと言っておきながら,k=1決めうちの実装になっていました.あとでこっそり直しておきます.
+https://github.com/suhara/bit_knn
+使い方はこんな感じです.
+Usage: bit_knn_classify <train filename> <test filename>
+[-k knum] number of neighbors to be used for prediction (Default: 1)
+[-f] using feature vector data structure instead of bit vectors. (Default: OFF)
+[-q] Quiet mode, which does not diplay predict result. (Default: OFF)
+LIBSVMフォーマットのデータが入力で予測値を標準出力に表示するのでLIBSVMと同じように利用することができます.-fオプションは素ベクトルにstd::pair<int, float>を用いる指定.-qオプションを使うと予測値を表示しないので,ベンチマークを行う際に使います.
+おわりに
+今日はビットを数えるpopcnt命令の利用によってバイナリ素性の内積計算を高速化し,k-NNの高速化のいち実装について紹介しました.もっと複雑になるかと思ったのですが,書いてみるとずいぶんすっきり書けるので,今後も使いどころがあれば使いたいパターンになりそうです.
+今日の記事は元々は数か月前にpopcnt命令の話を聞いたときにこれでバイナリ素性の素性ベクトルの内積計算が速くなるじゃない,と思って試してみてそのまま放置していたネタをまとめてみた次第です.ご相談させていただいた @takesako さん @shuyo さん,ようやくまとめることができました.
+なお,今回は低次元な素性ベクトルを前提としているので,高次元スパースな場合にはそのまま利用することができません.疎ベクトルの実装については @unnonouno さんの記事[3] が参考になります.
+References
+[1] SIMD で線形分類器を省メモリ・高速化 - ny23の日記
+[2] c++ - Fast Popcount instruction or Hamming distance for binary array? - Stack Overflow
+[3] 最速の疎ベクトルはどれだ - Preferred Research Blog
+ツイートする
+Permalink | コメント(0) | トラックバック(2)  
+bit vector + popcntでバイナリ素性のk-NN分類器を高速化する - 睡眠不足?!

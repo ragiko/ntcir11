@@ -1,0 +1,41 @@
+_ LinearLayout の width(またはheight) と weight の関係
+UI の作成で LinearLayout を使用する際、「とりあえず中の View の attribure に android:layout_weight="1" と書いとけばなんとなくうまくいく」なんてことを言われたことはありませんか? 以下は、weight を指定することで、LinearLayout の中では何が起きるのかについて調べたことのメモです。
+今回は、横方向(LinearLayout の orientation が horizontal) の場合で記述します。縦方向についても全く同様なので、縦の場合は width と height を入れ替えて読んでください。
+まず、View に指定する weight (android:layout_weight) はどういう意味でしょうか。 この場合の weight は「重要性」や、「影響力」という意味です。つまり、 weight のイメージとしては、値が大きいほど画面内で大きなスペースを占有するということです。
+ところが weight についてしっかり理解せずに使うと、本来の意味とは全く逆で値が大きいほど占有するスペースが小さくなる場合があります。なぜこのようになるかについてはあとで説明をするので、まずは以下の例を見てください。
+まずはレイアウトの XML です。
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="horizontal" android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+<TextView android:layout_width="fill_parent"
+android:layout_height="fill_parent" android:layout_weight="1"
+android:text="weight:1" android:background="@android:color/black"
+android:textColor="@android:color/white" />
+<TextView android:layout_width="fill_parent"
+android:layout_height="fill_parent" android:layout_weight="2"
+android:text="weight:2" android:background="@android:color/white"
+android:textColor="@android:color/black" />
+<TextView android:layout_width="fill_parent"
+android:layout_height="fill_parent" android:layout_weight="3"
+android:text="weight:3" android:background="@android:color/black"
+android:textColor="@android:color/white" />
+</LinearLayout>
+TextView を横に3つ並べています。weight の値は順に 1, 2, 3 となっています。それぞれの View の範囲が分かりやすいように、TextView の背景は 黒、白、黒にしました。このレイアウトを表示すると以下のようになります。
+なぜか最初の TextView が画面の 2/3 を占め、残りが2つめの TextView、3つ目は見当たりません。このようになるのは、weight の使われ方に原因があります。
+weight が横方向で使用される際の意味は以下のとおりです。
+LinearLayout に属するそれぞれの View について、それぞれの幅の合計とLinearLayout自体の幅との差分(余白)を各 View に割り振る際の比率
+7/4追記: @yanzm さんの Android Layout Cookbook によると、上記差分からさらに各 View の margin を引いたものが weight に従って分配されるとのこと(margin と padding の違いに注意)。さすが yanzm 本...
+View の幅は android_layout_width の指定に従って計算します。つまり、wrap_content であれば中身の幅、match_parent(またはfill_parent) であれば親の LinearLayout の幅になります。
+では、先程の例がなぜあのような見た目になってしまうのかを説明します。
+まずweight 適用以前の各 View の幅ですが、全て fill_parent なので 親の LinearLayoutの幅(== 画面の幅)になります。画面の幅 を W dip とすると、W dip の TextView 3つ分が並ぶことになるので 合計の幅は 3W dip です。 LinearLayout の幅は画面の幅と同じ W dip なので、差分を取ると -2W dip という負の値になります。
+もうわかったかもしれませんが、 fill_parent と weight を組み合わせると、差分(余白)が負の値になるのが一見奇妙な挙動になる原因です。この -2W dip を各 View の weight に従い分配すると以下のようになります。今回の例では weight の合計値は 6 (1 + 2 + 3) です。
+まず 最初の TextView は weight が 1 なので、-2W dip のうち、1/6 を受け取ります。つまり最終的は幅は W + (-2W * 1/6) dip == 2/3 * W dip です。画面の 2/3 を占有するということです。
+2つ目の TextView は、 weight が 2 なので、-2W dip のうち、2/6 を受け取ります。つまり最終的は幅は W + (-2W * 2/6) dip == 1/3 * W dip です。画面の 1/3 を占有するということです。
+3つ目の TextView は、 weight が 3 なので、-2W dip のうち、3/6 を受け取ります。つまり最終的は幅は W + (-2W * 3/6) dip == 0 * W dip です。幅が0なので表示されません。
+これが weight を指定した際に直感と違うみためになる理由です。
+では、単に View の幅を 1:2:3 にしたいしたい時はどうすればいいかというと、LinerLayout の幅全てを余白として扱い weight に従って各 View に分配するのが簡単なやり方です。そのためには各 View で android:layout_width="0dip" と指定します。さきほどの layout XML の android:layout_width を "0dip" に変えたものが以下の図です。
+このように、weight に比例した幅になっています。 今回 wrap_content の例は説明しませんでしたが、それぞれの幅を決めてから残った部分を weight に比例させて配分するという点は変わりません。
+weight の意味を正しく理解して、思い通りのレイアウトを作成してください。
+注: このエントリは、Androidのソースコードを読んで理解した内容なので間違っている可能性もあります。お気づきの点があれば @zaki50 までお知らせください。
+zaki日記(2011-07-02)

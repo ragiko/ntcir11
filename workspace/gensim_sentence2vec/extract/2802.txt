@@ -1,0 +1,37 @@
+  % dig @ns1.jprs.co.jp jprs.co.jp mx 
+; <<>> DiG 9.2.1 <<>> @ns1.jprs.co.jp jprs.co.jp 
+mx
+;; global options: printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: 
+NOERROR, id: 59551
+;; flags: qr aa 
+rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 2, ADDITIONAL: 4 
+;; QUESTION SECTION:
+;jprs.co.jp.      IN     MX 
+;; ANSWER SECTION:
+jprs.co.jp.   86400 IN    MX     20 mx2.jprs.co.jp.
+jprs.co.jp.   86400 IN    MX     10 mx1.jprs.co.jp. 
+;; AUTHORITY SECTION:
+jprs.co.jp.    86400 IN    NS    ns1.jprs.co.jp.
+jprs.co.jp.    86400 IN    NS    ns2.jprs.co.jp. 
+;; ADDITIONAL SECTION:
+mx1.jprs.co.jp. 86400 IN    A     61.120.151.84
+mx2.jprs.co.jp. 86400 IN    A     61.120.151.85
+ns1.jprs.co.jp.  86400 IN    A     61.120.151.70
+ns2.jprs.co.jp.  86400 IN    A     61.120.151.71 
+;; Query time: 4 msec
+;; SERVER: 61.120.151.70#53(ns1.jprs.co.jp)
+;; WHEN: Sun Jul 27 23:45:00 2003
+;; MSG SIZE rcvd: 168
+出力の意味をすべて詳しく書くのは難しいので、知っておくと便利な部分の見方をいくつか説明しておきます。
+空行でいくつかのセクションに分割されていますが、それぞれDNSの応答のセクションや、実行時に得られた情報を記しています。
+最初の数行は実行したdigコマンド自身のバージョンとコマンド行の内容、続いて応答のヘッダ部の内容です。
+status……正しく情報を得られた場合はNOERROR、ドメイン名が存在しない場合は NXDOMAINと表示されます。
+flags……この応答がどういう意味を持つのかを示すフラグが表示されています。特に「aa」が付く場合は、応答を返したネームサーバが権威付きの回答をしていることを示します。
+QUERY/ANSWER/AUTHORITY/ADDITIONAL……それぞれのセクションに何個のリソースレコードを返したかが表示されます。
+続く部分はそれぞれQUERY/ANSWER/AUTHORITY/ADDITIONALのセクションとして返ってきた情報がそのまま表示されます。情報の数が0のセクションは省略されます。これらのセクションで表示される行の2項目の数字はTTLを表し、キャッシュサーバが答える場合はそのキャッシュの維持される時間を表します。間を置いてもう1度同じ問い合わせを行うと数字が減っていくのが分かるはずです。
+最後の部分は問い合わせにかかった時間や、使用したネームサーバ、応答メッセージのサイズなどが表示されています。
+このように、digコマンドの出力を上から見ていくと、応答パケットの内容がほぼそのまま表示されているのが分かると思います。つまり、表示される中身を知ることは、そのままDNSの応答パケットを知ることになります。
+最初のうちは読むのが難しいかもしれません。慣れるに従い、見たいものが何かが分かるようになっていきます。DNSの仕組みを理解しようとするのであれば、digコマンドの表示をじっくりと眺めることから始めてみるのも一手です。
+@IT:DNS Tips:digコマンドとは

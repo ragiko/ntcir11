@@ -1,0 +1,57 @@
+
+次にArraryListクラスに登録されている要素の中から、指定した要素があるかどうかを検索してみます。ArrayListクラスで用意されている"indexOf"メソッドを使います。
+indexOf
+public int indexOf(Object elem)
+equals メソッドを使って等しいかどうかを判定しながら、指定された引数と同じ内容の要素を先頭
+から検索します。
+パラメータ:
+elem - オブジェクト 
+戻り値:
+リスト内で引数が最初に現れるインデックス。オブジェクトが見つからない場合は -1
+検索したい要素を引数に指定すると、ArrayListクラスのオブジェクト内に格納されている要素の先頭から検索を行い、最初に見つかった要素のインデックス番号を返してくれます。
+また"indexOf"メソッドは先頭から検索しますけれど、最後から検索するための"lastIndexOf"メソッドも用意されています。
+lastIndexOf
+public int lastIndexOf(Object elem)
+指定されたオブジェクトがリスト内で最後に現れるインデックスを返します。
+パラメータ:
+elem - 目的の要素 
+戻り値:
+リストで指定されたオブジェクトと一致する最後のオブジェクトのインデックス。オブジェクトが
+見つからない場合は -1
+使い方としては下記のような感じとなります。
+ArrayList<String> array = new ArrayList<String>();
+array.add("東京");
+array.add("大阪");
+array.add("東京");
+array.add("千葉");
+System.out.println(array.indexOf("東京"));      // 0
+System.out.println(array.lastIndexOf("東京"));  // 2
+サンプルプログラム
+では実際に試してみましょう。
+collectionTest4.java
+import java.util.ArrayList;
+class collectionTest4{
+public static void main(String args[]){
+ArrayList<String> array = new ArrayList<String>();
+array.add("東京");
+array.add("大阪");
+array.add("東京");
+array.add("千葉");
+for (int i = 0 ; i < array.size() ; i++){
+String country = array.get(i);
+System.out.println(country);
+}
+String word = "東京";
+int first = array.indexOf(word);
+System.out.println(word + "について検索します");
+if (first != -1){
+System.out.println("最初のインデックス番号は " + first);
+}
+int last = array.lastIndexOf("東京");
+if (last != -1){
+System.out.println("最後のインデックス番号は " + last);
+}
+}
+}
+上記をコンパイルして実際に実行してみると下記のようになります。
+要素の検索 - コレクション(ArrayList) - Java入門

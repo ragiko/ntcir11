@@ -1,0 +1,174 @@
+作成者: 上田悦子, 最終変更者: 怡土順一, 最終変更リビジョン: 493, 最終変更日時: 2009-09-01 22:47:32 +0900 (火, 01  9月 2009)
+ハフ変換
+OpenCVでは,標準的ハフ変換,確率的ハフ変換,マルチスケール型の古典的ハフ変換の3種類の手法を実装している.標準的ハフ変換と古典的ハフ変換では,検出された線は点(0, 0)から線までの距離&rho;と,線の法線がx軸と成す角&theta;の2つの値で表される.一方確率的ハフ変換では,端点をもつ線分として線を検出する.そのため,検出された線分は,始点と終点で表される.
+また,円は中心と半径を表す3つのパラメータで表現できるため,直線検出で投票に用いるハフ空間を,三次元に拡張することで円を検出する事が可能になる.
+#include <cv.h>
+#include <highgui.h>
+#include <math.h>
+int
+main (int argc, char **argv)
+{
+int i;
+float *line, rho, theta;
+double a, b, x0, y0;
+IplImage *src_img_std = 0, *src_img_prob = 0, *src_img_gray = 0;
+CvMemStorage *storage;
+CvSeq *lines = 0;
+CvPoint *point, pt1, pt2;
+// (1)画像の読み込み
+if (argc >= 2)
+src_img_gray = cvLoadImage (argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+if (src_img_gray == 0)
+return -1;
+src_img_std = cvLoadImage (argv[1], CV_LOAD_IMAGE_COLOR);
+src_img_prob = cvCloneImage (src_img_std);
+// (2)ハフ変換のための前処理
+cvCanny (src_img_gray, src_img_gray, 50, 200, 3);
+storage = cvCreateMemStorage (0);
+// (3)標準的ハフ変換による線の検出と検出した線の描画
+lines = cvHoughLines2 (src_img_gray, storage, CV_HOUGH_STANDARD, 1, CV_PI / 180, 50, 0, 0);
+for (i = 0; i total, 100); i++) {
+line = (float *) cvGetSeqElem (lines, i);
+rho = line[0];
+theta = line[1];
+a = cos (theta);
+b = sin (theta);
+x0 = a * rho;
+y0 = b * rho;
+pt1.x = cvRound (x0 + 1000 * (-b));
+pt1.y = cvRound (y0 + 1000 * (a));
+pt2.x = cvRound (x0 - 1000 * (-b));
+pt2.y = cvRound (y0 - 1000 * (a));
+cvLine (src_img_std, pt1, pt2, CV_RGB (255, 0, 0), 3, 8, 0);
+}
+// (4)確率的ハフ変換による線分の検出と検出した線分の描画
+lines = 0;
+lines = cvHoughLines2 (src_img_gray, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 50, 10);
+for (i = 0; i total; i++) {
+point = (CvPoint *) cvGetSeqElem (lines, i);
+cvLine (src_img_prob, point[0], point[1], CV_RGB (255, 0, 0), 3, 8, 0);
+}
+// (5)検出結果表示用のウィンドウを確保し表示する
+cvNamedWindow ("Hough_line_standard", CV_WINDOW_AUTOSIZE);
+cvNamedWindow ("Hough_line_probalistic", CV_WINDOW_AUTOSIZE);
+cvShowImage ("Hough_line_standard", src_img_std);
+cvShowImage ("Hough_line_probalistic", src_img_prob);
+cvWaitKey (0);
+cvDestroyWindow ("Hough_line_standard");
+cvDestroyWindow ("Hough_line_standard");
+cvReleaseImage (&src_img_std);
+cvReleaseImage (&src_img_prob);
+cvReleaseImage (&src_img_gray);
+cvReleaseMemStorage (&storage);
+return 0;
+}
+// (1)画像の読み込み
+コマンド引数で指定されたファイル名の画像(入力画像)をオープンし,関数
+cvLoadImage()で読み込む.2番目の引数にCV_LOAD_IMAGE_GRAYSCALE
+を指定することで,処理用として1チャンネル,グレースケールに変換する.
+また,表示用(検出した線を赤で示す)のために,2番目の引数にCV_LOAD_IMAGE_COLOR
+を指定して,カラー画像としても読み込んでおく.
+// (2)ハフ変換のための前処理
+cvHoughLines2()は,入力として,8ビット,シングルチャンネル,二値化画像を取る.
+そのため前処理としてcvCanny()を用いて,入力処理用のグレースケール画像をエッジ画像に変換する.cvCanny()は,サンプルのようにインプレース処理が可能である.
+また,cvHoughLines2()で使用する検出結果の線を保存するメモリストレージを生成しておく.
+// (3)標準的ハフ変換による線の検出と検出した線の描画
+標準的ハフ変換CV_HOUGH_STANDARDを指定して,エッジ画像から線を検出する.
+検出結果はシーケンスlinesの先頭ポインタとして返される.
+一つ一つの線は,シーケンスlinesから,cvGetSeqElem()を使用して,インデックスの順に取り出す.
+シーケンスlinesの一つの要素lineは,32ビット浮動小数点型2チャンネル配列(配列要素が2個)
+CV_32FC2(注1)であるため,line[0]に&rho;が,line[1]に&theta;が入る.
+最初に,&rho;と&theta;を用い線上の1点(x0, y0)を,x0=&rho;*cos(&theta;),
+y0=&rho;*sin(&theta;)として計算する.
+次に(x0, y0)を中心として,それぞれ1000pixel離れた線上の2点pt1,pt2を計算する.
+ここで&theta;が検出された線の法線方向を表しているため,検出された線とx軸が成す角は
+&theta;+90[deg] となる.sin(&theta;+90) = cos(&theta;),cos(&theta;+90) = -sin(&theta;)
+であるため,pt1.x = x0 + 1000 * (-sin(&theta;)), pt1.y = y0 + 1000 * cos(&theta;) で得られる.
+線上の2点を用いて,結果表示用の画像データsrc_img_std上に赤色,線幅3で直線を表示する.
+画像領域外の線はクリッピングされる.
+検出直線数が多くなり結果が見にくくなるので,表示を100 lineまでに押さえている.
+// (4)確率的ハフ変換による線分の検出と検出した線分の描画
+確率的ハフ変換CV_HOUGH_PROBABILISTICを指定して,エッジ画像から線分を検出する.
+検出結果はシーケンスlinesの先頭ポインタとして返される.
+一つ一つの線分は,シーケンスlinesから,cvGetSeqElem()を使用して,インデックスの順に取り出す.
+シーケンスlinesの一つの要素pointは,32ビット整数型4チャンネル配列(配列要素が4個)
+CV_32SC4(注1)であるため,point[0]に始点座標が,point[1]に終点座標が入る.
+始点,終点を用いて,結果表示用の画像データsrc_img_prob上に赤色,線幅3で線分を表示する.
+// (5)検出結果表示用のウィンドウを確保し表示する
+ウィンドウを生成し,直線検出結果を表示し,何かキーが押されるまで待つ.
+(注1) CV_(S|U|F)C
+実行結果例
+入力画像と直線検出結果
+[左] 入力画像
+[中] 標準的ハフ変換により,検出された直線(100[line]のみ表示)
+[右] 確率的ハフ変換により,検出された線分
+ハフ変換による円検出 cvHoughCircles
+グレースケール画像中の円をハフ変換を用いて検出する.サンプルコード内の各パラメータ値は処理例の画像に対してチューニングされている.
+#include <stdio.h>
+#include <cv.h>
+#include <highgui.h>
+int
+main (int argc, char **argv)
+{
+int i;
+float *p;
+IplImage *src_img = 0, *src_img_gray = 0;
+CvMemStorage *storage;
+CvSeq *circles = 0;
+// (1)画像の読み込み
+if (argc >= 2)
+src_img_gray = cvLoadImage (argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+if (src_img_gray == 0)
+exit (-1);
+src_img = cvLoadImage (argv[1], CV_LOAD_IMAGE_COLOR);
+// (2)ハフ変換のための前処理(画像の平滑化を行なわないと誤検出が発生しやすい)
+cvSmooth (src_img_gray, src_img_gray, CV_GAUSSIAN, 11, 11, 0, 0);
+storage = cvCreateMemStorage (0);
+// (3)ハフ変換による円の検出と検出した円の描画
+circles = cvHoughCircles (src_img_gray, storage, CV_HOUGH_GRADIENT,
+1, 100, 20, 50, 10, MAX (src_img_gray->width, src_img_gray->height));
+for (i = 0; i total; i++) {
+p = (float *) cvGetSeqElem (circles, i);
+cvCircle (src_img, cvPoint (cvRound (p[0]), cvRound (p[1])), 3, CV_RGB (0, 255, 0), -1, 8, 0);
+cvCircle (src_img, cvPoint (cvRound (p[0]), cvRound (p[1])), cvRound (p[2]), CV_RGB (255, 0, 0), 3, 8, 0);
+}
+// (4)検出結果表示用のウィンドウを確保し表示する
+cvNamedWindow ("circles", 1);
+cvShowImage ("circles", src_img);
+cvWaitKey (0);
+cvDestroyWindow ("circles");
+cvReleaseImage (&src_img);
+cvReleaseImage (&src_img_gray);
+cvReleaseMemStorage (&storage);
+return 0;
+}
+// (1)画像の読み込み
+コマンド引数で指定されたファイル名の画像(入力画像)をオープンし,関数
+cvLoadImage()でsrc_img_grayに読み込む.2番目の引数にCV_LOAD_IMAGE_GRAYSCALE
+を指定することで,処理用として1チャンネル,グレースケールに変換する.
+また,表示用(検出した線を赤で示す)のために,2番目の引数にCV_LOAD_IMAGE_COLOR
+を指定して,カラー画像src_imgとしても読み込んでおく.
+// (2)ハフ変換のための前処理
+cvHoughCircles()は,入力として,8ビット,シングルチャンネル,グレースケール画像を用いる.
+誤検出を少なくするために,前処理としてcvSmooth()を用いた画像の平滑化を施す.
+cvSmooth()は,サンプルのようにインプレース処理が可能である.
+また,cvHoughCircles()で使用する検出結果の円を保存するメモリストレージを生成しておく.
+// (3)ハフ変換による円の検出と検出した円の描画
+基本的な2段階ハフ変換CV_HOUGH_GRADIENTを指定して(現在はこれしか実装されていない),
+グレースケール画像から円を検出する.
+検出結果はシーケンスcirclesの先頭ポインタとして返される.
+一つ一つの円は,シーケンスcirclesから,cvGetSeqElem()を使用して,インデックスの順に取り出す.
+シーケンスcirclesの一つの要素pは,32ビット浮動小数点型3チャンネル配列(配列要素が3個)
+CV_32FC3(注1)であるため,p[0]に円中心のx座標値が,p[1]に円中心のy座標が,
+p[2]に円の半径がそれぞれ入る.
+検出された円を結果表示用の画像データsrc_img上に赤色,線幅3で表示し,円の中心を緑で表示する,
+// (4)検出結果表示用のウィンドウを確保し表示する
+ウィンドウを生成し,円検出結果を表示し,何かキーが押されるまで待つ.
+(注1) CV_(S|U|F)C
+実行結果例
+入力画像と円検出結果
+[左] 入力画像
+[右] ハフ変換により検出された円
+距離変換
+2値画像の各画素に対して,そこから値が0である画素への最短距離を与える変換を距離変換という.OpenCVでは,マスクを指定せずに近似なしの正確な距離計算を行なう事も,処理の高速化のために,指定したマスクのシフトを用いた近似計算を行なう事も可能である.
+opencv.jp - OpenCV: 特殊な画像変換(Special Image Transforms)サンプルコード -

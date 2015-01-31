@@ -1,0 +1,247 @@
+ xe_softwareTOP > VLHF - Variable Length Hash Function (可変長ハッシュ関数)
+Variable Length Hash Function (可変長ハッシュ関数)
+概要
+・可変長ハッシュ関数(以下VLHF)とは、現在標準化されているSHA, MD5などの固定長のハッシュ値を求めるハッシュ関数とは異なり、任意のソースデータから最低ハッシュ長を8バイト(64ビット)として、最大8,192バイト(65,536ビット)長以上のハッシュ値を求めることを可能にするハッシュ関数です。
+・ハッシュ値の耐衝突性や原像計算困難性、第2原像計算困難性などについては深くは調査していませんが、1ビットの違いや1バイトの長短でも算出されるハッシュ値は大きく異なります。
+・動作には最小で500KB程度、最大で2MB程度のメモリが必要です。
+・VLHFのアルゴリズムを組み込んで使用していただける場合や、高速化を図った改良をしていただいた場合はご連絡ください。
+・アルゴリズムの著作権はxe_softwareにあります。
+VLHFの特徴
+1.ハッシュ長を可変長にしたことで組み込みやすく
+ハッシュ関数にはSHAファミリーをはじめ、MD5やRIPEMDなどがありますが、これらは全て固定長(128ビットや256ビットや512ビットなど)で算出されるため、任意の長さのハッシュ値を利用したいアプリケーションに組み込むときに、長さを調節する手間が掛かることがあります。この労力の削減を図ります。
+2.ハッシュ長の幅を大きく拡大
+現在規格化されているハッシュ長は長くても256ビットまたは512ビットなどです。しかし、VLHFでは最大8,192バイトつまり65,535ビットまで大幅に拡大し、衝突耐性を高めました。また、最低8バイトつまり64ビットの短いハッシュ長も併せて算出できることで、ちょっとした文書の変更確認や破損検知に利用できます。
+※仕様で8バイト(64ビット)長よりも短いハッシュ値は算出不可能ですが、第1引数に8,192よりもおきな値を渡すことで上限を広げることが出来ます。
+3.最新のハッシュ関数よりも高速に動作
+【検証】CPU:Xeon E3110 (3.0GHz), MEM 4GB, .NetFramework3.5
+SHA512CryptoServiceProvider(.Net Framework3.5)と比較。
+(1).700MBの動画ファイルから64バイト(512ビット)のハッシュ値を求める。
+SHA512:1回目…54.2s  2回目…53.0s
+VLHF:1回目 …23.1s  2回目 …21.3s
+(2).126MBの動画ファイルから64バイト(512ビット)のハッシュ値を求める。
+SHA512:1回目…10.0s  2回目…9.7s
+VLHF:1回目 …3.9s  2回目 …4.0s
+(おまけ).VLHFで最大の8,192バイト(65,536ビット)を算出するのに掛かった時間。
+700MBの動画ファイル…20.2s 20.4s
+126MBの動画ファイル…3.7s 3.0s
+4.一つのデータから複数種類のハッシュを生成
+362D05BBFAA121FFCDF3AB5A462F124187BCB5AD2DA99B5BDA56681516D5E14C
+A94C26F083F3B6C3E80F04AE6E530BF02957421AB90D5830F65AF58E12716B76
+1378D37816AB153B6BE7EDF0114D69FDD18865D6B504AB0006AA44C7BE8546E8
+AD4314CC1FE496D384FD23CB8D68A9DDCC2D560D75EBBB6F55F01764D8DF39F1
+上記の4つのハッシュは全て文字列【abc】から生成されたハッシュ値です。
+一番上のハッシュ値は32バイト(256ビット)で一度で算出したものですが、残りは複数回に分けて算出した異なる長さのハッシュ値を連結したものです。
+このようにハッシュ値が提示されただけでは、そのハッシュ値から1つのソースデータに帰結することは困難で、どのように生成されたかも分からなければ逆算は難しいと思われます。
+5.オープンソースとして、より強固な暗号ハッシュに
+オープンソースとして公開することで、世界中の人々に訂正されて、よりよいハッシュ関数になればと思います。
+ソースコード1
+※try catchによる例外処理は記述外
+Visual Studio C# によるbyte型配列をデータの引数とするVLHFのソースコード
+private byte[] vlhf(int hashlen, byte[] srcdata)
+{    //フェーズ1
+byte[] rtnhash = new byte[hashlen];
+byte num = (byte)(hashlen & 0xFF);
+int x, y, s, t;
+byte[,] tbl = new byte[16, 16];
+s = srcdata.Length & 0xFF;
+x = (srcdata.Length & 0xF0) >> 4;
+y = srcdata.Length & 0x0F;
+tbl[x, y] = num;
+t = x;
+x = y;
+y = t;
+for (int i = 1; i < 256; i ++){
+for (; (x * 16 + y) == s || tbl[x, y] != 0; ){
+if (++y == 16){
+y = 0;
+if (++x == 16)
+x = 0;
+}
+}
+if (num < 0xFF)
+num++;
+else
+num = 0;
+tbl[x, y] = num;
+t = x;
+x = y;
+y = t;
+}
+//フェーズ2
+int cnt,subcnt,len;
+for (cnt = 0; cnt < srcdata.Length; cnt += Math.Min(1048576, srcdata.Length - cnt)){
+len = Math.Min(1048576, srcdata.Length - cnt);
+for (subcnt = 0; subcnt < len; subcnt ++){
+rtnhash[(cnt + subcnt) % hashlen] ^= srcdata[cnt + subcnt];
+rtnhash[(cnt + subcnt + 1) % hashlen] ^= srcdata[cnt + len - 1 - subcnt];
+rtnhash[(cnt + subcnt + 2) % hashlen] ^= (byte)(rtnhash[(cnt + subcnt) % hashlen] ^ rtnhash[(cnt + subcnt + 1) % hashlen]);
+rtnhash[(cnt + subcnt) % hashlen] ^= tbl[(rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) % 16, ((rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) >> 4) % 16];
+rtnhash[(cnt + subcnt + 3) % hashlen] ^= tbl[((rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) >> 4) % 16, (rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) % 16];
+}
+}
+if (cnt < hashlen){
+for (; cnt < hashlen; cnt ++){
+rtnhash[cnt] ^= tbl[((rtnhash[cnt - 1] / 16) + cnt) % 16, ((rtnhash[cnt - 1] % 16) + cnt) % 16];
+}
+&nbsp}
+for (cnt = 0; cnt < hashlen; cnt++){
+&nbsp    rtnhash[(cnt + 1) % hashlen] ^= tbl[rtnhash[cnt] % 16, rtnhash[cnt] / 16];
+&nbsp    rtnhash[(hashlen - 1) - ((cnt + 1) % hashlen)] ^= tbl[rtnhash[hashlen - 1 - cnt] / 16, rtnhash[hashlen - 1 - cnt] % 16];
+}
+return rtnhash;
+}
+private byte[] vlhf(int hashlen, FileStream srcfs)
+{    //フェーズ1
+byte[] rtnhash = new byte[hashlen];
+byte num = (byte)(hashlen & 0xFF);
+int x, y, s, t;
+byte[,] tbl = new byte[16, 16];
+s = (int)srcfs.Length & 0xFF;
+x = ((int)srcfs.Length & 0xF0) >> 4;
+y = (int)srcfs.Length & 0x0F;
+tbl[x, y] = num;
+t = x;
+x = y;
+y = t;
+for (int i = 1; i < 256; i ++){
+for (; (x * 16 + y) == s || tbl[x, y] != 0; ){
+if (++y == 16){
+y = 0;
+if (++x == 16)
+x = 0;
+}
+}
+if (num < 0xFF)
+num++;
+else
+num = 0;
+tbl[x, y] = num;
+t = x;
+x = y;
+y = t;
+}
+//フェーズ2
+int cnt,subcnt,len;
+byte[] srctmp = new byte[1048576];
+for (cnt = 0; cnt < (int)srcfs.Length; cnt += Math.Min(1048576, (int)srcfs.Length - cnt)){
+srcfs.Read(srctmp, 0, Math.Min(1048576, (int)srcfs.Length - cnt));
+len = Math.Min(1048576, (int)srcfs.Length - cnt);
+for (subcnt = 0; subcnt < len; subcnt ++){
+rtnhash[(cnt + subcnt) % hashlen] ^= srctmp[subcnt];
+rtnhash[(cnt + subcnt + 1) % hashlen] ^= srctmp[len - 1 - subcnt];
+rtnhash[(cnt + subcnt + 2) % hashlen] ^= (byte)(rtnhash[(cnt + subcnt) % hashlen] ^ rtnhash[(cnt + subcnt + 1) % hashlen]);
+rtnhash[(cnt + subcnt) % hashlen] ^= tbl[(rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) % 16, ((rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) >> 4) % 16];
+rtnhash[(cnt + subcnt + 3) % hashlen] ^= tbl[((rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) >> 4) % 16, (rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) % 16];
+}
+}
+if (cnt < hashlen){
+for (; cnt < hashlen; cnt ++){
+rtnhash[cnt] ^= tbl[((rtnhash[cnt - 1] / 16) + cnt) % 16, ((rtnhash[cnt - 1] % 16) + cnt) % 16];
+}
+&nbsp}
+for (cnt = 0; cnt < hashlen; cnt++){
+&nbsp    rtnhash[(cnt + 1) % hashlen] ^= tbl[rtnhash[cnt] % 16, rtnhash[cnt] / 16];
+&nbsp    rtnhash[(hashlen - 1) - ((cnt + 1) % hashlen)] ^= tbl[rtnhash[hashlen - 1 - cnt] / 16, rtnhash[hashlen - 1 - cnt] % 16];
+}
+srcfs.Close();
+return rtnhash;
+}
+ページのトップへ戻る
+解説
+・まず、このコードでは第1引数に求めるハッシュ長をバイト単位で受け取ります。
+このとき、8バイト以上であることを呼び出し直前に調べてください。
+第二引数にはデータをbyte型配列か、FileStreamで受け取ります。ソースデータが大きい場合は、FileStreamのほうを選択してください。
+・次に、VLHFはハッシュテーブルを構築する『フェーズ1』とハッシュ値を算出する『フェーズ2』の2つのフェーズで構成されています。
+どちらの場合にもフェーズ1は存在し、引数の違いによってフェーズ2が異なります。
+・そして、フェーズ2ではどちらの場合においても1MB(1,048,576Byte)ごとにデータが分割されて、処理が行われます。
+ソースデータが1MBを超えていても、メモリには最大で1MBのデータがその都度ロードされ、メモリが足りなくなることはありません。※ただし引数が1MBを超える場合を除く。
+・フェーズ1
+フェーズ1はbyte型配列、FileStreamどちらを引数とする場合でも同様の処理が行われます。
+byte[] rtnhash = new byte[hashlen];
+//戻り値が格納されるbyte型配列です
+byte num = (byte)(hashlen & 0xFF);
+//ハッシュ長を元に0~255の値を取得し、ハッシュテーブルの最初に置かれる初期値とします
+int x, y, s, t;
+//x,yはハッシュテーブル用の変数、sはデータ長から算出されたハッシュテーブルの最初の位置、tは入れ替え用の変数
+byte[,] tbl = new byte[16, 16];
+//ハッシュテーブル用の16x16の256byte2次元配列
+s = (int)srcfs.Length & 0xFF;
+//データ長を元に0~255の値を取得し、先頭4ビットをx、後半4ビットをyに設定
+x = ((int)srcfs.Length & 0xF0) >> 4;
+y = (int)srcfs.Length & 0x0F;
+//x,yに格納
+tbl[x, y] = num;
+//ハッシュ長から算出した初期値をデータ長から算出した領域に格納
+t = x;
+x = y;
+y = t;
+//x,yを入れ替え
+for (int i = 1; i < 256; i ++){...}
+//ハッシュテーブルの要素数分ループ
+for (; (x * 16 + y) == s || tbl[x, y] != 0; ){...}
+//最初に格納した値(s)か、0以外の数値が現れたらx,yを操作し、sでなく0でもない値が出るまでループ
+if (++y == 16){ 
+y = 0;
+if (++x == 16)
+x = 0;
+}
+//x,yをインクリメントし、16になったら0に戻す
+if (num < 0xFF)
+num++:
+else
+num = 0;
+//ハッシュテーブルに格納する値が255未満であればインクリメントする、255なら0にする
+tbl[x, y] = num;
+//ハッシュテーブルにnumを格納する
+t = x;
+x = y;
+y = t;
+//x,yを入れ替え 要素数分ループに戻る
+・フェーズ2
+フェーズ2ではハッシュテーブルを元に、戻り値のハッシュを算出するための処理を行います。
+※ここではFileStreamを引数で受け取った場合で説明を行います。
+int cnt,subcnt,len;
+//cntはデータサイズと比較用の変数、subcntは1MBごとの処理単位比較用変数、lenは処理単位識別用変数
+byte[] srctmp = new byte[1048576];
+//処理単位の1MBを作業用配列として確保
+for (cnt = 0; cnt < (int)srcfs.Length; cnt += Math.Min(1048576, (int)srcfs.Length - cnt)){...}
+//外側ループ、ソースデータストリームのサイズを識別して処理単位をcntに加え、終了を識別する
+srcfs.Read(srctmp, 0, Math.Min(1048576, (int)srcfs.Length - cnt));
+//srctmpにソースデータストリームから読み込む、最大で1MBごと
+len = Math.Min(1048576, (int)srcfs.Length - cnt);
+//処理単位識別の長さを取得、srctmp後部に余分なデータが付いていでもlenで識別します
+for (subcnt = 0; subcnt < len; subcnt ++){...}
+//lenの長さだけループする
+rtnhash[(cnt + subcnt) % hashlen] ^= srctmp[subcnt];
+//先頭ソースデータをrtnhashの先頭に排他論理和をする
+rtnhash[(cnt + subcnt + 1) % hashlen] ^= srctmp[len - 1 - subcnt];
+//最後尾ソースデータをrtnhashの2番目に排他論理和をする
+rtnhash[(cnt + subcnt + 2) % hashlen] ^= (byte)(rtnhash[(cnt + subcnt) % hashlen] ^ rtnhash[(cnt + subcnt + 1) % hashlen]);
+//ソースデータの先頭から3番目に前2つのデータと排他論理和したデータを排他論理和をする
+rtnhash[(cnt + subcnt) % hashlen] ^= tbl[(rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) % 16, ((rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) >> 4) % 16];
+//先頭ソースデータに3番目のソースデータから算出したハッシュテーブルの値を排他論理和する
+rtnhash[(cnt + subcnt + 3) % hashlen] ^= tbl[((rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) >> 4) % 16, (rtnhash[(cnt + subcnt + 2) % hashlen] + subcnt) % 16];
+//先頭から4番目のソースデータに3番目のソースデータから算出したハッシュテーブルの値を排他論理和する
+if (cnt < hashlen){
+for (; cnt < hashlen; cnt ++){
+rtnhash[cnt] ^= tbl[((rtnhash[cnt - 1] / 16) + cnt) % 16, ((rtnhash[cnt - 1] % 16) + cnt) % 16];
+}
+//ソースデータ長がハッシュ長よりも短い場合、最後尾のデータを元にハッシュテーブルから値を格納し調節します
+for (cnt = 0; cnt < hashlen; cnt++){...}
+//ハッシュ長分ループ
+rtnhash[(cnt + 1) % hashlen] ^= tbl[rtnhash[cnt] % 16, rtnhash[cnt] / 16];
+//戻り値用配列rtntmpの先頭から値を使ってハッシュテーブルを参照し、次の要素と排他論理和をする
+rtnhash[(hashlen - 1) - ((cnt + 1) % hashlen)] ^= tbl[rtnhash[hashlen - 1 - cnt] / 16, rtnhash[hashlen - 1 - cnt] % 16];
+//戻り値用配列rtntmpの最後尾から値を使ってハッシュテーブルを参照し、一つ手前の要素と排他論理和をする、x,y逆
+srcfs.Close();
+//引数で作成したファイルストリームを閉じます
+return rtnhash;
+//戻り値
+Variable Length Hash Function (可変長ハッシュ関数) の概要とソースコード 以上。
+更 2011/01/03
+変更2011/07/26
+バグや攻撃ポイント改善点、感想などありましたらご連絡ください。
+Mail:xenon_vc(at)yahoo.co.jp
+HP:http://www.geocities.jp/xe_software/
+ページのトップへ戻る
+■VLHF - Variable Length Hash Function (可変長ハッシュ関数) - xe_software

@@ -1,0 +1,26 @@
+3章 属性、CSS操作
+この章で登場するメソッド一覧です。
+.attr()
+.removeAttr()
+.addClass()
+.removeClass()
+.toggleClass()
+.hasClass()
+.css()
+.width()
+.height()
+innerWidth()、.innerHeight()
+outerWidth()、.outerHeight()
+.scrollTop()
+.scrollLeft()
+.offset()
+.position()
+属性、CSS操作
+属性とは、そのタグの中に書かれている部分で、例えば、<a href="xxx" target="_blank"> の場合、href="xxx" とtarget="_blank" が該当します。hrefやtargetが名前(キー)で、xxxや _blankが値です。属性を設定・取得・削除する構文を見ていきます。
+.attr()
+.removeAttr()
+.attr()
+jQueryでは、.attr()というメソッドを使って、属性を設定又は取得しています。.attr()には、4つの構文があります。 他のメソッドと同じく、引数の数や引数のタイプによって、これらの構文を区別します。
+.attr(name)
+マッチした要素の内の1番最初の要素の属性の値を取得します。
+【属性、CSS操作】 jQuery入門道場

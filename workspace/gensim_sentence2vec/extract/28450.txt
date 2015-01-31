@@ -1,0 +1,62 @@
+English | 日本語概要「埋め込みタイムライン」は簡単にTwitterのタイムラインを自分のサイトに表示できるツールです。タイムラインはリアルタイムで更新され、タイムライン上から直接、返信、リツイート、お気に入りに登録することができます。twitter.comのウィジェット設定から簡単に作成可能です。埋め込みタイムラインのタイプユーザー、お気に入り、リスト、検索結果、ハッシュタグのタイムラインを埋め込むことができます。ユーザータイムライン公開されているものであれば、どのユーザーのタイムラインでも埋め込むことができます。下記はこのページに埋め込みされた@TwitterDevJPのタイムラインです。ユーザタイムラインの上部にはフォローボタンがあり、閲覧中のサイトから離れることなく1クリックでフォローできます。@TwitterDevJP からのツイートお気に入りタイムラインユーザーのタイムラインと同様に、公開されているユーザーがお気に入りに登録したツイートをお気に入りタイムラインに表示できます。@TwitterDevJP のお気に入りに登録されたツイートリストタイムラインリストタイムラインでは指定したリストに入っているユーザーのツイートを表示できます。リストウィジェットの上部にはリストの名前、詳細、リスト作成者のプロフィールへのリンクが含まれます。リストタイムラインを作成するには、まず自分のアカウントにリストを作成するか他のユーザーが作成した既存のリストを保存してください。@TwitterJP/saigai からのツイート検索とハッシュタグ特定の検索クエリやハッシュタグを表示させるタイムラインを作成することもできます。ハッシュタグの場合、タイムラインの上部にはハッシュタグが表示され、ツイートボックスからは簡単にこの会話に参加することができます。ヘッダーのハッシュタグをクリックすると、そのハッシュタグのtwitter.comの検索結果ページが開きます。セーフモードを設定しておけば不適切な内容のツイートが表示されないようにすることができます。#daihyo に関するツイート埋め込みタイムラインの作成twitter.comへログインし、設定のウィジェットページからタイムラインを作成できます。作成したタイムラインはこのページに表示されます。ウェブサイト用のタイムラインを作成するには新規作成をクリックし、タイプを選択、フォームを記入してください。設定はTwitterのサーバー上に保存されます。タイムラインを保存すれば、形成されたコードがをサイトに貼るとサイトにタイムラインが表示されます。下記は埋め込みコードの一例です。<a class="twitter-timeline"
+href="https://twitter.com/TwitterDevJP"
+data-widget-id="YOUR-WIDGET-ID-HERE">
+@TwitterDevJP からのツイート
+</a>
+<script type="text/javascript">
+window.twttr = (function (d, s, id) {
+var t, js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id; js.src= "https://platform.twitter.com/widgets.js";
+fjs.parentNode.insertBefore(js, fjs);
+return window.twttr || (t = { _e: [], ready: function (f) { t._e.push(f) } });
+}(document, "script", "twitter-wjs"));
+</script>
+埋め込みツイートやツイートボタンを表示するためのwidgets.jsが既にページに含まれている場合は、再度スクリプトを読み込む必要はありません。カスタマイズ現在設定画面で下記の2項目をカスタマイズできます。埋め込みタイムラインのテーマ(背景色)はライト、ダークのどちらかを選択できます。埋め込みタイムラインのリンクの色も指定できます。埋め込みタイムラインをさらにカスタマイズするには、HTML側で下記の「サイズ」と「コード側で指定できるオプション」を参考に設定してください。サイズ埋め込みタイムラインは様々な高さや幅に合うように作られています。初期設定は520x600pxですが、サイト構成に合うようウィジェットのサイズが自動的に調整されます。例えばコードを幅300pxのdivに入れればタイムラインも自動的に幅300pxに調整されます。HTMLのwidthとheight属性で高さと幅を細かく設定することも可能です。<a class="twitter-timeline"
+width="300"
+height="500"
+href="https://twitter.com/TwitterDevJP"
+data-widget-id="YOUR-WIDGET-ID-HERE">
+@TwitterDevJP からのツイート
+</a>タイムラインのサイズは幅最小180px、最大520px、高さは最小200pxです。コード側で指定できるオプションウィジェット設定画面とは別に、埋め込み用のコードでカスタマイズできるオプションがあります。ウィジェット設定画面にもコード側でも設定できるオプションはコードの方が優先です。コード側での設定はすべて埋め込みコードにあるaタグの属性で設定できます。設定できるオプションは以下の通りです。テーマ:data-theme="dark"またはdata-theme="light"リンクの色:data-link-color="#cc0000"幅: 上記に書いてあった通りwidth属性で幅を設定できます(単位はpixels)高さ: 上記に書いてあった通りheight属性で高さを設定できます(単位はpixels)インターフェース:data-chrome属性を使ってウィジェットのレイアウトやインターフェースをカスタマイズできます。スペース区切りで以下のオプションを指定してください。
+noheader: タイムラインのヘッダーをなくします。自分のヘッダーを作る際、タイムラインのdisplay requirementsをご参照ください。nofooter: タイムラインのフッターやツイートボックスをなくします。noborders: ウィジェットの周りやツイートの間のボーダー(境界線)をなくします。noscrollbar: タイムラインのスクロールバーが表示されないようにします。その影響でサイトのアクセシビリティが悪くなる場合があるので要注意です。transparent: タイムラインの背景を透明にします。
+例えばdata-chrome="nofooter transparent"でフッターやツイートボックスのない透明背景タイムラインになります。ボーダー(境界線)の色:data-border-color="#cc0000"言語: ウィジェットの言語はHTML上のlang属性から推測されます。埋め込みコードのlang属性でも設定できます。ツイート数の固定: タイムラインのサイズを一定のツイート数に固定したい場合、data-tweet-limit="5"のようにツイート数(1から20まで)を指定してください。指定されている場合、そのツイート数が表示されて、ウィジェットの高さが全てのツイートがスクロールせずに見られるように調整されます。ウィジェットのサイズが固定になるので、ツイートが自動的に更新されません。おすすめしたいユーザー: 返信、リツイート、お気に入り登録の際にユーザーにおすすめしたいユーザーを指定示できます。data-related="benward,endform"のようにユーザ名をコンマで区切りで指定してください。ARIA politeness: ARIAは障害を持つ方のためのシステムです。詳細はこちら(英語)をご覧ください。埋め込みタイムラインの初期設定では最低限の設定となっています: aria-polite="polite"。埋め込みタイムラインをサイトの主なコンテンツソースとしている場合はdata-aria-polite="assertive"にすることをおすすめします。<a class="twitter-timeline"
+href="https://twitter.com/TwitterDevJP"
+data-widget-id="YOUR-WIDGET-ID-HERE"
+data-theme="dark"
+data-link-color="#cc0000"
+data-related="twitterapi,twitter"
+data-aria-polite="assertive"
+width="300"
+height="500"
+lang="ja" xml:lang="ja">
+@TwitterDevJP からのツイート
+</a>インターフェースの表示を変更するその他の例を下記に掲載しています:<a class="twitter-timeline"
+href="https://twitter.com/TwitterDevJP"
+data-widget-id="YOUR-WIDGET-ID-HERE"
+data-chrome="nofooter noborders transparent"
+lang="ja" xml:lang="ja">
+@TwitterDevJP からのツイート
+</a>固定された3ツイートを表示したい場合:<a class="twitter-timeline"
+href="https://twitter.com/TwitterDevJP"
+data-widget-id="YOUR-WIDGET-ID-HERE"
+data-chrome="nofooter"
+data-tweet-limit="3"
+lang="ja" xml:lang="ja">
+@TwitterDevJP からのツイート
+</a>タイムライン選択埋め込みタイムラインのウィジェットを使って、サイトにいろいろなタイムラインを表示することができます。例えば、SNSでユーザーのプロフィールページにそのユーザーのタイムラインを表示したり、ブログの各記事に作者のタイムラインを表示することができます。まず、普段通り埋め込みタイムラインのウィジェットを設定してください。ウィジェット作成後、以下の属性を使って表示するページごとに設定を変えることができます:ユーザー:data-screen-name属性、またはdata-user-id属性を使って、表示したいユーザーを指定できます。data-show-replies="true"を使って@ツイートを表示するかどうかも指定できます。お気に入り: ユーザータイムラインと同様、data-favorites-screen-name属性、またはdata-favorites-user-id属性を使って、誰のお気に入りタイムラインを表示するかを指定できます。リスト:data-list-owner-screen-name属性またはdata-list-owner-id属性を使ってリストの所有者、そして、data-list-id 属性またはdata-list-slug属性を使ってリストの識別子を指定できます。万が一、ウィジェットが一時的に使用できなくなった時のために、埋め込みコードのhrefを変更した設定に合わせておいてください。現状、検索クエリをページごとに変えることはできません。例えばユーザーの最新のツイートを記事の横に表示したい場合、次のようにして特定のユーザーのタイムラインを表示することができます:<a class="twitter-timeline"
+href="https://twitter.com/twitterapi"
+data-widget-id="YOUR-WIDGET-ID-HERE"
+data-screen-name="twitterapi"
+data-show-replies="false"
+data-tweet-limit="5">
+Tweets by @twitterapi
+</a>特定のリストタイムラインを表示する例:<a class="twitter-timeline"
+href="https://twitter.com/TwitterDev/lists/twitter-dev-advocates"
+data-widget-id="YOUR-WIDGET-ID-HERE"
+data-list-owner-screen-name="twitterdev"
+data-list-slug="twitter-dev-advocates">
+Tweets from the Twitter developer advocacy team.
+<a>
+モバイルTwitter for Websitesの他の機能と同様に、埋め込みタイムラインはモバイルブラウザにも最適です。ほとんどのスマートフォンのブラウザに対応しています。画面はタッチスクリーン対応です。高画質なディスプレイにも最適化されます。モバイルに対応しているウェブインテントを使用しています。モバイルデバイスには自動で変換されるためコードを書き換える必要はありません。
+埋め込みタイムライン | Twitter Developers

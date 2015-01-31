@@ -1,0 +1,3 @@
+トピックモデルは,単語のもつ潜在的な意味をトピックという概念によってモデル化することで文書の生成過程をモデル化する確率的生成モデルである.本研究では,文書中の単語の出現に関してPower-Lawと呼ばれる性質を導入する.具体的にはPitman-Yor過程を用いて文書中の単語の生成過程をモデル化する.Power-Lawの性質の導入により,少ないトピック数でも低いPerplexityを保持することを実験的に示す.
+Topic model is a probabilistic generative model that models latent semantics of words as "topic". In this paper, we propose a novel topic model that captures the power-law phenomenon of a word distribution, which is known as Zipf's law in linguistics. We use the Pitman-Yor process to model a generation process of a document. In an experiment using real data, our model outperformed LDA in document modeling in terms of perplexity.
+

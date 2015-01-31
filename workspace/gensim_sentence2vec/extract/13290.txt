@@ -1,0 +1,271 @@
+
+XQuery 1.0 and XPath 2.0 Data
+Model (XDM) (Second Edition)
+W3C Recommendation
+14 December 2010
+This version:
+http://www.w3.org/TR/2010/REC-xpath-datamodel-20101214/
+Latest version:
+http://www.w3.org/TR/xpath-datamodel/
+Previous versions:
+http://www.w3.org/TR/2009/PER-xpath-datamodel-20090421/,
+http://www.w3.org/TR/2007/REC-xpath-datamodel-20070123/
+Editors:
+Anders Berglund (XSL WG), BC&TF <http://www.albconsults.com>
+- Second Edition
+Mary Fern叩ndez (XML Query WG), AT&T Labs <mff@research.att.com>
+Ashok Malhotra (XML Query and XSL WGs), Oracle Corporation
+<ashok.malhotra@alum.mit.edu>
+Jonathan Marsh (XSL WG), Microsoft <jmarsh@microsoft.com>
+Marton Nagy (XML Query WG), Science Applications International
+Corporation (SAIC) <marton.nagy@saic.com>
+Norman Walsh (XSL WG), Mark Logic <Norman.Walsh@marklogic.com>
+Please refer to the 
+errata for this document, which may include
+some normative corrections.
+See also 
+translations.
+This document is also available in these non-normative formats:
+XML and Change
+markings relative to first edition.
+Copyright 息 2010 W3C速
+(MIT, ERCIM,
+Keio), All Rights Reserved.
+W3C liability,
+trademark
+and document
+use rules apply.
+Abstract
+This document defines the W3C XQuery 1.0 and XPath 2.0 Data
+Model (XDM), which is the data model of [XML
+Path Language (XPath) 2.0 (Second Edition)], [XSLT 2.0 (Second Edition)], and [XQuery], and any other specifications that reference
+it. This data model is based on the [XPath
+1.0] data model and earlier work on an [XML
+Query Data Model]. This document is the result of joint work by
+the [XSL Working Group] and the [XML Query Working Group].
+Status of this Document
+This section describes the status of this document at the
+time of its publication. Other documents may supersede this
+document. A list of current W3C publications and the latest
+revision of this technical report can be found in the W3C technical reports index at
+http://www.w3.org/TR/.
+This is one document in a set of eight documents that are being
+progressed to Edited Recommendation together (XPath 2.0, XQuery
+1.0, XQueryX 1.0, XSLT 2.0, Data Model (XDM), Functions and
+Operators, Formal Semantics, Serialization).
+This document, published on 14 December 2010, is an Edited
+Recommendation
+of the W3C. It supersedes the previous W3C Recommendation of 23
+January 2007. This second edition is not a new version of this
+specification; its purpose is to clarify a number of issues that
+have become apparent since the first edition was published. All of
+these clarifications (excepting trivial editorial fixes) have been
+published in a separate errata document, and published in a
+Proposed Edited Recommendation in April 2009. The changes are
+summarized in an appendix. This document has been jointly developed
+by the W3C XML Query Working
+Group and the W3C XSL
+Working Group, each of which is part of the XML Activity.
+This document has been reviewed by W3C Members, by software
+developers, and by other W3C groups and interested parties, and is
+endorsed by the Director as a W3C Recommendation. It is a stable
+document and may be used as reference material or cited from
+another document. W3C's role in making the Recommendation is to
+draw attention to the specification and to promote its widespread
+deployment. This enhances the functionality and interoperability of
+the Web.
+This document incorporates changes made against the Recommendation
+of 23 January 2007 that resolve all errata known at the date of
+publication. Changes to this document since the first edition are
+detailed in the G Changes since the First
+Edition. This document supersedes the first
+edition.
+This specification is designed to be referenced normatively from
+other specifications defining a host language for it; it is not
+intended to be implemented outside a host language. The
+implementability of this specification has been tested in the
+context of its normative inclusion in host languages defined by the
+XQuery 1.0 and XSLT 2.0 specifications; see the
+XQuery 1.0
+implementation report and the 
+XSLT 2.0 implementation report (member-only) for details.
+Please report errors in and submit comments on this document
+using W3C's public
+Bugzilla system (instructions can be found at http://www.w3.org/XML/2005/04/qt-bugzilla).
+If access to that system is not feasible, you may send your
+comments to the W3C XSLT/XPath/XQuery public comments mailing list,
+public-qt-comments@w3.org.
+It will be very helpful if you include the string [DM] in the
+subject line of your report, whether made in Bugzilla or in email.
+Each Bugzilla entry and email message should contain only one error
+report. Archives of the comments and responses are available at
+http://lists.w3.org/Archives/Public/public-qt-comments/.
+This document was produced by groups operating under the
+5
+February 2004 W3C Patent Policy. W3C maintains a public
+list of any patent disclosures made in connection with the
+deliverables of the XML Query Working Group and also maintains a
+public
+list of any patent disclosures made in connection with the
+deliverables of the XSL Working Group; those pages also include
+instructions for disclosing a patent. An individual who has actual
+knowledge of a patent which the individual believes contains
+Essential Claim(s) must disclose the information in accordance
+with 
+section 6 of the W3C Patent Policy.
+1 Introduction
+This document defines the XQuery 1.0 and XPath 2.0 Data Model,
+which is the data model of [XML Path Language
+(XPath) 2.0 (Second Edition)], [XSLT 2.0
+(Second Edition)] and [XQuery]
+The XQuery 1.0 and XPath 2.0 Data Model (henceforth "data
+model") serves two purposes. First, it defines the information
+contained in the input to an XSLT or XQuery processor. Second, it
+defines all permissible values of expressions in the XSLT, XQuery,
+and XPath languages. A language is closed with respect to
+a data model if the value of every expression in the language is
+guaranteed to be in the data model. XSLT 2.0, XQuery 1.0, and XPath
+2.0 are all closed with respect to the data model.
+The data model is based on the [Infoset] (henceforth "Infoset"), but it
+requires the following new features to meet the [XPath 2.0 Requirements] and [XML Query Requirements]:
+Support for XML Schema types. The XML Schema recommendations
+define features, such as structures ([Schema
+Part 1]) and simple data types ([Schema
+Part 2]), that extend the XML Information Set with precise type
+information.
+Representation of collections of documents and of complex
+values. ([XML Query
+Requirements])
+Support for typed atomic values.
+Support for ordered, heterogeneous sequences.
+As with the Infoset, the XQuery 1.0 and XPath 2.0 Data Model
+specifies what information in the documents is accessible, but it
+does not specify the programming-language interfaces or bindings
+used to represent or access the data.
+The data model can represent various values including not only
+the input and the output of a stylesheet or query, but all values
+of expressions used during the intermediate calculations. Examples
+include the input document or document repository (represented as a
+Document Node or a sequence of Document Nodes), the result of a
+path expression (represented as a sequence of nodes), the result of
+an arithmetic or a logical expression (represented as an atomic
+value), a sequence expression resulting in a sequence of items,
+etc.
+This document provides a precise definition of the properties of
+nodes in the XQuery 1.0 and XPath 2.0 Data Model, how they are
+accessed, and how they relate to values in the Infoset and
+PSVI.
+2.1 Terminology
+For a full glossary of terms, see D
+Glossary.
+In this specification the words must,
+must not, should, should
+not, may and recommended
+are to be interpreted as described in [RFC
+2119].
+This specification distinguishes between the data model as a
+general concept and specific items (documents, elements, atomic
+values, etc.) that are concrete examples of the data model by
+identifying all concrete examples as instances of the
+data model.
+[Definition: Every instance of the data
+model is a sequence.].
+[Definition: A sequence is an ordered
+collection of zero or more items.] A sequence cannot be a member of a sequence.
+A single item appearing on its own is modeled as a sequence
+containing one item. Sequences are defined in 2.5 Sequences.
+[Definition: An
+item is either a node or
+an atomic
+value],
+[Definition: The topmost node of a tree is called
+the root node.]
+Every node is one of the seven kinds of nodes defined in
+6 Nodes. Nodes form a tree that consists
+of a root node plus all the nodes that are reachable directly or
+indirectly from the root node via the dm:children, dm:attributes, and dm:namespace-nodes accessors. Every node
+belongs to exactly one tree, and every tree has exactly one root
+node.
+[Definition: A tree whose root node is a Document
+Node is referred to as a document.]
+[Definition: A tree whose root node is not a
+Document Node is referred to as a fragment.]
+[Definition: An atomic value is a value
+in the value space of an atomic type and is labeled with the name of
+that atomic type.]
+[Definition: An atomic type is a
+primitive simple type or a type
+derived by restriction from another atomic type.] (Types derived by
+list or union are not atomic.)
+[Definition: There are 21
+primitive simple types: the 19 defined in Section
+3.2 Primitive datatypesXS2 of
+[Schema Part 2] and
+xs:untypedAtomic and xs:anyAtomicType],
+defined in 2.6 Types.
+A type is represented in the data model by an expanded-QName.
+[Definition: An expanded-QName is a
+set of three values consisting of a possibly empty prefix, a
+possibly empty namespace URI, and a local name.] See 3.3.3 QNames and NOTATIONS.
+[Definition:
+Implementation-defined indicates an aspect that may differ
+between implementations, but must be specified by the implementor
+for each particular implementation.]
+[Definition:
+Implementation-dependent indicates an aspect that may differ
+between implementations, is not specified by this or any W3C
+specification, and is not required to be specified by the
+implementor for any particular implementation.]
+[Definition: In certain situations a value is
+said to be undefined (for example, the typed value of an
+element node). This term indicates that the property in question
+has no value and that any attempt to use its value results in an
+error.]
+Within this specification, the term URI refers to a Universal
+Resource Identifier as defined in [RFC 3986]
+and extended in [RFC 2987] with the new name
+IRI. The term URI has been retained in preference to IRI to avoid
+introducing new names for concepts such as Base URI that are
+defined or referenced across the whole family of XML
+specifications.
+In all cases where this specification leaves the behavior
+implementation-defined or implementation-dependent, the
+implementation has the option of providing mechanisms that allow
+the user to influence the behavior.
+2.2 Notation
+In addition to prose, this specification defines a set of
+accessor functions to explain the data model. The accessors are
+shown with the prefix dm:. This prefix is always shown in
+italics to emphasize that these functions are abstract; they exist
+to explain the interface between the data model and specifications
+that rely on the data model: they are not accessible directly from
+the host language.
+Several prefixes are used throughout this document for
+notational convenience. The following bindings are assumed.
+xs: bound to
+http://www.w3.org/2001/XMLSchema
+xsi: bound to
+http://www.w3.org/2001/XMLSchema-instance
+fn: bound to
+http://www.w3.org/2005/xpath-functions
+In practice, any prefix that is bound to the appropriate URI may
+be used.
+The signature of accessor functions is shown using the same
+style as [XQuery 1.0 and XPath 2.0
+Functions and Operators (Second Edition)], described in
+Section
+1.4 Function Signatures and
+DescriptionsFO.
+This document relies on the [Infoset]
+and Post-Schema-Validation
+Infoset (PSVI). Information items and properties are indicated
+by the styles information item and
+[infoset property],
+respectively.
+Some aspects of type assignment rely on the ability to access
+properties of the schema components. Such properties are indicated
+by the style {component property}. Note that this does not mean a
+lightweight schema processor cannot be used, it only means that the
+application must have some mechanism to access the necessary
+properties.
+

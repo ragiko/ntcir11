@@ -1,0 +1,319 @@
+53.2. 拡張性伝統的に、新しいインデックスメソッドの実装は、非常に難しい作業を意味していました。
+ロックマネージャやログ先行書き込みなどデータベースの内部動作を理解する必要がありました。
+GiSTインタフェースは高度に抽象化されており、アクセスメソッドの実装者には、アクセスするデータ型のセマンティックスのみの実装を要求します。
+GiST層自身が同時実行性、ログ処理、ツリー構造の検索処理に関する注意を行います。
+この拡張性と、他の、扱うことができるデータを対象とした標準検索ツリーの拡張性とを混同すべきではありません。
+例えば、PostgreSQLは拡張可能なB-treeとハッシュインデックスをサポートしています。
+これは、PostgreSQLを使用して、任意のデータ型に対するB-treeやハッシュを構築することができることを意味します。
+しかし、B-treeは範囲述語(<、=、>)のみをサポートし、ハッシュインデックスは等価性問い合わせのみをサポートします。
+ですから、PostgreSQLのB-treeで例えば画像群をインデックス付けする場合、"画像xは画像yと同じか"、"画像xは画像yより小さいか"、"画像xは画像yより大きいか"といった問い合わせのみ発行することができます。
+この文脈でどのように"同じか"や"より小さいか"、"より大きいか"を定義するかに依存して、これが有意なこともあるでしょう。
+しかし、GiSTを基にしたインデックスを使用すれば、問題分野に特化した、おそらくは、"馬の画像を全て見つけたい"、"露出オーバーの写真をすべて見つけたい"といった質問に答えられる手段を作成することができます。
+GiSTアクセスメソッドを有効にし、実行するために行なわなければならないことは、ツリーのキーの動作を定義する、複数のユーザ定義のメソッドを実装することです。
+当然ながら、これらのメソッドは手の込んだ問い合わせをサポートするためかなり意匠を凝らす必要があります。
+しかし、すべての標準的な問い合わせ(B-treeやR-treeなど)ではこれらは、相対的に見てごく簡単です。
+まとめると、GiSTは汎用性、コード再利用、整理されたインタフェースと拡張性を兼ね備えたものです。
+GiST用の演算子クラスが提供しなければならない7つのメソッドを以下に示します。
+8番目は省略可能です。
+インデックスの正確性は、確実にsame、consistent、unionメソッドを適切に実装することです。
+一方、インデックスの効率(容量と速度)はpenaltyとpicksplitメソッドに依存します。
+残る2つの基本メソッドはcompressとdecompressですが、これによりインデックスはインデックス付けするデータと異なるデータ型のツリーデータを内部で持つことができるようになります。
+リーフはインデックス付けするデータ型となりますが、他のツリーノードは何らかのC構造体を取ることができます。
+(しかしここでもPostgreSQLのデータ型規約に従わなければなりません。
+容量が可変のデータに関してはvarlenaを参照してください。)
+ツリーの内部データ型がSQLレベルで存在する場合、CREATE OPERATOR CLASSコマンドのSTORAGEオプションを使用することができます。
+省略可能な8番目のメソッドはdistanceです。
+これは演算子クラスに順序付けスキャン(近傍検索)をサポートさせたい場合に必要です。
+consistent       
+インデックス項目pと問い合わせ値qが与えられると、この関数はインデックス項目が問い合わせと"一貫性"があるかどうか、つまり、述語"indexed_columnindexable_operator q"が、インデックス項目で表現される行に対して真かどうかを決定します。
+リーフインデックス項目では、これはインデックス付条件の試験と等価です。
+一方で内部ツリーノードでは、これはツリーノードで表現されるインデックスの副ツリーを走査する必要があるかどうかを決定します。
+結果がtrueならば、recheckフラグも返されなければなりません。
+これは、述語が確実に真なのか一部のみ真なのかを示します。
+recheck = falseならば、インデックスは述語条件を正確に試験されたことを示し、recheck= trueならば行が単に一致候補であることを示します。
+この場合、システムは自動的にindexable_operatorを実際の行値に対して評価し、本当に一致するかどうか確認します。
+この規則により、GiSTはインデックス構造が非可逆な場合でもある場合でもサポートすることができます。
+この関数のSQL宣言は以下のようになります。
+CREATE OR REPLACE FUNCTION my_consistent(internal, data_type, smallint, oid, internal)
+RETURNS bool
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+そして、Cモジュール内の対応するコードは以下のような骨格に従うことになります。
+Datum       my_consistent(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_consistent);
+Datum
+my_consistent(PG_FUNCTION_ARGS)
+{
+GISTENTRY  *entry = (GISTENTRY *) PG_GETARG_POINTER(0);
+data_type  *query = PG_GETARG_DATA_TYPE_P(1);
+StrategyNumber strategy = (StrategyNumber) PG_GETARG_UINT16(2);
+/* Oid subtype = PG_GETARG_OID(3); */
+bool       *recheck = (bool *) PG_GETARG_POINTER(4);
+data_type  *key = DatumGetDataType(entry->key);
+bool        retval;
+/*
+* strategy、keyおよびqueryの関数として戻り値を決定してください。
+*
+* インデックスツリー内のどこで呼びだされているかを知るためGIST_LEAF(entry)を使用してください。
+* それは、例えば = 演算子をサポートする場合重宝です
+*(非リーフノードにおける空でないunion()とリーフノードにおける等価性を検査することができます)。
+*/
+*recheck = true;        /* もしくは検査が正確であれば偽 */
+PG_RETURN_BOOL(retval);
+}
+ここで、keyはインデックス要素であり、queryはインデックスに対して検索される値です。
+StrategyNumberパラメータは、演算子クラスのどの演算子が適用されるかを示します。
+これはCREATE OPERATOR CLASSコマンドの演算子番号の1つに一致します。
+このクラスに含めた演算子が何かに応じて、queryのデータ型は変動することがあります。
+しかし、上記骨格は変動しないものと考えられます。
+unionこのメソッドはツリー内の情報を統合します。
+項目の集合が与えられると、この関数は与えられた項目すべてを表現するインデックス項目を新しく生成します。
+この関数のSQL宣言は以下のようになります。
+CREATE OR REPLACE FUNCTION my_union(internal, internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+そして、Cモジュール内の対応するコードは以下のような骨格に従うことになります。
+Datum       my_union(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_union);
+Datum
+my_union(PG_FUNCTION_ARGS)
+{
+GistEntryVector *entryvec = (GistEntryVector *) PG_GETARG_POINTER(0);
+GISTENTRY  *ent = entryvec->vector;
+data_type  *out,
+*tmp,
+*old;
+int         numranges,
+i = 0;
+numranges = entryvec->n;
+tmp = DatumGetDataType(ent[0].key);
+out = tmp;
+if (numranges == 1)
+{
+out = data_type_deep_copy(tmp);
+PG_RETURN_DATA_TYPE_P(out);
+}
+for (i = 1; i < numranges; i++)
+{
+old = out;
+tmp = DatumGetDataType(ent[i].key);
+out = my_union_implementation(out, tmp);
+}
+PG_RETURN_DATA_TYPE_P(out);
+}
+ご覧になったように、この骨格でunion(X, Y, Z) = union(union(X, Y), Z)であるようなデータ型を処理しています。
+このGiSTサポートメソッドに適切なunionアルゴリズムを実装することで、このような場合以外のデータ型をサポートすることは非常に容易です。
+unionの実装関数は新たにpalloc()されたメモリへのポインタを返さなければなりません。
+単に入力されたものを返すことはできません。
+compressデータ項目をインデックスページ内の物理的な格納に適した形式に変換します。
+この関数のSQL宣言は以下のようになります。
+CREATE OR REPLACE FUNCTION my_compress(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+そして、Cモジュール内の対応するコードは以下のような骨格に従うことになります。
+Datum       my_compress(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_compress);
+Datum
+my_compress(PG_FUNCTION_ARGS)
+{
+GISTENTRY  *entry = (GISTENTRY *) PG_GETARG_POINTER(0);
+GISTENTRY  *retval;
+if (entry->leafkey)
+{
+/* 圧縮バージョンで entry->key を差し替え */
+compressed_data_type *compressed_data = palloc(sizeof(compressed_data_type));
+/* entry->key ... から *compressed_data を補填 */
+retval = palloc(sizeof(GISTENTRY));
+gistentryinit(*retval, PointerGetDatum(compressed_data),
+entry->rel, entry->page, entry->offset, FALSE);
+}
+else
+{
+/* 通常非リーフ項目に対して行うことはない */
+retval = entry;
+}
+PG_RETURN_POINTER(retval);
+}
+当然ながらcompressed_data_typeを、リーフノードを圧縮するために変換する特定の型に適合させなければなりません。
+また必要に応じて、ここでNULL値の圧縮に関して注意をしなければなりません。
+例えばgist_circle_compressなどでは(Datum) 0を格納します。
+decompresscompressメソッドの逆です。
+データ項目のインデックス表現から、データベースで扱うことができる書式に変換します。
+この関数のSQL宣言は以下のようになります。
+CREATE OR REPLACE FUNCTION my_decompress(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+そして、Cモジュール内の対応するコードは以下のような骨格に従うことになります。
+Datum       my_decompress(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_decompress);
+Datum
+my_decompress(PG_FUNCTION_ARGS)
+{
+PG_RETURN_POINTER(PG_GETARG_POINTER(0));
+}
+上記骨格は、伸長を必要としない場合に適したものです。
+penalty新しい項目をツリーの特定の分岐点に挿入するための"コスト"を示す値を返します。
+項目は、ツリー内でpenaltyが最小の経路に挿入されます。
+penaltyから返される値は非負でなければなりません。
+負の値が返された場合、ゼロとして扱われます。
+この関数のSQL宣言は以下のようになります。
+CREATE OR REPLACE FUNCTION my_penalty(internal, internal, internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;  -- in some cases penalty functions need not be strict
+そして、Cモジュール内の対応するコードは以下のような骨格に従うことになります。
+Datum       my_penalty(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_penalty);
+Datum
+my_penalty(PG_FUNCTION_ARGS)
+{
+GISTENTRY  *origentry = (GISTENTRY *) PG_GETARG_POINTER(0);
+GISTENTRY  *newentry = (GISTENTRY *) PG_GETARG_POINTER(1);
+float      *penalty = (float *) PG_GETARG_POINTER(2);
+data_type  *orig = DatumGetDataType(origentry->key);
+data_type  *new = DatumGetDataType(newentry->key);
+*penalty = my_penalty_implementation(orig, new);
+PG_RETURN_POINTER(penalty);
+}
+penalty関数は優れた性能のインデックスではきわめて重要です。
+これは、挿入の段階で新しい項目をツリーに追加する場所を決定する際にどの分岐に従うかを決定するために使用されます。
+問い合わせの際、インデックスのバランスが良ければ、検索が速くなります。
+picksplitインデックスページ分割が必要になった時、この関数は、ページ内のどの項目を古いページに残すか、および、どれを新しいページに移動するかを決定します。
+この関数のSQL宣言は以下のようになります。
+CREATE OR REPLACE FUNCTION my_picksplit(internal, internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+そして、Cモジュール内の対応するコードは以下のような骨格に従うことになります。
+Datum       my_picksplit(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_picksplit);
+Datum
+my_picksplit(PG_FUNCTION_ARGS)
+{
+GistEntryVector *entryvec = (GistEntryVector *) PG_GETARG_POINTER(0);
+OffsetNumber maxoff = entryvec->n - 1;
+GISTENTRY  *ent = entryvec->vector;
+GIST_SPLITVEC *v = (GIST_SPLITVEC *) PG_GETARG_POINTER(1);
+int         i,
+nbytes;
+OffsetNumber *left,
+*right;
+data_type  *tmp_union;
+data_type  *unionL;
+data_type  *unionR;
+GISTENTRY **raw_entryvec;
+maxoff = entryvec->n - 1;
+nbytes = (maxoff + 1) * sizeof(OffsetNumber);
+v->spl_left = (OffsetNumber *) palloc(nbytes);
+left = v->spl_left;
+v->spl_nleft = 0;
+v->spl_right = (OffsetNumber *) palloc(nbytes);
+right = v->spl_right;
+v->spl_nright = 0;
+unionL = NULL;
+unionR = NULL;
+/* 項目自体のベクタの初期化 */
+raw_entryvec = (GISTENTRY **) malloc(entryvec->n * sizeof(void *));
+for (i = FirstOffsetNumber; i <= maxoff; i = OffsetNumberNext(i))
+raw_entryvec[i] = &(entryvec->vector[i]);
+for (i = FirstOffsetNumber; i <= maxoff; i = OffsetNumberNext(i))
+{
+int         real_index = raw_entryvec[i] - entryvec->vector;
+tmp_union = DatumGetDataType(entryvec->vector[real_index].key);
+Assert(tmp_union != NULL);
+/*
+* インデックス項目の格納場所を決定し、それに合わせてunionLとunionRを更新
+* します。v_spl_left もしくは v_spl_right のどちらかに項目を追加します。
+* カウンタに留意してください。
+*/
+if (my_choice_is_left(unionL, curl, unionR, curr))
+{
+if (unionL == NULL)
+unionL = tmp_union;
+else
+unionL = my_union_implementation(unionL, tmp_union);
+*left = real_index;
+++left;
+++(v->spl_nleft);
+}
+else
+{
+/*
+* Same on the right
+*/
+}
+}
+v->spl_ldatum = DataTypeGetDatum(unionL);
+v->spl_rdatum = DataTypeGetDatum(unionR);
+PG_RETURN_POINTER(v);
+}
+penalty同様、picksplit関数も優れた性能のインデックスのためにきわめて重要です。
+penaltyとpicksplitの実装を適切に設計することが、性能が良いGiSTインデックスの実装を行うことにつながります。
+same2つのインデックス項目が同一の場合に真、さもなくば偽を返します。
+この関数のSQL宣言は以下のようになります。
+CREATE OR REPLACE FUNCTION my_same(internal, internal, internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+そして、Cモジュール内の対応するコードは以下のような骨格に従うことになります。
+Datum       my_same(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_same);
+Datum
+my_same(PG_FUNCTION_ARGS)
+{
+prefix_range *v1 = PG_GETARG_PREFIX_RANGE_P(0);
+prefix_range *v2 = PG_GETARG_PREFIX_RANGE_P(1);
+bool       *result = (bool *) PG_GETARG_POINTER(2);
+*result = my_eq(v1, v2);
+PG_RETURN_POINTER(result);
+}
+歴史的な理由により、same関数は単純に論理値の結果を返しません。
+その代わり、3番目の引数で指定された場所にフラグを格納しなければなりません。
+distanceインデックス項目pと問い合わせ値qを与えると、この関数は問い合わせ値からのインデックス項目の"距離"を決定します。
+この関数は、演算子クラスが何らかの順序付け演算子を含む場合には提供しなければなりません。
+順序付け演算子を使用する問い合わせは、まず最小の"距離"を持つインデックス項目を返すことで実装されます。
+このためこの結果は演算子の意味と一貫性を持たなければなりません。
+リーフインデックスノード項目では、結果は単にインデックス項目との距離を表します。
+内部ツリーノードでは、結果はすべての子項目が持つ中から最も最小の距離でなければなりません。
+この関数のSQL宣言は以下のようにならなければなりません。
+CREATE OR REPLACE FUNCTION my_distance(internal, data_type, smallint, oid)
+RETURNS float8
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+Cモジュールにおける対応するコードは次の骨格に従うことになります。
+Datum       my_distance(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(my_distance);
+Datum
+my_distance(PG_FUNCTION_ARGS)
+{
+GISTENTRY  *entry = (GISTENTRY *) PG_GETARG_POINTER(0);
+data_type  *query = PG_GETARG_DATA_TYPE_P(1);
+StrategyNumber strategy = (StrategyNumber) PG_GETARG_UINT16(2);
+/* Oid subtype = PG_GETARG_OID(3); */
+data_type  *key = DatumGetDataType(entry->key);
+double      retval;
+/*
+* determine return value as a function of strategy, key and query.
+*/
+PG_RETURN_FLOAT8(retval);
+}
+distance関数の引数は、recheckフラグが使用されない点を除いて、consistent関数の引数と同一です。
+タプルが返された後タプルを再度順序付けする手段がありませんので、リーフインデックス項目への距離は常に正確に決定される必要があります。
+内部ツリーノードへの距離の決定に関しては、その結果がすべての子の実際の距離よりも大きくならない限り、多少の概算は許されます。
+したがって、例えば、幾何学に関するアプリケーションでは、通常境界矩形への距離で十分です。
+結果値は何らかの有限のfloat8になります。
+(無限大やマイナス無限大はNULLなどの場合を扱うために内部的に使用されます。
+このためdistance関数がこれらの値を返すことは勧められません。)
+すべてのGiSTサポートメソッドは通常短期間有効なメモリコンテキストで呼び出されます。
+つまりCurrentMemoryContextは各タプルが処理された後にリセットされます。
+そのためpallocしたすべてをpfreeすることに注意することはあまり重要ではありません。
+しかし、サポートメソッドで、繰り返される呼び出しを跨がってデータをキャッシュすることが有用な場合があります。
+このためには、fcinfo->flinfo->fn_mcxtの中で超期間有効なデータを割り当て、そこへのポインタをfcinfo->flinfo->fn_extraの中に保持してください。
+こうしたデータはインデックス操作(例えば1つのGiSTインデックススキャン、インデックス構築、インデックスタプルの挿入)の間有効です。
+fn_extra値を置き換える時に以前の値をpfreeすることに注意してください。
+さもないと操作の間リークが蓄積されます。
+前のページホーム次のページ序文上に戻る実装
+拡張性

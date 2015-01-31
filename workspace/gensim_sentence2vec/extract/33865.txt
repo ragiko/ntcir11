@@ -1,0 +1,204 @@
+先週金曜日(12/2)にクックパッドインフラ勉強会に参加しまして、そこで同社の成田さんから「今日からできるApacheモジュール開発と運用」という発表がありました。
+リアルタイム画像変換モジュールの「TOFU」を開発するに至った経緯と、Apacheモジュール開発についてのお話でした。
+TOFUは、S3に置かれたマスターとなる画像ファイルを取得し、与えられたパラメータでリアルタイム(オンザフライ)にリサイズ・トリミングを行うモジュール(mod_tofu)です。
+料理を楽しくする画像配信システム
+実際は、モジュールによる画像取得・変換をベースに、キャッシュや配信までも含めた一連の画像配信システムと言えそうです。
+この仕組みをNginxを使って実装できないかと考えて、リアルタイム変換の仕組みをNginxだけで実現する方法を実験してみました。
+準備するもの
+HttpImageFilterModule
+このモジュールはパッケージに同梱されているオプションモジュールの一つで、JPEG、GIF、PNGを変換するフィルターを提供します。
+有効にするには、ビルド時にパラメータを指定する必要があります。
+./configure --with-http_image_filter_module
+ビルドし直したnginxの入れ替えを行う場合は、こちらを参考にしてください。
+リクエストを落とさずにnginxをアップグレードする方法とその検証
+また、ビルドにはlibgdが必要なのでGDライブラリを別途インストールしておく必要があります。
+最も簡単な例
+/imagesディレクトリにあるjpgファイルを全て150*150のサムネイルに変換したい場合は、以下の設定を書くだけです。
+location ~ /images/.*\.jpg$ {
+image_filter  crop  150  150;
+}
+このままだと元サイズのファイルにアクセスできなかったり、エラー制御がしにくいのですが、このモジュールがいかに簡単に使えるかがわかると思います。
+ローカルファイルで実験
+前述の最も簡単な例を発展させて、外部からのパラメータに従って、まずはローカルディスクにある画像に対してリアルタイム変換をしてみます。
+対象とするファイル
+momiji.jpg
+JPEGファイル
+1024×683 ピクセル
+274,661 バイト
+外部からのパラメータ
+width(幅)
+height(高さ)
+type(リサイズの方法)
+resize(縦横比を変えずにサイズ変換)
+crop(サイズ変換後に指定されたサイズに切り取る)
+quality(JPEGの画質≒圧縮率)
+要件
+/imagesディレクトリにあるJPEGファイル(*.jpg)にパラメータを付けてアクセスをした時、パラメータに従って変換された画像を返す。
+結果
+以下のように、パラメータを変えるだけで欲しい画像サイズに変換されます。
+/images/momiji.jpg?width=150&height=150&type=resize
+/images/momiji.jpg?width=200&height=200&type=crop
+/images/momiji.jpg?width=400&height=100&type=crop&quality=5
+こちらのリンク先でパラメータをいろいろ変更してテストができます。お試し下さい。
+http://nginx.labs.cloudrop.jp/images/momiji.jpg?width=150&height=150
+設定方法
+/images でパラメータの有無をチェックします。なければ通常の画像を返すようにしています。(何もしない)
+パラメータがあれば /image_filter へリライトされ、パラメータから変数に代入し、$arg_typeを元に /resize か /corp へリライトします。
+/reize /crop でそれぞれ処理をし、変換された画像が返されます。
+※ ImageFilterが処理できない場合は415エラーが発生するので、それを1*1pxの透過GIFに置き換えています。
+設定ファイル
+location ~ /images/.*\.jpg$ {
+if ($query_string ~ .*=.*) {
+rewrite ^/images/(.*\.jpg)$ /image_filter/$1 last;
+}
+}
+location ~ ^/image_filter/(.*\.jpg)$ {
+internal;
+set $file $1;
+set $width 150;
+set $height 150;
+set $quality 75;
+if ($arg_width ~ (\d*)) {
+set $width $1;
+}
+if ($arg_height ~ (\d*)) {
+set $height $1;
+}
+if ($arg_quality ~ (100|[1-9][0-9]|[1-9])) {
+set $quality $1;
+}
+if ($arg_type = "resize") {
+rewrite ^ /resize last;
+}
+rewrite ^ /crop last;
+}
+location /resize {
+internal;
+rewrite ^ /images/$file break;
+image_filter  resize  $width $height;
+image_filter_jpeg_quality $quality;
+error_page 415 = @empty;
+}
+location /crop {
+internal;
+rewrite ^ /images/$file break;
+image_filter  crop  $width $height;
+image_filter_jpeg_quality $quality;
+error_page 415 = @empty;
+}
+location @empty {
+empty_gif;
+}
+パフォーマンス
+ab(ApacheBench)で100リクエストを並列で一度に送り、1秒あたりのリクエスト処理数を5回測定した平均値。クライアントとサーバーは別でインターネットを経由して測定。
+ローカルでの処理なのでネットワークのボトルネックはありません。一方、キャッシュを利用していないので、リクエストごとに変換処理が動くことになります。
+無変換を基準に考えると、サイズが大きめの画像へのリサイズは時間がかかりますが、小さくなるに従って無変換よりもパフォーマンスが上がります。
+変換に処理時間がかかるものの、Webで利用するサムネイル程度のサイズにすれば十分実用的な速度だと思います。
+S3経由で実験
+今度はTOFUの仕様に近づくべく、S3(リモートサーバー)にあるファイルを取得するようにします。
+実験のサーバーは「さくらのVPS512」でS3は「USスタンダードリージョン」です。ネットワークのレイテンシは150ms程です。
+対象とするファイル
+sanzaru.jpg
+US Standard リージョン
+JPEGファイル
+1024×683 ピクセル
+194,728 バイト
+外部からのパラメータ(ローカルと同じ)
+width(幅)
+height(高さ)
+type(リサイズの方法)
+resize(縦横比を変えずにサイズ変換)
+crop(サイズ変換後に指定されたサイズに切り取る)
+quality(JPEGの画質≒圧縮率)
+要件
+JPEGファイル(*.jpg)にパラメータを付けてアクセスをした時、S3上にある同名ファイルを取得し、パラメータに従って変換された画像を返す。
+変換した画像はキャシュし、2回目以降はキャッシュを利用する。
+結果
+/s3images/sanzaru.jpg?width=150&height=150&type=resize
+/s3images/sanzaru.jpg?width=200&height=200&type=crop
+/s3images/sanzaru.jpg?width=400&height=100&type=crop&quality=5
+こちらのリンク先でパラメータをいろいろ変更してテストができます。お試し下さい。
+http://nginx.labs.cloudrop.jp/s3images/sanzaru.jpg?width=200&height=200&type=crop
+設定方法
+80番ポートで待ち受ける/s3images で8080番ポートで動くバックエンドの/s3images へリクエストをそのまま渡します。
+8080番ポートの/s3imagesでパラメータから変数に代入し、$arg_typeを元に/s3_resize か/s3_corp へ、パラメータがなければ/s3_original へリライトします。
+/s3_resize /s3_crop /s3_originalでそれぞれS3からファイルを取得・変換処理をし、画像を80番ポートのフロントエンドへ返します。
+80番ポートのフロントエンドはバックエンドから返ってきたレスポンスをキャッシュし、画像を返します。以降、すでにキャッシュ済みリクエストだった場合は、バックエンドへ送らず、キャッシュを返します。
+設定ファイル
+server {
+listen 80;
+server_name localhost;
+root /var/www/html;
+location /s3images {
+proxy_pass http://localhost:8080;
+proxy_cache s3cache;
+proxy_cache_key $scheme$host$uri$arg_width$arg_height$arg_type$arg_quality;
+proxy_cache_valid  200 60m;
+}
+}
+server {
+listen 8080;
+server_name localhost;
+root /var/www/html;
+access_log logs/proxy_access.log;
+access_log logs/error_access.log;
+resolver 8.8.8.8;
+location ~ /s3images/(.*\.jpg)$ {
+set $s3host MY_S3_HOST;
+set $file $1;
+set $width 150;
+set $height 150;
+set $quality 75;
+if ($query_string !~ .*=.*) {
+rewrite ^ /s3_original last;
+}
+if ($arg_width ~ (\d*)) {
+set $width $1;
+}
+if ($arg_height ~ (\d*)) {
+set $height $1;
+}
+if ($arg_quality ~ (100|[1-9][0-9]|[1-9])) {
+set $quality $1;
+}
+if ($arg_type = "resize") {
+rewrite ^ /s3_resize last;
+}
+rewrite ^ /s3_crop last;
+}
+location /s3_original {
+internal;
+proxy_pass http://$s3host/$file;
+}
+location /s3_resize {
+internal;
+proxy_pass http://$s3host/$file;
+image_filter  resize  $width  $height;
+image_filter_jpeg_quality  $quality;
+error_page 415 = @empty;
+}
+location /s3_crop {
+internal;
+proxy_pass http://$s3host/$file;
+image_filter  crop  $width  $height;
+image_filter_jpeg_quality  $quality;
+error_page 415 = @empty;
+}
+location @empty {
+empty_gif;
+}
+}
+8080ポート側にresolverの設定が入っています。NginxはOS標準の名前解決方法を利用してくれないため、ネームサーバーをresolverに設定する必要があります。
+ここではGoogle Public DNSが設定されていますが、利用するサーバーの最寄り(通常同じDC内)のネームサーバーを指定します。
+パフォーマンス
+ab(ApacheBench)で100リクエストを並列で一度に送り、1秒あたりのリクエスト処理数を5回測定した平均値。クライアントとサーバーは別でインターネットを経由して測定。
+S3からファイルを取得する処理を含めると、ネットワークのボトルネックがあり、1リクエスト2秒程度かかります。それを含めてしまうと、ネットワークに引きずられて正確な値がでないので、キャッシュに対して測定しています。
+キャッシュからの応答になるので、純粋にファイルサイズの大きさに比例していきます。マスターの画像が変更されないことがわかっている場合、もしくは、変更があった場合にハッシュ値などを使ってキャッシュを書き換えるなどすると、実用的な速度で利用できることがわかります。
+まとめ
+細かい設定(例えば、左上から右へ10px下へ20pxを起点に切り取るなど)はできませんし、pngからjpgなどのフォーマット変換もできないので、多くの機能を望む場合は、他のプログラムを利用するか、Nginxモジュールを書く事になると思います。
+とは言っても、モジュールをインストールして、設定を書くだけで利用できるので、プロトタイプ開発の用途には使えますし、リモートサーバーのファイル自体をキャッシュしたり、Proxy Cacheを適切に設定したり、多段にキャッシュを用意したりすれば、用途に限りがありますが、プロダクションでも使えると思います。
+Nginxモジュール開発の参考
+NginxでのModuleの作り方 – よねのはてな
+Rails アプリを nginx の拡張モジュールで置き換えて高速化する方法 – HeartRails Tech Blog
+Emiller’s Guide to Nginx Module Development
+簡単!リアルタイム画像変換をNginxだけで行う方法 | cloudrop

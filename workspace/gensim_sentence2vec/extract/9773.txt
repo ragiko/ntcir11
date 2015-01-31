@@ -1,0 +1,54 @@
+
+WordPressで固定ページなどで投稿すると自動で文章を整形するタグ<br>や<p>などが勝手に入ってしまい困ってしまったことはありませんか?最近このWordPressの自動整形を制御する方法を先輩に教えてもらったので、ついでに制御方法を色々調べて記事にしてみました!
+WordPressで自動生成されるタグを制御する方法
+調べてみたら色々な制御方法があることが分かりました。ケースによって使い分けるのが良いかと思います。また、今回はプラグインを使わない方法のみの紹介になります。
+全ての投稿に実装する場合
+まずは全ての投稿の自動整形を無効にする方法です。functions.phpに下記のコードを記述するだけで実装可能です。
+functions.php
+remove_filter('the_content', 'wpautop'); // 記事の自動整形を無効にする
+remove_filter('the_excerpt', 'wpautop'); // 抜粋の自動整形を無効にする
+投稿記事タイプごとに実装する場合
+また、サイトの仕様によってはsingle.phpはクライアントさんがブログを投稿するので自動整形機能を残して、固定ページのみ自動整形しないようにしたい場合も出てくると思います。そうした時は、自動整形したくないテンプレート(固定ページだったらpage.phpとか)に以下のコードを入れておけば大丈夫です!固定ページだけでなくカスタム投稿タイプのテンプレートなどにも使えるので便利ですね!
+page.php(※自動改行したくないテンプレート)
+<?php remove_filter ('the_content', 'wpautop'); ?> // <?php the_content(); ?>の前に入れる
+また、functions.phpで制御する方法もありますので、そちらも載せておきます。
+functions.php
+add_filter('the_content', 'wpautop_filter', 9);
+function wpautop_filter($content) {
+global $post;
+$remove_filter = false;
+$arr_types = array('page'); //自動整形を無効にする投稿タイプを記述
+$post_type = get_post_type( $post->ID );
+if (in_array($post_type, $arr_types)) $remove_filter = true;
+if ( $remove_filter ) {
+remove_filter('the_content', 'wpautop');
+remove_filter('the_excerpt', 'wpautop');
+}
+return $content;
+}
+<p>の自動挿入は残しつつ、HTMLソースが勝手に消されるのを止めたい場合
+最後に少し変化球な場合の対応です。デフォルトのままだと、<p>や<br>が自動挿入される他に、逆にHTMLソースで入力した際の<P>や<br>タグが勝手に消される場合があります。意図的に行間を開けたい時などに、<br>タグを連続で入れても行間が広くならないのはこれが原因です。
+先ほど紹介した、自動整形を無効にすれば反映されますが、場合によっては「<p>の自動挿入は残しておいて、htmlソースは勝手に消さないでほしい」なんてわがままbodyな場面も出てくるかもしれません。そういった時には以下のコードを使います。
+functions.php
+add_action('init', function() {
+remove_filter('the_title', 'wptexturize');
+remove_filter('the_content', 'wptexturize');
+remove_filter('the_excerpt', 'wptexturize');
+remove_filter('the_title', 'wpautop');
+remove_filter('the_content', 'wpautop');
+remove_filter('the_excerpt', 'wpautop');
+remove_filter('the_editor_content', 'wp_richedit_pre');
+});
+add_filter('tiny_mce_before_init', function($init) {
+$init['wpautop'] = false;
+$init['apply_source_formatting'] = ture;
+return $init;
+});
+上記コードをfunctions.phpに書くことで、<p>の自動挿入は行われつつ、HTMLソースもほとんど壊されないで済むようになります。うーん便利ですね!
+最後に
+以上でWordpressのエディタ自動整形を制御する方法の紹介を終わります。いかがだったでしょうか?上記で紹介したコードを使えばだいたいのことは上手くいくと思いますので、困ったら是非チェックしてみてください。
+また、新規のサイトでは問題ないですが、既存の記事があるサイトに適応する場合は、適応した後に崩れているところがないかチェックすることを忘れないようにしてくださいね!
+参考にした記事
+WordPressのPタグ、BRタグの自動整形に対処する | 設定やツールねた
+WordPressで困った時に役立つお助けコード8つ | Webクリエイターボックス
+Wordpressでエディタに自動生成されるタグ(<p>とか<br>)を制御する方法まとめ | 株式会社WEB企画スタッフブログ

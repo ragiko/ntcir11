@@ -1,0 +1,145 @@
+   weight      feed
+1     179 horsebean
+2     160 horsebean
+3     136 horsebean
+4     227 horsebean
+5     217 horsebean
+6     168 horsebean
+7     108 horsebean
+8     124 horsebean
+9     143 horsebean
+10    140 horsebean
+11    309   linseed
+12    229   linseed
+13    181   linseed
+14    141   linseed
+15    260   linseed
+16    203   linseed
+17    148   linseed
+18    169   linseed
+19    213   linseed
+20    257   linseed
+21    244   linseed
+22    271   linseed
+23    243   soybean
+24    230   soybean
+25    248   soybean
+26    327   soybean
+27    329   soybean
+28    250   soybean
+29    193   soybean
+30    271   soybean
+31    316   soybean
+32    267   soybean
+33    199   soybean
+34    171   soybean
+35    158   soybean
+36    248   soybean
+37    423 sunflower
+38    340 sunflower
+39    392 sunflower
+40    339 sunflower
+41    341 sunflower
+42    226 sunflower
+43    320 sunflower
+44    295 sunflower
+45    334 sunflower
+46    322 sunflower
+47    297 sunflower
+48    318 sunflower
+49    325  meatmeal
+50    257  meatmeal
+51    303  meatmeal
+52    315  meatmeal
+53    380  meatmeal
+54    153  meatmeal
+55    263  meatmeal
+56    242  meatmeal
+57    206  meatmeal
+58    344  meatmeal
+59    258  meatmeal
+60    368    casein
+61    390    casein
+62    379    casein
+63    260    casein
+64    404    casein
+65    318    casein
+66    352    casein
+67    359    casein
+68    216    casein
+69    222    casein
+70    283    casein
+71    332    casein
+> y  y
+weight      feed
+1     179 horsebean
+2     160 horsebean
+3     136 horsebean
+4     227 horsebean
+・・・・・
+68    216    casein
+69    222    casein
+70    283    casein
+71    332    casein
+> str (y)
+'data.frame':   71 obs. of  2 variables:
+$ weight: num  179 160 136 227 217 168 108 124 143 140 ...
+$ feed  : Factor w/ 6 levels "casein","horsebean",..: 2 2 2 2 2 2 2 2 2 2 ...
+(2) データフレームの読み込み
+ここでは,表シートあるいはエクセルの表計算シートからクリップボード経由で読み込む操作を行う.
+表2 六種類の飼料サプリメントと鶏の体重 「スタック形式」の緑の部分をマウスで選択し,これをコピーする.
+次に,Rの「コンソール」画面に,
+y 
+と記述し,コピーした[clipboard]データファイルを,Rの内部のデータフレーム,ファイル名x に直接読み込む.
+・header=TRUE は第1行が列の変数名になっていることを指示している.
+)     データをコピーした後で,カッコを入力する.ENTERーキーを押す.
+(3) 読み込んだデータフレームの確認
+y  #    と記述し,Rの内部に作成したデータフレーム y を,表示し確認する.
+(4) データフレームの構造確認
+str (y) #  と記述し,Rの内部のデータフレーム y の2変数の内容を表示確認する.
+Rが理解した,鶏の体重(weight 測定値)と飼料サプリメントの2変数名のリストと変数ごとのカテゴリの数とカテゴリ名が示される.
+・分析で使用する変数名とカテゴリ名はRが理解した名前を使用する.
+注意: 水準A1〜A6を含む因子(飼料サプリメント)のデータ形式が [Factor] 形式でないときは,正しい統計処理ができなくなる.
+y$feed  #  と記述し,データフレームの水準の変数を[Facter]形式に変更する.
+1因子Aの基礎統計
+a. 因子Aの基礎統計量
+Rの「コンソール」画面に,
+by ( y$weight, y$feed, summary ) #   と記述し,「スタック形式」のデータで,群別の基礎統計利用を計算する.
+> by ( y$weight, y$feed, summary )
+y$feed: casein
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+216.0   277.2   342.0   323.6   370.8   404.0 
+--------------------------------------------------------------- 
+y$feed: horsebean
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+108.0   137.0   151.5   160.2   176.2   227.0 
+--------------------------------------------------------------- 
+y$feed: linseed
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+141.0   178.0   221.0   218.8   257.8   309.0 
+--------------------------------------------------------------- 
+y$feed: meatmeal
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+153.0   249.5   263.0   276.9   320.0   380.0 
+--------------------------------------------------------------- 
+y$feed: soybean
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+158.0   206.8   248.0   246.4   270.0   329.0 
+--------------------------------------------------------------- 
+y$feed: sunflower
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+226.0   312.8   328.0   328.9   340.2   423.0 
+b. 因子Aの平均値の推移図    # plotMeans関数を使用するにはパッケージ 「Rcmdr」を読み込んでおくこと
+boxplot ( y$weight ~ y$feed) #  と記述し,箱ひげグラフを表示する.
+plotMeans ( y$weight, y$feed, error.bars="se") #  と記述し,平均値の推移図を表示する.
+c. グラフの観察
+バートレット(Bartlett)の検定--分散の等質性(等分散性)の検定
+飼料サプリメント6水準(6群)の分散が等しいか,あるいは等しくないかを検定する.
+6水準のデータの分散は等質であるとの帰無仮説を立てる.
+分散分析( R関数 aov )は,分散が等しいという仮定の上で構築されているので標本の測定値にもとづいて分散が一様であるか検討する.
+ただし,分散分析のF検定はその前提条件が崩れても,検定結果は信頼できるといわれている.
+Rの「コンソール」画面に,
+bartlett.test ( y$weight ~ y$feed ) # と記述し,「スタック形式」のデータで,分散の等質性の検定を行う.
+バートレットの検定は水準ごとの標本の数が同じでない場合も使用できる.
+p値が0.05以下のときに水準の分散は等しくないと結論する.
+R言語で統計解析入門: くり返しのある一元配置分散分析と多重比較(対応なし・標本数が異なる) 梶山 喜一郎

@@ -1,0 +1,15 @@
+
+スポンサードリンク
+画像ファイルを読み込んで処理を実行し、完了後に削除しようとしたところ、「別のプロセスで使用されているため、プロセスはファイル 'c:\temp\001.jpg' にアクセスできません。」とのエラーが出て削除できませんでした。
+複数の画像ファイルを順次読み込んで処理をするのですが、削除の段階で消えるファイルと消えないでエラーになるファイルがあります。
+クリックで拡大
+【対応方法】
+画像ファイルを使う際に.Cloneでコピーを使ったり、Disposeを実行したりしてもエラーになります。
+そこで以下のようにFileStreamを使用してやるとうまくいきいました。
+FileStream を使ってReadモードで開いて最後にCloseすると問題ないようです。
+Dim img As System.Drawing.Bitmap
+Using fs As New System.IO.FileStream(imgFile, IO.FileMode.Open, IO.FileAccess.Read)
+img = Image.FromStream(fs).Clone
+fs.Close()
+End Using
+エラー「別のプロセスで使用されているため、プロセスはファイル 'c:\temp\001.jpg' にアクセスできません。」 - Microsoft.NET - Project Group

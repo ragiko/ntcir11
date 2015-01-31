@@ -1,0 +1,61 @@
+
+離散時間摩擦(塑性)モデル
+[研究テーマ]
+[トップページ]
+[english]
+作成中
+摩擦(正確に言うと「クーロン摩擦」)は,私たちの日常生活のいたるところに存在します.手と道具の間にも,足と地面の間にも,機械の中にも,どんなところにも摩擦があります.
+クーロン摩擦は速度と反対方向の摩擦力を発生しますが,このとき,速度と摩擦力の関係はゼロ速度の前後で不連続です.この不連続性ゆえに,「静止摩擦」というものが実現します.たとえば机が多少かたむいていても,机の上の物が滑り落ちずに静止した状態(ゼロ速度)を保つことができます.速度と摩擦力の関係が連続であれば,机の少しの傾きやちょっとしたそよ風で,机の上の物がゆっくりと動き出してしまいます.
+速度と摩擦力の不連続な関係は,我々の日常生活では当たり前ですが,コンピュータによるシミュレーションやデジタル制御で人工的に作り出そうとすると,非常に面倒です.デジタル計算機の中では時間を離散的にしか扱えないので,ぴったりゼロ速度になる瞬間というのをプログラム上で扱いづらいからです.
+我々は,クーロン摩擦の不連続な摩擦特性を,シミュレーションやデジタル制御で人工的に作り出す簡単な計算手法を考案しました.従来のように,
+物理的に意味のない速度閾値を用いて,ゼロ速度と非ゼロ速度を区別する   
+静止摩擦状態と動摩擦状態の状態フラグを記憶して,動作を切り替える 
+時間刻みを細かくして,ゼロ速度交差時刻を探す                         
+・・・という面倒なプログラミングをする必要はもうありません.ゼロ速度交差に伴うチャタリングや,速度閾値によるドリフトも生じません.
+コンピュータグラフィックス,コンピュータゲーム,バーチャルリアリティ,ヒューマンインターフェース機器の制御などのために有用です.
+Stick-Slip現象のシミュレーション.
+提案した摩擦モデルを発展させて作った注射シミュレータ.力覚提示装置を介して,針と皮膚の間の摩擦力を提示します.
+離散時間摩擦(塑性)モデルの資料集
+基礎技術編
+Ryo Kikuuwe, Naoyuki Takesue, Akihito Sano, Hiromi Mochiyama, and Hideo Fujimoto:Admittance and Impedance Representations of Friction Based on Implicit Euler Integration,IEEE Transactions on Robotics, 22(6), pp. 1176-1188, December 2006. 
+[PDFファイル]
+&copy;2006 IEEE. Personal use of this material is permitted. However, permission to reprint/republish this material for advertising or promotional purposes or for creating new collective works for resale or redistribution to servers or lists, or to reuse any copyrighted component of this work in other works must be obtained from the IEEE.
+もっとも詳細な情報を記載しています.慣性・コンプライアンスの有無と入出力によって,4種類のモデル(モデルA〜モデルD)を提案しています.これらのモデルの使い分けについては第IV節を御覧ください.
+Ryo Kikuuwe, Naoyuki Takesue, Akihito Sano, Hiromi Mochiyama, and Hideo Fujimoto:Fixed-Step Friction Simulation: From Classical Coulomb Model to Modern Continuous Models,In Proceedings of the 2005 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2005), pp. 3910-3917, August 2005 (Edmonton, Canada).
+[PDFファイル]
+&copy;2005 IEEE. Personal use of this material is permitted. However, permission to reprint/republish this material for advertising or promotional purposes or for creating new collective works for resale or redistribution to servers or lists, or to reuse any copyrighted component of this work in other works must be obtained from the IEEE.
+上記の論文の下書き的な講演会予稿論文で,「モデルA」「モデルB」「モデルC」について書いています.上記の論文に載っていないシミュレーション結果がいくつか載っています.なお,「モデルA」には「不連続摩擦モデル」,「モデルB」「モデルC」には「連続摩擦モデル」という名前を付与していますが,最近はこの名称を使うことは控えています.
+菊植亮,藤本英雄:インピーダンス型離散時間摩擦モデル,日本ロボット学会学術講演会講演論文集,3A13,2005. 
+[PDFファイル]
+「モデルC」と「モデルB」についての最初の発表です.数学的な説明があまり洗練されていません.
+菊植亮, 武居直行, 佐野明人, 望山洋, 藤本英雄: 有限時間で零速度に収束する不連続摩擦モデル, 第10回ロボティクスシンポジア予稿集, pp. 215-220, 2005. 
+[PDFファイル]
+「モデルA」についての最初の発表です.数学的な説明があまり洗練されていません.「不連続摩擦モデル」という名称は最近は使わないようにしています.
+菊植亮:滑らかでないシステムの離散時間表現とヒューマンインタフェースへの応用,九州大学ロボティクスリサーチコア第7回研究会(2007年7月4日(水))における発表資料.
+[PDFファイル]
+離散時間摩擦モデルがどのような経緯で考案されたかを説明しています.その発展としてのプロクシベースト・スライディングモード制御の説明も含まれています.
+Ryo Kikuuwe:Embedding Nonsmooth Systems in Digital Controllers,KAIST-Kyushu University Joint Seminar 2008 (2008年9月20日(土))における発表資料.
+[PDFファイル]
+上記の「リサーチコア」資料を短くした英語バージョンです.
+応用事例編
+Ryo Kikuuwe, Yu Kobayashi, and Hideo Fujimoto:Coulomb-Friction-Based Needle Insertion/Withdrawal Model And Its Discrete-Time Implementation,In Proceedings of EuroHaptics 2006, pp. 207-212, July 2006 (Paris, France).
+[PDFファイル]
+「モデルC」を一部修正したモデルを用いて,注射シミュレータを作りました.注射の針と皮膚組織の間の摩擦力を,力覚提示デバイスから提示できます.また,組織を貫いたときの「プツッ」とした感触(英語圏では『pop』と呼ぶ)も提示します.
+山本公弘,菊植亮,藤本英雄:離散時間並列粘弾塑性モデルに基づいた自動車の操舵反力シミュレータ,日本ロボット学会学術講演会講演論文集,2C24,2006年9月.
+[PDFファイル]
+「モデルC」を用いて,ドライビングシミュレータのためのアルゴリズムを作っています.タイヤと地面の間の摩擦を再現しているので,車庫入れなどの際の「スエギリ」の反力も提示できます.
+Ryo Kikuuwe, Naoyuki Takesue, and Hideo Fujimoto:A Control Framework to Generate Nonenergy-Storing Virtual Fixtures: Use of Simulated Plasticity,IEEE Transactions on Robotics, 24(4), pp. 781-793, August 2008.
+[PDFファイル]
+&copy;2008 IEEE. Personal use of this material is permitted. However, permission to reprint/republish this material for advertising or promotional purposes or for creating new collective works for resale or redistribution to servers or lists, or to reuse any copyrighted component of this work in other works must be obtained from the IEEE.
+「モデルC」「モデルA」をベースにして,弾性エネルギーを蓄えない安全な「仮想壁」を作る方法を説明しています.
+Ryo Kikuuwe, Naoyuki Takesue, and Hideo Fujimoto:Passive Virtual Fixtures Based on Simulated Position-Dependent Anisotropic Plasticity,In Proceedings of the 2007 IEEE International Conference on Robotics and Automation (ICRA 2007), pp. 3263-3268, April 2007 (Rome, Italy).
+[PDFファイル]
+&copy;2007 IEEE. Personal use of this material is permitted. However, permission to reprint/republish this material for advertising or promotional purposes or for creating new collective works for resale or redistribution to servers or lists, or to reuse any copyrighted component of this work in other works must be obtained from the IEEE.
+上記の論文の下書き的な講演会予稿論文です.「Passive Virtual Fixtures」というのは正しくないという指摘を査読者からいただいたので,上記のジャーナル論文では「Non-Energy-Storing Virtual Fixtures」と言い換えています.
+その他
+菊植亮:力覚提示における物理モデル、状態方程式、そして演算手順,第14回日本バーチャルリアリティ学会大会における発表資料(2009年9月10日(木)).
+[PDFファイル]
+力覚提示計算全般についてのチュートリアル的な講演です.
+本発表は,日本バーチャルリアリティ学会・力触覚の提示と計算研究会の企画によるオーガナイズドセッション『力覚提示計算を俯瞰する』の一部でした.
+菊植のホームページ
+離散時間摩擦(塑性)モデル

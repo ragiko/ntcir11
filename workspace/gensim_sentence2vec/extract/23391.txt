@@ -1,0 +1,108 @@
+[CentOS6][Cacti] 閾値チェック&メール通知プラグイン
+Create: 2013/01/20
+LastUpdate: 2013/01/23
+[  メニューに戻る ]
+ここでは、閾値をチェックし、閾値を越えた場合にメールで通知する機能を Cacti に追加してみます。
+"thold" と "setttings" の2つのプラグイン" をCactiに導入します。
+「 Cactiのインストール」で作成した環境を前提とします。
+1.プラグインのダウンロード
+Cacti Plugins のダウンロードサイト から、"settings" と "thold" の2つをダウンロードします。
+# cd /tmp
+# wget http://docs.cacti.net/_media/plugin:thold-v0.4.9-3.tgz
+# wget http://docs.cacti.net/_media/plugin:settings-v0.71-1.tgz
+2.プラグインの設置
+上記1で取得したアーカイブを解凍して、Cacti のプラグイン格納用ディレクトリに設置します。ディレクトリ、ファイルの所有者は、WEBサーバの実行ユーザと同じ apache にしておきます。
+# cd /var/www/cacti/
+# mkdir -p plugins
+# cd plugins
+# gzip -dc /tmp/plugin:settings-v0.71-1.tgz | tar xvf -
+# gzip -dc /tmp/plugin:thold-v0.4.9-3.tgz | tar xvf -
+# chown -R apache.apache .
+# ls -l
+合計 8
+drwxr-xr-x 3 apache apache 4096  9月 25 22:45 2011 settings
+drwxr-xr-x 5 apache apache 4096 11月 13 03:29 2011 thold 
+3.Cacti の設定
+ブラウザで Cacti のページを開いて、thold プラグインの設定を行います。
+3.1.プラグインの有効化
+プラグインを使えるように有効化します。
+[console]&rarr;[Plugin Management]をクリックすると、下図のページが表示されます。
+上記2で設置した2つのプラグインが表示され、[Status]が "Not Installed" になっているので、これを "Active" にします。
+赤枠で示した、[Actions] のアイコンをクリックします。
+下図のように、表示が変わったら、緑色のアイコンをクリックします。
+下図のような表示に変わり、[Status]が "Active" になればOKです。
+3.2.メール設定
+監視結果のメールを送信する宛先や、使用するSMTPサーバなど、メール関連の設定を行います。
+[console]&rarr;[Settings]&rarr;[Mail/DNS]をクリックすると、下図のページが表示されます。
+以下のように入力して、[Save]ボタンをクリックします。
+Emailing Options
+[Test Email] ・・・ テスト用メールの宛先アドレスを入力する
+[From Email Address] ・・・ メール送信元のアドレスを入力する
+[From Name] ・・・ メール送信元の名前を入力する
+SMTP Options
+[SMTP Hostname] ・・・ SMTPサーバのIPアドレス または FQDNを入力する
+[SMTP Username] ・・・ SMTPサーバの認証が必要な場合は、ユーザ名を入力を入力する
+[SMTP Password] ・・・ SMTPサーバの認証が必要な場合は、パスワードを2回入力を入力する
+DNS Options
+[Primary DNS IP Adress] ・・・ /etc/resolv.conf の設定と違うDNSを使用したい場合に入力する
+設定が正しいことを確認するために、テストメールを送信します。
+[Send a Test Email] をクリックします。
+下図のダイアログが表示され、"Success!"と表示されたらメール送信の成功です。
+下図のようなメールが届きます。
+3.3.通知メールの宛先設定
+閾値チェック結果のメール送信先を設定します。
+複数作成できますが、ここでは、「管理者」という宛先を1つだけ登録してみます。
+[console]&rarr;[Notification Lists]をクリックすると、下図のページが表示されます。
+[Add]をクリックします。
+下図のページが表示されたら、以下の項目を入力して、[Create]ボタンをクリックします。
+General Settings
+[Name] ・・・ この宛先の名前を入力します。
+ここでは、"管理者"を入力します。
+[Descprition] ・・・ この宛先の説明を入力します。
+ここでは、"管理者" を入力します。
+[Email Address] ・・・ メールアドレスを入力します。
+3.4.ダウンメールの宛先設定
+監視中のデバイス(サーバ、ルータなど)がダウンしたときに通知するメールの宛先を設定します。
+[console]&rarr;[Settings]&rarr;[Thresholds] をクリックすると、下図のページが表示されます。
+[Dead Host Notifications Email] にメールアドレスを入力して、[Save]ボタンをクリックします。
+なお、[Dead Host Notifications Email]で設定する宛先は、全てのデバイスのデフォルトになります。
+デバイスごとに宛先をかえたい場合は別のページで設定します。(後述)
+実際に監視中のデバイスを停止して、ダウンメールが送信されることを確認してみます。
+[console]&rarr;[Devices]をクリックすると各デバイスの状態を見ることができます。
+下図のように [Status] が "Down" と表示されると、メールが送信されます。
+下図は、デバイスのダウンを通知するメールです。
+停止したデバイスを起動すると、下図のように [Status] が、"Recovering" になります。
+しばらくして、[Status]が "Up" に変わると、ダウンしたデバイスが復旧したということでメールが送信されます。
+下図は、ダウンしたデバイスが復旧したときに通知するメールです。
+なお、デバイスごとにメールの宛先を設定することもできます。
+[console]&rarr;[Devices]で、下図のような各デバイスごとのページを表示すると、[Thold Up/Down Email Notification]という設定項目が追加されています。この項目を使用すると、以下のように個別に通知先を設定できます。
+Disabled ・・・ 通知しない
+Global List ・・・ 上記 [console]&rarr;[Settings] で設定した宛先に通知
+List Below ・・・ 上記3.3で設定した宛先をメニューから選択して通知
+Global and List Below ・・・ Global List と List Below の両方へ通知
+3.5.閾値チェック内容の設定 
+ここでは、例として、ローカルホストのログインユーザー数を監視設定してみます。
+ログインユーザー数が1をこえたら、アラートメールを送信するように設定します。
+[console]&rarr;[Thresholds] をクリックすると、下図のページが表示されます。
+[Add]をクリックします。
+下図のページが表示されたら以下の項目を入力して、[Create]ボタンをクリックします。
+[Host] ・・・ チェック対象のホストを選択します
+ここでは、ローカルホストを選択します
+[Graph] ・・・ チェック対象のグラフを選択します
+ここでは、"Logged in Users" を選択します
+[Data Source] ・・・ チェック対象の値を選択します
+ここでは、"users" を選択します
+下図のページが表示されたら、以下の項目を入力して[Save]ボタンをクリックします。
+Alert High / Low Settings
+[High Threshold] ・・・ ここで設定した上限値を超えたらアラートメールが送信されます。
+ここでは 1 を入力します
+Other Settings
+[Alert Notification List] ・・・ アラートメールの送信先を上記3.3で作成した宛先から選択します。
+ここでは、"管理者" を選択します
+実際にローカルホストのログインユーザ数を増やして、アラートメールの送信を確認してみます。
+[console]&rarr;[Thresholds] をクリックすると、下図のページが表示されます。
+ローカルホストのログインユーザ数が 2 になると、上記で設定した監視項目の "Localhost - Logged in Users [users]" が赤く表示され、アラートメールが送信されます。
+下図は、閾値の上限を超えた場合に通知されるアラートメールです。
+ログインユーザ数を 1 に戻すと、下図のようにグリーンで表示され、ノーマルな状態に戻ったことを通知するメールが送信されます。
+下図は、ノーマルな状態に戻ったことを通知するメールです。
+[CentOS6][Cacti] 閾値チェック&メール通知プラグイン - Blue21(cos6_cacti301)

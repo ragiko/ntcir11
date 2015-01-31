@@ -1,0 +1,1390 @@
+
+ヘッダーをスキップ
+Oracle Database PL/SQLユーザーズ・ガイドおよびリファレンス10g リリース2(10.2)B19257-01
+目次
+索引
+5 PL/SQLのコレクションおよびレコードの使用
+多くのプログラミング手法では、配列、バッグ、リスト、ネストした表、セット、ツリーなどのコレクション型を使用します。PL/SQLのデータ型TABLEおよびVARRAYを使用すると、データベース・アプリケーション内でこれらの型をモデル化できます。これによって、ネストした表、結合配列および可変サイズの配列を宣言できます。この章では、データの集まり(コレクション)をローカル変数として参照または操作する方法を示します。また、RECORDデータ型を使用して、関連する様な型の値を1つの論理単位として操作する方法についても説明します。
+この章の項目は、次のとおりです。
+PL/SQLのコレクションおよびレコード
+使用するPL/SQLコレクション型の選択
+コレクション型の定義とコレクション変数の宣言
+コレクションの初期化および参照
+コレクションの代入
+コレクションの比較
+マルチレベル・コレクションの使用
+コレクション・メソッドの使用
+コレクション例外の回避
+レコードの定義と宣言
+レコードへの値の代入
+PL/SQLのコレクションおよびレコード
+コレクションおよびレコードとは、配列、レコードまたは表の要素のような、個別に操作できる内部的な要素があるコンポジット型のことです。
+コレクションは、すべて同じ型の要素の順序付きグループです。コレクションは、リスト、配列および標準的なプログラミング・アルゴリズムで使用される他のデータ型を包含した一般的な概念です。各要素は、一意の添字によってアドレスが付けられます。
+レコードはフィールドに格納されるいくつかの関連したデータ項目のグループであり、それぞれに独自の名前とデータ型があります。レコードは、表の行または表の行の一部の列を保持する変数と考えることができます。フィールドは表の列に対応しています。
+次の項では、PL/SQLのコレクションおよびレコードについて説明します。
+PL/SQLのコレクション
+PL/SQLレコード
+PL/SQLのコレクション
+PL/SQLには、次のコレクション型が用意されています。
+結合配列は、索引付き表とも呼ばれ、添字の値に任意の数字または文字列を使用して要素を参照できます。他のプログラミング言語でのハッシュ表に似ています。
+ネストした表は、任意の数の要素を保持します。VARRAYでは、添字に連番を使用します。等価のSQLの型を定義すると、ネストした表をデータベース表に格納し、SQLを介して操作できます。
+VARRAY(可変サイズの配列)は、固定数の要素を保持します(ただし、要素の数は実行時に変更できます)。VARRAYでは、添字に連番を使用します。等価のSQLの型を定義すると、データベース表にVARRAYを格納できます。VARRAYはSQLを介して格納および取得できますが、ネストした表に比べると柔軟性は低くなります。
+コレクションは1次元のみですが、コレクションを要素に持つコレクションを作成すると、多次元配列のモデルを作成できます。
+アプリケーションでコレクションを使用するには、1つ以上のPL/SQLの型を定義し、それらの型の変数を定義します。コレクション型は、プロシージャ、ファンクションまたはパッケージで定義できます。ストアド・サブプログラムに、コレクションの変数をパラメータとして渡すことができます。
+単一の値よりも複雑なデータを参照するために、PL/SQLレコードまたはSQLオブジェクト型をコレクションに格納できます。ネストした表とVARRAYは、オブジェクト型の属性にすることもできます。
+ネストした表
+PL/SQLのネストした表は、一連の値を表します。これは、要素数が宣言されていない1次元配列と考えることができます。要素にネストした表を持つネストした表を作成すると、多次元配列のモデルを作成できます。
+データベース内では、ネストした表は一連の値を保持する列の型と考えられます。Oracleは、ネストした表の行を特に順序付けずに格納します。ネストした表をデータベースからPL/SQL変数の中に取り出すと、それらの行に1から始まる連続した添字が付けられます。これによって、個の行に配列のようにアクセスできます。
+ネストした表と配列には重要な相違点が2つあります。
+図5-1に示すように、ネストした表では要素数が宣言されていませんが、配列では数値が事前定義されています。ネストした表のサイズは動的に大きくできますが、配列には上限があります。「コレクション要素の参照」を参照してください。
+配列は常に密です(添字が連続しています)が、ネストした表は添字が連続していない場合があります。ネストした表も最初は密ですが、疎にすることができます(つまり添字が連続していなくてもかまいません)。組込みプロシージャDELETEを使用すると、ネストした表から要素を削除できます。組込みファンクションNEXTを使用すると、順序に欠番が生じる場合でも、ネストした表のすべての添字に対して反復処理を実行できます。
+図5-1    配列とネストした表との相違点
+画像の説明
+VARRAY
+VARRAY型の項目は、VARRAYと呼ばれます。VARRAYを使用すると、配列操作の個の要素を参照したり、コレクションを全体として操作することができます。要素を参照するには、標準的な添字構文を使用します(図5-2を参照)。たとえば、Grade(3)は、GradesというVARRAYの3番目の要素を参照します。
+図5-2    サイズ10のVARRAY
+画像の説明
+VARRAYには最大サイズがあり、このサイズを型定義で指定します。VARRAYの索引には、1に固定されている下限と、拡張可能な上限があります。たとえば、VARRAY Gradesの現在の上限は7ですが、最大10まで拡張できます。したがって、VARRAYに入れることのできる要素の数は、0(空の場合)個から型定義で指定された最大値まで変更できます。
+結合配列(索引付き表)
+結合配列は、キーと値のペアのセットです。各キーは一意で、配列内の対応する値を検索するために使用されます。キーは、整数または文字列にできます。
+初めてキーを使用して値を代入すると、そのキーが結合配列に追加されます。その後、同じキーを使用して値を代入すると、同じエントリが更新されます。一意のキーを選択することが重要です。たとえば、データベース表の主キー、数値のハッシュ関数、複数の文字列を連結した一意の文字列の値などを、キーの値として使用できます。
+次に、文字列のキーを使用した結合配列型の宣言と、この型の2つの配列の例を示します。
+例5-1    コレクション型の宣言
+DECLARE
+TYPE population_type IS TABLE OF NUMBER INDEX BY VARCHAR2(64);
+country_population population_type;
+continent_population population_type;
+howmany NUMBER;
+which VARCHAR2(64);
+BEGIN
+country_population('Greenland') := 100000; -- Creates new entry
+country_population('Iceland') := 750000;   -- Creates new entry
+-- Looks up value associated with a string
+howmany := country_population('Greenland');
+continent_population('Australia') := 30000000;
+continent_population('Antarctica') := 1000; -- Creates new entry
+continent_population('Antarctica') := 1001; -- Replaces previous value 
+-- Returns 'Antarctica' as that comes first alphabetically.
+which := continent_population.FIRST;
+-- Returns 'Australia' as that comes last alphabetically.
+which := continent_population.LAST;
+-- Returns the value corresponding to the last key, in this
+-- case the population of Australia.
+howmany := continent_population(continent_population.LAST);
+END;
+/
+結合配列は、任意のサイズのデータ・セットを表すために役立ち、配列内での要素の位置が不明でも、配列の全要素をループせずに個の要素をすばやく参照します。単純なSQL表のように、主キーに基づいて値を取り出すことができます。単純な参照データの一時記憶域では、結合配列によって、SQL表に必要なディスク領域の使用やネットワーク操作を回避できます。
+結合配列は、永続的なデータの格納ではなく一時的なデータを意図しているため、INSERTやSELECT INTOなどのSQL文では使用できません。結合配列は、パッケージで型を宣言し、パッケージ本体に値を代入することで、データベース・セッションの間を永続的に維持できます。
+グローバリゼーション設定が結合配列のVARCHAR2キーに与える影響
+VARCHAR2のキー値を持つ結合配列を使用したセッション中に、各国語またはグローバリゼーションの設定が変わると、プログラムでランタイム・エラーとなる可能性があります。たとえば、セッション中にNLS_COMP初期化パラメータやNLS_SORT初期化パラメータを変更すると、NEXTやPRIORなどのメソッドで例外が発生する可能性があります。セッション中にこれらの設定の変更が必要な場合は、必ず元の値に戻してから、結合配列での操作を実行してください。
+キーに文字列を使用して結合配列を宣言する場合、その宣言ではVARCHAR2型、STRING型またはLONG型を使用する必要があります。結合配列を参照するためのキー値には、NCHAR型やNVARCHAR2型などの異なる型を使用できます。TO_CHARファンクションでVARCHAR2に変換できる場合は、DATEなどの型を使用することもできます。LONGデータ型は、下位互換性のためにのみ使用してください。詳細は、「LONGおよびLONG RAWデータ型」を参照してください。
+ただし、他の型を使用する場合は、キーに使用する値の一貫性と一意性に注意してください。たとえば、NLS_DATE_FORMAT初期化パラメータが変更された場合は、SYSDATEの文字列値が変更され、その結果、array_element(SYSDATE)では、以前と異なる結果が生じます。異なる2つのNVARCHAR2値が、(特定の各国語キャラクタのかわりに疑問符が使用されて)同一のVARCHAR2値に変わる可能性もあります。この場合、array_element(national_string1)とarray_element(national_string2)は、同一の要素を参照します。NLS_SORT初期化パラメータの末尾が_CI(大/小文字を区別しない比較)または_AI(アクセント記号の有無および大/小文字を区別しない比較)である場合、大/小文字、アクセント記号またはデリミタ文字の異なる2つのCHARまたはVARCHAR2の値も同じであるとみなされます。
+データベース・リンクを使用して、リモート・データベースへのパラメータとして結合配列を渡すと、2つのデータベースで、グローバリゼーション設定が異なる可能性があります。リモート・データベースでFIRSTやNEXTなどの操作を実行すると、文字順序が元のコレクションとは異なる場合でも、リモート・データベース自体の文字順序が使用されます。キャラクタ・セットの相違によって、一意であった2つのキーがリモート・データベース上では一意でない場合、プログラムはVALUE_ERROR例外を受け取ります。
+PL/SQLレコード
+レコードは、行における列と同様、フィールドのグループで構成されます。%ROWTYPE属性を使用すると、すべての列をリストせずに、データベースの表の中の行を表すPL/SQLレコードを宣言できます。記述したコードは、表に列が追加された後でも正常に動作します。表の列のサブセット、または複数の表の列を表現する場合、ビューを定義するかカーソルを宣言して正しい列を選択し、必要な結合を実行した後、ビューまたはカーソルに%ROWTYPEを適用します。
+PL/SQLでのレコードの使用の詳細は、この章の次の項を参照してください。
+レコードの定義と宣言
+レコードへの値の代入
+使用するPL/SQLコレクション型の選択
+他の言語を使用するコードまたはビジネス・ロジックがすでに存在する場合、通常は、その言語の配列を変換して、型をPL/SQLのコレクション型に直接設定できます。
+他の言語の配列は、PL/SQLのVARRAYになります。
+他の言語の設定およびバッグは、PL/SQLのネストした表になります。
+他の言語のハッシュ表や他の無秩序な参照表は、PL/SQLの結合配列になります。
+オリジナルのコードを記述していたり、最初からビジネス・ロジックを設計している場合は、各状況に適切なコレクション型を判断するために各コレクション型の長所を考慮してください。
+ネストした表と結合配列の選択
+ネストした表と結合配列(以前の索引付き表)はともに、同じような添字表記法を使用しますが、パラメータの引渡しの永続性と容易性の点で、異なる特性があります。
+ネストした表はデータベースの列に格納できますが、結合配列をデータベースの列に格納することはできません。ネストした表を使用すると、通常、単一列の表とそれより大きい表を結合する必要があるSQL操作を簡略化できます。
+結合配列は、プロシージャのコールやパッケージの初期化のたびにコレクションがメモリー内に構成される、比較的小規模な参照表に適しています。結合配列のサイズには固定制限がないため、量が事前にわからない情報を収集する場合に効果的です。結合配列の添字には、負数や非連続の数字を指定したり、数字のかわりに文字列の値を使用することができるため、その索引値は柔軟性があります。
+PL/SQLは、数値のキー値を使用するホスト配列と結合配列との間で自動的に変換を行います。データベース・サーバーとの間でのコレクションの受渡しには、データの値を結合配列で設定し、その結合配列を(FORALL文またはBULK COLLECT句を使用した)バルク構成で使用することが、最も効果的な方法です。
+ネストした表とVARRAYとの使い分け
+VARRAYが適している場合を次に示します。
+要素の数が事前にわかっている。
+通常、すべての要素が順番にアクセスされる。
+データベースに格納されている間、VARRAYはその順序と添字を保持しています。
+各VARRAYは、それが列である表の内部(VARRAYが4KB未満の場合)か、同じ表領域内の表の外部(VARRAYが4KBを超える場合)のいずれかに、単一のオブジェクトとして格納されます。VARRAYのすべての要素は、同時に更新または取得する必要があります。これは、すべての要素に対してなんらかの操作を同時に実行する場合に最適です。ただし、この方法で多数の要素を格納および取得することは、現実的ではありません。
+ネストした表が適している場合を次に示します。
+索引値が連続していない。
+索引値の数が設定されていない。ただし、上限があります。「コレクション要素の参照」を参照してください。
+すべての要素を同時にではなく、一部の要素を削除または更新する必要がある。
+通常、メインの表の各行に複数のエントリを含む個別の参照表を作成し、結合問合せを介してその表にアクセスする。
+ネストした表は疎密な場合があります。最後から順に項目を削除せずに、任意の要素を削除できます。
+ネストした表のデータは、個別の記憶域表に格納されます。この記憶域表は、ネストした表に関連付けられた、システム生成によるデータベース表です。ネストした表にアクセスすると、データベースで記憶域表が結合されます。この記憶域表によって、ネストした表は、コレクションの一部の要素にのみ影響を与える問合せと更新に適した内容になります。
+ネストした表では、データベースへの格納(またはデータベースからの取得)時に表の順序と添字が保持されないため、ネストした表の順序と添字は信頼できません。
+コレクション型の定義とコレクション変数の宣言
+コレクションを作成するには、コレクション型を定義した後、その型の変数を宣言します。コレクションは、他の型や変数と同じ有効範囲とインスタンス化の規則に従います。コレクションは、ブロックまたはサブプログラムに入ったときにインスタンス化され、ブロックまたはサブプログラムが終了した時点で消滅します。パッケージの中では、そのパッケージが初めて参照された時点でコレクションのインスタンスが生成され、データベース・セッションが終わった時点で消滅します。
+注意:
+SQLオブジェクト型でのPL/SQLの使用方法の詳細は、第12章「PL/SQLのオブジェクト型の使用」を参照してください。CREATE TYPE SQL文の詳細は、『Oracle Database SQLリファレンス』を参照してください。CREATE TYPE BODY SQL文の詳細は、『Oracle Database SQLリファレンス』を参照してください。 
+TABLE型およびVARRAY型は、TYPE定義を使用して、任意のPL/SQLブロック、サブプログラムまたはパッケージの宣言部で定義できます。構文は、「コレクション定義」を参照してください。
+PL/SQL内で宣言されたネストした表およびVARRAYの場合、表またはVARRAYの要素型は、REF CURSOR以外の任意のPL/SQLデータ型となります。
+VARRAY型の定義では、その最大サイズを正の整数で指定する必要があります。次の例では、366個以内の日付を格納する型を定義します。
+DECLARE
+TYPE Calendar IS VARRAY(366) OF DATE;
+結合配列は、索引付き表とも呼ばれ、任意のキー値を使用して要素を挿入できます。キーは連続しなくてもかまいません。
+キー・データ型は、PLS_INTEGER、BINARY_INTEGERまたはVARCHAR2か、VARCHAR2サブタイプのVARCHAR、STRINGまたはLONGのいずれかとなります。PLS_INTEGERおよびBINARY_INTEGERは、同じデータ型です。
+VARCHAR2ベースのキーを使用するには、VARCHAR2(32760)のキーの型を宣言することになるLONGの場合を除いて、キーの長さを指定する必要があります。RAW、LONG RAW、ROWID、CHARおよびCHARACTERの各型は、結合配列のキーとしては使用できません。LONGデータ型およびLONG RAWデータ型は、下位互換性のためにのみ使用してください。詳細は、「LONGおよびLONG RAWデータ型」を参照してください。
+初期化の句は指定できません。結合配列用のコンストラクタの表記は存在しません。VARCHAR2ベースのキーを使用する結合配列の要素を参照する場合は、TO_CHARファンクションでVARCHAR2に変換できるかぎり、DATE、TIMESTAMPなどの別の型を使用できます。
+結合配列は、主キー値を索引として使用してデータを格納できます。この場合、連続したキー値とはなりません。例5-2では、添字に1のかわりに100を使用して、結合配列の1つの要素を作成しています。
+例5-2    結合配列の宣言
+DECLARE
+TYPE EmpTabTyp IS TABLE OF employees%ROWTYPE
+INDEX BY PLS_INTEGER;
+emp_tab EmpTabTyp;
+BEGIN
+/* Retrieve employee record. */
+SELECT * INTO emp_tab(100) FROM employees WHERE employee_id = 100;
+END;
+/
+PL/SQLのコレクション変数の宣言
+コレクション型を定義した後は、その型の変数を宣言します。NUMBERなどの事前定義の型と同様に、宣言では新しい型名を使用します。
+例5-3    ネストした表、VARRAYおよび結合配列の宣言
+DECLARE
+TYPE nested_type IS TABLE OF VARCHAR2(30);
+TYPE varray_type IS VARRAY(5) OF INTEGER;
+TYPE assoc_array_num_type IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+TYPE assoc_array_str_type IS TABLE OF VARCHAR2(32) INDEX BY PLS_INTEGER;
+TYPE assoc_array_str_type2 IS TABLE OF VARCHAR2(32) INDEX BY VARCHAR2(64);
+v1 nested_type;
+v2 varray_type;
+v3 assoc_array_num_type;
+v4 assoc_array_str_type;
+v5 assoc_array_str_type2;
+BEGIN
+-- an arbitrary number of strings can be inserted v1
+v1 := nested_type('Shipping','Sales','Finance','Payroll'); 
+v2 := varray_type(1, 2, 3, 4, 5); -- Up to 5 integers
+v3(99) := 10; -- Just start assigning to elements
+v3(7) := 100; -- Subscripts can be any integer values
+v4(42) := 'Smith'; -- Just start assigning to elements
+v4(54) := 'Jones'; -- Subscripts can be any integer values
+v5('Canada') := 'North America'; -- Just start assigning to elements
+v5('Greece') := 'Europe';        -- Subscripts can be string values
+END;
+/
+例5-4に示すとおり、%TYPEを使用すると、事前に宣言したコレクションのデータ型を指定できます。この指定によって、コレクションの定義を変更すると、要素の数または要素の型に依存している他の変数が自動的に更新されます。
+例5-4    %TYPEを使用したコレクションの宣言
+DECLARE
+TYPE few_depts IS VARRAY(10) OF VARCHAR2(30);
+TYPE many_depts IS VARRAY(100) OF VARCHAR2(64);
+some_depts few_depts;
+-- If we change the type of some_depts from few_depts to many_depts,
+-- local_depts and global_depts will use the same type 
+-- when this block is recompiled
+local_depts some_depts%TYPE;
+global_depts some_depts%TYPE;
+BEGIN
+NULL;
+END;
+/
+コレクションは、ファンクションおよびプロシージャの仮パラメータとして宣言できます。これによって、コレクションをストアド・サブプログラムに渡したり、あるサブプログラムから別のサブプログラムに渡すことができます。例5-5では、ネストした表をパッケージ・プロシージャのパラメータとして宣言しています。
+例5-5    ネストした表としてのプロシージャのパラメータの宣言
+CREATE PACKAGE personnel AS
+TYPE staff_list IS TABLE OF employees.employee_id%TYPE;
+PROCEDURE award_bonuses (empleos_buenos IN staff_list);
+END personnel;
+/
+CREATE PACKAGE BODY personnel AS
+PROCEDURE award_bonuses (empleos_buenos staff_list) IS
+BEGIN
+FOR i IN empleos_buenos.FIRST..empleos_buenos.LAST
+LOOP
+UPDATE employees SET salary = salary + 100 
+WHERE employees.employee_id = empleos_buenos(i);
+END LOOP;
+END;
+END;
+/
+パッケージ外部からpersonnel.award_bonusesをコールするには、personnel.staff_list型の変数を宣言し、その変数をパラメータとして渡します。
+例5-6    ネストした表パラメータでのプロシージャのコール
+DECLARE
+good_employees personnel.staff_list;
+BEGIN
+good_employees :=  personnel.staff_list(100, 103, 107);
+personnel.award_bonuses (good_employees);
+END;
+/
+ファンクション仕様部のRETURN句の中にコレクション型を指定することもできます。
+要素型を指定するには、%TYPEを使用して変数またはデータベース列のデータ型を指定できます。また、%ROWTYPEを使用して、カーソルまたはデータベース表の行の型を指定できます。例5-7および例5-8を参照してください。
+例5-7    %TYPEおよび%ROWTYPEを使用したコレクション要素型の指定
+DECLARE
+-- Nested table type that can hold an arbitrary number of employee IDs. 
+-- The element type is based on a column from the EMPLOYEES table. 
+-- We do not need to know whether the ID is a number or a string.
+TYPE EmpList IS TABLE OF employees.employee_id%TYPE;
+-- Declare a cursor to select a subset of columns.  
+CURSOR c1 IS SELECT employee_id FROM employees;
+-- Declare an Array type that can hold information about 10 employees.
+-- The element type is a record that contains all the same
+-- fields as the EMPLOYEES table.
+TYPE Senior_Salespeople IS VARRAY(10) OF employees%ROWTYPE;
+-- Declare a cursor to select a subset of columns.
+CURSOR c2 IS SELECT first_name, last_name FROM employees;
+-- Array type that can hold a list of names. The element type
+-- is a record that contains the same fields as the cursor
+-- (that is, first_name and last_name).
+TYPE NameList IS VARRAY(20) OF c2%ROWTYPE;
+BEGIN
+NULL;
+END;
+/
+例5-8では、RECORD型を使用して、要素型を指定しています。「レコードの定義と宣言」を参照してください。
+例5-8    レコードとしてのVARRAY
+DECLARE
+TYPE name_rec IS RECORD ( first_name VARCHAR2(20), last_name VARCHAR2(25) ); 
+TYPE names IS VARRAY(250) OF name_rec;
+BEGIN
+NULL;
+END;
+/
+NOT NULL制約は、要素型に対しても指定できます。例5-9を参照してください。
+例5-9    コレクション要素のNOT NULL制約
+DECLARE
+TYPE EmpList IS TABLE OF employees.employee_id%TYPE NOT NULL;
+v_employees EmpList := EmpList(100, 150, 160, 200);
+BEGIN
+v_employees(3) := NULL; -- assigning NULL raises an error
+END;
+/
+コレクションの初期化および参照
+ネストした表またはVARRAYは、初期化されるまでは基本構造的にNULL(コレクションの要素ではなく、コレクション自体がNULL)です。ネストした表またはVARRAYを初期化するには、コンストラクタを使用します。このコンストラクタは、コレクション型と同じ名前のシステム定義ファンクションです。このファンクションは、コレクションに渡される要素から、コレクションを構成します。
+VARRAYやネストした表の変数に対しては、コンストラクタを明示的にコールする必要があります。第3のコレクションである結合配列は、コンストラクタを使用しません。コンストラクタは、ファンクション・コールが許可されているところでコールできます。
+例5-10では、(ファンクションに類似し、コレクション型と同じ名前を持つ)コンストラクタを使用して、ネストした表を初期化しています。
+例5-10    ネストした表のコンストラクタ
+DECLARE
+TYPE dnames_tab IS TABLE OF VARCHAR2(30);
+dept_names dnames_tab;
+BEGIN
+dept_names := dnames_tab('Shipping','Sales','Finance','Payroll');
+END;
+/
+ネストした表ではサイズが宣言されていないため、コンストラクタには必要な数だけ要素を配置できます。
+例5-11では、(ファンクションに類似し、コレクション型と同じ名前を持つ)コンストラクタを使用して、VARRAYを初期化しています。
+例5-11    VARRAYのコンストラクタ
+DECLARE
+-- In the varray, we put an upper limit on the number of elements
+TYPE dnames_var IS VARRAY(20) OF VARCHAR2(30);
+dept_names dnames_var;
+BEGIN
+-- Because dnames is declared as VARRAY(20), we can put up to 10
+-- elements in the constructor
+dept_names := dnames_var('Shipping','Sales','Finance','Payroll');
+END;
+/
+例5-12に示すとおり、型の宣言でNOT NULL制約を指定する場合を除いて、NULLの要素をコンストラクタに渡すことができます。
+例5-12    NULLの要素を含むコレクションのコンストラクタ
+DECLARE
+TYPE dnames_tab IS TABLE OF VARCHAR2(30);
+dept_names dnames_tab;
+TYPE dnamesNoNulls_type IS TABLE OF VARCHAR2(30) NOT NULL;
+BEGIN
+dept_names := dnames_tab('Shipping', NULL,'Finance', NULL);
+-- If dept_names was of type dnamesNoNulls_type, we could not include
+-- null values in the constructor
+END;
+/
+例5-13に示すとおり、コレクションは、そのコレクションの宣言で初期化することができ、これはプログラミング的に推奨される方法です。この場合は、そのコレクションのEXTENDメソッドをコールして、後で要素を追加できます。
+例5-13    コレクション宣言とコンストラクタの組合せ
+DECLARE
+TYPE dnames_tab IS TABLE OF VARCHAR2(30);
+dept_names dnames_tab := dnames_tab('Shipping','Sales','Finance','Payroll');
+BEGIN
+NULL;
+END;
+/
+例5-14に示すとおり、引数を指定しないでコンストラクタをコールすると、空(NULLではない)のコレクションを受け取ります。
+例5-14    空のVARRAYコンストラクタ
+DECLARE
+TYPE dnames_var IS VARRAY(20) OF VARCHAR2(30);
+dept_names dnames_var;
+BEGIN
+IF dept_names IS NULL THEN
+DBMS_OUTPUT.PUT_LINE('Before initialization, the varray is null.');
+-- While the varray is null, we cannot check its COUNT attribute.
+--   DBMS_OUTPUT.PUT_LINE('It has ' || dept_names.COUNT || ' elements.');
+ELSE
+DBMS_OUTPUT.PUT_LINE('Before initialization, the varray is not null.');
+END IF;
+dept_names := dnames_var(); -- initialize empty varray 
+IF dept_names IS NULL THEN
+DBMS_OUTPUT.PUT_LINE('After initialization, the varray is null.');
+ELSE
+DBMS_OUTPUT.PUT_LINE('After initialization, the varray is not null.');
+DBMS_OUTPUT.PUT_LINE('It has ' || dept_names.COUNT || ' elements.');
+END IF;
+END;
+/
+コレクション要素の参照
+要素への参照はいずれも、コレクション名と添字をカッコで囲んで指定します。この添字によって、処理の対象となる要素が決まります。要素を参照するには、次の構文を使用してその添字を指定します。
+collection_name(subscript)
+subscriptは、ほとんどの場合、結果が整数になる式か、または文字列キーで宣言した結合配列の場合はVARCHAR2です。
+使用できる添字範囲は、次のとおりです。
+ネストした表の場合は、1〜2147483647です(PLS_INTEGERの上限)。
+VARRAYの場合は、1〜size_limit(宣言に指定した制限)です(2147483647以下)。
+数値キーの結合配列の場合は、-2147483648〜2147483647です。
+文字列キーの結合配列の場合、キーの長さおよび使用可能な値の数は、型宣言に指定したVARCHAR2の長さ制限およびデータベース・キャラクタ・セットによって異なります。
+例5-15は、ネストした表の要素を参照する方法を示しています。
+例5-15    ネストした表の要素の参照
+DECLARE
+TYPE Roster IS TABLE OF VARCHAR2(15);
+names Roster := Roster('D Caruso', 'J Hamil', 'D Piro', 'R Singh');
+PROCEDURE verify_name(the_name VARCHAR2) IS
+BEGIN
+DBMS_OUTPUT.PUT_LINE(the_name);
+END;
+BEGIN
+FOR i IN names.FIRST .. names.LAST
+LOOP
+IF names(i) = 'J Hamil' THEN
+DBMS_OUTPUT.PUT_LINE(names(i)); -- reference to nested table element
+END IF;
+END LOOP;
+verify_name(names(3));  -- procedure call with reference to element
+END;
+/
+例5-16に、ファンクション・コールでの結合配列の要素の参照方法を示します。
+例5-16    結合配列の要素の参照
+DECLARE
+TYPE sum_multiples IS TABLE OF PLS_INTEGER INDEX BY PLS_INTEGER;
+n  PLS_INTEGER := 5;   -- number of multiples to sum for display
+sn PLS_INTEGER := 10;  -- number of multiples to sum
+m  PLS_INTEGER := 3;   -- multiple
+FUNCTION get_sum_multiples(multiple IN PLS_INTEGER, num IN PLS_INTEGER) 
+RETURN sum_multiples IS
+s sum_multiples;
+BEGIN
+FOR i IN 1..num LOOP
+s(i) := multiple * ((i * (i + 1)) / 2) ; -- sum of multiples
+END LOOP;
+RETURN s;
+END get_sum_multiples;
+BEGIN
+-- call function to retrieve the element identified by subscript (key)
+DBMS_OUTPUT.PUT_LINE('Sum of the first ' || TO_CHAR(n) || ' multiples of ' || 
+TO_CHAR(m) || ' is ' || TO_CHAR(get_sum_multiples (m, sn)(n)));
+END;
+/
+コレクションの代入
+あるコレクションを、INSERT文、UPDATE文、FETCH文、SELECT文、代入文またはサブプログラム・コールよって、別のコレクションに代入できます。次の構文を使用すると、式の値をコレクションの特定の要素に代入できます。
+collection_name(subscript) := expression;
+ここで、expressionは結果がコレクション型定義の要素に指定された型の値です。
+SET、MULTISET UNION、MULTISET INTERSECT、MULTISET EXCEPTなどの演算子を使用して、ネストした表を代入文の一部として変換できます。
+値のコレクション要素への代入では、次のような例外が発生する可能性があります。
+添字がNULLであったり、正しいデータ型に変換することができない場合、PL/SQLは事前定義の例外VALUE_ERRORを呼び出します。通常、添字は整数である必要があります。結合配列では、VARCHAR2の添字を使用するように宣言することもできます。
+添字が初期化されていない要素を参照した場合、PL/SQLはSUBSCRIPT_BEYOND_COUNTを呼び出します。
+コレクションが基本構造的にNULLの場合、PL/SQLはCOLLECTION_IS_NULLを呼び出します。
+コレクションの例外の詳細は、「コレクション例外の回避」、例5-38および「事前定義のPL/SQL例外のまとめ」を参照してください。
+例5-17は、代入の操作では、コレクションに同じデータ型が必要であることを示しています。要素型が同じであることのみでは不十分です。
+例5-17    コレクション代入のデータ型の互換性
+DECLARE
+TYPE last_name_typ IS VARRAY(3) OF VARCHAR2(64);
+TYPE surname_typ IS VARRAY(3) OF VARCHAR2(64);
+-- These first two variables have the same datatype.
+group1 last_name_typ := last_name_typ('Jones','Wong','Marceau');
+group2 last_name_typ := last_name_typ('Klein','Patsos','Singh');
+-- This third variable has a similar declaration, but is not the same type.
+group3 surname_typ := surname_typ('Trevisi','Macleod','Marquez');
+BEGIN
+-- Allowed because they have the same datatype
+group1 := group2;
+-- Not allowed because they have different datatypes
+--   group3 := group2; -- raises an error
+END;
+/
+例5-18に示すとおり、基本構造的にNULLのネストした表またはVARRAYを、第2のネストした表またはVARRAYに代入する場合、第2のコレクションを再度初期化する必要があります。同様に、値NULLをコレクションに代入すると、コレクションは基本構造的にNULLになります。
+例5-18    NULL値のネストした表への代入
+DECLARE
+TYPE dnames_tab IS TABLE OF VARCHAR2(30);
+-- This nested table has some values
+dept_names dnames_tab := dnames_tab('Shipping','Sales','Finance','Payroll');
+-- This nested table is not initialized ("atomically null").
+empty_set dnames_tab;
+BEGIN
+-- At first, the initialized variable is not null.
+if dept_names IS NOT NULL THEN
+DBMS_OUTPUT.PUT_LINE('OK, at first dept_names is not null.');
+END IF;
+-- Then we assign a null nested table to it.
+dept_names := empty_set;
+-- Now it is null.
+if dept_names IS NULL THEN
+DBMS_OUTPUT.PUT_LINE('OK, now dept_names has become null.');
+END IF;
+-- We must use another constructor to give it some values.
+dept_names := dnames_tab('Shipping','Sales','Finance','Payroll');
+END;
+/
+例5-19 では、ネストした表に適用可能なANSI規格のいくつかの演算子を示します。
+例5-19    集合演算子を使用したネストした表の代入
+DECLARE
+TYPE nested_typ IS TABLE OF NUMBER;
+nt1 nested_typ := nested_typ(1,2,3);
+nt2 nested_typ := nested_typ(3,2,1);
+nt3 nested_typ := nested_typ(2,3,1,3);
+nt4 nested_typ := nested_typ(1,2,4);
+answer nested_typ;
+-- The results might be in a different order than you expect.
+-- Remember, you should not rely on the order of elements in nested tables.
+PROCEDURE print_nested_table(the_nt nested_typ) IS
+output VARCHAR2(128);
+BEGIN
+IF the_nt IS NULL THEN
+DBMS_OUTPUT.PUT_LINE('Results: <NULL>');
+RETURN;
+END IF;
+IF the_nt.COUNT = 0 THEN
+DBMS_OUTPUT.PUT_LINE('Results: empty set');
+RETURN;
+END IF;
+FOR i IN the_nt.FIRST .. the_nt.LAST
+LOOP
+output := output || the_nt(i) || ' ';
+END LOOP;
+DBMS_OUTPUT.PUT_LINE('Results: ' || output);
+END;
+BEGIN
+answer := nt1 MULTISET UNION nt4; -- (1,2,3,1,2,4)
+print_nested_table(answer);
+answer := nt1 MULTISET UNION nt3; -- (1,2,3,2,3,1,3)
+print_nested_table(answer);
+answer := nt1 MULTISET UNION DISTINCT nt3; -- (1,2,3)
+print_nested_table(answer);
+answer := nt2 MULTISET INTERSECT nt3; -- (3,2,1)
+print_nested_table(answer);
+answer := nt2 MULTISET INTERSECT DISTINCT nt3; -- (3,2,1)
+print_nested_table(answer);
+answer := SET(nt3); -- (2,3,1)
+print_nested_table(answer);
+answer := nt3 MULTISET EXCEPT nt2; -- (3)
+print_nested_table(answer);
+answer := nt3 MULTISET EXCEPT DISTINCT nt2; -- ()
+print_nested_table(answer);
+END;
+/
+例5-20に、代入文を使用したレコードのVARRAYへの代入を示します。
+例5-20    複雑なデータ型を使用したVARRAYへの値の代入
+DECLARE
+TYPE emp_name_rec is RECORD (
+firstname    employees.first_name%TYPE,
+lastname     employees.last_name%TYPE,
+hiredate     employees.hire_date%TYPE
+);
+-- Array type that can hold information 10 employees
+TYPE EmpList_arr IS VARRAY(10) OF emp_name_rec;
+SeniorSalespeople EmpList_arr;
+-- Declare a cursor to select a subset of columns.
+CURSOR c1 IS SELECT first_name, last_name, hire_date FROM employees;
+Type NameSet IS TABLE OF c1%ROWTYPE;
+SeniorTen NameSet;
+EndCounter NUMBER := 10;
+BEGIN
+SeniorSalespeople := EmpList_arr();
+SELECT first_name, last_name, hire_date BULK COLLECT INTO SeniorTen FROM
+employees WHERE job_id = 'SA_REP' ORDER BY hire_date;
+IF SeniorTen.LAST > 0 THEN
+IF SeniorTen.LAST < 10 THEN EndCounter := SeniorTen.LAST; 
+END IF;
+FOR i in 1..EndCounter LOOP
+SeniorSalespeople.EXTEND(1);
+SeniorSalespeople(i) := SeniorTen(i);
+DBMS_OUTPUT.PUT_LINE(SeniorSalespeople(i).lastname || ', ' 
+|| SeniorSalespeople(i).firstname || ', ' ||
+SeniorSalespeople(i).hiredate);
+END LOOP;
+END IF;
+END;
+/
+例5-21に、FETCH文を使用したレコードのネストした表への代入を示します。
+例5-21    複雑なデータ型を使用した表への値の代入
+DECLARE
+TYPE emp_name_rec is RECORD (
+firstname    employees.first_name%TYPE,
+lastname     employees.last_name%TYPE,
+hiredate     employees.hire_date%TYPE
+);
+-- Table type that can hold information about employees
+TYPE EmpList_tab IS TABLE OF emp_name_rec;
+SeniorSalespeople EmpList_tab;   
+-- Declare a cursor to select a subset of columns.
+CURSOR c1 IS SELECT first_name, last_name, hire_date FROM employees;
+EndCounter NUMBER := 10;
+TYPE EmpCurTyp IS REF CURSOR;
+emp_cv EmpCurTyp; 
+BEGIN
+OPEN emp_cv FOR SELECT first_name, last_name, hire_date FROM employees 
+WHERE job_id = 'SA_REP' ORDER BY hire_date;
+FETCH emp_cv BULK COLLECT INTO SeniorSalespeople;
+CLOSE emp_cv;
+-- for this example, display a maximum of ten employees
+IF SeniorSalespeople.LAST > 0 THEN
+IF SeniorSalespeople.LAST < 10 THEN EndCounter := SeniorSalespeople.LAST; 
+END IF;
+FOR i in 1..EndCounter LOOP
+DBMS_OUTPUT.PUT_LINE(SeniorSalespeople(i).lastname || ', ' 
+|| SeniorSalespeople(i).firstname || ', ' || SeniorSalespeople(i).hiredate);
+END LOOP;
+END IF;
+END;
+/
+コレクションの比較
+コレクションがNULLかどうかをチェックできます。大きい、未満などの比較は実行できません。この制限は、暗黙的な比較にも適用されます。たとえば、コレクションはDISTINCT、GROUP BYまたはORDER BYリストには使用できません。
+このような比較操作を行う場合は、2つのコレクションが大きい、小さいなどを判断する手段をユーザーが任意に定義し、コレクションとその要素の調査結果をTRUEまたはFALSEの値で戻すような1つ以上のファンクションを記述する必要があります。
+例5-23に示すとおり、ネストした表の場合は、宣言された同じ型の2つのネストした表が等しいかどうかをチェックできます。また、例5-24に示すとおり、集合演算子(CARDINALITY、MEMBER OF、IS A SET、IS EMPTYなど)を適用して、1つのネストした表内または2つのネストした表の間で、特定の条件をチェックすることもできます。
+ネストした表とVARRAYは、基本構造的にNULLである場合があるため、例5-22に示すとおり、NULLかどうかをテストできます。
+例5-22    コレクションがNULLかどうかのチェック
+DECLARE
+TYPE emp_name_rec is RECORD (
+firstname    employees.first_name%TYPE,
+lastname     employees.last_name%TYPE,
+hiredate     employees.hire_date%TYPE
+);
+TYPE staff IS TABLE OF emp_name_rec;
+members staff;
+BEGIN
+-- Condition yields TRUE because we have not used a constructor.
+IF members IS NULL THEN
+DBMS_OUTPUT.PUT_LINE('NULL');
+ELSE
+DBMS_OUTPUT.PUT_LINE('Not NULL');
+END IF;
+END;
+/
+例5-23に、ネストした表が等しいか等しくないかの比較を示します。大きいまたは未満の比較は実行できないため、順序付けすることはできません。
+例5-23    2つのネストした表の比較
+DECLARE
+TYPE dnames_tab IS TABLE OF VARCHAR2(30);
+dept_names1 dnames_tab := dnames_tab('Shipping','Sales','Finance','Payroll');
+dept_names2 dnames_tab := dnames_tab('Sales','Finance','Shipping','Payroll');
+dept_names3 dnames_tab := dnames_tab('Sales','Finance','Payroll');
+BEGIN
+-- We can use = or !=, but not < or >.
+-- Notice that these 2 are equal even though the members are in different order.
+IF dept_names1 = dept_names2 THEN
+DBMS_OUTPUT.PUT_LINE('dept_names1 and dept_names2 have the same members.');
+END IF;
+IF dept_names2 != dept_names3 THEN
+DBMS_OUTPUT.PUT_LINE('dept_names2 and dept_names3 have different members.');
+END IF;
+END;
+/
+例5-24に示すとおり、ANSI規格の集合演算子を使用して、ネストした表の特定のプロパティをテストしたり、2つのネストした表を比較することができます。
+例5-24    集合演算子を使用したネストした表の比較
+DECLARE
+TYPE nested_typ IS TABLE OF NUMBER;
+nt1 nested_typ := nested_typ(1,2,3);
+nt2 nested_typ := nested_typ(3,2,1);
+nt3 nested_typ := nested_typ(2,3,1,3);
+nt4 nested_typ := nested_typ(1,2,4);
+answer BOOLEAN;
+howmany NUMBER;
+PROCEDURE testify(truth BOOLEAN DEFAULT NULL, quantity NUMBER DEFAULT NULL) IS
+BEGIN
+IF truth IS NOT NULL THEN
+DBMS_OUTPUT.PUT_LINE(CASE truth WHEN TRUE THEN 'True' WHEN FALSE THEN 'False' 
+END);
+END IF;
+IF quantity IS NOT NULL THEN
+DBMS_OUTPUT.PUT_LINE(quantity);
+END IF;
+END;
+BEGIN
+answer := nt1 IN (nt2,nt3,nt4); -- true, nt1 matches nt2
+testify(truth => answer);
+answer := nt1 SUBMULTISET OF nt3; -- true, all elements match
+testify(truth => answer);
+answer := nt1 NOT SUBMULTISET OF nt4; -- also true
+testify(truth => answer);
+howmany := CARDINALITY(nt3); -- number of elements in nt3
+testify(quantity => howmany);
+howmany := CARDINALITY(SET(nt3)); -- number of distinct elements
+testify(quantity => howmany);
+answer := 4 MEMBER OF nt1; -- false, no element matches
+testify(truth => answer);
+answer := nt3 IS A SET; -- false, nt3 has duplicates
+testify(truth => answer);
+answer := nt3 IS NOT A SET; -- true, nt3 has duplicates
+testify(truth => answer);
+answer := nt1 IS EMPTY; -- false, nt1 has some members
+testify(truth => answer);
+END;
+/
+マルチレベル・コレクションの使用
+スカラー型やオブジェクト型のコレクションの他に、コレクションを要素に持つコレクションも作成できます。たとえば、VARRAYのネストした表、VARRAYのVARRAY、ネストした表のVARRAYなどを作成できます。
+ネストした表のネストした表をSQLの列として作成する場合は、CREATE TABLE文の構文をチェックして、記憶表の定義方法を確認します。
+例5-25、例5-26および例5-27に、マルチレベル・コレクションの構文と機能性を示します。例12-17「ネストした表でのBULK COLLECTの使用」も参照してください。
+例5-25    マルチレベルVARRAY
+DECLARE
+TYPE t1 IS VARRAY(10) OF INTEGER;
+TYPE nt1 IS VARRAY(10) OF t1; -- multilevel varray type
+va t1 := t1(2,3,5);
+-- initialize multilevel varray
+nva nt1 := nt1(va, t1(55,6,73), t1(2,4), va);
+i INTEGER;
+va1 t1;
+BEGIN
+-- multilevel access
+i := nva(2)(3); -- i will get value 73
+DBMS_OUTPUT.PUT_LINE('I = ' || i);
+-- add a new varray element to nva
+nva.EXTEND;
+-- replace inner varray elements
+nva(5) := t1(56, 32);
+nva(4) := t1(45,43,67,43345);
+-- replace an inner integer element
+nva(4)(4) := 1; -- replaces 43345 with 1
+-- add a new element to the 4th varray element
+-- and store integer 89 into it.
+nva(4).EXTEND;
+nva(4)(5) := 89;
+END;
+/
+例5-26    マルチレベルのネストした表
+DECLARE
+TYPE tb1 IS TABLE OF VARCHAR2(20);
+TYPE Ntb1 IS TABLE OF tb1; -- table of table elements
+TYPE Tv1 IS VARRAY(10) OF INTEGER;
+TYPE ntb2 IS TABLE OF tv1; -- table of varray elements
+vtb1 tb1 := tb1('one', 'three');
+vntb1 ntb1 := ntb1(vtb1);
+vntb2 ntb2 := ntb2(tv1(3,5), tv1(5,7,3));  -- table of varray elements
+BEGIN
+vntb1.EXTEND;
+vntb1(2) := vntb1(1);
+-- delete the first element in vntb1
+vntb1.DELETE(1);
+-- delete the first string from the second table in the nested table
+vntb1(2).DELETE(1);
+END;
+/
+例5-27    マルチレベルの結合配列
+DECLARE
+TYPE tb1 IS TABLE OF INTEGER INDEX BY PLS_INTEGER;
+-- the following is index-by table of index-by tables
+TYPE ntb1 IS TABLE OF tb1 INDEX BY PLS_INTEGER;
+TYPE va1 IS VARRAY(10) OF VARCHAR2(20);
+-- the following is index-by table of varray elements
+TYPE ntb2 IS TABLE OF va1 INDEX BY PLS_INTEGER;
+v1 va1 := va1('hello', 'world');
+v2 ntb1;
+v3 ntb2;
+v4 tb1;
+v5 tb1; -- empty table
+BEGIN
+v4(1) := 34;
+v4(2) := 46456;
+v4(456) := 343;
+v2(23) := v4;
+v3(34) := va1(33, 456, 656, 343);
+-- assign an empty table to v2(35) and try again
+v2(35) := v5;
+v2(35)(2) := 78; -- it works now
+END;
+/
+コレクション・メソッドの使用
+コレクション・メソッドを使用すると、コレクションの使用およびアプリケーションのメンテナンスが簡単になります。コレクション・メソッドには、COUNT、DELETE、EXISTS、EXTEND、FIRST、LAST、LIMIT、NEXT、PRIOR、TRIMなどがあります。
+コレクション・メソッドとは、コレクションに対する操作を実行するための、ドット表記法を使用してコールされる組込みファンクションまたはプロシージャです。コレクション・メソッドには、次が適用されます。
+コレクション・メソッドは、SQL文からはコールできません。
+EXTENDとTRIMは、結合配列で使用できません。
+EXISTS、COUNT、LIMIT、FIRST、LAST、PRIORおよびNEXTは、ファンクションです。EXTEND、TRIMおよびDELETEはプロシージャです。
+EXISTS、PRIOR、NEXT、TRIM、EXTENDおよびDELETEは、コレクションの添字に対応するパラメータを取ります。通常、この添字は整数ですが、結合配列の場合は文字列も使用できます。
+基本構造的にNULLであるコレクションに適用されるのはEXISTSのみです。それ以外のメソッドをそのようなコレクションに適用すると、PL/SQLはCOLLECTION_IS_NULLを呼び出します。
+詳細は、「コレクション・メソッド」を参照してください。
+コレクション要素の存在のチェック(EXISTSメソッド)
+EXISTS(n)は、コレクションにn番目の要素が存在する場合にTRUEを戻します。それ以外の場合、EXISTS(n)はFALSEを戻します。EXISTSとDELETEを組み合せると、疎であるネストした表を操作できます。また、EXISTSを使用すると、存在しない要素を参照したことによる例外の発生を回避できます。範囲外の添字を渡した場合、EXISTSはSUBSCRIPT_OUTSIDE_LIMITを呼び出さずに、FALSEを戻します。
+例5-28    コレクション要素のEXISTSのチェック
+DECLARE
+TYPE NumList IS TABLE OF INTEGER;
+n NumList := NumList(1,3,5,7);
+BEGIN
+n.DELETE(2); -- Delete the second element
+IF n.EXISTS(1) THEN
+DBMS_OUTPUT.PUT_LINE('OK, element #1 exists.');
+END IF;
+IF n.EXISTS(2) = FALSE THEN
+DBMS_OUTPUT.PUT_LINE('OK, element #2 has been deleted.');
+END IF;
+IF n.EXISTS(99) = FALSE THEN
+DBMS_OUTPUT.PUT_LINE('OK, element #99 does not exist at all.');
+END IF;
+END;
+/
+コレクション内の要素数のカウント(COUNTメソッド)
+COUNTは、コレクションに現在含まれている要素の数を戻します。
+例5-29    COUNTを使用したコレクションの要素のカウント
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(2,4,6,8); -- Collection starts with 4 elements.
+BEGIN
+DBMS_OUTPUT.PUT_LINE('There are ' || n.COUNT || ' elements in N.');
+n.EXTEND(3); -- Add 3 new elements at the end.
+DBMS_OUTPUT.PUT_LINE('Now there are ' || n.COUNT || ' elements in N.');
+n := NumList(86,99); -- Assign a completely new value with 2 elements.
+DBMS_OUTPUT.PUT_LINE('Now there are ' || n.COUNT || ' elements in N.');
+n.TRIM(2); -- Remove the last 2 elements, leaving none.
+DBMS_OUTPUT.PUT_LINE('Now there are ' || n.COUNT || ' elements in N.');
+END;
+/
+コレクションの現在のサイズは不明の場合があるため、そのような場合にCOUNTが役立ちます。たとえば、Oracleデータの列をフェッチしてネストした表に入れることができます。この場合、結果セットのサイズに応じて要素の数を決めます。
+VARRAYの場合、COUNTは常にLASTと同じです。EXTENDおよびTRIMメソッドを使用して、VARRAYのサイズを増減できます。この場合、COUNT値の上限はLIMITメソッドで指定した値になります。
+ネストした表の場合、COUNTは通常、LASTと同じです。ただし、ネストした表の途中から要素を削除すると、COUNTはLASTより小さくなります。要素を総計するときに、COUNTは削除された要素を無視します。DELETEをパラメータ・セットを指定せずに使用すると、COUNTが0に設定されます。
+コレクションの最大サイズのチェック(LIMITメソッド)
+サイズが宣言されていないネストした表や結合配列の場合、LIMITはNULLを戻します。VARRAYの場合、LIMITはVARRAYに入れることのできる要素の最大数を戻します。この最大数は型定義で指定し、TRIMメソッドやEXTENDメソッドを使用して後で変更できます。
+例5-30    LIMITを使用したコレクションの最大サイズのチェック
+DECLARE
+TYPE dnames_var IS VARRAY(7) OF VARCHAR2(30);
+dept_names dnames_var := dnames_var('Shipping','Sales','Finance','Payroll');
+BEGIN
+DBMS_OUTPUT.PUT_LINE('dept_names has ' || dept_names.COUNT 
+|| ' elements now');
+DBMS_OUTPUT.PUT_LINE('dept_names''s type can hold a maximum of ' 
+|| dept_names.LIMIT || ' elements');
+DBMS_OUTPUT.PUT_LINE('The maximum number you can use with ' 
+|| 'dept_names.EXTEND() is ' || (dept_names.LIMIT - dept_names.COUNT));
+END;
+/
+最初または最後のコレクション要素の検索(FIRSTメソッドとLASTメソッド)
+FIRSTとLASTは、それぞれ整数の添字を使用しているコレクションの最初と最後(最小と最大)の索引番号を戻します。
+キー値がVARCHAR2の結合配列の場合は、最小および最大のキー値が戻ります。デフォルトでは、文字列内の文字のバイナリ値に基づいて順序付けが行われます。NLS_COMP初期化パラメータがANSIに設定されている場合、順序付けはNLS_SORT初期化パラメータで指定したロケール固有のソート順に基づきます。
+コレクションが空の場合、FIRSTとLASTはNULLを戻します。コレクションに含まれる要素の数が1つのみの場合、FIRSTとLASTは同じ索引値を戻します。
+例5-31に、FIRSTおよびLASTを使用して、添字が連続しているコレクションの要素に対して反復処理を実行する方法を示します。
+例5-31    コレクションでのFIRSTおよびLASTの使用
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(1,3,5,7);
+counter INTEGER;
+BEGIN
+DBMS_OUTPUT.PUT_LINE('N''s first subscript is ' || n.FIRST);
+DBMS_OUTPUT.PUT_LINE('N''s last subscript is ' || n.LAST);
+-- When the subscripts are consecutive starting at 1, 
+-- it's simple to loop through them.
+FOR i IN n.FIRST .. n.LAST
+LOOP
+DBMS_OUTPUT.PUT_LINE('Element #' || i || ' = ' || n(i));
+END LOOP;
+n.DELETE(2); -- Delete second element.
+-- When the subscripts have gaps or the collection might be uninitialized,
+-- the loop logic is more extensive. We start at the first element, and
+-- keep looking for the next element until there are no more.
+IF n IS NOT NULL THEN
+counter := n.FIRST;
+WHILE counter IS NOT NULL
+LOOP
+DBMS_OUTPUT.PUT_LINE('Element #' || counter || ' = ' || n(counter));
+counter := n.NEXT(counter);
+END LOOP;
+ELSE
+DBMS_OUTPUT.PUT_LINE('N is null, nothing to do.');
+END IF;
+END;
+/
+VARRAYの場合、FIRSTは常に1を戻し、LASTは常にCOUNTと同じです。
+ネストした表の場合、通常はFIRSTは1を戻し、LASTはCOUNTと同じです。ただし、ネストした表の先頭から要素を削除すると、FIRSTは1より大きい数値を戻します。また、ネストした表の途中から要素を削除すると、LASTはCOUNTより大きくなります。
+要素をスキャンするときに、FIRSTおよびLASTは削除された要素を無視します。
+コレクションの各要素のループ(PRIORメソッドとNEXTメソッド)
+PRIOR(n)は、コレクションの索引nの前の索引番号を戻します。NEXT(n)は、索引nの後の索引番号を戻します。nの前の番号がない場合、PRIOR(n)はNULLを戻します。nの後の番号がない場合、NEXT(n)はNULLを戻します。
+キーがVARCHAR2型の結合配列の場合は、これらのメソッドは適切なキー値を戻します。NLS_COMP初期化パラメータがANSIに設定されていないかぎり、順序付けは文字列内の文字のバイナリ値に従います。この場合、ANSIの場合の順序付けは、NLS_SORT初期化パラメータで指定したロケール固有のソート順に従います。
+これらのメソッドは、添字の値の固定セットを使用したループに比べて高い信頼性があります。これは、ループ中にコレクションの要素が挿入または削除される可能性があるためです。特に結合配列の場合、添字は連続した順序ではないため、添字の順序が(1、2、4、8、16)や('A'、'E'、'I'、'O'、'U')となっている可能性があります。
+例5-32    PRIORおよびNEXTを使用したコレクションの要素へのアクセス
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(1966,1971,1984,1989,1999);
+BEGIN
+DBMS_OUTPUT.PUT_LINE('The element after #2 is #' || n.NEXT(2));
+DBMS_OUTPUT.PUT_LINE('The element before #2 is #' || n.PRIOR(2));
+n.DELETE(3); -- Delete an element to show how NEXT can handle gaps.
+DBMS_OUTPUT.PUT_LINE('Now the element after #2 is #' || n.NEXT(2));
+IF n.PRIOR(n.FIRST) IS NULL THEN
+DBMS_OUTPUT.PUT_LINE('Can''t get PRIOR of the first element or NEXT of the 
+last.');
+END IF;
+END;
+/
+PRIORまたはNEXTを使用すると、任意の添字列を索引とするコレクション内を移動できます。例5-33では、NEXTを使用して、いくつかの要素が削除されたネストした表内を移動しています。
+例5-33    ネストした表の要素へのNEXTを使用したアクセス
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(1,3,5,7);
+counter INTEGER;
+BEGIN
+n.DELETE(2); -- Delete second element.
+-- When the subscripts have gaps, the loop logic is more extensive. We start at
+-- the first element, and keep looking for the next element until there are no more.
+counter := n.FIRST;
+WHILE counter IS NOT NULL
+LOOP
+DBMS_OUTPUT.PUT_LINE('Counting up: Element #' || counter || ' = ' ||
+n(counter));
+counter := n.NEXT(counter);
+END LOOP;
+-- Run the same loop in reverse order.
+counter := n.LAST;
+WHILE counter IS NOT NULL
+LOOP
+DBMS_OUTPUT.PUT_LINE('Counting down: Element #' || counter || ' = ' ||
+n(counter));
+counter := n.PRIOR(counter);
+END LOOP;
+END;
+/
+要素間を横断するときに、PRIORおよびNEXTは削除された要素をスキップします。
+コレクションのサイズの拡大(EXTENDメソッド)
+ネストした表またはVARRAYのサイズを大きくするには、EXTENDを使用します。
+このプロシージャには次の3つの形式があります。
+EXTENDは、コレクションに1つのNULL要素を追加します。
+EXTEND(n)は、コレクションにn個のNULL要素を追加します。
+EXTEND(n,i)は、コレクションにi番目の要素のコピーをn個追加します。
+索引付き表でEXTENDを使用することはできません。EXTENDを使用して、初期化されていないコレクションに要素を追加することはできません。NOT NULL制約をTABLEまたはVARRAY型に指定した場合、EXTENDの最初の2つの形式はその型のコレクションに適用できません。
+EXTENDは、コレクションの内部サイズ(削除された要素を含む)を操作します。これは、すべての要素を完全に削除するパラメータを指定しないDELETEではなく、DELETE(n)を使用して削除された要素を指します。EXTENDは削除された要素を見つけると、それらの要素を数に含めます。PL/SQLは削除された要素のプレースホルダを保持するため、新しい値を代入して要素を再作成できます。
+例5-34    EXTENDを使用したコレクションのサイズの拡大
+DECLARE
+TYPE NumList IS TABLE OF INTEGER;
+n NumList := NumList(2,4,6,8);
+x NumList := NumList(1,3);
+PROCEDURE print_numlist(the_list NumList) IS
+output VARCHAR2(128);
+BEGIN
+FOR i IN the_list.FIRST .. the_list.LAST
+LOOP
+output := output || NVL(TO_CHAR(the_list(i)),'NULL') || ' ';
+END LOOP;
+DBMS_OUTPUT.PUT_LINE(output);
+END;
+BEGIN
+DBMS_OUTPUT.PUT_LINE('At first, N has ' || n.COUNT || ' elements.');
+n.EXTEND(5); -- Add 5 elements at the end.
+DBMS_OUTPUT.PUT_LINE('Now N has ' || n.COUNT || ' elements.');
+-- Elements 5, 6, 7, 8, and 9 are all NULL.
+print_numlist(n);
+DBMS_OUTPUT.PUT_LINE('At first, X has ' || x.COUNT || ' elements.');
+x.EXTEND(4,2); -- Add 4 elements at the end.
+DBMS_OUTPUT.PUT_LINE('Now X has ' || x.COUNT || ' elements.');
+-- Elements 3, 4, 5, and 6 are copies of element #2.
+print_numlist(x);
+END;
+/
+削除された要素を含めると、ネストした表の内部サイズは、COUNTとLASTが戻す値とは異なります。これは、すべての要素を完全に削除するパラメータを指定しないDELETEではなく、DELETE(n)を使用して削除された要素を指します。たとえば、ネストした表を5つの要素で初期化してから、要素2と要素5を削除した場合、内部サイズは5で、COUNTは3を戻し、LASTは4を戻します。削除されたすべての要素は、その位置に関係なく同様に処理されます。
+コレクションのサイズの縮小(TRIMメソッド)
+このプロシージャには次の2つの形式があります。
+TRIMは、コレクションの末尾から1つの要素を削除します。
+TRIM(n)は、コレクションの末尾からn個の要素を削除します。
+すべての要素を削除する場合は、パラメータを指定せずにDELETEを使用します。
+たとえば、次の文では、ネストした表のcoursesから最後の3つの要素を削除します。
+例5-35    TRIMを使用したコレクションのサイズの縮小
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(1,2,3,5,7,11);
+PROCEDURE print_numlist(the_list NumList) IS
+output VARCHAR2(128);
+BEGIN
+IF n.COUNT = 0 THEN
+DBMS_OUTPUT.PUT_LINE('No elements in collection.');
+ELSE
+FOR i IN the_list.FIRST .. the_list.LAST
+LOOP
+output := output || NVL(TO_CHAR(the_list(i)),'NULL') || ' ';
+END LOOP;
+DBMS_OUTPUT.PUT_LINE(output);
+END IF;
+END;
+BEGIN
+print_numlist(n);
+n.TRIM(2); -- Remove last 2 elements.
+print_numlist(n);
+n.TRIM; -- Remove last element.
+print_numlist(n);
+n.TRIM(n.COUNT); -- Remove all remaining elements.
+print_numlist(n);
+-- If too many elements are specified, 
+-- TRIM raises the exception SUBSCRIPT_BEYOND_COUNT.
+BEGIN
+n := NumList(1,2,3);
+n.TRIM(100);
+EXCEPTION
+WHEN SUBSCRIPT_BEYOND_COUNT THEN
+DBMS_OUTPUT.PUT_LINE('I guess there weren''t 100 elements that could be 
+trimmed.');
+END;
+-- When elements are removed by DELETE, placeholders are left behind. TRIM counts
+-- these placeholders as it removes elements from the end.
+n := NumList(1,2,3,4);
+n.DELETE(3);  -- delete element 3
+-- At this point, n contains elements (1,2,4).
+-- TRIMming the last 2 elements removes the 4 and the placeholder, not 4 and 2.
+n.TRIM(2);
+print_numlist(n);
+END;
+/
+nが大きすぎる場合、TRIM(n)はSUBSCRIPT_BEYOND_COUNTを呼び出します。
+TRIMは、コレクションの内部サイズを操作します。TRIMは削除された要素を見つけると、それらの要素を数に含めます。これは、すべての要素を完全に削除するパラメータを指定しないDELETEではなく、DELETE(n)を使用して削除された要素を指します。
+例5-36    削除された要素に対するTRIMの使用
+DECLARE
+TYPE CourseList IS TABLE OF VARCHAR2(10); 
+courses CourseList;
+BEGIN
+courses := CourseList('Biol 4412', 'Psyc 3112', 'Anth 3001');
+courses.DELETE(courses.LAST);  -- delete element 3
+/* At this point, COUNT equals 2, the number of valid
+elements remaining. So, you might expect the next 
+statement to empty the nested table by trimming 
+elements 1 and 2. Instead, it trims valid element 2 
+and deleted element 3 because TRIM includes deleted 
+elements in its tally. */
+courses.TRIM(courses.COUNT);
+DBMS_OUTPUT.PUT_LINE(courses(1));  -- prints 'Biol 4412'
+END;
+/
+一般に、TRIMとDELETEの間の相互作用には依存しないでください。ネストした表は、固定サイズの配列のように扱ってDELETEのみを使用するか、またはスタックのように扱ってTRIMとEXTENDのみを使用することをお薦めします。
+PL/SQLは切り捨てられた(TRIM)要素のプレースホルダを保持しないため、切り捨てられた要素に新しい値を代入するのみではその要素を置き換えることができません。
+コレクション要素の削除(DELETEメソッド)
+このプロシージャには次の様な形式があります。
+パラメータを指定しないDELETEはコレクションからすべての要素を削除し、COUNTを0に設定します。
+DELETE(n)は、数値キーの結合配列またはネストした表からn番目の要素を削除します。結合配列のキーが文字列の場合は、そのキー値に対応する要素が削除されます。nがNULLである場合、DELETE(n)は何も実行しません。
+DELETE(m,n)は、結合配列またはネストした表からm〜nの範囲のすべての要素を削除します。mがnより大きい場合、またはmかnがNULLである場合、DELETE(m,n)は何も実行しません。
+次に例を示します。
+例5-37    コレクションに対するDELETEメソッドの使用
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(10,20,30,40,50,60,70,80,90,100);
+TYPE NickList IS TABLE OF VARCHAR2(64) INDEX BY VARCHAR2(32);
+nicknames NickList;
+BEGIN
+n.DELETE(2);    -- deletes element 2 
+n.DELETE(3,6);  -- deletes elements 3 through 6 
+n.DELETE(7,7);  -- deletes element 7 
+n.DELETE(6,3);  -- does nothing since 6 > 3
+n.DELETE;      -- deletes all elements
+nicknames('Bob') := 'Robert';
+nicknames('Buffy') := 'Esmerelda';
+nicknames('Chip') := 'Charles';
+nicknames('Dan') := 'Daniel';
+nicknames('Fluffy') := 'Ernestina';
+nicknames('Rob') := 'Robert';
+-- following deletes element denoted by this key
+nicknames.DELETE('Chip');
+-- following deletes elements with keys in this alphabetic range
+nicknames.DELETE('Buffy','Fluffy'); 
+END;
+/
+VARRAYの添字は常に連続しているため、TRIMメソッドを使用して末尾の要素を削除することを除き、個の要素は削除できません。パラメータを指定せずにDELETEを使用すると、すべての要素を削除できます。
+削除対象の要素が存在しない場合でも、DELETE(n)は単にその要素をスキップするため、例外は呼び出されません。PL/SQLは削除された要素のプレースホルダを保持するため、削除された要素に新しい値を代入して、その要素を置き換えることができます。これは、すべての要素を完全に削除するパラメータを指定しないDELETEではなく、DELETE(n)を使用して削除された要素を指します。
+DELETEを使用すると、疎であるネストした表を維持できます。疎であるネストした表は、その他のネストした表と同様に、データベース内に格納できます。
+ネストした表に割り当てられるメモリーの量は、動的に増減します。要素を削除すると、メモリーはページ単位で解放されます。表全体を削除した場合は、すべてのメモリーが解放されます。
+コレクション・パラメータへのメソッドの適用
+サブプログラム内で、コレクション・パラメータは引数のプロパティがバインドされていることを前提にしています。組込みコレクション・メソッド(FIRST、LAST、COUNTなど)をそのようなパラメータに適用できます。コレクション・パラメータを取って要素に反復処理を実行したり、要素を追加または削除する、汎用目的のサブプログラムを作成できます。VARRAYパラメータの場合、パラメータ・モードに関係なく、LIMITの値は常にパラメータの型定義から導出されます。
+コレクション例外の回避
+例5-38に、PL/SQLによって事前に定義されている様々なコレクションの例外を示します。また、この例では、問題を回避するための注釈も示します。
+例5-38    コレクションに関する例外
+DECLARE
+TYPE WordList IS TABLE OF VARCHAR2(5);
+words WordList;
+err_msg VARCHAR2(100);
+PROCEDURE display_error IS
+BEGIN
+err_msg := SUBSTR(SQLERRM, 1, 100);
+DBMS_OUTPUT.PUT_LINE('Error message = ' || err_msg);
+END;
+BEGIN
+BEGIN
+words(1) := 10; -- Raises COLLECTION_IS_NULL
+--  A constructor has not been used yet.
+--  Note: This exception applies to varrays and nested tables,
+--  but not to associative arrays which do not need a constructor.
+EXCEPTION
+WHEN OTHERS THEN display_error;
+END;
+--  After using a constructor, we can assign values to the elements.
+words := WordList('1st', '2nd', '3rd'); -- 3 elements created
+--  Any expression that returns a VARCHAR2(5) is valid.
+words(3) := words(1) || '+2';
+BEGIN
+words(3) := 'longer than 5 characters'; -- Raises VALUE_ERROR
+--  The assigned value is too long.
+EXCEPTION
+WHEN OTHERS THEN display_error;
+END;
+BEGIN
+words('B') := 'dunno'; -- Raises VALUE_ERROR
+--  The subscript (B) of a nested table must be an integer. 
+--  Note: Also, NULL is not allowed as a subscript.
+EXCEPTION
+WHEN OTHERS THEN display_error;
+END;
+BEGIN
+words(0) := 'zero'; -- Raises SUBSCRIPT_OUTSIDE_LIMIT 
+--  Subscript 0 is outside the allowed subscript range.
+EXCEPTION
+WHEN OTHERS THEN display_error;
+END;
+BEGIN
+words(4) := 'maybe'; -- Raises SUBSCRIPT_BEYOND_COUNT
+--  The subscript (4) exceeds the number of elements in the table.
+--  To add new elements, call the EXTEND method first.
+EXCEPTION
+WHEN OTHERS THEN display_error;
+END;
+BEGIN
+words.DELETE(1);
+IF words(1) = 'First' THEN NULL; END IF; -- Raises NO_DATA_FOUND
+--  The element with subcript (1) has been deleted.
+EXCEPTION
+WHEN OTHERS THEN display_error;
+END;
+END;
+/
+発生した例外はサブブロックで処理されるため、例5-38では、実行が継続されます。「例外が呼び出された後に実行を続ける方法」を参照してください。例外処理でのSQLERRMの使用については、「エラー・コードとエラー・メッセージの取得: SQLCODEおよびSQLERRM」を参照してください。
+次のリストは、指定された例外が呼び出される場合を示しています。「事前定義のPL/SQL例外のまとめ」を参照してください。
+コレクションに関する例外 
+呼び出される場合 
+COLLECTION_IS_NULL 
+基本構造的にNULLのコレクションに対して操作を試みた場合。 
+NO_DATA_FOUND 
+添字で、削除されている要素や結合配列の存在していない要素が指定された場合。 
+SUBSCRIPT_BEYOND_COUNT 
+添字がコレクションの中の要素数を超えている場合。 
+SUBSCRIPT_OUTSIDE_LIMIT 
+添字が有効範囲外である場合。 
+VALUE_ERROR 
+添字がNULLか、またはキーの型に変換できない場合。この例外は、キーがPLS_INTEGERの範囲として定義され、添字がこの範囲外の場合に発生する可能性があります。 
+場合によっては、例外を呼び出さずに、無効な添字をメソッドに渡すことができます。たとえば、添字NULLをDELETE(n)に渡しても、何も実行されません。削除された要素に値を代入すると、NO_DATA_FOUNDを呼び出さずにその要素を置き換えることができます。これは、すべての要素を完全に削除するパラメータを指定しないDELETEではなく、DELETE(n)を使用して削除された要素を指します。次に例を示します。
+例5-39    DELETE(n)による無効な添字の処理
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+nums NumList := NumList(10,20,30);  -- initialize table
+BEGIN
+nums.DELETE(-1);  -- does not raise SUBSCRIPT_OUTSIDE_LIMIT
+nums.DELETE(3);   -- delete 3rd element
+DBMS_OUTPUT.PUT_LINE(nums.COUNT);  -- prints 2
+nums(3) := 30;    -- allowed; does not raise NO_DATA_FOUND
+DBMS_OUTPUT.PUT_LINE(nums.COUNT);  -- prints 3
+END;
+/
+パッケージ・コレクション型とローカル・コレクション型には互換性がありません。たとえば、次のパッケージ・プロシージャをコールするとします。
+例5-40    パッケージ・コレクション型とローカル・コレクション型の非互換性
+CREATE PACKAGE pkg AS
+TYPE NumList IS TABLE OF NUMBER;
+PROCEDURE print_numlist (nums NumList);
+END pkg;
+/
+CREATE PACKAGE BODY pkg AS
+PROCEDURE print_numlist (nums NumList) IS
+BEGIN
+FOR i IN nums.FIRST..nums.LAST LOOP
+DBMS_OUTPUT.PUT_LINE(nums(i));
+END LOOP;
+END;
+END pkg;
+/
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n1 pkg.NumList := pkg.NumList(2,4); -- type from the package.
+n2 NumList := NumList(6,8);         -- local type.
+BEGIN
+pkg.print_numlist(n1); -- type from pkg is legal
+-- The packaged procedure cannot accept a value of the local type (n2)
+-- pkg.print_numlist(n2);  -- Causes a compilation error.
+END;
+/
+2番目のプロシージャ・コールは失敗します。これは、パッケージおよびローカルのVARRAY型は定義が同一でも互換性がないためです。
+レコードの定義と宣言
+レコードを作成するには、RECORD型を定義してから、その型のレコードを宣言します。目的の値を含む表、ビューまたはPL/SQLカーソルを作成または検索し、%ROWTYPE属性を使用して一致するレコードを作成することもできます。
+RECORD型は、任意のPL/SQLブロック、サブプログラムまたはパッケージの宣言部で定義できます。独自のRECORD型を定義する際は、フィールドにNOT NULL制約を指定したり、フィールドにデフォルト値を指定することができます。「レコード定義」を参照してください。
+例5-42および例5-42に、レコード型の宣言を示します。
+例5-41    単純なレコード型の宣言および初期化
+DECLARE
+TYPE DeptRecTyp IS RECORD (
+deptid NUMBER(4) NOT NULL := 99,
+dname  departments.department_name%TYPE,
+loc    departments.location_id%TYPE,
+region regions%ROWTYPE );
+dept_rec DeptRecTyp;
+BEGIN
+dept_rec.dname := 'PURCHASING';
+END;
+/
+例5-42    レコード型の宣言および初期化
+DECLARE
+-- Declare a record type with 3 fields.
+TYPE rec1_t IS RECORD (field1 VARCHAR2(16), field2 NUMBER, field3 DATE);
+-- For any fields declared NOT NULL, we must supply a default value.
+TYPE rec2_t IS RECORD (id INTEGER NOT NULL := -1, 
+name VARCHAR2(64) NOT NULL := '[anonymous]');
+-- Declare record variables of the types declared
+rec1 rec1_t;
+rec2 rec2_t;
+-- Declare a record variable that can hold a row from the EMPLOYEES table.
+-- The fields of the record automatically match the names and 
+-- types of the columns.
+-- Don't need a TYPE declaration in this case.
+rec3 employees%ROWTYPE;
+-- Or we can mix fields that are table columns with user-defined fields.
+TYPE rec4_t IS RECORD (first_name employees.first_name%TYPE, 
+last_name employees.last_name%TYPE, 
+rating NUMBER);
+rec4 rec4_t;
+BEGIN
+-- Read and write fields using dot notation
+rec1.field1 := 'Yesterday';
+rec1.field2 := 65;
+rec1.field3 := TRUNC(SYSDATE-1);
+-- We didn't fill in the name field, so it takes the default value declared
+DBMS_OUTPUT.PUT_LINE(rec2.name);
+END;
+/
+データベースにレコードを格納する場合、そのレコードのフィールドと表の列が一致していれば、INSERT文またはUPDATE文でそのレコードを指定できます。
+%TYPEを使用して、表の列の型に対応するフィールドの型を指定できます。記述したコードは、列の型が変更された(たとえば、VARCHAR2の長さを伸ばしたり、NUMBERの精度を高くした)場合でも、正常に動作します。例5-43では、部門の情報を保持するためのRECORD型を定義します。
+例5-43    %ROWTYPEを使用したレコードの宣言
+DECLARE
+-- Best: use %ROWTYPE instead of specifying each column.
+-- Use <cursor>%ROWTYPE instead of <table>%ROWTYPE because 
+-- we only want some columns.
+-- Declaring the cursor doesn't run the query, so no performance hit.
+CURSOR c1 IS SELECT department_id, department_name, location_id 
+FROM departments;
+rec1 c1%ROWTYPE;
+-- Use <column>%TYPE in field declarations to avoid problems if 
+-- the column types change.
+TYPE DeptRec2 IS RECORD (dept_id   departments.department_id%TYPE, 
+dept_name departments.department_name%TYPE, 
+dept_loc departments.location_id%TYPE);
+rec2 DeptRec2;
+-- Final technique, writing out each field name and specifying the type directly,
+-- is clumsy and unmaintainable for working with table data. 
+-- Use only for all-PL/SQL code.
+TYPE DeptRec3 IS RECORD (dept_id NUMBER, 
+dept_name VARCHAR2(14), 
+dept_loc VARCHAR2(13));
+rec3 DeptRec3;
+BEGIN
+NULL;
+END;
+/
+PL/SQLを使用すると、オブジェクト、コレクションおよびその他のレコード(ネストしたレコード)を含むレコードを定義できます。ただし、レコードをオブジェクト型の属性にすることはできません。
+プロシージャのパラメータおよびファンクションの戻り値としてのレコードの使用
+レコードは、ストアド・プロシージャを使用すると簡単に処理できます。これは、渡すパラメータが1つのみで、各フィールドに個別のパラメータを渡す必要がないためです。たとえば、EMPLOYEES表から表の行をフェッチしてレコードに格納し、従業員の有給休暇またはその他の抽象的な値を計算するファンクションにその行をパラメータとして渡すと想定します。ファンクションは、レコードのフィールドを参照することで従業員に関するすべての情報にアクセスできます。
+次の例は、ファンクションからレコードを戻す方法を示しています。複数のストアド・ファンクションおよびストアド・プロシージャからレコード型を参照できるようにするには、パッケージ仕様部でそのレコード型を宣言します。
+例5-44    ファンクションからレコードを戻す
+DECLARE
+TYPE EmpRecTyp IS RECORD (
+emp_id       NUMBER(6),
+salary       NUMBER(8,2));
+CURSOR desc_salary RETURN EmpRecTyp IS
+SELECT employee_id, salary FROM employees ORDER BY salary DESC;
+emp_rec     EmpRecTyp;
+FUNCTION nth_highest_salary (n INTEGER) RETURN EmpRecTyp IS
+BEGIN
+OPEN desc_salary;
+FOR i IN 1..n LOOP
+FETCH desc_salary INTO emp_rec;
+END LOOP;
+CLOSE desc_salary;
+RETURN emp_rec;
+END nth_highest_salary;
+BEGIN
+NULL;
+END;
+/
+スカラー変数と同様に、ユーザー定義のレコードもプロシージャやファンクションの仮パラメータとして宣言できます。
+例5-45    プロシージャへのパラメータとしてのレコードの使用
+DECLARE
+TYPE EmpRecTyp IS RECORD (
+emp_id       NUMBER(6),
+emp_sal      NUMBER(8,2) );
+PROCEDURE raise_salary (emp_info EmpRecTyp) IS
+BEGIN
+UPDATE employees SET salary = salary + salary * .10
+WHERE employee_id = emp_info.emp_id;
+END raise_salary;
+BEGIN
+NULL;
+END;
+/
+ネストされたレコードを宣言し、参照できます。つまり、レコードを他のレコードの構成要素にできます。
+例5-46    ネストされたレコードの宣言
+DECLARE
+TYPE TimeTyp IS RECORD ( minutes SMALLINT, hours SMALLINT );
+TYPE MeetingTyp IS RECORD (
+day     DATE,
+time_of TimeTyp,             -- nested record
+dept    departments%ROWTYPE, -- nested record representing a table row
+place   VARCHAR2(20),
+purpose VARCHAR2(50) );
+meeting MeetingTyp;
+seminar MeetingTyp;
+BEGIN
+-- you can assign one nested record to another if they are of the same datatype
+seminar.time_of := meeting.time_of;
+END;
+/
+このような代入は、親レコードが異なるデータ型を持っている場合でもできます。
+レコードへの値の代入
+レコード内のすべてのフィールドにデフォルト値を設定するには、例5-47に示すとおり、同じ型の初期化されていないレコードをそのフィールドに代入します。
+例5-47    レコードへのデフォルト値の代入
+DECLARE
+TYPE RecordTyp IS RECORD (field1 NUMBER, 
+field2 VARCHAR2(32) DEFAULT 'something');
+rec1 RecordTyp;
+rec2 RecordTyp;
+BEGIN
+-- At first, rec1 has the values we assign.
+rec1.field1 := 100; rec1.field2 := 'something else';
+-- Assigning an empty record to rec1 resets fields to their default values.
+-- Field1 is NULL and field2 is 'something' due to the DEFAULT clause
+rec1 := rec2;
+DBMS_OUTPUT.PUT_LINE('Field1 = ' || NVL(TO_CHAR(rec1.field1),'<NULL>') || ',
+field2 = ' || rec1.field2);
+END;
+/
+ドット表記法を使用した代入文を使用して、レコードのフィールドに値を代入できます。
+emp_info.last_name := 'Fields';
+例5-47では、値は、レコードの各フィールドに個別に代入されています。代入文を使用してレコードに値のリストを代入することはできません。レコード用のコンストラクタのような表記は存在しません。
+レコードを同じデータ型の別のレコードに代入する場合にのみ、値をすべてのフィールドに一度に代入できます。正確に一致するフィールドが含まれているのみでは不十分です。例5-48を参照してください。
+例5-48    レコードのすべてのフィールドへの1文での代入
+DECLARE
+-- Two identical type declarations.
+TYPE DeptRec1 IS RECORD ( dept_num  NUMBER(2), dept_name VARCHAR2(14));
+TYPE DeptRec2 IS RECORD ( dept_num  NUMBER(2), dept_name VARCHAR2(14));
+dept1_info DeptRec1;
+dept2_info DeptRec2;
+dept3_info DeptRec2;
+BEGIN
+-- Not allowed; different datatypes, even though fields are the same.
+--      dept1_info := dept2_info; 
+-- This assignment is OK because the records have the same type.
+dept2_info := dept3_info;
+END;
+/
+フィールドの数と順序が同じで、対応するフィールドのデータ型が同じであれば、%ROWTYPEレコードをユーザー定義のレコードに代入できます。
+DECLARE
+TYPE RecordTyp IS RECORD (last employees.last_name%TYPE, 
+id employees.employee_id%TYPE);
+CURSOR c1 IS SELECT last_name, employee_id FROM employees;
+-- Rec1 and rec2 have different types. But because rec2 is based on a %ROWTYPE, 
+-- we can assign is to rec1 as long as they have the right number of fields and
+-- the fields have the right datatypes.
+rec1 RecordTyp;
+rec2 c1%ROWTYPE;
+BEGIN
+SELECT last_name, employee_id INTO rec2 FROM employees WHERE ROWNUM < 2;
+rec1 := rec2;
+DBMS_OUTPUT.PUT_LINE('Employee #' || rec1.id || ' = ' || rec1.last);
+END;
+/
+SELECT文またはFETCH文を使用して列の値をフェッチし、レコードに代入することもできます。選択リストの列が、レコード中のフィールドと同じ順序で並ぶようにしてください。
+例5-49    SELECT INTOを使用したレコードでの値の代入
+DECLARE
+TYPE RecordTyp IS RECORD (last employees.last_name%TYPE, 
+id employees.employee_id%TYPE);
+rec1 RecordTyp;
+BEGIN
+SELECT last_name, employee_id INTO rec1 FROM employees WHERE ROWNUM < 2;
+DBMS_OUTPUT.PUT_LINE('Employee #' || rec1.id || ' = ' || rec1.last);
+END;
+/
+レコードの比較
+レコードがNULLであるかどうかテストしたり、等しいかどうか比較することはできません。このような比較を実行する場合は、パラメータとして2つのレコードを受け入れ、対応するフィールドに対して適切なチェックまたは比較を実行する、独自のファンクションを記述します。
+PL/SQLレコードのデータベースへの挿入
+INSERT文のPL/SQLのみの拡張機能によって、VALUES句で、フィールドのリストではなくRECORD型または%ROWTYPE型の単一の変数を使用して、レコードをデータベース行に挿入できます。その結果、コードが読みやすくなり、メンテナンスが容易になります。
+FORALL文を使用してINSERT文を発行すると、レコードのコレクション全体の値を挿入できます。レコード内のフィールドの数は、INTO句にリストされている列数と等しい必要があります。また、対応するフィールドと列のデータ型には互換性が必要です。レコードと表との互換性を確実に保持するには、変数をtable_name%ROWTYPE型として宣言することが最も便利です。
+例5-50では、%ROWTYPE修飾子を使用してレコード変数を宣言しています。この変数は、列リストを指定せずに挿入できます。%ROWTYPE宣言によって、表の列と同じ名前と型をレコードの属性に設定できます。
+例5-50    %ROWTYPEを使用したPL/SQLレコードの挿入
+DECLARE
+dept_info departments%ROWTYPE;
+BEGIN
+-- department_id, department_name, and location_id are the table columns
+-- The record picks up these names from the %ROWTYPE
+dept_info.department_id := 300;
+dept_info.department_name := 'Personnel';
+dept_info.location_id := 1700;
+-- Using the %ROWTYPE means we can leave out the column list
+-- (department_id, department_name, and location_id) from the INSERT statement
+INSERT INTO departments VALUES dept_info;
+END;
+/
+PL/SQLレコード値を使用したデータベースの更新
+UPDATE文のPL/SQLのみの拡張機能によって、SET句の右側にフィールドのリストではなくRECORD型または%ROWTYPE型の単一の変数を使用して、データベース行を更新できます。
+FORALL文を使用してUPDATE文を発行すると、レコードのコレクション全体の値を使用して行セットを更新できます。また、UPDATE文を使用して、RETURNING句でレコードを指定し、新しい値を取り出してレコードに代入することもできます。FORALL文を使用してUPDATE文を発行すると、更新された行セットから値を取り出してレコードのコレクションに代入できます。
+レコード内のフィールドの数は、SET句にリストされている列数と等しい必要があります。また、対応するフィールドと列のデータ型には互換性が必要です。
+キーワードROWを使用すると、行全体を表現できます。例5-51を参照してください。
+例5-51    レコードを使用した行の更新
+DECLARE
+dept_info departments%ROWTYPE;
+BEGIN
+-- department_id, department_name, and location_id are the table columns
+-- The record picks up these names from the %ROWTYPE.
+dept_info.department_id := 300;
+dept_info.department_name := 'Personnel';
+dept_info.location_id := 1700;
+-- The fields of a %ROWTYPE can completely replace the table columns
+-- The row will have values for the filled-in columns, and null
+-- for any other columns
+UPDATE departments SET ROW = dept_info WHERE department_id = 300;
+END;
+/
+キーワードROWを指定できる位置は、SET句の左側のみです。SET ROWの引数には、単一の行のみを戻す副問合せではなく、実際のPL/SQLレコードを指定する必要があります。レコードには、コレクションまたはオブジェクトも含めることができます。
+INSERT文、UPDATE文およびDELETE文には、RETURNING句を含めることができます。この句は、影響のある行の列値をPL/SQLレコード変数に戻します。これによって、挿入や更新の後、または削除の前に、行をSELECTで選択する必要がなくなります。
+デフォルトでは、この句が使用できるのは、厳密に1つの行で操作する場合のみです。バルクSQLを使用する場合、RETURNING BULK COLLECT INTO形式を使用して、1つ以上のコレクションに結果を格納できます。
+例5-52では、従業員の給与を更新し、従業員の名前、肩書きおよび新しい給与をレコード変数に取り出しています。
+例5-52    レコードを使用したRETURNING句の使用
+DECLARE
+TYPE EmpRec IS RECORD (last_name   employees.last_name%TYPE, 
+salary      employees.salary%TYPE);
+emp_info EmpRec;
+emp_id   NUMBER := 100;
+BEGIN
+UPDATE employees SET salary = salary * 1.1 WHERE employee_id = emp_id
+RETURNING last_name, salary INTO emp_info;
+DBMS_OUTPUT.PUT_LINE('Just gave a raise to ' || emp_info.last_name ||
+', who now makes ' || emp_info.salary);
+ROLLBACK;
+END;
+/
+レコードの挿入/更新に関する制約
+現在、レコードの挿入/更新には、次の制約があります。
+レコード変数が使用できるのは、次の位置に限定されます。
+UPDATE文のSET句の右側
+INSERT文のVALUES句の中
+RETURNING句のINTO副次句の中
+レコード変数は、SELECTリスト、WHERE句、GROUP BY句またはORDER BY句では使用できません。
+キーワードROWを指定できる位置は、SET句の左側のみです。また、ROWと副問合せは一緒に使用できません。
+UPDATE文では、ROWが使用されている場合、許可されるSET句は1つのみです。
+INSERT文のVALUES句にレコード変数が含まれている場合は、その句の中で他の変数または値を使用することはできません。
+RETURNING句のINTO副次句にレコード変数が含まれている場合は、その副次句の中で他の変数または値を使用することはできません。
+次の内容はサポートされません。
+ネストしたレコード型
+レコードを戻すファンクション
+EXECUTE IMMEDIATE文を使用したレコードの挿入および更新
+レコードのコレクションへのデータの問合せ
+SELECT INTO文またはFETCH文にBULK COLLECT INTO句を使用すると、行セットを取り出してレコードのコレクションに代入できます。
+例5-53    SELECT INTO文でのBULK COLLECTの使用
+DECLARE
+TYPE EmployeeSet IS TABLE OF employees%ROWTYPE;
+underpaid EmployeeSet; -- Holds set of rows from EMPLOYEES table.
+CURSOR c1 IS SELECT first_name, last_name FROM employees;
+TYPE NameSet IS TABLE OF c1%ROWTYPE;
+some_names NameSet; -- Holds set of partial rows from EMPLOYEES table.
+BEGIN
+-- With one query, we bring all the relevant data into the collection of records.
+SELECT * BULK COLLECT INTO underpaid FROM employees
+WHERE salary < 5000 ORDER BY salary DESC;
+-- Now we can process the data by examining the collection, or passing it to
+-- a separate procedure, instead of writing a loop to FETCH each row.
+DBMS_OUTPUT.PUT_LINE(underpaid.COUNT || ' people make less than 5000.');
+FOR i IN underpaid.FIRST .. underpaid.LAST
+LOOP
+DBMS_OUTPUT.PUT_LINE(underpaid(i).last_name || ' makes ' ||
+underpaid(i).salary);
+END LOOP;
+-- We can also bring in just some of the table columns.
+-- Here we get the first and last names of 10 arbitrary employees.
+SELECT first_name, last_name BULK COLLECT INTO some_names FROM employees
+WHERE ROWNUM < 11;
+FOR i IN some_names.FIRST .. some_names.LAST
+LOOP
+DBMS_OUTPUT.PUT_LINE('Employee = ' || some_names(i).first_name || ' ' || some_
+names(i).last_name);
+END LOOP;
+END;
+/
+Copyright &copy; 2005 Oracle Corporation. 
+All Rights Reserved.
+目次
+索引
+PL/SQLのコレクションおよびレコードの使用

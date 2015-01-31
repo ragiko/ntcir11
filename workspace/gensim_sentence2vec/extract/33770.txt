@@ -1,0 +1,57 @@
+
+第9回【似通った英単語の選択方法(前編)】
+迷える英単語の選択
+意味が似ている複数の英単語に出会ったとき、どちらを選択すればよいのか、迷うことがあります。
+例えば、「種類」と書きたいときに、typeかkindかを迷うかもしれません。『「イオンの種類」と書きたいのですが、types of ionsかkinds of ionsかどちらがよいですか』という質問を受けたことがあります。
+また例えば、様々な文脈で、「～が～するのを許容する」を表すallowとpermitについて、どちらを使えばよいのか迷うことがあるかもしれません。permitを使った英訳例に対して、『そのpermitをallowに変えてもよいですか』という質問を受けたことがあります。『技術文書中でpermitをあまり使ったことがなく、allowのほうが使いやすいので』との理由でした。
+また、allowとpermitに加えて、「～が～するのを可能にする」を表すenableや、「～に～させる」を表すletについてはどうでしょうか。
+そこで、普段の日英翻訳作業の中で、どのようにして、似通った英単語から訳語を選択しているかについて、説明します。上に例示したtypeとkind、またallowとpermit, enable, letの意味の違いについて見ていくとともに、似通った英単語を選択するにあたって大切なことは何かを説明します。
+types of ionsかkinds of ionsか—辞書で調べ、ネット検索で文脈をチェック
+大学院の理工系学生に技術英語を教えているとき、次のような、質問を受けました。
+質問:「イオンの種類」というときには、types of ionsかkinds of ionsかどちらがよいですか。先輩にはkinds of ionsをすすめられましたが、なんとなくそちらがよいと言われ、迷っています。そもそも、typeとkindの違いは何ですか。
+まず、typeとkindの違いについて、辞書で調べ、次のようにまとめることができると思います。
+<英単語typeとkindの意味の違い>
+kind「種類」= 1つのグループとして具体的に分類できる種類。「類(たぐ)い」を示す。
+辞書の定義: 
+kind = 種類、…(動植物の)類、族、属、種『ウィズダム英和辞典』
+kind =(人・物などの)種類…『プログレッシブ英和中辞典』
+kind = 種類、部類、類、類(たぐ)い、種、品種、機種、族、種族…『日外ビジネス/技術実用英語大辞典』
+type「種類」= 特性により客観的に区別ができる種類。「型」を示す。
+辞書の定義:
+type =(ある特性を共有する)型、タイプ、類型、種類『ウィズダム英和辞典』
+type =(共通の特徴をもつ)型、類型、タイプ『プログレッシブ英和中辞典』 
+type = 型、類型、定型、原型、タイプ、種類、区分、…『日外ビジネス/技術実用英語大辞典』
+このように、kindとtypeは、厳密には、意味が異なります。つまり、kindは「1つのグループとして分けられる類(たぐ)い」、typeは「特性により客観的に区別できる型」となります。この日本語のニュアンスを比較すると、文脈にもよりますが、「類(たぐ)い(kind)」よりも「型(type)」のほうが、明確に、区切りを伝えられそうだとも考えられます。
+一方で、「kind = 類(たぐ)い」と「type = 型」では、意味が重なる部分も大きく、実際の日英翻訳では、kindとtypeのいずれも使用可能な場合が多いのも確かです。
+次に、「イオンの種類」と書きたい場合にtypes of ionsかkinds of ionsかどちらがよいかを調べるために、ネット検索にて、types of ionsとkinds of ionsをそれぞれ検索します。ヒットした内容を読んで調べると共に、ヒット数を比較します。
+ヒットした内容例(適当に抜粋):
+<type>
+Types of Ions: Adduct Ion, Cluster Ion, Daughter Ion, Dimeric Ion, Even-Electron Ion, Fragment Ion, Isotopic Ion, Isotopic Molecular Ion, Isotopically Enriched Ion, Metastable Ion, Molecular Ion, Multiply-Charged Ion, Negative Ion, Odd-Electron Ion, Parent Ion, Positive Ion, Precursor Ion, Principal Ion, Product Ion, Radical Ion, Rearrangement Ion, Stable Ion, Unstable Ion…
+補足説明:イオンの種類として、種々のイオンを挙げる文脈でtypeを使用。
+The two types of ions are cations that have a positive charge and anions that have a negative charge.
+補足説明:2種類のイオンである陽イオンと陰イオンについての記載でtypeを使用。
+What types of ions make water hard?
+Large quantities of calcium and magnesium ions make water hard.
+補足説明:イオンの種類を表す文脈でtypeを使用。
+<kind>
+What kind of ions do metals form?  Positive.
+補足説明:陽イオンについての記載でkindを使用。上のtypeの例と同様の文脈。
+<typeとkindの両方>
+A mass analyzer is used to separate ions according to their mass-to-charge ratios. This is usually accomplished by using electric and magnetic fields so that only the required kinds of ions are retained and all other types of ions are allowed to pass through.
+補足説明:同じ文章の中で、kindsとtypesを同義で言い換えて使用。
+以上、いずれの例も、厳密には使い分けがあるのかもしれませんが、大体同じような文脈でtypeとkindが使用されていることが分かります。
+ヒット数の比較:(Google http://www.google.com/)(2014年8月)
+types of ions 	452,000	 	  kinds of ions	 234,000 	 
+ヒット数を単純比較すると、types of ionsがkinds of ionsを遥かに上回ります。
+以上、ネット検索によるヒット内容およびヒット数の比較、また辞書の定義による英単語typeとkindの意味の違いから、次のように、質問への答えをまとめることができます。
+<「イオンの種類」はtypes of ionsかkinds of ionsかどちらがよいか>への回答:
+kinds of ionsとtypes of ionsについて、どちらも同様の文脈にて使用が可能で、明確に使い分けされていない場合が多いことがネット検索で分かる。英単語kindとtypeの意味の違い(kind=1つのグループとして分類できる種類、つまり「類(たぐ)い」、type=ある特性を共有していることなどにより客観的に区別できる種類、つまり「型」)に基づいて、厳密に使い分けてもよいが、文脈上、どちらを使ってもよい場合も多い。
+ヒット数を比べると、types of ionsがkinds of ionsを遥かに上回る。したがって、単純にヒット数が多いtypesを使ってもよい。また、type(「型」)とkind(「類(たぐ)い」)のニュアンスを比較すると、typeはより明確に境界を区切るニュアンスがあるとも考えられる。どちらでもよい文脈であれば、typeを使うことで、より明確に書いてもよい。
+正確・明確に書くために—まずは辞書で単語の意味をチェック、その後ネット検索で使用状況を確認し、自分なりの答えを探す
+当然のことですが、しっかりと辞書で調べることが基本です。一般的な辞書を数冊使って調べることで、大抵の英単語の違いが見えてきます。その後、ネット検索にて実際の使用例を調べ、ヒット数だけでなく、ヒットした内容を比較することにより、英単語の実際の使い方を把握します。いずれを選択しても文脈上問題が無い場合であれば、より使い勝手のよい単語、より明確なニュアンスを持つ単語、を選択するとよいでしょう。
+そして最も大切なことは、なんとなく適当に選択するのではなく、一つ一つを丁寧に調べ、文脈に応じて、自分なりの理由付けをしながら英単語を選択することです。理由付けをしながら選択することで、正確・明確に書けるようになると思います。
+【似通った英単語の選択方法(前編)】のPOINT
+基本は複数の辞書を引くこと、ネット検索により量的・質的に各単語を調べること。疑問を放置せず、納得した上で英単語を選択することが、スキルアップにつながる。
+kindは「1つのグループとして分類できる種類」、つまり「類(たぐ)い」を表す。typeは「ある特性を共有していることなどで区別できる種類」、つまり「型」を表す。
+types of ionsとkinds of ionsをネット検索すると、同義で使われている場合も多い。英単語の意味の違いによりtypes of ionsとkinds of ionsを厳密に使い分けてもよいし、ヒット数が多く、より明確なニュアンスを持つtypes of ionsを選択してもよい。
+第9回【似通った英単語の選択方法(前編)】 | オンライン連載 | 特許英語・論文英語を専門とする翻訳と教育の会社 ユー・イングリッシュ

@@ -1,0 +1,178 @@
+
+ボックスなどを順番に追加していった場合、上から下に向かって順番に表示されますが、下ではなくボックスの右側や左側に次のボックスを表示させたい場合の指定方法です。floatプロパティを使って設定します。
+float : float
+プロパティは"float"です。値は下記の中から1つを選択します。
+float : left;  /* ボックスを左に寄せ、次のコンテンツを右へ回り込ませる */
+float : right; /* ボックスを右に寄せ、次のコンテンツを左へ回り込ませる */
+float : none;  /* 回り込みは行わない */
+デフォルトは「none」を指定した場合と同じで回り込みは行われません。
+具体的なイメージは試して頂いた方が早いので、実際の例を見てください。まずは「flow」を設定しない場合です。
+sample4-1.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" Content="text/html;charset=UTF-8">
+<title>スタイルシートサンプル</title>
+<link rel="stylesheet" href="./css/sample4-1.css" type="text/css">
+</head>
+<body>
+<div class="float-sample-1">
+<p>
+1番目のボックス
+</p>
+</div>
+<div class="float-sample-2">
+<p>
+2番目のボックス
+</p>
+</div>
+<div class="float-sample-3">
+<p>
+3番目のボックス
+</p>
+</div>
+<div class="float-sample-4">
+<p>
+4番目のボックス
+</p>
+</div>
+</body>
+</html>
+sample4-1.css
+@charset "Shift_Jis";
+div.float-sample-1{
+width:200px;
+height:150px;
+background:#eeeeee;
+}
+div.float-sample-2{
+width:100px;
+height:90px;
+background:#ffebcd;
+}
+div.float-sample-3{
+width:100px;
+height:90px;
+background:#fffacd;
+}
+div.float-sample-4{
+width:100px;
+height:90px;
+background:#98fb98;
+}
+実行結果は下記の通りです。
+何も指定しない場合は上記のように上から下へ順に表示されます。では1番目のボックスに「float:left」を指定してみます。(HTMLの方は変更が無いので省略します)。
+sample4-2.html
+sample4-2.css
+@charset "Shift_Jis";
+div.float-sample-1{
+float:left;
+width:200px;
+height:150px;
+background:#eeeeee;
+}
+div.float-sample-2{
+width:100px;
+height:90px;
+background:#ffebcd;
+}
+div.float-sample-3{
+width:100px;
+height:90px;
+background:#fffacd;
+}
+div.float-sample-4{
+width:100px;
+height:90px;
+background:#98fb98;
+}
+実行結果は下記の通りです。
+1番目のボックスに「float:left」を指定しています。その為、次のボックスは1番目のボックスの右側に回りこみをします。
+3番目のボックスは1番目のボックスと2番目のボックスの高さを比較した時にまだ1番目のボックスの方が高さが大きいため3番目のボックスも1番目の右側に来ています。
+3番目のボックスを表示した時点で1番目のボックスの高さを越えているので、4番目のボックスは1番目のボックスの下にきます。
+注意する点は回り込みを指定したとしても、回り込む領域に次のコンテンツを表示するだけの十分な領域が無ければ回り込みは行われません。同じ設定でもブラウザの幅を小さくすると回りこみが行えません。例えば下記のようになります。
+では次に1番目のボックスに「float:right」を指定してみます。
+sample4-3.html
+sample4-3.css
+@charset "Shift_Jis";
+div.float-sample-1{
+float:right;
+width:200px;
+height:150px;
+background:#eeeeee;
+}
+div.float-sample-2{
+width:100px;
+height:90px;
+background:#ffebcd;
+}
+div.float-sample-3{
+width:100px;
+height:90px;
+background:#fffacd;
+}
+div.float-sample-4{
+width:100px;
+height:90px;
+background:#98fb98;
+}
+実行結果は下記の通りです。
+今度は1番目のボックスは右側により、2番目以降のボックスは1番目のボックスの左側に配置されます。基本的な考え方は「left」を指定した場合と同じです。
+今度は1番目と2番目のボックスに「float:left」を指定してみましょう。
+sample4-4.html
+sample4-4.css
+@charset "Shift_Jis";
+div.float-sample-1{
+float:left;
+width:200px;
+height:150px;
+background:#eeeeee;
+}
+div.float-sample-2{
+float:left;
+width:100px;
+height:90px;
+background:#ffebcd;
+}
+div.float-sample-3{
+width:100px;
+height:90px;
+background:#fffacd;
+}
+div.float-sample-4{
+width:100px;
+height:90px;
+background:#98fb98;
+}
+実行結果は下記の通りです。
+1番目のボックスは左により、2番目のボックスはその右側に来ます。そして今度は2番目のボックスにも「float:left」が設定されているため、3番目のボックスは2番目のボックスの右側に来ます。
+最後に1番目のボックスに「float:left」を、2番目のボックスに「float:right」を設定してみましょう。
+sample4-5.html
+sample4-5.css
+@charset "Shift_Jis";
+div.float-sample-1{
+float:left;
+width:200px;
+height:150px;
+background:#eeeeee;
+}
+div.float-sample-2{
+float:right;
+width:100px;
+height:90px;
+background:#ffebcd;
+}
+div.float-sample-3{
+width:100px;
+height:90px;
+background:#fffacd;
+}
+div.float-sample-4{
+width:100px;
+height:90px;
+background:#98fb98;
+}
+実行結果は下記の通りです。
+1番目のボックスは左側に、そして2番目のボックスは右側に配置され、そして3番目以降のボックスは1番目と2番目のボックスの間に配置されます。
+このように「float」プロパティを使うことで、3段組レイアウトのようなものを簡単に作成することが出来ます。
+回り込みの設定(float) - 表現方法プロパティ - スタイルシート入門

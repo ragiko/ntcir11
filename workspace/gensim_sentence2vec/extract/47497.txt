@@ -1,0 +1,92 @@
+はじめに
+前回、iRemocon を操作するところまでやりました(中身はただの telnet みたいなもんですが…)。
+次はマイクで喋った言葉を拾ってそれに従って操作を出来るようにしようと思います。このエントリでは音声認識した結果を C++ で取ってくるところまでやります。
+で、フリーの音声認識エンジンがないかと探してみたところ、Julius に白羽の矢が立ちました。
+大語彙連続音声認識エンジン Julius
+音声認識分野の界隈では有名らしいですが、分からない点が多かったのでぼやいてたら、色々な方に助言をいただいて、何とか動かすことができました。ありがとうございます!
+Juliusのインストールと動作テスト
+The Julius book
+音声認識システム Julius を使って twitter に投稿する ruby スクリプト - Moderation is a fatal thing. Nothing succeeds like excess.
+ここらが参考になりました。精度をちょっとだけ上げたかったので configure のオプションを付けておきました。
+cvs -z3 -d:pserver:anonymous@cvs.sourceforge.jp:/cvsroot/julius co julius4
+cd julius4
+./configure --enable-setup
+make
+取りあえずこれでコンパイル完了。configure のオプションはもっといじれば、精度が良くなるかもしれません。
+次に以下のページからディクテーションキットを落としてきて解凍します。
+Juliusディクテーション実行キット
+出来た fast.jconf だけさっきの julius のフォルダに突っ込んでおきます。
+./julius/julius -C fast.jconf -input mic -charconv EUC-JP UTF-8
+これで起動すると、
+<<< please speak >>>と聞かれるので喋れば認識した結果が表示されます。
+pass1_best: テレビをつけて、 
+sentence1: テレビをつけて。
+クライアント側
+hecomi@hecominote:~/Program/cpp/iRemocon$ telnet 192.168.0.10 10500
+Trying 192.168.0.10...
+Connected to 192.168.0.10.
+Escape character is '^]'.
+<STARTPROC/>
+.
+<INPUT STATUS="LISTEN" TIME="1326295699"/>
+.
+<INPUT STATUS="STARTREC" TIME="1326295701"/>
+.
+<STARTRECOG/>
+.
+<INPUT STATUS="ENDREC" TIME="1326295703"/>
+.
+<ENDRECOG/>
+.
+<INPUTPARAM FRAMES="140" MSEC="1400"/>
+.
+<RECOGOUT>
+<SHYPO RANK="1" SCORE="-3549.973877">
+<WHYPO WORD="" CLASSID="<s>" PHONE="silB" CM="0.914"/>
+<WHYPO WORD="元気" CLASSID="元気:ゲンキ:元気:509" PHONE="g e N k i" CM="0.410"/>
+<WHYPO WORD="を" CLASSID="を:ヲ:を:63" PHONE="o" CM="0.928"/>
+<WHYPO WORD="つけ" CLASSID="つけ:ツケ:つける:239" PHONE="ts u k e" CM="0.468"/>
+<WHYPO WORD="て" CLASSID="て:テ:て:68" PHONE="t e" CM="0.638"/>
+<WHYPO WORD="。" CLASSID="。:。:。:8" PHONE="sp" CM="0.546"/>
+<WHYPO WORD="" CLASSID="</s>" PHONE="silE" CM="1.000"/>
+</SHYPO>
+</RECOGOUT>
+.
+<INPUT STATUS="LISTEN" TIME="1326295703"/>
+.
+Connection closed by foreign host.
+うーん…、電気をつけて欲しかったんだけど…。
+滑舌が悪いのかもしれないですが、まぁまぁ認識してくれます。
+コード
+#include <iostream>
+#include <boost/regex.hpp>
+#include <boost/asio.hpp>
+int main(int argc, char const* argv[])
+{
+using namespace boost::asio;
+using namespace std;
+// Julius の ip と port を指定
+const std::string ip = "192.168.0.10";
+const int port       = 10500;
+// Julius へ接続
+ip::address addr = ip::address::from_string(ip);
+ip::tcp::endpoint ep(addr, port);
+ip::tcp::iostream s(ep);
+// Julius サーバ 起動
+s << "STATUS\n" << std::flush;
+// 応答を解析する正規表現
+boost::regex r("WORD=\"([^\"]+)\"");
+boost::smatch m;
+// Julius からの応答を解析
+string line, word;
+while (getline(s, line)) {
+if (boost::regex_search(line, m, r))
+word += m.str(1);
+else if (line.find("<RECOGOUT>") != npos)
+word = "";
+else if (line.find("</RECOGOUT>") != npos)
+cout << word << endl;
+}
+return 0;
+}
+Julius で音声認識させてみた - 凹みTips

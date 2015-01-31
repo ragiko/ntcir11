@@ -1,0 +1,53 @@
+Firefox 36 が unicode-range デスクリプタをサポート、文字コード範囲を指定してフォントを適用可能に現在、Firefox Nightly としてリリースされている、Firefox 36 で、unicode-range デスクリプタがサポートされました。unicode-range は @font-face デスクリプタで、読み込んだフォントの適応範囲を指定します。
+現在、Firefox Nightly としてリリースされている、Firefox 36 で、unicode-range デスクリプタがサポートされました。unicode-range は @font-face デスクリプタで、読み込んだフォントの適応範囲を指定します。
+例えば、ある要素内のテキストのうち、特定の文字のみ、あるいは特定の文字コード範囲に含まれる文字のみを、別のフォントで置き換えたい場合などに、unicode-range でその文字や文字コード範囲を指定することができます。
+4.5 Character range: the unicode-range descriptor - CSS Fonts Module Level 3 Editor's Draft 27 October 2014
+unicode-range デスクリプタの使い方
+こういう指定が妥当というか実用的かは別として、わかりやすいサンプルソースを示してみますが、例えば下記のような HTML があったとします。
+<h1>HTML & CSS</h1>
+で、下記のように CSS を指定すれば、h1 要素内のテキスト表示には、ほとんどの場合 Arial フォントが適用されますね (もちろん、システムに Arial フォントがインストールされていればですが)。これは普通。
+h1 {
+font-family: Arial, sans-serif;
+}
+で、もしこのテキストの中の 「&」 にだけ、Trebuchet MS フォントを適用したい場合 (繰り返しますが、この指定が妥当か、とか実用的かは別としてですよ......)、unicode-range デスクリプタを使用して下記のように指定することで、対応するブラウザでは実現することができます。
+@font-face {
+font-family: Arial;
+src: local("Trebuchet MS");
+unicode-range: U+0026; /*「U+0026」 は Unicode における 「&」 の符号位置 */
+}
+ちなみに unicode-range デスクリプタに対応していないブラウザで表示すると、unicode-range: U+0026; の指定が無視されてしまいますので、下記のように指定したのと同じ意味になりますから、
+@font-face {
+font-family: Arial;
+src: local("Trebuchet MS");
+}
+font-family: Arial; が指定された場合は、ローカルにある Trebuchet MS フォントを使ってねということで、当然ながら、下記画像のようにすべてのテキストが Trebuchet MS フォントで表示されてしまいます (これももちろん、システムに Trebuchet MS フォントがインストールされていればですが)。
+しかし、unicode-range デスクリプタに対応したブラウザであれば、unicode-range: U+0026; の指定が活きてきますので、下記のように 「&」 にだけ、Trebuchet MS フォントが適用されることになります。
+このように、あるフォントを適用したい文字コード範囲を、Unicode の符号位置で指定することで、より詳細にフォントを指定することができますので、Web フォントと組み合わせて使用したりすると、デザインの幅がより広がるかもしれません。
+もちろん、未対応ブラウザでも上記のサンプルのように 「&」 にだけ、別のフォントを適用したければ、<span>&</span> みたいにしてスタイルを当てることで実現はできますが、1文字ならまだしも、複数の文字やある文字コード範囲をすべてとなると大変です。しかし、unicode-range デスクリプタを使用すればこのようなことも簡単に実現できます。
+なお、unicode-range の文字コード範囲指定は、下記のような書き方ができます。
+特定の符号位置を 1つ指定: 例) unicode-range: U+0026;
+文字コード範囲を指定: 例) unicode-range: U+0000-007F;
+ワイルドカード: 例) unicode-range: U+04??;
+「特定の符号位置を 1つ指定」 は前述した 「&」 だけを指定みたいな感じですね。「文字コード範囲を指定」 の場合は、例えば基本ラテン文字だけを範囲指定したいといった場合などに U+****-**** という形式で文字コード範囲を指定できます。
+例として、「MS Pゴシック」 のうち、基本ラテン文字だけを 「メイリオ」 で置き換えたければ、下記のような指定をすることで実現できます。
+@font-face {
+font-family: "MS Pゴシック";
+src: local("メイリオ"), local("Meiryo");
+unicode-range: U+0000-007F;
+}
+ワイルドカードは、「?」 を使用しますが、例えば 「文字コード範囲を指定」 する方法の unicode-range: U+0000-007F はワイルドカードを使用すると unicode-range: U+00?? とも書くことができます。
+これまた、そんな指定の仕方する奴はいねーよと怒られそうですが、極端な例として、下記のように記述すれば、「MS ゴシック」 で表示されるテキストのうち、U+0040-004F の文字コード範囲にある文字 (「@」、およびアルファベット大文字の 「A」 ～ 「O」) のみが 「Source Code Pro」 フォント (例では Google Fonts を使用) で表示されます。
+@font-face {
+font-family: "MS ゴシック";
+src: local("Source Code Pro"),
+local("SourceCodePro-Regular"),
+url(//themes.googleusercontent.com/static/fonts/sourcecodepro/v4/mrl8jkM18OlOQN8JLgasDxM0YzuT7MdOe03otPbuUS0.woff) format("woff");
+unicode-range: U+004?;
+}
+もちろん、「文字コード範囲を指定」 する方法と、ワイルドカードの組み合わせや、下記のように範囲をカンマ区切りで複数指定したりといったことも可能です。
+unicode-range: U+00-FF, U+980-9FF;
+unicode-range: U+3000-9FFF, U+ff??;
+ということで、下記にデモページを用意しました。
+unicode-range デスクリプタのデモ
+今回、Firefox Nightly (Firefox 36) がサポートしましたが、Google Chrome (36 以降 / Android 版は 38 以降)、Opera (25 以降) はすでにサポート済み。IE (9 以降) や Safari (5.1 以降) も完全ではないらしいですが基本的にはサポート済みですので、恐らく、上記のデモは動作するんじゃないかと思います (ただし、デモはフォントの指定が Windows しか配慮していないので他の OS だとダメな場合が多いと思いますけども)。
+Firefox 36 が unicode-range デスクリプタをサポート、文字コード範囲を指定してフォントを適用可能に | WWW WATCH

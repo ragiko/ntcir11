@@ -1,0 +1,63 @@
+混合ガウス モデルの紹介混合ガウス モデルは、多変量正規密度コンポーネントを結合することにより形成されます。Statistics Toolbox™ ソフトウェアでは、データの近似に 期待値最大化 (EM) アルゴリズムを使用した gmdistribution クラスを使用します。このアルゴリズムは、各観測値に関して、事後確率を各成分密度に代入します。混合ガウス モデルはデータ クラスタリングにしばしば使用されます。事後確率を最大にする成分を選択することにより、クラスターが代入されます。ガウス混合モデリングは、k 平均クラスタリングと同様に、局所的な最適条件に収束する反復アルゴリズムを使用します。各クラスターのサイズが同一でなく、クラスター間に相関があれば、ガウス混合モデリングの方が k 平均クラスタリングよりも適切である場合があります。混合ガウス モデルを使用するクラスタリングは、ソフトなクラスタリング方式と見なされることがあります。各点の事後確率は、各データ点が各クラスターに属する確率がある程度はあることを示します。
+ガウス混合によるクラスタリング近似モデルの多変量正規成分でクラスターを表すことができるので、混合ガウス分布をデータのクラスタリングに使用できます。 この処理について説明するため、最初に関数 mvnrnd を使用して、2 つの 2 変量ガウス分布の混合からシミュレーション データを作成します。rng('default')  % For reproducibility
+mu1 = [1 2];
+sigma1 = [3 .2; .2 2];
+mu2 = [-1 -2];
+sigma2 = [2 0; 0 1];
+X = [mvnrnd(mu1,sigma1,200);mvnrnd(mu2,sigma2,100)];
+scatter(X(:,1),X(:,2),10,'ko')
+二成分混合ガウス分布で近似します。ここでは正しい成分数がわかっていますが、実際に実数データを使用する場合は、成分数を変えてモデルを比較することによって、成分数を決定する必要があります。options = statset('Display','final');
+gm = fitgmdist(X,2,'Options',options);
+33 iterations, log-likelihood = -1210.59
+二成分混合分布の推定確率密度等高線をプロットします。2 つの 2 変量正規分布成分は重複しますが、ピークは異なっています。これにより、データを 2 つのクラスターに適切に分割できることがわかります。hold on
+ezcontour(@(x,y)pdf(gm,[x y]),[-8 6],[-8 6]);
+hold off
+近似混合分布の cluster メソッドを使用して、データをクラスターに分割します。cluster メソッドは、各点を混合分布の 2 つの成分の 1 つに代入します。idx = cluster(gm,X);
+cluster1 = (idx == 1);
+cluster2 = (idx == 2);
+scatter(X(cluster1,1),X(cluster1,2),10,'r+');
+hold on
+scatter(X(cluster2,1),X(cluster2,2),10,'bo');
+hold off
+legend('Cluster 1','Cluster 2','Location','NW')
+各クラスターは、混合分布の 2 変量正規分布成分の 1 つに対応します。cluster は点が成分に由来するという推定事後確率に基づいて、クラスターに点を割り当てます。各点は、最も高い事後確率に対応するクラスターに割り当てられます。posterior メソッドは、これらの posterior 確率を返します。例として各点の最初の成分の事後確率をプロットします。P = posterior(gm,X);
+scatter(X(cluster1,1),X(cluster1,2),10,P(cluster1,1),'+')
+hold on
+scatter(X(cluster2,1),X(cluster2,2),10,P(cluster2,1),'o')
+hold off
+legend('Cluster 1','Cluster 2','Location','NW')
+clrmap = jet(80); colormap(clrmap(9:72,:))
+ylabel(colorbar,'Component 1 Posterior Probability')
+混合ガウス分布を使用したソフトなクラスタリング前の例の代わりに、"ソフトなクラスタリング" の事後確率を使用することもできます。各点には、各クラスターのメンバーシップ スコアが割り当てられます。メンバーシップ スコアは単なる事後確率であり、各点が各クラスターの原型 (対応する成分の平均値など) にどれだけ類似しているかを記述します。指定したクラスター内のメンバーシップ スコアで点をランク付けすることができます。[~,order] = sort(P(:,1));
+plot(1:size(X,1),P(order,1),'r-',1:size(X,1),P(order,2),'b-');
+legend({'Cluster 1 Score' 'Cluster 2 Score'},'location','NW');
+ylabel('Cluster Membership Score');
+xlabel('Point Ranking');
+データの散布図でデータの明確な分離を確認するのは困難ですが、メンバーシップ スコアをプロットすることで、近似分布によりデータが適切にグループ分けされているかどうかがわかります。0.5 に近いスコアをもつ点はほとんどありません。  混合ガウス分布を使用したソフトなクラスタリングは、ファジィ k 平均クラスタリングと同様に、メンバーシップ スコアを使用して各点を各クラスターに割り当てます。ファジィ k 平均アルゴリズムでは、クラスターの形状がほぼ球面であり、どのクラスターもほぼ同じサイズであると仮定します。これは、すべての成分間で共有され、単位行列の倍数である 1 つの共分散行列をもつ混合ガウス分布に相当します。一方、gmdistribution ではさまざまな共分散オプションを指定できます。既定の設定のオプションでは、成分ごとに制約のない共分散行列を推定します。k 平均のように制約の厳しいオプションとしては、共有される対角共分散行列の推定が挙げられます。gm2 = fitgmdist(X,2,'CovType','Diagonal',...
+'SharedCov',true);
+この共分散オプションはファジィ k 平均クラスタリングに似ていますが、変数ごとに異なる分散を指定できるため、柔軟性に優れています。posterior を使用することでハード クラスター割り当てを計算せずにソフト クラスター メンバーシップ スコアを計算することができます。または、ハード クラスタリングの一環で cluster の 3 番目の出力として計算できます。P2 = posterior(gm2,X); % equivalently [idx,~,P2] = cluster(gm2,X)
+[~,order] = sort(P2(:,1));
+plot(1:size(X,1),P2(order,1),'r-',1:size(X,1),P2(order,2),'b-');
+legend({'Cluster 1 Score' 'Cluster 2 Score'},'location','NW');
+ylabel('Cluster Membership Score');
+xlabel('Point Ranking');
+新しいデータのクラスターへの代入前の例では、fitgmdist を使用して混合分布をデータに近似する手順と、cluster を使用してこれらのデータをクラスタリングする手順は別々の手順でした。しかし、両方の手順で同じデータが使用されています。cluster メソッドを使用すると、オリジナル データに見つかったクラスター (混合成分) に新しいデータ点を割り当てることもできます。  データセット X が与えられた場合、最初に混合ガウス分布に近似します。この操作は既に前述のコードで行っています。gm
+gm = 
+Gaussian mixture distribution with 2 components in 2 dimensions
+Component 1:
+Mixing proportion: 0.629379
+Mean:    1.0758    2.0426
+Component 2:
+Mixing proportion: 0.370621
+Mean:   -0.8292   -1.8482
+次に、cluster を使用して新しいデータセット Y の各点をオリジナル データ用に定義したクラスターの 1 つに割り当てることができます。Y = [mvnrnd(mu1,sigma1,50);mvnrnd(mu2,sigma2,25)];
+idx = cluster(gm,Y);
+cluster1 = (idx == 1);
+cluster2 = (idx == 2);
+scatter(Y(cluster1,1),Y(cluster1,2),10,'r+');
+hold on
+scatter(Y(cluster2,1),Y(cluster2,2),10,'bo');
+hold off
+legend('Class 1','Class 2','Location','NW')
+前述の例で示したように、各点の事後確率は、"ハード" クラスター割り当てを決定するのでなく、メンバーシップ スコアとして処理できます。cluster によって新しいデータで有意な結果を得るには、Y は、混合分布の作成に使用されたオリジナル データ X と同じ母集団から抽出されている必要があります。特に X に近似される混合ガウス分布の推定混合確率は、Y の事後確率を計算する際に使用されます。
+混合ガウス モデル - MATLAB & Simulink - MathWorks 日本

@@ -1,0 +1,172 @@
+3日で作る高速特定物体認識システム (3) SURFの抽出(2009/10/30)のつづき。画像からSIFTや SURFといった局所特徴量を抽出できるようになったのでここらでそれを応用してみます。特徴点のマッチングを取ることで2つの画像間で対応する場所を求められるようになります。下の例のような感じです。下の図で2つのキーポイント間にひいた直線は、両端のキーポイントの特徴ベクトルが似ている(距離が小さい)ことを表しています。以下、プログラムです。
+keypoint_matching.exe [画像1のファイル名] [画像2のファイル名]のように2つの画像ファイルを入力として与えると上のようにマッチング画像が表示されます。
+#include <cv.h>
+#include <highgui.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+const int DIM_VECTOR = 128;    // 128次元ベクトル
+const double THRESHOLD = 0.3;  // 線をつなぐ距離の閾値
+/**
+* 2つのベクトルのユークリッド距離を計算して返す
+*
+* @param[in] vec     ベクトル1の配列
+* @param[in] mvec    ベクトル2の配列
+* @param[in] length  ベクトルの長さ
+*
+* @return ユークリッド距離
+*/
+double euclidDistance(float* vec1, float* vec2, int length) {
+double sum = 0.0;
+for (int i = 0; i < length; i++) {
+sum += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
+}
+return sqrt(sum);
+}
+/**
+* 最近傍点を検索
+*
+* @param[in]   vec             特徴ベクトル
+* @param[in]   laplacian       ラプラシアン
+* @param[in]   keypoints       キーポイントの集合(この中から最近傍点を検索)
+* @param[in]   descriptors     特徴ベクトルの集合
+*
+* @return 最近傍点のインデックス(見つからないときは-1)
+*/
+int nearestNeighbor(float* vec, int laplacian, CvSeq* keypoints, CvSeq* descriptors) {
+int neighbor = -1;
+double minDist = 1e6;
+for (int i = 0; i < descriptors->total; i++) {
+CvSURFPoint* pt = (CvSURFPoint*)cvGetSeqElem(keypoints, i);
+// ラプラシアンが異なるキーポイントは無視
+if (laplacian != pt->laplacian) continue;
+float* v = (float*)cvGetSeqElem(descriptors, i);
+double d = euclidDistance(vec, v, DIM_VECTOR);
+// より近い点があったら置き換える
+if (d < minDist) {
+minDist = d;
+neighbor = i;
+}
+}
+// 最近傍点でも距離が閾値以上だったら無視する
+if (minDist < THRESHOLD) {
+return neighbor;
+}
+// 最近傍点が見つからない場合
+return -1;
+}
+/**
+* 画像1のキーポイントと近い画像2のキーポイントを組にして返す
+*
+* @param[in]  keypoints1       画像1のキーポイント
+* @param[in]  descriptors1     画像1の特徴ベクトル
+* @param[in]  keypoints2       画像2のキーポイント
+* @param[in]  descriptors2     画像2の特徴ベクトル
+* @param[out] ptpairs          類似キーポイントインデックスの列(2つ1組)
+*
+* @return なし
+*/
+void findPairs(CvSeq* keypoints1, CvSeq* descriptors1,
+CvSeq* keypoints2, CvSeq* descriptors2,
+vector<int>& ptpairs) {
+ptpairs.clear();
+// 画像1の各キーポイントに関して最近傍点を検索
+for (int i = 0; i < descriptors1->total; i++) {
+CvSURFPoint* pt1 = (CvSURFPoint*)cvGetSeqElem(keypoints1, i);
+float* desc1 = (float*)cvGetSeqElem(descriptors1, i);
+// 最近傍点を検索
+int nn = nearestNeighbor(desc1, pt1->laplacian, keypoints2, descriptors2);
+// 見つかったら画像1のインデックスと画像2のインデックスを順番に登録
+if (nn >= 0) {
+ptpairs.push_back(i);
+ptpairs.push_back(nn);
+}
+}
+}
+int main(int argc, char** argv) {
+const char* filename1 = argc == 3 ? argv[1] : "image/dolphin_image_0001.jpg";
+const char* filename2 = argc == 3 ? argv[2] : "image/dolphin_image_0001.jpg";
+cvNamedWindow("Keypoint Matching");
+// 画像はグレースケールでロード
+IplImage* grayImage1 = cvLoadImage(filename1, CV_LOAD_IMAGE_GRAYSCALE);
+IplImage* grayImage2 = cvLoadImage(filename2, CV_LOAD_IMAGE_GRAYSCALE);
+if (!grayImage1 || !grayImage2) {
+cerr << "cannot find image file" << endl;
+exit(-1);
+}
+// 描画用にカラーでロード
+IplImage* colorImage1 = cvLoadImage(filename1, CV_LOAD_IMAGE_ANYCOLOR|CV_LOAD_IMAGE_ANYDEPTH);
+IplImage* colorImage2 = cvLoadImage(filename2, CV_LOAD_IMAGE_ANYCOLOR|CV_LOAD_IMAGE_ANYDEPTH);
+// マッチング用の画像を描画
+CvSize sz = cvSize(colorImage1->width + colorImage2->width, colorImage1->height + colorImage2->height);
+IplImage* matchingImage = cvCreateImage(sz, IPL_DEPTH_8U, 3);
+// 画像1を描画
+cvSetImageROI(matchingImage, cvRect(0, 0, colorImage1->width, colorImage1->height));
+cvCopy(colorImage1, matchingImage);
+// 画像2を描画
+cvSetImageROI(matchingImage, cvRect(colorImage1->width, colorImage1->height, colorImage2->width, colorImage2->height));
+cvCopy(colorImage2, matchingImage);
+cvResetImageROI(matchingImage);
+CvSeq *keypoints1 = 0, *descriptors1 = 0;
+CvSeq *keypoints2 = 0, *descriptors2 = 0;
+CvMemStorage* storage = cvCreateMemStorage(0);
+CvSURFParams params = cvSURFParams(500, 1);
+// SURFを抽出
+cvExtractSURF(grayImage1, 0, &keypoints1, &descriptors1, storage, params);
+cvExtractSURF(grayImage2, 0, &keypoints2, &descriptors2, storage, params);
+// 特徴ベクトルの類似度が高いキーポイント同士を線でつなぐ
+vector<int> ptpairs;  // keypointsのインデックスが2つずつ組になるように格納
+findPairs(keypoints1, descriptors1, keypoints2, descriptors2, ptpairs);
+// 2つずつ組にして線を引く
+for (int i = 0; i < (int)ptpairs.size(); i += 2) {
+CvSURFPoint* pt1 = (CvSURFPoint*)cvGetSeqElem(keypoints1, ptpairs[i]);     // 画像1のキーポイント
+CvSURFPoint* pt2 = (CvSURFPoint*)cvGetSeqElem(keypoints2, ptpairs[i + 1]); // 画像2のキーポイント
+CvPoint from = cvPointFrom32f(pt1->pt);
+CvPoint to = cvPoint(cvRound(colorImage1->width + pt2->pt.x), cvRound(colorImage1->height + pt2->pt.y));
+cvLine(matchingImage, from, to, cvScalar(0, 255, 255));
+}
+// キーポイントマッチングした画像を描画
+cvShowImage("Keypoint Matching", matchingImage);
+cvWaitKey(0);
+// 後始末
+cvReleaseImage(&grayImage1);
+cvReleaseImage(&grayImage2);
+cvReleaseImage(&colorImage1);
+cvReleaseImage(&colorImage2);
+cvClearSeq(keypoints1);
+cvClearSeq(descriptors1);
+cvClearSeq(keypoints2);
+cvClearSeq(descriptors2);
+cvReleaseMemStorage(&storage);
+return 0;
+}
+画像1(左上の画像)の各キーポイントについて画像2(右下の画像)から最近傍点を検索しています。検索の方法は線形探索で、すべてのキーポイント間で距離を計算して一番近いものを選んでます。そのため、画像1のキーポイント数が800、画像2のキーポイント数が800だとすると全部で800x800=640000回もの距離計算が必要になります。線形探索は非常に効率が悪いので後でさらに高速な検索方法を導入予定です。ここで、SURFはラプラシアンが一致しない点同士は似ていないと判定してよいそうです。なぜかは勉強中です・・・キーポイント間の距離は特徴ベクトル(128次元)のユークリッド距離(L2ノルム)で測っています。そして、ユークリッド距離がTHRESHOLD(=0.3)以下の場合、対応する点と判断して直線を引いています。実際は、距離の比較なのでユークリッド距離の2乗を使っても問題ありません(閾値は変える必要あり)。大量に距離計算が必要なのでsqrt()を使わずint型で計算したほうが高速かも。
+局所特徴量の頑健性の検証
+SIFTやSURFは画像のスケール変化、平行移動、回転、隠蔽(オクルージョン)に対して頑健と言われてます。そんなわけで画像1(左上の画像)を変形してキーポイントのマッチングができるか試してみました。画像をクリックで拡大できます。
+画像のサイズ変更、回転、隠蔽は下のようなコードでできます。隠蔽は左半分を白く塗りつぶしています。詳しくは下のリンクを参照してください。
+画像のサイズ変更
+画像の回転
+図形の描画
+// 縮小
+IplImage* dst = cvCreateImage(cvSize(src->width/2, src->height/2), src->depth, src->nChannels);
+cvResize(src, dst);
+// 隠蔽(左半分を塗りつぶす)
+IplImage* dst = cvCloneImage(src);
+cvRectangle(dst, cvPoint(0, 0), cvPoint(dst->width/2, dst->height), cvScalar(255,255,255), CV_FILLED);
+// 回転
+IplImage* dst = cvCloneImage(src);
+int angle = 45;  // 回転角度
+float m[6];
+CvMat M;
+m[0] = (float)(cos(angle * CV_PI / 180));
+m[1] = (float)(-sin(angle * CV_PI / 180));
+m[2] = src->width * 0.5;
+m[3] = -m[1];
+m[4] = m[0];
+m[5] = src->height * 0.5;
+cvInitMatHeader(&M, 2, 3, CV_32FC1, m, CV_AUTOSTEP);
+cvGetQuadrangleSubPix(src, dst, &M);
+特定物体認識への応用
+キーポイントのマッチングは物体画像があるシーンの一部にある場合でも可能です。たとえば、画像2(右下の画像)をいろいろな物体を結合した画像にしてみました。線を引くユークリッド距離の閾値を0.2にしています。ちゃんとイルカがどこにあるか認識してますね。現状では、画像2(右下の画像)はたくさんの物体画像をまとめた一枚画ですが、後ほど物体モデルデータベース、大量の物体画像のキーポイントと特徴ベクトルを格納したデータベースに置き換える予定です。次の例は、ユークリッド距離の閾値を0.3にあげて少し条件を緩くしてみました。こうすると線はたくさん引かれますがその分間違えも大きくなってます。別の例です。これもユークリッド距離の閾値は0.3です。間違いは多いですが、画像1と同じピアノの画像に線が集中しているのはわかります。実際に特徴点のマッチングを特定物体認識に使う場合は間違えが多少あっても許されます。下のように正解の画像に線が集中していれば(得票数が多ければ)きちんと認識できるわけです。この多少間違えがあっても認識できるという性質を利用して認識を高速化させる方法も提案されています。3日で作る高速特定物体認識システム (5) 物体モデルデータベースの作成(2009/11/14)へ続きます。
+3日で作る高速特定物体認識システム (4) 特徴点のマッチング - 人工知能に関する断創録

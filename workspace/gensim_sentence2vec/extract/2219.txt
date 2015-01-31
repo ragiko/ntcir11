@@ -1,0 +1,19 @@
+CREATE_MODELプロシージャ
+DBMS_DATA_MININGパッケージのCREATE_MODELプロシージャは、指定されたデータを使用して、指定された名前およびマイニング機能を持つマイニング・モデルを作成します。モデルは、構成設定とユーザー指定の変換を使用して作成される場合もあります。
+PROCEDURE CREATE_MODEL(
+model_name            IN VARCHAR2,
+mining_function       IN VARCHAR2,
+data_table_name       IN VARCHAR2,
+case_id_column_name   IN VARCHAR2,
+target_column_name    IN VARCHAR2 DEFAULT NULL,
+settings_table_name   IN VARCHAR2 DEFAULT NULL,
+data_schema_name      IN VARCHAR2 DEFAULT NULL,
+settings_schema_name  IN VARCHAR2 DEFAULT NULL,
+xform_list            IN TRANSFORM_LIST DEFAULT NULL);
+マイニング機能の選択
+マイニング機能は、CREATE_MODELプロシージャに必須の引数です。データ・マイニング機能によって、モデル化や解決の対象となり得る問題のクラスが特定されます。
+データ・マイニング機能は、監視あり学習または監視なし学習のいずれかを実装しています。監視あり学習では、独立属性のセットを使用して従属属性の値またはターゲットを予測します。監視なし学習では従属属性と独立属性は区別されません。監視あり機能は予測的です。監視なし機能は記述的です。
+用語に関する注意:
+データ・マイニングの用語では、機能(function)とは、特定のデータ・マイニング・アプローチを使用して解決される問題の一般的な種類です。SQL言語の用語では、関数(function)は値を戻す演算子です。
+Oracle Data Miningのドキュメントでは、機能(function)またはマイニング機能(mining function)という用語は、データ・マイニング機能を表し、SQL関数(SQL function)またはSQLデータ・マイニング関数(SQL Data Mining function)という用語は、スコアリング(データ・マイニング・モデルの適用)用のSQL関数を表します。
+モデルの作成

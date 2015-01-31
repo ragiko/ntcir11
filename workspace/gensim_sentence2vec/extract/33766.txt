@@ -1,0 +1,215 @@
+mpileupのトラブルシューティング
+問題発生時の状況
+somatic SNVのコーラーである
+VarScanのsomaticサブプログラムを実行した結果が、空でした。
+$ infile1=MDS-04_normal_DRR001327.pileup
+$ infile2=MDS-04_tumor_DRR001326.pileup
+$ java -jar /toolDir/VarScan.v2.3.6/VarScan.v2.3.6.jar somatic $infile1 $infile2 ./output_1/out;
+$ cat output_1/out.indel
+chrom   position        ref     var     normal_reads1   normal_reads2   normal_var_freq normal_gt       tumor_reads1    tumor_reads2    tumor_var_freq  tumor_gt        somatic_status  variant_p_value somatic_p_value tumor_reads1_plus       tumor_reads1_minus      tumor_reads2_plus       tumor_reads2_minus      normal_reads1_plus      normal_reads1_minus     normal_reads2_plus      normal_reads2_minus
+$ cat output_1/out.snp
+chrom   position        ref     var     normal_reads1   normal_reads2   normal_var_freq normal_gt       tumor_reads1    tumor_reads2    tumor_var_freq  tumor_gt        somatic_status  variant_p_value somatic_p_value tumor_reads1_plus       tumor_reads1_minus      tumor_reads2_plus       tumor_reads2_minus      normal_reads1_plus      normal_reads1_minus     normal_reads2_plus      normal_reads2_minus
+varScanの実行ログの末尾には以下のように、
+十分なカバレージを満たす箇所が0件であることが分かります。
+Normal Pileup: MDS-04_normal_DRR001327.pileup
+Tumor Pileup: MDS-04_tumor_DRR001326.pileup
+Min coverage:   8x for Normal, 6x for Tumor
+Min reads2:     2
+Min strands2:   1
+Min var freq:   0.2
+Min freq for hom:       0.75
+Normal purity:  1.0
+Tumor purity:   1.0
+Min avg qual:   15
+P-value thresh: 0.99
+Somatic p-value:        0.05
+Not resetting normal file because GL000210.1 < GL000231.1
+Not resetting normal file because GL000210.1 < GL000231.1
+..(中略)..
+Not resetting normal file because GL000192.1 < GL000225.1
+Not resetting normal file because GL000192.1 < GL000225.1
+65745631 positions in tumor
+64745046 positions shared in normal
+0 had sufficient coverage for comparison
+0 were called Reference
+0 were mixed SNP-indel calls and filtered
+0 were called Germline
+0 were called LOH
+0 were called Somatic
+0 were called Unknown
+0 were called Variant
+入力に使用したmpileupを確認すると、
+4列目がdepth of coverageなので抽出し、隣り合う重複行を除去する(uniqコマンド)と、
+一ケタ台のカバレージばかりであることが判明。
+$ head -n 3 MDS-04_normal_DRR001327.pileup
+1       10031   T       1       ^".     =
+1       10032   A       1       .       @
+1       10033   A       1       .       B
+$ cut -f 4 MDS-04_normal_DRR001327.pileup | uniq | head -n 30
+1
+2
+3
+4
+3
+2
+1
+2
+3
+4
+5
+6
+5
+4
+3
+2
+1
+2
+1
+2
+3
+4
+3
+2
+1
+2
+1
+2
+1
+2
+先頭行周辺だけカバレージが低いかと思いきや、10未満を"<10"に置き換え件数を数えると、ほとんどが10未満であることが判明。
+$ cut -f 4 input_1/MDS-04_normal_DRR001327.recal.bam.pileup | awk '{if($1<10){print "<10"}else{print $1}}' | uniq -c | less
+226017 <10
+6 10
+23071017 <10
+29 10
+61396748 <10
+3 10
+206817813 <10
+29 10
+13265931 <10
+16 10
+30810454 <10
+12 10
+6091680 <10
+6 10
+7453003 <10
+10 10
+973186 <10
+今回使用したデータは
+3～4千万リードある公開ガンゲノムのexomeデータであるので、
+カバレージがこれほど低いわけはありません。
+http://trace.ddbj.nig.ac.jp/DRASearch/run?acc=DRR001326
+http://trace.ddbj.nig.ac.jp/DRASearch/run?acc=DRR001327
+mpileupにかける前の、BAMファイルをsamtoolsのtviewで参照したところ、
+以下のように、10を優に超える箇所が多数見られました。
+$ samtools tview MDS-04_normal_DRR001327.recal.bam
+13421     13431     13441     13451     13461     13471     13481
+N**NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+A  GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTTTCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+C**GA cacatttctcactgccttttgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+a**gatcaca ttctcactgccttttgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACAT TCTCACTGCCTTTTGTCTGCCCAGTTTCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+A**GATCACATT ctcactgccttttgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTT tcactgccttttgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTC  tgccttttgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCAC gccttttgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACT  CTTTTGTCTGCCCAGTTTCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+A**GATCACATTTCTCACTGCC  ttgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCT  TGTCTGCCCAGTTTCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+A**GATCACATTTCTCACTGCCTT tgtctgcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTT    TGCCCAGTTTCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+a**gatcacatttctcactgccttt     gcccagtttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+a**gatcacatttctcactgcctttt          tttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+a**gatcacatttctcactgccttttgt         TTCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+A**GATCACATTTCTCACTGCCTTTTGTCT       ttcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTG       TCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+A**GATCACATTTCTCACTGCCTTTTGTCTGCC     tcaccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCC     CACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+A**GATCACATTTCACACTGCCTTTTGTCTGCCCAG   caccagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGT   accagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTA    CAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACT
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTTT   cagaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTTTC   agaagtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTTTCA    aagtaggcctcttcctgacaggcagctgcaccact
+a**gatcacatttctcactgccttttgtctgcccagtttcac    agtaggcctcttcctgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTTTCACC        gcctcttcctgacaggcagctgcaccact
+a**gatcacatttctcactgccttttgtctgcccagtttcacc           tcttcctgacaggcagctgcaccact
+a**gatcacatttctcactgccttttgtctgcccagtttcaccag               tgacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTTTCACCAGA               gacaggcagctgcaccact
+A**GATCACATTTCTCACTGCCTTTTGTCTGCCCAGTTTCACCAGAA                  ggcagctgcaccact
+改めて、上記のカバレージ10以上の箇所をsamtools mpileupで確認したところ、
+その箇所が出力から抜けていることが確認できました。
+$ samtools mpileup MDS-04_normal_DRR001327.recal.bam | less
+(前略)..
+1       12729   N       2       Gg      5E
+1       12730   N       2       A$a     2J
+1       12731   N       1       g$      E
+1       14023   N       1       ^!G     E
+1       14024   N       1       A       D
+1       14025   N       1       T       F
+1       14026   N       1       T       K
+その後、twitter上での@soh_iさんのご助言などもあり、
+https://twitter.com/nob_fj/status/421638891334926336
+i/status/421640639927681024">https://twitter.com/sohi/status/421640639927681024
+http://twitter.com/nob_fj/status/421642358392750080
+i/status/421643864277925888">http://twitter.com/sohi/status/421643864277925888
+http://twitter.com/nob_fj/status/421645406573834240
+http://twitter.com/nob_fj/status/421662929033760770
+i/status/421667693419188225">https://twitter.com/sohi/status/421667693419188225
+原因が、mpileupのデフォルトのフィルタリングであることが判明しました。
+上記のbamファイルはGATKの
+・duplicationのマーク
+・quality recalibration
+・indel local realignment
+を実施した後のbamファイルです。
+これらの処理を実施前のbamファイルに同様にmpileupをかけた結果は、
+上の実施後のbamと比較すれば明らかなように、以下のように
+カバレージが異常に低いということは無く、tviewの結果と
+類似の結果が得られているように見えます。
+$ samtools mpileup MDS-04_normal_DRR001327.bam | less
+:
+1       12731   N       10      g$GggGggtgG     IGIG#DG##G
+1       12732   N       9       AaaAaaaaA       AID#DG##G
+1       12733   N       9       GggGggggG       DIG#ID##I
+:
+1       13421   N       153     A$aAAAAAAAAAAAAAAAAAAaaAAAAAAAAAAAAAAAaAAaaAAAAaAAAAAAAaaAaaAAAaAaAaAaaaaaAaAAaAAaAAAaaaaAAAAaaAAAAAAAAAAAAaAAAaAAAAAaaAaAAAaAaAAAaAaAAaAaAAaaaaAAAaAAaa^2a^2a  #I#HAG=GFEDGDEH=@>HB=HHD<H@EHEIGHB9H@H?HIIDHBIFEGGIEGIIGHIIIFEGHIG>I8BHHBIIBAIII@CGIIGGIHBI)EGHIIIIIGHDGIIIHIHBDIHIFCBIBEIB9I@IIIDB8IF#G=II?@>BII*CDIIDB#
+1       13422   N       152     tTTTTTTTTTTTTTTTTTTttTTTTTTTTTTTTTTTtTTttTTTTtTTTTTTTttTttTTTtTtTtTtttttTtTTtTTtTTTttttTTTTttTTTTTTTTTTTTtTTTtTTTTTttTtTTTtTtTTTtTtTTtTtTTttttTTTtTTtttt        I#BBE:EFEBG<EH<BBGE8DIBBHCIGEHGHH9HBH:IIIDHHHEGHGIBIIHBIBIHICGIIBFI=DFGEHIB?>EHGFHIHG@IIHI,CEIHIGGIGHHIIIHIII8IIHHDFDIBIIF=IBIIIBF8ID#G9HI8D@AII=B@IDBB#
+varScanのsomaticにかける場合は、
+recalibration等を実施しないという選択肢も考えられますが、
+同様のツールのMuTectでは、これらの処理を実施済みの
+データを利用することを推奨していることもあり、
+より正確な結果が出力されることが期待できるようにも思います。
+その後、以下のsamtoolsのFAQやseqanswersの記事などを参照し、
+http://samtools.sourceforge.net/mpileup.shtml
+samtools mpileupの実行時に-Aオプションを付加すれば、大部分のフィルタは解除され
+$ samtools mpileup -A MDS-04_normal_DRR001327.recal.bam | less
+:
+1       12731   N       10      g$GggGggtgG     E;ED#CE##D
+1       12732   N       9       AaaAaaaaA       7KN#OO##B
+1       12733   N       9       GggGggggG       6IL#IL##D
+:
+1       13421   N       104     A$aAAAAAAAAAAaaaAAAAAAAAAAaAaaAAAaAAAaAaAaaAaaAaAaAaAaAaAaAaAAaaAAaAaAAAaAaAaAaAaAAaaAAaaAaAaaAaAaaAAaAa^2a     #F#57?BBCDADAEGDA=CBDCBFADCGGACEDECEHCHCHGCEGCHE>EEEEEH@HE@@EHHE,DCHEEBHCCCEEDEBEEBEEEDB?:D#?B5E42E81D5/
+1       13422   N       103     tTTTTTTTTTTtttTTTTTTTTTTtTttTTTtTTTtTtTttTttTtTtTtTtTtTtTtTTttTTtTtTTTtTtTtTtTtTTttTTttTtTttTtTttTTtTtt C#56>D>DFCE8@BHAAEHEEDEECHEEDEEAGGHCG@EEEHBCGEGCGBGBEEA=CCDGDFG2BGCEEGDG4ECECGAGGACGGABC:G#=D5E41G?0F/.
+さらに、-ABQ0 -d10000000オプションを付加するとより正確なカバレージが得られることが判明しました。
+$ samtools mpileup -ABQ0 -d10000000 MDS-04_normal_DRR001327.recal.bam | less
+:
+1       12731   N       10      g$GggGggtgG     E;ED#CE##D
+1       12732   N       9       AaaAaaaaA       7KN#OO##B
+1       12733   N       9       GggGggggG       6IL#IL##D
+:
+1       13421   N       104     A$aAAAAAAAAAAaaaAAAAAAAAAAaAaaAAAaAAAaAaAaaAaaAaAaAaAaAaAaAaAAaaAAaAaAAAaAaAaAaAaAAaaAAaaAaAaaAaAaaAAaAa^2a     #F#57?BBCDADAEGDA=CBDCBFADCGGACEDECEHCHCHGCEGCHE>EEEEEH@HE@@EHHE,DCHEEBHCCCEEDEBEEBEEEDB?:D#?B5E42E81D5/
+1       13422   N       103     tTTTTTTTTTTtttTTTTTTTTTTtTttTTTtTTTtTtTttTttTtTtTtTtTtTtTtTTttTTtTtTTTtTtTtTtTtTTttTTttTtTttTtTttTTtTtt C#56>D>DFCE8@BHAAEHEEDEECHEEDEEAGGHCG@EEEHBCGEGCGBGBEEA=CCDGDFG2BGCEEGDG4ECECGAGGACGGABC:G#=D5E41G?0F/.
+状況をまとめますと、samtools mpileup実行時に、
+・GATKのrecalibration実施後のbamをsamtools mpileupの
+デフォルトオプションで実行するとデフォルトのフィルタにより
+多くのリードが除外されるため、
+カバレージ(depth of coverage)が異常に低くなる。
+・tviewでは、そのようなフィルタは行われない。
+・mpileup実行時に-Aオプションや、'-ABQ0 -d10000000'を実行すると、
+そのようなほとんどのリードが除外される状況は回避できる。
+以上、問題は解決。
+尚、varScanの実行に関しては、
+GATKのrecalibration前のbamのmpileupした結果、
+recalibration後のbamに-ABQ0 -d10000000付きでmpileupした結果の
+どちらも結果が空という状況は回避されました。
+NGS Surfer's Wiki | 						samtools

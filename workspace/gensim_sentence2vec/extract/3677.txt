@@ -1,0 +1,132 @@
+Error Handling¶
+OpenCVのエラーハンドリングは,IPL(Image Processing Library)の場合と似ています.エラーが発生した場合でも,関数はエラーコードを返しません.その代わりに,
+Error
+を呼び出すマクロ
+CV_ERROR
+を用いてエラーを発生させます.その中で,
+SetErrStatus
+によりエラー状態をセットし,標準あるいはユーザ定義のエラーハンドラ(メッセージボックスを表示したり,ログを書き出したりできます.詳しくは,
+RedirectError
+を参照してください)を呼び出します.1スレッドに1つ,現在のエラー状態(整数値)を保存するグローバル変数が存在します.このエラー状態は,関数
+GetErrStatus
+によって取得できます.
+エラーハンドリングには3つのモードが存在します(
+SetErrMode
+および
+GetErrMode
+を参照してください):
+Leaf
+. エラーハンドラを呼び出した後に,プログラムが終了します.これはデフォルト値です.エラーが発生すると即座に通知されるので,デバッグ時に役立ちます.しかし,製品版のシステムでは,より細かく制御可能な他の2つのモードの方が適しているかもしれません.
+Parent
+. エラーハンドラは呼ばれますが,プログラムは終了しません.また,(C++の例外処理を利用しないので)スタックは巻き戻されません.ユーザは,
+CxCore
+の関数を呼び出した後で,
+GetErrStatus
+を用いてエラーコードをチェックし,対処を行います.
+Silent
+. これは
+Parent
+モードと似ていますが,エラーハンドラが呼ばれません.
+実際は,
+Leaf
+モードと
+Parent
+モードの動作は,エラーハンドラによって実装され,その実装された動作に関しては,上述の説明は正しいと言えます.しかし,
+GuiBoxReport
+では少し違う挙動を示し,カスタムエラーハンドラに至っては全く異なる動作をする可能性があります.
+エラーの発生やチェックなどを行うマクロ.
+/* 関数内の処理文を挟むことで,それらをプロローグ(リソースの初期化)と
+エピローグ(確保されたリソースの解放)から分離する特別なマクロ */
+#define __BEGIN__       {
+#define __END__         goto exit; exit: ; }
+/* 「リソース解放ステージ」へ進みます */
+#define EXIT            goto exit
+/* CV_ERROR() で使用する関数名をローカルに定義します */
+#define CV_FUNCNAME( Name )  \
+static char cvFuncName[] = Name
+/* 現在のコンテクスト内でのエラーを発生させます */
+#define CV_ERROR( Code, Msg )                                       \
+/* CXCORE の関数呼び出しの後の状態をチェックします */
+#define CV_CHECK()                                                  \
+/* CXCORE の関数呼び出しと CV_CHECK() 呼び出しの簡略表現です */
+#define CV_CALL( Statement )                                        \
+/* デバッグモードとリリースモード両方に対応した状態チェックを行います */
+#define CV_ASSERT( Condition )                                          \
+/* これらのマクロは,それぞれ対応するマクロ CV_... と似ていますが,
+exit ラベルを必要とせず,cvFuncName も定義されている必要がありません */
+#define OPENCV_ERROR(status,func_name,err_msg) ...
+#define OPENCV_ERRCHK(func_name,err_msg) ...
+#define OPENCV_ASSERT(condition,func_name,err_msg) ...
+#define OPENCV_CALL(statement) ...
+#include "cxcore.h"
+#include <stdio.h>
+void cvResizeDCT( CvMat* input_array, CvMat* output_array )
+{
+CvMat* temp_array = 0; // 最後には解放されるべきポインタの宣言
+CV_FUNCNAME( "cvResizeDCT" ); // cvFuncNameの宣言
+__BEGIN__; // 処理の開始.このマクロの直後に何らかの宣言があるとしても,
+// それらは,エピローグ部からはアクセスできません.
+if( !CV_IS_MAT(input_array) || !CV_IS_MAT(output_array) )
+// エラーを発生させるために CV_ERROR() を利用します.
+CV_ERROR( CV_StsBadArg,
+"input_array or output_array are not valid matrices" );
+// 後のバージョンでは撤廃されるだろう制約条件について,
+// CV_ASSERT() を用いてチェックします.
+CV_ASSERT( input_array->rows == 1 && output_array->rows == 1 );
+// 安全な関数呼び出しのために CV_CALL を利用します.
+CV_CALL( temp_array = cvCreateMat( input_array->rows,
+MAX(input_array->cols,
+output_array->cols),
+input_array->type ));
+if( output_array->cols > input_array->cols )
+CV_CALL( cvZero( temp_array ));
+temp_array->cols = input_array->cols;
+CV_CALL( cvDCT( input_array, temp_array, CV_DXT_FORWARD ));
+temp_array->cols = output_array->cols;
+CV_CALL( cvDCT( temp_array, output_array, CV_DXT_INVERSE ));
+CV_CALL( cvScale( output_array,
+output_array,
+1./sqrt((double)input_array->cols*output_array->cols), 0 ));
+__END__; // 処理の終了.エピローグはこのマクロの後に書きます.
+// temp_array を解放します.
+// エラー発生前に temp_array が確保されていない場合,
+// cvReleaseMat が適切に処理を行います.今回のような場合は,特にに何もしません.
+cvReleaseMat( &temp_array );
+}
+int main( int argc, char** argv )
+{
+CvMat* src = cvCreateMat( 1, 512, CV_32F );
+#if 1 /* エラーなし */
+CvMat* dst = cvCreateMat( 1, 256, CV_32F );
+#else
+CvMat* dst = 0; /* エラー処理のテスト用 */
+#endif
+cvSet( src, cvRealScalar(1.), 0 );
+#if 0 /* エラーハンドラを起動しないようにするためには 0 から 1 へ変更してください */
+cvSetErrMode( CV_ErrModeSilent );
+#endif
+cvResizeDCT( src, dst ); // エラーが発生した場合,
+// メッセージボックスがポップアップするか,
+// メッセージがログに書き込まれるか,
+// あるいはユーザー定義の処理が行われます.
+if( cvGetErrStatus() < 0 )
+printf("Some error occured" );
+else
+printf("Everything is OK" );
+return 0;
+}
+cv::GetErrStatus¶
+int cvGetErrStatus(void)¶
+現在のエラー状態を返します.
+この関数は,現在のエラー状態,つまり直前の
+SetErrStatus
+呼び出しによってセットされた値,を返します.
+Leaf
+モードでは,エラー発生後直ちにプログラムが終了するので,関数呼び出し後も常に制御可能にしておくためには,
+SetErrMode
+を呼び出して,エラーモードを
+Parent
+あるいは
+Silent
+にセットしておかなくてはいけません.
+ユーティリティとシステム関数,マクロ &mdash; opencv v2.1 documentation

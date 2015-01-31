@@ -1,0 +1,160 @@
+
+分析単位
+analysis
+unit
+July
+29, 2001
+研究を行うときに、学習者の発話や作文を、分析単位に区切って調べます。このページでは、その分析単位について紹介します。例えば、Chaudron (1988, p. 45) には、Analytical
+Units Employed in L2 Discourse Analysis として、utterance、turn、T-unit、communication-unit、fragments などを説明しています。これらの分析単位を論じたものに、Crookes (1990) や、Bardovi-Harlig
+(1992) や、Foster, Tonkyn, & Wigglesworth (2000) があります。学習者の発話や作文を分析しようと思っている人は、参考にしてください。
+T-Unit
+T-unit は、1つの主節とそれに付随したり埋め込まれた従属節から成る単位です: "one main clause with all
+subordinate clauses attached to it" (Hunt, 1965, p. 20) 。基本的には、書かれた言語を分析する単位ですので、話し言葉を分析するのには向いていないということが指摘されています
+(Foster, Tonkyn,
+& Wiggesworth, 2000)。そのほかの問題点については、Bardovi-Harlig (1992) を参照してください。
+T-unit の平均の長さ (T-unit 内の平均語数)や、誤りのない
+T-unit (error-free
+T-unit)、全T-unit に占める EFT の割合などが指標に使われます。
+C-Unit (Communication Unit)
+Loban (1966) が、T-unit が話言葉には向かないとして、改良案を出したのが、C-unit です。まだ、Loban (1966) を読んでいないので、手に入りしだい紹介したいと思います。特徴は、T unit に加えて、動詞を伴わない独立した句も含まれる点です。次の例を見てください。
+A: Where's my
+hat?
+B: On the table. (T-unit --- 0: C-unit ---
+1)
+Bの発話は、T-unit だと0ですが、C-unit ではきちんとカウントします。Pica et al. (1989) たちは、次のように述べて C-unit を使っています。"All data were coded for
+c-units, as defined by Brock et al. (1986), as utterances, for
+example, words, phrases and sentences, grammatical and
+ungrammatical, which provide referential or pragmatic meaning to
+NS-NNS interaction" (Pica, Holliday, Lewis, &
+Morgenthaler, 1989, p. 72)
+Idea-Unit
+Kroll (1977)が提案した単位で、Crookes (1990) に載っている例を見てみると、かなり細かく細分化されるみたいです。また、かなり統語的にも条件を設けているみたいです。興味の有る人は調べて教えてください。
+"a chunk of
+information which is viewed by the speaker/writer cohesively as
+it is given a surface form … related …
+to psychological
+reality for the encoder" (Kroll, 1977, p. 85, cited in
+Foster et al., 2000, p. 358)
+Turn
+他の話者によって区切られる単位です。他の単位に対して、上位概念になるます。記憶違いでなければ、Halliday & Hassan (1976) の分析で、turn が出てきたのではなかったでしょうか。
+Tone-Unit
+音調核1つを含む単位です。短くなります。これは、信頼性の面で、問題があると指摘されています
+(Crookes, 1990)。また、イントネーションなどを基本にする単位は、第2言語学習者の場合、不適切であるという考えも示されています
+(Foster, Tonkyn,
+& Wigglesworth, 2000)。
+Utterance
+(1) 1つの音調カーブに入っているか、(2) ポーズによって区切られているか、あるいは
+(3) 1つの意味的な単位をなしているか、の特徴を持つ単位
+(Crookes &
+Rulon, 1985, cited in Crookes, 1990) です。Crookes (1990) は、utterance
+が信頼でき、かつ、妥当な単位だと主張しています。しかし、Forster たちは、この単位もポーズやイントネーションを基本としているため、不適切であると考えています。
+AS-Unit (The Analsysis of Speech Unit) (Foster, Tonkyn, &
+Wigglesworth, 2000)
+話し言葉の分析のために、Foster, Tonkyn, &
+Wigglesworth (2000) が提案した単位で、基本的には統語的な単位です。T-unit を基本にして、話し言葉の特徴にあうように工夫したと述べています
+(p. 365)。
+定義は、"An
+AS-unit is a single speaker's utterance consisting of an
+independent clause, or sub-clausal unit, together with any
+subordinate clause(s) associated with either." (p. 365) です。以下にそれぞれの用語の定義を書いておきます。
+an
+independent clause:      "minimally a clause
+including a finite verb" 定型動詞を含む節のこと
+an
+independent sub-clausal:   "one or more phrases which
+can be elaborated to a full clause by 
+means of recovery of ellipted
+elements from the context of the 
+discourse or situation"
+1つかそれ以上の句。談話や場面の文脈があれば省略された
+要素が復活でき、完全な節に直せるもの。
+"a minor
+utterance, which will be defined as one of the class of
+'Irregular
+sentences' or 'Nonsentences' identified by Quirk et 
+al. (1985: 838-53)"
+マイナーな発話。Quirk et al. らによって、Irregular sentences とか、
+nonsentences と分類されたもの。
+A
+subordinate clause        "consist minimally of a
+finite or non-finite Verb element plus at least 
+one other clause element
+(Subject, Object, Complement or Adverbial)."
+少なくとも1つ別の要素を従える定型動詞か不定形動詞を含んで
+いるもの。これは、| I like reading. |(1 clause
+/ 1 AS-unit) ですが、
+| I like :: reading books.| (2
+clauses / 1 AS-unitとなるということです。
+注意点は次の二つですが、Foster たちは、具体例を挙げて、親切に説明しているので、ぜひ論文の方を参考にしてください。
+(1) clause
+coordination
+動詞句の連結がある場合、通常は1つの
+AS-unit として考えられる。しかし、最初の動詞句が降下音調や上昇音調で区切られていたり、0.5秒以上のポーズで区切られてい
+るときには、別の AS-unit とする。
+(2) 副詞節が文末にくるときは、先にある AS-unit に含める。(ただし、36をみると、1つの音調単位に入っていないときには、独立した
+AS-unit になる。)
+I.
+Bibliography
+Foster, P., Tonkyn, A., &
+Wigglesoworth, G. (2000). Measuring spoken language: A unit for
+all reasons. Applied Linguistics, 21(3), 354-375.
+第2言語学習者の発話を分析するためには、T-unit や、utterance では不適当であることを指摘している。また、4つのジャーナルの研究を分析した結果、定義やその具体例が単純すぎて、参考にならないとしている。AS-unit を提唱し、具体例を挙げながら、単位の区切り方を示している。
+Bardovi-Harlig, K. (1992). A second look
+at T-unit analysis: Reconsidering the sentence. TESOL
+Quarterly, 26(2), 390-395.
+上級の第2言語学習者の作文を分析するとき、T-unit 分析よりも、文を基にした分析の方がよい。T-unit は、(a) 接続されている文を分割することで、学習者の等位接続の能力を軽く見ている、(b) 逆に文を分けることで、評価を与えてしまうこともある、(c) 環境によって、等位接続の節の扱いが異なる、などの問題点が指摘されている。(a) に関しては、"a cumbersome run-on
+sentence" を分けることができるが、正当な等位接続まで分けてしまうこと、また
+"asymmetrical
+conjunction" を分けてしまうこと、接続の意味を、ないものとして考えてしまうことなど例を挙げて説明している。(c) は、主節の場合は分割して数えるのに、従属節の場合には分割されない問題点を指摘している。coordination index として、(independent clause coordination)/
+combined clauses *100 を指標として提案している。
+Crookes, G. (1990). The utterance, and
+other basic units for second language discourse analysis. Applied
+Linguistics, 11, 183-199.
+談話分析における発話の単位について検討している。(a) T-unit and variations
+(the c-unit, the idea unit), (b) Turn, (c) Tone unit/tone
+group, (d) utterance の定義を概観し、相互間の関係について考察し、さらに、信頼性と妥当性の点から検討し、
+"it has
+been argued that the utterance has a strong claim for
+attention in structural discourse analysis, perhaps to the
+point of displacing other units as a default choice on
+grounds of reliability and validity." (p. 194) と提案している。
+Chaudron,
+C. (1988). Second language classrooms: Research on teaching
+and learning. Cambridge: CUP.
+第2言語の談話分析で用いられる分析単位を表でまとめている
+(p. 45)。(a)
+utterance, (b) turn, (c) T-unit, (d) communication-unit, (e)
+fragment など。
+平野絹枝. (1990). 「言語能力の客観的指標の妥当性〜日本人EFL大学生の場合〜」『上越教育大学研究紀要』第9巻, 第2分冊, pp. 65-77.
+日本人大学生に対して、CELT (英語学力)と
+T-unit に関わる指標を比較し、T-unit を指標として使うことの妥当性を検討している。
+Pica, T.,
+Holliday, L., Lewis, N. & Morgenthaler, L. (1989).
+Comprehensible output as an outcome of linguistic demands on the
+learner. Studies in Second Language Acquisition, 11,
+63-90.
+NS の不理解の信号に対して、NNS がどのように反応するかを調べたもの。発話分析は、すべて、c-unit にならっている。c-unit の定義が与えられている
+(p. 72)。
+Watanabe,
+T., Sakai, H., & Urano, K. (1995). Teacher talk in
+kindergarten immersion program: Teacher's speech modification
+over time. 『中部地区英語教育学会紀要』第25号, 151-156.
+教師の発話 (Teacher talk) 分析のための枠組みを提示しています。(1) Function、(2)
+Discourse Modification、(3) Structure のレベルに分け、それぞれ下位分類が示されています。
+高橋渉. (1993). 「日本、中国、韓国の英語教科書における語彙分析」『外国における言語教育の教科書分析〜異文化理解教育の向上をめざして〜:平成4年度文部省・教育方法等プロジェクト実施報告』信州大学教育学部英語教育.
+異語数 (type)、総語数
+(token) を使った分析。TTR (Type-Token Ratio) に触れている。
+Hunt, K. W. (1965). Grammatical
+structures written at three grade levels (Research Report
+No. 3). Urbana, IL: National Council of Teachers of English.
+ようやく平野絹枝先生のおかげで手に入りました。これから読みます。
+Gaies, S.
+J. (1980). T-unit analysis in second language research:
+Applications, problems and 
+limitations. TESOL Quarterly, 14(1), 53-60.
+Larsen-Freeman, D. (1983). Assessing global second language
+proficiency. In H. W. Seliger & M. H. 
+Long (Eds.), Classroom oriented research (pp. 287-304). Rowley,
+MA: Newbury House.
+(c) 2001 Sakai Hideki All rights researved. sakaih@shinshu-u.ac.jp 
+unit

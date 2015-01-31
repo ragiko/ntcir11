@@ -1,0 +1,29 @@
+13.6. plistlib — Mac OS X .plist ファイルの生成と解析¶
+バージョン 2.6 で変更: このモジュールは以前は Mac 専用ライブラリだけにありましたが、
+全てのプラットフォームで使えるようにしました。
+このモジュールは主に Mac OS X で使われる「プロパティーリスト」
+XML ファイルを読み書きするインターフェイスを提供します。
+プロパティーリスト (.plist) ファイル形式は基本的型のオブジェクト、たとえば辞書やリスト、数、文字列など、に対する単純な XML による保存形式です。たいてい、トップレベルのオブジェクトは辞書です。
+値は文字列、整数、浮動小数点数、ブール型、タプル、リスト、辞書
+(ただし文字列だけがキーになれます)、 Data または datetime.datetime
+のオブジェクトです。文字列の値は(辞書のキーも含めて)ユニコード文字列であって構いません –
+それらは UTF-8 で書き出されます。
+<data> plist 型は Data クラスを通じてサポートされます。これは Python の文字列に対する薄いラッパです。文字列に制御文字を含めなければならない場合は Data を使って下さい。
+このモジュールは以下の関数を定義しています:
+plistlib.readPlist(pathOrFile)¶
+plist ファイルを読み込みます。
+pathOrFile はファイル名でも(読み込み可能な)ファイルオブジェクトでも構いません。展開されたルートオブジェクト(たいていは辞書です)を返します。
+XML データは xml.parsers.expat にある Expat パーサを使って解析されます
+– 間違いのある XML に対して送られる可能性のある例外についてはそちらの文書を参照して下さい。未知の要素は plist 解析器から単純に無視されます。
+plistlib.writePlist(rootObject, pathOrFile)¶
+rootObject を plist ファイルに書き込みます。
+pathOrFile はファイル名でも(書き込み可能な)ファイルオブジェクトでも構いません。
+TypeError が、オブジェクトがサポート外の型のものであったりサポート外の型のオブジェクトを含むコンテナだった場合に、送出されます。
+plistlib.readPlistFromString(data)¶
+文字列から plist を読み取ります。ルートオブジェクトを返します。
+plistlib.writePlistToString(rootObject)¶
+rootObject を plist 形式の文字列として返します。
+plistlib.readPlistFromResource(path[, restype='plst'[, resid=0]])¶
+path のリソースフォークの中の restype タイプのリソースから
+plist を読み込みます。使用可能: Mac OS X。
+13.6. plistlib — Mac OS X .plist ファイルの生成と解析 &mdash; Python 2.7ja1 documentation

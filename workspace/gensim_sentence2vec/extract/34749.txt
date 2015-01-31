@@ -1,0 +1,37 @@
+A: 
+一部のファイルが CD/DVD ライティングソフトや DVD 再生ソフト等と競合している可能性があります。"pfc.vdx" 
+というファイルを削除 (ファイルが存在している場合) して、システムを再起動してみてください。 
+Windows ME の場合
+C:WINDOWS:system:iosubsys:pfc.vxd
+Windows 2000 の場合
+C:WINNT:system32:iosubsys:pfc.vxd 
+A: 
+DVDit! バージョン 2.5 及び MyDVD は、Windows NT には対応しておりません。Windows 98/2000/ME/XP 
+を使用したコンピュータにインストールしてください。 
+DVDit! 2.5 出荷時に使用されている紙製 CD-ROM ケースの一部に誤った動作環境が記載されているものがあることが確認されております。正しい動作環境は以下の様になっておりますのでご了承ください。 
+動作環境
+Windows 98、Windows Me、Windows 2000、または Windows XP 
+Microsoft DirectShow 6.4 以上
+(Windows Media Player の一部としてインストールされる) 
+Microsoft Internet Explorer 4.0 以上 (オンラインヘルプ表示のため) 
+300 MHz Pentium II 以上 
+128 MB 以上のシステムメモリ(RAM) 
+210 MB 以上のハードディスク容量 
+ビデオおよびオーディオファイル用に十分なディスク容量 (2 時間の DVD タイトルをつくるには 18GB 必要) 
+CD-ROM ドライブ(DVD-ROM ドライブ、DVD プレーヤソフト推奨) 
+A: 
+MyDVD4をインストール後に、MPGCHECK.DLLエラーが出る場合には、
+以下の手順で、下記3つのフォルダーの内容を、MyDVDディレクトリーのルートにコピーして問題を 回避してください。
+1)エクスプローラーで下記の各フォルダ内のファイル(合計46ファイル)を確認します。
+C:\Program Files\Common Files\Sonic Shared\Ligos\Decoders 
+C:\Program Files\Common Files\Sonic Shared\Ligos\GoMotion 
+C:\Program Files\Common Files\Sonic Shared\MainConcept 
+2) 上記の各フォルダ内のファイル(合計46ファイル)を、 C:\Program Files\Sonic\MyDVD  
+フォルダのルートにコピーします。
+注)MyDVDがインストールされているフォルダ
+3) C:\Program Files\Sonic\MyDVD フォルダ内に.ax ファイルが合計10ファイルあるのを確認します。
+4) .axファイル(合計10ファイル)を、 C:\WINDOWS\SYSTEM32\REGSVR32.EXE 
+にドラッグ・アンド・ドロップします。
+5) コンピュータを再起動します。
+上記作業後に、正しくMyDVDが起動されることを確認してください。
+SONICJAPAN

@@ -1,0 +1,97 @@
+
+パターン認識・ 機械学習勉強会  第19回
+@ナビプラス
+中村晃一  2014年9月11日 
+謝辞
+会場・設備の提供をしていただきました
+㈱ ナビプラス様
+にこの場をお借りして御礼申し上げます.
+ガウス分布以外でのEM法 
+前回は混合ガウス分布
+\[ p(\mathbf{x}) = \sum_{c=1}^K \pi_c\mathcal{N}(\mathbf{x}|\boldsymbol{\mu}_c,\boldsymbol{\Sigma}_c) \]
+に対するEM法の紹介をしましたが,今回は多変数ベルヌーイ分布や多項分布を混合した分布に対するEM法も紹介します.
+多変数ベルヌーイ分布 
+久しぶりなので復習すると,確率 $p$ で $x=1$, $1-p$ で $x=0$ となる確率分布をベルヌーイ分布(Bernoulli distribution) と呼びます.
+$$ 
+\begin{array}{|c|c|c|} \hline
+x & 0 & 1 \\ \hline
+p(x) & 1-p & p \\ \hline
+\end{array}
+$$
+これは簡潔に
+\[ p(x) = p^x(1-p)^{1-x} \]
+と書くことが出来ます.
+これの多変数バージョンが多変数ベルヌーイ分布(multivariate Bernoulli distribution)です.つまり
+\[ \mathbf{x} = (1,0,0,1,0,\ldots,0,1) \]
+の様な $d$ 次元の二値ベクトルで表現され,各変数は独立であり,第 $i$ 成分が $1$ となる確率が $p_i$ であるような確率変数の従う分布が $d$ 変数ベルヌーイ分布です.
+多変数ベルヌーイ分布の例を紹介します.
+文書 $d$ 内に単語 $w_i$ が出現したか否かを $1,0$ で表現し,各単語の出現は独立だと仮定すればこれは多変数ベルヌーイモデルとなります.
+$$ \begin{array} \hline
+\text{単語}  & w_1 & w_2 & w_3 & w_4 & \cdots \\ \hline
+\text{文書}d & 1  & 0  & 0 & 1 & \cdots \\ \hline
+\end{array} $$
+下図はmldata.orgからダウンロード出来る$28\times 28$ の手書き数字データを二値化したものです.これを $784$ 次元のベルヌーイ分布に従う確率変数としてモデリングすることが出来ます.
+その他,yes/noで答えるタイプのアンケート結果など,二値変数が複数ある場合のもっともシンプルなモデル化が多変数ベルヌーイ分布です.
+再び数式に戻ると,$d$変数ベルヌーイ分布とは変数の変域が $\mathbf{x} \in \{0,1\}^d$ であり,
+\[ \mathbf{x} = (x_1,x_2,\ldots,x_d) \]
+を取る確率が
+\[ p(\mathbf{x}|\mathbf{p}) = \prod_{i=1}^d p_i^{x_i}(1-p_i)^{1-x_i} \]
+と表されるような確率分布です.この分布のパラメータは
+\[ \mathbf{p} = (p_1,p_2,\ldots,p_d) \qquad (0\leq p_i \leq 1)\]
+となります.
+分布の平均・共分散は
+\[ \begin{aligned}
+E[\mathbf{x}] &= \mathbf{p}\\
+\mathrm{cov}[\mathbf{x}] &= \mathrm{diag}\{p_i(1-p_i)\} = \begin{pmatrix}
+p_1(1-p_1)  & \cdots & 0 \\
+\vdots  & \ddots & \vdots \\
+0 & \cdots & p_d(1-p_d)
+\end{pmatrix}
+\end{aligned}\]
+となります.各変数は独立なので,分散共分散行列は対角行列になります.
+【証明】
+各変数は独立なので1変数の場合を示せば十分.
+\[ \begin{aligned}
+E[x] &= 1\cdot p + 0 \cdot (1-p) = p \\
+V[x] &= E[(x-p)^2] = (1-p)^2\cdot p + (0-p)^2\cdot (1-p) = p(1-p)
+\end{aligned} \]
+$K$ 個の $d$変数ベルヌーイ分布を比率 $\boldsymbol{\pi}$で混ぜあわせれば混合ベルヌーイ分布
+\[ p(\mathbf{x}|\mathbf{p},\boldsymbol{\pi}) = \sum_{k=1}^K \pi_k p(\mathbf{x}|\mathbf{p}_k) \]
+が出来上がります.
+混合ベルヌーイ分布の平均・共分散は次のようになります.
+\[ \begin{aligned}
+E[\mathbf{x}] &= \sum_{k=1}^K\pi_k\mathbf{p}_k \\
+\mathrm{cov}[\mathbf{x}] &= \sum_{k=1}^K\pi_k\left\{\mathrm{diag}\{p_{ki}(1-p_{ki})\}+\mathbf{p}_k\mathbf{p}_k^T\right\}\\
+& - E[\mathbf{x}]E[\mathbf{x}]^T
+\end{aligned} \]
+【証明】
+\[ E[\mathbf{x}] = \sum_{\mathbf{x}}\mathbf{x}\sum_{k=1}^K\pi_kp(\mathbf{x}|\mathbf{p}_k) = \sum_{k=1}^K\pi_k\sum_{\mathbf{x}}\mathbf{x}p(\mathbf{x}|\mathbf{p}_k) = \sum_{k=1}^K\pi_k\mathbf{p}_k \]
+また,
+\[ \mathrm{cov}[\mathbf{x}] = E[\mathbf{x}\mathbf{x}^T]-E[\mathbf{x}]E[\mathbf{x}]^T \]
+と
+\[ \begin{aligned}
+E[\mathbf{x}\mathbf{x}^T] &= \sum_{\mathbf{x}}\mathbf{x}\mathbf{x}^T\sum_{k=1}^K\pi_kp(\mathbf{x}|\mathbf{p}_k) = \sum_{k=1}^K\pi_k\sum_{\mathbf{x}}\mathbf{x}\mathbf{x}^Tp(\mathbf{x}|\mathbf{p}_k) \\
+&= \sum_{k=1}^K\pi_k\left\{ \mathrm{cov}_k[\mathbf{x}] - E_k[\mathbf{x}]E_k[\mathbf{x}]^T\right\}
+\end{aligned} \]
+より(但し,$\mathrm{cov}_k,E_k$は $p(\mathbf{x}|\mathbf{p}_k)$ における共分散・平均)
+面白いポイントは,混合ベルヌーイ分布の分散共分散行列
+\[ \mathrm{cov}[\mathbf{x}] = \sum_{k=1}^K\pi_k\left\{\mathrm{diag}\{p_{ki}(1-p_{ki})\}+\mathbf{p}_k\mathbf{p}_k^T\right\} - E[\mathbf{x}]E[\mathbf{x}]^T \]
+はもはや対角行列ではないという事です.
+あるデータ $\mathbf{x}$ の一部だけ観測出来たとしましょう.すると,そのデータがどのカテゴリ $k$ のデータであるかある程度推測する事が出来,$\mathbf{x}$ の他の部分も予測する事が可能になる為です.
+EM法 
+学習データを $D$, 隠れ変数を $\mathbf{z}$,モデルのパラメータを$\boldsymbol{\theta}$とする. $\boldsymbol{\theta}$ を推定する為には,これを初期化して以下を収束するまで反復する.
+【E step】
+$\boldsymbol{\theta}^{\mathrm{old}}$ を用いて以下を計算する.
+\[ p(\mathbf{z}|D,\boldsymbol{\theta}^{\mathrm{old}}) \]
+【M step】以下によって $\boldsymbol{\theta}$ を更新する.
+\[ \boldsymbol{\theta}^{\mathrm{new}} = \mathop{\rm arg~max}\limits_{\boldsymbol{\theta}}\mathcal{Q}(\boldsymbol{\theta},\boldsymbol{\theta}^{\mathrm{old}}) \]
+但し,
+\[ \mathcal{Q}(\boldsymbol{\theta},\boldsymbol{\theta}^{\mathrm{old}}) = \sum_{\mathbf{z}}p(\mathbf{z}|D,\boldsymbol{\theta}^{\mathrm{old}})\log p(D,\mathbf{z}|\boldsymbol{\theta}) \]
+今の場合,学習データは二値ベクトルの集合 $D=\{\mathbf{x}_1,\ldots,\mathbf{x}_n\}$,モデルのパラメータは $\boldsymbol{\theta} = (\mathbf{p},\boldsymbol{\pi})$ です.
+また,隠れ変数 $\mathbf{z}$ は各データ $\mathbf{x}_i$ がクラス $k$ のデータか否かを表す二値変数で,これを
+\[ z_{ik} = \left\{\begin{array}{ll}
+1 & (\text{$\mathbf{x}_i$ がクラス $k$ のデータ}) \\
+0 & (\text{それ以外})
+\end{array}\right. \]
+と置きます.
+パターン認識・機械学習勉強会 第19回 @ ナビプラス

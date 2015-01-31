@@ -1,0 +1,20 @@
+
+使用例
+行数・単語数・バイト数を表示します(オプションなし)。
+$ wc /etc/passwd
+25   32 1065 /etc/passwd
+行数のみを表示します(オプション -l)。
+$ wc -l /etc/passwd
+25 /etc/passwd
+単語数のみを表示します(オプション -w)。
+$ wc -w /etc/passwd
+32 /etc/passwd
+パイプ「|」を使って、wcコマンドを実行します。ここでは「fingerコマンドを実行してみます。
+$ finger | wc -l
+2
+関連コマンド
+file,
+ls,
+strings,
+sum
+Linuxコマンド【 wc 】ファイルの行数・単語数・バイト数を表示 - Linux入門 - Webkaru

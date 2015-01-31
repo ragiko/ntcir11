@@ -1,0 +1,59 @@
+Android SDKにはNinePatchを簡単につくるツール「draw9patch」が付属しています。9patchはビットマップイメージを高品位に拡大するためのフォーマットです。縮小には対応していませんが、1つの画像でいくつものサイズに対応できるため、効率的にアプリケーションサイズを圧縮できます。
+右の画像ではTextViewの背景画像に9patchを適応したpngイメージを指定しています。2つのTextViewは改行の都合でアスペクト比が異なっていますが、9patchを使うことで背景画像のゆがみを抑制できています。
+9patchまとめ
+リソースを節約しつつ高品位な背景が作れる
+命名規則は画像のフォーマットに併せて最後尾に.9を付与(.9.pngなど)
+画像の左と上の端1pxは拡大範囲を表す
+画像の右と下の端1pxはコンテンツの範囲を表す(オプション)
+以下は9patchの適用例(画像)です。
+9patchチュートリアル
+9patchの作成方法を解説します。作成するためのツールはSDKのインストール先のToolsディレクトリ(たとえばandroid-sdk-windows/tools/draw9patch.bat)にあります。
+以下、続きます
+起動画面
+起動画面に9patchを適応したい画像をドラッグアンドドロップします。
+操作方法
+draw9patchでは、「拡大可能」な領域を指定します。
+9patchでは画像の上下左右の1px分を利用して拡大領域、コンテンツ領域(TextViewでは文字が入る部分、paddingの指定のようなもの)を表現します。コンテンツ領域はオプションで、何かの背景として9patchを利用することを想定しています。
+左と上の1px:拡大可能領域を指定(指定された領域が拡大される)
+右と下の1px:コンテンツの表示領域を指定(指定された領域にTextなどのコンテンツが表示される)
+読み込み直後
+読み込み直後では拡大率が高すぎるため、Zoomスライドバーで調整します。
+Show lock
+Show lockチェックボックス:9patch作成用領域と画像領域を可視化します。イメージの上にマウスカーソルをオーバーロールすると画像部分に赤とグレーで斜線が入ります。draw9patchツールでは作業対象外の領域です。
+Show patches
+Show patchesチェックボックス:9patchの拡大範囲(ピンク)を表示します。
+patchの範囲が未選択の場合、すべての領域がピンクで拡大対象と認識されてしまいます。
+左側と上側の端に拡大範囲を指定(一番端の部分をマウスでドラッグしながら線を書く)してください。
+左と上の線が交差する中央部分のみが拡大範囲(ピンクの領域)として認識されます。
+Show Content
+Show Contentチェックボックス:コンテンツ表示領域(青)を表示します(画面右側)。
+画像の右および下の外側1pxをつかって指定します。コンテンツ領域はオプションですが、Viewのpaddingに相当します。必要に応じて9patch画像からコンテンツがはみ出ないようにしてください。
+ファイル名を.9.pngにする
+9patchの命名規則はxxx.9.yyyです。(ファイル名:background.9.pngなど)
+リソースとして取り込む
+プロジェクトにリソースとして取り込むには特別気にする項目はありません。
+普通の画像と同様にdrawableに登録するだけで、とても簡単です。
+ソースコード
+レイアウトファイルに背景として指定します。
+layout/main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:gravity="center_vertical"
+android:text="@string/hello"
+android:textColor="#FFFFFF"
+android:background="@drawable/background"/>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:gravity="left"
+android:text="@string/hello2"
+android:textColor="#FFFFFF"
+android:background="@drawable/background"/>
+</LinearLayout>
+チュートリアル:9patchで画像を作る «  Tech Booster

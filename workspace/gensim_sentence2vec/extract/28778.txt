@@ -1,0 +1,59 @@
+これまでも、多くの記事にされていて、恐らくKernelや巨大なコードを読んでいる人にとっては当たり前なのかもしれませんが、あまりに快適だったのとこれをきちんとやれてなかった事に自戒をこめて記事にしようと思います。grepとかscreenを駆使していた時間を返してほしい!
+対象者
+僕がLinux大好きなので、Linux上での動作を前提にしています。対象者はLinux KernelやApache HTTP Server等、数万から数十万、さらには数百万行のコードをじっくり読んでいきたいと考えている人におすすめしたいと思います。巨大なコードを何のツールも使わずに読むのはかなりきついはずです。しかし、今回はGNU GLOBALと呼ばれるソースコードタグシステムをvimに組み込む事で、快適にコードリーディングをすることが可能になります。また、コードリーディングのメソッドとして、「ひらメソッド」が僕のお気に入りなので、参考にしてみてください。
+今では、「Linuxエンジニアを目指して入社一年目にやって役にたったと思う事」に入れるべき項目だと思っています(って追記しちゃいました)。では、具体的に快適な環境を整えるまでと、最低限のチュートリアルをしたいと思います。
+環境設定
+このブログを読んでいる人は、vimとscreenくらいは当たり前に入れているだろうということで、そこの設定は省略します。では、GNU GLOBALを入れていきましょう。
+まずはGNU GLOBALをダウンロードしましょう。ダウンロードしたら、/usr/local/srcあたりにファイルを展開して下さい。
+cd /usr/local/src/global-6.2.2/
+そして、コンパイルしましょう。大体は、以下のように適当にprefixを決めてやれば良いと思います。
+./configure --prefix=/usr/local/global
+make
+make instll
+といった具合でしょうか。一応、パスが通っている所にリンクを貼っておくと良いと思います。
+ln -s /usr/local/global/bin/gtags /usr/bin/gtags
+ln -s /usr/local/global/bin/global /usr/bin/global
+これで、GNU GLOBALの設定は完了です。次に、この機能をvimと連携させます。まずはプラグインファイルをコピーしましょう。
+mkdir -p ~/.vim/plugin/
+cp/usr/local/global/share/gtags/gtags.vim ~/.vim/plugin/gtags.vim
+さらに、vim用のgtagsのキーバインドを設定をしておきます。
+cat >> ~/.vimrc << "EOF"
+map <C-g> :Gtags 
+map <C-h> :Gtags -f %<CR>
+map <C-j> :GtagsCursor<CR>
+map <C-n> :cn<CR>
+map <C-p> :cp<CR>
+EOF
+これで準備は完了です。
+コードリーディング開始
+今回は、Apache2.4.1のソースのコードリーディングをしてみましょう。まずは、読みたいコードのタグ付を行います。
+cd /usr/local/src/httpd-2.4.1
+タグ付コマンドを実行します。
+gtags -v
+vオプションはあってもなくてもいいです。タグ付が完了すると、以下のように出力されます。
+・
+・
+・
+[727] extracting tags of support/htpasswd.c
+[728] extracting tags of support/htdbm.c
+[729] extracting tags of support/suexec.c
+[730] extracting tags of support/logresolve.c
+[Sun Apr 15 21:05:52 JST 2012] Done.
+次に、gtagsを実行したディレクトリでvim(vim-enhanced)を実行します。
+vim .
+これでvimが以下のように起動します。ここからは図で説明していきます。
+ここでは、vimの操作でhjklを使ってカーソルを動かし、今回は上図の「server」ディレクトリにカーソルをあわせてEnterを叩きます。
+すると上図のように表示が切り替わり、「server」ディレクトリの中に入ることができました。そして、今回は例として「main.c」のコードリーディングをしてみましょう。
+上図のように「/main」で検索すると、以下のようにヒットしたmain.c上にカーソルが合っているのでEnterを叩きます。
+すると、main.cがvimで開かれます。ここで、ようやくGNU GLOBALの出番です。
+まず、ここで「Ctrl+h」とすると、上図のように今開いているコードの関数一覧が下のGNU GLOBALの領域(Quickfix List領域)に出力されます。
+そして、GNU GLOBALの領域(Quickfix List領域)においては、「Ctrl+n」で下にカーソル移動、「Ctrl+p」で上にカーソル移動ができます。それと同時に、上のvim領域に表示されているコードもその関数の箇所に自動的に移動していきます。今回は、main()を見て行きましょう。上図のようにCtrl+nを数回押してmain()にカーソルをあわせると、同時にvimの出力もmain関数部分に移動したとおもいます。
+今度は、普通にhjklでvimの領域のカーソルを移動させていきます。そして、上の図のように「apr_pool_abort_set()」まで移動しました。ここで、この関数ってなんだろ?と思うでしょう。そこで、「Ctrl+j」を押すと、自動的にその関数が定義されている箇所(別ファイルであっても)に移動してくれます。
+GUN GLOBALの領域(Quickfix List領域)に「apr_pool_abort_set()」に関する複数の定義箇所がファイル名と共に候補が出力されたと思います。同時に、一つ目の候補であるapr_pools.hのapr_pool_abort_set()にvimの出力も切り替わったとおもいます。ここで、複数の候補を見るために、「Ctrl+n」で下、「Ctrl+p」で上に移動させます。
+今回は、Ctrl+nで一つ下に移動すると、上図のようにapr_pools.cのなかにapr_pool_abort_set()の定義があることが分かりました。さらに、上の図のように自動でその定義箇所にvimの領域の表示も移動していることが分かります。
+大体内容が分かったら、「Ctrl+o」で上の図のように直前のapr_pools.hの表示に戻ります。ちなみに「Ctrl+i」が直全の表示に進む、です。Quickfix List領域の表示はこの操作では変わりません。
+さらに、もう一度「Ctrl+o」で上の図のようにmain()の位置まで戻ります。どうでしょう、これまでscreenを複数起動して、grepで必死に定義を探していたりしていたのがバカみたいです。GNU GLOBALとvimの組み合わせ、これは本当に素晴らしい。
+これまでやっていたようなgrepもできます。上の図のように、「Ctrl+g」を押した後に「 -g apr_pool_create」と入力してEnterを押します。
+すると、全てのソースからapr_pool_createに引っかかった箇所を候補として一覧で出してくれます。これで、「Ctrl+n」や「Ctrl+p」でコードを追う事ができます。また、「Ctrl+w」×2回で、下のGLOBALの領域にvimのカーソルを移動させることができます。こうすれば、hjkl等でGNU GLOBALの領域を移動できます。
+これは素晴らしいですね!これで快適に巨大なコードをリーディングすることができそうです。可能であれば、入社1年目の段階で出来るようになっておくべきスキルだと思いました。
+人間とウェブの未来 - GNU GLOBALとvimで巨大なコードでも快適にコードリーディング

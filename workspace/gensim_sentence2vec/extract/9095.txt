@@ -1,0 +1,85 @@
+はじめまして。web制作にかかわっている人です。ふわっとしすぎだろとか言わないでくださいお願いします。
+さて、表題にも書いておりますが、CSSだけで実はちょっとした図形なら作れちゃうんですよね。え、もう知ってる?そうですか。でも書きます。
+これ、一体何が嬉しいかと言いますと、わざわざ画像を用意してアイコンをつくらなくてもいい場合が出てくるんですよ!わーい!(特にスマートフォンとか下手に画像にしてしまうとボケボケになってしまうといったような悲劇が防げたりするわけです…)
+たとえばリストの頭とかに丸をつけたいけど、デフォルトのリストマークじゃないんだよ!って時こんな感じ。
+他にも色々と簡単なものだけでこれだけあります(組み合わせ次第でもっと作れそうな)
+上のコードは、はいどーん。
+html
+<ul>
+<li class="squeaFill">べた四角</li>
+<li class="squeaLine">線四角</li>
+<li class="circleFill">黒丸</li>
+<li class="circleLine">線丸</li>
+<li class="circleLineDouble">二重線丸</li>
+<li class="triangleRight">右三角</li>
+<li class="triangleBottomRight">右下三角</li>
+</ul>
+css
+共通
+li:before{
+margin-right: 5px;
+content: " ";
+display: inline-block;
+}
+べた四角
+.squeaFill:before{
+background: #666;
+width: 1em;
+height: 1em;
+}
+線四角
+.circleLine:before{
+width: 1em;
+height: 1em;
+border: solid 1px #333;
+border-radius: 50%;
+}
+黒丸
+.circleFill:before{
+background: #666;
+width: 1em;
+height: 1em;
+border-radius: 50%;
+}
+線丸
+.circleLine:before{
+width: 1em;
+height: 1em;
+border: solid 1px #333;
+border-radius: 50%;
+}
+二重線丸
+.circleLineDouble:before{
+width: 0.6em;
+height: 0.6em;
+border: double 4px #333;
+border-radius: 50%;
+}
+右三角
+.triangleRight:before{
+width: 0;
+height: 0;
+border-color: transparent transparent transparent #333;
+border-style: solid;
+border-width: 0.5em 0 0.5em 1em ;
+}
+右下三角
+.triangleBottomRight:before{
+width: 0;
+height: 0;
+border-color: transparent #333 #333 transparent;
+border-style: solid;
+border-width: 0.5em;
+}
+合わせ技として、四角形と三角形を組み合わせて矢印にしてみたり—とか工夫次第でもっと作り出せるのが便利便利(配置に頭抱えたりしますけど)
+そうそう、丸はcss3の角丸を使用しているのでIE8以下のブラウザでは丸くなりません。IE8まで頑張って丸でなくてもいいわーって時に参考になればいいなーなんて。
+ではラストに!
+よく参考にするサイトさんをまとめてみましたー!
+今回記載したコードも下記サイトさんを参考に覚えていきました
+(たまに忘れて見に行くけど)
+http://css-tricks.com/examples/ShapesOfCSS/
+これは三角形のジェネレータ
+http://apps.eky.hk/css-triangle-generator/
+(もうひとつ紹介しようと思っていたサイトさんはどうやら閉鎖されてしまったみたいで…見つからず…無念)
+それでは、web制作にかかわってる人でしたー!
+CSSでちょっとした図形を描いてみるーわーい | Penseur Blog

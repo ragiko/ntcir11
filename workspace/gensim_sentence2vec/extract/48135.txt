@@ -1,0 +1,84 @@
+
+Cosminexus HTTP ServerとHitachi Web Serverで使用している乱数生成アルゴリズムについて,NIST(米国国立標準技術研究所)からの勧告がありました。
+脆弱性の内容
+Cosminexus HTTP ServerとHitachi Web Serverで使用している乱数生成アルゴリズムについて,NIST(米国国立標準技術研究所)からの勧告がありました。
+SSL機能を使用する場合,勧告に従い,当該乱数生成アルゴリズムを使用しないようにいたします。
+影響を受けるバージョンを下記に示しますので,対策版の適用をお願いいたします。
+なお,SSL機能を使用していない場合は,本脆弱性は発生しません。
+対象製品名 : Cosminexus HTTP Server
+対象バージョン : 
+AIX(64), HP-UX(IPF), Linux(x64), Windows, Windows(x64)
+09-00 - 09-00-09
+対象製品名 : Hitachi Web Server
+対象バージョン : 
+HP-UX(IPF)
+04-00-04 - 04-00-06,04-10-02 - 04-10-09,04-20 - 04-20-06,
+03-10-08 - 03-10-13
+Linux
+04-20 - 04-20-05
+Linux(IPF)
+04-00 - 04-00-06,04-10-01 - 04-10-07,
+03-00-01 - 03-10-07,03-10 - 03-10-11,
+02-04-/C - 02-04-/F
+Solaris(x64)
+04-00-01
+Windows
+04-00-04 - 04-00-06,04-10-02 - 04-10-09,04-20 - 04-20-06,
+03-10-06 - 03-10-11
+対象製品名 : Hitachi Web Server - Security Enhancement
+対象バージョン : 
+HP-UX(IPF)
+02-04-/E - 02-04-/I
+また本問題は,Cosminexus HTTP Server,Hitachi Web Serverを構成製品とする,下記Cosminexus製品にも該当します。Cosminexus製品に含まれるCosminexus HTTP Server,Hitachi Web Serverのバージョン,及びCosminexus製品の対策バージョンについては,サポートサービス窓口へご相談願います。
+■Cosminexus V9
+対象製品名 : uCosminexus Developer
+対象製品名 : uCosminexus Application Server
+対象製品名 : uCosminexus Application Server(64)
+対象製品名 : uCosminexus Service Platform
+対象製品名 : uCosminexus Service Platform(64)
+対象製品名 : uCosminexus Service Architect
+対象製品名 : uCosminexus Application Server-R
+対象製品名 : uCosminexus Primary Server Base
+対象製品名 : uCosminexus Primary Server Base(64)
+対象バージョン : 
+AIX(64), HP-UX(IPF), Linux(x64), Windows, Windows(x64)
+09-00 - 09-50
+■Cosminexus V8
+対象製品名 : uCosminexus Application Server Express
+対象製品名 : uCosminexus Application Server Smart Edition
+対象製品名 : uCosminexus Developer 01
+対象製品名 : uCosminexus Application Server Standard
+対象製品名 : uCosminexus Application Server Enterprise
+対象製品名 : uCosminexus Service Platform
+対象製品名 : uCosminexus Service Architect
+対象製品名 : uCosminexus Application Server Standard-R
+対象製品名 : uCosminexus Developer Standard
+対象製品名 : uCosminexus Developer Professional
+対象製品名 : uCosminexus Primary Server Base
+対象製品名 : uCosminexus Developer Professional for Plug-in
+対象バージョン : 
+HP-UX(IPF), Linux(IPF), Windows, Solaris(x64)
+08-00 - 08-70
+■Cosminexus V7
+対象製品名 : uCosminexus Application Server Standard
+対象製品名 : uCosminexus Developer Standard
+対象製品名 : uCosminexus Developer Professional
+対象製品名 : uCosminexus Application Server Enterprise
+対象製品名 : uCosminexus Application Server Smart Edition
+対象製品名 : uCosminexus Primary Server Base
+対象製品名 : uCosminexus Service Platform
+対象製品名 : uCosminexus Service Platform - Messaging
+対象製品名 : uCosminexus Service Architect
+対象バージョン : 
+HP-UX(IPF), Linux(IPF), Windows
+07-00 - 07-60
+■Cosminexus V6.7
+対象製品名 : uCosminexus Developer Light
+対象製品名 : uCosminexus Developer Standard
+対象製品名 : uCosminexus Application Server Standard
+対象製品名 : uCosminexus Developer Professional
+対象製品名 : uCosminexus Application Server Enterprise
+対象バージョン : 
+Linux(IPF)
+06-70
+Cosminexus HTTP Server, Hitachi Web Serverにおける乱数生成アルゴリズムの問題:ソフトウェア製品セキュリティ情報:ソフトウェア:日立

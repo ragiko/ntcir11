@@ -1,0 +1,70 @@
+競合の自動検出では、まず、形式手法を用いて、それぞれの単体サービスをモデル化します。次に、競合検出アルゴリズムをサービスを組み合わせに適用し、競合を検出します。しかし、従来の自動検出の枠組みでは、サービスの数、ユーザの数に対して、探索すべき状態数が指数的に発散する状態爆発(State explosion)が大きな問題となっており、現実的なサービスへの適用が困難でした。
+そこで、本研究では、この状態爆発の問題を回避、軽減することで、競合検出を効率的に行うアルゴリズムを提案してきました。
+ルールベース仕様によるサービスのモデル化
+サービスをモデル化ための形式言語は、多数存在しますが、我々はSTR (State
+Transition Rules)と呼ばれるルールベース仕様を採用してきました。この手法はルールのモジュール性の良さと直感性に富むことから,広く利用されています.
+ルールは、前条件、イベント、後条件の3つから構成され、全てのユーザを含む大域状態の遷移を規定します。
+以下は、発信拒否(OCS)サービスを記述したルールベース仕様(一部)です。
+U={A,B,C}
+V={x,y}
+E = {onhook,offhook,dial}
+P = {idle,dialtone,calling,busytone,OCS}
+R = {
+pots1: idle(x)       [offhook(x)] dialtone(x).
+pots2: dialtone(x)   [dial(x,x)]  busytone(x).
+pots4: calling(x,y)  [onhook(x)]  idle(x),idle(y).
+pots8: busytone(x)   [onhook(x)]  idle(x).
+ocs1:  dialtone(x),OCS(x,y)
+[dial(x,y)]  busytone(x),OCS(x,y).
+ocs2:  dialtone(x),idle(y),~OCS(x,y)
+[dial(x,y)]  calling(x,y).          
+}
+s0 = idle(A),idle(B),idle(C),OCS(A,B),OCS(A,C)
+I_{ocs} = ~OCS(x,y) + ~calling(x,y)
+s0 は初期状態で、ユーザA, B, Cがアイドルで、AがBとCに対して発信拒否(OCS)を設定していることをあらわしています。
+競合検出問題
+サービス競合とは、「単体では正常に動作していたサービスが、複数同時に実行された場合に生じる不具合」を指します。不具合というのはあいまいなので、本研究は特に次の4つの不具合のクラスに着目しています。
+デッドロック
+サービス実行が停止する
+ループ
+初期状態に戻れない無限ループに陥る
+非決定性
+同じイベントで複数の背反する動作が可能となってしまう。
+不変性質の侵害
+サービスが常に満たすべき性質が侵害される。
+すると、サービス競合は次のように定式化できます。
+与えられたサービス(仕様)Sが、上のどの不具合も含まないとき安全であると定義する。 SA, SBを与えられたサービス(仕様)とする。SAとSBが競合するとは、
+SA, SBがともに安全で、かつ、SA+SBが安全でないときである(+はルールセットの和演算子)。
+定義から、サービス競合を検出するためには、SA+SBのとりうる全状態をしらみつぶしに調べればよいのですが、状態爆発問題のため、実用的ではありません。
+ペトリネットのP-インバリアントを用いた検出アルゴリズム
+ペトリネットは、様々な優れた解析手法を備えた数学モデルです。本アルゴリズムは、ルールベース仕様の構造をペトリネットにマッピングし、状態の可達性を「P-インバリアント」によって解析することで、状態探索をすることなく、(静的な)競合検出が行えます。
+上のルールベース仕様は、下のような(高レベル)ペトリネットにマッピングできます。
+P-インバリアントとは、状態の可達性の必要条件をあたえる式のことで、ペトリネットの構造(接続行列)から計算されます。本アルゴリズムのキーアイデアは、不具合を起こす状態を人工的に生成し、その状態への可達性をP-インバリアントによって検証します。もし、不具合状態において、P-インバリアントが成り立たなければ、その状態へは到達不能であることが証明できるので、競合が発生しないことを保障できます。
+本アルゴリズムは、あくまでも必要条件による解析しか行えませんが、状態探索を必要としないので、非常に高速な競合検出が可能になります。
+発表文献
+Masahide Nakamura, Yoshiaki Kakuda and Tohru Kikuno, ``Analyzing non-determinism in telecommunication services using P-invariant of Petri net model'', Proc. of Int'l. Conf. on Computer Communication (INFOCOM'97), 
+pp.1253-1260, Apr. 1997.
+Masahide Nakamura, Yoshiaki Kakuda and Tohru Kikuno, ``Petri net based detection method for non-deterministic feature interactions and its experimental evaluation'', Proc. of Fourth Int'l. Workshop on Feature Interactions in 
+Telecommunication Networks and Distributed Systems (FIW'97), pp.138-152, 
+Jun. 1997.
+ユーザの対称性を利用した検出アルゴリズム
+通信サービスには、「サービスSの加入者全員は、どのユーザに対してもSを等しく利用できる」という性質があります。例えば、ユーザAが,
+BとC両方に発信拒否(OCS)を設定していると仮定します。このとき、AがBにダイアルしてもCにダイヤルしても同じように着信が拒否されます(下図参照)。この2つの動作の間にはちょうど鏡に映したような対称性がうかがえます。
+この対照性に着目すると、探索する状態を削減することができます。上の例では、右側の状態遷移は左側から再生成することが可能なので、競合検出に必要な情報をおとすことなく、右側を捨てることができます。この対照性は、ユーザ変数の置換を用いて定式化することができます。つまり、ユーザ数が増えれば増えるほど、高い状態削減を達成できます。
+発表文献
+Masahide Nakamura, Yoshiaki Kakuda and Tohru Kikuno, ``Feature interaction detection using permutation symmetry'', Proc. of Fifth Int'l. 
+Workshop on Feature Interactions in Telecommunication Networks and Distributed 
+Systems (FIW'98), pp.187-201, Sep. 1998.
+Masahide Nakamura and Tohru Kikuno, ``Exploiting symmetric relation for efficient feature interaction detection'', IEICE Trans. on Information 
+and Systems, Vol.E82-D, No.10, pp.1352-1363, 1999.
+イベントの独立性を利用した検出アルゴリズム
+通信サービスにおけるイベントでは,互いに独立,すなわち,「一方のイベント実行が他方の実行に影響を与えないもの」が存在します.この独立なイベントに着目すると,競合検出に必要な性質を保存したままで探索する状態空間を削減することができます.
+例として,ユーザAとBが共に,ビジートーン状態にあると仮定します.この後,それぞれが受話器を一旦オンフックし,再度オフフックして,共にダイヤルトーン状態になるまでを考えます.このとき,AもBも電話がつながっていないので,「Aがオン(オフ)フックする」というイベントと「Bがオン(オフ)フックする」というイベントは互いに独立です.すなわち,どんな順番で発生しても,最終的には共にダイヤルトーンになります.この状態遷移を図に表すと以下のようになります。
+図中s1からs9まで、6通りの道が存在しますが、どれをとっても結果的にはs9にたどり着きます。これは、イベントの独立性から保障される性質です。従って、状態探索の際には、この6つのうち1つだけをたどることで競合検出を試みます。この例では、4状態、8遷移を削減できます。
+この独立性は、前述の対照性と組み合わせて適用することができ、さらに効率のよい状態削減を達成することができます。
+発表文献
+中村匡秀, 菊野 亨, 「通信サービスにおけるフィーチャーインタラクション検出へのペトリネットの応用」, システム/制御/情報, システム制御学会, 45巻, 第8号, pp.451-460, 2001.
+<< 戻る
+masa-n@is.aist-nara.ac.jp
+(C) Masahide Nakamura, Nara Institute of Science and Technology
+サービス競合の自動検出

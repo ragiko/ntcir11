@@ -1,0 +1,924 @@
+
+目次
+はじめに
+英語音声の基礎知識
+1.ことばのプロソディー
+2.音素と発音記号
+3.音声の変化
+4.アクセント
+5.リズム
+6.イントネーション
+7.スピード
+8.総合としての文
+9.和英対照用語
+0.参考にした文献
+BOW式英語音声表示記号
+1.発音記号
+2.音声変化記号
+3.アクセント表示記号
+4.リズム表示記号
+5.イントネーション表示記号
+6.説明用補助記号
+7.使用例
+あとがき
+はじめに
+このBOW式英語音声表示記号は、PCの半角キーボードにある記号を英語口語文の文中に挿入して、英語口語文の発音・アクセント・リズム・イントネーションを近似的に表現するためのツールとして開発した。17個の記号で27種の音声の表示を行なうことができる。
+この記号を使うことで、長年の学校英語(普通の大卒の人間であれば3+3+2の8年間)で体得できなかった英語口語文の音声を理解するのに役立つことができるほか、英語音声を解析する方法として利用できるかもしれないと思っている。
+今回この英語音声表示記号を開発するにあたり、梅田にある大手書店4箇所を何度も訪れたが、英語のコーナーには数百種類を越えるハウツー書が置かれていた。しかし、この英語音声表示記号はその類のものではない。英語口語文のスクリプトをPCで分析し、英語音声を総合理解するためのツールである。ただし、私がまとめた次の「英語音声の基礎知識」がその前提にある。
+英語音声の基礎知識
+1.ことばのプロソディー
+音楽のメロディは、1)音高(ピッチ)、2)音長、3)音量、4)無音の時間(休止)、5)スピードの要素で成立している。ことばにもメロディーがあり、1)アクセント、2)リズム、3)イントネーション、4)スピードから成立している。ことばのメロディーにも音楽のメロディーの要素が含まれている。
+プロソディーとは、発声要素のすべてを含めた言語の音声的な特徴を指すが、これは、ことばのメロディーに、5)音素を加えたものと言って過言ではなかろう。
+2.音素と発音記号
+BOW式発音記号へ
+音素というのは、「その言語を話す者が、同じ音だと感じる音」で、実際に発音されている音と同じとは限らない。これは母音と子音に分けられ、それぞれの言語に固有である。日本語のラ行の子音はRでもLでもない別の子音である。
+英語にも特有の音素があり、母音と子音に分かれる。音素が組み合わさって音節が作られ、音節が組み合わさって語ができる。
+まず最初に「BOW式発音記号」を作った。これは発音記号を使わず、文字に記号を加えることで近似的に単語の発音を表示する記号である。その基本になるのは以下の6種類の記号で、基本記号だけ、基本記号+英文字、あるいは、基本記号2つ以上の組合せ+英文字で音声表示を行なう。
+[ > ] [ <  ] [ ~ ] [ : ] [ & ] [ !  ]
+この「BOW式発音記号」は一見複雑のように見えるが、基本記号のイメージを理解すると直感的に分かる。そのほとんどが、記号1個を文字の前か後に挿入するだけなので、簡単この上ない。Jones式発音記号、国際発音記号やカタカナで書くよりは遥かに簡単であり、カタカナより正確である。
+日本語の母音は5種類であるのに対して、英語の母音は短母音は5種、長母音4種、二重母音5種、あいまい母音1種、アメリカ英語独特のr色の母音1種を合わせると22種類にもなる。この「BOW式発音記号」では、記号を挿入するだけで15種類の母音の発音を表示できる。あいまい母音の表示記号 [ < ] もその一つで、これだけでも活用範囲は広い。
+子音は、日本語にはない発音の             と、日本語に近いその他の子音になる。日本語にない発音は個々に習得するより仕方がなく、日本語に近い発音はわざわざとりあげるまでもない。その代わりとして、注意すべき子音の発音などについては、注意記号[ ! ]を挿入することで対応することに留めた。もちろん、この記号を注意すべき母音に使っても良い。
+ただし、単語の発音は辞書などで一語一語習得していくべきものであり、それが一応習得されているとの前提のもとで、英口語音声の近似的表示をするための記号を開発した。だから、この「BOW式発音記号」は、自分が身につけた発音と異なる場合の修正のメモ代わりに使う程度のものである。私は重宝しているが、英口語音声表示にとって重要な記号ではないので、面倒と思われたら飛ばしていただいて構わない。
+3.音声の変化
+BOW式音声変化記号へ
+英語の音声の変化は日本語と比べて非常に大きい。文字で知っている単語群が聴き取れない大きな原因がここにあると思える。
+英語には以下の原則があり、音声の、1)弱化・短縮、2)脱落、3)変音、4)連音(リエゾン)が起る。
+アクセントの原則
+英語のアクセントは原則として、重要な情報は、強く(大きく)、高く、長く発音される。逆に重要でない情報は、弱く(小さく)、低く、短く発音され、極端な場合消失する。このことについては、4.アクセントで詳しく述べる。
+リズムの原則
+英語のリズムは原則として、文アクセント音節がほぼ同じ時間間隔でくり返され、文アクセント音節に続く非アクセント音節の数には影響されない。それに適応するため、非アクセント音節の短縮や脱落、連音、しゃべりやすい音に変わるなどの対応策がとられる。このことについては、5.リズムで詳しく述べる。
+省エネの原則
+英語では、発音をしやすくすることによって、発音に使うエネルギーを減らそうとする傾向が強い。
+スピードの原則
+これは英語に限らないが、話すスピードが増すと、それに適応するため、短縮や脱落、連音、話しやすい音に変わるなどの対応策がとられる。これについては、7.スピードでも述べる。
+A.弱化・短縮
+英語では、重要でない語、音節は、弱く、低く、短くするというアクセントの原則があり、母音はあいまい音となり短くなる。また、英語のリズムは、アクセントを等間隔で刻むアクセント・リズムで、このため、アクセントのない語や音節は、それに合うように短縮する。
+B.消失・脱落
+アクセントの原則、リズムの原則、発音のし難さ、などにより、音の消失・脱落が起る。弱いあいまい母音、子音が重なった時の破裂音  p   b   t   d   k   g  などが消えたり、脱落しやすい。
+単語の中の音が消えることを 消失 、語と語とのつながりで音が消えるのを 脱落 という。単語内では、あいまい母音、単語末尾の破裂音が 消失 しやすく、単語間では、同じ子音の連続、類似子音の連続、破裂音の連続、破裂音+子音などで 脱落 が起りやすい。
+消失と脱落を区別せずに、両方を消失としても、あるいは脱落としても不都合はない。
+C.変音
+・単語内や単語間で t   が r に近い音、d に近い音 に変わる。
+例:water [warer wader]  get up [gerup  gedup ]
+・単語間で d  が  r に近い音 に変わる。
+例:kind of [kinrof]
+・単語間で th  が  n  になる。
+例:in there [innere]
+・単語内、単語間で、前の音が後の音を変える
+例:picked の d  は、無声音 k の影響で無声化し t の音になる。
+・単語間で、後の音が前の音を変える
+例:have to の v は、無声音 t の影響で無声化し、 f の音になる。
+・単語間で、前後の音が影響しあって中間的な音に変わる
+例:meet you の t と y が影響しあって ty の音になる。
+Would you の d と y が影響しあって dy の音になる。
+miss you の s と y が影響しあって sy の音になる。
+as you の s と y が影響しあって zy の音になる。
+D.連音(リエゾン)
+単語間で、前の単語の最後の子音と後の単語の最初の母音がつながり、「子音 母音」が「子音+母音」となることが多い。子音では  n   r   t   d   l  に多い。[you] の  y  は半母音で、母音扱いをする。
+これらの音声変化を表示する「BOW式音声変化記号」を作った。
+複合形
+以上の音声変化は単独でも起こるが、組み合わされることも多く、音声変化がより高度になる。
+例えば、a lot of の場合
+音声変化記号	 BOW式発音記号 国際発音記号 変音の種類
+a lot of [<a l>ot <of]    原形
+a lot- of [<a l>ot<of]   連音(リエゾン)
+a- lot- o(f) [<al>ot<o]  連音 連音 脱落
+4.アクセント
+BOW式アクセント表示記号へ
+A.音節
+母音を中心として、前後に境目があると感じられる単位を音節という。
+日本語は1)母音か2)子音+母音で構成され、英語は基本的には、子音+母音+子音で構成される。
+母音または子音+母音のように母音で終わる音節を「開音節」と呼び、子音+母音+子音のように子音で終わる音節を「閉音節」と呼ぶ。日本語はすべて「開音節」で、英語の大部分は「閉音節」である。
+英語では、アクセントのある短母音は、その直後の子音までを1つの音節に含むという原則がある。
+[子]+[母]  [子]+[母]+[子]
+これは、「開音節」では落ち着かず、本来の「閉音節」にしてしまおうとするためだろう。
+そのため、
+limit  method  habit  honest  woman  は
+li-mit  me-thod ha-bit  ho-nest  wo-man ではなく 
+lim-it  meth-od hab-it  hon-est  wom-an の音節に分ける。
+最初の音節の短母音を発音する際、それに後ろからくっついている子音までを一気に発音し、そこで一瞬の間を置いてから、後ろの音節を発音するのが正式とされている。
+B.アクセント一般
+ある語、句、文の中で、他より目立って聞こえるとき、その部分にアクセントがあると言う。アクセントは音節の母音につく。アクセントというと、楽譜のアクセントと同じく強い(大きい)音を連想するが、言語でいうアクセントの定義はそれとは違う。
+アクセントのある音節の音は高く、大きく、長い傾向にあり、その中で音の高低の比重が大きいものを高低アクセント、音量の大小の比重が大きいものを強勢アクセントという。
+日本語のアクセントは音の高低(ピッチ)によって表す比重が大きく「高低アクセント、高さアクセント」と言われる。それに対して、英語は強勢によって表す比重が大きく、「強勢アクセント、強さアクセント、強弱アクセント」という。
+しかし、英語の強勢アクセントにも、音の高さと音の長さの要素も含まれている。つまり、強勢の強いほど音は高い場合が多く、強勢のない音節は最も音が低く、時には零(無音)になる。また、音の長さも、強勢の強いほど長く、強勢のない音節では短く、時には零(消失)になる。英語学習書や英会話のガイドブックの多くは、強勢ばかりを強調してアクセント=強勢とし、音の高低を問題としているものは見当たらなかった。しかし、これは間違いで、英語のアクセントは「強勢」が中心ではあるが、それにに劣らぬほど「音の高低」の要素を含んでいる。
+ネイティヴの会話を先入観なく聴けば、英語のアクセントも音の高低が大きく関係していることに気づくはずだが、なぜそうならないのか不思議だ。
+アクセントの原則
+重要な情報は、強く(大きく)、高く、長く発音される。逆に重要でない情報は、弱く(小さく)、低く、短く発音され、極端な場合消失する。
+アクセントは「語」の中だけでなく、「句」「文」の中にもあり、それぞれを、語アクセント  句アクセント  文アクセントという。
+英語では、重要な部分にアクセントがくる。そのアクセントだが、日本語とまったく違うのは強勢アクセントを持っていることである。強勢アクセントでは、アクセントのない部分は弱く、時には聴こえないほどになる。
+そのため、英語ではアクセントのある部分が重要で、アクセントのない部分が聞こえなくても、ある程度は見当がつけられる。例えば、語アクセントのアクセントのある音節だけでその単語を推定できたり、文アクセントのある単語だけで、その文の内容をある程度推定できる。それほど、英語ではアクセントは重要である。
+C.語アクセント
+単にアクセントというときは「語アクセント」を指すことが多い。英語ではすべての語が本来第1アクセントを持っている。だから、1音節語は第1アクセントがあることになる。2音節以上の語では、一番強い第1アクセント、その次に強い第2アクセント、弱アクセントの3段階がある。弱アクセントは無アクセント、非アクセントとも呼ばれる。
+ただし、「機能語」という単語群では、アクセントのある「強形」のほかに、アクセントの弱い「弱形」があって、通常は「弱形」が使われる。しかし、特に強調するときには、アクセントのある「強形」を使う。辞書には最初に「弱形」、後に「強形」が書かれている。「弱形」では、弱く(小さく)、低く、短い。
+「機能語」は、他の語と結びつくことによってはじめて文法的価値を発揮する語群で、「be動詞」「have動詞」「冠詞」「前置詞」「接続詞(that)」「関係詞(that)」「人称代名詞」「所有代名詞」は(弱、低、短)が原則である。
+BOW式発音記号、音声変化記号を使って「機能語」の強形、弱形を表示すると以下の表になる。
+「弱形」では母音が曖昧化され、音の一部が脱落(省略)されることがある。
+機能語の強形と弱形
+種類	単語強形弱形(通常はこちら)
+冠詞	a	&a<a
+an	>an<an (a)n
+the	th>e:		th<e子音前 th>e:母音の前
+人称代名詞	you	you:		y(o)u yo(u)
+he	he:		h<e (h)e
+she	she:		sh<e
+him	him		(h)<im (hi)m
+them	them		th<em (th)<em (the)m
+us	>us		<us
+所有代名詞	your	you:~r		y<ou~r y(o)u~r y<o(ur)
+his	his		(h)<is
+her	her:		(h)<e~r
+助動詞/be動詞am	a:m		<am (a)m
+are	a:re		<a(re)
+can	c>an		c<an c(a)n
+have	h>ave		h<ave (h)<ave (ha)ve
+has	h>as		h<as (h)<as (ha)s
+had	h>ad		h<ad (h)<ad (ha)d
+could	could		c<ould
+must	m>ust		m<ust m<us(t)
+will	will		(w)<ill (wi)ll
+shall	sh>all		sh<all
+would	would		w<ould (wo)uld (woul)d
+should	should		sh<ould
+前置詞/接続詞at	>at		<at
+for	fo:r		f<o(r) f(o)r
+from	fr>om		fr<om f(ro)m
+and	>and		<and <an(d) (a)nd (a)n(d)
+or	or		<o
+関係詞	that	th>at		th<at th<a(t)
+who	who:		wh<o w(ho)
+不定形容詞	some	so:me		s<ome s(o)me
+any	any		<any
+その他	there	there		th<ere
+これに対して、アクセントを持つ語群を「内容語」という。これは聞き手に情報として明確に伝える必要性のある語群で、名詞、動詞、形容詞、副詞(thatあれほど)、指示代名詞(that/this)、疑問詞、数詞などを言う。情報価値の高い順からいえば、一般には名詞>形容詞、副詞>動詞となる。内容語は通常では弱形化は起らない。
+短縮形は2個の機能語がつながって作られる場合が大半なので、弱形になることが多い。しかし機能語+not の短縮形は、内容語(副詞)の not と合体することでアクセントを持つ内容語となる。 do ^not    ^don't
+そのほか、L^et us  L^et's も内容語(動詞)と合体しているので、内容語となる。
+D.句アクセント
+句とは、語がいくつかまとまって、ある意味を持つ語群を言う。ここでは、語単独とは違うアクセントの位置の変動や程度の変化が生じたり、音の連結・弱化・消失・同化などが生じたりする。音の消失には一瞬の間を伴うことがある。
+イントネーション句とは、一息で続けて発音する語群で、息継ぎ(ポーズ)がその区切りとなる。これは強調する内容によって変わるが、短く区切るごとに強調する部分が増える。文は句が集まって形成されるので、句アクセントについては、次の文アクセントでまとめて述べる。
+E.文アクセント
+くだけた会話の中では、多くの場合、1つの文の中で特に強いアクセントのある単語は1つだけであるが、改まった口調になるにつれて、第2アクセントだった言葉もより強調されて第1アクセントへと変化していく。そして、フレーズ単位で軽いポーズが置かれるようになる。
+文アクセントは意味上重要なものにアクセントをつけ、重要でないものは格下げにする。アクセントのない音節は語、句、文で弱化したり、消失・脱落することがある。機能語は通常、文中でアクセントを持たない。また、内容語であっても、意味内容の希薄なものは弱いアクセントとなる。
+先に、アクセント一般のところで強調したが、アクセントは強勢だけでなく、それに劣らぬほど音高(ピッチ)も関係し、アクセントが強いほどピッチは高くなる傾向にある。音の高低の差を音楽では音程というが、スクリプトを見ながら米国ネイティヴの口語を聴いて、アクセントの音程はおおむね以下のようになることを発見した。
+文アクセントの中で 非常に強いアクセントのある音節の音程: 完全8度 階名で 上のド
+文アクセントの中で 強いアクセントのある音節の音程   : 完全5度 階名で ソ
+文アクセントの中で 普通のアクセントのある音節の音程  : 完全4度 階名で ファ
+機能語とアクセント 弱い音節の音程(音のベースライン) : 完全1度 階名で ド
+二つの音を同時に発した場合、心地よく聞こえる音程を協和音程と呼び、最も心地よいのが完全1度と完全8度とされている。次に心地よく聞こえるのが、完全4度と完全5度である。例えば、ド から数えると、完全1度は ド と ド 、完全8度は ド と オクターブ上のド、完全4度は ド と ファ、完全5度は ド と ソ の間の音程となる。アクセントがこの人間の耳に気持ちよく聴こえる音程になっていることを知り、なるほどと納得した。
+このように、文アクセントの強さの程度を定量的に音程で表示したものは、英会話ガイドブック、英語学習書、英語音声学テキストで皆無だった。自分の耳で虚心に聞けば、アクセントが強勢だけでなく、それに劣らぬほど音程の違いがあることに気づくはずである。もし、少し楽譜が読めるものであれば、その音程の違いを階名で表すことも簡単なことである。
+この音程を含んだ「BOW式アクセント表示記号」を作った。これによって、英語口語音声の表示がより実際に近づいたと思われる。アクセント記号は本来は母音の上に置くべきであるが、それは簡単ではないので、母音の前に挿入する。
+英語のリズムは、文中でアクセントを持つ音節がビートになり、ほぼ同じ時間でくり返す。これは、次の5.リズムで取り上げるが、アクセント・リズムと呼ばれる。この文中でビートになるアクセントを文アクセントという。つまり、英口語の「リズムの起点」となっているアクセントが「文アクセント」である。
+このことから、「文アクセント」は「リズム開始記号」の [ | ] と併用することが必須となり、この記号 [ | ]の先行するアクセントが「文アクセント」となる。これを欠く単独のアクセントは、ピッチの高さを示すだけで、文アクセントにはならない。
+文アクセントについては、例外的に音の強勢の強さとピッチの高さが対応しない場合もある。例えば、同じピッチでありながら強勢が違うとか、ピッチが最低のベースラインで、強勢のアクセントだけがある場合などがそれに当る。その場合でも、「リズム開始記号」を「アクセント表示記号」と併用することで、文アクセントを正しく表示することができる。
+5.リズム
+リズム表示記号へ
+リズムとは音声の流れの中で、音の強弱や長短が規則的なパターンとしてくり返される現象を言う。これは、語や句では問題とならず、文で問題となる。
+日本語はすべて開音節で、母音または子音+母音のように母音で終わる。日本語のリズムは、音節がほぼ等間隔に現れて1拍子をくり返すので「ダダダダの機関銃リズム」と例えられ、「音節拍リズム」という。
+音節をで表し、無音の時間(休止、間)をで表すと、五七五調は以下のように表示できる。
+｜｜｜｜
+｜ふるいけや｜かわずとびこむ｜みずのおと｜
+これは正確には「音節拍リズム」ではなく「モーラ・リズム」というべきで、例えば、発見 [ハッケン] は [ハッ] と [ケン] の2音節であるが、[ハ] [ッ] [ケ] [ン] の4モーラに数えている。このように、七五調の7や5は音節ではなく、モーラを数えている。しかし、一般には「音節拍リズム」と考えてよい。
+英語では文アクセントがほぼ等間隔に現れる。アクセントのある音節から次のアクセントのある音節直前までが英語の基本リズム単位で、「フット( foot )」という。英語はこの「フット」がほぼ同じ長さ(時間)で発音される。このフットを区切る記号として [ | ] を作った。これは楽譜の小節を区切る縦線と同じで、この記号の次から文アクセントが始まるので「リズム開始記号」と呼ぶことができる。
+もう少し詳しく説明すると、英語ではアクセントのある一つの音節に、複数のアクセントの無い音節が続き、次のアクセントのある音節から、また複数のアクセントのない音節が続くというパターンをくり返す。音節の間隔はばらばらで「波のうねりリズム」と例えられ、「アクセント・リズム」という。
+アクセントのある音節をで、アクセントのない(弱い)音節を ・ で表すと、英語のリズムは以下のように表示できる。
+｜・・｜・・・・・｜・｜・・・・・・｜・・・・｜
+アクセントのない(弱い)複数の音節から始まる場合は、以下のようになる。
+・・・｜・・｜・・・・・｜・｜・・・・・・｜・・・・｜
+これを楽譜で言えば、1小節は必ず強いアクセントのある音節(文アクセント)から始まり、アクセントのない(弱い)音節がこれに続く。
+文の中の1小節の時間は均等なので、その調節はアクセントのない(弱い)音節の短縮で行ない、短縮は時には消失にまで至る。アクセントのある音節の時間の延長や小休止(間)を入れることで、1小節の時間の延長を図ることもある。この「休止記号」として [ ** ] を作った。一瞬の間(ま)を表す [ * ] よりも長い間(ま)という意味である。
+この休止記号とリズム開始記号とを合わせて「リズム表示記号」とした。
+日本語の「音節拍リズム」と英語の「アクセント・リズム」を音楽で例えてみれば、カンツォーネとアメリカン・ポップスとの違い、イタリア・オペラのアリアとドイツ・オペラのアリアとの違い、山田耕筰の歌と最近のことば数の多い若者の歌との違いと言えるかもしれない。
+英語と日本語で、アクセントの違いは非常に大きいが、理解できないというほどではない。しかし、「リズムの違い」となると、まったく異なっている。英語と日本語の音声の最大の違いは、このリズムの違いであろう。
+英語のリズムの原則
+英語のリズムの原則は、文アクセント音節がほぼ同じ時間間隔でくり返され、文アクセント音節に続く音節の数には影響されない。
+この原則は、文アクセントを変えてしまうほど強力である。文アクセントを持つ音節が連続する場合は、これを避けるために、前の音節を長めに発音したり、アクセントの位置を変えて、[強]+[弱]+[強] の交替リズムを作ることがあり、「リズム移動」という。
+例えば、^good ^old ^dog  |^good old |^dog
+6.イントネーション
+イントネーション表示記号へ
+ことばのメロディーは、1)アクセント、2)リズム、3)イントネーションから成立している。イントネーションとは文全体に及ぶ音の高さ(ピッチ)の変動を言うが、強勢は関係しない。このピッチの変動はアクセントでも密接に関係しているが、こちらは強勢が必然的に関わっている。
+イントネーションは文末にあるが、文末にだけあるのではない。文はいくつかのイントネーション句に分けられ、それぞれの句末にイントネーションがある。イントネーション句とは、一息で続けて発音する語群で、息継ぎ(ポーズ)がその区切りとなるが , を持つとは限らない。このイントネーション句は、強調する内容によって変わる。短く区切るごとに強調する部分が増える。演説では細かく区切り、日常会話では区切り方が少なくなる傾向にある。
+イントネーションの上げ下げは、イントネーション句の最後のアクセント音節から始まる。文末に来るイントネーション句でもそれは変わらない。
+「イントネーション表示記号」として、以下A〜Eの5種類を作った。
+A.下降調
+完結、断定が基本的な意味で、文末で最も多く使われ、話者の「主張・断定」を示す。Wh 疑問文にあたる日本語文は上昇調であるのに、英語文では下降調になるのは、Wh 疑問詞の部分を教えて欲しいという話者の意思を表しているためである。
+1)平叙文、2)Wh疑問文、3)命令文、4)感嘆文、5)付加疑問のうち、同意を前提とし、返答を求めないもの。
+B.上昇調
+未完結、不確実が基本的な意味で、話者の「判断保留」を示す。自己主張を控えた言い方なので、丁寧で柔らかい。
+1)文の切れ目、2)Yes/No 疑問文、3)平叙疑問文、4)相手のことばへの言い返し、5)依頼や勧誘、6)挨拶、7)呼びかけ、8)断定的な口調を和らげたいとき、9)付加疑問のうち、実際にYes/No の返答を期待しているとき
+C.下降上昇調
+断定に不確実が加わったもので、「限定つき同意」「躊躇した答え」が基本的な意味。これは英語独特のイントネーションで、英語でよく使われる。
+1)文の途中、2)陳述文を控えめに言う言い訳など、3)命令文や警告を和らげる、4)言外の意味を伝える
+D.上昇下降調
+強い感情を表す音調で、「強い断定」「強い驚き」などを表す。使われる機会はそれほど多くはない。
+E.平坦調
+1〜2語程度の短い文で、退屈や残念などの含みを持って使われる。
+音のベースラインの変動
+これはイントネーションではないが、会話などで、1)平静を失って音声のピッチのベースラインが2度程度高くなり、上ずって聞こえる場合、2)元のベースラインに戻る場合に使う。
+7.スピード
+話すスピードが増すと、それに適応するため、短縮や脱落、連音、しゃべりやすい音に変わるなどの対応策がとられる。その対象は主にアクセントのない個所が選ばれる。これは、3.音声の変化でも述べた。
+8.総合としての文
+1)音声的に見た文は、分析された音声学的要素の総合であって、それらの単なる寄せ集めではない。
+部分を詳細に理解すること以上に、それらの総合として、全体を理解する必要がある。
+2)文の中にはアクセントがあり、意味的に重要な語や音節は、強く、高く、長く、
+重要でない語や音節は、弱く、低く、短く発音される。その程度は重要度に原則として対応する。
+3)文にはリズムがあり、英語のリズムは日本語のリズムと全く異なる。
+英語のリズムは、文アクセントの間隔がほぼ同じになる。
+そのために、弱アクセント音節の圧縮、アクセント音節の延長、アクセントの移動が起きる。
+4)英語のイントネーションはヴァリエーションが大きく、「イントネーション句」として文中でも使われる。
+9.和英対照用語
+<BOW式発音記号>
+音声			speach sound
+音声学			phonetics
+プロソディー		prosody
+音節			syllable
+開音節			open syllable
+閉音節			closed syllable
+音素			phoneme
+発音記号		phonetic alphabet
+母音			vowel
+子音			consonant
+r色の母音		r-colored vowel
+二重母音		diphthong
+有声音			voiced sound
+無声音			voiceless sound
+<BOW式音声変化記号>
+短縮			contraction
+消失			elision
+脱落			deletion
+同化			assimilation
+連音			liaison
+リエゾン		liaison
+同化			assimilation
+<BOW式アクセント表示記号>
+アクセント		accent
+高低アクセント		pitch accent
+高さアクセント		pitch accent
+高低アクセント		pitch accent
+強勢アクセント		stress accent
+強さアクセント		stress accent
+強弱アクセント		stress accent
+高さ・長さアクセント	pitch and length accent
+強いアクセント		strong accent
+弱いアクセント		weak accent
+第1アクセント		primary accent
+第2アクセント		secondary accent
+語アクセント		word accent
+句アクセント		phrasal accent
+文アクセント		sentence accent
+語強勢			word stress
+句強勢			phrasal stress
+文強勢			sentence stress
+機能語			function words
+強形			strong form
+弱形			weak form
+強化			strengthening
+弱化			weakening
+内容語			content words
+複合語アクセント	compound accent
+<BOW式リズム表示記号>
+リズム			rhythm
+強勢拍リズム		stress-timed rhythm
+音節拍リズム		syllable-timed rhythm
+モーラ			mora
+フット			foot
+ポーズ			pause
+小休止			pause
+休符			rest
+間			pause
+リズム移動		rhythm shift
+<BOW式イントネーション表示記号>
+イントネーション	intonation
+イントネーション句	intonational phrase IP
+下降調			fall
+上昇下降調		rise-fall
+上昇調			rise
+下降上昇調		fall-rise
+平坦調			level
+平板調			level
+10.参考にした文献
+1)話せる聴ける英語のリズム感		服部孝彦著		アルク		2008年
+2)英語音声学入門			竹林滋・斉藤弘子著	大修館書店	2008年
+3)英語の音声を科学する		川越いつえ著		大修館書店	2007年
+4)日本人のための音声学レッスン	牧野武彦著		大修館書店	2005年
+5)知っている英語なのに
+なぜ聞き取れない?			藤田英時著		ナツメ社	2008年
+6)ネイティヴ英語発音の法則		長尾和夫・Aバーガー著	DHC		2006年
+BOW式英語音声表示記号
+キーボードにある記号の中から、視覚的に連想しやすいものを選んだ。原則として対象とする文字の前に挿入するが、後に挿入するものは注記した。
+1.BOW式発音記号
+発音記号の基礎知識へ
+「基本記号」
+1.[ > ]  母音の基本音を表す
+( 発音記号      )は、それぞれ >a >e >i >o >u で表す
+記号のイメージ: 口を縦や横に大きく開ける発音
+2.[ <  ] あいまい母音を表す
+( 発音記号  ) は、<a <e <i <o <u <y のいずれかで表す
+記号のイメージ: 口を開けない発音
+例:<about mom<ent poss<ible c<ontain famo<us bic<ycle
+3.[ ~ ]  r-coloring が付いた米語発音を表す
+記号のイメージ: 舌の位置と状態
+例:c>a~r st>a~r doo~r fo~rk
+4.[ : ]  延長記号を表す
+( 発音記号  )
+記号のイメージ: 発音記号と同じ
+例:e:vening  see:
+注意:この記号は英文字の後につける
+5.[ & ]  母音の名称音を表す
+( 発音記号          )は、 &a &e &i &o &u で表す
+記号のイメージ: 短母音でなくてプラスがある
+例:n&ame b&ike c&ute &evening n&ote
+6.[ !  ] 注意すべき発音(記号で近似させることはできない場合に使う)
+記号のイメージ: 注意せよという感嘆符 !
+「応用記号」
+1-1.[ >a ] ( 発音記号  ) a の基本音。 口を笑うように横に開け、 エ に近い ア
+例:>apple b>ag c>at f>at h>appy m>atter n>atural r>andom st>amp 
+1-2.[ >e ] ( 発音記号  ) e の基本音。 日本語の エ とほぼ同じ
+例:d>evil  >egg  h>elp  l>eft  p>en  t>el>ephone
+1-3.[ >i ] ( 発音記号  ) i の基本音。 エに近い イ。 日本語の イ とは違うので要注意
+例:an>imal c>ity f>ilm morn>ing p>icture s>ince tenn>is
+1-4.[ >o ] ( 発音記号  ) o の基本音。 口を一杯開けた ア
+例:b>ody c>op d>octor G>od h>ot j>ob n>ot st>op
+1-5.[ >u ] ( 発音記号  ) u の基本音。 口をあまり開けない ア
+例:b>ud c>up h>ut l>uck m>utt t>ub >up
+2-1.[ <a ] ( 発音記号  ) あいまい母音
+2-2.[ <e ] ( 発音記号  ) あいまい母音
+2-3.[ <i ]  ( 発音記号  ) あいまい母音
+2-4.[ <o ] ( 発音記号  ) あいまい母音
+2-5.[ <u ] ( 発音記号  ) あいまい母音
+23.[ <~ ]  ( 発音記号  ) 短いあいまい音に r-coloring が付いたもの。一種の長母音として扱う
+例:calend<~ar fi<~re to<~ur teach<~er 
+234.[ <:~ ]  ( 発音記号  ) 長いあいまい音に r-coloring が付いたもの。一種の長母音として扱う
+例:b<:~ird <:~early f<:~urther c<:~ertain
+4-1.[ a: ]  ( 発音記号  ) 口を一杯開けた長母音 アー
+例:fa:ther  
+4-3.[ i: ] ( 発音記号  ) 日本語のイよりも口を横に開いた イー
+例:capri:ce machi:ne poli:ce tecchni:que  
+5-1.[ &a ] ( 発音記号  ) a の名称音。 エィ。誤ってエーと発音されやすいので要注意
+例:&angel c&ake d&ate m&ake n&ame pl&ace s&afe t&ake vivr&ate
+5-2.[ &e ] ( 発音記号  ) e の名称音。 日本語のイよりも口を横に開いたイー
+例:b&e &even h&e w&e m&e m&eter sp&ecies th&&se
+5-3.[ &i ] ( 発音記号  ) i の名称音。 アィ
+例:b&icycle cl&imate l&ite rec&ital t&iny
+5-4.[ &o ] ( 発音記号  ) o の名称音。 オゥ。誤ってオーと発音されやすいので要注意
+例:b&oth c&old d&on't g&o h&ope m&ost &old r&oad s&ow w&on't 
+5-5.[ &u ] ( 発音記号  ) u の名称音。 ユー
+例:c&ute exc&use h&uge prod&use t&ube &usually
+6-1.[ ! ]   の発音に注意!
+例:a!ddress !dream  
+6-2.[ ! ]   の発音に注意!
+例:cen!tral en!trance s!treet
+6-3.[ ! ]  スィ  の発音に注意!
+例:bi!cycle !city i!cy !six
+6-4.[ ! ]  スィー の発音に注意!
+例:!cease !see
+6-5.[ ! ]  ズィ の発音に注意!
+例:bu!sy di!zzy la!zy noi!zy pan!sy vi!sit !zip
+6-6.[ ! ]  ズィー の発音に注意!
+例:!zero
+6-7.[ ! ]  ュウー の発音に注意! 日本語のウーより口を尖らす
+例:!two !too !who !root !food
+2.BOW式音声変化記号
+音声変化の基礎知識へ
+「単語内の音声変化」
+[( )*] ( ) 内の音は脱落するが、口の形は残り一瞬の間「ッ」がある
+記号のイメージ: 隠す と 余韻
+例:abou(t)* [abou*] ca:n'(t)* [ca:n'*] ou(t)*door [ou*door]
+[ * ]  [( )*] の省略形。脱落文字が1字の場合、簡略化のため ( ) を省略しても良い。
+例:about* [abou*] ca:n't* [ca:n'*] out*door [ou*door]
+注意:この記号は英文字の後につける。リズムの小休止記号を示すのは、[ ** ]
+[( )]  ( ) 内の音の脱落
+記号のイメージ: 隠す
+例:twen(t)y [tweny] won(d)erful [wonerful] cam(e)ra [camra]
+[ \ ]  変音を表す
+記号のイメージ: 両替
+1)[t]  [tt]  が「r に近い音」や「d に近い音」に変わる
+例:eigh\ty[eighry]  li\ttle [lirle]  wa\ter [warer wader]  mi\ddle [mirle]
+2)有声音が無声音に変わる
+例:picke\d [pikt]
+「単語間の音声変化」
+[ - ]  単語間の音声関係であることの表示、前の単語語尾につける。
+この記号単独では語尾子音と語頭母音の連結(リエゾン)を表す
+記号のイメージ: 連結
+例:Could- you [Couldyou]  after- all[afterall]  miss- you [missyou]
+注意:前の単語の語尾の後に挿入する。イントネーションの平坦調を示すのは[ -- ]
+[ - ]と[( )*] 語尾子音と語頭子音が同じか似ているため語尾子音が脱落するが、一瞬の間がある
+例:wi(th)* them [wi*them]  thi(s)* size [thi*size]  I(s)*- this [I*this]
+[ - ]と[ * ]  [ - ]と[( )*] の省略形で ( )内の文字が1字の場合は、( )を省略できる
+例:this* size [thi*size]  Is*- this [I*this]
+[ - ]と[( )]  語尾子音と h の脱落した語頭母音の連結
+例:What- (h)ave [Whatave]  schoud- (h)ave [schoudave]
+[ - ]と[ \ ]  前の単語の語尾と後の単語の語頭の関係で起きる音の変化を表す
+1)[t] が「r に近い音」「d に近い音」になる
+例:wai\t- along [wairalong]   bu\t- it [burit]   ge\t- up [gerup]
+2)[d] が「r に近い音」になる
+例:kin\d- of [kinrof]  hear\d- of [hearrof]
+3)[th] が [n] に変わる
+例:in- \there [innere]  on- \that [onnat]  mean- \that [meannat]
+4)前の有声音が後と同じ無声音に変わる
+例:Plea\se- send [Pleasend]  o\f- course [ofcourse]  ha\ve- to [hafto]
+3.BOW式アクセント表示記号  
+アクセントの基礎知識へヘ
+[ ^ ]  強いアクセント
+記号のイメージ: 高いピッチ
+1)語アクセント:単語の中の第1アクセントのある音節の母音の前(辞書は母音の上)
+例:t^elev`ision
+2)文アクセント:強いアクセントのある単語の音節の母音の前に付けるが、
+リズム開始記号 | と併用する。単独では、ピッチの高さのみを表す
+ピッチの高さは、音のベースラインの完全5度上の音程、階名で ソ
+例:Do you |l`ive in a |h^ouse or an a|p`artment?
+[ ` ]  やや強いアクセント
+記号のイメージ: 発音記号の第2アクセント
+1)語アクセント:単語の中の第2アクセントのある音節の母音の前(辞書は母音の上)
+例:t^elev`ision
+2)文アクセント:やや強いアクセントのある単語の音節の母音の前に付けるが、
+リズム開始記号 | と併用する。単独では、ピッチの高さのみを表す
+ピッチの高さは、音のベースラインの完全4度上の音程、階名で ファ
+例:I |l`ive in an a | p`artment.
+[ ^^ ]  非常に強いアクセントで、文アクセントにだけ使う
+記号のイメージ: 強いアクセント記号のくり返し
+文アクセント:特別に強いアクセントのある音節の母音の前に付けるが、
+リズム開始記号 | と併用する。単独では、ピッチの高さのみを表す
+ピッチの高さは、音のベースラインの完全8度上の音程、階名で 上のド
+例:Oh, |^^no. I |l`ive in a |h^ouse
+[ = ]  ピッチがベースラインと同じ高さの強勢アクセントで、文アクセントにだけ使う
+記号のイメージ: ピッチが同じ
+文アクセント:ピッチがベースラインと同じで、強勢アクセントのある音節の母音の前
+リズム開始記号 | と併用する
+ピッチの高さは、ベースラインと同じ音程。階名で ド
+例:Did you |=eat in some |g=ood restaur`ants?/
+[  ]  非常に弱いアクセント(アクセントが無いとも表現)
+記号のイメージ: 無
+1)語アクセント:単語の弱いアクセントの音節には表示記号をつけない(辞書と同じ)
+例:t^elev`ision
+2)文アクセント:機能語と単語の弱いアクセントの音節にはアクセント記号をつけない
+ピッチの高さは、音のベースラインで、完全1度上の音程、 階名で ド
+例:I |l`ive in an a|p`artment.
+4.BOW式リズム表示記号
+リズムの基礎知識ヘ
+[ | ]  リズム開始記号。文アクセントの音節の前に付ける
+記号のイメージ: 五線譜の小節の縦線
+例:Do you |l`ive in a |h^ouse or an a|p`artment?
+[ ** ]  イントネーション句の区切りの休止記号。文のリズムをとるための 間(ま)を示す
+[ , ] のないイントネーション句では1スペースを空けて付ける
+記号のイメージ: 一瞬よりは長い間(ま)
+例:Oh, |n^^o. ** I |l`ive in a |h^ouse.
+注意:この記号は英文字の後につける。音声変化の一瞬の間を表すのは[ * ]
+5.BOW式イントネーション表示記号
+イントネーションの基礎知識ヘ
+注意:イントネーション表示記号は、句または文の最後につける
+[ _ ]  下降調:文や,句の後、[ , ] のないイントネーション句では1スペースを空けて付ける
+記号のイメージ: 低いピッチ
+例:I |l`ive in an a|p`artment._
+[ / ]  上昇調:文や,句の後、[ , ] のないイントネーション句では1スペースを空けてつける
+記号のイメージ: 尻上がり
+例:Do you |l`ive in a |h^ouse?/
+[ _/ ] 下降上昇調:文や,句の後、[ , ] のないイントネーション句では1スペースを空けてつける
+記号のイメージ: 一旦低くなり上がる
+例:I |l^ove my |h`ouse._/
+[ /_ ] 上昇下降調:文や,句の後、[ , ] のないイントネーション句では1スペースを空けてつける
+記号のイメージ: 一旦高くなり下がる
+例:Oh,/_**  wh`at w`as th`e |m=atter?
+[ -- ]  平坦調:文や,句の後、[ , ] のないイントネーション句では1スペースを空けてつける
+記号のイメージ: 上がり下がりのない平坦
+例:Do you |l`ike |y^our a|p`artment?-
+注意:単語間の音声関係であることを示すのは[ - ]
+[ # ]  音のベースラインの変動
+文のベースラインのピッチを変える時に、文の先頭に付ける
+記号のイメージ: 五線譜での音程の上がる記号
+[ #2 ] 文の先頭に付け、2度音程上昇を示す
+例:I |l`ive in an a`partment. #2 I |l`ove my a|p`artment.
+[ #-2] 文の先頭に付け、2度音程下降を示す
+例:I |l`ove my ap|`artment. #-2 I |d^on't like a |h^ouse.
+6.説明用補助記号
+これは音声表示記号ではないが、半角キーボードでコメントを付ける場合に便利な略語類
+[ => ] 
+記号のイメージ:  に似ている
+[ <= ] 
+記号のイメージ:  に似ている
+[ abt.] ほぼ、おおよそ、約
+記号のイメージ: aboutの略語
+[ cf.] 比較、参照
+記号のイメージ: confer 、compareの略語
+[ i.e.] すなわち、言い換えれば
+記号のイメージ: ラテン語id est = that is の略語
+[ ex.] 例
+記号のイメージ: exampleの略語
+[ syn.] 同意語
+記号のイメージ: synonymの略語
+[ ant.] 反意語
+記号のイメージ: antonymの略語
+7.使用例
+ネイティヴの話す英語口語文のスクリプトをBOW式表示記号で分析した見本を7例提示する。1.〜6.は今回書店で購入したもので、7.は VOAのWebサイト からダウンロードして入手した。1.と6.の早口の個所は、スクリプトを眼で追うことさえ難しい猛スピードに困惑したが、それ以外の口語文では苦労は少なかった。
+最初に<原文>、次に<音声表示記号使用文>を載せ、7.IN THE NEWS in VOA Special English ではMP3による音声の再生とファイルの保存もできるようにした。
+1.映画「ローマの休日」 スペイン広場でデートに誘う場面
+2.映画「ローマの休日」 王女と報道関係との会見場面
+3.ケネディー大統領の演説
+4.キング牧師の演説
+5.N.Y.で録音されたフライト・アテンダントのアナウンス
+6.N.Y.で録音された道順を尋ねる場面
+7.IN THE NEWS in VOA Special English
+1.映画「ローマの休日」 スペイン広場でデートに誘う場面
+ローマの休日 「デートの誘い」  Roman Holiday " The invitation to date " (1953)
+<原文>
+JOE:
+Weeel, it's you!
+ANN: 
+Yes, Mr.Bradley!
+JOE: 
+Or is it?
+ANN: 
+Do you like it?
+JOE: 
+Yeah... very much. So that was mysterious appointment.
+ANN: 
+Mr. Bradley, I have a confession to make.
+JOE: 
+Confession?
+ANN: 
+Yes, I... ran away last night, from school.
+JOE: 
+Oh, what was the matter? Trouble with the teacher?
+ANN: 
+No, nothing like that.
+JOE: 
+Well, you don't just run away form school for nothing.
+ANN: 
+Well, I only meant it to be for an hour or two. They gave me something last night to make me sleep.
+JOE: 
+Oh, I see.
+ANN: 
+Now I'd better get a taxi and go back.
+JOE: 
+Well, look, before you do... why don't you take a little time for yourself?
+ANN: 
+Maybe another hour.
+JOE: 
+Live dangerously, take the whole day!
+ANN: 
+I could do some of the things I've always wanted to.
+JOE: 
+Like what?
+ANN: 
+Oh, you can't imagine... I'd, I'd like to do just whatever I'd like, the whole day long!
+JOE: 
+You mean, things like having your hair cut? Eating gelato?
+ANN: 
+Yes, and I'd like to sit at sidewalk cafe and look in shop windows, walk in the rain! have fun, and maybe some excitement. It doesn't seem much to you, does it?
+JOE: 
+It's great! Tell you what. Why don't we do all those things... together?
+ANN: 
+But don't you have to work?
+JOE: 
+Work? No! Today's gonna be a holiday.
+ANN: 
+But you don't want to do a lot of silly things.
+JOE: 
+Don't I? First wish, one saidewalk cafe. Coming right up? I know just the place, Rocca's.
+ローマの休日 パラマウント映画 1953年
+<音声表示記号使用文>
+JOE:
+|W^^eeel,_ it's |y^ou!/
+ANN: 
+|Y^es, Mr. Brad|l`ey!/
+JOE: 
+Or |^is ^it?_
+ANN: 
+Do you like- |^it?/
+JOE: 
+Yeah... |v^ery much._ So |th^at w`as mys|t^erious ap|p^ointment._
+ANN: 
+Mr. |Br`adley, I have- a con|f^ession to make._
+JOE: 
+Con|f`ession?/
+ANN: 
+Yes,- I...** ran- a|w^ay last* |n`ight,/ fr(o)m |sch^ool._
+JOE: 
+Oh,/_ |wh`at w`as th`e |m=atter? |Tr`ouble w`ith the |t^eacher?/
+ANN: 
+No, |n^othing like |th`at.
+JOE: 
+W`ell, y`ou |d`on't just |r`un- `away from |sch`ool for |n^othing._
+ANN: 
+Well, I |^only |m`eant- it to be for an- |h^our o(r) tw`o.- 
+They |g^ave me some(thing) last |n`ight to make me |sl^eep._
+JOE: 
+Oh, I |s^ee._
+ANN: 
+Now I'(d) be\tter get- a |t^axi and go |b`ack._
+JOE: 
+W`ell, look,-- be|f^ore you |d`o... |wh^y don't you |t`ake- a little |t`ime f(o)r your|s`elf?_
+ANN: 
+|M`aybe another- |(h)^our._
+JOE: 
+|L^ive dangerously, |t`ake the |wh^ole day!
+ANN: 
+I |c^ould do |s`ome (of) (the) things I'(ve) al|w`ays |w^anted- to._
+JOE: 
+|L`ike |wh^at?_
+ANN: 
+|^Oh, you can't imagine-- |`I'd,_ I'd like to do |j^^ust whatever I'd like, the |wh`ole day |l`ong!_
+JOE: 
+You mean, things like having your hair |c^ut?/ Eating ge|l`ato?/
+ANN: 
+|Y^es, and- I'd like to sit- at sidewalk ca|f^e _ and look- in shop win|d`ows,/ walk in the |r^^ain!_ have |f^un,_ (and) maybe |s`ome ex|c^itement._ (It)|d`oesn't s`eem much to |y^ou, d`oes- it?_
+JOE: 
+|`It's |gr^eat!_ |T^ell y^ou wh`at._ |Wh^y d^on't w^e d`o `all th`ose th`ings_** t`o|g^ether?_
+ANN: 
+|B^ut don't- you have to |w^ork?/
+JOE: 
+|W^ork?/ No!_ To|d^ay's gonna be a |h^ol<iday._
+ANN: 
+But |y^ou don't* want* to do- a lo(t) o(f) |s^illy |th^ings./
+JOE: 
+|D^on't I?_ |F`irst |w^ish,/ |`one s`aidew`alk c`afe._ Coming |r^ight- up?_ I know |j^ust the |pl`ace, |R^occa's._
+2.映画「ローマの休日」 王女と報道関係との会見場面
+ローマの休日 「王女と記者として」 Roman Holiday " As a Princess and a press " (1953)
+<原文>
+EMBASSY ANNOUNCER: 
+Laddies and gentlemen, please approach.
+Master of Ceremonies: 
+Sua Altezza Reale, Her Royal Highness.
+AMBASSADOR: 
+Your Royal Highness, the ladies and gentlemen of the press.
+M.C.: 
+Ladies and gentlemen, Her Royal Highness will now anser youe questions.
+DEAN OF PRESS: 
+I believe at the outset, Your Highness, that I should express the pleasure of all of us at your recovery from the recent illness.
+ANN: 
+Thank you.
+CORRESPONDENT A: 
+Does Your Highness believe that federation would be a possible solution to Europe's economic problems?
+ANN: 
+I am in favor of any measure which would lead to closer cooperation in Europe.
+CORRESPONDENT B: 
+And what, in the opinion of Your Highness, is the outlook for friendship among nations?
+ANN: 
+I have every faith in it, as I have faith in relations between people.
+JOE: 
+May I say, speaking from my own press service, we believe that Your Highnes' faith will not be unjusttified.
+ANN:
+I am so glad to hear you say it.
+CORRESPONDENT C: 
+Which of the cities visited did Your Highness enjoy the most?
+GENERAL: 
+Each in its own way...
+ANN: 
+Each in its own way was...unforgettable. It would be difficult to... Rome! By all means, Rome! I will cherish my visit here in memory as long as I live.
+CORRESPONDENT D: 
+Despite your indisiposition, Your Highness?
+ANN: 
+Despite that.
+M.C.: 
+Photographs may be taken.
+AMBASSADOR: 
+Thank you, ladies and gentlemen. Thank you very much.
+ANN: 
+I would now like to meet some of the ladies and gentlemen of the press.
+PREA A: 
+Hitchcock, Chicago Daily News.
+ANN: 
+I'm so happy to see you.
+.
+.
+PREA I: 
+Lampe, New York Herald Tribune.
+ANN: 
+Good afternoon.
+IRVING: 
+Irving Radovich, C.R. Photo Service.
+ANN: 
+How do you do?
+IRVING: 
+Er, may I present Your Highness with some commemorative photos of your visit to Rome?
+ANN: 
+Thank you so very much.
+JOE:
+Joe Bradley, American News Service.
+ANN: 
+So happy, Mr Bradley.
+PRESS J:
+Moriones, La Vangurdia, Barcelona.
+ローマの休日 パラマウント映画 1953年
+<音声表示記号使用文>
+EMBASSY ANNOUNCER: 
+|L`addies- and |g^entlemen,_ |pl^ease app|r^oach._
+Master of Ceremonies: 
+Sua Al|t^^ezz^^a |R^^e^ale,_ Her |R^oyal |H^ighness._
+AMBASSADOR: 
+Your |R^oyal High|n^ess, the |l`adies and |g^entlemen of the |pr^ess.--
+M.C.: 
+|L^adies and |g`entlemen, ** Her |R^oyal |H`ighness will now |`anser your |qu=estions._
+DEAN OF PRESS: 
+I be|l^ieve-- at* the |`out`set, Your High|n`ess,/ that |`I should ex|pr^ess the |pl`easure of-- |`all- of- |`us at- |y`our re|c`overy from the |r^ecent |`illness._
+ANN: 
+|Th^ank you._
+CORRESPONDENT A: 
+Does |Y^our |H`ighness be|l`ieve_ ** that f`ede|^ration would |b^e a |p^ossible so|l^ution to |^Europe's eco|n^omic pr`oblems?_
+ANN: 
+I am in |f^avor of a|n^y m`easure_ ** which would |l^ead to |cl`oser coope|r^ation in |`Europe._
+CORRESPONDENT B: 
+And |wh^at, in the o|p^inion of Y`our |H^ighness,_ is the |^out`look for |fr^iendship among |n^ations?_
+ANN: 
+I have |^every f`aith in- it,_** as I have |f^aith in re|l^ations between |p^eople._
+JOE: 
+May |^I say,_** |sp^eaking from my |^own pr`ess service,-- we be|l^ieve that Your |H^ighnes' |f`aith  /** will not be un|j^usttified._
+ANN:
+I am |s^o glad to |h`ear you |s^ay it._
+CORRESPONDENT C: 
+|Wh^ich of the |c`ities visited did Your |H^ighness enjoy the |m^ost?_
+GENERAL: 
+|^Each in its |`own way...
+ANN: 
+|^Each in- its |^own w`ay was/...unforget|t`able./ It would be |d`ifficult t`o... |R`ome! By |^all m`eans,--  Rome! I will |ch^erish my |v^isit `here in |m`emory as |l`ong as I |l`ive._
+CORRESPONDENT D: 
+Des|p^ite your |`indisipo|s^ition,/ Your |H^ighness?/
+ANN: 
+Des|p^ite that._
+M.C.: 
+Photo|gr^aphs may be |t^aken._
+AMBASSADOR: 
+|Th^ank y`ou, |l`adies and g`entle|m^en./ |Th`ank y`ou |v`ery much._
+ANN: 
+I would |n`ow l`ike t`o |m`eet some of the |l`adies and |g`entlemen of the |pr^ess._
+PREA A: 
+|H^itchcock, Chicago |D^aily News._
+ANN: 
+I'm so happy to |s^ee you._
+・
+・
+PREA I: 
+|L`ampe,/ |N`ew York |H`erald Tribune._
+ANN: 
+Good after|n`oon./
+IRVING: 
+Irving |R^adovich, C.R. |Ph^oto Service.
+ANN: 
+How do you |d^o?--
+IRVING: 
+Er, may |`I pre|s^ent Your |H^ighness ** with some com|m^emorative |ph^otos of your |v^isit to |R^ome?--
+ANN: 
+|Th`ank y`ou so |v^ery m`uch._
+JOE:
+Joe |Br^adley, A|m^erican |N`ews Service._
+ANN: 
+|S^o h^appy, Mr. Brad|l^ey./
+PRESS J:
+Morio|n^es, La |V`angurdia, Barcelona._
+・
+・
+3.ケネディー大統領の演説
+ジョン・F.ケネディー 「国のために何ができるかを問え」
+John F. Kennedy " Ask What You Can Do for Your Country " (1961)
+<原文>
+And so, my fellow Americans: Ask not what your country can do for you - ask what you can do for your country.
+My fellow citizens of the world: Ask not what America will do for you, but what together we can do for the freedom of man.
+Finally, whether you are citizens of America or citizens of thw world, ask of us here the same high standards of strength and sacrifice which we ask of you. With a good conscience our only sure rewarrd, with history the final judge of our deeds, let us go forth to lead the land we love, asking His blessing and His help, but knowing that here on earth God's work must truly be our own.
+名演説で学ぶアメリカの歴史 上岡伸雄編著 研究社 2006年
+<音声表示記号使用文>
+And |s`o, my |f`ellow A|m`ericans: Ask |n^ot what your |c^ountry can |d`o for |y`ou -- |`ask what |y^ou can |d`o for your |c`ountry._
+My fellow citizens of the |w^orld: Ask |n^ot ** what A|m^erica will |d^o for |y^ou, but what* to|g^ether ** |w`e can do for the |fr`eedom of man._
+Finally,/ |wh^ether y^ou ^are citizens of Am`erica / or |c^itizens of thw w`orld,/ |^ask ^of ^us |h`ere ** the |s^ame h`igh |st`andards of |str^ength and |s`acrifice ** which |w`e ask of |y^ou._ With a |g^ood c`onscience our |`only sure re|w^arrd,/ with |h^istory the |f`inal judge of our |d^eeds,_ |l`et us |g=o forth to |l^ead the |l`and we |l`ove, asking |H^is blessing and |H^is help, but |kn^owing that |h^ere on `earth ** |G^od's work must |tr^uly be our own._
+4.キング牧師の演説
+マーティン・ルーサー・キング「私には夢がある」 Martin Luther King  " I Have a Dream " (1963)
+<原文>
+I say to you today, my friends, that in spite of the difficulties and frustrations of the moment I still have a dream. It is a dream deeply rooted in the American dream.
+I have a dream that one day this nation will rise up and live out the true meaning of its creed: "Wehold these truths to be self-evident; that all men are created equal"
+I have a dream that one day on the red hills of Georgia the sons of former slaves and the sons of former slave owners will be able to sit down together at a table of brotherhood.
+I have a dream that one day even the state of Mississippi, a desert state, sweltering with the heart of injustice and oppression, will be transformed into an oasis of freedom and justice.
+I have a dream that my four children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character.
+名演説で学ぶアメリカの歴史 上岡伸雄編著 研究社 2006年
+<音声表示記号使用文>
+|^I s`ay t`o y`ou t`oday,--** m`y friends,_ that in |sp^ite `of th`e |d`ifficulties and fr`ust|r^ations of the moment ** |`I still have- a |dr`eam. It is a |dr^eam deeply |r`ooted in the A|m^erican dream._
+I |h`ave- a |dr^eam ** that |`one day ** this |n^ation will |r^ise up ** and |l`ive out the |tr^ue m`eaning of its |cr^eed: "|W^e h`old these tr`uths to be |s^elf-evident; that |^all men are cre|`ated equal"_
+I |h`ave- a |dr^eam ** that |`one day ** on the |r^ed h`ills of |G`eorgia ** the |s^ons- of ^former sl`aves ** and the |s^ons- of f^ormer sl^ave owners will be |^able to s`it d`own to|g`ether ** at- a |t^able of |br^otherhood._
+I |h`ave- a |dr^eam ** that |`one day |^even the |st`ate of |M`ississippi, a |d^esert state,_ |sw^eltering with the ^heat of in|j^ustice and |`oppression,_ will be |tr^ansformed |^into an |`oasis of |fr^eedom and |j`ustice._
+I |h`ave- a |dr^eam ** that my |f^our children will |`one d`ay ** |l`ive in- a |n`ation ** where |th^ey will |n^ot be |j`udged by the |c`olor- of their |sk`in ** but by the |c^ontent of their |ch`aracter._
+5.N.Y.で録音されたフライト・アテンダントのアナウンス
+<原文>
+Ladies and gentlemen, thank you for choosing New York Airlines. Flight attendants will now make their final cabin checks before we take off. If you have any questions regarding safety, please ask a flight attendant at this time. 
+Please makes sure at this time that all of your carry-on items and tray tables are put away, your seat back is in full upraight position, and your seatbelt is fastend.
+And if an emargency evacuation is necessary, leave all cary-on items behind. New york Airlines is a non-smoking airaline, so please remember that federal law prohibits tampering with, dis|abling or destroying lavatory smoke detecters.
+Customers must com|ply with all lighted signs, placards and crewmember instruction.
+At this time, any passengers using electronic devices, such as a laptop computer, are asked to refrain from use until approximately 20 minuites after our dep|arture. Thank you for listening and enjoy your flight.
+LIVE from N.Y. ニューヨークをまるごと聞き取ろう! 岡田久恵著 ジャパンタイムズ 2000年
+<音声表示記号使用文>
+|L`ad`ies `and |g`entlemen,_ |th`ank you for |ch`oosing |N`ew Y`ork |`Airlines._ |Fl`ight* at|t^endants will now make (their) |f`inal c`abin |ch^ecks before we take off._ If |y^ou have a|n^y questions regarding safet`y,/ pl^ease ask- a flight- att`endant at* this time._
+|Pl^ease makes |s^ure at this |t^ime that |^all of your |c`arry-on |`items and |tr`ay t`ables are |p`ut away,_ your |s^eat b`ack is in |f^ull ^upraight |p^osition,-- and your |s^eatbelt is fastend._
+And if an e|m^argency evacu|^ation is |n`ecessary,/ l^eave all |c`ary-on |`items behind._ |N^ew york |`Airlines is a |n^on-smoking |`airaline,-- so |pl^ease remember that |f`ederal law pro|h^ibits t`ampering with, dis|^abling or |d`estroying |l`avatory |sm`oke detecters.--
+|C^ustomers must com|pl`y with- all |l^ighted s`igns,_ |pl`acards and |cr`ewmember inst|r`uction._
+At th^is |t^ime, `any |p`assengers `using e|l^ectronic de|v^ices,/ such as- a |l`aptop com|p`uter,/ are |`asked to re|fr`ain from |`use until (a)|ppr`oximately |^20 minuites after our dep|`arture._ |Th`ank y`ou f`or |l^istening / and en|j`oy y`our flight._
+6.N.Y.で録音された道順を尋ねる場面
+<原文>
+WOMAN: 
+Excuse me, sir. could you help me a second?
+MAN: 
+Yeah, Sure. No problem. What can I help you with?
+WOMAN: 
+I'm trying to get to the Plaz and I don't know where I am or how to get there.
+MAN: 
+Okay. Well, right now, we're on 42nd and Broadway. Um, since you're walking, I would probably walk over two blocks towards 5th Avenue and make a left. And walk approximately 17 blocks or so. You'll see the hotel on your left-hand side
+WOMAN: 
+Do you know about haow long that's gonna take?
+MAN: 
+About 20 to 30 minuites.
+WOMAN: 
+Wel, you know I'm kind of a hurry. Um, is there a subway line I could catch to get there a little faster?
+MAN: 
+Sure. You can take the N&R uptown and get off the third stop. That should leave you off at about 5th Avenue. You'll see tha hotel right in front o you.
+WOMAN: 
+You know, do you think if I took a cab, I could get there faster?
+MAN: 
+You could. But in today's taraffic, I wouldn't.
+WOMAN: 
+All right. Thanks for your help.
+MAN: 
+No problem.
+LIVE from N.Y.II もっとニューヨークを聞いてみよう! 岡田久恵著 ジャパンタイムズ 2001年
+<音声表示記号使用文>
+WOMAN: 
+Ex|c^use me, |s^ir.- Could you |h^elp me a |s`econd?_
+MAN: 
+|Y`eah, |S`ure. No |pr`obl(em)._ What* can- I |h`elp- you with?_
+WOMAN: 
+I'm |tr^ying t`o |g^et- to the |Pl^az and I |d`on't* kn`ow |wh`ere- I am or |h`ow t`o |g`et there._
+MAN: 
+|^Ok^ay._ W`ell, |r^ight n`ow, (we')re- on |^4^2nd and Br`oad|w^ay./ Um, |s`ince- you're |w`alking, I would |pr^obably w`alk over |tw^o blocks |t`owards 5th Avenue and |m^ake a left. An(d) |w`alk app|r`oximately |^17 bl`ocks or |s`o.-- Y`ou'll |s^ee the |h`otel on your |l`eft*-hand side._
+WOMAN: 
+Do |y`ou know how (a)|b`out long that's gonna |t^ake?_
+MAN: 
+(A)bout ^20 to |`30 minuites._
+WOMAN: 
+(Wel), you know (I'm) |k^ind- of a |h`urry._ Um, is |th^ere (a) s^ubway |l^ine I (could) |c`atch to |g`et there a little |f`aster?/
+MAN: 
+|S^ure. You can |t`ake the |`N&`R up|t`own /** and |g`e\t- off the |th`ird stop.-- That |sh^ould l`eave you off at- about |^5th ^Avenue. You'll |s^ee the ho|t^el right- in |fr`ont- of you._
+WOMAN: 
+Y`ou kn`ow,** d`o |y^ou th`ink- if- I |t`ook a c`>ab,-- I (could) get* \there |f`a:ster?/
+MAN: 
+You |c^ould._ But- in to|d^ay's `traffic,-- I wouldn't._
+WOMAN: 
+All right._  |Th^anks f^or y^our |h`elp._
+MAN: 
+No |pr`oblem._
+7.IN THE NEWS in VOA Special English
+" Quick Action Sought on Plan to Rescue Banks From Bad Debts "
+<原文>
+クリックでMP3ファイルを再生  右クリックで「対象をファイルに保存」
+This is IN THE NEWS in VOA Special English.
+In recent weeks, the United States government has dealt with struggling financial companies on a case-by-case basis. Now government and congressional leaders are discussing a plan, and they say there is no time to lose. 
+The idea is to have the government buy troubled housing loans from banks and other financial companies. These bad debts resulted from what Treasury Secretary Henry Paulson calls "irresponsible lending and irresponsible borrowing." 
+The loans were then sold as securities. Investors bought them for their high returns. But now their loss of value may call into question the financial condition of the companies that own them. 
+As a result, these bad loans have blocked the flow of credit that the economy depends on. 
+Removing them from the financial system will require a lot of money. How much? Secretary Paulson was asked that question at a news conference on Friday. 
+REPORTER: "You said this needs to be a significant size. Are we talking hundreds of billions, a trillion dollars?"
+HENRY PAULSON: "We're talking hundreds of billions. This needs to be big enough to make a real difference and get at the heart of the problem."
+Details of the rescue plan are still being worked out, but the administration wants Congress to act on legislation next week. Congress is supposed to leave after that to campaign for the November fourth elections, but lawmakers could delay their plans.
+President George Bush called on Congress not to add provisions that could delay a bill. He says the proposed action does involve risk to taxpayer money, but he expects the money will be paid back. He says most of the assets that the government is planning to buy have good value over time, because most homeowners continue to pay their mortgages. 
+And he says the economic risks of not acting would be far higher. 
+Earlier this week, the government gave a rescue loan to the huge insurance company A.I.G. in return for a controlling interest. That came after the government took control of the housing finance companies Fannie Mae and Freddie Mac last week. And six months ago it provided loans for the bailout of the investment bank Bear Stearns. All these steps, and more, are connected to the bad loans.
+President Bush said the American system of free enterprise rests on the idea "that the federal government should interfere in the marketplace only when necessary." He says today's shaky financial markets demand government intervention. 
+Recent measures have been historic. But there have been other government interventions in private business over the years.
+For example, Congress provided billions of dollars to help airlines after the terrorist attacks seven years ago.
+And in nineteen eighty-nine, when President Bush's father was president, Congress established the Resolution Trust Corporation. The agency had to deal with hundreds of failed savings and loan banks. Dealing with that crisis cost taxpayers about one hundred twenty-five billion dollars. 
+And that's IN THE NEWS in VOA Special English, written by Brianna Blake. I'm Steve Ember.
+VOA Special English 19 September 2008
+<音声表示記号使用文>
+クリックでMP3ファイルを再生  右クリックで「対象をファイルに保存」
+|Th^is is |^IN TH^E NEWS in |^VO`A ** |Sp=ec`ial ^English._
+In |r^ecent weeks, the U|n^ited St`ates |g`overnm^ent /** has |d^ealt with |str^uggling f<i|n^ancial compa|n^ies /** on- a |c^ase-by-|c^ase b`asis._ N`ow |g^overnment and con|gr^essional |l`ead`ers /** are dis|c^ussing a |pl`an,/** and they |s`ay there is |n`o time to |l`ose._ 
+The |^idea ** is to |h^ave the |g`overnment _ |b^uy ** |tr^oubled |h^ousing l^oans _/ from |b^anks and other f<i|n^ancial |c`ompanies._ |Th^ese `bad |d^ebts ** re|s^ulted from what |Tr`easury S^ecretary |H`enry P^aulson |c`alls / "|^irr^esp^ons>ible |l^end^ing -- and |`irr`esp`ons`ible |b`>orrowing."_ 
+The |l^oans were th`en |s`old as se|c^urities._ In|v`estors |b^ought them for their high re|t^<:~urns._ But |n`ow _/** their |l^oss of |v`alue _/ may |c^all into qu|`estion the f<i|n^ancial con|d^ition of the |c`ompanies |th`at own them._ 
+^As- a re|s`ult,_** |th`ese b`ad |l`oans have |bl^ocked the flow of |cr^edit that the e|c^onomy de|p^ends on._ 
+Re|m^oving th`em from the f<i|n`ancial syst`em /** will re|q^uire a |l`ot- of m`oney._ How |m^uch?/ |S^ecretary P`aulson was |^a:sked that ques|t`ion /** at a |n`ews c`onference on |Fr^iday._ 
+REPORTER: "(You) |s^aid th`is |n^eeds to be a sig|n^ifican(t) |s`ize.-- (Are) we |t`alking |h^undreds (of) |b`illions, (a) |tr^illion |d^ollars?"--
+HENRY PAULSON: "We're |t`alking |h^undr^eds- of |b`ill(i)ons. This |n`eeds to be ** |b^ig en`ough ** to |m`ake- a |r^eal d`ifference ** and |g`et- at* the |h`ea~rt- of the |pr`oblem._"
+De|t^ails of the |r`escue |pl`an are |st`ill being worked- |^out,_ but \the- (a)d|m^inistr`ation |w`ants C^ongress to |^act on |l`eg`isl`ation |n`ext week._ Cong|r^ess is sup|p^osed* to |l^eave after |th`at -- to |c^ampaign for the No|v^ember f`ourth e|l^ections,_ but |l^awmakers c`ould de|l^ay their |pl^ans._
+|Pr^esident |G`eorge |B`>ush _ |c^alled- on |C`ongress _** |n^ot to |`>add pro|v`isions that could* de|l^ay a |b`ill._ He |s^ays the pro|p^osed `action |d^oes inv^olve |r^isk to tax|p^ayer m`oney,/ b`ut- he ex|p^ects the |m`oney w`ill be |p`aid b^ack._ He says |m^ost- of the |^assets that the |g`overnm`ent is |pl`anning to |b`uy _/ h`ave |g^ood v`alue over |t`ime,_/ be|c`ause most |h^omeowners con|t^inue to pay their |m^ortgages._ 
+|`And he says ** the eco|n^omic r`isks ** of |n^ot `acting ** would be |f`a~r h`igher._ 
+|^Earlier this |w`eek,--** the |g^overnment gave a |r`escue l`oan _/ ** to the |h^uge in|s^urance compa|n`y ** |^A.`I.|^G. ** in re|t^<:~urn for a cont|r^olling |`interest. |Th^at c`ame after the |g^overnm`ent ** took cont|r^ol of the |h^ous`ing f^in`ance |c^ompan`ies /** |F`annie M`ae and |Fr`eddie M^ac ** |l`ast week._ |`And _/ six |m^onths ag`o ** it pro|v`ided l`oans _/ for the |b^ail`out of- (the) in|v^estment b`ank ** B`ear |St^<:~earns. |^All the(se) |st`eps, and |mo~re,_/ are con|n^ected to the |b`ad loans._
+|Pr`esident |B`ush s^aid / the A|m`erican |s^ystem of |fr^ee ^enterpr`ise / |r^ests `on `the `i|d^ea _/ "that (the) |f^ed^er^al g^overnment ** should |^int^erf`ere ** in \the |m`arketplace |`only when |n`ecessary."_ He |s=ays to|d`ay's |sh^aky f^<i|n`ancial mar|k`ets / de|m^and |g^ov^ernm^ent inter|v`ention._ 
+|R^ecent |m`easures have |b`een his|t^oric._ |B=ut there have |b`een ^other |g`overnment inter|v`entions in |pr`ivate busi|n`ess over the |y^ears._
+For e|x^ample,--** |C^ongress pro|v`id`ed |b^illions of |d`ollars to |h`elp |^airl`ines `aft`er th`e |t^errorist a|tt`acks |s`even years a|g`o._
+|^And _/ in |n^ineteen |`eighty-n`ine,_/ when |Pr`esident |B`ush's |f^ather was |pr`esid`ent,/** |C^ongr^ess `es|t^ablished the |R^esol^ution |Tr^ust Corpo|r`ation._ The |^agency / h`ad to |d`eal with |h^undreds- of |f`ailed s`avings- and* |l^oan b`anks._ |D^ealing with |th`at crisis / |c`ost t`axpayers / `about |^one h^undred |tw^enty-f`ive |b`illion dollars._ 
+And |th^at's ** |^IN `THE |N^EWS in |^VO|`A ** Speci`al |^English, |wr`itten by Brianna |Bl^ake. |`I'm |St`eve `Ember._
+あとがき
+私は1985年49歳のときにパソコンを始め、以来この文明の利器をフルに活用してきた。大学時代の2年間は男声合唱に熱中していたので、歌の楽譜を読むことができる。そこで、PCを活用してメロディーを簡単に記述できる「メロディー略譜」を考案し、これを使って歌の3部作「歌のデータベース1000」「歌の曲名検索」「歌と思い出」を作った。
+今年に入って、「abc譜」という優れた記譜法があることを知り、「メロディー略譜」を全面的に「abc譜」に変更した。まず、歌の3部作でそれを行い、次には「クラシック・データベース400」と「クラシック曲名検索」を作った。
+これを終えると、この「BOW式英語音声表示記号」の作成に取り組んだ。というのは、その前に「大阪弁と標準語のアクセント」をまとめたことがあり、その時に大阪弁を楽譜的に表現できないかと考えたことがあったからだ。結局、大阪弁は楽譜よりも簡単な音の「高低譜」だけで充分であることが分かった。しかし、英語のはなしことばであれば、楽譜的に表示できるかもしれないと考えた。
+それからは書店の英語コーナーを何度も訪れた。梅田の4つの大手書店の英語コーナーは、英会話とTOEIC関係の本で満ち溢れ、数百種類を越えると思われる。その中から、かなりの数の本を購入して内容をチェックしてみたが、どれも、単語の発音とか部分的なことが中心で、文全体についての観点から書かれたものを見つけることはできなかった。
+辞書に載っている国際発音記号をPCで書くことは簡単ではない。カタカナで書くことも、余計な操作が必要な上、正確ではない。そこで、国際発音記号に代わるものを目指し、まず最初に、「発音記号」を作った。PCの記号キーだけで作れるものという条件で、国際発音記号の中の重要なもの、頻度が高いものを選んだ。
+購入した本の中で参考になったのは、英語の音声の変化が日本語と比べて大きいことだった。文字で知っている単語群が聴き取れない大きな原因がここにあると思った。そこで「発音記号」の次は「音声変化記号」を作った。
+これらと並行してネイティヴの話す会話のスクリプトをPCに書き込み、そのスクリプトを見ながらネイティブの話す英語を「発音記号」「音声変化記号」でチェックして行った。そうすることで分かった大きなことは、「英語は強勢アクセントだけでなく、それに劣らぬほど音の高低アクセントがあること、弱いアクセントの部分は短くなり、時には消失してしまうこと」である。
+英語学習書や英会話ガイドブックのほとんどが、英語は強勢アクセントだから音の高低は問題にしなくて良いと書いている。確かに音の高低がなく、強勢だけのアクセントというものもあるにはあるが、それは非常にまれであり、自分の耳でよく聞いてみると、ほとんどのアクセントは音の高低を伴っている。
+そして、口語文の会話では、弱いアクセントの音高(ピッチ)を基準にした場合、普通のアクセントの音程は完全4度上、強いアクセントは完全5度上、極端に強いアクセントは完全8度上になることが多いということを発見した。基準の音の階名を ド とすると、それぞれ ファ ソ 高いド になる。そこで、この音程の情報を含んだ「アクセント表示記号」を作った。
+この仕事をはじめて2週間くらいが過ぎたころだと思う。A書店の英語コーナーに、見慣れぬ小さな薄っぺらの本を見つけた。手に取ってみると、私にとって革命的な内容が書かれていた。英語と日本語の最大の違いがリズムの違いであることを、この可愛い小冊子が教えてくれたのだ。心の中で快哉を叫び、むさぼるようにそれを読んだ。その本の名は「話せる聴ける英語のリズム感 服部孝彦著 株)アルク 2008年7月刊」である。
+この書物から、「英語音声学」という学問があることを知り、書店で探したが、置かれているのは梅田の大手4店の内の2店しかなく、その書店でも人目のつかない片隅に置かれていた。英語音声学の入門書を3冊購入したが、これらでさえ、発音とか部分的なことがらが70%以上を占めている。それでも、普通の英語学習書にほとんど取り上げられない、リズムやアクセント、イントネーションが少しは書かれていて参考になった。
+これらの書物や自分で見つけたことなどから、「リズム表示記号」「イントネーション表示記号」を作り、それらを総合して「英語音声の基礎知識」をまとめた。「BOW式英語音声表示記号」は、このようなステップで作成し、スクリプトを見ながらネイティヴの会話を聴いて、何度も修正を行なった。
+この英語音声表示記号の実用性を調べるため、7つの例文で使ってみたが、いずれの場合も、話されている英口語を近似的に表現できることが分かった。
+ネイティヴには自明なことがらでも、非ネイティヴはそれを分析しなければ、正しく理解することはできない。そして、このような非ネイティヴからの分析は、ネイティヴの英語学にも貢献するところがあるかもしれないと思う。
+例えば、ある英口語文の中のイントネーションのパターンについて、下降調、上昇調、下降上昇調、上昇下降調、平坦調が、それぞれどれほどあって全体の何%を占めるのかとか、句イントネーションは全体の何%であるのかを、データの量が膨大であったとしても、瞬時に知ることができる。それも普通のエディターやワープロソフトの置換機能を利用するだけで可能である。同じことは、アクセントや音声変化についても簡単に行なえる。特別なソフトを作って解析すれば、より簡単に、より多くの成果が得られるだろう。
+英語学が細部を深く詳細に研究するのは、学問として当然なのだろうが、このような「実用的学問(実学)」もまた必要なのではなかろうか?
+私がこれから英会話を習得しようとすることはないだろう。それは、したいことが多くあるからであるし、英会話を習得する必要がないからだ。しかし、もし習得する気になれば、この記号を活用するだろうと思う。
+私のしたいことは、例えば、このような人がしていないことを創り出すことである。その過程で英語と日本語の音声の違いをかなり深く理解できたが、それはオマケで得たものである。
+この「BOW式英語音声表示記号」には、英語のはなしことばをメロディーとして表現するための楽譜的要素を多く含ませることができた。これで以て「メロディー略譜」から始まった「PCで楽譜」という一連の仕事を終りにしようと思う。8月9月の2ヶ月間を専らこれに関わってきたが、やりがいのある楽しい仕事だった。
+<2008.9.28.>
+BOW式英語音声表示記号

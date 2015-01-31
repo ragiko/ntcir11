@@ -1,0 +1,80 @@
+
+次の例は、TextBox コントロールに数値を入力するようユーザーに要求して、それを数値に変換する Web フォームの完全な分離コード ページです。
+その後、その数値を 2 倍にして、元の入力と同じ書式指定規則を使って表示します。  
+using System;
+using System.Globalization;
+partial class NumericUserInput : System.Web.UI.Page
+{
+protected void OKButton_Click(object sender, EventArgs e)
+{
+string locale;
+CultureInfo culture = null;
+double number = 0;
+bool result = false;
+// Exit if input is absent.
+if (String.IsNullOrEmpty(this.NumericString.Text)) return;
+// Hide form elements.
+this.NumericInput.Visible = false;
+// Get user culture/region
+if (!(Request.UserLanguages.Length == 0 || String.IsNullOrEmpty(Request.UserLanguages[0])))
+{
+try
+{
+locale = Request.UserLanguages[0];
+culture = new CultureInfo(locale, false);
+// Parse input using user culture.
+result = Double.TryParse(this.NumericString.Text, NumberStyles.Any,
+culture.NumberFormat, out number);
+}
+catch { }
+// If parse fails, parse input using any additional languages.
+if (!result)
+{
+if (Request.UserLanguages.Length > 1)
+{
+for (int ctr = 1; ctr <= Request.UserLanguages.Length - 1; ctr++)
+{
+try
+{
+locale = Request.UserLanguages[ctr];
+// Remove quality specifier, if present.
+locale = locale.Substring(1, locale.IndexOf(';') - 1);
+culture = new CultureInfo(Request.UserLanguages[ctr], false);
+result = Double.TryParse(this.NumericString.Text, NumberStyles.Any, culture.NumberFormat, out number);
+if (result) break;
+}
+catch { }
+}
+}
+}
+}
+// If parse operation fails, use invariant culture.
+if (!result)
+result = Double.TryParse(this.NumericString.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out number);
+// Double result.
+number *= 2;
+// Display result to user.
+if (result)
+{
+Response.Write("<P />");
+Response.Write(Server.HtmlEncode(this.NumericString.Text) + " * 2 = " + number.ToString("N", culture) + "<BR />");
+}
+else
+{
+// Unhide form.
+this.NumericInput.Visible = true;
+Response.Write("<P />");
+Response.Write("Unable to recognize " + Server.HtmlEncode(this.NumericString.Text));
+}
+}
+}
+HttpRequest.UserLanguages
+プロパティには、HTTP 要求の Accept-Language ヘッダーに含まれるカルチャ名からデータが入ります。
+ただし、すべてのブラウザーの要求に Accept-Language ヘッダーが含まれるとは限りません。ユーザーがヘッダーを完全に禁止する場合もあります。  このため、ユーザー入力を解析する際にはフォールバック カルチャが重要になります。  通常、フォールバック カルチャは、CultureInfo.InvariantCulture によって返されるインバリアント カルチャです。  また、テキスト ボックスへの入力によってユーザーがカルチャ名を Internet Explorer に提供する場合もありますが、無効なカルチャ名が指定される可能性があります。  このため、CultureInfo オブジェクトをインスタンス化する際には、例外処理が重要になります。  
+Internet Explorer によって送信された HTTP 要求から取得される HttpRequest.UserLanguages 配列には、ユーザー側の優先度設定の順序でデータが入ります。
+配列の先頭の要素には、ユーザーの最優先カルチャ/地域の名前が格納されます。  何らかの追加項目が配列に含まれる場合、Internet Explorer はそれらに任意のクオリティ識別子を割り当てます。この識別子はセミコロンによってカルチャから区切られます。  たとえば、fr-FR カルチャの項目は fr-FR;q=0.7 という形式になります。  
+この例では、useUserOverride パラメーターを false に設定して CultureInfo コンストラクターを呼び出し、新しい CultureInfo オブジェクトを作成します。
+これによって、カルチャ名がサーバー上の既定のカルチャ名である場合、クラス コンストラクターによって作成される新しい CultureInfo オブジェクトにはカルチャの既定の設定が含まれ、サーバーの [地域と言語のオプション] アプリケーションを使ってオーバーライドされた設定は反映されません。  通常、サーバーでオーバーライドされた設定値はユーザーのシステムに存在せず、ユーザー入力に反映されることもありません。  
+ユーザー入力の変換先となる数値型の Parse メソッドまたは TryParse メソッドをコードで呼び出すことができます。
+1 つの解析操作で解析メソッドを繰り返し呼び出す必要が生じる場合があります。  したがって、解析操作が失敗した場合に false を返す TryParse メソッドの方が適切です。  これに対して、Parse メソッドによって繰り返しスローされる例外を Web アプリケーションで処理する場合、コストが非常に大きくなる可能性があります。  
+方法 : Web コントロールでの数値のユーザー入力を数値に変換する

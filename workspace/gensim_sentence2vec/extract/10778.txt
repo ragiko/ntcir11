@@ -1,0 +1,92 @@
+Identity Synchronization for Windows の既知の問題点
+この節では、既知の問題点の一覧を示します。既知の問題点にはバグ ID が関連付けられています。
+4997513
+Windows 2003 システムでは、ユーザーが次回ログオン時にパスワードを変更しなければならない設定がデフォルトでオンになっています。Windows 2000 システムでは、この設定はデフォルトではオフです。
+Windows 2000 および Windows 2003 システムで「ユーザーは次回ログオン時にパスワードの変更が必要」設定をオンにしてユーザーを作成すると、Directory Server 上ではパスワードなしのユーザーが作成されます。ユーザーが次回 Active Directory にログインするとき、ユーザーはパスワードを変更する必要があります。この変更により、そのユーザーの Directory Server 上でのパスワードは無効化されます。またこの変更により、そのユーザーが次回 Directory Server への認証を行うときに、オンデマンドでの同期が強制的に必要になります。
+Active Directory 上でパスワードを変更するまでの間、ユーザーは Directory Server への認証を行うことができません。
+5077227
+Remote Administration 2.1 を含む pcAnywhere 10 で Identity Synchronization for Windows コンソールを表示しようとすると、問題が発生する可能性があります。pcAnywhere バージョン 9.2 では、同様の問題の発生は確認されていません。問題が解決しない場合は、リモート管理ソフトウェアを削除してください。代替としては VNC を使用できます。VNC では、Identity Synchronization for Windows コンソールの表示に関する既知の問題は確認されていません。
+5097751
+FAT 32 でフォーマットされたファイルシステム上の Windows システムに Identity Synchronization for Windows をインストールする場合、ACL は利用できません。また、セットアップ時にアクセス制限が施行されません。セキュリティーを確保するために、Identity Synchronization for Windows のインストールは必ず、NTFS ファイルシステム上の Windows に対して行うようにしてください。
+6254516
+コンシューマ上で Directory Server プラグインをコマンド行を使用して設定するとき、プラグインはコンシューマに対して新しいサブコンポーネント ID を生成しません。プラグイン設定はコンシューマに対して新しい ID を生成しません。
+6288169
+Identity Synchronization for Windows 用のパスワード同期プラグインは、accountlock および passwordRetryCount をチェックする前であっても、未同期のアカウントについて Active Directory へのバインドを試みます。
+この問題点を解決するには、LDAP サーバー上でパスワードポリシーを施行します。また、ユーザー検索時に次のフィルタを使用するように Access Manager を設定します。
+(| ( !(passwordRetryCount=*) ) (passwordRetryCount <=2) )
+ただしこの対処策では、LDAP 経由でのログイン試行数が多すぎるときに「ユーザーが見つからない」エラーが返されます。この対処策では、Active Directory アカウントをブロックしません。
+6331956
+o=NetscapeRoot がレプリケートされる場合に、Identity Synchronization for Windows コンソールが起動に失敗します。
+6332197
+ユーザー情報がまだ作成されていないグループを Directory Server 上で同期すると、Identity Synchronization for Windows はエラーを返します。
+6336471
+Identity Synchronization for Windows プラグインは、連鎖されたサフィックスを通じた検索を行うことができません。結果として、Directory Server インスタンス上で変更およびバインド操作を実行できません。
+6337018
+Identity Synchronization for Windows で、XML ファイルへの Identity Synchronization for Windows 設定のエクスポートがサポートされているべきですが、実際にはサポートされていません。
+6386664
+Identity Synchronization for Windows は、グループ同期機能を有効にした時点で Active Directory と Directory Server の間のユーザーおよびグループの情報を同期します。コマンド行から resync コマンドが発行されてからはじめて同期が発生するのが理想的な動作です。
+6452425
+SUNWtls パッケージのバージョン 3.11.0 がインストールされている Solaris システムに Identity Synchronization for Windows をインストールすると、管理サーバーが起動しない場合があります。この問題を解決するには、Identity Synchronization for Windows をインストールする前に SUNWtls パッケージをアンインストールします。
+6251334
+Active Directory ソースの変更後であっても、ユーザー削除の同期を停止できません。したがって、同期対象ユーザー (SUL) リストが同じ Active Directory ソース内の別の組織ユニット (OU) にマップされる場合、削除の同期は継続します。ユーザーは Directory Server インスタンス上では削除されたように見えます。SUL マッピングを持たない Active Directory ソースからユーザーが削除される場合でも、ユーザーは削除されたように見えます。
+6335193
+ユーザーを Directory Server から Active Directory に同期する目的で、再同期コマンドの実行を試みる場合があります。未同期のユーザーが未同期グループに追加されると、グループエンティティーの作成に失敗します。
+この問題を解決するには、同期が正しく行われるように、resync コマンドを 2 回実行する必要があります。
+6339444
+同期ユーザーリストで「ベース DN」ペインの「参照」ボタンを使用して、同期のスコープを指定できます。スコープを指定するとき、サブサフィックスは取得されません。
+この問題点に対処するには、読み取りおよび検索に対して匿名アクセスを許可する ACI を追加します。
+6379804
+このエラーは、Windows システム上で Identity Synchronization for Windows のコアコンポーネントをバージョン 1.1 SP1 にアップグレードする際に発生します。updateCore.bat ファイルで、管理サーバーへの参照がハードコードされている部分に誤りがあります。その結果、アップグレード処理の一部が正常に完了しません。
+この問題を解決するには、ユーザーは、アップグレードスクリプトの管理サーバーを参照している部分 (2 箇所) を置き換える必要があります。
+アップグレードスクリプトの 51 行目と 95 行目の次の命令を置き換えます。変更する行は次のとおりです。
+net stop "Sun Java(TM) System Administration Server 5.2"
+この行を次のように変更します。
+net stop admin52-serv
+指示どおりに変更を行ったあとで、アップグレードスクリプトを再実行してください。
+6388872
+Directory Server で、Active Directory に対する Windows の作成式について、フロー cn=%cn% はユーザーとグループの両方に対して機能します。それ以外のすべての組み合わせに対し、Identity Synchronization for Windows は同期中にエラーを発生します。
+6332183
+ユーザー dn: user1, ou=isw_data を既存のグループ dn: DSGroup1,ou=isw_data に追加するシナリオを考えます。ユーザーをグループから削除する (削除操作を実行する) と、グループの uniquemember が変更されます。ここで、同じ DN を持つグループに同じユーザーが追加されると仮定します。userdn: user1, ou=isw_data に対して追加操作が実行されます。
+削除が可能になる前に追加操作のフローが Directory Server から Active Directory に移ると、Identity Synchronization for Windows は、ユーザーがすでに存在するという例外をログに出力する可能性があります。同期中に削除操作よりも先に追加操作が実行される競合状況が発生する可能性があり、結果として、Active Directory が例外をログに出力します。
+6444341
+Identity Synchronization for Windows のアンインストールプログラムがローカライズされていません。WPSyncResources_X.properties ファイルの /opt/sun/isw/locale/resources ディレクトリへのインストールが失敗します。
+この問題点に対処するには、不足している WPSyncResources_X.properties ファイルを、installer/locale/resources ディレクトリから手動でコピーします。
+6444878
+Java Development Kit (JDK) バージョン 1.5.0_06 のインストールと設定は、管理サーバーを実行する前に行ってください。
+6444896
+Identity Synchronization for Windows のテキストベースインストールの実行時に、管理パスワードを空にしたまま Enter キーを押すと、インストールプログラムが終了します。
+6452538
+Windows プラットフォームで、Identity Synchronization for Windows によって使用される Message Queue 3.5 では、PATH 値の長さが 1K バイト未満である必要があります。これよりも長い値は切り捨てられます。
+6486505
+Windows では、Identity Synchronization for Windows は英語および日本語ロケールのみをサポートします。
+6477567
+Directory Server Enterprise Edition 6.1 で、Identity Synchronization for Windows 用の Directory Server プラグインは Directory Server インストールとともにインストールされます。Identity Synchronization for Windows のインストーラでは Directory Server プラグインはインストールされません。代わりに、Identity Synchronization for Windows はプラグインの設定のみを行います。
+このリリースの Identity Synchronization for Windows では、テキストベースのインストーラによるインストール処理中に、Identity Synchronization for Windows 用 Directory Server プラグインの設定が要求されることはありません。対処策として、Identity Synchronization for Windows インストールの完了後に、コマンドプロンプトから Idsync dspluginconfig コマンドを実行します。
+6472296
+日本語 Windows システムにインストールする際に一部のローカライズパッケージがインストールされず、Identity Synchronization for Windows のユーザーインタフェースの一部が英語で表示される場合があります。
+この問題点に対処するには、インストールを開始する前に、PATH 環境変数に unzip.exe を追加します。
+6485333
+インストーラとアンインストーラが一部国際化されていないため、英語のメッセージが表示されます。
+6492125
+中国語および韓国語ロケールでは、Identity Synchronization for Windows のオンラインヘルプの内容が正しく表示されません。
+6501874
+Directory Server パスワード互換モード (pwd-compat-mode) が DS6-migration-mode または DS6-mode に設定されている場合、Directory Server から Active Directory へのアカウントのロックアウトの同期が失敗します。
+6501886
+Active Directory ドメインの管理者パスワードを変更した場合、Identity Synchronization for Windows コンソールに警告が表示される現象が確認されています。使用しているパスワードが有効な場合でも、表示される警告は「ホストのクレデンシャルが無効です:hostname.domainnname」となります。
+6529349
+Solaris SPARC では、/usr/share/lib/mps//jss4.jar ファイルが存在しないと Identity Synchronization for Windows がアンインストールされない可能性があります。これは、製品インストールの実行時に、インストーラがすでにインストールされている SUNWjss パッケージのインスタンスを検出し、これを更新しない場合のみに発生します。
+この問題を回避するには、製品のインストール時に、Java クラスパスに /usr/share/lib/mps/secv1/jss4.jar を追加します。
+$JAVA_EXEC -Djava.library.path=./lib \
+-classpath "${SUNWjss}/usr/share/lib/mps/secv1/jss4.jar:\
+${SUNWjss}/usr/share/lib/mps/jss4.jar:\
+${SUNWxrcsj}/sfw/share/lib/xerces-200.jar:./lib/installsdk.jar:\
+./lib/ldap.jar:./lib/webstart.jar:\
+${SUNWiquc}/usr/share/lib/jms.jar:.:./lib/install.jar:\
+./resources:./locale/resources:./lib/common.jar:\
+./lib/registry.jar:./lib/ldapjdk.jar:./installer/registry/resources" \
+-Djava.util.logging.config.file=./resources/Log.properties \
+-Djava.util.logging.config.file=../resources/Log.properties \
+-Dcom.sun.directory.wps.logging.redirectStderr=false \
+-Dcom.sun.directory.wps.logging.redirectStdout=false \
+uninstall_ISW_Installer $1
+Identity Synchronization for Windows の既知の問題点 (Sun Java System Directory Server Enterprise Edition 6.1 リリースノート)

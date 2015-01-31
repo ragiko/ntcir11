@@ -1,0 +1,62 @@
+タイムストレッチをC++で実装する方法を調べてみました
+タイムストレッチ(TimeStretch)をC++で実装する方法を調べてみました。
+調べただけで、結局いい方法が見つかりません。誰か教えてください。
+そもそもタイムストレッチとは
+タイムストレッチとは、音程(ピッチ)を変えずに速度(テンポ)だけを変更する、音声処理。
+タイムストレッチ/ピッチシフト – Wikipedia
+アルゴリズム的にはフーリエ変換とかするらしいけれども、大学生の時、その大学の授業は抜け出してフランス映画を見に行った思い出しかないので、自分では無理。便利な変換ライブラリを探してみた。
+VLC Player
+はじめにとったのがこの方法。VLC Playerをサーバモードで起動しして、C++のソースからソケット通信してコマンドを送りつけた。
+これはこれでうまくいったのだが、サーバへの通信を実施するので、微妙なタイムラグが入った。
+音楽の速度をコマンドラインから自由自在に操れる!多機能すぎるオープンソースの音楽再生ソフト『VLC メディアプレイヤー』 | Futurismo
+DirectShow
+DirectShowのサンプルがあったので、真似するとタイムストレッチができた。
+ゲームクリエイターになりたい!! : DirectShowで簡単にできた。MP3の再生。
+ほか、参考リンク。
+Geekなぺーじ:再生速度を変える
+IMediaSeeking::SetRate
+DirectShow(GraphBuilder)でのタイムストレッチ
+ただ、この方法だと音程も高くなってしまった。実現したいのは、音程はそのままで速度だけ可変にしたい。
+このページによると、DirectShow用のフィルタは自分で作りなさいと書いてある。えっ!
+音声再生速度変換 : もっとゆっくりしゃべって! – Windows Multimedia Hacks – Site Home – MSDN Blogs
+Windows Media Player SDK
+Windows Media Player SDKの IWMPSettings::put_rate を使用すると再生速度変換ができるらしい。これも、上のリンクに書いてあった方法。
+Media player Classic
+Media player Classicにフィルタを設定するとタイムストレッチできるみたいだけれども、それがコードからいじれるかは不明。
+Media Player Classicで、音声ピッチを変えずに倍速再生をする方法 – くらげのChangeLog
+そして困ったときのStackoverflow
+最後にたどり着くのは、やっぱりStackoverflow
+c++ – Changing tempo (speed) of audio – Stack Overflow
+ここでは、以下のライブラリが紹介されている。
+SoundTouch Sound Processing Library軽量のC++ライブラリ。
+Un4seen Developments – 2MIDI / BASS / MID2XM / MO3 / XM-EXE / XMPlayサンプルを動かしてみたら、けっこう多機能なライブラリだ。音楽に関わることはたいていできそうな感じ。
+商用だと以下。
+Rubber Band Audio Time Stretcher Library
+DIRAC Time Stretching & Pitch Shifting : The DSP Dimension
+とりあえず、SoundTouchがシンプルでつかえそうなので、これに挑戦してみることにした。
+タイムストレッチ(TimeStretch)をC++で実装する方法を調べてみました。
+調べただけで、結局いい方法が見つかりません。誰か教えてください。
+そもそもタイムストレッチとは
+タイムストレッチとは、音程(ピッチ)を変えずに速度(テンポ)だけを変更する、音声処理。
+タイムストレッチ/ピッチシフト – Wikipedia
+アルゴリズム的にはフーリエ変換とかするらしいけれども、大学生の時、その大学の授業は抜け出してフランス映画を見に行った思い出しかないので、自分では無理。便利な変換ライブラリを探してみた。
+VLC Player
+はじめにとったのがこの方法。VLC Playerをサーバモードで起動しして、C++のソースからソケット通信してコマンドを送りつけた。
+これはこれでうまくいったのだが、サーバへの通信を実施するので、微妙なタイムラグが入った。
+音楽の速度をコマンドラインから自由自在に操れる!多機能すぎるオープンソースの音楽再生ソフト『VLC メディアプレイヤー』 | Futurismo
+DirectShow
+DirectShowのサンプルがあったので、真似するとタイムストレッチができた。
+ゲームクリエイターになりたい!! : DirectShowで簡単にできた。MP3の再生。
+ほか、参考リンク。
+Geekなぺーじ:再生速度を変える
+IMediaSeeking::SetRate
+DirectShow(GraphBuilder)でのタイムストレッチ
+ただ、この方法だと音程も高くなってしまった。実現したいのは、音程はそのままで速度だけ可変にしたい。
+このページによると、DirectShow用のフィルタは自分で作りなさいと書いてある。えっ!
+音声再生速度変換 : もっとゆっくりしゃべって! – Windows Multimedia Hacks – Site Home – MSDN Blogs
+Windows Media Player SDK
+Windows Media Player SDKの IWMPSettings::put_rate を使用すると再生速度変換ができるらしい。これも、上のリンクに書いてあった方法。
+Media player Classic
+Media player Classicにフィルタを設定するとタイムストレッチできるみたいだけれども、それがコードからいじれるかは不明。
+Media Player Classicで、音声ピッチを変えずに倍速再生をする方法 – くらげのChangeLog
+タイムストレッチをC++で実装する方法を調べてみました | Futurismo

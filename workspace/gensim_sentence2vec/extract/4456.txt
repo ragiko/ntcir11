@@ -1,0 +1,37 @@
+この投稿は自分のブログ記事をQiita用に整形したものです。追記事項があればブログの方に書いていきます。
+「Pythonの数値計算ライブラリ NumPy入門」 http://rest-term.com/archives/2999/
+Pythonの数値計算ライブラリ NumPy入門
+Scientific Computing Tools For Python — Numpy
+NumPy は Pythonプログラミング言語の拡張モジュールであり、大規模な多次元配列や行列のサポート、これらを操作するための大規模な高水準の数学関数ライブラリを提供する。(via Wikipedia)
+これまで知識があいまいだったNumPyについて、もう一度おさらいしたいと思います。NumPyはSciPyと併せて科学技術計算でよく利用されています。また、高速に行列演算ができるのでOpenCV(コンピュータビジョンライブラリ)でもNumPyを利用したPythonインタフェースが提供されるようになりました。
+OpenCVのPythonバインディングについては2011年にブログでも取り上げていますので参考までに。
+* さくらVPSにOpenCVをインストールしてPythonから使う
+環境
+CentOS 6.4 (x86_64)
+Python 2.7.5 (ELF 64-bit LSB executable)
+NumPy 1.7.1
+NumPy配列(numpy.ndarray)とは
+numpy.ndarrayの属性(attributes)
+データ型について
+配列の生成
+配列形状の変更
+Indexing
+Fancy Indexing
+インデックスの検索
+配列に対する操作/演算
+配列の結合/分割、軸操作
+配列のソート
+配列要素に対する演算
+Broadcasting
+配列の走査
+統計関数
+ファイル入出力
+NumPy配列(numpy.ndarray)とは
+An ndarray is a (usually fixed-size) multidimensional container of items of the same type and size.
+numpy.ndarray は多次元配列を扱うクラスです。基本的に以下の制限があります。
+配列内要素の型は全て同じ
+配列長は固定 (固定長配列)
+配列の各次元の要素数は同じ
+(※ ただし、制限付きで配列の形状変更は可能。説明は後述)
+C言語の配列とよく似ています。制限がある分、Pythonのリスト(list)型と比較して大規模な配列を扱う際の処理効率が良くなっています。また、これ以降 "配列" と表記したときは基本的に numpy.ndarray を指すこととします。
+Pythonの数値計算ライブラリ NumPy入門 - Qiita

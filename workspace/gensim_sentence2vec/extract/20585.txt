@@ -1,0 +1,12 @@
+
+※こちらのAPIはYahoo! ID連携に対応したAPIです。
+Yahoo! ID連携によるAPIアクセス方法の詳細は、以下のページをご確認ください。
+・Yahoo! ID連携
+・Yahoo! ID連携によるAPIアクセス実装方法
+※こちらのAPIを利用する場合は、こちらからアプリケーションIDを取得してください。
+サンプルリクエストURL
+https://circus.shopping.yahooapis.jp/ShoppingWebService/V1/submitItemサンプルリクエスト POST /ShoppingWebService/V1/submitItem HTTP/1.1 Host: circus.shopping.yahooapis.jp Authorization: Bearer <アクセストークン>seller_id=teststore&item_code=item1
+レスポンスフィールド
+フィールド
+説明
+ショッピング:商品個別反映API - Yahoo!デベロッパーネットワーク

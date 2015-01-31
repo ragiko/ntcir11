@@ -1,0 +1,4 @@
+シミュレーションを実行する計算機の性能値を格納する性能格納部と、シミュレーションに用いる性能モデルを格納するモデルデータベースと、モデルデータベースに格納された性能モデルからシミュレーションに使用する性能モデルを作成するモデル作成部を有する。This evaluation system has: a performance storage part storing a performance value of a computer executing the simulation; a model database storing a performance model used for the simulation; and a model production part producing the performance model used for the simulation from the performance model stored in the model database. - 特許庁
+UML設計モデルから、確率的な性能評価モデルを導出するコンピュータ・プログラムおよび確率的な性能評価モデルを導出する方法COMPUTER PROGRAM AND METHOD FOR DERIVING STOCHASTIC PERFORMANCE EVALUATION MODEL FROM ULM DESIGN MODEL - 特許庁
+UMLモデルから性能評価モデルを自動的に生成できるようにし、性能評価モデルの作成にかかる時間およびコストを削減する。To reduce the time or costs required for the preparation of a performance evaluation model by automatically generating a performance evaluation model from a UML model. - 特許庁
+性能モデルの英語・英訳 - 英和辞典・和英辞典 Weblio辞書

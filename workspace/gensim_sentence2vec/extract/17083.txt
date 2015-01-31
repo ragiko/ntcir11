@@ -1,0 +1,11 @@
+最近追っているSimple English Wikipediaを用いた英語のテキスト平易化に関する研究について紹介します。
+通常のEnglish Wikipediaと、語彙や文法に制限を設けた平易版のSimple English Wikipediaを用いて、統計的機械翻訳の枠組みでテキスト平易化を行う研究を、Kauchakらが行っています。
+今回はACLから3本の文献を紹介します。
+Kauchakらによると、所与の文に対して、平易な語彙と文構造を用いて、原文の本旨を保持した平易版を生成することを、テキスト平易化と言います。
+子ども、外国語学習者、高齢者、などのデータの可用性を向上させたり、機械翻訳などの他の言語処理タスクの前処理として、テキスト平易化が有用であるようです。
+Simple English Wikipedia: A new simplification task (ACL-2011)
+この文献の大きな貢献は、テキスト平易化のための大規模なデータセットを公開したことです。
+English Wikipediaと、その平易版であるSimple English Wikipediaを対応付け、137,000文対のパラレルコーパスを構築しました。
+この平易化コーパスは、ここからダウンロードできます。
+http://www.cs.middlebury.edu/~dkauchak/simplification/
+Simple English Wikipediaを用いたテキスト平易化 - moguranosenshi

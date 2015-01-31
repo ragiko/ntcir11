@@ -1,0 +1,162 @@
+
+セッションについて
+Java サーブレットは HTTP プロトコルを使用します。HTTP はステートレスプロトコルです。
+サーバは、リクエストを受け取ってレスポンスを返すと、クライアント ( ブラウザ ) との接続を終了します。
+サーバにはクライアントを一意に識別できる情報を持っていないため、クライアントの情報は維持されません。
+( サーバはどのクライアントがどの情報を持っていたかを判断できない。 )
+上記の問題を解決するための仕組みがセッション管理となります。
+セッションとは、簡単に説明するとクライアントがサーバに接続してから切断するまでの 1 接続単位です。
+一般的には 1 リクエスト単位ではなく、例えば、ユーザがログインしてからログアウトもしくは、
+ブラウザを閉じるなどの操作を行うまでの間を表します。 
+1 セッションの間には、複数回のリクエスト送信、レスポンス受信が行われます。上述したように、
+HTTP はステートレスプロトコルですので、どのリクエストがどのユーザのものなのかを
+判断する一意の情報が必要です。この一意に識別される情報をセッション ID と言います。
+セッション ID は不規則な英数字の組合せを 10 数桁 以上 ( アプリケーションサーバによって相違が
+あります。 ) の組合せで作成され、このセッション ID をサーバは初回アクセス時にクライアントに
+送信し、クライアントは受け取ったセッション ID をリクエスト時にいっしょに送信します。
+上記の仕組みからサーバはクライアントを一意に識別することができ、1 セッションの間、
+クライアントの情報を保持することができます。( セッション間で有効な変数などを利用できる。 )
+サーバ、クライアント間の情報を保持する仕組みでクッキーとセッションの違いは、クッキーは
+クライアント側での情報の保持であり、セッションはサーバ側での情報の保持となります。
+( セッションのセッション ID の保持はクッキーを利用しています。 )
+通常、セッション ID はクッキーに保存されます。クライアントのクッキーが利用できない場合、
+URL リライティング ( URL に セッション ID を含める ) を行います。
+セッション管理を行う上で以下の点に留意します。
+セッションタイムアウトを適切に設定します。
+ブラウザから何もリクエストが来ない状態がつづくと,サーバ側ではユーザが自サーバのページを閲覧中なのか、
+アクセスを中止してしまったのか ( ブラウザを閉じるなど ) を知ることができません。
+このような場合、サーバ側がブラウザからのリクエストをいつまでも待ち続けるのはシステム資源やセキュリティ的な観点
+から得策ではありません。
+一定時間リクエストが無かったセッションは切断する必要があります。
+使用済みのセッションは必ず破棄します。
+ユーザがログアウトなどの操作 ( 以降、継続したアクセスを行わない、システム資源を使用しない。 ) を行った場合は、
+システム資源やセキュリティ的な観点からも必ず、セッションの破棄を行う必要があります。
+クラスタリング環境では、セッションに格納するオブジェクトはシリアライズ可能である必要があります。
+クラスタリング環境でセッションに格納するオブジェクトは全て ( 独自に作成した JavaBeans も含む )
+java.io.Serializable が実装されている必要があります。
+クラスタリングの処理では、セッションオブジェクトを一旦 byte 配列に変換して各サーバに送信します。
+受信側は、受け取った byte 配列からオブジェクトを再生成します。
+この処理では、各オブジェクトがシリアライズ可能になっている必要があります。
+クラスタリング環境で java.io.Serializable が実装されていないオブジェクトをセッションに格納しようとすると
+以下のようなエラー内容が出力されます。
+java.lang.IllegalArgumentException: Attribute [オブジェクト名] is not serializable
+セッションの有無だけでログインしていることを判断すると二重ログインが発生する可能性があります。
+ブラウザで接続中に、別のブラウザでアクセスするとセッションは別になります。 
+通常、セッション ID はクッキーに保存されますが、クッキーは HTTP 環境ではテキストです。
+セッション ID が盗まれる ( セッションハイジャック ) 可能性を持ちます。
+初回アクセス時はクライアント側でクッキーが利用できるか否か不明のため、
+URL リライティングを合わせて行うことも多く、その際、URL に付与されるため、
+セッション ID はユーザに見える状態になることがあります。
+Java サーブレットでは、セッション管理に HttpSession というインターフェイスを使用します。
+アプリケーションサーバはクライアントに対応する HttpSession のオブジェクトを簡単な
+データベースで管理していて、クライアントからのリクエストに含まれるセッション ID が
+このデータベースに存在した場合、そのユーザはセッションを持っていると判断し、既存の
+セッションを返します。
+セッション ID を持っていない場合や HttpSession のオブジェクトを簡単なデータベースに
+存在しない場合、セッションを持っていないと判断し、新規のセッションが生成されます。
+( 1 ) セッションの生成
+リクエストを送信してきたブラウザに対して、セッションの生成を行いセッションを開始します。
+上述のようにセッションはセッション ID によって識別されます。セッション ID は通常、クッキーに
+保存されます。
+* ブラウザに Internet Explorer を使用されている場合は、[ツール] - [インターネットオプション] - [プライバシー] 
+- [詳細設定] - [自動 Cookie 処理を上書きする] にチェックを入れ、[ダイアログを表示する]を選択すると
+クッキー が送信されてくる様子を確認できます。
+ファイル名:SessionServlet.java
+import java.io.*;
+import javax.servlet.http.*;
+import java.io.IOException;
+import javax.servlet.ServletException;
+public class SessionServlet extends HttpServlet {
+private static final long serialVersionUID = 1L;
+public void doGet (HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+/* getSession(false) は現在セッションが存在しなければ
+*  null を返却します。 */	
+HttpSession session=request.getSession(false);
+response.setContentType("text/html; charset=shift_jis");
+PrintWriter out = response.getWriter();
+out.println("<html>");
+out.println("<head>");
+out.println("<title>Cookie Example</title>");
+out.println("</head>");
+out.println("<body>");
+out.println("<h2>");
+if(session == null){
+out.println("セッションが存在しません。");
+/* getSession(true) でセッションが存在しなければ
+* 新規セッションを作成します。 */
+session=request.getSession(true);
+}
+else{
+out.println("セッションが存在します");
+}
+out.println("</h2>");
+out.println("<BR>");	  
+out.println("<form method=\"GET\" action=\""
++ request.getContextPath() + "/SessionServlet\">");  
+out.println("<input type=\"submit\" value =\"次 へ\"> ");  
+out.println("</form>");  	  
+out.println("</body>");
+out.println("</html>");
+out.close();
+}
+}
+import java.io.*;
+import javax.servlet.http.*;
+import java.io.IOException;
+import javax.servlet.ServletException;
+public class SessionServlet extends HttpServlet {
+private static final long serialVersionUID = 1L;
+public void doGet(HttpServletRequest request, 
+HttpServletResponse response) 
+throws ServletException, IOException {
+String tex = "Hello!";
+/* セッションを作成します。 */			
+HttpSession session=request.getSession(true);
+/* tex をセッションへ格納します。 */
+session.setAttribute("sessionKey1",tex);
+/* ContentType を設定*/
+response.setContentType("text/html; charset=Shift_JIS");
+/* 出力用 PrintWriter を取得*/
+PrintWriter out = response.getWriter();
+/* HTML 出力 */
+out.println("<html>");
+out.println("<head>");
+out.println("<title>Session Sevlet GET</title>");
+out.println("</head>"); 
+out.println("<body>");   
+out.println("<h2>セッションに値を設定しました。</h2>"); 
+out.println("<h2>" + tex + "</h2>"); 
+out.println("<form method=\"POST\" action=\""
++ request.getContextPath() + "/SessionServlet\">");  
+out.println("<input type=\"submit\" value =\"POST送信\">" );  
+out.println("</form>");   
+out.println("</body>");
+out.println("</html>");	
+}
+public void doPost (HttpServletRequest request,
+HttpServletResponse response)
+throws ServletException, IOException {
+/* ContentType を設定*/
+response.setContentType("text/html; charset=Shift_JIS");
+/* 出力用 PrintWriter を取得*/
+PrintWriter out = response.getWriter();
+/* HTML 出力 */
+out.println("<html>");
+out.println("<head>");
+out.println("<title>Session Sevlet POST</title>");
+out.println("</head>"); 
+out.println("<body>");   
+out.println("<h2>セッションから値を取り出しました。</h2>"); 
+/* getAttribute を使用してセッションより値を取得 */
+out.println("<h2>" 
++ request.getSession(true).getAttribute("sessionKey1") + "</h2>");
+out.println("<form method=\"POST\" action=\""
++ request.getContextPath() + "/SessionServlet\">");  
+out.println("<input type=\"submit\" value =\"POST送信\"> ");  
+out.println("</form>");  
+out.println("</body>");
+out.println("</html>");    
+}
+} 
+サーブレットの様々なサンプル - セッションの管理 -

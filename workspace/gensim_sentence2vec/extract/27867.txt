@@ -1,0 +1,12 @@
+						SQL文について 正しい結果を抽出できない
+borrower = (customer_name, loan_number)
+depositor = ( customer_name, account_number)
+customer = (customer_name, customer_age)
+上記のようなテーブル含まれてるDBに以下のSQL文を実行したんですが正しい結果が得られません。
+クエリ: 
+accountを持っているが、loanをもっていないcustomerの名前を抽出する。
+試したSQL文)
+SELECT DISTINCT customer.customer_name FROM customer, borrower, depositor WHERE customer.customer_name = depositor.customer_name AND NOT(customer.customer_name = borrower.customer_name)
+結果) loanを持っているcustomerを取り除くことができていない
+正しい結果を抽出するSQL文が分かる方回答お願いします。
+SQL文について 正しい結果を抽出できないborrower = (customer_name, ... - Yahoo!知恵袋

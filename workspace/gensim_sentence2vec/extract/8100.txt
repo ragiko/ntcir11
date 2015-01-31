@@ -1,0 +1,48 @@
+［2013年9月26日追記 『経済セミナー』2013年10・11月号に掲載された拙稿「政府累積債務は経済成長を阻害するか」の一部は,本ブログ記事に拠っています。］
+ハーバード大学のカーメン・ラインハート教授とケネス・ロゴフ教授が2010年に発表した論文に誤りがあると,マサチューセッツ大学の大学院生トーマス・ハーンドン氏等が指摘して,メディアやブログで大きな騒ぎになっている。
+大家による影響力ある論文の誤りが無名の研究者により指摘された事件としては,ハーバード大のフェルドスタイン教授が1974年に発表した論文で起こったことが思い出された。これは大学院生の研究助手が計算プログラムをミスしたことが原因だった。当時とは違い,ウェブで情報が広まる現在では,学界以外でも関心を呼ぶような状況になっている。加えて,健全財政を主張する政治家達がラインハート=ロゴフ論文の「中央政府の債務が国内総生産(GDP)の90%以上になると経済成長率が低下する」という結果を根拠にしていることも関心を大きくしている。
+日本経済新聞が26日の紙面でこの話題を取り上げ,私のコメントも紹介されたが,私が取材で話した内容はほぼ反映されていないので,こちらにまとめる。
+ハーンドン氏達はラインハート=ロゴフ論文のもとになった表計算ソフトのシートまで戻って検証して,「政府債務残高の対GDP比が90%以上の国の経済成長率が論文では-0.1%としているが,正しく計算すると2.2%」という結論を得た(注1)。まず,論文への転記ミスによるものか,スプレッドシートの数値は0.0%とのこと。そこから3つの「誤り」があるとしている。
+(1)表計算ソフトの集計ミス
+列の集計をする際に末尾の5つのセルを含めなかったために,5か国のデータが集計に含まれていない。このミスによる経済成長率への影響は0.3ポイント程度。
+(2)データの除外
+(ニュージーランドを含む)3か国の第2次世界大戦直後のデータが欠落している。
+(3)平均のとり方
+ラインハート=ロゴフ論文では国ごとの経済成長率の平均を同じウェイトで平均している。ハーンドン氏達は年ごとの経済成長率を同じウェイトで平均をとるのが正しい(国ごとのウェイトは90%以上を長く経験した国が大きくなる)が正しいと主張している。
+ラインハート=ロゴフ論文では,ニュージーランドで90%以上となったのが1年だけで,そのときの経済成長率が-7.6%のため,全体の平均を大きく引き下げている。ニュージーランドの第2次大戦直後のデータを補うか,またはニュージーランドのウェイトを低くとると,平均は大きく上がることになる(なお,中位値は大きな影響を受けず,2010年論文では1.6%となっている)。
+(1)の集計ミスはマウス操作の手元が狂ったということだろうか。これは誰が見ても誤りで,ラインハート,ロゴフ両教授も認めている。
+ハーンドン氏達はラインハート,ロゴフ両教授がウェブに公開しているデータを基に,(2)のようにデータが欠落していると主張しているが,これらのデータは2010年論文執筆時には整備されておらず,後から整備されてウェブに公開されたものであると,ラインハート,ロゴフ教授は応答している。両教授はデータを拡充して,2010年論文の発展形といえる論文(もう一人のラインハート氏が著者に加わる)を2012年に発表しているが,この論文では90%以上になった場合の経済成長率は2.3%(90%以下の場合より1.2ポイント低い)としている。データが追加されて結果が書き替えられたということであり,古い結果が誤りであることにこだわっていても仕方がない(注2)。
+(3)の平均のとり方は見解の相違。学会の場であれば討論者や聴衆との議論になりそうな話題である。どちらかを選べといわれれば,私はラインハート=ロゴフ論文の手法を支持する(上記の拙稿もその立場である)。慎重に議論するなら両者を計算して幅をもってみることになるが,2012年論文の段階ではそれほど大きな違いにはならないように思える。
+まとめると,いま話題になっている数字は,すでに新しい研究で書き替えられているものであり,古い結果にこだわることに学術的な意味はない。いま騒ぎ立てるのは政治的な意図で動いている人か,事情を理解できずに騒ぎに振り回されている人である。
+なお,ラインハート=ロゴフ論文は高債務と低成長の相関関係を示したが,高債務から低成長への因果関係を立証したものではない。むしろ「なぜ財政赤字が発生するのか」(http://blogs.yahoo.co.jp/iwamotoseminar/30491529.html )でのべたように低成長から高債務への因果関係があるのではないかというのが通説であり,この考え方は戦後の日本にも非常によく当てはまる。
+(注1)
+ラインハート,ロゴフ両教授が長年かけて整備した政府債務データを使用して私も「政府累積債務の帰結:危機か? 再建か?」(http://www.iwamoto.e.u-tokyo.ac.jp/Docs/2012/SeifuRuisekiSaimunoKiketsu.pdf )という論文を書いたが,ハーンドン氏達は元データの正誤を問うものではなく,ラインハート=ロゴフ論文でのそれらデータの扱い方を問題としている。したがって,その批判は,元データを用いて独自の分析をした研究には及ばない。
+(注2)
+フェルドスタイン教授は1974年論文の誤りを訂正した上で,データを延長したところ当初の論文の結論は補強されたとしている。奇しくも,データの追加による結果の変化という現象が今回の騒動と共通している。
+(参考文献)
+Feldstein, Martin S. (1974), Social Security, Induced Retirement, and Aggregate Capital Accumulation, Journal of Political Economy, Vol. 82, No. 5, September-October, pp. 905-926. 
+Feldstein, Martin S. (1982), Social Security and Private Saving: Reply, Journal of Political Economy, Vol. 90, No. 3, June, pp. 630-642.
+Herndon, Thomas, Micheal Ash and Robert Pollin (2013), Does High Public Debt Consistently Stifle Economic Growth? A Critique of Reinhart and Rogoff, University of Massachusetts Amherst.
+http://www.peri.umass.edu/fileadmin/pdf/working_papers/working_papers_301-350/WP322.pdf
+Leimer, Dean R., and Selig D. Lesnoy (1982), Social Security and Private Saving: New Time-Series Evidence, Journal of Political Economy, Vol. 90, No. 3, June, pp. 606-629.
+Reinhart Carmen M., and Kenneth S. Rogoff (2010), Growth in a Time of Debt, American Economic Review Paper and Proceedings, Vol. 100, Number 2, May, pp. 573-578.
+Reinhart Carmen M., Vincent R. Reinhart and Kenneth S. Rogoff (2012), Public Debt Overhangs: Advanced-Economy Episodes Since 1800, Journal of Economic Perspectives, Vol. 26, No. 3, Summer, pp. 69-86.
+http://pubs.aeaweb.org/doi/pdfplus/10.1257/jep.26.3.69
+(参考)
+ラインハート,ロゴフ両教授の最初の2つの応答
+Reinhart-Rogoff Response to Critique, The Wall Street Journal, April 16, 2013.
+http://blogs.wsj.com/economics/2013/04/16/reinhart-rogoff-response-to-critique/
+Reinhert, Rogoff Admit Excel Mistake, Rebut Other Critiques, The Wall Street Journal, April 17, 2013.
+http://blogs.wsj.com/economics/2013/04/17/reinhart-rogoff-admit-excel-mistake-rebut-other-critiques/
+ハーンドン氏の応答
+The Grad Student Who Took Down Reinhart And Rogoff Explains Why Theyre Fundamentally Wrong, Business Insider, April 22, 2013. 
+http://www.businessinsider.com/herndon-responds-to-reinhart-rogoff-2013-4
+ラインハート,ロゴフ両教授の応答
+Reinhart and Rogoff: Responding to Our Critics, New York Times, April 25, 2013.
+http://www.nytimes.com/2013/04/26/opinion/reinhart-and-rogoff-responding-to-our-critics.html
+(関係する過去記事)
+「なぜ財政赤字が発生するのか」
+http://blogs.yahoo.co.jp/iwamotoseminar/30491529.html 
+「政府累積債務の帰結:危機か? 再建か?」
+http://blogs.yahoo.co.jp/iwamotoseminar/37367546.html
+ラインハート=ロゴフ論文の誤りについて ( その他経済 | 論文 参考文献 結論 数字 大学 経済 ) - 岩本康志のブログ - Yahoo!ブログ

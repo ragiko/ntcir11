@@ -1,0 +1,22 @@
+
+Oracle Textの索引(CTXCAT索引やCONTEXT索引など)はドメイン索引であり、「PARAMETERS」句に パラメータの値を指定することができます。CONTEXT索引で利用されていたLEXER、MEMORY、STOPLIST、STORAGE、WORDLISTなど のパラメータはCTXCAT索引でも利用することができます。また、CTXCATには、INDEX SETという新しいパラメータがあります。 INDEX SETは、CTXCAT索引に含められる構造化列を定義します。たとえば、item_desc列に索引を作成したいが、検索結果を priceで制限してstart_time別にソートする必要があるとします。この場合、新しいINDEX SETを作成して、これを構造化列に 追加します。
+ctx_ddl.create_index_set ('auction_set');
+ctx_ddl.add_index ('auction_set', 'price');
+ctx_ddl.add_index ('auction_set', 'start_time');
+注意:
+item_desc列はINDEX SETの一部に加える必要はありません。 item_descは、索引作成時に索引作成対象列として指定します。
+CREATE INDEX auction_index ON auction (item_desc)
+INDEXTYPE IS CTXCAT
+PARAMETERS ('INDEX SET auction_set');
+カタログ問合せ言語
+CONTEXT索引で使用されるCONTAINS演算子の代わりに、CATSEARCH演算子を使用します。 「toy」と「dog」という語が含まれているが、「live animal」という語は含まれないすべてのオークション・アイテムを検索するとします。
+SELECT item_id, item_desc FROM auction
+WHERE CATSEARCH (item_desc, '(toy dog) - "live animal"', null) > 0;
+ANDでつながれる語には、ANDという語も"&" 演算子も必要ありません。ANDは、隣接するすべての語に対して仮定されます。 NOTは"-"で置換されます(ここでは使用されていませんが、ORは"|"で置換されます)。 カッコを使用して、語をグループ化 することができます。二重引用符は句を囲むために使用します(そうでないと、"live animal"は"live AND animal"と解釈 されてしまいます)。上記の問合せの"null"は、構造化句のプレースホルダです。
+デフォルトはないため、構造化句を指定 しない場合には必ずここに"null"を挿入する必要があります。構造化句を使用すると、結果を制限またはソートすることが できます。100ドル以下のアイテムのみを検索するように上記問合せを拡張する場合は、次の問合せが使用できます。
+SELECT item_id, item_desc FROM auction
+WHERE CATSEARCH (item_desc, '(toy dog) | "live animal"', 'price < 100') > 0
+最新のアイテムが最初に表示されるように結果をソートするには、次の問合せを使用します。
+SELECT item_id, item_desc FROM auction
+WHERE CATSEARCH (item_desc, '(toy dog) | "live animal"','price < 100 order by start_time desc') > 0
+製品情報 - Oracle 9i Database Daily Feature

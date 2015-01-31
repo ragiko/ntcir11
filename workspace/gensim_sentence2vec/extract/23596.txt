@@ -1,0 +1,88 @@
+// forked from yotakawato's "forked: D3.js + Googleスプレッドシート(縦棒グラフ)" http://jsdo.it/yotakawato/qNBZ
+// forked from _shimizu's "D3.js + Googleスプレッドシート" http://jsdo.it/_shimizu/zemk
+(function(google, d3){
+google.load("visualization", "1");
+google.setOnLoadCallback(init);
+function init() {
+var query = new google.visualization.Query("https://docs.google.com/a/fout.jp/spreadsheet/ccc?key=0AidN2VKiKiCCdEZjNmNZUzg1RUxuZ1hnZVg5TmRuSUE&usp=drive_web");
+query.setQuery("SELECT A, SUM(B) GROUP BY A FORMAT A 'M/d'"); // QueryLanguageでグルーピング集計
+query.send(handleQueryResponse);
+}
+function handleQueryResponse(response) {
+// データ取得
+var data = response.getDataTable();
+var DataArray = new Array(data.getNumberOfRows());
+for (var row = 0; row < data.getNumberOfRows(); row++) {
+DataArray[row] = new Array(data.getNumberOfColumns());
+for (var col = 0, n = data.getNumberOfColumns(); col < n; col++) {
+if(col > 0){
+DataArray[row][col] = Math.floor(data.getFormattedValue(row, col));
+}else{
+DataArray[row][col] = data.getFormattedValue(row, col);
+}
+}
+}
+rendering(DataArray);
+}
+function rendering(data) {
+var barHeight = 14;
+var width = 200;
+var height = (barHeight + 1) * data.length;
+var fontSize = 2;
+// domain() で指定した区間をとrange() で指定した区間にマッピングする(svg領域をハミ出ないように)
+var x = d3.scale.linear().domain([0, d3.max(data, function(datum) { return datum[1]; })]).rangeRound([0, width]);
+var y = d3.scale.linear().domain([0, data.length]).range([0, height]);
+// グラフを表示するsvgエリアを作成
+var barDemo = d3.select("#bar-demo")
+.append("svg:svg")
+.attr("width", width)
+.attr("height", height);
+// 棒グラフの表示
+barDemo.selectAll("rect")
+.data(data)
+.enter()
+.append("svg:rect")
+.attr("x", 40)
+.attr("y", function(datum, index) { return y(index); })
+.attr("height", barHeight)
+.attr("width", function(datum) { return x(datum[1]); })
+.attr("fill", "#2d578b")
+.attr("opacity", "0.5")
+// 棒グラフにイベントを設置
+.on("mouseover", function(){ d3.select(this).style("fill", "blue"); })
+.on("mouseout", function(){ d3.select(this).style("fill", "#2d578b"); });
+// 数値を表示
+barDemo.selectAll("text")
+.data(data)
+.enter()
+.append("svg:text")
+.attr("x", 28)
+.attr("y", function(datum, index) { return y(index) + barHeight; })
+.attr("dx", 20)
+.attr("dy", -barHeight / 2 + 3)
+.attr("text-anchor", "left")
+.attr("style", "font-size: 10; font-family: Helvetica, sans-serif;")
+.text(function(datum) { return datum[1]; })
+.attr("fill", "black");
+// 年代を表示
+barDemo.selectAll("text.xAxis")
+.data(data)
+.enter().append("svg:text")
+.attr("x", 28)
+.attr("y", function(datum, index) { return y(index) - barHeight / 2; })
+.attr("dx", -10)
+.attr("text-anchor", "middle")
+.attr("style", "font-size: 10; font-family: Helvetica, sans-serif")
+.text(function(datum) { return datum[0]; })
+.attr("transform", "translate(0, 18)")
+.attr("class", "xAxis");
+}
+})(google, d3);
+<p>
+スプレッドシートテスト
+</p>
+<div id="bar-demo"></div>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<a href="https://docs.google.com/a/fout.jp/spreadsheet/ccc?key=0AidN2VKiKiCCdEZjNmNZUzg1RUxuZ1hnZVg5TmRuSUE&usp=drive_web">スプレッドシートに飛ぶ</a>
+forked: D3.js + Googleスプレッドシート(横棒グラフ) - jsdo.it - Share JavaScript, HTML5 and CSS

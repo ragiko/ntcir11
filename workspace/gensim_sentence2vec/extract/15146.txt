@@ -1,0 +1,156 @@
+
+AWK で十分ですよ - その3 - 共分散,相関係数,最小二乗法
+2012年 12月 1日掲載
+「AWK とともにあらんことを」
+1年以上も間があいてしまったが,AWK でいろいろする第3回である.
+今回は,2変数の統計量などを計算してみる.
+まずは,サンプルデータ作りである.
+今回は,強い相関のある 2変数のデータセットを作成する.
+$ awk 'BEGIN{for(i=0;i<20;i++)print i+rand()-0.5,i+rand()-0.5}' > data.txt
+できあがった data.txt はこんな感じ.
+$ cat data.txt
+-0.499992 -0.368462
+1.25561 0.95865
+2.03277 1.71896
+2.54704 3.17886
+4.1793 4.43469
+4.8835 5.01942
+6.33097 5.53457
+6.55346 7.0297
+8.17115 7.5077
+8.88342 8.56684
+9.91749 10.1868
+11.089 11.4304
+12.3462 12.0269
+12.592 13.1539
+13.916 14.2012
+15.4103 15.2622
+15.7625 15.5475
+17.2361 16.8282
+18.1326 18.2564
+19.491 18.8653
+直線 y = x 付近にならぶ 20組のデータができあがった.
+ここからは,第1カラムの値を「x」,第2カラムの値を「y」として話を進めていく.
+まずは,2変数の共分散を計算してみよう.
+共分散 Sxy の計算式は,
+Sxy = 1/n Σ(x - μx)(y - μy)
+ただし,μx,μy は,x,y の平均値
+であるから,AWKスクリプト covariance.awk は,次のように書ける.
+{
+x[NR] = $1
+y[NR] = $2
+}
+END{
+if(NR == 0) exit
+for(i in x){
+sum_x += x[i]
+sum_y += y[i]
+}
+m_x = sum_x / NR
+m_y = sum_y / NR
+for(i in x){
+sum_dxdy += (x[i] - m_x) * (y[i] - m_y)
+}
+print sum_dxdy / NR
+}
+計算してみよう.
+$ awk -f covariance.awk data.txt
+34.1126
+共分散が計算できれば,相関係数 ρxyも計算できる.
+ρxy = Sxy / σxσy
+ただし,σx,σy は x,y の標準偏差
+が,それぞれの値をいちいち求めて計算するのはめんどうなので,
+まとめて計算してしまう.
+ρxy = Σ(x - μx)(y - μy) / √Σ(x - μx)2  √Σ(y - μy)2
+AWKスクリプト correlation_coefficient.awk は,次のようになる.
+{
+x[NR] = $1
+y[NR] = $2
+}
+END{
+if(NR == 0) exit
+for(i in x){
+sum_x += x[i]
+sum_y += y[i]
+}
+m_x = sum_x / NR
+m_y = sum_y / NR
+for(i in x){
+sum_dx2 += (x[i] - m_x) ^ 2
+sum_dy2 += (y[i] - m_y) ^ 2
+sum_dxdy += (x[i] - m_x) * (y[i] - m_y)
+}
+if(sum_dx2 == 0.0 || sum_dy2 == 0.0) exit
+print sum_dxdy / sqrt(sum_dx2) / sqrt(sum_dy2)
+}
+計算してみよう.
+$ awk -f correlation_coefficient.awk data.txt
+0.99758
+相関係数がほとんど 1.期待通りの値が出た.
+線形の回帰直線の式も計算してみよう.
+y = a x + b
+の,係数 a,b は,最小二乗法を使うと,
+a = (n Σxy - ΣxΣy) / (n Σx2 - (Σx)2)
+b = (Σx2Σy - ΣxΣxy) / (n Σx2 - (Σx)2)
+で計算できる.
+AWKスクリプト least_squares_method.awk は,次のように書ける.
+{
+x[NR] = $1
+y[NR] = $2
+}
+END{
+if(NR <= 1) exit
+for(i in x){
+sum_x += x[i]
+sum_y += y[i]
+sum_x2 += x[i] ^ 2
+sum_xy += x[i] * y[i]
+}
+if(NR * sum_x2 - sum_x ^ 2 == 0.0) exit
+a = (NR * sum_xy - sum_x * sum_y) / (NR * sum_x2 - sum_x ^ 2)
+b = (sum_x2 * sum_y - sum_x * sum_xy) / (NR * sum_x2 - sum_x ^ 2)
+print a, b
+}
+計算結果はこうなる.
+$ awk -f least_squares_method.awk data.txt
+0.987677 0.0726783
+a が 0.987677,b が 0.0726783 か.
+ま,だいたい y = x に近いかな.
+回帰式が求まったら,残差も計算しなくてはならない.
+先ほど作った least_squares_method.awk に,残差の計算式
+√(Σ(a x + b - y)2 / n)
+を書き足そう.
+{
+x[NR] = $1
+y[NR] = $2
+}
+END{
+if(NR <= 1) exit
+for(i in x){
+sum_x += x[i]
+sum_y += y[i]
+sum_x2 += x[i] ^ 2
+sum_xy += x[i] * y[i]
+}
+if(NR * sum_x2 - sum_x ^ 2 == 0.0) exit
+a = (NR * sum_xy - sum_x * sum_y) / (NR * sum_x2 - sum_x ^ 2)
+b = (sum_x2 * sum_y - sum_x * sum_xy) / (NR * sum_x2 - sum_x ^ 2)
+for(i in x){
+sum_e2 += (a * x[i] + b - y[i]) ^ 2
+}
+print a, b, sqrt(sum_e2 / NR)
+}
+計算すると,
+$ awk -f least_squares_method.awk data.txt
+0.987677 0.0726783 0.40455
+残差の RMS(Root Mean Square) は 0.40455 となった.
+今回の AWKスクリプト:
+covariance.awk
+correlation_coefficient.awk
+least_squares_method.awk
+過去の記事:
+その1 - 和,平均,最大,最小
+その2 - 分散,標準偏差,度数分布
+[ KDO ホームにもどる]
+(C) 2012 KDO
+AWK で十分ですよ - その3 - 共分散,相関係数,最小二乗法

@@ -1,0 +1,97 @@
+
+論文
+一般論文
+井原健紘, 高木一幸, 尾関和彦, "雑音環境下単語認識のための複素周波数領域における参照再構成法," 日本音響学会誌, Vol.64, No.9, pp.533--544, 2008年9月.
+Yutaka Tsuboi, Takehiro Ihara, Kazuyuki Takagi, and Kazuhiko Ozeki, "The use of overlapped sub-bands in multi-band, multi-SNR, multi-path recognition of noisy word utterances," IEICE Transactions on Information and Systems, Vol.E91-D, No.6, pp.1774--1782, June 2008.
+Kiwamu Yamagata, Satoshi Fukutomi, Kazuyuki Takagi, Kazuhiko Ozeki, "Sentence compression using statistical information about dependency path length," Lecture Notes in Computer Science 4188/2006, pp.127--134, Sept. 2006.
+Meirong Lu, Kazuyuki Takagi, and Kazuhiko Ozeki, "Japanese dependency structure analysis using information about multiple pauses anf F0," IEICE Transactions on Information and Systems, Vol.E89-D, No.1, pp.298--304, Jan. 2006.
+Kenichi Yoshida, Kazuyuki Takagi, and Kazuhiko Ozeki, "Automatic adjustment of subband likelihood recombination weights for improving noise-robustness of a multi-SNR multi-band speaker identification system," IEICE Transactions on Information and Systems, Vol.E87-D, No.11, pp.2453--2459, Nov. 2004.
+吉田健一, 高木一幸, 尾関和彦, "マルチSNR部分帯域モデルを用いた雑音環境下での話者識別," 日本音響学会誌, Vol.59, No.1, pp.3-–12, 2003年1月.
+Kazuyuki Takagi, Rei Oguro, Kazuhiko Ozeki, "Effectiveness of word string language models on noisy broadcast news speech recognition, " IEICE Transactions on Information and Systems, Vol.E85-D, No.7, pp.1130--1137, July 2002.
+廣瀬幸由,  尾関和彦,  高木一幸, "日本語読み上げ文の係り受け解析における韻律的特徴量の有効性," 自然言語処理, Vol.8, No.4, pp.71–-89, 2001年10月.
+小黒玲, 尾関和彦, 張玉潔, 高木一幸, "文節重要度と係り受け整合度に基づく日本語文簡約アルゴリズム," 自然言語処理, Vol.8, No.3, pp.3–-18, 2001年7月.
+Kazuhiko Ozeki, Yoshiyasu Ishigami, and Kazuyuki Takagi, "Performance comparison of recognition systems: a Bayesian approach," The Journal of the Acoustical Society of Japan (E), Vol.20, No.3, pp.171--179, May 1999.
+Kazuyuki Takagi and Shuichi Itahashi, "Temporal Characteristics of Utterance Units and Topic Structure of Spoken Dialogs," IEICE Transactions on Information and Systems, Vol.E78-D, No.3, pp.269--276, March 1995.
+Kazuyuki Takagi and Shuichi Itahashi, "Formant Frequency Extraction by Moment Calculation of Speech Spectrum," Journal of the Acoustical Society of Japan, Vol.12, No.1, pp.47--50, Jan.1991.
+国際会議プロシーディングス
+Kazuyuki Takagi, Kazuhiko Ozeki, "Dependency analysis of spontaneous monologue speech using pause and F0 information: a preliminary study," Proceedings of International Conference of Speech Prosody 2006, PS5-20, May 2006, Dresden, Germany.
+Kazuyuki Takagi, Kazuhiko Ozeki, "Dependency analysis of read Japanese sentences using pause and F0 information: a speaker independent case," Proceedings of ICSLP2004 (8th International Conference on Spoken Language Processing), Vol.4, pp.3021--3024, Oct. 2004, Jeju, Korea.
+Kenichi Yoshida, Kazuyuki Takagi, Kazuhiko Ozeki, "Improved model training and Automatic weight adjustment for multi-SNR multi-band speaker identification system," Proceedings of ICSLP2004 (8th International Conference on Spoken Language Processing), Vol.3, pp.1749--1752, Oct. 2004, Jeju, Korea.
+Kazuyuki Takagi, Kazuhiko Ozeki, "Dependency analysis of read Japanese sentences using pause information: a speaker independent case," Proceedings of International Conference of Speech Prosody 2004, pp.595--598, Mar. 2004, Nara, Japan.
+Lu Meirong, Kazuyuki Takagi, Kazuhiko Ozeki, "Recovery of Japanese dependency structure using multiple pause information," Proceedings of International Conference of Speech Prosody 2004, pp.513--516, Mar. 2004, Nara, Japan.
+Kazuyuki Takagi, Mamiko Okimoto, Yasuo Ogawa, Kazuhiko Ozeki, "A neural network approach to dependency analysis of Japanese sentences using prosodic information," Proceedings of EUROSPEECH2003 (8th European Conference on Speech Communication and Technology), pp.3177--3180, Sept. 2003, Geneva, Switzerland.
+Lu Meirong, Kazuyuki Takagi, Kazuhiko Ozeki, "The use of multiple pause information in dependency analysis of spoken Japanese sentences," Proceedings of EUROSPEECH2003, pp.3173--3176, Sept. 2003, Geneva, Switzerland.
+Kazuyuki Takagi, Hajime Kubota, Kazuhiko Ozeki, "Combination of pause and F0 information in dependency analysis of Japanese sentences," Proceedings of ICSLP2002 (7th International Conference on Spoken Language Processing), Vol.2, pp.1173--1176, Sept. 2002, Denver, U.S.A.
+Rei Oguro, Hiromi Sekiya, Yuhei Morooka, Kazuyuki Takagi, and Kazuhiko Ozeki, "Evaluation of a Japanese sentence compression method based on phrase significance and inter-phrase dependency," Proceedings of TSD 2002 (Lecture Notes in Artificial Intelligence 2448, Springer-Verlag), pp.27--32,  Sept. 2002, Brno, Czech Republic.
+Kazuyuki Takagi, Kazuhiko Ozeki, "Pause information for dependency analysis of read Japanese sentences," Proceedings of EUROSPEECH 2001 (7th European Conference on Speech Communication and Technology), Vol.2, pp.1041--1044, Sept. 2001, Aalborg, Denmark.
+Kenichi Yoshida, Kazuyuki Takagi, Kazuhiko Ozeki, "A multi-SNR subband model for speaker identification under noisy environments," Proceedings of EUROSPEECH 2001 (7th European Conference on Speech Communication and Technology), Vol.4, pp.2849--2852, Sept. 2001, Aalborg, Denmark.
+Kazuhiko Ozeki, Kazuyuki Takagi, and Hajime Kubota, "The use of prosody in Japanese dependency structure analysis,"	Proceedings of ISCA Tutorial and Research Workshop on Speech Recognition and Understanding, pp.123--126, Oct. 2001, Red Bank, U.S.A.
+Kazuyuki Takagi, Rei Oguro, Kazuhiko Ozeki, "Effects of word string language models on noisy broadcast news speech recognition," Proceedings of ICSLP2000 (6th International Conference on Spoken Language Processing), Vol.1, pp.154--157, Oct. 2000, Beijing, China.
+Yukiyoshi Hirose, Kazuhiko Ozeki, Kazuyuki Takagi, "Effectiveness of prosodic features in syntactic analysis of read Japanese sentences," Proceedings of ICSLP2000 (International Conference on Spoken Language Processing), Vol.1, pp.215--218, Oct. 2000, Beijing, China.
+Rei Oguro, Kazuhiko Ozeki, Yujie Zhang, Kazuyuki Takagi, "An efficient algorithm for Japanese sentence compaction based on phrase importance and inter-phrase dependency," Proceedings of TSD 2000 (Lecture Notes in Artificial Intelligence 1902, Springer-Verlag), pp.103--108, Sept. 2000, Brno, Czech Republic.
+Kenichi Yoshida, Kazuyuki Takagi, Kazuhiko Ozeki, "Speaker identification using subband HMMs," Proceedings of EUROSPEECH 99 (6th European Conference on Speech Communication and Technology), Vol.2, pp.1019--1022, Sept. 1999, Budapest, Hungary.
+Kazuyuki Takagi, Rei Oguro, Kenji Hashimoto, Kazuhiko Ozeki, "Performance evaluation of word phrase and noun category language models for broadcast news speech recognition," Proceedings of ICSLP1998 (5th International Conference on Spoken Language Processing), Vol.6, pp.2507--2510, Dec. 1998, Sydney, Australia.
+Kazuyuki Takagi, Shuichi Itahashi, "Segmentation of Spoken Dialogue by Interjections, Disfluent Utterances and Pauses," Proceedings of ICSLP1996 (4th International Conference on Spoken Language Processing), Vol.2, pp.697--700, Oct. 1996, Philadelphia, U.S.A.
+Kazuyuki Takagi, Shuichi Itahashi, "Effectiveness of pause information in the content word detection of spoken dialogues," Proceedings of EUROSPEECH 1995 (4th European Conference on Speech Communication and Technology), Vol.1, pp.19--22, Sept. 1995, Madrid, Spain.
+Kazuyuki Takagi, Shuichi Itahashi, "Prosodic pattern of utterance units in Japanese spoken dialogs," Proceedings of ICSLP1994 (3rd International Conference on Spoken Language Processing), Vol.1,  pp.143--146, Sept. 1994, Yokohama, Japan.
+Kazuyo Tanaka, Kanae Kinibuchi, Naoko Houra, Kazuyuki Takagi, Shuichi Itahashi, Katsunobu Itoh, Satoru Hayamizu, "Annotating Illocutionary Force Types and Phonological Features into a Spontaneous Dialogue Corpus : An  Experimental Study," Proceedings of ICSLP1994 (3rd International Conference on Spoken Language Processing), Vol.3, pp.1831--1834, Sept. 1994, Yokohama, Japan.
+Kazuyuki Takagi, Naoko Houra, Shuichi Itahashi, "Characteristics of utterance units and temporal structure of spoken dialog," Proceedings of ISSD93 (International Symposium on Spoken Dialogue), pp.287--290, Nov. 1993, Tokyo, Japan.
+Shuichi Itahashi, Kazuyuki Takagi, "Automatic formant frequency extraction by moment calculation of speech spectrum," Proceedings of EUROSPEECH 1989 (1st European Conference on Speech Communication and Technology), Vol.2, pp.207--210, Sept. 1989, Paris, France.
+Kazuyuki Takagi, Shuichi Itahashi, "Formant frequency estimation by moment calculation of speech spectrum," Proceedings of 2nd Joint Meeting of ASA and ASJ, Journal of the Acoustical Society of America, Vol.84-J6, p.22, Nov. 1988, Honolulu, U.S.A.
+国内学会口頭発表
+石井貴大, 緒形剛, 高木一幸, "言語共通のスペクトルテンプレートによる非負値行列因子分解を用いた日英2言語識別の検討," 日本音響学会2013年秋季研究発表会, 2-P-35, 2013年9月26日.
+緒形剛, 高木一幸, "スパースネス及び連続性制約付き非負値行列因子分解による特徴分析を用いた言語識別の検討," 日本音響学会2013年春季研究発表会, 3-P-7c, 2013年3月15日.
+緒形剛, 高木一幸, "非負値行列因子分解を利用した音素配列情報の抽出による言語識別の検討," 日本音響学会2012年春季研究発表会, 3-P-15, 2012年3月15日.
+緒形剛, 高木一幸, "非負値行列因子分解を用いた音素配列情報の抽出による言語識別の検討," 電子情報通信学会, 技術研究報告, SP2001-83, pp.45--48, 第13回音声言語シンポジウム, 2011年12月19日.
+加來俊輔, 高木一幸, 吉田利信, "調波時間構造テンプレートを用いた非負値行列分解に基づく楽器音源分離," 日本音響学会音楽音響研究会, MA2010-61, pp.13--17, 2010年12月.
+小倉秀隆, 高木一幸, 吉田利信, "韻律情報を用いた辞書分割法による雑音環境下での単語認識," 日本音響学会2010年春季研究発表会, 1-Q-1, 2010年3月.
+高木一幸, 加来俊輔, "マルチSNR・マルチバンド法によるGMMを用いた言語識別," 日本音響学会2009年春季研究発表会, 3-Q-28, 2009年3月.
+土屋裕一, 高木一幸, 吉田利信, "マルチバンド・マルチSNR・マルチパス単語音声認識における帯域結合重みに関する検討," 日本音響学会2009年春季研究発表会, 1-P-11, 2009年3月.
+福冨諭, 高木一幸, 尾関和彦, "確率的な手法による日本語文簡約," 言語処理学会第13回年次大会, D5-2, 2007年3月.
+坪井豊, 高木一幸, 尾関和彦, "重複帯域分割法を用いた雑音に頑健なマルチSNR音声認識," 日本音響学会2007年春季研究発表会, 1-P-11, 2007年3月.
+山形究, 福冨諭, 高木一幸, 尾関和彦, "係り受け経路長を利用した新聞記事の自動簡約," 言語処理学会第12回年次大会, P2-11, 2006年3月. 
+福冨諭, 高木一幸, 尾関和彦, "文節抽出型文簡約における読みやすさ向上のための文節末修正," 言語処理学会第12回年次大会, C5-5, 2006年3月.
+高木一幸, 尾関和彦, "韻律情報を用いた話し言葉コーパスの係り受け解析の試み," 日本音響学会2006年春季研究発表会, 3-1-11, 2006年3月.
+坪井豊, 高木 一幸, 尾関和彦, "マルチSNR・マルチバンド音声認識のためのHMM学習用雑音に関する検討,"日本音響学会2005年秋季研究発表会, 1-P-34, 2005年10月.
+吉田健一, 高木一幸, 尾関和彦, "マルチSNR・マルチバンド法を用いた話者識別における様々な学習雑音に対する性能評価," 	日本音響学会2005年春季研究発表会, 2-Q-20, 2005年3月. 
+高木一幸, 尾関和彦, "話し言葉コーパスの係り受け解析を目的とした韻律の分析," 日本音響学会2006年春季研究発表会, 3-P-29, 2005年3月.
+福冨諭, 高木一幸, 尾関和彦,	"概念距離と係り受けを利用した要約文の文節対応付け," 言語処理学会第11回年次大会発表論文集, D3-8, 2005年3月.
+福冨諭, 高木一幸, 尾関和彦,	"概念距離と係り受けを利用した要約文の文節対応付け," 情報処理学会第67回全国大会講演論文集, Vol.2, pp.119--120, 2005年3月. 
+井原健紘, 高木一幸, 尾関和彦, "参照再構成法を用いた時間周波数マスクによる音声と音楽の分離,"	電子情報通信学会総合大会, D-SP-4, 2005年3月.
+諸岡祐平, 江崎誠, 高木一幸, 尾関和彦, "重要文抽出と文簡約を併用した新聞記事の自動要約," 言語処理学会第10回年次大会発表論文集, pp.436--439, 2004年3月.
+小野寺栄, 吉田健一, 高木一幸, 尾関和彦, "マルチパス方式を用いた雑音環境下での単語音声認識—アクセント情報の利用—,"	日本音響学会2004年春季研究発表会, 3-Q-9, 2004年3月. 
+吉田健一, 高木一幸, 尾関和彦, "1/f雑音を用いたマルチSNR部分帯域法による雑音下話者識別," 日本音響学会2004年春季研究発表会, 3-Q-8, 2004年3月. 
+呂美蓉, 高木一幸, 尾関和彦, "着目文節の前後のポーズ情報を利用した係り受け解析," 日本音響学会2004年春季研究発表会, 2-P-26, 2004年3月. 
+高木一幸, 尾関和彦, "係り受け解析における韻律情報有効性の多数話者による評価," 日本音響学会2004年春季研究発表会, 2004年3月.
+吉田健一, 高木一幸, 尾関和彦, "雑音下話者識別におけるマルチSNR部分帯域法とスペクトルサブトラクション法の性能比較," 日本音響学会2003年秋季研究発表会, 2003年9月.
+諸岡祐平, 小黒玲, 高木一幸, 尾関和彦	, "係り受け整合度と文節重要度を用いた自動簡約文の主観評価,"	言語処理学会第9回年次大会発表論文集, pp.667–670, 2003年3月.
+根岸知弘, 高木一幸, 尾関和彦, "サポートベクターマシンによる日本語長文の短文分割," 言語処理学会第9回年次大会発表論文集, pp.453–-456, 2003年3月.
+沖本真美子, 小川善生, 高木一幸, 尾関和彦, "韻律情報を用いた日本語読み上げ文の係り受け解析におけるニューラルネットワークの利用," 日本音響学会2003年春季研究発表会, 2-Q-6, 2003年3月.
+呂美蓉, 高木一幸, 尾関和彦, "日本語読み上げ文の係り受け解析における複数ポーズ情報の利用," 日本音響学会2003年春季研究発表会, 2-Q-1, 2003年3月. 
+吉田健一, 高木一幸, 尾関和彦, "マルチSNR部分帯域モデルを用いた話者識別システムの耐雑音性能改善," 日本音響学会2003年春季研究発表会, 1-4-25, 2003年3月.
+諸岡祐平, 小黒玲, 高木一幸, 尾関和彦, "文節間係り受け整合度と文節重要度を用いて自動簡約した日本語文の主観評価, 情報処理学会研究報告NL (自然言語処理) 153-2, PP.9--16, 2003年1月. 
+久保田新, 高木一幸, 尾関和彦, "韻律を利用した係り受け解析におけるポーズ・基本周波数情報の結合法の検討," 日本音響学会2002年春季研究発表会, 1-P-22, 2002年3月. 
+久保田新, 高木一幸, 尾関和彦, "係り受け解析におけるポーズ・ピッチの利用法の検討," 日本音響学会2001年秋季研究発表会, 2-2-8, 2001年10月.
+小黒玲, 高木一幸, 尾関和彦, "文節重要度と係り受け整合度に基づいた文簡約実験," 電子情報通信学会技術研究報告, NLC 2001-3, pp.15--20, 2001年5月.
+高木一幸, 小黒玲, 尾関和彦, "雑音重畳音声の認識における連語言語モデルの比較," 日本音響学会2001年春季研究発表会, 2-3-18, 2001年3月.
+吉田健一, 高木一幸, 尾関和彦, "フレーム単位で最適SNR部分帯域モデルを選択する話者認識," 日本音響学会2001年春季研究発表会, 3-P-8, 2001年3月.
+吉田健一, 高木一幸, 尾関和彦, "マルチSNR部分帯域GMMを用いた雑音環境下での話者認識," 電子情報通信学会技術研究報告, DSP2000-97/SP2000-63, pp.55-–61, 2000年9月.
+高木一幸, 小黒玲, 林真由美, 八木澄江, 尾関和彦,  "種々の音響条件におけるニュース音声認識についての考察," 日本音響学会2000年春季研究発表会, 1-Q-10, 2000年3月.
+小黒玲, 尾関和彦, 張玉潔, 高木一幸, "文節重要度と係り受け整合度に基づく文要約アルゴリズム,"	言語処理学会第6回年次大会発表論文集, pp.133–-136, 2000年3月.
+小黒玲, 高木一幸, 尾関和彦, "複数の単語bigramモデルを線形結合した言語モデルの検討," 日本音響学会1999年秋季研究発表会, 3-Q-20, 1999年10月.
+橋本顕示, 高木一幸, 小黒玲, 尾関和彦, "単語クラスタリングに基づく言語モデルを用いたニュース音声認識," 日本音響学会1999年春季研究発表会, 1-1-26, 1999年3月.
+小黒玲, 高木一幸, 橋本顕示, 尾関和彦, "ニュース音声認識のための言語モデルの比較," 日本音響学会1998年春季研究発表会, 1-6-22, 1998年3月.
+高木一幸, 小黒玲, 橋本顕示, 尾関和彦, "ニュース音声認識における言語モデルの検討," 電子情報通信学会技術研究報告, SP97-79/NLC97-46, pp.21-–28, 1997年12月.
+高木一幸, 板橋秀一, "対話音声の発話単位への自動区分の検討," 情報処理学会研究報告(SLP), SLP-15-24, pp.139–-144, 1997年2月.
+高木一幸, 板橋秀一,  "間投詞・非流暢発話と休止による対話音声区分化の検討," 日本音響学会平成8年春季研究発表会, 1-P-10, 1996年3月.
+高木一幸, 板橋秀一,  "対話音声中の自立語の検出におけるポーズ情報導入の効果," 日本音響学会平成7年春季研究発表会, 3-P-12, 1995年3月.
+高木一幸, 板橋秀一,  "音声対話における発話系列の韻律パタン," 日本音響学会平成6年春季研究発表会, 2-8-4, 1994年3月.
+田中和世, 杵淵香奈恵, 保浦直子, 高木一幸, 小栗直樹, 板橋秀一, 伊藤克亘, 速水悟, "対話音声コーパスの発話文タイプ・形態素情報の付与," 日本音響学会1994年春季研究発表会, pp.27–28, 2001年3月.
+高木一幸, 保浦直子, 板橋秀一, "対話における話題展開と発話単位の性質," Spontaneous Speechの分析・理解・生成, SPREC93-1-3, 1993年7月.
+高木一幸, 保浦直子, 板橋秀一, "対話音声中の発話単位の時間関係," 日本音響学会平成5年春季研究発表会, 3-8-2, 1993年3月.
+高木一幸, 保浦直子, 板橋秀一, "模擬対話音声における各種区分の持続時間の性質," 電子情報通信学会技術研究報告, SP92-111/NLC92-52, 1992年12月.
+高木一幸, 板橋秀一,  "対話音声中の各種音形・韻律単位の性質," 日本音響学会平成4年春季研究発表会, 3-5-8, 1992年10月.
+高木一幸, 板橋秀一, "スペクトルのモーメント計算によるホルマント周波数推定," 日本音響学会平成元年春季研究発表会, 1-7-11, 1989年3月.
+高木一幸, 板橋秀一, "スペクトルモーメントを利用した音声のホルマント周波数推定法," 電子情報通信学会技術研究報告(SP), 88-802, 1988年10月.
+高木一幸, 板橋秀一, "スペクトルモーメントによる母音ホルマント周波数の推定," 日本音響学会昭和63年春季研究発表会, 2-1-13, 1987年3月.
+Takagi Laboratory, UEC, Tokyo, Japan

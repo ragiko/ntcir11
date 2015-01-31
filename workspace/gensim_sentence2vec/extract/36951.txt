@@ -1,0 +1,248 @@
+
+解説&para;
+Mroongaで実際にパーサの挙動をみるにはmroonga_commandを使ってGroongaのtokenizeコマンドを呼び出すことができます。
+SELECT mroonga_command("tokenize ....");
+例えば、"トークナイズ機能とは?"をTokenBigramパーサで実行すると、
+SELECT mroonga_command("tokenize TokenBigram トークナイズ機能とは? ")
+結果は以下のように確認できます。
+[{"value":"トー","position":0},{"value":"ーク","position":1},{"value":"クナ","position":2},{"value":"ナイ","position":3},{"value":"イズ","position":4},{"value":"ズ機","position":5},{"value":"機能","position":6},{"value":"能と","position":7},{"value":"とは","position":8},{"value":"は?","position":9},{"value":"?","position":10}]
+参照 : Mroongaの全文検索用パーサの変更 http://mroonga.org/ja/docs/userguide/wrapper.html#how-to-specify-the-parser-for-full-text-search
+参照 : Groongaのtokenizeコマンド http://groonga.org/ja/docs/reference/commands/tokenize.html
+参照 : Groonga/Mroongaのトークナイザー(tokenizer)の挙動を追ってみる」http://y-ken.hatenablog.com/entry/mroonga-tokenizer-behavior
+注意&para;
+MroongaのパーサはGroongaのトークナイザーと同義です。
+Q: Mroongaが使っているメモリを解放するにはどうしたらよいでしょうか。&para;
+A: FLUSH TABLES を実行します。&para;
+解説&para;
+MroongaはGroongaをラップして利用しているので、Mroongaのメモリ管理は主にGroongaのメモリ管理になります。
+Mroongaからは"FLUSH TABLES"を実行するとGroongaのデータベースを閉じることができます。
+Q: map failed!!!というエラーがでたのですがどうしたらよいでしょうか。&para;
+A: vm.overcommit_memory=1 にすることで解決できることがあります。&para;
+解説&para;
+Linux上でMroongaを利用している場合、メモリ要求があったときに空き容量がなかった場合には、以下のように${MySQLのデータディレクトリ}/groonga.logにMroongaがエラーになってしまう現象がありますが、
+mmap failed!!!! in GRN_IO_SEG_REF(0x7f840597c7b0, 1)
+vm.overcommit_memory=1と定義してメモリを使い切るまでは十分なメモリがあるように振る舞う設定にします。
+sysctl -w vm.overcommit_memory=1
+また、OS再起動後も設定を有効にするには
+/etc/sysctl.conf か/etc/sysctl.d/groonga.conf というファイルを作ってそこに以下を記述しておくと良いでしょう。
+vm.overcommit_memory = 1
+Q: mysqldがクラッシュした後mrnファイルがロックされた場合、インデックスの再構築以外にロックを解除させる方法はないでしょうか?&para;
+A: 単にロックが残っているだけであれば、以下のSQLでロックを解除できます。&para;
+SELECT mroonga_command("clearlock");
+注意&para;
+ロックが残っているだけではなく、データベースに不整合が発生している場合はインデックスを再構築しないといけません。
+clearlockは使い方によってはデータベースが壊れるきっかけになる危険なコマンドです。通常は使わないでください。他に書き込んでいる処理がないのにロックがかかっているときだけ使うようにしてください。もし、他に書き込んでいる処理がある場合はclearlockがきっかけでデータベースが壊れる可能性があります。
+Q:  Mroonga のリストアの方法 を 教えてください。&para;
+A: Mroonga関連テーブルをダンプして、問題発生時にMroonga関連テーブルとファイルも全削除後にダンプからリストアします。&para;
+解説&para;
+Mroonga関連のテーブルがすべて削除されてOKということであれば、MySQLのデータディレクトリ以下にある *.mrn と *.mrn.xxx を手動で削除しても大丈夫です。ただし、その前にMySQLレベルでMroonga関連のテーブルをすべて削除してあるか確認してください。MySQLレベルにMroonga関連のテーブルの情報が残っているとうまくテーブルを作成したりできなくなります。
+データベースを指定してダンプ、リストアする場合は以下のようにできます。
+データベースを指定してダンプ
+mysqldump -u root データベース名 > dumpfile.sql
+リストア
+mysql -u root < dumpfile.sql
+注意&para;
+.mrnがGroongaのデータベースのメタデータを管理しているファイルで、*.mrn.xxxが実データが入っているファイルなのですが、*.mrnは新しいテーブルを作成するときになかったら自動で作成されます。
+Q: 同じキーワードでもヒットするときとヒットしないときがあるのはどうしてでしょうか?&para;
+A: エスカレーションするからです。&para;
+解説&para;
+全文検索するときには複数の検索方法を組み合わせています。基本的に完全一致検索のみを行います。完全一致検索でのヒット件数が所定の閾値以下の場合に限り、非わかち書き検索を行い、それでもヒット件数が閾値以下の場合は部分一致検索を行います。(閾値のデフォルト値は0です。)
+関連&para;
+内部の詳しい挙動はGroongaでの検索の挙動をご覧ください: http://groonga.org/ja/docs/spec/search.html
+エスカレーションの例と設定方法 : http://mroonga.org/ja/docs/reference/server_variables.html#mroonga-match-escalation-threshold
+Q: ベクターカラムに対してオフラインインデックス構築できますか?&para;
+A: ベクターカラムへの全文検索用のインデックスはサポートしていません。代わりに、ベクターカラムに入れた値を文字列にしたものを別のカラムに入れてそれに対して全文検索用のインデックスを構築してください。&para;
+解説&para;
+サポートしていない理由は以下になります。
+オンラインインデックス構築では入力値を使ってインデックスを構築します。
+オフラインインデックス構築では保存された値を使ってインデックスを構築します。
+全文検索用のインデックスを作成するにはトークナイズ対象の文字列が必要です。
+ベクターカラムに文字列を入力として値を保存している場合は、オンラインインデックス構築のときは文字列を用意できます。
+しかし、ベクターの値を入力としていればオンラインインデックス構築でも文字列を用意できません。
+(SQLからはベクターの値を入力とはできません。Groongaのloadコマンドを使えばできます。)
+また、オフラインインデックス構築のときはベクターになった値しか持っていないので文字列を用意できません。
+そのためベクターカラムの全文検索用のインデックスはサポートしていません。
+ベクターカラムに入れた値を文字列にしたものを別のカラムに入れてそれに対して全文検索用のインデックスを構築する例を以下に挙げます。
+ベクターカラムを使ってタグ検索を実現するテーブルとデータを以下とします。
+CREATE TABLE Tags (
+name VARCHAR(64) PRIMARY KEY
+) DEFAULT CHARSET=utf8
+COLLATE=utf8_bin
+COMMENT='default_tokenizer "TokenDelimit"';
+CREATE TABLE Bugs (
+id INT PRIMARY KEY AUTO_INCREMENT,
+tags TEXT COMMENT 'flags "COLUMN_VECTOR", type "Tags"',
+FULLTEXT INDEX(tags)
+) DEFAULT CHARSET=utf8;
+INSERT INTO Bugs (tags) VALUES ("Linux MySQL groonga");
+INSERT INTO Bugs (tags) VALUES ("mroonga");
+INSERT INTO Bugs (tags) VALUES ("groonga mroonga");
+groonga を 含むタグを検索します。
+select * from Bugs where match(tags) against("groonga" IN BOOLEAN MODE);
+検索結果が以下になります。
+id  tags
+1   Linux MySQL groonga
+3   groonga mroonga
+Q: boolean modeでのプラグマ指定で対応しているのは?&para;
+A: DとWプラグマ です。&para;
+解説&para;
+Dプラグマは演算子を省略した場合にどの演算を行うかを指定します。指定できる演算子は、OR, +, - のいずれかです。
+'D'プラグマの書式は以下の通りです。
+*D演算子
+例: *D+ groonga mroonga
++単語 : ある単語が存在しなければならないという条件を表す。(いわゆるAND)
+-単語 : ある単語が存在してはならないという条件を表す。(いわゆるNOT)
+OR 単語 : ある単語は存在しなくてもよいという条件を表す。 (いわゆるOR)
+Dプラグマの具体例をもって説明します。
+以下のようなテーブルとデータを用意します。
+CREATE TABLE books (
+`id` INTEGER AUTO_INCREMENT,
+`title` text,
+PRIMARY KEY(`id`),
+FULLTEXT INDEX content_index (title)
+) engine=mroonga default charset utf8;
+INSERT INTO books (title) VALUES ('[groonga入門]');
+INSERT INTO books (title) VALUES ('[mroonga入門]');
+INSERT INTO books (title) VALUES ('[実践groonga - groonga入門の次のステップ]');
+INSERT INTO books (title) VALUES ('[実践rroonga]');
+INSERT INTO books (title) VALUES ('[mroongaのレシピ]');
+INSERT INTO books (title) VALUES ('[groongaのレシピ]');
+「*D+」を使って groonga と 入門 とを両方含む文書を検索します。
+SELECT * FROM books WHERE
+MATCH (title) AGAINST('*D+ groonga 入門' IN BOOLEAN MODE) ORDER BY
+MATCH (title) AGAINST('*D+ groonga 入門' IN BOOLEAN MODE) DESC;
+これを実行した結果は以下になります。
+3   [実践groonga - groonga入門の次のステップ]
+1   [groonga入門]
+「*DOR」を使って groonga または 入門 を 含む文書を検索します。
+SELECT * FROM books WHERE
+MATCH (title) AGAINST('*DOR groonga 入門' IN BOOLEAN MODE) ORDER BY
+MATCH (title) AGAINST('*DOR groonga 入門' IN BOOLEAN MODE) DESC;
+これを実行した結果は以下になります。
+id  title
+3   [実践groonga - groonga入門の次のステップ]
+1   [groonga入門]
+2   [mroonga入門]
+6   [groongaのレシピ]
+「*D-」を使ってgroongaを含み、入門を含まない文書を検索します。
+SELECT * FROM books WHERE
+MATCH (title) AGAINST('*D- groonga 入門' IN BOOLEAN MODE) ORDER BY
+MATCH (title) AGAINST('*D- groonga 入門' IN BOOLEAN MODE) DESC;
+これを実行した結果は以下になります。
+id  title
+3   [実践groonga - groonga入門の次のステップ]
+1   [groonga入門]
+2   [mroonga入門]
+6   [groongaのレシピ]
+Wプラグマはマルチカラムインデックスのセクションごとに重み付けを指定するための書式です。
+'W'プラグマの書式は以下の通りです。重みは、省略された場合1となります。負の重みも指定することができます。
+*W[数値[:重み][,数値[:重み]]...
+例:*W0:10,1:-1 
+Wプラグマの具体例をもって説明します。
+以下のようなマルチカラムインデックスを含むテーブルとデータを用意します。
+CREATE TABLE books (
+`id` INTEGER AUTO_INCREMENT,
+`title` text,
+`comment` text,
+PRIMARY KEY(`id`),
+FULLTEXT INDEX content_index (title, comment)
+) engine=mroonga default charset utf8;
+INSERT INTO books (title, comment) VALUES ('[groonga入門]', 'groongaの初歩的な内容のみ。');
+INSERT INTO books (title, comment) VALUES ('[mroonga入門]', 'mroongaの初歩的な内容のみ。groongaについても触れている。');
+INSERT INTO books (title, comment) VALUES ('[実践groonga - groonga入門の次のステップ]', '入門を卒業したら読む本。');
+INSERT INTO books (title, comment) VALUES ('[実践rroonga]', '入門の次に読むべき本。すぐに使える実践的な内容が売り。');
+INSERT INTO books (title, comment) VALUES ('[mroongaのレシピ]', '入門の次に読むべき実践的な本');
+INSERT INTO books (title, comment) VALUES ('[groongaのレシピ]', 'いわゆるレシピブック。');
+titleカラムに重み10を与え、commentカラムに重み1を与え、groongaが含まれるレコードを検索するクエリは以下のようになります。
+SELECT * FROM books WHERE
+MATCH (title,comment) AGAINST('*W0:10,1:1 +groonga' IN BOOLEAN MODE) ORDER BY
+MATCH (title,comment) AGAINST('*W0:10,1:1 +groonga' IN BOOLEAN MODE) DESC;
+これを実行した結果は以下になります。
+id  title   comment
+3   [実践groonga - groonga入門の次のステップ]    入門を卒業したら読む本。
+1   [groonga入門] groongaの初歩的な内容のみ。
+6   [groongaのレシピ]   いわゆるレシピブック。
+2   [mroonga入門] mroongaの初歩的な内容のみ。groongaについても触れている。
+注意&para;
+'D'と'W'プラグマの他にMroongaでは、MySQL の Boolean Mode 全文検索 ( http://dev.mysql.com/doc/refman/5.6/en/fulltext-boolean.html ) と同じようなクエリの書き方で同じような操作を扱えるようサポートしています。現状 +, -, OR 演算子をサポートしています。その他の演算子については未実装です。
+Mroonga の Boolean Mode 全文検索の -演算子は 「-XXX」のように「XXX」が含まれていないレコード全部というクエリーは重いので、ご留意ください。
+Q: DATETIME型のカラムにNULLを保存できないのはどうしてでしょうか?&para;
+A: NULLを格納しようとする場合は'1970-01-01 00:00:00'を代わりに格納します。&para;
+解説&para;
+具体例を以下に示します。
+CREATE TABLE diaries (
+uptime datetime default NULL
+) ENGINE mroonga DEFAULT CHARSET UTF8;
+INSERT INTO diaries (uptime) VALUES(null);
+このuptimeを見てみると、 NULLの代わりに'1970-01-01 00:00:00'が格納されていることがわかります。
+SELECT * FROM diaries;
++---------------------+
+| uptime              |
++---------------------+
+| 1970-01-01 00:00:00 |
++---------------------+
+Q: DATETIME型のカラムに0月0日を保存できないのはどうしてでしょうか?&para;
+A: 0月0日を格納しようとする場合は1月1日を代わりに格納します。&para;
+解説&para;
+具体例を以下に示します。
+SET NAMES UTF8;
+CREATE TABLE diaries (
+uptime datetime default NULL
+) ENGINE mroonga DEFAULT CHARSET UTF8;
+INSERT INTO diaries (uptime) VALUES('99/00/00 00:00:00');
+このuptimeを見てみると、0月0日の代わりに1月1日が格納されていることがわかります。
+SELECT * FROM diaries;
++---------------------+
+| uptime              |
++---------------------+
+| 1999-01-01 00:00:00 |
++---------------------+
+Q: Mroonga の性能に関して判明している問題、解決済の問題を教えてください。&para;
+A: 以下4つの問題が分かっています。1 と 2 については 対応済みです。3 と 4 については未対応 です。&para;
+limit指定で出力を制限しても応答が遅い問題
+count(*)等で件数を取得するだけでも応答が遅い問題
+全文検索以外の条件で絞り込む処理が遅い問題
+全文検索以外の条件でソートする処理が遅い問題
+解説&para;
+全文検索のスコアの降順 + LIMITのように"ORDER BY"の処理の際にインデックスが効かないクエリの場合、検索ヒット件数に比例したコストがかかってしまうため、特に大量の検索がヒットするようなキーワード検索においてクエリ処理に極端に時間がかかってしまうケースがあります。実行例は以下となります。
+SECLET COLUMNS FROM table WHERE MATCH(a) AGAINST(b) LIMIT 1000, 10;
+詳細については次のドキュメントを参照:http://mroonga.github.com/ja/docs/userguide/storage.html#optimisation-for-order-by-limit-in-full-text-search
+COUNT(*)などの行カウントを行う場合と通常のSELECTによるデータ参照を行う場合に対して、従来よりMySQLではストレージエンジンの呼び出しを行う部分(=ストレージエンジンインタフェース)における区別が存在していないため、行数をカウントするだけで良いような場合にもレコードアクセス(SELECTの結果には含まれないデータへのアクセス)が行われる問題があります。実行例は以下となります。
+SELECT COUNT(*) FROM table WHERE MATCH(a) AGAINST(b);
+詳細については次のドキュメントを参照:http://mroonga.github.com/ja/docs/userguide/storage.html#optimisation-for-counting-rows
+全文検索以外の条件で絞り込む処理が遅い問題の実行例は以下となります。cond pushという仕組みで実現できそうなのですが、まだ手を付けられていません。
+SELECT COLUMNS FROM table WHERE MATCH(a) AGAINST(b) AND c LIKE 'hoge%';
+全文検索以外の条件でソートする処理が遅い問題の実行例は以下となります。解決方法はまだ検討していません。
+SELECT COLUMNS FROM table WHERE MATCH(a) AGAINST(b) ORDER BY c;
+Q:  ストレージエンジンモードのテーブルにFulltext_indexとB-tree_indexを張った場合メモリ領域を共有しますか?&para;
+A: 共有しません。&para;
+解説&para;
+まず、ストレージエンジンモードでは大きく分けてインデックスは以下の4パターンがあります。
+全文検索用インデックス:
+CREATE FULLTEXT INDEXに対応。USINGは無視で、常にパトリシアトライを使用。
+位置情報検索用インデックス:
+CREATE SPATIAL INDEXに対応。USINGを指定してはいけない。常にパトリシアトライを使用。
+検索・ソート用インデックス:
+CREATE INDEX(USINGなし)またはCREATE INDEX ... USING BTREEに対応。範囲検索にも使える。内部的にはBツリーではなくパトリシアトライを使用。
+検索用インデックス:
+CREATE INDEX ... USING HASHに対応。範囲検索やソートには使えないが、完全一致検索は検索・ソート用インデックスより高速。
+それぞれのパターンでキーになるものが変わってきます。これは主にどのようにトークナイズするかどうかで変わってきます。(位置情報検索用のインデックスは別になります。)
+例えば、全文検索用インデックスの場合は、値そのものではなく、値をトークナイズし、
+トークンそれぞれがキーになりますが、検索・ソート用インデックスや検索用インデックスではトークナイズせずに値そのものがキーになります。
+この「どのようにトークナイズするか」はインデックス毎に異なる情報なので、別々に管理しています。そのため、使用するメモリ領域も別々になっています。
+注意&para;
+同じ種類のインデックス間ではキー管理の部分を共有することもできるのですが、今はまだそこは実装されていません。
+(Groongaを直接使う場合はそのようなことができます。)
+どのような場合でも全文検索用のインデックスと検索用のインデックスなどのように、違う種類のインデックス間ではメモリ領域を共有することはできません。
+Q: Mroonga に メモリリークの疑いがあるのですが、どうすれば確認できますか?&para;
+A:&para;
+mroonga_command("status")を実行して、alloc_countの値を確認します。それが際限なく増えていくと Mroonga または Groonga に メモリリークの疑いがあります。
+実行時間を短くしても再現できるのならば、valgrindを動かしてみる手もあります。
+解説&para;
+以下のように mroonga_command("status") を実行します。
+SELECT mroonga_command("status");
+実行結果は以下となり、この中のalloc_countの値が際限なく増えていくようでしたらMroonga(Groonga)にメモリリークの疑いがあります。
+{"alloc_count":577,"starttime":1384738905,"uptime":32533,
+"version":"3.0.8-159-g72baf4e","n_queries":0,"cache_hit_rate":0.0,"command_version":1,
+"default_command_version":1,"max_command_version":2}
+利用者向け FAQ - Mroonga - Groonga issues!

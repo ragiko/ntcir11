@@ -1,0 +1,64 @@
+NLSSORT 
+構文
+nlssort.gifの説明  
+用途
+NLSSORTは、文字値charと明示的または暗黙的に指定された照合に対する照合キーを返します。照合キーは、指定された照合に従ってcharをソートするために使用されるバイト文字列です。照合キーのプロパティでは、特定の照合に対して生成された2つの照合キーをバイナリ順に従って比較したときのそれらのキーの相互順が、その特定の照合に従って比較したソース文字値の相互順と等しくなります。
+charおよび'nlsparam'は、CHAR、VARCHAR2、NCHARまたはNVARCHAR2データ型です。
+'nlsparam'の値は次の書式で指定する必要があります。
+'NLS_SORT = collation'
+collationは、言語照合の名前またはBINARYです。NLSSORTは、指定された照合を使用して照合キーを生成します。'nlsparam'を指定しないと、セッション・パラメータNLS_SORTで指定された、現行セッションのデフォルトの照合が使用されます。BINARYを指定すると、後述のようにRAWにキャストされて必要に応じて切り捨てられたchar値自体が返されます。
+'nlsparam'を指定した場合、言語照合名に接尾辞_aiを追加してアクセント記号の有無を区別しない照合を行うか、または_ciを追加して大/小文字を区別しない照合を行うことができます。アクセント記号の有無および大/小文字を区別しないソートの詳細は、『Oracle Databaseグローバリゼーション・サポート・ガイド』を参照してください。ORDER BY問合せ句でアクセント記号の有無および大/小文字を区別しない照合を使用するとソート順が非決定的になるため、お薦めしません。
+返される照合キーは、RAWデータ型です。特定の照合について特定のchar値から生成される照合キーの長さが、NLSSORTで返されるRAW値の最大長を超過することがあります。この場合、NLSSORTの動作は初期化パラメータMAX_STRING_SIZEの値に依存します。MAX_STRING_SIZE = EXTENDEDの場合、戻り値の最大長は32767バイトです。照合キーがこの制限を超えると、「ORA-12742: 照合キーを作成できません」エラーが発生してファンクションの実行が失敗します。入力文字列が短くても、その文字列に分解の比率が非常に高いUnicode文字が高い割合で含まれている場合には、このエラーが発生することがあります。
+MAX_STRING_SIZE = STANDARDの場合、戻り値の最大長は2000バイトです。返される値がこの制限を超える場合、NLSSORTは、計算結果が最大長を超えないように、charの最長の接頭辞(先頭のサブストリング)についての照合キーを計算します。単一言語の照合(たとえばFRENCH)の場合、通常、接頭辞の長さは1000文字です。複数言語の照合(たとえばGENERIC_M)の場合、通常、接頭辞の長さは500文字です。Unicode照合アルゴリズム(UCA)に基づく照合(たとえばUCA0610_DUCET)の場合、通常、接頭辞の長さは285文字です。照合およびcharに含まれる文字によっては、正確な長さが短くなったり長くなる場合があります。
+MAX_STRING_SIZE = STANDARDの場合の動作は、言語の順序付けを決定するためにその照合キー(NLSSORTの結果)が比較される2つの文字値が、正確な文字位置は異なっていても、接頭辞が同じである場合に、等しいとみなされることを意味します。NLSSORTファンクションは、比較条件、BETWEEN条件、IN条件、ORDER BY、GROUP BYおよびCOUNT(DISTINCT)での言語の順序付けを決定するために暗黙的に使用されるため、長い文字値に対しては、これらの操作でおよその結果のみが返される場合があります。これらの操作から確実に正確な結果を得るには、MAX_STRING_SIZE = EXTENDEDを使用するようにデータベースを移行します。
+MAX_STRING_SIZE初期化パラメータの詳細は、「拡張データ型」を参照してください。
+このファンクションは、CLOBデータを直接的にサポートしていません。ただし、暗黙的なデータ変換を使用してCLOBを引数として渡すことはできます。
+例
+このファンクションを使用すると、文字列の2進値を基にしたソートおよび比較ではなく、言語ソート基準を基にしたソートおよび比較を指定できます。次の例では、2つの値を含むテスト表を作成し、戻される値がNLSSORTファンクションによってどのように順序付けられるかを示します。
+CREATE TABLE test (name VARCHAR2(15));
+INSERT INTO test VALUES ('Gaardiner');
+INSERT INTO test VALUES ('Gaberd');
+INSERT INTO test VALUES ('Gaasten');
+SELECT *
+FROM test
+ORDER BY name;
+NAME
+---------------
+Gaardiner
+Gaasten
+Gaberd
+SELECT *
+FROM test
+ORDER BY NLSSORT(name, 'NLS_SORT = XDanish');
+NAME
+---------------
+Gaberd
+Gaardiner
+Gaasten
+次の例では、比較操作でのNLSSORTファンクションの使用方法を示します。
+SELECT *
+FROM test
+WHERE name > 'Gaberd'
+ORDER BY name;
+no rows selected
+SELECT *
+FROM test
+WHERE NLSSORT(name, 'NLS_SORT = XDanish') > 
+NLSSORT('Gaberd', 'NLS_SORT = XDanish')
+ORDER BY name;
+NAME
+---------------
+Gaardiner
+Gaasten
+同一の言語ソート基準を使用する比較操作で頻繁にNLSSORTを使用する場合、NLS_COMPパラメータ(データベース用か現行のセッション用のいずれか)にLINGUISTICを設定し、セッションのNLS_SORTパラメータに必要なソート基準を設定するとより効率的です。これによって、現行のセッション中のすべてのソート操作および比較操作において、デフォルトでそのソート基準が使用されるようになります。
+ALTER SESSION SET NLS_COMP = 'LINGUISTIC';
+ALTER SESSION SET NLS_SORT = 'XDanish';
+SELECT *
+FROM test
+WHERE name > 'Gaberd'
+ORDER BY name;
+NAME
+---------------
+Gaardiner
+Gaasten
+NLSSORT

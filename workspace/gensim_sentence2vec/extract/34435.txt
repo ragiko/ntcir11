@@ -1,0 +1,55 @@
+
+Dim s As String = "0"
+'String型を使って文字列を追加していく
+Dim t1 As Integer = System.Environment.TickCount
+Dim str1 As String = ""
+For i As Integer = 0 To 200000
+str1 += s
+Next
+t1 = System.Environment.TickCount - t1
+'かかった時間を表示
+Console.WriteLine("String: {0}ミリ秒", t1)
+'StringBuilderクラスを使って文字列を追加していく
+Dim t2 As Integer = System.Environment.TickCount
+Dim sb As New System.Text.StringBuilder()
+For i As Integer = 0 To 200000
+sb.Append(s)
+Next
+Dim str2 As String = sb.ToString()
+t2 = System.Environment.TickCount - t2
+'かかった時間を表示
+Console.WriteLine("StringBuilder: {0}ミリ秒", t2)
+'結果例
+'String: 24165ミリ秒
+'StringBuilder: 16ミリ秒
+string s = "0";
+//String型を使って文字列を追加していく
+int t1 = System.Environment.TickCount;
+string str1 = "";
+for (int i = 0; i < 200000; i++)
+{
+str1 += s;
+}
+t1 = System.Environment.TickCount - t1;
+//かかった時間を表示
+Console.WriteLine("String: {0}ミリ秒", t1);
+//StringBuilderクラスを使って文字列を追加していく
+int t2 = System.Environment.TickCount;
+System.Text.StringBuilder sb = new System.Text.StringBuilder();
+for (int i = 0; i < 200000; i++)
+{
+sb.Append(s);
+}
+string str2 = sb.ToString();
+t2 = System.Environment.TickCount - t2;
+//かかった時間を表示
+Console.WriteLine("StringBuilder: {0}ミリ秒", t2);
+//結果例
+//String: 24165ミリ秒
+//StringBuilder: 16ミリ秒
+StringBuilderのパフォーマンス
+ここからは、StringBuilderのパフォーマンスについてより詳しく説明します。なお以下の説明では特に文字列を追加するケースについて取り上げていますが、文字列の置換や挿入などでもほぼ同様だと思ってください。
+StringBuilderのCapacityを指定しておく
+StringBuilder.Appendで文字列を追加していく時、最終的にどの程度の長さになるか分かっているならば、その長さをStringBuilder.Capacityプロパティにあらかじめ指定しておくとパフォーマンスが向上します。
+Capacityプロパティは、StringBuilderのバッファの容量を表します。StringBuilderに追加された文字列がこの容量を超えた時は、自動的により大きなバッファを割り当て、そこに今までのデータをコピーします。よって、Capacityの値が頻繁に更新されると効率が落ちるため、始めから必要なだけ容量を確保しておきます。
+文字列処理を高速に行う: .NET Tips: C#, VB.NET

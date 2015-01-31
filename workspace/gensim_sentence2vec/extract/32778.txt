@@ -1,0 +1,77 @@
+
+<outoput>は、デフォルトのスタイルは無しです。
+CSSを何も指定していないと、こんな  かんじ。(計算結果の表示部分が<output>)
++ 
+= 
+0
+このページのサンプルは、<output>の部分が分かりやすいようにCSSで背景色などをつけていますよ。
+あと、<output>
+と一緒に使えるモノは、
+数値を表す<input type="number">と<input type="range">だけかと思ったのですが、
+テキスト入力の<input type="text">でも、入力結果を表示できました。
+こんなかんじです  (もしかしたらW3C的には非推奨かもしれないけど。今のところブラウザは表示しちゃいます) 
+いらっしゃいませ お客様!
+名前が入れ替わる部分が<output>でできています。ソースは「サンプル8」をご覧ください。
+<output>を使ってみよう。まずはname属性を使用
+name属性を使う方法で、計算結果を表示してみましょう。
+name属性の値によって、数値を入力する部品や<output>要素を特定します。
+サンプル1
+冒頭の「足し算のサンプル」のHTMLソースはこのようになっています。
+<form oninput="op1.value = Number(a.value) + Number(b.value);">
+<input type="number" name="a" value="0" size="10"> + 
+<input type="number" name="b" value="0" size="10"> = 
+<output name="op1">0</output>
+</form>
+それぞれの入力部品のname属性の値を、<form>要素内に書いた JavaScript で呼び出して計算し、<form>要素の oninputイベントハンドラで、計算結果を<outout>の値として返しています。
+数字の入力と同時に計算結果が表示される指定です。
+oninput は「オン インプット」= 入力時の処理を指定します。
+ちなみに、下のサンプルは、冒頭のサンプルに「送信ボタン」を設置したもの。
+送信ボタンを押して、ブラウザの「アドレスバー」を見ると、入力フィールドの値は送られるけど、<output>からは何も送られていないのがわかるはず。ホントに表示だけの要素ですね。(ということで、この  送信ボタンに意味はありません)
++ 
+= 
+0
+サンプル2
+サンプル1では入力と同時に計算結果が表示されますが、
+このように、ボタンを押して計算結果を表示させることもできます。
+× 
+= 
+0
+<form>
+<input type="number" name="a" value="0" size="10"> × 
+<input type="number" name="b" value="0" size="10"> = 
+<output name="op1">0</output>
+<input type="button" onclick="op1.value = Number(a.value) * Number(b.value);" value="計算する">
+</form>
+サンプル1で<form>に指定していた oninputの代わりに、
+ボタン<input type="button">の onclickイベントハンドラで計算結果を返しています。
+onclickは「オン クリック」= クリック時 の処理を指定します。
+サンプル1、2 まででは、<form>の中か、ボタン部品の中で、計算式を作っています。
+で、<output>要素の中で作れないかと探したら、1つ方法はあったのですが、onforminputイベントハンドラを使う方法で、この forminputイベントとformchangeイベントは、もう廃止されたんだそうです。(なので今はOperaくらいしかプレビューしませんでした)
+こちらの4項目めに廃止の件が書かれています。(2011年の4月までには廃止されたようです)
+W3C - 『HTML 5 differences from HTML 4』日本語訳 - HTML5.JP 
+で、意味は無いですが、せっかくサンプルを作ったので(笑)HTMLソースだけ書いておきます。
+<form>
+<input type="number" name="a" value="0" size="10"> ÷ 
+<input type="number" name="b" value="0" size="10"> = 
+<output onforminput="value= Number(a.value) / Number(b.value);">0</output>
+</form>
+id属性を使って出力する方法もあります(for属性も使います)
+数値のフォーム部品(ここでは<input type="number">)にid属性で名前をつけ、
+<outprt>のfor属性で関連づけます。for属性は出力元のフォーム部品を明確に示すためのものです。
+サンプル3
+まずは、<form>要素の
+oninputイベント で、数字の入力と同時に計算結果を出します。
++
+=
+計算結果
+<form oninput="document.getElementById('op3').value =
+parseInt(document.getElementById('na').value, 10) +
+parseInt(document.getElementById('nb').value, 10)">
+<input type="number" id="na"> +
+<input type="number" id="nb"> =
+<output for="na nb" id="op3">計算結果</output>
+</form>
+<form>の oninputイベントで、id属性を使って各要素のvalue値を呼び出して計算し、
+<outout>の値として返しています。
+<outprt>のfor属性は「半角スペース」で区切って複数指定できます。
+ほんっとにはじめてのHTML5:[55] 計算結果の出力欄を作ろう<output>

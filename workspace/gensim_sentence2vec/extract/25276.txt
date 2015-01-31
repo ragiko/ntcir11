@@ -1,0 +1,5 @@
+
+Siemens SIMATIC S7-1500 CPU PLC デバイスファームウェアの乱数生成は、エントロピー不足のため、暗号保護メカニズムを破られ、セッションをハイジャックされる脆弱性が存在します。
+補足情報 : CWE による脆弱性タイプは、CWE-331: Insufficient Entropy (エントロピー不足) と識別されています。
+http://cwe.mitre.org/data/definitions/331.html
+JVNDB-2014-001710 - JVN iPedia - 脆弱性対策情報データベース

@@ -1,0 +1,29 @@
+SQL ServerではDATEDIFF関数を使って、日付と日付の差を取得することができます。
+文法:
+DATEDIFF(element, d1, d2)
+d1とd2の日付の差をelementで指定した日付要素に従って求める。
+使用例:2つの日付の差を求める。
+SELECT date1, date2, DATEDIFF(day, date1, date2) FROM tbTestTable;
+date1             date2             DATEDIFF(day, date1, date2)
+———————————————————————————————————————
+1970-07-22 00:00:00   1999-12-12 00:00:00    10735
+1970-07-22 00:00:00   1967-03-02 00:00:00    -1238
+使用例:今日の日付と誕生日との日数の差を求める。
+SELECT birthday, GETDATE(), DATEDIFF(day, birthday, GETDATE()) FROM tbEmpTable;
+birthday           GETDATE()            DATEDIFF(day, birthday, GETDATE())
+————————————————————————————————————————————-
+1970-07-22 00:00:00   2009-09-09 22:31:36.090    14294
+1984-12-24 00:00:00   2009-09-09 22:31:36.090    9025
+SQLコマンド辞典に戻る
+Popular Posts:
+【SQL変換関数】CONVERT ? 型の変換を行う (SQL Server)
+【SQL文字列関数】SUBSTR / SUBSTRING ? 文字列を部分抽出する (Oracle、SQL Server)
+【SQL文字列関数】STR ? 数値を文字列に変換 (SQL Server)
+【SQL日付関数】DATEADD ? 日付(日時)を加算する (SQL Server)
+【SQL変換関数】ISNULL ? NULL値を変換する (SQL Server)
+【SQL変換関数】CAST ? 型変換を行う (Oracle、SQL Server)
+【SQL文字列関数】RIGHT ? 文字列の右部分(末尾)から文字を抽出 (SQL Server)
+【SQL集計関数】COUNT関数 ? 行数をカウントする (Oracle、SQL Server)
+【SQL算術関数】ROUND ? 四捨五入を行う(まるめる) (Oracle、SQL Server)
+【SQL変換関数】DECODE ? 値を変換する (Oracle)
+【SQL日付関数】DATEDIFF ? 日付と日付の差を取得する (SQL Server)

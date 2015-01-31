@@ -1,0 +1,14 @@
+Warning! There are errors in this corpus.Please read the Warning about using the Tatoeba Corpus (which includes the Tanaka Corpus along with many corrections).
+Briefly, not only are there errors, but there are sentences that sound a bit unnatural.Some sentences sound strange in Japanese, others sound strange in English.
+To lower the number of errors,
+I eliminate all Japanese sentences not "owned" by a Japanese native speakers working on the project and I only include English sentences that I've personally proofread.
+These are various ways that you can search the Tanaka Corpus.
+TOP: A. Kojiro's Search Engine using Charles Kelly's merged data.
+I build my own file from all the sentences in the Tatoeba Corpus.I include newer sentences that Jim Breen's file doesn't have.I also eliminate all Japanese sentences not "owned" by a Japanese native speaker working on the project.I only include English sentences that I've personally proofread.
+MIDDLE: J. Breen
+Advantage: It has the [T]ext reading help.
+Disadvantage: You can only see up to 100 found items, though that is usually enough.
+BOTTOM: Trang & Sysko
+Advantage: Automatically generated furigana, which is usually correct, so even if you don't read kanji very well, you can easily read the Japanese.
+Disadvantage: This is "raw" data from the Tatoeba Corpus with all errors, too.
+Japanese-English Parallel Corpus - 日英パラレルコーパス

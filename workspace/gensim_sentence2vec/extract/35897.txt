@@ -1,0 +1,28 @@
+画像を単色で塗りつぶす¶
+画像を単色で塗りつぶす方法を示します.
+また,この例には示しませんが, 画像中の部分矩形を塗りつぶす場合には、ROIまたは cv::rectangle を利用します.
+矩形を描く などを参考にしてください.
+#include <iostream>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+int
+main(int argc, char *argv[])
+{
+// 初期化時に塗りつぶす
+cv::Mat red_img(cv::Size(640, 480), CV_8UC3, cv::Scalar(0,0,255));
+cv::Mat white_img(cv::Size(640, 480), CV_8UC3, cv::Scalar::all(255));
+cv::Mat black_img = cv::Mat::zeros(cv::Size(640, 480), CV_8UC3); 
+// 初期化後に塗りつぶす
+cv::Mat green_img = red_img.clone();
+green_img = cv::Scalar(0,255,0);
+cv::namedWindow("red image", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
+cv::namedWindow("white image", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
+cv::namedWindow("black image", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
+cv::namedWindow("green image", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
+cv::imshow("red image", red_img);
+cv::imshow("white image", white_img);
+cv::imshow("black image", black_img);
+cv::imshow("green image", green_img);
+cv::waitKey(0);
+}
+画像処理 &mdash; OpenCV-CookBook

@@ -1,0 +1,44 @@
+
+4 Oracle R Enterpriseの統計関数
+この章では、最もよく使用される基本的な統計プロシージャを実行するOracle R Enterpriseの関数について説明します。これらの関数は、市販の製品からOracle R Enterpriseに切り替えるユーザーの助けとなるように設計されています。
+Oracle R Enterpriseは、次の一連の関数を提供します。
+ore.corr
+ore.crosstab
+ore.extend
+ore.freq
+ore.rank
+ore.sort
+ore.summary
+ore.univariate
+また、「Oracle R EnterpriseのRモデルのバージョン」に示すore.lm()、ore.stepwise()およびore.neural()も重要です。
+これらの関数の使用法は、例で示します。大部分の例では、「例のデータ」に示す同じデータが使用されています。
+例のデータ
+ほとんどの例では、表NARROWを使用します。
+NARROWは、次のように9つの列を持つore.frameです。
+R> class(NARROW)
+[1] "ore.frame"
+attr(,"package")
+[1] "OREbase"
+R> names(NARROW)
+[1] "ID"             "GENDER"         "AGE"            "MARITAL_STATUS"
+[5] "COUNTRY"        "EDUCATION"      "OCCUPATION"     "YRS_RESIDENCE" 
+[9] "CLASS"    
+一部の列のみが数値です。
+ore.corr
+ore.corrには次の特徴があります。
+ore.frameの複数の数値列にわたる相関分析を実行します。
+制御列との部分相関をサポートします。
+相関の前の集計を可能にします。
+結果の後処理およびRコード・フローへの統合を可能にします。
+ore.corrの出力は、R cor()関数の出力に適合させることができます。これにより、ore.corrの出力を、R関数またはグラフィックで後処理ができます。
+構文および出力については「ore.corrのパラメータ」を、例については「ore.corrの例」を参照してください。
+ore.corrのパラメータ
+ore.corrには、次のパラメータがあります。
+data: ore.frameとして相関係数を計算する対象となるデータ。
+var: 相関マトリクスを構築するdataの数値列
+group.by: 計算する相関マトリクスを示します。ore.corrは、group.by列の一意の値と同じ数の相関マトリクスを計算します。デフォルト値はNULLです
+weight: var列の倍数因子を提供する数値を持つdataの列。デフォルト値はNULLです。
+partial: 部分相関の制御変数として使用するdataの列。デフォルト値はNULLです。
+stats: 相関の計算方法。pearson(デフォルト)、spearman、kendallのうちの1つです
+ore.corrは、group.byが使用されている場合を除く、すべての場合に出力としてore.frameを返します。group.byが使用されている場合は、Oracle R Enterprise listオブジェクトを返します。
+Oracle R Enterpriseの統計関数

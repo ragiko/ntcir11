@@ -1,0 +1,14 @@
+今お仕事で関わっているEC-CUBEですが、ネット上にはまだまだ情報が少ないです。例えばプラグイン作成でオリジナルフォームを作っても、SC_FormParamクラスを使って、どうやってチェックしたらいいのか調べてもなかなか出て来ません。 そこで私が独自で調べた中から、少しづつ情報提供していきたいと思います。※:EC-CUBEのバージョンは2.12.2のものをベースにしています。SC_FormParamの基本的な使い方SC_FormParamクラスを使うには、拡張先であるSC_FormParam_Exクラスをインスタンス化して利用します。 ここではPOSTされたデータを設定してみましょう。
+$objFormParam = new SC_FormParam_Ex();
+$objFormParam->setParam($_POST);
+次に、内容の検証ルールを追加します。 ここでは例として名前(性、名)とメールアドレスを必須入力にし、メールアドレスはちゃんとした形式になっているもののみ受け入れるようにしてみます。
+$objFormParam->addParam('姓', 'sei', '', '', array('EXIST_CHECK','NO_SPTAB'));
+$objFormParam->addParam('名', 'mei', '', '', array('EXIST_CHECK','NO_SPTAB'));
+$objFormParam->addParam('メールアドレス', 'email', '', '', array('EMAIL_CHECK'));
+後半に挙げる「オプション」が必要な検証ルールについては、次のようにaddParam()の3番目の引数に設定します。
+//姓を3文字以内にしたい場合
+$objFormParam->addParam('姓, 'sei', 3, '', array('MAX_LENGTH_CHECK'));
+そして最後に検証作業。 エラーがあると$arrErr変数にエラーが配列で格納されます。
+$arrErr = $objFormParam->checkError();
+検証ルールの最後のパラメーターにある配列型の文字のところがポイントなんですけど、ここに様々なルールを追加していくことでいろんな検証ルールを作ることができます。 以下に検証ルール一覧を載せてみたので実際に組み合わせて試してみてください。$objFormParam->addParam()の4番目の引数は入力値をmb_convert_kana()で変換するための変換オプション文字列を指定します。 変換オプションを指定した場合は、checkError()を実行する前に「$objFormParam->convParam()」を実行する必要があるので注意してください。
+EC-CUBE:SC_FormParamクラスによるパラメーターチェック方法 - colori

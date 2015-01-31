@@ -1,0 +1,135 @@
+
+このサンプルは日本語係り受け解析APIを使用して、入力された文章に対して係り受け解析を行い、その結果を表形式で表示するものです。［解析対象文］のテキストエリアに文章を入力します。［解析］ボタンを押下すると係り受け解析を行い、［解析結果］以下に解析結果を表形式で表示します。
+コード解説
+ダウンロードしたアーカイブファイルを展開すると下記のようになります。
+`-- sample1
+|-- LICENSE.txt
+|-- README.txt
+`-- jdsa_sample.php
+jdsa_sample.php
+<?php 
+/**
+* Yahoo! JAPAN Web APIのご利用には、アプリケーションIDの登録が必要です。
+* あなたが登録したアプリケーションIDを $appid に設定してお使いください。
+* アプリケーションIDの登録URLは、こちらです
+* http://e.developer.yahoo.co.jp/webservices/register_application
+*/
+$appid = '<あなたのアプリケーションID>'; // <-- ここにあなたのアプリケーションIDを設定してください。
+function escapestring($str) {
+return htmlspecialchars($str, ENT_QUOTES);
+}
+if (isset($_POST['sentence'])) {
+$sentence = mb_convert_encoding($_POST['sentence'], 'utf-8', 'auto');
+}
+else
+{
+$sentence = "";
+}
+?>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<title>テキスト解析デモ - 日本語係り受け解析</title>
+</head>
+<body>
+<style type="text/css">
+<!--
+h1 {
+text-align: center;
+float: left;
+}
+h2 {
+text-align: justify;
+margin: 0 0 0 0;
+padding: 0;
+}
+div {
+clear:both;
+}
+.apiEx {
+padding-top: 10px;
+*padding-top: 0px;
+}
+p {
+text-align: justify;
+padding: 0;
+margin: 0 0 0 0;
+float:left;
+}
+form { text-align: justify }
+-->
+</style>
+<div>
+<h1>テキスト解析デモ - 日本語係り受け解析</h1>
+</div>
+<div>
+<h2>入力文</h2>
+<form name="myForm" method="post" action="./jdsa_sample.php">
+<textarea name="sentence" cols=70 rows=8><?php echo escapestring($sentence); ?></textarea>
+<br/>
+<input type="submit" name="exec" value="解析"></input>
+</form>
+</div>
+<div id="result">
+<h2>解析結果</h2>
+<table width="622px" cellpadding="5" cellspacing="1"style="float:left" border=solid>
+<tbody>
+<?php
+if ($sentence != "")
+{
+echo "<tr>";
+echo "<td>文節</td>";
+echo "<td>係り先の文節</td>";
+echo "</tr>";
+$request = "http://jlp.yahooapis.jp/DAService/V1/parse?appid=" . $appid . "&sentence=" . urlencode($sentence);
+$responsexml = simplexml_load_file($request);
+$size = count($responsexml->Result->ChunkList->Chunk);
+for ($i= 0; $i < $size; $i++)
+{
+$chunk = $responsexml->Result->ChunkList->Chunk[$i];
+$depend_chunk_id = intval($chunk->Dependency);
+if ($depend_chunk_id >= 0)
+{
+$depend_chunk = $responsexml->Result->ChunkList->Chunk[$depend_chunk_id];
+}
+echo "<tr>";
+echo "<td>";
+foreach ($chunk->MorphemList->Morphem as $morph)
+{
+echo escapestring($morph->Surface);
+}
+echo "</td>";
+echo "<td>";
+if ($depend_chunk_id < 0)
+{
+echo "-> 文末";
+}
+else
+{
+echo "-> ";
+foreach ($depend_chunk->MorphemList->Morphem as $t_morph)
+{
+echo escapestring($t_morph->Surface);
+}
+}
+echo "</td>";
+echo "</tr>";
+}
+}
+?>
+</tbody>
+</table>
+</div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td align="center">
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="http://developer.yahoo.co.jp/about">
+<img src="http://i.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+</td>
+</tr>
+</table>
+</body>
+</html>
+テキスト解析サンプルコード:係り受け解析 - Yahoo!デベロッパーネットワーク

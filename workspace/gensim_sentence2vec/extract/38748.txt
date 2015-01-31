@@ -1,0 +1,5 @@
+上記の全ての形式で、ドット区切りのアドレスの各要素は、10 進数、8 進数 (先頭にを付ける)、16 進数 (先頭に0Xを付ける) で指定できる。In all of the above forms, components of the dotted address can be specified in decimal, octal (with a leading 0 ),
+- JM
+クロックサイクル1の最後のベクトル要素のアドレスと、次のクロックサイクル2で入力された第2ベクトルデータの先頭のベクトル要素のアドレスとが比較され、先頭のベクトル要素を含み、同一のアドレスを持つベクトル要素が連続している連続領域が検出される。The address of the final vector element in the clock cycle 1 is compared with the address of the head vector element of second vector data inputted in the following clock cycle 2, and a continuous area including the head vector element in which vector elements having the same address are continued is detected. - 特許庁
+アダー部4は、ベクトル演算部1から送られてくる先頭要素アドレスと要素間距離との加算によってベクトル要素毎のリクエストのメモリアクセスアドレスを生成する。An adder part 4 generates the memory access address of a request for every vector element by adding a leading element address sent from a vector arithmetic part 1 and a distance between elements. - 特許庁
+先頭要素アドレスの英語・英訳 - 英和辞典・和英辞典 Weblio辞書

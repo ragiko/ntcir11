@@ -1,0 +1,6 @@
+オプション引数 name には、テストの名前を指定します; デフォルトの場合や None を指定した場合、 os.path.basename(filename) になります。 オプション引数 package には、 Python パッケージを指定するか、モジュール相対のファイル名の場合には相対の基準ディレクトリとなるPython パッケージの名前を指定します。Optional argument name gives the name of the test; by default,or if None, os.path.basename(filename) is used.Optional argument package is a Python package or the name of a Python package whose directory should be used as the base directory for a module-relative filename. - Python
+引数 x がゼロでない場合、この正規化小数はx に 2 の累乗を乗じたものであり、その絶対値は常に 1/2 以上 1 未満、つまり [0.5,1) となる。If the argument x is not zero, the normalized fraction is x times a power of two, and its absolute value is always in the range 1/2 (inclusive) to 1 (exclusive), that is, [0.5,1).
+- JM
+入力された文字の系列はこの指定にもとづいて変換され、変換結果は対応するpointer引き数が指す場所に格納される。A sequence of characters from the input is converted according to this specification, and the result is placed in the corresponding pointer argument.
+- JM
+「二基数多倍体」に関連した英語例文の一覧(3ページ目) - Weblio英語例文検索

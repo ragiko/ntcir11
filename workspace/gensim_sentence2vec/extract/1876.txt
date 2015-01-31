@@ -1,0 +1,42 @@
+
+TextBoxでコピー・貼り付け・切り取り・元に戻す・他を実施 (5個)   (SNo.044)
+1.テキストボックスで選択文字列をクリップボードにコピーする
+2.テキストボックスの選択文字列をクリップボードの内容と置き換える
+3.テキストボックスの選択文字列をクリップボードに移動する
+4.テキストボックスで直前に実行された編集操作を元に戻す
+5.テキストボックスのアンドゥバッファから直前に実行された操作に関する情報を削除
+使用コントロール
+Button1 〜 Button5  TextBox1
+その他条件
+WindowsXP(Vista) Visual Basic 2005(VB2008)
+1.テキストボックスで選択文字列をクリップボードにコピーする
+Private Sub Button1_Click(ByVal sender As System.Object, _                          ByVal e As System.EventArgs) Handles Button1.Click
+''TextBoxBase.Copy メソッド
+'テキスト ボックスの現在の選択項目をクリップボードにコピーします。    TextBox1.Copy()
+End Sub
+2.テキストボックスの選択文字列をクリップボードの内容と置き換える
+Private Sub Button2_Click(ByVal sender As System.Object, _                          ByVal e As System.EventArgs) Handles Button2.Click
+''TextBoxBase.Paste メソッド
+'テキスト ボックスの現在の選択項目をクリップボードの内容と置き換えます。    TextBox1.Paste()
+End Sub
+3.テキストボックスの選択文字列をクリップボードに移動する
+Private Sub Button3_Click(ByVal sender As System.Object, _                          ByVal e As System.EventArgs) Handles Button3.Click
+''TextBoxBase.Cut メソッド
+'テキスト ボックスの現在の選択項目をクリップボードに移動します。    TextBox1.Cut()
+End Sub
+4.テキストボックスで直前に実行された編集操作を元に戻す
+Private Sub Button4_Click(ByVal sender As System.Object, _                          ByVal e As System.EventArgs) Handles Button4.Click
+''TextBoxBase.Undo メソッド
+'テキスト ボックスで直前に実行された編集操作を元に戻します。    TextBox1.Undo()
+End Sub
+5.テキストボックスのアンドゥバッファから直前に実行された操作に関する情報を削除
+Private Sub Button5_Click(ByVal sender As System.Object, _                          ByVal e As System.EventArgs) Handles Button5.Click
+''TextBoxBase.ClearUndo メソッド
+'テキスト ボックスのアンドゥバッファから直前に実行された操作に関する情報を削除します。    
+TextBox1.ClearUndo()
+End Sub
+2004/05/27
+2005/09/20
+VBレスキュー(花ちゃん)
+VB.NET2003  VB2005
+テキストボックスで コピー・貼り付け・切り取り・元に戻す・アンドゥ情報の削除を実現 - VBレスキュー(花ちゃん)  VS,VB.NET,VB2005,VB2008,VB2010,サンプル,Tips

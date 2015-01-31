@@ -1,0 +1,339 @@
+
+氏名  尺長 健(しゃくなが たけし)
+Takeshi Shakunaga's Homepage In English
+職業  岡山大学教授
+大学院自然科学研究科(博士後期課程) 計算機科学講座
+大学院自然科学研究科(博士前期課程) 電子情報システム工学専攻
+工学部情報系学科
+専門  コンピュータビジョン、パターン認識
+講義 
+画像処理・
+映像メディア処理・
+人工知能     
+コンピュータビジョン(大学院)
+諸情報 
+代表論文 
+最近の研究紹介(学科内限定) 
+論文・発表リスト 
+経歴・
+学会活動
+参加した主な研究プロジェクト
+2008.4-2012.3
+科学研究費補助金, 基盤研究(B), 課題番号 20300067,
+追跡・認識融合型コンピュータビジョン
+(研究代表者:尺長 健)
+2003.4-2007.3
+科学研究費補助金, 基盤研究(B), 課題番号 15300062,
+部分空間法のロバスト化によるコンピュータビジョンの機能高度化
+(研究代表者:尺長 健)
+2000.4-2005.3
+科学技術振興事業団, 戦略的基礎研究推進事業
+研究領域「高度メディア社会の生活情報技術」
+研究課題「文化遺産の高度メディアコンテンツ化のための自動化手法」
+(研究代表者:池内 克史 東大大学院 教授)
+1998.4-2001.3
+科学研究費補助金, 基盤研究(B)(2), 課題番号 10480074,
+注視点シフトのモデル化とこれに基づく適応型視覚の実現
+(研究代表者:尺長 健)
+1997.4-2001.3
+日本学術振興会未来開拓学術研究推進事業, 分散協調視覚による
+動的3次元状況理解(JSPS-RFTF 96P00501)
+(研究代表者:松山 隆司 京大大学院 教授)
+最近の主な学会活動
+04.1-08.12 Editorial board, International Journal of Computer Vision
+02.5-06.5  Editotial board, IEICE Trans. Inf. & Syst., vol.ED
+Program chair, MIRU2002
+Area chair, MIRU2005, ACCV2006
+Program committee, MVA2013, MVA2011, ICCV2009, MVA2009, MVA2007, ICCV2005, MVA2005,...
+ジャーナル論文(2001-)
+Yuki Oka, Takeshi Shakunaga
+``Real-time Face Tracking and Recognition by Sparse Eigentracker 
+Augmented by Associative Mapping to 3D Shape,''
+in special issue on ``Best of Face and Gesture 2011'', 
+Image and Vision Computing, Elsevier, vol.30, issue 3, pp.147-158, 2012.3.
+田口智之,野口清志,尺長健
+``適応型疎テンプレート追跡,''
+電子情報通信学会論文誌(D), vol.J93-D, no.8, pp.1502-1511, 2010.8.
+坂上文彦,尺長健
+``並列部分射影による顔画像認識とDecomposed Eigenface法への適用,''
+電子情報通信学会論文誌(D), vol.J92-D, no.5, pp.1349-1358, 2008.5.
+Yasuhiro Mukaigawa, Yasunori Ishii, Takeshi Shakunaga
+``Analysis of photometric factors based on photometric linearization,''
+Journal of the Optical Society of America A, vol.24, issue 10, pp.3326-3331, 2007.10.
+山根亮,川嶋幸治,戸高千智,尺長健
+``動作データの時系列相関行列による舞踊動作解析,''
+電子情報通信学会論文誌(D-II), vol.J-D-II, no.8, pp.1652-1661, 2005.8.
+松原康晴,尺長健
+``疎テンプレートマッチングとその実時間物体追跡への応用,''
+情報処理学会論文誌, vol.46, no. SIG9(CVIM11), pp.60-71, 2005.6.
+向川康博,石井育規,尺長健
+``画像の線形化による光学現象の解析,''
+情報処理学会論文誌, vol.45, no.SIG8(CVIM9), pp.40-52, 2004.6.
+Fumihiko Sakaue, Takeshi Shakunaga
+``Robust Projection onto Normalized Eigenspace Using Relative Residual analysis and Optimal Partial Projection,''
+IEICE Trans. Inf. & Syst., vol.E87-D, no.1, pp.34-41, 2004.1.
+坂上文彦,尺長健
+``正規化固有空間への部分射影問題の解法,''
+情報処理学会論文誌, vol.44, no. SIG(CVIM8), pp.100-108, 2003.12.
+佐竹純二, 尺長健
+``階層的注視点制御による動画像上での複数人物追跡,''
+電子情報通信学会論文誌(D-II), vol.J84-D-II, no.8, pp.1212-1221, 2003.8.
+重成一真, 坂上文彦, 尺長健
+``固有顔の直交分解と仮想化による照明変動に影響されない顔画像認識,''
+電子情報通信学会論文誌(D-II), vol.J84-D-II, no.7, pp.996-1004, 2003.7.
+石井育規,福井孝太郎,向川康博,尺長健
+``光学現象の分類に基づく画像の線形化,''
+情報処理学会論文誌, vol.44, no. SIG5(CVIM6), pp.11-21, 2003.4.
+岡直人, 向川康博, 尺長健
+``形状情報と画像情報の併用による Cast Shadow のモーフィング,''
+情報処理学会論文誌, vol.43, no. SIG11(CVIM5), pp.130-138, 2002.12.
+山元宣政, 重成一真, 尺長健,
+``仮想部分空間法による照明に影響されない顔認識,''
+電子情報通信学会論文誌(D-II), vol.J84-D-II, no.8, pp.1753-1761, 2001.8.
+向川康博, 西山正志,尺長健,
+``スクリーン物体への光学パターン投影による仮想光学環境の実現,''
+電子情報通信学会論文誌(D-II), vol.J84-D-II, no.7, pp.1448-1455, 2001.7.
+加藤丈和, 向川康博, 尺長健,
+``安定な顔認識のための分散協調登録,''
+電子情報通信学会論文誌(D-II), vol.J84-D-II, no.3, pp.500-508, 2001.3.
+最近の国際会議・国際ワークショップ発表(2001-)
+Hisayoshi Chugan, Yuki Oka, Takeshi Shakunaga, 
+``Parallel Underdetermined Approach to Weight Equations in Tracking and Recognition Framework,'' in 
+Proc. International Conference on Machine Vision \& Applications (MVA2013),
+pp.242-246, 2013.5.
+Hisayoshi Chugan, Takeshi Shakunaga, 
+``Hierarchical Approach to Weight Equations in Tracking and Recognition Framework,'' in Proc. The 10th IEEE Conference on Automatic Face and Gesture Recognition (FG2013), 2013.4.
+Hiroyuki Seto, Tomoyuki Taguchi, Takeshi Shakunaga,
+``Directional Eigentemplate Learning for Sparse Template Tracker,''
+Proc. Fifth Pacific Rim Symposium on 
+Image and Video Technology (PSIVT 2011), Springer, LNCS 7088,
+pp.178-189, 2011.11.
+Tsuyoshi Migita, Kazuhiro Sogawa, Takeshi Shakunaga,
+``Specular-free Residual Minimization for Photometric Stereo with
+Unknown Light Sources,''
+Proc. Fifth Pacific Rim Symposium on 
+Image and Video Technology (PSIVT 2011), Springer, LNCS 7087,
+pp.104-115, 2011.11.
+Yuki Oka, Takeshi Shakunaga, 
+``Sparse Eigentracker Augmented by Associative Mapping to 3D Shape,''
+Proc. The 9th IEEE Conference on Automatic Face and Gesture Recognition (FG2011), pp.649-656, 2011.3.
+Ryo Yamane, Takeshi Shakunaga,
+``Dance Motion Analysis by Correlation Matrix Between Pose Sequences,''
+Proc. International Conference on Image and Vision Computing, New Zealand 
+(IVCNZ2010), 2010.11.
+Takeshi Shakunaga, Fumihiko Sakaue, 
+``Homogeneous Eigenspace for Photometric Analyses and Recognition,''
+Proc. International Conference on Image and Graphics (ICIG2009), pp.398-405, 2009.11.
+Yuki Oka, Toshiyuki Kuroda, Tsuyoshi Migita, Takeshi Shakunaga,
+``Tracking 3d Pose of Rigid Object by 3d Sparse Template,''
+Proc. International Conference on Image and Graphics (ICIG2009), pp.390-397, 2009.11.
+Keiji Sakabe, Tomoyuki Taguchi, Takeshi Shakunaga,
+``Automatic Eigentemplate Learning for Sparse Template Tracker,''
+Proc. Third Pacific-Rim Symposium on 
+Image and Video Technology (PSIVT 2009), LNCS 5414, pp.714-725, 2009.1.
+Tsuyoshi Migita, Shinsuke Ogino, Takeshi Shakunaga,
+``Direct Bundle Estimation for Recovery of Shape, Reflectance Property and
+Light Position,''
+Proc. ECCV2008, Springer, LNCS 5304, pp.412-425, 2008.10.
+Tsuyoshi Migita, Takeshi Shakunaga,
+``Evaluation of Epipole Estimation Methods with/without Rank-2 Constraint 
+across Algebraic/Geometric Error Functions,''
+in Proc. IEEE Conference on Computer Vision and Pattern Recognition, (CVPR2007), 2007.6.
+Tsuyoshi Migita, Takeshi Shakunaga,
+``One-Dimensional Search for Reliable Epipole Estimation,''
+Proc.2006 IEEE Pacific-Rim Symposium on 
+Image and Video Technology (PSIVT'06), pp.1215-1224, 2006.12.12.
+Fumihiko Sakaue, Makoto Kobayashi, Tsuyoshi Migita, Takeshi Shakunaga, Junji Satake, 
+``A Real-life Test of Face Recognition System for Dialogue Interface Robot 
+in Ubiquitous Environments,''
+Proc. International Conference on Pattern Recognition (ICPR2006),
+pp.1155-1160, 2006.8.20.
+Takeshi Shakunaga, Kiyoshi Noguchi,
+``Robust Tracking of Appearance by Sparse Template Adaptation,''
+Proc. The Eighth IASTED International Conference on Signal and Image Processing (SIP2006), pp.85-90, 2006.8.14.
+Fumihiko Sakaue, Takeshi Shakunaga,
+``Gaussian Decomposition for Robust Face Recognition,''
+Proc. Asian Conference on Computer Vision (ACCV2006), pp.110-119, 2006.1.
+Yasuhiro Mukaigawa, Yasunori Ishii, Takeshi Shakunaga,
+``Classification of Photometric Factors Based on Photometric Linearization,''
+Proc. Asian Conference on Computer Vision (ACCV2006), pp.613-622, 2006.1.
+Fumihiko Sakaue, Takeshi Shakunaga,
+``Combination of Projectional and Locational Decompositions for Robust Face Recognition,'' Proc. International Workshop on Analysis and Modeling of Face and Gestures (AMFG2005), pp. 407-421, 2005.10.
+Yuji Kamon, Ryo Yamane, Yasuhiro Mukaigawa, Takeshi Shakunaga,
+``Coordination of Appearance and Motion Data for Virtual View Generation
+of Traditional Dances,''
+Proc. Fifth International Conference on 3-D Digital Imaging and Modeling (3DIM2005),
+pp.118-125, 2005.6.
+Takeshi Shakunaga, Yasuharu Matsubara, Kiyoshi Noguchi,
+``Appearance Tracker Based on Sparse Eigentemplate'',
+Proc. International Conference on Machine Vision & Applications (MVA2005),
+pp.13-17, 2005.5.
+Tsuyoshi Migita, Shin Sekiguchi, Takeshi Shakunaga,
+``Estimation of Bidirectional Texture Functions from Bizen-ware Images'',
+Proc. 11th Korea-Japan Joint Workshop on Frontiers of Computer Vision(FCV2005),
+pp.171-176, 2005.1.
+Yuji Kamon, Ryo Yamane, Takeshi Shakunaga,
+``Dancer-centered view generation of archived traditional dance'',
+Proc. 11th Korea-Japan Joint Workshop on Frontiers of Computer Vision(FCV2005),
+pp.19-24, 2005.1.
+Yasuhiro Mukaigawa, Masashi Nishiyama, Takeshi Shakunaga,
+``Virtual Photometric Environment using Projector'',
+Proc. Tenth International Conference on Virtual System and Multimedia
+(VSMM2004), pp.64-72, 2004.11.17.
+Junji Satake, Takeshi Shakunaga,
+``Multiple Target Tracking by Appearance-based Condensation Tracker Using 
+Structure Information,''
+Proc. ICPR2004, vol.3, pp.294-297, 2004.8.25.
+Takeshi Shakunaga, Fumihiko Sakaue, Kazunari Shigenari,
+``Robust Face Recognition by Combining Projection-Based Image Correction and Decomposed Eigenface,''
+Proc. FG2004, pp.241-247, 2004.5.
+Fumihiko Sakaue, Takeshi Shakunaga,
+``Face Recognition by Parallel Partial Projections,''
+Proc. ACCV2004, vol.1, pp.144-150, 2004.1.
+Yasuhiro Mukaigawa, Daisuke Genda, Ryo Yamane and Takeshi Shakunaga,
+``Color Blending based on Viewpoint and Surface Normal for Generating Images
+from Any Viewpont using Multiple Cameras'',
+Proc. IEEE MFI2003, pp.95-100, 2003.7.
+Yasuhiro Mukaigawa, Masashi Nishiyama and Takeshi Shakunaga,
+``Realization of Virtual Photometric Environment by Photometric Pattern Projection'',
+Proc. IEEE CIRA2003, pp.435-440, 2003.7.
+Fumihiko Sakaue, Takeshi Shakunaga,
+''Natural Image Correction by Iterative Linear Projection onto Eigenspaces,''
+Proc. MVA2002, pp.36-39, 2002.12.
+Junji Satake, Takeshi Shakunaga,
+''Simultaneous Estimation of Head Pose and Shape by Hierarchical Control System,''
+Proc. MVA2002, pp.72-75, 2002.12.
+Kazunari Shigenari, Takeshi Shakunaga, Fumihiko Sakaue,
+''Decomposed Eigenface Method along with Image Correction for Robust Face
+Recognition,''
+Proc. MVA2002, pp.322-325, 2002.12.
+Takeshi Shakunaga, Fumihiko Sakaue,
+``Natural Image Correction by Iterative Projections to Eigenspace
+Constructed in Normalized Image Space'',
+Proc. ICPR2002, vol.1, pp.648-651, 2002.
+Takeshi Shakunaga, Kazunari Shigenari,
+``Decomposed Eigenface for Face Recognition under Various Lighting Conditions,''
+Proc. CVPR'01, vol. 1, pp.864-871, 2001.12.
+Yasuhiro Mukaigawa, Hajime Miyaki, Sadahiko Mihashi, Takeshi Shakunaga,
+``Photometric Image-Based Rendering for Image Generation in Arbitrary
+Illumination,'' Proc. ICCV'01, vol.2, pp.652-659, 2001.7.
+最近の国内シンポジウム・研究会発表(2005-)
+尺長健
+``[招待講演]3次元疎固有テンプレート追跡に基づく実時間顔認識技術,''
+電子情報通信学会技術報告, BioX2013-9, 2013.8.
+瀬戸寛之,福永嵐馬,尺長健
+``顔画像の適応型疎テンプレート追跡に基づく母音認識用固有空間の作成,''
+情報処理学会研究報告, 2013-CVIM-187, no.42, 2013.5.
+右田剛史,槌谷洋介,尺長健
+``形状・反射特性・光源の同時推定法の改良と様々な実画像への適用,''
+情報処理学会研究報告, 2013-CVIM-186, no.12, 2013.3.
+小林宏章,加藤秀章,尺長健
+``距離・画像センサと複素相関を用いた回転不変なジェスチャ認識,''
+情報処理学会研究報告, 2013-CVIM-186, no.19, 2013.3.
+片山聡一朗,中岸久佳,右田剛史,尺長健
+``距離・画像センサを利用した3次元顔追跡・認識融合,''
+電子情報通信学会技術報告, PRMU2012-105, 2013.1.
+尺長健,中岸久佳,岡裕希
+``照明適応を含むパターン認識系の構成と顔追跡・認識への応用,''
+電子情報通信学会技術報告, PRMU2012-39, 2012.9.
+中岸久佳,尺長健
+``表情変化に対応できる顔追跡・認識融合系,''
+画像の認識・理解シンポジウム(MIRU2012)論文集, IS2-31, 2012.8.
+四宮洋平,加藤秀章,尺長健
+``Kinectを用いた3次元疎テンプレート追跡による人物姿勢追跡,''
+電子情報通信学会技術報告, PRMU2011-264, 2012.3.
+右田剛史,槌谷洋介,尺長健
+``物体形状・反射特性・光源の同時推定の実装法と評価,''
+情報処理学会研究報告, 2012-CVIM-181, no. 19, 2012.3.
+尺長健,中岸久佳
+``不足決定系による多クラス識別を用いた顔追跡・認識融合,''
+電子情報通信学会技術報告, PRMU2011-166, 2012.1.
+中岸久佳,岡裕希,尺長健
+``3次元疎固有テンプレートによる顔追跡・認識融合系の大規模化,''
+電子情報通信学会技術報告, PRMU2011-167, 2012.1.
+渡邊隼,右田剛史,尺長健
+``スプライン補間を用いた動画像からのステレオ形状復元,''
+情報処理学会研究報告, vol. 2012-CVIM-180, no. 50, 2012.1.
+澤田裕介,尺長健
+``仮説検証に基づく自然環境下での複数歩行者追跡,''
+画像の認識・理解シンポジウム(MIRU2011)論文集, pp.718-725, 2011.7.
+祖川和弘,右田剛史,尺長健
+``光源色の補空間を用いた物体形状・反射特性・光源の同時推定,''
+情報処理学会研究報告, CVIM-176-23, 2011.5.
+高田潤,右田剛史,尺長健
+``スプライン曲面を用いたステレオ形状復元法の改良,''
+情報処理学会研究報告, CVIM-176-2, 20011.5.
+尺長健,岡裕希
+``正規化固有顔を用いた顔形状推定・照明変換・識別処理の一体化,''
+電子情報通信学会技術報告, PRMU2010-190, 2011.01.
+岡裕希,尺長健
+``3次元疎固有テンプレート追跡による実時間顔認識,''
+電子情報通信学会技術報告, PRMU2010-191, 2011.01.
+永井雄大,右田剛史,尺長健
+``スプライン曲面を用いた顔のステレオ形状復元手法,''
+電子情報通信学会技術報告, PRMU2009-264, 2010.3.
+澤見幸枝,右田剛史,尺長健
+``形状・反射特性・光源位置の同時推定に基づく顔形状の復元,''
+電子情報通信学会技術報告, PRMU2009-265, 2010.3.
+久常晃裕,武村和宙,尺長健
+``疎固有テンプレート追跡による顔追跡・認識融合系の改良と性能分析,''
+電子情報通信学会技術報告, PRMU2009-188, 2010.1.
+武村和宙,久常晃裕,尺長健
+``疎固有テンプレート追跡による顔追跡と顔認識の融合,''
+電子情報通信学会技術報告, PRMU2008-213, 2009.2.
+田口智行,坂部圭治,尺長健
+``適応型疎テンプレート追跡に基づく見え変動の学習,''
+電子情報通信学会技術報告, PRMU2008-173, 2008.12.
+黒田利行,大森誠,児玉健二,右田剛史,尺長健
+``方向積分特徴の対応付けによる疎テンプレート追跡の高速化,''
+電子情報通信学会技術報告, PRMU2008-174, 2008.12.
+岡裕希,黒田利行,右田剛史,尺長健
+``3次元疎テンプレート追跡の粗密探索による安定化,''
+電子情報通信学会技術報告, PRMU2008-175, 2008.12.
+荻野真佑,右田剛史,尺長健
+``Torrance-Sparrowモデルに基づく反射特性・形状・光源位置の同時推定の検討,''
+情報処理学会研究報告, CVIM-163-89, 2008.3.
+岡田直城,武村和宙,尺長健
+``疎固有テンプレート追跡による実時間顔認識の検討,''
+情報処理学会研究報告, CVIM-160-25, 2007.9.
+山根 亮,尺長 健
+``固有空間を用いた舞踊動作の定量的評価に関する検討,''
+情報処理学会研究報告, CVIM-158-19, 2007.3.
+右田剛史,尺長健
+``ランク2制約を考慮した基礎行列・エピポール推定の精度評価,''
+情報処理学会研究報告, CVIM-156-19, 2006.11.
+野口清志,尺長健
+``疎テンプレートコンデンセーション法による見え情報の学習を伴う実時間物体追跡,''
+情報処理学会研究報告, CVIM-153-46, 2006.3.
+右田剛史,尺長健
+``未校正画像対中の点対応に基づくエピポールの1次元探索法,''
+情報処理学会研究報告, CVIM-153-64, 2006.3.
+坂上文彦,右田剛史,尺長健,佐竹純二,近間正樹,上田博唯
+``ユビキタス環境における対話型ロボットのための顔識別システム,''
+電子情報通信学会技術報告, PRMU2005-88, 2005.10.
+坂上文彦,尺長健
+``ガウシアンフィルタによる画像分解を用いた照明変動にロバストな顔画像認識,''
+電子情報通信学会技術報告, PRMU2005-91, 2005.10.
+佐竹純二,近間正樹,坂上文彦,尺長健,上田博唯
+``ユビキタス環境における顔認識・音声認識を組み合わせたロボット対話インタフェースの試作,''
+情報処理学会研究報告, CVIM-150-1, 2005.9.
+阿部圭佑,野口清志,尺長健
+``選択的半追跡を組み込んだ疎テンプレートコンデンセーション法,''
+画像の認識・理解シンポジウム(MIRU2005)論文集, pp.403-410, 2005.7.
+坂上文彦,尺長健
+``並列部分射影に基づく照明変動にロバストな高速背景差分法,''
+画像の認識・理解シンポジウム(MIRU2005)論文集, pp.1216-1223, 2005.7.
+加門 優治,山根 亮,尺長 健
+``スペースカービング法へのシルエット制約の導入,''
+情報処理学会研究報告, CVIM-148-27, 2005.3.4.
+江角 直起,右田 剛史,尺長 健
+``フーリエ級数モデルによる双方向テクスチャ関数学習と仮想光学環境への応用,''
+情報処理学会研究報告, CVIM-148-26, 2005.3.4.
+関口 真,右田 剛史,尺長 健
+``基底反射特性モデルの線形結合による双方向テクスチャ関数と物体形状の同時復元の検討,''
+情報処理学会研究報告, CVIM-148-25, 2005.3.4.
+連絡先  
+Tel & FAX 086-251-8177 (直通)  
+Email: shaku "at" cs.okayama-u.ac.jp
+尺長研ホームページ 
+shaku's page

@@ -1,0 +1,45 @@
+1 つのオブジェクトで複数の変換を実行することは、複数の変換を 1 つに結合することを意味します。つまり、各変換行列から出力を取得し、次の変換への入力として使用することで、すべての行列変換が適用された結果を得ることができます。
+回転と平行移動という 2 つの変換行列を乗算するとします。その結果、回転と平行移動両方の関数を実行する新しい行列が作成されます。行列の乗算は可換ではないため、回転変換に平行移動変換を乗算した場合と平行移動変換に回転変換を乗算した場合の結果は異なります。
+次のコード例は、回転の後に平行移動を適用する方法を示してから、平行移動の後に回転を適用する方法を示しています。レンダリング結果が異なる点に注意してください。
+D2D1_RECT_F rectangle = D2D1::RectF(300.0f, 40.0f, 360.0f, 100.0f);
+// Draw the rectangle before transforming the render target.
+m_pRenderTarget->DrawRectangle(
+rectangle,
+m_pOriginalShapeBrush,
+1.0f,
+m_pStrokeStyleDash
+);
+D2D1_MATRIX_3X2_F rotation = D2D1::Matrix3x2F::Rotation(
+45.0f,
+D2D1::Point2F(330.0f, 70.0f)
+);
+D2D1_MATRIX_3X2_F translation = D2D1::Matrix3x2F::Translation(20.0f, 10.0f);
+// First rotate about the center of the square and then move
+// 20 pixels to the right along the x-axis
+// and 10 pixels downward along the y-axis.
+m_pRenderTarget->SetTransform(rotation* translation);
+// Draw the rectangle in the transformed space.
+m_pRenderTarget->FillRectangle(rectangle, m_pFillBrush);
+m_pRenderTarget->DrawRectangle(rectangle, m_pTransformedShapeBrush, 1.0f);
+D2D1_RECT_F rectangle = D2D1::Rect(40.0f, 40.0f, 100.0f, 100.0f);
+// Draw a rectangle without transforming it.
+m_pRenderTarget->DrawRectangle(
+rectangle,
+m_pOriginalShapeBrush,
+1.0f,
+m_pStrokeStyleDash
+);
+D2D1_MATRIX_3X2_F translation = D2D1::Matrix3x2F::Translation(20.0f, 10.0f);
+m_pRenderTarget->SetTransform(translation);
+D2D1_MATRIX_3X2_F rotation = D2D1::Matrix3x2F::Rotation(
+45.0f,
+D2D1::Point2F(70.0f, 70.0f)
+);
+// First move 20 pixels to the right along the x-axis and
+// 10 pixels downward along the y-axis,
+// and then rotate about the center of the original square.
+m_pRenderTarget->SetTransform(translation * rotation);
+// Draw the rectangle in the transformed space.
+m_pRenderTarget->FillRectangle(rectangle, m_pFillBrush);
+m_pRenderTarget->DrawRectangle(rectangle, m_pTransformedShapeBrush);
+複数の変換を 1 つのオブジェクトに適用する方法  (Windows)

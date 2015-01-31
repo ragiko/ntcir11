@@ -1,0 +1,91 @@
+再生速度を変える  &dagger;
+再生速度を変えるには、サンプリング周波数Fsの値を大きくしたり、小さくしたりします。
+load handel;    %MATLABにはじめからセットされているハレルヤをロード
+Fs = Fs * 2;    %サンプリング周波数の値を2倍にする
+sound(y, Fs);                             %ロードした音を再生
+ただしこの方法では、単位時間あたりの波の数も多くなってしまう(周波数が大きくなってしまう)ため、声の高さ(ピッチ)も高くなってしまいます。
+Fsを一定にして、音声データのサンプルの中抜きや線形補間を行っても同様の問題が起きます。
+ピッチを一定に保ちながら再生速度を変えるには、フレームごとに音声波形を増やしたり、減らしたりします。
+参考:Ackie Sound タイムストレッチ、ピッチシフトのアルゴリズム
+再生速度を4倍にするプログラム(4フレームにつき1回の割合でフレーム再結合)
+clear all;
+load handel;					% ハレルヤをロード
+frameSize = 0.025;				% フレーム長:0.025秒(25ms)
+frameShift = 0.010;				% フレームシフト長:0.010秒(10ms)
+frameSizeSample = fix( Fs * frameSize );	% フレーム長:サンプル換算
+frameShiftSample = fix( Fs * frameShift );	% フレームシフト長:サンプル換算
+maxFrame = fix((length(y)-(frameSizeSample-frameShiftSample))/frameShiftSample)-1;
+startFrame = 1;					% フレームの開始サンプル番号
+endFrame = startFrame + frameSizeSample - 1;	% フレームの終了サンプル番号
+% 再生速度を何倍にするか(正の整数で指定して下さい)
+speechRate = 4;
+% 修正後の音声データの格納用
+y2 = zeros(frameSizeSample, 1);
+for countFrame = 1 : 1 : maxFrame
+thisData = y(startFrame : endFrame);
+window = hamming(frameSizeSample);  	% ハミング窓を生成
+thisData = thisData .* window;      	% 切り出したフレームにハミング窓をかける
+% countFrame が speechRate で割り切れる時だけ、切り出したフレームを【足し合わせる】
+if mod(countFrame, speechRate) == 0
+% フレームシフト部の足しあわせ
+y2_shift = ...
+y2(length(y2)-frameShiftSample+1:length(y2)) + thisData(1:frameShiftSample);
+% フレームの追加
+y2 = [y2(1:length(y2)-frameShiftSample) ; ...
+y2_shift ; thisData( frameShiftSample+1 : length(thisData) )];
+end
+startFrame = startFrame + frameShiftSample;
+endFrame = startFrame + frameSizeSample - 1;
+end
+sound(y2, Fs);                             	% 再生
+wavwrite(y2, Fs, 'handel_rateUp.wav');
+結果
+やや減衰が起こっています。これは、フレームの中抜きをしたため、フレームの境界がガタガタになってしまった(位相の不一致が起きた)ためと考えられます。
+そこでフレーム間の位相を滑らかにするために、LSEE-MSTFTMアルゴリズム を使います。上記に続いて以下を実行します。
+%LSEE-MSTFTMアルゴリズム
+%【各フレームの振幅スペクトル】の計算
+startFrame = 1; endFrame = startFrame + frameSizeSample - 1;
+% 音声の長さが変わったので最大フレーム数も計算し直す
+maxFrame = fix((length(y2)-(frameSizeSample-frameShiftSample))/frameShiftSample)-1;
+ModifiedSTFTM = zeros(frameSizeSample*2, maxFrame); % 各フレームの振幅スペクトルの格納用
+for countFrame = 1 : 1 : maxFrame
+thisData = y2(startFrame : endFrame);
+window = hamming(frameSizeSample); thisData = thisData .* window;
+fftsize = frameSizeSample * 2;                  % FFT次数
+dft = fft(thisData, fftsize);                   % フーリエ変換
+Adft = abs(dft);                                % 振幅スペクトル
+ModifiedSTFTM(:, countFrame) = Adft;            % 各フレームの振幅スペクトルを記録
+startFrame = startFrame + frameShiftSample;
+endFrame = startFrame + frameSizeSample - 1;
+end
+%【各フレームの位相スペクトル】の計算
+wgn_sf = Fs; wgn_n = length(y2); rand('state', sum(100 * clock));
+y3 = randn(1, wgn_n)';                              % 初期信号(ホワイトノイズ)の生成
+% 50回のループ
+for count_i = 1 : 50
+y_new = zeros(length(y3), 1);
+% 各フレームごとに解析
+startFrame = 1; endFrame = startFrame + frameSizeSample - 1;
+for count_frame = 1 : maxFrame
+thisData = y3(startFrame : endFrame);
+window = hamming(frameSizeSample);
+thisData = thisData .* window;
+dft_LSEEMSTFTM = fft(thisData, fftsize);
+%【data_LSEEMSTFTM の位相スペクトル】
+Angdft_LSEEMSTFTM = atan2(imag(dft_LSEEMSTFTM), real(dft_LSEEMSTFTM));
+%【振幅スペクトルとdata_LSEEMSTFTM の位相スペクトルから音声波形を作る】
+sound_fft_LSEEMSTFTM = ModifiedSTFTM(:,count_frame) .* exp(Angdft_LSEEMSTFTM*j);
+% 逆フーリエ変換
+sound_part_LSEEMSTFTM = real(ifft(sound_fft_LSEEMSTFTM, fftsize));
+sound_part_LSEEMSTFTM = sound_part_LSEEMSTFTM(1:fftsize/2);
+%音声を足しあわせ
+y_new(startFrame:endFrame) = y_new(startFrame:endFrame) + sound_part_LSEEMSTFTM;
+startFrame = startFrame + frameShiftSample;
+endFrame = startFrame + frameSizeSample - 1;
+end
+y3 = y_new;
+end
+sound(y3, Fs);                               % 再生(LSEE_MSTFTMアルゴリズム適用後)
+wavwrite(y3, Fs, 'handel_rateUp_LSEE_MSTFTM.wav');
+結果
+MATLAB Note/音声の加工 - Miyazawa’s Pukiwiki 公開版

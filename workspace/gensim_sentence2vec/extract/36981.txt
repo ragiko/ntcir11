@@ -1,0 +1,48 @@
+こんにちは、最近あだ名が増えるばかりのおじいちゃんと申します。
+今回はブラウザ対応で便利な「modernizr.js」を紹介します。
+modernizr.jsとは
+modernizr.jsはJavaScriptのライブラリです。
+閲覧者のブラウザがどのような機能をサポートしているかをチェックして、HTMLタグにサポート状況を判別できるクラスを付与し、その結果を記録したmodernizrグローバルオブジェクトを生成してくれます。
+それらを利用して、ブラウザごとの処理を記載することが可能となります。ということで、さっそく使ってみましょう。
+ダウンロード
+下記よりダウンロードが可能です。
+Modernizr
+http://modernizr.com/
+modernizr.jsをダウンロードしようとするとチェックボックスが並んでいるページが表示されます。これらの項目はmodernizr.jsを使用することで対応状況を判別できる項目になります。
+どの機能を判別したいかによって、選択した機能を判別できるJSを生成してダウンロードすることができます。
+使用している機能だけを選ぶのもいいですし、使用する可能性がある項目をまとめてチェックしておいて使うのもありです。
+読み込み
+ダウンロードしたmodrnizr.jsを読み込みます。
+<head>
+<meta charset="UTF-8">
+<title>modernizr</title>
+<link rel="stylesheet" href="css/common.css">
+<script src="lib/js/modernizr/modernizr.custom.97581.js"></script>
+</head>
+modernizr.jsを読み込んだHTMLファイルをブラウザで見てみると、
+<html lang="ja" class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
+記載していないはずのclassがHTMLタグに追加されていますね。これがmodernizr.jsの機能になります。
+閲覧者の使用しているブラウザごとに判別してクラスを付与しているので、追加されたクラスを使うことで、ブラウザの対応状況に応じたCSSを記載することができます。
+たとえばcanvasが利用可能な場合は「canvas」とクラス名を付与します。canvasが利用できない場合は、頭にno-がついた機能名、「no-canvas」 というクラス名を付与します。
+JavaScriptでは前述したmodernizrグローバルオブジェクトを生成しているので、このオブジェクトを利用して対応することができます。
+CSSで利用する方法
+HTMLタグに付与された、no-機能名のCSSを書いてあげることで対応することができます。
+.no-canvas{
+//canvasを使用できない場合のCSSを記載
+}
+JavaScriptで利用する方法
+生成されたmodernizrグローバルオブジェクトのプロパティに各機能の使用状況が記録されていますので、以下のようにブラウザごとの処理が書けます。
+if(Modernizr.canvas) {
+//canvasを使用できる場合の処理
+}else{
+//canvasを使用できない場合の処理
+}
+その他機能
+html5shiv
+IE8未満などのHTML5未対応のブラウザで、HTML5から追加されたタグを使用できるようにしてくれます
+Polyfill
+最新の機能が利用できないブラウザ向けにJavaScriptなどで同様の機能を扱えるようにするためのものです
+まとめ
+以上がmodernizr.jsの使い方になります。
+modernizr.jsを使って、手間のかかるブラウザ対応を少し簡単にしてみてはいかがでしょうか。それでは、また。
+ブラウザ対応が簡単に!「modernizr.js」の機能と利用方法 | 株式会社LIG

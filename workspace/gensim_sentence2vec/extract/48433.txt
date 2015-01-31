@@ -1,0 +1,18 @@
+■変換書式yyyy：4桁の年yy：2桁の年MM：先頭に0を埋め2桁の月。dd：先頭に0を埋め2桁の日。HH：先頭に0を埋め24時間表記の時間。hh：先頭に0を埋め12時間表記の時間。mm：先頭に0を埋め2桁の分。ss：先頭に0を埋め2桁の秒。fff：3桁のミリ秒dddd：曜日など■DateからStringへ変換例：
+Dim dt As Date = DateTime.Now            '現在の日時を取得
+Dim strDate = dt.ToString("yyyy/MM/dd")
+Console.WriteLine(strDate)
+strDate = Format(dt, "yyyy/MM/dd")
+DateTime.Parseメソッド：現在のカルチャを使用して変換を行います。
+DateTime.ParseExactメソッド：特定のカルチャを使用して変換を行います。
+Dim date1 As Date = DateTime.Parse("20110915")
+Dim ci As New System.Globalization.CultureInfo("ja-JP")
+Dim date2 As DateTime = DateTime.Parse("2011年9月15日 18時54分22秒",_
+ci, System.Globalization.DateTimeStyles.AssumeLocal)
+Dim date3 As Date = DateTime.ParseExact("201109", "yyyyMM", Nothing)
+Dim date4 As Date = DateTime.ParseExact("2011/09/15 22:13:24", "yyyy/MM/dd HH:mm:ss", Nothing);
+Dim date5 As DateTime = DateTime.ParseExact("Thur, 15 Sep 2011 23:21:12 +0900", _
+"ddd, d MMM yyyy HH':'mm':'ss zzz", _
+System.Globalization.DateTimeFormatInfo.InvariantInfo, _
+System.Globalization.DateTimeStyles.None)
+VB.NET 日付Date型と文字列String型の変換 - .NET入門

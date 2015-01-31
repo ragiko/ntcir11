@@ -1,0 +1,133 @@
+
+こける Wired-Winsockを使ってみようぜ-2.Winsockの素性は? '97/11/16
+2.Winsockの素性は?
+今回からいよいよプログラムを作成します。
+といってもまだ通信を行うのは先になりますけど。(^^;;
+なので、いきなり具体的になります。
+今回は「winsock情報を表示するシステムチェッカー」をサンプルプログラムとして作ります。
+winsockってのは元々「いろんなメーカのネットワークAPIではプログラムが作りにくい。共通のAPIを規格化しよう」というところから始まっています。
+なので、いろいろなメーカが作成したwinsockがあることになっています。
+で、winsockは自分の素性を取得できるようにAPIを用意しています。
+このwinsockの素性を表示してみましょう。(どうせこの素性を取得するAPIは初期化をかねているんで、使わざるをえないしね。)
+Delphiでwinsockを使うには、winsockユニットをusesします。
+ここにwinsockを使うのに必要な関数宣言とか、定数とかが書いてあります。
+winsockを使うプログラム(プロセス)は、最初に自分自身のプロセスにおけるWinsockの初期化を行い、最後に自分自身のプロセスにおけるWinsockの解放を行う事になっています。
+ややこし言い方ですね。要するにおまじないみたいなもので、Winsockを使うプログラムは、最初と最後に必ず呼ばなきゃいけないwinsockAPIがあるのです。
+これらはプロセス単位で1度づつ行えばよいので、winsockを使うためのユニットのInitialization節とFinalization節で行うのが良いと思います。
+winsockの初期化はWSAStartupです。
+型宣言はこんなの。 
+function WSAStartup(wVersionRequired: word; var WSData: TWSAData): Integer;
+返り値はエラーコードで、0なら成功。
+この関数に失敗すると、winsockが使えない環境ということです。多分バージョン違いでしょう。
+winsockそのものが無ければこのAPI自身を呼び出せませんものね。
+プログラムの始めに、これを判定してエラー表示を行うとかしなければいけません。
+引数のwVersionRequiredは、「プログラムが想定するバージョン」です。1.1を指定しておきます。これは$0101と指定します。 
+MakeWord使って、MakeWord(1,1)としても良いんですけど、どうせおまじないみたいなものだしめんどくさいでしょ?
+もう一つの引数WSDataは、この関数が設定して返してきます。
+winsockに関するいくつかの情報です。今回のサンプルプログラムはこれを表示しようというわけ。
+このなかで重要なのは、「対応できるバージョン」です。
+普通にWindows95等で使う場合はバージョン1.1なので問題はありません。
+もし違った場合はエラー扱いしてしまえばよいでしょう。
+他のは、「表示すると面白い」ぐらいで、プログラム上絶対必要という情報はありません。
+TWSDataはこんなの。
+type
+TWSAData= packed record
+wVersion:     WORD;
+wHighVersion: WORD;
+szDescription: array[0..WSADESCRIPTION_LEN] of Char;
+szSystemStatus: array[0..WSASYS_STATUS_LEN] of Char;
+iMaxSockets:  WORD;
+iMaxUdpDg:    WORD;
+lpVendorInfo: PChar;
+end;
+wVersionってのが、先ほどの「対応できるバージョン」です。$0101でなければエラーにしちゃいましょう。
+wHighVersionってのは、「対応できる最高のバージョン」です。関係ないですね。Win95標準品は1.1になります。
+szDescriptionは、備考みたいな文字列です。表示するぐらいしか用途が無いです。
+szSystemStatusも、同じく備考みたいな文字列です。「Win95で実行中」とか英語で書いてあったりします。
+iMaxSocketsは、使用できる最大のソケット数です。普通これが気になるほどソケット作ったりはしないので大丈夫でしょう。(Win95標準のだと256個。しかし実際にはその前にリソース不足になるんだよね。)
+しかし、これがあるということは巨大なシステムでサーバーを作るときに「クライアントとつなぎっぱなしにしてはいけない」ということです。
+iMaxUdpDgってのは、UDPソケットで扱える最大のバイト数です。もともとUDPであまり巨大なデータを送ってはいけません。
+lpVenderInfoというのは、ベンダー固有情報です。PCharになっていますが、文字列が入っているとは限りません。これを使うとwinsockで規定されているAPI以外の使い方もできるかもしれませんが、可搬性は落ちるし、一般論としてバージョンアップ時に互換性を保ってくれないベンダー(^^;;もありますから使わない方が良いです。
+使えるものってほとんど無いでしょ?「これを表示するのが目的」というシステムチェッカーを作るのなら重要ですが。(今回はこれを作るんだってばさ。(^^;;)
+他にはバージョン情報ぐらいに表示でもしますかね。 
+終了際に使うのが、WSACleanupです。 
+function WSACleanup: Integer;
+返り値が0なら成功、エラーの場合はSOCKET_ERRORです。
+なんで失敗したのかは、WSAGetLastErrorで調べられますが、もう終了しようとしてるので失敗しても回復手段がないでしょ?
+というわけで、私のスタンスとしてはこいつのエラーは調べません。(デバッグ中はエラー表示させたりしますけど)
+時々、「成功するまでWSACleanupを呼び続ける」というのを見ますが、それってWSAStartupに失敗していた場合凍結します。
+リソースリークの方が凍結よりマシだと思いますけど。
+これは考え方や主義主張があるだろうと思うので、自分の主義で解決してください。
+WSACleanupみたいに、「失敗したらSOCKET_ERROR、その時はWSAGetLastErrorで調べる」っていうのはwinsockAPIのパターンです。
+失敗したらのパターンで、「0なら」ってのと「INVALID_SOCKETなら」ってのもあります。
+winsockを使うユニットを一つ作成して使うとすると、WSAStartupと、WSACleanupの使い方のサンプルコードは、こんな感じになります。
+unit UNetLib; { ユニット名は好みに応じてつけてください }
+interface
+uses Winsock;
+function CanUseWinsock:Boolean;
+var WSAData: TWSaData; { 何処かで表示するため }
+implementation
+var WSAStartupResult: Integer;
+function CanUseWinsock: Boolean;
+begin
+result:= (WSAStartupResult=0) and (WSAData.wVersion=$0101);
+end;
+Initialization
+WSAStartupResult:=WSaStartup($0101,WSAData);
+Finalization
+WSACleanup;
+end.
+どこかエラー表示を行うべきときに、CanUseWinsockを呼び出してwinsockが使えるか判定します。
+メインフォームのOnCreateの最初の方とかプロジェクトソースの最初の方で判定して、失敗したときはその旨表示してさっさとアプリケーションを終了しちゃえば楽ですね。
+WSAStartupで得られる情報みたいに、環境固有の情報としては「ローカルホスト名」というのがあります。
+システムチェッカーを作るならこれも表示しておいた方が良いでしょう。
+普通「ローカルホスト名」は「コンピュータ名」ですが、PPP接続の場合は大抵プロバイダが接続時に名前をつけます。
+しかし、Windows95についているwinsockはちゃんと「コンピュータ名」から自分の情報が検索できるようです。
+#OS/2だと駄目だったとも聞いているのですが、私はOS/2を持っていないので確認できません。ほんとうかしら?
+ローカルホスト名を取得するwinsockAPIはこんなの。 
+function gethostname(name:PChar;namelen:Integer):Integer;
+nameにNULターミネートの文字列(普通のPChar文字列)が入ります。
+呼び出す前にバッファを確保しておかなければなりません。 
+namelenはバッファサイズです。
+返り値はエラーコード。「成功したら0、失敗したらSOCKET_ERROR、失敗したらWSAGetLastErrorで調べる」のパターンです。
+これが失敗するとすれば、WSAStartupをしなかった/失敗したとか、バッファが小さいぐらいしか思い付かないのですが。
+PPP接続の場合、「プロバイダが接続時につけたホスト名」はこれでは判りません。
+このAPIで取得できる名前は「通信しなくても取得できるもの」に限られます。
+Windows95でPPP接続した場合は[コントロールパネル]-[ネットワーク]-[ユーザー情報]-[コンピュータ名]と同じ物です。
+WindowsAPIとかもそうなのですが、APIを直接使う時はよくPCharを使うのです。
+C言語でアプリケーション作成することを考えてでしょうね。
+ま、DelphiのstringはDelphi以外では使えないので共通的にPCharを選ぶのでしょうけど。
+PCharを引数として結果を戻してくるAPIの使い方には一種のパターンがあって、大体こんな格好で使います。
+function LocalHostName:string;
+begin
+SetLength(Result,512); { 512 ってのは適当ですが、こんなに長い名前はつけられないでしょう }
+if gethostname(PChar(Result),512)<>0 then begin
+Result:=''; { エラーです。好みによってはExceptionをライズしてもいいでしょう}
+Exit;
+end;
+SetLength(Result,StrLen(PChar(Result)); {バッファをちょうど良いサイズに調整します}
+end;
+SetLengthってのは、Delphiの関数で文字列のバッファサイズを設定します。
+まずこれでgethostnameに渡すバッファを確保します。 
+gethostnameからResultに文字列が返ってくると、バッファサイズをちょうどいいサイズに設定し直します。
+PChar文字列はNUL文字で終了ですが、string文字列はそうではありませんから、string文字列として長さを設定する必要があるのです。
+それが最後のSetLengthです。
+StrLenってのは「PCharの文字列長、つまりNULまでのバイト数」を返します。
+ResultにはPChar文字列が設定されているはずですから、この長さにResultのバッファサイズを調整してあげればよいわけです。
+これで、「winsockに関する情報を表示する」システムチェッカーを作る準備ができました。
+出来上がったプログラムはこれ。.EXEはファイルが大きいので省略します。
+[ソースダウンロード] 
+今回のプログラムは単にインストールされているWinsock環境を調べるだけのものなので、PPP接続を行う必要はありません。
+-実行例-
+私の環境です。あなたの環境とも多分ローカルホスト名しか違わないと思います。
+次の話
+[表紙]
+[Program Files]
+[オブジェクト指向異聞]
+[プログラム未整理知識]
+[Winsockを使ってみようぜ]
+[だべり]
+[What's New]
+[書いた奴]
+[リンク]
+2.Winsockの素性は

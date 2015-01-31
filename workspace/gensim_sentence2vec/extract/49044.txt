@@ -1,0 +1,36 @@
+
+ここでは各DBMSごとに文字列の一部を取得する方法を紹介します.
+Accessの場合
+AccessはMid関数かMidB関数を使用します.
+Mid(string, start[, length])
+MidB(string, start[, length])
+Mid関数は string で示す文字列の start から length 文字分文字列を取得します.
+MidB関数は string で示す文字列の start から length バイト分文字列を取得します.
+ここで start の先頭の位置は1から始まります.また,length は省略可能です.省略した場合は文字列の最後まで取得します.
+SQLサンプル
+Mid関数を使用して文字列の一部を取得する例を以下に示します.
+SELECT Mid('チャーリーブラウン', 1, 5);
+結果
+Expr1000
+SQLServerの場合
+SQLServerはSUBSTRING関数を使用します.
+SUBSTRING(string, start, length)
+SUBSTRING関数は string で示す文字列の start から length 文字分文字列を取得します.ここで start の先頭の位置は1から始まります.
+SQLサンプル
+SUBSTRING関数を使用して文字列の一部を取得する例を以下に示します.
+SELECT SUBSTRING('ルシール・ヴァン・ぺルト', 6, 3);
+結果
+Expr1000
+Oracleの場合
+OracleはSUBSTR関数かSUBSTRB関数を使用します.
+SUBSTR(string, start[, length])
+SUBSTRB(string, start[, length])
+SUBSTR関数は string で示す文字列の start から length 文字分文字列を取得します.
+SUBSTRB関数は string で示す文字列の start から length バイト分文字列を取得します.
+ここで start の先頭の位置は1から始まります.また,length は省略可能です.省略した場合は文字列の最後まで取得します.
+SQLサンプル
+SUBSTR関数を使用して文字列の一部を取得する例を以下に示します.
+SELECT SUBSTR('ルシール・ヴァン・ぺルト', 1, 4) AS 結果
+結果
+結果
+逆引きSQL構文集 - 文字列の一部を取得する(Mid, SUBSTR, SUBSTRING)

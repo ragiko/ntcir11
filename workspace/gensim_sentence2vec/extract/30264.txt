@@ -1,0 +1,20 @@
+相互作用中心のテスト¶
+相互作用中心のテストは2000年代前半に登場したExtreme Programming(XP)から生まれた設計、テストの手法です。オブジェクトの状態ではなく振る舞いに注目し、メソッドを呼び出した際にコラボレータとオブジェクトの間で、意図したインタラクション(相互作用)が行われるか検証します。
+例えば複数のSubscriberにメッセージを送信するPublisherがあるとします。
+class Publisher {
+List<Subscriber> subscribers
+void send(String message)
+}
+interface Subscriber {
+void receive(String message)
+}
+class PublisherSpec extends Specification {
+Publisher publisher = new Publisher()
+}
+どのようにPublisherをテストすればよいでしょうか?状態中心のテストではpublisherがsubscriberを追跡できているか検証します。しかし、ここで一番の関心事は、publisherが送ったメッセージがsubscriberで受信できるかです。これを検証するにはSubscriberの特別な実装を用意し、publisherとsubscriberのやり取りを監視します。このような実装をモックオブジェクトと呼びます。
+subscriberのモック実装を開発者自身で用意することもできますが、インタラクションが複雑なメソッドが増えてくると、非常に手間になってきます。そこでモックフレームワークの登場です。このフレームワークはコラボレータがどのようにインタラクションすべきか定義することで、実際にその通りに動作したか検証することができます。
+How Are Mock Implementations Generated?
+(質問: どのようにモックの生成を実装しているか?)よくあるJavaのモックフレームワークと同様に、SpockもJDK動的プロキシ(インタフェースのモック時)、CGLIBプロキシ(クラスをモック時)を使用してモックを作成します。これらは、Groovyのメタプラグラミングを使用した場合に比べ、Javaのコードでモックを使用する際に有利に働きます。
+Javaの世界では、JMock、EasyMock、Mockitoといったモックフレームワークが人気があり、非常に成熟しています。これらのモックフレームワークをSpcokで使用することもできますが、Spcokの言語仕様に合わせて、より自然に記述できるように、モックフレームワークをSpock自身で再構築することを決めました。この判断は、相互作用中心のテストを容易にするため、Groovyの機能を活用し、より読みやすく、より楽しく書けるようにしたいという思いからです。この章を読み終えた時に、その目標が達成されていると感じていただけると幸いです。
+特に何も明示していない限り、すべての機能はJavaとGroovyで使用することができます。
+相互作用中心のテスト &mdash; Spock 1.0-SNAPSHOT

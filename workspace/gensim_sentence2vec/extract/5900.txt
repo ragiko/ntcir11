@@ -1,0 +1,213 @@
+詳細は manual081108.pdfと,追加関数の解説を加えた ism091124doc.pdf を参照してください.簡単な紹介スライド tokei2010prosper2.pdf
+_ ユーザー辞書  
+すべての関数に,実行時にユーザー辞書を指定できるようにしました.ただし Mac や Linux ,Windows でMeCab? へのパス設定を行っている場合は,システム側でmecabrc ファイルを設定ください.この引数は,Windowsユーザーで環境設定が難しいと感じているユーザーのための仕様です.詳しくは, RMeCabをご覧ください. かならず mecab で正しくコンパイルした辞書ファイルを指定してください.
+テキスト59ページのユーザー辞書の作成方法は Windows を対象とした説明です.Mac および Linux では http://mecab.sourceforge.net/dic.html の説明に従ってください.一部を以下の引用いたします.
+適当なディレクトリに移動 (例: /home/foo/bar)
+foo.csv という辞書ファイルを作成(例はテキスト58ページのishida.csv)
+基広,-1,-1,1000,名詞,固有名詞,人名,名,*,*,基広,モトヒロ,モトヒロ
+辞書のコンパイル
+% /usr/local/libexec/mecab/mecab-dict-index -d/usr/local/lib/mecab/dic/ipadic \
+-u foo.dic -f utf8 -t utf8 foo.csv
+-d DIR: システム辞書があるディレクトリ
+-u FILE: FILE というユーザファイルを作成
+-f charset: CSVの文字コード
+-t charset: バイナリ辞書の文字コード 
+/home/foo/bar/foo.dic ができていることを確認
+実行方法
+res <- RMeCabC("石田基広", dic = "/home/ishida/foo.dic")
+res
+RMeCab パッケージを利用するには以下のコードを画面の > の右に入力して、Enter を押して実行します.
+なお試用データセットを用意しました.
+_ RMeCabC()関数 : 短文の処理  
+> library(RMeCab)
+> kekka <- RMeCabC("すもももももももものうち")
+> unlist(kekka)
+第二引数 1 を加えると形態素原型を返します.
+> kekka <- RMeCabC("ご飯を食べた", 1)
+> unlist(kekka)
+#    名詞     助詞     動詞   助動詞 
+#  "ご飯"     "を" "食べる"     "た" 
+# 第二引数なしだと
+> kekka <- RMeCabC("ご飯を食べた")
+> unlist(kekka)
+#    名詞     助詞     動詞   助動詞 
+# "ご飯"   "を" "食べ"   "た" 
+# 名詞だけ取り出したければ
+unlist(kekka) [names(unlist(kekka)) == "名詞"]
+# ご飯
+# R-2.8.0 をMacOSXやLinuxでご利用の場合は
+# 以下の3行を実行しないと動作しないかもしれません
+# R-2.7 や R-2.8.1 では必要ありません
+# kekka <- unlist(kekka)
+# Encoding(kekka) <- "UTF-8"
+# Encoding(names(kekka)) <- "UTF-8"
+_ RMeCabText?()関数   : ファイルの解析結果をそのまま表示  
+# その他,和布蕪の出力をそのままリスト形式で出力する関数
+>  RMeCabText("data/sakura.txt")
+# こんな結果
+#[[1]]
+# [1] "昨日"     "名詞"     "副詞可能" "*"        "*"        "*"       
+# [7] "*"        "昨日"     "キノウ"   "キノー"  
+#
+#[[2]]
+# [1] "も"     "助詞"   "係助詞" "*"      "*"      "*"      "*"      "も"    
+# [9] "モ"     "モ"    
+_ RMeCabDF()関数  : データフレームの指定列を解析  
+ID,Sex,Reply
+1,F,写真とってくれよ
+2,M,写真とってください
+3,F,写真とってね
+4,F,写真とってください
+5,M,写真とってっす
+と言うファイルが c:/data/photo.csv にあったとして
+> dat <- read.csv("c:/data/photo.csv", head = T)
+と読み込んで
+> RMeCabDF(dat, 3)
+> RMeCabDF(dat, "Reply") # 列名でも良い
+# datという読み込んだデータの 3 列目に日本語がある
+とすると,3 列目のデータをすべて形態素解析にかけます.
+[[1]]
+名詞   動詞   助詞   動詞   助詞 
+"写真" "撮っ"   "て" "くれ"   "よ" 
+[[2]]
+名詞       動詞       助詞       動詞 
+"写真"     "とっ"       "て" "ください" 
+また
+RMeCabDF(dat, 3, 1)
+とすると,形態素原型を返します.
+_ RMeCabFreq?()関数   : ファイルから頻度表を作成  
+> (kekka <- RMeCabFreq("c:/data/sakura.txt") )
+# こんな結果
+# length = 13 
+#     Term     Info1    Info2       Freq
+#1      。       記号      句点         2
+#2      、       記号      読点         1
+#3      を       助詞      格助詞      1
+...
+# 10   桜餅     名詞      一般        3
+# 11   今日     名詞      副詞可能   1
+#        芥川龍之介 『蜘蛛の糸』(青空文庫より借用)
+#        ただし主人公の名前の「かん陀多」の
+#      「かん」にあたる漢字は特殊文字なので削っている
+実行時間を計る
+> pt1 <- proc.time()
+> kekka <- RMeCabFreq("c:/data/kumo.txt")
+pt2 <- proc.time()
+> kekka # 結果を見る
+Term      Info1      Info2     Freq
+1           あの     フィラー   *          1
+2         いくら     副詞        一般      2
+3   いつの間にか   副詞        一般      1
+4       うようよ    副詞        一般      1
+5         きっと     副詞        一般      1
+# 実行時間を見る
+> pt2 - pt1
+頻度表をグラフにしてみる
+# 『蜘蛛の糸』から、一般名詞かつ頻度が 7 以上の語を選ぶ
+kekka <- kekka [kekka[, 2] == "名詞" & kekka[, 3] == "一般" 
+&  kekka[,4] > 6, ] 
+k.col <- rainbow(nrow(kekka))
+matplot(1:nrow(kekka), kekka[,4], type = "n")
+for(i in 1:nrow(kekka)){
+matlines(i, kekka[i,4], type = "h", col = k.col[i],  lwd =5)
+}
+legend(1, max(kekka$Freq), legend = kekka$Term, col = k.col,
+lwd = 5)
+_ docMatrix()関数, docMatrix2()関数    : 通常はdocMatrix()を使ってください.文書ターム行列(および重み付け),あるいはターム共起頻度行列(2009年3月追加)を作成  
+デフォルトでは名詞と動詞,形容詞のみを抽出するが,pos 引数で変更可能.
+# 対象ファイルのみが収まっているディレクトリ doc を用意して
+> res <- docMatrix("doc", pos = c("名詞","形容詞","助詞") )
+> res
+docs
+terms              doc1.txt doc2.txt doc3.txt
+[[LESS-THAN-1]]         0        0        0
+[[TOTAL-TOKENS]]        4        6        8
+は                      1        1        1
+学生                    1        1        0
+私                      1        0        0
+の                      0        1        0
+数学                    0        1        1
+彼女                    0        1        1
+で                      0        0        1
+を                      0        0        1
+あるいはフォルダを別に指定して
+> targetDir <- "c:/data/file" 
+> test <- docMatrix(targetDir)
+> test
+# 名詞と動詞のみを抽出する場合
+> test <- docMatrix(targetDir, pos = c("名詞","動詞") )
+> test
+# こんな結果
+#        docs
+# terms    dat1.txt dat2.txt dat3.txt
+# 季節          2        0        0
+#  今            1        0        0
+#  春            2        0        0
+#  人            1        0        1
+#  大好き        1        0        0
+#   日本          2        2        2
+各テキストで頻度数が 2 以上のタームのみで構成する場合
+通常は以下のようにします.
+これはあるタームがすべてのテキストで出現した総数を指定することになります.
+> test <- docMatrix(targetDir)
+## 総頻度が 2 以上のタームを残す
+> test <- test[rowSums(test) > 2, ] 
+各テキスト別に,最低頻度を満たすタームだけを残す
+# 指定頻度以下のタームが何種類あったかは表示される
+> test <- docMatrix(targetDir,  minFreq = 2 )
+> test
+# こんな結果
+#      docs
+#terms  dat1.txt dat2.txt dat3.txt
+#  季節        2        0        0
+#  春          2        0        0
+#  日本        2        2        2
+#  犬          0        2        2
+#  柴犬        0        2        0
+#  特産        0        2        0
+TF と IDF を組み合わせた重みをつける場合
+> test <- docMatrix(targetDir,  weight = "tf*idf" )
+> test
+# こんな結果
+#        docs
+#terms    dat1.txt dat2.txt dat3.txt
+#  あり   2.584963 0.000000 0.000000
+#  い     1.584963 1.584963 0.000000
+#  し     1.584963 1.584963 0.000000
+#  季節   5.169925 0.000000 0.000000
+#  迎えよ 2.584963 0.000000 0.000000
+co 引数はタームの共起行列を作成する.
+## ただし,共起行列は巨大になり,
+## パソコンのスペックによっては
+## 途中でR,場合によってはパソコンがフリーズすることもあります.
+## その場合 Matrix パッケージを使って,疎な行列に変換すると
+## 有効な場合もあります.詳しくは,サンプルデータ data.zip
+## あるいは data.tar.gz 内の RMeCab.R をご覧ください
+> ## 行名のタームと列名のタームが共起した回数
+> ## 対称行列である
+> res <- docMatrix("doc", pos = c("名詞","形容詞","助詞"), co = 1)
+> res # 対角要素は出現回数
+terms
+terms  は 学生 私 の 数学 彼女 で を
+は    3    2  1  1    2    2  1  1
+学生  2    2  1  1    1    1  0  0
+私    1    1  1  0    0    0  0  0
+の    1    1  0  1    1    1  0  0
+数学  2    1  0  1    2    2  1  1
+彼女  2    1  0  1    2    2  1  1
+で    1    0  0  0    1    1  1  1
+を    1    0  0  0    1    1  1  1
+行名のタームと列名のタームが共起したか否か
+> ## 対称行列である
+> res <- docMatrix("doc", pos = c("名詞","形容詞","助詞"), co = 2)
+> res
+は 学生 私 の 数学 彼女 で を
+は    1    1  1  1    1    1  1  1
+学生  1    1  1  1    1    1  0  0
+私    1    1  1  0    0    0  0  0
+の    1    1  0  1    1    1  0  0
+数学  1    1  0  1    1    1  1  1
+彼女  1    1  0  1    1    1  1  1 
+で    1    0  0  0    1    1  1  1
+を    1    0  0  0    1    1  1  1
+RMeCabFunctions - RとLinuxと...

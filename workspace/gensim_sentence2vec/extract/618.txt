@@ -1,0 +1,160 @@
+
+宇野毅明と有村博紀による公開プログラム(コード) 
+このページでは、公開しているプログラムのコードがダウンロードできます。主に、列挙アルゴリズムやデータマイニングに関するものです。全て、宇野毅明、あるいは、良く一緒に研究をしてお世話になっている北海道大学の有村博紀先生によって作られたものです。各プログラムに使用言語とコード作成者が書いてありますので、質問、あるいはバグの報告などは、作成者にご連絡ください。宇野毅明は 
+uno@nii.ac.jp、有村博紀先生は arim@ist.hokudai.ac.jp です。
+!!! 
+コードの最近のバージョンに、マッキントッシュのフォーマットではエラーが出るというバグがありました。現行バージョンではこのバグは治っています。
+LCM (Linear time Closed 
+itemset Miner) ver.2     (C言語、宇野毅明) [文献 
+1]     解説ページ(英語)
+データベースから頻出するパターン(頻出集合)すべてを見つけ出すプログラムです。極大なパターン、意味的に飽和しているパターン(飽和集合、closed 
+set)のみを高速に見つけ出すことも可能です。2004年のデータマイニング実装コンテスト(FIMI04) 
+で優勝しました。2部グラフの極大クリークの列挙もできます。
+LCM ver. 2.5 (頻出集合、飽和頻出集合のみ。ちょっと速くなっています。)
+LCM ver. 3 (OSDM05 
+に投稿したものを改良したもの。たぶん、LCMシリーズの中では一番速い) [文献 1a]
+LCM ver. 5.3 (アソシエーションルールを見つける、トランザクションに重みをつける(負重みも可)、頻出度、パターンの大きさに上下限を設ける、各パターンを含むトランザクションのIDを表示をする、といった細かい機能をつけ、プログラムを単純にしたもの。多機能な分だけ、2倍ほど余計に時間がかかります。)
+LCM_basic   
+マイニングアルゴリズム勉強用の、非常に簡単なコードです(C と 
+perl のバージョンがあります)。LCM1 
+は単に振り分けのみを使った深さ優先探索アルゴリズム、LCM2はコンディショナルデータベース、データベース縮約、equi-support 
+のテクニックを用いています。
+LCM_seq 2.1 
+(C言語、宇野毅明)      解説ページ(英語)
+LCM 
+をシークエンスマイニング用に変更したものです。各トランザクションがアイテムの列だと考え、頻出する部分シークエンスを全て見つけ出します。基本アルゴリズムはプレフィックススパンという方法に対応しますが、データの持ち方や計算方法がLCM式になっています。
+ACLA (Approximate 
+Cover Listing Algorithm)    (C言語、宇野毅明) 
+解説ページ(英語)
+各項目がアイテムの集合になっているデータベースの、多くの項目をカバーするアイテム集合を全て見つけるアルゴリズムです。カバーするとは、トランザクションにアイテム集合のアイテムがひとつでも入っていれば、カバーすると言います。パターンマイニングと組合せて、データベースを少ないパターンで説明したり、正例・負例を分ける「または」でつながれた規則(cascade型)を見つけることもできます。
+SSPC (Similar Set Pair 
+Comparison)    (C言語、宇野毅明)       解説ページ(英語)
+各項目が部分集合になっているデータベースで、似ている項目、共通部分の大きい項目のペアを全て見つけるアルゴリズムです。全対比較をしないので、普通の方法よりはかなり高速になっています。
+MaxMotif ver2.0     (C言語、宇野毅明) 
+[文献 2]      解説ページ(英語)
+MaxMotif (Java, 
+有村博紀)
+文字列データからモチーフと呼ばれる、極大な、ワイルドカードを含んでよい頻出文字列を全て見つけ出すプログラムです。
+FREQT,  FREQT ver.4     
+(Java, 有村博紀) [文献 3]
+FREQTは、頻出するラベル付き順序木パターンを見つけるプログラムです。ラベル付き順序木とは、各頂点にラベルと子どもの順序が与えられたような木のことをいいます。FREQTは、ラベル付き順序木Gと閾値tを入力して、Gにt通り以上の埋め込み方で埋め込めるようなラベル付き順序木を全て見つけます。
+UNOT    
+(Java, 有村博紀) [文献 4]
+UNOTは、頻出するラベル付き木パターンを見つけるプログラムです。ラベル付き木とは、各頂点にラベルが与えられたような木のことをいいます。UNOTは、ラベル付き木Gと閾値tを入力して、Gにt通り以上の埋め込み方で埋め込めるようなラベル付き木を全て見つけます。
+SHD 
+(Sparsity-based Hypergraph Dualization, ver. 3.1)    (C言語、宇野毅明) [文献 5]     解説ページ(英語)
+ハイパーグラフ双対化、極小集合被覆、極小横断、極小ヒッティングセットなどと呼ばれる問題に対する高速なアルゴリズムです。疎性をうまく使っているので、大規模なデータでも高速計算が可能です。
+MACE (MAximal Clique 
+Enumerater, ver. 2.2)     (C言語、宇野毅明) [文献 
+6]     解説ページ(英語)
+グラフのクリーク・極大クリークを列挙するプログラムです(Makino&Uno 
+algorithm の実装です)。 (D.Eppstein 
+教授が報告されたバグは修正されました)   富田先生らによるアルゴリズムの実装も作りました [X] (極大クリーク列挙と最大クリーク発見用です) (C言語, 
+宇野毅明)
+SIMSET 
+(Similarity-based SET clustering and itemset mining, ver. 1.1)     (C言語、宇野毅明)      
+解説ページ(英語)
+類似性をベースにして近傍グラフを作り、そこから極大クリークを列挙してクラスタリングを行うプログラムです。頻出パターンとは異なり、ある程度代表的な頻出アイテム集合のみを計算することができます。 
+PCE (Pseudo Clique 
+Enumerater)    (C言語、宇野毅明) [文献 7]      
+解説ページ(英語)
+グラフから擬似クリーク(密度の濃い部分グラフ)を列挙するプログラムです。
+AFIM 
+(Ambigious Frequent Itemset Miner)  (C code, Takeaki Uno) [文献 
+8]    解説ページ(英語)
+多くの項目にだいたい含まれるようなアイテム集合を全て見つけるプログラムです。2部グラフの密部分グラフ(疑似クリーク)を列挙する問題を解いているのとほぼ等価です。 
+CyPath (enumeration 
+for CYcles and PATHs)     (C言語、宇野毅明)      
+解説ページ(英語)       論文の計算実験で使った問題
+グラフに含まれる、閉路(サイクル)、2点を結ぶ道(パス)を列挙するプログラムです。長さを制限をしたり、ショートカットがないもの(コードレスパス、コードレスサイクル)のみを見つけることもできます。
+TGE (Enumeration for 
+Trees and subGraphs/Connected components)    (C言語、宇野毅明)      
+解説ページ(英語)
+グラフに含まれる、(有向、無向の)部分木、全張木を列挙するプログラムです。大きさを制限をできます。
+SACHICA 3.4 
+(Scalable Algorithm for Characteristic/Homogenous Interval CAlculation) 
+(C言語, 宇野毅明) [文献 9]    
+解説ページ(英語)
+入力した文字列ファイルから、決まった長さの部分列の組でハミング距離が閾値以下のものを全て見つけ出すアルゴリズムです。この種の他のアルゴリズムに比べ、正確性を犠牲にせずかつより高速です。主にゲノム相同性解析を目的として開発したコードなので、ゲノム解析用の機能がいくつかついています(ソレクサの解析、アセンブリング、ことなる種のゲノム比較など)。
+SHEAP 1.2 
+(Similarity/Homology Efficient Anakyze Procedure)     (C code, 
+宇野毅明)      解説ページ(英語)
+2つのファイルを比較してドットプロットで図示するプログラム。また、あるファイルの中で良く現れる部分文字列がある領域に色を付けて表示する機能もあります。
+SimText 1.0 (Text Similality Analyzer)     
+(Windoows アプリ, 宇野毅明、(株)ピコラボ)
+テキストファイルの中から、他のテキストファイルと似ている部分を見つけ出し、そこに色を付けて表示するプログラムです。また、頻出するフレーズを見つけることもできます。他のプログラムと異なり、Windows 
+アプリケーションですので、テキストを貼り付けて比較する、という簡単な操作で比較ができます。
+Entrad 1.0 (Envelope-in-tree algorithm for geometrical edit 
+distance)     (python, デザイン by 宇野毅明, coded by 
+松井鉄史)
+断片編集距離という、局所的な類似性に重きを置いた編集距離を高速に計算するプログラムです。pythonで書かれており、linux、cygwin、macOSなどpythonがインストールされている環境で実行できます。
+SIMSTR 
+(Similarity-based frequent STRing , ver. 1.1)     (C言語、宇野毅明)      
+解説ページ(英語)      
+論文の計算実験で使った問題
+ハミング距離が短い、短い部分文字列の組を列挙し、それをベースにして頻出あいまい文字列を見つけるアルゴリズムです。1億文字を超えるような文字列に対しても、多くの比較的長い頻出文字列を非常に短時間で見つけることができます。
+Epi-approx (Mining 
+frequent approximate episodes)    (C言語, 内田 雄三, 有村 博紀)
+Epi-approx 
+は、系列(ラベルの列)データベース内に指定回数以上近似的に現れるエピソード(ラベルの列)を全て見つけるアルゴリズムです。近似的に現れるとは、エピソードと現れる場所の編集距離(挿入・削除・ラベル変換の最小値)が閾値以下である場合です。
+POWIC 
+(POWer Index Calculation)     (C言語, 宇野毅明)    
+Explanation      論文の計算実験で使った問題
+POWIC 
+は、重み付き投票ゲームの投票力指数を計算するプログラムです。投票力指数とは、議会や株主総会など各プレイヤー(株主、政党)の票数が異なるようなときに、各プレイヤーの発言力の大きさを測る指標であり、このプログラムは数ある指数の中でも著名な 
+Banzhaf 指数, Shapley-Shubik 指数, Deegan-Packel 指数の計算をします。
+HornSAT (Solving 
+Horn Satisfiability Problems)     (C言語、宇野毅明)
+ホーン形式の充足可能性判定問題を解くプログラムです。
+[1] Takeaki Uno, Tatsuya Asai, Yuzo Uchida, Hiroki Arimura, "An 
+Efficient Algorithm for Enumerating Closed Patterns in Transaction Databases", 
+Discovery Science 2004, LNAI 3245, pp.16-31
+[1] 
+Takeaki 
+Uno, Masashi Kiyomi, Hiroki Arimura, "LCM ver.2: Efficient Mining Algorithms for 
+Frequent/Closed/Maximal Itemsets," in Proceedings of IEEE ICDM'04 Workshop FIMI'04, 
+available at http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS//Vol-126/, 
+2004.
+[1] 
+(version 1) Takeaki Uno, Tatsuya Asai, Hiroki Arimura and Yuzo Uchida, "LCM: An 
+Efficient Algorithm for Enumerating Frequent Closed Item Sets," Workshop on Frequent 
+Itemset Mining Implementations (FIMI'03), available at http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS//Vol-90/
+[1a] Takeaki Uno, Masashi Kiyomi, Hiroki Arimura, "LCM ver.3: Collaboration 
+of Array, Bitmap and Prefix Tree for Frequent Itemset Mining", Open Source Data 
+Mining Workshop on Frequent Pattern Mining Implementations 2005, available at home page of 
+Open Source Data Mining Workshop on Frequent Pattern Mining Implementations 2005, 2005
+[2] Hiroki, Arimura, Takeaki Uno, "An Efficient Polynomial Space and 
+Polynomial Delay Algorithm for Enumeration of Maximal Motifs in a Sequence", Journal 
+of Combinatorial Optimization 13, pp.243-262, 2007
+[3] Tatsuya Asai, Kenji Abe, Shinji Kawasoe, Hiroki Arimura, Hiroshi 
+Sakamoto, Setsuo Arikawa: Efficient Substructure Discovery from Large Semi-structured 
+Data. SDM 2002
+[4] Tatsuya 
+Asai, Hiroki Arimura, Takeaki Uno and Shin-ichi Nakano, "Discovering Frequent 
+Substructures in Large Unordered Trees", Lecture Notes in Artifical Intelligence 2843 
+(Proceedings of 6th International Conference on Discovery Science (DS2003)), 
+Springer-Verlag, pp. 47-60, 2003
+[5] Keisuke Murakami, Takeaki Uno: Efficient Algorithms for Dualizing 
+Large-Scale Hypergraphs, arXiv, CoRR abs/1102.3813: (2011)
+[6] 
+Kazuhisa Makino, Takeaki Uno, "New Algorithms for Enumerating All Maximal 
+Cliques", Lecture Notes in Computer Science 3111 (Proceedings of SWAT 2004), 
+Springer, pp.260-272, 2004
+[7] Takeaki Uno, An Efficient Algorithm for Solving Pseudo Clique 
+Enumeration Problem, Algorithmica 56(1), pp. 3-16, 2010
+[8] Takeaki Uno and Hiroki Arimura, 
+"Ambiguous Frequent Itemset Mining and Polynomial Delay Enumeration", Lecture 
+Notes in Artificial Intelligence 5012, pp. 357-368, 2008
+[9] Takeaki Uno, "An Efficient Algorithm for Finding Similar 
+Short Substrings from Large Scale String Data", Lecture Notes in Artificial 
+Intelligence 5012, pp. 345-356, 2008 (Best Paper Runner-up Award)
+[9] Takeaki Uno, Multi-sorting algorithm for finding pairs of similar short substrings 
+from large-scale string data, Knowledge and Information Systems 25(2), pp. 229-251, 2010
+[10]
+[11]
+[X] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi, "The 
+worst-case time complexity for generating all maximal cliques and computational 
+experiments", Theoretical Computer Science 363, pp. 28-42, 2006 
+宇野毅明のホームページへ  
+情報学研究所のホームページへ 
+公開プログラム

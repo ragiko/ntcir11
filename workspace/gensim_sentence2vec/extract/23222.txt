@@ -1,0 +1,154 @@
+
+Symfony2のblogチュートリアルをテストコードを書きながら写経してみました。
+blogチュートリアルは入門編ということもあり、コントローラーにロジックが書かれています。そのままではユニットテストを書くことが難しかったため、アプリケーションの機能を上位レイヤーから検証するファンクショナルテストを書きました。具体的には、リクエストに対するレスポンス内容の検証や、データベースに接続してテーブルの中身が正しく更新されているかを検証するテストを書きました。
+テストとしては荒く不完全ですが、コードに変更を加えたときに、過去に作ったものが著しく壊れていないことは確認できます。
+上位レイヤーからテストを書き、全体をカバーした後にリファクタリングする手法は、レガシーコード改善ガイドにも紹介されています。
+この記事のソースコードは章ごとにタグを打ってgithubに置いてあります。
+https://github.com/karakaram/symfony2-blog-tutorial/tags
+動作確認環境
+Symfony 2.0.11
+PHP 5.3.10
+PHPUnit 3.6.10
+目次
+テストを書く前の準備
+6章 参照系ページのファンクショナルテスト
+7章 登録ページのファンクショナルテスト
+8章 登録ページのバリデーションのファンクショナルテスト
+10章までチュートリアルを進める
+fixtureでテストの順番の依存性を解決
+テストを書く前の準備
+エディタからPHPUnitを実行できる環境を整えましょう。エディタからPHPUnitが実行できると、開発のリズムと楽しさが全然違います。
+私と同じくVimを使用されている方はこちらの記事が参考になるかもしれません。
+VimからPHPUnitを実行する環境を整える
+Symfony2のテストをVimのquickrunから実行する
+VimでPHPUnitの実行結果をシンプルに表示するプラグインを書いた
+コマンドラインからSymfony2ので作成したアプリケーションのテストを実行する方法も残しておきます。下記は、Symfony2の本体が~/Sites/Symfonyにある場合の例です。
+$ cd ~/Sites/Symfony
+$ phpunit -c app
+Configuration read from /Users/karakaram/Sites/Symfony/app/phpunit.xml.dist
+........
+Time: 3 seconds, Memory: 33.50Mb
+OK (8 tests, 22 assertions)
+-c オプションで phpunit.xml.dist のディレクトリを指定する所がポイントです。引数にファイルを指定すればそのファイルのテストだけを実行することもできます。
+6章 参照系ページのファンクショナルテスト
+まずはblogチュートリアル(6) テンプレートの作成までチュートリアルを進めます。ここまで完了すると、ブログの一覧を表示するページとブログの詳細を表示するページができているはずです。
+これらのページのファンクショナルテストを以下のように書きました。なお、テストを成功させるにはPostテーブルにあらかじめデータを登録しておく必要があります。
+// src/My/BlogBundle/Tests/Controller/DefaultControllerTest.php
+namespace My\BlogBundle\Tests\Controller;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+class DefaultControllerTest extends WebTestCase
+{
+public function test一覧画面が表示される()
+{
+$client = static::createClient();
+$crawler = $client->request('GET', '/blog/');
+$this->assertTrue($client->getResponse()->isSuccessful());
+}
+public function test詳細画面が表示される()
+{
+$client = static::createClient();
+$crawler = $client->request('GET', '/blog/1/show');
+$this->assertTrue($client->getResponse()->isSuccessful());
+}
+}
+ざっくり解説すると下記のことを行なっています。
+/blog/ と /blog/1/show にGETリクエストを送信。
+それぞれのリクエストに対し、http status 200 を応答するか検証。
+7章 登録ページのファンクショナルテスト
+続いて、blogチュートリアル(7) 記事の追加までチュートリアルを進めます。この章では、ブログを登録するページを作成します。
+登録ページのファンクショナルテストは以下のように書きました。詳細ページのテストも修正しています。
+// src/My/BlogBundle/Tests/Controller/DefaultControllerTest.php
+//中略
+class DefaultControllerTest extends WebTestCase
+{
+//中略
+public function test登録ができる()
+{
+$client = static::createClient();
+$crawler = $client->request('GET', '/blog/new');
+$this->assertTrue($client->getResponse()->isSuccessful());
+$form = $crawler->selectButton('Save Post')->form();
+$form['form[title]'] = 'title';
+$form['form[body]'] = 'bodybodybody';
+$crawler = $client->submit($form);
+$crawler = $client->followRedirect();
+$this->assertTrue($client->getResponse()->isSuccessful());
+//データベースを参照して登録されているか確認
+$kernel = static::createKernel();
+$kernel->boot();
+$em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+$dql = 'SELECT p FROM My\BlogBundle\Entity\Post p ORDER BY p.id DESC';
+$query = $em->createQuery($dql);
+$query->setMaxResults(1);
+$posts = $query->execute();
+$post = $posts[0];
+$this->assertSame('title', $post->getTitle());
+$this->assertSame('bodybodybody', $post->getBody());
+}
+public function test詳細画面が表示される()
+{
+$client = static::createClient();
+// $crawler = $client->request('GET', '/blog/1/show');
+$crawler = $client->request('GET', '/blog/');
+$link = $crawler->filter('a:contains("title")')->eq(0)->link();
+$crawler = $client->click($link);
+$this->assertTrue($client->getResponse()->isSuccessful());
+}
+}
+解説は下記になります。
+/blog/new ページにリクエストを送り、http status 200 を応答するか検証。
+formに値を設定し、formをsubmit。submit後、http status 200 を応答するか検証。
+データベースに接続し、Postテーブルにデータが登録されているか検証。
+詳細ページのテストを登録したデータを参照するようにリファクタリング。
+8章 登録ページのバリデーションのファンクショナルテスト
+続いて、blogチュートリアル(8) データのバリデーションまでチュートリアルを進めます。この章では、登録するページに入力エラーチェックを追加します。
+バリデーションのファンクショナルテストは以下のように書きました。
+// src/My/BlogBundle/Tests/Controller/DefaultControllerTest.php
+//中略
+class DefaultControllerTest extends WebTestCase
+//中略
+public function test登録画面のバリデーションが機能する()
+{
+$client = static::createClient();
+$crawler = $client->request('GET', '/blog/new');
+$this->assertTrue($client->getResponse()->isSuccessful());
+$form = $crawler->selectButton('Save Post')->form();
+//必須チェック
+$form['form[title]'] = '';
+$form['form[body]'] = '';
+$crawler = $client->submit($form);
+$body = $client->getResponse()->getContent();
+$this->assertSame(2, preg_match_all('/This value should not be blank/', $body, $maches));
+//最小文字数チェック
+$form['form[title]'] = '1';
+$form['form[body]'] = '1';
+$crawler = $client->submit($form);
+$body = $client->getResponse()->getContent();
+$this->assertSame(1, preg_match_all('/This value is too short. It should have 2 characters or more/', $body, $maches));
+$this->assertSame(1, preg_match_all('/This value is too short. It should have 10 characters or more/', $body, $maches));
+//最大文字数チェック
+$longCharcter = '';
+for ($i=0; $i < 51; $i++) {
+$longCharcter .= 'a';
+}
+$form['form[title]'] = $longCharcter;
+$form['form[body]'] = $longCharcter;
+$crawler = $client->submit($form);
+$body = $client->getResponse()->getContent();
+$this->assertSame(1, preg_match_all('/This value is too long. It should have 50 characters or less/', $body, $maches));
+}
+//中略
+解説は下記になります。
+/blog/new ページにリクエストを送り、http status 200 を応答するか検証。
+formにエラーとなる値を設定し、submit。
+http status 200を応答し、期待するエラーメッセージが表示されるか検証。
+この程度の文字列マッチであれば、preg_match_all ではなく substr_count が使えそうなことを後から知りました。そのうちリファクタリングします。
+10章までチュートリアルを進める
+ここまでテストを書いて感触をつかめれば、後はなんとかなると思います。テストコードを書きながら、10章までチュートリアルを進めます。残りの章では記事の削除、記事の編集などが紹介されています。
+コードはgithubに置いてあります。
+https://github.com/karakaram/symfony2-blog-tutorial/tags
+10章以降はリファクタリングと新機能追加について紹介されています。10章に入る前にもう少しテストの実行環境を整えます。
+fixtureでテストの順番の依存性を解決
+データの削除の章までテストを書くと、テストの順番やデータの状況によっては詳細ページのテストが失敗するようになります。参照ページや編集ページのテストも、初期データがないとテストが失敗してしまいます。テストの順番に依存性が発生しており、好ましい状況ではありません。
+次回の記事では、DoctrineFixturesBundleを導入してこの問題を解決します。
+テストコードを書きながらSymfony2のblogチュートリアルを写経した | karakaram-blog

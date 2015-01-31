@@ -1,0 +1,7 @@
+14.6.2 音声認識率の評価
+認識結果が出たら,次は評価用スクリプトは score.py で音声認識率を評価しよう. 方向ごとに評価するために,次の3つのコマンドを順番に実行していこう. 
+> python score.py result.txt transcription_list1.txt 60 10
+> python score.py result.txt transcription_list3.txt 0 10
+> python score.py result.txt transcription_list2.txt -60 10
+引数の意味は,前から順に音声認識結果のログ,正解データ, 正解データの音声到来方向,音声到来方向の許容誤差である. たとえば1行目なら,50度から70度から到来した音源を評価対象として, transcription_list1.txt にある正解データと比較する. 実行すると,図14.35のような表示が 得られるはずだ. 各行は左から順に認識が成功したかどうか,認識結果,正解データを表す. 最後の行は,全発話中何発話が成功したかと,音声認識率を表す. この場合は, 20発話中 17 発話の認識に成功し,認識率は 85% である. 
+HARK クックブック Version 1.9.9. (Revision: 5967) : 音声認識率の評価

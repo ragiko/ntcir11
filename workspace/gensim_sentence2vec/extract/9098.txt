@@ -1,0 +1,7 @@
+drawRoundRectComplex()メソッドって?  
+[ActionScript3.0]
+Graphicsクラス / drawRoundRectComplex()メソッド
+Graphicsクラスの描画メソッドには、複雑な角丸矩形が描けるものがあるらしい。  
+複雑な角丸矩形の描画
+drawRoundRectComplex(x:Number, y:Number, width:Number, height:Number, topLeftRadius:Number, topRightRadius:Number, bottomLeftRadius:Number, bottomRightRadius:Number):void
+[AS3.0] drawRoundRectComplex()メソッド? | にゃあプロジェクト

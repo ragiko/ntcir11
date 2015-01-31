@@ -1,0 +1,23 @@
+異常値検知、素敵な響きですね!fluent-plugin-anomalydetect 作りました - PolyPeaceLightあらかじめ固定値でアラートの条件を決めておかなくても、通常と異なる数値変化を検出してアラートできたら大変嬉しい、ということでインストールして一週間ほど運用してみました。
+fluent-agent-lite で送信されてくる nginx のアクセスログの数を対象
+60秒間隔で集計
+<match nginx.access.**>
+type copy
+<store>
+...
+</store>
+<store>
+...
+</store>
+<store>
+type anomalydetect
+tag  nginx.anomaly.access_log
+tick 60
+store_file /var/log/td-agent/anomalydetect.dat
+</store>
+</match>目論見としては、アクセス数の急変 (増加、減少) を検知したい、というところです。
+nginx.anomaly.access_log        {"outlier":17.139157711554112,"score":7.503651241329008,"target":2367}
+nginx.anomaly.access_log        {"outlier":7.1147699712708645,"score":3.0314162920326417,"target":2391}
+nginx.anomaly.access_log        {"outlier":7.1296905023335135,"score":3.4056734467047143,"target":2502}
+このようなログが60秒ごとに出力されるので、scoreの値を zabbix に送ってグラフにして観察してみます。実際にアクセス数が急変した状態でのグラフを並べてみると…19:41ごろの急上昇に対応してスコアが上がり、最大で 4.35 になりました。ただ、19:00ごろの小さなピークに対する反応 (スコア 2.62) と比べると、スコア的な差が小さく感じます。デフォルトの状態では起動直後はスコアが7程度、それから時間が経過すると低下していき、平常時は 0〜3 程度の値を取るようです。特に大きな変化のない状態で、1日分をグラフにすると以下のような感じです。急激なダウンについてはまだ幸いにも大きな障害が起きていないため、スコアがどのような反応をするのか、引き続き観察してアラートに使用する score の閾値を決めたいですね。
+異常値検出プラグイン fluent-plugin-anomalydetect を使ってみたのでそろそろ閾値を決めたい - 酒日記 はてな支店

@@ -1,0 +1,62 @@
+
+目的
+コメントスパム対策2では、リファラーでスパムを弾く方法を説明しました。
+もしそれで上手くいかないような場合には、このHiddenタグを使ったスパム対策に切り替えてください。
+自分のサイト上からのコメント投稿以外は受付けない… そんな改造法。
+追記するのは2箇所だけのお手軽対策なので、お試しあれ
+作業に入る前の注意点
+この改造をするにあたり、
+BlognPlus(ぶろぐん+)スクリプト本体の index.php をいじることになります。
+間違えるとブログが壊れる可能性もあるのでphp初心者で自信が無い…という人は
+バックアップをしっかり取って作業するか、もしくは諦めた方が無難です(＾＾;
+壊れても当方は責任を取りませんので自己責任で作業してくださいネ
+動作確認サーバー: 
+ロリポップ!
+/
+さくらインターネット
+/
+VALUE-DOMAIN XREA
+ぶろぐんVer: 2.2.4/2.3.2
+コメントスパム対策の改造説明 
+作業としてはこの2つ
+(1) スキンHTMLへの追記
+(2) index.php への追記
+(1) スキンHTMLへの追記
+スキンのHTMLファイルへの追記を行います。
+「コメント投稿フォーム」の <form …>～</form> の間に
+ここから～ここまで(下記テキストエリア内のソース) を追加します。
+?? 行目位 <form action="index.php?mode=comment" method=post>
+?? 行目位   <input type="hidden" value="{CEID}" name="blogn_cid">
+?? 行目位   <input type= …
+<!-- // コメントスパム対策(Hidden_Check Skin)。ここから----------- -->
+<script language="JavaScript"><!--
+document.write('<input type="hidden" name="blogn_cm10check" value="'+location.href+'" readonly>');
+// --></script>
+<!-- // コメントスパム対策(Hidden_Check Skin)。ここまで----------- -->
+?? 行目位 </form>
+#ソース行数はスキンの種類によってバラバラです。
+(2) index.phpの修正
+ぶろぐんプラススクリプトの index.phpファイル を開いてください。
+「コメント入力処理」の所に ここから～ここまで(下記テキストエリア内のソース) を追加します
+284行目位 //----------------------------------------- コメント入力処理
+285行目位 function blogn_input_comment($user, $entry_id, $name, $email = "", $url = "", $mes, $set_cookie, $ip, $agent) {
+286行目位   $errflg = false;
+287行目位   $utf_name = blogn_mbConv($name, 0, 4);
+288行目位   $utf_email = blogn_mbConv($email, 0, 4);
+289行目位   $utf_url = blogn_mbConv($url, 0, 4);
+290行目位   $utf_mes = blogn_mbConv($mes, 0, 4);
+// コメントスパム対策(Hidden_Check php)。ここから------------------
+$cmtcheck = stristr($_POST["blogn_cm10check"], $_SERVER['HTTP_HOST']);
+if(!$cmtcheck) $utf_mes = "";
+// コメントスパム対策(Hidden_Check php)。ここまで------------------
+292行目位 if (!$entry_id || !$utf_name || !$utf_mes) {
+293行目位   // エラー処理
+294行目位   //HTTPヘッダ送信
+#ソース行数はぶろぐんのバージョンによって変わるので目安程度にしてください
+index.phpを保存し、FTPソフト等を使用して上書きアップロードすれば完了です(＾＾)b
+これでブログ上からのコメント投稿のみ受付けるようになります。
+お疲れさまでした。
+# お手軽に対策～ を条件に改造法を説明しましたが、このやり方だと
+# スパム業者にまた悪策を練られてしまえば、抜け道はできてしまいます(‾ ‾;
+# んでも今のところは効果大。 軽いしね
+コメントスパム対策の為の改造 (機械的に送られてくる宣伝コメントをシャットアウト!)…(Hiddenタグ編) - ブログンサポート

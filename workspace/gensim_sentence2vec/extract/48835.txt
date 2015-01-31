@@ -1,0 +1,86 @@
+
+Manabu Suzuki,Osamu MORIKAWA
+National Institute of Advanced Industrial Science and Technology 1-1-1,
+Higashi,Tsukuba, Ibaraki, 305-8566 Japan Tsukuba Central 6
+Abstract
+Recently, many presenters use personal computers in symposium, and the
+number of connection troubles is increasing. In HIS2000, common personal
+computers for presentation were prepared. To prepare common PCs for general
+use includes the idea of universal design. Presenters could choose either
+the common personal computer or their own computers. There were 4 patterns
+of speaker changing; A) Common PC to Common PC, B) Common PC to Own PC,
+C) Own PC to Common PC, D) Own PC to Own PC. We recorded scenes of speaker
+changing, and checked speaker changing time. As a result, pattern 'A' indicated
+the reduction of speaker changing time. We also analyzed behaviors of some
+presenters. It is difficult to introduce common PCs which satisfy every
+presenter, but improving this problem would contribute human interface
+study. We expect that this report support effective use of common personal
+computer.
+Keywords: presentation, speaker changing time, universal design,
+method of human interface study
+1. はじめに
+近年、PCによる発表が増加しており、それに伴い、発表者交代時のPC接続のトラブルも増加の傾向にある。発表時のトラブルは発表者だけでなく、聴衆にとっても無駄な時間でもある。発表の度につなぎ替えを行っている発表者持参のPCのかわりに、事務局側で会場のプロジェクタとの接続確認を行った発表用PCをあらかじめ用意しておけば、接続時のこれらトラブル防止が期待できる。そこで、限られた発表時間を効果的に有効利用するために、発表用PCの設置を検討した。
+しかし、導入の効果が不明である、導入のための事務作業が増大する、機器借り入れのための予算が必要である、トラブルが起きた場合の責任問題など、導入に対し否定的な意見も多くあった。
+そこで、導入した場合の効果について実験をし、今後の大会運営に有益な知見を得ることも、ヒューマンインタフェース学会ならではの取り組みと考え、HIS2000を、発表用PCの設置による話者交代時間軽減の効果の実証実験の場とすることにした[1]。
+本報告ではHIS2000での試みによって得られたデータについて報告する。
+2. HIS2000での試み
+発表用PCの設置は、見方によってはユニバーサルデザインの一つである。使いたい人が使えば良い、使わない人がこれによって不利益を被ることが無い様にすることは大前提である。事務局が用意したPCが、プレゼンテーションソフト、そのバージョン、描画速度等の点で、発表者全員の満足いくスペックであるという保証はないし、満たすのは現実的に不可能に近い。完璧を目指すのではなく、できるだけ多くの人ができるだけ便利に使える事を目標にした。そこで、以下の環境を整える事にした。
+大会事務局では、表1の仕様の発表用PCを会場数(4)+1台用意し、各会場のプロジェクタと接続し、正常動作することを確認した。各PCのハードディスク上には発表セッションのフォルダ、その下に発表番号のフォルダを用意した。コピー媒体は、フロッピーディスク、MO、CD-ROM、メモリーカード(64MB)に対応した。
+表1 発表用PCの仕様
+Table 1 Specification of Common PC for Presentation.
+本体
+CPUMobile Celeron 400MHz
+外部画像出力1,024x768ドット:65,536色
+メモリ64M RAM
+HDD6.4GB
+OSWindows98
+FDD1.44MB対応
+CD-ROM最大24倍速
+外部接続
+PCメモリーカード64MB
+MO640MB
+SCSIカードPCカード接続
+マウスUSB接続(オプティカル)
+使用可能アプリケーション
+InternetExploer 5.0
+Netscape 4.7
+PowerPointViewer
+AcrobatReader 4.0
+発表者は休憩時間などを利用して事前に、該当PCの該当フォルダに自分のデータをコピーする。該当PCまたは、会場外のホワイエに設置したPCで、動作チェックする。
+発表終了後、フォルダ内のデータは事務局が責任を持って消去する。
+発表者には、今回の試みの趣旨を説明し、発表用PCの積極的利用および、話者交代時のビデオ撮影に協力頂いた(図1)。ビデオ撮影は、前の発表が終わるところから次の発表が始まるまでの間とした。
+3. 結果
+発表用PCへのファイルコピー作業には、メモリーカードの利用が多かった。これは、発表者の多くが、持参したPCにPCカードスロットが標準装備されており、フロッピーよりも簡単に大容量のコピーが行えたためと思われる。
+今回の試みでは、発表用PCの積極的利用はお願いしたものの、最終判断は各発表者に任せた。この結果、ビデオ記録された話者交代は、
+A ) 発表用PC  発表用PC (31件)
+B ) 発表用PC  持ち込みPC (11件)
+C ) 持ち込みPC  発表用PC (8件)
+D ) 持ち込みPC  持ち込みPC (7件)
+の4パターンとなった。
+各パターン毎に集計した交代時間を図2に示す。なお交代時間は、司会者が発表者を紹介した時点から、発表開始した時点までとした。時間分解能は1/30秒である。最速の0.0秒はAの事例、最長の114.7秒はDの事例であった。
+交代時間を1要因(交代パターン)で分散分析したところ、有意差が認められた(F[3,53]=19.95,
+p<.01)。また、従来の大会でのパターンであるDと今回のAをウェルチ検定したところ、有意差が認められた(t'[6]=3.35,
+p<.01)。
+また操作内容ごとの所要時間の集計を表2に示す。残念ながら、今回のビデオ記録だけでは、操作開始・終了時刻の特定が不可能なものがかなりあったため、特定できたものだけの集計となっている。
+表2 発表者の操作の所要時間
+Table 2 Times of Operating Equipments by Presenters.
+PC操作
+マイク装着
+電源コード接続
+ビデオケーブル接続
+平均(秒)
+9.7
+10.4
+8.4
+11.9
+件数
+64
+33
+4
+16
+4. 考察
+本節では、個々の事例について行動分析をする。
+事例1、最速事例(交代時間0.0秒: パターンA; 図3)
+発表用PCの連続使用のケースで、司会者が発表者を紹介している間に、発表者が登壇する(時刻
+-11.0秒)。前発表者は発表者用の準備を行い、プログラムの起動を確認して、指し棒を発表者に手渡し、降壇する(-9.3)。発表者は、紹介終了を待って、発表を開始する。これは、両発表者が同じ発表用PCを使用するため、前発表者が自分の発表の終了と共に、次の発表者の準備も引き続き行ったため、発表者は何もせずに、発表をすることができた事例である。
+大会発表における使用機器の話者交代時間への影響

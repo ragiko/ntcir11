@@ -1,0 +1,38 @@
+[お知らせ]IEだとリンク先が見つからない場合があります.その場合はGoogle ChromeあるいはFirefoxなどで閲覧してください.
+ICP(Iterative Closest Point)法について
+ICPは3次元形状モデルの間の位置合わせを行う手法であり、
+遺物の計測結果の統合等に広く用いられている。
+ICPは Chen and Medioni および Besl and McKay によって
+同時期に考案された手法であるようだ。
+Chen, Y. and Medioni, G.:
+Object modeling by registration of multiple range images,
+Proceedings of IEEE International Conference on Robotics and Automation,
+pp. 2724-2729, 1991
+DOI: 10.1109/ROBOT.1991.132043
+Besl, P. J. and McKay, N. D.:
+A Method for Registration of 3-D Shapes,
+IEEE Transactions on Pattern Analysis and Machine Intelligence,
+Vol. 14, No. 2, pp. 239-256, 1992
+DOI: 10.1109/34.121791
+発表以降、ICPには様々な改良が施されてきており、多くの変種がある。
+Rusinkiewicz and Levoy は、2001年の時点でこれらを分類し、
+高速なICPを実現するための指針を示している。
+Rusinkiewicz, S. and Levoy, M.:
+Efficient Variants of the ICP Algorithm,
+Proceedings of International Conference on 3-D Digital Imaging and Modeling,
+pp. 145-152, 2001
+http://graphics.stanford.edu/papers/fasticp/
+DOI: 10.1109/IM.2001.924423
+この文献はICPの実践的な理解に役立つ内容を多数含んでいるため、
+その内容をかいつまんで紹介する。
+初期値の与え方について
+ICPによって的確な結果を得るためには、相対的な剛体変換の
+初期値を与える必要がある。
+一般的には以下のような手法がある。
+(形状)スキャナの位置をトラッキングする
+表面の特徴点を同定・対応付けする
+"spin-image" を使う
+(慣性)主軸を計算
+対応点の全探索
+ユーザ入力
+ICP

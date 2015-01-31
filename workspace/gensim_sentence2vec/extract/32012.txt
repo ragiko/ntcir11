@@ -1,0 +1,49 @@
+
+音声認識をさせて何かのデータにコンバートしたいという需要は結構最近あるので、2014年のMax環境で何かできないか調べてみました。
+日本語の音声認識エンジンはJuliusがよく使われているそうなので早速こちらからダウンロードしてみたところ、OS10.10でも10.9でもなぜかコンパイルがうまくいかない。
+http://julius.sourceforge.jp
+ネットでヒントを求めたところHomebrewだと楽だとのこと。
+そういえばシンガポールに行くときに丸山君にHomebrewの便利さを聞いてインストールしてあったのですが、その後使う機会が無くすっかり忘れていたので環境構築し直し。
+Homebrewとは-
+– Mac OS 上でのソフトウェア管理を行うソフトウェアのこと
+– Macの中に入っているソフトウェアを尊重して利用するVersion 管理なので,利用しやすい
+Homebrewのインストールはターミナルで以下のコマンドを実行。
+$ ruby -e “$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)”
+Juliusとディクテーションキットのインストールは以下のコマンド。
+$ brew tap oame/nlp
+$ brew install julius julius-dictation-kit
+これだけであっさりインストールできます。
+macの場合、core audioがうまく動作しないので、音声入力のためのライブラリportaudioもインストールする必要があるかもしれません。
+(僕の場合事前にportaudioをビルドしてあったので、homebrew経由でもこれが無いと動作しないかは未確認)
+更にMax/MSP上でJuliusで処理したデータを受け取るにはMaxのshellオブジェクトをインストールする必要があります。
+shellオブジェクトの場合、コマンドをフルパスで書かないと実行してくれません。.bash_profileなどでパスを通してターミナルで実行してるプログラムも、Maxのshellオブジェクトだとパスが通ってません。
+もしかしたら、Maxサーチパスのほうに記述すればフルパスで書かなくてもいいのかもしれません。
+http://cycling74.com/toolbox/bernstein-shell/
+shellオブジェクトはその名の通り、shellのように動作してくれるオブジェクトです。
+Juliusがインストールされてるディレクトリやディクテーションキットのjconfが置いてあるディレクトリを書いてメッセージオブジェクトに記述し、shellオブジェクトに送り込めばマイクからの音声入力を文字列として取得できます。
+“/usr/local/bin/julius -C /usr/local/opt/julius-dictation-kit/share/main.jconf -C /usr/local/opt/julius-dictation-kit/share/am-gmm.jconf”
+音楽で使うことも可能ですが、インスタレーションでこういうプログラムは結構必要な場面があると思うので、音声による言語をMaxで音響や光や映像に変換するパッチをスタンバイさせておくと便利だと思います。
+routeオブジェクトやselオブジェクトなどを使って特定の文字列が入力されたときに何かを動作させるようにプログラムを組んでいくのが基本になると思います。
+大量に音声が入力されても聖徳太子並みにポリフォニックに処理できるかというと、そこまでは技術は進化してない模様。
+Mac OSXではsiri以降kyokoなど日本語の音声合成が組み込まれているので、赤松さんのaka.speechと組み合わせて、マイクとスピーカーのフィードバックループを作って走らせると、誤認識だけが立ち上がった病的な独り言が延々続いて、新たな娯楽が生まれそうな予感がします。 
+http://www.iamas.ac.jp/~aka/max/
+音声認識と音声合成のフィードバックループはこんな感じになります。
+Comment from 藤本隆行 (DUMBTYPE, Kinsei R&D)
+これらの音楽のために収集された過剰な音素は、一律の面というよりは網のように繋がりつつ積み重なっていき、その編目のそこここから接続を待つ炭素の腕が 飛び出している。それらのレイヤーは不透明で、重なりは直視出来なくても、その表面には下に隠されたモノの凹凸が浮き上がる。
+そこには、線的に伸びるモニュメントというよりは、有機分子モデルのアシンメトリーな規則性と複雑さがあるようで、その構造をリズムがオーバードライブするというよりは、冷徹に切り刻んでいく。
+その溢れる音の中でも手触りが感じられるのは、Akihiko Matsumotoがネイティヴなプログラマーなうえに、確たる音楽的教養を持っていることの証だと思う。
+彼の最新作「Metamemory」は蓄積された莫大な情報に振り回されることなく、その中を泳ぎ回るような作品となった。 
+http://plumus.tokyomax.jp/release/mus-012
+iTunes Music Store
+https://itunes.apple.com/jp/album/metamemory/id943297106?l=en 
+[MUS-012] Metamemory by Akihiko Matsumoto ℗ 2014 +MUS [ EP, Digital ]
+Released: 2014/09/30 
+Mastering :
+Yu Miyashita at Underarrow
+http://www.underarrow.com
+Artwork:
+Adam Hosmer
+http://adamhosmer.com
+アーティスト自身による全曲解説
+http://akihikomatsumoto.com/works/metamemory.html 
+Max/MSPとJuliusを使って音声認識した日本語を音響や光に変換 | Akihiko Matsumoto Blog

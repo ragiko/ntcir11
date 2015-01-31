@@ -1,0 +1,7 @@
+米Google は、Mobile-Friendly Websites というモバイルフレンドリーなウェブサイトを構築するためのサイトを Google Developers に公開した。モバイルSEOや、モバイルサイト構築に役立つソフトウェアなどのドキュメントがまとめられているほか、モバイルフレンドリーテストツールで指定した URL がモバイルに適したサイトか否かを簡易的に診断することができる。試したところ、モバイルに適したことを示す Awesome! This page is mobile-friendly またはブラウジングに支障がある可能性を示す Not mobile-friendly のいずれかを表示するようだ。この診断結果と検索結果表示への影響との関係性は不明。
+ドキュメント類はこれまでに Google がモバイル構築サイトと検索エンジンとの関係性について発言してきた内容やよく寄せられる質問と回答が改めて整理されているので、不明点があった時に参考にしたり、改めて復習する時に便利だろう。
+Google Mobile Friendly Websites
+https://developers.google.com/webmasters/mobile-sites/
+モバイルSEO
+https://developers.google.com/webmasters/mobile-sites/mobile-seo/
+ASCII.jp:米Google、モバイルフレンドリーサイト構築のためのドキュメント公開

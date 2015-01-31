@@ -1,0 +1,78 @@
+最近、にわかに音声認識というものが盛り上がっています。
+スマートフォンに搭載されている、AppleのSiri、NTTドコモのしゃべってコンシェル、Googleの音声検索あたりが有名ですが、お掃除ロボやエアコン、カーナビといった家電にも音声認識機能が搭載されるようになってきました。
+認識の精度や意識の問題(人前で機械に話しかけるのはちょっと恥ずかしい)などの課題はありますが、音声認識はアプリや家電のUIの一部としてこれから普及していくと思われます。
+ですが、一般の開発者にとって音声認識機能を自分のアプリやウェブサイトに組み込むのはまだまだ難しいです。
+Juliusのようなオープンソースの音声認識システムもありますが、一般の開発者が自前で音声認識サーバーを立てるのは敷居が高いと思います。
+GoogleやAppleばっかりズルい!音声認識が自分のWebサイトやアプリに組み込めたら夢が広がるのになー
+Javascriptで数行で書けて、
+自分でサーバー立てる必要もなくて、
+認識精度もよくて、
+無料で使える音声認識システム
+がどこかに転がってないかなー。という夢を見るわけですが、なんと実はもう既にあるのです!
+*デモ機能を試すには最新版のChromeでアクセスをお願いします
+簡単に使えるSpeech Input API
+はいはい、知ってる知ってる。Chrome11から追加されたHTMLのinput要素にx-webkit-speechを加えると、フォームの入力に使えるおもちゃでしょ?
+キーボードで打ったほうが100倍速いし、誰が使うんだよww
+デモ
+そんなものもあったかもしれませんが、違います
+実はChrome25から、もっと低レベルな操作をJavascriptから行えるWeb Speech APIというのが実装されているのです。
+低レベルな操作を可能にするWeb Speech API
+Web Speech APIの機能を一つずつ紹介していきます。
+その前に、Web Speech APIはSpeech Input APIと違って、最初にJavascriptでオブジェクトを作らないといけません。
+var recognition = new webkitSpeechRecognition();
+recognition.lang = "ja-JP";
+認識する言語は日本語にしておきます。
+音声認識の開始と終了
+音声認識の開始がstart(), 終了がstop()になります。
+認識が終了するとonresultイベントが呼び出されるので、ここで認識結果を取得して表示してあげます。
+<input type="button" value="音声認識開始" onclick="recognition.start();"/>
+<input type="button" value="音声認識終了" onclick="recognition.stop();"/>
+<div id="state">停止中</div>
+<div id="recognizedText"></div>
+var recognition = new webkitSpeechRecognition();
+recognition.lang = "ja-JP"
+//話し声の認識中
+recognition.onsoundstart = function(){
+$("#state").text("認識中");
+};
+//マッチする認識が無い
+recognition.onnomatch = function(){
+$("#recognizedText").text("もう一度試してください");
+};
+//エラー
+recognition.onerror= function(){
+$("#recognizedText").text("エラー");
+};
+//話し声の認識終了
+recognition.onsoundend = function(){
+$("#state").text("停止中");
+};
+//認識が終了したときのイベント
+recognition.onresult = function(event){
+var results = event.results;
+for (var i = event.resultIndex; i<results.length; i++){
+$("#recognizedText").text(results[i][0].transcript);
+};
+デモ
+途中の認識結果の表示
+Googleの音声検索を使ったことがある人は、認識途中に表示されている文字列が徐々に変化していく様子を見たことがあると思います。Web Speech APIではあの機能も実現することができます。
+ソース
+var recognition = new webkitSpeechRecognition();
+recognition.lang = "ja-JP";
+//中間結果の表示オン
+recognition.interimResults = true;
+recognition.onresult = function(event){
+var results = event.results;
+for (var i = event.resultIndex; i<results.length; i++){
+//認識の最終結果
+if(results[i].isFinal){
+$("#recognizedText").text(results[i][0].transcript);
+}
+//認識の中間結果
+else{
+$("#recognizedText").text(results[i][0].transcript);
+}
+}
+};
+デモ
+Webアプリに高機能な音声認識を追加するWeb Speech API - Kesin's diary

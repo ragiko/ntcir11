@@ -1,0 +1,62 @@
+素集合データ構造(そしゅうごうデータこうぞう、英: disjoint-set data structure)は、データの集合を素集合(互いにオーバーラップしない集合)に分割して保持するデータ構造。このデータ構造に対する以下の2つの便利な操作をUnion-Findアルゴリズムと呼ぶ。
+Find: 特定の要素がどの集合に属しているかを求める。2つの要素が同じ集合に属しているかの判定にも使われる。
+Union: 2つの集合を1つに統合する。
+これら2つの操作をサポートしているため、素集合データ構造は「Union-Findデータ構造」あるいは「Merge-Find集合」とも呼ばれる。これら以外の重要な操作として MakeSetがある。これは、与えられた1つの要素だけを格納した集合(シングルトン)を作成する。これら3つの操作により、様々な実用的分割問題を解くことができる(「応用」の節を参照)。
+これらの操作をより正確に定義するには、集合の表現方法を決める必要がある。典型的な手法としては、それぞれの集合について、ある固定の要素を選択して「代表 (representative)」とし、その集合全体を表すものとする。すると Find(x) は x が属する集合の代表を返す。また、Union は2つの代表を引数とする。
+素集合連結リスト[編集]
+素集合データ構造を生成する単純な手法としては、集合毎に連結リストを生成する方法がある。リストの先頭の要素がその集合の代表となる。
+MakeSetは1要素のリストを生成する。Unionは2つのリストを連結する操作で、定数時間の操作である。この実装の欠点は、FindがΩ(n)または線形時間を必要とする点である。
+これを防ぐには、連結リストの各ノードにそのリストの先頭へのポインタを格納しておけばよい。つまり、Findの引数がノードへのポインタであれば、即座にそのノードが属するリストの先頭(代表)がわかる。しかし、このように実装すると今度はUnion操作で各ノードの先頭へのポインタを更新しなければならなくなり、Ω(n) の時間がかかるようになる。
+各リストの長さがわかっているなら、短い方を長い方に連結することでUnionの性能を改善できる。これ (weighted-union heuristic) を採用すると、n個の要素について、m回のMakeSet、Union、Find操作を行ったときにかかる時間は O(m + nlog n) となる[1]。漸近的により高速な操作には別のデータ構造が必要である。
+素集合森[編集]
+素集合森 (disjoint-set forest) はそれぞれの集合を木構造で表したデータ構造で、各ノードには親ノードへの参照がある。1964年、Bernard A. Galler と Michael J. Fischer が考案したが[2]、詳細な解析にはその後何年かかかった。
+素集合森では、各集合の代表は木構造の根となる。Findは親ノードへのリンクを根に到達するまでたどっていく。Unionは2つの木構造を1つにする操作であり、どちらかの根が全体の根となる。以下に素集合森の実装例を擬似コードで示す。
+function MakeSet(x)
+x.parent := x
+function Find(x)
+if x.parent == x
+return x
+else   
+return Find(x.parent)
+function Union(x, y)
+xRoot := Find(x)
+yRoot := Find(y)
+xRoot.parent := yRoot
+この素朴な実装では、連結リストを使った場合と変わらない。なぜなら、木構造の平衡が保たれないからである。しかし、これを改善する方法が2つある。
+第一の方法は union by rank と呼ばれ、Union操作で常に大きい木の方が全体の根になるように連結するものである。木の大きさを評価するにはrank を用いる。これは、1要素の木の rank を 0 とし、同じ rank r の木を連結したとき、全体の根とした方の木の rank を r+1 とするものである。このようにするだけで、MakeSet、Union、Find 操作の償却実行時間は  となる。改良した MakeSet と Union の擬似コードは以下のようになる。
+function MakeSet(x)
+x.parent := x
+x.rank   := 0
+function Union(x, y)
+xRoot := Find(x)
+yRoot := Find(y)
+if xRoot.rank > yRoot.rank
+yRoot.parent := xRoot
+else if xRoot.rank < yRoot.rank
+xRoot.parent := yRoot
+else if xRoot != yRoot // x と y が同じ集合にない場合だけマージする。
+yRoot.parent := xRoot
+xRoot.rank := xRoot.rank + 1
+第二の改善は path compression と呼ばれ、Find操作を行ったときに構造を平坦化するものである。Findで根ノードまでのリンクをたどっているとき、各ノードは同じ代表を共有しているので、それらを根ノードに直接接続できる。このため、Find は再帰的にたどったノードが全て親ノードとして根ノードを指すように変更する。こうすると木構造はより平坦になり、その後の操作が高速化される。以下に Find の改良版を示す。
+function Find(x)
+if x.parent == x
+return x
+else
+x.parent := Find(x.parent)
+return x.parent
+これらの手法は相補的であり、これを共に行うことで各操作の償却実行時間は  となる。ここで  は関数  の逆であり、 は非常に高速に大きな値になるアッカーマン関数である。 はその逆関数なので、実用的な  の値に対しては常に 5 未満の値になる。したがって、各操作の償却実行時間は事実上非常に小さな定数となる。
+実際、これは漸近最良である。Fredman と Saks は1989年、どのような素集合データ構造でも1回の操作あたり平均で  のノードにアクセスするとした[3]。
+応用[編集]
+素集合データ構造は集合の分割をモデル化したもので、例えば無向グラフの連結成分などに対応する。したがって、2つの頂点が同じ成分に属するかどうかを調べたり、新たな辺を追加することで閉道となるかを調べるのに利用できる。
+Boost Graph Library では、Incremental Connected Components 機能の実装に素集合データ構造を使っている。また、グラフの最小全域木を求めるクラスカル法の実装にもこれを使っている。
+なお、素集合森の実装では削除ができない点に注意されたい。上述した2つの改良を施しても削除は容易ではないが、削除に対応したもっと複雑な手法が既に設計されている[4]。
+歴史[編集]
+素集合森は考案されてからよく使われていたが、上限(そして限定的な下限)がアッカーマン関数の逆関数であることを証明したのはロバート・タージャンだった。それまで、操作毎の時間の上限はジョン・ホップクロフトとジェフリー・ウルマンが証明した O(log* n) とされていた。log* は重複対数であり、これも増加の遅い関数である(ただし、アッカーマン関数の逆関数ほどではない)。タージャンと van Leeuwen はより効率的なワンパスの Find のアルゴリズムも考案している。
+2007年、ACM SIGPLAN の Workshop on ML において、Sylvain Conchon と Jean-Christophe Filliâtre が素集合森データ構造の永続版を発表した。これは構造の以前のバージョンを効率的に保持するもので、計算機支援証明システムCoqを使って形式的に正しさが証明されている[5]。
+脚注・出典[編集]
+^ Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. Introduction to Algorithms, Second Edition. MIT Press and McGraw-Hill, 2001. ISBN 0-262-03293-7. Chapter 21: Data structures for Disjoint Sets, pp.498–524.
+^ Bernard A. Galler and Michael J. Fischer. An improved equivalence algorithm. Communications of the ACM, Volume 7, Issue 5 (May 1964), pages 301-303. 素集合森に関する最初の論文。 ACM Digital Library
+^ M. Fredman and M. Saks. The cell probe complexity of dynamic data structures. Proceedings of the Twenty-First Annual ACM Symposium on Theory of Computing, pages 345–354. May 1989. "Theorem 5: Any CPROBE(log n) implementation of the set union problem requires Ω(m α(m, n)) time to execute m Find's and n−1 Union's, beginning with n singleton sets."
+^ Zvi Galil and Giuseppe F. Italiano. Data structures and algorithms for disjoint set union problems, ACM Computing Surveys, Volume 23, Issue 3 (September 1991), pages 319-344. ACM Digital Library
+^ Sylvain Conchon and Jean-Christophe Filliâtre. A Persistent Union-Find Data Structure. In ACM SIGPLAN Workshop on ML, Freiburg, Germany, October 2007.
+素集合データ構造 - Wikipedia

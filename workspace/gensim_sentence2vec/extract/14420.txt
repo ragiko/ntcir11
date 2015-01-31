@@ -1,0 +1,24 @@
+先日コメントでいただいた情報、リンク先にあったのはAMDのOPEN CL向けHEVCデコーダーでした。
+http://xhevc.com/en/downloads/downloadCenter.jsp
+台湾のイベントなどで掲載されていた純正デコーダーとは違うようですが、Kaveri発表当時から将来の新機能とされてきたHEVCデコーダーが実現した、というではないですか。さっそくいろいろ試してみましたので報告します。
+基本的には上記のリンク先からStrongene PC OpenCL HEVC/H.265 Decoderを落とし、解凍したあと中のreg.batファイルを右クリック管理者として実行、を選ぶだけですが、スプリッターとしてLAV Filtersの新しいものを落としておいた方がよさそうです。
+https://github.com/Nevcairiel/LAVFilters/releases
+とりあえずここにアップされていた0.62でOKですがここで注意。Video ConfigurationからFormatsを選び、下から4番目にあるhevcのチェックを外しておきましょう・・・。いや、チェック入っていてもいいんですけど、このままだとLAV Filtersのソフトデコードで再生されちゃうのでOPEL CL デコーダーで再生されている実感がないんですよ。
+再生ソフトは推奨のWindows Media Playerを使って実行してみたところ、当方の2種類のAPU、Richland・KaveriともCPUの稼働率が20%以下程度まで下がり、GPUが映像の動きに合わせて激しく0〜100%の間を行き来します。
+OPEN CL版の実行状態を調べるため、LAV FiltersのソフトデコードのHEVCを有効にし、OPEN CL版をアンインストールして比較してみましょう。アンインストーラーは付属してませんが、作り方は簡単。reg.batを右クリック編集として出て来たテキストファイルの
+regsvr32 "%~dp0hevcsrc.dll"
+regsvr32 "%~dp0hevcdecfltr.dll"
+regsvr32 "%~dp0FLVSplitter.ax"
+regsvr32 "%~dp0mp4demux.dll"
+とある部分を
+regsvr32 -u "%~dp0hevcsrc.dll"
+regsvr32 -u "%~dp0hevcdecfltr.dll"
+regsvr32 -u "%~dp0FLVSplitter.ax"
+regsvr32 -u "%~dp0mp4demux.dll"
+に上書きし、別の名前のbatファイル(uninstall.batなど)で保存したものを「管理者として実行」するだけです。CPUが仕事してGPUが仕事しなくなっているのがわかると思います。
+ネット上では4K相当のHEVCファイルもアップされていますのでこれを実行してみると、RichlandとKaveriの差がはっきりわかります。カクカクしっぱなしのRichlandに対しKaveriも完全スムーズとはいかないものの、そこそこ動画としてみられる程度には再生できるようになっています。このOPEN CL版はまだ作り始めたばかりですので、今後の成熟が楽しみですね。ボチボチH.264からH.265に移行したくなるかも。
+なお、このデコーダー、AMD向けとなっていますがOPEN CLではありますから他の環境ではと実行してみますと
+・Core i7 4770+内蔵GPU ×
+・FX8350 GeForceGT640  
+となりました。ちなみにFX環境の方がCPU性能が高いせいか、Kaveriよりさらに一段も二段も上のスムーズな動画再生を実現してくれました(笑) まだCPU処理の方が一枚上か。改良の余地はありそうなのでHSAフル活用してほしいな。
+話題?のOPEL CL版HEVCデコーダーで未来体験 - 録画人間の末路

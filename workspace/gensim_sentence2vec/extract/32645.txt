@@ -1,0 +1,12 @@
+ 本稿は、Scott Guthrie氏のブログを、氏の許可を得て、翻訳、転載したものです。米Microsoft社の副社長で、ASP.NETやSilverlightの開発チームを統率する氏のブログでは、次期製品を含む最新の技術をいち早く紹介しています。
+原典:ASP.NET Web API: CORS support and Attribute Based Routing Improvements
+ASP.NET Web API:CORSサポートと属性ベースのルーティング改善
+初回リリースから、莫大なASP.NET Web APIを採用してきました。2月に、ASP.NET and Web Tools 2012.2 Updateを出荷し、Web APIおよびその他のASP.NETコンポーネントにさらに多数の新機能が追加されました。
+ASP.NETチームは、次期新機能(素晴らしい機能が盛りだくさん)の開発に必死で取り組んでいます。今回の開発で素晴らしいことの一つが、チームのオープンソース開発プロセスの使い方です。これは、以前この春に採用すると告知していた、より親密にコミュニティと協力し合い、早期に新機能を評価して頂いたり、コミュニティの開発者に新機能の開発に直接貢献して頂くというものです。
+以下は、2つの次期ASP.NET Web API新機能についての追加情報です。
+これは、ASP.NET MVPのBrock Allen氏とTim McCall氏が開発、貢献してくれたものです(attributerouting.netで有名)。
+ASP.NET Web APIへのCORSサポート
+クロスオリジンリソース共有とは(CORS)、Webページから異なるドメインにAJAXリクエストできるようにするW3C基準です。この基準は、コールを行うリソースのドメインへのコールを規制する、Webブラウザで実装された同じオリジンポリシーを緩和します。CORSの仕様には、クロスオリジンコールを行う時のブラウザとサーバのやり取りが定義されています。
+以下の画像は、Contosoドメインにクロスドメインコールを行なっているASP.NET Web API Test Tool(http://xyz123.azurewebsites.net/で実行されている)を表示しています。
+SENDをクリックすると、クロスオリジンリクエストが行われます。Contosoサイトは、CORSサポートを設定していないので、エラーダイアログが表示されます。
+ASP.NET Web API: CORSサポートと属性ベースのルーティング改善:CodeZine

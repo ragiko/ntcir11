@@ -1,0 +1,5 @@
+コード : 文字列内の検索 (Visual C#) 以下のコード例では、String オブジェクトで IndexOf メソッドを呼び出し、部分文字列が最初に出現した場所のインデックスを報告します。 例 string searchWithinThis = "ABCDEFGHIJKLMNOP";
+string searchForThis = "DEF";
+int firstCharacter = searchWithinThis.IndexOf(searchForThis);
+Console.WriteLine("First occurrence: {0}", firstCharacter); コードのコンパイル コードをコピーし、コンソール アプリケーションの Main メソッドに貼り付けます。 信頼性の高いプログラミング IndexOf メソッドは、部分文字列が最初に出現した場所の最初の文字の位置を報告します。インデックスは、0 から始まります。つまり、文字列の最初の文字はインデックス 0 になります。 IndexOf が部分文字列を検出できない場合は、-1 が返されます。 IndexOf メソッドでは大文字と小文字が区別され、現在のカルチャが使用されます。 発生する可能性のある例外に対する制御を強化するには、文字列の検索を try-catch ステートメントで囲みます。 参照 例外処理ステートメント | string | String.IndexOf メソッド (文字列) | 一般的な言語例のトピック
+コード : 文字列内の検索 (Visual C#)

@@ -1,0 +1,79 @@
+リニアサーチ(線形探索とも呼ばれる)はリストの先頭から終端に向かって目的の要素を探し出すアルゴリズムです。
+目的の要素であるという判定は比較によって行います。
+アルゴリズム分析
+リストの先頭から要素を取り出す
+取り出した要素の値と探したい要素の値を比較する
+一致すれば探索完了
+一致しなければ 1. へ戻り次の要素を取り出す
+かなりシンプルで理解し易いアルゴリズムです。
+図解
+特徴
+単純でわかりやすいアルゴリズムですが、データをひとつひとつ順に照合するのでリストのサイズが大きいと効率が悪いです。
+サンプルコード
+Java
+配列から目的の値を持つ要素を探します。
+public class LinearSearch {
+/**
+* リニアサーチの実装
+*/
+public static int execute(int[] data, int target) {
+int notfound = -1; // 見つからなかった場合の戻り値
+for(int i = 0; i < data.length; i++) {
+if (data[i] == target) {
+return i; // 配列のインデックスを返す
+}
+}
+return notfound; 
+}
+public static void main(String[] args) {
+int[] data = {1,2,3,4,5}; // 配列
+int result;
+// ``3''を持っているインデックスを探す
+result = LinearSearch.execute(data, 3);
+if (result != -1) {
+System.out.println("Found: index key = " + result);
+} else {
+System.out.println("Not found.");
+}
+}
+}
+C言語
+標準入力から得た値を持つ要素を配列から探します。
+#include <stdio.h>
+#define ARRAY_SIZE (8) /* size of array */
+int main(void)
+{
+int array[ARRAY_SIZE] = {9, 7, 18, 20, 8, 39, 77, 35};
+int key;
+int i;
+puts("find value?");
+scanf("%d", &key);
+for (i = 0; i < ARRAY_SITE; ++i) {
+if (array[i] == key) {
+puts("Found!\n");
+return 0;
+}
+}
+puts("Not Found.\n");
+return 0;
+}
+Python
+標準入力から得た値を持つ要素をリストから探します。
+def linear_search(aList, val):
+for x in aList:
+if x == val:
+return True
+return False
+if __name__ == '__main__':
+from random import shuffle
+l = range(15)
+v = raw_input('Find value? ')
+r = linear_search(l, int(v))
+if r:
+print('Found!')
+else:
+print('Not Found!')
+アルゴリズム
+バイナリーサーチ 
+プライバシー ポリシー | ライセンス・問い合わせ | &copy; 2007-2013 codereading.com
+リニアサーチ/線形探索 : アルゴリズム

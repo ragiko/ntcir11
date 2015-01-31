@@ -1,0 +1,169 @@
+単純グッド・チューリング推定法 (Simple Good-Turing Estimation) とは何ぞや?
+R, NLP
+単語頻度のディスカウンティング(スムージング)について説明してる日本語の文献って,ほとんど北先生の「確率的言語モデル」の内容で,あまり情報がないんですよね.
+最も単純なのは加算法だと思うんですが,定評のある(と個人的に思ってる)単純グッド・チューリング推定法について簡単に説明しようと思います.
+ディスカウンティングって何で必要なの?
+例えばナイーブベイズで条件付き確率を学習する時に,あるカテゴリには存在するけどあるカテゴリには存在しないという単語(例えば「あらびき」)があると非常に困ったことになります.
+「あらびき」の含まれる文書を識別しようとすると,「あらびき」さえなければ「NLP」というカテゴリに分類されるのに,「NLP」みたいな高尚な分野には「あらびき」という単語が存在しないので P(あらびき|NLP) = 0 で全体の条件付き確率が0になってしまいます.その結果「お笑い」に分類されてしまうなんてことがあります.これをゼロ頻度問題といいます.
+けしからんですね!
+そこでディスカウンティングの出番です!
+個人的な解釈として「ディスカウンティング」とは,相対頻度の高い単語の相対頻度を低くして,その分を低頻度の単語に割り当てるので「ディスカウンティング」と呼ぶのかなぁと思ってます.
+だから「加算法」という"ディスカウンティング"手法も存在するわけです.
+加算法
+加算法は全単語の出現頻度に一律の値δを追加します.なので出現頻度が0であってもδ回出現したことになって出現確率が0になることは防げます.
+加算法を適用するとある単語wの出現確率は次のような形になります.
+ここでn(w)は単語wの出現回数です.分母にδ|W|追加しているのはΣP(w) = 1にするためです.
+δ = 1の時を Laplace Smoothing と呼びます.
+語彙数が少ない場合や精度を求めない場合は手軽に実装もできていいんですが,語彙数が膨大になると分母のδ|W|の影響が無視できないぐらいでかくなるので問題なんです.
+そこで単純グッド・チューリング推定法の出番です!
+単純グッド・チューリング推定法
+グッド・チューリング推定法は学習データにr回出現した単語の出現回数の期待値に基づいて行われるディスカウンティング手法です.
+Turing estimator
+r回出現した単語の出現回数は次のように補正されます.
+ここでNrは学習データにr回出現した単語の数です (frequency of frequency r).
+なのでr回出現した単語wの出現確率は
+となります.っで,出現頻度0の単語に関してはN1/(N0N)を割り当てます.
+これを[1]ではTuring estimatorと呼んでいます.
+Good Turing estimator
+Turing estimatorで問題になるのは,例えばr = 11の時にNr=0となってしまうとそれ以降のr*が定義できなくなってしまうことです.また,rが大きいと信頼性に欠けます.
+なのでNrの補正が必要になります.
+補正の仕方にはいろいろあるっぽいんですが,Linear Good-Turing estimateを採用します.
+これは単語頻度と単語数にジップの法則が成り立つという知見を利用した補正方法です.
+まず,Nr≠0のNrをrの小さいものから順に並べます.
+そして次のようにNrの補正値Zrを定義します.
+ジップの法則が成り立つ場合
+が成り立つのでこの回帰係数を求めます.
+っで,そうするとrの補正値r*は次のようになります.
+これを[1]ではGood Turing estimatorと呼んでいます.
+Turing estimator と Good Turing estimator のコラボ
+rの値が小さいものはNrの値も大きくて信憑性が高いので単純グッド・チューリング推定法ではrの値が大きいものだけに式(2)を適用し,rの値が小さいものには式(1)を適用します.
+そこで問題になるのがどこで式(1)と式(2)を切り替えるかですが,[1]では式(1)で求めたr*と式(2)で求めたr*の差が標準偏差の1.65倍を超えた以下になった場合に式(1)から式(2)に切り替えるとしています.
+分散は次のように近似できるらしいです(導出過程はわかりません…).
+最後に,これだとΣP(w) = 1を満たさないので次のように正規化します.
+ここでprは出現頻度がrの単語の出現確率なので注意してくださいね.出現頻度がrの個々の単語の出現確率だと pr/Nrになります.
+(prunnormは正規化されてないという意味です)
+あくまでも出現頻度0の単語の出現確率にN1/Nを割り当てるみたいです.
+以上が単純グッド・チューリング推定法の説明です!丸々[1]の内容なんで,わかりにくい!って方は[1]を参照してください.
+Rで実装してみよう!
+素晴らしいことに[1]にはSによる実装が載っています.個人的に気に食わない点がけっこうあったんで自分なりにRに移植してみました.
+サンプルデータとしてRMeCab で配布されているdata.tar.gzのデータセットを使っています.
+あと,Laplace smoothing と補正後の頻度の比較を行っています.
+sgtTest.R
+sgt <- function(r, Nr) {
+# number of words
+N <- sum(r * Nr)
+d <- diff(r)
+# Turing estimate
+{
+# turing estimate index
+ti <- which(d == 1)
+# discount coefficients of Turing estimate
+dct <- numeric(length(r))
+dct[ti] <- (r[ti] + 1) / r[ti] * c(Nr[-1], 0)[ti] / Nr[ti]
+}
+# Linear Good-Turing estimate
+{
+#Zr <- Nr / c(1, 0.5 * diff(r, lag = 2), r[length(r)] - r[length(r) - 1])
+Zr <- Nr / c(1, 0.5 * (d[-1] + d[-length(d)]), d[length(d)])
+f <- lsfit(log(r), log(Zr))
+coef <- f$coef
+# corrected term frequency
+rc <- r * (1 + 1 / r)^(1 + coef[2])  
+# discount coefficients of Linear Good-Turing estimate
+dclgt <- rc / r
+}
+# make switch from Turing to LGT estimates
+{
+# standard deviation of term frequencies between 'r' and 'rc' (?)
+rsd <- rep(1,length(r))        
+rsd[ti] <- (seq_len(length(r))[ti] + 1) / Nr[ti] * sqrt(Nr[ti + 1] * (1 + Nr[ti + 1] / Nr[ti]))
+dc <- dct
+for (i in 1:length(r)) {
+if (abs(dct[i] - dclgt[i]) * r[i] / rsd[i] <= 1.65) {
+dc[i:length(dc)] <- dclgt[i:length(dc)]
+break
+}
+}
+}
+# renormalize the probabilities for observed objects
+{
+# summation of probabilities
+sump <- sum(dc * r * Nr) / N
+# renormalized discount coefficients
+dcr <- (1 - Nr[1] / N) * dc / sump
+}
+# term frequency
+tf <- c(Nr[1] / N, r * dcr)
+p <- c(Nr[1] / N, r * dcr / N)
+names(p) <- names(tf) <- c(0, r)        
+list(p = p, r = tf)
+}
+# comarison between Laplace smoothing and Simple Good-Turing estimation
+compare <- function(tf, N0 = NULL) {
+# Laplace Smoothing
+tbl <- table(tf)
+r <- as.integer(names(tbl))
+Nr <- as.integer(tbl)
+if (!is.null(N0)) {
+Nr[1] <- N0
+}
+N <- sum(r * Nr)
+p <- (r + 1) / (N + sum(Nr))
+names(p) <- r
+lsp <- list(p = p, r =  p * N)
+cat("Laplace Smoothing\n")
+print(head(lsp$r))
+cat("\n")
+# Simple Good-Turing Estimation
+if (is.null(N0)) {
+N0 <- sum(tf == 0)
+}
+r <- r[-1]
+Nr <- Nr[-1]
+sgtp <- sgt(r, Nr)
+sgtp$p[1] <- sgtp$p[1] / N0
+cat("Simple Good Turing estimation\n")
+print(head(sgtp$r))
+cat("\n")
+}
+library(RMeCab)
+d <- t(docMatrix2("data/writers/"))
+train.index <- c(1:3, 5, 6)
+tf <- colSums(d[train.index,])
+compare(tf)
+compare(tf, 100000)
+実行結果
+$ R --slave -f tmp.R
+file_name =  data/writers//ogai_gan.txt opened
+file_name =  data/writers//ogai_kanoyoni.txt opened
+file_name =  data/writers//ogai_niwatori.txt opened
+file_name =  data/writers//ogai_vita.txt opened
+file_name =  data/writers//soseki_eijitsu.txt opened
+file_name =  data/writers//soseki_garasu.txt opened
+file_name =  data/writers//soseki_omoidasu.txt opened
+file_name =  data/writers//soseki_yume.txt opened
+number of extracted terms = 5209
+to make matrix now
+Laplace Smoothing
+0         1         2         3         4         5 
+0.7569295 1.5138591 2.2707886 3.0277182 3.7846477 4.5415772 
+Simple Good Turing estimation
+0         1         2         3         4         5 
+0.1259478 0.6147441 1.3373734 2.2621483 3.2214393 4.1980137 
+Laplace Smoothing
+0         1         2         3         4         5 
+0.1351457 0.2702914 0.4054372 0.5405829 0.6757286 0.8108743 
+Simple Good Turing estimation
+0         1         2         3         4         5 
+0.1259478 0.6147441 1.3373734 2.2621483 3.2214393 4.1980137 
+compare(tf)はコーパス全体の語彙数を用いて補正した補正後の頻度,compare(tf, 100000)の実行結果は語彙数を100000として補正した後の頻度です.上の値は実際の頻度を出力しています.
+結果からわかるようにLaplace Smoothingでは補正後の頻度が実際の頻度とかなりかけ離れています.
+その点単純グッド・チューリング推定法では差はせいぜい1といった具合です.
+このように語彙数が大きい場合は加算法だと誤差がひどくなってしまうですねぇ.
+参考文献
+[1] W. Gale and G. Sampson. Good-Turing smoothing without tears. Journal of Quantita-
+tive Linguistics, Vol. 2, No. 3, pp. 217–237, 1995.
+[2] 北研二, 辻井潤一. 確率的言語モデル. 東京大学出版会, 1999.
+ツイートする
+Permalink | コメント(0) | トラックバック(1) | 20:44
+単純グッド・チューリング推定法 (Simple Good-Turing Estimation) とは何ぞや? - あらびき日記

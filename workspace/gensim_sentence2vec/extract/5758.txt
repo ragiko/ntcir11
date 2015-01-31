@@ -1,0 +1,16 @@
+  public partial class MainWindow : Window
+{
+public MainWindow()
+{
+InitializeComponent();
+StackPanel1.DataContext = new
+{
+住所録 = new[]
+{
+new{住所="大阪",住居者="井上"},
+new{住所="東京",住居者="加藤"},
+}
+};
+}
+}
+開発メモ@ ウィキ - コレクション走査パス+匿名クラス+日本語変数の利用

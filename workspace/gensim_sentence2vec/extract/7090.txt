@@ -1,0 +1,111 @@
+
+こんにちは、入社3か月の斉藤です。
+いつまで新人と名乗れるものなのでしょうか。気持ちはいつでもフレッシュです。  
+現在IVR(自動音声応答)サービスにあれこれと関わっています。
+AWS上のAsteriskサーバをHeartbeat+Pacemakerで冗長化したのでそれについて書いていこうと思います。
+HeartbeatやPacemakerは高可用クラスタシステムを構築するためのオープンソースなパッケージです。
+詳しくは以下のページを見てください。
+Linux-HA
+Linux-HA Japan
+Pacemakerプロジェクトウェブサイト
+IVRやAsteriskに関しては以下の記事から続いています。
+Asterisk-IVR on AWS(外線接続編)  EC2 on Asterisk-IVR  
+まず今回のおおまかな構成は以下のとおり。
+今回使用したAMI、Heartbeat、Pacemakerのバージョンは次のとおりです。
+Amazon Linux AMI 2012.03
+heartbeat-3.0.5
+pacemaker-1.0.12
+作業手順は以下のとおりです。
+あまりよろしくないとは思いつつ今回はrootユーザーで作業しています。
+本来なら適宜sudoを使っていくべきかなと思います。
+ホスト名の設定
+セキュリティグループの設定
+パッケージのインストール
+Heartbeatの設定
+起動とリソースエージェントの設定
+動作確認
+1.ホスト名の設定
+EC2ではデフォルトのままだと起動毎にホスト名が変わってしまうので、heartbeat01、heartbeat02というホスト名をそれぞれつけます。
+ホスト名の固定の仕方は以下のとおりです。  
+echo heartbeat01 > /etc/hostname
+hostname -F /etc/hostname
+/etc/sysconfig/networkを編集します。  
+HOSTNAME=heartbeat01
+2.セキュリティグループの設定
+Heartbeatでノード間の監視をするために以下を追加します。
+sourceにはAsteriskサーバのセキュリティグループを指定します。  
+PortService
+Source
+3.パッケージのインストール
+・openhpi-libsのインストール
+Pacemakerのインストールに必要なopenhpi-libsのパッケージは、AmazonLinuxのリポジトリにありません。
+なのでCentOS6のリポジトリを追加してインストールします。
+/etc/yum.repos.d/CentOS-Base.repoというファイルを以下のように作成します。
+[centos-base]
+name=CentOS-6 - Base
+mirrorlist=http://mirrorlist.centos.org/?release=6&arch=x86_64&repo=os
+enabled=0
+gpgcheck=1
+gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-6
+yumコマンドでインストールします。
+yum --enablerepo=centos-base install openhpi-libs.x86_64
+・Heartbeat、Pacemakerのインストール
+こちらからリポジトリパッケージ(pacemaker-1.0.12-1.1.el6.x86_64.repo.tar.gz)をダウンロードしインストールします。
+tar zxvf pacemaker-1.0.12-1.1.el6.x86_64.repo.tar.gz /tmp/
+cd /tmp/pacemaker-1.0.12-1.1.el6.x86_64.repo
+yum -c pacemaker.repo install pacemaker.x86_64  heartbeat.x86_64
+4.Heartbeatの設定
+・/etc/ha.d/ha.cf
+/etc/ha.d/ha.cfに設定を記述します。各サーバ毎に設定をします。ucast以外は各サーバ共通です。
+pacemaker     on
+autojoin      none
+udpport       694
+ucast         eth0 ec2-175-41-243-27.ap-northeast-1.compute.amazonaws.com  //自分のではなく相手のPublic DNS
+warntime      10
+deadtime      15
+initdead      60
+keepalive     5
+node          heartbeat01
+node          heartbeat02
+auto_failback off
+uuidfrom      nodename
+logfile       /var/log/heartbeat.log
+logfacility   none
+・/etc/ha.d/authkeys
+/etc/ha.d/authkeysで相互認証に使用する秘密鍵を指定します。
+各サーバで同一のものにします。
+auth *num*
+*num* *algorithm* *secret*
+*num :1から始まる簡単なキーインデックス
+*algorithm:シグネチャーアルゴリズム。 md5またはsha1を使用できます。
+*secret:認証キー
+作成後rootだけが読み込みできるようにします。
+#chmod 0600 /etc/ha.d/authkeys
+5.起動とリソースエージェントの設定
+設定するために各サーバでHeartbeatを起動させます。
+/etc/init.d/heartbeat start
+下記のコマンドで画像のようにOnlineになるか確認します。
+crm_mon -A
+heartbeat01,02ともにOnlineになっています。
+サーバ間のチェックは正しく行われているので次にリソースエージェントの設定をします。
+設定にはcrmコマンドを使用します。内容は以下のとおりです。
+crm
+#configure 
+crm(live)configure# property $id="cib-bootstrap-options" stonith-enabled="false" no-quorum-policy="ignore"
+crm(live)configure# rsc_defaults resource-stickiness="INFINITY" migration-threshold="1"
+crm(live)configure# primitive p_asterisk ocf:heartbeat:asterisk params user="root" group="root" maxfiles="65536" op monitor interval="10s" timeout="30s" op start interval="0s" timeout="30s" op stop interval="0s" timeout="30s"
+crm(live)configure# commit
+crm(live)configure# quit
+6.動作チェック
+設定が終わったのでフェイルオーバーできるかどうか動作のチェックをします。先ほど同じく”crm_mon -A”で確認します。
+asteriskがheartbeat02で起動しています。
+それでは、asteriskのプロセスを止めてheartbeat01のasteriskが起動するかを試してみます。
+killコマンドを使いプロセスを終了して、”crm_mon -A”で確認してみます。すると
+heartbeat01でasteriskが起動しています。
+heartbeat02の方が動いてないよというメッセージもでています。  
+これで無事フェイルオーバーできました。
+感想
+無事にAsteriskサーバを冗長化できました。
+切り替えの際にB2BUAにレジストする必要があるので数秒かかりますが、自動で切り替えられるのは素敵ですね。
+今回はAsteriskサーバでしたが、UDPの通信が必要でELBが使えない場合には同じように冗長化できると思います。
+AWS上のAsteriskサーバをHeartbeat+Pacemakerで冗長化 «  サーバーワークス エンジニアブログ

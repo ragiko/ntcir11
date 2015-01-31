@@ -1,0 +1,216 @@
+PostgreSQLのシステムテーブル入門 (暗記用のSQL集)
+DB, Ruby on Rails, PostgreSQL |  
+PostgreSQLで,システムテーブルを利用するための入門。
+システムテーブルの使い方を覚えれば,自分が作ったテーブルの統計情報や,メタデータを取得する事ができる。
+DBそのものの理解も深まる。
+(1)情報スキーマ(人間に理解しやすい。調べ物をするとき便利)
+カラム一覧
+制約一覧
+(2)統計情報ビュー(パフォーマンス調整に便利)
+テーブル一覧
+接続プロセス一覧
+(3)システムカタログ(アプリからの利用向け)
+テーブル一覧
+活用例
+以下のSQLは,覚えやすいようにシンプルに記載してある。
+いざという時に使うために,全部暗記しよう。
+必要に応じてPostgreSQLの最新版のドキュメントを参照すること。
+PostgreSQL日本語ドキュメント
+http://www.postgresql.jp/document/
+(1)情報スキーマ(information_schema)を使おう
+PostgreSQLの情報スキーマ(information_schema)は,DBのシステム情報(メタデータ)を参照するための標準インタフェース。
+information_schemaの存在はSQLの標準規格で決められているので,MySQLやMSSQLやOracleにも,同じ物がある。
+つまり,DBを使っていれば必ずお世話になる。
+情報スキーマ
+http://www.postgresql.jp/document/8.4/html/information-schema.html
+情報スキーマは、現在のデータベースで定義されたオブジェクトについての情報を持つビューの集合。
+情報スキーマは標準SQLで定義されている。(なので逆に,PostgreSQLに特化した情報は見れない。)
+PostgreSQLに特化した情報を調べるためには,情報スキーマではなく,システムカタログを使う。(後述)
+その情報スキーマの利用法。
+(1−1)カラム一覧
+カラム一覧を表示するSQL(カラムの属性情報付き):
+SELECT
+*
+FROM
+information_schema.columns
+WHERE
+table_schema = 'public'
+;
+カラムの型などの情報が,人間に理解しやすい形式で表示される。
+例えば,もし度忘れして「このカラム,VARCHARのいくつだっけ?」というような時は,
+data_typeがcharacter_varying
+character_maximumが255とか
+になっているので,そこを見ればわかる。
+自動カウントアップされない。設定漏れか?
+という時には,column_defaultの列に nextval が入っているかどうかを調べればわかる。
+［PostgreSQLウォッチ］第3回 ついに正式リリースされた7.4の新機能を見る 
+http://itpro.nikkeibp.co.jp/members/SI/oss/20031121/2/
+information_schemaは,システムカタログを参照するための標準インターフェイスである。メタデータ検索用の各種ビューが含まれる。
+列情報を検索するためのビューはcolumnsである。
+(1−2)制約一覧
+主キーを一覧表示するSQL:
+SELECT
+*
+FROM
+information_schema.table_constraints
+WHERE
+constraint_type = 'PRIMARY KEY'
+;
+主キーの設定漏れをチェックしたりできる。
+主キー制約以外にも,UNIQUE, CHECK, FOREIGN_KEYなど各種制約に関する情報を閲覧できる。
+※NOT NULL制約は,CHECK制約の一種として記載されている。
+前述のinformation_schema.columnsのis_nullable列からも判別可能。
+制約の詳細については下記URLを参照。
+データベース PostgreSQL 制約
+http://d.hatena.ne.jp/s-kita/20081013/1223863631
+NOT NULL制約:NULL値を禁止
+UNIQUE制約:列内で重複する値を禁止
+PRIMARY KEY制約:NOT NULLとUNIQUEを組み合わせたもの
+CHECK制約:指定した式を満たさない値を禁止
+FOREIGN KEY制約:外部テーブルのレコードと紐付けて,その紐付けを壊すような操作を禁止
+ところでinformation_schemaは,テーブル一覧を表示させることも可能だ。
+information_schema.tablesからテーブル一覧を参照することにより,「テーブルの存在判定」を行なう事ができる。
+しかし,それを見てもあまりおもしろくはない。
+もしテーブル一覧を見たい場合は,次項の「稼動統計情報」から見たほうがよいだろう。
+(2)統計情報ビューを使おう
+情報スキーマでは,DBのstaticな情報(=「どのような構造か?」)を得られた。
+DBのdynamicな動きに関する情報を得るには,稼働統計情報ビューが役立つ。
+各テーブルや各データベースが「どのように使われているか?」を調べられる。
+稼動統計情報を活用しよう(1)
+http://lets.postgresql.jp/documents/technical/statistics/
+pg_stat_databaseでDB単位の稼動情報,pg_stat_user_tablesでテーブル単位の稼動情報を閲覧できる。
+Postgresの統計情報コレクタとは:統計情報ビューの一覧
+http://www.postgresql.jp/document/pg830doc/html/monitoring-stats.html
+PostgreSQLパフォーマンスチューニング
+http://www.stackasterisk.jp/tech/dataBase/postgresTuning01_03.jsp
+もし統計情報がいらない場合,統計情報を収集しないように設定を書き換えて,パフォーマンスを若干改善させる事ができる。
+その統計情報ビューの利用法。
+(2−1)テーブル一覧
+テーブル一覧を表示するSQL(テーブルの稼動統計情報付き):
+SELECT
+*
+FROM
+pg_stat_user_tables
+;
+各テーブルがスキャンされた(読み取られた)回数,データが挿入された回数なども合わせて表示される。
+どのテーブルに CREATE INDEX すべきか,否か?といった判断にも活用できるはず。
+稼動統計情報を活用しよう(3)
+http://lets.postgresql.jp/documents/technical/statistics/3
+seq_scan:このテーブルに対する表スキャンの実行回数
+n_tup_ins:INSERTされた行数
+などの統計情報を表示してくれる。
+パフォーマンスチューニングのために,インデックスの使いどころ
+http://www.techscore.com/tech/sql/15_01.html
+テーブルが頻繁に更新されるような場合にインデックスを利用するとパフォーマンスは低下します。
+(2−2)現在実行中の処理を一覧
+現在DB内で立ち上がっているプロセスの一覧を表示するSQL:
+SELECT
+*
+FROM
+pg_stat_activity
+;
+DBが重くなり,クエリがなかなか返ってこない。という時に使う。
+current_queryの列で,DBサーバが現在処理している最中のSQL文を特定できる。
+やる夫がDB接続数を確認するようです。
+http://shinjuku-vipper.cocolog-nifty.com/blog/2008/03/postgresql_8bc2_2.html
+IDLEが多い場合は、特に問題はありません。SELECTが多い場合はちょっと要注意です。
+(3)システムカタログを理解しよう
+システムカタログは,システムディクショナリともいう。
+通常,手動で使うテーブルではない。アプリ側から利用する。
+アプリ側とは,例えば
+DB管理ツール(例:pgAdmin)
+DBアクセス用のフレームワーク(例:ORマッパ)
+など。
+上で紹介したinformation_schemaがC言語に例えられるとすれば,システムカタログはアセンブラのようなものだ。
+可読性は微妙だが,それだけにかゆい所に手が届く。
+ちなみにシステムカタログにおかしな更新をかけると,データベースが破壊される事がある。
+(アセンブラの安全でないコードがOSをクラッシュさせるのと似ている。)
+全システムカタログの一覧とドキュメント
+http://www.postgresql.jp/document/pg836doc/html/catalogs.html
+PostgreSQLのシステムカタログは通常のテーブルと同じように更新できるが,データベースシステムを台なしにしてしまう可能性がある。通常手作業でシステムカタログを変更してはいけない。
+特に難易度の高い操作のために,まれに,手作業で更新する事もある。 
+とりあえず知っておくべきなのは,
+システムカタログというものが存在すること
+活用例
+(3−1)使いづらさを実感する
+システムカタログからカラム一覧を取得するSQL:
+SELECT
+*
+FROM
+pg_attribute
+;
+カラム一覧は,情報スキーマだけでなく,システムカタログから取得することもできる。
+というより,システムカタログを人間にとって使いやすくするために,後付けで,上位のインタフェースとして用意されているのが情報スキーマビューなのである。
+情報スキーマより下位のシステムカタログだと,テーブル名はattrelidの列にoid(テーブルを一意に識別するための番号)として表示されるので,人間にとって理解しやすくはない。
+単純な調べものであれば information_schema を使ったほうがよいだろう。
+pg_attribute
+http://www.postgresql.jp/document/pg801doc/html/catalog-pg-attribute.html
+pg_attributeでは,所属テーブルやデータ型は「oid」として格納されているので読みづらい
+(3−2)活用例を知る
+システムカタログが有効活用されている例。
+もしかしたら,人によっては,以下のSQLをいつも目にしているだろう。
+SELECT
+a.attname,
+format_type(a.atttypid, a.atttypmod),
+d.adsrc,
+a.attnotnull
+FROM
+pg_attribute a LEFT JOIN pg_attrdef d ON a.attrelid = d.adrelid AND a.attnum = d.adnum
+WHERE
+a.attrelid = 'テーブル名'::regclass AND
+a.attnum > 0 AND
+NOT a.attisdropped
+ORDER BY
+a.attnum
+;
+※このSQLは暗記する必要はない。必要性と動作概要を理解すればOK。
+これは,Ruby on Railsのログファイルにしょっちゅう出てくるSQLだ。
+Railsを利用していない場合であっても,上の「テーブル名」の所に,好きなテーブル名を入れて手動で実行してみることが可能。
+実行すると,以下のカラムが表示される。
+attname : カラム名
+format_type : カラム型
+adsrc : デフォルト値
+attnotnull : not null 制約の有無
+特定のテーブル内の全カラムを,コンパクトな形で表示している。
+Ruby on Rails中でこのSQLを発行しているのは,ActiveRecordのpostgresアダプタ部分だ。
+rails / activerecord / lib / active_record / connection_adapters / postgresql_adapter.rbの最新版ソースコード
+http://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+# Returns the list of a table's column names, data types, and default values.
+def column_definitions(table_name) #:nodoc:
+query <<-end_sql
+SELECT a.attname, format_type(a.atttypid, a.atttypmod), d.adsrc, a.attnotnull
+FROM pg_attribute a LEFT JOIN pg_attrdef d
+ON a.attrelid = d.adrelid AND a.attnum = d.adnum
+WHERE a.attrelid = '#{quote_table_name(table_name)}'::regclass
+AND a.attnum > 0 AND NOT a.attisdropped
+ORDER BY a.attnum
+end_sql
+end
+ActiveRecordは,1つのテーブルを1つのオブジェクトにマッピングするためのライブラリ。
+簡単に言えば,ruby側でオブジェクトにデータをセットすることにより,裏でDB側でテーブルに値をセットする事ができる。
+そういったマッピング(ORマッピング)を可能にするためには,
+オブジェクトにセット可能な変数の名前(=カラム名)と,
+変数の型と,
+セットが必須であるかどうか(=not null 制約)
+を知る必要がある。
+そのために上述のSQLが実行され,結果としてActiveRecordオブジェクトが無事生成される。
+これがわかっていれば,railsアプリのログを見る際に謎を感じなくて済む。
+Rails and Postgresql - Eliminate Hundreds of Thousands of Queries a Day
+http://cfis.savagexi.com/2008/02/08/rails-and-postgresql-eliminate-hundreds-of-thousands-of-queries-a-day
+Besides being the most run query, this was also the seventh most time consuming query.(あるRailsアプリのログを解析した結果,このSQLが最も多く実行されていた。)
+まとめ
+PostgreSQLをマスターしたい場合,これらシステムテーブルの構成をひとつひとつ調査してゆけば知識がだいぶ増えてゆくと思われる。
+ただし,ある程度の知識を持っておけば,全てを覚えておく必要はない。
+例えばCSEでDBにアクセスしている場合,「DBエクスプローラ」ペインの「システムテーブル」の項目を開けば,システムテーブルは列挙される。
+その中から,自分の欲しい情報がありそうなビューを名前から推測して,その都度必要な部分だけ閲覧すればよい。
+関連する記事:
+インデックスを作成して,SQLの速度をチューニングする手順 (PostgreSQLで,EXPLAIN文とCREATE INDEX文によるパフォーマンス改善) - 主に言語とシステム開発に関して
+http://d.hatena.ne.jp/language_and_engineering/20110121/p1
+PREPARE文と,PL/pgSQL の入門  (PostgreSQLで「動的に」SQLを実行するために,プリペアド・クエリやストアドファンクションを定義しよう) - 主に言語とシステム開発に関して
+http://d.hatena.ne.jp/language_and_engineering/20110218/p1
+「相関サブクエリ」とは何かを理解して,複雑なSQLでも読めるようになろう - 主に言語とシステム開発に関して
+http://d.hatena.ne.jp/language_and_engineering/20101108/p1
+SQLで,テーブルに存在しない複数行のデータを取得する方法 (PostgreSQLの generate_series関数をマスターしよう) - 主に言語とシステム開発に関して
+http://d.hatena.ne.jp/language_and_engineering/20100309/p1
+ツイートする
+PostgreSQLのシステムテーブル入門 (暗記用のSQL集) - 主に言語とシステム開発に関して

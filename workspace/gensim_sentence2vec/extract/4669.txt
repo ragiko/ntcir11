@@ -1,0 +1,1711 @@
+
+2012年度の講義関連情報等を提供します。
+情報提供を歓迎いたします。
+秋学期の火曜日2時限に開講しています(クラス01、2単位)。
+目次
+シラバス参照
+各回の講義内容 [
+最初
+|
+最新
+]
+過去の情報 [
+2011年度
+|
+2008年度
+|
+2007年度
+|
+2006年度
+]
+各回の講義内容
+第1回(10/02)
+連絡事項
+毎回の講義では、USBフラッシュメモリなどの記憶媒体が必要です。
+講義内容
+多重回帰分析の方法(単純回帰分析との違い)
+説明変数の個数:
+単純回帰分析では2個、
+多重回帰分析では3個以上(k個)。
+(いずれも定数項を含む)
+自由度:
+単純回帰分析では n &minus; 2、
+多重回帰分析では n &minus; k
+〔検定の手続き、決定係数〕
+係数推定値の解釈:
+他の変数の影響を取り除いた(コントロールした)上での、
+被説明変数との単純回帰のような関係。
+「偏微分」のような関係。
+説明変数間の相関の推論への影響
+定式化の誤り(変数の過不足)の推論への影響
+多重回帰分析における係数推定値の解釈(教科書 4.2 節)
+残差とは
+回帰分析 = 被説明変数の変動を説明変数で「説明する」
+理論値・予測値 = 「説明された」部分
+= 説明変数の影響している部分
+残差 = 「説明し残された」部分
+= 説明変数の影響を取り除いた残りの部分
+係数の解釈(その1)
+理論モデル(決定的モデル):
+Y
+=
+&beta;1
++
+&beta;2
+X2
++
+&beta;3
+X3
+係数:
+&beta;2
+=
+Y
+を
+X2
+で偏微分した答え
+=
+X3
+を一定とした(コントロールした)ときの
+X2
+の
+Y
+への影響をあらわす
+「他の説明変数のコントロール」と残差回帰
+回帰式1:
+Yi
+=
+&beta;1
++
+&beta;2
+Xi2
++
+&beta;3
+Xi3
++
+ui
+説明変数:
+(
+1
+,
+Xi2
+,
+Xi3
+)
+回帰式2:
+Yi
+=
+&delta;1
++
+&delta;2
+Xi3
++
+wi
+説明変数:
+(
+1
+,
+Xi3
+)
+=
+「他の説明変数」
+回帰式3:
+Xi2
+=
+&gamma;1
++
+&gamma;2
+Xi3
++
+vi
+説明変数:
+(
+1
+,
+Xi3
+)
+=
+「他の説明変数」
+残差回帰:
+"回帰式2の残差" を
+"回帰式3の残差" に回帰する
+係数推定値は、
+回帰式1における
+&beta;2
+の推定値と等しい
+残差は、
+回帰式1における残差と等しい
+係数の解釈(その2):
+他の説明変数をコントロールした上での単純回帰
+説明変数の組み合わせによって、係数推定値が異なる
+コントロールする変数が変わるのだから、推定値が変わっても当然
+実用上は厄介か?  過剰定式化・過少定式化(教科書 4.5 節)
+実習:フィリップス曲線に関する推論(教科書 p. 99, 応用例 4.1)
+データ [PhillipsCurve2.xlsx]
+多重回帰の計算(回帰式1):
+被説明変数=名目賃金上昇率(W-dot)
+説明変数=｛1, 完全失業率(UN)、物価上昇率(PI)｝
+分析ツールによる結果を新しいシート '回帰式1' に出力
+残差をシート 'データ' の列 K にコピーしておく。
+セル K13 にラベルとして「回帰式1の残差」と入力
+残差回帰の計算(回帰式2):
+被説明変数=名目賃金上昇率(W-dot)
+説明変数=｛1, 物価上昇率(PI)｝
+分析ツールによる結果を新しいシート '回帰式2' に出力
+残差をシート 'データ' の列 M にコピーしておく。
+セル M13 にラベルとして「回帰式2の残差」と入力
+残差回帰の計算(回帰式3):
+被説明変数=完全失業率(UN)
+説明変数=｛1, 物価上昇率(PI)｝
+分析ツールによる結果を新しいシート '回帰式3' に出力
+残差をシート 'データ' の列 N にコピーしておく。
+セル N13 にラベルとして「回帰式3の残差」と入力
+残差回帰の計算(回帰式4):
+被説明変数=回帰式2の残差
+説明変数=｛回帰式3の残差｝
+｛1, 回帰式3の残差｝でも良い(何故か?)
+分析ツールによる結果を新しいシート '回帰式4' に出力
+残差をシート 'データ' の列 L にコピーしておく。
+セル L13 にラベルとして「回帰式4の残差」と入力
+残差回帰の結果を確認:
+「回帰式に1の残差」と「回帰式4の残差」が一致していることを確認する。
+回帰式1における「完全失業率(UN)」の係数と、
+回帰式4における「回帰式3の残差」の係数について、
+推定値が一致していることを確認する。
+(標準誤差、t値、P値もそれぞれ一致しているだろうか?)
+変数を取り除いた場合の推定値(回帰式5):
+被説明変数=名目賃金上昇率(W-dot)
+説明変数=｛1, 完全失業率(UN)｝
+回帰式1と回帰式5の結果(とくに、完全失業率の係数の推定値、P値など)
+を比較する
+(物価上昇率(PI)をコントロールしないと、結果はどうなるか?)
+多重共線性に注意を払う:
+分析ツール「相関」を用いて、W-dot, UN, PI の相関係数行列を求める。
+とくに、UN と PI の相関係数に注目
+宿題
+(提出の必要なし)
+完全失業率(UN)と物価上昇率(PI)の役割を入れ替えて残差回帰を行い、
+実習内容を自分で再現できるように復習すること。
+第2回(10/9)
+講義内容
+実習(その1):
+前回の宿題の答え合わせ。
+PhillipsCurve2.ans.xlsx
+回帰式2a:名目賃金上昇率(W-dot)を｛1, 完全失業率(UN)｝に回帰
+残差 wa-hat
+回帰式3a:物価上昇率(PI)を｛1, 完全失業率(UN)｝に回帰
+残差 va-hat
+回帰式4a:wa-hatをva-hatに回帰
+残差 ua-tilde
+回帰式1における物価上昇率(PI)の係数が、回帰式4aにおける係数と一致することを確認。
+回帰式1における残差u-hatと回帰式4aにおける残差ua-tildeと一致することを確認。
+多重回帰分析における係数推定値の解釈(教科書 4.2 節)
+係数の解釈:他の説明変数をコントロールした上での単純回帰の係数(偏微分の係数と同様)
+「他の説明変数のコントロール」と残差回帰
+回帰式1:
+Yi
+=
+&beta;1
++
+&beta;2
+Xi2
++
+&beta;3
+Xi3
++
+ui
+説明変数:
+(
+1
+,
+Xi2
+,
+Xi3
+)
+回帰式2:
+Yi
+=
+&delta;1
++
+&delta;2
+Xi3
++
+wi
+説明変数:
+(
+1
+,
+Xi3
+)
+=
+「他の説明変数」
+回帰式3:
+Xi2
+=
+&gamma;1
++
+&gamma;2
+Xi3
++
+vi
+説明変数:
+(
+1
+,
+Xi3
+)
+=
+「他の説明変数」
+回帰式4(残差回帰):
+"回帰式2の残差" を
+"回帰式3の残差" に回帰する
+Frisch-Waugh-Lovell定理
+回帰式4の係数推定値は、
+回帰式1における
+&beta;2
+の推定値と等しい
+回帰式4の残差は、
+回帰式1における残差と等しい
+説明変数の組み合わせによって、係数推定値が異なる
+コントロールする変数が変わるのだから、推定値が変わっても当然
+説明変数の追加・削除しても係数推定値が変化しないのはどのような場合か?
+実用上は厄介か?  過剰定式化・過少定式化(教科書 4.5 節)
+実習(その2):
+EViewsによる残差回帰の計算
+同じデータファイルを継続して利用。Excelで開く。
+PhillipsCurve2.ans.xlsx
+シート「データ」のセル範囲G14:I185までの範囲(アルファベットの変数名ラベルとデータ3列分)をコピーして、列Tより右側に値複写。
+名目賃金率上昇率の変数名を「W-dot」から「Wdot」に変更する(ハイフンを含む変数名をEViewsで使用できないため)
+EViewsを起動。File > New > Workfile
+とメニューを選んで新規ワークファイルを作成。
+Data specificationを、
+Frequency = Monthly、
+Start date = 1991:1、
+End date = 2005:3 と設定してから[OK]をクリック。
+あらかじめExcelで値複写しておいた領域(先頭行の変数名を含む)をコピーし、EViewsに貼り付ける(EViewsのメニュー Edit > Pasteを選択。あるいはCtrl+V)。
+[Next](または[次へ])をクリックし、Start date = 1991:1 として [Finish] をクリック。
+回帰式1の推定:Quick > Estimate Equation とメニューを選択。Equation specificationを「wdot c un pi」として [OK] をクリック。
+[Name] をクリックしてから [OK] をクリック。(デフォルトのEQ01という名前で結果が保存される。)
+Workfileウィンドウで [Genr] をクリック。「res1 = resid」と計算式を入力してから [OK] をクリック。
+回帰式2aを推定:Quick > Estimate Equation とメニューを選択。Equation specificationを「wdot c un」として [OK] をクリック。
+Workfileウィンドウで [Genr] をクリック。「res2a = resid」と計算式を入力してから [OK] をクリック。
+回帰式3aを推定:Quick > Estimate Equation とメニューを選択。Equation specificationを「pi c un」として [OK] をクリック。
+"Delete Untitled EQUATION?" との質問に [Yes] で答える。
+Workfileウィンドウで [Genr] をクリック。「res3a = resid」と計算式を入力してから [OK] をクリック。
+回帰式4aを推定:Quick > Estimate Equation とメニューを選択。Equation specificationを「res2a res3a」として [OK] をクリック。
+"Delete Untitled EQUATION?" との質問に [Yes] で答える。
+Workfileウィンドウで [Genr] をクリック。「res4a = resid」と計算式を入力してから [OK] をクリック。
+[Name] をクリックしてから「eq04a」名前を入力してから [OK] をクリック。
+EQ01 における物価上昇率 PI の係数と、
+EQ04A における RES3A の係数とが一致していることを確認する。
+EQ01 と EQ04A の残差が一致していることを次の手順で確認する。
+Workfileウィンドウで [Genr] をクリック。「diff = res4a - res1」と計算式を入力してから [OK] をクリック。
+Quick > Series Statistics > Histogram and Stats とメニューを選択し、
+Series name = diff として [OK] をクリック。
+丸めの誤差を除いて171カ月分すべてについて diff の値がほとんどゼロであることを確認する。
+File > Save とメニューを選び、PhillipsCurve2.wf1 という名前でワークファイルを保存する。(保存したワークファイルは同じデータファイルを用いた分析に再利用可能。この実習の最初の6ステップを省略できる。名前を付けた方程式も保存される。)
+EViewsの利用可能なコンピュータルームを確認するには、
+大学のコンピュータルームガイドの「ソフトウェア検索」を参照してください。
+宿題
+(提出の必要なし)
+第1回の実習における回帰式4(および第2回の実習における回帰式4a)では、
+本来ならば定数項なしの(定数項をゼロとした)回帰計算をすべきであるが、
+このことを無視して定数項をゼロとしないで回帰の計算をしても
+同様の結果が得られるのは何故か。
+この質問に回答できるように復習すること。
+第3回(10/16)
+講義内容
+宿題の解説
+多重共線性(教科書 4.3 節)
+説明変数間に(強い)相関があることによって生じる問題
+特殊なケース:完全な多重共線性
+ダミー変数の使い方を間違えた場合
+(たとえば、四半期ダミーを4つとも、
+性別ダミー(男性ダミー、女性ダミー)を2つとも同時に使ってしまう)
+などに生じる。
+分析用の計算ソフトウェアでエラーとなる(自分の間違いに気づく)
+ので、深刻な問題ではない
+データの散らばり方(情報の量)
+2つの説明変数に相関が無いとき、
+データは平面上に満遍なく散らばっている
+2つの説明変数に強い相関があるとき、
+データは平面上の一直線の近辺だけに散らばっている
+多重共線性の問題
+= 情報が不足している
+= 分析の精度が低くなる(推定量の分散が大きくなる)
+&beta;jの分散:
+誤差項の分散に比例
+説明変数Xijの標本分散に反比例
+(1 &minus; Rj2)に反比例。ただし、Rj2 = Xijをその他のすべての説明変数に回帰したときの決定係数。
+(1 &minus; Rj2)&minus;1は分散拡大因子(variance inflation factor, VIF)と呼ばれる。
+(観察できる)多重共線性の症状
+当てはまりは良い(決定係数は大きい)のに、
+個々の係数は有意でない
+当てはまりは良い(決定係数は大きい)のに、
+係数の符号条件が満たされない
+説明変数(の一部)を取り除いたり追加したりすると、
+結果が大きく変化する
+サンプル(の一部)を取り除いたり追加したりすると、
+結果が大きく変化する
+定式化の誤り(変数の過不足)の推論への影響(教科書 4.5 節)
+過剰定式化による誤り
+OLSE は、
+係数パラメータの値の如何に関わらず(ゼロであっても)
+標準的仮定の下で BLUE
+OLSE は、過剰定式化の場合でも BLUE.
+「係数の値がゼロ」という知識・情報を持っていない(用いていない)分だけ精度は低い(推定量の分散は大きい、多重共線性)
+過少定式化による誤り
+誤った知識・情報を用いているため、不偏推定量ではない。
+過少定式化の方がはるかに深刻。
+実習:
+データの入手:
+浅野・中村『計量経済学』有斐閣、2000年の
+表5-7「小田急沿線家賃のデータ(平成7年)」
+同書のデータ公開ページへ
+表5-7 の Excel 形式データをダウンロード(ファイル名を 小田急家賃.xls として保存)
+変数名を付けて、説明を別シートに移動
+データのあるシートの名称を「データ」とする。
+以下の表全体をコピーしてからシート「データ」のセルB5に貼り付ける。
+必要に応じて、書式設定「折り返して全体を表示する」などを解除する。
+1家賃RENT
+2バス乗車時間BUS
+3徒歩時間WALK
+4敷金礼金DEPOSIT
+5専有面積AREA
+6築年数AGE
+7部屋は1階か2階かDFONE
+8空調の有無DAC
+9収納の有無DSTRG
+10フローリングの有無DFLR
+11バルコニーの有無DBALC
+12新宿からの列車時間STRAIN
+13乗換路線数NLINES
+14急行停車駅からの駅数NSTNRAP
+15運賃FARE
+16新宿からの距離SDIST
+17駅STN
+シート「データ」のセル範囲D5:D21にある変数名をコピーし、
+行と列を入れ替えてセル範囲A24:Q24に貼り付ける。
+新しいシートを挿入:
+シート名のタブを右クリック。
+[挿入] をクリックし、ワークシートを挿入。
+このワークシートの名称を「説明」とする。
+シート「データ」の 1 行目から 22 行目までを切り取って、
+新しいシートの先頭部分に貼り付け。
+シート「データ」の 1 行目から 23 行目までを削除。
+急行停車駅ダミーを作成 DRAPID:
+NSTNRAP = 0 のとき 1, それ以外のとき 0
+回帰の計算:
+被説明変数 = ln( RENT )
+説明変数 = { 1, STRAIN, BUS, WALK, AREA, DRAPID }
+EViewsによるデータ読み込み(インポート)
+EViewsを起動。File > New > Workfile
+とメニューを選んで新規ワークファイルを作成。
+Workfile structure type = Unstructured/Undated、
+Data range の Observations = 776 と設定してから[OK]をクリック。
+File > Import > Import from file とメニューを選択。
+作成済みの「小田急家賃.xls」を開き、[完了]をクリック。
+Workfileウィンドウで [Genr] をクリック。
+「drapid = (nstnrap = 0)」と計算式を入力してから [OK] をクリック。
+Quick > Estimate Equation とメニューを選択。Equation specificationを「log(rent) c strain bus walk area drapid」として [OK] をクリック。(変数 DRAPID の作成を省略して、Equation specificationを「log(rent) c strain bus walk area (nstnrap = 0)」として推定することもできる。)
+相関係数行列は Quick > Group Statistics > Correlations とメニューを選択してから、変数のリストを入力する(Workfileウィンドウで変数を予め選択しておけば、変数のリスト入力を省略できる)。
+VIFは、Equationウィンドウの [View] をクリックしてから Coefficient Diagnostics > Variance Inflation Factors と選択すると表示される(Centered VIF として表示される)。元の表示に戻すためには [View] をクリックしてから Estimation Output を選ぶ。
+宿題
+(提出の必要なし)
+実習のデータを用いて、
+分析をより改善するにはどのようにしたら良いだろうか?
+計算をしてもしなくとも良いので、
+改善策を考えること。
+例えば、
+どのような物件の家賃が高いのか(安いのか)を考え、
+その要因に対応する変数(説明変数の候補)を考える。
+さらに、データがあれば(集められれば)説明変数として追加する、
+などが改善策の一例。
+説明変数を追加する場合は、その符号条件についても考えること。
+第4回(10/23)
+講義内容
+宿題の解説
+定式化の誤り(変数の過不足)の推論への影響(教科書 4.5 節)
+過剰定式化による誤り
+OLSE は、
+係数パラメータの値の如何に関わらず(ゼロであっても)
+標準的仮定の下で BLUE
+OLSE は、過剰定式化の場合でも BLUE.
+「係数の値がゼロ」という知識・情報を持っていない(用いていない)分だけ精度は低い(推定量の分散は大きい、多重共線性)
+過少定式化による誤り
+誤った知識・情報を用いているため、不偏推定量ではない。
+過少定式化の方がはるかに深刻。
+線形制約の F 検定
+t 検定ではできないこと:
+複数の等式であらわされる仮説:
+例)&beta;2 = 0
+and &beta;3 = 0
+(?これは t 検定できます。)複数のパラメタを含む1つの等式であらわされる仮説:
+例)&beta;2 = &beta;3
+複数のパラメタを含む複数の等式であらわされる仮説:
+例)&beta;2 + &beta;3 = 1
+and &beta;4 &minus; &beta;5 = 0
+2つのモデル:
+制約付きモデル, restricted model, R モデル, H0 モデル
+制約なしモデル, unrestricted model, U モデル, H1 モデル
+残差2乗和 SSR (sum of squared residuals):
+制約付きモデル RSSR
+制約なしモデル USSR
+大小関係:RSSR &ge; USSR, RSSR &minus; USSR &ge; 0
+F 値 = { ( RSSR &minus; USSR ) / G } / { USSR / ( n &minus; k ) }、
+ただし、
+n = 標本の大きさ、
+k = U モデルの説明変数の個数(含 定数項)、
+G = 制約の個数(制約をあらわす等式の本数)
+帰無仮説の下では(制約の正しい場合は)、
+2つの残差2乗和の差 RSSR &minus; USSR はゼロに「近い」はず
+右片側に棄却域を設定
+制約付きモデルの作り方:
+制約をあらわす等式を G 個のパラメタについて解く
+解いた結果を回帰式(制約なしモデル)に代入
+未知パラメタを含まない項は左辺に移行する。
+また、
+未知パラメタを含む項は右辺に残し、
+パラメタごとに因数分解して整理する
+新たな変数(被説明変数、説明変数のリスト)を作成し、回帰の計算を行う
+実習:前回の実習の続き
+制約なしモデル:
+ln RENTi
+=
+&beta;1
++ &beta;2
+STRAINi
++ &beta;3
+BUSi
++ &beta;4
+WALKi
++ &beta;5
+AREAi
++ &beta;6
+DRAPIDi
++ ui
+EViewsでワークファイル odakyu_rent.wf1 を開く
+Quick > Estimate Equation > Equation specification = "log(RENT)  c STRAIN BUS WALK AREA DRAPID"。[OK] をクリック
+[Name] をクリック。Name = "equ"。[OK] をクリック
+帰無仮説:
+新宿からの列車時間(STRAIN)の係数とバス乗車時間(BUS)の係数は等しい
+&beta;2
+= &beta;3 を制約なしモデルに代入
+因数分解される項 &beta;3(STRAIN + BUS)
+新たに作成すべき変数は STRAIN + BUS
+制約付きモデルを推定し、残差2乗和を求める
+Quick > Estimate Equation > Equation specification = "log(RENT)  c (STRAIN+BUS) WALK AREA DRAPID"。[OK] をクリック
+[Name] をクリック。Name = "eqr"。[OK] をクリック
+F 値、P 値を計算し、仮説検定を行う
+Command window(Main menuの直ぐ下の白色の領域)に「scalar fval = ((eqr.@ssr - equ.@ssr) / 1) / (equ.@ssr/equ.@df)」とタイプして[Enter]を打つ
+Command windowに「scalar pval = 1 - @cfdist(fval, 1, equ.@df)」とタイプして[Enter]を打つ
+Workfileウィンドウを見るとスカラー変数fval, pvalが生成されている。これらの名前をダブルクリックすると計算結果を確認することができる
+Excelの利用
+Excelで新規ワークシートを開く
+Equation EQUウィンドウの内容全体をドラッグして選択、右クリックしてコンテキストメニューから Copy、オプションとして Number copy method = Unformated を選んで [OK] をクリック。さらにExcelのワークシートの適当な位置に貼り付け。
+同様に、Equation EQRウィンドウの内容を Number copy method = Unformated としてコピーし、Excelのワークシートの適当な位置に貼り付け。
+F 値を定義式に沿って計算
+P 値を計算 =FDIST(F 値, G, n&minus;k)
+Excelでは引き算が不要である点に注意。
+有意水準を自分で決め、それとP値を比較して仮説検定を行う。
+宿題にも利用するので、結果を保存。Excelワークブックのファイル名は任意。
+EViewsのWorkfileは名前を変更せずに上書きして保存する。
+宿題
+(要提出)
+第3回および第4回の実習で使用した小田急沿線家賃のデータ(浅野・中村『計量経済学』有斐閣、2000年、表5-7)について、次の問いに答えなさい。
+次の回帰式について、
+帰無仮説 H0
+「&beta;2
+= &beta;3
+= &beta;4」、
+対立仮説 H1「
+H0 でない
+」
+として仮説検定を行いなさい:
+ln RENTi
+=
+&beta;1
++ &beta;2 STRAINi
++ &beta;3 BUSi
++ &beta;4 WALKi
++ &beta;5 AREAi
++ &beta;6 DRAPIDi
++ &beta;7 AGEi
++ ui
+検定結果の報告に際しては、
+次の順で行うこと。
+制約なしモデルの推定結果を(表ではなく数式のかたちで要約して)報告する
+制約付きモデルの推定結果を(表ではなく数式のかたちで要約して)報告する
+2つのモデルの残差2乗和の値、統計値(F 値)および関連する自由度、P値を明記した上で、仮説検定の結論を述べる
+「表ではなく数式のかたちで」要約する方法は、教科書78ページ例えば2008年度の「計量経済学α」期末試験の解答例等を参照のこと。
+提出期限:
+第6回(11/06を予定)開始時刻。
+10分以内の遅刻は許容されます。
+それ以上遅刻した場合は授業終了後に提出してください。
+10分を超える遅刻は減点されます。
+第7回講義まで提出を受付けますが、さらに減点されます。
+授業時間外に提出したい場合はゆとりを持ってメールで問い合わせてください。
+様式:
+A4用紙1ページ(穴の開いた用紙は不可。
+用紙の片面のみを使用のこと。
+学部の定める様式も含めて、表紙のみのページを付けないこと)。
+Word 形式の雛形ファイルを参考に、
+ページの右上端に学籍番号・氏名を書くこと。
+ワープロなどを使用しても良いし、手書きでも良い。
+授業時間中にプリンタを使用することはできないので、
+ワープロソフトを使用する場合は、印刷したものを持参すること。
+第5回(10/30)
+連絡事項
+前回の授業で課した宿題(提出期限は第6回(11/06を予定)授業開始時刻)を提出したい人は、授業の前後などに担当教員まで直接提出してください。
+宿題の問題文中の但書を一部変更しました。
+変更前:「表ではなく数式のかたちで」要約する方法は、教科書78ページ等を参照のこと。
+変更後:「表ではなく数式のかたちで」要約する方法は、教科書78ページ例えば2008年度の「計量経済学α」期末試験の解答例等を参照のこと。
+講義内容
+線形制約の F 検定
+残差2乗和 SSR (sum of squared residuals):
+制約付きモデル RSSR
+制約なしモデル USSR
+大小関係:RSSR &ge; USSR, RSSR &minus; USSR &ge; 0
+F値 = { ( RSSR &minus; USSR ) / G } / { USSR / ( n &minus; K ) }、
+ただし、
+n = 標本の大きさ、
+K = 制約なしモデルの説明変数の個数(含 定数項)、
+G = 制約の個数(制約をあらわす等式の本数)
+F統計量は帰無仮説の下で自由度 (G, n &minus; K) の F 分布に従う。
+帰無仮説の下では(制約の正しい場合は)、
+2つの残差2乗和の差 RSSR &minus; USSR はゼロに「近い」はず
+右片側に棄却域を設定
+構造変化等の検定
+ダミー変数を用いて、制約なしモデルを構築する。
+Chowテスト(ダミー変数を用いない検定手法)
+ダミー変数を用いた検定
+実習:ダミー変数と交差項の利用
+データ:
+B.H. Baltagi (2011) Econometrics, 5th ed., Springer-Verlag.
+E-book,
+84〜85ページ
+Additional information: Samples, Supplements, Data Sets (Zip file)に収録のEARN.ASC
+個人の賃金、経験、学歴、性別、人種などについてのデータ。標本の大きさ = 595
+Windowsのメモ帳などで開くことのできるテキストファイル。先頭行に変数名あり。
+圧縮ファイルBaltagi_Data_sets.zipを開き、
+その中にあるデータファイル EARN.ASC を解凍(圧縮ファイルの外の場所にコピー)
+EViewsの起動、新規ワークファイルの作成、データのインポートと保存:
+File > New > Workfile
+とメニューを選んで新規ワークファイルを作成。
+Workfile structure type = Unstructured/Undated、
+Data range の Observations = 595 と設定してから[OK]をクリック。
+File > Import > Import from file とメニューを選択。
+展開(解凍)済みの「EARN.ASC」を開き、[完了]をクリック。
+File > Save
+とメニューを選んで保存場所を選んでからファイル名 earn
+(または earn.wf1)を入力。
+保存のオプションとして Double precision を選択する。
+注意:上の手順でデータが読み込まれるが、
+データファイル中で「EXP」と名付けられていた変数は「EXP01」
+という名前で作成される。指数関数を意味する文字列 EXP と
+同じ名前の変数は作成されない。
+回帰式1の推定(log(WAGE) on ED, EXP01, EXP01^2):
+Quick > Estimate Equation >
+Equation specification = "LWAGE C ED EXP01 EXP01^2"。[OK] をクリック
+[Name] をクリック。Name = "WO_FEMDUM"。[OK] をクリック
+回帰式2の推定(log(WAGE) on ED, EXP01, EXP01^2, FEM およびダミー FEM と他変数との交差項):
+Quick > Estimate Equation >
+Equation specification = "LWAGE C ED EXP01 EXP01^2 FEM FEM*ED FEM*EXP01 FEM*EXP01^2"。[OK] をクリック
+[Name] をクリック。Name = "W_FEMDUM"。[OK] をクリック
+回帰式3の推定(男性のみのサンプル。log(WAGE) on ED, EXP01, EXP01^2):
+Workfileウィンドウの [Sample] をクリック。
+IF condition = "fem = 0"。[OK] をクリック。
+Quick > Estimate Equation >
+Equation specification = "LWAGE C ED EXP01 EXP01^2"。[OK] をクリック
+[Name] をクリック。Name = "MONLY"。[OK] をクリック
+回帰式4の推定(女性のみのサンプル。log(WAGE) on ED, EXP01, EXP01^2):
+Workfileウィンドウの [Sample] をクリック。
+IF condition = "fem = 1"。[OK] をクリック。
+Quick > Estimate Equation >
+Equation specification = "LWAGE C ED EXP01 EXP01^2"。[OK] をクリック
+[Name] をクリック。Name = "FONLY"。[OK] をクリック
+回帰式2(制約なしモデル)の残差2乗和が、
+分割されたサンプルに基づく回帰式3・4の残差2乗和の合計として
+求められることを確認:
+Command windowに「scalar ussr = monly.@ssr + fonly.@ssr」とタイプして[Enter]を打つ
+Workfileウィンドウの ussr をダブルクリックして計算結果を確認し、Equation W_FEMDUM ウィンドウの Sum squared resid と一致していることを確認
+仮説検定1(ダミーFEMにかかる4つの係数はすべてゼロ):
+Equation W_FEMDUM ウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+> Coefficient restrictions = "c(5) = c(6) = c(7) = c(8) = 0"。
+[OK] をクリック。
+F統計量は帰無仮説の下で自由度(4, 587)の F分布に従う。計算されたF値(F-statistic)あるいはP値(Probability)を用いて検定を行う。
+帰無仮説が(例えば有意水準1%で)棄却されることを確認する。
+仮説検定2(ダミーFEMを含む3つの交差項の係数はすべてゼロ):
+Equation W_FEMDUM ウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+> Coefficient restrictions = "c(6) = c(7) = c(8) = 0"。
+[OK] をクリック。
+F統計量は帰無仮説の下で自由度(3, 587)の F分布に従う。計算されたF値(F-statistic)あるいはP値(Probability)を用いて検定を行う。
+帰無仮説が(例えば有意水準10%で)棄却されないことを確認する。
+仮説検定3(ダミーFEMと経験年数EXP01にかかる2つの交差項係数はゼロ):
+Equation W_FEMDUM ウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+> Coefficient restrictions = "c(7) = c(8) = 0"。
+[OK] をクリック。
+F統計量は帰無仮説の下で自由度(2, 587)の F分布に従う。計算されたF値(F-statistic)あるいはP値(Probability)を用いて検定を行う。
+帰無仮説が(例えば有意水準10%で)棄却されないことを確認する。
+回帰式5の推定(男性・女性を含むサンプル。log(WAGE) on ED, EXP01, EXP01^2, FEM, FEM*ED):
+Workfileウィンドウの [Sample] をクリック。
+IF condition の設定を空にして [OK] をクリック。
+Quick > Estimate Equation >
+Equation specification = "LWAGE C ED EXP01 EXP01^2 FEM FEM*ED"。[OK] をクリック
+とくに FEM*ED の係数に注目して回帰式2と5を比較する。
+(例えば、有意水準を10%として係数のゼロ制約についてのt検定を行う。)
+宿題
+(提出の必要なし)
+本日の実習で推定した回帰式5について、経験年数の2乗「EXP01^2」の係数は負値である。このことから、経験年数が長過ぎると、経験年数が長ければ長いほど賃金が下落すると結論して良いか。他の変数が一定であるとして、賃金の対数を経験年数 EXP01 の2次関数と見なし、賃金が最高になる経験年数の値を求めなさい。また、経験年数 EXP01 の最小値、最大値、平均などを確認したうえで、上記の議論についてコメントしなさい。
+第6回(11/06)
+連絡事項
+前々回の授業で課した宿題を巡回して回収しますので、座席でお待ち下さい。
+講義内容
+実習(前回の続きと宿題の解説):ダミー変数と交差項を利用した構造変化等の検定
+データ:
+B.H. Baltagi (2011) Econometrics, 5th ed., Springer-Verlag.
+E-book,
+84〜85ページ
+個人の賃金、経験、学歴、性別、人種などについてのデータ。標本の大きさ = 595
+ワークファイル earn.wf1 を開く(エクスプローラでダブルクリック)
+回帰式2の推定(log(WAGE) on ED, EXP01, EXP01^2, FEM およびダミー FEM と他変数との交差項):
+Quick > Estimate Equation >
+Equation specification = "LWAGE C ED EXP01 EXP01^2 FEM FEM*ED FEM*EXP01 FEM*EXP01^2"。[OK] をクリック
+[Name] をクリック。Name = "W_FEMDUM"。[OK] をクリック
+仮説検定1(ダミーFEMにかかる4つの係数はすべてゼロ):
+Equation W_FEMDUM ウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+> Coefficient restrictions = "c(5) = c(6) = c(7) = c(8) = 0"。
+[OK] をクリック。
+F統計量は帰無仮説の下で自由度(4, 587)の F分布に従う。計算されたF値(F-statistic)あるいはP値(Probability)を用いて検定を行う。
+帰無仮説が(例えば有意水準1%で)棄却されることを確認する。
+仮説検定2(ダミーFEMを含む3つの交差項の係数はすべてゼロ):
+Equation W_FEMDUM ウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+> Coefficient restrictions = "c(6) = c(7) = c(8) = 0"。
+[OK] をクリック。
+F統計量は帰無仮説の下で自由度(3, 587)の F分布に従う。計算されたF値(F-statistic)あるいはP値(Probability)を用いて検定を行う。
+帰無仮説が(例えば有意水準10%で)棄却されないことを確認する。
+仮説検定3(ダミーFEMと経験年数EXP01にかかる2つの交差項係数はゼロ):
+Equation W_FEMDUM ウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+> Coefficient restrictions = "c(7) = c(8) = 0"。
+[OK] をクリック。
+F統計量は帰無仮説の下で自由度(2, 587)の F分布に従う。計算されたF値(F-statistic)あるいはP値(Probability)を用いて検定を行う。
+帰無仮説が(例えば有意水準10%で)棄却されないことを確認する。
+回帰式5の推定(男性・女性を含むサンプル。log(WAGE) on ED, EXP01, EXP01^2, FEM, FEM*ED):
+Workfileウィンドウの [Sample] をクリック。
+IF condition の設定を空にして [OK] をクリック。
+Quick > Estimate Equation >
+Equation specification = "LWAGE C ED EXP01 EXP01^2 FEM FEM*ED"。[OK] をクリック
+とくに FEM*ED の係数に注目して回帰式2と5を比較する。
+(例えば、有意水準を10%として係数のゼロ制約についてのt検定を行う。)
+[Name] をクリック。Name = "eqlog"。[OK] をクリック
+回帰式5について、他の変数が一定のとき、賃金が最高になる経験年数(EXP01)の値を求める。
+計算方法1:Equation Outputをコピーして、Excelワークシートに貼り付けてから、Excelを用いて計算する。
+計算方法2:EViewsのscalarコマンドを利用する「scalar exp01peak = -(1/2) * eqlog.@coefs(3) / eqlog.@coefs(4)
+」
+計算方法3:
+Equation EQLOG ウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+> Coefficient restrictions = "-c(3) / c(4) / 2 = 0"。
+[OK] をクリック。
+賃金が最高になる経験年数は31.59年(計算方法3によれば、標準誤差は2.16年であることも分かる)
+経験年数(EXP01)の分布を確認する:
+Quick > Series Statistics > Histogram and Stats とメニューを選択し、
+Series name = exp01 として [OK] をクリック。
+ピークとなる31.59年よりも長い経験年数の人は多い?
+撹乱項の不均一分散(教科書 第 8 章)
+標準的仮定 4(教科書 p. 48)が成り立たない場合
+系列相関と不均一分散が同時に生じる場合もあるが、
+系列相関が無く不均一分散のみを考慮する(標準的仮定 5 は成立しているが、
+仮定 4 は成立しないかもしれない場合を考える)
+不均一分散の原因(データの集計:合計と平均、定式化の誤り)
+不均一分散の統計的推論への影響
+最小 2 乗推定量は不偏推定量(不偏性に必要な仮定は 0, 1, 3.
+仮定 4 は不要)
+推定量の分散・標準誤差(したがって、t値、P値)の通常の計算公式は誤り
+係数の有意性についての検定のこれまでの方法は使えない
+不均一分散か否かについての確認(最小 2 乗法による推定結果に基づいて)
+残差・予測値プロット:残差(縦軸)と予測値(横軸)の散布図
+補助回帰による検定:Breusch-Pagan 検定(教科書 8.4 節)
+撹乱項に不均一分散がある場合のモデルの改善と推定(教科書 8.3, 8.4 節)
+加重最小2乗法
+宿題
+なし
+第7回(11/13)
+連絡事項
+第4回講義の宿題(締切は前回第6回講義開始時)を巡回して回収しますので、座席でお待ち下さい。遅刻した人は授業終了後に近藤まで提出してください。
+講義内容
+撹乱項の不均一分散(教科書 第 8 章)
+標準的仮定 4(教科書 p. 48)が成り立たない場合
+系列相関と不均一分散が同時に生じる場合もあるが、
+系列相関が無く不均一分散のみを考慮する(標準的仮定 5 は成立しているが、
+仮定 4 は成立しないかもしれない場合を考える)
+不均一分散の原因(データの集計:合計と平均、定式化の誤り)
+不均一分散の統計的推論への影響
+最小 2 乗推定量は不偏推定量(不偏性に必要な仮定は 0, 1, 3.
+仮定 4 は不要)
+推定量の分散・標準誤差(したがって、t値、P値)の通常の計算公式は誤り
+係数の有意性についての検定のこれまでの方法は使えない
+不均一分散か否かについての確認(最小 2 乗法による推定結果に基づいて)
+残差・予測値プロット:残差(縦軸)と予測値(横軸)の散布図
+補助回帰による検定:Breusch-Pagan 検定(教科書 8.4 節)
+撹乱項に不均一分散がある場合のモデルの改善と推定(教科書 8.3, 8.4 節)
+加重最小2乗法
+実習:
+データ:
+B.H. Baltagi (2011) Econometrics, 5th ed., Springer-Verlag.
+E-book,
+84〜85ページ
+個人の賃金、経験、学歴、性別、人種などについてのデータ。標本の大きさ = 595
+前回の実習と同じデータを用いる。
+EViewsを用いて、撹乱項の不均一分散への対応方法を習得する。
+次の回帰モデル(被説明変数は賃金の対数)を推定する。
+これは前回の実習で推定済み:
+log WAGEi
+=
+&beta;1
++ &beta;2 EDi
++ &beta;3 EXP01i
++ &beta;4 EXP01i2
++ &beta;5 FEMi
++ &beta;6 FEM &times; EDi
++ ui
+推定結果に名前を付ける:[Name] をクリック。Name = "eqlog"。[OK] をクリック
+残差に名前を付ける:Workfileウィンドウの [Genr] をクリック。
+Equation = "reslog = resid" として [OK] をクリック。
+残差と予測値に名前を付ける:Workfileウィンドウの [Genr] をクリック。
+Equation = "fitlog = lwage - reslog" として [OK] をクリック。
+残差・予測値プロットの作成:
+Workfileウィンドウの中の変数 fitlog, reslog をこの順に選択(2番目の reslog は、Ctrlキーを押しながらクリック)。
+Quick > Graph とメニューを選択し、
+List of series = "fitlog reslog" となっていることを確認してから [OK] をクリック。
+Graph type/Specific = Scatter クリックしてから [OK] をクリック。
+[Name] をクリック。Name = "UY_plot_eqlog" として [OK] をクリック。
+Breusch-Pagan 検定を行う:
+ei
+を回帰の残差として、
+以下の補助回帰式の推定を行う:
+ei2
+=
+&gamma;1
++ &gamma;2 EDi
++ &gamma;3 EXP01i
++ &gamma;4 EXP01i2
++ &gamma;5 FEMi
++ &gamma;6 FEM &times; EDi
++ (残差)i
+Quick > Estimate Equation >
+Equation specification = "reslog^2 c ed exp01 exp01^2 fem fem*ed"。[OK] をクリック
+検定統計量 = 標本の大きさ &times; 決定係数(自由度修正済みでない)= n R2
+EViews Command windowに「scalar bp_log = bp_test_eqlog.@regobs * bp_test_eqlog.@r2」とタイプして[Enter]を打つ
+EViews Command windowに「scalar pval_bp_log = 1 - @cchisq(bp_log, bp_test_eqlog.@ncoefs - 1)」とタイプして[Enter]を打つ
+EViewsのコマンドを使わずに、Equation OutputをコピーしてExcelのシートに貼り付けてから、検定統計量を計算しても良い。P値の求め方は、
+=CHIDIST(n R2, 5)
+5 は自由度(補助回帰における定数項以外の係数の数)
+補助回帰の計算を行わずに、EViewsのメニューに沿って操作をするだけでもBreusch-Pagan検定を実施することは可能。
+Equation: EQLOGウィンドウで View > Residual Diagnostics > Heteroskedasticity Tests とメニューを選択し(記載されている説明をよく読んでから)[OK] をクリック。
+"Obs*R-squared" とラベルの付いた統計量と、その右のP値を用いる。
+新しい系列「賃金」を作成する。
+Workfileウィンドウの [Genr] をクリック。
+Equation = "wage = exp(lwage)" として [OK] をクリック。
+次の回帰モデル(被説明変数は賃金)を推定する:
+WAGEi
+=
+&beta;1
++ &beta;2 EDi
++ &beta;3 EXP01i
++ &beta;4 EXP01i2
++ &beta;5 FEMi
++ &beta;6 FEM &times; EDi
++ ui
+推定結果に eqlin と名前を付ける。
+残差に reslin と名前を付ける。
+予測値の系列を fitlin という名前で作成する。
+残差・予測値プロットを作成する。
+同様にBreusch-Pagan 検定を行う
+注意:
+Breusch-Pagan 検定において、
+不均一分散の原因となる変数は元の回帰式の説明変数と同じである必要はありません。
+逆に、どのような変数を用いて検定を行ったかを明記しなければ、
+Breusch-Pagan 検定の結果報告として不十分といえます。
+Breusch-Pagan 検定の結果を報告する際には、
+不均一分散を説明する変数に何を用いたかを明記してください。
+宿題
+(提出の必要なし)すべての計算をEViewsではなくExcelを用いて実行できるように復習すること。
+第8回(11/20)
+講義内容
+撹乱項の不均一分散(教科書 第 8 章)
+標準的仮定 4(教科書 p. 48)が成り立たない場合
+撹乱項に不均一分散がある場合のモデルの改善と推定(教科書 8.3, 8.4 節)
+加重最小2乗法(Weighted Least Squares, WLS)
+変数変換してから通常の最小2乗法(OLS)を適用するのと同じ
+変数変換された誤差項はガウス・マルコフの仮定を満たす
+WLSは、不均一分散をあらわすモデルが正しいという仮定の下で、最良線形不偏推定量(BLUE)
+各誤差項の分散は未知であるため、WLSではなく実行可能なWLS(Feasible WLS, FWLS)を提供する。この意味では、漸近理論に基づく推論。
+不均一分散に対して頑健な最小2乗推定量の標準誤差(共分散行列の推定量)
+教科書の式(8.12)ではなく式(8.13)に基づく推定
+各誤差項の分散を各残差の2乗で置き換えて推定する。
+Whiteの推定量
+漸近理論に基づく推論。
+加重最小2乗法と頑健な標準誤差とを組み合わせる
+不均一分散をあらわすモデルが正しいとは限らない
+正しくなくとも、WLSにより相対的に分散の小さい推定量が得られる
+実習:
+データ:
+B.H. Baltagi (2011) Econometrics, 5th ed., Springer-Verlag.
+E-book,
+84〜85ページ
+個人の賃金、経験、学歴、性別、人種などについてのデータ。標本の大きさ = 595
+前回の実習と同じデータを用いる。
+EViewsを用いて、撹乱項の不均一分散への対応方法を習得する。
+(これまでの実習で実施済み)新しい系列「賃金」を作成する。
+Workfileウィンドウの [Genr] をクリック。
+Equation = "wage = exp(lwage)" として [OK] をクリック。
+(これまでの実習で実施済み)次の回帰モデルを(通常の最小2乗法(OLS)で)推定する:
+WAGEi
+=
+&beta;1
++ &beta;2 EDi
++ &beta;3 EXP01i
++ &beta;4 EXP01i2
++ &beta;5 FEMi
++ &beta;6 FEM &times; EDi
++ ui
+推定結果に eqlin と名前を付ける。
+加重最小2乗法(WLS)により係数を推定する
+回帰式:
+WAGEi
+=
+&beta;1
++ &beta;2 EDi
++ &beta;3 EXP01i
++ &beta;4 EXP01i2
++ &beta;5 FEMi
++ &beta;6 FEM &times; EDi
++ ui
+誤差項の分散が教育年数に比例すると仮定:
+V(ui)
+= c
+EDi
+(c は定数)
+変数変換後の回帰式のパラメータを通常の最小2乗法(OLS)で推定
+回帰式:
+WAGEi
+&times;
+EDi&minus;1/2
+=
+&beta;1
+EDi&minus;1/2
++ &beta;2 EDi
+&times;
+EDi&minus;1/2
++ &beta;3 EXP01i
+&times;
+EDi&minus;1/2
++ &beta;4 EXP01i2
+&times;
+EDi&minus;1/2
++ &beta;5 FEMi
+&times;
+EDi&minus;1/2
++ &beta;6 FEM &times; EDi
+&times;
+EDi&minus;1/2
++ ui
+&times;
+EDi&minus;1/2
+誤差項 ui &times; EDi&minus;1/2 は均一分散の仮定を満たす。
+EViewsでの推定:
+推定済みの回帰式とほぼ同様だが、すべての変数を @sqrt(ed) で割った変数を用いる。定数項のないモデルである点にも注意。
+Quick > Estimate Equation >
+Equation specification = "wage/@sqrt(ed) 1/@sqrt(ed) ed/@sqrt(ed) exp01/@sqrt(ed) exp01^2/@sqrt(ed) fem/@sqrt(ed) fem*ed/@sqrt(ed)"。
+EViewsの機能を用いて簡易に加重最小2乗法(WLS)を実行する(同じ結果が得られることを確認するため(ただし、保存せずに作業を進めるため)、Equationウィンドウの [Freeze] をクリックし、前の結果を残してから以下の作業を始めること)
+Quick > Estimate Equation >
+Equation specification = "wage c ed exp01 exp01^2 fem fem*ed"
+[Option] タブをクリック。
+Weights Type = Variance、Weight series = ed、Scaling = None、[OK] をクリック
+推定結果に eqlin_wls と名前を付ける。
+この推定結果と、eqlin の結果とを比較する。
+通常の最小2乗法(OLS)により係数を推定し、不均一分散に対して頑健な標準誤差を推定する
+回帰式:
+WAGEi
+=
+&beta;1
++ &beta;2 EDi
++ &beta;3 EXP01i
++ &beta;4 EXP01i2
++ &beta;5 FEMi
++ &beta;6 FEM &times; EDi
++ ui
+Quick > Estimate Equation >
+Equation specification = "wage c ed exp01 exp01^2 fem fem*ed"
+[Option] タブをクリック。
+Coefficient covariance matrix = White、[OK] をクリック
+推定結果に eqlin_robust と名前を付ける。
+この推定結果と、eqlin, eqlin_wls の結果とを比較する。
+加重最小2乗法(WLS)により係数を推定し、不均一分散に対して頑健な標準誤差を推定する
+回帰式:
+WAGEi
+=
+&beta;1
++ &beta;2 EDi
++ &beta;3 EXP01i
++ &beta;4 EXP01i2
++ &beta;5 FEMi
++ &beta;6 FEM &times; EDi
++ ui
+誤差項の分散が教育年数に概ね比例すると仮定:
+V(ui)
+= c
+EDi
+(c は定数)
+Quick > Estimate Equation >
+Equation specification = "wage c ed exp01 exp01^2 fem fem*ed"
+[Option] タブをクリック。
+Coefficient covariance matrix = White、Weights Type = Variance、Weight series = ed、Scaling = None、[OK] をクリック
+推定結果に eqlin_wls_robust と名前を付ける。
+この推定結果と、eqlin, eqlin_wls, eqlin_robust の結果とを比較する。
+宿題
+(提出の必要なし)加重最小2乗推定量を変数変換後の変数に対して通常の最小2乗法を提供することにより求める手順を、例えば、EViewsではなくExcelを用いても実行できるように復習すること。
+第9回(11/27)
+講義内容
+撹乱項の系列相関(教科書 第 9 章)
+標準的仮定 5(教科書 p. 48)が成り立たない場合
+系列相関の原因(習慣、調整の遅れ、時間単位、定式化の誤り)
+系列相関の統計的推論への影響:
+最小2乗推定量は不偏推定量だが、分散・標準誤差の通常の計算公式は誤り
+系列相関の有無についての確認(最小2乗法による推定結果に基づいて)
+残差の時系列プロット
+ダービン・ワトソン検定(教科書 9.3 節)
+補助回帰による検定(教科書 9.6 節、ダービンの代替的方法)
+ダービン・ワトソン検定
+統計量の基本的性質:
+DW = (今期の残差と1期前の残差との差の2乗和) &divide;
+(残差の2乗和)
+0 &le; DW &le; 4
+DW = 2 ( 1 &minus; &rho; )
+が近似的に成り立つ。
+&rho; は今期の撹乱項と1期前の撹乱項との相関係数。
+DW の帰無分布は説明変数の値に依存する。
+汎用性のある分布表は作成できない(t 検定, F 検定などとの相違点)。
+標本の大きさ(n)と説明変数の個数(k, 定数項含む)
+だけに依存する上限分布と下限分布が存在する。
+検定の手順:
+H0: &rho; = 0、
+H1: &rho; > 0 の場合
+有意水準を決める(通常の検定と同じ)。
+分布表から、上限分布に基づく臨界値(dU)と
+下限分布に基づく臨界値(dL)を読み取る。
+本当の臨界値(d)は分からないが、
+dL &le; d &le; dU であるから、
+DW &le; dL のとき、
+DW &le; d だから、帰無仮説を棄却。
+dL < DW &le; dU のとき、
+DW &le; d か DW > d かが不明だから、不決定。
+DW > dU のとき、
+DW > d だから、帰無仮説を受容。
+使用上の注意:
+ラグ付き内生変数が説明変数に含まれるとき、
+ダービン・ワトソン統計量は使えない
+定数項を含むモデルに対して適用する。
+定数項の無いモデルの場合は分布表が異なる。
+実習
+(マクロ輸入関数の例)
+データ:[qimport2.xlsx]
+日経NEEDS-FAME(早稲田大学BETA版)から得られる、
+1994年第I四半期から2011年第IV四半期までの、
+実質GDP(GDP)、実質輸入(M)、GDPデフレータ(PGDP)、輸入デフレータ(PM)
+Workfileの作成:File > New > Workfile、Workfile structure type = Dated - regular frequency、Frequency = Quarterly、Start date = 1994:1、End date = 2011:4
+データのインポート:File > Import > Import from fileと選択してから qimport2.xlsxを開く。Predefined rangeを選択して、ドロップダウンリストからシートDataを選択してから[完了]をクリック
+ファイルの保存:File > Save、ファイル名を qimport2.wf1 とする。
+次の回帰モデルを(通常の最小2乗法(OLS)で)推定する:
+log Mt
+=
+&beta;1
++ &beta;2 log GDPt
++ &beta;3 log (PMt / PGDPt)
++ ut
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp)"
+推定結果に imp_fn と名前を付ける。
+残差に imp_res と名前を付ける。
+残差の時系列プロット:
+Workfileウィンドウの残差(imp_res)をクリックして選択してから、Quick > Graph > [OK] をクリックし、さらに [OK] をクリック
+同じ符号が続く傾向がある場合は、正の系列相関が疑われる
+Durbin-Watson検定:
+計算結果 DW = 0.7672
+標本の大きさ n = 72
+定数項以外の説明変数の数 m = k &minus; 1 = 2
+有意水準を 5% と定め、分布表(教科書 p. 356)を用いて右片側検定を行う(標本の大きさがちょうど 72 の場合の臨界値は記載されていないので、70の場合と75の場合の値を利用する)
+帰無仮説は棄却される? 棄却されない? 不決定?
+系列相関が見つかった(?)場合にどうするか
+確認する方法:残差の時系列プロット、ダービン・ワトソン検定、補助回帰による検定(ダービンの代替的方法、ブルーシュ・ゴッドフリ検定(the Breusch-Godfrey test))
+まず、定式化の誤りを疑う.重要な説明変数は欠落していないか?
+宿題
+(要提出)
+第5回〜第8回の実習で使用した個人の賃金、経験、学歴などについてのデータ(B.H. Baltagi (2011) Econometrics, 5th ed., Springer-Verlag, 84〜85ページ)について、次の問いに答えなさい。
+次の回帰式について、誤差項がガウス・マルコフの仮定を満たすとして、通常の最小2乗法による推定結果を表ではなく数式のかたちで要約して報告しなさい。
+WAGEi
+=
+&beta;1
++ &beta;2 EDi
++ &beta;3 EXP01i
++ &beta;4 EXP01i2
++ &beta;5 FEMi
++ &beta;6 OCCi
++ ui
+1.の回帰式について、誤差項の不均一分散に関するBreusch-Pagan検定を行いなさい。
+1.の回帰式について、誤差項の分散が教育年数(EDi)に概ね比例すると仮定して、教育年数をウェイトとして用いた加重最小2乗法による推定を行い、推定結果を表ではなく数式のかたちで要約して報告しなさい。
+提出期限:
+第11回(12/11を予定)開始時刻。
+10分以内の遅刻は許容されます。
+それ以上遅刻した場合は授業終了後に提出してください。
+10分を超える遅刻は減点されます。
+第12回講義まで提出を受付けますが、さらに減点されます。
+授業時間外に提出したい場合はゆとりを持ってメールで問い合わせてください。
+様式:
+A4用紙1ページ(穴の開いた用紙は不可。
+用紙の片面のみを使用のこと。
+学部の定める様式も含めて、表紙のみのページを付けないこと)。
+Word 形式の雛形ファイルを参考に、
+ページの右上端に学籍番号・氏名を書くこと。
+ワープロなどを使用しても良いし、手書きでも良い。
+授業時間中にプリンタを使用することはできないので、
+ワープロソフトを使用する場合は、印刷したものを持参すること。
+第10回(12/04)
+連絡事項
+前回の授業で課した宿題(提出期限は第11回(12/11を予定)授業開始時刻)を提出したい人は、授業の前後などに担当教員まで直接提出してください。
+講義内容
+撹乱項の系列相関(教科書 第 9 章)
+標準的仮定 5(教科書 p. 48)が成り立たない場合
+系列相関の原因(習慣、調整の遅れ、時間単位、定式化の誤り)
+系列相関の統計的推論への影響:
+最小2乗推定量は不偏推定量だが、分散・標準誤差の通常の計算公式は誤り
+系列相関の有無についての確認(最小2乗法による推定結果に基づいて)
+残差の時系列プロット
+ダービン・ワトソン検定(教科書 9.3 節)
+補助回帰による検定(教科書 9.6 節、ダービンの代替的方法)
+ダービン・ワトソン検定
+統計量の基本的性質:
+DW = (今期の残差と1期前の残差との差の2乗和) &divide;
+(残差の2乗和)
+0 &le; DW &le; 4
+DW = 2 ( 1 &minus; &rho; )
+が近似的に成り立つ。
+&rho; は今期の撹乱項と1期前の撹乱項との相関係数。
+DW の帰無分布は説明変数の値に依存する。
+汎用性のある分布表は作成できない(t 検定, F 検定などとの相違点)。
+標本の大きさ(n)と説明変数の個数(k, 定数項含む)
+だけに依存する上限分布と下限分布が存在する。
+検定の手順:
+H0: &rho; = 0、
+H1: &rho; > 0 の場合
+有意水準を決める(通常の検定と同じ)。
+分布表から、上限分布に基づく臨界値(dU)と
+下限分布に基づく臨界値(dL)を読み取る。
+本当の臨界値(d)は分からないが、
+dL &le; d &le; dU であるから、
+DW &le; dL のとき、
+DW &le; d だから、帰無仮説を棄却。
+dL < DW &le; dU のとき、
+DW &le; d か DW > d かが不明だから、不決定。
+DW > dU のとき、
+DW > d だから、帰無仮説を受容。
+使用上の注意:
+ラグ付き内生変数が説明変数に含まれるとき、
+ダービン・ワトソン統計量は使えない
+定数項を含むモデルに対して適用する。
+定数項の無いモデルの場合は分布表が異なる。
+補助回帰による検定
+検定方法の名称:
+ダービンの代替的方法、ブルーシュ・ゴッドフリ検定(the Breusch-Godfrey test)
+統計量の基本的構造:
+モデル:
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+ut
+= &rho; ut&minus;1
++ &epsilon;t
+(&epsilon;tは標準的仮定を満たす)
+まとめたモデル:
+Yt
+= &beta;1
++ &beta;2 Xt
++ &rho; ut&minus;1
++ &epsilon;t
+検定の手順1(教科書で紹介されているもの):
+H0: &rho; = 0、
+H1: &rho; &ne; 0(両側検定)の場合
+元の回帰:Yt を (1, Xt)
+に回帰して残差 et を求める。
+補助回帰:et を (1, Xt, et&minus;1 )
+に回帰する。
+t = 1 のとき、et&minus;1 に対応する値がないので、
+t = 1 からではなく、t = 2 から始まる大きさ n&minus;1 のデータセットを用いる。
+帰無仮説の下で (n&minus;1) R2
+は自由度 1 のカイ2乗分布に従う。
+(両側検定だが)棄却域は右裾に。
+検定の手順2(EViewsにより計算されるもの):
+H0: &rho; = 0、
+H1: &rho; &ne; 0(両側検定)の場合
+元の回帰:Yt を (1, Xt)
+に回帰して残差 et を求める。
+さらに、e0 = 0 と定義する。
+補助回帰:et を (1, Xt, et&minus;1 )
+に回帰する。
+t = 1 から始まる大きさ n のデータセットを用いる。
+帰無仮説の下で n R2
+は自由度 1 のカイ2乗分布に従う。
+(両側検定だが)棄却域は右裾に。
+使用上の注意:
+ラグ付き内生変数が説明変数に含まれるときでも適用可能
+et&minus;1 の係数についてのt値を使って検定しても良い。
+その他の係数などは意味が無いから使わない。報告しない。
+より高次の自己回帰過程へ一般化が可能。
+実習(その1)
+(マクロ輸入関数の例、前回の実習の続き)
+データ:[qimport2.xlsx]
+日経NEEDS-FAME(早稲田大学BETA版)から得られる、
+1994年第I四半期から2011年第IV四半期までの、
+実質GDP(GDP)、実質輸入(M)、GDPデフレータ(PGDP)、輸入デフレータ(PM)
+エクスプローラで、前回の実習で作成したWorkfileをダブルクリックして開く
+Durbin-Watson検定:
+Workfileの中のEquation imp_fn をダブルクリックして Equationウィンドウを開く
+計算結果 DW = 0.7672
+標本の大きさ n = 72
+定数項以外の説明変数の数 m = k &minus; 1 = 2
+有意水準を 5% と定め、分布表(教科書 p. 356)を用いて右片側検定を行う(標本の大きさがちょうど 72 の場合の臨界値は記載されていないので、70の場合と75の場合の値を利用する)
+帰無仮説は棄却される? 棄却されない? 不決定?
+補助回帰による検定をEViewsの機能を利用して簡易に検定を行う:
+Equation: IMP_FNウィンドウにおいて、View > Residual Diagnostics > Serial Correlation LM Test、Lags to include = 1、[OK] をクリック
+検定統計量=補助回帰の標本の大きさ(72)と決定係数との積
+補助回帰における1期前残差の最初の値はゼロ
+上の計算(1期前残差の最初の値を欠損値として扱った場合)と若干異なるが、概ね同じような結果が得られる。
+系列相関が見つかった(?)場合にどうするか
+確認する方法:残差の時系列プロット、ダービン・ワトソン検定、補助回帰による検定(ダービンの代替的方法、ブルーシュ・ゴッドフリ検定(the Breusch-Godfrey test))
+まず、定式化の誤りを疑う.重要な説明変数は欠落していないか?
+撹乱項に系列相関がある場合のモデルの改善と推定(教科書 9.4, 9.5 節)
+元のモデル:
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+ut
+= &rho; ut&minus;1
++ &epsilon;t
+ラグ付き内生変数を説明変数に追加する(関連:教科書 7.4 節)
+Yt
+= &beta;1
++ &beta;2 Xt
++ &gamma;1 Yt&minus;1
++ ut
+コクラン・オーカット法
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+&rho; Yt&minus;1
+= &rho; &beta;1
++ &rho; &beta;2 Xt&minus;1
++ &rho; ut&minus;1
+Yt
+&minus; &rho; Yt&minus;1
+= (1 &minus; &rho;) &beta;1
++ &beta;2 (Xt &minus; &rho; Xt&minus;1)
++ &epsilon;t
+&rho; を推定値で置き換えて変数変換を行ってからOLSで推定
+非線形最小2乗法、最尤法
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+&rho; Yt&minus;1
+= &rho; &beta;1
++ &rho; &beta;2 Xt&minus;1
++ &rho; ut&minus;1
+Yt
+= (1 &minus; &rho;) &beta;1
++ &beta;2 (Xt &minus; &rho; Xt&minus;1)
++ &rho; Yt&minus;1
++ &epsilon;t
+不均一分散と系列相関に対して頑健な標準誤差(共分散行列の推定)
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+ut
+= &rho; ut&minus;1
++ &epsilon;t
+Newey-WestのHAC (heteroskedasticity-autocorrelation consistent)推定量
+実習(その2):(実習(その1)の続き):
+不均一分散と系列相関に対して頑健な標準誤差(共分散行列の推定)
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp)"
+[Option] タブをクリック、Coefficient covariance matrix = HAC (Newey-West)、[OK] をクリック
+推定結果に imp_fn_hac と名前を付ける。
+ラグ付き内生変数を説明変数に追加する
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp) log(m(-1))"
+推定結果に imp_fn_lag と名前を付ける。
+非線形最小2乗法
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp) ar(1)"
+推定結果に imp_fn_ar1 と名前を付ける。
+宿題
+次の手順をEViewsで実行して補助回帰を実際に推定し、
+Breusch-Godfrey検定を行いなさい。
+また、2番目の方法で計算される統計値やP値が、
+EViewsの
+Residual Diagnostics > Serial Correlation LM Test、Lags to include = 1
+により計算される結果と一致することを確認しなさい。
+授業中の実習で用いたWorkfile qimport2.wf1 を開く
+t = 2 から始まる大きさ n&minus;1 のデータセットを用いて補助回帰の計算を行う:
+Quick > Estimate Equation、Specification = "imp_res c log(gdp) log(pm/pgdp) imp_res(-1)"
+統計値 (n&minus;1) R2 と対応するP値を計算する
+EViewsを用いる場合
+補助回帰の推定結果に bgreg1 と名付ける
+EViews Command windowに「scalar bgtest1 = bgreg1.@regobs * bgreg1.@r2」とタイプして[Enter]を打つ
+EViews Command windowに「scalar pval_bg = 1 - @cchisq(bgtest1, 1)」とタイプして[Enter]を打つ
+Excelを用いる場合
+Equation Outputをコピーする(Number copy method = Unformatted)。
+その後、Excelのシートに貼り付ける
+統計値を (n&minus;1) &times; R2 により求める。n&minus;1 の値は 71。
+P値を =CHIDIST((n&minus;1) R2, 1) により求める。
+t = 1 から始まる大きさ n のデータセットを用いて補助回帰の計算を行う:
+1期前残差をあらわす新たな変数 imp_res1(1994年第I四半期の値はゼロ)を作成する
+Wordfileウィンドウの [Genr] をクリック。
+「imp_res1 = imp_res(-1)」と計算式を入力してから [OK] をクリック。
+Wordfileウィンドウの [Genr] を再度クリック。
+「imp_res1 = 0」と計算式を入力し、
+Sample = 「1994Q1 2011Q4」となっているものを「1994Q1 1994Q4」に変更してから [OK] をクリック。
+Quick > Estimate Equation、Specification = "imp_res c log(gdp) log(pm/pgdp) imp_res1"
+統計値 n R2 と対応するP値を計算する(手順は、ほとんど上の方法と同じ。標本の大きさの違い、EViewsでの推定結果に別の名前を付ける点に注意すること)
+EViewsを用いる場合
+補助回帰の推定結果に bgreg1 と名付ける
+EViews Command windowに「scalar bgtest2 = bgreg2.@regobs * bgreg2.@r2」とタイプして[Enter]を打つ
+EViews Command windowに「scalar pval_bg = 1 - @cchisq(bgtest2, 1)」とタイプして[Enter]を打つ
+Excelを用いる場合
+Equation Outputをコピーする(Number copy method = Unformatted)。
+その後、Excelのシートに貼り付ける
+統計値を n &times; R2 により求める。n の値は 72。
+P値を =CHIDIST(n R2, 1) により求める。
+第11回(12/11)
+連絡事項
+前々回の授業で課した宿題を巡回して回収しますので、座席でお待ち下さい。
+講義内容
+前回の宿題の答え合わせ:qimport2_ar1.xlsx
+撹乱項に系列相関がある場合のモデルの改善と推定(教科書 9.4, 9.5 節)
+元のモデル:
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+ut
+= &rho; ut&minus;1
++ &epsilon;t
+ラグ付き内生変数を説明変数に追加する(関連:教科書 7.4 節)
+Yt
+= &beta;1
++ &beta;2 Xt
++ &gamma;1 Yt&minus;1
++ ut
+コクラン・オーカット法
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+&rho; Yt&minus;1
+= &rho; &beta;1
++ &rho; &beta;2 Xt&minus;1
++ &rho; ut&minus;1
+Yt
+&minus; &rho; Yt&minus;1
+= (1 &minus; &rho;) &beta;1
++ &beta;2 (Xt &minus; &rho; Xt&minus;1)
++ &epsilon;t
+&rho; を推定値で置き換えて変数変換を行ってからOLSで推定
+非線形最小2乗法、最尤法
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+&rho; Yt&minus;1
+= &rho; &beta;1
++ &rho; &beta;2 Xt&minus;1
++ &rho; ut&minus;1
+Yt
+= (1 &minus; &rho;) &beta;1
++ &beta;2 (Xt &minus; &rho; Xt&minus;1)
++ &rho; Yt&minus;1
++ &epsilon;t
+不均一分散と系列相関に対して頑健な標準誤差(共分散行列の推定)
+Yt
+= &beta;1
++ &beta;2 Xt
++ ut,
+ut
+= &rho; ut&minus;1
++ &epsilon;t
+Newey-WestのHAC (heteroskedasticity-autocorrelation consistent)推定量
+実習(その1) :(マクロ輸入関数の例、前回の実習の続き)
+不均一分散と系列相関に対して頑健な標準誤差(共分散行列の推定)
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp)"
+[Option] タブをクリック、Coefficient covariance matrix = HAC (Newey-West)、[OK] をクリック
+推定結果に imp_fn_hac と名前を付ける。
+ラグ付き内生変数を説明変数に追加する
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp) log(m(-1))"
+推定結果に imp_fn_lag と名前を付ける。
+非線形最小2乗法
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp) ar(1)"
+推定結果に imp_fn_ar1 と名前を付ける。
+分布ラグモデル:
+多項式ラグモデル
+幾何級数型ラグモデル
+補助資料
+実習(その2):(多項式ラグモデルの推定、実習(その1)の続き)
+輸入関数をGDPと相対価格の8期の分布ラグで定式化し、
+2次の多項式ラグモデルとして推定する。
+これまでと同様に、対数線形モデル(log-logモデル)を用いる。
+教科書169ページ,応用例7.1と類似の分析。
+季節調整系列を用いるため,季節ダミー(四半期ダミー)は用いない。
+ラグを考慮しない回帰式:(推定済み、Equation: IMP_FN)
+log Mt
+=
+&beta;1
++ &beta;2 log GDPt
++ &beta;3 log Pt
++ ut
+ただし 
+Pt
+=
+PMt / PGDPt
+分布ラグ(Polynomial Distributed Lags, PDLs)を含む回帰式:
+log Mt
+=
+&beta;1
++ &beta;2 log GDPt
++ &beta;3 log GDPt&minus;1
++ &sdot;&sdot;&sdot;
++ &beta;10 log GDPt&minus;8
++ &beta;11 log Pt
++ &beta;12 log Pt&minus;1
++ &sdot;&sdot;&sdot;
++ &beta;19 log Pt&minus;8
++ ut
+Quick > Estimate Equation、Specification = "log(m) c pdl(log(gdp),8,2) pdl(log(pm/pgdp),8,2)"
+推定結果に imp_fn_pdl と名前を付ける。
+1994年第I四半期から2011年第IV四半期までの72期分のデータがあるが、
+8期ラグを考慮しているので、
+64期分のデータを用いて推定される。
+EViewsのPDL項のオプションを利用して、1期のリード(ラグの反対)の係数や9期のラグ(分布ラグで考慮しているラグの範囲の直ぐ1期前)の係数がゼロとなるような制約を課すことができる。
+PDL(変数名, ラグの次数, 多項式の次数):係数のゼロ制約なし
+PDL(変数名, ラグの次数, 多項式の次数, 1):Near endのゼロ制約
+PDL(変数名, ラグの次数, 多項式の次数, 2):Far endのゼロ制約
+PDL(変数名, ラグの次数, 多項式の次数, 3):Both endsのゼロ制約
+宿題
+(提出の必要なし)本日の実習の内容を再現できるように復習すること。
+また、多項式ラグモデルの推定について、
+EViewsのPDL項を用いずに、あるいはExcelで再現すること。
+第12回(12/18)
+連絡事項
+第9回講義の宿題(締切は前回第11回講義開始時)を巡回して回収しますので、座席でお待ち下さい。遅刻した人は授業終了後に近藤まで提出してください。
+講義内容
+前回の宿題の答え合わせ:qimport2_pdl.xlsx
+幾何級数型分布ラグモデル(無限のラグを持つモデル):補助資料
+Yt
+= &alpha;
++ &beta;0 Xt
++ &beta;1 Xt&minus;1
++ &beta;2 Xt&minus;2
++ &hellip;
++ &beta;m Xt&minus;m
++ &hellip;
++ ut,
+&beta;k = &beta; &delta;k
+Yt,
+= &alpha;
++ &beta; (
+Xt
++ &delta; Xt&minus;1
++ &delta;2 Xt&minus;2
++ &hellip;
++ &delta;m Xt&minus;m
++ &hellip;
+)
++ ut,
+適応型期待形成(適応的期待形成):
+X*t+1
+&minus; X*t
+= &gamma; (Xt
+&minus; X*t)
+X*t+1
+= &gamma; {Xt
++ (1 &minus; &gamma;) Xt&minus;1
++ (1 &minus; &gamma;)2 Xt&minus;2
++ &hellip;
++ (1 &minus; &gamma;)m Xt&minus;m
++ &hellip;}
+短期効果:
+&beta;0
+= &beta;
+長期効果:
+&beta;0
++ &beta;1
++ &beta;2
++ &hellip;
+= &beta; (1 + &delta; + &delta;2 + &hellip;)
+= &beta; &divide; (1 &minus; &delta;)
+ラグ付き内生変数を含むモデル
+幾何級数型ラグモデルの変換:
+Yt
+= &alpha;&prime;
++ &beta; Xt
++ &delta; Yt&minus;1
++ vt,
+&alpha;&prime; = (1 &minus; &delta;) &alpha;,
+vt
+=
+ut
+&minus; &delta; ut&minus;1
+ラグ付き内生変数 + 撹乱項の系列相関 
+通常の最小2乗法(OLS)では推定できない。
+部分調整モデル:
+Yt
+&minus; Yt&minus;1
+= &theta; (Y*t
+&minus; Yt&minus;1),
+Y*t
+= &alpha;
++ &beta; Xt
++ ut
+Yt
+=
+&theta; &alpha;
++ &theta; &beta; Xt
++ (1 &minus; &theta;) Yt&minus;1
++ &theta; ut
+ラグ付き内生変数 + 撹乱項は系列無相関 
+通常の最小2乗法(OLS)で推定できる。
+実習
+(マクロ輸入関数の例、前回の実習の続き)
+データ:[qimport2.xlsx]
+日経NEEDS-FAME(早稲田大学BETA版)から得られる、
+1994年第I四半期から2011年第IV四半期までの、
+実質GDP(GDP)、実質輸入(M)、GDPデフレータ(PGDP)、輸入デフレータ(PM)
+エクスプローラで、前回の実習で作成したWorkfileをダブルクリックして開く
+ラグ付き内生変数を説明変数に追加したモデルの推定(前回の実習で実施済み)
+Workfileウィンドウの中のEquation imp_fn_lagをダブルクリックして開く。
+推定結果が保存されていない場合は、以下の2つの手順を実行する。
+Quick > Estimate Equation、Specification = "log(m) c log(gdp) log(pm/pgdp) log(m(-1))"
+推定結果に imp_fn_lag と名前を付ける。
+部分調整モデルと見なした分析
+部分調整パラメータ:
+&theta;
+各係数は元の回帰式の係数と
+&theta;
+との積なので、
+ラグ付き内生変数の係数が
+1 &minus; &theta;
+であることを用いて、
+元の回帰式の係数を推定する。その標準誤差も求める。
+Equationウィンドウにおいて、
+View > Coefficient Diagnostics > Wald Test - Coefficient Restrictions
+Coefficient restrictions separated by commas = "c(2) / (1 - c(4)) = 0, c(3) / (1 - c(4)) = 0" として [OK] をクリック。
+ここで、c(p) は p 番目の係数をあらわす(順序は表に並んでいる順番。推定した際に指定した順番と同じ)。
+出力される2つの表のうち、下側の表の Value の列が推定値。上側の表の Chi-square が指定された式が同時に成り立つことを帰無仮説とした検定のためのカイ2乗統計値(自由度とP値も出力される)。
+線形制約だけでなく非線形制約も扱うことができる。標準誤差等はDelta methodと呼ばれる方法で計算されている(詳細は例えば浅野・中村(2009)223〜224ページを参照のこと)。
+宿題
+(要提出)
+浅野・中村(2009)(文献情報の詳細はシラバスを参照のこと)の表1に記載されている1955〜1992年までのGDPと電力消費に関するデータを用いて、以下の問いに答えなさい。
+データは出版社(有斐閣書籍編集第2部)のウェブサイト「付加データ:『計量経済学』」で公開されているもの(表1. GDPと電力消費)を各自ダウンロードして利用しなさい。
+回帰式の推定結果を報告する際には、
+表ではなく数式のかたちで要約したものを報告しなさい。
+また、ダービン・ワトソン統計量が適用可能な場合に限り、
+それも併せて報告しなさい。
+この宿題の問題作成に際して、
+浅野・中村(2009)の例5-2、例7-5を参考にしました。
+次の2つの回帰式(Model 1およびModel 2)について、誤差項がガウス・マルコフの仮定を満たすとする。
+それぞれ利用可能なすべてのデータ(第1式は38年分のデータ、第2式は37年分のデータ)を用いて、通常の最小2乗法により推定し、
+Model 2の結果のみを報告しなさい。
+Model 1の結果を報告してはいけません。
+Model 1:
+log(ECt)
+=
+&beta;1
++ &beta;2 log(GDPt)
++ &beta;3 D74t
++ &beta;4 D74t
+&times; log(GDPt)
++ ut
+Model 2:
+log(ECt)
+=
+&gamma;1
++ &gamma;2 log(GDPt)
++ &gamma;3 D74t
++ &gamma;4 D74t
+&times; log(GDPt)
++ &gamma;5 log(ECt&minus;1)
++ ut
+ただし、
+log(ECt)
+と
+log(GDPt)
+はそれぞれ
+t
+期の電力消費量とGDPをあらわす。
+また、
+D74t
+は1974年以降は1、1973年以前は0となるダミー変数をあらわす。
+Model 2について、
+誤差項の系列相関に関するBreusch-Godfrey検定を行いなさい。
+ただし、帰無仮説は「誤差項は系列無相関」、
+対立仮説は「誤差項は1階の自己回帰過程に従う」とし、
+結果の報告には補助回帰で用いた標本の大きさ、検定統計値、
+統計量の帰無分布の名称を含めること。
+Model 2では部分調整モデルを想定しているものとする。
+Model 2の係数推定値は、Model 1の係数推定値と直接比較することができない。
+1973年以前の電力消費のGDPに対する弾力性の値をModel 1およびModel 2に基づいて推定した結果(推定値と標準誤差)を報告しなさい(報告の様式は任意とする)。
+さらに、2つのモデルから得られた弾力性の推定結果を比較しなさい(両者がどのように類似しているか、あるいは異なるかを簡潔に説明しなさい)。
+提出期限:
+第14回(01/22を予定)開始時刻。
+10分以内の遅刻は許容されます。
+それ以上遅刻した場合は授業終了後に提出してください。
+10分を超える遅刻は減点されます。
+これまでと異なり、解答・解説を試験前に周知するための期間を確保するため、第14回講義終了後は提出を受け付けません。
+授業時間外に提出したい場合は次の手順で提出してください。
+近藤の研究室ドア横のポストに投函して提出してください。
+提出よりも前、あるいは提出と同日に、
+研究室のポストに投函する(投函した)旨をメールで近藤まで知らせてください。
+(問合せではなく、お知らせいただければそれで十分です。
+このメールへの返信は省略させていただきますので、ご了承ください。)
+メールへの添付ファイルとしての提出は受け付けていません。
+そのようなメールを受け取っても対応できませんのでご理解ください。
+様式:
+A4用紙1ページ(穴の開いた用紙は不可。
+用紙の片面のみを使用のこと。
+学部の定める様式も含めて、表紙のみのページを付けないこと)。
+Word 形式の雛形ファイルを参考に、
+ページの右上端に学籍番号・氏名を書くこと。
+ワープロなどを使用しても良いし、手書きでも良い。
+授業時間中にプリンタを使用することはできないので、
+ワープロソフトを使用する場合は、印刷したものを持参すること。
+(12/25)
+授業なし。
+(01/01)
+授業なし。
+第13回(01/08)
+連絡事項
+前回の授業で課した宿題(提出期限は第14回(01/22を予定)開始時刻)を提出したい人は、授業の前後などに担当教員まで直接提出してください。
+第15回授業(01/29を予定)で実施する期末試験は、
+通常の授業教室(4-307 PC教室)において実施します。
+持込は不可とし、
+試験時間中にはPCを使用しない(使用できない)予定です。
+講義内容
+確率的な説明変数
+標準的仮定1「説明変数は確率変数でなく、固定された値を持つ。」
+が成り立たない
+小標本理論ではなく大標本理論・漸近理論に基づく推論
+「偏りのない推定量」:不偏性ではなく一致性
+最小2乗推定量の漸近的性質
+説明変数と撹乱項が無相関のときは一致推定量
+説明変数と撹乱項に相関があるときは一致推定量でない
+説明変数と撹乱項に相関があるモデルの例
+同時方程式モデル
+説明変数に観測誤差のあるモデル
+ラグ付き内生変数および撹乱項の系列相関があるモデル
+宿題
+なし。
+(01/15)
+授業なし。
+第14回(01/22)
+連絡事項
+前々回の授業で課した宿題を巡回して回収しますので、座席でお待ち下さい。
+第15回授業(01/29を予定)で実施する期末試験は、
+通常の授業教室(4-307 PC教室)において実施します。
+持込は不可とし、
+試験時間中にはPCを使用しない(使用できない)予定です。
+講義内容
+操作変数法(IV)
+説明変数と撹乱項に相関があるときにも適用可能、一致推定量
+操作変数=説明変数と相関があり、撹乱項と無相関な変数
+2段階最小2乗法(2SLS):
+説明変数よりも操作変数の数が多い場合に対応
+説明変数を操作変数に回帰した予測値を操作変数とする
+分散の小さい操作変数推定量
+実習:フィリップス曲線と合理的期待仮説による期待インフレ率(教科書の応用例10.1の類題)
+データ:[PhillipsCurve3.xlsx]
+期待変数を含む回帰式:
+WDOTt
+=
+&beta;1
++ &beta;2 (1/UNt)
++ &beta;3 PIEt+1
++ ut
+静学的期待形成仮説に基づく推論
+期待形成モデル:
+PIEt+1
+=
+PIt
+回帰モデル:
+WDOTt
+=
+&beta;1
++ &beta;2 (1/UNt)
++ &beta;3 PIt
++ ut
+OLSによる推論
+合理的期待形成仮説に基づく推論
+期待形成モデル:
+PIEt+1
+=
+E(PIt+1
+|
+It
+)
+回帰モデル:
+WDOTt
+=
+&beta;1
++ &beta;2 (1/UNt)
++ &beta;3 PIt+1
++ ut
+(説明変数に観測誤差のあるモデル)
+2SLSによる推論(操作変数:定数項,
+(1/UNt&minus;1),
+(1/UNt&minus;2),
+PIt&minus;1,
+PIt&minus;2,
+WDOTt&minus;1,
+WDOTt&minus;2
+)
+EViewsを起動。File > New > Workfile
+とメニューを選んで新規ワークファイルを作成。
+Data specificationを、
+Frequency = Monthly、
+Start date = 1991:1、
+End date = 2011:2 と設定してから[OK]をクリック。
+File > Import > Import from file とメニューを選び、
+データファイル PhillipsCurve3.xlsx を開く。
+データファイル中のシート data からデータが読み込まれることを確認してから [完了] をクリック。(この際、Excelでデータファイルを開いた状態だとエラーが起きることがあるので、開いた場合は閉じておくこと。)
+静学的期待形成仮説に基づく推論(OLSによる推論):
+Quick > Estimate Equation とメニューを選択。Equation specificationを「wdot c 1/un pi」として [OK] をクリック。
+[Name] をクリック。名前を「static_ols」として [OK] をクリック。
+合理的期待形成仮説に基づく推論(2SLSによる推論):
+Quick > Estimate Equation とメニューを選択。Equation specificationを「wdot c 1/un pi(1)」とする。(まだ、[OK] をクリックしない。)
+Estimation settings/Method のドロップダウンリストから[TSLS - Two-Stage Least Squares (TSNLS and ARMA)] を選択する。
+Instrument listダイアログが現れるので、これを「c 1/un 1/un(-1) 1/un(-2) pi(-1) pi(-2) wdot(-1) wdot(-2)」としてから [OK] をクリック。
+(外生変数と考えている 1/un も忘れずに操作変数リストに入れること。)
+[Name] をクリック。名前を「rational_2sls」として [OK] をクリック。
+宿題
+(提出の必要なし)本日の実習の内容を再現できるように復習すること。
+また、2段階最小2乗法(2SLS)による推定について、
+EViewsで2SLSによる推定の機能を用いずに、あるいはExcelで再現すること。
+第15回(01/29)
+近藤康之 
+〒169-8050 東京都新宿区西早稲田 1-6-1
+早稲田大学政治経済学術院
+Copyright (C) 2011 Yasushi KONDO. All rights reserved.
+計量経済学β講義(2012年度)

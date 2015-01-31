@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+a = np.arange(-10, 10, 0.1)
+s = 1.0 / (1.0 + np.exp(-a))
+plt.plot(a, s)
+plt.show()
+これは$(-\infty, \infty)$の区間の実数を$(0, 1)$に写像する関数なので,あるデータ点${\bf x}$を$f({\bf x}) = {\bf w}^{\rm T}{\bf x} + b$によって1次元に写像したあと,シグモイド関数に通した値$\sigma(f({\bf x}))$は,$(0,1)$の値をとる確率値であると考えることができるようになる.
+今,データ点${\bf x}$にはラベルとして0か1のどちらかが対応しているとする.このとき,${\bf x}$のラベルが1である確率と0である確率は,それぞれ
+$$p(y=1 \mid {\bf x};{\bf w},b) = \sigma(f({\bf x})) \equiv s({\bf x})$$
+$$p(y=0 \mid {\bf x};{\bf w},b) = 1 - \sigma(f({\bf x})) \equiv 1 - s({\bf x})$$
+と表すことができる.ラベルを$c(0\ or\ 1)$で表せば,データ点${\bf x}$が与えられたときのラベルの尤度は
+$$p(y=c \mid {\bf x};{\bf w},b) = s({\bf x})^c(1 - s({\bf x}))^{1-c}$$
+とまとめて書くことができる.今,$N$個のデータ点があるとして,それぞれが全て独立であると考えると,データ点の集合${\bf x}_n(n=1,\dots,N)$とラベルの集合$c_n(n=1,\dots,N)$に対する,このモデルのパラメータである${\bf x},b$の尤度は各データの尤度の積で表せるので,
+$$\mathcal{l}({\bf w},b) = \prod_{n=1}^N p(y \mid {\bf x};{\bf w},b) = \prod_{n=1}^N s({\bf x}_n)^{c_n}(1-s({\bf x}_n))^{1-c_n}$$
+と定義できる.この最大化を考えるのだが,まず$(0,1)$区間の値の積をデータ数分だけ計算しようとすると,浮動小数点のオーバーフローが起こりやすいため,対数をとって和の形で表すことにする.対数関数は単調増加であるので,対数をとったとしても大小関係は変わらない.また,実装上の容易さの観点から,符号を反転することで最大化ではなく最小化問題に置き換えることにする.すると,目的関数は以下のように書き下せる.
+\begin{eqnarray}
+\def\sx{s({\bf x}_n)}
+\mathcal{L}({\bf w},b) &=&
+-\sum_{n=1}^N \ln \left\{
+\sx^{c_n}(1 - \sx)^{1 - c_n}
+\right\} \\
+&=& -\sum_{n=1}^N \left\{
+c_n \ln \sx + (1 - c_n) \ln (1 - \sx)
+\right\}
+\end{eqnarray}
+これを負の対数尤度(negative log likelihood)関数と呼ぶ.また,モデルの予測のはずれ具合を表すので,損失関数(loss function)とも呼ばれる.これを最小化するパラメータ${\bf w},b$は,この関数をパラメータそれぞれで偏微分して0とおけば求まるような気がする.シグモイド関数の導関数が
+$$\sigma(a) = \frac{1}{1 + \exp(-a)}$$
+$$\frac{d \sigma}{d a} = \frac{\exp(-a)}{(1 + \exp(-a))^2} = \frac{1}{1 + \exp(-a)}\frac{\exp(-a)}{1 + \exp(-a)} = \sigma(a)\frac{1 + \exp(-a) - 1}{1 + \exp(-a)} = \sigma(a)\left( 1 - \sigma(a) \right)$$
+となることに注意して,パラメータ${\bf w},b$それぞれにおける偏導関数を求めてみる.
+${\bf w}$における偏導関数
+$$
+\frac{\partial \mathcal{L}}{\partial {\bf w}} =
+-\sum_{n=1}^N \left\{
+c_n \frac{\partial \ln\sigma(f({\bf x}_n))}{\partial f({\bf x}_n)}\frac{\partial f({\bf x}_n)}{\partial {\bf w}} +
+(1 - c_n) \frac{\partial \ln(1 - \sigma(f({\bf x}_n)))}{\partial f({\bf x}_n)} \frac{\partial f({\bf x}_n)}{{\bf w}}
+\right\}
+$$
+\begin{eqnarray}
+\def\xn{{\bf x}_n}
+\frac{\partial \mathcal{L}}{\partial {\bf w}} = -\sum_{n=1}^N \xn (c_n - \sx)
+\end{eqnarray}
+

@@ -1,0 +1,169 @@
+Limechat for MacOSの設定ファイル 00:12 
+意外とわからないLimechat for MacOSの設定ファイルの在処。
+しかもバイナリーデーターだしw
+http://groups.google.com/group/limechatosx/browse_thread/thread/dd153bf9bad45df7
+See under ~/Library/Preferences/ 
+- LimeChat.plist 
+- net.limechat.LimeChat.plist 
+引用でもタグが挿入されてしまう。 11:42 
+はてなの日記ってhtmlとは微妙に違うwikiっぽい構成なので引用をしておいても中がインライン展開されていて、前のエントリーのpatchファイルがおわなーことになっていたので調べてみたらスーパーPre記法なるものがあり、それにして対応してみました。
+微妙に使いやすいんだか使いにくいのかわかりません。
+Redmine CSV Import Plugin 00:48 
+前回の続き。
+旧RedmineからデーターのmigrationをするためにCSV経由でやることに。
+なぜなら旧Redmineはユーザー作成ポリシーがないために名前に日本語と英語が入り交じるという燦々たる状況。
+仕方がないのでユーザーは全部手動で登録しなおし。
+問題がチケット。
+旧Redmineから移行予定のプロジェクトにある全チケットはExportできたのでこれをImportするプラグインを使う。
+http://daipresents.com/weblog/fujihalab/archives/2010/03/redmine-csv-import-plugin.php
+ここにあるpluginをQuickHackしてつかうことにする。
+ソースをざっと眺めて
+・入力日と作成日は保持して欲しい
+・テーブルにある二つのユーザー情報については、名前ベースでQueryしているみたいなので、idをkeyにしてQueryしたほうがいい
+・ステータスについても同様
+#書き出したcsvはユーザー名とステータスは名前ではいってるのでそれを新規対応に手動で書換。
+の対応をしてimport成功!
+とおもったら、なぜかチケットのステータスが全部新規に。
+詳しくは追ってないけどfilterが、どうも新規に追加されたチケットを全部ステータスを新規にしているみたいなので、saveした後に
+updateするようにHack。Rails使いの同僚がみたら微妙な顔しそうだけど、いまの要求はとりあえず動けばOKなので勘弁してねw
+というわけで以下patch
+git diff importer_controller.rb
+diff --git a/app/controllers/importer_controller.rb b/app/controllers/importer_c
+index f8ecb6d..506c959 100644
+--- a/app/controllers/importer_controller.rb
++++ b/app/controllers/importer_controller.rb
+@@ -8,7 +8,7 @@ class ImporterController < ApplicationController
+ISSUE_ATTRS = [:id, :subject, :assigned_to, :fixed_version,
+:author, :description, :category, :priority, :tracker, :status,
+-    :start_date, :due_date, :done_ratio, :estimated_hours]
++    :start_date, :due_date, :done_ratio, :estimated_hours, :created_on, :update
+def index
+end
+@@ -111,14 +111,14 @@ class ImporterController < ApplicationController
+attrs_map = fields_map.invert
+FasterCSV.foreach(tmpfile.path, {:headers=>true, :encoding=>encoding, :quot
+-
++       
+project = Project.find_by_name(row[attrs_map["project"]])
+tracker = Tracker.find_by_name(row[attrs_map["tracker"]])
+-      status = IssueStatus.find_by_name(row[attrs_map["status"]])
+-      author = User.find_by_login(row[attrs_map["author"]])
++      status = IssueStatus.find_by_id(row[attrs_map["status"]])
++      author = User.find_by_id(row[attrs_map["author"]])
+priority = Enumeration.find_by_name(row[attrs_map["priority"]])
+category = IssueCategory.find_by_name(row[attrs_map["category"]])
+-      assigned_to = User.find_by_login(row[attrs_map["assigned_to"]])
++      assigned_to = User.find_by_id(row[attrs_map["assigned_to"]])
+fixed_version = Version.find_by_name(row[attrs_map["fixed_version"]])
+# new issue or find exists one
+issue = Issue.new
+@@ -209,6 +209,8 @@ class ImporterController < ApplicationController
+issue.fixed_version_id = fixed_version != nil ? fixed_version.id : issue.
+issue.done_ratio = row[attrs_map["done_ratio"]] || issue.done_ratio
+issue.estimated_hours = row[attrs_map["estimated_hours"]] || issue.estima
++      issue.created_on = row[attrs_map["created_on"]] || issue.created_on
++      issue.updated_on = row[attrs_map["updated_on"]] || issue.updated_on
+# custom fields
+issue.custom_field_values = issue.available_custom_fields.inject({}) do |
+@@ -223,10 +225,14 @@ class ImporterController < ApplicationController
+@failed_count += 1
+@failed_issues[@handle_count + 1] = row
+end
+-  
++
++
++      Issue.update_all "status_id = #{status.id}", ["id = ?", issue.id]      
++
+if journal
+journal
+end
++
+@handle_count += 1
+end # do
+こんな感じ無事importできました。IDは変わるけどまあしょうがないってことで。
+Ubuntu10.04にredmineをインストール。ただしdebで。 15:35 
+Redmineを新規に立てて古いのからmigrationしました。
+アカウントポリシーやサーバーの場所などを変更したために、決行な大事となってしまいました。
+同僚に話しをしたらgemでいれたら?といわれましたがUbuntu使いとしてaptitudeからインストールしてみました。
+http://www.redmine.org/wiki/1/HowTo_Install_Redmine_in_Ubuntu
+ここを参考にさっくりと。
+sudo apt-get install redmine redmine-mysql
+sudo ln -s  /usr/share/redmine/public /var/www/redmine
+apacheのpassengerからmysqlのDBまで作成してくれてべーんり。
+あとは、/etc/apache2/mods-available/passenger.confのUbuntu/Debianのapache実行ユーザーのwww-dataに変更。
+PassengerDefaultUser www-data
+あとは使うsites-enabled/000-default.confなどに以下のディレクティブ書けばおわり
+<Directory /var/www/redmine>
+RailsBaseURI /redmine
+</Directory>
+ハマリどころは
+/etc/redmine
+/var/cache/redmine
+/var/log/redmine/
+などと設定・ログファイルが分散するのでgemインストールな方は嫌いかもしれません。
+で、pluginなどを入れてログをみたら
+ActionController::RoutingError (No route matches "/plugin_assets/redmine_wiki_extensions/stylesheets/wiki_extensions.css" with {:method=>:get}):
+/vendor/rails/actionpack/lib/action_controller/routing/recognition_optimisation.rb:66:in `recognize_path'
+みえないっていわれて、コードとかおってみたらredmine/publicの下にディレクトリーがないっぽい。
+AapacheのconfigurationでAllowSymlinkがOKでてるの確認した上で、
+ln -s /var/cache/redmine/default/plugin_asstes /var/www/redmine/
+とかしておけばOK。もしくはApacheのAliasつかってもいいのでお好きな方をどうぞ。
+最後に過去のredmineのcsvからexportしたのをimportしたのですが、pluginをcasual hackしてつかったのでそれはまた後日。
+この後、ぼやぼやしていたらredmine1.0がでてしまったのでdebのredmineをgemに変更して、1.0とかにあげるのをやる予定です。
+PT2で遊ぼう!(その1) 23:07 
+いまさら感のあるPT2ですが、我が家にはサーバ利用のShuttleのCube型PC以外デスクトップがありません。
+そのCube型もVMware ESXiサーバーとかいれているので、録画機としてはあまり適しているとはいえません。
+さらにMacしかないために買ったはいいけど使えないしという状況のまま
+なんだかなんで忙しかったので半年近く放置していたのをやっと使う気にになりました。
+さてここから構成を悩むこと2ヶ月近くかかりました。
+・じゃまなのでMini ITXにしたい
+・iPadでみたいので生TSファイルではなく、720p/H264にエンコードしたいのでパワーがいる
+・Windowsで使う気はまったくない
+・ともかくじゃまなのでMini ITXにしたい(大事なことなので2回言いました)
+このような条件で考えると、CPUは最新のCorei3/5あたりがいいけど
+miniITXでPCI Expressでない"マザーはSocket G1タイプ以外ないみたい。
+AMDのAM3も同じ状況でPCI Express"でない"mini ITXマザーはない。
+LGA775だとCore 2 Quadあたり狙い目だけどTDP95Wとかなり高いけど、これしかないなぁという感じでした。
+ケースも調べてみたらJX-FX300Bというホットスワップベイ搭載というステキなケースがあるみたいなので以下のような構成を考えてみました。
+マザー Intel DG41MJ 8,000円
+CPU   Core2Quad Q8400 18,000円 
+Memory 1Gx 2 5,000円
+HDD WD 2Tx2 9,000円 x 2 = 18,000円
+Case JX-FX300B 10,000円
+とこんな構成で6万円前後で考えていました。
+本当はOS用に300Gを使うとかいろいろ考えていたけどLVMあるからいっかーみたいなノリです。
+で、先日秋葉原にいってきて調達してきたのは……
+BareBone Shuttle SA76G2
+CPU AMD AthlonII 605e
+Memory UMAX 1G x2 
+HDD WD 2Tx2
+こんな感じで全部あわせて57000円ぐらいでした。
+いきなりAMDになったのは以下の理由です。
+・Core2QuadのTDPが高杉!
+・JX-FX300Bがすごいちゃちい!
+・Shuttleのベアボーンが6%引き&CPUと買うと1000円引き&同時購入3%引きをやってた
+CPUは260eにしようかとおもったのですが、せっかくなのでQuadな605eにしてみました。
+TDPは45Wとかなりエコな感じです。
+かえってきてさっくり組み上げてOS入れようとおもったら家にキーボードがないのでiMacのを引きはがしてくるという萎え萎えっぷりです。
+これにPT2とICカードリーダーでNTT com SCR3310をつけて準備完了!
+(その2に続く)
+PT2で遊ぼう!(その2) 01:32 
+UbuntuはOfficial Siteから10.04のサーバー版をダウンロード。
+OSは64bit版にしました。
+http://www.ubuntu.com/server/get-ubuntu/download
+ここからどうぞ。
+検索してみるとみなさんDesktop版とかつかってるみたいでびっくり。一度も使ったことありません。
+ダウンロードしてきたISOをDVD-RなりCD-Rなりに焼いて、マシンのほうでCDBoot。
+BIOS設定とかは適当にやってください。
+インストールはLVMのところだけはまるので注意。
+ガイド − ディスク全体を使い、LVMをセットアップする
+を選らんだ後、使う容量(この場合は/にmountする部分)を聞いてくる。
+今回は/を最小にして、残りをtsの保存領域いしたいので、
+1%
+を入力する。最小で500Mなので20Gもあればどんなことがあろうとも十分だろう。
+その後、2本目のHDDのパテーションでフォーマットするときの種類で"LVM"を選らんだ後に
+LVMマネージャーで物理ボリュームを追加して、残り全体を/mnt/dataにmountするように設定。
+フォーマットが死ぬほど時間かかるので注意。
+LAMP,postgreSQL,sshdあたりをいれて再起動。
+次はドライバーとfoltiaのインストール。。。
+Bstyle = LOlita + Gothic 4th Trial

@@ -1,0 +1,51 @@
+MARK_FAILED
+このプロシージャを使用して索引のステータスをLOADINGからFAILEDへ変更します。
+まれに、CREATE INDEXまたはALTER INDEXに失敗すると、索引のステータスがLOADINGのままになる場合があります。索引のステータスがLOADINGになると、RESUME INDEXを使用してリカバリしようとしてもブロックされます。このような場合は、RESUME INDEXで索引をリカバリできるように、CTX_ADM.MARK_FAILEDを使用してステータスをLOADINGからFAILEDに強制的に変更します。
+CTX_ADM.MARK_FAILEDを実行するには、CTXSYSとしてログオンする必要があります。
+注意:
+CTX_ADM.MARK_FAILEDを使用する場合は、注意が必要です。これは最後の手段として使用し、索引に影響を与えるセッションが他にない場合にのみ使用するようにしてください。通常、別のセッションでCREATEまたはALTER INDEXを使用して索引を作成中の場合、CTX_ADM.MARK_FAILEDは正常に実行されません。ただし、索引の作成や変更で、CTX_ADM.MARK_FAILEDが正常に実行されたことを示すウィンドウが表示されることがあります。この場合、別のセッションで索引を作成中であっても、索引が失敗としてマーク付けされます。
+CTX_ADM.MARK_FAILEDはローカル・パーティション索引で機能します。ただし、すべてのパーティションのステータスがFAILEDに変更されます。したがって、CTX_ADM.MARK_FAILEDを使用した後は、ALTER INDEX REBUILD PARTITION PARAMETERS ('RESUME')を使用してすべての索引パーティションを再構築する必要があります。この操作の後にALTER INDEX PARAMETER ('RESUME')を実行すると、索引パーティションのステータスが有効にリセットされます。MARK_FAILED操作の前に正常に構築された索引パーティションは、再構築されません。 
+構文
+CTX_ADM.MARK_FAILED(
+owner_name     in    VARCHAR2,
+index_name     in    VARCHAR2);
+owner_name
+ステータス変更対象索引の所有者名
+index_name
+ステータス変更対象の索引名
+例
+begin
+CTX_ADM.MARK_FAILED('owner_1', 'index_1');
+end;
+SET_PARAMETER
+SET_PARAMETERプロシージャは、索引作成用のシステム・レベルのパラメータを設定します。 
+構文
+CTX_ADM.SET_PARAMETER(param_name IN VARCHAR2,
+param_value IN VARCHAR2);
+param_name
+設定するパラメータの名前を指定します。次のいずれかのパラメータを指定できます。
+max_index_memory(索引付けに使用可能な最大メモリー)
+default_index_memory(索引付けに割り当てられたデフォルトのメモリー)
+log_directory(CTX_OUPUTファイル用ディレクトリ)
+ctx_doc_key_type(CTX_DOCプロシージャ用のデフォルトの入力キー型)
+file_access_role(FILEまたはURLデータストアを使用する場合の索引作成用のデフォルトのデータベース・ロール名)
+default_datastore(デフォルトのデータストア・プリファレンス)
+default_filter_file(ファイルに格納されているデータ用のデフォルトのフィルタ・プリファレンス)
+default_filter_text(デフォルトのテキスト・フィルタ・プリファレンス)
+default_filter_binary(デフォルトのバイナリ・フィルタ・プリファレンス)
+default_section_html(デフォルトのhtmlセクション・グループ・プリファレンス)
+default_section_xml(デフォルトのxmlセクション・グループ・プリファレンス)
+default_section_text(デフォルトのテキスト・セクション・グループ・プリファレンス)
+default_lexer(デフォルトのレクサー・プリファレンス)
+default_wordlist(デフォルトのワードリスト・プリファレンス)
+default_stoplist(デフォルトのストップリスト・プリファレンス)
+default_storage(デフォルトの記憶域プリファレンス)
+default_ctxcat_lexer
+default_ctxcat_stoplist
+default_ctxcat_storage
+default_ctxcat_wordlist
+default_ctxrule_lexer
+default_ctxrule_stoplist
+default_ctxrule_storage
+default_ctxrule_wordlist
+CTX_ADMパッケージ

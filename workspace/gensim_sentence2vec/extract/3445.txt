@@ -1,0 +1,67 @@
+GithubのAtomは優れたエディタですが、日本語周りは自分で設定しないといけない部分が結構あるようです
+Tree View
+横のファイルブラウザのようなものがそうです。日本語ファイルがあったときは中華フォントで表示されてしまいます
+1. File->Setting
+2. Filter packagesで"tree"を入力
+3. 出てきた"Tree View"を開き、"Open in Atom"を選択
+4. 新しくAtomウィンドウが開き、そのサイドバー(Tree)に関連ファイルが表示される
+5. その中でstylesheetの中にtree-view.lessがあるので開いて編集する
+6. しかし管理者でないと保存できない(インストールフォルダによるが)
+7. なのでファイル名だけ覚えて別のエディタを管理者権限で開いて編集します
+8. lessですがフォントを変えるだけなので書き方はCSSと同じです
+9. しかし反映されません(私の場合)
+10. なのでインポートされているUIの方のスタイルシートを同様に編集します
+11. 例えばAtom Dark Ui
+11. うまくいきました
+12. 
+File->OpenYourStyleSheetを開きます
+.tree-view {
+font-family: "Meiryo";
+}
+を追記します
+日本語化されました(即時反映です)
+Mark Down Preview
+同様に
+.markdown-preview {
+font-family: "Meiryo";
+h1, h2, h3, h4, h5, h6 {
+font-family: "Meiryo";
+}
+}
+を追記します
+以上です
+GithubのAtomは優れたエディタですが、日本語周りは自分で設定しないといけない部分が結構あるようです
+## Tree View
+横のファイルブラウザのようなものがそうです。日本語ファイルがあったときは中華フォントで表示されてしまいます
+<s>
+1. File->Setting
+2. Filter packagesで"tree"を入力
+3. 出てきた"Tree View"を開き、"Open in Atom"を選択
+4. 新しくAtomウィンドウが開き、そのサイドバー(Tree)に関連ファイルが表示される
+5. その中でstylesheetの中にtree-view.lessがあるので開いて編集する
+6. しかし管理者でないと保存できない(インストールフォルダによるが)
+7. なのでファイル名だけ覚えて別のエディタを管理者権限で開いて編集します
+8. lessですがフォントを変えるだけなので書き方はCSSと同じです
+9. <font color=red>しかし反映されません(私の場合)</font>
+10. なのでインポートされているUIの方のスタイルシートを同様に編集します
+11. 例えばAtom Dark Ui
+11. <font color=#0099FF>うまくいきました</font>
+12. </s>
+#
+1. File->OpenYourStyleSheetを開きます
+2. .tree-view {
+font-family: "Meiryo";
+}
+3. を追記します
+4. 日本語化されました(即時反映です)
+## Mark Down Preview
+1. 同様に
+2. .markdown-preview {
+font-family: "Meiryo";
+h1, h2, h3, h4, h5, h6 {
+font-family: "Meiryo";
+}
+}
+3. を追記します
+以上です
+Atomの日本語化 - Qiita

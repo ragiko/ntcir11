@@ -1,0 +1,87 @@
+はじめまして。アカツキのサーバエンジニアのこうのです。サウザンドメモリーズで主にサーバ側のプログラム・インフラを担当しています。 今回はサウザンドメモリーズで発生した、Redisにまつわるトラブルを紹介したいと思います。
+TL;DR
+RedisのSorted SetのZRANGE系のコマンドは計算量がO(log(N)+M)(Mは取得結果の数)になるので、 適切にLIMITをつけるなどして取得結果数を制限しないと負荷が高くなってしまいますよ、というお話。
+背景
+サウザンドメモリーズではバトル出撃時に一緒に出撃するフレンドやランダムに選ばれた他のプレイヤーを選択することができます。 この「ランダムに選ばれた他のプレイヤー」の選択ロジックに弊社ではRedisのSorted Setを利用した実装を行っています。
+ランダムといってもすべてのプレイヤーからランダムで選んでしまってはアクティブでないプレイヤーや自分のパーティの強さと かけ離れたプレイヤーが選ばれてしまうため、実際には「アクティブで、より自分のプレイヤーレベルに近い他のプレイヤー」 から選択しています。サウザンドメモリーズではバッチで定期的に最近ログインしているユーザを取得し、プレイヤーIDをmember、 プレイヤーレベルをscoreとしてSorted Setに格納しています。
+当初はプレイヤーがフレンドを選択する際に「自分のレベルに近いプレイヤー」を取得する実装をZRANGEBYSCOREコマンドを 使って実装していたのですが、単純な実装ではプレイヤー数が増えた際にRedisの負荷が上がるという問題が発生しました。
+サンプルコード
+このサンプルではruby, redis-rbを利用しています。 ここでは細かい境界等は考慮したコードになっていませんが、ここでは省略します。
+自分のレベルと近いプレイヤーから3人をランダムに取得する例は以下のようになります。
+def get_random_players(user_score)
+candidates = redis.zrangebyscore("user_cache", (user_score-1), (user_score+1)) # <- ここの計算量がO(log(N)+M)
+candidates.sample(3)
+end
+ここではZRANGEBYSCOREを使って自分のレベルの±1のユーザを取得しています。 コメントに記載しているように、2行目のZRANGEBYSCOREの呼び出しの計算量がO(log(N)+M)になっています。 Sorted Setに含まれている件数が少ない場合には取得件数Mが多くならないのでさほど問題にならないのですが、 件数が多くなってくるとここの実行時間が問題になってきます。
+そこで、厳密に同じ結果が得られるわけではありませんが以下のようにロジックを修正します。
+def get_random_players(user)
+rank = redis.zrank("user_cache", user) + rand(-100..100)
+candidates = redis.zrange("user_cache", (rank-10), (rank+10))
+candidates.sample(3)
+end
+ZRANKを使って自分の順位を取得し、それにランダムで±100を加算(または減算)します。ここでの計算量はO(log(N))です。 次にZRANGEを使って上記で生成した順位の±10の範囲で結果を取得します。このようにすることで取得件数Mを20に制限することができます。 ZRANGEで取得する件数Mを定数で制限することにより計算量から除外することができますので、計算量はO(log(N))となります。
+上で述べたように厳密に同じ結果が得られるわけではありませんが、類似した結果を計算量を大幅に削減して取得することができます。
+ベンチマーク
+環境
+ベンチマークは以下の環境で実行しました。
+Mac OS X 10.9.2
+Redis 2.8.4
+Ruby 2.0.0p247
+コード
+Sorted Setに1-10をランダムなスコアとしてNを100件、1000件、10000件としたSorted Setを作成し、 上記のbefore, afterをそれぞれ10000回実行して実行時間を計測しました。
+require 'benchmark'
+require 'redis'
+def before(key, redis, user_score)
+redis.zrangebyscore(key, user_score-1, user_score+1)
+end
+def after(key, redis, user)
+rank = redis.zrank(key, user) + rand(-10..10)
+redis.zrange(key, rank-10, rank+10)
+end
+r = Redis.new
+iterations = 10_000
+my_user = 'user'
+my_score = 5
+[100, 1_000, 10_000].each do |n|
+r.zadd "sample_#{n}", my_score, my_user 
+(1..n).each do |i|
+r.zadd "sample_#{n}", rand(1..10), i
+end
+range_count = r.zrangebyscore("sample_#{n}", my_score-1, my_score+1).count
+puts "sample_#{n} item count between #{my_score-1}-#{my_score+1}: #{range_count}"
+end
+Benchmark.bm(13) do |x|
+[100, 1_000, 10_000].each do |n|
+x.report("before_#{n}") do
+iterations.times do
+before("sample_#{n}", r, my_score)
+end
+end
+x.report("after_#{n}") do
+iterations.times do
+after("sample_#{n}", r, my_user)
+end
+end
+end
+end
+[100, 1_000, 10_000].each do |n|
+r.del "sample_#{n}"
+end
+実行結果
+$ ruby redis-zrange-benchmark.rb
+sample_100   item count between 4-6: 34
+sample_1000  item count between 4-6: 302
+sample_10000 item count between 4-6: 3053
+user     system      total        real
+before_100      2.410000   0.220000   2.630000 (  2.961534)
+after_100       2.160000   0.380000   2.540000 (  2.871653)
+before_1000    17.530000   0.830000  18.360000 ( 20.632104)
+after_1000      2.190000   0.390000   2.580000 (  2.881505)
+before_10000  170.840000   8.640000 179.480000 (198.790772)
+after_10000     2.210000   0.390000   2.600000 (  2.906655)
+Sorted Setに含まれている件数を線形に増加させるとスコア4から6に含まれる件数(M)が線形に増加しており、 それに伴ってbefore_*の実行時間が線形に増加していることがわかります。
+一方after_*は取得結果件数を制限しているため、Sorted Setに含まれる件数に依存することなく 結果を取得することができます。
+まとめ
+RedisのSorted SetのZRANGE系コマンドでは取得結果数が計算量に大きく影響する例を紹介しました。 今回の例ではZRANGEのmin, maxの範囲を指定することで取得件数Mを制限していますが、 LIMITを利用することで取得件数を指定することもできます。
+Redisは高速で様々なデータ構造に対応しており便利なデータストアですが、実装する際にはRedisコマンドのドキュメント(特に計算量の部分)を読むことをおすすめします。
+Redis、計算量の恐怖 | Akatsuki Hackers Lab アカツキハッカーズラボ

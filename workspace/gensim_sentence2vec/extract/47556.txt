@@ -1,0 +1,154 @@
+PostgreSQL Advent Calendar 2012（全部俺）のDay 8です。
+今日は、PostgreSQLの統計情報を網羅的に収集・蓄積するPgPerfパッケージの紹介をします。
+このパッケージは、本日リリースしたものです。
+snaga/pgperf-snapshot
+https://github.com/uptimejp/pgperf-snapshot
+■PostgreSQLの統計情報の記録と監視
+PostgreSQLでは、動作についての内部の情報を取得するために、さまざまなシステムビューやSQL関数があります。
+統計情報コレクタ
+http://www.postgresql.jp/document/9.0/html/monitoring-stats.html
+システム管理関数
+http://www.postgresql.jp/document/9.0/html/functions-admin.html
+この情報を取得することで、PostgreSQLの内部でどのような処理が行われているのかを知ることができます。
+一方で、これらの内部の統計情報は時々刻々と変化していくため、データベースサーバの運用という観点で見る場合には、きちんと記録をしておく必要があります。
+また、データベースの監視やパフォーマンスの分析にはさまざまな角度からこれらの内部の統計情報を分析する必要がありますが、いざ何か問題が起こって分析しようとすると、必要な情報が取れていない、といったことが起こりえます。
+つまり、データベースの運用を行う上では、後に分析する際に必要になる可能性を考慮して、「最初から、定期的に、網羅的に」情報を収集しておくことが重要になります。
+■パフォーマンス統計情報を取得・保存するPgPerfパッケージ
+PostgreSQLでは、いままでにもいくつかパフォーマンス関連の統計情報を取得したりレポートするツールが存在していました。
+しかし、「動作させるための設定が複雑である」、「ツールが複雑でメンテナンスが難しい」、「特定のレポートを出すのに特化している」といった課題がありました。
+今回リリースした「PgPerfパッケージ」は、パフォーマンス関連の統計情報を
+内部のシステムビューなどのほぼ同じ形式で、
+稼働しているシステムに極力手を加えずに、
+すべてを網羅的に取得・蓄積し、
+後から自由に分析できるようにする
+という目的のために開発されたものです。
+そのため、実装の特徴としては、
+スクリプト（SQL、PL/pgSQL）のみで動作するため、PostgreSQLの稼働しているプラットフォームに依存しない。
+各種性能情報を容易に取得・保存することができ、蓄積したデータを自由に分析・活用することができる。
+インストールおよびアンインストールが容易で、稼働しているPostgreSQLの設定を変更する必要がない。
+といったことが挙げられます。
+pgstattupleやpg_stat_statementsなどのcontribモジュールがインストールされていなくても、デフォルトで取得できる情報はすべて取得しますし、これらのcontribモジュールがインストールされていればそれらの情報も併せて取得します。
+PgPerfパッケージの詳細なマニュアルを読みたい方はこちらをご覧ください。
+PgPerfパッケージユーザーマニュアル
+http://www.uptime.jp/go/pgperf-snapshot
+■PgPerfパッケージのインストール
+PgPerfパッケージのインストールは非常に簡単です。各メジャーバージョンに対応する pgperf_install.sql スクリプトを、contribモジュールと同じようにデータベースに対してインストールするだけです。
+[snaga@devsv02 pgperf-snapshot]$ psql -f pgperf_install91.sql testdb
+BEGIN
+CREATE SCHEMA
+psql:pgperf_install91.sql:28: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "snapshot_pkey" for table "snapshot"
+CREATE TABLE
+CREATE FUNCTION
+(...snip...)
+CREATE FUNCTION
+COMMIT
+[snaga@devsv02 pgperf-snapshot]$
+作成すると、データベース内にpgperfというスキーマが作成され、スナップショット取得用のテーブルやSQL関数が作成されたことが分かります。
+[snaga@devsv02 pgperf-snapshot]$ psql testdb
+psql (9.0.6, server 9.1.2)
+Type "help" for help.
+testdb=# SET search_path TO pgperf;
+SET
+testdb=# \d
+List of relations
+Schema |                Name                 | Type  |  Owner
+--------+-------------------------------------+-------+----------
+pgperf | snapshot                            | table | postgres
+pgperf | snapshot_pg_current_xlog            | table | postgres
+pgperf | snapshot_pg_locks                   | table | postgres
+pgperf | snapshot_pg_relation_size           | table | postgres
+pgperf | snapshot_pg_stat_activity           | table | postgres
+pgperf | snapshot_pg_stat_bgwriter           | table | postgres
+pgperf | snapshot_pg_stat_database           | table | postgres
+pgperf | snapshot_pg_stat_database_conflicts | table | postgres
+pgperf | snapshot_pg_stat_replication        | table | postgres
+pgperf | snapshot_pg_stat_statements         | table | postgres
+pgperf | snapshot_pg_stat_user_indexes       | table | postgres
+pgperf | snapshot_pg_stat_user_tables        | table | postgres
+pgperf | snapshot_pg_statio_user_indexes     | table | postgres
+pgperf | snapshot_pg_statio_user_tables      | table | postgres
+pgperf | snapshot_pg_statistic               | table | postgres
+pgperf | snapshot_pgstatindex                | table | postgres
+pgperf | snapshot_pgstattuple                | table | postgres
+(17 rows)
+testdb=#
+■スナップショットの取得
+それでは、インストールしたPgPerfパッケージを使って、統計情報のスナップショットを取得してみます。
+スナップショットを取得するには、pgpgerf.create_snapshot()というSQL関数を使用します。
+testdb=# SELECT pgperf.create_snapshot(1);
+create_snapshot
+-----------------
+0
+(1 row)
+testdb=#
+create_snapshot()関数には、スナップショット取得レベルを指定する必要があります。スナップショット取得レベルは、そのデータの種別やスナップショット取得にかかる負荷に応じて、もっとも基礎的な「1」から可能な限りの情報を取得する「5」までレベル分けがされています。
+ここでは、まずはもっとも基本的なスナップショット取得レベル1で取得してみます。
+■取得したスナップショットの確認
+取得したスナップショットは、pgperfスキーマ内にある「snapshot_」で始まる複数のテーブルに格納されます。
+pgperf.snapshotテーブルは、スナップショット取得時刻とスナップショットIDの対応を保存するテーブルです。このテーブルを参照すると、いつ取得したスナップショットなのか、スナップショットIDが何番なのか、といった情報を確認することができます。
+testdb=# SELECT * FROM pgperf.snapshot;
+sid |             ts
+-----+----------------------------
+0 | 2012-12-08 11:17:02.822046
+(1 row)
+testdb=# 
+各種統計情報のデータそのものは、その他の「pgperf.snapshot_*」というテーブルに保存されます。
+例えば、バックグラウンドライタの統計情報を取得できるpg_stat_bgwriterシステムビューのスナップショットはpgperf.snapshot_pg_stat_bgwriterテーブルに保存される、といった仕組みです。
+testdb=# SELECT * FROM pgperf.snapshot_pg_stat_bgwriter ;
+-[ RECORD 1 ]---------+------------------------------
+sid                   | 0
+checkpoints_timed     | 136
+checkpoints_req       | 35
+buffers_checkpoint    | 1746118
+buffers_clean         | 0
+maxwritten_clean      | 0
+buffers_backend       | 1383900
+buffers_backend_fsync | 0
+buffers_alloc         | 451660
+stats_reset           | 2012-11-30 13:29:50.000083+09
+testdb=#
+詳細については、ユーザマニュアルを参照してください。
+PgPerfパッケージユーザーマニュアル
+http://www.uptime.jp/go/pgperf-snapshot
+■スナップショットの削除
+スナップショットを削除するには、スナップショットIDを指定してpgperf.delete_snapshot()関数を使います。指定したスナップショットIDのスナップショットデータを、すべてのスナップショットテーブルから一括して削除してくれます。
+testdb=# SELECT * FROM pgperf.snapshot;
+sid |             ts
+-----+----------------------------
+0 | 2012-12-08 11:17:02.822046
+(1 row)
+testdb=# SELECT pgperf.delete_snapshot(0);
+delete_snapshot
+-----------------
+t
+(1 row)
+testdb=#
+■スナップショットの消し込み
+基本的にスナップショットのデータは蓄積していくものですが、ある一定の期間以上経過した古いものは削除をしたい、といった場合もあると思います。そのような場合には、pgperf.purge_snapshots()関数を使います。
+pgperf.purge_snapshots()関数は、引数にINTERVAL型の値を取り、指定した期間より古いスナップショットを一括して削除します。
+以下の例は、取得してから32日以上経過したスナップショットを削除している例です。
+testdb=# SELECT pgperf.purge_snapshots('32 days');
+purge_snapshots
+-----------------
+12
+(1 row)
+testdb=#
+■PgPerfパッケージのアンインストール
+PgPerfパッケージは、PL/pgSQLで作成されたSQL関数とテーブル類で構成されており、すべてpgperfスキーマ内に作成されます。
+ですので、アンインストールする場合にはpgperfスキーマをCASCADE指定でDROPすることで、きれいにアンインストールすることができます。pgperf_uninstall.sqlスクリプトは、この処理を行ってくれます。
+[snaga@devsv02 pgperf-snapshot]$ psql -U postgres -f pgperf_uninstall.sql testdb
+psql:pgperf_uninstall.sql:1: NOTICE:  drop cascades to 50 other objects
+DETAIL:  drop cascades to table pgperf.snapshot
+drop cascades to function pgperf._get_server_version()
+drop cascades to function pgperf._check_function(name)
+(...snip...)
+drop cascades to function pgperf.create_snapshot_pgstatindex(integer)
+drop cascades to function pgperf.delete_snapshot_pgstatindex(integer)
+DROP SCHEMA
+[snaga@devsv02 pgperf-snapshot]$
+■まとめ
+今回は、PostgreSQLのパフォーマンス統計情報を取得・蓄積する方法として、PgPerfパッケージの紹介と、その基本的な使い方の解説をしました。
+PgPerfパッケージは、インストールするのも使ってみるのも（もちろんアンインストールも）非常に簡単ですので、ぜひ試してみていただければと思います。
+明日は、このPgPerfパッケージを使って蓄積したスナップショットデータを、SQLを使って分析する方法を御紹介します。
+では、また。
+PostgreSQL Deep Dive: パフォーマンス統計情報のスナップショットを取得する

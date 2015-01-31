@@ -1,0 +1,142 @@
+ 18世紀中頃イタリアの医師ガルヴァーニが、カエルの筋肉がカミナリの雷光により収縮することを発見してから、生命現象と電気的活動の関係を探る研究が今日に至るまで盛んに行われている。膜電位センサーの概念は、イカの巨大軸索における活動電位発生時のイオン透過性の変化を膜電位固定法を用いた研究により、1952年にHodgkin-Huxleyによって初めて導入された[1]。1974年にArmstrong & Bezanillaによって、脱分極時に電位依存性チャネルを通ってイオン電流が流れる直前に一過的に流れる外向き電流(ゲート電流)が観測され、膜電位に応答する分子内電荷による膜電位感知機構が提唱された[2]。 
+1980年代に、種々の電位依存性チャネルがクローニングされ[3][4][5]、保存されたアミノ酸配列として電荷を帯びた残基を有する膜貫通領域が存在し、それを中心とした電位センサードメインによる膜電位感知機構が想定された。クローニング以降、分子生物学的手法を組み合わせた電気生理学的機能解析が発展し、電位依存性イオンチャネルの電位センサードメインの作動機構に対して種々のモデルが提唱されている。2005年に電位依存性ホスファターゼ(VSP)の発見により電位センサードメインを有する蛋白質がイオンチャネル以外にも存在し電位センサーが酵素活性の調節に対しても機能していることが明らかになった[6]。2003年に古細菌[7]、2005年にはほ乳類[8]の電位依存性チャネルの結晶構造が解かれ、電位センサードメインの機能解析が原子レベルで解析される形となった。また、電位センサーの概念が成熟した現在では、電位依存性チャネルの様な電位センサードメインを有さない膜蛋白質からも電位依存的な活性やゲート電流の観測が報告されている。
+構造と作動機構
+電位依存性イオンチャネルの共通骨格は、S1-S6の6本の膜貫通ヘリックスから構成され、後半S5-S6をポアドメイン、前半S1-S4を電位センサードメインとして分類されている。S4には正電荷をおびたアミノ酸残基(主にアルギニン)が3残基おきに4-7個規則正しく存在し、S1、S2に存在する負電荷を帯びたアミノ酸残基と塩橋を構成することで、電位センサードメインのフォールディング[9]、膜へのトラフィッキングを維持している[10]。 
+S4の正電荷を帯びたアミノ酸残基は、膜電位変化を感知する中心的な役割を担っている。これら正電荷が膜電位変化に応答して細胞膜にかかる電場を横切って移動し、「ゲート電流」として観測される。実際には、これらの残基のうち細胞外側の4つが有効なゲーティングチャージ(~+4e)として働く事が知られている[11][12]。4リピート構造である通常の電位依存性イオンチャネルの場合は4つある電位センサーが作動して初めてチャネルが開口する仕組みを取っており、チャネルの開口確率は膜電位に対して急勾配のボルツマン関数(+12e～+13e)となっており、半導体素子の電位依存性(+1e)と比較しても極めてシャープな電位依存性を有する。これは、神経細胞において膜電位の有効レンジの幅(-60～+40mV)が電子機器類よりも狭いにも関わらずON/OFFを明確に区別する機能素子を作り出す上で有効な仕組みである[13]。
+電位センサードメインが2量体化した構造で機能するタンパク質である電位依存性H+チャネル[14][15]は、開く際に2量体間で協調が起こり、電位依存性を増強している[16][17]。電位センサーには細胞内外からくさび状に水が陥入し、実効膜電位は電位センサー中心部の疎水性バリアの部分に収束していることが想定されている[18][19]。このことも、最小限の構造変化で最大限の電荷の移動を生みだしている。 
+電位センサーに作用する薬剤
+毒蜘蛛の一種タランチュラの毒であるハナトキシンは電位依存性チャネルの電位センサーに結合して阻害する[20]。 
+その他、膜電位依存的な活性を有する分子
+電位依存性イオンチャネル型の電位センサードメインを有していないイオンチャネルや膜蛋白質からも電位依存性な活性変化が報告されている[21][22][23][24]。内耳有毛細胞で膜電位に応答して伸び縮みする膜蛋白であるプレスチンは電場内にCl-を保持し電位センサーとして使っている[25]。代謝型アセチルコリン受容体(M1受容体)は電位依存的なリガンド親和性の変化を呈しゲート電流が観測される[26]。 
+関連項目
+静止膜電位 
+活動電位 
+電位依存性チャネル 
+カリウムチャネル 
+ナトリウムチャネル 
+カルシウムチャネル 
+膜電位感受性色素
+参考文献
+A L HODGKIN, A F HUXLEY, B KATZ
+Measurement of current-voltage relations in the membrane of the giant axon of Loligo. 
+J. Physiol. (Lond.): 1952, 116(4);424-48 [PubMed:14946712]
+[WorldCat.org]
+C M Armstrong, F Bezanilla
+Charge movement associated with the opening and closing of the activation gates of the Na channels. 
+J. Gen. Physiol.: 1974, 63(5);533-52 [PubMed:4824995]
+[WorldCat.org]
+M Noda, S Shimizu, T Tanabe, T Takai, T Kayano, T Ikeda, H Takahashi, H Nakayama, Y Kanaoka, N Minamino
+Primary structure of Electrophorus electricus sodium channel deduced from cDNA sequence. 
+Nature: , 312(5990);121-7 [PubMed:6209577]
+[WorldCat.org]
+T Tanabe, H Takeshima, A Mikami, V Flockerzi, H Takahashi, K Kangawa, M Kojima, H Matsuo, T Hirose, S Numa
+Primary structure of the receptor for calcium channel blockers from skeletal muscle. 
+Nature: , 328(6128);313-8 [PubMed:3037387]
+[WorldCat.org]
+[DOI]
+B L Tempel, D M Papazian, T L Schwarz, Y N Jan, L Y Jan
+Sequence of a probable potassium channel component encoded at Shaker locus of Drosophila. 
+Science: 1987, 237(4816);770-5 [PubMed:2441471]
+[WorldCat.org]
+Yoshimichi Murata, Hirohide Iwasaki, Mari Sasaki, Kazuo Inaba, Yasushi Okamura
+Phosphoinositide phosphatase activity coupled to an intrinsic voltage sensor. 
+Nature: 2005, 435(7046);1239-43 [PubMed:15902207]
+[WorldCat.org]
+[DOI]
+Youxing Jiang, Alice Lee, Jiayun Chen, Vanessa Ruta, Martine Cadene, Brian T Chait, Roderick MacKinnon
+X-ray structure of a voltage-dependent K+ channel. 
+Nature: 2003, 423(6935);33-41 [PubMed:12721618]
+[WorldCat.org]
+[DOI]
+Stephen B Long, Ernest B Campbell, Roderick Mackinnon
+Crystal structure of a mammalian voltage-dependent Shaker family K+ channel. 
+Science: 2005, 309(5736);897-903 [PubMed:16002581]
+[WorldCat.org]
+[DOI]
+Stephen B Long, Ernest B Campbell, Roderick Mackinnon
+Crystal structure of a mammalian voltage-dependent Shaker family K+ channel. 
+Science: 2005, 309(5736);897-903 [PubMed:16002581]
+[WorldCat.org]
+[DOI]
+Yoko Sato, Masao Sakaguchi, Shinobu Goshima, Tatsunosuke Nakamura, Nobuyuki Uozumi
+Molecular dissection of the contribution of negatively and positively charged residues in S2, S3, and S4 to the final membrane topology of the voltage sensor in the K+ channel, KAT1. 
+J. Biol. Chem.: 2003, 278(15);13227-34 [PubMed:12556517]
+[WorldCat.org]
+[DOI]
+N Yang, A L George, R Horn
+Molecular basis of charge movement in voltage-gated sodium channels. 
+Neuron: 1996, 16(1);113-22 [PubMed:8562074]
+[WorldCat.org]
+S K Aggarwal, R MacKinnon
+Contribution of the S4 segment to gating charge in the Shaker K+ channel. 
+Neuron: 1996, 16(6);1169-77 [PubMed:8663993]
+[WorldCat.org]
+Fred J Sigworth
+Structural biology: Life's transistors. 
+Nature: 2003, 423(6935);21-2 [PubMed:12721605]
+[WorldCat.org]
+[DOI]
+Mari Sasaki, Masahiro Takagi, Yasushi Okamura
+A voltage sensor-domain protein is a voltage-gated proton channel. 
+Science: 2006, 312(5773);589-92 [PubMed:16556803]
+[WorldCat.org]
+[DOI]
+I Scott Ramsey, Magdalene M Moran, Jayhong A Chong, David E Clapham
+A voltage-gated proton-selective channel lacking the pore domain. 
+Nature: 2006, 440(7088);1213-6 [PubMed:16554753]
+[WorldCat.org]
+[DOI]
+Carlos Gonzalez, Hans P Koch, Ben M Drum, H Peter Larsson
+Strong cooperativity between subunits in voltage-gated proton channels. 
+Nat. Struct. Mol. Biol.: 2010, 17(1);51-6 [PubMed:20023639]
+[WorldCat.org]
+[DOI]
+Yuichiro Fujiwara, Tatsuki Kurokawa, Kohei Takeshita, Megumi Kobayashi, Yoshifumi Okochi, Atsushi Nakagawa, Yasushi Okamura
+The cytoplasmic coiled-coil mediates cooperative gating temperature sensitivity in the voltage-gated H(+) channel Hv1. 
+Nat Commun: 2012, 3();816 [PubMed:22569364]
+[WorldCat.org]
+[DOI]
+N Yang, A L George, R Horn
+Probing the outer vestibule of a sodium channel voltage sensor. 
+Biophys. J.: 1997, 73(5);2260-8 [PubMed:9370423]
+[WorldCat.org]
+[DOI]
+Francesco Tombola, Medha M Pathak, Ehud Y Isacoff
+Voltage-sensing arginines in a potassium channel permeate and occlude cation-selective pores. 
+Neuron: 2005, 45(3);379-88 [PubMed:15694325]
+[WorldCat.org]
+[DOI]
+K J Swartz, R MacKinnon
+Hanatoxin modifies the gating of a voltage-dependent K+ channel through multiple binding sites. 
+Neuron: 1997, 18(4);665-73 [PubMed:9136774]
+[WorldCat.org]
+Yuichiro Fujiwara, Batu Keceli, Koichi Nakajo, Yoshihiro Kubo
+Voltage- and [ATP]-dependent gating of the P2X(2) ATP receptor channel. 
+J. Gen. Physiol.: 2009, 133(1);93-109 [PubMed:19114637]
+[WorldCat.org]
+[DOI]
+Harley T Kurata, Markus Rapedius, Marc J Kleinman, Thomas Baukrowitz, Colin G Nichols
+Voltage-dependent gating in a "voltage sensor-less" ion channel. 
+PLoS Biol.: 2010, 8(2);e1000315 [PubMed:20208975]
+[WorldCat.org]
+[DOI]
+Julio F Cordero-Morales, Luis G Cuello, Eduardo Perozo
+Voltage-dependent gating at the KcsA selectivity filter. 
+Nat. Struct. Mol. Biol.: 2006, 13(4);319-22 [PubMed:16532008]
+[WorldCat.org]
+[DOI]
+S Oiki, R E Koeppe, O S Andersen
+Voltage-dependent gating of an asymmetric gramicidin channel. 
+Proc. Natl. Acad. Sci. U.S.A.: 1995, 92(6);2121-5 [PubMed:7534411]
+[WorldCat.org]
+D Oliver, D Z He, N Klöcker, J Ludwig, U Schulte, S Waldegger, J P Ruppersberg, P Dallos, B Fakler
+Intracellular anions as the voltage sensor of prestin, the outer hair cell motor protein. 
+Science: 2001, 292(5525);2340-3 [PubMed:11423665]
+[WorldCat.org]
+[DOI]
+Yair Ben-Chaim, Baron Chanda, Nathan Dascal, Francisco Bezanilla, Itzchak Parnas, Hanna Parnas
+Movement of 'gating charge' is coupled to ligand binding in a G-protein-coupled receptor. 
+Nature: 2006, 444(7115);106-9 [PubMed:17065983]
+[WorldCat.org]
+[DOI]
+膜電位センサー - 脳科学辞典

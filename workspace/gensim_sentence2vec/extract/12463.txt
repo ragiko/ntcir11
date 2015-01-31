@@ -1,0 +1,2 @@
+地球を赤道半径r=6378.137kmを半径とする球体として計算しています。方位角は北:0度、東:90度、南:180度、西:270度。地点A(経度x1, 緯度y1)、地点B(経度x2, 緯度y2)d=rcos^{%5ctiny -1}(siny_{%5ctiny 1}siny__{%5ctiny 2}+cosy__{%5ctiny 1}cosy__{%5ctiny 2}cos%5cDelta x)%5c%5c%5cphi=90-atan2(sin%5cDelta x,%5c cosy_{%5ctiny 1}tany_{%5ctiny 2}-siny_{%5ctiny 1}cos%5cDelta x)%5c%5c%5chspace{30}%5cDelta x=x_{%5ctiny 2}-x_{%5ctiny 1}">
+2地点間の距離と方位角 - 高精度計算サイト

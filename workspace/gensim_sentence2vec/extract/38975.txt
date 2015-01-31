@@ -1,0 +1,38 @@
+正規表現を使って文字列の検索し、検索された文字列を取得するには、RegexクラスとMatchメソッド(またはMatchsメソッド)を使用します。一致した要素はMatchオブジェクトとして返されます。
+メールアドレスを抽出する
+次の例ではTextBox1に入力された文字列からメールアドレスっぽい文字列をすべて検索し、表示します。ここで使用している正規表現パターンは、「Regular-Expressions.info」で紹介されているものです。
+'Regexオブジェクトを作成 
+Dim r As New System.Text.RegularExpressions.Regex( _
+"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b", _
+System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+'TextBox1.Text内で正規表現と一致する対象を1つ検索 
+Dim m As System.Text.RegularExpressions.Match = r.Match(TextBox1.Text)
+'次のように一致する対象をすべて検索することもできる 
+'Dim mc As System.Text.RegularExpressions.MatchCollection = _
+'    r.Matches(TextBox1.Text)
+While m.Success
+'一致した対象が見つかったときキャプチャした部分文字列を表示 
+Console.WriteLine(m.Value)
+'次に一致する対象を検索 
+m = m.NextMatch()
+End While
+//Regexオブジェクトを作成
+System.Text.RegularExpressions.Regex r =
+new System.Text.RegularExpressions.Regex(
+@"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b",
+System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+//TextBox1.Text内で正規表現と一致する対象を1つ検索
+System.Text.RegularExpressions.Match m = r.Match(TextBox1.Text);
+//次のように一致する対象をすべて検索することもできる
+//System.Text.RegularExpressions.MatchCollection mc = r.Matches(TextBox1.Text);
+while (m.Success)
+{
+//一致した対象が見つかったときキャプチャした部分文字列を表示
+Console.WriteLine(m.Value);
+//次に一致する対象を検索
+m = m.NextMatch();
+}
+HTML内の<H>タグを抽出する
+次にグループ化の例を示します。正規表現でグループ化を指定するには、「(?<(数字または名前)>)」のようにします。正規表現に一致したグループはMatchクラスのGroupsプロパティで取得できます。なおMSDNには、「HREFS のスキャン」という例や、「URL 情報の抽出」という例が紹介されています。
+以下にTextBox1に入力された文字列を検索して、HTMLのHタグ(H1、H2、H3、...)とその部分のテキストを抽出する例を示します。先程の例ではMatchメソッドを使っていましたが、今回はMatchesメソッドを使ってみます。もちろん先ほどと同じようにMatchメソッドを使っても構いません。
+正規表現を使って文字列を検索し、抽出する: .NET Tips: C#, VB.NET

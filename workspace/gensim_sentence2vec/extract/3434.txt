@@ -1,0 +1,260 @@
+ Inheriting Constructors を Variadic Templates でエミュレートする
+C++, C++0x
+C++0x の規格制定において、 Inheriting Constructors を見直す提案がなされたようです:
+本の虫: pre-Madrid mailingの簡易レビュー
+曰く、 Inheriting Constructors (以下、 Constructor を Ctor と略記)は、 Variadic Templates でエミュレート可能である。
+故に、実装経験も使用経験もない機能は取り除くべきだ。
+とのことですが、果たして本当に Inheriting Ctors は Variadic Templates で置き換え可能なのか、
+実際に Inheriting Ctors を Variadic Templates で実現してみることにします。
+まず Inheriting Ctors についてよく知らない人のために、ざっと説明すると、
+Inheriting Ctors とは、派生クラスにおいて、その基底クラスのコンストラクタを使えるようにするためのもので、例えば
+#include <utility>
+#include <vector>
+#include <string>
+struct X
+: public std::vector<std::string>
+{
+typedef std::vector<std::string> base;
+using base::base; // inheriting ctor, 基底クラスの ctor を使用可能に
+// 更にカスタムコンストラクタを追加できる
+explicit X( int n )
+{
+base::reserve(n);
+for( int i = 1; i <= n; ++i ) {
+base::push_back( std::to_string(i) ); // std::to_string は数値を文字列化する関数
+}
+}
+};
+このように書くことで、 X は std::vector<std::string> と同様に初期化することが可能になります:
+X x,    // デフォルト初期化
+y( 5, "foo" ), // 引数を与えた初期化
+z = { "hoge", "fuga", "piyo" }, // 初期化子リストによる初期化
+u( 10 );  // X で定義されたコンストラクタがある場合は、そちらが優先
+上の例を見て分かるように、 Inheriting Ctors は主に、
+「型自体は基底クラスとは異なるが、基底クラスと同じように動作する」
+クラスを簡潔に作りたい場合、言い換えるなら
+クラスに対する strong typedef を簡潔に行いたい場合に、とても重宝します。
+では、そんな Inheriting Ctors を、実際に Variadic Templates で置き換えてみましょう。
+まず安直には、単純に ctor を Variadic Templates で転送する、以下のようなコードが考えられます:
+#include <utility>
+#include <vector>
+#include <string>
+struct X
+: public std::vector<std::string>
+{
+typedef std::vector<std::string> base;
+template<class... Args>
+X( Args&&... args )
+: base( std::forward<Args>(args)... ) {}
+// とりあえずカスタムコンストラクタは置かない
+};
+しかし、このコードには問題があります。
+このコードでは、 X の ctor は非 explicit になっています。つまり、あらゆる型に対し、暗黙の型変化が定義されることになるため、
+void f( X const& );
+f( 2 ); // well-formed
+このように、本来ならば行うべきでない型変換が行われてしまうのです。
+このような不都合な動作を避けるには、コンストラクタを explicit 修飾して
+struct X
+: public std::vector<std::string>
+{
+typedef std::vector<std::string> base;
+template<class... Args>
+explicit X( Args&&... args )
+: base( std::forward<Args>(args)... ) {}
+};
+と書くことが考えられますが、その場合、今度は
+std::vector<std::string> v = { "1", "2", "3" };
+X x = v;  // ill-formed
+このようなコードが書けなくなってしまいます。
+元のクラスからの暗黙変換は禁止したい、という意図がある場合には、これでも構いませんが、
+Inheriting Ctors の動作をシミュレートする意図からすると、これは問題です。
+また、それとは別に、メタプログラミングを行いたい場合にも問題が起こり、
+上記のコードは、あらゆる引数を受け付ける ctor を定義しているため、
+std::is_constructible といった「構築可能性を問い合わせる」メタ関数の結果が、全て真になってしまいます。
+そうなるのを避けるためには、メタプログラミングにより SFINAE を行う必要があります:
+#include <utility>
+#include <type_triats>
+#include <vector>
+#include <string>
+struct X
+: public std::vector<std::string>
+{
+typedef std::vector<std::string> base;
+// 型変換コンストラクタ
+template< class T,
+// T から base への暗黙変換が可能なときのみ定義される
+class = typename std::enable_if<
+std::is_convertible<T, base>::value
+>::type
+>
+X( T && x )
+: base( std::forward<T>(x) ) {}
+// 暗黙変換できない場合は explicit
+template< class... Args,
+// Args... から base を構築できる場合のみ定義される
+class = typename std::enable_if<
+std::is_constructible<base, Args...>::value
+>::type
+>
+explicit X( Args&&... args )
+: base( std::forward<Args>(args)... ) {}
+};
+更に、今のままだと
+X x = { "1", "2", "3" };
+というコードが書けないので*1、それに対応するために
+struct X
+: public std::vector<std::string>
+{
+typedef std::vector<std::string> base;
+// X x = { "a", "b" }; のような書き方を可能にするために必要
+// この場合は std::initializer_list<std::string> を引数にしてもいいが
+// 機械的に書き換える場合の為に、こういう形に。
+X( base && x )
+: base( std::forward<base>(x) ) {}
+// 型変換コンストラクタ
+template< class T,
+// T から base への暗黙変換が可能なときのみ定義される
+class = typename std::enable_if<
+std::is_convertible<T, base>::value
+>::type
+>
+X( T && x )
+: base( std::forward<T>(x) ) {}
+// 暗黙変換できない場合は explicit
+template< class... Args,
+// Args... から base を構築できる場合のみ定義される
+class = typename std::enable_if<
+std::is_constructible<base, Args...>::value
+>::type
+>
+explicit X( Args&&... args )
+: base( std::forward<Args>(args)... ) {}
+};
+このように、基底クラスに対する rvalue reference を取る ctor を追加する必要があります。
+また、更に、このままだと複数引数の ctor は全て explicit になってしまい、その場合
+std::pair<int, int> f() {
+return { 1, 2 };
+}
+のような書き方が不可能なるため、 Inheriting Ctors のエミュレーションとしては不完全です。
+それに対処するためには、下記のコードのように、
+struct X
+: public std::vector<std::string>
+{
+typedef std::vector<std::string> base;
+// X x = { "a", "b" }; のような書き方を可能にするために必要
+// この場合は std::initializer_list<std::string> を引数にしてもいいが
+// 機械的に書き換える場合の為に、こういう形に。
+X( base && x )
+: base( std::forward<base>(x) ) {}
+// 型変換コンストラクタ
+template< class T,
+// T から base への暗黙変換が可能なときのみ定義される
+class = typename std::enable_if<
+std::is_convertible<T, base>::value
+>::type
+>
+X( T && x )
+: base( std::forward<T>(x) ) {}
+// 暗黙変換できない、かつ一引数の場合のみ explicit
+template< class... Args,
+// 一引数で、 Args... から base を構築できる場合のみ定義される
+class = typename std::enable_if<
+( sizeof...(Args) == 1 ) &&
+std::is_constructible<base, Args...>::value
+>::type
+>
+explicit X( Args&&... args )
+: base( std::forward<Args>(args)... ) {}
+// 一引数以外の場合は X( Args&&.. args ) だと上の ctor と被るので、別のシグネチャにする必要あり
+// ゼロ引数
+X() = default;
+// 二引数以上
+template< class T, class... Args,
+class = typename std::enable_if<
+( 1 + sizeof...(Args) != 1 ) &&
+std::is_constructible<base, T, Args...>::value
+>::type
+>
+X( T && x, Args&&... args )
+: base( std::forward<T>(x), std::forward<Args>(args)... ) {}
+};
+メタプログラミングを使って一引数以外の ctor は非 explicit にします。
+更に、 base&& を取る ctor は、今回はたまたま基底クラスが move 可能な型なので問題ないですが、
+一般の場合には基底クラスが move 可能かどうか分からないので、そこも SFINAE しましょう。
+こうすると、 Inheriting Ctors を Variadic Templates によって書き換えたコードは、最終的に、
+struct X
+: public std::vector<std::string>
+{
+typedef std::vector<std::string> base;
+// X x = { "a", "b" }; のような書き方を可能にするために必要
+// base が move 可能な時のみ定義されるようにする
+// その際、直接 base で enable_if を行うと、 SFINAE にならずエラーになるので、
+// テンプレートのデフォルト引数を利用し、無理やり依存名を作り出す必要あり
+template< class T = base,
+class = typename std::enable_if<
+std::is_move_constructible<T>::value  // gcc 4.5.0 では is_move_constructible は存在しない
+>::type                                 // その場合は is_constructible<T, T&&> を使う
+>
+X( base && x )  // ここは T ではなく base にする( T を推論させてはいけない)
+: base( std::forward<base>(x) ) {}
+// 型変換コンストラクタ
+template< class T,
+// T から base への暗黙変換が可能なときのみ定義される
+class = typename std::enable_if<
+std::is_convertible<T, base>::value
+>::type
+>
+X( T && x )
+: base( std::forward<T>(x) ) {}
+// 暗黙変換できない、かつ一引数の場合のみ explicit
+template< class... Args,
+// 一引数で、 Args... から base を構築できる場合のみ定義される
+class = typename std::enable_if<
+( sizeof...(Args) == 1 ) &&
+std::is_constructible<base, Args...>::value
+>::type
+>
+explicit X( Args&&... args )
+: base( std::forward<Args>(args)... ) {}
+// 一引数以外の場合は X( Args&&.. args ) だと上の ctor と被るので、別のシグネチャにする必要あり
+// ゼロ引数
+X() = default;
+// 二引数以上
+template< class T, class... Args,
+class = typename std::enable_if<
+( 1 + sizeof...(Args) != 1 ) &&
+std::is_constructible<base, T, Args...>::value
+>::type
+>
+X( T && x, Args&&... args )
+: base( std::forward<T>(x), std::forward<Args>(args)... ) {}
+};
+このようになります。
+なお、実際には Inheriting Ctors は constexpr の有無や例外指定も引き継ぐため、これでは不完全ですが、
+gcc-4.5.0 ではそれらは使えない為、この日記では割愛しました。
+* * *
+さて、このように、実際に Inheriting Ctors を Variadic Templates を使って書き換えてみると、
+確かに Inheriting Ctors は Variadic Templates を使って書き換えが可能なのですが、
+それには C++0x に対する理解が必要で、またその手順は非常に面倒であり、落とし穴も至る所にあり、			更に、複数引数の ctor に対する explicit 性や、今回はスルーしましたが noexcept 以外の例外指定など*2、
+完全には書き換えられない部分も、些細ではありますが存在します。
+また、 Variadic Templates によって転送できない引数、というのも存在し:
+void f( void* );
+void f( std::pair<int, int> );
+template<class... Args>
+void g( Args&&... args ) {
+f( std::forward<Args>(args)... );
+}
+f( 0 ); // おk. f( void* ) を呼び出す
+g( 0 ); // ダメ。 f( int ) を呼びだそうとしてエラー。
+f( { 1, 2 } );  // おk. f( std::pair<int, int> ) を呼び出す
+g( { 1, 2 } );  // ダメ。 テンプレートは { ... } という形を推論できない
+そのような場合でも Inheriting Ctors ならば問題なく転送できますが、
+Variadic Templates を使った場合には、完全に無力です。
+と、このように考えると、転送に関するこれらの問題を考えずに、簡潔に strong typedef を行なえる
+Inheriting Ctors は、 C++0x には必要な機能なのではないか、と思うのです。
+// あ、ユーザ定義リテラルさんは要らないです。 さっさと消えて下さい。
+ツイートする
+Permalink | コメント(3) | トラックバック(0) | 17:24   
+*1: gcc ならば -fno-deduce-init-list を付けてコンパイルしない限りコンパイル通ってしまいますが、これはあくまで独自拡張です。
+*2:もっとも、 noexcept 以外の例外指定は deprecated なので、対応する必要がない、と言われればそれまでですが そもそも noexcept 以外の例外指定は「該当する例外以外が来たらプログラムを強制終了させてね」っていう意味なので、特に意味ないことに気づきました。故に例外指定のエミュレーションは不完全でも問題ないです。
+Inheriting Constructors を Variadic Templates でエミュレートする - 野良C++erの雑記帳

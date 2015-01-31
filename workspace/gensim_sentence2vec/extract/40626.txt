@@ -1,0 +1,39 @@
+Perlとphpでファイルの比較を行ってみます。2つのファイルの一致するかを検証するプログラムです(差分の取得は行ないません)。
+以下の順に前半にPerl、後半にphpでの記述方法を記しています。
+Perlで比較する
+phpで比較する
+use File::Compare;
+my $target_a = "比較対象A";
+my $target_b = "比較対象B";
+print compare( $target_a, $target_b );
+exit;
+解説:
+一致していれば “0″ を出力します。
+一致していなければ “1″ を出力します。
+どちらかのデータが存在しないなどエラーの場合は “-1″ を出力します。
+以下のように、1行目のモジュール名の後に”cmp”を指定することで、6行目の”compare”を短く表記することができます。
+use File::Compare qw( cmp );
+my $target_a = "比較対象A";
+my $target_b = "比較対象B";
+print cmp( $target_a, $target_b );
+exit;
+その他、一行ずつ比較し異なる部分が発生した時点で値を返す”text_compare”が用意されています。
+File::Compareの内容:
+http://cpan.uwinnipeg.ca/htdocs/perl/File/Compare.pm.html
+fread関数でそれぞれ読み込んでから比較をします。
+$cmp = array();
+$target_a = "比較対象A";
+$target_b = "比較対象B";
+$list = array( $target_a, $target_b );
+foreach( $list as $value ){
+$file = fopen( $value , "r");
+$data = fread( $file, filesize( $value ) );
+fclose( $file );
+array_push( $cmp, $data );
+}
+echo $cmp[0] === $cmp[1] ? 0 : 1;
+exit;
+解説:
+一致していれば “0″ を出力します。
+一致していなければ “1″ を出力します。
+Perl/PHPでファイルのデータ内容の比較を行う方法 | maxar quartz

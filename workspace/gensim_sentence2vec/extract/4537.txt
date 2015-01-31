@@ -1,0 +1,3 @@
+漢字平仮名作成部101では、漢字解釈部100で認識した漢字を漢字平仮名辞書102を使って検索し、その漢字に対応する読み仮名を取り出し、認識した漢字をその読み仮名に置き換える。In a kanji-kana creation part 101, kanji recognized by the kanji interpretation part 100 is searched by using a kanji-kana dictionary 102, phonetic kana corresponding to the kanji is retrieved, and the recognized kanji is replaced by the phonetic kana. - 特許庁
+漢字変換部11では入力文字漢字変換部111にて漢字「鮪」に変換し、さらに、平仮名片仮名変換部113では入力文字「まぐろ」をもとに平仮名「まぐろ」と片仮名「マグロ」に変換する。The Chinese character converting part 11 converts the input characters into Chinese characters by an input character/Chinese character converting part 111, and converts the input characters into hiragana and katakana by a hiragana/katakana converting part 113. - 特許庁
+「漢字を平仮名に」に関連した英語例文の一覧 - Weblio英語例文検索

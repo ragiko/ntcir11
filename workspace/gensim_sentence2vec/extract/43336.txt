@@ -1,0 +1,4 @@
+XS is an interface description file format used to create an extension interface between Perl and C code (or a C library) which one wishes to use with Perl. The XS interface is combined with the library to create a new library which can then be either dynamically loaded or statically linked into perl. The XS interface description is written in the XS language and is the core component of the Perl extension interface.
+XS は Perl と(Perl と一緒に使いたい)C のコード(または C ライブラリ)との 間の拡張インターフェースを作るのに使われるインターフェース記述 ファイルフォーマットです。 XS インターフェースはライブラリと動的または静的にリンクされて、 Perl とリンクすることのできる新しいライブラリを生成します。 XS インターフェース記述はは XS 言語で書かれており、 Perl 拡張インターフェースのコアコンポーネントです。
+An XSUB forms the basic unit of the XS interface. After compilation by the xsubpp compiler, each XSUB amounts to a C function definition which will provide the glue between Perl calling conventions and C calling conventions.
+perlxs - XS 言語リファレンスマニュアル - perldoc.jp

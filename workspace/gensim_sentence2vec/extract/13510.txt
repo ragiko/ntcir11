@@ -1,0 +1,15 @@
+Feature #4147: Array#sample で重みを指定したい
+http://redmine.ruby-lang.org/issues/show/4147
+起票者: Yoji Ojima
+ステータス: Open, 優先度: Normal
+Array#sample にブロックを渡したとき、ブロックの戻り値を要素の重みとして使用するのはいかがでしょうか。
+下記のサンプルで、"大吉" が "凶" の 1000 倍の確率で選択されるようにしたいです。
+omikuji_box = [
+{:name => "大吉", :weight => 1000},
+{:name => "中吉", :weight => 100},
+{:name => "小吉", :weight => 10},
+{:name => "凶",   :weight => 1}
+]
+omikuji = omikuji_box.sample {|v| v[:weight] }
+puts omikuji[:name]
+[Ruby 1.9-Feature#4147][Open] Array#sample で重みを指定したい - Ruby Forum

@@ -1,0 +1,28 @@
+
+cpimportでデータをロードする際にデータ型に納まらないデータが存在する場合、デフォルトではエラーになりません。そのデータもトランケートされた状態で挿入されます。
+しかし、cpimport時に-Sオプションを付与すると、正常にロードできないデータの挿入を防ぐことができます。
+-Sオプションを付与しない場合
+今回はVARCHAR(9)のcol2列に以下のデータを挿入します。
+ロードするcsvファイル
+1|テスト              
+2|アシスト           
+3|てすと              
+※2行目の「アシスト」は4文字なので、正しく挿入するにはVARCHAR(12)以上のデータ長が必要になります。
+[root@infsrv4 ~]# cpimport test t1 /tmp/test.csv 
+Locale is : ja_JP.UTF-8 
+Using table OID 3461 as the default JOB ID 
+Input file(s) will be read from : /root 
+Job description file : /usr/local/Calpont/data/bulk/tmpjob/test_t1_D20140416_T183752_Job_3461.xml 
+Log file for this job: /usr/local/Calpont/data/bulk/log/Job_3461.log 
+2014-04-16 18:37:52 (8284) INFO : successfully loaded job file /usr/local/Calpont/data/bulk/tmpjob/test_t1_D20140416_T183752_Job_3461.xml 
+2014-04-16 18:37:52 (8284) INFO : Job file loaded, run time for this step : 0.311897 seconds 
+2014-04-16 18:37:52 (8284) INFO : PreProcessing check starts 
+2014-04-16 18:37:52 (8284) INFO : input data file /tmp/test.csv 
+2014-04-16 18:37:52 (8284) INFO : PreProcessing check completed 
+2014-04-16 18:37:52 (8284) INFO : preProcess completed, run time for this step : 0.029609 seconds 
+2014-04-16 18:37:52 (8284) INFO : No of Read Threads Spawned = 1 
+2014-04-16 18:37:52 (8284) INFO : No of Parse Threads Spawned = 3 
+2014-04-16 18:37:52 (8284) INFO : For table test.t1: 3 rows processed and 3 rows inserted. 
+2014-04-16 18:37:52 (8284) WARN : Column test.t1.col2; Number of character strings truncated: 1 
+2014-04-16 18:37:53 (8284) INFO : Bulk load completed, total run time : 1.34562 seconds 
+不正データを除外する場合はcpimport時に-Sオプションを付与する | 注意事項 | InfiniDB技術情報サイト ～データ活用/分析基盤として利用されているInfiniDBの技術情報ナレッジサイト～

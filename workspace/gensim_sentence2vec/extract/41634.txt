@@ -1,0 +1,19 @@
+半角スペース、タブ、改行の処理
+pre-wrapだと、基本動作はpre(半角スペース、タブ、改行はそのまま生かされる)でボックスの幅で改行する。
+選べる値
+normal
+pre
+nowrap
+pre-wrap
+pre-line
+ブロックレベル要素を勝手に拡張したり、ハミ出したりしないかチェック
+*色の意味
+自動で折り返す指定
+二つ同時に指定すると折り返す
+勝手に拡張したりハミ出したり
+<pre>
+word-break : break-all ;
+word-wrap : break-word ;
+white-space : pre-wrap ; 
+firefox   3.6.3
+自動改行(word-break・word-wrap・white-space プロパティ)をコントロールして、テキストがボックスから飛び出さないようにしたい。 | 乱雑モックアップ

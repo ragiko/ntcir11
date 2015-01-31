@@ -1,0 +1,333 @@
+Android プラットフォームには、Bluetooth ネットワークスタックのサポートが含まれていて、それによりデバイスは他の Bluetooth デバイスと無線でデータ交換ができるようになります。アプリケーションフレームワークは、Android Bluetooth API を介した Bluetooth 機能へのアクセスを提供します。これらの API により、アプリケーションは他の Bluetooth デバイスとの無線での接続が許可され、2 点間および複数間の無線機能の使用が可能となります。
+Bluetooth API を使用することにより、Android アプリケーションは以下が実行可能となります。
+他の Bluetooth デバイスのスキャン
+ペアの Bluetooth デバイスに対するローカル Bluetooth アダプタの問い合わせ
+RFCOMM チャネルの確立
+サービスディスカバリを介したほかのデバイスとの接続
+他のデバイスへまたは他のデバイスからのデータ転送
+複数接続の管理
+基本
+このドキュメントでは、Bluetooth を使用して通信する際に必須である 4 つの主要なタスクを遂行するために、Android Bluetooth API の使用方法を説明します。その 4 つとは、Bluetooth の設定、ローカルエリアでのペアデバイスまたは利用可能デバイスのいずれかの発見、デバイスの接続、およびデバイス間のデータ転送です。
+Bluetooth API はすべてandroid.bluetooth
+パッケージで利用可能となっています。以下は Bluetooth 接続を作成するために必要となるクラスの概要です。 
+BluetoothAdapter
+ローカル Bluetooth アダプタ( Bluetooth 無線 ) を表します。BluetoothAdapter は、すべての Bluetooth 双方向通信のエントリポイントとなります。これを使用することにより、他の Bluetooth デバイスの発見、結合済み ( ペアになった ) デバイスリストの問い合わせ、既知の MAC アドレスを使用した BluetoothDevice のインスタンス化、他のデバイスからの通信にリッスンするための BluetoothServerSocket の生成が可能となります。
+BluetoothDevice
+リモートの Bluetooth デバイスを表します。 BluetoothSocket を介しリモートデバイスとの接続を要求するため、またはデバイスの名前、アドレス、クラス、および結合状態といったデバイスに関する情報を問い合わせるためにこれを使用します。
+BluetoothSocket
+Bluetooth ソケット ( TCP
+Socket に類似 ) に対するインターフェイスを表します。 これはアプリケーションが別の Bluetooth デバイスとのデータ交換を InputStream と OutputStream で行うことを可能にする接続ポイントです。
+BluetoothServerSocket
+入ってくるリクエストをリッスンするオープンなサーバソケットを表します
+( TCP ServerSocket に類似 ) 。2 つの Android デバイスを接続するためには、片側のデバイスを、このクラスを使ってサーバソケットとしてオープンする必要があります。リモートの Bluetooth デバイスがこのデバイスに接続を要求をし、接続が受け入れられると、BluetoothServerSocket が接続された BluetoothSocket を返却します。
+BluetoothClass
+Bluetooth
+デバイスの一般的な特性や機能を表現します。これは読み込み専用のプロパティセットで、デバイスの大小さまざまなクラスとサービスを定義するものです。しかしながら、デバイスによりサポートされるすべての Bluetooth プロファイルとサービスを正確に表現しているわけではありませんが、デバイスのタイプに対するヒントを得るためには利用価値があります。
+BluetoothProfile
+Bluetooth プロファイルを表現するインターフェイス。Bluetooth プロファイルとは、デバイス間の Bluetooth ベースの通信用ワイアレスインターフェイス仕様のことです。そのひとつの例が Hands-Free プロファイルです。プロファイルの詳しい解説はプロファイルを使った動作を参照してください。
+BluetoothHeadset
+携帯電話といっしょに使う Bluetooth ヘッドセットのサポートを提供します。これには Bluetooth Headset と Hands-Free ( v1.5 ) プロファイルが含まれています。
+BluetoothA2dp
+高品質のオーディオストリームを Bluetooth 上であるデバイスからもう一方のデバイスに流すしくみを定義します。"A2DP" は Advanced Audio Distribution Profile を意味します。
+BluetoothProfile.ServiceListener
+サービス ( 特定のプロファイルを実行する内部のサービスのこと ) との接続がが完了したり切断が完了したタイミングをBluetoothProfile IPC クライアントに通知するインターフェイスです。
+Bluetooth パーミッション
+アプリケーションで Bluetooth 機能を使用するために、少なくとも BLUETOOTH と BLUETOOTH_ADMIN の 2 つのBluetooth パーミッションのどちらか一方の許可を宣言する必要があります。
+接続要求、接続受付、およびテータ転送などの任意の Bluetooth 通信を実行するためには、BLUETOOTH パーミッションを要求する必要があります。
+デバイス発見の開始や Bluetooth 設定の操作を行うためには、BLUETOOTH_ADMIN
+パーミッションを要求する必要があります。ほとんどのアプリケーションは、ローカル Bluetooth デバイスを発見する能力のためだけに、このパーミッションが必要です。アプリケーションがユーザ要件として Bluetooth の設定を変更する "power manager" でない限り、このパーミッションが付与された他の機能を使用すべきではありません。注意: BLUETOOTH_ADMIN パーミッションを使用する場合は、BLUETOOTH パーミッションも必要です。
+Bluetooth パーミッションはアプリケーションのマニフェストファイルで宣言します。以下はその例です。
+<manifest ... >
+<uses-permission android:name="android.permission.BLUETOOTH" />
+...
+</manifest>
+アプリケーションのパーミッションの宣言に関する詳しい情報は、 <uses-permission>
+リファレンスを参照してください。
+Bluetooth のセットアップ
+アプリケーションで Bluetooth による通信を可能にする前準備として、そのデバイスで Bluetooth がサポートされていることを検証する必要があり、そうすることで有効であることが保証されます。
+Bluetooth がサポートされていなければ、潔く Bluetooth のすべての機能も無効にすべきです。Bluetooth がサポートされていて無効の場合は、アプリケーションから去ることなくユーザに Bluetooth を有効にするよう求めます。この設定は、 BluetoothAdapter を使用し、2 段階で遂行されます。
+BluetoothAdapterの取得
+BluetoothAdapter は任意またはすべての Bluetooth
+アクティビティで必要です。BluetoothAdapter を取得するには、 static の getDefaultAdapter() メソッドを呼び出します。これはデバイス自体の Bluetooth アダプタ ( Bluetooth 無線 ) を表すBluetoothAdapter を返却します。全体のシステムでは Bluetooth アダプタがひとつあり、アプリケーションはそのオブジェクトを使用してデバイスとの双方向通信が可能になります。getDefaultAdapter() が null を返した場合は、デバイスが Bluetooth をサポートしないことになりここで話が終わってしまいます。以下はサンプルです。
+BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+if (mBluetoothAdapter == null) {
+// Device does not support Bluetooth
+}
+Bluetooth の有効化
+次に、Bluetooth が有効であることを保証する必要があります。 isEnabled() を呼び出して、現時点で Bluetooth が有効かどうかを確認します。このメソッドが false を返却した場合は Bluetooth は無効です。Bluetooth を有効にするには、ACTION_REQUEST_ENABLE アクションインテントを使って startActivityForResult()
+を呼び出します。
+これによりシステム設定を通して Bluetooth を有効にする要求を ( アプリケーションを停止することなく) 発生させることができます。以下はサンプルです。
+if (!mBluetoothAdapter.isEnabled()) {
+Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+}
+Bluetooth を有効にするために許可を要求するダイアログが、図 1 のように表示されます。ユーザが "Yes" を選択した場合、システムが Bluetooth の有効化を開始し、そのプロセスが完了 ( または失敗 ) するとフォーカスがアプリケーションに戻ります。
+Bluetooth の有効化に成功すると、アクティビティが onActivityResult()
+コールバックにおいて RESULT_OK の結果コードを受け取ります。エラー ( またはユーザが "No" を選択 ) により Bluetooth が有効でなかった場合は、結果コードは RESULT_CANCELED になります。
+オプションでアプリケーションが
+ACTION_STATE_CHANGED ブロードキャストインテントをリッスンすることもでき、システムが Bluetooth の状態が変化したときはいつでもブロードキャストします。このブロードキャストは、EXTRA_STATE と EXTRA_PREVIOUS_STATE の追加のフィールドを含んでいて、それぞれ新と旧の Bluetooth の状態です。 この追加フィールドへの設定可能な値は、STATE_TURNING_ON、 STATE_ON、 STATE_TURNING_OFF、および STATE_OFF です。 このブロードキャストをリッスンすることにより、アプリが実行中で Bluetooth の状態が変更されたことを検知することができます。
+ヒント: 発見機能を有効にすることで、自動的に Bluetooth を有効にすることができます。Bluetooth アクティビティの実行前に、デバイス発見機能を常時有効にしておくことを計画しているなら、上の手順 2 を飛ばしてください。発見機能の有効化
+については以降を読んでください。
+デバイスの検出
+BluetoothAdapter を使うことによりデバイス発見機能を用いるか、またはペア ( 結合 ) デバイスのリストを問い合わせるかのいずれかの方法で、リモート Bluetooth デバイスを見つけることができます。
+デバイスの発見は、Bluetooth が使用可能なデバイスがローカル領域にあるかどうかをスキャンする処理で、それぞれについていくつかの情報を要求します
+( これは "discovering"、"inquiring"、"scanning" として参照されるときがあります) 。しかしながら、ローカル領域にある Bluetooth デバイスが発見の要求に応答できるのは、現時点で発見可能であることを有効としている場合に限られます。デバイスが発見可能である場合、デバイス名、クラス、そのユニークな MAC アドレスといったいくつかの情報を共有して発見の要求に応答します。この情報を使用して発見を実行するデバイスが、発見されたデバイスに対し接続の開始を判断できるようになります。
+初めてリモートデバイスとの接続が確立できた時点で、ペアリングの要求が自動的にユーザに提示されます。デバイスがペアになるとデバイスの基本情報 ( デバイス名、クラス、MAC アドレスといった ) が保存され、Bluetooth API を使用した読み出しが可能となります。リモートデバイスに対する既知の MAC アドレスを使って、それとの接続が、発見を実行することなくいつでも開始できるようになります ( デバイスは認識できる範囲にあると仮定します ) 。
+ペアリングされたことと接続されたこととは違うということを把握しておいてください。ペアリングされたというのは、2 つのデバイスが各々相手の存在を承知しているということ意味しており、認証に使うことができるリンク用の鍵を共有し、お互いが暗号化接続する能力が備わったということです。接続されたというのは、デバイスが現時点において RFCOMM チャネルを共有し、お互いにデータ転送が可能となったことを意味します。現時点の Android Bluetooth API では、RFCOMM 接続が確立する前にデバイスがペアリングされていることが必須となっています ( ペアリングは Bluetooth API で暗号化接続を開始したときに自動的に実行されます ) 。
+後のセクションで、ペアになったデバイスまたはデバイスの発見する方法、または新たなデバイスの発見使った新しいデバイスを発見する方法を説明します。
+注意: Android 搭載のデバイスはデフォルトで発見可能になっていません。ユーザは、システム設定での限られた時間内でデバイスを発見可能にすることができ、またアプリケーションは、ユーザがアプリケーションから離脱することなく発見機能を使用できるように要求することができます。発見機能を有効にする方法は後で解説します。
+ペアデバイスの問い合わせ
+デバイスの発見を実行する前に、要求しているデバイスが既知のものかどうかを見極めるためにペアデバイスのセットを問い合わせしておく価値はあります。そのためには、getBondedDevices()を呼び出します。これはペアとなったデバイスを表すBluetoothDeviceのセットを返却します。以下はすべてのペアデバイスの問い合わせを行い、ArrayAdapter を使って各デバイス名をユーザに見せるサンプルです。
+Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+// If there are paired devices
+if (pairedDevices.size() > 0) {
+// Loop through paired devices
+for (BluetoothDevice device : pairedDevices) {
+// Add the name and address to an array adapter to show in a ListView
+mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+}
+}
+接続を開始するためにBluetoothDeviceオブジェクトの中から必要となるのは MAC アドレスです。このサンプルでは、それがユーザに対して表示している ArrayAdapter の一部として保存されています。MAC アドレスは接続を開始するために後から抽出されます。デバイスの接続については、このセクションの接続の作成でさらに学ぶことができます。
+デバイスの発見
+デバイスの発見を開始するには、単純のstartDiscovery()を呼び出します。プロセスは非同期で、メソッドは発見処理が正常に開始されたかどうかを示す boolean を即座に返却します。発見の処理は通常約 12 秒間の問い合わせスキャンを呼び出し、その後に見つかった各デバイスの Bluetooth 名を取得するためのページスキャンが続きます。
+アプリケーションは、発見した各デバイスに関する情報を受信するために、ACTION_FOUNDインテントに対するBroadcastReceiverを登録する必要があります。各デバイスに対し、システムがACTION_FOUNDインテントをブロードキャストします。このインテントは追加のフィールドEXTRA_DEVICEとEXTRA_CLASSを持ち運び、それぞれBluetoothDeviceとBluetoothClassを含んでいます。これはデバイスが発見されたときにブロードキャストのハンドリングを登録可能とする方法のサンプルです。
+// Create a BroadcastReceiver for ACTION_FOUND
+private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+public void onReceive(Context context, Intent intent) {
+String action = intent.getAction();
+// When discovery finds a device
+if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+// Get the BluetoothDevice object from the Intent
+BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+// Add the name and address to an array adapter to show in a ListView
+mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+}
+}
+};
+// Register the BroadcastReceiver
+IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+接続を開始するためにBluetoothDeviceオブジェクトに必要となるのは MAC アドレスです。このサンプルではそれがユーザに対して表示している ArrayAdapter の一部として保存されています。MAC アドレスは接続を開始るために後から抽出されます。デバイスの接続については、このセクションの接続の作成でさらに学ぶことができます。
+警戒:発見処理の実行は、Bluetooth アダプタには重い処理であり、多くのリソースを消費することになります。一旦接続するデバイスを見つけたら、接続を試みる前に確実にcancelDiscovery()で常に発見を停止してください。また、すでにデバイスとの接続を保持している場合に、発見処理を実行すると接続に利用できる情報量を著しく低下させてしまうことから、接続中は発見処理を実行すべきではありません。
+発見機能の有効化
+ローカルデバイスを他のデバイスから発見可能となるようにしたい場合は、ACTION_REQUEST_DISCOVERABLEアクションインテントでstartActivityForResult(Intent, int)を呼び出します。これにより発見可能モードを有効にしたことがシステム設定を通して公表されます ( アプリケーションを停止せずに ) 。デフォルトでは、デバイスが発見可能になれるのは 120 秒間です。インテントにEXTRA_DISCOVERABLE_DURATION付加情報を追加することで異なる期間を定義することができます。アプリがセットできる最大の期間は 3600 秒で、値が 0 のときはデバイスが常に発見可能であることを意味します ( 0 未満または 3600 より大きいと自動的に 120 秒にセットされます ) 。以下の例は、期間を 300 秒にセットするコードスニペットです。
+Intent discoverableIntent = new
+Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+startActivity(discoverableIntent);
+図 2 のダイアログが表示され、デバイスを発見可能にする許可をユーザに要求します。ユーザが"Yes" と答えると、デバイスは指定した数の時間だけ発見可能になろうとします。Activity は onActivityResult()コールバックへの呼び出しをデバイスが発見可能でいる期間と等しい結果コードで受信します。ユーザが"No" と答える、またはエラーが発生すると、結果コードはActivity.RESULT_CANCELLED になります。
+注意:Bluetooth がデバイスで有効になっていない場合、デバイス発見機能を有効にすることにより Bluetooth が自動的に有効になります。
+デバイスは、割り当てられた期間中、静かに発見可能モードのままでいます。発見可能モードが変更されたことを通知してほしい場合は、ACTION_SCAN_MODE_CHANGEDインテントにBroadcastReceiver を登録することができます。これには、EXTRA_SCAN_MODEとEXTRA_PREVIOUS_SCAN_MODEの追加フィールドが含まれ、それぞれ新旧のスキャンモードを知らせてくれます。それぞれに可能な値は、 SCAN_MODE_CONNECTABLE_DISCOVERABLE、SCAN_MODE_CONNECTABLE、またはSCAN_MODE_NONEで、これらは順番にデバイスが発見可能モードである、発見可能モードであるが依然接続を受信可能である、または発見可能モードではなく接続も受信できないことを表しています。
+デバイスの発見機能を有効にする必要がないのは、リモートデバイスとの接続を開始する予定がない場合です。発見機能を有効にするのは、アプリケーションを入ってくる接続を受け付けるサーバソケットのホストにしたい場合のみ必要で、それはリモートのデバイスが接続を開始する前にこのデバイスを発見る必要があるからです。
+デバイスの接続
+アプリケーションで、2 つのデバイス間の接続を作成するためには、サーバサイドとクライアントサイドの両方の機構で実装が必要となり、それは一方のデバイスがサーバソケットをオープンする必要があり、もう一方が接続を開始する必要があるからです ( 接続の開始には、サーバデバイスの MAC アドレスを使用します ) 。サーバとクライアントは、同一のRFCOMM チャネル上で、それぞれが接続済みのBluetoothSocketを受け取ったときに接続されたとみなします。この時点で各デバイスは入出力ストリームを得ることができ、データの転送を開始することが可能となりますが、この接続の管理についてはセクションで説明します。このセクションでは、2 つのデバイス間における接続の開始の方法について説明します。
+サーバデバイスとクライアントデバイスは、それぞれに必要なBluetoothSocketを異なる方法で獲得します。サーバは入ってくる接続が受け付けられたときにそれを受信します。クライアントはサーバに対しRFCOMM チャネルをオープンしたときにそれを受信します。
+ひとつの実装テクニックとして、各デバイスが自動的にサーバを準備しておくというのがあり、そうすることでそれぞれがサーバソケットをオープンさせ、接続をリッスンします。その後どちらかのデバイスが他方のクライアントとなります。別の方法として、一方のデバイスが明示的に接続の "ホスト" となり、必要に応じてサーバソケットをオープンし、他方のデバイスは単に接続を開始します。
+注意:2 つのデバイスがペアとなっていない場合、Android フレームワークは自動的にペアリング要求の通知、または図 3 のようなダイアログを接続処理中にユーザに表示します。それにより、デバイスの接続を試みるときに、アプリケーションがデバイスがペアになっているかどうかを意識する必要がなくなります。RFCOMM 接続への試みは、ユーザが正常にペアとなるまでブロックされるか、ユーザがペアリングを拒否した、またはペアリングに失敗した、またはタイムアウトとなった場合には、その試みは失敗します。
+サーバとしての接続
+2 つのデバイスを接続したいとき、一方がBluetoothServerSocketをオープンしそれを保持することによってサーバとして振る舞う必要があります。サーバソケットの目的は、入ってくる接続要求をリッスンすることと、もう一方が接続を受け付けられたときに、接続済みのBluetoothSocketを提供することです。BluetoothServerSocketからBluetoothSocketが得られたとき、さらなる接続を受け入れたくない場合は、BluetoothServerSocketを放棄することが可能 ( かつ放棄すべき ) です。
+UUID について
+普遍的に一意な識別子 ( Universally Unique Identifier : UUID ) は、128 ビットの標準化フォーマットであり、それには文字列の ID が情報を一意に識別するために使用されます。UUID のポイントは、なんらかのランダム変数を選択可能である十分に大きな数であることと破損がないことです。このケースでは、アプリケーションのBluetooth サービスを一意に識別する目的でこれが使用されています。アプリケーションに使用する目的で UUID を取得するには、ウェブ上に数多くあるランダム UUID ジェネレータの中からひとつを使用することができ、UUIDをfromString(String)で初期化します。
+以下は、サーバソケットをセットアップし、接続を受け付ける基本的な処理手順です。
+BluetoothServerSocketを listenUsingRfcommWithServiceRecord(String, UUID)呼び出すことにより取得します。
+この文字列は、サービスの名前を識別可能とするもので、システムはそれを自動的にデバイス上の新たなサービス発見プロトコル (Service Discovery Protocol : SDP ) データベースエントリに書き込みます ( この名前は任意で、単純にアプリケーションの名前にすることができます ) 。またUUID も SDP エントリに含まれ、クライアントデバイスとの接続で一致させる基となります。つまりクライアントがこのデバイスとの接続を試みたとき、接続したいサービスとユニークに識別する UUID を持ち運ぶことになります。接続が受け付けられるようにするには、これらの UUID が一致している必要があります ( 次の手順で ) 。
+接続要求に対するリッスンを、accept()を呼び出すことにより開始します。
+この呼び出しはブロックされます。これは接続が受け付けられる、または例外が発生すると戻ってきます。リモートデバイスが、このサーバソケットが登録した UUID と一致した接続要求を送信したとき、接続が受け付けられます。 成功したときは、accept()が接続済みのBluetoothSocketを返却します。
+追加の接続を受け付けたくない場合に、close() を呼び出します。
+これによりサーバソケットとすべてのリソースは解放されますが、 accept() で返された接続済み BluetoothSocket はクローズされません。TCP/IP とは異なり、 RFCOMM が同時に許可するのは、チャネルあたりひとつの接続済みクライアントのみであり、よってほとんどの場合、接続済みソケットを受け付けた直後に BluetoothServerSocket の close() を呼び出すのが賢明です。
+accept() の呼び出しは、これがブロックされた呼び出であり、アプリケーションでの他との相互作用を妨害してしまうことから、メインの Activity UI スレッドで実行すべきではありません。通常BluetoothServerSocket や BluetoothSocket を使う処理は、アプリケーションで管理された新しいスレッドで処理した方が賢明です。 accept() のようなブロックされた呼び出しを中断するには、BluetoothServerSocket ( または BluetoothSocket ) の close() を別のスレッドから呼び出し、ブロックされた呼び出しから即座に戻るようにします。BluetoothServerSocket や BluetoothSocket
+のすべてのメソッドはスレッドセーフである点に留意してください。
+サンプル
+以下は、入ってくる接続を受け付けるサーバコンポーネントのためのシンプルなスレッドです。
+private class AcceptThread extends Thread {
+private final BluetoothServerSocket mmServerSocket;
+public AcceptThread() {
+// Use a temporary object that is later assigned to mmServerSocket,
+// because mmServerSocket is final
+BluetoothServerSocket tmp = null;
+try {
+// MY_UUID is the app's UUID string, also used by the client code
+tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
+} catch (IOException e) { }
+mmServerSocket = tmp;
+}
+public void run() {
+BluetoothSocket socket = null;
+// Keep listening until exception occurs or a socket is returned
+while (true) {
+try {
+socket = mmServerSocket.accept();
+} catch (IOException e) {
+break;
+}
+// If a connection was accepted
+if (socket != null) {
+// Do work to manage the connection (in a separate thread)
+manageConnectedSocket(socket);
+mmServerSocket.close();
+break;
+}
+}
+}
+/** Will cancel the listening socket, and cause the thread to finish */
+public void cancel() {
+try {
+mmServerSocket.close();
+} catch (IOException e) { }
+}
+}
+この例では、入ってくる接続はひとつのみを望み、接続が受け入れられBluetoothSocket を獲得するとるとすぐにアプリケーションは分離されたスレッドにその獲得した BluetoothSocket を送信し、
+BluetoothServerSocket をクローズしてループから抜けます。
+accept()
+が BluetoothSocket を返すときは、ソケットがすでに接続済みであることからconnect() を呼び出すべきでない点に注意してください ( クライアントサイドでしているので ) 。
+manageConnectedSocket() はデータ転送のためのスレッドを開始するアプリケーションにおける架空のメソッドで、これについては接続の管理 で解説しています。
+通常は、入ってくる接続のリッスンが完了したらすぐにBluetoothServerSocket
+をクローズすべきです。このサンプルでは、BluetoothSocket を獲得したらすぐに close() を呼び出しています。また、private の  BluetoothSocket をクローズできるように、サーバソケットのリッスンを停止する必要があるイベント内において、スレッド内に public のメソッドを提供したくなるでしょう。
+クライアントとしての接続
+リモートデバイス ( オープンされたサーバソケットを保持しているデバイス ) を開始するには 、リモートデバイスを表している BluetoothDevice オブジェクトを最初に獲得する必要があります ( BluetoothDevice の取得は、上のセクションの デバイスの検出で取り上げています ) 。その後
+BluetoothDevice を使用して BluetoothSocket を獲得し接続を開始する必要があります。
+以下は基本的な処理手順です。
+BluetoothDevice を使用して、 BluetoothSocket をcreateRfcommSocketToServiceRecord(UUID) を呼び出すことにより開始します。
+これは、 BluetoothDevice に接続する BluetoothSocket を開始します。ここで渡された UUID は、サーバがその BluetoothServerSocket をオープンしたときにサーバデバイスにより使用された UUID ( listenUsingRfcommWithServiceRecord(String, UUID) で ) と一致している必要があります。同じ UUID を使用するということは、単にアプリケーションでの UUID の文字列のハードコーディングするだけのことであり、その後、サーバとクライアントの両方からそれを参照することになります。
+接続を connect() を呼び出すことにより開始します。
+この呼び出しにより、システムはUUID と一致させるために、リモートデバイスでの SDP ルックアップを実行することになります。ルックアップに成功し、リモートデバイスが接続を受け付けると、接続している間に使用する RFCOMM チャネルが共有され、connect() から戻ってきます。このメソッドはブロックされる呼び出しです。なんらかの理由で接続に失敗するか connect() メソッドがタイムアウト ( 約 12 秒後 ) となった場合は、例外が投げられます。
+connect() はブロックされる呼び出しなので、この接続処理はメインの Activity スレッドから常に分離して実行されなければなりません。
+注意: connect() を呼び出したときは、デバイスがデバイス発見処理を実行していないことを保証する必要があります。発見処理中の場合は、接続の試みが非常に遅くなり、ほとんどの場合失敗します。
+実例
+以下は Bluetooth 接続を開始するスレッドの基本的なサンプルです。
+private class ConnectThread extends Thread {
+private final BluetoothSocket mmSocket;
+private final BluetoothDevice mmDevice;
+public ConnectThread(BluetoothDevice device) {
+// Use a temporary object that is later assigned to mmSocket,
+// because mmSocket is final
+BluetoothSocket tmp = null;
+mmDevice = device;
+// Get a BluetoothSocket to connect with the given BluetoothDevice
+try {
+// MY_UUID is the app's UUID string, also used by the server code
+tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+} catch (IOException e) { }
+mmSocket = tmp;
+}
+public void run() {
+// Cancel discovery because it will slow down the connection
+mBluetoothAdapter.cancelDiscovery();
+try {
+// Connect the device through the socket. This will block
+// until it succeeds or throws an exception
+mmSocket.connect();
+} catch (IOException connectException) {
+// Unable to connect; close the socket and get out
+try {
+mmSocket.close();
+} catch (IOException closeException) { }
+return;
+}
+// Do work to manage the connection (in a separate thread)
+manageConnectedSocket(mmSocket);
+}
+/** Will cancel an in-progress connection, and close the socket */
+public void cancel() {
+try {
+mmSocket.close();
+} catch (IOException e) { }
+}
+}
+cancelDiscovery() が接続が確立する前に呼び出されている点に注目してください。接続前には必ずこれを行うことで、発見処理が行われているかどうかを確認する必要がなく安全に呼び出せます ( それでもチェックしたい場合は、isDiscovering() を呼び出してください ) 。
+manageConnectedSocket()  は、データ転送のためのスレッドを開始するアプリケーションにおける架空のメソッドで、これについては、接続の管理 で解説しています。
+BluetoothSocket での処理が完了したら、常に close() をクリーンアップのために呼び出します。 そうすることで、即座に接続済みのソケットがクローズされ、すべての内部リソースがクリーンアップされます。
+接続の管理
+2 つ ( またはそれ以上 ) のデバイスの接続に成功したら、それぞれが接続済みの BluetoothSocket を持つことになります。ここからはデバイス間でデータを共有できるので楽しいですね。BluetoothSocketを使って、任意のデータを転送する処理は以下のように簡単です。
+ソケットを使って転送をハンドリングするInputStreamとOutputStreamを、それぞれgetInputStream()とgetOutputStream()で取得します。
+ストリームに対し、read(byte[])とwrite(byte[])でデータの読み書きを行います。
+これだけです。
+当然ですが、実装での細かな考慮点があります。何よりもまず、ストリームの読み込みと書き込み専用のスレッドを使用すべきです。これは、read(byte[])とwrite(byte[])メソッドは共にブロックする呼び出しであることから重要です。read(byte[])はストリームから読み込めるものがあるまでブロックします。write(byte[])は通常はブロックしませんが、リモートのデバイスがread(byte[])をすぐに呼び出さず、中間バッファがいっぱいになった場合のフロー制御でブロックが発生します。よってスレッドのメインループはInputStreamからの読み込みに専念しなければなりません。スレッドで public に分割されたメソッドは、OutputStreamへの書き込みの開始に使用されます。
+実例
+これは、どこかで見たようなやり方のサンプルです。
+private class ConnectedThread extends Thread {
+private final BluetoothSocket mmSocket;
+private final InputStream mmInStream;
+private final OutputStream mmOutStream;
+public ConnectedThread(BluetoothSocket socket) {
+mmSocket = socket;
+InputStream tmpIn = null;
+OutputStream tmpOut = null;
+// Get the input and output streams, using temp objects because
+// member streams are final
+try {
+tmpIn = socket.getInputStream();
+tmpOut = socket.getOutputStream();
+} catch (IOException e) { }
+mmInStream = tmpIn;
+mmOutStream = tmpOut;
+}
+public void run() {
+byte[] buffer = new byte[1024];  // buffer store for the stream
+int bytes; // bytes returned from read()
+// Keep listening to the InputStream until an exception occurs
+while (true) {
+try {
+// Read from the InputStream
+bytes = mmInStream.read(buffer);
+// Send the obtained bytes to the UI Activity
+mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+.sendToTarget();
+} catch (IOException e) {
+break;
+}
+}
+}
+/* Call this from the main Activity to send data to the remote device */
+public void write(byte[] bytes) {
+try {
+mmOutStream.write(bytes);
+} catch (IOException e) { }
+}
+/* Call this from the main Activity to shutdown the connection */
+public void cancel() {
+try {
+mmSocket.close();
+} catch (IOException e) { }
+}
+}
+コンストラクタは必要なストリームを獲得し、一回実行され、スレッドが InputStream を介して入ってくるデータを待ちます。read(byte[])がストリームからのバイト配列を返すと、親クラスのメンバのハンドラを使ってメインのActivityにデータが送信されます。 親クラスからのメンバハンドラを使って、データがメインの Activity に送られます。その後戻ってストリームからのさらなるバイト配列を待ちます。
+送出データの送信は、メインのアクティビティからスレッドの write() メソッドを呼び出すのと同じくらいシンプルで、送信するバイト配列を渡します。このメソッドは単純にリモートデバイスにデータを送信する write(byte[]) を呼び出します。
+スレッドの cancel() メソッドで BluetoothSocket をクローズすることにより、いつでも接続を終了させることができるので、このメソッドは重要です。Bluetooth
+接続を終わらせたいときはこれが呼び出されるようにすべきです。
+プロファイルを使った動作
+Android 3.0 から、Bluetooth プロファイルを使った動作のサポートが Bluetooth API に加わりました。Bluetooth プロファイルとは、デバイス間の Bluetooth ベースの通信用ワイヤレスインターフェイス仕様です。例ではハンズフリープロファイルを取り上げています。携帯電話からワイヤレスのヘッドセットに接続するためには、両方のデバイスが Hands-Free プロファイルをサポートしなければなりません。
+インターフェイスのBluetoothProfileを実装し、特定の Bluetooth プロファイルをサポートする独自のクラスを作成することができます。Android
+Bluetooth API は以下の Bluetooth プロファイルに対する実装を提供します。
+Headset。Headset は携帯電話といっしょに使う Bluetooth ヘッドセットのサポートを提供します。Android はBluetoothHeadsetクラスを提供し、これはプロセス間通信 ( IPC) を用いた Bluetooth Headset Service を制御するためプロキシとなります。これには共に Bluetooth Headset と Hands-Free ( v1.5 ) プロファイルが含まれています。BluetoothHeadsetクラスには AT コマンドのサポートが含まれています。このトピックの詳しい解説は ベンダー固有のコマンドを参照してください。
+A2DP。Advanced Audio Distribution Profile ( A2DP ) は高品質のオーディオストリームを Bluetooth 接続上であるデバイスからもう別のデバイスに流すしくみを定義するプロファイルのひとつです。Android はBluetoothA2dpクラスを提供し、これは IPC を介して Bluetooth A2DP Service を制御するためのプロキシとなります。
+以下はプロファイルを使った動作のための基本的な手順です。
+Bluetooth のセットアップで説明したように、デフォルトをアダプタを取得します。
+getProfileProxy()を使ってプロファイルと関連付いたプロファイルプロキシへの接続を確立します。下の例では、プロファイルプロキシオブジェクトはBluetoothHeadsetのインスタンスになります。
+BluetoothProfile.ServiceListenerをセットアップします。このリスナにより、サービスから接続されたり切断されたりしたときにBluetoothProfile IPC クライアントへの通知が行われます。
+onServiceConnected()でプロファイルオブジェクトへのハンドルを取得します。
+プロファイルプロキシオブジェクトを保持した時点で、それを使って接続の状態を監視し、そのプロファイルに関連するその他の操作が可能となります。
+以下の例はBluetoothHeadsetプロキシオブジェクトに接続する方法のコードスニペットで、これにより Headset プロファイルの制御が可能となります。
+BluetoothHeadset mBluetoothHeadset;
+// Get the default adapter
+BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+// Establish connection to the proxy.
+mBluetoothAdapter.getProfileProxy(context, mProfileListener, BluetoothProfile.HEADSET);
+private BluetoothProfile.ServiceListener mProfileListener = new BluetoothProfile.ServiceListener() {
+public void onServiceConnected(int profile, BluetoothProfile proxy) {
+if (profile == BluetoothProfile.HEADSET) {
+mBluetoothHeadset = (BluetoothHeadset) proxy;
+}
+}
+public void onServiceDisconnected(int profile) {
+if (profile == BluetoothProfile.HEADSET) {
+mBluetoothHeadset = null;
+}
+}
+};
+// ... call functions on mBluetoothHeadset
+// Close proxy connection after use.
+mBluetoothAdapter.closeProfileProxy(mBluetoothHeadset);
+ベンダー固有の AT コマンド
+Android 3.0 から、アプリケーションがヘッドセットにより送信されるプリセットされたベンダー固有の AT コマンド ( Plantronics +XEVENT コマンドなど ) のシステムブロードキャストを登録できるようになりました。例えばアプリケーションは接続済みのデバイスのバッテリーレベルを示すブロードキャストを受信できたり、必要に応じてユーザに通知したり、他のアクションを受け付けることができたりします。ACTION_VENDOR_SPECIFIC_HEADSET_EVENTインテントに対するブロードキャストレシーバを作成して、ヘッドセット用のベンダー固有の AT コマンドをハンドルしてください。
+h. Bluetooth - ソフトウェア技術ドキュメントを勝手に翻訳

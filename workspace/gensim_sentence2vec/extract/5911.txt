@@ -1,0 +1,71 @@
+カスタム投稿タイプについて質問です。
+カスタム投稿ラベルを下記2種類用意して運用しています。
+・賃貸
+・新築
+これらに属する記事のアーカイブを見せようとサイドバーに下記の表示を目論んでいます。
+カテゴリー:
+・賃貸(8)
+・新築(18)
+月別アーカイブ:
+・2012年2月(10)
+・2012年1月(16)
+フォーラムで似たようなトピックを検索のうえ(URL)、下記のコードを書いてみましたが月別アーカイブ表示が上手く動作していません。
+<?php wp_get_archives(array('type' => 'monthly', 'post_type' => array('chintai',bunjyou'), 'show_post_count' => true)); ?>
+上記では賃貸と新築を足し合わせたアーカイブ記事数を統合して表示しようとしています。
+また、カスタム投稿ラベルの投稿件数付きでの表示については見せ方の方法自体手探りの状態で、お知恵拝借できましたら幸いです。
+haha tadukoさん
+入力項目が異なるので、賃貸と新築を別の投稿タイプにしたのかもしれませんが、この構造だと、どのようなパーマリンク構造で賃貸と新築を足し合わせたアーカイブを表示するかなどのカスタマイズも必要になってくるため、それなりに大変です。
+管理画面の入力が多少手間かもしれませんが、WordPress 自体の構造に合わせるならば、物件というカスタム投稿タイプに「賃貸」と「新築」をカスタム分類で実装した方が表示の実装は簡単になります。
+>jim912さま
+ご教授いただきましてありがとうございました!
+内容をもとにいろいろ調べましたところ下記コードで実現したいことができました。
+カテゴリー
+<ul>
+<?php wp_list_categories('title_li=&taxonomy=bukkentype&show_count=1'); ?>
+</ul>
+月別アーカイブ
+<h3>月別アーカイブ</h3>
+<ul>
+<?php wp_get_archives('type=monthly&post_type=bukken&show_post_count=1'); ?>
+</ul>
+カスタム投稿タイプとカスタム分類は下記のように配置しなおしました。
+・カスタム投稿タイプ  物件(bukken)
+・カスタム分類  物件タイプ(bukkentype)
+・賃貸と新築はカスタム分類『物件タイプ』のなかにカテゴリー?(ターム)として含めました
+- 賃貸(スラッグはchintai)
+- 新築(スラッグはbunjyou)
+以上で実現することができました。
+最後に追加で質問させてもらえたらと思います。
+先のタームを条件分岐の要素として固定ページでクラス名を出仕分け用と試みているのですが、カスタム分類のタームで条件分岐させるところでつまずいてしまっています。
+実際のコードは下記になります。
+<span class='<?php if(is_tax('bukken', 'chintai')) : ?>chintai
+<?php elseif(is_tax('bukken', 'bunjyou')) : ?>bunjyou<?php endif; ?>'>
+<?php echo  get_the_term_list( $post->ID, 'bukkentype', '', ', ', '' ); ?>
+</span>
+上記で実現しようとしているのは、
+カスタム分類ターム『bukken』を持っていれば、class名にbukkenを与え、
+またはそれが『bunjyou』であれば、class名にbunjyouを付けて、
+リンク付きのそれぞれターム名を表示させるといった内容になります。
+is_taxを固定ページで使っているのが怪しいと思いながらも、
+既出のフォーラム記事や
+http://ja.forums.wordpress.org/topic/6229?replies=3
+海外方面の記事をあたってみましたが上手く参考になりそうなものを見つけ切れていません。
+解決につながりそうな参照先情報だけでも結構ですので
+おわかりになられましたらアドバイス頂戴できますと嬉しいです。
+的外れな質問かもしれません。
+失礼しております。
+こんにちは
+自己解決&参照元情報を見つけたので報告します。
+下記のコードで解決しました。
+<span class='<?php if(is_tax('bukken', 'chintai')) : ?>chintai
+<?php elseif(is_tax('bukken', 'bunjyou')) : ?>bunjyou<?php endif; ?>'>
+<?php if(has_term("chintai","bukkentype",$post->ID)):?>chintai
+<?php elseif(has_term("bunjyou","bukkentype",$post->ID)):?>bunjyou<?php endif; ?>'>
+<?php echo  get_the_term_list( $post->ID, 'bukkentype', '', ', ', '' ); ?>
+</span>
+ポイントはhas_termを使うというところでした。
+こちらのサイトにたどり着き、勉強させていただきました。
+WordPress3.1で追加されたhas_termが便利
+http://techblog.55w.jp/?p=407
+私にできることは、まんま使えるコードを見つけることしかありませんので、ご報告でした。
+WordPress › フォーラム » カスタム投稿タイプのリスト表示と月別アーカイブ表示

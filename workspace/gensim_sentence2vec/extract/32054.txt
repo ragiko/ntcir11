@@ -1,0 +1,592 @@
+性能測定法  
+1次元領域分割による並列コードと2次元領域分割に基づく並列コードの速度を比較する前に、
+計算に要する時間やMPI通信に要する時間を測定する方法について説明する。
+これまで以下の二つの方法を説明した。
+「4. OpenMP入門」では、omp_get_wtime()関数による時間測定
+「5. MPIを用いた並列計算」では、mpi_wtime()関数による時間測定
+今回はもう一つの方法を紹介する:
+Fotran95言語の組み込み関数(サブルーチン) cpu_time()による時間測定
+仕様
+subroutine cpu_time(time)
+real(SP), intent(out) :: time  !プログラムの始まりから計測したCPU時間(秒)
+mpi_wtime
+は、MPIを用いた並列化プログラムのみで、しかもmpi_initを呼んだ後でしか使えなかったが、cpu_timeにはそのような制限がない。(ただ
+しFotran95で導入された関数なので、古いFotran90コンパイラは対応していないかもしれない。)
+cpu_time関数の利用例  
+stopwatchモジュール
+module stopwatch
+use constants
+implicit none
+private
+public :: stopwatch__print, stopwatch__strt, stopwatch__stop
+integer, parameter :: max_watch_id = 100
+integer            :: used_watch_id_max=-1
+real(SP), dimension(0:max_watch_id) :: time_start_saved, time_total
+contains
+subroutine stopwatch__print
+integer :: id
+do id = 0 , used_watch_id_max
+print *,'stopwatch:', id, time_total(id)
+end do
+end subroutine stopwatch__print
+subroutine stopwatch__strt(id)
+integer, intent(in) :: id
+logical :: firstcall = .true.
+if (firstcall) then
+time_total(:) = 0.0_DP
+firstcall = .false.
+end if
+if (id>used_watch_id_max) used_watch_id_max = id
+call cpu_time(time_start_saved(id))
+end subroutine stopwatch__strt
+subroutine stopwatch__stop(id)
+integer, intent(in) :: id
+real(SP) :: time_now, elapsed
+call cpu_time(time_now)
+elapsed = time_now - time_start_saved(id)
+time_total(id) = time_total(id) + elapsed
+end subroutine stopwatch__stop
+end module stopwatch
+stopwatchモジュールの利用法  
+program thermal_diffusion_decomp2d_hybrid
+use constants
+use parallel
+use temperature
+use stopwatch
+implicit none
+integer :: loop
+call stopwatch__strt(0)  ! プログラム全体の実行時間
+call stopwatch__strt(1)  ! 並列化初期化にかかる時間
+call parallel__initialize
+call stopwatch__stop(1)
+call stopwatch__strt(2)  ! 温度場初期化にかかる時間
+call temperature__initialize
+call stopwatch__stop(2)  ! 温度場の出力にかかる時間
+call temperature__output_2d_profile
+call stopwatch__stop(2)
+call stopwatch__strt(3)  ! ヤコビ法による求解にかかる時間
+do loop = 1 , LOOP_MAX
+call temperature__update
+end do
+call stopwatch__stop(3)
+call stopwatch__stop(0)  
+call stopwatch__print   ! 結果の出力
+call temperature__finalize
+call parallel__finalize
+end program thermal_diffusion_decomp2d_hybrid
+出力例
+stopwatch:      0    1.286565               
+stopwatch:      1    0.2393930  
+stopwatch:      2    4.3821335E-04
+stopwatch:      3    1.046950    
+これを見るとプログラム全体の実行時間(0番)のうち、ほとんどがヤコビ法の求解(3番)に費やされていることがわかる。
+2次元領域分割による並列コード  
+領域分割による並列化を行うときに注意すべき点は、
+MPIプロセスの配置方法である。
+2次元領域分割の場合、あるプロセスに注目すると、最も頻繁に通信する相手は、隣(東西南北)の4つのプロセスである。
+計算機のネットワークの配線方法(トポロジー)等に基づく通信性能の特性を考慮に入れて、
+隣同士の通信がもっとも通信速度的に「近い」位置にプロセスを配置することが望ましい。
+以下のようにプロセス(ランク番号)を配置した場合、
+4番のプロセスはランク番号1,3,5,7のプロセスと頻繁に通信することになる。
+もしも使用している並列計算機のネットワークの設計上、
+4番のプロセスはむしろランク番号0,2,6,8のプロセスと通信した方が速い場合には、以下のようにプロセスを配置する方が望ましい。
+MPI関数の一つMPI_CART_CREATEを使うと、もしも使用する計算機がネットワークの通信性能の関する情報を提供している場合には、その情報を活用し通信効率の点で最適な配置でプロセスを自動的に分配してくれる。
+MPI_CART_CREATEを用いた2次元領域分割法による熱伝導問題のコード thermal_diffusion_decomp2d.f90 を示す。
+MPI_SENDRECV関数を用いて東西南北の4つの隣接プロセスと通信する。
+!=========================================================================
+! thermal_diffusion_decomp2d_mpi.f90
+!
+!   Purpose: 
+!       To calcuate thermal equilibrium state, or the temperature
+!       distribution T(x,y) in a unit square, 0<=(x,y)<=1.
+!       Heat source is constant and uniform in the square.
+!       Temperature's boundary condition is fixed; T=0 on the four
+!       sides.
+!
+!   Method:
+!       2nd order finite difference approximation for the Poisson
+!       equation of the temperature,
+!                 \nabla^2 T(x,y) + heat_source = 0.
+!       leads to 
+!         T(i,j) = (T(i+1,j)+T(i-1,j)+T(i,j+1)+T(i,j-1)) / 4      &
+!                + heat_source*h^2/4,
+!       where the grid spacing, h, is same and uniform in x- 
+!       and y-directions. Jacobi method is used to solve this.
+!
+!   Parallelization:
+!       MPI parallelization under 2-dimensional domain decomposition.
+!   
+!   Reference codes:
+!       - "thermal_diffusion.f90" is a companion code that is 
+!         parallelized with a 1-D domain decomposition.
+!       - "sample_birdseyeview.gp" is a gnuplot script to visualize
+!         T(i,j) distribution in the square, produced by the routine
+!         temperature__output_2d_profile in this code.
+!
+!   Coded by   Akira Kageyama,
+!         at   Kobe University,
+!         on   2010.07.15,
+!         for  the Lecture Series "Computational Science" (2010).
+!=========================================================================
+module constants
+implicit none
+integer, parameter :: SP = kind(1.0)
+integer, parameter :: DP = selected_real_kind(2*precision(1.0_SP))
+integer, parameter :: MESH_SIZE = 1000    ! was = 61
+integer, parameter :: LOOP_MAX = 10000
+end module constants
+module stopwatch
+use constants
+implicit none
+private
+public :: stopwatch__print, stopwatch__strt, stopwatch__stop
+integer, parameter :: max_watch_id = 100
+integer            :: used_watch_id_max=-1
+real(SP), dimension(0:max_watch_id) :: time_start_saved, time_total
+contains
+subroutine stopwatch__print
+integer :: id
+do id = 0 , used_watch_id_max
+print *,'stopwatch:', id, time_total(id)
+end do
+end subroutine stopwatch__print
+subroutine stopwatch__strt(id)
+integer, intent(in) :: id
+logical :: firstcall = .true.
+if (firstcall) then
+time_total(:) = 0.0_DP
+firstcall = .false.
+end if
+if (id>used_watch_id_max) used_watch_id_max = id
+call cpu_time(time_start_saved(id))
+end subroutine stopwatch__strt
+subroutine stopwatch__stop(id)
+integer, intent(in) :: id
+real(SP) :: time_now, elapsed
+call cpu_time(time_now)
+elapsed = time_now - time_start_saved(id)
+time_total(id) = time_total(id) + elapsed
+end subroutine stopwatch__stop
+end module stopwatch
+module parallel
+use constants
+use mpi
+implicit none
+private
+public :: parallel__initialize,       &
+parallel__i_am_on_border,   &
+parallel__communicate,      &
+parallel__finalize,         &
+parallel__set_prof_2d,      &
+parallel__tellme
+type ranks_
+integer :: me
+integer :: north, south, west, east
+end type ranks_
+type(ranks_) :: ranks
+integer, parameter :: ndim = 2  ! 2-D domain decomposition
+type process_topology_
+integer                  :: comm
+integer, dimension(ndim) :: dims
+integer, dimension(ndim) :: coords
+end type process_topology_
+type(process_topology_) :: cart2d
+integer :: nprocs
+integer :: istt, iend
+integer :: jstt, jend
+contains
+!== Private ==!
+subroutine dataTransferEastward(n,sent_vect, recv_vect)
+integer, intent(in) :: n
+real(DP), dimension(n), intent(in)  :: sent_vect
+real(DP), dimension(n), intent(out) :: recv_vect
+integer :: ierr
+integer, dimension(MPI_STATUS_SIZE) :: status
+call mpi_sendrecv(sent_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     & 
+ranks%east,               &
+0,                        &
+recv_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     &
+ranks%west,               &
+MPI_ANY_TAG,              &
+cart2d%comm,              &
+status,                   &
+ierr)
+end subroutine dataTransferEastward
+subroutine dataTransferNorthward(n,sent_vect, recv_vect)
+integer, intent(in) :: n
+real(DP), dimension(n), intent(in)  :: sent_vect
+real(DP), dimension(n), intent(out) :: recv_vect
+integer :: ierr
+integer, dimension(MPI_STATUS_SIZE) :: status
+call mpi_sendrecv(sent_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     & 
+ranks%north,              &
+0,                        &
+recv_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     &
+ranks%south,              &
+MPI_ANY_TAG,              &
+cart2d%comm,              &
+status,                   &
+ierr)
+end subroutine dataTransferNorthward
+subroutine dataTransferSouthward(n,sent_vect, recv_vect)
+integer, intent(in) :: n
+real(DP), dimension(n), intent(in)  :: sent_vect
+real(DP), dimension(n), intent(out) :: recv_vect
+integer :: ierr
+integer, dimension(MPI_STATUS_SIZE) :: status
+call mpi_sendrecv(sent_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     & 
+ranks%south,              &
+0,                        &
+recv_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     &
+ranks%north,              &
+MPI_ANY_TAG,              &
+cart2d%comm,              &
+status,                   &
+ierr)
+end subroutine dataTransferSouthward
+subroutine dataTransferWestward(n,sent_vect, recv_vect)
+integer, intent(in) :: n
+real(DP), dimension(n), intent(in)  :: sent_vect
+real(DP), dimension(n), intent(out) :: recv_vect
+integer :: ierr
+integer, dimension(MPI_STATUS_SIZE) :: status
+call mpi_sendrecv(sent_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     & 
+ranks%west,               &
+0,                        &
+recv_vect,                &
+n,                        &
+MPI_DOUBLE_PRECISION,     &
+ranks%east,               &
+MPI_ANY_TAG,              &
+cart2d%comm,              &
+status,                   &
+ierr)
+end subroutine dataTransferWestward
+!== Public ==!
+subroutine parallel__communicate(ism1,iep1,jsm1,jep1,field)
+integer, intent(in) :: ism1, iep1, jsm1, jep1
+real(DP), dimension(ism1:iep1,jsm1:jep1), intent(inout) :: field
+integer :: ierr
+integer, dimension(MPI_STATUS_SIZE) :: status
+integer :: i, j, istt, iend, jstt, jend, isize, jsize
+real(DP), dimension(MESH_SIZE+2) :: sent_vect, recv_vect
+!    real(DP), dimension(:), allocatable :: sent_vect, recv_vect
+istt = ism1 + 1
+iend = iep1 - 1
+jstt = jsm1 + 1
+jend = jep1 - 1
+isize = iep1 - ism1 + 1
+!    allocate(sent_vect(isize),recv_vect(isize))
+sent_vect(1:isize) = field(ism1:iep1,jend)
+call dataTransferNorthward(isize,sent_vect,recv_vect)
+field(ism1:iep1,jsm1) = recv_vect(1:isize)
+sent_vect(1:isize) = field(ism1:iep1,jstt)
+call dataTransferSouthward(isize,sent_vect,recv_vect)
+field(ism1:iep1,jep1) = recv_vect(1:isize)
+!    deallocate(sent_vect,recv_vect)
+jsize = jend - jstt + 1
+!    allocate(sent_vect(jsize),recv_vect(jsize))
+sent_vect(1:jsize) = field(iend,jstt:jend)
+call dataTransferEastward(jsize,sent_vect,recv_vect)
+field(ism1,jstt:jend) = recv_vect(1:jsize)
+sent_vect(1:jsize) = field(istt,jstt:jend)
+call dataTransferWestward(jsize,sent_vect,recv_vect)
+field(iep1,jstt:jend) = recv_vect(1:jsize)
+!    deallocate(sent_vect,recv_vect)
+end subroutine parallel__communicate
+subroutine parallel__finalize
+integer :: ierr
+call mpi_finalize(ierr)
+end subroutine parallel__finalize
+function parallel__i_am_on_border(which) result(answer)
+character(len=*), intent(in) :: which
+logical :: answer
+answer = .false.
+if ( which=='west' .and.cart2d%coords(1)==0 )                answer = .true.
+if ( which=='east' .and.cart2d%coords(1)==cart2d%dims(1)-1 ) answer = .true.
+if ( which=='south'.and.cart2d%coords(2)==0 )                answer = .true.
+if ( which=='north'.and.cart2d%coords(2)==cart2d%dims(2)-1 ) answer = .true.
+end function parallel__i_am_on_border
+subroutine parallel__initialize
+logical, dimension(ndim) :: is_periodic
+integer :: ierr
+logical :: reorder
+call mpi_init(ierr)
+call mpi_comm_size(MPI_COMM_WORLD, nprocs,   ierr)
+cart2d%dims(:) = 0 ! required by mpi_dims_create
+call mpi_dims_create(nprocs, ndim, cart2d%dims, ierr)
+is_periodic(1) = .false.
+is_periodic(2) = .false.
+reorder = .true.
+call mpi_cart_create(MPI_COMM_WORLD, ndim, cart2d%dims,             &
+is_periodic, reorder, cart2d%comm, ierr)
+call mpi_comm_rank (cart2d%comm, ranks%me, ierr)
+call mpi_cart_shift(cart2d%comm, 0,           1,                    &
+ranks%west,  ranks%east,  ierr)
+call mpi_cart_shift(cart2d%comm, 1,           1,                    &
+ranks%south, ranks%north, ierr)
+call mpi_cart_coords(cart2d%comm, ranks%me, 2, cart2d%coords, ierr)
+print *,' dims(1) = ', cart2d%dims(1)
+print *,' dims(2) = ', cart2d%dims(2)
+print *,' coords(1) = ', cart2d%coords(1)
+print *,' coords(2) = ', cart2d%coords(2)
+istt = MESH_SIZE *  cart2d%coords(1)    / cart2d%dims(1) + 1
+iend = MESH_SIZE * (cart2d%coords(1)+1) / cart2d%dims(1)
+jstt = MESH_SIZE *  cart2d%coords(2)    / cart2d%dims(2) + 1
+jend = MESH_SIZE * (cart2d%coords(2)+1) / cart2d%dims(2)
+print *,'   nprocs = ', nprocs
+print *,' ranks%me = ', ranks%me
+print *,' istt = ', istt, ' iend = ', iend
+print *,' jstt = ', jstt, ' jend = ', jend
+print *,' north = ', ranks%north
+print *,' south = ', ranks%south
+print *,' west  = ', ranks%west
+print *,' east  = ', ranks%east
+print *,' i_am_on_border("west")  = ', parallel__i_am_on_border("west")
+print *,' i_am_on_border("east")  = ', parallel__i_am_on_border("east")
+print *,' i_am_on_border("north") = ', parallel__i_am_on_border("north")
+print *,' i_am_on_border("south") = ', parallel__i_am_on_border("south")
+end subroutine parallel__initialize
+function parallel__set_prof_2d(ism1,iep1,                     &
+jsm1,jep1,                     &
+istt_,iend_,                   &
+jstt_,jend_,                   &
+myprof)       result(prof_2d)
+integer,  intent(in) :: ism1
+integer,  intent(in) :: iep1
+integer,  intent(in) :: jsm1
+integer,  intent(in) :: jep1
+integer,  intent(in) :: istt_
+integer,  intent(in) :: iend_
+integer,  intent(in) :: jstt_
+integer,  intent(in) :: jend_
+real(DP), dimension(ism1:iep1,jsm1:jep1), intent(in) :: myprof
+real(DP), dimension(0:MESH_SIZE+1,0:MESH_SIZE+1) :: prof_2d
+real(DP), dimension(0:MESH_SIZE+1,0:MESH_SIZE+1) :: work
+integer :: ierr
+integer :: meshsize_p1_sq = (MESH_SIZE+1)**2
+work(:,:) = 0.0_DP
+work(istt_:iend_,jstt_:jend_) = myprof(istt_:iend_,jstt_:jend_)
+call mpi_allreduce(work(1,1),               &  ! source
+prof_2d(1,1),            &  ! target
+meshsize_p1_sq,          &
+MPI_DOUBLE_PRECISION,    &
+MPI_SUM,                 &
+cart2d%comm,             &
+ierr)
+end function parallel__set_prof_2d
+function parallel__tellme(which) result(val)
+character(len=*), intent(in) :: which
+integer                      :: val
+select case (which)
+case  ('rank_east')
+val = ranks%east
+case  ('rank_north')
+val = ranks%north
+case  ('rank_south')
+val = ranks%south
+case  ('rank_west')
+val = ranks%west
+case  ('rank_me')
+val = ranks%me
+case  ('iend')
+val = iend
+case  ('istt')
+val = istt
+case  ('jend')
+val = jend
+case  ('jstt')
+val = jstt
+case  ('nprocs')
+val = nprocs
+case default
+print *, 'Bad arg in parallel__tellme.'
+call parallel__finalize
+stop
+end select
+end function parallel__tellme
+end module parallel
+module temperature
+use constants
+use stopwatch
+use parallel
+implicit none
+private 
+public :: temperature__initialize,            &
+temperature__finalize,              &
+temperature__output_2d_profile,     &
+temperature__update
+real(DP), allocatable, dimension(:,:) :: temp
+real(DP), allocatable, dimension(:,:) :: work
+real(DP), parameter :: SIDE = 1.0_DP
+real(DP) :: h = SIDE / (MESH_SIZE+1)
+real(DP) :: heat
+integer  :: istt, iend, jstt, jend
+integer  :: myrank, north, south, west, east, nprocs
+contains
+!=== Private ===
+subroutine boundary_condition
+if ( parallel__i_am_on_border('west')  ) temp(            0,jstt-1:jend+1) = 0.0_DP
+if ( parallel__i_am_on_border('east')  ) temp(  MESH_SIZE+1,jstt-1:jend+1) = 0.0_DP
+if ( parallel__i_am_on_border('north') ) temp(istt-1:iend+1,  MESH_SIZE+1) = 0.0_DP
+if ( parallel__i_am_on_border('south') ) temp(istt-1:iend+1,            0) = 0.0_DP
+end subroutine boundary_condition
+!=== Public ===
+subroutine temperature__initialize
+real(DP) :: heat_source = 4.0
+istt   = parallel__tellme('istt')
+iend   = parallel__tellme('iend')
+jstt   = parallel__tellme('jstt')
+jend   = parallel__tellme('jend')
+myrank = parallel__tellme('rank_me')
+north  = parallel__tellme('rank_north')
+south  = parallel__tellme('rank_south')
+east   = parallel__tellme('rank_east')
+west   = parallel__tellme('rank_west')
+nprocs = parallel__tellme('nprocs')
+allocate(temp(istt-1:iend+1,jstt-1:jend+1))
+allocate(work(  istt:iend  ,  jstt:jend)  )
+heat = (heat_source/4) * h * h
+temp(:,:) = 0.0_DP       ! initial condition
+end subroutine temperature__initialize
+subroutine temperature__finalize
+deallocate(work,temp)
+end subroutine temperature__finalize
+subroutine temperature__output_2d_profile
+real(DP), dimension(0:MESH_SIZE+1,    &
+0:MESH_SIZE+1) :: prof
+integer                            :: counter = 0   ! saved
+integer                            :: ierr          ! use for MPI
+integer                            :: istt_, iend_, jstt_, jend_
+character(len=4)                   :: serial_num    ! put on file name
+character(len=*), parameter        :: base = "../data/temp.2d."
+integer :: i, j
+call set_istt_and_iend 
+call set_jstt_and_jend
+write(serial_num,'(i4.4)') counter
+prof(:,:) = parallel__set_prof_2d(istt-1, iend+1,                   &
+jstt-1, jend+1,                   &
+istt_,  iend_,                    &
+jstt_,  jend_,                    &
+temp)
+if ( myrank==0 ) then
+open(10,file=base//serial_num)
+do j = 0 , MESH_SIZE+1
+do i = 0 , MESH_SIZE+1
+write(10,*) i, j, prof(i,j)
+end do
+write(10,*)' ' ! gnuplot requires a blank line here.
+end do
+close(10)
+end if
+counter = counter + 1
+contains
+subroutine set_istt_and_iend
+istt_ = istt
+iend_ = iend
+if ( parallel__i_am_on_border('west') ) then
+istt_ = 0
+end if
+if ( parallel__i_am_on_border('east') ) then
+iend_ = MESH_SIZE+1
+end if
+end subroutine set_istt_and_iend
+subroutine set_jstt_and_jend
+jstt_ = jstt
+jend_ = jend
+if ( parallel__i_am_on_border('south') ) then
+jstt_ = 0
+end if
+if ( parallel__i_am_on_border('north') ) then
+jend_ = MESH_SIZE+1
+end if
+end subroutine set_jstt_and_jend
+end subroutine temperature__output_2d_profile
+subroutine temperature__update
+integer :: i, j
+call stopwatch__strt(8)
+call stopwatch__strt(4)
+call parallel__communicate(istt-1,iend+1,jstt-1,jend+1,temp)
+call stopwatch__stop(4)
+call stopwatch__strt(5)
+call boundary_condition
+call stopwatch__stop(5)
+call stopwatch__strt(6)
+do j = jstt , jend
+do i = istt , iend
+work(i,j) = (temp(i-1,j)+temp(i+1,j)+temp(i,j-1)+temp(i,j+1))*0.25_DP  &
++ heat
+end do
+end do
+call stopwatch__stop(6)
+call stopwatch__strt(7)
+temp(istt:iend,jstt:jend) = work(istt:iend,jstt:jend)
+call stopwatch__stop(7)
+call stopwatch__stop(8)
+end subroutine temperature__update
+end module temperature
+program thermal_diffusion_decomp2d_mpi
+use constants
+use parallel
+use temperature
+use stopwatch
+implicit none
+integer :: loop
+call stopwatch__strt(0)
+call stopwatch__strt(1)
+call parallel__initialize
+call stopwatch__stop(1)
+call stopwatch__strt(2)
+call temperature__initialize
+call stopwatch__stop(2)
+!--  call temperature__output_2d_profile
+call stopwatch__stop(2)
+call stopwatch__strt(3)
+do loop = 1 , LOOP_MAX
+call temperature__update
+!--    if ( mod(loop,100)==0 ) call temperature__output_2d_profile
+end do
+call stopwatch__stop(3)
+call stopwatch__stop(0)
+call stopwatch__print
+call temperature__finalize
+call parallel__finalize
+end program thermal_diffusion_decomp2d_mpi
+【演習】2次元領域分割による並列化コードの実行(非並列計算)  
+上のコード thermal_diffusion_decomp2d_mpi.f90を、MESH_SIZE=1000のまま計算機 "scalar" で実行せよ。
+使用ノード数は1とする。
+参考ジョブスクリプト( thermal_diffusion_decomp2d_mpi.js )
+#!/bin/sh
+#PBS -l cputim_job=00:05:00
+#PBS -l memsz_job=2gb
+#PBS -l cpunum_job=1
+#PBS -T vltmpi
+#PBS -b 1
+#PBS -q PCL-A
+cd /home/users/your_directory/src
+mpirun_rsh -np 1 ${NQSII_MPIOPTS} ./a.out
+実行結果例(抜粋、コメント追加)
+[0]  stopwatch:   0    156.9908     # 全実行時間 (約157秒)
+[0]  stopwatch:   1   6.5398932E-02 # 並列初期化にかかった時間
+[0]  stopwatch:   2   1.7432213E-02 # 温度場初期化にかかった時間
+[0]  stopwatch:   3    156.9167     # temperature__updateにかかった時間
+[0]  stopwatch:   4   0.8027854     # MPI通信にかかった時間
+[0]  stopwatch:   5   0.2311089     # 境界条件の設定にかかった時間
+[0]  stopwatch:   6    90.23702     # ヤコビ法のメインループにかかった時間
+[0]  stopwatch:   7    65.61881     # 作業配列を温度場にコピーするのにかかった時間
+[0]  stopwatch:   8    156.9118     # temperature__updateにかかった時間
+7.実践編

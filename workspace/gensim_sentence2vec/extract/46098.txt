@@ -1,0 +1,92 @@
+
+パッケージ 
+クラス 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要:  入れ子 | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+jp.ac.takushoku_u.cs
+クラス SSAnalysis
+java.lang.Object
+jp.ac.takushoku_u.cs.SSAnalysis
+public class SSAnalysisextends java.lang.Object
+SSAnalysisクラスはSS分析を計算するためのクラスです。
+1からnまでのn段階のアンケートデータを分析することができます。
+バージョン:
+1.11
+作成者:
+笠島 裕史(Kasajima Hiroshi)
+コンストラクタの概要
+SSAnalysis()
+設定されているデフォルトのサイズで分析を行うマトリクスを設定します。
+SSAnalysis(Matrix baseMatrix)
+引数を元に分析を行うマトリクスを設定します。
+SSAnalysis(Matrix baseMatrix,
+int scale)
+引数を元に分析を行うマトリクスとアンケートの型を設定します。
+SSAnalysis(Matrix baseMatrix,
+int scale,
+double threshold)
+引数を元に分析を行うマトリクス、アンケートの型、しきい値を設定します。
+SSAnalysis(Matrix baseMatrix,
+int scale,
+double threshold,
+int rating)
+引数を元に分析を行うマトリクス、アンケートの型、しきい値、評定の最大値を設定します。
+メソッドの概要
+double
+getCoefficient(int startI,
+int goalJ)
+ある項目Iから項目Jへの順序(包含)性係数を求めます。
+Matrix
+getCoefficientMatrix()
+順序(包含)性係数表をマトリクスで返します。
+Matrix
+getFrequencyMatrix(int startI,
+int goalJ)
+ある項目Iと項目J間の度数分布表を求めます。
+int[]
+getGraphElementArray()
+項目をグラフを描く順に並べ替えた項目番号の配列を返します。
+double[]
+getGraphHeightArray()
+SSグラフを描く際の縦軸となる各項目の値を配列で返します。
+Matrix
+getMatrix()
+分析を行う前のマトリクスを返します。
+int
+getMaxValue()
+評定の最大値を返します。
+int
+getScaleType()
+アンケートの型を返します。
+Matrix
+getSkeletonMatrix()
+SSグラフを描くためのスケルトンマトリクスを返します。
+Matrix
+getSSMatrix()
+SSマトリクスを返します。
+double
+getThreshold()
+しきい値を返します。
+void
+setElement(int row,
+int col,
+int value)
+SS分析の対象となるマトリクスの要素を修正します。
+void
+setMatrix(Matrix baseMatrix)
+SS分析の対象となるマトリクスを設定します。
+void
+setThreshold(double threshold)
+しきい値を設定します。
+クラス java.lang.Object から継承したメソッド
+clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait
+コンストラクタの詳細
+SSAnalysis

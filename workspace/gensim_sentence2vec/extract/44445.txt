@@ -1,0 +1,90 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX 45
+struct linklist
+{
+char Name[MAX];
+struct linklist *pNext;
+};
+struct linklist *pHead;//定義のリストの先頭ポインタの点に注意してください。データを保存させないようにしてください
+linklist *linklist_add(linklist *pHead)//ノードの追加 {
+printf("please input the what you want\n");
+char chName[30];
+gets(chName);
+struct linklist *pTemp=NULL, *p;
+pTemp=(linklist *)malloc(sizeof(linklist));//リストを格納するためのメモリ空間を開く strcpy(pTemp->Name,chName);
+if (pTemp == NULL)//ノードの頭が空の場合 {
+return pHead;//ダイレクトリターン }
+pTemp->pNext =NULL;//リストには、ヘッドノードを持つ、次のノードは空 if (pHead == NULL)//如果链表为空,头指针指向要添加的节点 {
+pHead=pTemp;
+}
+else
+{
+p=pHead;
+while(p->pNext !=NULL)
+{
+p=p->pNext;
+}
+p->pNext=pTemp;
+return pHead;
+}
+/*
+pTemp =pHead;
+while (pTemp !=NULL)
+{
+free(pTemp);
+pTemp =pTemp->pNext;
+}*/
+}
+linklist * delete_linklist(linklist *pHead)
+{
+linklist *pTemp=NULL, *p;
+char chName[MAX];
+printf("please input delete the thing\n");
+gets(chName);
+pTemp =pHead;
+while (pTemp)
+{
+if (strcmp(pTemp->Name,chName)==0)
+{
+//printf("%s\n",pTemp->Name);
+p=pHead;
+if (pHead == pTemp)//ヘッドノードを削除するには {
+pHead =pTemp->pNext;//2番目のノードに先頭ポインタをしましょう printf("delete the first node successful\n");
+break;
+}
+while(1)
+{
+if (p->pNext=pTemp)// {
+p->pNext =pTemp->pNext;
+printf("delete the no first node successful\n");
+break;
+}
+p=p->pNext;
+}
+break ;
+}
+pTemp =pTemp->pNext;// }
+return pHead;
+}
+void userviw(linklist *pHead)
+{
+linklist *pTemp= pHead;
+while (pTemp)
+{
+printf("%s\n",pTemp->Name);
+pTemp =pTemp->pNext;
+}
+}
+int main()
+{
+struct linklist *pHead =NULL;
+pHead = linklist_add(pHead);
+userviw(pHead);
+pHead = delete_linklist(pHead);
+userviw(pHead);
+return 0;
+}
+シンプルなリスト操作 | コーディング

@@ -1,0 +1,140 @@
+PL/SQL の配列 = コレクション型  
+PL/SQL コレクション型には 大きく分けて PL/SQL 表と VARRAY(可変長配列) が存在する。
+PL/SQL 表  
+PL/SQL 表とは、オラクルのコレクション型の一種。
+結合配列(索引付き表) と ネストした表 (NESTED TABLE) が PL/SQL 表と呼ばれている。
+昔のオラクルには 索引付き表しかなく、索引付き表はデータベースに格納できず PL/SQL でしか扱えなかったため PL/SQL 表と呼ばれたと思われる。
+現在は ネストした表 も PL/SQL 表に含まれているが、こちらは テーブルに格納可能。
+PL/SQL 表 という言葉が正確な意味をあらわしていないため、その表現は消えつつある(と思う)。
+結合配列 (索引付の表)  
+マニュアルには結合配列と訳されているが、原文では Associative Array (=連想配列) をあらわす。
+(Oracle よりも他の開発言語から連想配列やハッシュテーブルという言葉が急速に定着しているので、連想配列としてほしい。)
+結合配列の特徴
+配列の添え字(インデックス)の データ型 と要素のデータ型を宣言して配列を定義する。
+結合配列の添え字は連続している(密である)必要はない。
+添え字は -2^31 〜 2^31 まで 
+文字型の場合には、制限なし? ( 未確認 )
+データベースに格納できない。
+添え字に使用できるデータ型は整数および文字列(※)。
+配列のサイズは自動拡張される。
+初期化していなくても NULL ではない。
+実行開始時には既にアトミック NULL ではなくアトミック NULL にできない。(エラーになる)
+PL/SQL ブロック内だけで有効 (CREATE TYPE できない)
+(※) 添え字に使用できるデータ型は、整数の PLS_INTEGER、BINARY_INTEGER、
+文字列には VARCHAR2、VARCHAR2のサブタイプである STRING、LONG となっている。
+(文字列を添え字に正式に使用できるのは、9i R2 以降? 、R1 のマニュアルには、まだ結合配列のセクションが存在していないため確認できなかった。)
+注意 結合配列にはコンストラクタ表記はない(宣言時に初期値を設定する構文もない) 
+ちなみにレコード型のコンストラクタも存在しない。
+結合配列の初期化
+初期化専用のプロシージャを作成する、プロシージャ名は initialize などで統一するとメンテもしやすくなる。
+(プロシージャはパラメータが異なればオーバーロードできる。)
+結合配列の削除
+結合配列は アトミック NULL にすることができないため DELETE メソッドを使用してメモリを解放する。
+vList.DELETE ;
+結合配列の定義と初期化の例: 数値を添え字にもつ配列と文字列を添え字にもつ配列
+CREATE OR REPLACE PROCEDURE RIVUS.INITIAL_TEST1
+IS
+TYPE tArrayINT IS TABLE OF VARCHAR2(10) INDEX BY BINARY_INTEGER;
+TYPE tArraySTR IS TABLE OF VARCHAR2(20) INDEX BY VARCHAR2(5);
+vName10_List tArrayINT;
+vName20_List tArraySTR;
+-- Init vName10_List
+PROCEDURE INITIALIZE ( P_ARRAY OUT tArrayINT)
+IS
+BEGIN
+P_ARRAY(1) := 'AAA';
+P_ARRAY(9) := 'BBB';
+-- ...
+END;
+-- Init vName20_List
+PROCEDURE INITIALIZE ( P_ARRAY OUT tArraySTR)
+IS
+BEGIN
+P_ARRAY('壱') := 'AAA';
+P_ARRAY('弐') := 'BBB';
+END;
+BEGIN
+INITIALIZE(vName10_List);
+INITIALIZE(vName20_List);
+-- ...
+vName10_List.DELETE;
+vName20_List.DELETE;
+END;
+/
+関連事項
+⇒ 二次元配列の作り方 (索引付の表の二次元配列)
+ネストした表 (NESTED TABLE)  
+ネステッド・テーブルは上限のない 一次元配列である。
+ネストした表の特徴
+テーブル(データベース)に格納できる。
+添え字は 1 オリジンである。
+添え字は 1 〜 2^31 まで
+配列の要素を順序付けをおこなわずに格納する。
+データベースに格納すると添え字の情報は消失する。
+データベースから取り出すと 1 オリジンで添え字が再割り当てされる。
+PL/SQL ブロック内および外でも有効 (CREATE TYPE できる)
+ネストした表の定義例: VARCHAR2(10) の 一次元配列 で NULL を許可しない。
+ネステッド・テーブルの初期化例 (コンストラクタの使用)
+添え字は 1 オリジンである (1 から開始する)。
+CREATE OR REPLACE PROCEDURE RIVUS.INITIAL_TEST2
+IS
+TYPE tArray10 IS TABLE OF VARCHAR2(10) NOT NULL;
+vName_List tArray10 := tArray10('AAA','BBB'); -- ここで初期値代入
+vNULL_List tArray10;
+BEGIN
+--
+vName_List(0.5) := 'ABC';  -- 1 に代入
+-- 添え字に数値へと暗黙変換できない文字列は使用できない。
+-- vName_List('壱') := 'ABC';  -- エラー
+-- vNULL_List(1) := 'AAA';   コレクションは初期化されていません。エラー
+-- EMPTY
+vNULL_List := tArray10();
+vNULL_List.EXTEND(100);
+vNULL_List(100) := 'AAA';
+-- ...
+vName_List.DELETE;
+vNULL_List.DELETE;
+END;
+/
+VARRAY (可変長配列 : Variable ARRAY ?)  
+上限のある可変長配列。旧来の配列の特徴に最も近い? 配列である。
+10 個の大きさで宣言した VARRAY の添え字は 1 〜 10 となる。
+可変長配列の特徴
+データベースに格納できる。
+添え字は 1 オリジンで領域が連続している(密である)。
+配列のサイズは自動拡張されないが宣言の上限まで EXTEND メソッドで動的に拡張が可能。
+EXTEND メソッドはデフォルトで NULL 初期化する。
+コンストラクタを使用して初期化されていない場合には EXTEND は使用できない。
+PL/SQL ブロック外でも有効 (CREATE TYPE できる)
+可変長配列の定義例: VARCHAR2(10) の 一次元配列 で NULL を許可しない。
+CREATE OR REPLACE PROCEDURE RIVUS.INITIAL_TEST3
+IS
+TYPE tArray10 IS VARRAY(100) OF VARCHAR2(10) NOT NULL;
+vName_List tArray10 := tArray10('AAA','BBB');  -- ここで初期値代入
+vEmpty_List tArray10 := tArray10();
+vNULL_List tArray10;
+BEGIN
+-- 添え字に数値へと暗黙変換できない文字列は使用できない。
+vName_List('1.5') := 'ABC'; -- OK (=2)
+--
+-- vName_List(50) := 'ABC';   -- 拡張されていない範囲への代入はエラー
+-- 
+vName_List.EXTEND(50);	-- 配列を +50 個初期化(=52)
+vName_List(50) := 'ABC';
+vName_List(52) := 'ABC';
+--	vName_List(53) := 'ABC';	-- エラーになる。
+--	vName_List.EXTEND(50);  -- さらに +50 すると宣言時の 100 を超えエラーになる。
+vName_List.EXTEND(48);
+vEmpty_List.EXTEND(50);	-- 配列を +50 個初期化(50)
+--	vNULL_List.EXTEND(50);	-- エラーになる。
+vNULL_List := tArray10();
+vNULL_List.EXTEND(50);	-- OK
+-- ...
+vName_List.DELETE;
+vEmpty_List.DELETE;
+vNULL_List.DELETE;
+END;
+/
+各コレクションの比較対照表(まとめ)  
+互換性の問題なのかコレクションで 3種類もあるので混乱を招きやすい。表記方法も含めて微妙に共通点も多いのが混乱に拍車をかけている。しかし、それぞれ機能面で実現できない事などがあり、それぞれ一長一短という印象がある。プログラムで、どのコレクションを使用するかは用心して選択した方がよいだろう。
+PL/SQL コレクション型 - オラクル・Oracle PL/SQL プログラミング

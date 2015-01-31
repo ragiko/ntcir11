@@ -1,0 +1,92 @@
+はじめまして、デザイン・エフェクト担当の上松です。デザイナー班からは初!投稿です。
+先日、弊社のパズルゲーム・PanicFarmが大幅アップデートされGoogle Playでリリースされましたが、みなさまはプレイされましたでしょうか? バトルモードが搭載され、スコアがフィーチャーされています。ちょっとしたアドバイスですが、勢いでたくさん消すより、心の中でリズムをとってタイミングよく消とコンボを繋ぐと高得点が狙えますよ!
+私は、1,500,000点ぐらいがベストスコアです。ぜひチャレンジしてくださいね。
+さて、記事の本題にはいりましょう。今回は、普段使っているCocos2d-xのアニメーション関連のメソッドをまとめてみました!
+Cocos2d-xのアニメーション機能まとめ
+Cocos2d-xでは、簡単なメソッドで様々なアニメーションを作成することができます。複雑なアニメーションも、組み合わせ次第でさくっとできたりします。まずは基本的な使い方から‥!
+基本モーション
+まずは、基本の動きから。Cocos2d-xで使える基本変形は「移動・回転・スケール・スキュー(・透明度)」です。
+移動
+//移動 1秒 100,200へ
+CCFiniteTimeAction* move = CCMoveTo::create( 1.0f, ccp(100, 200));
+obj->runAction( move );
+スケール
+//スケール 1秒で、スケール1.5に
+CCFiniteTimeAction* scale = CCScaleTo::create( 1.0f, 1.5f);
+obj->runAction( scale );
+回転
+//スケール 1秒で、90度回転
+CCFiniteTimeAction* rotation = CCRotateTo::create( 1.0f, 90.0f);
+obj->runAction( rotation );
+スキュー
+//スキュー 1秒で、X軸 20度、Y軸30度
+CCFiniteTimeAction* skew = CCSkewTo::create( 1.0f, 20.0f, 30.0f);
+obj->runAction( skew );
+透明度
+//フェード 1秒で、50%へ
+CCFiniteTimeAction* fade = CCFadeTo::create( 1.0f, 128);
+obj->runAction( fade );
+イージング
+上で作ったアニメーションは、直線的(リニア)な動きばかりでした。動きに緩急をつけて、より自然でゲームらしいアニメーションに仕上げましょう!
+イージングを掛ける場所によって、〜In、〜Out、〜InOutというサフィックスがつきます。
+あ、開始値を指定しないと動いたように見えないので、テストするときは、
+obj->setScale( 0.0f );
+をお忘れなく!
+Ease
+基本的なイージングです。特徴がない代わりに、とっても使いやすいのです。
+obj->runAction(CCEaseInOut::create(CCScaleTo::create(1.000f, 1.00f), 2));
+EaseExponential
+ちょっとカーブがキツめのイージングです。ちょっとねちっこい動きになります。
+obj->runAction(CCEaseExponentialInOut::create(CCScaleTo::create(1.000f, 1.00f)));
+EaseSine
+Easeに比べて、より直線的なイージングです。ほんのりイージングさせたいときに。
+obj->runAction(CCEaseSineInOut::create(CCScaleTo::create(1.000f, 1.00f)));
+EaseElastic
+名前の通り、とっても弾力的な動きをします。Outのほうが使い道が多いと思います。第二引数を大きくし過ぎると効果が確認できなくなるかもです。
+obj->runAction(CCEaseElasticOut::create(CCScaleTo::create(2.000f, 1.00f), 0.3f));
+EaseBounce
+終了値に当たって跳ね返るような、硬いバウンスモーションになります。
+obj->runAction(CCEaseBounceOut::create(CCScaleTo::create(1.000f, 1.00f)));
+EaseBack
+一瞬通りすぎて、動き始め/動き終わります。ElasticやBounceほどではないけど、ちょっと強調したいアニメーションに。
+obj->runAction(CCEaseBackOut::create(CCScaleTo::create(1.000f, 1.00f)));
+順番再生・同時再生・タイミング
+今までのアニメーションを同時に動かしたり順番に動かしたりして、より複雑なアニメーションを作りましょう。
+透明度が0->255になりながら、移動して出てくるなど、2つ以上のアニメーションを合わせると表現力がぐっと上がります!
+順番再生
+CCSequence::create( アクション1, アクション2, …, NULL );
+という感じで作成します。ちょっと複雑になって来ましたが大丈夫。
+obj->runAction(
+CCSequence::create(
+CCEaseBounceOut::create(CCScaleTo::create(1.000f, 1.00f)),
+CCEaseSineInOut::create(CCScaleTo::create(0.500f, 0.00f)),
+NULL
+)
+);
+同時再生
+CCSpawn::createWithTwoActions( アクション1, アクション2 );
+といった具合です。CCSequenceをアクションとして入れることもできるので、かなり複雑なアニメーションを実行出来ます。
+obj->runAction(
+CCSpawn::createWithTwoActions(
+CCEaseExponentialInOut::create(CCScaleTo::create(1.000f, 1.00f)),
+CCFadeTo::create(1.000f, 255)
+)
+);
+待機する
+シーケンスで動かせるようになったので、待機もできるようにしましょう。CCDelayTime::create( 秒数 );を使います。
+obj->runAction(
+CCSequence::create(
+CCDelayTime::create(1.000f),
+CCEaseExponentialInOut::create(CCScaleTo::create(1.000f, 1.00f)),
+NULL
+)
+);
+ではでは作っていきましょう!
+コードで書くと、タイミング調整に非常に苦労しますが、そのあたりはCocosBuilderを使って楽をすると良いかもしれません。
+データを直接読み込むフローをお持ちでない方でも、タイムラインとアニメーション機能が優秀なので、テストと作成が簡単になります。
+キーが付いている部分を右クリックするとイージングの指定ができます。
+こういったツールでリアルタイムで検討をしつつ実装、の流れが良いのではと思います。
+ゲーム制作では、通常のアプリ以上にアニメーションが重要になってきます。
+弊社では、キーフレーム情報を元に自動でコード化するツールを開発するなどの工夫で、なんとか工数を減らすべく効率化を進めています。
+手早く綺麗に効率的に!アニメーションを作っていきたいですね。
+もうアニメーションで迷わない。 Cocos2d-xのCCActionまとめ | ワンダープラネットエンジニア Blog

@@ -1,0 +1,58 @@
+
+例[編集]
+fromからselectまでの一連の式がLINQクエリ式である。このコードでは、fruitsの中からmで始まるものを取り出し、それをretに格納し、それをforeachで順に出力している(実際にはretは遅延評価される)。
+string[] fruits =
+{
+"apple",
+"cherry",
+"melon",
+"orange",
+"marron",
+"mango",
+};
+var ret = from x in fruits
+where x[0] == 'm'
+select x;
+foreach (var e in ret)
+{
+Console.WriteLine(e);
+}
+言語仕様[編集]
+LINQに対応する言語は、LINQ の能力をより発揮させるために新しい言語仕様が併せて導入されている。例えば、クエリ式、拡張メソッド、ラムダ式、匿名型などがそうである。C# における例は C# 3.0からの仕様 を参照されたい。
+データソース[編集]
+LINQはサードパーティによるものを含め、あらゆる種類のデータソースに対して適用することができる。これは、標準クエリ演算子に対応する機能を拡張メソッドとしてデータソースに追加することで実現している。
+従来では同種のデータ型やオブジェクトの集合に対して列挙やソート、フィルタを効率的に扱うために配列 (Arrayクラス) やコレクションオブジェクトが用いられた。一方、データベースやXML上のデータ集合はADO.NETによってデータセットとして取り扱われており異なる操作が必要であった。LINQによって、これらのオブジェクトやデータセットを区別せず共通的に扱うことが可能となった。
+例えば、マイクロソフトによるものでは次のような実装がある。
+LINQ to Objects (あらゆるコレクション/列挙子をLINQクエリで操作可能にする)
+LINQ to XML (XLinq)
+LINQ to ADO.NET
+LINQ to SQL (DLinq / SQL Server専用)
+LINQ to Entities (SQL Setrver / ORACLE / MySQL / SQLite等)
+LINQ to DataSet (DataSetに対する拡張メソッドにより、LINQクエリを記述可能とする)
+Azure Table Storage (Windows AzureのキーバリューストアでLINQクエリを記述可能とする)
+サードパーティ製データソースとしては、以下が挙げられる。
+LINQ to Twitter - ツイッターの情報をソースとする。
+LINQに対応する言語[編集]
+次の言語がLINQに対応する。
+C# 3.0
+F# 1.1.8.1
+Visual Basic 9.0
+Delphi Prism 2009 (Oxygene)
+C++/CLIはLINQに対応する予定はなく、従来通りの構文でLINQ関係のライブラリを使用できるのみである。
+その他の言語での実装[編集]
+LINQは、LINQの思想に感化された人々により、マイクロソフト系のプログラミング言語にとどまらず、さまざまなプログラミング言語向けの実装が行われている。
+jLinq - JavaScriptでの実装
+JSINQ - JavaScriptでの実装
+linq.js - JavaScriptでの実装
+Chris Pietschmann's LINQ to JavaScript - JavaScriptでの実装
+PHPLinq - PHPでの実装
+Quaere - Javaでの実装
+JaQue - Javaでの実装.
+JaQu - Javaでの実装
+Querydsl - Javaでの実装
+pynq - Pythonでの実装
+go-linq - Goでの実装
+外部リンク[編集]
+LINQ: .NET 統合言語クエリ
+The LINQ Project
+統合言語クエリ - Wikipedia

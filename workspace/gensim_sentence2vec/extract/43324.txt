@@ -1,0 +1,124 @@
+この記事は Vim Advent Calendar 2014 の8日目の記事です.昨日に引き続き犬アイコンがお送りします.昨日は daisuzu さんの vital-smtpを作った でした.
+今回は今年つくったプラグインとか,過去につくったけれど紹介していなかったプラグインを3つ紹介します.
+vim-operator-surround : 指定したテキストオブジェクトを特定の囲み(surrounding)で囲むという処理を行うオペレータプラグイン
+committia.vim : git commit したときに開くコミットバッファをリッチにするプラグイン
+vim-grammarous : 自然言語の文法チェックプラグイン
+それぞれのプラグイン紹介は独立しているので,気になるものだけでもチェックしてもらえればと思います.
+また,インストール方法については,他のプラグインと同じなので割愛しています.
+vim-operator-surround
+https://github.com/rhysd/vim-operator-surround
+vim-operator-surround は指定したテキストオブジェクトに対して,特定の"囲み"を追加・削除・変更するオペレータプラグインです.
+既存のテキストに()などの囲みを追加,削除,変更する場合,まず前側の ( を追加・削除して次に後ろ側に移動して ) を…というふうに編集するのは地味に手間です.
+vim-operator-surround ではその辺りの問題をオペレータを使って解決しようとしています.(オペレータについては :help operator)
+vim-operator-surround をインストールすると3つの <Plug> マッピングが定義されます.
+なお,vim-operator-user に依存しているので,こちらも一緒にインストールする必要があります.
+<Plug>(operator-surround-append) : テキストオブジェクトに対して指定した囲みで囲むという処理を行うオペレータ
+<Plug>(operator-surround-delete) : テキストオブジェクト内にある囲みを削除するオペレータ
+<Plug>(operator-surround-replace) : テキストオブジェクト内にある囲みを変更するオペレータ
+下記のように自分の好きなキーにマッピングします.
+map <silent>sa <Plug>(operator-surround-append)
+map <silent>sd <Plug>(operator-surround-delete)
+map <silent>sr <Plug>(operator-surround-replace)
+ここでは sa,sd,sr にそれぞれマッピングしました.下記ではこれらの設定を前提に紹介します.
+<Plug>(operator-surround-append)
+sa{テキストオブジェクト}{囲み指定}
+例えば,ある変数参照 some_var があったとき,これに関数呼び出しを加えて func(some_var) としたいとします.
+この時,some_var のどこかにカーソルを持って行って saiw( と入力すると,iw で指定された1単語が () で囲まれ,(some_var) となります.このあとカーソルは ( の位置にあるはずなので,普通にインサートモードで func と入力すれば OK です.
+この他にも markdown のバッククォートでの囲みの追加など,「特定の範囲を何かで囲みたい」というときに使えます.
+<Plug>(operator-surround-delete)
+sd{(削除したい囲みを含む)テキストオブジェクト}
+先程は囲みを付け足す処理を行いましたが,今度は逆に特定の範囲内にある囲みの削除を行います.
+例えば,括弧で囲まれたテキスト (foo) があるとき,foo の上にカーソルを持って行って sda( とすると a( で指定された (...) の部分のうち,囲みである ( と ) が削除されて foo となります.
+<Plug>(operator-surround-replace)
+sr{変更したい囲みを含むテキストオブジェクト}{新しい囲み指定}
+例えば,ダブルクォートな文字列 "this is text" があったときに,これをシングルクォートな文字列に書き換えたいとします.この時,sra"' と入力すると,a" で指定されたダブルクォートな文字列に対し,「囲みを ' で置き換える」という処理を行います.
+vim-surround との違い
+"囲み"を扱うプラグインとしては,既に tpope さんの vim-surround があります.しかし,vim-surround は古くからあるプラグインで色々不満もあったため,新しく vim-operator-surround をつくることにしました.
+モチベーションは下記の3点です.
+オペレータマッピングとして定義し,テキストオブジェクトとは独立させることでユーザが自由にテキストオブジェクトと組み合わせられるようにしたかった(vim-surround はオペレータのようなマッピングを提供しているものの本当のオペレータとは違っていて違和感がある)
+カスタマイズ性(vim-surround は一応カスタマイズはできるものの拡張性は低くかなりわかりにくい)
+vim-surround のコードが手を入れるのがつらい感じだったのと,テストが無かった
+カスタマイズ
+g:operator#surround#blocks という辞書変数でカスタマイズできるようになっています.
+デフォルトの ( や {,` ` などの囲みの定義は この辺にある ので,追加したいブロックなどがある場合はこれを参考に書き換えてみると良いと思います.ブロックはファイルタイプごとに指定でき,'-' というキーに定義された囲みはすべてファイルタイプに適用されます.(特定のファイルタイプのみで使いたい囲みがある場合は,そのファイルタイプ名をキーとする要素を追加すれば OK です)
+例えば,僕の場合は saiw( のように ( を入力するのが面倒なので p で済ませたい(saiwp)なぁと思うことが多く,下記のように設定しています.
+let g:operator#surround#blocks =
+\ {
+\   '-' : [
+\       { 'block' : ['(', ')'], 'motionwise' : ['char', 'line', 'block'], 'keys' : ['p'] },
+\   ]
+\ }
+今後やっていきたいこと
+現在は saiw( のようにオペレータの入力 sa と囲みの指定 ( が離れてしまっているので,これをつなげて sa(iw のように入力できると良いなぁと思っています.
+committia.vim
+https://github.com/rhysd/committia.vim
+git commit した時に開くコミットバッファを改善するプラグインです.
+普段 git commit すると下記のようなバッファが1つ vim で開き,そこにコミットメッセージを書いていると思います.
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+...
+コミットバッファにはそのコミットのステータスや,-v を付けた時(僕は常時 -v が着くようにしています)は diff も追記されます.
+ですが,diff が長くなると,変更を diff で見つつコミットメッセージを書いていくという作業になります.ウィンドウを分割して,片方でメッセージを書きつつ片方で diff をスクロールしていっても良いのですが,ウィンドウ間の移動とインサートモード/ノーマルモードの移動が激しいのが気になりました.
+そこで,コミットメッセージ編集とコミットステータスとコミットの diff を別のウィンドウに分けて表示する committia.vim をつくりました.
+このプラグインをインストールしたあと,ターミナルの横幅が十分ある状態で git commit とすると自動でウィンドウ分割された Vim が立ち上がります.
+これにより,最初からコミット編集(edit window)とコミットステータス(status window)とコミット diff (diff window)が分かれた状態から始まります.
+また,各ウィンドウにはフックを設定することができます.例えば,下記のように edit window が開いた時の設定を書けます.
+let g:committia_hooks = {}
+function! g:committia_hooks.edit_open(info)
+" Additional settings
+setlocal spell
+" If no commit message, start with insert mode
+if a:info.vcs ==# 'git' && getline(1) ==# ''
+startinsert
+end
+" Scroll the diff window from insert mode
+" Map <C-n> and <C-p>
+imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
+imap <buffer><C-p> <Plug>(committia-scroll-diff-up-half)
+endfunction
+英文を書く際に個人的には必須なスペルチェックの有効化や,コミットメッセージがまだない場合はインサートモードで始めるなどの便利設定を書いてあります.
+また,edit window のみで <Plug>(committia-scroll-diff-down-half) と <Plug>(committia-scroll-diff-up-half) という2つのマッピングを使っています.これらはインサートモードで編集中に直接 diff ウィンドウを上下スクロールするためのマッピングです.コミットメッセージを書きつつ,「あれ,あそこどう書いたかな?」と思った場合はそのまま diff ウィンドウをスクロールして確認することができます.
+なお,左右にウィンドウ分割するだけの幅が無いと判断した場合はシングルカラムモードになります.
+このモードでは,edit window と status window は統合され,diff window が縦分割で開かれます.その他は上記と同じです.
+今後やっていきたいこと
+vimrc にちょこっと書いていた設定を元にプラグイン化されたものなのでバグが色々あったり至らなかったりしたのですが,プルリクをもらったりしてぼちぼちまともになってきました.僕はたまに SVN や Mercurial も使うことがあるので,そっちにも対応したいなぁと思っています.
+vim-grammarous
+https://github.com/rhysd/vim-grammarous
+vim-grammarous は自然言語の文法チェックを行うためのプラグインです.Vim には元々スペルチェックが搭載されていますが,vim-grammarous ではスペルミスだけでなく単語の品詞間違いなどの文法チェックを行えます.LanguageTool という,自然言語処理ツールをバックエンドとして使っており,その実行のために Java 7+ が必要です.
+文法チェックを実行する
+現在のインターフェースは至ってシンプルで,
+:GrammarousCheck
+とすると現在のバッファに対して文法チェックが走ります.
+初回実行時に LanguageTool の jar ファイルを落としてくるため時間がかかります(モバイル回線などを使っている場合は注意してください).その後,文法チェックが行われますが,かなり重い処理なのでそれなりに時間がかかります.もしインストールに失敗したら path/to/vim-grammarous/misc ディレクトリ以下に LanguageTool-x.y.zip を直接展開してください.
+チェックが終了すると,各エラーの箇所がバッファ上で赤くハイライトされ,カーソルが最初のエラーの位置にジャンプします.また,下部にエラーの詳細を表示する info window が表示されます.info window にはエラーメッセージ,エラーが起きたコンテキスト,修正案が表示されます.カーソルを動かすと,カーソル位置に対応して info window も自動で更新されます.
+なお,1回の実行にそれなりに時間がかかるため,細々とチェックするというよりは,一通り書き終えてからその文章をコミットする前にざっと文法チェックをかけるというやり方がおすすめです.
+どういう文法エラーがチェックできるの?というのが気になるところだと思いますが,文の大文字始まりや冠詞の誤りなど,様々なものがあるのでこちらの修正例を見てみてください.
+文法エラーを直す
+info window にカーソルを移動し,f を入力すると LanguageTool が示した方法で文法エラーが自動で修正されます.(修正内容は info window 内に表示されています) 上記 gif アニメーションでもこの機能を利用して文法エラーを修正しています.
+手動で修正する場合は普段通り直接バッファを編集すれば良いのですが,ハイライトは残ってしまうので,修正後 info window から r で,「この文法エラーは既に修正済み」というのを知らせる必要があります.r を押すと自動で info window が閉じ,対象のハイライトが消えます.また,:GrammarousReset により,一気にすべての文法エラー表示を取り除くこともできます.
+info window にはこの他にも次/前のエラーへジャンプする n/p,対象のエラーの箇所にカーソルを移動する <CR> などのマッピングが定義されており,どのようなマッピングがあるかは ? で見ることができます.(もしくはこちら)
+カスタマイズ
+info window 内で行える操作は全て <Plug> マッピングとしても提供されているので,同じ操作を info window 外からでも行えます.一覧は こちら にあります.
+また,:GrammarousCheck したときに呼ばれるフックも設定できるため,下記のように文法チェックが走った時だけ定義されるマッピングも設定できます.ここでは,エラー間のカーソル移動を文法チェックしたバッファで直接走らせるためのマッピングを定義しています.
+let g:grammarous#hooks = {}
+function! g:grammarous#hooks.on_check(errs)
+nmap <buffer><C-n> <Plug>(grammarous-move-to-next-error)
+nmap <buffer><C-p> <Plug>(grammarous-move-to-previous-error)
+endfunction
+function! g:grammarous#hooks.on_reset(errs)
+nunmap <buffer><C-n>
+nunmap <buffer><C-p>
+endfunction
+また,ソースコード内のコメントの文法チェック用にコメント内のみを文法チェックする機能もあります.(コメントの判定は Vim のハイライトを利用します)
+今後やっていきたいこと
+GitHub Flavored Markdown の fence code block のように,埋め込まれたブロック内も現状では文法チェックしてしまいます.そこで,文法チェックの対象から外すパターンを指定できるようにしたいと思っています.
+LanguageTool の実行をバックグラウンドで行い,ユーザの編集を妨げないようにするというのも考えています.また,インサートモードに入った地点とノーマルモードに戻った地点を見て,新たに入力された文のみを文法チェックすることで,インクリメンタルに文法チェックしていく仕組みがあると良いのかなぁと思っています.
+LanguageTool 自体は英語以外にも日本語を含む他の自然言語に対応していますので,それらにも対応していきたいです.(一応今も :GrammarousCheck --lang=ja などで実行自体はできると思います)
+まとめ
+最近作ったプラグイン3つについて紹介しました.どれか1つでも気になったものがあれば,是非試してみて出来ればフィードバックをもらえるとありがたいです.最近はどうも仕事が忙しくなってきていたり,他の作業とかに時間を取られていたりしてしまっていますが,これからも継続的に編集作業を改善するプラグインを作っていきます.
+明日は yoshiko さん担当です.期待.
+犬製 Vim プラグイン紹介3本立て - sorry, uninuplemented:

@@ -1,0 +1,44 @@
+unite.vim
+unite.vim は最近もりあがりを見せてきた vim のプラグインです。候補の一覧からアイテムを選択しアクションを実行するための汎用的な仕組みを持っています。基本的には、ファイラやバッファセレクタとして利用できます。加えて、一覧して表示するデータ(source)を自分で定義することができるのが特徴です。Emacsのanything.elのようですね。利用できるsourceとしては以下のようなものがあります。
+file ファイルの一覧
+file_mru 最近開いたファイルの一覧
+buffer 現在開いているバッファの一覧
+help ヘルプの一覧
+outline ソースコードを解析した結果の一覧
+詳しくは、ドキュメントを参考にしてください。
+unite.vim のsourceを自分で定義すると好みの情報を一覧して選択できるようになるので便利です。しかし、sourceは通常vimスクリプトをつかって定義する必要があります。普段から使わないvimスクリプトをsourceを作るために覚えるのはたいへんです。sourceを普段使っている言語で作成できれば便利です。そこで、Perlをはじめとしたスクリプト言語によってsourceを書くことが可能になるunite-scriptを作りました。
+unite-scriptの利用例
+unite-scriptを利用するには、unite-script が読み込める形式の文字列を出力するスクリプトを作成する必要あります。ここでは、vimからはてなブックマークのhotentryを出力するbookmarks.plを用いて説明します。bookmarks.pl の実装は非常に単純です。フィードを読み込んで一行ごとに出力していきます。この時、各行は
+一覧に表示するタイトル\tvimで実行するコマンドの用になっています。具体的なスクリプトは以下のようになります。
+use strict;
+use warnings;
+use XML::Feed;
+use URI;
+use Perl6::Say;
+use Cache::File;
+use URI::Fetch;
+my $target = 'http://b.hatena.ne.jp/hotentry.rss';
+my $cache = Cache::File->new( cache_root => '/tmp/cache' );
+my $res = URI::Fetch->fetch(
+$target,
+Cache => $cache
+) or die URI::Fetch->errstr;
+my $feed = XML::Feed->parse(\($res->content));
+for my $entry ($feed->entries) {
+say sprintf("%s\tcall system('open %s')", $entry->title, $entry->link);
+}
+このスクリプトを実行すると以下のよう出力されます。
+> perl bookmarks.pl
+C言語すら知らなかった私が2ヶ月でiPhoneアプリをリリースするまでにやった事。 | Last Day. jp      call system('open http://www.lastday.jp/2010/11/22/objective-c')
+漢字も使える手書き風の日本語フォントのまとめ | コリス   call system('open http://coliss.com/articles/freebies/freebies-handwriting-japanese-font.html')
+webデザインのセンスを磨く『系のwebデザインまとめ』の総まとめ*ホームページを作る人のネタ帳  call system('open http://e0166.blog89.fc2.com/blog-entry-817.html')
+苦しんで覚えるC言語     call system('open http://9cguide.appspot.com/')このスクリプトをunite-scriptから呼び出すには次のようにします。
+:Unite script:perl:/path/to/bookmarks.plこれで、一つsourceが完成しました。これをvimから呼び出すと次のようになります。記事の名前を選んでEnterを押すとブラウザが起動して記事をみることができます。このほかにもunite-scriptのリポジトリのexamplesディレクトリにいくつかの例を含めました。
+bookmarks.pl はてなブックマークの人気エントリの一覧、ブラウザで表示
+gmail.pl Gmailの受信箱のメール一覧、ブラウザで表示
+twitter_user.pl miyagawaさんのツイートを一覧、ブラウザで表示
+itunes.pl 現在再生しているプレイリストの曲を一覧、再生
+個人的にはitunes.plがコーディング中にすばやく選曲するのにとても便利でお気に入りです。こんなかんじです。絞り込みもできて便利。ただし、実装のほとんどがAppleScriptなのでMacのひとしか使えません。
+まとめ
+unite.vim のsourceをお好きなスクリプト言語で作成できる、unite-scriptについて説明しました。vimスクリプトに馴染みがない人も簡単にsourceを定義することができて便利です。一方、実際に各行のコマンド部分にはvimスクリプトを書く必要があるため、複雑なことをするためには結局vimスクリプトを学ぶ必要があります。また、スクリプトの出力結果を利用するという仕組み上、unite.vimのもつ便利な機能(項目ごとに複数のアクションを定義したり)が利用できなくなっています。このような制限のため、高機能なsourceはつくりにくいものの、vimスクリプトビギナーにとってはちょっとした便利sourceを作りたい時にはやはり便利です。僕自身もvimスクリプトは初心者なのでつたない感じになっていますが、よければ使って、おもしろいsourceをつくってみてください。
+unite.vim の source をお好きなスクリプト言語で書ける unite-script - はこべブログ ♨

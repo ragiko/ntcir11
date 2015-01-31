@@ -1,0 +1,117 @@
+
+5 文書構造
+目次
+5.1 SVG 文書片を定義する: 'svg' 要素
+5.1.1 概観
+5.1.2 'svg' 要素
+5.2 グループ化: 'g' 要素
+5.2.1 概観
+5.2.2 'g' 要素
+5.3 'defs' 要素
+5.4 'discard' 要素
+5.5 'title' と 'desc' 要素
+5.5.1 適用し得る 'title' と 'desc'
+5.5.2 複数の 'title' と 'desc' 要素
+5.5.3 'title' と 'desc' に対するユーザインターフェースのふるまい
+5.6 'use' 要素
+5.7 'image' 要素
+5.8 条件処理
+5.8.1 条件処理の概観
+5.8.2 'switch' 要素
+5.8.3 'requiredFeatures' 属性
+5.8.4 'requiredExtensions' 属性
+5.8.5 'systemLanguage' 属性
+5.8.6 'requiredFormats' 属性
+5.8.7 'requiredFonts' 属性
+5.9 外部リソース
+5.9.1 'externalResourcesRequired' 属性
+5.9.2 漸進的描画
+5.9.3 'prefetch' 要素
+5.10 共通属性
+5.10.1 すべての要素に共通の属性
+5.10.2 文字内容の要素の属性
+5.1 SVG 文書片を定義する: svg 要素
+5.1.1 概観
+SVG 文書片
+は
+svg
+要素とその
+svg
+要素に含まれる任意個数の
+SVG 要素
+により構成される。
+An SVG document fragment consists of any number of SVG elements contained within an 'svg' element, including the 'svg' element.
+SVG 文書片
+は空の素片(すなわち
+svg
+要素の内部に何も含んでいないもの)や、
+rect
+などの
+グラフィックス要素
+をただ一つ含むごく単純なものから、
+コンテナ要素
+と
+グラフィックス要素
+から構築される複雑で深い入れ子構造を持つものまでになり得る。
+An SVG document fragment can range from an empty fragment (i.e., no content inside of the 'svg' element), to a very simple SVG document fragment containing a single SVG graphics element such as a 'rect', to a complex, deeply nested collection of container elements and graphics elements.
+SVG 文書片
+はそれ自身が独立したファイルまたはリソースとなれる。その場合、
+SVG 文書片
+は SVG 文書になる。あるいは、親となる XML 文書に素片としてインラインに埋め込むこともできる。
+An SVG document fragment can stand by itself as a self-contained file or resource, in which case the SVG document fragment is an SVG document, or it can be embedded inline as a fragment within a parent XML document.
+親の XML 文書に素片として埋め込まれた単純な SVG 内容の例を下に示す。 XML 名前空間の利用により
+svg
+要素と
+ellipse
+要素が SVG 名前空間に属することを指示していることに注意:
+The following example shows simple SVG content embedded inline as a fragment within a parent XML document. Note the use of XML namespaces to indicate that the 'svg' and 'ellipse' elements belong to the SVG namespace:
+<?xml version="1.0"?>
+<parent xmlns="http://example.org"
+xmlns:svg="http://www.w3.org/2000/svg">
+<!-- 親の内容がここに -->
+<!-- parent contents here -->
+<svg:svg width="4cm" height="8cm" version="1.2" baseProfile="tiny" viewBox="0 0 100 100">
+<svg:ellipse cx="50" cy="50" rx="40" ry="20" />
+</svg:svg>
+<!-- ... -->
+</parent>
+次は少し複雑な例で(いくつかの矩形が含まれている)独立した外部依存のない SVG 文書になっている:
+This example shows a slightly more complex (i.e., it contains multiple rectangles) stand-alone, self-contained SVG document:
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny"
+width="5cm" height="4cm" viewBox="0 0 100 100">
+<!-- 4個の別々の矩形 -->
+<desc> Four separate rectangles </desc>
+<rect x="20" y="20" width="20" height="20"/>
+<rect x="50" y="20" width="30" height="15"/>
+<rect x="20" y="50" width="20" height="20"/>
+<rect x="50" y="50" width="20" height="40"/>
+<!-- 'rect' 要素でキャンバスの境界を表示 -->
+<!-- Show outline of canvas using 'rect' element -->
+<rect x="1" y="1" width="98" height="98"
+fill="none" stroke="blue" stroke-width="2" />
+</svg>
+SVG 文書片
+は
+svg
+要素を1個だけ含み得る。すなわち
+svg
+要素は SVG 内容の内部には現れない。
+An SVG document fragment can only contain one single 'svg' element, this means that 'svg' elements cannot appear in the middle of SVG content.
+いかなる場合でも、
+XML 名前空間 1.0
+または
+XML 名前空間 1.1
+勧告
+[XML-NS10, XML-NS]
+に従って、すべての
+SVG要素
+が SVG 名前空間に属するものと識別されるように、
+svg
+要素のスコープの中で SVG 名前空間宣言が与えられなければならない。
+In all cases, for compliance with either the Namespaces in XML 1.0 or Namespaces in XML 1.1 Recommendations [XML-NS10, XML-NS], an SVG namespace declaration must be in scope for the 'svg' element, so that all SVG elements are identified as belonging to the SVG namespace.
+例えば、接頭辞のない xmlns 属性を
+svg
+要素に指定できる。これは xmlns 属性が与えられた要素のスコープの中のすべての要素の既定の名前空間が SVG になることを意味する:
+For example, an 'xmlns' attribute without a prefix could be specified on an 'svg' element, which means that SVG is the default namespace for all elements within the scope of the element with the 'xmlns' attribute:
+Document Structure – SVG Tiny 1.2

@@ -1,0 +1,58 @@
+文字数制限で書ききれないので、2回に分けて投稿します。
+以下は差分抽出関数です。
+簡単のため、エラーチェックは省いてます。
+//img … 検査画像のBITMAP構造体
+//bg  … 背景画像のBITMAP構造体
+void Diff(BITMAP img, BITMAP bg)
+{
+const int bw = 5;//局所領域のサイズ
+const int br = bw/2;//局所領域の中心から見た±方向の領域上限
+int w = img.bmWidth;//画像幅
+int h = img.bmHeight;//画像高さ
+unsigned char* buf = GetGrayscaleBytesFromBitmap(img);//検査画像のグレースケール取得
+unsigned char* bgimg = GetGrayscaleBytesFromBitmap(bg);//背景画像のグレースケール取得
+float* vector1 = (float*)malloc(sizeof(float)*bw*bw);//検査画像の局所領域バッファ
+float* vector2 = (float*)malloc(sizeof(float)*bw*bw);//背景画像の局所領域バッファ
+//局所領域が画像内に収まるように、上下左右にbrだけ「のりしろ」を入れる。
+for(int y=br;y<h-br;y++){
+for(int x=br;x<w-br;x++){
+//検査画像と背景画像の局所領域グレー値をvector1とvector2に格納する。
+//ついでにvector1とvector2の距離を求めておく。
+float vectorAbs1=0.0; //vector1の距離(2乗和を求めて最後に√する)
+float vectorAbs2=0.0; //vector2の距離(2乗和を求めて最後に√する)
+for(int dy=-br;dy<=br;dy++){
+for(int dx-br;dx<=br;dx++){
+int idx_vct = (dy+br)*bw + (dx+br);//局所領域バッファの格納順番(左上右下)
+int idx_img = (y+dy)*w + (x+dx);//グレースケール配列の格納順番(左上右下)
+vector1[idx_vct]=(float)buf[idx_img];//検査画像のグレー値を格納
+vector2[idx_vct]=(float)bgimg[idx_img];//背景画像のグレー値を格納
+vectorAbs1 += vector1[idx_vct]*vector1[idx_vct];
+vectorAbs2 += vector2[idx_vct]*vector2[idx_vct];
+}
+}
+vectorAbs1 = sqrt(vectorAbs1);//√して距離にする
+vectorAbs2 = sqrt(vectorAbs2);//√して距離にする
+//格納された局所領域のグレー値から、正規化距離による差分を計算する。
+float distance = 0.0; //差分(2乗和を求めて最後に√する)
+for(int dy=-br;dy<=br;dy++){
+for(int dx-br;dx<=br;dx++){
+int idx_vct = (dy+br)*bw + (dx+br);//局所領域バッファの格納順番(左上右下)
+float dif   = vector1[idx_vct]/vectorAbs1 - vector2[idx_vct]/vectorAbs2; 
+diffSq += dif*dif;
+}
+}
+distance = sqrt(distance);//√して距離にする
+//差分が閾値より大きければ検査画像の画素を赤で塗りつぶす
+int idx_img32 = (y*w + x)*4; //検査画像のピクセルバッファ位置(1画素=4バイト)
+img.bmBits[idx_img32] = 255; //赤=255
+img.bmBits[idx_img32+1] = 0; //緑=0
+img.bmBits[idx_img32+2] = 0; //青=0
+}
+}
+//バッファ解放
+free(buf);
+free(bgimg);
+free(vector1);
+free(vector2);
+}
+背景差分法における正規化距離 - C・C++ - 教えて!goo

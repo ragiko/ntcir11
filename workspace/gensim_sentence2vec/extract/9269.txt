@@ -1,0 +1,4 @@
+対話コーパス生成装置、対話コーパスの生産方法、バーチャルチャット装置、およびプログラムINTERACTION CORPUS GENERATING DEVICE, INTERACTIVE CORPUS GENERATING METHOD, VIRTUAL CHAT DEVICE, AND PROGRAM - 特許庁
+応答文生成装置100はユーザ発話とその応答文との発話対、およびその発話対における対話状態のラベル値を付与した対話コーパスを記憶する対話コーパス記憶部133を備える構成とした。An answer sentence generation device 100 is equipped with an interaction corpus storage part 133, which stores a corpus given utterance pairs of user utterances and their answer sentences and label the values of interaction states of the utterance pairs. - 特許庁
+そして、応答文生成部150は、判断した対話状態に類似するユーザ発話の応答文を対話コーパスから検索する。An answer sentence generation part 150 retrieves an answer sentence to the user utterance similar to the decided interaction state from the interaction corpus. - 特許庁
+対話コーパスの英語・英訳 - 英和辞典・和英辞典 Weblio辞書

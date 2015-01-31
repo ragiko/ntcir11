@@ -1,0 +1,499 @@
+ここでは、探索アルゴリズムの1つであるダイクストラ法について解説します。
+ダイクストラ法は、構造やグラフ構造において、他のノードとの最短経路を探すためのアルゴリズムです。
+エドガー・ダイクストラという人に考案されたため、その名前からダイクストラのアルゴリズムと呼ばれます。
+ダイクストラと呼ばれるのが一般的ですが、発音の違いからディクストラと呼ばれる場合もあります。
+ダイクストラ法では、通常の深さ優先探索や幅優先探索等とは異なり、グラフのコストを考慮した探索を
+行うことができます。ただ、ダイクストラ法では負数のコストは使用できません。
+ここで言うところのコストとは、隣接ノードへの行き辛さの事です。現実世界に当てはめて考えれば、
+距離であったり、地形の良し悪しがコストとして考えられるでしょう。
+例えば、コストを考慮したグラフというのは以下のようになります。
+&emsp;&emsp;&emsp;&emsp;①
+&emsp;&emsp;
+&emsp;2&emsp;&emsp;&emsp;3
+&emsp;&emsp;
+&emsp;&emsp;&emsp;&emsp;②
+これはノード間のリンクに対してコストを記述している例となります。
+①から②へ至るルートが2つあり、左のルートであればコスト2で②へ行けますが、
+右のルートであればコスト3かかってしまいます。
+仮にコストを距離として捉えるならば、左のルートで行ったほうが近いという事です。
+では、ダイクストラ法についてもう少し具体的に解説します。
+ダイクストラ法は開始地点からあるノードへ至るまでの総コストを管理し、総コストの最も低いノードから
+少しずつ探索範囲を広げていくことで、目的ノードまでの最短距離を見つけます。
+幅優先探索に近い動きをしますが、あくまでも総コストの最も低いノード順であり、レベル順に探索を行う
+訳ではありません。
+例えば、以下の例を見てください。
+&emsp;&emsp;&emsp;&emsp;5&emsp;&emsp;&emsp;&emsp;&emsp;2
+&emsp;&emsp;②
+&emsp;①&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;⑤
+&emsp;&emsp;③④
+&emsp;&emsp;&emsp;2&emsp;&emsp;&emsp;2&emsp;&emsp;&emsp;2
+リンクに書いてあるマル無しの番号がコストです。
+このグラフで①から⑤への最短経路を求める事を考えて見ます。
+1.最初に①の隣接ノードである②と③をコンテナに積みます。
+&emsp;&emsp;この時、②の総コストは5、③の総コストは2です。
+2.コンテナ内にある②と③の内、最も総コストの低いものは③なので、
+&emsp;&emsp;③を取り出し、③の隣接ノードである④をコンテナに積みます。
+&emsp;&emsp;この時、コンテナ内には②と④があり、②の総コストは5、
+&emsp;&emsp;④の総コストは4(③の総コスト+③④のコスト)です。
+3.コンテナ内にある②と④の内、最も総コストの低いものは④なので、
+&emsp;&emsp;④を取り出し、④の隣接ノードである⑤をコンテナに積みます。
+&emsp;&emsp;この時、コンテナ内には②と⑤があり、②の総コストは5、
+&emsp;&emsp;⑤の総コストは6(④の総コスト+④⑤のコスト)です。
+4.コンテナ内にある②と⑤の内、最も総コストの低いものは②なので、
+&emsp;&emsp;②を取り出し、②の隣接ノードは⑤ですが、ここではコンテナには積みません。
+&emsp;&emsp;なぜなら、⑤の総コストは現在6であり、②の総コスト+②⑤コストは7となり、
+&emsp;&emsp;現在の経路よりもコストが掛かっている事が分かります。
+&emsp;&emsp;このように、総コストが大きくなる場合には、コンテナからは取り出しません。
+&emsp;&emsp;逆に、総コストが小さくなる場合には、総コストを上書きした上でコンテナに積みます。
+5.コンテナ内に残った⑤を取り出します。
+&emsp;&emsp;これが目的ノードなので、探索は終了となり、⑤へは最短でコスト6で行ける事になります。
+これがダイクストラ法の動きとなります。
+ただの幅優先探索であれば①②⑤のルートが最短となりますが、あくまでも総コストの短いもの
+から順となるため、①③④⑤が最短となります。当然ながら、それが正しい結果です。
+しかし、コストが全て一定であれば、ダイクストラ法は幅優先探索と同等の動きをします。
+さて、上記の動きをアルゴリズムとしてまとめると以下のようになります。
+前提:各ノードの総コストは非常に大きい値で初期化
+1.開始地点のノードをコンテナに積む
+2.コンテナから、ノードへ至るための総コストが最小のノードを1つ取り出す(仮に取り出したノードをNとします)
+3.Nの隣接ノードの内、
+&emsp;&emsp;・訪問済みでない
+&emsp;&emsp;または
+&emsp;&emsp;・「Nの総コスト+Nから隣接ノードへのコスト」が現在の隣接ノードの総コストより小さい
+&emsp;&emsp;場合に、隣接ノードの総コストを更新した上で、コンテナに積みます。
+4.目的ノードが取り出されるまで、「2.」「3.」を繰り返します。
+&emsp;&emsp;目的ノードが見つかる前に、コンテナが空になったら探索失敗(目的ノードへ至る経路はない)となります。
+これがダイクストラ法のアルゴリズムになります。
+コンテナとは特定のデータ構造を表しているのではなく、総コストが最小のノードを取り出せるという条件が
+満たせるのであれば、特に何でも構いません。
+おあつらえ向きのデータ構造として優先度付きキューがあります。優先度付きキューはある条件順に値を取り出せる
+データ構造です。つまり、総コストが最小のノード順に取り出すようにすれば良い訳です。
+優先度付きキューは実装方法はいくらかありますが、二分ヒープ木と実質的に同じです。
+興味のある方はこちらを参照してください。
+ただ、普通の優先度付きキューでは上手く使えない場合がありますので、そこは注意してください。
+例えば、上記のアルゴリズムの解説の「3.」で隣接ノードの総コストを更新するとありますが、優先度付きキュー内の
+任意のノードの値を更新できない場合や、値を更新できたとしてもヒープを再構築してくれない等の場合には
+正常に総コストが最小のノードを取り出す事ができないため上手く動作しません。
+この点に関しては注意してください。
+サンプルプログラムを提示しますが、サンプルプログラムではグラフを以下のような形で表現しています。
+S⑤⑥①⑦&emsp;
+⑨⑥⑥&emsp;&emsp;&emsp;
+⑧&emsp;&emsp;&emsp;⑨&emsp;
+⑦&emsp;⑤③&emsp;&emsp;
+&emsp;⑧&emsp;⑤①&emsp;
+⑧&emsp;⑦⑧&emsp;G
+「S」がスタート地点であり、「G」がゴール地点です。
+マスに書かれた番号がそのマスを通過する上での必要コスト、空白のマスはコスト無しで通過できます。
+スタート地点からゴール地点に向かうにあたり、最小コストで行けるルートを求めます。
+わざわざ空白のマスを用意しているのは、その方がぐにゃぐにゃ動いて見栄えが良いからです。
+上記の結果は以下のようになります。
+S*⑥①⑦&emsp;
+⑨*⑥***
+⑧***⑨*
+⑦&emsp;⑤③&emsp;*
+&emsp;⑧&emsp;⑤①*
+⑧&emsp;⑦⑧&emsp;G
+「*」が通過した経路で、「S」から「G」へ行くためのコストは「11」です。
+では、サンプルプログラムを見て下さい。
+#include <iostream>
+#include <ctime>
+#include <queue>
+//ダイクストラ法探索用構造体
+struct Node{
+//ノードの添え字
+unsigned int index;
+//訪問元ノードの添え字
+unsigned int parent;
+//ノードのコスト
+unsigned int cost;
+//ノードまでの総コスト
+unsigned int total_cost;
+//訪問済み情報
+bool visited;
+};
+//ヒープ比較用関数
+bool Comparator(const Node* node1,const Node* node2){
+return node1->total_cost>node2->total_cost;
+}
+//プロトタイプ宣言
+//グラフ生成関数
+void CreateGraph(Node*,unsigned int,unsigned int);
+//グラフ描画関数
+void PrintGraph(Node*,unsigned int,unsigned int);
+//ダイクストラ法アルゴリズム
+void Dijkstra(Node*,unsigned int,unsigned int,unsigned int);
+const unsigned int COST_MAX=0x0A;
+const unsigned int UP=0x0100;
+const unsigned int RIGHT=0x0200;
+const unsigned int DOWN=0x0400;
+const unsigned int LEFT=0x0800;
+const unsigned int START=0x1000;
+const unsigned int GOAL=0x4000;
+const unsigned int WALK=0x8000;
+int main(void){
+std::srand(std::time(nullptr));
+//グラフ横幅・縦幅
+const unsigned int width=25;
+const unsigned int height=25;
+//グラフ用領域の確保
+Node* graph=new Node[width*height];
+//初期化(便宜的に親は自分)
+for(int i=0;i<width*height;i++){
+graph[i].index=i;
+graph[i].parent=i;
+graph[i].cost=0;
+graph[i].total_cost=UINT_MAX;
+graph[i].visited=false;
+}
+//グラフの生成
+CreateGraph(graph,width,height);
+//グラフの描画ダイクストラ法適用前
+PrintGraph(graph,width,height);
+//ダイクストラ法によりグラフに経路を設定
+Dijkstra(graph,width+1,(height-1)*width-2,width);
+//グラフの描画ダイクストラ法適用後
+PrintGraph(graph,width,height);
+//コスト合計出力(ゴールの総コスト)
+std::cout<<"Total Cost : "<<graph[(height-1)*width-2].total_cost<<std::endl;
+//グラフ用領域の解放
+delete[] graph;
+return 0;
+}
+//ダイクストラ法関数
+//graph:探索対象グラフへのポインタ
+//start:スタート地点の添え字
+//goal:ゴール地点の添え字
+//width:グラフの横幅
+void Dijkstra(Node* graph,unsigned int start,unsigned int goal,unsigned int width){
+std::vector<Node*> vector;
+//スタート地点を動的配列に挿入
+vector.push_back(&graph[start]);
+Node* visit;
+while(!vector.empty()){
+//総コストの最も低い要素を取り出し(先頭要素)
+visit=vector.front();
+visit->visited=true;
+vector.erase(vector.begin());
+//ゴールだったら抜ける
+if(visit->index==goal)
+break;
+//隣接ノードをvectorに追加
+unsigned int index=visit->index;
+unsigned int up=index-width;
+unsigned int right=index+1;
+unsigned int down=index+width;
+unsigned int left=index-1;
+//上
+if(
+(
+!graph[up].visited ||
+graph[up].cost<=COST_MAX &&
+graph[up].total_cost>graph[index].total_cost+graph[up].cost
+) ||
+up==goal
+){
+graph[up].parent=index;
+graph[up].total_cost=graph[index].total_cost+(up==goal ? 0 : graph[up].cost);
+vector.push_back(&graph[up]);
+}
+//右
+if(
+(
+!graph[right].visited ||
+graph[right].cost<=COST_MAX &&
+graph[right].total_cost>graph[index].total_cost+graph[right].cost
+) ||
+right==goal
+){
+graph[right].parent=index;
+graph[right].total_cost=graph[index].total_cost+(right==goal ? 0 : graph[right].cost);
+vector.push_back(&graph[right]);
+}
+//下
+if(
+(
+!graph[down].visited ||
+graph[down].cost<=COST_MAX &&
+graph[down].total_cost>graph[index].total_cost+graph[down].cost
+) ||
+down==goal
+){
+graph[down].parent=index;
+graph[down].total_cost=graph[index].total_cost+(down==goal ? 0 : graph[down].cost);
+vector.push_back(&graph[down]);
+}
+//左
+if(
+(
+!graph[left].visited ||
+graph[left].cost<=COST_MAX &&
+graph[left].total_cost>graph[index].total_cost+graph[left].cost
+) ||
+left==goal
+){
+graph[left].parent=index;
+graph[left].total_cost=graph[index].total_cost+(left==goal ? 0 : graph[left].cost);
+vector.push_back(&graph[left]);
+}
+//先頭に総コストの一番小さいものが来るように、ヒープ化
+std::make_heap<std::vector<Node*>::iterator>(vector.begin(),vector.end(),Comparator);
+}
+//ゴールについていない場合は、探索失敗(このプログラムではありえない)
+if(visit->index!=goal)
+return;
+//経路設定
+visit=&graph[visit->parent];
+while(visit->index!=start){
+visit->cost=WALK;
+visit=&graph[visit->parent];
+}
+}
+//グラフ生成関数の実装
+//graph:グラフ用配列のポインタ
+//width:グラフ横幅(4以上)
+//height:グラフ縦幅(4以上)
+void CreateGraph(Node* graph,unsigned int width,unsigned int height){
+//4以上でなければ生成禁止
+if(width<4 || height<4){
+return;
+}
+//--------------
+//外周の設定
+//--------------
+//上下両端
+for(unsigned int x=1;x<width-1;x++){
+graph[x].cost=RIGHT|LEFT;
+graph[(height-1)*width+x].cost=LEFT|RIGHT;
+}
+//左右両端
+for(unsigned int y=1;y<height-1;y++){
+graph[y*width].cost=UP|DOWN;
+graph[(y+1)*width-1].cost=UP|DOWN;
+}
+//四隅
+graph[0].cost=RIGHT|DOWN;
+graph[width-1].cost=DOWN|LEFT;
+graph[(height-1)*width].cost=UP|RIGHT;
+graph[width*height-1].cost=LEFT|UP;
+//始点(左上)・終点(右下)
+graph[width+1].cost=START;
+graph[width+1].total_cost=0;
+graph[(height-1)*width-2].cost=GOAL;
+//--------------------
+//コスト付け処理
+//--------------------
+for(unsigned int y=1;y<height-1;y++){
+for(unsigned int x=1;x<width-1;x++){
+if(graph[x+width*y].cost!=START && graph[x+width*y].cost!=GOAL)
+//2分の1の確立でコストなしノード
+if(rand()%2==0)
+graph[x+width*y].cost=0;
+else
+graph[x+width*y].cost=rand()%COST_MAX+1;
+}
+}
+}
+//グラフ描画関数の実装
+//graph:グラフ用配列のポインタ
+//width:グラフ横幅
+//height:グラフ縦幅
+void PrintGraph(Node* graph,unsigned int width, unsigned int height){
+for(unsigned int y=0;y<height;y++){
+for(unsigned int x=0;x<width;x++){
+switch(graph[y*width+x].cost){
+//グラフコスト(10まで)
+case 0:
+std::cout<<"  ";
+break;
+case 1:
+std::cout<<"①";
+break;
+case 2:
+std::cout<<"②";
+break;
+case 3:
+std::cout<<"③";
+break;
+case 4:
+std::cout<<"④";
+break;
+case 5:
+std::cout<<"⑤";
+break;
+case 6:
+std::cout<<"⑥";
+break;
+case 7:
+std::cout<<"⑦";
+break;
+case 8:
+std::cout<<"⑧";
+break;
+case 9:
+std::cout<<"⑨";
+break;
+case 10:
+std::cout<<"⑩";
+break;
+//上下壁
+case UP:case DOWN:case UP|DOWN:
+std::cout<<"";
+break;
+//左右壁
+case LEFT:case RIGHT:case LEFT|RIGHT:
+std::cout<<"";
+break;
+//上右壁
+case UP|RIGHT:
+std::cout<<"";
+break;
+//上左壁
+case UP|LEFT:
+std::cout<<"";
+break;
+//下右壁
+case DOWN|RIGHT:
+std::cout<<"";
+break;
+//下左壁
+case DOWN|LEFT:
+std::cout<<"";
+break;
+//上右下壁
+case UP|RIGHT|DOWN:
+std::cout<<"";
+break;
+//右下左壁
+case RIGHT|DOWN|LEFT:
+std::cout<<"";
+break;
+//下左上壁
+case DOWN|LEFT|UP:
+std::cout<<"";
+break;
+//左上右壁
+case LEFT|UP|RIGHT:
+std::cout<<"";
+break;
+//十字壁
+case UP|RIGHT|DOWN|LEFT:
+std::cout<<"";
+break;
+case START:
+std::cout<<"S";
+break;
+case GOAL:
+std::cout<<"G";
+break;
+case WALK:
+std::cout<<"*";
+break;
+}
+}
+std::cout<<std::endl;
+}
+}
+このプログラムの実行結果は以下のようになります。
+S&emsp;⑤④⑥①&emsp;⑩&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;⑤&emsp;&emsp;&emsp;&emsp;③⑨⑩
+⑧⑨&emsp;④⑥⑤⑦⑧⑩&emsp;&emsp;&emsp;&emsp;⑦①&emsp;⑧&emsp;⑥⑥&emsp;⑥&emsp;
+⑧②④⑥⑥&emsp;①③⑧&emsp;④&emsp;⑦⑧&emsp;&emsp;⑤⑨⑤&emsp;②&emsp;&emsp;
+⑨④&emsp;③①&emsp;⑥&emsp;④⑤⑥⑦②&emsp;&emsp;&emsp;⑥&emsp;&emsp;⑧&emsp;&emsp;②
+⑦&emsp;②⑩④&emsp;②②①&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;①&emsp;⑧&emsp;&emsp;
+②&emsp;②⑧⑧⑨④⑦&emsp;⑩&emsp;&emsp;⑤⑨⑤&emsp;&emsp;①&emsp;&emsp;&emsp;&emsp;&emsp;
+&emsp;&emsp;&emsp;&emsp;③&emsp;⑥⑩⑨②&emsp;①⑩①&emsp;&emsp;⑩&emsp;&emsp;⑩&emsp;&emsp;&emsp;
+⑧④&emsp;⑥②&emsp;&emsp;&emsp;&emsp;⑤④②⑤⑤&emsp;&emsp;&emsp;⑥&emsp;&emsp;&emsp;⑦⑤
+&emsp;⑨⑨&emsp;&emsp;&emsp;&emsp;&emsp;⑤&emsp;&emsp;⑤&emsp;⑥②⑧③⑩&emsp;⑥⑦②&emsp;
+⑦&emsp;&emsp;&emsp;①&emsp;⑧④&emsp;⑩②⑧⑧&emsp;&emsp;&emsp;&emsp;&emsp;③⑦⑥⑨④
+&emsp;&emsp;&emsp;①④&emsp;&emsp;&emsp;&emsp;&emsp;⑤②⑨⑧&emsp;①①&emsp;&emsp;&emsp;④&emsp;&emsp;
+⑥&emsp;③&emsp;&emsp;&emsp;⑦&emsp;⑤&emsp;②&emsp;&emsp;④&emsp;&emsp;&emsp;①③⑩⑧&emsp;&emsp;
+④⑩⑨&emsp;③&emsp;⑤⑥②⑩&emsp;&emsp;&emsp;&emsp;&emsp;⑤⑧⑦&emsp;&emsp;③&emsp;&emsp;
+&emsp;&emsp;&emsp;②&emsp;⑤&emsp;④&emsp;&emsp;&emsp;&emsp;⑧⑦①①④⑨⑦&emsp;④&emsp;④
+&emsp;①⑤④&emsp;③①&emsp;&emsp;&emsp;⑥&emsp;②&emsp;②②&emsp;⑦④&emsp;⑤&emsp;&emsp;
+&emsp;&emsp;⑤②&emsp;&emsp;⑨&emsp;④⑦⑦⑥&emsp;②&emsp;⑥②①⑩&emsp;&emsp;&emsp;&emsp;
+&emsp;&emsp;①&emsp;&emsp;&emsp;③&emsp;&emsp;&emsp;⑨⑦⑩&emsp;③⑥⑦①&emsp;&emsp;&emsp;⑧&emsp;
+⑧⑦⑧⑤②&emsp;&emsp;⑩⑨&emsp;⑦⑥&emsp;&emsp;①&emsp;⑦⑦&emsp;&emsp;&emsp;⑨&emsp;
+&emsp;&emsp;④&emsp;⑩&emsp;&emsp;②③⑧&emsp;&emsp;⑥&emsp;⑨⑧⑦③&emsp;&emsp;⑧&emsp;①
+&emsp;④&emsp;&emsp;⑤&emsp;&emsp;⑩&emsp;&emsp;⑥&emsp;①①①&emsp;&emsp;&emsp;&emsp;&emsp;⑩④&emsp;
+⑩&emsp;①&emsp;⑤⑧&emsp;&emsp;&emsp;&emsp;④①&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;⑦&emsp;&emsp;&emsp;
+&emsp;&emsp;⑩&emsp;⑩&emsp;①&emsp;&emsp;&emsp;&emsp;&emsp;③&emsp;&emsp;&emsp;&emsp;⑦&emsp;⑩&emsp;&emsp;⑥
+&emsp;⑥③⑤①④①&emsp;&emsp;&emsp;&emsp;&emsp;④&emsp;&emsp;&emsp;&emsp;⑦⑦③&emsp;②G
+S**④⑥①&emsp;⑩&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;⑤&emsp;&emsp;&emsp;&emsp;③⑨⑩
+⑧⑨*④⑥⑤⑦⑧⑩&emsp;&emsp;&emsp;&emsp;⑦①&emsp;⑧&emsp;⑥⑥&emsp;⑥&emsp;
+⑧②*⑥⑥&emsp;①③⑧&emsp;④&emsp;⑦⑧&emsp;&emsp;⑤⑨⑤&emsp;②&emsp;&emsp;
+⑨④*③①&emsp;⑥&emsp;④⑤⑥⑦②&emsp;&emsp;&emsp;⑥&emsp;&emsp;⑧&emsp;&emsp;②
+⑦**⑩④&emsp;②②①&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;①&emsp;⑧&emsp;&emsp;
+②*②⑧⑧⑨④⑦&emsp;⑩&emsp;&emsp;⑤⑨⑤&emsp;&emsp;①&emsp;&emsp;&emsp;&emsp;&emsp;
+&emsp;*****⑥⑩⑨②&emsp;①⑩①&emsp;&emsp;⑩&emsp;&emsp;⑩&emsp;&emsp;&emsp;
+⑧④&emsp;⑥②*&emsp;&emsp;&emsp;⑤④②⑤⑤&emsp;&emsp;&emsp;⑥&emsp;&emsp;&emsp;⑦⑤
+&emsp;⑨⑨&emsp;&emsp;*&emsp;&emsp;⑤&emsp;&emsp;⑤&emsp;⑥②⑧③⑩&emsp;⑥⑦②&emsp;
+⑦&emsp;&emsp;&emsp;①*⑧④&emsp;⑩②⑧⑧&emsp;&emsp;&emsp;&emsp;&emsp;③⑦⑥⑨④
+&emsp;&emsp;&emsp;①④*&emsp;&emsp;&emsp;&emsp;⑤②⑨⑧&emsp;①①&emsp;&emsp;&emsp;④&emsp;&emsp;
+⑥&emsp;③***⑦&emsp;⑤&emsp;②&emsp;&emsp;④&emsp;&emsp;&emsp;①③⑩⑧&emsp;&emsp;
+④⑩⑨*③&emsp;⑤⑥②⑩&emsp;&emsp;&emsp;&emsp;&emsp;⑤⑧⑦&emsp;&emsp;③&emsp;&emsp;
+&emsp;&emsp;&emsp;**⑤&emsp;④&emsp;&emsp;&emsp;&emsp;⑧⑦①①④⑨⑦&emsp;④&emsp;④
+&emsp;①⑤④*③①&emsp;&emsp;&emsp;⑥&emsp;②&emsp;②②&emsp;⑦④&emsp;⑤&emsp;&emsp;
+&emsp;&emsp;⑤②*&emsp;⑨&emsp;④⑦⑦⑥&emsp;②&emsp;⑥②①⑩&emsp;***
+&emsp;&emsp;①&emsp;**③&emsp;&emsp;&emsp;⑨⑦⑩&emsp;③⑥⑦①&emsp;**⑧*
+⑧⑦⑧⑤②**⑩⑨&emsp;⑦⑥&emsp;&emsp;①&emsp;⑦⑦&emsp;*&emsp;⑨*
+&emsp;&emsp;④&emsp;⑩&emsp;*②③⑧&emsp;&emsp;⑥&emsp;⑨⑧⑦③&emsp;*⑧&emsp;*
+&emsp;④&emsp;&emsp;⑤&emsp;*⑩&emsp;&emsp;⑥&emsp;①①①&emsp;&emsp;&emsp;**⑩④*
+⑩&emsp;①&emsp;⑤⑧****④********⑦&emsp;**
+&emsp;&emsp;⑩&emsp;⑩&emsp;①&emsp;&emsp;*&emsp;*③&emsp;&emsp;&emsp;&emsp;⑦&emsp;⑩&emsp;*⑥
+&emsp;⑥③⑤①④①&emsp;&emsp;***④&emsp;&emsp;&emsp;&emsp;⑦⑦③&emsp;*G
+Total Cost : 20
+それでは解説します。
+まず、グラフ生成用の関数であるCreateGraph関数及び、PrintGraph関数や定数は実質的には関係ありません。
+これらは探索するためのデータを作成したり出力するための関数です。
+重要なのは1マスあたりの情報を現すNode構造体および、ダイクストラ法によるアルゴリズムの実装である
+Dijkstra関数です。
+まず、Node構造体について説明します。
+探索対象となるグラフの盤面は配列で表します。
+そのため、Node構造体には、自分の添え字を格納するためのindexを用意しています。
+またparentは、ゴールからスタートまで逆算して通過経路を割り出すため、自分がどのノードから遷移されたのか
+が分かるように訪問元の添え字を格納するためのメンバ変数です。
+残りのcost、total_cost、visitedがダイクストラ法では特に重要な情報となります。
+costは、そのノードを通過する上で必要なコストであり、total_costにはスタート地点からそのノードへ至るまでの
+総コストを格納します。visitedは訪問済みであるかどうかの情報を格納します。
+main関数でNodeの初期化を行っていますが、total_costは適当に大きな値を入れて初期化します。
+これは重要なので注意してください。間違っても、0等で初期化してはいけません。
+なお、costに格納する情報ですが、コストとして扱うのは、10以下の値を入れたときのみです。
+それ以上の値が入っている場合には、描画用の情報として扱います。詳しくは、プログラムの冒頭あたりに
+定義されている定数群とPrintGraph関数のswitch文の分岐を見れば分かると思います。
+続いて、Dijkstra関数ですが、引数としてグラフの配列graph、スタート地点の添え字start、
+ゴール地点の添え字goal、グラフの幅widthを取るようにしています。
+関数の処理は、説明したアルゴリズムの通りです。
+まず、探索用のコンテナとして動的配列vectorを宣言しています。これはvectorでなければならないという
+ことではありません。使い安いものがあればそれを使っても構いません。
+このvectorには、ノードのポインタを格納するようにしています。
+そして探索処理は、最初にスタート地点のノードを動的配列に格納し、空になるか、
+ゴールに至るまでループを回します。
+ループ処理の中身が具体的な処理となります。動的配列から先頭の要素を取り出し、
+取り出したノードの隣接ノードを動的配列に格納します。
+今回のプログラムで使用するグラフでは上下左右の4方向が隣接ノードとなります。
+costを描画用の情報としても使用しているので、隣接ノードを格納する条件は「訪問済みでない」または
+「現在の総コストより新しい総コストの方が小さい」というダイクストラ法本来の条件に加え、
+「移動可能なノード(最大コスト値以下)である」という条件を追加しています。
+また、ゴールノードは最大コスト値より高い値で表現されているので、ゴールノードの場合は例外的に格納対象とします。
+ゴールノードの総コストを更新する際にも、ゴールノードのコストは0という扱いにしています。
+これらの条件に合致すれば、訪問元ノード情報と総コストを更新し、動的配列に格納するだけです。
+隣接ノードの格納処理が完了したら、ループ処理の仕上げとして動的配列にヒープを構築します。
+これにより動的配列の先頭に総コストが最小の値が来るようにしています。
+これによりゴールノードが見つかった場合には、ゴールノードからスタートノードへの経路を逆算したらDijkstra関数の
+処理は完了します。
+さて、これがダイクストラ法のプログラムとなります。
+もう少しだけ、このプログラムの内容を補足しておきます。
+まず、make_heap関数により動的配列をヒープとしています。STLには標準でpriority_queueという優先度付きキューが
+用意されているのですが、このプログラムでは使用できません。
+なぜなら、既に動的配列に格納されているノードの総コストをより少ない総コストで更新したとします。
+この場合、priority_queueでは更新時にヒープを再構築してくれません。
+総コストの更新により、もしかしたら他のノードより早く取り出される事になったのかも知れないにも関わらず、
+前の位置のまま変わりません。総コストの低い順という条件が崩れてしまいます。
+従って、make_heapによりノードの追加や更新が完了した最後の処理として、ヒープの構築を行っています。
+priority_queueは実質的にヒープなので、やっている事に大差はありません。
+また、このプログラムでは動的配列に重複して同じノードが挿入される余地がありますが、特に問題はありません。
+動的配列に格納する時に既に格納されている場合は弾くという処理を入れても良いのですが、
+入れなくても困る事は特にありませんので、別に入れていません。なぜなら、ある重複して格納されているノードが
+あったとして、その1つを取り出したとします。この時、隣接ノードの追加・更新が起きたとします。そうなった場合、
+次に同じノードを取り出したとしても、総コストの更新は既に行ったので、隣接ノードを格納する条件で全て弾かれます。
+従って、特に問題は起きません。
+さて、それでは探索のアルゴリズムの1つであるダイクストラ法については以上です。
+Trivial Contents -ダイクストラ法-

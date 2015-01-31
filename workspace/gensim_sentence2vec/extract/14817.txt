@@ -1,0 +1,169 @@
+iOSと機械学習
+機械学習, 画像処理, 音声処理, iOS
+ビッグデータとかの機械学習隆盛の背景にある文脈や、その拠り所となるコンピュータの処理性能から考えても「モバイルデバイス向けOSと機械学習を紐付けて考えようとする」ことはそもそもあまり筋がよろしくない・・・とは思うのですが、やはり長くiOSだけにコミットしてきた身としては、新たに興味を持っている機械学習という分野と、勝手知ったるiOSという分野の交差点はないのかなと考えずにはいられないわけでして。。
+そんなわけで、「iOS と機械学習」について雑多な切り口から調べてみました。
+iOSで使える機械学習ライブラリ
+DeepBeliefSDK
+コンボリューショナルニューラルネットワークを用いた画像認識ライブラリ。iOSとかのモバイルデバイスで処理できるよう、高度に最適化してある、OpenCVと一緒に使うのも簡単、とのこと。
+https://github.com/jetpacapp/DeepBeliefSDK
+何はともあれ SimpleExample というサンプル実行したら、
+頼んでもないのにいきなりノートパソコンを認識しました!すごい!
+SimpleExample のソースを見てみると、フレーム毎に得られるピクセルバッファの処理はこんな感じでした。
+- (void)runCNNOnFrame: (CVPixelBufferRef) pixelBuffer
+{
+assert(pixelBuffer != NULL);
+OSType sourcePixelFormat = CVPixelBufferGetPixelFormatType( pixelBuffer );
+int doReverseChannels;
+if ( kCVPixelFormatType_32ARGB == sourcePixelFormat ) {
+doReverseChannels = 1;
+} else if ( kCVPixelFormatType_32BGRA == sourcePixelFormat ) {
+doReverseChannels = 0;
+} else {
+assert(false); // Unknown source format
+}
+const int sourceRowBytes = (int)CVPixelBufferGetBytesPerRow( pixelBuffer );
+const int width = (int)CVPixelBufferGetWidth( pixelBuffer );
+const int fullHeight = (int)CVPixelBufferGetHeight( pixelBuffer );
+CVPixelBufferLockBaseAddress( pixelBuffer, 0 );
+unsigned char* sourceBaseAddr = CVPixelBufferGetBaseAddress( pixelBuffer );
+int height;
+unsigned char* sourceStartAddr;
+if (fullHeight <= width) {
+height = fullHeight;
+sourceStartAddr = sourceBaseAddr;
+} else {
+height = width;
+const int marginY = ((fullHeight - width) / 2);
+sourceStartAddr = (sourceBaseAddr + (marginY * sourceRowBytes));
+}
+void* cnnInput = jpcnn_create_image_buffer_from_uint8_data(sourceStartAddr, width, height, 4, sourceRowBytes, doReverseChannels, 1);
+float* predictions;
+int predictionsLength;
+char** predictionsLabels;
+int predictionsLabelsLength;
+struct timeval start;
+gettimeofday(&start, NULL);
+jpcnn_classify_image(network, cnnInput, JPCNN_RANDOM_SAMPLE, 0, &predictions, &predictionsLength, &predictionsLabels, &predictionsLabelsLength);
+struct timeval end;
+gettimeofday(&end, NULL);
+const long seconds  = end.tv_sec-- start.tv_sec;
+const long useconds = end.tv_usec - start.tv_usec;
+const float duration = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+NSLog(@"Took %f ms", duration);
+jpcnn_destroy_image_buffer(cnnInput);
+NSMutableDictionary* newValues = [NSMutableDictionary dictionary];
+for (int index = 0; index < predictionsLength; index += 1) {
+const float predictionValue = predictions[index];
+if (predictionValue > 0.05f) {
+char* label = predictionsLabels[index % predictionsLabelsLength];
+NSString* labelObject = [NSString stringWithCString: label];
+NSNumber* valueObject = [NSNumber numberWithFloat: predictionValue];
+[newValues setObject: valueObject forKey: labelObject];
+}
+}
+dispatch_async(dispatch_get_main_queue(), ^(void) {
+[self setPredictionValues: newValues];
+});
+}
+・・・と決してシンプルとは言い難いですが、ここで行っている分類処理のコアは、
+jpcnn_classify_image(network, cnnInput, JPCNN_RANDOM_SAMPLE, 0, &predictions, &predictionsLength, &predictionsLabels, &predictionsLabelsLength);
+この1行にあるのかなと。で、あとはバッファまわりの諸々とか、得られた結果の処理とか。
+おもしろそうなので、また別の機会にちゃんと見てみようと思います。
+ML4iOS
+iOSでの機械学習を行うためのオープンソースライブラリ。ライセンスは Apache License, Version 2.0 。
+https://github.com/fgarcialainez/ML4iOS
+コミット履歴を見ると、3年前(2012年1月)からあり、つい最近も更新されています。
+LearnKit
+iOS, OS X 向け機械学習フレームワーク、とのこと。
+https://github.com/mattrajca/LearnKit
+http://mattrajca.com
+サポートしているアルゴリズム
+Anomaly Detection
+Collaborative Filtering
+Decision Trees
+k-Means
+k-Nearest Neighbors
+Linear Regression
+Logistic Regression
+Naive Bayes
+Neural Networks
+Principal Component Analysis
+READMEに下記のようなサンプルコード載ってるので、今度試す。
+LNKNeuralNetClassifier *classifier = [[LNKNeuralNetClassifier alloc] initWithMatrix:matrix 
+implementationType:LNKImplementationTypeAccelerate
+optimizationAlgorithm:algorithm
+classes:[LNKClasses withRange:NSMakeRange(1, 10)]];
+[classifier train];
+LNKClass *someDigit = [classifier predictValueForFeatureVector:someImage length:someImageLength];
+使いやすそう。
+mlpack-ios
+mlpack を Objective-C プロジェクトにリンクできるようにしたもの、とのこと。
+https://github.com/Headtalk/mlpack-ios
+mlpack というのは「スケーラブルなC++機械学習ライブラリ」らしい。
+http://www.mlpack.org/
+Swift-Brain
+Swiftで書かれた人工知能/機械学習ライブラリ。ベイズ理論、ニューラルネットワーク、その他AIが実装されているとのこと。
+https://github.com/vlall/Swift-Brain
+Matrices
+Matrix operations
+Machine Learning algorithms
+Basic Regressions
+Neural Networks
+Support Vector Machines
+Bayesian Classifiers
+Self Organized Maps (maybe?)
+Clustering
+Statistics
+Bayes Theorem/Naive Classifier
+Kalman Filter
+Markov Model
+学習結果をiOSで利用
+「機械学習によって得られたモデル等をiOSで利用する」ケースです。
+冒頭で、「iOSと機械学習を結びつけて考えるのはあまり筋がよろしくない」と書きましたが、このケースでは学習自体はiOSデバイスではなくバックエンド(という表現が正しいかは不明)で行うので、至極真っ当、というか王道かと。
+画像認識
+OpenCV for iOS に機械学習で作成したモデル(分類器)のxmlファイルをアプリに持たせれば、人の顔以外にもいろんなものを認識できますよ、という記事。
+iOS - 「顔以外」のものを画像認識する - Qiita
+分類器自体はプラットフォーム依存ではないので、iOSという限定を外せばかなり色々とチュートリアル記事とかモデル配布記事がでてきます。
+OpenCV - LumberMills Notes
+OpenCVで猫検出 (モデル配布) - Qiita
+OpenCVによるアニメ顔検出ならlbpcascade_animeface.xml - デー
+OpenCV 2.4.2で分類器を作る - shkh's blog
+文字認識
+iOS で使える OCR ライブラリ。
+https://github.com/ldiqual/tesseract-ios
+機械学習で精度を向上させたり、日本語を覚えさせたり。
+Tesseract-OCRの学習 - はだしの元さん
+Tesseract-OCRの日本語調教(1) - 日本語練習中
+参考:画像からのテキスト抽出:tesseract-ocr - Qiita
+音声認識
+こういう話でいえば、同様に、iOS用の音声認識エンジンも学習データを用意してモデルを自作することができます。
+フリーの iOS 向け音声認識/音声合成ライブラリ『OpenEars』の使い方 - Over&Out その後
+OpenEars 1.6で音声認識を行う - Over&Out その後
+OpenEars は PocketSphinx (CMU Sphinx) というカーネギーメロン大学によるオープンソース認識エンジンのラッパーライブラリで、それ用の音響モデルを自作することはできます(とある案件で試したことあり)。
+国産の「大語彙連続音声認識エンジン Julius」(iOSで利用可能)も、もちろん学習によりモデルを自作できます。
+実例集
+ストアに出ているアプリなど。
+Deep Belief by Jetpac - teach your phone to recognize any object
+上でも紹介した、DeepBeliefSDKを使ったアプリ。
+Deep Belief by Jetpac - teach your phone to recognize any object on the App Store on iTunes
+このアプリでネコを認識するデモ動画。
+http://petewarden.com/2014/04/08/how-to-add-a-brain-to-your-smart-phone/
+Deep Learning
+ディープラーニングで画像を分類するアプリ。
+Deep Learning on the App Store on iTunes
+Summly
+2011年12月と、ちょっと古い記事ですが、Summlyという「ウェブのコンテンツを箇条書きとキーワードの一覧に要約する」アプリのニュース記事。
+コンテンツを要約する画期的なiOSアプリ、16歳が開発   « WIRED.jp
+まずは、特別なアルゴリズムでHTML処理を使って、ウェブページからテキストを抜き出すことから始まる。そのテキストを分析して、記事から選び出された「凝縮された部分」を箇条書きで吐き出す。Summlyのアルゴリズムは、いくつもの機械学習の手法と「遺伝的」アルゴリズム——進化をまねた発見的探索法——を利用してこれを行っている。
+ダロイジオ氏のアルゴリズムは、さまざまな出版社によるいろいろなタイプの記事の、人間による要約を調査した。そしてこれらの要約を、Summlyが吐き出すべきものや、情報キュレーションを行う人間の仕事をうまく真似るための、メトリクス[尺度]を調整する際のモデルとして活用した。
+その後 Yahoo! に買収され、Yahoo!のニュース要約とパーソナライズ表示、動画、画像検索機能等にその技術が用いられているとのこと。
+米Yahoo!、Summly買収後1カ月で要約技術をiOSアプリに統合 -INTERNET Watch
+Plant Recognition: Bringing Deep Learning to iOS
+ディープラーニングで植物を認識する、という論文。
+Plant Recognition: Bringing Deep Learning to iOS | Alexandre Dalyac - Academia.edu
+おわりに
+iOS と機械学習を絡めたお仕事、お待ちしております!
+独立してから第3四半期目の実績まとめ - Over&Out その後
+ツイートする
+Permalink | コメント(0) | 21:21   
+iOSと機械学習 - Over&Out その後

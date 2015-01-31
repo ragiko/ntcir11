@@ -1,0 +1,138 @@
+N-gramについて｜自然言語処理・全文検索
+N-gramとは文章を指定文字数ごとに切り出し文字の出現する一を検索用のインデックスとして使う方法です。
+例えば2文字ごとに切り出すバイグラム方式は、以下PHPでこのような実行結果になります。
+<?php
+$NGRAM = 2;
+$sentence = "私は今、日本に住んでいます。";
+$result = array();
+for($i = 0;$i <= (mb_strlen($sentence) - $NGRAM);$i++) {
+$parts = mb_substr($sentence, $i, $NGRAM);
+$parts = strtolower($parts);
+$result[$i] = $parts;
+}
+print_r($result);
+?>
+実行結果
+Array
+(
+[0] => 私は
+[1] => は今
+[2] => 今、
+[3] => 、日
+[4] => 日本
+[5] => 本に
+[6] => に住
+[7] => 住ん
+[8] => んで
+[9] => でい
+[10] => いま
+[11] => ます
+[12] => す。
+)
+このように14文字からなる文章から13個のNgramを抽出しました。添字はそのNgramの出現位置を表します。
+次にこの文章から句読点を省きます。
+<?php
+$NGRAM = 2;
+$EXCLUDES = array("、", "。");
+$sentence = "私は今、日本に住んでいます。";
+$result = array();
+for($i = 0;$i <= (mb_strlen($sentence) - $NGRAM);$i++) {
+$parts = mb_substr($sentence, $i, $NGRAM);
+$parts = strtolower($parts);
+$exists_exclude = false;
+foreach($EXCLUDES as $exclude) {
+$pos = mb_strpos($parts, $exclude);
+if($pos === 0) {
+$exists_exclude = true;
+} else if($pos !== false) {
+$parts = str_replace($exclude, " ", $parts);
+}
+}
+if(!$exists_exclude) {
+$result[$i] = $parts;
+}
+}
+print_r($result);
+?>
+<?php
+$NGRAM = 2;
+$EXCLUDES = array("、", "。");
+$sentence = "あかぱじゃま、あおぱじゃま、きぱじゃま";
+$result = array();
+for($i = 0;$i <= (mb_strlen($sentence) - $NGRAM);$i++) {
+$parts = mb_substr($sentence, $i, $NGRAM);
+$parts = strtolower($parts);
+$exists_exclude = false;
+foreach($EXCLUDES as $exclude) {
+$pos = mb_strpos($parts, $exclude);
+if($pos === 0) {
+$exists_exclude = true;
+} else if($pos !== false) {
+$parts = str_replace($exclude, " ", $parts);
+}
+}
+if(!$exists_exclude) {
+$result[$i] = $parts;
+}
+}
+$counted_list = array();
+foreach($result as $num => $word) {
+if(array_key_exists($word, $counted_list)) {
+$counted_list[$word][] = $num;
+} else {
+$counted_list[$word] = array($num);
+}
+}
+print_r($counted_list);
+?>
+<?php
+$NGRAM = 2;
+$EXCLUDES = array("、", "。");
+$sentence = "あかぱじゃま、あおぱじゃま、きぱじゃま";
+$result = array();
+for($i = 0;$i <= (mb_strlen($sentence) - $NGRAM);$i++) {
+$parts = mb_substr($sentence, $i, $NGRAM);
+$parts = strtolower($parts);
+$exists_exclude = false;
+foreach($EXCLUDES as $exclude) {
+$pos = mb_strpos($parts, $exclude);
+if($pos === 0) {
+$exists_exclude = true;
+} else if($pos !== false) {
+$parts = str_replace($exclude, " ", $parts);
+}
+}
+if(!$exists_exclude) {
+$result[$i] = $parts;
+}
+}
+$counted_list = array();
+foreach($result as $num => $word) {
+if(array_key_exists($word, $counted_list)) {
+$counted_list[$word][] = $num;
+} else {
+$counted_list[$word] = array($num);
+}
+}
+$conn = mysql_connect("localhost:3306", "user", "pass");
+if(!$conn) {
+echo mysql_error();
+exit();
+}
+$res = mysql_select_db("mydatabase", $conn);
+if(!$res) {
+echo mysql_error();
+exit();
+}
+echo "mysql connected.n";
+$document_id = '0';
+foreach($counted_list as $key => $indexes) {
+$words = implode(",", $indexes);
+$sql = "insert into ngrams_2 (document_id, grams, words_in_document)
+values ('$document_id', '$key', '$words')";
+echo $key." at ".$words."n";
+mysql_query($sql, $conn);
+}
+mysql_close($conn);
+?>
+N-gramについて｜自然言語処理・全文検索｜ICT-STARTのホームページ

@@ -1,0 +1,42 @@
+
+【2】 パターン検索 ereg(), eregi()
+ereg(), eregi()関数は、パターンマッチを行い一致パターンを取り出します。
+大文字、小文字の区別をしないときeregi()関数を使用します。
+ereg(pattern, string [, regs]);
+第一引数にマッチパターン、第二引数に対象となる変数、
+第三引数に一致した文字列が返される代入配列(省略可)を指定します。
+<?php
+// 文字列の部分一致
+$text = "What's a beautiful day today";
+if (ereg("^What", $text, $arr1)) {
+echo "$arr1[0]から始まる文字列です。";
+}
+if (ereg("today$", $text, $arr2)) {
+echo "$arr2[0]で終了する文字列です。";
+}
+?>
+サンプルを実行する
+<?php
+// 一連の文字列、アルファベットの文字列と一致
+// (英字3文字以上にマッチ)
+$text = "12345abCD12345";
+if (ereg("[a-zA-Z]{3,}", $text, $arr1)) {
+echo "$arr1[0]の英字3文字以上がマッチしました!";
+}
+?>
+サンプルを実行する
+<?php
+// 文字の出現回数で一致
+$text = "AAAAAA456BBBBBB";
+if (ereg("[0-5]{2}", $text, $arr1)) {
+echo "0〜5までの2個の数字$arr1[0]を含む文字列です。";
+}
+?>
+サンプルを実行する
+【3】 パターン置換 ereg_replace(), eregi_replace()
+ereg_replace()関数は、引数で与えられる文字列とパターンの一致する文字列を置き換えます。
+大文字、小文字の区別をしないときeregi_replace()関数を使用します。
+ereg(pattern, replacemrnt, string);
+第一引数にマッチパターン、第二引数に置き換えたい文字列、
+第三引数に対象となる変数を指定します。。
+PHP基礎編【正規表現/パターンマッチ】

@@ -1,0 +1,8 @@
+
+X=0, Y=0のゼロ軸を描きたい. 
+set {x|y}zeroaxis を使います.オプションを付けなければ,
+線種0(点線)で描かれます.ls line_stle, lt  line_type,
+lw  line_width  のオプションでゼロ軸の線種を変えることができます.
+以下の例では  lt -1 を使い,
+枠線と同じ線を描いてみました.
+gnuplot / plot (2)

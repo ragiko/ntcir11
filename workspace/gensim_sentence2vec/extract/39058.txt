@@ -1,0 +1,118 @@
+
+こんなのができます。
+これは二回の操作で状態を遷移させるときの事象の列すなわち操作の列が表になってます。
+たとえば中状態から二回の操作で断にするには電・風または風・電の順にボタンを押せばいい。
+遷移行列の掛け算を繰り返して T^n (= T×T×T×....×T) を求めると、n回の操作で状態を遷移させるときの操作の列が得られます。
+この遷移行列 T の n 乗計算を Mathematica でやってみた.
+まずシンボル計算自体は何の問題も無し.Mathematica では,何も指示しなくても,同じシンボルは同じものとして扱ってくれる.
+In[0] = Expand[(風 + 電) 風]
+Out[0] = 電 風 + 風^2ちなみに In が入力行で Out が出力行.
+まずは遷移行列 T を定義しよう.
+In[1] = T = {{風, 電, 0, 0}, {電, 0, 風, 0}, {電, 0, 0, 風}, {電, 風, 0, 0}}
+Out[1] = {{風, 電, 0, 0}, {電, 0, 風, 0}, {電, 0, 0, 風}, {電, 風, 0, 0}}では T2 を計算してみよう.Mathematica での行列積は,Dot (記号表記 . ) を使用する.
+In[2] = T . T
+Out[2] = {{電^2 + 風^2, 電 風, 電 風, 0}, {2 電 風, 電^2, 0, 風^2}, {2 電 風, 電^2 + 風^2, 0, 0}, {2 電 風, 電^2, 風^2, 0}}おっと,早速問題発生だ.遷移行列の計算では,"電" と "風" の積は非可換である.積がボタンを押す順序と対応しているのだから,これが勝手に交換されてしまうのはまずい.
+電 風: 電源ボタン風量ボタンの順に押す
+風 電: 風量ボタン電源ボタンの順に押す
+Mathematica では,可換な積 Times (記号表記では * または&times;) の他に,非可換な積 NonCommutativeMultiply (記号表記では **) が存在する.T . T の結果が上のようになってしまったのは,Dot が内部計算で可換な積 Times を使用しているからだ.これを非可換な積に置き換えるには,Dot ではなく,一般化内積 Inner を使用する.
+Inner は,どのように積を取るか,どのように和を取るかを指定できる.この積に NonCommutativeMultiply を指定する.
+In[3] = Inner[NonCommutativeMultiply, T, T, Plus]
+Out[3] = {{2 * 0 ** 電 + 電 ** 電 + 風 ** 風, 0 ** 0 + 0 ** 風 + 電 ** 0 + 風 ** 電,
+2 * 0 ** 0 + 電 ** 風 + 風 ** 0, 0 ** 0 + 0 ** 風 + 電 ** 0 + 風 ** 0},
+{2 * 0 ** 電 + 電 ** 風 + 風 ** 電, 0 ** 0 + 0 ** 風 + 電 ** 電 + 風 ** 0,
+0 ** 0 + 0 ** 風 + 電 ** 0 + 風 ** 0, 2 * 0 ** 0 + 電 ** 0 + 風 ** 風},
+{2 * 0 ** 電 + 電 ** 風 + 風 ** 電, 2 * 0 ** 0 + 電 ** 電 + 風 ** 風,
+0 ** 0 + 0 ** 風 + 電 ** 0 + 風 ** 0, 0 ** 0 + 0 ** 風 + 電 ** 0 + 風 ** 0},
+{2 * 0 ** 電 + 電 ** 風 + 風 ** 電, 0 ** 0 + 0 ** 風 + 電 ** 電 + 風 ** 0,
+2 * 0 ** 0 + 電 ** 0 + 風 ** 風, 0 ** 0 + 0 ** 風 + 電 ** 0 + 風 ** 0}}ここで a ** b という表現は,NonCommutativeMultiply[a, b] の省略表記である.
+さて,一般化内積で NonCommutativeMultiply を指定したことにより,確かに "電 風" が "風 電" と同一視されることは無くなった.しかし 0 との積がそのまま残っているなど,簡約ルールがほとんど機能しなくなっていることにも気付く.そう,Mathematica では,非可換な積に関する簡約ルールがデフォルトでは定義されていないのだ.
+そこで,遷移行列の要素を簡約する関数 ExpandOperation を自作することにする.
+まず,引数がパターンにマッチしなかった場合のデフォルト定義と,引数が零元を含む非可換積の場合の簡約ルールを定義する.
+In[4] = ExpandOperation[a_] := ExpandAll[a]
+In[5] = ExpandOperation[NonCommutativeMultiply[x___, 0, y___]] := 0式4は,どのパターンにもマッチしなかった場合のデフォルトルールである.この場合,標準の展開関数である ExpandAll にて展開される.
+式5は,NonCommutativeMultiply[a, b, c, 0, e, f] などの 0 を含む非可換な積が渡された場合にマッチするルールを定めている.この場合は項全体を 0 に書き換える.
+実験してみよう.
+In[6] = ExpandOperation[電 ** 風]
+Out[6] = 電 ** 風
+In[7] = ExpandOperation[0 ** 電]
+Out[7] = 0
+In[8] = ExpandOperation[電 ** 風 ** 0]
+Out[8] = 0実際,0 を含む非可換な積が 0 に簡約されているのが分かる.
+なお,Mathematica には引数がひとつの関数を後置形で書くための記法が存在する.
+In[9] = 電 ** 風 // ExpandOperation
+Out[9] = 電 ** 風
+In[10] = 0 ** 電 // ExpandOperation
+Out[10] = 0
+In[11] = 電 ** 風 ** 0 // ExpandOperation
+Out[11] = 0これはそれぞれ式6, 式7, 式8と同じ意味である.以後はなるべく後置表現で書く.
+さて,まだ問題は残っている.このままでは ExpandOperation[0 ** 電 + 電 ** 電 + 風 ** 風] の簡約が行われない.なぜなら,この式の内部表現は ExpandOperation[ Plus[0 ** 電, 電 ** 電, 風 ** 風] ] であり,先ほど定義した ExpandOperation のパターンにはマッチしないからだ.
+そこで,引数のヘッドが Plus であるときに,Plus の各要素について再帰的に簡約を行うようなルールを追加する.同様に,可換な積 Times についてもパターンを用意しよう.
+In[12] = ExpandOperation[h_Plus] := Map[ExpandOperation, h]
+In[13] = ExpandOperation[h_Times] := Map[ExpandOperation, h]なお,この右辺は ExpandOperation /@ h と書くこともできる.これは Map の簡易記法になっている.
+では実験してみよう.
+In[14] = 2 * 0 ** 電 + 電 ** 電 + 風 ** 風 // ExpandOperation
+Out[14] = 電 ** 電 + 風 ** 風うまくいっている.ここで ExpandOperation 関数に Listable 属性を付けておこう.Listable 属性の付いた関数は,引数にリストが渡されたとき,自動的に Map 動作を行うようになる.
+In[15] = SetAttributes[ExpandOperation, Listable]
+In[16] = {0 ** 電, 電 ** 電} // ExpandOperation
+Out[16] = {0, 電 ** 電}
+In[17] = Inner[NonCommutativeMultiply, T, T, Plus] // ExpandOperation
+Out[17] = {{電 ** 電 + 風 ** 風, 風 ** 電, 電 ** 風, 0},
+{電 ** 風 + 風 ** 電, 電 ** 電, 0, 風 ** 風},
+{電 ** 風 + 風 ** 電, 電 ** 電 + 風 ** 風, 0, 0},
+{電 ** 風 + 風 ** 電, 電 ** 電, 風 ** 風, 0}}今度は簡約が進んで綺麗になった.
+そろそろ遷移行列の積を関数化し,それに名前を付けておこう.名前は TransitionMatrixMultiply とする.
+In[18] = TransitionMatrixMultiply[x_, y_] := 
+Inner[NonCommutativeMultiply, x, y, Plus] // ExpandOperation
+In[19] = TransitionMatrixMultiply[x_, y_, z__] := 
+TransitionMatrixMultiply[TransitionMatrixMultiply[x, y], z]
+In[20] = SetAttributes[TransitionMatrixMultiply, {Flat, OneIdentity}]式16は TransitionMatrixMultiply に 2 つの引数が渡されたときのパターンを定義していて,Inner 関数を使って行列積を計算し,ExpandOperation で結果の簡約を行っている.
+式17は,TransitionMatrixMultiply に 3 つ以上の引数が渡された場合の簡約ルールである.これは再帰的に定義すればよい.
+式18は,TransitionMatrixMultiply に属性を設定している.属性 Flat は,f[a,f[b,c] ] == f[f[a,b],c] == f[a, b, c] という関係 (結合則) が成り立つことを示している.属性 OneIdentity は,パターンマッチで f[a] と a を同一視することを示している.
+では実際に T2 と T3 を計算してみよう.
+In[21] = TransitionMatrixMultiply[T, T]
+Out[21] = {{電 ** 電 + 風 ** 風, 風 ** 電, 電 ** 風, 0},
+{電 ** 風 + 風 ** 電, 電 ** 電, 0, 風 ** 風},
+{電 ** 風 + 風 ** 電, 電 ** 電 + 風 ** 風, 0, 0},
+{電 ** 風 + 風 ** 電, 電 ** 電, 風 ** 風, 0}}
+In[22] = TransitionMatrixMultiply[T, T, T]
+Out[22] = {{(電 ** 電 + 風 ** 風) ** 風 + 電 ** 風 ** 電 + 風 ** 電 ** 電,
+(電 ** 電 + 風 ** 風) ** 電, 風 ** 電 ** 風,電 ** 風 ** 風},
+{(電 ** 風 + 風 ** 電) ** 風 + 電 ** 電 ** 電 + 風 ** 風 ** 電,
+(電 ** 風 + 風 ** 電) ** 電 + 風 ** 風 ** 風, 電 ** 電 ** 風, 0},
+{(電 ** 風 + 風 ** 電) ** 風 + (電 ** 電 + 風 ** 風) ** 電, 
+(電 ** 風 + 風 ** 電) ** 電, (電 ** 電 + 風 ** 風) ** 風, 0},
+{(電 ** 風 + 風 ** 電) ** 風 + 電 ** 電 ** 電 + 風 ** 風 ** 電,
+(電 ** 風 + 風 ** 電) ** 電, 電 ** 電 ** 風, 風 ** 風 ** 風}}おっと,T3 でまたもや簡約が止まっている.これは分配法則が足りないようだ.ExpandOperation にルールを追加しよう.
+In[23] = ExpandOperation[(h : NonCommutativeMultiply)[a___, b_Plus, c___]] :=
+Distribute[h[a, b, c], Plus, h, Plus, ExpandOperation[h[##]] &]
+In[24] = TransitionMatrixMultiply[T, T, T]
+Out[24] = {{電 ** 電 ** 風 + 電 ** 風 ** 電 + 風 ** 電 ** 電 + 風 ** 風 ** 風,
+電 ** 電 ** 電 + 風 ** 風 ** 電, 風 ** 電 ** 風, 電 ** 風 ** 風},
+{電 ** 電 ** 電 + 電 ** 風 ** 風 + 風 ** 電 ** 風 + 風 ** 風 ** 電,
+電 ** 風 ** 電 + 風 ** 電 ** 電 + 風 ** 風 ** 風, 電 ** 電 ** 風, 0},
+{電 ** 電 ** 電 + 電 ** 風 ** 風 + 風 ** 電 ** 風 + 風 ** 風 ** 電,
+電 ** 風 ** 電 + 風 ** 電 ** 電, 電 ** 電 ** 風 + 風 ** 風 ** 風, 0},
+{電 ** 電 ** 電 + 電 ** 風 ** 風 + 風 ** 電 ** 風 + 風 ** 風 ** 電,
+電 ** 風 ** 電 + 風 ** 電 ** 電, 電 ** 電 ** 風, 風 ** 風 ** 風}}無事展開が行われるようになった.
+さて,毎回 TransitionMatrixMultiply を書くのは面倒だ.中置記法を導入しよう.
+In[25] = Needs["Notation`"]
+In[26] = InfixNotation[\!\(\*TagBox["::","NotationTemplateTag"]\),
+TransitionMatrixMultiply]これで新しい中置演算子 :: が導入され,TransitionMatrixMultiply[T, T, T] の代わりに T::T::T と書けるようになった.
+In[27] = TransitionMatrixMultiply[T, T, T] == T :: T :: T
+Out[28] = Trueさらに,遷移行列 T の n 乗を計算する関数 TransitionMatrixPower も定義しておこう.
+In[29] = TransitionMatrixPower[m_, 0] := IdentityMatrix[4];
+In[30] = TransitionMatrixPower[m_, n_Integer] := 
+Apply[TransitionMatrixMultiply, Table[m, {i, n}]];
+In[31] = TransitionMatrixPower[T, 4] == T::T::T::T
+Out[31] = TrueTn を求める作業としてはこれでほぼ完成だ.
+ここまで見てきたように,Mathematica の計算では項書き換えが基本となっている.Mathematica の世界で,式とはまさにツリーのことだ.そして,ツリー中の「パターン」に対する書き換えルールを追加することで,得たい結果に近づけていく*1.
+最後に,遷移行列を見やすく表示する関数を作っておこう.詳しい説明は省くが,ここでも「パターン」が活躍している.簡約後に残った A + B + ... というパターンは,求める状態遷移を起こす複数の操作方法に対応している.また,A ** B ** C ** ... というパターンは,ABC... という順序で操作を行うことに対応している.これらのパターンを利用して,テーブル表記を行っている.
+In[32] = TransitionTableForm[a_] :=
+Replace[a, x_Plus -> Hold[List @@ x], {2}] \
+// ReleaseHold \
+// Replace[#, x_NonCommutativeMultiply
+-> Hold[StringJoin[ToString /@ List @@ x]], {2, 3}] & \
+// ReleaseHold \
+// TableForm
+In[33] = TransitionMatrixPower[T, 3] // TransitionTableForm
+パターンマッチと項書き換え - Mathematica で非可換なシンボル計算 - NyaRuRuが地球にいたころ

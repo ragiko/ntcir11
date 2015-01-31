@@ -1,0 +1,269 @@
+メッセージングに関しては先人の有用な文書が容易に発見できたので割愛、hubotのhttpdテストに関する知見が見つけられなかったので適当に書いてみたのを杜撰にまとめてみた。
+scripts/circleci-webhook.coffee
+CircleCIのWebHookをHubotで受信してみる。
+(軽く調べてhubot-circleci-webhookみたいなサンプルコード見つけられなかったから書いたんだけど、slackでintegrationsを節約したい人によいかもしれない)
+_ = require 'lodash'
+module.exports = (robot) ->
+robot.router.post '/hubot/circleci/hooks', (req, res) ->
+return res.end 'abort' unless _.isObject req.body.payload
+{status, build_num, branch, vcs_revision, subject} = req.body.payload
+return res.end 'abort' unless status in ['failed', 'fixed']
+robot.messageRoom '#room', "#{status} #{branch}##{build_num}, #{subject} (#{vcs_revision})"
+res.end 'ok'
+test/hubot.spec.coffee
+robot.serverの中にhttp.Serverの実体が入ってる。
+robot.routerがexpressの実体、下記コードではしてないけどレスポンスまでテストしたかったらこいつをsupertestとかに食わせればよい
+robot.adapter.on 'connected'とrobot.server.on 'listening'を待つのにPromiseを使った(mochaはitとかbeforeとかで(done) ->せずにPromiseを返すとfulfill/rejectを待ってくれる
+fs = require 'fs'
+path = require 'path'
+request = require 'request'
+require('es6-promise').polyfill()
+{expect} = chai = require 'chai'
+Robot = require 'hubot/src/robot'
+{TextMessage} = require 'hubot/src/message'
+describe 'hubot', ->
+robot = adapter = undefined
+roomname = '#room' # const
+beforeEach ->
+robot = new Robot null, 'mock-adapter', true, 'hubot'
+promise = Promise.all [
+new Promise (resolve) ->
+robot.adapter.on 'connected', ->
+require(path.resolve 'scripts', 'circleci-webhook')(robot)
+adapter = robot.adapter
+resolve()
+new Promise (resolve) ->
+robot.server.on 'listening', ->
+resolve()
+]
+robot.run()
+return promise
+afterEach ->
+robot.shutdown()
+robot.server.close()
+it 'reply with pong', (done) ->
+adapter.on 'send', (envelope, strings) ->
+expect(envelope.room).to.equal roomname
+expect(strings[0]).to.equal 'success master#22, Don\'t explode when the system clock shifts backwards (1d231626ba1d2838e599c5c598d28e2306ad4e48)'
+done()
+fs.createReadStream(path.resolve('test', 'fixture', 'circleci-payload.json'))
+.pipe(request.post "http://localhost:#{robot.server.address().port}/hubot/circleci/hooks")
+{
+"payload": {
+"vcs_url" : "https://github.com/circleci/mongofinil",
+"build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+"build_num" : 22,
+"branch" : "master",
+"vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
+"committer_name" : "Allen Rohner",
+"committer_email" : "arohner@gmail.com",
+"subject" : "Don't explode when the system clock shifts backwards",
+"body" : "",
+"why" : "github",
+"dont_build" : null,
+"queued_at" : "2013-02-12T21:33:30Z",
+"start_time" : "2013-02-12T21:33:38Z",
+"stop_time" : "2013-02-12T21:34:01Z",
+"build_time_millis" : 23505,
+"username" : "circleci",
+"reponame" : "mongofinil",
+"lifecycle" : "finished",
+"outcome" : "success",
+"status" : "success",
+"retry_of" : null,
+"steps" : [ {
+"name" : "configure the build",
+"actions" : [ {
+"bash_command" : null,
+"run_time_millis" : 1646,
+"start_time" : "2013-02-12T21:33:38Z",
+"end_time" : "2013-02-12T21:33:39Z",
+"name" : "configure the build",
+"command" : "configure the build",
+"exit_code" : null,
+"type" : "infrastructure",
+"index" : 0,
+"status" : "success"
+} ]
+}, {
+"name" : "lein2 deps",
+"actions" : [ {
+"bash_command" : "lein2 deps",
+"run_time_millis" : 7555,
+"start_time" : "2013-02-12T21:33:47Z",
+"command" : "((lein2 :deps))",
+"messages" : [ ],
+"step" : 1,
+"exit_code" : 0,
+"end_time" : "2013-02-12T21:33:54Z",
+"index" : 0,
+"status" : "success",
+"type" : "dependencies",
+"source" : "inference",
+"failed" : null
+} ]
+}, {
+"name" : "lein2 trampoline midje",
+"actions" : [ {
+"bash_command" : "lein2 trampoline midje",
+"run_time_millis" : 2310,
+"continue" : null,
+"parallel" : true,
+"start_time" : "2013-02-12T21:33:59Z",
+"name" : "lein2 trampoline midje",
+"command" : "((lein2 :trampoline :midje))",
+"messages" : [ ],
+"step" : 6,
+"exit_code" : 1,
+"end_time" : "2013-02-12T21:34:01Z",
+"index" : 0,
+"status" : "failed",
+"timedout" : null,
+"infrastructure_fail" : null,
+"type" : "test",
+"source" : "inference",
+"failed" : true
+} ]
+} ]
+}
+}
+メッセージングに関しては先人の有用な文書が容易に発見できたので割愛、hubotのhttpdテストに関する知見が見つけられなかったので適当に書いてみたのを杜撰にまとめてみた。
+## scripts/circleci-webhook.coffee
+CircleCIのWebHookをHubotで受信してみる。
+(軽く調べて`hubot-circleci-webhook`みたいなサンプルコード見つけられなかったから書いたんだけど、slackでintegrationsを節約したい人によいかもしれない)
+```coffeescript
+_ = require 'lodash'
+module.exports = (robot) ->
+robot.router.post '/hubot/circleci/hooks', (req, res) ->
+return res.end 'abort' unless _.isObject req.body.payload
+{status, build_num, branch, vcs_revision, subject} = req.body.payload
+return res.end 'abort' unless status in ['failed', 'fixed']
+robot.messageRoom '#room', "#{status} #{branch}##{build_num}, #{subject} (#{vcs_revision})"
+res.end 'ok'
+```
+## test/hubot.spec.coffee
+* `robot.server`の中にhttp.Serverの実体が入ってる。
+* `robot.router`がexpressの実体、下記コードではしてないけどレスポンスまでテストしたかったらこいつを`supertest`とかに食わせればよい
+* `robot.adapter.on 'connected'`と`robot.server.on 'listening'`を待つのにPromiseを使った(mochaは`it`とか`before`とかで`(done) ->`せずにPromiseを返すとfulfill/rejectを待ってくれる
+```coffeescript
+fs = require 'fs'
+path = require 'path'
+request = require 'request'
+require('es6-promise').polyfill()
+{expect} = chai = require 'chai'
+Robot = require 'hubot/src/robot'
+{TextMessage} = require 'hubot/src/message'
+describe 'hubot', ->
+robot = adapter = undefined
+roomname = '#room' # const
+beforeEach ->
+robot = new Robot null, 'mock-adapter', true, 'hubot'
+promise = Promise.all [
+new Promise (resolve) ->
+robot.adapter.on 'connected', ->
+require(path.resolve 'scripts', 'circleci-webhook')(robot)
+adapter = robot.adapter
+resolve()
+new Promise (resolve) ->
+robot.server.on 'listening', ->
+resolve()
+]
+robot.run()
+return promise
+afterEach ->
+robot.shutdown()
+robot.server.close()
+it 'reply with pong', (done) ->
+adapter.on 'send', (envelope, strings) ->
+expect(envelope.room).to.equal roomname
+expect(strings[0]).to.equal 'success master#22, Don\'t explode when the system clock shifts backwards (1d231626ba1d2838e599c5c598d28e2306ad4e48)'
+done()
+fs.createReadStream(path.resolve('test', 'fixture', 'circleci-payload.json'))
+.pipe(request.post "http://localhost:#{robot.server.address().port}/hubot/circleci/hooks")
+```
+## test/fixture/circleci-payload.json
+CircleCIのAPI-Docsから持ってきた
+* https://circleci.com/docs/configuration
+* https://circleci.com/docs/api#build
+```json
+{
+"payload": {
+"vcs_url" : "https://github.com/circleci/mongofinil",
+"build_url" : "https://circleci.com/gh/circleci/mongofinil/22",
+"build_num" : 22,
+"branch" : "master",
+"vcs_revision" : "1d231626ba1d2838e599c5c598d28e2306ad4e48",
+"committer_name" : "Allen Rohner",
+"committer_email" : "arohner@gmail.com",
+"subject" : "Don't explode when the system clock shifts backwards",
+"body" : "",
+"why" : "github",
+"dont_build" : null,
+"queued_at" : "2013-02-12T21:33:30Z",
+"start_time" : "2013-02-12T21:33:38Z",
+"stop_time" : "2013-02-12T21:34:01Z",
+"build_time_millis" : 23505,
+"username" : "circleci",
+"reponame" : "mongofinil",
+"lifecycle" : "finished",
+"outcome" : "success",
+"status" : "success",
+"retry_of" : null,
+"steps" : [ {
+"name" : "configure the build",
+"actions" : [ {
+"bash_command" : null,
+"run_time_millis" : 1646,
+"start_time" : "2013-02-12T21:33:38Z",
+"end_time" : "2013-02-12T21:33:39Z",
+"name" : "configure the build",
+"command" : "configure the build",
+"exit_code" : null,
+"type" : "infrastructure",
+"index" : 0,
+"status" : "success"
+} ]
+}, {
+"name" : "lein2 deps",
+"actions" : [ {
+"bash_command" : "lein2 deps",
+"run_time_millis" : 7555,
+"start_time" : "2013-02-12T21:33:47Z",
+"command" : "((lein2 :deps))",
+"messages" : [ ],
+"step" : 1,
+"exit_code" : 0,
+"end_time" : "2013-02-12T21:33:54Z",
+"index" : 0,
+"status" : "success",
+"type" : "dependencies",
+"source" : "inference",
+"failed" : null
+} ]
+}, {
+"name" : "lein2 trampoline midje",
+"actions" : [ {
+"bash_command" : "lein2 trampoline midje",
+"run_time_millis" : 2310,
+"continue" : null,
+"parallel" : true,
+"start_time" : "2013-02-12T21:33:59Z",
+"name" : "lein2 trampoline midje",
+"command" : "((lein2 :trampoline :midje))",
+"messages" : [ ],
+"step" : 6,
+"exit_code" : 1,
+"end_time" : "2013-02-12T21:34:01Z",
+"index" : 0,
+"status" : "failed",
+"timedout" : null,
+"infrastructure_fail" : null,
+"type" : "test",
+"source" : "inference",
+"failed" : true
+} ]
+} ]
+}
+}
+```
+Node.js - hubotのhttpdを mocha + chai でテストする - Qiita

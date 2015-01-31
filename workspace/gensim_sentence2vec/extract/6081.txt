@@ -1,0 +1,54 @@
+SQLパズル
+売上表テーブル
+コード  売上
+------  ----
+A      10
+B       5
+C      20
+D      20
+E      10
+F      25
+G      30
+H      30
+I      30
+Oracle8で、順位付け(一般的な順位と、Denseな順位)する。
+出力結果
+コード  売上  順位  順位(Dense)
+------  ----  ----  -----------
+G      30     1     1
+H      30     1     1
+I      30     1     1
+F      25     4     2
+C      20     5     3
+D      20     5     3
+A      10     7     4
+E      10     7     4
+B       5     9     5
+データ作成スクリプト
+create table 売上表(
+コード char(1),
+売上   number(2));
+insert into 売上表 values('A',10);
+insert into 売上表 values('B', 5);
+insert into 売上表 values('C',20);
+insert into 売上表 values('D',20);
+insert into 売上表 values('E',10);
+insert into 売上表 values('F',25);
+insert into 売上表 values('G',30);
+insert into 売上表 values('H',30);
+insert into 売上表 values('I',30);
+commit;
+select a.コード,min(a.売上) as 売上,
+sum(sign(b.売上-a.売上))+1 as 順位,
+count(distinct b.売上) as "順位(Dense)"
+from 売上表 a,売上表 b
+where a.売上 <= b.売上
+group by a.コード
+order by 順位,a.コード;
+解説
+select句での相関サブクエリや、分析関数を使わずに、順位を求める古のSQLです。
+自レコードの売上以上のレコードと自己結合して、グループ化してます。
+3-4 順位にupdate
+3-5 順位(DENSE)が指定した範囲のデータを取得
+3-22 相関サブクエリで順位付け
+7-14  古のSQL(順位付け)

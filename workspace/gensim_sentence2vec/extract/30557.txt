@@ -1,0 +1,8 @@
+\[
+\begin{eqnarray}
+l(\mu, \sigma^{2}; x_{1},x_{2},\cdots,x_{n}) &=& \log L(x_{1},x_{2},\cdots,x_{n}; \mu, \sigma^{2}) \\
+&=& \log f(x_{1},x_{2},\cdots,x_{n}; \mu, \sigma^{2}) \\
+&=& n\log\frac{1}{\sqrt{2\pi\sigma^{2}}} - \sum_{i=1}^{n}\frac{(x_{i}-\mu)^{2}}{2\sigma^{2}}
+\end{eqnarray}
+\]
+最尤法(正規分布) | 平均μを最尤法によって求める方法

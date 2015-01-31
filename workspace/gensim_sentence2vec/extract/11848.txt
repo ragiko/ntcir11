@@ -1,0 +1,31 @@
+WordPressのカテゴリー選択部分はチェックボックスで表示されており、もちろんチェックボックスなのでひとつの記事に対して複数のカテゴリーを選択することができます。ただ、場合によって複数選択されてほしくないということがあるので、カテゴリーを1つしか選択できないように制限する方法を備忘録兼ねて紹介します。
+同じことを実装しようとする際、1つに制限するからラジオボタンに変更するというのをよく見かけます。たしかにその方がわかりやすいので自分もその方法を使おうかと思ったのですが、投稿画面ではラジオボタンで問題なく実装できても、記事一覧のクイック編集部分がラジオボタンだと自分の知識不足もあって上手く実装できませんでした…。(正確にはとりあえず実装はできるけど、挙動が非常に怪しい)
+投稿画面はラジオボタンで実装して、クイック編集に関してはいっそのこと非表示にするとかも考えましたがなんか微妙ですし、同じく投稿画面はラジオボタンで実装して、クイック編集に関しては下記で紹介するのを用いてとかも考えたのですが、同じ機能なのに見た目がバラバラになるのも個人的に微妙でした。なので、今回は投稿画面と投稿一覧のクイック編集ともにそのままチェックボックスを使用しつつ、jQueryを使ってカテゴリー選択を1つに制限します。
+実装にはfunctions.phpを使用するので、テーマ内にない場合は作成して以下を記述してください。
+functions.php
+add_action( 'admin_print_footer_scripts', 'limit_category_select' );
+function limit_category_select() {
+?>
+<script type="text/javascript">
+jQuery(function($) {
+// 投稿画面のカテゴリー選択を制限
+var cat_checklist = $('.categorychecklist input[type=checkbox]');
+cat_checklist.click( function() {
+$(this).parents('.categorychecklist').find('input[type=checkbox]').attr('checked', false);
+$(this).attr('checked', true);
+});
+// クイック編集のカテゴリー選択を制限
+var quickedit_cat_checklist = $('.cat-checklist input[type=checkbox]');
+quickedit_cat_checklist.click( function() {
+$(this).parents('.cat-checklist').find('input[type=checkbox]').attr('checked', false);
+$(this).attr('checked', true);
+});
+$('.categorychecklist>li:first-child, .cat-checklist>li:first-child').before('<p style="padding-top:5px;">カテゴリーは1つしか選択できません</p>');
+});
+</script>
+<?php
+}
+上記をfunctions.phpに記述することで、見た目は変わらずチェックボックスのままですが、カテゴリーを1つしか選択できないようになっています。上記コードは投稿だけでなくカスタム投稿タイプでも問題なくカテゴリー選択が制限されるようになっているんですが、もし特定のカスタム投稿では制限したくないとかあれば、.categorychecklistや.cat-checklistの部分を制限したいもののみの記述へ変更してください。
+自分が使うならこのままで問題ないんですが、クライアントとかに「チェックボックスなのに1個しか選択できない!」とか言われるとアレなので、18行目で「カテゴリーは1つしか選択できません」という文言を表示するようにしています。
+表示させる箇所を変更したい場合はクラス指定の部分やjQueryの.beforeとかを、表示させる文言を変更したい場合は「カテゴリーは1つしか選択できません」の箇所を任意でそれぞれ変更してください。
+WordPress:カテゴリー選択を1つしかできないように制限する方法 | NxWorld

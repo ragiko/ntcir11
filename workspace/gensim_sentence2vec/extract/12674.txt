@@ -1,0 +1,11 @@
+
+2 ビジネス・プロセス設計の概要
+この章ではビジネス・プロセス設計について説明します。この章にはBusiness Process Management Notation (BPMN)の基本的な概要を示します。この概要では、主に、このガイドで使用されるBPMN固有の用語について説明します。
+OracleでのBPMN 2.0の実装の詳細は、第6章「Oracle BPMを使用したビジネス・プロセスのモデリング」を参照してください。
+また、この章では、営業見積サンプル・プロジェクトについても説明します。このプロジェクトはOracle BPMドキュメント・セット内の例全体で使用されています。
+この章の内容は次のとおりです。
+2.1項「Business Process Management Notation(BPMN)の概要」
+2.2項「営業見積サンプルの概要」
+2.1 Business Process Management Notation (BPMN)の概要
+この項では、Business Process Management Notation (BPMN)の概要について説明します。ここでは、主に、このガイド全体で使用されるBPMN用語について説明します。
+ビジネス・プロセス設計の概要

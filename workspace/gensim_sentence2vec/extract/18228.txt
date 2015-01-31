@@ -1,0 +1,239 @@
+(PHP Advent Calendar 25日目参加エントリです。前の日は @mugeso さんによる「PHPerのMVCの一体どこが間違っていたのか」でした。)
+年末三日間の聖戦に向けて聖夜は休息にあてているみなさん、こんにちは。
+今日は、ジェネレータをより有効に使うべく、foreach 文のファンタスティックな使い方を紹介します。
+ジェネレータの風が吹けば foreach 文が儲かる
+皆さんご存知の通り、ジェネレータによってイテレータが簡単に作れるようになりました。
+これはつまり、foreach 文が今よりもっと使われるようになる、言い換えると foreach 文の存在感が高まることが予想されます。
+ジェネレータが導入される
+イテレータが簡単に作れる
+— foreach 文の存在感が高まる
+実はこれは逆も成り立ちます。
+つまり、foreach 文の重要性が高まれば、それを利用するためのイテレータやジェネレータの重要性が高まるということです。
+foreach文の重要性が高まる
+イテレータの重要性が高まる
+— ジェネレータの重要性も高まる
+そこで本エントリでは、foreach 文をより活用すべく、あまり知られていない foreach 文の使い方を紹介します。
+名付けて、「ファンタスティックな foreach 文」です。
+foreach 文を使ってコードブロックの前後に処理を挟み込む
+foreach 文を使うと、コードブロック (コードのひとかたまり) に対して、前後に処理を追加できます。
+たとえば、コードの実行時間を計測したいとしましょう。
+通常は、次のようにします。
+ポイントは、計測のための処理がコードブロックの前後に置かれていることです。
+// フィボナッチ数列
+function fib($n) {
+return $n <= 1 ? $n : fib($n-1) + fib($n-2);
+}
+// 実行時間を計測
+$start = microtime(true);                  // 前処理
+echo fib(30), "\n";                        // コードブロック
+echo (microtime(true) - $start), "sec\n";  // 後処理
+これを、foreach 文を使うことでコードブロックの前後に計測処理を自動的に追加するようにしてみましょう。
+// フィボナッチ数列
+function fib($n) {
+return $n <= 1 ? $n : fib($n-1) + fib($n-2);
+}
+// 実行時間を計測するためのジェネレータ関数
+// (繰り返しをせずに1回だけyieldするのがポイント)
+function bench() {
+$start = microtime(true);                  // 前処理
+yield;                                     // コードブロックを呼び出す
+echo (microtime(true) - $start), "sec\n";  // 後処理
+}
+// 使い方(計測処理がなくなっている!)
+foreach (bench() as $_) {
+echo fib(30), "\n";      // コードブロック
+}
+ここでのポイントは、foreach 文を繰り返しのためには使っておらず、単にコードブロックの前後に処理を追加するためだけに使っていることです。
+別の言い方をすると、「繰り返し回数を 1 回に固定した foreach 文」とも言えます。
+通常であれば、こういったケースには無名関数を使うのが定石ですが、似たようなことが foreach 文でもできてしまいました。
+もうひとつの例として、フォームタグを生成するヘルパークラスと、それを利用したジェネレータ関数を紹介します。
+// ジェネレータ関数
+// ・前処理として <form> タグとCSRFトークン用のタグを出力
+// ・フォームヘルパーを使ってコードブロックを呼び出す
+// ・後処理として </form> タグを出力
+function newFormHelper($action='', $method='POST') {
+$fh = new FormHelper();           // 前処理
+$fh->startForm($action, $method); // 前処理
+yield $fh;                        // コードブロックの呼び出し
+$fh->endForm();                   // 後処理
+}
+// エスケープ
+function ht($value) {
+// 徳丸本 p.395 参照
+return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+// フォームヘルパークラス
+class FormHelper {
+// CSRF用のトークンを生成する
+function csrfToken() {
+return sha1(session_id());
+}
+// フォームの開始タグと、CSRFトークン用のタグを出力
+function startForm($action='', $method='POST') {
+echo '<form action="', ht($action), '"',
+' method="', ht($method), '"', ">";
+echo '<input type="hidden" name="_csrf"',
+' value="', ht($this->csrfToken()), '">';
+}
+// フォームの終了タグを出力
+function endForm() {
+echo "</form>\n";
+}
+// <input>タグを出力
+function input($type, $name) {
+$value = $_POST[$name];
+echo '<input type="', ht($type), '"',
+' name="', ht($name), '"',
+' value="', ht($value), '">';
+}
+// ラジオボタンを出力
+function radio($name, $value) {
+$chk = $_POST[$name] == $value ? ' checked="checked"' : '';
+echo '<input type="radio"',
+' name="', ht($name), '"',
+' value="', ht($value), '"', $chk, ">";
+}
+}
+使い方は次のような感じになります。
+<?php
+// <form> と <input name="_csrf"> が出力される
+foreach (newFormHelper('homhom.php') as $fh) {
+?>
+<dl>
+<dt>メールアドレス</dt>
+<dd><?php $fh->input('text', 'email'); ?></dd>
+<dt>パスワード</dt>
+<dd><?php $fh->input('password', 'pass'); ?></dd>
+</dl>
+<p>
+<input type="submit" value="ログイン">
+</p>
+<?php
+}  // </form> が出力される
+?>
+ポイントは次の点です。
+foreach 文の開始部で <form> タグと CSRF 用トークンのタグが出力される
+ループ変数としてフォームヘルパーオブジェクトが渡される
+foreach文の終了部で </form> タグが出力される
+実行結果:
+<form action="homhom.php" method="POST">
+<input type="hidden" name="_csrf" value="abc123">
+<dl>
+<dt>メールアドレス</dt>
+<dd><input type="text" name="email" value=""></dd>
+<dt>パスワード</dt>
+<dd><input type="password" name="pass" value=""></dd>
+</dl>
+<p>
+<input type="submit" value="ログイン">
+</p>
+</form>
+foreach 文を使って if 文をシミュレートする
+さきほどの例は、「繰り返し回数を 1 回に固定した foreach 文」でした。
+今度は、「繰り返し回数が 0 回または 1 回の foreach 文」です。
+何らかの条件によって繰り返し回数を 0 回または 1 回にすることで、foreach 文で if 文をシミュレートできます(ただし「else」は実現できません)。
+簡単なコードを見てみましょう。
+// ジェネレータ関数
+function iff($condition) {
+if ($condition) {
+echo "...前処理...\n";   // 前処理
+yield;                   // コードブロックの呼び出し
+echo "...後処理...\n";   // 後処理
+}
+}
+// 使い方1:条件が真なのでコードブロックが1回だけ実行される
+foreach (iff('0'==0) as $_) {
+echo "'0'==0\n";    // 実行される
+}
+// 使い方2:条件が偽なのでコードブロックは実行されない
+foreach (iff('0'===0) as $_) {
+echo "'0'===0\n";   // 実行されない
+}
+ところで、foreach 文で if 文をシミュレートして、何がうれしいんでしょうか?
+それは、やはりコードブロックの前後に処理を挟み込めることです。
+たとえば、HTML テンプレート用の部分キャッシュ(HTML 全体ではなく、指定された箇所だけをキャッシュする機能。Ruby on Rails でいうところのフラグメントキャッシュ) を実装するとしましょう。
+要件は次のようになります。
+キャッシュがあればそれを使い、コードブロックは実行しない。
+キャッシュがなければコードブロックを実行し、その結果をキャッシュする。
+これを PHP で実装するには、通常は if 文を使います。
+<html>
+<body>
+<?php
+// 部分キャッシュを取得
+$cache_key = 'foo/bar/123';
+$content = partial_cache_get($cache_key);
+// もしなければコードブロックを実行する(あれば実行しない)
+if ($content === null) {
+ob_start();
+?>
+<ul>
+<?php for ($i = 1; $i <= 100; $i++) { ?>
+<li><?= $i ?></li>
+<?php } ?>
+</ul>
+<?php
+// HTMLの部分文字列をキャッシュに格納
+$content = ob_get_clean();
+$seconds = 5*60;
+partial_cache_set($cache_key, $content, $seconds);
+}
+// 部分キャッシュの内容を出力
+echo $content;
+?>
+</body>
+</html>
+このようなコードは、foreach 文を使えば簡潔になります。
+なぜなら、if 文と違い、foreach 文ではコードブロックの前後にキャッシュ処理を挟み込めるからです。
+<?php
+// ジェネレータ関数
+function partial_cache($key, $seconds) {
+$content = partial_cache_get($key);    // 前処理
+if ($content === null) {
+ob_start();                          // 前処理
+yield;                               // コードブロックの呼び出し
+$content = ob_get_clean();           // 後処理
+partial_cache_set($key, $seconds);   // 後処理
+}
+echo $content;                         // 後処理
+}
+// 使い方
+?>
+<html>
+<body>
+<?php foreach (partial_cache('foo/bar/baz', 5*60) as $_) { ?>
+<ul>
+<?php for ($i = 1; $i <= 100; $i++) { ?>
+<li><?= $i ?></li>
+<?php } ?>
+</ul>
+<?php } ?>
+</body>
+</html>
+もちろん、同じようなことは無名関数を使ってもできます。
+興味ある人は試してみてください。
+PHPコミッタにお願い
+ここで紹介したような foreach 文の使い方をしようとすると、現在の PHP の言語仕様ではちょっと残念な点があります。
+foreach 文において、ループ変数を使わない場合でも「as $xxx」が省略できない。
+繰り返しを連想させる「foreach」ではなく、より汎用的な「for」を使いたい、けどできない。
+つまりですね、
+foreach (homhom() as $_) {
+....
+}
+ではなくて、
+for (homhom()) {
+....
+}
+のように簡潔に書きたいってことです。
+これができれば、不格好な「function() use (…) { … }」を使わずに済むケースが多くなるんですよね。
+「as $xxx」が省略できないのは、今までそういう要求がなかったというだけで、省略できるようにすることは (技術上は) 簡単なはずです。
+また「foreach」のかわりに「for」を使うのは、「for」が「foreach」も兼ねるようになればいいだけなので、これも簡単なはずです (Java や JavaScript と同じようにするだけ)。
+もし本稿をお読みの PHP コミッタがおられましたら、PHP の将来のために、ぜひご一考くださるようお願いします。
+まとめ
+本エントリでは、ファンタスティックな foreach 文の使い方を紹介しました。
+ポイントは foreach 文を、「繰り返し」目的ではなくて「前後に処理を挟み込む」目的で使っていることです。
+これにより、foreach 文を DSL 用に使うという、新たな使い道ができるようになります。
+foreach 文の使い道が広がると、イテレータや、ひいてはジェネレータの価値が高まります。
+みなさんも、foreach 文を繰り返し用途に限定することなく、よりファンタスティックな使い方を研究してみてください。
+なお本エントリで紹介した foreach 文の使い方は、Java や Python でも使えます。
+PyConJP 2012 での発表資料を貼っておきますので、興味があればどうぞ。
+[PHP] ジェネレータ導入記念:PHP上級者こそ知ってほしい、なぜforeach文が重要か?  |  私の小岩ホッチキス

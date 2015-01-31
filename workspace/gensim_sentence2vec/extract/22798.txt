@@ -1,0 +1,50 @@
+ #733. semantic prosody の通時的側面 [semantic_prosody][semantic_change][terminology]
+semantic prosody は,コーパス言語学の進展により20余年前にその現象が気付かれたばかりの比較的新しい研究である.現代英語について共時的な観点からしても研究が進んでいないのだから,通時的な側面の研究はいまだ皆無といってよさそうだ.[2011-03-12-1], [2011-03-03-1]の記事で軽く言及したように,通時的なディメンションはあるはずで,意味変化の研究と関連して,今後おもしろい分野になってくるかもしれないと考えている.
+これまで数点の関連論文に目を通したが,通時的な言及はほとんどない.唯一,[2011-03-03-1]で関連文献として挙げた 	Louw が,semantic prosody と irony の関係を論じながら,通時的な関連に言及している.
+Prosodies, therefore, are reflections of either pejorative or ameliorative changes that have run their course sufficiently to allow irony to be instantiable against them through the deliberate creation of an exception to the trend. (169)
+ある表現が irony と認められるためには,元の表現が一定の semantic prosody をもっており,聞き手もそれを知っていることが前提となる.皮肉を発する話し手は,その表現とは通常共起しない表現を意図的に組み合わせることによって,聞き手の予想を裏切ることを目指す.皮肉を通じさせるためには,是非とも聞き手が問題の semantic prosody を(無意識であれ)知っている必要がある.その知識は,他の一般的な言語能力 (linguistic competence) と同様に,個人が明示的にアクセスすることができない種類の知識だが,個人が言語習得の過程で獲得するものには違いない.では,獲得に際してのインプットは何かというと,コーパスから引き出されると初めて可視化される類の共起表現とその頻度だろう.その共起表現と頻度は,その言語共同体で歴史的に育まれてきたものの現在の現われである.semantic prosody の通時的なディメンションは確かに存在する.
+ある semantic prosody が歴史のどの段階で生じたかを知ることは,なかなかに難しい.semantic prosody には負の含蓄の例が多いことから,問いの多くは「ある語句が軽蔑的な (derogatory) 含蓄を帯び始めたのはいつか」というようなものになるだろう.文脈を丹念に調べて,1例ずつ derogatory か否かを判定してゆくという地道で困難な作業が必要となるだろうが,それ以前にどの表現が semantic prosody の候補になりうるかという問題を解決しなければならない.なぜならば,semantic prosody はその性質からして話者の内省や直感ではアクセスできないものだからである ([2011-03-20-1]) .この点に関して,Louw の警鐘は痛烈だ.
+A common problem is what might be called 'twenty-twenty hindsight': the tendency to claim that one 'felt' the presence of a form which was inaccessible to one's intuition until it was revealed through research. The only cure for twenty-twenty hindsight lies in constant exposure, of the most humbling kind, to real examples. (173)
+内省でアクセスできない問題を研究テーマとするというのは,方法論上の矛盾である.通時的側面を論じる以前に,現代英語の共時的側面ですら semantic prosody はいまだよく理解されていないのである.
+semantic prosody とは何かという定義の問題については,[2011-03-02-1]で1つの定義を紹介したが,捉えにくい概念なので客観的な記述は難しい.むしろ直感に訴えかける説明だと妙によく理解できるのである.例えば,Louw の次の定義などは,もっともよく直感にフィットするのである.
+[a] consistent aura of meaning with which a form is imbued by its collocates (157)
+・ Louw, Bill. "Irony in the Text or Insincerity in the Writer? The Diagnostic Potential of Semantic Prosodies." Text and Technology: In Honour of John Sinclair. Ed. M. Baker, G. Francis, and E. Tognini-Bonelli. Amsterdam: John Benjamins, 1993. 157--76.
+[
+固定リンク 
+|
+印刷用ページ
+|
+コメント
+]
+#732. -dom は生産的な接尾辞か [suffix][productivity]
+[2009-05-18-1], [2011-04-28-1]の記事で接尾辞 -dom について紹介したが,昨日の記事[2011-04-28-1]を書いたあとで,引用に含まれていた Wentworth の論文を読んでみた.-dom に的を絞った驚くほど網羅的な研究だった.結論らしい結論はないのだが,-dom の具体例の列挙により事実上この接尾辞の生産性 (productivity) を示した研究といっていいだろう.論文のあらましに近くなるが,以下に要点を書き留めておく.
+まず,Wentworth (280--81) は主に20世紀の言語学者の -dom の生産性に関する言及を数多く収集し,"inactive" とする論者と "active" とする論者の間で意見が完全に割れていることを示す."inactive" とする言及の1例として,1935年の "-dom . . . is to all intents and purposes now dead" が挙げられる,"active" とするものには同年の ". . . still active, that is to say, regarded as easily available  for the coining of new compounds . . ." が挙げられる.
+収集した言及の中に,19世紀後半の同時代の軽蔑的な反応が含まれており興味深い (283--84) .
+Among  the recent vulgarisms that have crept into the press is an abuse of the suffix dom . . . as legitimately used in kingdom, christendom . . . The word, however, does not admit of unlimited extension at the hands either of neologists or of would-be comic writers. 'Officialdom is strong in France . . . '
+次に,Wentworth は,1840年からの100年間で初めて印刷上に現われた262個の -dom 語を列挙する (284--85) .20世紀に入ってからの40年間だけでほぼ半数の132語が列挙されている.これだけを見ても,昨日の OED に基づく通時的分布が,20世紀における -dom の生産性を相当に過小評価しているということが分かる.ただし,Wentworth は特定の著者や特定の年に -dom の新語が現われていることに注意を喚起している.
+英米の著名な作家による -dom 語の使用例を概観した後,Wentworth は1800年以降に現われた約300語の -dom 語の "usage status" について調査する.そのほとんどが "standard" な語であると指摘しており,-dom の生産性を暗に示しているようである (290) .
+Of the approximately 300 Modern English words treated in this inquiry, all but a relative few are standard. Many are rich in connotation of empire, of politic organization, of dominion real or fancied. Some are daring, poetic, curious, whimsical. But such traits hardly disqualify the words as standard English, so broad is that concept.
+次に,-dom の語形成上の特徴,-dom 語の強勢の位置が考察される (293--94) .形容詞の基体に接尾辞のついた少数派の例として halidom, bourgeoisdom, carefreedom, topsyturvydom, awaredom, Englishdom, Germandom, ramshackledom が紹介されるが,最も頻度の高い -dom 語が freedom や wisdom など形容詞由来であることが指摘される (293) .
+続けて,各 -dom 語が,権威あるいくつかの辞書に見出し語として含められているかどうかを確認する (294) .しかし,ある -dom 語が文証されたことがあるかどうかということは必ずしも生産性の指標とはならないことを示唆し,Jespersen から次の一節を引用しつつ -dom の潜在的な生産性を評価している (295) .
+A word may have been used scores of times without finding its way into any dictionary,---and a word may be an excellent one even if it has never been used before by any human being. If at its first appearance it is just as intelligible as if it had been in constant use for centuries, why should the first occurrence be more faulty than the three-thousandth?
+最後に,1800年以降に現われた -dom 語が300個ほどリストアップされる (296--306) .狭い話題を深く追究するという,研究の王道を行く印象的な論文だった.
+分かっていたつもりだが,接辞の生産性の問題はやはりその定義から始めなければならないなと改めて実感した.
+・ Wentworth, Harold. "The Allegedly Dead Suffix -dom in Modern English." PMLA 56 (1941): 280--306.
+#731. 接尾辞 -dom をもつ名詞の通時的分布 [suffix][oed][corpus][productivity]
+[2009-05-18-1]の記事「接尾辞-dom をもつ名詞」では現代英語で使われる -dom 語をいくつか挙げたが,今回は通時的な観点からこの接尾辞を眺めてみたい.Bauer (220) によると,-dom は一度は瀕死の接尾辞とみなされるほどに衰退していたが,現代英語では一定の生産性を取り戻してきているという.
+-dom    This suffix forms abstract, uncountable nouns from concrete, countable ones. For a long time it was thought that the suffix was moribund or totally non-productive, but Wentworth (1941) showed that it had never completely died out, and it is still productive in contemporary English, though not very much so. Recent examples include Dollardom, fagdom, gangsterdom, girldom (all OEDS). (220)
+-dom は原則として名詞の基体に付加して抽象名詞を作るが,freedom のように形容詞の基体に付加する例もある.
+OED で通時的分布を調べてみた.[2011-01-05-1]で紹介した「OED の検索結果から語彙を初出世紀ごとに分類する CGI」を利用して世紀ごとに -dom 語を数え上げ,以下のように視覚化した.Sodom などの雑音も多少は混じっており,ざっと見て気付いたものは削除したが,大雑把な数え上げとして理解されたい.数値データはこのページのHTMLソースを参照.
+中英語から近代英語にかけてのじわじわとした復活,そして19世紀の爆発は印象的である.20世紀の下火は,現実を反映しているのか,あるいは OED の語彙収集上の事情によるものだろうか.いずれにしても19世紀以降の新 -dom 語彙はすべてが低頻度語で,nonce-word も多い.Frequency Sorter によると,ANC (American National Corpus) で10回以上用いられているものは,fandom, boredom, stardom, fiefdom くらいだ.
+接辞の生産性 (productivity) は理論的に計算するのが難しいとされる (Baayen and Lieber) .-dom の19世紀の爆発は20世紀そして21世紀にどの程度続いているのか,直感的に捉えられる接辞の生産性とは客観的にどのように記述されるのか,生産性の問題にコーパスがどのように活用できるのか.-dom に注目するだけでも,様々な問題が持ち上がってくる.
+・Bauer, Laurie. English Word-Formation. Cambridge: CUP, 1983.
+・Baayen, Harald and Rochelle Lieber. "Productivity and English Derivation: A Corpus-Based Study." Linguistics 29 (1991): 801--43.
+#730. 写本文化の textual transmission [textual_transmission][manuscript]
+英語に限らず印刷術が発明される前の中世のテキストは,手書きの写し (copying) によって伝達されていた.写しの写し (recopying) が数世代続くと,伝言ゲームのように原テキストからの差は開いてゆくのが普通である.しかし,たとえ一度の写しであっても,人間による手書きである以上,参照している原本 (exemplar) からの逸脱は避けられない.また,その逸脱が単純な写し誤り (scribal error) であることもあれば,より意図的な編集 (editing) や翻訳 (translation) に近いものであることもある.したがって,ある原テキストの書写によって生じた新テキストは,現代の印刷文化やコピー文化が当然とする厳密な写しではなく,ある程度の逸脱を必ず含む新ヴァージョンである.写本文化における textual transmission は,このような逸脱,可変性,流動性に特徴づけられている.Boffey (117) によると,この特徴は Zumthor により "mouvance" と呼ばれているところのものである.
+写しの際に逸脱が生み出されるメカニズムとしてもっとも理解しやすいのは,写字生 (scribe) による写し誤り (error) である.これには,文字を入れ替える,別の文字を書く,文字を書き落とす,行を間違える (eyeskip) などがある.現代の手書きやタイピングにも対応するものがあるので想像しやすいだろう.テキストをキーボードで打ち込む際に行を間違えるなど,日常茶飯事である.
+単純な写し誤りではなく,より意図的な種類の逸脱としては,より良い読みを与えられるとの判断でなされる語句の置き換えがある.また,対象となる読者や聴者を意識しての改変ということもあり得る.例えば,説教であれば,易しい口語体に置き換えるであるとか,レトリックのために語順を入れ替えたりするなどが考えられる.解釈の便のために注をつけたり,句読法を変えたりということもあり得る.古風な言語で書かれた原テキストを同時代風の言語にアップデートするという改変もあるだろう.さらに,写字生が原本の方言を自分の方言に「翻訳する」という場合もある.方言の「翻訳」は特に標準英語の存在しない中英語期にあってはごく普通に行なわれており,原テキストの言語のみならずテキストの趣を大きく変えてしまう可能性をはらんでいる.
+印刷文化は,最初から完成版で原稿を収め,その完成版をコピーして頒布することを前提としている.一方で,写本文化は,最初から最後まで完成版というものはなく,非完成版が別の改変された非完成版として次々に派生してゆくという過程を前提としていた.したがって,後者のテキスト伝達では,テキストは必然的に dynamic, flexible, unfixed だったのである.
+現存する中英語テキストの version を考える際には,上記のような,現代とは異なる写本文化の textual transmission の事情を念頭に置いておく必要がある.
+中英語ロマンスの発展も,写本文化の textual transmission を特徴づける "mouvance" に支えられていた.これについては,[2010-11-06-1]の記事「Romance」を参照.
+・ Boffey, Julia. "From Manuscript to Modern Text." A Companion to Medieval English Literature and Culture: c.1350--c.1500. Ed. Peter Brown. Malden, MA: Blackwell, 2007. Malden, MA: Wiley-Blackwell, 2009. 107--22.
+hellog〜英語史ブログ / 2011-04

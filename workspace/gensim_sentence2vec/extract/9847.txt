@@ -1,0 +1,187 @@
+領域観測サービス
+iBeacon の機能は CoreLocation.framework の領域観測サービスの一部として実装されています。領域観測サービスはジオフェンシングを実現するの為の機能で、任意の領域への iOS デバイスを持ったユーザーの出入りを検出することができます。
+従来の領域観測サービスは地理的領域観測と呼ばれるもので、位置情報を基に領域への出入りを監視します。iOS 7  では、この領域観測サービスに iBeacon が追加されました。iBeacon は Beacon による領域観測を行う機能で、任意の場所に設置した Beacon を検出して領域への出入り(接近・離脱)を監視します。また、検出した Beacon からの大まかな距離を測定することも可能です。
+iBeacon は、地理的領域観測では難しかった非常に狭い領域への出入りを比較的高い精度で検出する事が出来るため、広い領域への出入りを検出する地理的領域観測を補完する機能として追加されました。
+iBeacon と Bluetooth Low Energy
+iBeacon では、Bluetooth Low Energy (BLE) を利用して通信を行い、デバイスの近くに Beacon が存在することを検知します。Bluetooth のデバイスは、自分の存在を他のデバイスに知らせるために自デバイスや対応サービスの情報を公開する仕組みがあり、これをアドバタイズといいます。また、BLE ではアドバタイズを行っているデバイスのことをペリフェラル、ペリフェラルを検索して情報の取得などを行うデバイスのことをセントラルと呼びます。
+iBeacon で利用される Beacon はペリフェラルにあたり、Beacon の識別情報をアドバタイズしています。また、Beacon を検索するアプリ側はセントラルにあたり、CoreLocation.framework の API 経由で Beacon がアドバタイズしている情報にアクセスします。
+Beacon の識別
+iBeacon では、Beacon は個々の Beacon を識別するための情報をアドバタイズします。アドバタイズする情報は下記の通りです。
+proximity UUID
+128 bit の UUID で表現される識別子です。法人などの組織などの単位の識別子として用いられることが想定されています。Beacon がアドバタイズするデータには、必ずこの値が含まれている必要があります。
+major
+16 bit unsigned integer の値で、同一 proximity UUID を持つ Beacon の識別子として利用します。例えば、ショッピングモールなどの単位で同一の値を割り当てて、グルーピングするといったような用途が想定されています。Beacon がアドバタイズするデータに、この値を含めるかどうかは任意です。
+minor
+16 bit unsigned integer の値で、同一 proximity UUID および major を持つ Beacon の識別子として利用します。例えば、ショッピングモールの各店舗などの単位で値を割り当てて、店舗を識別するといったような用途が想定されています。Beacon がアドバタイズするデータに、この値を含めるかどうかは任意です。
+iBeacon の API
+Beacon による領域観測のために、CoreLocation.framework に下記の2つのクラスが追加されました。
+CLBeaconRegion
+領域観測の対象となる Beacon を表すクラスです。このクラスのインスタンスを領域観測サービスに登録することで、対象の Beacon のイベントが発生するようになります。
+proximityUUID
+領域観測の対象とする Beacon の proximity UUID を指定するプロパティです。この proximity UUID と一致する Beacon のみが領域観測イベント発生の対象となります。
+major
+上記の proximity UUID を持った Beacon について、領域観測の対象とする major の値を指定するプロパティです。proximity UUID と major が一致する Beacon のみが領域観測イベント発生の対象となります。なお、この値を指定しなかった場合には、proximity UUID が一致する Beacon 全てが対象となります。
+minor
+上記の proximity UUID と major を持った Beacon について、領域観測の対象とする minor の値を指定するプロパティです。proximity UUID, major, minor が一致する Beacon のみが領域観測イベント発生の対象となります。なお、この値を指定しなかった場合には、proximity UUID, major (指定した場合) が一致する Beacon 全てが対象となります。
+CLBeacon
+Beacon の端末の情報を表すクラスです。領域観測イベントが発生した際に、Beacon の端末が発信している情報がこのクラスのインスタンスに設定されて渡されてきます。このクラスはプログラマが生成することはありません。
+proximityUUID
+Beacon の proximity UUID を格納するプロパティです。
+major
+Beacon の major を格納するプロパティです。
+minor
+Beacon の minor を格納するプロパティです。
+proximity
+Beacon の相対距離の情報を格納するプロパティです。このプロパティは CLProximity 列挙型の値です。
+CLProximity
+Beacon の相対距離を表す列挙型です。下記の4つの値が定義されています。
+CLProximityImmediate
+Beacon が至近距離にあることを表します。
+CLProximityNear
+Beacon が近距離にあることを表します。
+CLProximityFar
+Beacon が遠距離にあることを表します。
+CLProximityUnknown
+Beacon の距離が不明であることを表します。
+サンプルアプリの作成
+では、実際に Beacon の存在を検知してローカル通知をするサンプルアプリを作成してみましょう。サンプルアプリのソースコードは GitHub に公開してありますので参考にして下さい。
+proximity UUID を用意する
+まずは、proximity UUID に利用する UUID を用意します。ターミナル上で uuidgen コマンドを実行すると、128bit の UUID が生成されます。
+$ uuidgen
+Xcode プロジェクトの作成
+Xcode から新規プロジェクトを作成して下さい。Beacon による領域観測機能は iOS 6 以前では利用できません。必ず iOS SDK 7 を利用してビルドする Xcode 5 を使って下さい。新規プロジェクトのテンプレートは Single View Application を選択します。
+ライブラリの追加
+Beacon による領域観測機能を利用するためには、CoreLocation.framework を利用する必要がありますので、プロジェクトから参照できるように追加しておいて下さい。
+Beacon による領域観測の開始
+今回のサンプルアプリでは、アプリ起動時に Beacon による領域観測を開始するようにします。コードは下記の通りです。
+- (void)viewDidLoad
+{
+[super viewDidLoad];
+if ([CLLocationManager isMonitoringAvailableForClass:[CLBeaconRegion class]]) {
+// CLLocationManagerの生成とデリゲートの設定
+self.locationManager = [CLLocationManager new];
+self.locationManager.delegate = self;
+// 生成したUUIDからNSUUIDを作成     
+self.proximityUUID = [[NSUUID alloc] initWithUUIDString:@"生成したUUID文字列"];
+// CLBeaconRegionを作成
+self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:self.proximityUUID
+identifier:@"jp.classmethod.testregion"];                                                               
+// Beaconによる領域観測を開始                                                
+[self.locationManager startMonitoringForRegion:self.beaconRegion];
+}
+}
+5行目では、CLLocationManager のスタティックメソッドである、isMonitoringAvailableForClass: で Beacon による領域観測が可能であるかチェックしています。BLE に対応しているデバイスでないと、Beacon による領域観測は実行できません。このメソッドは、CLRegion クラスのサブクラスの Objective-C クラス構造体を引数にとって、アプリを実行中のデバイスが引数で渡されたクラスに対応する領域観測を実行できるかを判定します。今回は、Beacon による領域観測を実行するので、CLBeaconRegion のクラス構造体を渡しています。
+13行目では、CLBeaconRegion のインスタンスを作成しています。イニシャライザには、proximity UUID と Region の ID を渡しています。proximity UUID は、先ほど uuidgen コマンドで生成した UUID の文字列から NSUUID のインスタンスを作成して、これを利用しています。Region の ID は従来からの地理的領域観測と同様、アプリ内で Region を特定するために利用します。
+領域観測イベントをハンドリングする
+Beacon を検知するなどして領域観測イベントが発生した場合に、そのイベントをハンドリングするためには、CLLocationManagerDelegate プロトコルのメソッドを実装します。
+Beacon 領域への出入りのイベントをハンドリングする
+領域への出入りのイベントをハンドリングするには、従来の位置情報を利用した領域観測サービスと同様、locationManager:didEnterRegion: メソッドと、locationManager:didExitRegion: メソッドを実装する必要があります。
+コードは下記の通りです。
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region
+{
+// ローカル通知
+[self sendLocalNotificationForMessage:@"Enter Region"];
+// Beaconの距離測定を開始する
+if ([region isMemberOfClass:[CLBeaconRegion class]] && [CLLocationManager isRangingAvailable]) {
+[self.locationManager startRangingBeaconsInRegion:(CLBeaconRegion *)region];
+}
+}
+- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region
+{
+// ローカル通知
+[self sendLocalNotificationForMessage:@"Exit Region"];
+// Beaconの距離測定を終了する
+if ([region isMemberOfClass:[CLBeaconRegion class]] && [CLLocationManager isRangingAvailable]) {
+[self.locationManager stopRangingBeaconsInRegion:(CLBeaconRegion *)region];
+}
+}
+領域へ入った(Beacon に近づいた)イベントと領域から出た(Beacon から遠ざかった)イベントをハンドリングして、ローカル通知を送っています。
+また、領域へ入ると対象の Beacon との距離の測定を開始することができます。上記コードでは、CLLocationManager の startRangingBeaconsInRegion: メソッドで距離の測定を開始し、stopRangingBeaconsInRegion: メソッドで距離の測定を終了しています。
+Beacon の距離測定イベントをハンドリングする
+Beacon からの距離の測定を開始すると、定期的にイベントが発生するようになります。このイベントをハンドリングするためには、locationManager:didRangeBeacons:inRegion: メソッドを実装する必要があります。
+コードは下記の通りです。
+- (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region
+{
+if (beacons.count > 0) {
+// 最も距離の近いBeaconについて処理する
+CLBeacon *nearestBeacon = beacons.firstObject;
+NSString *rangeMessage;
+// Beacon の距離でメッセージを変える
+switch (nearestBeacon.proximity) {
+case CLProximityImmediate:
+rangeMessage = @"Range Immediate: ";
+break;
+case CLProximityNear:
+rangeMessage = @"Range Near: ";
+break;
+case CLProximityFar:
+rangeMessage = @"Range Far: ";
+break;
+default:
+rangeMessage = @"Range Unknown: ";
+break;
+}
+// ローカル通知
+NSString *message = [NSString stringWithFormat:@"major:%@, minor:%@, accuracy:%f, rssi:%d",
+nearestBeacon.major, nearestBeacon.minor, nearestBeacon.accuracy, nearestBeacon.rssi];
+[self sendLocalNotificationForMessage:[rangeMessage stringByAppendingString:message]];
+}
+}
+メソッドの2番目の引数には、距離測定中の Beacon の配列が渡されてきます。この配列は、Beacon までの距離が近い順にソートされていますので、先頭に格納されている CLBeacon のインスタンスが最も距離が近い Beacon の情報となります。
+Beacon アプリの作成
+Beacon を検知してローカル通知を送るサンプルアプリができたので、動作確認のために Beacon を用意する必要があります。今現在はすぐに Beacon を入手するのが難しそうなので、別の iOS デバイスを Beacon として動作させるために Beacon アプリを作成したいと思います。
+Xcode プロジェクトの作成
+Xcode から新規プロジェクトを作成して下さい。新規プロジェクトのテンプレートは Single View Application を選択します。
+ライブラリの追加
+Beacon アプリは、デバイスを BLE のペリフェラルとして動作させ、Beacon の識別情報をアドバタイズすることによって実現します。このため、CoreBluetooth.framework と CoreLocation.framework を利用する必要がありますので、プロジェクトから参照できるように追加しておいて下さい。
+アドバタイズの開始
+Beacon アプリでも、アプリ起動時にアドバタイズを開始するようにします。コードは下記の通りです。
+- (void)viewDidLoad
+{
+[super viewDidLoad];
+// 生成したUUIDからNSUUIDを作成  
+self.proximityUUID = [[NSUUID alloc] initWithUUIDString:@"生成したUUID文字列"];
+// CBPeripheralManagerを作成
+self.peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil options:nil];
+// アドバタイズ開始処理
+if (self.peripheralManager.state == CBPeripheralManagerStatePoweredOn) {
+[self startAdvertising];
+}
+}
+- (void)startAdvertising
+{
+// CLBeaconRegionを作成してアドバタイズするデータを取得
+CLBeaconRegion *beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:self.proximityUUID
+major:1
+minor:2
+identifier:@"jp.classmethod.testregion"];
+NSDictionary *beaconPeripheralData = [beaconRegion peripheralDataWithMeasuredPower:nil];
+// アドバタイズを開始
+[self.peripheralManager startAdvertising:beaconPeripheralData];
+}
+9行目で生成している CBPeripheralManager は、iOS デバイスをペリフェラルとして動作させるためマネージャクラスです。startAdvertising: メソッドに NSDictionary 型でアドバタイズするデータを渡すと、アドバタイズが開始されます。
+20行目では、先程と同じように CLBeaconRegion のインスタンスを生成しています。今回は、proximity UUID の他に major と minor も指定しています。CLBeaconRegion のインスタンスを生成しているのは、Beacon としてアドバタイズするデータを取得するためです。CLBeaconRegion の peripheralDataWithMeasuredPower: メソッドは、イニシャライザで指定した設定値を基にアドバタイズするデータを返します。よって、上記コードでは、proximity UUID に生成した UUID、major に 1、 minor に 2 が設定された NSDictionary 型のデータが返されます。
+なお、このメソッドのパラメータの measuredPower というのは、ペリフェラルの 1m 地点での電波強度を表す NSNumber 型の値です。この数値を識別情報と一緒にアドバタイズして、セントラル側で距離測定の際に利用します。nil を渡すとデフォルト値が設定されます。
+取得したアドバタイズするデータを先程の startAdvertising: メソッドに渡せば任意の値のアドバタイズが開始され、Beacon として動作させることができます。
+動作を確認する
+では、作成したサンプルを動作させてみましょう。まず、Beacon を検出するサンプルアプリを起動して、その後に Beacon アプリを起動して下さい。すると、サンプルアプリが Beacon アプリを検出して、領域観測イベントが発生します。
+下図は、ローカル通知が送られて通知センターに表示されている様子です。
+領域観測サービスが開始した後、すぐに Beacon が検出されて locationManager:didEnterRegion: デリゲートメソッドが呼び出されています。さらに、Beacon の距離測定イベントが断続的に発生して、locationManager:didRangeBeacons:inRegion: デリゲートメソッドが呼び出されています。距離測定イベントは、locationManager:didExitRegion: デリゲートメソッドが呼び出されて距離測定処理を停止するまで発生し続けます。Beacon アプリ側で設定した major と minor の値がきちんと渡されていることも確認できます。
+また、iOS デバイスを Beacon として動作させて Beacon の相対距離の値がどの程度の距離を示しているのか調べてみました。この結果、CLProximityImmediate が 50cm 以内、CLProximityNear が 数m 以内、CLProximityFar が壁を1枚隔てて 15m 以内といった感じでした。もちろん、環境や Beacon のデバイスによってこれらの距離は変化するものと思われます。
+領域観測サービスの開始と Enter イベント
+2013/12/11 追記。
+下記の記事で、不備を指摘して頂いていました。
+iBeacon Tips: 正しいビーコン監視方法
+領域観測サービス開始時に既に観測領域内にデバイスが存在していると、最初の locationManager:didEnterRegion: メソッドが呼び出されない問題は、iOS 7 より CLLocationManager に追加された requestStateForRegion: メソッドで対策がなされていたようです。詳しい内容は上記記事にて解説されていますので、あわせて読まれる事をお勧めします。
+未検証ですが、従来からの地理的領域観測における同様の問題に関しても、このメソッドの追加によって解決されるものと思われます。ただし、iOS 6 以下のデバイスでは利用できないので注意が必要です。
+ここからは、領域観測サービスに関する補足事項です。
+iOS 6 の領域観測サービスでは、領域観測サービス開始時に既に観測領域内にデバイスが存在していると、最初の locationManager:didEnterRegion: メソッドが呼び出されませんでした。これは、iOS 7 の地理的領域観測、Beacon による領域観測も同じ挙動をするようです。
+Beacon による領域観測の場合、領域観測サービス開始時に既に Beacon が検出できる距離にあると、locationManager:didEnterRegion: メソッドが呼び出されません。この場合でも、Beacon が検出できない距離まで遠ざかれば locationManager:didExitRegion: メソッドは呼び出されます。
+あくまで観測領域の境界をまたいだ際にしかイベントが発生しないようですので注意が必要です。
+CLRegion の役割が変更された
+従来の領域観測で利用していたクラスである CLRegion は iOS 7 SDK で追加された CLCircularRegion に変更されました。また、CLRegion 自体は観測領域全般を表す抽象クラスという扱いになり、地理的領域関係のメンバは全てそのサブクラスである CLCircularRegion に移動されて非推奨となりました。Beacon の観測領域を表す CLBeaconRegion も CLRegion のサブクラスです。
+まとめ
+Beacon による領域観測機能の追加によって、今までは難しかった小さな領域での位置情報の活用が実現可能になりました。この機能は割り合い簡単に実装できるので、Beacon の調達が容易にできるようになれば、様々なサービスに手軽に組み込むことができそうです。
+参考サイト
+Location and Maps Programming Guide
+[iOS 7] 新たな領域観測サービス iBeacon を使ってみる ｜ Developers.IO

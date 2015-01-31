@@ -40,7 +40,7 @@ class LabeledLineSentence(object):
             return self.sentences_cache
 
         sentences = []
-        lines = self.textcollection.words_list([]) # すべての形態素
+        lines = self.textcollection.words_list([u"名詞", u"動詞"]) # すべての形態素
         for uid, line in enumerate(lines):
             sentences.append(LabeledSentence(words=line, labels=['SENT_%s_%s' % (self.label, str(uid))]))
 
@@ -58,10 +58,14 @@ class Corpus(object):
     def __init__(self):
         self.conf = config.Config("gensim_sentence2vec")
 
-        query = ht.file_read(self.conf.SPOKEN_QUERY_PATH).split("\n")
+        query = ht.file_read(self.conf.WRITE_QUERY_PATH).split("\n")
         query.pop()
         self.query_tc = ht.TextCollection(query)
-        self.doc_tc = ht.TextCollection(self.conf.SPOKEN_DOC_PATH)
+        self.doc_tc = ht.TextCollection(self.conf.WRITE_DOC_PATH)
+        # TODO: wrapも取れるように設計しよう...
+        self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
+        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:1000]])
+        self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
 
         self.corpus_path = self.conf.PROJECT_PATH+"/middle/corpus.txt"
 
@@ -72,7 +76,8 @@ class Corpus(object):
 
     def make_sent2vec_sentences(self):
         return LabeledLineSentence(self.doc_tc, "DOC") \
-               + LabeledLineSentence(self.query_tc, "QUERY")
+               + LabeledLineSentence(self.query_tc, "QUERY") \
+               + LabeledLineSentence(self.expand_tc, "EXPAND")
 
     def doclabel2text(self, doclabel):
         """
@@ -94,14 +99,14 @@ class MySentVec(object):
             return self.model_cache
 
         # モデル作成
-        # model = Doc2Vec(sentences, size=100, window=8, min_count=5, workers=4)
-        model = Doc2Vec(alpha=0.025, min_alpha=0.025, workers=4)  # use fixed learning rate
-        model.build_vocab(self.sentences)
-         
-        for epoch in range(1):
-            model.train(self.sentences)
-            model.alpha -= 0.002  # decrease the learning rate
-            model.min_alpha = model.alpha  # fix the learning rate, no decay
+        model = Doc2Vec(self.sentences, size=400, window=5, min_count=5, workers=4)
+        # model = Doc2Vec(alpha=0.025, min_alpha=0.025, workers=4)  # use fixed learning rate
+        # model.build_vocab(self.sentences)
+        #  
+        # for epoch in range(1):
+        #     model.train(self.sentences)
+        #     model.alpha -= 0.002  # decrease the learning rate
+        #     model.min_alpha = model.alpha  # fix the learning rate, no decay
 
         self.model_cache = model
         return self.model_cache
@@ -116,6 +121,7 @@ if __name__ == '__main__':
     conf = config.Config("gensim_sentence2vec")
 
     corpus = Corpus()
+    print "make corpus"
 
     # labelと文章の対応はあっているはず 
     # print corpus.doclabel2text("SENT_DOC_1").text()
@@ -123,11 +129,20 @@ if __name__ == '__main__':
     # print corpus.make_sent2vec_sentences().output_sentences()
 
     model = MySentVec(corpus)
+    print "make model"
+
+    # ht.pp(model.model().most_similar(u"音声", topn=50))
+    # exit()
 
     res = []
     for i in range(37):
         query_label = "SENT_QUERY_%s" % str(i)
+        print query_label
         res.append(model.most_similar_in_doc(query_label))
 
+#     for text, sim in res[0][0:10]:
+#         ht.pp(text.path)
+#         ht.pp(sim)
+# 
     # fileのアウトプット
     helper.output_result(res, conf.RESULT_PATH)

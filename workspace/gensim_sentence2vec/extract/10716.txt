@@ -1,0 +1,58 @@
+2.1. インデックスの作成
+1章で紹介した簡単なサンプルを元に改良を加えて行きます。
+import java.io.FileReader;
+import java.io.IOException;
+import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
+public class SampleIndex{
+public static void main(String[] args) throws IOException{
+boolean create = true;
+//インデックスに登録するファイルのあるディレクトリ
+File directory = new File(args[0]);
+String[] filepath = directory.list();
+//インデックスの保存先
+String index = args[1];
+//インデクサの生成
+IndexWriter writer = new IndexWriter(index, new JapaneseAnalyzer(), create);
+//文書の解析
+for (int i = 0; i < filepath.length; i++) {
+Document doc = new Document();
+//ファイルパスの登録
+doc.add(Field.UnIndexed("url", filepath[i]));
+Reader reader = new FileReader(filepath[i]);
+//文書の中身の登録
+doc.add(Field.Text("contents",reader));
+writer.addDocument(doc);          
+}
+//インデクサのクローズ
+writer.optimize();
+writer.close();
+}    
+}
+まずはじめにインデックスを作成するIndexWriterの初期化を行います。
+IndexWriterは新規に作成するだけでなく、既存のインデックスに情報を追加することも出来ます。
+IndexWriterのコンストラクタの第一引数は、インデックスを保存するフォルダのパスです。
+第二引数は、解析を行うプログラムのインスタンスです。
+日本語を形態素解析する場合、org.apache.lucene.analysis.ja.JapaneseAnalyzerを指定する必要があります。
+第三引数は、インデックスを新規作成するかどうか指定するフラグです。
+trueであれば既存のインデックスは削除され、新たに一から作成することになります。
+既に他のIndexWriterによって開かれているインデックスはロックされており、書き込むことが出来ません。
+そのためインデックスを作成するプログラムは、常に1つしか動作しない作りになっていることが望ましいです。
+次に文書の解析を行います。
+あるディレクトリに含まれるファイルの一覧は、java.io.Fileのlist()メソッドで取得出来ます。
+ここではサブディレクトリを考慮に入れていません。
+またテキストファイルのような、解析を必要としないファイルを対象としています。
+HTMLファイルのような解析を必要とするファイルを読み込む場合は、自前の解析プログラムを用意しなければなりません。
+逆に言えば、解析プログラムを用意さえすれば、どのような文書でも検索対象にすることが出来ます。
+インデックスの登録には、DocumentクラスとFieldクラスを用います。
+Documentは1つの文書単位を表すクラス、Fieldクラスは文書の属性を表すクラスです。
+インデックスへの登録・インデックスからの検索はDocument単位で行われます。
+1つのDocumentは複数のFieldを持ち、各Fieldは属性の名前とその値を持ちます。
+Fieldの値が検索対象となります。
+なお基本的にFieldの値はString型ですが、java.io.Readerインスタンスを指定することも出来ます。
+適切にFieldを設定したDocumentを引数に、IndexWriterのaddDocument(Document)メソッドを呼ぶことで
+インデックスに文書を追加していきます。
+全ての文書を追加し終えたら、最後にIndexWriterのoptimize()メソッドを呼び、インデックスの最適化を行います。
+2. インデックスの作成  | TECHSCORE(テックスコア)

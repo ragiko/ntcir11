@@ -1,0 +1,81 @@
+が(最小2乗法の意味で)できるだけ正確に成り立つように
+&beta;0,&beta;1,&beta;2
+を求めます。しかし,合否は0か1しか値がありません。そこで,1である確率を &pi;
+と書けば,ロジスティック回帰では次の式が(最尤法の意味で)できるだけ正確に成り立つような
+&beta;0,&beta;1,&beta;2
+を求めます:
+上のような回帰式の左辺に現れる関数をリンク関数といいます。この場合のリンク関数はロジット関数と呼ばれ,logit(&pi;) と書くことがあります。ちなみに &pi; / (1 - &pi;) はオッズ(odds)と呼ばれる量ですので,ロジット関数はオッズの対数ということになります。
+上の式を確率 &pi; について解けば次のようになります:
+この右辺は logit-1(&beta;0 + &beta;1x1 + &beta;2x2) とも書きます。この logit-1 という関数(logitの逆関数)はロジスティック関数と呼ばれるものの一種です。
+データの読み込み方(RStudio使用)
+data1.csv というファイルをダウンロードして,RStudioの右上の「Workspace」ペインで「Import Dataset」「From Text File...」とたどって,読み込ませます。
+データの読み込み方(クリップボード経由)
+WindowsならRに次のように打ち込んでください(リターンキーはまだ押しません):
+data1 = read.table("clipboard", header=TRUE)
+MacならRに次のように打ち込んでください(リターンキーはまだ押しません):
+data1 = read.table(pipe("pbpaste"), header=TRUE)
+このページの上の表または同じデータの入ったExcelの表を(ヘッダ部分「y,x1,x2」も含めて)マウスで選択し,右クリックで「コピー」を選びます。
+Rで,さきほど押さなかったエンターキーを押します。
+念のため,Rで data1 と打ち込んで,正しいデータになっていることを確かめます。
+データの読み込み方(Excel経由)
+Excelにデータを打ち込み,CSV形式で保存してください。
+Rで次のように打ち込んでください:
+data1 = read.csv(file.choose())
+ファイル選択の窓が現れますので,さきほど保存したCSVファイルを選んでください。Rで「不完全な最終行が見つかりました」という警告が出ることがありますが,無視してください。
+もし日本語を含む表が文字化けするなら次のようにして文字コードを指定します:
+data1 = read.csv(file.choose(), fileEncoding="CP932")
+念のため,Rで data1 と打ち込んで,正しいデータになっていることを確かめます。
+通常の重回帰分析
+Rで重回帰分析をするには,
+lm(y ~ x1 + x2, data=data1)
+と打ち込みます(lm は linear model の意味です)。もっと良い方法は,
+result1 = lm(y ~ x1 + x2, data=data1)
+のように結果を変数(オブジェクト)に入れておき,
+summary(result1)
+として結果を表示させることです。このほうが複数のモデルを比較するときにも便利です。この場合は次のように表示されます:
+Call:
+lm(formula = y ~ x1 + x2, data = data1)
+Residuals:
+Min      1Q  Median      3Q     Max 
+-0.6548 -0.3092 -0.2713  0.5010  0.7095 
+Coefficients:
+Estimate Std. Error t value Pr(>|t|)
+(Intercept) -1.69441    2.24318  -0.755    0.475
+x1           0.29598    0.37222   0.795    0.453
+x2           0.01483    0.02159   0.687    0.514
+Residual standard error: 0.552 on 7 degrees of freedom
+Multiple R-squared: 0.1113,	Adjusted R-squared: -0.1426 
+F-statistic: 0.4385 on 2 and 7 DF,  p-value: 0.6616 
+つまり y = -1.69441 + 0.29598x1 + 0.01483x2
+で予測されることがわかります(ただしどの係数も有意ではありません)。
+上で説明したロジスティック回帰を行って結果を result2
+というオブジェクトに代入するには
+result2 = glm(y ~ x1 + x2, data=data1, family=binomial(link="logit"))
+と打ち込みます。続いて
+summary(result2)
+と打ち込めば次のように表示されます:
+Call:
+glm(formula = y ~ x1 + x2, family = binomial(link = "logit"), 
+data = data1)
+Deviance Residuals: 
+Min       1Q   Median       3Q      Max  
+-1.4754  -0.8584  -0.8007   1.1905   1.5719  
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)
+(Intercept) -9.44589    9.12237  -1.035    0.300
+x1           1.27158    1.49423   0.851    0.395
+x2           0.06424    0.08739   0.735    0.462
+(Dispersion parameter for binomial family taken to be 1)
+Null deviance: 13.460  on 9  degrees of freedom
+Residual deviance: 12.345  on 7  degrees of freedom
+AIC: 18.345
+Number of Fisher Scoring iterations: 4
+つまり logit(&pi;) = -9.44589 + 1.27158x1 + 0.06424x2
+で予測されることがわかります(ただしどの係数も有意ではありません)。
+また,fitted(result2) と打ち込むと,フィットされた値
+logit-1(&beta;0 + &beta;1x1 + &beta;2x2)
+が表示されます。
+カブトムシの問題
+次の表は,Annette J. Dobson and Adrian G. Barnett, An Introduction to Generalized Linear Models, 3rd ed. (CRC Press, 2008) の p.127 にあるデータです。x はある薬品の量(対数),n はその薬品を与えたカブトムシの数,y はそのうち死んだ数です。薬品の量が増えると死ぬ確率がどのように高くなるかを調べます。
+xny
+ロジスティック回帰

@@ -1,0 +1,59 @@
+[C++][Boost]Boost.Context でジェネレータを作る
+知らないうちに Boost.Context が trunk 入りしていたので,それを使って Python のジェネレータのようなものを作る CRTP クラスを書いてみました.
+generator.hpp
+メンバ関数 generate を実装するとジェネレータを作り上げてくれます.ジェネレータは,遅延評価される range として振る舞います.
+以下の例はフィボナッチ数列を返すジェネレータを作るものです.
+#include <iostream>
+#include <tuple>
+#include "generator.hpp"
+struct fib
+: iorate::generator<fib, int>
+{
+int max;
+explicit fib(int max)
+: max(max)
+{}
+template <class Context>
+void generate(Context &ctx) const
+{
+int a = 0, b = 1;
+while (a < max)
+{
+yield(a, ctx);
+std::tie(a, b) = std::make_tuple(b, a + b);
+}
+}
+};
+int main()
+{
+for (int i : fib(100)) std::cout << i << ' ';
+// 0 1 1 2 3 5 8 13 21 34 55 89 
+}
+yield ベースの列挙を自然に書けていると思います.
+Boost.Context は夢が広がりますね.
+Boost.Context を GCC 4.8.0 20110302 で使うときの問題
+上の例は GCC 4.6.1 (i686-pc-mingw32) + Boost Trunk 77256 で動作を確認しましたが,GCC 4.8.0 20120302 だと列挙を中断した場合に std::terminate() で終了してしまいます.			再現条件を探したところ,std::shared_ptr に指定したデリータ内で,完了していないコンテキストの unwind_stack() を呼び出す場合に(典型的には,std::shared_ptr<context> を使っている場合に起こります),std::terminate() が呼び出されるようです*1.
+#include <memory>
+#include <boost/context/all.hpp>
+#include <boost/shared_ptr.hpp>
+using namespace boost::contexts;
+context ctx;
+void f()
+{
+ctx.suspend();
+}
+int main()
+{
+ctx = context(f, default_stacksize(), no_stack_unwind, return_to_caller);
+ctx.start();
+// OK
+// ctx.unwind_stack();
+// std::terminate() is called at context_base.hpp:176
+std::shared_ptr<void>(nullptr, [](void *) { ctx.unwind_stack(); });
+// OK
+// boost::shared_ptr<void>(static_cast<void *>(nullptr), [](void *) { ctx.unwind_stack(); });
+}
+std::shared_ptr の排他制御が関係しているのかなと思いますが,よく分かりません.GCC のリリース版でも同じ問題が存在していれば,もう少し調べてみようと思います.
+ツイートする
+Permalink | コメント(0) | トラックバック(0) | 19:04 
+Boost.Context でジェネレータを作る - iorateの日記

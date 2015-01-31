@@ -1,0 +1,22 @@
+音声圧縮・伸張ミドルウェアとは
+音声圧縮・伸張ミドルウェアは、高圧縮率ながら高音質な音声圧縮/伸張を実現します。
+人の声に適した圧縮アルゴリズム及び演算量の低い伸張アルゴリズムを採用しております。
+対応プロセッサ/プラットフォーム
+音声圧縮・伸張ミドルウェアはANSI C準拠で作成のためOS非依存になっています。
+以下は、対応可能な例です。
+対応プロセッサ
+RISC
+ARM (ARM7, ARM9, XScale)
+SH (SH2, SH2A, SH3, SH4, SH4A)
+Pentium互換
+対応OS
+組み込み系
+μ-ITRON
+VxWorks
+intent
+WindowsCE, Windows Automotive, PocketPC, PocketPC, Windows Mobile, Android
+Embedded-Linux
+PC
+Microsoft  Windows
+PC-Linux
+製品(音声圧縮・伸張ミドルウェア) - 旭化成

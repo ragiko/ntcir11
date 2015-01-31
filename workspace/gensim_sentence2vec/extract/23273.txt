@@ -1,0 +1,55 @@
+GoogleはAndroid端末やiOS端末で利用可能なGoogle音声検索をリリースしています。
+今回はこのGoogle音声検索にも利用されている音声認識をアプリから利用する方法を説明したいと思います。アイデア次第でいろいろと活用出来るのではないでしょうか。
+それでは続きで説明します。
+RecognizerIntent
+音声認識はRecognizerIntentクラスを利用します。
+このRecognizerIntentクラスに定義されてているACTION_RECOGNIZE_SPEECHのIntentを発行して音声認識のActivity(見た目はダイアログですが)を起動させます。
+そしてその結果をonActivityResultメソッドで受け取って任意の処理を行います。
+音声認識Activityの起動
+まずはIntentの生成部分です。
+Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+Intentは必要に応じてextrasを追加しますが、ACTION_RECOGNIZE_SPEECHではEXTRA_LANGUAGE_MODELが必須です。
+設定できる値は以下の2つです。後述しますが認識したあとにWeb検索をすることも可能です。その場合は後者の値を設定した方がよいと思われます。
+LANGUAGE_MODEL_FREE_FORM
+LANGUAGE_MODEL_WEB_SEARCH
+intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+必須ではありませんが他に設定することextrasにはEXTRA_PROMPTがあります。これは音声検索のActivityに表示するメッセージを設定します。今回は「Please Speech」と表示させてみようと思います。
+intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+"Please Speech");
+その他のextrasはAndroid Developersを参照してください。
+putExtraを設定したら結果を受け取るためにstartActivityForResultでIntentを発行します。
+今回のACTION_RECOGNIZE_SPEECHに限ったことではありませんが、startActivityForResultが呼び出された時に、どのIntentからの結果かを判断するためにstartActivityForResultの第二引数に任意の値を与えて判断します。(サンプルではint型のREQUEST_CODEというメンバ変数を定義しています)
+startActivityForResult(intent, REQUEST_CODE);
+これで音声認識のActivityが起動します。
+Googleの音声検索アプリが入っていない場合などはActivityの起動に失敗することがあるのでサンプルソースではtry,catchで囲っています。
+結果の受け取り
+音声認識のActivityの結果をonActivityResultメソッドで受け取って処理を行います。
+結果はArrayListの形で返ってきます。サンプルではそれらを一纏めにしてToastで表示させています。
+ここで特定の言葉を認識した場合にそれに対応した機能を起動させるなどの使い道が考えられます。
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+// requestCodeを確認して、自分が発行したIntentの結果であれば処理を行う
+if ((REQUEST_CODE == requestCode) && (RESULT_OK == resultCode)) {
+// 結果はArrayListで返ってくる
+ArrayList<String> results =
+data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+// ArrayListで返ってきた結果を一纏めにする
+StringBuffer stringBuffer = new StringBuffer();
+for (int i = 0; i < results.size(); i++) {
+stringBuffer.append(results.get(i));
+}
+// 結果を表示する
+Toast.makeText(this, stringBuffer.toString(), Toast.LENGTH_LONG).show();
+}
+super.onActivityResult(requestCode, resultCode, data);
+}
+ACTION_WEB_SEARCH
+ACTION_RECOGNIZE_SPEECHのIntentを発行して結果を得ましたがACTION_WEB_SEARCHのIntentを発行することでブラウザで検索を実行することも可能です。
+下記は「Android」と喋った結果です。
+関連する記事:
+Intentを使ってアプリを連携させる(暗黙的Intent)
+Intentで画面遷移する(暗黙的Intent)/Getting started
+Bluetoothで通信を行う(1)
+カメラ機能を無効にする
+アプリの機能ごとにショートカットを作る
+音声認識を利用する «  Tech Booster

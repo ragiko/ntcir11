@@ -1,0 +1,419 @@
+Google Maps JavaScript API V3 サービス
+ジオコーディング
+ジオコーディングとは、住所(「1600 Amphitheatre Parkway, Mountain View, CA」など)を地理座標(緯度 37.423021、経度 -122.083739 など)に変換する処理のことをいいます。地理座標を使用して、マーカーを配置したり地図の位置決めを行ったりできます。 
+Google Maps API には、ユーザー入力から動的に住所をジオコーディングするためのジオコーダ クラスがあります。サービスの不正使用を防ぐため、これらのリクエストのレートは制限されています。既知の住所を、動的にではなく静的にジオコーディングしたい場合は、Geocoding APIのドキュメントを参照してください。
+ジオコーディング リクエスト
+ジオコーディング サービスへのアクセスは、Google Maps API が外部サーバーへの呼び出しを行う必要があるため、非同期に行われます。このため、コールバック メソッドを渡してリクエストの完了時に実行する必要があります。このコールバック メソッドにより結果が処理されます。ジオコーダは複数の結果を返すことがあるので注意が必要です。
+コード内では、google.maps.Geocoder オブジェクトを使用して Google Maps API ジオコーディング サービスにアクセスします。Geocoder.geocode() メソッドはジオコーディング サービスへのリクエストを開始し、入力用語を含む GeocodeRequest オブジェクト リテラルと、回答の受け取り時に実行するコールバック メソッドを渡します。
+GeocodeRequest オブジェクト リテラルには次のフィールドがあります:
+{ address: string, latLng: LatLng, bounds: LatLngBounds, region: string}
+これらのフィールドを以下に説明します。
+address(必須*)- ジオコーディングする住所。
+latLng(必須*)- この LatLng に最も近い判読可能な住所を取得します。
+bounds(省略可能)- この LatLngBounds 内でジオコーディングの結果に大きくバイアスをかけます。(詳しくは、後述のビューポートのバイアスを参照してください)。
+region(省略可能)- IANA 言語 region サブタグ(リンク先は英語)で指定された、地域コード。多くの場合、これらのタグはよく使用される ccTLD(「トップレベル ドメイン」)の 2 文字の値に直接マッピングされます(詳しくは、後述の地域コードのバイアスを参照してください)。
+* 注: address または latLng のいずれかを検索対象として渡します。(latLng を渡すと、ジオコーダにより「逆ジオコーディング」が行われます。詳細は逆ジオコーディングを参照してください)。
+bounds と region パラメータは、ジオコーダ-の結果に影響を与えるだけで、完全に制限するわけではありません。
+ジオコーディング レスポンス
+ジオコーディング サービスでは、ジオコーダの結果の取得時に実行されるコールバック メソッドが必要です。このコールバックでは results と status コードをこの順序で保持するパラメータを 2 つ渡す必要があります。ジオコーダから複数のエントリが返されることがあるため、GeocoderResults オブジェクト リテラルは配列です。
+ジオコーディングの結果
+GeocoderResults オブジェクト リテラルは 1 つのジオコーディング結果を表し、次の形式のオブジェクトです:
+results[]: { types[]: string, formatted_address: string, address_components[]: {   short_name: string,   long_name: string,   types[]: string }, geometry: {   location: LatLng,   location_type: GeocoderLocationType   viewport: LatLngBounds,   bounds: LatLngBounds }}
+これらのフィールドを以下に説明します:
+types[] は返された結果の「タイプ」を示す配列です。この配列には結果で返された対象物のタイプを表す一連のタグが含まれます。たとえば、「シカゴ」のジオコーディングでは「locality」と「political」が返されて、それぞれ「シカゴ」が都市であることと行政的存在であることを示します。
+formatted_address はこの場所の判読可能な住所を含む文字列です。多くの場合、この住所は「郵便の宛先」と同一ですが、国によっては異なる場合があります(イギリスなど一部の国では、ライセンス上の制限により本当の郵便の宛先は配布できません)。通常、この住所は、1 件以上の住所コンポーネントから構成されます。たとえば、住所「111 8th アベニュー、ニューヨーク、NY」には「111 8th アベニュー」(番地)、「ニューヨーク」(市)、「NY」(米国の州)という個別の住所コンポーネントが含まれています。これらの住所コンポーネントについては以降で説明します(タイプについて詳しくは、後述のタイプを参照してください)。
+address_component[] は、前述のとおり、個別の住所コンポーネントを格納した配列です。
+geometry には、以下の情報が含まれます:
+location にはジオコーディングされた緯度と経度の値が含まれます。location は、書式設定された文字列としてではなく、LatLng オブジェクトとして返されることに注意してください。
+location_type には特定の location に関する追加データが含まれます。現在、以下の値がサポートされています。
+google.maps.GeocoderLocationType.ROOFTOP は、返された結果が正確なジオコーディングを反映していることを示します。
+google.maps.GeocoderLocationType.RANGE_INTERPOLATED は、返された結果が正確な 2 地点(交差点など)間で補間された近似値(通常は道路上)を反映していることを示します。補間された結果は通常、ルーフトップ ジオコーディングが番地を利用できない場合に返されます。
+google.maps.GeocoderLocationType.GEOMETRIC_CENTER は、返された結果がポリライン(道路など)やポリゴン(領域)などの結果の幾何学的中心であることを示します。
+google.maps.GeocoderLocationType.APPROXIMATE は、返された結果が近似値であることを示します。
+viewport には、返された結果に推奨されるビューポートが格納されます。
+bounds(オプションで返される)には、返された結果を完全に含むことができる LatLngBounds が格納されます。これらの境界は、推奨のビューポートと一致しない場合があるので注意してください(たとえば、サンフランシスコには厳密にいうとファラロン諸島が市の一部として含まれますが、ビューポートには含まれません)。
+ジオコーダから返される住所には、ブラウザの優先言語設定、または API JavaScript を読み込んだときに language パラメータで指定した言語が使用されます(詳しくは、ローカライズをご覧ください)。
+住所コンポーネントのタイプ
+返された結果内の types[] 配列は、「住所タイプ」を示します。これらのタイプは address_components[] 配列内でも返されることがあり、特定の住所コンポーネントのタイプを示します。ジオコーダ内の住所には複数のタイプがあることがあります。タイプは「タグ」として考えることができます。たとえば多くの場合、都市には political と locality タイプのタグが付いています。
+HTTP ジオコーダでサポートされ、返されるタイプを以下に説明します:
+street_address は正確な番地を示します。 
+route は名前のあるルート(たとえば US 101)を示します。
+intersection は主な交差点(通常は 2 本の大通りの交差点)を示します。
+political は行政上の存在を示します。通常、このタイプは一部の民政のポリゴンを示します。
+country は国政上の存在を示し、一般的にはジオコーダから返される最上位のタイプです。
+administrative_area_level_1 は国レベルの下の 1 次的な行政上の存在を示します。米国の場合、この行政上のレベルは州です。すべての国でこの行政上のレベルが存在するわけではありません。
+administrative_area_level_2 は国レベルの下の 2 次的な行政上の存在を示します。米国の場合、この行政上のレベルは郡です。すべての国でこの行政上のレベルが存在するわけではありません。
+administrative_area_level_3 は国レベルの下の 3 次的な行政上の存在を示します。このタイプは小規模な行政上の区域を示します。すべての国でこの行政上のレベルが存在するわけではありません。
+colloquial_area は一般的に使用されている通称を示します。
+locality は行政上の存在である都市または町を示します。
+sublocality は地域の下の 1 次的な行政上の存在を示します。
+neighborhood は名前のある近隣を示します。
+premise は名前のある場所を示します。通常は共通の名前を持つ建物や建物の集合体です。
+subpremise は名前のある場所の下の 1 次的な存在を示します。通常は共通の名前を持つ建物の集合体内の 1 棟の建物です。
+postal_code は対象の国内で郵便物の宛先として使用される郵便番号を示します。
+natural_feature は際立つ地勢を示します。
+airport は空港を示します。
+park は名前のある公園を示します。
+上記の他に、住所コンポーネントには以下のタイプが含まれることがあります:
+post_box は特定の郵便ポストを示します。
+street_number は正確な番地を示します。
+floor は建物の住所の階数を示します。
+room は建物の住所の部屋を示します。
+ステータス コード
+status コードは次の値のうちのいずれかを返します:
+google.maps.GeocoderStatus.OK はジオコードが成功したことを示します。
+google.maps.GeocoderStatus.ZERO_RESULTS は、ジオコードは成功しましたが、結果が返されなかったことを示します。遠隔地にある存在しない address または latng がジオコードに渡されると、このような状態になることがあります。
+google.maps.GeocoderStatus.OVER_QUERY_LIMIT はリクエストが割り当て量を超えていることを示します。
+google.maps.GeocoderStatus.REQUEST_DENIED は何らかの理由でリクエストが拒否されたことを示します。 
+google.maps.GeocoderStatus.INVALID_REQUEST は一般的に、クエリ(address または latLng)が不足していることを示します。
+次の例では、住所をジオコードして、返された緯度/経度にマーカーを置きます。ハンドラが匿名の関数リテラルとして渡されていることに注意してください。
+var geocoder;  var map;  function initialize() {    geocoder = new google.maps.Geocoder();    var latlng = new google.maps.LatLng(-34.397, 150.644);    var myOptions = {      zoom: 8,      center: latlng,      mapTypeId: google.maps.MapTypeId.ROADMAP    }    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  }  function codeAddress() {    var address = document.getElementById("address").value;    geocoder.geocode( { 'address': address}, function(results, status) {      if (status == google.maps.GeocoderStatus.OK) {        map.setCenter(results[0].geometry.location);        var marker = new google.maps.Marker({            map: map,            position: results[0].geometry.location        });      } else {        alert("Geocode was not successful for the following reason: " + status);      }    });  }<body onload="initialize()"> <div id="map_canvas" style="width: 320px; height: 480px;"></div>  <div>    <input id="address" type="textbox" value="Sydney, NSW">    <input type="button" value="Encode" onclick="codeAddress()">  </div></body>
+例を表示(geocoding-simple.html)
+逆ジオコーディング(住所の逆検索)
+「ジオコーディング」という語は、一般的に人が読み取れる住所の地図上の場所への変換を表します。地図上の場所を人が読み取れる住所に変換するプロセスを「逆ジオコーディング」と呼びます。
+Geocoder は逆ジオコーディングを直接サポートしています。テキストの address を返すのではなく、latLng パラメータで緯度/経度の組み合わせをカンマで区切って返します。
+次の例では、緯度/経度の値をジオコーディングしてその場所に地図の中心を配置し、情報ウィンドウに書式設定された住所を示します。2 番目の結果も返しますが、1 番目の結果よりも限定されていません(この例では、近隣の名前が返されます):
+var geocoder;  var map;  var infowindow = new google.maps.InfoWindow();  var marker;  function initialize() {    geocoder = new google.maps.Geocoder();    var latlng = new google.maps.LatLng(40.730885,-73.997383);    var myOptions = {      zoom: 8,      center: latlng,      mapTypeId: google.maps.MapTypeId.ROADMAP    }    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  }  function codeLatLng() {    var input = document.getElementById("latlng").value;    var latlngStr = input.split(",",2);    var lat = parseFloat(latlngStr[0]);    var lng = parseFloat(latlngStr[1]);    var latlng = new google.maps.LatLng(lat, lng);    geocoder.geocode({'latLng': latlng}, function(results, status) {      if (status == google.maps.GeocoderStatus.OK) {        if (results[1]) {          map.setZoom(11);          marker = new google.maps.Marker({              position: latlng,              map: map          });          infowindow.setContent(results[1].formatted_address);          infowindow.open(map, marker);        }      } else {        alert("Geocoder failed due to: " + status);      }    });  }
+上記の例では、(results[1] を選択することにより)2 番目の結果が示されていることに注意してください。逆ジオコーディングでは、複数の結果が返されることが多くあります。ジオコードでの「住所」は、郵便物送付用の住所とは限りませんが、いずれにせよその場所の地理的な名前です。たとえば、シカゴ市のある地点のジオコードを行うとき、ジオコードされる地点には通りの名前による住所、市の名前(シカゴ)、州の名前(イリノイ)、または国の名前(米国)などのラベルが付けられていることでしょう。ジオコーダにはこれらのどの住所でも指定できます。逆ジオコーダはこれらの結果をすべて返します。
+逆エンコーダにおけるマッチングは、行政機関(国、州、都市および周辺地域)、通りの名前による住所、および郵便番号に対して行われます。
+前のクエリから返された住所の全リストを、以下に示します。
+results[0].formatted_address: "275-291 Bedford Ave, Brooklyn, NY 11211, USA",results[1].formatted_address: "Williamsburg, NY, USA",results[2].formatted_address: "New York 11211, USA",results[3].formatted_address: "Kings, New York, USA",results[4].formatted_address: "Brooklyn, New York, USA",results[5].formatted_address: "New York, New York, USA",results[6].formatted_address: "New York, USA",results[7].formatted_address: "United States"
+住所は小さな地域から大きな地域の順に返されます。一般に、最も正確な住所が最も重要な結果であり、この場合もそうなっています。いくつもの住所が返されていることに注意してください。最も狭い範囲の通りの名前による住所から、周辺地域、都市、郡、州など、もっと広い行政機関に対応する住所です。より一般的な住所に一致させたい場合は、results[].types フィールドを調べます。
+注: 逆ジオコーディングは科学的に正確というわけではありません。ジオコーダは、特定の許容範囲内で解決できる最も近い場所を検索します。
+例を表示する(geocoding-reverse.html)
+ビューポートのバイアス
+また、ジオコーディング サービスに、特定のビューポート(境界ボックスで表現)の中から望ましい結果を出力するように指定することもできます。これには、GeocodeRequest オブジェクト リテラル内で bounds パラメータを設定して、このビューポートの境界を定義します。なお、バイアスで優先されるのは境界内の結果のみです。境界の外により関連性の高い結果がある場合はそれらも含まれます。
+たとえば、「Winnetka」のジオコードでは通常、シカゴ郊外の地域が返されます:
+{  "types":["locality","political"],  "formatted_address":"Winnetka, IL, USA",  "address_components":[{    "long_name":"Winnetka",    "short_name":"Winnetka",    "types":["locality","political"]  },{    "long_name":"Illinois",    "short_name":"IL",    "types":["administrative_area_level_1","political"]  },{    "long_name":"United States",    "short_name":"US",    "types":["country","political"]  }],  "geometry":{    "location":[ -87.7417070, 42.1083080],    "location_type":"APPROXIMATE"  }}
+ただし、bounds パラメータを指定してロサンジェルスのサン フェルナンド バレーに境界枠を定義すると、この場所にある「Winnetka」という名前の近隣がジオコーディングの結果として返されます。
+{  "types":["sublocality","political"],  "formatted_address":"Winnetka, California, USA",  "address_components":[{    "long_name":"Winnetka",    "short_name":"Winnetka",    "types":["sublocality","political"]  },{    "long_name":"Los Angeles",    "short_name":"Los Angeles",    "types":["administrative_area_level_3","political"]  },{    "long_name":"Los Angeles",    "short_name":"Los Angeles",    "types":["administrative_area_level_2","political"]  },{    "long_name":"California",    "short_name":"CA",    "types":["administrative_area_level_1","political"]  },{    "long_name":"United States",    "short_name":"US",    "types":["country","political"]  }],  "geometry":{    "location": [34.213171,-118.571022],    "location_type":"APPROXIMATE"  }}
+地域コードのバイアス
+また、region パラメータを使って、ジオコーディング サービスの結果で特定の地域が優先されるよう明示的に設定することもできます。このパラメータは、IANA 言語 region サブタグ(リンク先は英語)として指定された、地域コードを使用します。多くの場合、これらのタグは、「co.uk」の場合の「uk」など、よく使用される ccTLD(「トップレベル ドメイン」)の 2 文字の値に直接マッピングされます。場合によって、region タグは ISO-3166-1 コードもサポートします。これは ccTLD 値(「Great Britain」の「GB」など)とは異なることがあります。
+ジオコーディング リクエストは、Google マップのメイン アプリケーションでジオコーディングが提供されているすべてのドメインに対して送信できます。なお、バイアスで優先されるのは特定のドメイン内の結果のみです。このドメインの外により関連性の高い結果がある場合はそれらも含まれます。
+たとえば、Geocoding サービスのデフォルトのドメインは米国に設定されているため、「Toledo」をジオコーディングすると以下のような結果が返されます:
+{  "types":["locality","political"],  "formatted_address":"Toledo, OH, USA",  "address_components":[{    "long_name":"Toledo",    "short_name":"Toledo",    "types":["locality","political"]  },{    "long_name":"Ohio",    "short_name":"OH",    "types":["administrative_area_level_1","political"]  },{    "long_name":"United States",    "short_name":"US",    "types":["country","political"]  }]}
+region フィールドに 'es'(スペイン)を設定して「Toledo」をジオコーディングすると、スペインの都市が返されます。
+{  "types":["locality","political"],  "formatted_address":"Toledo, España",  "address_components":[{    "long_name":"Toledo",    "short_name":"Toledo",    "types":["locality","political"]  },{    "long_name":"Toledo",    "short_name":"TO",    "types":["administrative_area_level_2","political"]  },{    "long_name":"Castilla-La Mancha",    "short_name":"CM",    "types":["administrative_area_level_1","political"]  },{    "long_name":"España",    "short_name":"ES",    "types":["country","political"]  }]}
+ルート
+ルート(各種の交通手段を使用)は、DirectionsService オブジェクトを使用して計算できます。このオブジェクトは Google Maps API ルート サービスと通信し、サービスはルート リクエストを受信して計算した結果を返します。これらのルート結果をユーザー自身で処理することも、DirectionsRenderer オブジェクトを使用して結果をレンダリングすることもできます。
+ルートでは、原点と目的地をテキスト文字列(「シカゴ、イリノイ」、「ダーウィン、NSW、オーストラリア」など)または LatLng 値として指定できます。ルート サービスは一連のウェイポイントを使用して、複数の部分からなるルートを返すことができます。ルートは、地図上にルートを描画するポリラインとして表示されるか、<div> 要素内のテキストによる説明として表示されます(「Williamsburg Bridge ランプを右折」など)。
+ルート リクエスト
+ルート サービスへのアクセスは、Google Maps API が外部サーバーへの呼び出しを行う必要があるため、非同期に行われます。このため、コールバック メソッドを渡してリクエストの完了時に実行する必要があります。このコールバック メソッドにより結果が処理されます。ルート サービスは、独立した routes[] の配列として複数のルートを返すことがあります。
+V3 でルートを使用するには、タイプ DirectionsService のオブジェクトを作成して DirectionsService.route() を呼び出してルート サービスを開始し、入力用語を含む DirectionsRequest オブジェクト リテラルとレスポンスの受信時に実行するコールバック メソッドを渡します。
+DirectionsRequest オブジェクト リテラルには次のフィールドがあります:
+{  origin: LatLng | String,  destination: LatLng | String,  travelMode: TravelMode,  unitSystem: UnitSystem,  waypoints[]: DirectionsWaypoint,  optimizeWaypoints: Boolean,  provideRouteAlternatives: Boolean,  avoidHighways: Boolean,  avoidTolls: Boolean  region: String}
+これらのフィールドを以下に説明します:
+origin(必須)は、ルートの計算を開始する、開始位置を指定します。この値は、String(「シカゴ、イリノイ」など)または LatLng 値として指定できます。
+destination(必須)は、ルートの計算の終了位置を指定します。この値は、String(「シカゴ、イリノイ」など)または LatLng 値として指定できます。
+travelMode(必須)は、ルートの計算に使用する交通手段を指定します。有効な値は下記の交通手段で指定しています。
+unitSystem(省略可能)は、結果を表示するときに使用する単位系を指定します。有効な値は下記の単位系で指定しています。
+waypoints[](省略可能)は、DirectionsWaypoint の配列を指定します。ウェイポイントは、指定された位置を経由してルートを変更します。ウェイポイントは、以下に示すフィールドを持つオブジェクト リテラルとして指定されます:
+location はウェイポイントの位置を、LatLng または String として指定します。これらはジオコーディングされます。
+stopover はウェイポイントがルート上の停止地点であることを示すブール値で、ルートを 2 つのルートに分割する機能があります
+(ウェイポイントについて詳しくは、後述のルート内でのウェイポイントの使用をご覧ください)。
+optimizeWaypoints(省略可能)は、指定された waypoints を使用するルートを最適化して、最短ルートを取得するよう指定します。true の場合、ルート サービスは並べ替えた waypoints を waypoint_order フィールドに返します(詳しくは、後述のルートでのウェイポイントの使用を参照してください)。
+provideRouteAlternatives(省略可能)は、true に設定した場合、ルート サービスで複数の代替ルートを返すよう指定します。なお、代替ルートを返すように指定すると、サーバーのレスポンス タイムが長くなる場合があります。
+avoidHighways(省略可能)は、true に設定した場合、可能な場合は計算されたルートで主な高速道路を除外するよう指定します。
+avoidTolls(省略可能)は、true に設定した場合、可能な場合は計算されたルートで有料区間を除外するよう指定します。
+region(省略可能)は、ccTLD(「トップレベル ドメイン」)の 2 文字の値として指定される地域コードを指定します(詳しくは、後述の地域のバイアスを参照してください)。
+DirectionsRequest のサンプルは次のとおりです:
+{  origin: "Chicago, IL",  destination: "Los Angeles, CA",  waypoints: [    {      location:"Joplin, MO",      stopover:false    },{      location:"Oklahoma City, OK",      stopover:true    }],  provideRouteAlternatives: false,  travelMode: TravelMode.DRIVING,  unitSystem: UnitSystem.IMPERIAL}
+交通手段
+ルートを計算する際、使用する交通手段を指定する必要があります。現時点でサポートされている交通手段は次のとおりです:
+TravelMode.DRIVING は道路網を使用した標準の運転ルートを示します。
+TravelMode.WALKING は歩行者専用道路と歩道(使用できる場合)を使用した徒歩ルートをリクエストします。
+New!TravelMode.BICYCLING は自転車パスと優先道路を使用する自転車ルートをリクエストします(現在は米国でのみ利用できます)。
+注: 徒歩ルートには明確な歩行者用道路が含まれないことがあるため、徒歩ルートから DirectionsResult に警告が返されます。デフォルトの DirectionsRenderer を使用していない場合は、これを表示する必要があります。
+単位系
+デフォルトでは、ルートは出発地の国または地点の単位系を使用して計算され、表示されます(注: 住所ではなく座標(緯度/経度)で表した出発地は、常にメートル法がデフォルトになります)。たとえば、「シカゴ、イリノイ」から「トロント、オンタリオ」へのルートはマイルを使用して表示され、この逆のルートはキロメートルで表示されます。この単位系は、次の UnitSystem 値のいずれかを使用してリクエスト内で明示的に設定することでオーバーライドできます:
+UnitSystem.METRIC はメートル系の使用を指定します。距離はキロメートルを使用して表示されます。
+UnitSystem.IMPERIAL はインペリアル系(ヤード法)の使用を指定します。距離はマイルを使用して表示されます。
+注: この単位系設定は、ユーザーに表示されるテキストにのみ影響します。ルートの結果にはユーザーに表示されない距離の値も含まれますが、これは常にメートルで表現されます。
+ルートの地域のバイアス
+Google Maps API ルート サービスは、JavaScript ブートストラップを読み込んだドメイン(地域または国)に影響される住所結果を返します(多くのユーザーは http://maps.google.com/ を読み込むため、暗黙的に米国がドメインに設定されます)。ブートストラップをサポートする別のドメインから読み込むと、そのドメインの影響を受ける結果が取得されます。たとえば、「サンフランシスコ」を検索する場合、http://maps.google.com/(米国)を読み込むアプリケーションから返される結果は http://maps.google.es/(スペイン)を読み込むアプリケーションからの結果とは異なります。
+また、region パラメータを使って、ルート サービスの結果で特定の地域が優先されるように設定することもできます。このパラメータは、IANA 言語 region サブタグ(リンク先は英語)として指定された、地域コードを使用します。多くの場合、これらのタグは、「co.uk」の場合の「uk」など、ccTLD(「トップレベル ドメイン」)の 2 文字の値に直接マッピングされます。場合によって、region タグは ISO-3166-1 コードもサポートします。これは ccTLD 値(「Great Britain」の「GB」など)とは異なることがあります。
+Google Maps の対象範囲を示すスプレッドシートを参照して、各国でサポートするルートの範囲を確認してください。
+ルートのレンダリング
+DirectionsService へのルート リクエストを route() メソッドで開始する場合、サービス リクエストの完了時に実行されるコールバックを渡す必要があります。このコールバックは DirectionsResult と DirectionsStatus コードをレスポンスで返します。
+ルート クエリのステータス
+DirectionsStatus は次の値を返します:
+OK は、レスポンスに有効な DirectionsResult が格納されていることを示します。
+NOT_FOUND は、リクエストに指定された出発地、目的地、ウェイポイントのうち、少なくとも 1 つの場所がジオコーディングできないことを示します。
+ZERO_RESULTS は、出発地と目的地の間にルートが見つからなかったことを示します。
+MAX_WAYPOINTS_EXCEEDED は DirectionsRequest に指定された DirectionsWaypoint が多すぎることを示します。ウェイポイントの最大許容数は 8 に出発地点と到着地点を加えた数です。Maps API Premier のユーザーは、23 のウェイポイントと出発地点、到着地点を使用できます。
+INVALID_REQUEST は指定された DirectionsRequest が無効であることを示します。
+OVER_QUERY_LIMIT は許可された期間内でウェブページから送信されたリクエストが多すぎることを示します。
+REQUEST_DENIED はウェブページでルート サービスを使用できないことを示します。
+UNKNOWN_ERROR は、サーバー エラーが原因でルート リクエストを処理できなかったことを示します。もう一度試すと正常に処理される可能性があります。
+結果を処理する前にこの値を確認して、ルート クエリが有効な結果を返したことを確認してください。
+DirectionsResult の表示
+DirectionsResult はルート クエリの結果を格納しており、ユーザー自身が処理することも、DirectionsRenderer オブジェクトに渡して地図上への結果の表示を自動的に処理することもできます。
+DirectionsRenderer を使用して DirectionsResult を表示するには、次のことを実行するだけです:
+DirectionsRenderer オブジェクトを作成します。
+レンダラで setMap() を呼び出して、渡された地図にバインドします。
+レンダラで setDirections() を呼び出して、上記で説明したように DirectionsResult に渡します。レンダラは MVCObject であるため、プロパティへの変更がある場合は自動的に検出し、関連付けられたルートが変更されると地図を更新します。
+次の例では、ルート 66 上の 2 つの地点間のルートを計算します。出発地点と到着地点はドロップダウン リストで指定された "start" 値と "end" 値で設定されています。DirectionsRenderer は指定された地点間のポリラインの表示と、出発地点と到着地点、存在する場合はウェイポイントへのマーカーの配置を処理します。
+var directionDisplay;var directionsService = new google.maps.DirectionsService();var map;function initialize() {  directionsDisplay = new google.maps.DirectionsRenderer();  var chicago = new google.maps.LatLng(41.850033, -87.6500523);  var myOptions = {    zoom:7,    mapTypeId: google.maps.MapTypeId.ROADMAP,    center: chicago  }  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  directionsDisplay.setMap(map);}function calcRoute() {  var start = document.getElementById("start").value;  var end = document.getElementById("end").value;  var request = {    origin:start,    destination:end,    travelMode: google.maps.TravelMode.DRIVING  };  directionsService.route(request, function(result, status) {    if (status == google.maps.DirectionsStatus.OK) {      directionsDisplay.setDirections(result);    }  });}<div><b>Start: </b><select id="start" onchange="calcRoute();">  <option value="chicago, il">Chicago</option>  <option value="st louis, mo">St Louis</option>  <option value="joplin, mo">Joplin, MO</option>  <option value="oklahoma city, ok">Oklahoma City</option>  <option value="amarillo, tx">Amarillo</option>  <option value="gallup, nm">Gallup, NM</option>  <option value="flagstaff, az">Flagstaff, AZ</option>  <option value="winona, az">Winona</option>  <option value="kingman, az">Kingman</option>  <option value="barstow, ca">Barstow</option>  <option value="san bernardino, ca">San Bernardino</option>  <option value="los angeles, ca">Los Angeles</option></select><b>End: </b><select id="end" onchange="calcRoute();">  <option value="chicago, il">Chicago</option>  <option value="st louis, mo">St Louis</option>  <option value="joplin, mo">Joplin, MO</option>  <option value="oklahoma city, ok">Oklahoma City</option>  <option value="amarillo, tx">Amarillo</option>  <option value="gallup, nm">Gallup, NM</option>  <option value="flagstaff, az">Flagstaff, AZ</option>  <option value="winona, az">Winona</option>  <option value="kingman, az">Kingman</option>  <option value="barstow, ca">Barstow</option>  <option value="san bernardino, ca">San Bernardino</option>  <option value="los angeles, ca">Los Angeles</option></select></div>
+例を表示(directions-simple.html)
+次の例では、カリフォルニア州サンフランシスコのハイトアシュベリーとオーシャンビーチ間の異なる交通手段を使用したルートを表示します:
+var directionDisplay;var directionsService = new google.maps.DirectionsService();var map;var haight = new google.maps.LatLng(37.7699298, -122.4469157);var oceanBeach = new google.maps.LatLng(37.7683909618184, -122.51089453697205);function initialize() {  directionsDisplay = new google.maps.DirectionsRenderer();  var myOptions = {    zoom: 14,    mapTypeId: google.maps.MapTypeId.ROADMAP,    center: haight  }  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  directionsDisplay.setMap(map);}function calcRoute() {  var selectedMode = document.getElementById("mode").value;  var request = {      origin: haight,      destination: oceanBeach,      // Note that Javascript allows us to access the constant      // using square brackets and a string value as its      // "property."      travelMode: google.maps.TravelMode[selectedMode]  };  directionsService.route(request, function(response, status) {    if (status == google.maps.DirectionsStatus.OK) {      directionsDisplay.setDirections(response);    }  });}<div><b>Mode of Travel: </b><select id="mode" onchange="calcRoute();">  <option value="DRIVING">Driving</option>  <option value="WALKING">Walking</option>  <option value="BICYCLING">Bicycling</option></select></div>
+例を表示(directions-travel-modes.html)
+DirectionsRenderer はポリラインと関連付けられたマーカーの表示を処理し、一連のステップとしてルートのテキスト表示も処理します。これを行うには、setPanel() を DirectionsRenderer で呼び出して、この情報を表示する <div> を渡します。こうすることで、該当する著作権情報や、結果に関連する警告が表示されます。
+テキストによるルートは、ブラウザの優先言語設定、または API JavaScript を language パラメータを使用して読み込んだときに指定された言語を使用して提供されます(詳しくは、ローカライズをご覧ください)。
+次の例は、ルートを表示する <div> パネルがあることを除いて、上記の例と同じです:
+var directionDisplay;var directionsService = new google.maps.DirectionsService();var map;function initialize() {  directionsDisplay = new google.maps.DirectionsRenderer();  var chicago = new google.maps.LatLng(41.850033, -87.6500523);  var myOptions = {    zoom:7,    mapTypeId: google.maps.MapTypeId.ROADMAP,    center: chicago  }  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  directionsDisplay.setMap(map);  directionsDisplay.setPanel(document.getElementById("directionsPanel"));}function calcRoute() {  var start = document.getElementById("start").value;  var end = document.getElementById("end").value;  var request = {    origin:start,    destination:end,    travelMode: google.maps.TravelMode.DRIVING  };  directionsService.route(request, function(response, status) {    if (status == google.maps.DirectionsStatus.OK) {      directionsDisplay.setDirections(response);    }  });}// select UI elements omitted<div><div id="map_canvas" style="float:left;width:70%; height:100%"></div><div id="directionsPanel" style="float:right;width:30%;height 100%"></div>
+例を表示(directions-panel.html)
+DirectionsResults オブジェクト
+ルート リクエストを DirectionsService に送信すると、ステータス コードと DirectionsResult オブジェクトの結果からなるレスポンスを受け取ります。DirectionsResult はフィールドを 1 つ持つオブジェクト リテラルです:
+routes[] には DirectionsRoute オブジェクトの配列が格納されています。各ルートは、DirectionsRequest で指定された出発地点から到着地点に至る経路を示します。一般に、リクエストのprovideRouteAlternatives フィールドが true に設定されている場合(このとき複数のルートが返されます)を除き、リクエストに対して返されるルートは 1 つだけです。
+ルート サービスのルート
+以前の DirectionsTrip オブジェクトは DirectionsRoute に名前が変更されました。ルートは、親旅程の区間ではなく、出発から到着までの全行程を指すようになったことに注意してください。
+DirectionsRoute には指定された出発地点と到着地点からの結果が 1 つ格納されます。この区間にはウェイポイントが指定されたかどうかによって、1 つ以上の区間(タイプ DirectionsLeg)が含まれます。また、ルートには著作権や警告の情報も含まれています。これらの情報は、ユーザーに対してルート情報を表示するときに一緒に表示しなければなりません。
+DirectionsRoute は、次のフィールドを含むオブジェクト リテラルです:
+legs[] には DirectionsLeg オブジェクトの配列が格納され、各オブジェクトには、指定されたルート内の 2 つの地点からのルートの区間についての情報が格納されています。区間は、指定したウェイポイントまたは目的地ごとに 1 つずつ存在します(ウェイポイントがないルートには、DirectionsLeg が 1 つだけ含まれます)。各区間は一連の DirectionStep で構成されます。
+waypoint_order には、ルートを計算する際のウェイポイントの順序を示す配列が格納されます。DirectionsRequest がoptimizeWaypoints: true を渡した場合、この配列には変更された順序が含まれることがあります。
+overview_path には、結果のルートのおおよその(平準化された)パスを示す LatLng の配列が格納されます。
+bounds には、この所定のルートに沿ったポリラインの境界を示す LatLngBounds が格納されます。
+copyrights には、このルートと一緒に表示する著作権表示のテキストが格納されます。提供された DirectionsRenderer オブジェクトを使用しない場合は、この情報をユーザー自身が処理して表示する必要があります。
+warnings[] には、これらのルートを表示するときに一緒に表示する警告の配列が格納されます。提供された DirectionsRenderer オブジェクトを使用しない場合は、この警告をユーザー自身が処理して表示する必要があります。
+ルートの区間
+以前の DirectionsRoute オブジェクトは DirectionsLeg に名前が変更されました。区間は親ルートの区間を指します。
+DirectionsLeg は、計算されたルートでの出発地点から到着地点への行程の 1 つの区間を定義します。ウェイポイントが含まれていないルートは 1 つの「区間」で構成されますが、1 つ以上のウェイポイントを定義したルートは、それぞれのルートに必要な数の 1 つ以上の区間で構成されます。
+DirectionsLeg は、次のフィールドを含むオブジェクト リテラルです:
+steps[] には、行程の区間の各ステップについての情報を示す DirectionsStep オブジェクトの配列が格納されています。
+distance はこの区間でカバーされる距離の合計を、次の形式の Distance オブジェクトとして示します:
+value は距離をメートル単位で示します。
+text には距離の文字列表現が格納され、デフォルトで出発地点に使用されている単位で表示されます(たとえば、出発地点が米国内の場合はマイルが使用されます)。この単位系は、UnitSystem を元のクエリで具体的に設定することでオーバーライドできます。使用する単位系にかかわらず、distance.value フィールドにはメートルで表現された値が格納されます。
+これらのフィールドは、距離が不明の場合には未定義にすることができます。
+duration はこの区間にかかる所要時間の合計を、次の形式の Duration オブジェクトとして示します:
+value は所要時間を秒単位で表します。
+text には所要時間の文字列表現が格納されます。
+これらのフィールドは、所要時間が不明の場合には未定義にすることができます。
+start_location にはこの区間の出発地点の LatLng が格納されています。ルート ウェブ サービスは始点と終点に最も近い交通手段(通常は道路)を使用して位置を計算するため、start_location はこの区間の指定された出発地点とは異なる場合があります(道路が出発地点付近にない場合など)。
+end_location にはこの区間の到着地点の LatLng が格納されています。DirectionsService は始点と終点に最も近い交通手段(通常は道路)を使用して位置を計算するため、end_location はこの区間の指定された到着地点とは異なる場合があります(道路が到着地点付近にない場合など)。
+start_address にはこの区間の始点の住所が人間が読める形式で格納されています(通常は住所形式)。
+end_address にはこの区間の終点の住所が人間が読める形式で格納されています(通常は住所形式)。
+ルートのステップ
+DirectionsStep はルートの最も基本的な単位で、行程内の具体的な指示を示す 1 つのステップを含んでいます。たとえば、「西新宿(交差点)を左折」というのがステップです。ステップには、このような指示だけでなく、今のステップと次のステップの関係を表す情報(距離や所要時間など)も含まれます。たとえば、「国道 20 号線に合流」という指示のステップには、「37 km」や「40 分」といった次のステップまでの距離や所要時間を表す情報が含まれます。
+DirectionsStep は、次のフィールドを含むオブジェクト リテラルです:
+instructions には、テキスト文字列内にこのステップの指示が格納されています。
+distance には、このステップで次のステップまでにカバーされる距離が Distance オブジェクトとして格納されています(上述の DirectionsLeg の説明を参照してください)。距離が不明な場合、このフィールドは定義されないことがあります。
+duration には、次のステップまでにこのステップの実行に必要な標準時間が、Duration オブジェクトとして格納されています(上述の DirectionsLeg の説明を参照してください)。所要時間が不明な場合、このフィールドは定義されないことがあります。
+start_location にはこのステップの始点のジオコードされた LatLng が格納されています。
+end_location にはこのステップの終点の LatLng が格納されています。
+DirectionsResults の検査
+DirectionsRoute、DirectionsLeg、DirectionsStep の DirectionsResults コンポーネントを、ルート レスポンスの解析の時点で検査して使用できます。
+次の例は、ニューヨーク市のある観光地への徒歩ルートを作成します。ルートの DirectionsStep を検査して各ステップにマーカーを追加し、そのステップに対する指示テキストを持つ InfoWindow に情報を貼り込みます。
+注: ここでは徒歩ルートを計算しているので、別の <div> パネルにはユーザーに対する警告も表示されます。
+var map;var directionDisplay;var directionsService;var stepDisplay;var markerArray = [];function initialize() {  // Instantiate a directions service.  directionsService = new google.maps.DirectionsService();  // Create a map and center it on Manhattan.  var manhattan = new google.maps.LatLng(40.7711329, -73.9741874);  var myOptions = {    zoom: 13,    mapTypeId: google.maps.MapTypeId.ROADMAP,    center: manhattan  }  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  // Create a renderer for directions and bind it to the map.  var rendererOptions = {    map: map  }  directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions)  // Instantiate an info window to hold step text.  stepDisplay = new google.maps.InfoWindow();}function calcRoute() {  // First, clear out any existing markerArray  // from previous calculations.  for (i = 0; i < markerArray.length; i++) {    markerArray[i].setMap(null);  }  // Retrieve the start and end locations and create  // a DirectionsRequest using WALKING directions.  var start = document.getElementById("start").value;  var end = document.getElementById("end").value;  var request = {      origin: start,      destination: end,      travelMode: google.maps.TravelMode.WALKING  };  // Route the directions and pass the response to a  // function to create markers for each step.  directionsService.route(request, function(response, status) {    if (status == google.maps.DirectionsStatus.OK) {      var warnings = document.getElementById("warnings_panel");      warnings.innerHTML = "" + response.routes[0].warnings + "";      directionsDisplay.setDirections(response);      showSteps(response);    }  });}function showSteps(directionResult) {  // For each step, place a marker, and add the text to the marker's  // info window. Also attach the marker to an array so we  // can keep track of it and remove it when calculating new  // routes.  var myRoute = directionResult.routes[0].legs[0];  for (var i = 0; i < myRoute.steps.length; i++) {      var marker = new google.maps.Marker({        position: myRoute.steps[i].start_point,        map: map      });      attachInstructionText(marker, myRoute.steps[i].instructions);      markerArray[i] = marker;  }}function attachInstructionText(marker, text) {  google.maps.event.addListener(marker, 'click', function() {    stepDisplay.setContent(text);    stepDisplay.open(map, marker);  });}<div><b>Start: </b><select id="start">  <option value="penn station, new york, ny">Penn Station</option>  <option value="grand central station, new york, ny">Grand Central Station</option>  <option value="625 8th Avenue New York NY 10018">Port Authority Bus Terminal</option>  <option value="staten island ferry terminal, new york, ny">Staten Island Ferry Terminal</option>  <option value="101 E 125th Street, New York, NY">Harlem - 125th St Station</option></select><b>End: </b><select id="end" onchange="calcRoute();">  <option value="260 Broadway New York NY 10007">City Hall</option>  <option value="W 49th St & 5th Ave, New York, NY 10020">Rockefeller Center</option>  <option value="moma, New York, NY">MOMA</option>  <option value="350 5th Ave, New York, NY, 10118">Empire State Building</option>  <option value="253 West 125th Street, New York, NY">Apollo Theatre</option>  <option value="1 Wall St, New York, NY">Wall St</option></select><div>
+例を表示(directions-complex.html)
+ルート内でのウェイポイントの使用
+DirectionsRequest で説明したように、ルート サービスを使用してルートを計算するときに「ウェイポイント」(タイプ DirectionsWaypoint)も指定できます。ウェイポイントを使用すると、追加で指定した地点を通るルートを計算できます。
+waypoint は次のフィールドで構成されています:
+location(必須)はウェイポイントの住所を指定します。
+stopover(省略可能)は、このウェイポイントがルート上の実際の停止地点であるか(true)、または指定された場所を通過することを推奨しているだけか(false)を指定します。デフォルトでは、停止地点は true です。
+デフォルトでは、指定したウェイポイントを、指定した順番で通るルートが計算されます。オプションで、optimizeWaypoints: true を  DirectionsRequest 内に渡して、より効率的な順序にウェイポイントを並べ替え、指定されたルートをルート サービスで最適化できます(この最適化では、巡回セールスマン問題が応用されています)。ルート サービスでルートを最適化するには、すべてのウェイポイントが停止地点である必要があります。
+ウェイポイントの順序を最適化することを指定した場合は、その順序が DirectionsResult オブジェクトの optimized_waypoints_order フィールドで返されます。
+次の例では、さまざまな始点、終点、ウェイポイントを使用して、米国内を横断するルートを計算します(複数のウェイポイントを選択する場合は、リスト内でアイテムを選択するときに Ctrl キーを押しながらクリックします)。routes.start_address と routes.end_address を検査して、各ルートの始点と終点のテキストを取得します。
+var directionDisplay;var directionsService = new google.maps.DirectionsService();var map;function initialize() {  directionsDisplay = new google.maps.DirectionsRenderer();  var chicago = new google.maps.LatLng(41.850033, -87.6500523);  var myOptions = {    zoom: 6,    mapTypeId: google.maps.MapTypeId.ROADMAP,    center: chicago  }  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  directionsDisplay.setMap(map);}function calcRoute() {  var start = document.getElementById("start").value;  var end = document.getElementById("end").value;  var waypts = [];  var checkboxArray = document.getElementById("waypoints");  for (var i = 0; i < checkboxArray.length; i++) {    if (checkboxArray.options[i].selected == true) {      waypts.push({          location:checkboxArray[i].value,          stopover:true      });    }  }  var request = {      origin: start,      destination: end,      waypoints: waypts,      optimizeWaypoints: true,      travelMode: google.maps.TravelMode.DRIVING  };  directionsService.route(request, function(response, status) {    if (status == google.maps.DirectionsStatus.OK) {      directionsDisplay.setDirections(response);      var route = response.routes[0];      var summaryPanel = document.getElementById("directions_panel");      summaryPanel.innerHTML = "";      // For each route, display summary information.      for (var i = 0; i < route.legs.length; i++) {        var routeSegment = i+1;        summaryPanel.innerHTML += "<b>Route Segment: " + routeSegment + "</b><br />";        summaryPanel.innerHTML += route.legs[i].start_address + " to ";        summaryPanel.innerHTML += route.legs[i].end_address + "<br />";        summaryPanel.innerHTML += route.legs[i].distance.text + "<br /><br />";      }    }  });}
+例を表示(directions-waypoints.html)
+ドラッグ可能なルート
+DirectionsRenderer で動的に表示されたルートが「ドラッグ可能」である場合、ユーザーは地図上に表示された結果パスをドラッグしてルートを変更できます。レンダラの表示をドラッグ可能にするには、draggable プロパティを true に設定します。
+ルートがドラッグ可能になっていると、表示された結果のパス(またはウェイポイント)を選択して、それらのコンポーネントを新しい場所に移動できます。変更後のパスは、DirectionsRenderer によって動的に更新されて表示されます。ドロップすると、暫定的なウェイポイント(白い小さなマーカー)が地図に追加されます。パス セグメントを選択して移動すると、ルートの該当区間が変更されます。一方、ウェイポイント マーカー(始点と終点を含む)を選択して移動すると、そのウェイポイントを通過するルートの区間が変更されます。
+ドラッグ可能なルートはクライアント側で変更、表示されるため、表示されているルートをユーザーが変更したときの DirectionsRenderer の directions_changed イベントを、必要に応じてモニタおよび処理してください。
+次に示すコードは、シドニーからニュー サウス ウェールズの奥地をめぐる旅です。このコードでは、directions_changed イベントをモニタして、旅の全区間の総移動距離を更新しています。
+var rendererOptions = {  draggable: true};var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);;var directionsService = new google.maps.DirectionsService();var map;var australia = new google.maps.LatLng(-25.274398, 133.775136);function initialize() {  var myOptions = {    zoom: 7,    mapTypeId: google.maps.MapTypeId.ROADMAP,    center: australia  };  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  directionsDisplay.setMap(map);  directionsDisplay.setPanel(document.getElementById("directionsPanel"));  google.maps.event.addListener(directionsDisplay, 'directions_changed', function() {    computeTotalDistance(directionsDisplay.directions);  });  calcRoute();}function calcRoute() {  var request = {    origin: "Sydney, NSW",    destination: "Sydney, NSW",    waypoints:[{location: "Bourke, NSW"}, {location: "Broken Hill, NSW"}],    travelMode: google.maps.TravelMode.DRIVING  };  directionsService.route(request, function(response, status) {    if (status == google.maps.DirectionsStatus.OK) {      directionsDisplay.setDirections(response);    }  });}function computeTotalDistance(result) {  var total = 0;  var myroute = result.routes[0];  for (i = 0; i < myroute.legs.length; i++) {    total += myroute.legs[i].distance.value;  }  total = total / 1000.  document.getElementById("total").innerHTML = total + " km";}
+例を表示(directions-draggable.html)
+距離行列
+Google の Distance Matrix API は、複数の出発地と目的地の間を、指定した交通手段で移動した場合の距離と所要時間を計算するサービスを提供します。
+このサービスは、ルートの詳細は返しません。ルート情報(ポリラインやテキストによるルート説明を含む)は、1 つの出発地と 1 つの目的地を ルート サービスに渡して取得できます。
+使用制限と要件
+割り当て
+距離行列サービスには、以下の使用制限が適用されます:
+1 回のリクエストで、出発地 25 か所まで、目的地 25 か所まで
+1 回のリクエストで要素 100 個まで(出発地 x 目的地)
+リクエストのレートも制限されています。特定の期間においてリクエストの要素数が多すぎると、OVER_QUERY_LIMIT レスポンス コードが返されます。
+Google マップの表示
+Distance Matrix API は、最終的に Google マップに情報を表示することを目的としてのみ使用できます。たとえば、指定の所要時間に収まる出発地と目的地のペアを特定できるのは、最終的にそれらの結果を Google マップからリクエストして表示する場合のみです。このサービスを、Google マップに表示することなく利用することは禁止されています。
+距離行列リクエスト
+距離行列サービスへのアクセスは、Google Maps API が外部サーバーへの呼び出しを行う必要があるため、非同期に行われます。したがって結果を処理するためには、コールバック メソッドを渡してリクエストの完了時に実行する必要があります。
+コード内では、google.maps.DistanceMatrixService オブジェクトを使用して Google Maps API 距離行列サービスにアクセスします。DistanceMatrixService.getDistanceMatrix() メソッドは、距離行列サービスへのリクエストを開始します。このメソッドには、出発地、目的地、交通手段を格納するオブジェクト リテラルと、レスポンスの受け取り時に実行するコールバック メソッドを渡します。
+var origin1 = new google.maps.LatLng(55.930385, -3.118425);var origin2 = "Greenwich, England";var destinationA = "Stockholm, Sweden";var destinationB = new google.maps.LatLng(50.087692, 14.421150);var service = new google.maps.DistanceMatrixService();service.getDistanceMatrix(  {    origins: [origin1, origin2],    destinations: [destinationA, destinationB],    travelMode: google.maps.TravelMode.DRIVING,    avoidHighways: false,    avoidTolls: false  }, callback);function callback(response, status) {  // See Parsing the Results for  // the basics of a callback function.}
+例を表示(distance-matrix.html)
+サービスに渡すオブジェクト リテラルには次のフィールドがあります:
+origins(必須)- 距離や時間の計算に使用する 1 つ以上の出発地の住所文字列または google.maps.LatLng オブジェクトの配列。
+destinations(必須)- 距離や時間の計算に使用する 1 つ以上の目的地の住所文字列または google.maps.LatLng オブジェクトの配列。
+travelMode(省略可能)- ルート計算に使用する交通手段。有効な値は次のとおりです。
+google.maps.TravelMode.DRIVING(デフォルト)は、道路網を利用した標準の運転ルートです。
+google.maps.TravelMode.WALKING は歩行者専用道路と歩道(使用できる場合)を使用した徒歩ルートをリクエストします。
+google.maps.TravelMode.BICYCLING は自転車専用道路と優先道路を使用する自転車ルートをリクエストします(現時点では米国およびカナダの都市部でのみ利用できます)。
+unitSystem(省略可能)- 距離の表示に使用する単位系。有効な値は次のとおりです:
+google.maps.UnitSystem.METRIC(デフォルト)
+google.maps.UnitSystem.IMPERIAL
+avoidHighways(省略可能)- true の場合、出発地から目的地の間のルートが、可能な限り高速道路を避けて計算されます。
+avoidTolls(省略可能)- true の場合、地点間のルートが可能な限り有料道路を避けて計算されます。
+距離行列レスポンス
+距離行列サービスへの呼び出しが正常に完了すると、DistanceMatrixResponse オブジェクトと DistanceMatrixStatus オブジェクトが返されます。これらのオブジェクトは、リクエストで指定したコールバック関数に渡されます。
+DistanceMatrixResponse オブジェクトには、ルートが計算できた出発地と目的地のペアごとに、その移動距離と所要時間の情報が格納されます。
+{  "origin_addresses": [ "Greenwich, Greater London, UK", "13 Great Carleton Square, Edinburgh, City of Edinburgh EH16 4, UK" ],  "destination_addresses": [ "Stockholm County, Sweden", "Dlouhá 609/2, 110 00 Praha-Staré Město, Česká republika" ],  "rows": [ {    "elements": [ {      "status": "OK",      "duration": {        "value": 70778,        "text": "19 hours 40 mins"      },      "distance": {        "value": 1887508,        "text": "1173 mi"      }    }, {      "status": "OK",      "duration": {        "value": 44476,        "text": "12 hours 21 mins"      },      "distance": {        "value": 1262780,        "text": "785 mi"      }    } ]  }, {    "elements": [ {      "status": "OK",      "duration": {        "value": 96000,        "text": "1 day 3 hours"      },      "distance": {        "value": 2566737,        "text": "1595 mi"      }    }, {      "status": "OK",      "duration": {        "value": 69698,        "text": "19 hours 22 mins"      },      "distance": {        "value": 1942009,        "text": "1207 mi"      }    } ]  } ]}
+距離行列の結果
+レスポンスでサポートされるフィールドを以下に説明します:
+originAddresses は、距離行列リクエストの origins フィールドで渡した場所の配列です。住所はジオコーディングされて返されます。
+destinationAddresses は、destinations フィールドで渡した場所の配列です。ジオコーディングされて返されます。
+rows は DistanceMatrixResponseRow オブジェクトの配列で、1 行が各出発地に対応します。
+elements は rows の子で、その行の出発地と各目的地のペアに対応します。出発地/目的地ペアごとのステータス、距離、所要時間の情報が格納されます。
+各 element の distance および duration フィールドには、value フィールド(常にメートルまたは秒単位)と text フィールド(判読性の高い情報)の両方が含まれています。距離の text 値の単位系は、リクエストの unitSystem で指定できます(デフォルトはメートル法)。
+ステータス コード
+距離行列レスポンスには、要素ごとのステータスに加え、レスポンス全体のステータス コードも含まれています。
+レスポンスのステータス コード
+DistanceMatrixResponse に適用されるステータス コードは、DistanceMatrixStatus オブジェクトで渡されます。以下のステータス コードがあります:
+OK - リクエストが有効であることを示します。すべての出発地/目的地ペアのルートが見つからなかった場合もこのステータスが返されます。要素レベルのステータス情報については、要素のステータス コードをご覧ください。
+INVALID_REQUEST - 指定したリクエストが無効であることを示します。このステータスは、通常は必須フィールドが指定されていない場合に返されます。上記のサポートされるフィールドの一覧をご覧ください。
+MAX_ELEMENTS_EXCEEDED - 出発地と目的地の結果数がクエリあたりの上限を超えていることを示します。
+MAX_DIMENSIONS_EXCEEDED - リクエストに、25 か所を超える出発地または 25 か所を超える目的地が指定されていたことを示します。
+OVER_QUERY_LIMIT - 特定の期間内にアプリケーションから送信されたリクエストが多すぎたことを示します。しばらく待ってからもう一度試すと、リクエストが正常に処理されます。
+REQUEST_DENIED は、距離行列サービスの使用がウェブページによって拒否されたことを示します。
+UNKNOWN_ERROR - サーバー エラーが原因で距離行列リクエストを処理できなかったことを示します。もう一度試すと正常に処理される可能性があります。
+要素のステータス コード
+以下のステータス コードは、特定の DistanceMatrixElement オブジェクトに適用されます:
+NOT_FOUND - この出発地/目的地ペアがジオコーディングできなかったことを示します。
+OK - レスポンスに有効な結果が格納されていることを示します。
+ZERO_RESULTS - 出発地と目的地の間にルートが見つからなかったことを示します。
+結果の解析
+DistanceMatrixResponse オブジェクトには、リクエストで渡した出発地ごとに 1 つの row が格納されています。各行には、その出発地と各目的地のペアごとに element フィールドが格納されます。
+function callback(response, status) {  if (status == google.maps.DistanceMatrixStatus.OK) {    var origins = response.originAddresses;    var destinations = response.destinationAddresses;    for (var i = 0; i < origins.length; i++) {      var results = response.rows[i].elements;      for (var j = 0; j < results.length; j++) {        var element = results[j];        var distance = element.distance.text;        var duration = element.duration.text;        var from = origins[i];        var to = destinations[j];      }    }  }}
+高度
+高度サービスは、地球上の場所の高度データを提供します。海底の場合は深度を提供します(負の値を返します)。指定された場所の高度が、Google が所有するデータでは正確にわからない場合は、そこから最も近い 4 地点のデータを補間した平均値が返されます。
+ElevationService オブジェクトにより、地球上の場所の高度データを問い合わせる簡単なインターフェースが得られます。また、パスに沿ってサンプリングされた高度データをリクエストすることで、ルートに沿って等間隔で高度の変化を計算することもできます。ElevationService オブジェクトは Google Maps API 高度サービスと通信し、高度サービスは高度リクエストを受信して高度データを返します。
+サービスの不正使用を防ぐため、これらのリクエストのレートは制限されています。既知の場所の高度を静的に計算したい場合は、Elevation API のドキュメントをご覧ください。
+高度サービスを使用して、ハイキングおよび自転車アプリケーション、モバイル位置特定アプリケーション、低解像度の測量アプリケーションを開発できます。
+高度リクエスト
+高度サービスへのアクセスは、Google Maps API が外部サーバーへの呼び出しを行う必要があるため、非同期に行われます。このため、コールバック メソッドを渡してリクエストの完了時に実行する必要があります。このコールバック メソッドにより結果が処理されます。高度サービスはステータス コード(ElevationStatus)と各 ElevationResult オブジェクトの配列を返すことに注意してください。
+ElevationService は 2 種類のリクエストを処理します:
+getElevationForLocations() メソッドを使用した、離れている位置のリクエスト。LocationElevationRequest オブジェクトを使用して、1 つ以上の位置のリストが渡されます。
+getElevationAlongPath() メソッドを使用した、パスに沿った一連の接続された地点の高度のリクエスト。PathElevationRequest オブジェクトにパス頂点の順序付きセットが渡されます。パスに沿って高度をリクエストするとき、そのパスに沿って取得するサンプル数を示すパラメータも渡す必要があります。
+これらの各メソッドは、コールバック メソッドも渡して、返された ElevationResult と ElevationStatus オブジェクトを処理する必要があります。
+位置の高度のリクエスト
+LocationElevationRequest オブジェクト リテラルには、次のフィールドがあります:
+{  locations[]: LatLng}
+locations(必須)は、高度データを返す地球上の場所を定義します。このパラメータは、LatLng の配列を受け取ります。
+サービス割り当ての範囲内であれば、配列内に任意の数の座標を渡せます。なお、複数の座標を渡す場合は、座標を 1 つのみ渡す場合と比べて、返されるデータの正確性が損なわれる可能性がある点に注意してください。
+サンプリングされたパス高度のリクエスト
+PathElevationRequest オブジェクト リテラルには次のフィールドがあります:
+{  path[]: LatLng,  samples: Number}
+これらのフィールドを以下に説明します:
+path(必須)は、高度データを返す地球上のパスを定義します。path パラメータは、2 つ以上の LatLng オブジェクトの配列を使用して、2 つ以上の {緯度,経度} の順序付きペアのセットを定義します。
+samples(必須)は、高度データを返すパスに沿ってサンプリングする地点の数を示します。samples パラメータに従い、指定した path が等間隔に分割されて各地点が順序付けられます。
+位置リクエストと同様に、path パラメータは緯度と経度の値のセットを指定します。一方このリクエストでは、path パラメータに頂点を順序付けたセットを指定します。頂点の高度データを返すのではなく、パス リクエストはパスの長さに沿ってサンプリングされ、各サンプルは互いに等距離になります(終点を含む)。
+高度レスポンス
+有効な各リクエストに対して、高度サービスは定義されたコールバックに ElevationResult のセットと ElevationStatus オブジェクトを返します。
+高度のステータス
+各高度リクエストはコールバック関数に ElevationStatus コードを返します。この status コードには、次のいずれかの値が含まれます: 
+OK はサービス リクエストが正常に終了したことを示します。
+INVALID_REQUEST はサービス リクエストの形式が正しくないことを示します。
+OVER_QUERY_LIMIT はリクエスト側が割り当てを超過したことを示します。
+REQUEST_DENIED はサービスがリクエストを完了せず、無効なパラメータが原因の可能性があることを示します。
+UNKNOWN_ERROR は、不明なエラーが発生したことを示します
+google.maps.ElevationStatus.OK のこのステータス コードを確認して、コールバックが正常に終了したことを確認してください。
+高度の結果
+成功すると、コールバック関数の results 引数には ElevationResult オブジェクトのセットが格納されます。これらのオブジェクトには次の要素が含まれています:
+高度データが計算される位置の location 要素(LatLng オブジェクトを含む)。なお、パス リクエストの場合は、location 要素のセットに、パスに沿ってサンプリングされた地点が格納されます。
+その場所の高度をメートル単位で表す elevation 要素。
+高度の例
+次の例は、地図上をクリックすると、LocationElevationRequest オブジェクトを使用して高度リクエストに変換します:
+var elevator;var map;var infowindow = new google.maps.InfoWindow();var denali = new google.maps.LatLng(63.3333333, -150.5);function initialize() {  var myOptions = {    zoom: 8,    center: denali,    mapTypeId: 'terrain'  }  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  // Create an ElevationService  elevator = new google.maps.ElevationService();  // Add a listener for the click event and call getElevation on that location  google.maps.event.addListener(map, 'click', getElevation);}function getElevation(event) {  var locations = [];  // Retrieve the clicked location and push it on the array  var clickedLocation = event.latLng;  locations.push(clickedLocation);  // Create a LocationElevationRequest object using the array's one value  var positionalRequest = {    'locations': locations  }  // Initiate the location request  elevator.getElevationForLocations(positionalRequest, function(results, status) {    if (status == google.maps.ElevationStatus.OK) {      // Retrieve the first result      if (results[0]) {        // Open an info window indicating the elevation at the clicked position        infowindow.setContent("The elevation at this point is " + results[0].elevation + " meters.");        infowindow.setPosition(clickedLocation);        infowindow.open(map);      } else {        alert("No results found");      }    } else {      alert("Elevation service failed due to: " + status);    }  });}
+例を表示(elevation-simple.html)
+次の例は、座標のセットを受け取るとポリラインを作成し、Google Visualization API を使用してこのパスに沿って高度データを表示します(この API は Google 共通ローダーを使用して読み込む必要があります)。高度リクエストは PathElevationRequest を使用して作成されます:
+var elevator;var map;var chart;var infowindow = new google.maps.InfoWindow();var polyline;// The following path marks a general path from Mt.// Whitney, the highest point in the continental United// States to Badwater, Death Vallet, the lowest point.var whitney = new google.maps.LatLng(36.578581, -118.291994);var lonepine = new google.maps.LatLng(36.606111, -118.062778);var owenslake = new google.maps.LatLng(36.433269, -117.950916);var beattyjunction = new google.maps.LatLng(36.588056, -116.943056);var panamintsprings = new google.maps.LatLng(36.339722, -117.467778);var badwater = new google.maps.LatLng(36.23998, -116.83171);// Load the Visualization API and the columnchart package.google.load("visualization", "1", {packages: ["columnchart"]});function initialize() {  var myOptions = {    zoom: 8,    center: lonepine,    mapTypeId: 'terrain'  }  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  // Create an ElevationService.  elevator = new google.maps.ElevationService();  // Draw the path, using the Visualization API and the Elevation service.  drawPath();}function drawPath() {  // Create a new chart in the elevation_chart DIV.  chart = new google.visualization.ColumnChart(document.getElementById('elevation_chart'));  var path = [ whitney, lonepine, owenslake, panamintsprings, beattyjunction, badwater];  // Create a PathElevationRequest object using this array.  // Ask for 256 samples along that path.  var pathRequest = {    'path': path,    'samples': 256  }  // Initiate the path request.  elevator.getElevationAlongPath(pathRequest, plotElevation);}// Takes an array of ElevationResult objects, draws the path on the map// and plots the elevation profile on a Visualization API ColumnChart.function plotElevation(results, status) {  if (status == google.maps.ElevationStatus.OK) {    elevations = results;    // Extract the elevation samples from the returned results    // and store them in an array of LatLngs.    var elevationPath = [];    for (var i = 0; i < results.length; i++) {      elevationPath.push(elevations[i].location);    }    // Display a polyline of the elevation path.    var pathOptions = {      path: elevationPath,      strokeColor: '#0000CC',      opacity: 0.4,      map: map    }    polyline = new google.maps.Polyline(pathOptions);    // Extract the data from which to populate the chart.    // Because the samples are equidistant, the 'Sample'    // column here does double duty as distance along the    // X axis.    var data = new google.visualization.DataTable();    data.addColumn('string', 'Sample');    data.addColumn('number', 'Elevation');    for (var i = 0; i < results.length; i++) {      data.addRow(['', elevations[i].elevation]);    }    // Draw the chart using the data within its DIV.    document.getElementById('elevation_chart').style.display = 'block';    chart.draw(data, {      width: 640,      height: 200,      legend: 'none',      titleY: 'Elevation (m)'    });  }}
+例を表示(elevation-paths.html)
+ストリートビュー
+Google ストリートビューは、指定された道路から対象範囲全体の 360 度のパノラマ ビューを提供します。ストリートビューの API 対象範囲は、Google マップ アプリケーション(http://maps.google.com/)と同じです。ストリートビューが現在サポートされている市町村のリストは、Google マップ ヘルプセンターでご確認ください。
+以下はストリートビュー画像のサンプルです。
+Google Maps JavaScript API では、Google マップ ストリートビューで使用される画像を取得して操作するためのストリートビュー サービスを提供します。V2 API とは異なり、Maps JavaScript API V3 のストリートビュー サービスはブラウザ内でネイティブにサポートされます。
+ストリートビュー マップの用途
+ストリートビューは、スタンドアロンの DOM 要素内で使用できますが、用途として最も便利なのは地図上で場所を特定したいときです。ストリートビューはデフォルトで有効になっており、ズームや移動に使用するナビゲーション ズーム コントロールには、ストリートビューの「ペグマン コントロール」が統合されています。このコントロールを非表示にするには、地図の MapOptions で streetViewControl を false に設定します。ストリートビュー コントロールのデフォルトの位置を変更することもできます。その場合は、Map の streetViewControlOptions.position プロパティを新しい ControlPosition に設定します。
+ストリートビュー ペグマン コントロールを使用して、地図内でストリートビューのパノラマを直接表示できます。ペグマンをクリックしたままにすると、地図が更新され、地図上に青の輪郭を使用してストリートビュー対応の通りが表示されます:
+ペグマン マーカーを通りにドロップすると、地図が更新され、指定された位置のストリートビュー パノラマが表示されます。
+次の例では、streetViewControl をボストンの地図のフェンウェイ パーク付近に追加します:
+var fenway = new google.maps.LatLng(42.345573,-71.098326);  var mapOptions = {    center: fenway,    zoom: 14,    mapTypeId: google.maps.MapTypeId.ROADMAP  };var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+例を表示(streetview-map.html)
+ストリートビューのパノラマ
+ストリートビュー画像は、StreetViewPanorama オブジェクトを使用することでサポートされます。このオブジェクトがストリートビュー「ビューア」への API インターフェースとなります。各地図にはデフォルトのストリートビュー パノラマがあり、これは地図の getStreetView() メソッドを呼び出して取得できます。streetViewControl オプションを true に設定してストリートビュー コン ロールを地図に追加すると、ペグマン コントロールがこのデフォルトのストリートビュー パノラマに自動的に接続されます。
+独自の StreetViewPanorama オブジェクトを作成して、地図の streetView プロパティを明示的にこの作成したオブジェクトに設定することで、デフォルトではなくこのオブジェクトを使用するよう地図を設定することもできます。地図とパノラマ間のオーバーレイの自動共有など、デフォルト動作を変更する場合、デフォルト パノラマをオーバーライドできます(下記のストリートビュー内のオーバーレイを参照してください)。
+ストリートビューのコンテナ
+別の DOM 要素(一般には <div> 要素)内の StreetViewPanorama を表示したい場合があります。この場合、StreetViewPanorama のコンストラクタの DOM 要素を渡すだけです。画像を最適に表示するには、最小 200x200 ピクセルを推奨します。
+注: ストリートビュー機能は地図とともに使用するようにデザインされていますが、地図との使用は必須ではありません。ストリートビュー オブジェクトは地図なしで単独で使用することができます。
+ストリートビューの場所と視点(POV)
+StreetViewPanorama コンストラクタを使用しても、StreetViewOptions パラメータを使用してストリートビューの場所と視点を設定できます。作成した後にオブジェクトの  setPosition() と setPov() を呼び出して、場所と視点を変更できます。
+ストリートビューの場所は画像に対するカメラの中心の位置を定義しますが、その画像に対するカメラの向きは定義しません。向きを定義するため、StreetViewPov オブジェクトでは 3 つのプロパティを定義します:
+heading(デフォルトは 0)は、カメラ中心の回転角度を、真北からの相対角度で定義します。方向は時計回りに測定されます(90 度が真東)。
+pitch(デフォルトは 0)は、カメラの初期デフォルト ピッチからの「上」または「下」向きの角度を定義します。通常は水平です(常にそうではなりません)(たとえば、丘の上から撮影した画像は、一般には水平ではないデフォルト ピッチを示します)。ピッチ角度は、仰角は負の値(真上に -90 度、デフォルト ピッチに直交)、伏角は正の値(真下に +90 度、デフォルト ピッチに直交)で測定されます。
+zoom(デフォルトは 1)は、このビュー(事実上、「視野」を除く)のズーム レベルを定義します。0 の場合、完全にズームアウトされます。多くのストリートビューの場所では、ズームレベルとして 0 から 3 をサポートします。
+次のコードは、ボストンのフェンウェイ パークの地図を初期ビューで表示します。ペグマンを選択して地図上のサポートする位置にドラッグすると、地図上のストリートビュー パノラマが変化します:
+var fenway = new google.maps.LatLng(42.345573,-71.098326);var mapOptions = {  center: fenway,  zoom: 14,  mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(    document.getElementById("map_canvas"), mapOptions);var panoramaOptions = {  position: fenway,  pov: {    heading: 34,    pitch: 10,    zoom: 1  }};var panorama = new  google.maps.StreetViewPanorama(document.getElementById("pano"), panoramaOptions);map.setStreetView(panorama);
+例を表示する(streetview-simple.html)
+ストリートビュー内のオーバーレイ
+デフォルトの StreetViewPanorama オブジェクトは地図オーバーレイの表示をネイティブにサポートします。オーバーレイは一般に、LatLng の位置に固定された「ストリート レベル」で表示されます(マーカーはたとえば、末尾がその位置のストリートビュー パノラマの水平面に固定されて表示されます)。
+現在、ストリートビュー パノラマでサポートされているオーバーレイのタイプは、Marker、InfoWindow、カスタム OverlayView に限定されています。地図上に表示するオーバーレイは、パノラマを Map オブジェクトの代替として処理し、setMap() を呼び出して StreetViewPanorama を地図の代わりに引数として渡すことで、ストリートビュー パノラマに表示できます。情報ウィンドウも同様に、open() を呼び出して、地図の代わりに StreetViewPanorama() を渡すことで、ストリートビュー パノラマ内で開くことができます。
+また、デフォルトの StreetViewPanorama で地図を作成する場合、地図上にマーカーが作成されると、地図の関連付けられたストリートビュー パノラマと自動的に共有されます(パノラマが表示されている場合)。デフォルトのストリートビュー パノラマを取得するには、Map オブジェクトの getStreetView() を呼び出します。地図の streetView プロパティを明示的に独自に作成した StreetViewPanorama に設定した場合、デフォルトのパノラマがオーバーライドされ、自動オーバーレイ共有が無効になります。
+次の例では、ニューヨーク市 Astor Place 付近のさまざまな場所を示すマーカーを表示します。ストリートビューに表示を切り替えると、共有マーカーが StreetViewPanorama 内に表示されます。
+var map;var panorama;var astorPlace = new google.maps.LatLng(40.729884, -73.990988);var busStop = new google.maps.LatLng(40.729559678851025, -73.99074196815491);var cafe = new google.maps.LatLng(40.730031233910694, -73.99142861366272);var bank = new google.maps.LatLng(40.72968163306612, -73.9911389350891);function initialize() {  // Set up the map  var mapOptions = {    center: astorPlace,    zoom: 18,    mapTypeId: google.maps.MapTypeId.ROADMAP,    streetViewControl: false  };  map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);  // Setup the markers on the map  var cafeMarkerImage =      new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=cafe|FFFF00');  var cafeMarker = new google.maps.Marker({      position: cafe,      map: map,      icon: cafeMarkerImage,      title: 'Cafe'  });  var bankMarkerImage =      new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=dollar|FFFF00');  var bankMarker = new google.maps.Marker({      position: bank,      map: map,      icon: bankMarkerImage,      title: 'Bank'  });  var busMarkerImage =      new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=bus|FFFF00');  var busMarker = new google.maps.Marker({      position: busStop,      map: map,      icon: busMarkerImage,      title: 'Bus Stop'  });  // We get the map's default panorama and set up some defaults.  // Note that we don't yet set it visible.  panorama = map.getStreetView();  panorama.setPosition(astorPlace);  panorama.setPov({    heading: 265,    zoom:1,    pitch:0}  );}function toggleStreetView() {  var toggle = panorama.getVisible();  if (toggle == false) {    panorama.setVisible(true);  } else {    panorama.setVisible(false);  }}
+例を表示(streetview-overlays.html)
+ストリートビューのイベント
+ストリートビューの表示を切り替えたり方向を操作しているとき、StreetViewPanorama の状態の変化を示すイベントを監視できます:
+pano_changed は、個々のパノラマ ID が変更されたときに起動されます。このイベントは、パノラマ内で関連付けられたデータ(リンクなど)がこのイベント発生時に変更されたことは保証しません。このイベントは、パノラマ ID が変更されたことのみを示します。パノラマ ID(このパノラマの参照に使用できます)は、現在のブラウザ セッション内でのみ一定であることに注意してください。
+position_changed は、パノラマの基準(LatLng)位置が変更したときに起動されます。パノラマを回転しても、このイベントはトリガされません。パノラマの基準位置は、関連付けられたパノラマ ID を変更しなくても変更できます。API が最も近いパノラマ ID をパノラマの位置に自動的に関連付けるからです。
+pov_changed は、ストリートビューの StreetViewPov が変更されたときに起動されます。このイベントは、位置とパノラマ ID が変化しなくても起動することに注意してください。
+links_changed は、ストリートビューのリンクが変更されると起動されます。このイベントは、pano_changed で指定されたパノラマ ID が変更された後、非同期に起動される場合があります。
+visible_changed は、ストリートビューの表示状態が変更されると起動されます。このイベントは、pano_changed で指定されたパノラマ ID が変更された後、非同期に起動される場合があります。
+次のコードは、これらのイベントを処理して基準の StreetViewPanorama のデータを収集します:
+var caffe = new google.maps.LatLng(37.869085,-122.254775);function initialize() {  var panoramaOptions = {    position:caffe,    pov: {      heading: 270,      pitch:0,      zoom:1    },    visible:true  };  var panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), panoramaOptions);  google.maps.event.addListener(panorama, 'pano_changed', function() {      var panoCell = document.getElementById('pano_cell');      panoCell.firstChild.nodeValue = panorama.getPano();  });  google.maps.event.addListener(panorama, 'links_changed', function() {      var linksTable = document.getElementById('links_table');      while(linksTable.hasChildNodes()) {        linksTable.removeChild(linksTable.lastChild);      };      var links =  panorama.getLinks();      for (var i in links) {        var row = document.createElement("tr");        linksTable.appendChild(row);        var hCell = document.createElement("td");        var hText = "Link: " + i + "";        hCell.innerHTML = hText;        var vCell = document.createElement("td");        var vText = links[i].description;        vCell.innerHTML = vText;        linksTable.appendChild(hCell);        linksTable.appendChild(vCell);      }  });  google.maps.event.addListener(panorama, 'position_changed', function() {      var positionCell = document.getElementById('position_cell');          positionCell.firstChild.nodeValue = panorama.getPosition();  });  google.maps.event.addListener(panorama, 'pov_changed', function() {      var headingCell = document.getElementById('heading_cell');      var pitchCell = document.getElementById('pitch_cell');      headingCell.firstChild.nodeValue = panorama.getPov().heading;      pitchCell.firstChild.nodeValue = panorama.getPov().pitch;  });}
+例を表示(streetview-events.html)
+ストリートビューのコントロール
+StreetViewPanorama を表示するとき、デフォルトでさまざまなコントロールがパノラマに表示されます。これらのコントロールは、ストリートビューの StreetViewPanoramaOptions 内にある該当するフィールドを true またはfalse に設定して、有効または無効にできます:
+panControl は、パノラマを回転させるために使用します。このコントロールは、デフォルトでは標準の内蔵コンパスおよび移動コントロールとして表示されます。panControlOptions フィールドの PanControlOptions を指定して、コントロールの位置を変更できます。
+zoomControl は、画像内をズームするために使用します。このコントロールは、デフォルトでは移動コントロールの下に表示されます。zoomControlOptions フィールドの ZoomControlOptions を指定して、コントロールの外観を変更できます。
+addressControl は、関連する位置の住所を示すテキスト オーバーレイを提供します。addressControlOptions フィールドの StreetViewAddressControlOptions を指定して、コントロールの外観を変更できます。
+linksControl は、隣接するパノラマ画像へ移動するための案内用矢印を画像に表示します。
+次の例では、関連するストリートビュー内に表示されたコントロールを変更し、ビューのリンクを削除します:
+var fenway = new google.maps.LatLng(42.345573,-71.098326);// Note: constructed panorama objects have visible: true// set by default.var panoOptions = {  position: fenway,  addressControlOptions: {    position: google.maps.ControlPosition.BOTTOM,    style: {      "fontWeight" : "bold",      "backgroundColor" : "#191970",      "color" :"#A9203E"    }  },  linksControl: false,  panControl: false,  zoomControlOptions: {    style: google.maps.ZoomControlStyle.SMALL  },  enableCloseButton: false,  visible:true};var panorama = new google.maps.StreetViewPanorama(    document.getElementById("pano"), panoOptions);
+例を表示(streetview-controls.html)
+ストリートビューのデータへの直接アクセス
+ストリートビューのデータを利用できるかどうかをプログラム上で判定したり、特定のパノラマに関する情報を直接地図やパノラマを操作せずに返したい場合があります。StreetViewService オブジェクトを使用して、これを実行できます。このオブジェクトには Google のストリートビュー サービスに保存されているデータへのインターフェースがあります。
+ストリートビュー サービスのリクエスト
+ストリートビュー サービスへのアクセスは、Google Maps API が外部サーバーへの呼び出しを行う必要があるため、非同期に行われます。このため、コールバック メソッドを渡してリクエストの完了時に実行する必要があります。このコールバック メソッドにより結果が処理されます。
+StreetViewService に対する 2 種類のリクエストを開始できます:
+getPanoramaById() は、パノラマを一意に特定する参照 ID を受け取って、パノラマ データを返します。この参照 ID は、現在のブラウザ セッション内でのみ一定であることに注意してください。
+getPanoramaByLocation() は、渡された LatLng と検索対象の半径(メートル単位)を受け取り、指定された領域のパノラマ データを検索します。半径が 50 m 以下の場合、返されるパノラマは指定された位置に最も近いパノラマになります。
+ストリートビュー サービスのレスポンス
+getPanoramaByLocation() と getPanoramaById() のどちらも、ストリートビュー サービスからの結果の取得時に実行されるコールバック関数を指定します。このコールバック関数は StreetViewPanoramaData オブジェクト内にパノラマ データのセットを返し、次にリクエストのステータスを示す StreetViewStatus コードを返します。
+StreetViewPanoramaData オブジェクト仕様には、次の形式のストリートビュー パノラマについてのメタデータが含まれています:
+{  "location": {    "latLng": LatLng,    "description": string,    "pano": string  },  "copyright": string,  "links": [{      "heading": number,      "description": string,      "pano": string,      "roadColor": string,      "roadOpacity": number    }],  "tiles": {    "worldSize": Size,    "tileSize": Size,    "centerHeading": number  }}
+このデータ オブジェクトは StreetViewPanorama オブジェクトそのものではありません。このデータを使用してストリートビュー オブジェクトを作成するには、StreetViewPanorama を作成して setPano() を呼び出し、返された location.pano フィールドに指定された ID を渡します。
+status コードは次の値のうちのいずれかを返します:
+OK は、一致するパノラマをサービスが見つけたことを示します。
+ZERO_RESULTS は、渡された条件と一致するパノラマをサービスが見つけられなかったことを示します。
+UNKNOWN_ERROR は、ストリートビュー リクエストを処理できず、正確な理由が不明であることを示します。
+次のコードは、ユーザーのクリックにマーカーを作成して応答する StreetViewService を作成します。このマーカーをクリックすると、その場所の StreetViewPanorama を表示します。コードはサービスから返された StreetViewPanoramaData のコンテンツを使用します。
+var map;var berkeley = new google.maps.LatLng(37.869085,-122.254775);var sv = new google.maps.StreetViewService();var panorama;function initialize() {  panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"));  // Set up the map  var mapOptions = {    center: berkeley,    zoom: 16,    mapTypeId: google.maps.MapTypeId.ROADMAP,    streetViewControl: false  };  map = new google.maps.Map(document.getElementById('map_canvas'),      mapOptions);  // getPanoramaByLocation will return the nearest pano when the  // given radius is 50 meters or less.  google.maps.event.addListener(map, 'click', function(event) {      sv.getPanoramaByLocation(event.latLng, 50, processSVData);  });}function processSVData(data, status) {  if (status == google.maps.StreetViewStatus.OK) {    var marker = new google.maps.Marker({      position: data.location.latLng,      map: map,      title: data.location.description    });    google.maps.event.addListener(marker, 'click', function() {      var markerPanoID = data.location.pano;      // Set the Pano to use the passed panoID      panorama.setPano(markerPanoID);      panorama.setPov({        heading: 270,        pitch: 0,        zoom: 1      });      panorama.setVisible(true);    });  }}
+例を表示(streetview-service.html)
+カスタム ストリートビュー パノラマの表示
+Maps JavaScript API V3 では、StreetViewPanorama オブジェクト内でのカスタム パノラマの表示がサポートされています。カスタム パノラマを使用すると、建物の内装や眺めのよい場所など、アイデア次第でさまざまなパノラマ画像を表示できます。カスタム パノラマを、Google の既存のストリートビュー パノラマにリンクさせることも可能です。
+カスタム パノラマ画像のセットを設定する方法は次のとおりです:
+各カスタム パノラマの基本パノラマ画像を作成します。この基本画像は、ズームで表示することを考えて、できるだけ解像度の高い画像にする必要があります。
+基本画像から、ズーム レベルごとのパノラマ タイルのセットを作成します(省略可能ですが作成することをおすすめします)。
+カスタム パノラマ間のリンクを作成します。
+(省略可能)Google の既存のストリートビュー画像の中から「エントリ」パノラマを指定し、カスタム セットと標準セットの間のリンクをカスタマイズします。
+StreetViewPanoramaData オブジェクト内で、各パノラマ画像のメタデータを定義します。
+カスタム パノラマのデータと画像を特定するためのメソッドを実装し、そのメソッドを StreetViewPanorama オブジェクト内でカスタム ハンドラとして指定します。
+以下では、この手順について詳しく説明します。
+カスタム パノラマの作成
+各ストリートビュー パノラマは、1 か所から 360 度を見渡すための 1 つ以上の画像のセットで構成されます。StreetViewPanorama オブジェクトには、正距円筒(Plate Carrée)図法に準拠した画像を使用します。この図法は、360 度の水平ビュー(湾曲した全体画像)と、180 度の垂直ビュー(まっすぐ見上げたり見下ろしたりするための画像)からなります。これらの視野を合わせてアスペクト比 2:1 の画像にします。湾曲したパノラマの全体画像は次のようになります。
+パノラマ画像を作成する場合、通常は 1 か所から撮った複数の写真をパノラマ ソフトウェアで合成します(詳しくは、Wikipedia の  Comparison of photo stitching applicationsをご覧ください)。これらのパノラマ画像は、カメラを 1 地点に固定して撮影する必要があります。そうすることで、2 次元平面画像を 360 度パノラマの球体に投影することができます。
+パノラマを直線座標系で球体に投影しておくと、画像を直線的な「タイル」に分割する場合や、計算上のタイル座標に基づいて画像を提供する場合に便利です。
+カスタム パノラマ タイルの作成
+ストリートビューでは、ズーム レベルが異なる画像を用意して、ズーム コントロールを使ってデフォルト ビューからズームインしたりズームアウトしたりできます。通常、ストリートビューのパノラマ画像には 5 段階のズーム レベルを設定します。1 つのパノラマ画像ですべてのズーム レベルを表示しようとすると、大きな画像を使うと処理が遅くなり、画像の解像度を低くするとズームインしたときの画質が劣化します。ただし、ズーム レベルごとに解像度を変えた画像は、Google のマップ タイルをズーム レベル別に作成するのと同じような方法で簡単に作成できます。
+StreetViewPanorama を初めて読み込むと、デフォルトでは全横幅の 25%(円弧の 90 度分)のパノラマがズーム レベル 1 で表示されます。このビューは、標準的な人間の視野とほぼ同じです。基本的には、デフォルト ビューからズーム アウトすると円弧(つまり視界)の角度が広がり、ズームインすると円弧の角度が狭まります。StreetViewPanorama では、選択したズーム レベルでのおおよその視野が自動的に計算され、その水平方向の視野にほぼ一致するタイル セットを選ぶ形でその解像度に最適な画像が選択されます。以下に、ストリートビューのズーム レベルと視野の対応を示します:
+ストリートビューのズーム レベル
+視野(度)
+サービス

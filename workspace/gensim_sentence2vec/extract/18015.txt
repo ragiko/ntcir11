@@ -1,0 +1,13 @@
+
+public SQLException(String reason,
+String SQLState,
+int vendorCode)
+指定の reason、SQLState、および vendorCode で SQLException オブジェクトを構築します。
+cause は初期化されません。Throwable.initCause(java.lang.Throwable) メソッドを呼び出すことによって、あとでこれを初期化できます。
+パラメータ:reason - 例外の説明SQLState - 例外を識別する XOPEN コードまたは SQL:2003 コードvendorCode - データベースベンダー固有の例外コード
+public SQLException(String reason,
+String SQLState)
+指定の reason および SQLState で SQLException オブジェクトを構築します。
+cause は初期化されません。Throwable.initCause(java.lang.Throwable) メソッドを呼び出すことによって、あとでこれを初期化できます。ベンダーコードは 0 に初期化されます。 
+パラメータ:reason - 例外の説明SQLState - 例外を識別する XOPEN コードまたは SQL:2003 コード
+SQLException (Java Platform SE 6)

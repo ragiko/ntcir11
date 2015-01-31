@@ -1,0 +1,23 @@
+本研究では,新聞記事を対象とした情報検索に注目し,検索質問文が表す情報内容を扱うための第一歩として,
+(1)質問文を構成する各単語は本来全てが曖昧さを持っているということを前提とし,それらの言語的な多義性を同時に解消する
+(2)解消された各単語に対し,シソーラスを知識の構造,組織化の手段として導入し,検索質問文の各語について,シソーラス構造の中から拡張の対象となる階層を自動的に抽出することで質問文の拡張を行う
+ことを目的とする.本研究の具体的な項目と研究内容は以下の通りである.
+(1)関連記事のトラッキング
+上記(2)に対し,シソーラス構造を自動的に抽出するために,関連記事を抽出する手法を提案し,TDT2を用いた実験では高精度で関連記事が抽出できることを示した(論文2).
+(2)タグ誤りの自動検出と修正
+語義解消を行うコーパスの不均質の問題に対処するため,あらかじめ人手により付与されたタグの誤りを自動的に検出し,修正する手法を提案した(論文1,3,6).
+(3)階層構造の自動構築
+シソーラスの自動構築において,大量データからの統計量を用いて,分野の階層構造が,人手により作成された階層構造を用いて文書を分類する場合よりも高い精度で分類できることを明らかにした(論文4).
+(4)情報検索のための語義解消
+語義の解消,シソーラス構造を用いて,質問文の拡張を行う手法を提案した(論文5).
+In this work, we proposed a method to disambiguate word senses and applied the results to query expansion in Information Retrieval.
+We mainly focus and proposed in the following methods.
+(1)Learning Subject Drift for Topic Tracking
+For topic tracking where data is collected over an extended period of time, the discussion of a topic, i.e. the subject in a story changes over time. This work focuses on subject drift and presents a method for topic tracking on broadcast news stories to handle subject drift. The basic idea is to automatically extract the optimal positive training data of the target topic so as to include only the data which are sufficiently related to the current subject. The method was tested on the TDT1 and TDT2, and the results show the effectiveness of the method.
+(2)Correcting Category Errors in Text Classification
+We proposed a method for correcting category annotation errors in multi-labeled data which deteriorate overall performance of text classification. We used the hierarchical structure for this purpose : we used it as a simple heuristics, i.e. the resulting category should be the same level, parent or child of the original category assigned to a document Experimental results with the Reuters 96 corpora show that our method achieves high precision in detecting and correcting annotation errors. Further, results on text classification improves accuracy.
+(3)A comparison of Manual and Automatic Constructions of Category Hierarchy for Classifying Large Corpora
+We addressed the problem dealing with a large collection of data, and investigate the use of automatically constructing category hierarchy from a given set of categories to improve classification of large corpora. We used two well-known techniques, partitioning clustering, k-means and a loss function to create category hierarchy. K-means is to cluster the given categories in a hierarchy. To select the proper number of k, we use a loss function which measures the degree of our disappointment in any differences between the true distribution over inputs and the learner's prediction. Once the optimal number of k is selected, for each duster, the procedure is repeated. Our evaluation using the 1996 Reuters corpus which consists of 806,791 documents shows that automatically constructing hierarchy improves classification accuracy.
+(4)Word Sense Disambiguation in Information Retrieval
+We proposed a method for feature selection which is used for disambiguating word senses. In our method, sets of features which correspond to each different sense of an ambiguous word are selected by applying a statistical technique. Further, we applied the results to query expansion in Information Retrieval.
+KAKEN - 複数の単語に関する語義の同時解消と情報検索における検索質問拡張への適用(15500087)

@@ -1,0 +1,145 @@
+
+8月30日(火)
+また左足が吊って(この前はすねだったが、今回はふくらはぎ)、激痛で夜中目が覚める。足が吊りそう感があるのにどうすることもできない無力感といった
+ら。
+ということで痛いながらも再度寝て、5時ちょっと前に起床。メールを書いたり、昨日の日記を付けたりする。
+7時に朝食。あっさり食おうと思っているのだが、ケーキがうまそうなのでつい食べてしまう。
+今日はどうしようか考えたが、聞きたい発表が一日中あるので、サボらずフル出場することに。ただし疲れたのでオーラルセッションを中心に聞く予定。
+8時半開始。サプライズトークはPascale
+Fung。ルネサンス絵画について、お笑いを交えて講義。遠近法、コンジャンテ、テネブロッソなどの技法について。
+Signals and Speech (Alex Portland, MIT)
+Honest
+Signalについて。もともとは動物間の情報交換の研究で、人間間では(個体間の)社会に関係する情報のやりとりのことを言うらしい。人間の集団間の役
+割の違いとシグナリングについて。
+スライドをあまり使わず(図も小さい)言葉での説明が主だったのでよく理解できなかった。
+9時半からコーヒーブレイク。外でもやっているので、今日は外でコーヒーを飲んでみた。
+10時から言語モデルのセッションを聞く。
+ASR - Language Models II
+Empirical Evaluation and Combination of Advanced Language Modeling
+Techniques (Brno U of Tech/JHU)
+いくつかの言語モデルの比較研究。データはPenn Treebankで規模は小さい。評価はperplexity。3-gram/5-gram
+with GT/KN平滑化、structured LM, Log-bilinear
+LM、ニューラルネットLMなどを併用。RNNを使った数種類のモデルとKneser-Ney平滑化の5gramの併用が比較的有効。次にWSJとBNで
+評価して、似たような結論。WERでの評価も同じ傾向。結論としては、RNNを使った言語モデル(+ふつうの5-gram)が有効。RNN言語モデルを
+使ったいろいろな応用の紹介(圧縮、機械翻訳など)も紹介された。
+Personalizing Model M for Voice Search (Microsoft)
+Model
+Mを個人適応させる。音声サーチでは、クエリの約半分は個人の過去の履歴に現れる。そこで個人の検索履歴の内容を特徴として加えて適応を行う。リスコアリ
+ングにより、誤り率が結構下がる。
+Sentence Selection by Direct Likelihood Maximization for Language Model
+Adaptation (Tokyo Inst. Tech.)
+篠崎さん。言語モデルの学習データ選択問題。開発データから作った言語モデルで選ぶべき言語データのパープレキシティを選ぶ(間接モデル)のではなく、言
+語データのサブセットで言語モデルを作り、それで開発データを評価することで言語データを選ぶ(直接モデル)。さらに、context
+locality weight
+(CLW)という重み付けをすることにより、開発データに現れないn-gramを選ばれやすくする。CLWの詳細はよく理解できなかった。
+Feature Combination Approaches for Discriminative Language Models (IBM)
+識別的言語モデルで、様々な特徴を組み合わせるときの学習方法。通常は組み合わせる特徴を並べて特徴ベクトルを作るが、それだと特徴ベクトルの次元が巨大
+になる。Cascade
+Trainingでは、まず1番目の特徴セットで識別関数を学習し、その識別関数の値と第2の特徴セットの値をあらたな特徴ベクトルとする。Model
+Score
+Combinationでは、複数の特徴セットを独立に学習し、複数の識別関数の出力を新たな特徴ベクトルとしてメタ識別関数を学習する
+(Boostingみたいなものか?)。実験では、単語n-gram、品詞n-gram、クラスタリングによるクラスのn-gram、それと
+"acoustic n-gram"(ある候補のHMM特徴系列のn-gram?)を使う。結果として、score
+combinationはあまり有効でなく、cascade は場合によって通常の特徴ベクトル組み合わせより性能が高いことがある。
+On-Line Language Model Biasing for Multi-Pass Automatic Speech
+Recognition (BBN)
+認識結果のn-bestの中での単語の出現頻度を調べ、その頻度を元の言語モデル学習データの単語出現頻度に掛けて言語モデルを学習し直す
+(Biasing)。言語モデルの再計算を高速に行う方法を提案。認識性能はやや改善。
+Mandarin Word-Character Hybrid-Input Neural Network Language Model (BBN)
+中国語の言語モデルとして、単語モデルと文字モデルを併用する。言語モデルはニューラルネット。入力として単語履歴と文字履歴を単に併用する(各単語・文
+字はベクトル表現)。6単語履歴+12文字履歴のモデルを使い、通常のモデルより0.2%ぐらい改善。単語と文字モデルを単に併用した場合と認識結果は同
+じだったが、学習及び適用時間が短いところが売りらしい。
+このあと昼食。もと先生、仁先生、岩手県立大の伊藤慶明先生と4人で、中央市場にトリッパ(モツ煮)を食べにいく。
+中央市場に着くと、中はまだ営業中。肉や野菜のような生ものだけでなく、酒などもたくさん売られている。
+いちおう目当ての店があったのだが、行ってみると閉店していた。今日だけ休みなのかどうかは不明。
+仕方ないので市場の中をうろうろ歩き、トリッパを出している店を見つけて食べることに。
+私はトリッパのサンドイッチと鰯のスパゲティ、水を頼む。
+トリッパのサンドイッチが先に来る。パン(パニーニ)は堅くて食べにくいが、モツはあっさりしていて柔らかく、パンと食べると何を食べてるのかよくわから
+ない感じ。
+スパゲティは、なんか黄色くて縮れたラーメンのような麺。腰はなくて短い。味はなんか香菜みたいな感じで、以前中国で食べたインスタントラーメンを思い出
+す味。いまいち。
+食べ終わって、午後からは音声対話のセッションを聞く。
+Spoken Dialog Systems I
+User Study of Spoken Decision Support System (NICT)
+翠さん。POMDPベースの対話システム(京都観光案内)の実ユーザによる対話実験。このシステムでは、返答の中での情報推薦の部分をPOMDPで制御し
+ている。最初のセッションでは実ユーザによる選択はシステムの推定でも高いスコアを出している観光スポットだったが、2回目ではシステムのスコアが低いス
+ポットをユーザが選ぶ傾向があった。模擬対話であっても、2回目には1回目と違う場所を選ぶ傾向があるためだろうという分析。
+Efficient Probabilistic Tracking of User Goal and Dialog History for
+Spoken Dialog Systems (Honda Research Inst. USA)
+複数の発話間でユーザの信念が一貫するように信念を追跡する(Belief
+tracking)。信念を確率的に表現するために、動的確率的オントロジー木(DPOT)という構造を使う。また確率推定が複雑になるのでGibbs
+Samplingを使う(よくわからなかった)。Let's GOシステム(バス運行情報システム)で評価。
+Tackling a Shilly-Shally Classifier for Predicting Task Success in
+Spoken Dialogue Interaction (U Ulm)
+対話が成功するかどうかの識別。対話がうまく行っていなそうだったら人間のオペレータにつなぐ。1発話ごとに「対話がうまくいった」「部分的にうまく行っ
+た」「うまく行かなかった」の3クラス識別をして、推定結果の系列がどの程度ばらつくかを使うらしい。詳細はよくわからなかった。
+Evauation of Listening-Oriented Dialogue Control Rules Based on the
+Analysis of HMMs (NTT)
+目黒さん。聞き役対話システムの評価。聞き役対話のための対話行為タグの遷移を手作業でモデル化。対話実験(WoZ)を行い、HMMベースの対話制御シス
+テムと比較。対話の良さを主観評価した。HMMは今一つの性能。手作りルールの方がよかった。質疑で苦労していた。
+Large-Scale Experiments on Data-Driven Design of Commercial Spoken
+Dialog Systems (SpeechCycle)
+VXMLを使うような商用対話システムの開発には膨大な工数がかかるので、それをいかに自動化するか。たとえばタイムアウトを何秒にするか、ある時点での
+プロンプトはopenかyesnoか、等々。この研究ではすべてをインプリメントし、どの時点でどの方法を使うかを決めるモジュール
+(contender)を実装して対話実験を行い、その結果から対話の各時点でとるべき戦略を強化学習により最適化しようとしている。定量的な結果はな
+し。
+Comparing System-Driven and Free Dialogue in In-Vehicle Interaction
+(Telkamatic AB)
+カーナビなどの音声対話において、対話戦略がユーザにとってどの程度認知負荷に影響するのかの調査。ドライブシミュレータで車線変更をするタスク
+(LCT)によって認知負荷を測った。提案システム(TAB/VCC)は自由発話を受け付けるシステムで、タスク達成率・達成時間・ユーザ満足度とも従来
+のシステム主導システムよりよかったが、認知負荷がどうなのかはよくわからなかったという結果。
+ここでコーヒーブレイク。
+午後後半はHuman-Robot InteractionとInformation Extraction and
+Retrievalのどちらを聞くか迷ったが、HRIの方は音源分離がメインだったのでやめて、Information Extraction and
+Retrievalの方を聞く。
+SLP for Information Extraction and
+Retrieval I
+Latent Topic Modeling for Audio Corpus Summarization (MIT)
+Timothy
+Hazen。音声ドキュメントの中に、どの話題がどの程度含まれているのかをまとめるのが目標。認識結果から文書ベクトルを求め(単語出現頻度はラティス
+から推定)、PLSAでモデル化。PLSAのトピックのうち、特定の文書の生成確率が高いものは特定の話題に関連している。あるトピックを要約するため、
+トピックとの関連が高い(相互情報量が大きい)単語をトピックの代表単語として選ぶ。評価対象はFisher
+Corpus。ナイーブな方法のような気がする。
+Investigation of Spontaneous Speech Characterization Applied to Speaker
+Role Recognition (LIUM)
+放送中の対話(フランス語)の処理をするプロジェクト。話者の役割を当てる。フランス語放送対話のコーパス(EPIC
+corpus)には話者の役割がラベル付けされている。(複数タグを許す。ゲスト/政治家/首相 など)局所的情報による認識と大域的情報による認識を組
+み合わせる。局所的認識の特徴は、音素出現率とかピッチ、単語信頼度など比較的低レベルのもの。大域的認識では、局所的認識の結果を組み合わせる。精度は
+76%ぐらい。
+Zero-Resource Audio-Only Spoken Term Detection Based on a Combination
+of Template Matching Technique (IRISA)
+音響ベースのキーワードスポッティング。連続DPと、SSM(Self-Similarity Matix。うちでやっていたFrame
+Relation
+Matrixと似ている)を組み合わせる。音響特徴としてMFCCとPosteriogramを比較(Posteriogramは言語依存)。言語に依存
+したPosteriogramが有効だが、言語があっていないposteriogramよりもMFCCのほうがまし。SSMの併用は効果がある。
+Automatic Learning in Context Indexing Service Using Phonetic Alignment
+(AT&T Labs)
+AT&Tのコンテンツ処理システムMIRACLEの説明。放送音声を認識するときに、キャプションと認識結果を合わせて性能を上げる。認識結果を
+合わせるときに、単語単位のマッチングだけでなく音素単位のマッチングも行う。言語モデル適応も行う(時間がなくて発表は省略)。
+Leveraging Relevance Cues for Improved Spoken Document Retrieval
+(National Taiwan Normal U)
+Berlin
+Chenのところの学生さん。確率的検索モデルにトピックモデルを組み込む。また、単語単位検索とサブワード単位検索(音節)を組み合わせる。具体的なと
+ころはよくわからない。いろいろな情報を組み合わせる方法より、通常のモデルにトピックを入れただけのモデルがもっともよい。
+Spoken Lecture Summerization by Random Walk over a Graph Constructed
+with Automatically Extracted Key Terms (National Taiwan U)
+重要文選択による音声要約。文書中の文をノードに、文間の類似度をエッジスコアとして文書をグラフで表現する。類似度は、文に対するPLSAトピックの確
+率の類似性を使うようだ。ある文のスコアを、その文自体の重要度と、グラフ上でそれに隣接する文のスコアからの影響の和として定義する。スコアを求める方
+法としてランダムウォークによる数値計算を使う。なんか行列計算で解析解が求まる気がするのだが。
+18時に終了して、19時からバンケット行きバスが出るので、いったん荷物を置きにホテルに戻る。Webを見ると、なんか日本には台風が来ているらしい。
+帰りの飛行機大丈夫かな。
+19時ちょっと前に会場に戻る。バンケット行きの人たちですごい混雑。1000人以上いるみたいだからね。
+19時過ぎにバスがくるが、何しろ人が多いのでバスが出発するのも一苦労だ。7番目か8番目ぐらいのバスに乗ることができた。
+バスはフィレンツェの町を抜けて郊外へ。バスが通るとは思えない細い道を抜けていく。郊外に来ても道が太くならないところがすごい。
+30分ほどで会場のVilla Castelleti
+に到着。どういうところなのかわからなかったが、コンベンション会場みたいなところだった。
+入り口でラッパと太鼓の人たちがお出迎え。
+中ではすでに飲み食いが始まっていて、料理には人がたかっている。料理を取るのに並んでいるようにも見えるが、ぜんぜん動いていない。
+最初に飲み物をもら
+い、そのあとちょっとだけマカロニとか取って、それで何とか持たせる。
+建物の中だけでなく、庭でも酒や料理が出ていて、そこにも大量の人が出ている。早くもケーキとかを確保。
+その後適当に飲みながら話をしたりする。足が痛いので途中座ったりしながら過ごす。
+22時頃みんなじわじわと帰り始める。順次帰りのバスが出ていて、無事バスに乗ってフィレンツェへ。バスの中ではほとんど寝ていく。23時頃学会会場に戻
+り、そこからホテルに戻る。少しメールを書いて、11時半頃寝る。
+前の日へ 目次へ 次の日へ
+8月30日

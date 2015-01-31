@@ -1,0 +1,112 @@
+ ホームボタンを押してアプリがバックグラウンドに回る時や、他のアプリに遷移した時に、メッセージを出したりする方法を検討しました。この記事は、その時に試したソースコードや特徴をまとめたものです。
+なお結論としては、onUserLeaveHint()を使う方法が最も良いでしょう。こちらに全体のソースコードを置きました。
+調べた所、onUserLeaveHint()を使う方法とIntent.ACTION_CLOSE_SYSTEM_DIALOGSを使う方法の2通りがあるようです。それぞれ見てきましょう。
+onUserLeaveHint()を使う方法
+・Activityがバックグラウンドに行くと呼ばれます。
+・ホームボタンが押された時の他、通知領域から他のアプリに遷移した場合などにも反応します。
+・他アプリ起動やActivityの切替全てに反応してしまう。
+・戻るボタンが押された場合には反応しません(戻るボタンが押された事は別の方法で取得できる)。
+・こちらを参考にしました:Y.A.M の 雑記帳: Android Home キーが押されたことを検知する。
+package jp.sample.AndroidPressHomeKeyEventSample;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.widget.Toast;
+public class MainActivity extends Activity {
+/** Called when the activity is first created. */
+@Override
+public void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.main);
+}
+@Override
+public void onUserLeaveHint(){
+//ホームボタンが押された時や、他のアプリが起動した時に呼ばれる
+//戻るボタンが押された場合には呼ばれない
+Toast.makeText(getApplicationContext(), "Good bye!" , Toast.LENGTH_SHORT).show();
+}
+}
+Intent.ACTION_CLOSE_SYSTEM_DIALOGSを使う方法
+・ホームボタンが押された事自体に反応する。
+・しかし、アプリがバックグラウンドにいても反応してしまう。
+・戻るボタンが押された場合には反応しません(戻るボタンが押された事は別の方法で取得できる)。
+・こちらを参考にしました;ビデオ再生中にホームキーが押された場合 - 日本Androidの会 | Google グループ
+package jp.sample.activityFinishSample02;
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.widget.Toast;
+public class MainActivity extends Activity {
+/** Called when the activity is first created. */
+@Override
+public void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.main);
+//ホームボタン押された時の準備
+HomeButtonReceive m_HomeButtonReceive = new HomeButtonReceive();
+IntentFilter iFilter = new IntentFilter();
+iFilter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+this.registerReceiver(m_HomeButtonReceive, iFilter);
+}
+public class HomeButtonReceive extends BroadcastReceiver{
+@Override
+public void onReceive(Context arg0, Intent arg1){
+//ここにさせたい事を書く
+Toast.makeText(getApplicationContext(), "Good bye!" , Toast.LENGTH_SHORT).show();
+}
+}
+}
+これらを改良する(してみようとする)
+これらが基本的な方法です。これを少し改良してみましょう。
+onUserLeaveHint()を使う方法を改良する
+onUserLeaveHint()を使う方法だと、戻るボタンが押された時に反応しません。なのでonKeyDown()を追加して、戻るボタンのイベントを取得します。
+package jp.sample.AndroidPressHomeKeyEventSample;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.widget.Toast;
+public class MainActivity extends Activity {
+/** Called when the activity is first created. */
+@Override
+public void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.main);
+}
+@Override
+public void onUserLeaveHint(){
+//ホームボタンが押された時や、他のアプリが起動した時に呼ばれる
+//戻るボタンが押された場合には呼ばれない
+Toast.makeText(getApplicationContext(), "Good bye!" , Toast.LENGTH_SHORT).show();
+}
+@Override
+public boolean onKeyDown(int keyCode, KeyEvent event) {
+switch(keyCode){
+case KeyEvent.KEYCODE_BACK:
+//戻るボタンが押された時の処理。
+Toast.makeText(this, "Back button!" , Toast.LENGTH_SHORT).show();
+finish();
+return true;
+}
+return false;
+}
+}
+よくあるものです。これでホームボタンやバックボタンが押された時や、他のアプリに切り替えた時に反応してくれます。どういう時に反応するのかもっとテストが必要ですが、基本的にはこれで十分でしょう。
+今回の記事を書くのをきっかけにgithubアカウントを作りました。これを含めた全体のソースコードは私のgithubアカウントに置いたので、そちらを参照して下さい。
+Intent.ACTION_CLOSE_SYSTEM_DIALOGSを使う方法を改良する
+このIntent.ACTION_CLOSE_SYSTEM_DIALOGSを使う方法について、自分自身がトップにいないのにも関わらずホームボタンが押された事に反応する問題に対処してみます。しかしどうも上手く行っていません…。
+・アプリがバックグラウンドに行くタイミングでfinish();やandroid.os.Process.killProcess(Process.myPid());などによりアプリを終了する方法ですが、なぜか上手くいきません。
+・自分がバックグラウンドではなく、表で起動しているかをフラグにて管理する方法を試してみました。アプリが起動したらフラグはtrueに、ホームボタンが押されたらフラグはfalseに、onResume()でフラグをtrueに、といった感じでフラグを管理します。しかしonUserLeaveHint()でフラグをfalseにできれば良いのですが、onUserLeaveHint()の方がHomeButtonReceiveより後に呼ばれるようで、他のアプリに遷移した後にホームボタンを押すと反応してしまうのは防げません。
+・こちらのコードを参考にトップにあるパッケージネームを取得して、自分自身と一致するときだけメッセージを出すって方法が良さそうなんですが、ちょっと上手く行きません(ちゃんとわかってる人が書けばちゃんと動きそう。パーミッションも必要なので少々大げさかも。
+まとめ
+色々やってみましたが、シンプルにonUserLeaveHint()だけを使う方法が最も有効です。
+自分は上にも書いたような方法で、戻るボタン検知と組み合わせて使っています。ここに全体を置いておきます。
+(そもそもホームボタンが押された時というのは、ユーザーがアプリを消そうとした時です。そのような時にメッセージを出したりなど、何かすべきでは無いのかもしれません。どうしても必要な場合に行いましょう。)
+参考サイト
+・[Android]アプリを(擬似的に)シングルタスクにする方法 - chakimarの日記
+・Y.A.M の 雑記帳: Android Home キーが押されたことを検知する。
+・ホームボタンが押されたことを取得する方法 - 日本Androidの会 | Google グループ
+・ビデオ再生中にホームキーが押された場合 - 日本Androidの会 | Google グループ
+Android開発 ホームボタン押下やアプリ切り替わりを検知する - えんたつの記録

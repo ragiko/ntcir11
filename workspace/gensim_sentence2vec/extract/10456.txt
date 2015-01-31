@@ -1,0 +1,107 @@
+
+7/7(月)
+あまり寝付けなくて,夜中何度も起きる.結局5時少し前に起床.調子がいまいちだが,日記を書いたりする.
+6時半ごろ朝食.最初,朝食会場がどこだか良くわからずに迷う.
+朝食はバイキングだが,味はいまいち.特に焼きそばは,紐を食べているようだ.
+メールを読んだり少し仕事をしたり.8時半から開会式なので,8時過ぎに隣の建物へ.
+8時半から開会式.AIMでは何のセレモニーもなかったが,こちらは来賓を前に据えて大々的に開会式.論文状況の報告もここでされた.341/673で,
+採択率は50.7%.
+開会式の後,Keynoteが3つある.
+Key Note 1: From Video Semantic Interpretation toward Human
+Behavior Understanding (Jenq-Neng Hwang, ワシントン大)
+ビデオコンテンツの認識と記述について.映像内での人間の位置の推定.また,モデルベースのマッチングによって,ビデオに写っている人間の姿勢を推定す
+る.一見モーションキャプチャのようだが,あくまで「ありもの」のビデオシーケンス内の人間の動作記述が目的とのこと.どんな内容でも記述できるようにな
+るにはまだ遠いが,ここまでできるのかという感じではある.
+Key Note 2: Digital Video Image Quality and Perceptual Coding
+(Kamisetty R. Rao, UTexas at Arlington)
+画像と映像の主観品質と,それを使った符号化についてのレクチャー.心理音響については比較的研究が進んでいるのに対して,画像・映像の品質に関係する視
+覚心理についてはあまり進んでいない感じ.システムが複雑すぎるのだろう.視覚心理を考慮したいくつかの評価基準が紹介されたが,覚えられなかった.
+Key Note 3: The Neural Basis of Language Processing in the Context
+of Development (Elena Plante,  U of Arizona)
+言語発達と脳機能の関係の話.何十人もの子供の脳をスキャンする研究が行われていたことにちょっと驚き.いくつかの言語課題(動詞を聞いてその動作を思い
+浮かべる,等)に対して脳機能を計測し,その右/左半球優位性が年齢とともにどう変化するかを調べている.10代後半まで,緩やかに左半球優位性が増加し
+ている.ごくわずかだが男女差もある.言語理解が右脳優位な人が1割程度いるというのを初めて聞いて驚いた.
+ここで昼飯.南華亭酒店の2階でバイキング.朝とあまり代わり映えしない.午後から座長なので,手早く済ませる.
+午後からずっと座長.今回の部屋は60人ぐらい入る.
+Language and Speech Processing: Human Language Understanding and
+Learning
+Application of HTK to the Polish Language (University of York)
+この発表はproceedingsに含まれていない.てっきり取り下げだと思ったら,本人が来ていてびっくり.そもそも発表していいのか.内容は,HTK
+でポーランド語の認識をしてみましたというもの.音素モデルはtriphoneだが,規模は小さい.名前を誤認識するときに,同じ性別の名前に間違いやす
+いというのがちょっと面白かった.形態的な何かがあるんだろうか.
+On Automatic Construction of Based-NLP Chinese Medicine Ontology
+Concept's Description Architecture (Institute of Scientific and
+Technical Information of China)
+漢方医学の文献を自然言語処理的に解析して,漢方のオントロジーを自動的に作りましたという話.論文・発表とも英語がめちゃくちゃでよくわからない.もと
+もと漢方のシソーラスも情報源に含めているそうなので,それに比べて改善したのはどこか?と質問してみたが,埒が明かなかった.
+A Novel Feature Extraction Approach Based on PCA and Improved
+Fisher Score Applied in Speaker Verification (LanZhou University of
+Technology)
+No Show.
+Speaker Independent Emotion Recognition Based on SVM/HMMs Fusion
+System (North University of China)
+No Show.
+Auditory Features with Vocal Tract Length Normalization for
+Language Identification (Tsinghua University)
+GMMによる言語識別の特徴量の話.MFCCの三角窓の代わりにGammatone
+filterを使うのと,声道長正規化を併用する.また,Shifted Delta
+Ceptstrum(SDC)というのも使う.EERで評価.MFCCの場合3.20%から,Gammatone+VTLNで1.87%までエラーが減
+少.
+Automatic Language Identification Using Support Vector Machines
+and Phonetic N-gram (Tsunghua University)
+各言語で連続音素認識を行い,それをN-gramで評価した尤度を全部まとめてベクトルにして,それをSVMで識別する.単に最大尤度を選択するよりも,
+SVMを使った方が精度が上がる.ベクトルの正規化の方法によっても性能に差があり,さらにGMM尤度もベクトルに加えるとよい.音素認識+N-gram
+の枠組みはVQ+HMMとどのくらい違うのか?と質問したが,今後の検討だそうで.
+Vowel Recognition Based on Frequency Ranges Determined by
+Bandwidth Approach (Universiti Malaysia Perlis)
+マレー語の母音認識.LPCによる平滑化スペクトルを単峰の分布で近似し,その中心周波数とバンド幅を特徴パラメータとする.LPCより性能がいいとのこ
+とだが,本当かいなと片桐先生が突っ込みを入れていた.母音はいいけど子音はどうするの,と質問してみたが,子音についてはなんか別なことをするしかない
+ようだ.
+Speech Feature Extraction of Cochlear Implants on the Basis of
+Auditory Perception Wavelet Transform (Suzhou University)
+No Show.
+コーヒーブレークの間,Y大学のK先生と,その学生さんがいたのでちょっと話をする.明日一緒にどこか行きましょうかという話になるが,どうなるか.
+Language and Speech Processing: LAnguage Acquisition and
+Reproduction 
+このセッションも私がChair.本来のCo-chairが来ないので,代理でHUSTのProf. Oscar Au
+がco-chairに.イケメン.
+An Empirical Evaluation of a Two-Dimensional Second-order Sound
+Field Recording and Reproduction System (The U. of Sydney)
+円形マイクロホンアレイで音を収録し,包囲型円形スピーカアレイで音場を再現.First-Order
+とSecond-Orderの違いが良くわからなかったが,音圧強度だけでなく音圧勾配も再現するということだろうか.基本的にスピーカアレイの中心のみ
+で音場を再現する.
+A Linguistic Reputation System Applied in Peer-to-Peer (Southwest
+Jiaotong University)
+No Show.
+Harmonic Analysis of Nonlinear Devices for Virtural Bass System
+(Nanyang Technological University)
+貧弱なスピーカのためのベースライン強調システム.LPFでベースの周波数帯域だけ取り出し,それを非線形処理で歪ませて高調波を作り出して混ぜなおす.
+どういう非線形を使ったらどんな高調波が出るか,それと元の音の性質との関係(単一正弦波か復号波か)の解析.FFTを使うなら,単にF0を検出してそれ
+をコピーして高調波を作ればいいんでないの?と質問した.まあそういう方法もあるよねという答え.
+Pruning Dependency Trees in a Syntactic Information Retrieval
+Model (University of Ulster, UK)
+No Show.
+A Detection of Lip-smack in Spontaneous Speech (South China
+University of Technology)
+Lip-smackの検出.Lip-smackの前後には無音がある場合が多いことから,まず短い領域を切り出し,HMMで認識.再現率/適合率が
+81/87%なので,なかなかの性能.
+A Fuzzy Logic Based Speech Extraction Approach for E-Learning
+Content Production (Shandong University)
+発音評価のお手本を作るため,音声コンテンツの中から音声・非音声識別をする.いくつかのパラメータをファジイ論理で組み合わせて音声確率を計算する.普
+通はGMMを使うんじゃないの?と質問したが,従来の音声・非音声識別の研究はあまりフォローしてないようだった.
+Relationship between Fundamental and Formant Frequency in
+Whispered Mandarin (Soochow University)
+中国語のささやき声から声調を推定する話.四声とF1〜F3の関係を分析した結果,F2と四声が関係ありそうだとのこと.「普通の音声でもそうなのか?」
+という質問があったが,普通の音声だとそれほど明確な関係は見られないとのこと.人間にはささやき声の声調識別が可能なのかと聞いたら,人間で6割ぐらい
+だそうだ.今回の実験では人間に識別できたデータだけを使っているとのこと.
+Mispronunciation Detection Based on Cross-Language Phonological
+Comparisons (Chinese University of Hong Kong)
+広東語話者の英語発音の誤り検出.明日のキーノートのProf. Helen
+Mengの所の研究.広東語話者の発音誤りルールから,誤りを含む拡張辞書を生成し,それを使って認識.河合さんの研究との違いを聞いてみたが,「あちら
+は単語ベースだがこっちは連続音声認識」という答え.それはちょっと違うのでは.
+Welcome Receptionまで1時間ほどあるので,一旦ホテルに戻って荷物を置き,また会場に戻ってくる.JAISTの李さんがProf.
+Helen Mengと話をしていたので,少し話をする.そのうちレセプション開始.今回は立食.
+前では音楽演奏と歌があった.どういう歌なのかわからない.民謡ではないようだが,歌謡曲だろうか.
+立食だったので1時間ほどで抜けて,部屋で仕事をする.10時過ぎに寝る.
+前の日へ 目次へ 次の日へ
+7月7日

@@ -1,0 +1,19 @@
+ChAff: 韻律的な情報によるリアルタイム会話分析
+概要
+ロボットの不手際でミーティングが中断されることを想像してみる.
+この邪魔によって話者は,ロボットに怒り,口頭で激しい非難を浴びせる.ではさらに,
+ロボットが謝り,その行動を改めることを想像してみよう.このシナリオを実現するために,
+ChAffプロジェクトのゴールは韻律的な情報によってリアルタイムに会話を分類するFPGAをデザインすることである.
+現在取り組んでいるのは,韻律に関する特徴に基づいたアプローチである.
+リアルタイム会話分析のシミュレーション結果から,我々は目的に適ったアルゴリズムを見つけることができる.
+シミュレーションが終わったら,会話分析アルゴリズムをレジスタトランスファレベル(RTL)記述に論理合成し,
+FPGA上で動作させる.
+現在,このシステムは会話速度(毎秒),ピッチ(基本的には速度)や音量(デシベル)
+をリアルタイムに計算している.将来的には,
+速度・ピッチ・音量の空間における軌跡の分類を進めるつもりである.
+参考文献
+Reynolds Carson, Ishikawa Masatoshi and Tsujino, H. : Realizing Affect in Speech Classification in Real-Time, 
+Aurally Informed Performance: Integrating Machine Listening and Auditory Presentation in Robotic Systems, 
+In conjunction with AAAI Fall Symposia (Washington, 2006.10.13-15) 
+[PDF]
+メタ・パーセプション:ヒューマンインターフェイス

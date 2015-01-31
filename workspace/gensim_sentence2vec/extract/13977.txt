@@ -1,0 +1,11 @@
+<certification-config xmlns="http://www.intra-mart.jp/certification/certification-config"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.intra-mart.jp/certification/certification-config certification-config.xsd">
+<category name="im_admin_login">
+<param>
+<param-name>ipv4_filter</param-name>
+<param-value>192.168.0.1, 192.168.1.[0-128], 192.168.2.*</param-value>
+</param>
+</category>
+</certification-config>
+認証IPアドレス制限設定(システム管理者用) &mdash; intra-mart Accel Platform /

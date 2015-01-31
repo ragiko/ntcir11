@@ -1,0 +1,199 @@
+intro
+Go を触ってて interface を用いた設計がまだまだよくわかってなかったので、一旦まとめることにしました。Go には明示的な継承の機能は無く、 interface も例えば Java のそれとはかなり毛色が違うので、(Class ではなく) Struct の設計に結構癖があると感じます。Go の interface は言語設計的にもかなり尖っていて、 Go という言語を強く特徴付けていると同時に、 Go 言語自体の開発者たちもこの機能をかなり重要視しています。
+例えば、 Go の開発者の一人である Russ Cox 氏によれば
+Go's interfaces—static, checked at compile time, dynamic when asked for—are,
+for me, the most exciting part of Go from a language design point of view. If
+I could export one feature of Go into other languages, it would be
+interfaces.
+http://research.swtch.com/interfaces
+とのこと。
+「Interface を制すものは Go を制す」
+なのかもしれない、と思いまずこの機能を使い方の視点からまとめてみました。(まあ、単にヤックの毛を狩り始めたら、随分遠くまで来てしまったという話。。)
+Basic
+まずは、基本的な Struct (Class 的なもの) とそのメソッド定義から。
+(本当は下記の例は String() を実装するのが正解だけどそれは別で)
+// 基本的な Struct
+type Point struct {
+X int
+Y int
+}
+// Struct のメソッド
+func (p Point) Coordinate() string {
+// p がレシーバ
+return fmt.Sprintf("(%d, %d)", p.X, p.Y)
+}
+func main1() {
+var a Point = Point{2, 3}
+fmt.Println(a.Coordinate()) // (2, 3)
+}
+既存の型も拡張できます。
+// 既存の型を元にした独自の型を定義できる。
+type trimmedString string
+// そこにメソッドも追加できる。
+func (t trimmedString) trim() trimmedString {
+return t[:3]
+}
+func main2() {
+var t trimmedString = "abcdefg"
+fmt.Println(t.trim())
+// 型変換
+var s string = string(t)
+// 型を変換したので、 trim() は無い
+// fmt.Println(s.trim())
+fmt.Println(s)
+}
+この辺は tour of go でもおなじみです。
+Go の interface の定義の内容は、単なるメソッドリストです。
+リスト中のメソッドを全て実装していれば、その Interface を満たす(satisfy) とみなされます。
+Java では実装(implements) と宣言されますが、そうした明示的な宣言はないのが Goの特徴です。
+// Interface を宣言
+type Accessor interface {
+GetText() string
+SetText(string)
+}
+// Accessor を満たす実装
+// Interface の持つメソッド群を実装していれば、
+// Interface を満たす(satisfy) といえる。
+// 明示的な宣言は必要なく、実装と完全に分離している。
+type Document struct {
+text string
+}
+func (d *Document) GetText() string {
+return d.text
+}
+func (d *Document) SetText(text string) {
+d.text = text
+}
+func main3() {
+// Document のインスタンスを直接変更しても
+// 値渡しになってしまうので
+// ポインタを使用
+var doc *Document = &Document{}
+doc.SetText("document")
+fmt.Println(doc.GetText())
+// Accessor Interface を実装しているので
+// Accessor 型に代入可能
+var acsr Accessor = &Document{}
+acsr.SetText("accessor")
+fmt.Println(acsr.GetText())
+}
+mixin
+別の型を定義に含むと、含んだ型のメソッドが定義された状態になります。
+これは継承というよりは mixin のイメージですね。
+この場合、継承(引い継いだ、程度の意味での)されたメソッド内のレシーバの挙動に注意です。
+type Page struct {
+Document // 匿名型を含むと、その型のメソッドが継承(というか mixin)される
+Page     int
+}
+func main4() {
+// Page は Document を継承しており
+// Accessor Interface を満たす。
+// この場合代入可能
+var acsr Accessor = &Page{}
+// この値は acsr.Document.text に設定されてる。
+// acsr の構造体がレシーバになっているわけではないということ
+acsr.SetText("page")
+fmt.Println(acsr.GetText())
+// Document と Page の間に代入可能な関係は無い
+// var page Page = Document{}
+// var doc Document = Page{}
+}
+Duck Typing
+「アヒルのように鳴くなら、それはアヒル。」
+動的な型付け言語では、「鳴く」ことができるかは実行時に試すか、予めメソッドの先頭などで調べる必要があります。
+Go の場合は「鳴く」こと自体を interface で定義し、ランタイムではなくコンパイル時にチェックできます。
+メソッドの引数に Interface 型を指定して、コンパイルが通った時点で、渡された値はアヒルのように鳴くことが保証されるわけです。
+/*
+Duck Typing
+Accessor を満たしていれば、 Get, Set できるという例。
+*/
+func SetAndGet(acsr Accessor) {
+acsr.SetText("accessor")
+fmt.Println(acsr.GetText())
+}
+func main5() {
+// どちらも Accessor として振る舞える
+SetAndGet(&Page{})
+SetAndGet(&Document{})
+}
+Override
+Override はそのまま。
+細かいけど int -> string の変換は string(i) ではできず、 strconv.Itoa を使う。
+(ただ、 Overload はできない、その辺はどうすればいいんだろう。。可変長引数かな?)
+/*
+Override
+*/
+type ExtendedPage struct {
+Document
+Page int
+}
+// Document.GetText() のオーバーライド
+func (ep *ExtendedPage) GetText() string {
+// int -> string は strconv.Itoa 使用
+return strconv.Itoa(ep.Page) + " : " + ep.Document.GetText()
+}
+func main6() {
+// Accessor を実装している
+var acsr Accessor = &ExtendedPage{
+Document{},
+2,
+}
+acsr.SetText("page")
+fmt.Println(acsr.GetText()) // 2 : page
+}
+Interface 型
+Interface 型はメソッドを持たない Interface です。
+つまり、メソッドを持たない struct を含めて、全ての struct は Interface 型を満たすと言えます。例えば、下記のメソッドは全ての型の値を受け取ることができます。
+func f(v interface {}) {
+// v
+}
+しかし、ここで重要なのは v の型は interface{} 型であるということ。
+Go の runtime では、全ての値は必ず一つの型を持つので、型が不定といったことはなく、メソッドの引数などでは可能であれば型の変換が行われます。
+上記 f() は全ての値を interface{} 型に変換します。
+interface {} 型の struct が、任意の type であることは、型アサーションという機能を用いて行います。
+型アサーションのシグニチャは以下。
+e, ok := v.(type) // v が type を満たすかを調べる
+// Interface 型
+// Get() があるかを調べる
+// er を付ける命名が慣習
+type Getter interface {
+GetText() string
+}
+func dynamicIf(v interface{}) string {
+// v は Interface 型
+var result string
+g, ok := v.(Getter) // v が Get() を実装しているか調べる
+if ok {
+result = g.GetText()
+} else {
+result = "not implemented"
+}
+return result
+}
+func dynamicSwitch(v interface{}) string {
+// v は Interface 型
+var result string
+// v が実装している型でスイッチする
+switch checked := v.(type) {
+case Getter:
+result = checked.GetText()
+case string:
+result = "not implemented"
+}
+return result
+}
+func main7() {
+var ep *ExtendedPage = &ExtendedPage{
+Document{},
+3,
+}
+ep.SetText("page")
+// do は Interface 型を取り
+// ジェネリクス的なことができる
+fmt.Println(dynamicIf(ep))       // 3 : page
+fmt.Println(dynamicIf("string")) // not implemented
+// 型スイッチを使う場合
+fmt.Println(dynamicSwitch(ep))       // 3 : page
+fmt.Println(dynamicSwitch("string")) // not implemented
+}
+Go の interface 設計 - Block Rockin’ Codes

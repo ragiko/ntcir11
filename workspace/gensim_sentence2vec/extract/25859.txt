@@ -1,0 +1,70 @@
+
+rpm
+{
+-q|--query
+} [
+select-options
+] [
+query-options
+]
+rpm
+{
+-V|--verify
+} [
+select-options
+] [
+verify-options
+]
+rpm --import 
+PUBKEY ...
+rpm
+{
+-K|--checksig
+} [
+--nogpg
+] [
+--nopgp
+] [
+--nomd5
+]
+"    PACKAGE_FILE" ...
+rpm
+{
+-i|--install
+} [
+install-options
+]
+PACKAGE_FILE ...
+rpm
+{
+-U|--upgrade
+} [
+install-options
+]
+PACKAGE_FILE ...
+rpm
+{
+-F|--freshen
+} [
+install-options
+]
+PACKAGE_FILE ...
+rpm
+{
+-e|--erase
+} [
+--allmatches
+] [
+--nodeps
+] [
+--noscripts
+]
+[
+--notriggers
+] [
+--repackage
+] [
+--test
+]
+PACKAGE_NAME ...
+rpm - システム管理コマンドの説明 - Linux コマンド集 一覧表

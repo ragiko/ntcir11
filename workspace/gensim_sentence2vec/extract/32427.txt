@@ -1,0 +1,20 @@
+はじめに
+プラグインがDAOとして認識できるインターフェース(または抽象クラス)は、diconファイルにおいて
+次のインターセプタがアスペクトされたものに限定されます。
+org.seasar.dao.interceptors.S2DaoInterceptor
+org.seasar.dao.pager.PagerS2DaoInterceptorWrapper
+これらのインターセプタがorg.seasar.framework.aop.interceptors.InterceptorChainによって
+アスペクトされていても認識できます。また、ポイントカットの指定も有効ですので、DAOが認識されない場合はdiconファイルを確認してみてください。
+※現在のバージョンではHot DeployおよびCool Deployにおけるアスペクトには未対応
+使い方
+SQLファイルを開く
+エディタから開く
+パッケージエクスプローラーやタイプ・メンバービューから開く
+SQLファイルを作成する
+SQLファイルのあるメソッドにマーカを付ける
+SQLファイルを開く
+エディタから開く
+DAOの呼び出し元や、開いているDAOのインターフェースからSQLファイルを開くことができます。
+メソッドを選択した場合はそのメソッドに対応するSQLファイルを、インターフェースを選択した場合はすべてのメソッドで対応する
+SQLファイルを開きます。複数DBMS対応を行っていてメソッドに対応するSQLファイルが複数ある場合は、それらすべてを開きます。
+Seasar - DI Container with AOP -

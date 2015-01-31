@@ -1,0 +1,4 @@
+本発明にかかる装置によれば、多変量データの同一のカテゴリに属する標本データについてクラスタリング処理を実行することにより複数のクラスタに分類し、分類された複数のクラスタについて、各クラスタ間の分類規則の統合規則として、分類規則を導出する。Clustering processing is executed for sample data belonging to the same category of multivariant data, whereby the data are classified to a plurality of clusters, and the classification rule is derived as an integrated rule of each classification rule between clusters for the classified clusters. - 特許庁
+クラスタ分析という用語は、多くの異なる分類アルゴリズムを実際に包含している。The term cluster analysis actually encompasses a number of different classification algorithms.
+- コンピューター用語辞典
+多クラス分類の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

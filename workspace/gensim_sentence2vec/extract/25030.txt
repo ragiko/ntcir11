@@ -1,0 +1,47 @@
+今回は、前回の内容をさらに発展させて、動きを生みだすための様々な手法について、サンプルを参照しながら解説していきます。
+扱う動きは、実際に自然界に存在する様々な現象をシミュレーションします。以下のような内容を取り上げます。
+引力、反発力
+万有引力
+ばね、弾力
+こうした様々な動きを生みだすアルゴリズムを理解することで、作品の表現力が格段に高まります。徐々に難易度が増してきましたが、ステップバイステップで、少しずつ理解していきましょう!
+前回までの内容
+前回は、動きを生みだす3つのベクトル(ofVec2f)を使用しました。
+位置ベクトル
+速度ベクトル
+力ベクトル
+これらのベクトルとくみあわせて、動き、摩擦、重力などを表現しました。それらの動きを1つにまとめてParticleと名付けて再利用可能なクラスとして独立させました。
+Particleクラス
+Particle.h
+Particle.cpp
+今回は、このParticleクラスをさらに発展させていきます。
+引力、反発力
+引力(Attraction Force)と、反発力(Repulsion Force)について考えます。
+今回は、2次元の平面上での引力と反発力を扱います。ある一点を指定して、その一点に向かって平面上に引き付ける力(引力)と、ある一点から外に向けて反発する力(反発力)を設定します。全ての方面へ同じ力がかかる場合、力の中心から円形に力が働くようになります。また、中心点の距離が近ければ近いほど、大きな力が働くことになります。
+この力をParticleのクラスのメソッド(クラスの関数)として実装します。いろいろな実装方法がありますが、今回は以下のように作成してみました。
+引き付けあう力を加える – addAttractionForce
+// 引き付けあう力
+void Particle::addAttractionForce(float x, float y, float radius, float scale){
+// 力の中心点を設定
+ofVec2f posOfForce;
+posOfForce.set(x,y);
+// パーティクルと力の中心点との距離を計算
+ofVec2f diff = position - posOfForce;
+float length = diff.length();
+// 力が働く範囲かどうか判定する変数
+bool bAmCloseEnough = true;
+// もし設定した半径より外側だったら、計算しない
+if (radius > 0){
+if (length > radius){
+bAmCloseEnough = false;
+}
+}
+// 設定した半径の内側だったら
+if (bAmCloseEnough == true){
+// 距離から点にかかる力ベクトルを計算
+float pct = 1 - (length / radius);
+diff.normalize();
+force.x = force.x - diff.x * scale * pct;
+force.y = force.y - diff.y * scale * pct;
+}
+}
+第4回: openFrameworks基本 – 動きを極める、アニメーションのための様々なアルゴリズム | yoppa org

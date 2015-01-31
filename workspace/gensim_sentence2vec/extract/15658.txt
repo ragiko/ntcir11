@@ -1,0 +1,55 @@
+エラー1)「Failed to connect to VPN service component.」(VPNサービスコンポーネントへの接続に失敗しました。)
+「Failed. to connect for the follwing reason:Unable to reach server.」(接続に失敗しました:サーバに到達することができません。)
+主な原因1 : インターネットに接続できていない。
+Web ブラウザで、広島大学のホームページ( http://www.hiroshima-u.ac.jp/ 
+)を開いてみましょう。開くことができない場合には、インターネットに接続してください。そして、もう一度 VPN を接続しなおしてみましょう。主な原因2 : VPNサーバのホスト名が正しくない。vpn.hiroshima-u.ac.jp の入力を再確認してください。
+エラー2)「 Failed. to connect for the follwing reason: Authentication failure. 」(認証に失敗しました。)
+主な原因 1)アカウント名/パスワードが間違っている。
+パスワードが違う可能性がありますので、パスワードを変更しましょう。
+パスワード変更ページへ主な原因 2)Group ID/Group Password が間違っている。
+インストール時に入力する Group ID と Group Password が指定どおりの ID と Password になっているか確認しましょう。
+<設定確認方法>
+VPN を立ち上げて左メニューのEdit the profileを選択-->「Edit」−「Authentication Information」の中の
+Group ID : hinet
+Group Password : (hinetと入力します)
+入力されていても再度英字半角で正しく入力してください。
+参考:「3.接続の設定」
+エラー3)「 RIP Listener enabled wich may disconnect CVC Client 
+sometime later.Pliease disable RIP Listener to maintaion tunnel 
+connection. 」
+主な原因 : メッセージにある「RIP Listner」というプロトコルが動いている可能性があります。以下の場所にチェックが入っていないか確認してみましょう。
+「コントロールパネル」「プログラムの追加と削除」「Windows コンポーネントの追加と削除」「ネットワークサービス」を選択し、「詳細」ボタンをクリックする。次に出てくるウィンドウの「RIP リスナ」のチェックを外す。
+エラー4) 「 The routing table cannot be altered after the  VPN Connection has been established. The  VPN 
+Connection has been Closed. 」
+主な原因:routing table を変更しようとするプログラムが動作しています。
+エラー3)の RIP 
+Listner が OFF になっていることを確認してください。それでも現象が変化しない場合は、プレインストールされているプログラムが原因になっている可能性があります。
+以下でプレインストールプログラムの停止方法をご案内しますが、
+プレインストールされているソフトにはもちろん必要なものもあるでしょうし、
+ソフトによっては停止することによって不具合が発生することもないとは言い切れませんので、自己の判断と責任でやっていただくことをご了解願います
+(WindowsXP の場合の手順です)。
+[スタート]ボタン[ファイル名を指定して実行]で
+msconfig を実行
+[システム構成ユーティリティ]が起動するので、[サービス]タブをクリック
+[Microsoft のサービスを全て隠す]にチェックをつけます。
+これで表示される内容を念のためにメモしておくとよいと思います。
+次に残っているものを一つずつチェックを外して再起動し、VPN ソフトを起動します。
+これでいずれかのプログラムを止めたときに VPN が正常に稼動すれば、それが原因になっていることになります。
+もしそれが不要であれば、アンインストールされることをお薦めします。
+エラー5)「 Login Failure due to:Remote host not responding 」
+「 The secure  VPN connection has been lost.Click connect to
+re-establish the connection. 」等
+*Norton は、以下の設定をしても VPN に接続できないことがあります。 Norton を止めて全く動 かないようにしてから VPN に接続できた場合には、広島大学で一括購入している「ウィルス対 策ソフト」の利用をご検討ください。
+「ウィルス対策ソフトのダウンロード(学内限定)」   https://mslicense.office.hiroshima-u.ac.jp/
+エラー7)「 Eacfilt Driver must be bound to active interface(s):
+(ネットワークインターフェイス名)」
+主な原因
+以前使っていた VPN クライアントソフトをアンインストールした後、パソコンを再起動せず新たにインストールした。
+すでにインストールされている。
+主に Vista で起こる現象ですが、アンインストール後再起動しないと正常に削除したことにならず、その後のインストールが順調にできていても接続時にエ
+ラーが出ることがあります。
+もう一度、アンインストールし再起動してからインストールし直してみましょう。
+ハードウエアとの相性が悪い
+まれに正しくインストールしてもこのエラーになる場合があります。ネットワークインターフェイスの構成のなかにある Eacfilt 
+Driver を一旦削除して(チェックを外して)OK(終了)し、再度チェックを入れると解消する場合もあるようです。
+VPN接続が確立できない(つながらない) &mdash; Information Media Center

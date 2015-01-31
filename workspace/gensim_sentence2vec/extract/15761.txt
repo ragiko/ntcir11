@@ -1,0 +1,24 @@
+クラス名が「jquery-api-last-child」の要素の子要素である li 要素のうち、すべての最後の li 要素を選択。
+実装例(サンプル)
+項目1
+項目1−1
+項目1−2
+項目2
+項目2−1
+項目2−2
+項目2−2−1
+項目2−2−2
+項目2−3
+項目3
+実装例(サンプル)のソースコード
+JavaScript
+<script type="text/javascript">
+<!--
+jQuery( function() {
+jQuery( '.jquery-api-last-child li:last-child' ) . css( {
+border: '3px red double',
+} );
+} );
+// -->
+</script>
+jQuery( ':last-child' ) - jQuery API 日本語リファレンス

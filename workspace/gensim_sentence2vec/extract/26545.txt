@@ -1,0 +1,92 @@
+コンテンツでは、各ページを解析したデータを条件としてセグメントを設定できます。選択できる各グループの概要は下記のとおりです。
+1. author
+作成者名
+2. category
+URLに含まれるディレクトリ名(1階層のみ)
+例:sports, news, products, article など
+3. company
+ページから抽出された企業の名前
+4. concept
+ページから抽出されたキーワード
+5. language
+ページ内で利用されている言語
+6. location
+ページから抽出された地名
+7. pageclass
+自動分類または、メタタグによって設定された、ページ種別を利用してセグメントを設定できます。
+「article」 : 末端記事となります。
+「frontpage」:トップページやカテゴリトップページとなります。
+8. quote
+""や「」で囲まれたキーワード
+9. site
+このページのドメイン名
+10. taxonomy
+URLに含まれるディレクトリ名(複数階層を含む)
+例:sports, sports/news, sports/news/articles など
+11. サイト内に別途挿入している追加メタデータ
+下記のようなカスタムのメタタグで定義されているメタデータが対象
+<meta name="cXenseParse:xxx-fruit" content="orange"/>
+12. URLパターンで設定している追加メタデータ
+/profile/content/external/update APIにて付与しているメタデータが対象
+ソースでは、ユーザーのトラフィック情報を条件としてセグメントを設定できます。選択できる各グループの概要は下記のとおりです 
+1. exitLinkHost
+離脱ホスト
+2. exitLinkUrl
+離脱先URL
+3. host
+アクセス先のホスト名
+4. referrerHost
+参照元ホスト名
+5. referrerHostClass
+参照元ホストの分類。
+direct : リファラがセットされていない場合(ブックマークや直入など)
+social : リファラがFacebookあるいはTwitterのような知られたSNSの場合
+search : リファラがBingやGoogleといった検索エンジン、あるいはFacebookのようなSNS検索エンジン、あるいは内部的なサーチページである場合
+internal : リファラがリクエストしたページとTLDが同一の場合
+other : 外部ページやクロスドメイン参照など、上記以外の場合
+6. referrerSearchEngine
+参照元ホストが検索エンジンである場合の検索エンジン名
+例:Internal / Google / Yahoo / Yandex / Other
+7. referrerSocialNetwork
+参照元ホストがSNSである場合のSNS名
+例:Facebook / Twitter / Tumblr
+8. referrerUrl
+参照元のURL
+9. site
+アクセスされたページのドメイン名
+10. url
+アクセスされたURL
+デバイスでは、ユーザーの利用しているデバイス情報を条件としてセグメントを設定できます。選択できる各グループの概要は下記のとおりです。
+1. browser
+ユーザー エージェントのブラウザ種別
+例:Chrome / Firefox / MSIE
+2. browserLanguage
+ユーザー エージェントの言語設定
+例:ja-jp / en-us
+3. browserVersion
+ユーザー エージェントのブラウザバージョン
+例:Firefox 23 / Chrome 29 / Unknown
+4. capability
+flashやjavaが利用できるかどうかの識別
+5. colorDepth
+デバイスの色深度
+例:16 / 24 / 32
+6. company
+接続元IPアドレスから類推した接続先企業名/ISP名
+例:aol / comcast
+7. connectionSpeed
+接続元IPアドレスから類推した回線速度を示す識別子
+例:broadband / cable / dialup / mobile
+8. deviceType
+デバイス種別
+例:Desktop / Mobile / Tablet
+9. mobileBrand
+スマートフォンのデバイス ベンダ名
+例:HTC / RIM / Samsung / SonyEricsson
+10. os
+OSの種類
+例:Android / iPhone OS / Macintosh / Windows
+11. resolution
+デスクトップ解像度
+例:320x480 / 1280x800 / 1920x1280
+セグメントの設定条件に利用可能な項目 &ndash; Cxense サポートポータル

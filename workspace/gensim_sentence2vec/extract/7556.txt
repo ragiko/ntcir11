@@ -1,0 +1,151 @@
+レイヤ合成
+前回は、SPTK_IMAGE32 の内容をそのままウィンドウのイメージに転送して表示しましたが、アルファ値付きで描画して表示する場合や、複数のイメージを重ねて表示する場合は、それらのイメージを背景と合成して、その結果をウィンドウに表示する必要があります。
+ペイントソフトでは、このように重ねて表示するためのイメージ一枚一枚を一般に「レイヤ」と呼びます。
+ペイントソフト内では、以下のような構図になっています。
+<レイヤ ...>
+<レイヤ 2>
+<レイヤ 1>
+<背景>
+[合成後のイメージ]
+[ウィンドウ表示用イメージ]
+今回は、アルファ付きのイメージを背景と合成する、アルファブレンドを行います。
+スクリーンショット
+OPACITY のバーで、レイヤ自体の不透明度を変更できます。
+ソースコード
+使用画像 >> alphagrad.bmp
+011_layer.c#include "sptk.h"
+#define WIDTH  200
+#define HEIGHT 230
+SPTK_IMAGE *winimg;
+SPTK_IMAGE32 *layerimg,*blendimg;
+int opacity = 255;
+void blend_layer()
+{
+int ix,iy,a;
+SPTK_PIX_RGBA *psrc,*pdst;
+psrc = layerimg->pixbuf;
+pdst = blendimg->pixbuf;
+for(iy = 0; iy < layerimg->h; iy++)
+{
+for(ix = 0; ix < layerimg->w; ix++)
+{
+a = psrc->a * opacity / 255;
+pdst->r = (psrc->r - pdst->r) * a / 255 + pdst->r;
+pdst->g = (psrc->g - pdst->g) * a / 255 + pdst->g;
+pdst->b = (psrc->b - pdst->b) * a / 255 + pdst->b;
+psrc++;
+pdst++;
+}
+}
+}
+void draw()
+{
+sptk_image32_fill_plaid(blendimg, 0, 0, 200, 200);
+blend_layer();
+sptk_image32_blt_image(blendimg, 0, 0, 200, 200, winimg, 0, 0);
+sptk_update(NULL, 0, 0, 200, 200, 5);
+}
+void bar_handle(SPTK_WIDGET *wg,int type,int pos)
+{
+if(opacity != pos)
+{
+opacity = pos;
+draw();
+}
+}
+int main()
+{
+sptk_init("test", WIDTH, HEIGHT);
+winimg = sptk_window_get_image();
+layerimg = sptk_image32_load_bitmap("alphagrad.bmp");
+if(!layerimg) sptk_errexit("cannot load bitmap file");
+blendimg = sptk_image32_create(200, 200);
+sptk_image_text(winimg, 5, 210, "OPACITY", -1, 0);
+sptk_widget_bar_create(0, 55, 208, 135, 15, 0, 255, 255, bar_handle);
+draw();
+sptk_run();
+sptk_image32_free(layerimg);
+sptk_image32_free(blendimg);
+return 0;
+}
+解説
+今回は、レイヤのイメージとして、アルファ値をグラデーションさせた 32bit のビットマップ画像 "alphagrad.bmp" を読み込んで使用します。
+また、バーで合成の適用量を変更することができます。
+まず、レイヤのイメージとは別に、合成結果用のイメージを作成する必要があります。
+今回は、SPTK_IMAGE32 *blendimg が合成結果用のイメージです。
+合成結果のイメージでは、アルファ値は必要ないので、R,G,B の値だけあればよいのですが、新たに RGB 24bit のイメージフォーマットを作るのも面倒なので、今回は SPTK_IMAGE32 を使います。
+出来るだけメモリ負担を軽くしたいのであれば、RGB のみのフォーマットのイメージを作って、そこに合成結果を格納するようにしてください。
+レイヤ合成の手順としては、最初に合成結果用イメージに背景を描画し、その後、下層にあるレイヤから順に合成していきます。
+今回は背景をチェック柄にするので、まず sptk_image32_fill_plaid() で blendimg 全体をチェック柄で塗りつぶします。
+void sptk_image32_fill_plaid(SPTK_IMAGE32 *img,int x,int y,int w,int h)
+その後、blend_layer() で背景イメージとレイヤを合成します。
+これで合成結果は完成したので、blendimg をウィンドウのイメージへ転送し、更新します。
+レイヤ合成の処理を説明する前に、SPTK_IMAGE32 のイメージバッファを直接操作する方法を説明します。
+SPTK_IMAGE32 自体は以下のように定義されています。
+typedef struct _SPTK_IMAGE32
+{
+SPTK_PIX_RGBA *pixbuf;
+int w,h;
+}SPTK_IMAGE32;
+SPTK_IMAGE32 では、1px が 4 Byte、R-G-B-A 順に格納されているので、そのままバイト単位で操作しても良いですが、SPTK_PIX_RGBA を使ってピクセルの値を扱うと、わかりやすくなります。
+typedef union _SPTK_PIX_RGBA
+{
+struct { uint8_t r,g,b,a; };
+uint8_t c[4];
+}SPTK_PIX_RGBA;
+SPTK_PIX_RGBA は、共用体で宣言されています。
+r,g,b,a で直接名前を指定して扱うか、c[4] で配列として扱うこともできます。
+合成の計算方法を説明します。
+まず、RGB の色をアルファ値 A の不透明度で背景の RGB の色と合成して RGB の結果を得る場合、基本の計算式は以下のようになります。
+SRC : 合成元
+DST : 合成先
+A : 0.0〜1.0
+R = SRC_R * A + DST_R * (1 - A)
+G = SRC_G * A + DST_G * (1 - A)
+B = SRC_B * A + DST_B * (1 - A)
+アルファ値 (不透明度) が最小値なら合成元の色は全く適用されない、
+アルファ値が最大値なら合成元の色がそのまま適用されて合成先の色は適用されない、
+ということになりますから、
+合成元の色にはアルファ値を掛けて、合成先の色にはアルファ値を反転したものを掛けます。
+この式を使って RGBA を 0〜255 の範囲に直すと、以下のようになります。
+R = SRC_R * A / 255 + DST_R * (255 - A) / 255
+...
+割り算が2回入っていますし、ちょっと複雑ですね。
+少し高速化を考えてみましょう。
+元の式を見てみると、* (1 - A) の部分が展開できそうです。
+R = SRC_R * A + DST_R * (1 - A)
+= SRC_R * A + (DST_R - DST_R * A)
+= (SRC_R * A - DST_R * A) + DST_R
+= (SRC_R - DST_R) * A + DST_R
+式が単純化出来ました。
+これを 0〜255 の範囲にしてみます。
+R = (SRC_R - DST_R) * A / 255 + DST_R
+掛け算・割り算が一回で済みました。
+合成では基本的にこの式を使うことにします。
+blend_layer() で、実際のレイヤ合成を行っています。
+void blend_layer()
+{
+int ix,iy,a;
+SPTK_PIX_RGBA *psrc,*pdst;
+psrc = layerimg->pixbuf;
+pdst = blendimg->pixbuf;
+for(iy = 0; iy < layerimg->h; iy++)
+{
+for(ix = 0; ix < layerimg->w; ix++)
+{
+a = psrc->a * opacity / 255;
+pdst->r = (psrc->r - pdst->r) * a / 255 + pdst->r;
+pdst->g = (psrc->g - pdst->g) * a / 255 + pdst->g;
+pdst->b = (psrc->b - pdst->b) * a / 255 + pdst->b;
+psrc++;
+pdst++;
+}
+}
+}
+psrc は合成元ということで、レイヤイメージ。
+pdst は合成先ということで、合成結果用イメージ。
+R,G,B の値は前述の計算式どおりに計算しています。
+なお、今回は合成の適用度も変更できるようになっています。
+現在の適用量 (レイヤの不透明度) は opacity (0〜255) に入っています。
+レイヤの各ピクセルのアルファ値にその適用量を掛けることで、全体の不透明度を調節しています。
+レイヤ合成(1)

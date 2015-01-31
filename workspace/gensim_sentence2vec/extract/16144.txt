@@ -1,0 +1,171 @@
+Springをベースに,O/RマッピングとしてHibernateを使用する際の,基本的な設定とHibernateTemplateを使用したHibernateとの連係方法を調査してみた.
+Springでは,O/Rマッピングツールとして,以下をサポートしている.
+Hibernate
+JDO
+Oracle TopLink
+Apache OJB
+iBATIS SQL Maps
+Springでは,これらを以下のようなスタイルでサポートする.
+O/Rマッピングツールの違いを上位APから隠蔽し,DIによって切替え可能なアプリケーション構成にできる.
+繁雑かつ,柔軟性の求められる設定,初期化処理の枠組の提供.
+より具体的には,DBのURLやユーザ名とパスワード,コネクションプールの設定と,SessionFactoryの生成などである.
+ありきたりな処理のコーディングから開放するための各O/Rマッピングツール毎のユーティリティの提供.
+Hibernateでは,HibernateTemplateというユーティリティクラスがある.
+また,DAOのための機能として,DBアクセスの仕組みにかぎらない例外構成も提供されている.
+本頁では,Spring流のHibernate設定とDAOの配置,HibernateTemplateを使用したHibernateとの連係を行うサンプルを作成した.
+なお,本頁ではHibernate3を使用する.
+もしクラスパスにhibernate2.jarがあるなら,削除しておくこと.
+また,Hibernate2とHibernate3では,パッケージ名が紛らわしいことになっていて,Spring側でもそれにひきずられているので注意する.
+Hibernate側のパッケージ名
+Hiberante2ではnet.sf.hibernate
+Hibernate3ではorg.hibernate
+Spring側のパッケージ名
+Hibernate2ではorg.springframework.orm.hibernate
+Hibernate3ではorg.springframework.orm.hibernate3
+${...}は例によってPropertyPlaceholderConfigurer(id値dbConfPostProcessorのbean)にて,設定ファイルconf/db.confの値を適用する.
+本サンプルでは,最初のbean,id値がsampleDaoとなっているbeanを設定したい.
+<bean id="sampleDao"
+class="org.fireproject.springsample.SampleDao">
+<property name="sessionFactory"><ref bean="sampleSessionFactory"/></property>
+</bean>
+このbeanはDAOで,DBアクセスのためのsessionFactoryの設定を必要としている.
+このsessionFactoryと,そのdataSourceの設定と初期化をbean設定とBeanFactoryにて実現する.
+まず,it値sampleDataSourceにてdataSourceを設定する.
+<bean id="sampleDataSource"
+class="org.apache.commons.dbcp.BasicDataSource"
+destroy-method="close">
+<property name="driverClassName" value="${db.driver}"/>
+<property name="url" value="${db.url}"/>
+<property name="username" value="${db.username}"/>
+<property name="password" value="${db.password}"/>
+<property name="maxActive" value="5"/>
+<property name="maxIdle" value="2"/>
+<property name="maxWait" value="3000"/>
+</bean>
+classはApache CommonsのDBCPから,BasicDataSourceを使用している.
+このクラスはコネクションプール機能があり,上記ではそれらの設定(maxActive,maxIdle,maxWait)も行っている.
+次にこのdataSourceを参照するsessionFactoryを定義する.
+<bean id="sampleSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+<property name="dataSource" ref="sampleDataSource"/>
+<property name="mappingResources">
+<list>
+<value>org/fireproject/springsample/SampleBean.hbm.xml</value>
+</list>
+</property>
+<property name="hibernateProperties">
+<props>
+<prop key="hibernate.dialect">${db.dialect}</prop>
+</props>
+</property>
+</bean>
+クラスはSpringのLocalSessionFactoryBeanで,これによってSpringとHibernateの設定の仕組みの差異を吸収する.
+まず,dataSourceで先程のit値sampleDataSourceを設定する.
+次にmappingResourcesでO/Rマッピング定義ファイルを設定する.
+list形式なので,複数ある場合は,要素listの子要素valueをどんどん追加していく.
+そしてhibernatePropertiesのキーhibernate.dialectに対する値として,SQL方言(DBMS毎に特有のSQLの違いを吸収するためのクラス)を設定する.
+以上のような設定により,上位APのコード上では,DAOではいきなりsessionFactoryが設定されていて,使用することができる.
+まず,setSessionFactoryメソッドがBeanFactoryによって呼ばれるので,上位でこのあたりの設定をする必要がない.
+さて,上記コードでは,まずメソッドsaveがある.
+public Object save(SampleBean sampleBean) {
+HibernateTemplate ht = new HibernateTemplate(this.sessionFactory);
+return ht.save(sampleBean);
+}
+Hibernateを直接扱うコードなら,sessionFactoryからsessionを取得して,前処理,後処理,例外処理といった,毎回同じコードを書かなければならないが,HibernateTemplateを使用すると,上記のようなすっきりしたコードですむ.
+SampleDaoのメソッドget,refresh,update,deleteAllも同様である.
+ただし,getやdeleteAllの内部で呼び出すHibernateTemplateのメソッドgetやloadAllで必要となるClass型の引数がEntityBean(ValueObject)であることに注意する.
+具体的には,getでは以下のようにEntityBeanがSampleBeanなので,そのクラス(SapleBean.class)を渡す.
+public SampleBean get(Integer id) {
+HibernateTemplate ht = new HibernateTemplate(this.sessionFactory);
+return (SampleBean)ht.get(SampleBean.class, id);
+}
+getRecordCountのみ少し異なる趣のあるコードとなっている.
+public int getRecordCount() {
+HibernateTemplate ht = new HibernateTemplate(this.sessionFactory);
+List resultList = (List) ht.execute(new HibernateCallback() {
+public Object doInHibernate(Session session) throws HibernateException {
+Query query = session.createQuery("select count(*) from SampleBean");
+return query.list();
+}
+});
+return ((Integer)resultList.get(0)).intValue();
+}
+主役はHibernateTemplateのメソッド,
+public Object execute(HibernateCallback action, boolean exposeNativeSession)
+throws DataAccessException
+である.
+第一引数のHibernateCallbackにはdoInHibernateメソッドがあり,メソッドexecute内部ではこれをコールバックする.
+templateは,柔軟性に欠けることが多いが,HibernateTemplateはこのコールバックの仕組みによって,柔軟性を持たせる仕組みを提供している.
+サンプルのように無名クラスにてdoInHibernateを定義することにより,あらゆるクエリを生成し,なおかつHibernateTemplateが提供する枠組の中で呼び出すことが可能となっている.
+実は,HibernateTemplateの多くのメソッドは,内部でこのメソッドを呼び出している.
+例えばHibernateTemplate#getは
+public Object get(final Class entityClass, final Serializable id, final LockMode lockMode)
+throws DataAccessException {
+return execute(new HibernateCallback() {
+public Object doInHibernate(Session session) throws HibernateException {
+if (lockMode != null) {
+return session.get(entityClass, id, lockMode);
+}
+else {
+return session.get(entityClass, id);
+}
+}
+}, true);
+}
+といった具合である.
+SampleDaoのメソッドを順次呼び出している.
+繰り返しになるが,ここでもSessionFactory云々といった処理を記述する必要がない.
+サンプルを実行する前に,
+conf/create_db.sql
+にてDBでテーブルを作成しておく.
+さらに,
+conf/db.conf
+に,DBの設定を記述する.
+では実行してみる.
+$> java -jar springsample.jar 
+...省略...
+support.AbstractBeanFactory:219 - Creating shared instance of singleton bean 'sampleDao'
+support.AbstractBeanFactory:219 - Creating shared instance of singleton bean 'sampleSessionFactory'
+support.AbstractBeanFactory:219 - Creating shared instance of singleton bean 'sampleDataSource'
+cfg.Environment:464 - Hibernate 3.0.4
+cfg.Environment:477 - hibernate.properties not found
+cfg.Environment:510 - using CGLIB reflection optimizer
+cfg.Environment:540 - using JDK 1.4 java.sql.Timestamp handling
+cfg.HbmBinder:259 - Mapping class: org.fireproject.springsample.SampleBean -> SAMPLE_BEAN
+hibernate3.LocalSessionFactoryBean:671 - Building new Hibernate SessionFactory
+cfg.Configuration:875 - processing extends queue
+cfg.Configuration:879 - processing collection mappings
+cfg.Configuration:888 - processing association property references
+cfg.Configuration:917 - processing foreign key constraints
+connection.ConnectionProviderFactory:53
+- Initializing connection provider: org.springframework.orm.hibernate3.LocalDataSourceConnectionProvider
+cfg.SettingsFactory:76 - RDBMS: PostgreSQL, version: 7.4.7
+cfg.SettingsFactory:77 - JDBC driver: PostgreSQL Native Driver, version: PostgreSQL 7.4.5 JDBC3 with SSL (build 216)
+dialect.Dialect:92 - Using dialect: org.hibernate.dialect.PostgreSQLDialect
+...省略...
+springsample.HelloSpringHibernate:31 - recordCount = 0
+springsample.HelloSpringHibernate:37 - save result = 1
+springsample.HelloSpringHibernate:37 - save result = 2
+springsample.HelloSpringHibernate:37 - save result = 3
+springsample.HelloSpringHibernate:37 - save result = 4
+springsample.HelloSpringHibernate:37 - save result = 5
+...省略...
+springsample.HelloSpringHibernate:37 - save result = 95
+springsample.HelloSpringHibernate:37 - save result = 96
+springsample.HelloSpringHibernate:37 - save result = 97
+springsample.HelloSpringHibernate:37 - save result = 98
+springsample.HelloSpringHibernate:37 - save result = 99
+springsample.HelloSpringHibernate:37 - save result = 100
+springsample.HelloSpringHibernate:39 - recordCount = 100
+springsample.HelloSpringHibernate:43 - got sampleBean id = 50 / value = 49
+springsample.HelloSpringHibernate:53 - got sampleBean id = 50 / value = 4900
+springsample.HelloSpringHibernate:58 - recordCount = 0
+support.AbstractApplicationContext:499
+- Closing application context [org.springframework.context.support.GenericApplicationContext;hashCode=22171962]
+support.AbstractBeanFactory:525
+- Destroying singletons in factory
+{org.springframework.beans.factory.xml.XmlBeanFactory defining beans
+[sampleDao,sampleDataSource,sampleSessionFactory,dbConf,dbConfPostProcessor]; root of BeanFactory hierarchy}
+hibernate3.LocalSessionFactoryBean:922 - Closing Hibernate SessionFactory
+impl.SessionFactoryImpl:776 - closing
+レコードの挿入,選択,更新,削除がうまくできているようだ.
+Hibernateとの連係の設定とHibernateTemplateの使用(Spring1.2.1)

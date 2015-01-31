@@ -1,0 +1,36 @@
+デフォルトのトランザクション処理¶
+Django のデフォルトの挙動では、組み込みのデータ変更に関わるモデル関数を呼び
+出したときにはいつでも自動的に commit を行います。例えば、 model.save()
+や model.delete() を呼び出すと、変更は即座にコミットされます。
+これはほとんどのデータベースにおける自動コミット設定とほとんど同じ挙動です。
+すなわち、ユーザがデータベースへの書き込みを必要とするような操作を行うと、
+Django はすぐに INSERT/UPDATE/DELETE 文を実行し、次いで
+COMMIT を実行します。暗黙のロールバックは行いません。
+HTTP リクエストとトランザクションを結び付ける¶
+TransactionMiddleware を介してリクエストとレスポンスのフェイズにトラン
+ザクションを結び付けるというものです。
+このトランザクション処理は次のように行われます: まず、リクエスト処理の開始
+時にトランザクションを開始します。レスポンスを問題なく生成できたら、全ての
+トランザクションをコミットします。ビュー関数が例外を送出したら、ロールバッ
+クを起こします。
+この機能を有効にするには、 TransactionMiddleware ミドルウェアを
+MIDDLEWARE_CLASSES 設定に追加します:
+MIDDLEWARE_CLASSES = (
+'django.middleware.cache.UpdateCacheMiddleware',
+'django.contrib.sessions.middleware.SessionMiddleware',
+'django.middleware.common.CommonMiddleware',
+'django.middleware.transaction.TransactionMiddleware',
+'django.middleware.cache.FetchFromCacheMiddleware',
+)
+ミドルウェアの配置順はとても重要です。トランザクションミドルウェアは呼び出
+されるビュー関数だけでなく、後続のミドルウェアモジュール全てに影響します。
+従って、セッションミドルウェアをトランザクションミドルウェアの後ろに配置す
+ると、セッションの生成はトランザクションの一部に入ってしまいます。
+いくつかのキャッシュミドルウェアの例外は:
+CacheMiddleware,
+UpdateCacheMiddleware,
+FetchFromCacheMiddleware は影響を受けませ
+ん。データベースキャッシュを使用しているときでも、 Django のキャッシュミドル
+ウェアは独自のデータベースカーソルを使います。(内部的に独自のデータベース
+コネクションとマッピングされています。)
+データベーストランザクションの管理 &mdash; Django 1.4 documentation

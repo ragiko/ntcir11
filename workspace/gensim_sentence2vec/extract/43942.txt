@@ -1,0 +1,4 @@
+単音節に区切って音声認識する場合に、ユーザが誤って音節を区切らないで発声した場合においても高精度に音声を認識する。To highly accurately recognize voices even when a user utters without erroneously sectioning syllables by the user when recognizing the voices by sectioning single syllables. - 特許庁
+音節認識部40は、ユーザが発話した各々の音節を認識して、認識した単語(例えば、尾張屋)を検索部100に供給する。A syllable recognition part 40 recognizes each of syllables that the user speaks and supplies recognized words (e.g. Owariya) to a retrieval part 100. - 特許庁
+本発明の一態様では、相互情報量を使用して音節に区分された単語に基づいて、音節のnグラムモデルがトレーニングされる。Under one aspect of the invention, a syllable n-gram model is trained, based on words that have been segmented into syllables, using mutual information. - 特許庁
+「音節」に関連した英語例文の一覧(4ページ目) - Weblio英語例文検索

@@ -1,0 +1,58 @@
+resetが発火されるメソッドは以下の3つです.
+collection.sort
+modelの配列を,定義したcomparatorを利用してソートしなおす.
+Qiitaではsortは利用していません.
+collection.fetch
+collectionに対応したアイテムをサーバーから取得する.
+Qiitaでは投稿のページャーでcollection.fetch({data: { before: oldestItemId } }) のように古い投稿を取得しています.
+collection.reset
+collectionの中身を引数に渡したモデルの配列で置き換える.
+Qiitaでは最初に表示するアイテム一覧をcollection.reset(<%= @items.to_json %>)のように設定しています.
+いずれもオプションに{silent: true}を渡すとresetイベントが発火されるのを防ぐことができます.
+その他
+Backbone.jsではこの2つ以外にももさまざまなイベントが組込みで用意されています.Backbone.jsの組込みイベント一覧
+これらをうまく使えばモデルとビューを適切に分離し,見通しの良いコードが書けるでしょう:)
+# Backbone.js Advent Calendar 6日目!
+参加者が増えなくてなかなか大変…簡単な内容でも良いので日本語コンテンツ増加のためにも使ったことある人は参加してください! http://atnd.org/events/22017
+この記事ではBackbone.jsのmodel/collectionのイベントとして用意されているイベントの中でも,綺麗に書くために使いこなしたい`add`と`reset`について
+Qiitaでの利用例を交えつつ説明していきます.
+## 余談
+Backbone.jsのアイコンが変わってますね.背骨でなくなった.
+![](http://documentcloud.github.com/backbone/docs/images/backbone.png)
+## 本題
+Backbone.jsでは
+```js
+model.bind('hoge', function () {
+alert('hogeされた');
+});
+model.trigger('hoge');  // => alert('hogeされた');
+```
+のように自分で決めたイベントにコールバックを登録し,発火させる仕組みがあります.
+このように自分で登録していってもいいのですが,よく使われそうなものについてはBackbone.ModelやBackbone.collectionに組込みで用意されています.
+今回はその中でも重宝する`add`及び`reset`イベントについて説明します.これらを適切に利用すると,サーバーからのデータ取得時やユーザーの行動によってデータが追加されたとき,ビューも合わせて変更するというロジックがシンプルに書けます.
+### addイベント
+名前の通り,collectionにモデルが追加されたときに発火します.
+```js
+var items = new Backbone.Collection;
+items.bind("add", function(item) {
+alert("New item is added: " + item.title);
+});
+```
+ユーザーが新規に投稿したときやサーバーから新しい情報を取得したときなどに便利です.
+Qiitaではユーザー投稿したアイテムをストリームへ追加する部分で利用しています.
+### resetイベント
+`reset`が発火されるメソッドは以下の3つです.
+- collection.sort
+- modelの配列を,定義した`comparator`を利用してソートしなおす.
+- Qiitaでは`sort`は利用していません.
+- collection.fetch
+- collectionに対応したアイテムをサーバーから取得する.
+- Qiitaでは投稿のページャーで`collection.fetch({data: { before: oldestItemId } })` のように古い投稿を取得しています.
+- collection.reset
+- collectionの中身を引数に渡したモデルの配列で置き換える.
+- Qiitaでは最初に表示するアイテム一覧を`collection.reset(<%= @items.to_json %>)`のように設定しています.
+いずれもオプションに{silent: true}を渡すと`reset`イベントが発火されるのを防ぐことができます.
+### その他
+Backbone.jsではこの2つ以外にももさまざまなイベントが組込みで用意されています.[Backbone.jsの組込みイベント一覧](http://documentcloud.github.com/backbone/#FAQ-events)
+これらをうまく使えばモデルとビューを適切に分離し,見通しの良いコードが書けるでしょう:)
+Backbone.jsでモデルとビューを分離しやすくするためにadd/resetイベントを活用 - Qiita

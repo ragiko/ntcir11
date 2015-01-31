@@ -1,0 +1,190 @@
+この記事ではCloudera Manager 5 のリリースの新機能と変更点について説明します。
+原文はこちら。
+GA版(5.0.0)の変更点は、ベータ版からの差分のみを記述しています。全ての変更点について確認する場合はベータ版の変更点もご参照ください。
+Cloudera Manager5.0.0の新機能
+サービスおよび構成管理
+・HDFSのキャッシュ管理
+リソース管理
+・Impalaアドミッション制御
+監視
+・ホスト毎のディスクの概要
+・Impalaのベストプラクティス
+・HBaseのテーブルの統計情報
+・HDFSキャッシュの統計
+Cloudera Manager5.0.0 Beta 2の新機能
+サービスおよび構成管理
+HDFS
+・HDFS NFS ゲートウェイロール
+・スナップショットからのHDFSデータの復元をサポート
+YARN
+・YARN Resource Manager 高可用性
+・リソースプールのスケジューラ
+その他
+・Sparkサービスのサポート
+・Accumuloサービスのサポート
+・サービスの拡張性をサポート
+・Oozieサーバの高可用性を設定するためのサポート
+・古くなった設定を閲覧するためのきめ細かいUI
+・最大ファイル記述子を設定するためのサポート
+監視
+・Cloudera Search/ Solrのサービスを監視するためのサポート
+・失敗したYARNアプリケーションのための新たな「failed」と「killed」のバッジの表示
+・YARNアプリケーションやImpalaクエリのフィルタリングディスプレイに利用できる複数の属性
+・HBaseのテーブルと名前空間、Impalaクエリ、YARNアプリケーションのための新しい運用レポートを追加
+・チャート/tsquery経由でのアクセスメトリクスに対するユーザー定義トリガーの作成をサポート
+重要 :トリガーは新しい機能で進化途中であるため、リリース間の下位互換性は現時点では保証されません。
+チャートの改善
+・新しいテーブルのグラフの種類
+・チャートからのデータおよびメタデータを表示するための新しいオプション
+・CSVまたはJSON形式のファイルへのグラフのデータをエクスポートするためのサポート
+管理設定
+・限られた管理者機能を持つ新しいロールタイプを追加しました
+・Cloudera ManagerサーバとすべてのJVMは、OutOfMemoryErrorが発生した場合ヒープダンプを生成します
+・Parcelディレクトリの場所を設定し、クラスタホストから古いパーセルを削除するかどうか、いつ削除するかを指定可能になりました
+Cloudera Manager5.0.0 Beta 1の新機能
+CDHバージョン
+・CDH 4とCDH 5の両方をサポートしています(CDH3は未サポートです)
+・CDH 4からCDH 5へのアップグレードウィザード
+本番実行環境としてYARNのサポート
+・MapReduce(MRv1)からYARN(MRv2)への設定インポート
+・Impala1.2用のYARNベースのリソース管理
+JDKバージョン
+Cloudera Manager5はJDK 6とJDK 7の両方をサポートし、どちらもインストールされます。
+リソース管理
+・リソースの静的および動的パーティショニング:コアサービス(HBase、HDFS、MapReduce、Solr、YARN)間のリソース(cgroup)の静的パーティショニングの設定ウィザードを提供します。YARNとImpala用の動的リソース割り当ても提供します。
+・YARNとImpala用プール、リソースグループ、およびキューの管理。
+・利用状況の監視と傾向分析
+監視
+・YARNサービス監視
+・YARN(MRv2)ジョブ監視
+・クエリの迅速なフィルタリングやアプリケーションの一覧が可能になる、ImpalaクエリとYARNジョブの属性のヒストグラムの設定
+・メトリクスを監視するためのスケーラブルなバックエンドデータベース
+チャートの改善
+・新しいグラフの種類:ヒストグラムとヒートマップ
+・新しいスケールの種類:指数と対数
+・tsquery言語の更新:新しい属性値の新しいグラフタイプをサポートするために、YARNと新しい機能をサポートする
+拡張性
+・ISVアプリケーションと非CDHサービスの両方を管理する機能(例えば、Accumulo、Sparkなど)
+・Beta 1の一部として選択したISVとの連携が可能
+シングルサインオン
+・シングルサインオンを可能にするためのSAMLのサポート
+Parcel
+・互換性のないParcelが一緒に使用されないよう保証するための依存関係の強制
+・ディスクスペースを節約するために、ダウンロードされたParcelをキャッシュしないためのオプション
+・管理操作のための改良されたエラーレポート
+Backup and Disaster Recovery(BDR)
+・HBaseとHDFSスナップショット:定常業務のためのスナップショットのスケジューリングをサポートします。
+・YARN(MRv2)のサポート:レプリケーションジョブは現在、MRv1の代わりにYARN(MRv2)を使用して実行することができます。
+・グローバルレプリケーションページ:HDFSやHiveのどちらかのためにスケジュールされたレプリケーションジョブとすべてのスナップショット(HDFSとHBase)は、単一のレプリケーションページに表示されます
+その他
+・グローバル検索ボックス
+・いくつかのユーザビリティの向上
+・サービスが再起動し、リフレッシュし、クライアント構成の再デプロイを必要とする設定の変更を包括的に検出します。
+Cloudera Manager5での互換性のない変更点
+以下のセクションでは、Cloudera Manager5リリースの互換性のない変更点について説明します。
+Cloudera Manager5.0.0で導入された互換性のない変更点
+・CDH 5 HueではPython 2.4と2.5のサポートを終了し、Python2.6以上が必要になります。Hueは、Python 2.6なしでインストールされますが、起動しません。
+・Cloudera Manager5.0はsnmpTrapOIDの値への変更が含まれています。以前のリリースでは snmpTrapOID (OID: .1.3.6.1.6.3.1.1.4.1.0) は、 clouderaManagerMIBNotifications (OID: .1.3.6.1.4.1.38374.1.1.1.1) に誤って設定されていました。これは Cloudera Manager 5.0で正しい値である clouderaManagerAlert (OID: .1.3.6.1.4.1.38374.1.1.1.1) に修正されています。この変更は、clouderaManagerMIBNotificationsを期待するように構成されたSNMPサーバ構成を破壊します。 Cloudera Managerの管理者は、修正されたOIDを受け入れるためにそれらのSNMPレシーバを設定する必要があります。
+・次の設定のデフォルト値は、デュアルスタックマシンでIPv4に優先プロトコルスタックを設定するためのJVMオプション
+-Djava.net.preferIPv4Stack=trueを含むように変更されました。Cloudera Manager5.0.0にアップグレードするとき、古いデフォルトに設定された値は、自動的に新しいデフォルトに変更されます。
+・MapReduceクライアント設定:
+・hadoop-env.sh:HADOOP_CLIENT_OPTSに追加
+・mapred-site.xml:mapred.child.java.optsに追加
+・YARNクライアント設定:
+・hadoop-env.sh:YARN_OPTSに追加
+・mapred-site.xml:yarn.app.mapreduce.am.command-optsに加え、mapreduce.map.java.opts、およびmapreduce.reduce.java.opts
+・HDFSクライアント設定:hadoop-env.sh:HADOOP_CLIENT_OPTSに追加
+・Hiveクライアント設定: hive-env.sh:HADOOP_CLIENT_OPTSに追加
+・次のMapReduceのヘルステストが削除されました。
+・ジョブの失敗
+・Mapのバックログ
+・バックログを削減
+・Mapのローカリティ
+必要であれば、テストは、トリガーに置き換えることができます。例:
+・直近1時間で完了したすべてのジョブを見て、失敗したジョブの10%以上が存在する場合、サービスの状態を黄色に変更します。
+IF (select (jobs_failed_rate * 3600) as jobs_failed, ((jobs_failed_rate + jobs_completed_rate + jobs_killed_rate) * 3600) as all_jobs where roleType=JOBTRACKER AND serviceName=$SERVICENAME and last(jobs_failed_rate / (jobs_failed_rate + jobs_completed_rate + 
+jobs_killed_rate)) >= 10 ending at $END_TIME duration "PT3600S") DO health:concerning
+・利用可能な全スロットの50%以上のMapがウェイト状態の場合、ヘルス状態は黄色になる。
+IF (select waiting_maps / map_slots where roleType=JOBTRACKER and serviceName=$SERVICENAME and last(waiting_maps / map_slots) > 50) DO health:concerning
+・利用可能な全スロットの50%以上のReduceがウェイト状態の場合、ヘルス状態は黄色になる。
+IF (select waiting_reduces / reduce_slots where roleType=JOBTRACKER and serviceName=$SERVICENAME and last(waiting_reduces / reduce_slots) > 50) DO health:concerning
+・HDFSのチェックポイントメトリクスは削除されました。
+・end_checkpoint_num_ops
+・end_checkpoint_avg_time
+・start_checkpoint_num_ops
+・start_checkpoint_avg_time
+Cloudera Manager5.0.0Beta 2で導入された互換性のない変更点
+・Impala 1.2.1 以前のリリースはサポートされなくなりました。
+・ヘルステストの定数の一部が変更されています。以下は、Cloudera Manager4に存在していました。
+・FAILOVERCONTROLLER_FILE_DESCRIPTOR
+・FAILOVERCONTROLLER_HOST_HEALTH
+・FAILOVERCONTROLLER_LOG_DIRECTORY_FREE_SPACE
+・FAILOVERCONTROLLER_SCM_HEALTH
+・FAILOVERCONTROLLER_UNEXPECTED_EXITS
+これらの定数は今、次の通りになっています。
+・MAPREDUCE_FAILOVERCONTROLLER_FILE_DESCRIPTOR
+・MAPREDUCE_FAILOVERCONTROLLER_HOST_HEALTH
+・MAPREDUCE_FAILOVERCONTROLLER_LOG_DIRECTORY_FREE_SPACE
+・MAPREDUCE_FAILOVERCONTROLLER_SCM_HEALTH
+・MAPREDUCE_FAILOVERCONTROLLER_UNEXPECTED_EXITS
+及び、
+・HDFS_FAILOVERCONTROLLER_FILE_DESCRIPTOR
+・HDFS_FAILOVERCONTROLLER_HOST_HEALTH
+・HDFS_FAILOVERCONTROLLER_LOG_DIRECTORY_FREE_SPACE
+・HDFS_FAILOVERCONTROLLER_SCM_HEALTH
+・HDFS_FAILOVERCONTROLLER_UNEXPECTED_EXITS
+変更の理由は、より良いヘルスシステムでのMapReduceとHDFSのフェイルオーバーコントローラの監視を区別することです。
+Cloudera Manager5.0.0Beta 1で導入された互換性のない変更点
+サービス
+Impala
+Cloudera Manager4.8(2013年11月下旬リリース)では、Impala1.2.1のみがサポートされています。これは、Impalaカタログサーバの導入によるものです。しかし、CDH 5.0.0Beta 1は、Impala1.2.0(Beta 版)とともにリリースされました。そのため、もし Cloudera Manager 4.8 (Impala 1.2.1 付属) から Cloudera Manager 5.0.0 Beta 1にアップグレードして、CDHをCDH 5.0.0 Beta 1にアップグレードする場合、Impalaのバージョンは1.2.0にダウングレードされます。これにより機能の一部が失われます。Impala1.2.0(Beta 版)に含まれていないImpala1.2.1の新機能のリストについては、New Features in Impalaを参照してください。
+Hive
+HiveServer2はCDH 5のHiveに必須のロールです。
+Hue
+CDH 5では、HueはBeeswax Serverのロールを持ちません。代わりにHueはHiveServer2にクエリを送信します。
+HDFS
+Cloudera Manager5は、HDFS高可用性のためのNFSマウントされた共有editsディレクトリをサポートしていません。共有editsのためのクォーラムジャーナル方式のみをサポートしています。Cloudera Manager 4 とNFSマウントディレクトリを用いた CDH 4の高可用性設定を使用している場合、高可用性機能を無効化するまでそのまま動作し続けます。NFSマウントされたディレクトリを用いての高可用性は再度有効にすることができません。さらに、高可用性を無効にしない限り、CDH 5にアップグレードすることができないため、アップグレード後に高可用性を再度有効にするためにクォーラムベースのストレージを使用する必要があります。
+YARN
+・YARN(MRv2)の設定mapreduce.job.userlog.retain.hoursはyarn.log-aggregation.retain-secondsに置き換えられています。mapreduce.job.userlog.retain.hours内の既存の値は失われます。しかし、この設定はもともと何の効果もなかったので、影響する機能はありません。
+・以下の設定パラメータがYARNから削除されました。この設定はもともと何の効果もなかったので、特に影響する機能はありません。
+・mapreduce.jobtracker.maxtasks.perjob
+・mapreduce.jobtracker.handler.count(同等のパラメータにyarn.resourcemanager.resource-tracker.client.thread-countがあります)
+・mapreduce.jobtracker.persist.jobstatus.active
+・mapreduce.jobtracker.persist.jobstatus.hours
+・mapreduce.job.jvm.numtasks
+・以下のYARN設定パラメータを置きかえました。YARNのパラメータで置き換えられたものはこれだけです。古い設定が失われますが、もともと何の効果もなかったので、影響する機能はありません。
+・mapreduce.jobtracker.restart.recover をyarn.resourcemanager.recovery.enabledに置き換え(ゲートウェイからResourceManagerに変更)
+・mapreduce.tasktracker.http.threadsからmapreduce.shuffle.max.connectionsに置き換え
+・mapreduce.jobtracker.staging.root.dirからyarn.app.mapreduce.am.staging-dirに置き換え
+・Cloudera Manager 5はYARNのデフォルトリソーススケジューラをFairSchedulerに設定しています。FIFOスケジューラでYARNを実行していた場合、次にYARNの再起動をするときにFairSchedulerに変更されます。FairSchedulerはCDH4.2.1以降でのみサポートされていて、それより古いクラスタでは障害が発生するため手動でFIFOかCapacitySchedulerに変更する必要があります。スケジューラをFIFOあるいはCapacitySchedulerに戻す方法についてはこのリリースノートのKnown Issuesのセクションを参考にしてください。
+Cloudera Manager5で変更された機能および動作
+以下のセクションでは、Cloudera Manager5で変更された機能について説明します。
+注意 :ローリングアップグレードはCDH 4とCDH 5との間ではサポートされていません。ローリングアップグレードはCDH 5.0.0 Beta 2 からそれ以降のリリースではサポートされず、また将来のCDH 5のベータ版からCDH 5のGAへのアップグレードもサポートされない場合があります。
+Cloudera Manager5.0.0の変更点
+・MapReduceはHDFS NameNodeのトポロジーを継承します。MapReduce JobTrackerのトポロジー設定は削除されました。2つのパラメータは常に同じ値に設定されている必要があり、設定が冗長でした。
+UI
+・クラスタタブからActivities、Other、Manage Resources セクションがなくなりました。
+Cloudera Manager5.0.0Beta 2の変更点
+プロダクト
+・Cloudera Backup and Disaster Recovery(BDR)は、現在、Cloudera Enterpriseに含まれています。
+・Cloudera StandardはCloudera Expressに変更されました。
+OSとパッケージング
+・Cloudera Manager組み込みデータベースパッケージの名前は、cloudera-manager-server-dbからcloudera-managerserver-db-2に変更されています。詳細については、お使いのOSのためのアップグレードとインストールのトピックを参照してください。
+・Ubuntuの10.04とDebian 6.0はサポートされなくなりました。
+HDFS
+・Cloudera Manager 4とは異なり、高可用性を有効にすると自動フェイルオーバーが自動的に有効になります。
+HBase
+・CDH 5ではHBaseはwatchdogプロセスで監視されるためHBase canaryは廃止されました。CDH 4では、HBase canaryはまだ使用されています。
+・RegionServerのデフォルトのヒープサイズが4GBに増加されました。
+監視
+・チャート「ビュー」とビューに関連するアクションは、「ダッシュボード」に名前が変更されました。
+・ImpalaのクエリとYARNのアプリケーション画面の属性フィルタの表示方法の変更
+・ ホーム、サービス、ロールのページの期限切れの設定の表示は、新しい画像になり、クラスタをリフレッシュするのか再起動するのかを示すツールチップを表示するようになりました。 クライアント設定を再デプロイする必要があるかどうかを示す新しいインジケータを追加しました。インジケータを生じさせた条件を確認し、解決するために、新しい期限切れの設定のページに移動するためのインジケータをクリックすることができます。
+・tsqueryメトリクスの命名規則に合うように、複数語のImpalaクエリとYARNアプリケーションの属性名はキャメルケースを利用する形式からアンダースコア区切りの形式に変更されました。たとえばquerytypeはQUERY_TYPEに変更されました。下位互換性のために、キャメルケースの名前は、まだサポートされています。
+管理画面
+・Cloudera Manager管理コンソールのメインナビゲーションバーが再編成されました。サービスタブはクラスタタブに置き換えられました。クラスタタブは個々のサービスへのリンクを含みます。このリンクは以前はサービスタブ、アクティビティ、レポートセクションの下にありました。これらはメインバーから削除され、リソースプールとサービスプールへのリンクを含むManage Resourcesセクションが追加されました。すべてのサービスのページは削除されました。
+・”Safety Valve” は “Advanced Configuration Snippet” にリネームされました。(注: 日本語版は「安全バルブ」のままです)
+・ホストへのロールの割り当てを指定する画面が改善されたスケーラビリティと使いやすさのために再設計されました。
+その他
+・io.compression.codecsプロパティは、MapReduceからHDFSへ移動しました。
+Cloudera Manager5の新機能と変更点 | Hadoopとビッグデータソリューションのリーディングカンパニー | Cloudera Japan

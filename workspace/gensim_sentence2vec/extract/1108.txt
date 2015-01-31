@@ -1,0 +1,3 @@
+
+We characterize a probabilistic measure named Model Set Unfalsified Probability (MSUP) for model set validation, where the model set is described by an LFT (Linear Fractional Transformation) form. We derive upper and lower bounds of MSUP and show that the lower bound computation can be reduced to an LMI-based convex optimization. A necessary and sufficient condition for which MSUP=0.5 (50%) is also provided. A numerical example confirms that the probabilistic approach more appropriately evaluates the suitability of a model set in robust controller design than deterministic approaches.
+適合性確率に基づくモデル集合の検証

@@ -1,0 +1,14 @@
+{if count($siryou_list)}
+?Y?t???/p>
+{foreach from=$siryou_list item=siryou}
+{$siryou.comment|escape}
+{/foreach}
+{/if}
+?A????/p>
+{foreach from=$syussyou_list key=key item=syussyou}
+{if $key >= 1}{/if}
+{$syussyou.sname1|escape}{$syussyou.sname2|escape}{$syussyou.sname3|escape}
+{$syussyou.naiyou|escape|nl2br}
+{/foreach}
+{if count($kanren_url_list) || count($kako_houdou_list)}
+??? ????\???|???$press.nengo|escape}?N{$press.mm|escape}??$press.dd|escape}??|{$press.title|escape}

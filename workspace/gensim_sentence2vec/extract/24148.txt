@@ -1,0 +1,5 @@
+Agenda   イントロダクション    - 少し自己紹介とか    - 分散コンピューティングでの分散ファイルシステム      の使用背景 分散ファイルシステムの基礎技術紹介 最新研究紹介    - 分散ファイルシステムにおける効果的なデータ配置    - 分散アプリケーションとの分散ファイルシステムの      連携   まとめ                                2
+少し自己紹介 名前: @nukamu 所属:東京大学大学院  田浦研究室 学年:修士2年 研究分野:分散コンピュー  ティング(特に分散ストレー  ジまわり) プログラミング:C, pythonが特に好き 趣味:バンド、音楽系                           3
+分散ファイルシステム周りのwork   DDDFS (Dynamically-Duplicate Distributed    File System)    - 数週間前に行われたICTプログラムコンテストに応募      し賞を受賞    - Github - https://github.com/nukamu/dddfs   Mogami    - 研究で作ってる      分散ファイル      システム    - 近日公開予定                                                 4
+分散ファイルシステムとは?            分散ファイルシステム                  複数のストレージを束ねて使う                  並列ファイルアクセスを可能にする                   有名な分散ファイルシステム:                   PVFS, GPFS, Lustre, HDFS,                          Gluster etc.processes                                               5
+TokyoWebMining#18_nukamu - SSSSLIDE

@@ -1,0 +1,33 @@
+[Java]文字列配列をカンマ区切りの文字列にする
+課のメンバーで簡単なプログラミングコンテスト。
+お題は、「dog」「cat」「pig」という文字列配列の各要素をカンマで区切った文字列に変換せよ、です。
+回答1
+String[] ary = new String[]{"dog", "cat", "pig"};
+StringBuilder builder = new StringBuilder();
+for(int i=0; i<ary.length; i++) {
+builder.append(ary[i]);
+if ( i != ary.length-1 ) {
+builder.append(",");
+}
+}
+String result = builder.toString();
+回答2
+String[] ary = new String[]{"dog", "cat", "pig"};
+StringBuilder builder = new StringBuilder();
+for(String str : ary) {
+builder.append(str).append(",");
+}
+String result = builder.substring(0, builder.length() - 1);
+回答3
+String[] ary = new String[]{"dog", "cat", "pig"};
+StringBuilder builder = new StringBuilder();
+for(int i=0; i<ary.length-1; i++) {
+builder.append(ary[i]).append(",");
+}
+String result = builder.append(ary[ary.length-1]).toString();
+まとめ
+こんな簡単な問題でもいろんな書き方があるね。「誰が書いても同じレベルに」っていうのを目指すって無理なんじゃないの。。と言いつつ、やっぱそこを意識して実際のプロジェクトでは無難そうな回答1で書くかなぁ。ちなみに今回出した僕の回答は3です。意図的にif文を避けてみました。
+最後はおきまりの、、、rubyで書くとこうなりますシリーズで。
+result = %w[dog cat pig].join(",")
+Permalink | コメント(1) | トラックバック(3) | 21:53  
+文字列配列をカンマ区切りの文字列にする - プログラマ的京都生活

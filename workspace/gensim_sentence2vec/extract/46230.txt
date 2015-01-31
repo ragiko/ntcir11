@@ -1,0 +1,254 @@
+
+設定例
+例1.センターに3拠点がそれぞれ接続しており、各拠点がセンターに対する足回り回線の上り速度を測定してQoS設定に反映する
+拠点A 172.16.100.1
+センターネットワーク拠点B 172.16.110.1
+172.16.10.1     
+拠点C 172.16.120.1
+[設定手順]
+センター
+#cooperation bandwidth-measuring remote 1 client 172.16.100.1
+#cooperation bandwidth-measuring remote 2 client 172.16.110.1
+#cooperation bandwidth-measuring remote 3 client 172.16.120.1
+#cooperation bandwidth-measuring server on
+拠点A(優先制御)
+#queue lan2 type priority
+#cooperation bandwidth-measuring client on
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+拠点B(帯域制御)
+#queue lan2 type shaping
+#queue lan2 class property 1 bandwidth=30%
+#cooperation bandwidth-measuring client on
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+拠点C(優先制御)
+#queue lan2 type priority
+#cooperation bandwidth-measuring client on
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+[解説]
+センター
+#cooperation bandwidth-measuring remote 1 client 172.16.100.1
+拠点Aをクライアントとして登録します。
+#cooperation bandwidth-measuring remote 2 client 172.16.110.1
+拠点Bをクライアントとして登録します。
+#cooperation bandwidth-measuring remote 3 client 172.16.120.1
+拠点Cをクライアントとして登録します。
+#cooperation bandwidth-measuring server on
+サーバとして機能させます。
+拠点A(優先制御)
+#queue lan2 type priority
+LAN2インタフェースでは優先制御を使用します。この他にクラス分けの設定が別途必要です。
+#cooperation bandwidth-measuring client on
+クライアントとして機能させます。
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+センター側をサーバとして登録します。このコマンド実行後に帯域測定動作が始動します。
+拠点B(帯域制御)
+#queue lan2 type shaping
+LAN2インタフェースでは帯域制御を使用します。
+#queue lan2 class property 1 bandwidth=30%
+帯域測定の結果を動的に反映させる場合には、queue class propertyコマンドでは帯域を%指定で設定します。%指定以外で設定し、帯域測定の結果がその設定値を下回った場合、その設定値は保証されません。この他にクラス分けの設定が別途必要です。
+#cooperation bandwidth-measuring client on
+クライアントとして機能させます。
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+センター側をサーバとして登録します。このコマンド実行後に帯域測定動作が始動します。
+拠点C(優先制御)
+#queue lan2 type priority
+LAN2インタフェースでは優先制御を使用します。この他にクラス分けの設定が別途必要です。
+#cooperation bandwidth-measuring client on
+クライアントとして機能させます。
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+センター側をサーバとして登録します。このコマンド実行後に帯域測定動作が始動します。
+例2.2拠点間で互いに上り速度を測定してQoS設定に反映する
+拠点A ネットワーク拠点B 
+172.16.10.1       172.16.20.1
+[設定手順]
+拠点A
+#queue lan2 type priority
+#cooperation bandwidth-measuring server on
+#cooperation bandwidth-measuring client on
+#cooperation bandwidth-measuring remote 1 server 172.16.20.1
+#cooperation bandwidth-measuring remote 2 client 172.16.20.1
+拠点B
+#queue lan2 type priority
+#cooperation bandwidth-measuring server on
+#cooperation bandwidth-measuring client on
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+#cooperation bandwidth-measuring remote 2 client 172.16.10.1
+[解説]
+拠点A
+#queue lan2 type priority
+LAN2インタフェースでは優先制御を使用します。この他にクラス分けの設定が別途必要です。
+#cooperation bandwidth-measuring server on
+サーバ機能を有効にします。
+#cooperation bandwidth-measuring client on
+クライアント機能を有効にします。
+#cooperation bandwidth-measuring remote 1 server 172.16.20.1
+拠点Bをサーバとして登録します。このコマンド実行後に帯域測定動作が始動します。
+#cooperation bandwidth-measuring remote 2 client 172.16.20.1
+拠点Bをクライアントとして登録します。
+拠点B
+#queue lan2 type priority
+LAN2インタフェースでは優先制御を使用します。この他にクラス分けの設定が別途必要です。
+#cooperation bandwidth-measuring server on
+サーバ機能を有効にします。
+#cooperation bandwidth-measuring client on
+クライアント機能を有効にします。
+#cooperation bandwidth-measuring remote 1 server 172.16.10.1
+拠点Aをサーバとして登録します。このコマンド実行後に帯域測定動作が始動します。
+#cooperation bandwidth-measuring remote 2 client 172.16.10.1
+拠点Aをクライアントとして登録します。
+コマンド
+連携動作で使用するポート番号の設定
+[書式]    cooperation port PORT
+no cooperation port [PORT]
+[設定値]   PORT ... ポート番号
+[説明]    連携動作で使用するUDPのポート番号を設定する。連携動作で送出される
+パケットの送信元ポート番号にこの番号を使用する。またこのポート番
+号宛のパケットを受信した場合には連携動作に関わるパケットとして処
+理する。
+[初期値]   59410
+帯域検出動作を行うか否かの設定
+[書式]    cooperation bandwidth-measuring ROLE SW
+no cooperation bandwidth-measuring ROLE [SW]
+[設定値]      ROLE ... 連携動作での役割
+server ... サーバ側動作
+client ... クライアント側動作
+SW
+on  ... 機能を有効にする
+off ... 機能を無効にする
+[説明]    帯域検出動作の機能毎の動作を設定する。
+[初期値]   全ての機能でoff
+帯域測定で連携動作を行う相手毎の動作の設定
+[書式]    cooperation bandwidth-measuring remote ID ROLE ADDRESS [OPTION=VALUE]
+no cooperation bandwidth-measuring remote ID [ROLE ADDRESS [OPTION=VALUE]]
+[設定値]    ID      ... 相手先ID番号(1-100)
+ROLE ... 連携動作での相手側の役割
+server ... 相手側がサーバ側動作を行う
+client ... 相手側がクライアント側動作を行う
+ADDRESS ... 連携動作の相手側IPアドレス、FQDNまたは'any'
+OPTION  ... オプション
+apply          ... 測定結果をLANインタフェースの速度設定に反映さ
+せるか否か、'on' or 'off'
+port           ... 相手側が使用するUDPのポート番号(1-65535)
+initial-speed  ... 測定開始値(64000-100000000)[bit/s]
+interval       ... 定期監視間隔(60-2147483647)[sec] or 'off'
+retry-interval ... エラー終了後の再試行までの間隔(60-2147483647)[sec]
+sensitivity    ... 測定感度、'high', 'middle' or 'low'
+syslog         ... 動作をログに残すか否か、'on' or 'off'
+interface      ... 測定結果を反映させるLANインタフェース
+class          ... 測定結果を反映させるクラス
+limit-rate     ... 設定値の最大変化割合(1-10000)[%]
+number         ... 測定に使用するパケット数(5-100)
+local-address  ... パケット送信時の始点IPアドレス
+[説明]    帯域測定で連携動作を行う相手毎の動作を設定する。
+[ノート]   ROLEパラメータでclientを設定する場合には、オプションはportとsyslog、
+local-addressだけが設定できる。serverを設定する場合には全てのオプシ
+ョンが設定できる。
+連携動作の相手側設定としてanyを指定できるのは、ROLEパラメータで
+clientを設定した場合のみである。
+applyオプションが'on'の場合、帯域測定の結果を相手先に向かうLANイン
+タフェースのspeed lanコマンドの設定値に上書きする。classオプション
+に値が設定されている場合には、queue lan class propertyコマンドの
+bandwidthパラメータに測定結果が反映される。
+initial-speedオプションでは、初期状態で測定を開始する速度を設定でき
+る。相手先からの応答がなかったり測定値が許容範囲を越えたなど、何ら
+かの障害で正しい測定ができなかった後の再試行でもこの設定速度で測定
+を開始する。パラメータの後ろに'k'または'M'をつけると、それぞれ
+kbit/s、Mbit/sとして扱われる。
+intervalオプションでは、帯域測定が正常終了した後、帯域に変化がない
+か定期的に確認測定する間隔を設定できる。'off'を指定した場合には測定
+終了後の定期的な確認測定を行わない。
+retry-intervalオプションでは、帯域測定が相手先からの応答がなかった
+り測定値が許容範囲を越えたなど、何らかの障害で正しい測定ができなか
+った場合の再試行までの時間を設定できる。ただし、網への負荷等を考慮
+すると正常に動作できない状況でむやみに短時間間隔で試行を繰り返すべ
+きではない。正常に測定できない原因を回避することが先決である。
+numberオプションでは、測定に使用するパケット数を設定できる。パケッ
+ト間隔のゆらぎが大きい環境ではこの数を多くすることで、より安定した
+結果が得られる。ただし測定に使用するパケットの数が増えるため測定パ
+ケットが他のデータ通信に与える影響も大きくなる可能性がある。
+sensitivityオプションでは、測定感度を変更することができる。パケット
+間隔のゆらぎが大きかったりパケットロスのある環境では、測定感度を鈍く
+することで、頻繁な設定変更を抑制したり測定完了までの時間を短縮するこ
+とができる。
+interfaceオプションでLANインタフェースが設定されている場合には、そ
+のLANインタフェースのspeed lanコマンドに測定結果が反映される。class
+オプションに値が設定されている場合にはqueue lan class propertyコマ
+ンドのbandwidthパラメータに測定結果が反映される。
+classオプションは帯域制御機能が実装されている機種でのみ利用できる。
+limit-rateオプションは、設定値の急激な変動をある割合内に抑えたい場
+合に設定する。直前の測定結果と今回の測定結果に大きな差がある場合、
+今回の測定結果そのものではなく、このlimit-rateに応じた値を今回の設
+定値として採用する。
+local-addressオプションでは、送信パケットの始点IPアドレスを設定でき
+る。設定がない場合、インタフェースに付与されたIPアドレスを使用する。
+[初期値]      apply=on
+port=59410
+initial-speed=10000000
+interval=3600
+retry-interval=3600
+sensitivity=high
+syslog=off
+interface 設定なし
+class 設定なし
+limit-rate 設定なし
+number=30
+local-address 設定なし
+連携動作の手動実行
+[書式]    cooperation TYPE go ID
+[設定値]      TYPE ... 連携動作タイプ
+bandwidth-measuring ... 回線帯域検出
+ID   ... 相手先ID番号(1-100)
+[説明]    手動で連携動作を実行する。
+[ノート]   測定結果がコンソールに表示される。
+インタフェース速度の設定で回線帯域検出の値を使用するように設定され
+ている場合には、この実行結果の値も設定への反映の対象となる。
+連携動作の状態の表示
+[書式]    show status cooperation TYPE [ID]
+[設定値]      TYPE ... 連携動作タイプ
+bandwidth-measuring ... 回線帯域検出
+ID   ... 相手先ID番号(1-100)
+[説明]    連携動作の情報を表示する。
+回線帯域検出の場合、以下の項目が表示される。
+相手先情報
+状態表示
+回数
+測定時刻
+クライアントの試行速度(サーバ動作のみ)
+測定結果(クライアント動作のみ)
+現状(クライアント動作のみ)
+設定変更履歴(クライアント動作のみ)
+次の測定までの残り時間(クライアント動作のみ)
+エラー回数と履歴
+[表示例]      回線帯域検出の場合
+#show status cooperation bandwidth-measuring
+1: 172.16.1.100
+remote: server
+measuring times: 43[times]
+last bandwidth: 56450[kbit/s] 2005/06/23 13:08:45
+set times: 3[times]
+last set bandwidth: 58650[kbit/s] 2005/06/23 13:08:45
+history: 58340[kbit/s] 2005/06/23 13:08:08
+: 56400[kbit/s] 2005/06/23 13:05:06
+next measuring: 3592[seconds]
+2: 172.16.1.100
+remote: client
+measuring times: 40[times]
+last tried: 8407[kbit/s] 2005/06/23 13:08:45
+#show status cooperation bandwidth-measuring
+1: 172.16.0.100
+相手側動作: client
+測定回数: 43[times]
+最新試行: 8407[kbit/s] 2005/06/23 13:08:45
+2: 172.16.0.100
+相手側動作: server
+測定回数: 67[times]
+最新測定結果: 59520[kbit/s] 2005/06/23 13:10:15
+設定変更回数: 5[times]
+現在の設定帯域: 58190[kbit/s] 2005/06/23 13:10:15
+設定変更履歴: 56030[kbit/s] 2005/06/23 13:09:34
+: 57220[kbit/s] 2005/06/23 13:08:47
+: 59830[kbit/s] 2005/06/23 13:08:15
+: 58010[kbit/s] 2005/06/23 13:05:00
+次回測定までの残り秒数: 3596[seconds]
+[EOF]
+帯域検出機能

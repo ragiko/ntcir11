@@ -1,0 +1,99 @@
+文字数を数える nchar  &dagger;
+nchar は文字ベクトル x を引数に取り、
+その要素中の文字数からなるベクトルを返す
+用法 nchar(x)
+引数
+x 文字ベクトル、もしくは文字ベクトルに強制変換されるベクトル
+詳細
+内部的に as.character と同値な操作が x に
+行われる。もしベクトルでないオブジェクトの場合は、まず deparse
+を行う必要がある
+返り値
+文字数が文字列として出力される(欠損文字列には整数 2)
+関連事項
+strwidth はプロット用に文字列の幅を与える
+例
+> x <- c("asfef","qwerty","yuiop[","b","stuff.blah.yech")
+> nchar(x)
+[1]  5  6  6  1 15
+> mean   # 平均値関数 mean の定義(内部関数)
+function (x, ...)
+UseMethod("mean")
+<environment: namespace:base>
+> deparse(mean)
+[1] "function (x, ...) "  "UseMethod(\"mean\")"
+> nchar(deparse(mean))
+[1] 18 17
+> nchar("")
+[1] 0
+> nchar(NULL)
+numeric(0)
+> nchar(NA)
+[1] 2
+文字列の部分的マッチング charmatch  &dagger;
+charmatch は、その第一引数の要素にマッチするものを、第二引数の中から探す
+用法 charmatch(x, table, nomatch = NA)
+引数
+x マッチされる対象(複数可)
+table マッチが調べられる文字列ベクトル
+nomatch マッチングが無い箇所で返される値
+詳細
+正確なマッチが一部だけのマッチより優先される(つまり、ターゲットの先頭部分に
+値が正確にマッチし、更にターゲットのほうがより長いケース)。
+もし正確なマッチングが一ヶ所だけ、皆無、ユニークな部分的なマッチがあれば、
+マッチ箇所の添字が返される。もし複数の正確なマッチ、もしくは部分的マッチが
+あれば 0 が返され、マッチが皆無なら NA が返される。
+関連事項
+pmatch, match. より一般的な(正規表現による)文字列のマッチング
+には grep や regexpr
+例
+> charmatch("", "") 
+[1] 1                 # 空文字列の正確なマッチ
+> charmatch("m",   c("mean", "median", "mode"))
+[1] 0                 # 複数のマッチ
+> charmatch("me", c("mean", "median", "mode"))
+[1] 0                 # 複数のマッチ
+> charmatch("med", c("mean", "median", "mode")) 
+[1] 2                 # ターゲットの2番目と正確なマッチ
+> charmatch(c("med","mo"), c("mean", "median", "mode"))
+[1] 2 3               # ターゲットの2,3番目と正確なマッチ
+大文字/小文字変換 toupper, tolower  &dagger;
+splus2R パッケージの、upperCase, lowerCase 関数
+今更そんなもの。もともと base には toupper, tolower があります。実行速度もほぼ同じ。
+toupper は、引数の文字列ベクトルの英小文字を英大文字に変換する。
+tolower は、引数の文字列ベクトルの英大文字を英小文字に変換する。
+用法
+toupper(x)
+tolower(x)
+引数
+x 文字列ベクトル
+例
+> x <- "MiXeD cAsE 123"
+> tolower(x)
+[1] "mixed case 123"
+> toupper(x)
+[1] "MIXED CASE 123"
+文字変換 chartr  &dagger;
+chartr は、第3引数の文字列ベクトル中の第1引数の文字を第2引数の文字に変換する。
+用法
+chartr(old, new, x)
+引数
+old 置き換えられる文字列
+new 置き換える文字列
+x 文字列ベクトル
+例
+> x <- "MiXeD cAsE 123"
+> chartr("a-z", "A-Z", x) # toupper と同じ結果になる
+[1] "MIXED CASE 123"
+> chartr("A-Z", "a-z", x) # tolower と同じ結果になる
+[1] "mixed case 123"
+> chartr("A-Z1-3", "a-z4-6", x) # 数字も置き換えることができる
+[1] "mixed case 456"
+> x <- "MiXeD cAsE 123@#"
+> chartr("A-Z1-3@#", "a-z4-6%$", x) # 当然,記号も置き換えることができる
+[1] "mixed case 456%$"
+> chartr(" !-~", "!-~ ", "This is a pen.") # 単純な暗号
+[1] "Uijt!jt!b!qfo/"
+> chartr("あ-ん", "ア-ン", "あいうえお") # Windows でもできるかな?
+[1] "アイウエオ"
+Rの文字列処理関数 - RjpWiki

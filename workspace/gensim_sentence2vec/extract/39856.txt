@@ -1,0 +1,98 @@
+著者:安井真人
+生物学者。大阪大学 理学研究科 生物科学専攻 特任研究員、理化学研究所 生命システム研究センター 細胞シグナル動態研究グループ 客員研究員兼任。現在、細胞の自発運動を分子生物学、イメージング、コンピュータシミュレーションなど多様な方法を用いた研究を行っている。
+OpenCVには輪郭を抽出する命令があります。 ここでは、画像から輪郭を抽出して表示するプログラムを作成します。 では、本ブログのロゴである
+を画像処理により「青字のJ」の輪郭を抽出するプログラムを作成してみましょう。 プログラムはXCodeで作成しました。 ただGUIが異なるだけなので、Windowsの方にも参考になると思います。
+GUIの設定
+はじめにプロジェクトを立ちあげ、OpenCVの設定をします。 詳しくは以下の記事を参考にしてください。
+>>OpenCVの設定の記事
+次にボタンを設置して、画像を読み込めるようにします。 以下の記事を参考にしてプログラムを作ってください。
+>>選択した画像を開くプログラム
+プログラム
+#import <Cocoa/Cocoa.h>
+#include "opencv/cv.h"
+#include "opencv/highgui.h"
+@interface AppDelegate : NSObject {
+IplImage* image;
+}
+@property (assign) IBOutlet NSWindow *window;
+- (IBAction)Button:(NSButton *)sender;
+@end
+//AppDelegate.m
+#import "AppDelegate.h"
+@implementation AppDelegate
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+// Insert code here to initialize your application
+cvNamedWindow("window",1);
+}
+-(NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)app{
+cvReleaseImage(&image);
+cvDestroyWindow("window");
+return NSTerminateNow;
+}
+- (IBAction)Button:(NSButton *)sender {
+NSOpenPanel *openPanel=[NSOpenPanel openPanel];
+NSArray *allowedFileTypes=[NSArray arrayWithObjects:@"png",@"PNG",nil];
+[openPanel setAllowedFileTypes:allowedFileTypes];
+NSInteger pressButton=[openPanel runModal];
+if(pressButton==NSOKButton){
+NSURL * filePath=[openPanel URL];
+NSString* fileName=[filePath path];
+const char* path=[fileName UTF8String];
+image=cvLoadImage(path,CV_LOAD_IMAGE_ANYCOLOR);
+if(image==NULL){
+NSLog(@"Not Read");
+}else{
+//ここからが本題です。
+//グレースケール用のIplImageを用意する
+IplImage *img_gray;
+img_gray=cvCreateImage(cvGetSize(image),IPL_DEPTH_8U,1);
+//青色だけを取り出す
+for(int j=0;jheight;j++){
+for(int i=0;iwidth;i++){
+//青色の画素をグレースケールへ移す
+img_gray->imageData[img_gray->widthStep*j+i]=image->imageData[image->widthStep*j+i*3];
+}
+}
+//二値化する(大津の方法)
+cvThreshold(img_gray, img_gray, 0, 255, CV_THRESH_BINARY|CV_THRESH_OTSU);
+//輪郭を抽出する
+//メモリストレージの確保
+CvMemStorage* storage=cvCreateMemStorage(0);
+CvSeq* contours;
+int nCont=cvFindContours(img_gray,storage,&contours,sizeof(CvContour),CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE,cvPoint(0,0));
+NSLog(@"輪郭数=%d",nCont);
+cvDrawContours(image,contours,CV_RGB(255,0,0),CV_RGB(0,255,0),1,2,CV_AA,cvPoint(0,0));
+cvShowImage("window",image);
+}
+}
+}
+@end
+解説
+「//ここからが本題です」からが新しい部分です。 まず、グレースケールへ変換するためIplImage* img_grayを用意しています。 そして、imageを画素ごとに操作して、青色の部分だけをimg_grayへ写しています。 それを2つのfor文で行なっています。
+for(int j=0;jheight;j++){
+for(int i=0;iwidth;i++){
+//青色の画素をグレースケールへ移す
+img_gray->imageData[img_gray->widthStep*j+i]=image->imageData[image->widthStep*j+i*3];
+}
+}
+最後に、img_grayを大津の方法で二値化しています。
+cvThreshold(img_gray, img_gray, 0, 255, CV_THRESH_BINARY|CV_THRESH_OTSU);
+これでJだけが白になった画像が得られます。  次に本題の輪郭の抽出を行なっています。 まずメモリストレージと呼ばれる構造体を定義して
+CvMemStorage* storage=cvCreateMemStorage(0);
+でメモリを確保します。 続いて、CvSeq構造体を定義しています。
+CvSeq* contours;
+そして、cvFindContoursで輪郭を取得しています。
+int cvFindContours(
+cvArr* image,          //処理対象の画像
+CvMemStorage* storage, //輪郭情報を保存するメモリストレージ
+CvSeq* contour,        //輪郭データへのポインタ
+int header_size,       //ヘッダーサイズ
+int mode,              //輪郭を検出する方法
+int method,            //輪郭を近似する方法
+CvPoint offset         //輪郭データをシフトする量
+);
+これにより、CvMemStorage構造体とCvSeq構造体に輪郭情報が保存されます。modeによって輪郭のとり方が変わります。モードに関しては以下の表にまとめます。
+定数
+意味
+輪郭の抽出 | プログラミング講座 JProgramer

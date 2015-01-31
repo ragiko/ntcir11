@@ -1,0 +1,261 @@
+22.1 Commandパターンとは
+第22章ではCommandパターンを学びます。あるオブジェクトに対して要求を送るということは、そのオブジェクトのメソッドを呼び出すことと同じです。 そして、メソッドにどのような引数を渡すか、ということによって要求の内容は表現されます。さまざまな要求を送ろうとすると、引数の数や種類を増やさなければなりませんが、 それには限界があります。そこで要求自体をオブジェクトにしてしまい、そのオブジェクトを引数に渡すようにします。それがCommandパターンです。
+Commandパターンは、要求をCommandオブジェクトにして、それらを複数組み合わせて使えるようにするパターンです。
+22.2 サンプルケース
+理科の授業で、「水100gに食塩は何g溶けるか」という飽和食塩水の実験を行うことにしました。手順は以下のとおりです。
+水100gに食塩を1gずつ加えて飽和食塩水を作る実験
+ビーカーに水を100g入れる
+ビーカーに食塩を1g入れる
+かき混ぜる
+完全に溶ければ、2に戻る
+食塩が溶け残ったら、そのときの水量、食塩量、濃度を記録する
+また、「食塩10gをすべて溶かすには水は何g必要か」という実験も行います。手順は以下のとおりです。
+食塩10gに水を10gずつ加えて飽和食塩水を作る実験
+ビーカーに食塩を10g入れる
+ビーカーに水を10g入れる
+かき混ぜる
+完全に溶けなければ、2に戻る
+食塩が完全に溶けたら、そのときの水量、食塩量、濃度を記録する
+生徒全員に実験方法を記述させるのは大変なので、実験方法が載っている実験セットを用意し、それを生徒に渡し、実験させることにします。 この実験をソースコードにすると、以下のような感じになります。
+//実験セット 
+public class Beaker { 
+private double water = 0; //水 
+private double salt = 0; //食塩 
+private boolean melted; //食塩がすべて溶けたときtrue、溶け残ったときfalse 
+public static final int ADD_SALT = 1; //食塩を加えて、かき混ぜる場合 
+public static final int ADD_WATER = 2; //水を加えて、かき混ぜる場合 
+//コンストラクタ 
+public Beaker(double water, double salt) { 
+this.water = water; 
+this.salt = salt; 
+this.mix();//かき混ぜる 
+} 
+//各実験を行うメソッド 
+public void experiment(int param) { 
+if (param == ADD_SALT) { 
+//食塩を1gずつ加えて飽和食塩水を作る実験をする場合 
+//完全に溶けている間は食塩を加える 
+while (isMelted()) { 
+this.addSalt(1); //食塩を1g入れる 
+this.mix(); //かき混ぜる 
+} 
+//実験結果をノートに記述する 
+System.out.println("食塩を1gずつ加える実験"); 
+this.note(); 
+} else if (param == ADD_WATER) { 
+//水を10gずつ加えて飽和食塩水を作る実験をする場合 
+//溶け残っている間は水を加える 
+while (!isMelted()) { 
+this.addWater(10); //水を10g入れる 
+this.mix(); //かき混ぜる 
+} 
+//実験結果をノートに記述する 
+System.out.println("水を10gずつ加える実験"); 
+this.note(); 
+} 
+} 
+//ビーカーに食塩を入れるメソッド 
+public void addSalt(double salt) { 
+this.salt += salt; 
+} 
+//ビーカーに水を入れるメソッド 
+public void addWater(double water) { 
+this.water += water; 
+} 
+//かき混ぜるメソッド 
+public void mix() { 
+//溶液をかき混ぜる 
+//溶けたか溶け残ったかをセットする
+//常温での飽和食塩水の濃度は約26.4%
+if((this.salt / (this.salt+this.water))*100 
+//実験する生徒 
+public class Student { 
+public static void main(String[] args) { 
+//水100gに食塩を1gずつ加えて飽和食塩水を作る実験 
+Beaker beaker = new Beaker(100,0); 
+beaker.experiment(Beaker.ADD_SALT); 
+//食塩10gに水を10gずつ加えて飽和食塩水を作る実験 
+Beaker beaker2 = new Beaker(0,10); 
+beaker2.experiment(Beaker.ADD_WATER); 
+} 
+}
+ここで、濃度10%の食塩水100gを作る実験を追加で行いたいとすると、実験セットクラスの実験を行うメソッドを以下のように修正しなければなりません。
+//実験セット
+public class Beaker {
+・・・
+public static final int MAKE_SALT_WATER = 3; //食塩水を作る場合
+//各実験を行うメソッド
+public void experiment(int param) {
+if (param == ADD_SALT) {
+・・・
+} else if (param == ADD_WATER) {
+・・・
+} else if (param == MAKE_SALT_WATER) {
+//食塩水を作る実験
+this.mix();
+//濃度をはかり、ノートに記述する
+System.out.println("食塩水を作る実験");
+this.note();
+}
+}
+・・・
+//実験する生徒
+public class Student {
+public static void main(String[] args) {
+・・・
+//10%の食塩水100gを作る実験
+Beaker beaker3 = new Beaker(90,10);
+beaker3.experiment(Beaker.MAKE_SALT_WATER);
+}
+}
+行いたい実験の種類を増やすと、呼び出す生徒クラスを修正するだけでなく、呼び出される実験セットクラスの実験部分にelse ifを追加する必要があります。また、それに対応するパラメータの種類も増やさなければなりません。これでは拡張性が良いとは言えません。
+そこで、実験の内容をint値で表すような方法はやめて、実験そのものを1つのCommandオブジェクトに含ませ、そのオブジェクトごと引数に渡す方法を考えます。実験内容、つまりCommandオブジェクトに共通のインターフェースを持たせることにより、実験セットクラスは、どんな種類の実験内容(Commandオブジェクト)を受け取っても、共通の実験を行うメソッドを実行すれば良いことになります。これがCommandパターンです。Commandパターンを適用した場合、クラス図は以下のようになります。
+実際に、上記実験のソースコードを記述してみます。
+//実験セット 
+public class Beaker { 
+private double water = 0; //水 
+private double salt = 0; //食塩 
+private boolean melted = true; //食塩がすべて溶けたときtrue、溶け残ったときfalse 
+//コンストラクタ 
+public Beaker(double water, double salt) { 
+this.water = water; 
+this.salt = salt;
+this.mix();//かき混ぜる
+} 
+//ビーカーに食塩を入れるメソッド 
+public void addSalt(double salt) { 
+this.salt += salt; 
+} 
+//ビーカーに水を入れるメソッド 
+public void addWater(double water) { 
+this.water += water; 
+} 
+//かき混ぜるメソッド 
+public void mix() { 
+//溶液をかき混ぜる 
+//溶けたか溶け残ったかをセットする
+//常温での飽和食塩水の濃度は約26.4%
+if((this.salt / (this.salt+this.water))*100 
+下記は実験内容を表すクラスの共通インターフェースを提供するスーパークラスです。
+//実験コマンドのスーパークラス 
+public abstract class Command { 
+//ビーカー 
+protected Beaker beaker; 
+//ビーカーをセットするメソッド 
+public void setBeaker(Beaker beaker) {
+this.beaker = beaker; 
+} 
+//要求内容を実行する抽象メソッド 
+public abstract void execute(); 
+} 
+そして、以下が実際の実験内容を表すクラス、すなわちこれらのインスタンスがCommandオブジェクトとなります。
+//食塩を1gずつ加える実験のコマンドクラス 
+public class AddSaltCommand extends Command { 
+public void execute() { 
+//食塩を1gずつ加えて飽和食塩水を作る実験をする場合 
+//完全に溶けている間は食塩を加える 
+while (beaker.isMelted()) { 
+beaker.addSalt(1); //食塩を1g入れる 
+beaker.mix(); //かき混ぜる 
+} 
+//実験結果をノートに記述する 
+System.out.println("食塩を1gずつ加える実験"); 
+beaker.note(); 
+} 
+} 
+//水を10gずつ加える実験のコマンドクラス 
+public class AddWaterCommand extends Command { 
+public void execute() { 
+//水を10gずつ加えて飽和食塩水を作る実験をする場合 
+//溶け残っている間は水を加える 
+while (!beaker.isMelted()) { 
+beaker.addWater(10); //水を10g入れる 
+beaker.mix(); //かき混ぜる 
+} 
+//実験結果をノートに記述する 
+System.out.println("水を10gずつ加える実験"); 
+beaker.note(); 
+} 
+}
+//食塩水を作る実験のコマンドクラス
+public class MakeSaltWaterCommand extends Command {
+public void execute() {
+//食塩水を作る実験
+beaker.mix();
+//濃度をはかり、ノートに記述する
+System.out.println("食塩水を作る実験");
+beaker.note();
+}
+}
+そして、実験を行う生徒です。生徒は実験内容(Commandオブジェクト)を用意し、それらを実行します。
+//実験する生徒 
+public class Student { 
+public static void main(String[] args) { 
+//実験内容(コマンドオブジェクト)を用意する 
+Command addSalt = new AddSaltCommand(); 
+Command addWater = new AddWaterCommand(); 
+Command makeSaltWater = new MakeSaltWaterCommand(); 
+//実験セットを実験内容にセットする 
+addSalt.setBeaker(new Beaker(100,0));//水100gの入ったビーカーをセットする 
+addWater.setBeaker(new Beaker(0,10));//食塩10gの入ったビーカーをセットする 
+makeSaltWater.setBeaker(new Beaker(90,10));
+//水90g、食塩10gの入ったビーカーをセットする 
+//実験を行う 
+addSalt.execute(); //食塩を加えて飽和食塩水を作る実験 
+addWater.execute(); //水を加えて飽和食塩水を作る実験 
+makeSaltWater.execute(); //10%の食塩水100gを作る実験 
+} 
+}
+Commandパターンを適用すると、実験セットのソースコードを変更しなくても、いろいろな実験を追加することができます。また、既存の実験内容を組み合わせて、新たな実験を作ることも可能です。新しい実験内容のexecuteメソッド内に、既存の実験内容のexecuteメソッドを記述すれば、新しい実験内容が実行された際、記述した順に既存の実験内容も実行されます。これにより、再利用性も高くなります。
+実習課題1
+濃度10%の食塩水100gを用意し、食塩を1gずつ加えていき、飽和濃度に達するには何gの食塩が必要か、という実験を追加することになりました。この実験をCommandパターンを利用し、実装しなさい。(MakeSaltWaterCommandクラスとAddSaltCommandクラスを利用すること)
+解答例
+追加する実験のコマンドクラスを用意します。
+import java.util.*;
+//実験コマンドクラス 
+public class MakeSaltWaterAddSaltCommand extends Command { 
+//実験リスト 
+private List<Command> commands = new LinkedList<Command>(); 
+//実験を実行するメソッド 
+public void execute() { 
+Iterator<Command> iterator = commands.iterator(); 
+//実験リストの実行 
+Command command = null; 
+while(iterator.hasNext()){ 
+command = iterator.next(); 
+command.execute(); 
+} 
+//実験結果をノートに記述する 
+System.out.println("食塩水を作り、それに食塩を1gずつ加えて飽和食塩水を作る実験"); 
+beaker.note(); 
+} 
+//実験リストに追加するメソッド 
+public void addCommand(Command command){ 
+commands.add(command); 
+} 
+}         
+この実験コマンドを利用する生徒クラスを以下のように追加します。
+//実験する生徒 
+public class Student { 
+public static void main(String[] args) { 
+//実験内容(コマンドオブジェクト)を用意する 
+Command makeSaltWater = new MakeSaltWaterCommand(); 
+Command addSalt = new AddSaltCommand(); 
+MakeSaltWaterAddSaltCommand makeSaltWaterAddSalt 
+= new MakeSaltWaterAddSaltCommand(); 
+//実験セットを実験内容にセットする 
+Beaker beaker = new Beaker(90,10); 
+makeSaltWater.setBeaker(beaker); 
+addSalt.setBeaker(beaker); 
+makeSaltWaterAddSalt.setBeaker(beaker); 
+//実験リストをセットする 
+makeSaltWaterAddSalt.addCommand(makeSaltWater); 
+makeSaltWaterAddSalt.addCommand(addSalt); 
+//実験を行う 
+makeSaltWaterAddSalt.execute(); 
+} 
+}        
+そして、実験セットクラスは編集しなくても良いのです。
+22.3 Commandパターンまとめ
+Command パターンの一般的なクラス図は以下のようになります。
+22.Commandパターン | TECHSCORE(テックスコア)

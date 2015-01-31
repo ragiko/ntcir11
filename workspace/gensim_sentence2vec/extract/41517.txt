@@ -1,0 +1,16 @@
+
+true positive, false positive, true negative, false negative について
+概要
+情報検索において、あるクエリを投げた際に結果として出て来る文書は、そのクエリを満たす正解文書(relevant)と、そうでない不正解文書(not relevant)に分けられる。
+また、結果として出て来た文書(retrieved)と、出て来なかった文書(not retrieved)にも分けられる。
+こうした分類の中で、検索結果として出て来た文書の中で、さらにクエリを満たす正解文書であるものをtp(true positive)と言います。
+また、検索結果として出て来た文書の中で、クエリを満たさないのに出て来た不正解文書をfp(false positive)
+出て来なくて良い文書が、期待通り、検索結果に含まれていないことをtn(true negative)
+出て来て欲しい文書が、期待に反して、検索結果に含まれていないことをfn(false negative)という。
+もっと簡単に
+とにかく、「true = 正しい、false = 間違い、positive = 出て来た、negative = 出て来ない」を表している模様。
+上記概要の、relevant, not relevant, retrieved, not retrieved を使って表を作ると、以下のような関係に。
+relevant(正解文書)
+not relevant(不正解文書)
+retrieved(出て来た文書)
+true positive, false positive, true negative, false negative について

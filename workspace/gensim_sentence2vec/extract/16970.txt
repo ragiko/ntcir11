@@ -1,0 +1,69 @@
+皆さんが大好きなphp.netですが、個人的な間隔では年3、4回はアクセスできない時があるような気がします。
+また、新幹線の中でコード書いたりしていると時々ネットから切断されてphp.netにアクセスできない事がありますよね。
+そんな時に限って組み込み関数の引数を知りたいとか、組み込みクラスのメソッドや引数が知りたいなんてことがあるわけですよ。
+そんなとき便利なのが以下のコマンドというか、phpのオプションが「–rf」と「–rc」の二つになります。
+まずはオプションの説明を表示してみましょう。
+$ php -h | grep ".*-r\(c\|f\)"                                                                                                                                                                                                                                    -[~]
+--rf <name>      Show information about function <name>.
+--rc <name>      Show information about class <name>.
+みれば大体わかると思いますが「–rf」が組み込み関数の情報を表示してくれます。それに対して「–rc」は組み込みのクラスの情報をみることができます。
+じゃあ実際にどうつかうのか?
+関数の場合はこんな感じです。
+$ php --rf strstr                                                                                                                                                                                                                                                 -[~]
+Function [ <internal:standard> function strstr ] {
+- Parameters [3] {
+Parameter #0 [ <required> $haystack ]
+Parameter #1 [ <required> $needle ]
+Parameter #2 [ <optional> $part ]
+}
+}
+strstrはパラメータが3つ必要で、そのうち1番目、2番目の引数は必須である事がわかりますね。
+次にクラスの場合はこんな感じです。
+php --rc Exception                                                                                                                                                                                                                                              -[~]
+Class [ <internal:Core> class Exception ] {
+- Constants [0] {
+}
+- Static properties [0] {
+}
+- Static methods [0] {
+}
+- Properties [7] {
+Property [ <default> protected $message ]
+Property [ <default> private $string ]
+Property [ <default> protected $code ]
+Property [ <default> protected $file ]
+Property [ <default> protected $line ]
+Property [ <default> private $trace ]
+Property [ <default> private $previous ]
+}
+- Methods [10] {
+Method [ <internal:Core> final private method __clone ] {
+}
+Method [ <internal:Core, ctor> public method __construct ] {
+- Parameters [3] {
+Parameter #0 [ <optional> $message ]
+Parameter #1 [ <optional> $code ]
+Parameter #2 [ <optional> $previous ]
+}
+}
+Method [ <internal:Core> final public method getMessage ] {
+}
+Method [ <internal:Core> final public method getCode ] {
+}
+Method [ <internal:Core> final public method getFile ] {
+}
+Method [ <internal:Core> final public method getLine ] {
+}
+Method [ <internal:Core> final public method getTrace ] {
+}
+Method [ <internal:Core> final public method getPrevious ] {
+}
+Method [ <internal:Core> final public method getTraceAsString ] {
+}
+Method [ <internal:Core> public method __toString ] {
+}
+}
+}
+コンストラクタの引数、メソッド情報など比較的分かり易く表示されるかと思います。
+まあ昨今だとIDE使う人が多いので補完されるしいらないって言う人もいるかもしれませんが、ちょっとしたときに便利なのでぜひ覚えておくと良いかと思います。
+php.netにアクセスしなくても関数の引数情報とかクラスの情報を見る方法 - polidog lab++

@@ -1,0 +1,689 @@
+
+[ PrevPage | Python | NextPage ]
+はじめに
+今回はゴールへの距離 (またはコスト) が推定できる場合に有効な探索方法を紹介します。知識を用いて効率的に探索する方法を「ヒューリスティック探索 (heuristic search) 」といいます。8 パズルを例題にして、その代表的な方法である「山登り法 (hill-climbing method) 」と「最良優先探索 (best-first search) 」、最適解を求める方法として「A* アルゴリズム (A star algorithm) 」を説明します。
+山登り法
+ヒューリスティック探索の中で、最も簡単な方法の一つに「山登り法 (hill-climbing method) 」があります。山登り法はゴールの位置を山頂にたとえて、常にゴールに近づく方向 (山を登る方向) へ探索を進める方法です。ヒューリスティック探索を実装する場合、何らかの方法でゴールへの距離 (コスト) を求める必要があります。この値を「評価値」といい、評価値を計算する関数を「評価関数 (evaluation function) 」といいます。
+一般に、探索手法を用いて解く問題は正確な評価値を計算することが難しいので、適当な推定値を用いることになります。たとえば 8 パズルの場合、前回説明した駒の移動距離 (マンハッタン距離) を評価値として用いることができます。このほかに、ゴール状態の位置と一致している駒の枚数を用いることもできます。
+山登り法は次の状態を選ぶさいに、その中から最も評価値の高い状態を選びます。ようするに、山登り法のアルゴリズムは評価値を基準にした「欲張り法」になるのです。8 パズルの場合であれば、マンハッタン距離が最も小さい局面 (ゴールに近い局面) を選ぶことになります。
+問題によっては、現在の状態の評価値よりも高い評価値の状態を選んでいく (常に山を登っていく) 方法もあります。この場合、ゴール以外の場所に評価関数の極大値 (山頂ではなく丘みたいな場所) が存在すると、真のゴールにたどり着くことができなくなります。近似解を求める場合には、このような方法が用いられることもあります。
+ただし、8 パズルを解く場合、現局面よりもマンハッタン距離が少ない局面が見つからないと、そこで探索が行き詰ることになります。今回は次の局面の中から最もマンハッタン距離が少ない局面を選んでいくことにします。
+プログラムの作成
+山登り法は深さ優先探索で簡単にプログラムできます。次のリストを見てください。
+リスト : 山登り法
+def hill_climb_search(board, space, cost, history):
+if board == GOAL:
+for x in history: print x
+return True
+else:
+buff = []
+for x in adjacent[space]:
+p = board[x]
+b = board[:]
+b[space] = b[x]
+b[x] = 0
+if b in history: continue
+c = cost - distance[p][x] + distance[p][space]
+buff.append((b, x, c))
+# コストの小さい局面から選択する
+buff.sort(lambda x, y: x[2] - y[2])
+for b, x, c in buff:
+history.append(b)
+if hill_climb_search(b, x, c, history): return True
+history.pop()
+return False
+関数 hill_climb_search の引数 board は盤面、space は空き場所の位置、cost は board のマンハッタン距離、history は局面の履歴 (手順) です。8 パズルを深さ優先探索で解く場合、同一局面のチェックがないと同じ手順を何度も繰り返すことがあり、ゴールにたどり着くことができなくなります。history に局面を格納して、同一局面のチェックと手順の表示に使います。
+board が GOAL と等しい場合は、ゴールに到達したので手順 (history) を表示します。今回は解を一つ見つけたら処理を終了することにします。hill_climb_search の返り値が True の場合は、再帰呼び出しをしないで True を返します。探索を続ける場合は False を返します。
+探索を続ける場合、次の局面の中から最もコストの小さい局面を選びます。最初の for ループで新しい局面を生成して、局面、空き場所の位置、コストをタプル (b, x, c) にまとめて配列 buff にセットします。history に同一局面がある場合は buff に追加しません。
+そして、コストを基準にして buff をソートします。ここが山登り法のポイントです。これで、コストの少ない局面 (ゴールに近い局面) から順番に選択することができます。あとは、buff から局面 b、空き場所の位置 x、コスト c を取り出して、hill_climb_search を再帰呼び出しするだけです。このとき、history に局面 b をセットすることをお忘れなく。
+実行結果
+それでは実行してみましょう。前回と同様に最長手数の局面を解いてみます。
+b = [8,6,7,2,5,4,3,0,1]
+hill_climb_search(b, b.index(0), get_distance(b), [b])
+[8, 6, 7, 2, 5, 4, 3, 0, 1]
+[8, 6, 7, 2, 5, 4, 0, 3, 1]
+[8, 6, 7, 0, 5, 4, 2, 3, 1]
+・・・省略・・・
+[1, 2, 3, 4, 0, 6, 7, 5, 8]
+[1, 2, 3, 4, 5, 6, 7, 0, 8]
+[1, 2, 3, 4, 5, 6, 7, 8, 0]
+実行時間は 0.012 秒と高速ですが、求めた解の手数は 193 手にもなってしまいました。山登り法は、山頂が一つだけしかなく評価関数が良い道標になると効果がある方法です。8 パズルの場合、単純な山登り法で短い手数の解を求めるのは難しいと思います。
+最良優先探索
+次は最良優先探索 (best-first search) を説明します。山登り法は、現在の状態 A から次の状態 (B, C, D) を選ぶさいに、その中から最も評価値の高い状態を選びます。A の次の状態 (B, C, D) の中から選ぶので、局所的な状態に基づいて探索を進めることになります。これに対し、最良優先探索は大域的な状態に基づいて探索を進めます。
+最良優先探索は幅優先探索のように探索中の状態をすべて保持していて、その中から最も評価値の高い状態を選びます。最も高い評価値を選ぶこところは山登り法と同じですが、全体の中から状態を選択するので、極大値があっても探索の途中で行き詰ることはありません。
+ただし、探索中の状態を保持するためメモリの使用量はとても多くなります。また、幅優先探索と違って最初に見つかる解が最適解 (最短手数の解) である保障はありません。最適解を求める場合は、あとで説明する A* アルゴリズム (A star algorithm) の方が適しています。
+プログラムの作成
+それでは、プログラムを作りましょう。幅優先探索はキューを使うと簡単にプログラムすることができました。最良優先探索は、このキューを「プライオリティキュー (ヒープ) 」に変更することで実現できます。
+最初に、局面を表すクラス State1 を定義します。
+リスト : 局面の定義
+class State1:
+def __init__(self, board, space, prev):
+self.board = board
+self.space = space
+self.prev = prev
+if prev is None:
+self.cost = get_distance(board)
+else:
+p = board[prev.space]
+self.cost = prev.cost - distance[p][space] + distance[p][prev.space]
+def __cmp__(x, y):
+return x.cost - y.cost
+インスタンス変数 board は局面、space は空き場所の位置、prev は 1 手前の局面 (State1 のオブジェクト) を格納します。これは前回作成した幅優先探索のプログラムと同じです。State1 にはこのほかにコストを格納するインスタンス変数 cost を追加します。この値は board のマンハッタン距離です。prev が None の場合、前回作成した関数 get_distance でマンハッタン距離を求めます。
+prev が None でない場合は、1 手前の局面との差分を計算してマンハッタン距離を求めます。移動した駒は 1 手前の空き場所の位置にあるので、board[prev.space] で求めることができます。駒のマンハッタン距離は前回と同様に配列 distance に格納しておきます。すると、cost は prev.cost - distance[p][space] + distance[p][prev.space] となります。
+それから、比較演算子で State1 のオブジェクトを比較するために、メソッド __cmp__ を定義します。これで拙作のページ 二分木とヒープ で作成したプライオリティキュー (PQueue) を利用することができます。
+最良優先探索のプログラムは次のようになります。
+リスト : 最良優先探索
+def best_first_search(start):
+q = PQueue()
+q.push(State1(start, start.index(0), None))
+table ={}
+table[tuple(start)] = True
+while not q.isEmpty():
+a = q.pop()
+for x in adjacent[a.space]:
+b = a.board[:]
+b[a.space] = b[x]
+b[x] = 0
+key = tuple(b)
+if key in table: continue
+c = State1(b, x, a)
+if b == GOAL:
+print_answer(c)
+return
+q.push(c)
+table[key] = True
+拙作のページ 二分木とヒープ で作成したモジュール pqueue を import として、プライオリティキュー PQueue を使います。まず最初に PQueue() でプライオリティキューを生成して変数 q にセットします。次に、start の局面を生成してメソッド push でプライオリティキューに追加します。table は同一局面のチェックに使用する辞書です。
+次に、キューからデータをメソッド pop で取り出して変数 a にセットします。a はキュー全体の中で最もコストの低い局面 (最もゴールに近い局面) です。その次の for ループで、駒を動かして新しい局面を生成します。そして、table で同一局面をチェックして、新しい局面だけをキューに追加します。もし、局面が GOAL と等しい場合は print_answer で手順を表示して処理を終了します。そうでなければ、メソッド push でキューに追加し、table[key] に True をセットします。
+実行結果
+それでは実行してみましょう。
+best_first_search([8,6,7,2,5,4,3,0,1])
+[8, 6, 7, 2, 5, 4, 3, 0, 1]
+[8, 6, 7, 2, 5, 4, 3, 1, 0]
+[8, 6, 7, 2, 5, 0, 3, 1, 4]
+・・・省略・・・
+[1, 2, 0, 4, 5, 3, 7, 8, 6]
+[1, 2, 3, 4, 5, 0, 7, 8, 6]
+[1, 2, 3, 4, 5, 6, 7, 8, 0]
+最良優先探索の実行時間は山登り法と同様に高速ですが、見つけた手順は 47 手になりました。このように、最良優先探索は確かに効率的な探索方法ですが、そのアルゴリズムは欲張り法なので、必ずしも最適解 (最短手数の解) が見つかるとは限らないわけです。
+A* アルゴリズム
+最良優先探索は、大域的な状態の中から評価値の高い状態を選んで探索を進めますが、スタートから現在地点までのコストは考慮していません。これに対し、A* アルゴリズム (A star algorithm) は、現在地点に到達するまでのコストと、そこからゴールまでに推定されるコストに基づいて探索を進める方法です。このとき、ある条件を満たしていると、最初に見つけた解が最適解 (最小のコストの解) になります。
+ここで用語を定義しておきます。今まで説明した探索方法は、木またはグラフの探索と同じなので、状態や局面のことを「ノード」と呼ぶことにします。子ノードのことを「継続ノード」と呼び、あるノードで継続ノードを生成することを「ノードを展開する」といいます。あるノードで継続ノードが全て生成されているとき、「ノードが閉じている (CLOSE) 」といい、まだ未生成の継続ノードが残っているときは「開いている (OPEN) 」といいます。
+それでは A* アルゴリズムを説明します。たとえば、経路の探索においてスタートノードから現在ノード p までの最小コストを g(p) とし、p からゴールまでの最小コストを h(p) とすると、p 地点を通ってゴールにいたる経路のコストは次式で与えられます。
+f(p) = g(p) + h(p)
+一般に、スタートから p までのコスト g(p) は求めることができますが、h(p) の正確なコストは求めることができません。そこで、h(p) は推定値 h*(p) を用いることにします。そして、p を通ってゴールにいたる経路の推定値 f*(p) を次のように定義します。
+f*(p) = g(p) + h*(p)
+最小の推定値 f*(p) になるノードを選んで探索を進める方法を「A アルゴリズム」といいます。このとき、条件 h*(p) <= h(p) を満たしていると「A* アルゴリズム」になり、最初に見つけた解が最適解となります。
+OPEN なノードの集まりを OPEN-LIST, CLOSE なノードの集まりを CLOSE-LIST とすると、具体的なアルゴリズムは次のようになります。
+スタートノードを OPEN-LIST に追加。推定値 f*(p) は h*(p) とする。
+OPEN-LIST が空の場合は探索失敗。
+OPEN-LIST から最小の f*(p) となるノード p を取り出して CLOSE-LIST に移す。
+p がゴールノードであれば探索成功。
+ノード p を展開して、全ての継続ノード q i の推定値 f*(q i) を計算する。
+OPEN-LIST, CLOSE-LIST に含まれていない継続ノードを OPEN-LIST に追加する。
+継続ノードが OPEN-LIST に含まれていて、新しい推定値が元の推定値よりも小さい場合は、新しい推定値に更新する。
+継続ノードが CLOSE-LIST に含まれていて、新しい推定値が元の推定値よりも小さい場合は、新しい推定値に更新して CLOSE-LIST から OPEN-LIST へ移す。
+2 へ戻る
+A* アルゴリズムのプログラムは、OPEN-LIST, CLOSE-LIST に含まれているノードで、以前よりも小さなコストの経路が見つかったら、その値に更新して探索を続けるところがポイントです。
+プログラムの作成
+A* アルゴリズムの証明はあとにして、先にプログラムを作りましょう。最初に局面 (ノード) を表すクラス State2 を定義します。
+リスト : 局面の定義
+OPEN = 1
+CLOSE = 0
+class State2:
+def __init__(self, board, space, prev, move, kind = OPEN):
+self.board = board
+self.space = space
+self.prev = prev
+self.move = move
+if prev is None:
+self.cost = move + get_distance(board)
+else:
+p = board[prev.space]
+self.cost = prev.cost + 1 - distance[p][space] + distance[p][prev.space]
+self.kind = kind
+def __cmp__(x, y):
+return x.cost - y.cost
+最良優先探索で作成した State1 に、手数を格納するインスタンス変数 move と、OPEN と CLOSE の種別を格納するインスタンス変数 kind を追加します。一度出現した局面は辞書 table にセットし、kind で OPEN と CLOSE を区別します。cost の値は "手数 + マンハッタン距離" になります。
+A* アルゴリズムのプログラムは次のようになります。
+リスト : A* アルゴリズム
+def a_star_search(start):
+q = PQueue()
+a = State2(start, start.index(0), None, 0)
+q.push(a)
+table ={}
+table[tuple(start)] = a
+while not q.isEmpty():
+a = q.pop()
+if a.kind == CLOSE: continue   # 廃棄オブジェクトのチェック
+for x in adjacent[a.space]:
+b = a.board[:]
+b[a.space] = b[x]
+b[x] = 0
+key = tuple(b)
+if key in table:
+# 同一局面がある
+c = table[key]
+# マンハッタン距離は同じだから手数を比較すればよい
+if c.move > a.move + 1:
+# 更新する
+if c.kind == OPEN:
+c.kind = CLOSE                  # 廃棄する
+c = State2(b, x, a, a.move + 1) # 新しいオブジェクト
+table[key] = c                  # 書き換え
+else:
+c.prev = a
+c.cost = c.cost - c.move + a.move + 1
+c.move = a.move + 1
+c.kind = OPEN
+# キューに追加
+q.push(c)
+else:
+c = State2(b, x, a, a.move + 1)
+if b == GOAL:
+print_answer(c)
+return
+q.push(c)
+table[key] = c
+# a の子ノードは展開済み
+a.kind = CLOSE
+OPEN-LIST には最良優先探索と同様にプライオリティキューを使います。ただし、プライオリティキューは同一局面のチェックに利用できないので、一度出現した局面は辞書 table にセットし、State2 のインスタンス変数 kind でノードの種別 (OPEN or CLOSE) を区別します。
+プログラムの基本的な骨格は最良優先探索と同じです。キューから最小コストのノードを取り出し、駒を動かして新しい局面を生成します。そして、新しい局面をキューと table に追加します。table にセットするデータは True ではなく、State2 のオブジェクトをセットすることに注意してください。。
+ポイントは新しい盤面 b と同じ局面が見つかった場合です。table から同一局面 c を取り出します。同じ局面なのでマンハッタン距離も同じです。したがって、手数の少ない方がコストの少ない局面になります。b の手数は a.move + 1 なので、この値が c.move よりも小さい場合は局面 c の値を更新します。
+c,kind が CLOSE の場合は、値を更新してキューに追加するだけなので簡単です。問題は c.kind が OPEN の場合です。c の値を直接書き換えると、キュー (ヒープ) を再構築する必要があります。実は、この処理に時間がかかるのです。キューから c を見つけて、ヒープの関係を満たすように修正する方法もありますが、今度はヒープから c を探索する処理に時間がかかります。
+そこで、オブジェクト c を廃棄して、新しい State2 オブジェクトをヒープに追加することにします。廃棄方法は簡単で、c.kind を CLOSE にするだけです。ヒープからデータを取り出すとき、kind をチェックして CLOSE ならばスキップするようにします。実際に試してみると、ヒープを再構築するよりも、こちらの方が高速になりました。
+実行結果
+それでは実行してみましょう。
+a_star_search([8,6,7,2,5,4,3,0,1])
+[8, 6, 7, 2, 5, 4, 3, 0, 1]
+[8, 6, 7, 2, 5, 4, 3, 1, 0]
+[8, 6, 7, 2, 5, 0, 3, 1, 4]
+[8, 6, 0, 2, 5, 7, 3, 1, 4]
+[8, 0, 6, 2, 5, 7, 3, 1, 4]
+[8, 5, 6, 2, 0, 7, 3, 1, 4]
+[8, 5, 6, 2, 1, 7, 3, 0, 4]
+[8, 5, 6, 2, 1, 7, 3, 4, 0]
+[8, 5, 6, 2, 1, 0, 3, 4, 7]
+[8, 5, 0, 2, 1, 6, 3, 4, 7]
+[8, 0, 5, 2, 1, 6, 3, 4, 7]
+[8, 1, 5, 2, 0, 6, 3, 4, 7]
+[8, 1, 5, 0, 2, 6, 3, 4, 7]
+[8, 1, 5, 3, 2, 6, 0, 4, 7]
+[8, 1, 5, 3, 2, 6, 4, 0, 7]
+[8, 1, 5, 3, 2, 6, 4, 7, 0]
+[8, 1, 5, 3, 2, 0, 4, 7, 6]
+[8, 1, 5, 3, 0, 2, 4, 7, 6]
+[8, 1, 5, 0, 3, 2, 4, 7, 6]
+[0, 1, 5, 8, 3, 2, 4, 7, 6]
+[1, 0, 5, 8, 3, 2, 4, 7, 6]
+[1, 5, 0, 8, 3, 2, 4, 7, 6]
+[1, 5, 2, 8, 3, 0, 4, 7, 6]
+[1, 5, 2, 8, 0, 3, 4, 7, 6]
+[1, 5, 2, 0, 8, 3, 4, 7, 6]
+[1, 5, 2, 4, 8, 3, 0, 7, 6]
+[1, 5, 2, 4, 8, 3, 7, 0, 6]
+[1, 5, 2, 4, 0, 3, 7, 8, 6]
+[1, 0, 2, 4, 5, 3, 7, 8, 6]
+[1, 2, 0, 4, 5, 3, 7, 8, 6]
+[1, 2, 3, 4, 5, 0, 7, 8, 6]
+[1, 2, 3, 4, 5, 6, 7, 8, 0]
+見つけた手順は 31 手になりました。確かに最短手数の手順を見つけることができました。生成した局面は全部で 12324 通り、実行時間は約 1 秒 (Windows XP, celeron 1.40 GHz, Python 2.4.2) でした。単純な幅優先探索よりも生成する局面数は少なくなるので、その分だけ実行時間も速くなります。もっとも、プライオリティーキューの操作は時間が少しかかるので、驚くほど高速にはなりません。それでも、ソートするよりは速くなります。
+アルゴリズムの証明
+それでは、A* アルゴリズムが最適解を与えることを証明してみましょう。
+最適解の経路上にある OPEN ノードを n とします。n の評価値 f(n) は h*(n) <= h(n) の条件により、最適解のコスト C 以下になります。
+f(n) = g(n) + h*(n) <= g(n) + h(n) = C
+最適解ではないゴールノード G の評価値は、最適解でないことにより値は C よりも大きくなります。
+f(G) > C
+このことにより、f(G) > f(n) が成り立つので、ノード G よりも先にノード n がOPEN-LIST から選ばれて展開されることになります。つまり、最適解が見つからない間は、非最適解のノード G は OPEN-LIST から決して選ばれることはありません。
+それから、もう一つ条件があります。もう気がついた方もいると思いますが、h*(n) <= h(n) を満たしてもコストが負になると、g(n) + h*(n) <= g(n) + h(n) は成立しません。A* アルゴリズムが成立するには、コストが非負であることが必須条件になります。ほかの分野に応用しようとするときには注意してください。
+双方向探索の A* アルゴリズム
+ところで、前回説明したスタートとゴールの双方向から探索する方法 (双方向探索) は A* アルゴリズムにも適用することができます。ゴールからスタート方向へ探索するときの評価関数を用意すれば、あとは双方向探索と同様にプログラムすることができます。8 パズルの場合、マンハッタン距離を求めるためのテーブル (距離表) を 2 つ用意すればいいでしょう。
+最初に、距離表を作成する関数 make_distance_table を作ります。次のリストを見てください。
+リスト : 距離表の作成
+def make_distance_table(board, wide):
+size = len(board)
+table = [[0] * size for _ in xrange(size)]
+for i in xrange(size):
+p = board[i]
+if p == 0: continue
+x1 = i / wide
+y1 = i % wide
+for j in xrange(size):
+x2 = j / wide
+y2 = j % wide
+table[p][j] += max(x1 - x2, x2 - x1)
+table[p][j] += max(y1 - y2, y2 - y1)
+return table
+# 距離を求める
+def get_distance(board, distance):
+v = 0
+for x in xrange(9):
+p = board[x]
+if p == 0: continue
+v += distance[p][x]
+return v
+引数 board は目標の盤面で、wide は盤面の幅です。作成する距離表は 2 次元配列 table[駒の種類][駒の位置] で表し、ここにマンハッタン距離をセットします。空き場所は関係ないので、table[0] はダミーとなります。変数 i は正しい駒の位置を表していて、p が駒の種類になります。変数 j が盤面の位置を表していて、i と j のマンハッタン距離を求めて、table[p][j] にセットします。最後に table を返します。それから、距離を求める関数 get_distance は、引数に盤面 board と距離表 distance を受け取るように修正します。
+次は局面を表すクラス State を定義します。次のリストを見てください。
+リスト : 局面の定義
+class State:
+def __init__(self, board, space, prev, move, dir, kind = OPEN):
+self.board = board
+self.space = space
+self.prev = prev
+self.move = move
+self.dir = dir
+self.kind = kind
+if dir == FORE:
+dt = start_distance
+else:
+dt = goal_distance
+if prev is None:
+self.cost = move + get_distance(board, dt)
+else:
+p = board[prev.space]
+self.cost = prev.cost + 1 - dt[p][space] + dt[p][prev.space]
+def __cmp__(x, y):
+return x.cost - y.cost
+インスタンス変数 dir に方向を表す値 (FORE or BACK) を格納します。スタートからゴール方向 (FORE) へ探索する場合は、距離表に start_distance を使います。ゴールからスタート方向 (BACK) へ探索する場合は goal_distance を使います。start_distance と goal_distance はグローバル変数として定義し、探索を行う関数 a_star_search でセットします。
+それでは、A* アルゴリズムで双方向探索を行う関数 a_star_search を作ります。次のリストを見てください。
+リスト : 双方向の A* アルゴリズム
+def a_star_search(start, goal):
+global start_distance, goal_distance
+q = PQueue()
+table ={}
+# スタートの登録
+start_distance = make_distance_table(goal, 3)
+a = State(start, start.index(0), None, 0, FORE)
+q.push(a)
+table[tuple(start)] = a
+# ゴールの登録
+goal_distance = make_distance_table(start, 3)
+a = State(goal, goal.index(0), None, 0, BACK)
+q.push(a)
+table[tuple(goal)] = a
+while not q.isEmpty():
+a = q.pop()
+if a.kind == CLOSE: continue   # 廃棄オブジェクト
+for x in adjacent[a.space]:
+b = a.board[:]
+b[a.space] = b[x]
+b[x] = 0
+key = tuple(b)
+if key in table:
+# 同一局面がある
+c = table[key]
+if a.dir != c.dir:
+# 発見
+if a.dir == FORE:
+print_answer(a)
+print_answer_goal(c)
+else:
+print_answer(c)
+print_answer_goal(a)
+return
+# 距離は同じだから手数を比較すればよい
+if c.move > a.move + 1:
+# 更新する
+if c.kind == OPEN:
+c.kind = CLOSE
+c = State(b, x, a, a.move + 1, a.dir)
+table[key] = c
+else:
+c.prev = a
+c.cost = c.cost - c.move + a.move + 1
+c.move = a.move + 1
+c.kind = OPEN
+# ヒープに追加
+q.push(c)
+else:
+c = State(b, x, a, a.move + 1, a.dir)
+q.push(c)
+table[key] = c
+# a の子ノードは展開済み
+a.kind = CLOSE
+リストは長いですが、処理内容はそれほど難しくありません。最初に、スタートのゴールの局面をキューに登録します。このとき、start_distance と goal_distance に距離表をセットします。FORE 方向の探索は目標が goal なので、make_distance_table に goal を渡して、その返り値を start_distance にセットします。逆に、BACK 方向の探索は目標が start なので、make_distance_table には start を渡して、goal_distance に返り値をセットします。
+あとは、同一局面を見つけたら方向 dir をチェックして、異なる値であれば解を見つけたことになります。関数 print_answer と print_answer_goal で手順を表示して処理を終了します。あとのプログラムは簡単なので説明は割愛いたします。詳細は プログラムリスト2 をお読みください。
+実行結果
+それでは実行してみましょう。
+a_star_search([8,6,7,2,5,4,3,0,1])
+[8, 6, 7, 2, 5, 4, 3, 0, 1]
+[8, 6, 7, 2, 5, 4, 0, 3, 1]
+[8, 6, 7, 0, 5, 4, 2, 3, 1]
+[8, 6, 7, 5, 0, 4, 2, 3, 1]
+[8, 6, 7, 5, 3, 4, 2, 0, 1]
+[8, 6, 7, 5, 3, 4, 2, 1, 0]
+[8, 6, 7, 5, 3, 0, 2, 1, 4]
+[8, 6, 0, 5, 3, 7, 2, 1, 4]
+[8, 0, 6, 5, 3, 7, 2, 1, 4]
+[8, 3, 6, 5, 0, 7, 2, 1, 4]
+[8, 3, 6, 0, 5, 7, 2, 1, 4]
+[8, 3, 6, 2, 5, 7, 0, 1, 4]
+[8, 3, 6, 2, 5, 7, 1, 0, 4]
+[8, 3, 6, 2, 5, 7, 1, 4, 0]
+[8, 3, 6, 2, 5, 0, 1, 4, 7]
+[8, 3, 0, 2, 5, 6, 1, 4, 7]
+[8, 0, 3, 2, 5, 6, 1, 4, 7]
+[0, 8, 3, 2, 5, 6, 1, 4, 7]
+[2, 8, 3, 0, 5, 6, 1, 4, 7]
+[2, 8, 3, 1, 5, 6, 0, 4, 7]
+[2, 8, 3, 1, 5, 6, 4, 0, 7]
+[2, 8, 3, 1, 5, 6, 4, 7, 0]
+[2, 8, 3, 1, 5, 0, 4, 7, 6]
+[2, 8, 3, 1, 0, 5, 4, 7, 6]
+[2, 0, 3, 1, 8, 5, 4, 7, 6]
+[0, 2, 3, 1, 8, 5, 4, 7, 6]
+[1, 2, 3, 0, 8, 5, 4, 7, 6]
+[1, 2, 3, 4, 8, 5, 0, 7, 6]
+[1, 2, 3, 4, 8, 5, 7, 0, 6]
+[1, 2, 3, 4, 0, 5, 7, 8, 6]
+[1, 2, 3, 4, 5, 0, 7, 8, 6]
+[1, 2, 3, 4, 5, 6, 7, 8, 0]
+当然ですが最短手数は 31 手になります。生成された局面数は 2077 個で、実行時間は 0.14 秒 (Windows XP, celeron 1.40 GHz, Python 2.4.2) になりました。A* アルゴリズムよりも局面数で約 1 / 6 になり、実行時間も約 7 倍と高速になりました。双方向探索は A* アルゴリズムでも高い効果を発揮するようです。
+参考文献
+[28-1] Leon Sterling, Ehud Shapiro, 『Prolog の技芸』, 共立出版, 1988
+[28-2] 石塚満, 『知識の表現と高速推論』, 丸善株式会社, 1996
+プログラムリスト1
+# coding: shift_jis
+#
+# eight.py : 8 Puzzle
+#
+#            Copyright (C) 2007 Makoto Hiroi
+#
+from pqueue import *
+# 隣接リスト
+adjacent = (
+(1, 3),       # 0
+(0, 2, 4),    # 1
+(1, 5),       # 2
+(0, 4, 6),    # 3
+(1, 3, 5, 7), # 4
+(2, 4, 8),    # 5
+(3, 7),       # 6
+(4, 6, 8),    # 7
+(5, 7)        # 8
+)
+# 距離
+distance = (
+(),
+(0, 1, 2, 1, 2, 3, 2, 3, 4),
+(1, 0, 1, 2, 1, 2, 3, 2, 3),
+(2, 1, 0, 3, 2, 1, 4, 3, 2),
+(1, 2, 3, 0, 1, 2, 1, 2, 3),
+(2, 1, 2, 1, 0, 1, 2, 1, 2),
+(3, 2, 1, 2, 1, 0, 3, 2, 1),
+(2, 3, 4, 1, 2, 3, 0, 1, 2),
+(3, 2, 3, 2, 1, 2, 1, 0, 1)
+)
+# 距離を求める
+def get_distance(board):
+v = 0
+for x in xrange(9):
+p = board[x]
+if p == 0: continue
+v += distance[p][x]
+return v
+#
+GOAL = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+SIZE = 181440
+##### 山登り法 #####
+def hill_climb_search(board, space, cost, history):
+if board == GOAL:
+for x in history: print x, get_distance(x)
+return True
+else:
+buff = []
+for x in adjacent[space]:
+p = board[x]
+b = board[:]
+b[space] = b[x]
+b[x] = 0
+if b in history: continue
+c = cost - distance[p][x] + distance[p][space]
+buff.append((b, x, c))
+# コストの小さい局面から選択する
+buff.sort(lambda x, y: x[2] - y[2])
+for b, x, c in buff:
+history.append(b)
+if hill_climb_search(b, x, c, history): return True
+history.pop()
+return False
+##### 最良優先探索 #####
+# 表示
+def print_answer(x):
+if x is not None:
+print_answer(x.prev)
+print x.board, x.cost
+# 局面の定義
+class State1:
+def __init__(self, board, space, prev):
+self.board = board
+self.space = space
+self.prev = prev
+if prev is None:
+self.cost = get_distance(board)
+else:
+p = board[prev.space]
+self.cost = prev.cost - distance[p][space] + distance[p][prev.space]
+def __cmp__(x, y):
+return x.cost - y.cost
+# 最良優先探索
+def best_first_search(start):
+q = PQueue()
+q.push(State1(start, start.index(0), None))
+table ={}
+table[tuple(start)] = True
+while not q.isEmpty():
+a = q.pop()
+for x in adjacent[a.space]:
+b = a.board[:]
+b[a.space] = b[x]
+b[x] = 0
+key = tuple(b)
+if key in table: continue
+c = State1(b, x, a)
+if b == GOAL:
+print_answer(c)
+return
+q.push(c)
+table[key] = True
+##### A* アルゴリズム #####
+OPEN = 1
+CLOSE = 0
+# 局面の定義
+class State2:
+def __init__(self, board, space, prev, move, kind = OPEN):
+self.board = board
+self.space = space
+self.prev = prev
+self.move = move
+if prev is None:
+self.cost = move + get_distance(board)
+else:
+p = board[prev.space]
+self.cost = prev.cost + 1 - distance[p][space] + distance[p][prev.space]
+self.kind = kind
+def __cmp__(x, y):
+return x.cost - y.cost
+# 探索
+def a_star_search(start):
+q = PQueue()
+a = State2(start, start.index(0), None, 0)
+q.push(a)
+table ={}
+table[tuple(start)] = a
+while not q.isEmpty():
+a = q.pop()
+if a.kind == CLOSE: continue   # 廃棄オブジェクトのチェック
+for x in adjacent[a.space]:
+b = a.board[:]
+b[a.space] = b[x]
+b[x] = 0
+key = tuple(b)
+if key in table:
+# 同一局面がある
+c = table[key]
+# マンハッタン距離は同じだから手数を比較すればよい
+if c.move > a.move + 1:
+# 更新する
+if c.kind == OPEN:
+c.kind = CLOSE                  # 廃棄する
+c = State2(b, x, a, a.move + 1) # 新しいオブジェクト
+table[key] = c                  # 書き換え
+else:
+c.prev = a
+c.cost = c.cost - c.move + a.move + 1
+c.move = a.move + 1
+c.kind = OPEN
+# キューに追加
+q.push(c)
+else:
+c = State2(b, x, a, a.move + 1)
+if b == GOAL:
+print_answer(c)
+return
+q.push(c)
+table[key] = c
+# a の子ノードは展開済み
+a.kind = CLOSE
+プログラムリスト2
+# coding: shift_jis
+#
+# eight1.py : 8 Puzzle (双方向の A* アルゴリズム)
+#
+#             Copyright (C) 2007 Makoto Hiroi
+#
+from pqueue import *
+import time
+# 隣接リスト
+adjacent = (
+(1, 3),       # 0
+(0, 2, 4),    # 1
+(1, 5),       # 2
+(0, 4, 6),    # 3
+(1, 3, 5, 7), # 4
+(2, 4, 8),    # 5
+(3, 7),       # 6
+(4, 6, 8),    # 7
+(5, 7)        # 8
+)
+# 定数
+OPEN = 0
+CLOSE = 1
+FORE = 0
+BACK = 1
+# 距離表の作成
+def make_distance_table(board, wide):
+size = len(board)
+table = [[0] * size for _ in xrange(size)]
+for i in xrange(size):
+p = board[i]
+if p == 0: continue
+x1 = i / wide
+y1 = i % wide
+for j in xrange(size):
+x2 = j / wide
+y2 = j % wide
+table[p][j] += max(x1 - x2, x2 - x1)
+table[p][j] += max(y1 - y2, y2 - y1)
+return table
+# 距離を求める
+def get_distance(board, distance):
+v = 0
+for x in xrange(9):
+p = board[x]
+if p == 0: continue
+v += distance[p][x]
+return v
+# 局面の定義
+class State:
+def __init__(self, board, space, prev, move, dir, kind = OPEN):
+self.board = board
+self.space = space
+self.prev = prev
+self.move = move
+self.dir = dir
+self.kind = kind
+if dir == FORE:
+dt = start_distance
+else:
+dt = goal_distance
+if prev is None:
+self.cost = move + get_distance(board, dt)
+else:
+p = board[prev.space]
+self.cost = prev.cost + 1 - dt[p][space] + dt[p][prev.space]
+def __cmp__(x, y):
+return x.cost - y.cost
+# 双方向の A* アルゴリズム
+def a_star_search(start, goal):
+global start_distance, goal_distance
+q = PQueue()
+table ={}
+# スタートの登録
+start_distance = make_distance_table(goal, 3)
+a = State(start, start.index(0), None, 0, FORE)
+q.push(a)
+table[tuple(start)] = a
+# ゴールの登録
+goal_distance = make_distance_table(start, 3)
+a = State(goal, goal.index(0), None, 0, BACK)
+q.push(a)
+table[tuple(goal)] = a
+while not q.isEmpty():
+a = q.pop()
+if a.kind == CLOSE: continue   # 廃棄オブジェクト
+for x in adjacent[a.space]:
+b = a.board[:]
+b[a.space] = b[x]
+b[x] = 0
+key = tuple(b)
+if key in table:
+# 同一局面がある
+c = table[key]
+if a.dir != c.dir:
+# 発見
+if a.dir == FORE:
+print_answer(a)
+print_answer_goal(c)
+else:
+print_answer(c)
+print_answer_goal(a)
+return
+# 距離は同じだから手数を比較すればよい
+if c.move > a.move + 1:
+# 更新する
+if c.kind == OPEN:
+c.kind = CLOSE
+c = State(b, x, a, a.move + 1, a.dir)
+table[key] = c
+else:
+c.prev = a
+c.cost = c.cost - c.move + a.move + 1
+c.move = a.move + 1
+c.kind = OPEN
+# ヒープに追加
+q.push(c)
+else:
+c = State(b, x, a, a.move + 1, a.dir)
+q.push(c)
+table[key] = c
+# a の子ノードは展開済み
+a.kind = CLOSE
+# 手順の表示
+def print_answer(x):
+if x is not None:
+print_answer(x.prev)
+print x.board
+def print_answer_goal(x):
+while x is not None:
+print x.board
+x = x.prev
+# 実行
+a = [8,6,7,2,5,4,3,0,1]
+goal = [1,2,3,4,5,6,7,8,0]
+s = time.clock()
+a_star_search(a, goal)
+e = time.clock()
+print "%.3f" % (e - s)
+Copyright (C) 2007 Makoto HiroiAll rights reserved.
+[ PrevPage | Python | NextPage ]
+Algorithms with Python / ヒューリスティック探索

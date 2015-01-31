@@ -1,0 +1,80 @@
+[1]パース処理
+クライアントから送られたSQL文の構文解析を行い「パースツリー」をつくります。この段階で構文エラーを検出します。
+テーブル名やカラム名が実在するか否かは問わないので「ローパースツリー(raw parse tree)」とも呼ばれます。
+[2]アナライズ処理
+パースツリーをもとに、テーブル名をOIDに変換するなどして「問い合わせツリー(query tree)」をつくります。
+テーブル名はシステムカタログpg_class、型名はpg_operatorなど、適宜システムカタログを検索します([])。
+また、例えば"SELECT * FROM tbl"のように"*"を使った場合には、実際のテーブルの列名で"SELECT col1,col2,... FROM tbl"のように置き換えます。
+より詳細に解説します。
+アナライズ処理はローパースツリーを基に以下のことを行います。
+システムカタログを検索してテーブル名や型などをOIDに変換
+例えばテーブル名はシステムカタログpg_class、型名はpg_operatorなど、適宜検索します。
+列名リストの補完
+例えば"SELECT * FROM tbl"のように"*"を使った場合、実際のテーブルの列名で"SELECT col1,col2,... FROM tbl"のように置き換えます。
+これらを経て、クエリツリーを作成します。
+なお、クエリツリーは以下の設定パラメータによってログに表示できます。 
+debug_print_parse = on			# パースツリーの表示
+debug_print_rewritten = on		# リライト後のパースツリーの表示
+debug_print_plan = on 			# 実行プランの表示
+debug_pretty_print = on
+実際のSQL文のクエリツリーを示します。
+まず、次のSELECT文のクエリツリーを図示します。
+SELECT a.aid, t.tid, t.tbalance 
+FROM pgbench_accounts AS a,
+pgbench_tellers AS t
+WHERE  t.tbalance = 1040 
+AND a.aid = t.tid	
+ORDER BY a.aid OFFSET 9 LIMIT 5;
+ログが表示するクエリツリーは文字列なので、ここでは見やすいように図形に直しています。
+完結した一つのSQL文は構造体Queryを根とするクエリツリーを作ります。
+ここで構造体QueryにはそのSQL文に関るすべての情報が保持されます。
+構造体Queryはsrc/include/nodes/parsenodes.hで定義されています。
+以下、構造体Queryが保持する要素のうち、重要なものを説明します。
+[1] RangeTableEntry RTE
+参照情報レンジテーブルエントリ(RTE)には以下のいずれかの情報が入ります。
+これはバージョンによって異なる。以下はバージョン9.1のものです。
+(1)RTE_RELATION		通常のリレーション。テーブル名とカラム名や別名など
+(2)RTE_SUBQUERY		FROM句の副問い合わせ
+(3)RTE_JOIN		結合タイプやレンジテーブル内のリレーションの位置とカラム位置を持つVarノードのリストなど
+(4)RTE_FUNCTION		FROM句の関数
+(5)RTE_VALUES		値
+(6)RTE_CTE		common table expr (with list element)	:
+rtekind=RTE_RELARIONならば、通常のテーブル、インデックス、シーケンス、ビュー、複合型、TOASTテーブル、外部テーブルのいづれかです。単純なSELECT文の場合はテーブル名とカラム名や別名、およびそれらに関わる各種情報から成ます。
+テーブル結合している場合は、各テーブル毎にリストが作成されます。
+2つのテーブルに関する情報はRangeTableEntryにリストとして連結して保持します。
+上図の(2)にあたる部分がテーブルpgbench_accounts、(3)の部分がpgbench_tellersの情報を保持しています。
+なお、このSELECT文はテーブルに別名(alias)を定義しているので、それらの情報も保持します。
+また、JOIN TREE部には2つのテーブルへの参照が連結され、
+WHERE句の2つの条件句も連結されています。
+RTEの定義はsrc/include/nodes/parsenodes.hの構造体RangeTblEntryで定義されています。
+[2] TargetList
+ターゲットリストは、問い合わせ結果の定義情報TargetEntryノードから成ります。
+SQL文によって内容が異なる。具体的には次のとおりです。
+SELECT	:SELECT句で表示するカラムのデータ
+INSERT	:VALUES()句に設定された挿入するデータ
+UPDATE	:SET col=val,... など、SET句に設定された更新データ
+DELETE	: なし
+例えば、先のSELECT文は"aaid, t.tid, t.tbalance"の3つの項目を表示するので、
+上図(1)の部分であるターゲットリストには、3つのターゲットエントリが含まれます。
+構造体TargetEntryはsrc/include/nodes/primnodes.hで定義されています。
+ソースコードで構造体の定義が改善されたため、
+IK15-parser2_060330.pdf
+は多少読み替えしなければなりません。具体的にはResdomという構造体は廃止され、TargetEntryに統合されました。
+resnoフィールドは、SELECT文では結果の並び順を示します。
+INSERT文とUPDATE文ではテーブル内のカラムの位置を示します。
+[3]JoinTree
+JoinTreeはSELECT文のみで、FROM句とWHERE句の検索条件を記録するノードから成ます。
+上図の(4)と(5)に当る部分です。
+[4]その他
+ORDER BY句、OFFSET句、LIMIT句などはそれぞれ構造体Queryに直接保存されます。
+上図の(6)に当る部分です。
+次に、2つのサブクエリのパースツリーを図示します。
+SELECT aid, bid FROM pgbench_accounts WHERE aid IN (SELECT bid FROM pgbench_tellers WHERE bid = 1);
+SELECT a.aid, a.bid FROM (SELECT * FROM pgbench_accounts WHERE aid 
+上のサブクエリはFROM句部分にSELECT文があるので、
+親のquery構造体のRangeTableEntry部分に入れ子になったSELECT文のquery構造体が連結された形になります。
+下のサブクエリは入れ子のSELECT文がWHERE句にあるので、
+親のquery構造体のJoin Tree(FromExpr)部分に入れ子のSELECT文のquery構造体が連結されます。
+サブクエリがFROM句にあるが、FromExprに連結されるわけではありません。名称に惑わされないようにしてください。
+このように、例え何重の入れ子になったサブクエリであっても、その都度query構造体が定義され、クエリツリーが定義できます。
+PostgreSQL関連情報

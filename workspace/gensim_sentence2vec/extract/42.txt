@@ -1,0 +1,44 @@
+scikit-learnCross ValidationとGrid Searchをやってみた。
+Cross Validation
+詳しいことはWikipediaに書いてある。
+Cross Validationはモデルの妥当性を検証する方法のひとつ。一般的に開発用のデータは訓練データと検証データに分かれる。
+しかし、このまま行ってしまうと折角の訓練データが減ってしまうことになる上に、訓練データの選び方によって汎化性能が下がってしまう可能性がある。
+Wikipediaに書いてあるもののホールド・アウト検定がこれに当たる。一般にはこれはCross Validationにはあたらない。
+ここに書いてあるK-分割交差検定がこれに当たる。K-分割交差検定では開発用のデータをK個に分割しK-1個を訓練用に、残りの一つを検証用に使いモデルの正当性を計算する。
+これにより使える訓練データが増えると同時に、これらを訓練データを変えることにより、汎化性能を上げることができる。
+scikit-learnで具体的にどのように行うのか書いてみた。訓練に使ったデータとしてはKaggleのData Science Londonで出されているものを用いた。
+SVM
+まずは単純にサポートベクターマシンでクラス分けをさせた時のコード
+# -*- coding: utf-8 -*-
+import os
+import sys
+from sklearn import svm
+import numpy as np
+import csv
+if __name__ == "__main__":
+train_feature_file = np.genfromtxt(open("../data/train.csv", "rb"), delimiter=",", dtype=float)
+train_label_file = np.genfromtxt(open("../data/trainLabels.csv", "rb"), delimiter=",", dtype=float)
+train_features = []
+train_labels = []
+for train_feature, train_label in zip(train_feature_file, train_label_file):
+train_features.append(train_feature)
+train_labels.append(train_label)
+train_features = np.array(train_features)
+train_labels = np.array(train_labels)
+clf = svm.SVC(C=100, cache_size=200, class_weight=None, coef0=0.0, degree=3,gamma=0.001, kernel="rbf", max_iter=-1, probability=False,random_state=None, shrinking=True, tol=0.001, verbose=False)
+clf.fit(train_features, train_labels)
+test_feature_file = np.genfromtxt(open("../data/test.csv", "rb"), delimiter=",", dtype=float)
+test_features = []
+print "Id,Solution"
+i = 1
+for test_feature in test_feature_file:
+print str(i) + "," + str(int(clf.predict(test_feature)[0]))
+i += 1
+def get_score(clf, train_features, train_labels):
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(train_features, train_labels, test_size=0.4, random_state=0)
+clf.fit(X_train, y_train)
+print clf.score(X_test, y_test) 
+cross_validation.train_test_splitは一定の割合が検証用データとなるように開発用データを分割する関数。この場合はtest_size=0.4を指定したので、40%のデータを検証用として使うことになる。
+fitが60%の訓練データで行うもので、scoreが残された40%のデータで検証を行いその正答率を出してくれる。これがこのモデルの、このテストデータにおける正当性となる。もちろんこれが高ければ高いほどよいが
+汎化性能が高いかどうかはここからでは読み取ることができない。そのためK分割を行うことでK回の検証を行うことができる。これらのスコアを平均することで汎化性能も含めたモデルの正当性を表すことができる。
+Python - scikit-learnでCross Validation - Qiita

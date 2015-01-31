@@ -1,0 +1,304 @@
+
+使用例:クロネッカー積、固有値、外積
+# クロネッカー積
+> B = matrix(rep(1,6),2,3)
+> A %x% B
+[,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    1    1    1    3    3    3
+[2,]    1    1    1    3    3    3
+[3,]    2    2    2    4    4    4
+[4,]    2    2    2    4    4    4
+# 固有値、固有ベクトル
+> eigen(A)
+$values
+[1]  5.3722813 -0.3722813
+$vectors
+[,1]       [,2]
+[1,] -0.5657675 -0.9093767
+[2,] -0.8245648  0.4159736
+# 検算、1列目が第一固有値の右固有ベクトルになっている
+> A %*% eigen(A)$vectors[,1]
+[,1]
+[1,] -3.039462
+[2,] -4.429794
+> eigen(A)$values[1] * eigen(A)$vectors[,1]
+[1] -3.039462 -4.429794
+# 外積
+> outer(c(1,-1),c(2,3), function(x,y){x+y})
+[,1] [,2]
+[1,]    3    4
+[2,]    1    2
+# 外積を使って2変数関数の3次元グラフを描く
+x = y = seq(-3, 3, length=60)
+rho = 0.8
+norm3D = function(x, y){exp(-(x^2-2*rho*x*y+y^2)/2/(1-rho^2))/2/pi/sqrt(1-rho^2)}
+z = outer(x, y, norm3D)
+par(bg="white")
+persp(x, y, z, theta=30, phi=30, expand=0.5, col="lightblue")
+もどる
+データの並べ替え sort, rev, order
+ベクトルの場合
+sort関数はベクトルを昇順に並べる。rev関数は逆順に並べ替える。両者を合わせて使うと降順に並べることができる。
+> sample(10)
+[1] 10  9  2  4  5  6  7  3  1  8
+> sort(sample(10))
+[1]  1  2  3  4  5  6  7  8  9 10
+> rev(sort(sample(10)))
+[1] 10  9  8  7  6  5  4  3  2  1
+行列、データフレームの場合
+2次元データのある列の大きさを昇順に並べ替えるにはorder関数を使う。並べ替えのキーとなる列を指定してorder関数を適用すると、並び替えたときの行の番号のリストが生成されるので、それを列要素に指定してデータを表示させればよい。
+> (z = matrix(sample(15),3))
+)
+[,1] [,2] [,3] [,4] [,5]
+[1,]    3    7   12    9   13
+[2,]   15    4    1   14    5
+[3,]    8   10    6    2   11
+> z[order(z[,1]),]	# 一列目をキーとして昇順に並べ替える
+[,1] [,2]
+[,1] [,2] [,3] [,4] [,5]
+[1,]    3    7   12    9   13
+[2,]    8   10    6    2   11
+[3,]   15    4    1   14    5
+もどる
+条件を満たす配列要素の個数を数える(n, length, which, sum, mean)
+例題 絶対値がa以上になる正規乱数の個数を求める。条件を満たしているならば1、さもなければ0、という判定結果を合計すれば条件を満たす添え字の個数になる。
+こたえ1 普通に考えればfor文。
+a = 3; n = 10000; 
+x = rnorm(n)
+count = 0
+for(i int 1:n) if(abs(x[i]) > a) count = count + 1
+こたえ2 同じことをwhich() + length()関数を使って表現できる。which( )関数は条件を満たす添え字の集合を作る関数。length() はベクトルの大きさを計算する関数。
+a = 3; n = 10000; 
+length(which(abs(rnorm(n)) > a))
+length(n[abs(rnorm(n)) > a])		# これでもよいはず
+こたえ3 条件を満たしているならば1、さもなければ0、という判定結果をsum()関数を使って合計すれば、条件を満たす添え字の個数になり、mean()関数を使えば相対度数が計算できる。
+a = 3; n = 10000; 
+mean(abs(rnorm(n)) > a) * n		# sum関数ではうまく行かない??
+円周率推定のモンテカルロ法
+円周率を推定する
+n=10000; mean(runif(n)^2+runif(n)^2<1) * 4
+論理値は TRUE を1とするので、mean()関数を使えば、条件を満たす相対度数が計算出来る。
+おまけ:誤差を計算する場合は
+piMonteCarlo <- function (n) {
+zz = runif(n)^2+runif(n)^2 < 1   ### 論理値のベクトル
+return(c(mean(zz)*4, sd(zz)*4/sqrt(n)))
+}
+piMonteCarlo(100000)	# これで 3.138960000 0.005198843 などと表示される。
+配列の累積和を計算する(cumsum)
+{f[n]}が与えられたとき、F[n] = F[n-1]+f[n]によって累積和ベクトルを計算する
+ランダムウォークのサンプルパスを作る
+m = 1000; rw = sample(c(-1,1),m,replace=T)
+plot(c(0,cumsum(rw)),type="l")abline(0,0,col="red")
+m = 1000		## 同じことを for 文を使って実現
+x = c(0, sample(c(-1,1),1,replace=T))
+for(i in 2:(m+1)) x[i] = x[i] + x[i-1]
+plot(x, type="l")
+繰り返し実験(sapply, replicate)
+ある作業を繰り返す場合、for文と同じような働きをする関数として、sapply()関数、replicate関数がある。
+パラメータ p を使ってある作業 A を実行し、結果A(p)を得る、という計算を、p=p1,p2,...,pnについて行い、結果A(p1),A(p2),...,A(pn)をベクトルにまとめる、という命令を次のように書く
+sapply(c(p1,p2,...,pn), function(p) {A(p)})
+同一条件で繰り返す場合はreplicate関数が使える。
+replicate(n, A(p))
+例えば
+> sapply(c(1,2,3,4,5), function(x) {x^2})		# c(1,2,3,4,5)^2 と同じ、各要素ごとに2乗
+[1]  1  4  9 16 25
+> sapply(rep(1000,4), function(n) mean(rnorm(n)))	# 正規乱数1000個の平均値を4通り計算する
+[1]  0.02675481 -0.03500802 -0.01315011  0.01796544
+# 次のようにしても同じ
+> replicate(4, mean(rnorm(1000)))	# 正規乱数1000個の平均値を4通り計算する
+例題 表の確率が p のコインを n 回投げて相対度数を計算する、という実験を m 回繰り返して、平均値と誤差を見積もり、ヒストグラムを描く
+p = 0.3; n = 100; m = 1000
+xa <- sapply(rep(n, m), function(k) mean(sample(c(1,0),prob=c(p,1-p),k,replace=T)))
+c(mean(xa),sd(xa)/sqrt(m))
+hist(xa, freq=F)
+## xa <- の行は、次のfor文と同じ
+for(i in 1:m) { xa[i] = mean(sample(c(1,0),prob=c(p,1-p),n,replace=T))}
+繰り返し計算:apply
+2次元のデータ配列の各行、あるいは各列に同じ計算をさせるための命令
+apply(df, 2, mean)		# 2次元のデータフレームdfの列ごとに平均値を計算する
+apply(df, 1, max)		# 行毎に最大値を計算する
+apply(df, 2, table)		# 列ごとに度数分布を計算する
+もどる
+数学の計算
+最適化計算
+最適化 optim
+最小値を計算する関数として、optim がある。
+> f = function(x) x+1/x
+> optim(2, f)
+$par
+[1] 1
+$value
+[1] 2
+$counts
+function gradient 
+30       NA 
+$convergence
+[1] 0
+$message
+NULL
+警告メッセージ: 
+In optim(2, f) :  Nelder-Mead 法による一次元最適化は信頼できません: 
+"Brent" 法を用いるか optimize() を直接使ってください  
+最大値を計算する場合は、controlパラメータを設定することで対処するか、関数定義の符号を逆転させる。ただし、引数の関数名の前にマイナス符号を付ける書き方は認められない。
+> optim(3, dnorm, mean=5, sd=2, control=list(fnscale=-1))
+$par
+[1] 5.000098
+$value
+[1] 0.1994711
+...
+線形計画法 simplex(boot)
+線形計画法は boot ライブラリの simplex 関数を使う。「≦制約式」、「≧制約式」「=制約式」の順番に、(係数行列、定数ベクトル)のペアで指定する。
+> library(boot)
+> A = rbind(c(1,2),c(3,1))	// 制約式の係数行列
+> b = c(10,8)			// 制約式の定数ベクトル
+> c = c(1,1)				// 目的関数の係数ベクトル
+> simplex(c, A, b, maxi=T)
+Linear Programming Results
+Call : simplex(a = c, A1 = A, b1 = b, maxi = T)
+Maximization Problem with Objective Function Coefficients
+x1 x2 
+1  1 
+Optimal solution has the following values
+x1  x2 
+1.2 4.4 
+The optimal value of the objective  function is 5.6.
+> sm = simplex(c, A, b, maxi=T)	// 目的関数最大化
+> cat("F(",sm$soln[[1]],",",sm$soln[[2]], ") =",sm$value,"\n")
+F( 1.2 , 4.4 ) = 5.6 
+数理計画法 lp(lpSolve)
+整数計画法も解けるパッケージ lpSolve を使うにはインストールする必要がある。インストールがうまくいかない場合は、次を試すと良い(R のアイコンを右クリックして、プロパティを表示させ、「リンク先」のパラメータに「--internet2」を追加する)。
+> install.packages("lpSolve");
+パッケージを C:/Users/sakasegawa/Documents/R/win-library/2.15 中にインストールします  (lib が指定されていないので) 
+--- このセッションで使うために、CRANのミラーサイトを選んでください --- 
+URL 'http://cran.md.tsukuba.ac.jp/bin/windows/contrib/2.15/lpSolve_5.6.6.zip' を試しています 
+Content type 'application/zip' length 678244 bytes (662 Kb)
+開かれた URL 
+downloaded 662 Kb
+パッケージ lpSolve は無事に展開され、MD5 サムもチェックされました 
+ダウンロードされたパッケージは、以下にあります 
+C:\Users\sakasegawa\AppData\Local\Temp\Rtmp2lOMC5\downloaded_packages 
+> library(lpSolve)
+使い方は以下の通り
+> f.in = c(1,1)			# max (c,x), s.t. Ax ≦ b を解く
+> f.mat = rbind(c(1,2),c(3,1))	# = A
+> f.dir = c("<=", "<=")		# 「≦」
+> f.rhs = c(10,8)		# = b
+> soln = lp ("max", f.in, f.mat, f.dir, f.rhs)	## "min" がデフォルト
+> soln$solution
+[1] 1.2 4.4
+整数計画法ならば「all.int=TRUE」オプションを指定する。一部の変数だけの整数制約ならば、「int.vec=c(1,2,3)」のように、整数条件の変数の添え字を指定する。
+同じように、0-1計画問題ならば「all.bin=TRUE」オプションを指定する一部の変数だけが2値変数ならば「binary.vec」によって、添え字集合を指定する。
+0
+> f.in = c(10,6,3,8,6)
+> f.mat = matrix(c(5,3,2,3,4), nrow=1)		// 制約式一つでも必ずmatrix指定、ベクトル指定は不可
+> f.dir = "<="
+> f.rhs = 8
+> lp ("max", f.in, f.mat, f.dir, f.rhs, all.int=T)$solution	// 整数計画法
+[1] 0 0 1 2 0
+> lp ("max", f.in, f.mat, f.dir, f.rhs, all.bin=T)$solution	// 0-1 計画法
+[1] 1 0 0 1 0
+もどる
+方程式を解く uniroot, polyroot
+区間を与えて、その中の解を一つ計算する関数として uniroot がある。結果は、誤差や反復回数などの情報を合わせてリストで与えられる。
+> f = function(x) x^2-1
+> uniroot(f,c(0,2))
+$root
+[1] 0.9999997
+$f.root
+[1] -5.356504e-07
+$iter
+[1] 6
+$estim.prec
+[1] 6.535148e-05
+関数が多項式の場合は、すべての解を同時に求める関数として、polyroot がある。
+> polyroot(c(1,0,-2))
+[1]  0.7071068+0i -0.7071068+0i
+> round(polyroot(c(1,0,-1.5)), digit=4)
+[1]  0.8165+0i -0.8165+0i
+もどる
+定積分 integrate
+関数を定義してから、関数名を引数とする。無限は「Inf」と書く。結果は誤差評価とともにlistで返される。数式の中で使う場合は「$value」を付けて関数値だけ取り出す必要がある。
+関数定義を直接書き込む場合は、「function(x) { }」でくるむこと。関数定義の中に条件分岐を含めることはできない(らしい)。
+# 数値積分
+> f = function(x) x^2
+> integrate(f,0,2)				## integrate(function(x){x^2},0,2) と同じ
+2.666667 with absolute error < 3e-14
+> integrate(f,0,2)$value
+[1] 2.666667
+> integrate(dnorm, -2,2)
+0.9544997 with absolute error < 1.8e-11
+> g = function(t,mu=2) mu * exp(-mu*t)
+> integrate(g,0,Inf)			## 広義積分も計算できる
+1 with absolute error < 5e-07
+> integrate(g,mu=5,0,Inf)		## パラメータの指定の仕方
+1 with absolute error < 2.3e-06
+関数定義の中に条件分岐がある場合はうまくいかない。定義区間ごとに別の関数を定義して合わせる必要がある(ありそう)。ifelse関数が使えればそれを利用する。
+> g = function(t,mu=2) {
++ if(t > 0) return(mu * exp(-mu*t) / 2)
++ if(t <= 0) return(mu * exp(mu*t) / 2)
++ }
+> 
+> g(2)			// 計算だけならば受け付けられる
+[1] 0.01831564
+> g(-1)
+[1] 0.1353353
+> integrate(g,-2,2)
+27.28992 with absolute error < 3e-13		## 最初の関数だけを使って計算される
+警告メッセージ: 
+1: In if (t > 0) mu * exp(-mu * t)/2 :
+条件が長さが2以上なので,最初の一つだけが使われます 
+2: In if (t <= 0) mu * exp(mu * t)/2 :
+条件が長さが2以上なので,最初の一つだけが使われます 
+# 別々に定義
+> gp = function(t,mu=2) mu * exp(-mu*t) / 2		##  [0,Inf) で定義
+> gm = function(t,mu=2) mu * exp(mu*t) / 2		## (-Inf,0] で定義
+> plot(c(1), xlim=c(-2,2), ylim=c(0,1), type="n")
+> curve(gp(x), 0, 2, add=T)
+> curve(gm(x), -2, 0, add=T)
+> integrate(gp,0,Inf)
+0.5 with absolute error < 7.7e-05
+> integrate(gm,-Inf,0)
+0.5 with absolute error < 7.7e-05
+# この場合は、ifelseを使って次のように定義できる。
+g = function(t,mu=2) exp(ifelse(t>0,-1,1) * mu*t) * mu / 2
+> integrate(g,-2,2)
+0.9816844 with absolute error < 1.1e-14
+もどる
+再帰計算
+再帰的プログラムを利用することができる。次は、「ハノイの塔」パズルの解。
+hanoi = function(n,i,j) {
+if(n > 1) hanoi(n-1,i,6-i-j)
+B <<- c(B, paste("(",i,"->",j,")"))		# B はグローバル変数
+if(n > 1) hanoi(n-1,6-i-j,j)
+}
+B = c()
+hanoi(7,1,3)
+B
+連立方程式を解く solve
+連立方程式は、solve関数を使う。方程式の係数行列はrbind関数を使って、描く方程式の係数ベクトルを行列にまとめ、係数行列と定数ベクトルをsolveの引数とする。
+> A = rbind(c(-1,4,2), c(3,-2,1), c(1,1,1))
+> solve(A,c(0,0,1))
+[1]  1.6  1.4 -2.0
+# 係数行列だけを引数にすると、逆行列を計算する
+> solve(A)
+[,1] [,2] [,3]
+[1,] -0.6 -0.4  1.6
+[2,] -0.4 -0.6  1.4
+[3,]  1.0  1.0 -2.0
+# 検算
+> solve(A) %*% A
+[,1]          [,2]          [,3]
+[1,] 1.000000e+00 -2.220446e-16 -4.440892e-16
+[2,] 2.220446e-16  1.000000e+00 -2.220446e-16
+[3,] 0.000000e+00  0.000000e+00  1.000000e+00
+もどる
+グラフィックス
+ヒント
+定義した関数のグラフを描く、ifを使って定義される場合
+ハッチを付ける
+低水準グラフィックス
+軸、軸ラベルを表示しない
+plot関数のオプションとして、軸や軸ラベルなどを描かないオプションをまとめる。
+オプション
+意味
+Rのワザ

@@ -1,0 +1,99 @@
+メール交換機でのスパム排除: PrevAppendix A. Eximによる実装NextA.7. SPFの検査を追加する      ここでは、Eximを使ってSender Policy Framework
+レコードを検査する方法を2つ説明する。
+ここで説明する機構のほかに、
+SpamAssassin スイートには近いうちに (2.70版あたりで)、
+洗練されたSPF検査がとりいれられるはずだ。これは、
+さまざまなSPFの結果に重みづけのある得点を割り振れる。
+この検査を、acl_mail_from
+ACLのかなりはじめのほうで実施することもできたのだが
+この判断に影響を与える問題点がある: SPFは伝統的な電子メール転送と互換性がない。
+転送元のホストがSRSを実装していないかぎり、
+転送されてきたメールでも
+エンヴェロープ送信者アドレスのドメインのSPF方針によって送信を認証されていないホストから届いたという理由で拒否してしまうだろう。
+これを避けるために、
+転送されてきたメールを受け付けなければならないホストの一覧を、
+ユーザごとに参照する必要がある
+(以下の転送されてきたメールを通すで説明する)。
+これは、受信者のユーザ名がわかる
+RCPT TO: より後でのみ可能になる。
+そこで、acl_rcpt_to の中で、
+どのグレーリスト法や最後の
+accept 文よりも前に、この検査を追加する。
+A.7.1. Exiscan-ACLによるSPFの検査        Tom Kistner の Exiscan-ACL パッチ
+(必須事項を見てほしい) の最近の版には、
+組み込みのSPF対応がある[1]。
+使いかたはとても簡単だ。
+spf というACL条件が追加される。
+この条件の結果を pass、 fail、
+softfail、 none、
+neutral、 err_perm、
+err_temp といったキーワードで調べる。
+acl_rcpt_to で、
+すべてのグレーリスト法検査や最後の
+accept 文よりも前に、以下の断片を挿入する:
+# 送信者アドレスのドメインについてのSPF情報を問い合わせ, もしあれば,
+# 送信側のホストがそのメールの配送を認証されているか調べる.
+# 認証されていなければ, そのメールは拒否する.
+#
+deny
+message     = [SPF] $sender_host_address is not allowed to send mail \
+from $sender_address_domain
+log_message = SPF check failed.
+spf         = fail
+# メッセージに SPF-Received: ヘッダを追加する
+warn
+message     = $spf_received
+この文では、
+送信者アドレスのドメインの持ち主が呼出し側のホストからの配送を認めていなければ、
+そのメールを拒否する。
+ただこのやりかたは、ドメインの持ち主が公告する情報にいささか頼りすぎているため、
+必要なメールまで拒否してしまう場合もあるかもしれない。
+お勧めの対案は、SPF検査を送信者呼出し確認法のような他の検査と組み合わせることだ
+(だがその前に注意しておいてほしいが、
+外部へ行くメールをスマートホストを通じて送っているのなら、
+これはできない):
+# 送信者アドレスを呼出し確認できず, 送信側ドメインのSPF情報が送信側
+# のホストに明らかな権限を与えていなければ, メールを拒否する.
+#
+deny
+message     = The sender address does not seem to be valid, and SPF \
+information does not grant $sender_host_address explicit \
+authority to send メール from $sender_address_domain
+log_message = SPF check failed.
+!verify     = sender/callout,random,postmaster
+!spf        = pass
+# メッセージに SPF-Received: ヘッダを追加する
+warn
+message     = $spf_received
+A.7.2. Mail::SPF::Query によるSPFの検査        Mail::SPF::Query は、SPFの公式なテストスイートである。
+http://spf.pobox.com/downloads.html で手に入る。
+Debian ユーザなら、libmail-spf-query-perl
+をインストールする。
+Mail::SPF::Query パッケージには、デーモン
+(spfd) がついてくる。
+これはUNIXドメインソケットで要求をlistenする。
+残念ながら、このデーモンを自動的に開始させる "init"
+スクリプトはついてこない。
+そこで以下の例では、SPF要求をするのにスタンドアロンの
+spfquery ユーティリティを使う。
+上のように、以下のものを、acl_rcpt_to のどのグレーリスト法の検査よりも前、
+最後の accept 文より前に挿入する:
+# "spfquery" を使ってこの特定の送信者/ホストのSPF状況を得る.
+# このコマンドが返すコードが1なら, これは認証された送信者である.
+#
+deny
+message     = [SPF] $sender_host_address is not allowed to send mail \
+from $sender_address_domain.
+log_message = SPF check failed.
+set acl_m9  = -ipv4=$sender_host_address \
+-sender=$sender_address \
+-helo=$sender_helo_name
+set acl_m9  = ${run{/usr/bin/spfquery $acl_m9}}
+condition   = ${if eq {$runrc}{1}{true}{false}}
+Notes[1]            Debian ユーザ: 2004年7月14日の時点では、
+exim4-daemon-heavy パッケージに入っている
+Exiscan-ACL の版にはまだSPF対応がない。
+しばらくの間は、ほかのSPFの実装を使ってもいいだろう ---
+libmail-spf-query-perl をインストールする。
+PrevHomeNextグレーリスト法への対応を追加するUpMIMEとファイル型の検査を追加する
+    SPFの検査を追加する

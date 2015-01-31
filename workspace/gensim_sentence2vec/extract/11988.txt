@@ -1,0 +1,523 @@
+
+この文書はRFC3736の日本語訳(和訳)です。
+この文書の翻訳内容の正確さは保障できないため、
+正確な知識や情報を求める方は原文を参照してください。
+翻訳者はこの文書によって読者が被り得る如何なる損害の責任をも負いません。
+この翻訳内容に誤りがある場合、訂正版の公開や、
+誤りの指摘は適切です。
+この文書の配布は元のRFC同様に無制限です。
+Network Working Group                                           R. Droms
+Request for Comments: 3736                                 Cisco Systems
+Category: Standards Track                                     April 2004
+Stateless Dynamic Host Configuration Protocol (DHCP) Service for IPv6
+IPv6のための状態なし動的ホスト設定プロトコル(DHCP)サービス
+Status of this Memo
+この文書の状態
+This document specifies an Internet standards track protocol for the
+Internet community, and requests discussion and suggestions for
+improvements.  Please refer to the current edition of the "Internet
+Official Protocol Standards" (STD 1) for the standardization state
+and status of this protocol.  Distribution of this memo is unlimited.
+この文書はインターネット共同体のためのインターネット標準化作業中のプ
+ロトコルを指定して、そして改良のために議論と提案を求めます。標準化状
+態とこのプロトコル状態は「インターネット公式プロトコル標準」(STD
+1)の現在の版を参照してください。このメモの配布は無制限です。
+Copyright Notice
+著作権表示
+Copyright (C) The Internet Society (2004).  All Rights Reserved.
+Abstract
+概要
+Stateless Dynamic Host Configuration Protocol service for IPv6
+(DHCPv6) is used by nodes to obtain configuration information, such
+as the addresses of DNS recursive name servers, that does not require
+the maintenance of any dynamic state for individual clients.  A node
+that uses stateless DHCP must have obtained its IPv6 addresses
+through some other mechanism, typically stateless address
+autoconfiguration.  This document explains which parts of RFC 3315
+must be implemented in each of the different kinds of DHCP agents so
+that agent can support stateless DHCP.
+IPv6のためのステートレス動的ホスト設定プロトコル(DHCP)サー
+ビスは、個別のクライアントの動的状態維持を必要とせずに、ノードがDN
+S再帰ネームサーバアドレスのような設定情報を得るために、使われます。
+ステートレスDHCPを使うノードが何か他のメカニズム、一般にステート
+レスアドレス自動設定、を通してIPv6アドレスを得たに違いありません。
+この文書は、それぞれの異なる種類のDHCPエージェントで、ステートレ
+スDHCPをサポートするため、RFC3315のどの部分が実装されなけ
+ればならないかを示します。
+1.  Introduction
+1.  はじめに
+Nodes that have obtained IPv6 addresses through some other mechanism,
+such as stateless address autoconfiguration [6] or manual
+configuration, can use stateless DHCP to obtain other configuration
+information such as a list of DNS recursive name servers or SIP
+servers.  A stateless DHCP server provides only configuration
+information to nodes and does not perform any address assignment.
+Such a server is called "stateless" because it need not maintain any
+dynamic state for individual clients.
+何か他のメカニズム、ステートレスアドレス自動設定[6]や手動設定、を通し
+てIPv6アドレスを得たノードがDNS再帰ネームサーバやSIPサーバ
+リストのような他の設定情報を得るためにステートレスDHCPを使うこと
+ができます。ステートレスDHCPサーバがノードに設定情報だけを供給し、
+そしてアドレス割当てを行いません。このようなサーバは、個別のクライア
+ントの動的状態を維持する必要がないから、「ステートレス」と呼ばれます。
+While the DHCP specification [1] defines more than 10 protocol
+messages and 20 options, only a subset of those messages and options
+are required for stateless DHCP service.  This document explains
+which messages and options defined in RFC 3315 are required for
+stateless DHCP service.  The intended use of the document is to guide
+the interoperable implementation of clients and servers that use
+stateless DHCP service.
+DHCP仕様書[1]が10以上のプロトコルメッセージと20以上のオプショ
+ンを定義するが、これらのメッセージとオプションの一部だけがステートレ
+スDHCPサービスに必要とされます。この文書はRFC3315で定義さ
+れたどのメッセージとオプションがステートレスDHCPサービスに必要か
+説明します。文書の意図する利用法は、ステートレスDHCPサービスを使
+うクライアントとサーバの協調動作実装の指導です。
+The operation of relay agents is the same for stateless and stateful
+DHCP service.  The operation of relay agents is described in the DHCP
+specification.
+リレーエージェントのオペレーションはステートレストステートフルのDH
+CPサービスで同じです。リレーエージェントのオペレーションはDHCP
+仕様書で記述されます。
+Section 4 of this document lists the sections of the DHCP document
+that an implementor should read for an overview of the DHCP
+specification and the basic requirements of a DHCP service.  Section
+5 lists the specific messages and options that are specifically
+required for stateless DHCP service.  Section 6 describes how
+stateless and stateful DHCP servers interact to provide service to
+clients that require address assignment and clients that require only
+stateless service.
+この文書の4章が実装者がDHCP仕様書とDHCPサービスの基本的な必
+要条件の概観のために読むべきであるDHCP文書の章をリストアップしま
+す。5章が特にステートレスDHCPサービスのために必要とされる特定の
+メッセージとオプションをリストアップします。6章がステートレスとステー
+トフルなDHCPサーバが、アドレス割当てを必要とするクライアントとス
+テートレスサービスだけを必要とするクライアントにサービスを供給するた
+めに、相互作用する方法を記述します。
+2.  Terminology
+2.  用語
+Throughout this document, "DHCP" refers to DHCP for IPv6.
+この文書を通じて「DHCP」はIPv6のDHCPのことです。
+This document uses the terminology defined in RFC 2460 [2], the DHCP
+specification [1], and the DHCP DNS configuration options
+specification [3].
+この文書はRFC2460[2]とDHCP仕様書[1]とDHCP DNS設定オ
+プション[3]で定義された用語を使います。
+"Stateless DHCP" refers to the use of DHCP to provide configuration
+information to clients that does not require the server to maintain
+dynamic state about the DHCP clients.
+「ステートレスDHCP」は、サーバによるDHCPクライアントの動的状
+態のサポートを要求せずに、設定情報を供給するDHCPの使い方です。
+3.  Overview
+3.  概観
+This document assumes that a node using stateless DHCP configuration
+is not using DHCP for address assignment, and that a node has
+determined at least a link-local address as described in section 5.3
+of RFC 2461 [4].
+この文書はステートレスDHCP設定を使っているノードがアドレス割当て
+のためにDHCPを使っていないと想定し、そしてノードがRFC2461
+[4]の5.3章で記述されるように、少なくともリンクローカルアドレスを決
+定したと想定します。
+To obtain configuration parameters through stateless DHCP, a node
+uses the DHCP Information-request message.  DHCP servers respond to
+the node's message with a Reply message that carries configuration
+parameters for the node.  The Reply message from the server can carry
+configuration information, such as a list of DNS recursive name
+servers [3] and SIP servers [5].
+ステートレスDHCPを通して設定パラメータを得るために、ノードがDH
+CP情報要求メッセージを使います。DHCPサーバがノードのために、設
+定パラメータを運ぶ応答メッセージでノードのメッセージに返答します。サー
+バからの応答メッセージは、DNS再帰ネームサーバ[3]とSIPサーバ[5]
+のリストのような、設定情報を運ぶことができます。
+This document does not apply to the function of DHCP relay agents as
+described in RFC 3315.  A network element can provide both DHCP
+server and DHCP relay service.  For example, a network element can
+provide stateless DHCP service to hosts requesting stateless DHCP
+service, while relaying messages from hosts requesting address
+assignment through DHCP to another DHCP server.
+この文書は、RFC3315で記述されるDHCPリレーエージェントの機
+能に当てはまりません。ネットワーク要素はDHCPサーバとDHCPリレー
+サービスの両方ともを用意することができます。例えば、ネットワーク要素
+がステートレスDHCPサービスを求めるホストにステートレスDHCPサー
+ビスを供給することができ、DHCPを通してアドレス割当てを求めている
+ホストからのメッセージを他のDHCPサーバに伝える事ができます。
+4.  Basic Requirements for Implementation of DHCP
+4.  DHCPの実装の基本的な必要条件
+Several sections of the DHCP specification provide background
+information or define parts of the specification that are common to
+all implementations:
+DHCP仕様書のいくつかの章は、背景情報を供給するか、すべての実装に
+共通の仕様の一部を定義します:
+1-4:   give an introduction to DHCP and an overview of DHCP message
+flows
+1-4:   DHCPとDHCPメッセージフローの概観の導入です
+5:     defines constants used throughout the protocol specification
+5:     プロトコル仕様で使われる定数を定義します
+6, 7:  illustrate the format of DHCP messages
+6, 7:  DHCPメッセージのフォーマットを例示します
+8:     describes the representation of Domain Names
+8:     ドメイン名表記を記述します
+9:     defines the "DHCP unique identifier" (DUID)
+9:     「DHCPユニーク識別子」(DUID)を定義します
+13-16: describe DHCP message transmission, retransmission, and
+validation
+13-16: DHCPメッセージ送信と再送と検証を記述します
+21:    describes authentication for DHCP
+21:    DHCPの認証を記述します
+5.  Implementation of Stateless DHCP
+5.  ステートレスDHCPの実装
+The client indicates that it is requesting configuration information
+by sending an Information-request message that includes an Option
+Request option specifying the options that it wishes to receive from
+the DHCP server.  For example, if the client is attempting to obtain
+a list of DNS recursive name servers, it identifies the DNS Recursive
+Name Server option in the Information-request message.  The server
+determines the appropriate configuration parameters for the client
+based on its configuration policies and responds with a Reply message
+containing the requested parameters.  In this example, the server
+would respond with DNS configuration parameters.
+クライアントはDHCPサーバから受信を望むオプションを指定したオプショ
+ン要求オプションを含む情報要求メッセージを送る事で、設定情報を求めて
+いることを示します。例えば、もしクライアントがDNS再帰ネームサーバ
+のリストを得ようと試みているなら、情報要求メッセージでDNS再帰ネー
+ムサーバオプションを指定します。サーバは設定ポリシに基づいてクライア
+ントに適切な設定パラメータを決定し、そして応答メッセージに求められた
+パラメータを含めて応答します。この例で、サーバはDNS設定パラメータ
+で返答するでしょう。
+As described in section 18.1.5 of RFC 3315, a node may include a
+Client Identifier option in the Information-request message to
+identify itself to a server, because the server administrator may
+want to customize the server's response to each node, based on the
+node's identity.
+RFC3315の18.1.5章で記述されるように、ノードは情報要求メッ
+セージに自分自身をサーバに識別させるクライアント識別子オプションを含
+めるかもしれません、なぜならサーバ管理者はノード識別子に基づいてそれ
+ぞれのノードの応答をカスタマイズすることを望むかもしれません。
+RFC 3315 does not define any mechanisms through which the time at
+which a host uses an Information-request message to obtain updated
+configuration parameters can be controlled.  The DHC WG has
+undertaken the development of such a mechanism or mechanisms which
+will be published as Standards-track RFC(s).
+RFC3315がホストが更新された設定情報パラメータを得る情報要求メッ
+セージを使う時間を制御するメカニズムを定義しません。DHC作業班は標
+準化RFCとして公開されるであろうメカニズムの開発に着手しました。
+RFC 3315 also does not provide any guidance about when a host might
+use an Information-request message to obtain updated configuration
+parameters when the host has moved to a new link.  The DHC WG is
+reviewing a related document, "Detection of Network Attachment (DNA)
+in IPv4" [8], which describes how a host using IPv4 can determine
+when to use DHCPv4.  Either the DHC WG or a WG formed from the DNA
+BOF will undertake development of a similar document for IPv6.
+RFC3315が、ホストが新しいリンクに移動した時、いつホストが更新
+された設定情報を得るために情報要求を使うかの指導も供給しません。DH
+C作業班は関連文書「IPv4でネットワーク接続の発見(DNA)」[8]を
+検討しており、これはIPv4を使うホストがいつDHCPv4を使うべき
+か決定する方法を記述します。DHC作業班かDNA BOFからの作業班の
+どちらかががIPv6のために類似の文書の開発に着手するでしょう。
+5.1.  Messages Required for Stateless DHCP Service
+5.1.  ステートレスDHCPサービスのために必要なメッセージ
+Clients and servers implement the following messages for stateless
+DHCP service; the section numbers in this list refer to the DHCP
+specification:
+クライアントとサーバがステートレスDHCPサービスのために次のメッセー
+ジを実装します;このリストでの章番号はDHCP仕様書を参照します:
+Information-request: sent by a DHCP client to a server to request
+configuration parameters (sections 18.1.5 and
+18.2.5)
+情報要求:           設定パラメータ(18.1.5章と18.2.5章)を求
+めるためにDHCPクライアントからサーバに送信
+Reply:               sent by a DHCP server to a client containing
+configuration parameters (sections 18.2.6 and
+18.2.8)
+応答:               設定パラメータ(18.2.6章と18.2.8章)を含
+み、サーバからクライアントに送信
+In addition, servers and relay agents implement the following
+messages for stateless DHCP service; the section numbers in this list
+refer to the DHCP specification:
+加えて、サーバとリレーエージェントがステートレスDHCPサービスのた
+めに次のメッセージを実装します;このリストでの章番号はDHCP仕様書
+を参照します:
+Relay-forward: sent by a DHCP relay agent to carry the client message
+to a server (section 15.13)
+リレー転送:       クライアントメッセージをサーバに運ぶためにDHCP
+リレーエージェントが送信(15.13章)
+Relay-reply:   sent by a DHCP server to carry a response message to
+the relay agent (section 15.14)
+リレー応答:       リレーエージェントへの応答メッセージを運ぶためにD
+HCPサーバが送信(15.14章)
+5.2.  Options Required for Stateless DHCP Service
+5.2.  ステートレスDHCPサービスに必要なオプション
+Clients and servers implement the following options for stateless
+DHCP service; the section numbers in this list refer to the DHCP
+specification:
+クライアントとサーバがステートレスDHCPサービスのために次のオプショ
+ンを実装します;このリストでの章番号はDHCP仕様書を参照します:
+Option Request:    specifies the configuration information that the
+client is requesting from the server (section
+22.7)
+オプション要求:   クライアントがサーバから求める設定情報を指定
+(22.7章)
+Status Code:       used to indicate completion status or other status
+information (section 22.13)
+状態コード:       完了状態位や他の状態情報を示すのに使用
+(22.13章)
+Server Identifier: used to identify the server responding to a client
+request (section 22.3)
+サーバ識別子:     クライアント要求に返答しているサーバを識別
+(22.3章)
+Servers and relay agents implement the following options for
+stateless DHCP service; the section numbers in this list refer to the
+DHCP specification:
+サーバとリレーエージェントはステートレスDHCPサービスのために次の
+オプションを実装します;このリストでの章番号はDHCP仕様書を参照し
+ます:
+Client message: sent by a DHCP relay agent in a Relay-forward message
+to carry the client message to a server (section 20)
+クライアントメッセージ:サーバへクライアントメッセージを運ぶリレー転
+送メッセージをDHCPリレーエージェントが送信(20章)
+Server message: sent by a DHCP server in a Relay-reply message to
+carry a response message to the relay agent (section
+20)
+サーバメッセージ:リレーエージェントへ応答メッセージを運ぶリレー応答
+メッセージをDHCPサーバが送信(20章)
+Interface-ID:   sent by the DHCP relay agent and returned by the
+server to identify the interface to be used when
+forwarding a message to the client (section 22.18)
+インタフェース識別子:クライアントへ送信する使用するインターフェー
+スを識別するために、DHCPリレーエージェントから
+送信され、サーバから返送される(22.18章)
+5.3.  Options Used for Configuration Information
+5.3.  設定情報のために使われるオプション
+Clients and servers use the following options to pass configuration
+information to clients; note that other options for configuration
+information may be specified in future Internet Standards:
+クライアントとサーバが設定情報をクライアントへ渡すのに次のオプション
+を使います;設定情報のための他のオプションが将来のインターネット標準
+で指定されるかもしれないことに注意してください:
+DNS Recursive Name Servers: specifies the DNS recursive name servers
+[7] the client uses for name resolution;
+see "DNS Configuration options for
+DHCPv6" [3]
+DNS再帰ネームサーバ:    クライアントが名前解決に使うDNS再帰ネー
+ムサーバ[7];「DHCPv6のためのDNS
+設定オプション」[3]参照
+DNS search list:            specifies the domain names to be searched
+during name resolution; see "DNS
+Configuration options for DHCPv6" [3]
+DNS捜索リスト:          名前解決の間に捜索するドメイン名を指定し
+ます;「DHCPv6のためのDNS設定オ
+プション」[3]参照
+SIP Servers:                specifies the SIP servers the client uses
+to obtain a list of domain names of IPv6
+addresses that can be mapped to one or
+more SIP outbound proxy servers [5]
+SIPサーバ:              1つ以上のSIP外向きプロキシサーバ[5]へ
+変換されるIPv6のドメイン名のリストを
+得るために、クライアントが、使用するSI
+Pサーバを指定
+5.4.  Other Options Used in Stateless DHCP
+5.4.  ステートレスDHCPで使われる他のオプション
+Clients and servers may implement the following options for stateless
+DHCP service; the section numbers in this list refer to the DHCP
+specification:
+クライアントとサーバがステートレスDHCPサービスのために次のオプショ
+ンを実装してもよいです;このリストでの章番号はDHCP仕様書を参照し
+ます:
+Preference:     sent by a DHCP server to indicate the preference
+level for the server (section 22.8)
+優先:             サーバのために優先レベルを示すためにDHCPサー
+バから送信(22.8章)
+Elapsed time:   sent by a DHCP client to indicate the time since the
+client began the DHCP configuration process (section
+22.9)
+経過時間:         クライアントがDHCP設定プロセスを始めてからの
+時間を示すため、DHCPクライアントから送信
+(22.9章)
+User Class:     sent by a DHCP client to give additional information
+to the server for selecting configuration parameters
+for the client (section 22.15)
+ユーザークラス:   クライアントの設定パラメータを選択することに対して
+サーバに追加の情報を与えるためにDHCPクライアン
+トから送信(22.15章)
+Vendor Class:   sent by a DHCP client to give additional information
+about the client vendor and hardware to the server
+for selecting configuration parameters for the client
+(section 22.16)
+ベンダークラス:   クライアントの設定パラメータを選ぶことに対してサー
+バにクライアントのベンダとハードウェアの追加情報を
+与えるためにDHCPクライアントからから送信
+(22.16章)
+Vendor-specific Information: used to pass information to clients in
+options defined by vendors (section
+22.17)
+ベンダ固有情報:   クライアントに情報を渡すためベンダが定義したオプショ
+ン(22.17章)
+Client Identifier: sent by a DHCP client to identify itself (section
+22.2).  Clients are not required to send this
+option; servers send the option back if included
+in a message from a client
+クライアント識別子:クライアント自身を識別するためにDHCPクライア
+ントが送信(22.2章)。クライアントはこのオプショ
+ンを送るように要求されません;サーバはもしクライ
+アントからのメッセージに含められていれば、オプショ
+ンを返送します。
+Authentication: used to provide authentication of DHCP messages
+(section 21)
+認証:             DHCPメッセージの認証を供給(21章)。
+6.  Interaction with DHCP for Address Assignment
+6.  アドレス割当てのためのDHCPとの相互作用
+In some networks, there may be both clients that are using stateless
+address autoconfiguration and DHCP for DNS configuration and clients
+that are using DHCP for stateful address configuration.  Depending on
+the deployment and configuration of relay agents, DHCP servers that
+are intended only for stateless configuration may receive messages
+from clients that are performing stateful address configuration.
+あるネットワークで、DNS設定のためにステートレスアドレス自動設定と
+DHCPを使っているクライアントと、ステートフルアドレス設定のために
+DHCPを使っているクライアントの両方があるかもしれません。リレーエー
+ジェントの実装と形状に依存して、ステートレス設定だけを意図するDHC
+Pサーバがステートフルアドレス設定を行っているクライアントからのメッ
+セージを受け取るかもしれません。
+A DHCP server that is only able to provide stateless configuration
+information through an Information-request/Reply message exchange
+discards any other DHCP messages it receives.  Specifically, the
+server discards any messages other than Information-Request or
+Relay-forward it receives, and the server does not participate in any
+stateful address configuration message exchanges.  If there are other
+DHCP servers that are configured to provide stateful address
+assignment, one of those servers will provide the address assignment.
+情報要求/応答メッセージ交換を通してステートレス設定情報を供給するこ
+とだけが可能なDHCPサーバは受信する他のDHCPメッセージを捨てま
+す。特に、サーバは情報要求やこれを受取るリレー転送以外のメッセージを
+捨て、そしてサーバはステートフルアドレス設定メッセージ交換に参加しま
+せん。もしステートフルアドレス割当てを供給するように設定される他のD
+HCPサーバがあるなら、それらのサーバの1つがアドレス割当てを供給す
+るでしょう。
+7.  Security Considerations
+7.  セキュリティの考察
+Stateless DHCP service is a proper subset of the DHCP service
+described in the DHCP specification, RFC 3315 [1].  Therefore,
+stateless DHCP service introduces no additional security
+considerations beyond those discussed in sections 21, 22.11, and 23
+of the DHCP specification [1].
+ステートレスDHCPサービスがDHCP仕様書、RFC3315[1]で記
+述されるDHCPサービスの適切なサブセットです。従って、ステートレ
+スDHCPサービスがDHCP仕様書[1]の21章と22.11章と23章
+で論じられ以上の追加のセキュリティの問題を導入しません。
+Configuration information provided to a node through stateless DHCP
+service may be used to mount spoofing, man-in-the-middle, denial-of-
+service, and other attacks.  These attacks are described in more
+detail in the specifications for each of the options that carry
+configuration information.  Authenticated DHCP, as described in
+sections 21 and 22.11 of the DHCP specification [1], can be used to
+avoid attacks mounted through the stateless DHCP service.
+ステートレスDHCPサービスを通してノードに供給した設定情報が、マウ
+ント詐欺や中間者攻撃やサービス妨害や他の攻撃に使われるかもしれません。
+これらの攻撃は設定情報を運ぶオプションのそれぞれの仕様書でより詳細に
+記述されます。DHCP仕様書[1]のセクション21章と22.11章で記述
+される認証されたDHCPは、ステートレスDHCPサービスを通して開始
+された攻撃を避けるために使うことができます。
+8.  Acknowledgments
+8.  謝辞
+Jim Bound, Ted Lemon, and Bernie Volz reviewed this document and
+contributed editorial suggestions.  Thanks to Peter Barany, Tim
+Chown, Christian Huitema, Tatuya Jinmei, Pekka Savola, and Juha
+Wiljakka for their review and comments.
+Jim BoundとTed LemonとBernie Volzはこの文書を再検討し、編集の提案を
+提供しました。批評とコメントについてPeter BaranyとTim ChownとChristian
+HuitemaとTatuya JinmeiとPekka SavolaとJuha Wiljakkaに感謝します。
+9.  References
+9.  参考文献
+9.1.  Normative References
+9.1.  参照する参考文献
+[1] Droms, R., Ed., Bound, J., Volz, B., Lemon, T., Perkins, C. and
+M. Carney, "Dynamic Host Configuration Protocol for IPv6
+(DHCPv6)", RFC 3315, July 2003.
+[2] Deering, S. and R. Hinden, "Internet Protocol, Version 6 (IPv6)
+Specification", RFC 2460, December 1998.
+9.2.  Informative References
+9.2.  有益な参考文献
+[3] Droms, R., Ed., "DNS Configuration options for Dynamic Host
+Configuration Protocol for IPv6 (DHCPv6)", RFC 3646, December
+2003.
+[4] Narten, T., Nordmark, E. and W. Simpson, "Neighbor Discovery for
+IP Version 6 (IPv6)", RFC 2461, December 1998.
+[5] Schulzrinne, H. and B. Volz, "Dynamic Host Configuration Protocol
+(DHCPv6) Options for Session Initiation Protocol (SIP) Servers",
+RFC 3319, July 2003.
+[6] Thomson, S. and T. Narten, "IPv6 Stateless Address
+Autoconfiguration", RFC 2462, December 1998.
+[7] Mockapetris, P., "Domain names - concepts and facilities", STD
+13, RFC 1034, November 1987.
+[8] Aboba, B., "Detection of Network Attachment (DNA) in IPv4", Work
+in Progress.
+10.  Author's Address
+10.  著者のアドレス
+Ralph Droms
+Cisco Systems
+1414 Massachusetts Avenue
+Boxborough, MA  01719
+USA
+Phone: +1 978 497 4733
+EMail: rdroms@cisco.com
+11.  Full Copyright Statement
+11.  著作権表示全文
+Copyright (C) The Internet Society (2004).  This document is subject
+to the rights, licenses and restrictions contained in BCP 78 and
+except as set forth therein, the authors retain all their rights.
+著作権(C)インターネット学会(2004)。この文書はBCP78に含
+まれる権利と許可と制限の適用を受け、そしてこの中に明らかにされる以外
+は著者がすべての権利を維持します。
+This document and the information contained herein are provided on an
+"AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE
+REPRESENTS OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE
+INTERNET ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF
+THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+この文書とここに含まれる情報はあるがままに供給されます、貢献者と貢献
+者が代表するか貢献者を後援する組織(もしあれば)とインターネット学会
+とインターネット技術標準化タスクフォースは、明確にも暗黙にも、この情
+報の使用が権利の侵害しないことや商業利用や特別の目的への利用に適当で
+ある事の保障を含め、全ての保証を拒否します。
+Intellectual Property
+知的所有権
+The IETF takes no position regarding the validity or scope of any
+Intellectual Property Rights or other rights that might be claimed
+to pertain to the implementation or use of the technology
+described in this document or the extent to which any license
+under such rights might or might not be available; nor does it
+represent that it has made any independent effort to identify any
+such rights.  Information on the procedures with respect to
+rights in RFC documents can be found in BCP 78 and BCP 79.
+この文書に記述された実装や技術に関して主張される知的財産権や他の権利の
+正当性や範囲について、この様な権利の元でライセンスが利用可能か利用不
+可能かの範囲について、IETFは何の立場もとりません;この様な権利を
+認識する独立の調査をしたとは述べません。RFC文書の権利に関する手続
+きの情報はBCP78とBCP79を見てください。
+Copies of IPR disclosures made to the IETF Secretariat and any
+assurances of licenses to be made available, or the result of an
+attempt made to obtain a general license or permission for the use
+of such proprietary rights by implementers or users of this
+specification can be obtained from the IETF on-line IPR repository
+at http://www.ietf.org/ipr.
+IETF事務局に公開されたIPRの写しと、利用可能な許可証と、仕様書
+の実装者や利用者によってされた一般的な許可書や許可を得るためにされた
+試みの結果は、http://www.ietf.org/iprにあるIETFオンラインIPR
+貯蔵庫で得られます。
+The IETF invites any interested party to bring to its attention
+any copyrights, patents or patent applications, or other
+proprietary rights that may cover technology that may be required
+to implement this standard.  Please address the information to the
+IETF at ietf-ipr@ietf.org.
+IETFは興味を持った誰からでもこの標準を実行するのに必要な技術をカ
+バーする著作権や特許や特許出願や他の所有権の注意を持ってくるように求
+めます。どうかietf-ipr@ietf.orgのIETFに情報を伝えてください。
+Acknowledgement
+謝辞
+Funding for the RFC Editor function is currently provided by the
+Internet Society.
+RFCエディタ機能のための資金供給が現在インターネット学会によって
+供給されます。
+[]Japanese translation by Ishida So
+RFC3736 IPv6のための状態なし動的ホスト設定プロトコル(DHCP)サービス

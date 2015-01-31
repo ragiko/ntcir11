@@ -1,0 +1,6 @@
+1次のButterworth 特性ならば、遮断特性が -6dB/octave です。それ以上の急峻な特性にはできません。
+逆に -6dB/octave ならば1次、とは言い切れません。
+たとえば、余分な次数を位相特性のコントロールに使ったりした場合。
+(参考ページ)
+http://ufcpp.net/study/digital_filter/butterworth.html#butterworth
+デジタルフィルタについて 【OKWave】

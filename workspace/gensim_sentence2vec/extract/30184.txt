@@ -1,0 +1,29 @@
+
+今回も引き続きシンタックスハイライトの改良記事です。
+前回の記事でひとまずは完成したのですが、切り替えスイッチが必要なものだけに挿入されるようにさらに改良します。
+JavaScriptでスクロールバーの有無を判定する方法
+ワードラップ切り替えスイッチが必要かどうかの判定はスクロールバーの有無で判断すれば良いと思って調べたところ、DOM要素の clientWidth と scrollWidth の値が一致するかどうかで判断できることが分かりました。
+参考: スクロールバーにスライダーが表示されているか(JavaScript)
+jQueryでDOM要素を参照する方法
+clientWidthとscrollWidthはDOM要素のプロパティなので、一旦DOM要素を参照してから取得します。
+$('セレクタ').get(0).clientWidth;
+$('セレクタ').context.clientWidth; /* これでも取得できたけど違いは不明 */
+もしくは prop() でも取得可能です。
+$('セレクタ').prop('clientWidth');
+これを元に、前回記事で作成したスクリプトをちょっと修正します。
+修正前
+// pre要素をラッパーで囲む
+$('pre').wrap('<div class="code-wrapper"></div>');
+修正後
+// pre要素をラッパーで囲む
+$('pre').filter(function(){
+return $(this).prop('clientWidth') != $(this).prop('scrollWidth');
+}).wrap('<div class="code-wrapper"></div>');
+これで完成・・・と思ったけど、よくよく考えるとthisからDOMプロパティを参照するのにわざわざjQueryオブジェクトを生成する必要はないなぁと。
+最終型
+// pre要素をラッパーで囲む
+$('pre').filter(function(){
+return this.clientWidth != thisscrollWidth; /* こっちの方が高速(のはず) */
+}).wrap('<div class="code-wrapper"></div>');
+こんな感じで紆余曲折はありましたが無事完成しました(^^)
+シンタックスハイライト改良:特定エリアのスクロールバーの有無を判定 - ID NOTES[アイディーノーツ]

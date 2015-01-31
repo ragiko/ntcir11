@@ -1,0 +1,6 @@
+iOS(iPhone / iPad)の開発で使用する、チャートライブラリ Core Plot 0.9 を導入するときに閲覧した、blogをメモ。
+執筆時点でCorePlot0.9が最新ですが、この記事通りに進めると、簡単に導入できました(XCode4.3 + CorePlot 0.9)。
+他の、blog等で記載されている、Ver.0.4の記事だと、そのまま実行できないので注意が必要でした。
+Adding charts to your iPhone / iPad App using Core Plot 0.9
+まだ検証途中ですが、CorePlotはなかなかクオリティの高いグラフが描けそうなので、実際に使用するかもしれません。
+[iPhone開発]チャートライブラリ Core Plot 0.9 導入 | コンパクトファクトリ

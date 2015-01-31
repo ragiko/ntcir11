@@ -1,0 +1,132 @@
+
+描画構造体とクライアントエリアの更新
+さて、前回のプログラムではクライアントエリアが隠れると
+クライアントエリアに描かれている内容が消されてしまうという問題点がありました
+今回は、その仕組みと解決策について説明します
+クライアントエリアが隠された場合、クライアントエリアの情報は消されてしまいます
+その後、再びクライアントエリアが表示されると、その領域は空の状態です
+この状態を無効リージョン、または更新リージョンと呼びます
+無効リージョンがウィンドウにある場合、Windows は WM_PAINTメッセージを発行します
+このメッセージは、無効リージョンが存在する限り、常にメッセージキューにポストされます
+WM_PAINT は、wPalam にデバイスコンテキストのハンドルを持ちますが、一般に無視します
+戻り値は 0 を返します
+次に、アプリケーションは無効リージョンを有効な状態にしなければいけません
+そのためには、背景を背景色で塗りつぶす必要があります
+しかも、全体を描くのではなく無効な領域だけを再描画するのです
+この作業の多くも、Windowsファンクションが行ってくれます
+このように、ウィンドウごとの情報を Windows は構造体で扱っているのです
+その構造体がPAINTSTRUCT構造体です
+typedef struct tagPAINTSTRUCT {
+HDC         hdc;
+BOOL        fErase;
+RECT        rcPaint;
+BOOL        fRestore;
+BOOL        fIncUpdate;
+BYTE        rgbReserved[32];
+} PAINTSTRUCT;
+最初の hdc には、描画に使われるデバイスコンテキスト
+fErase は、再描画の必要があるかどうかを判定します
+このメンバが 0 以外の時は、背景を再描画する必要があるのです
+rcPaint は、描画が要求されている長方形をあらわします
+このメンバの RECT 型 は、構造体変数です
+typedef struct tagRECT {
+LONG left;
+LONG top;
+LONG right;
+LONG bottom;
+} RECT;
+left には左上隅の X 座標、top はY座標
+right は、右下隅の X 座標、bottom はY座標を意味します
+PAINTSTRUCT 関数の残りのメンバは Windows が内部で使うものです
+この PAINTSTRUCT 構造体が今回のポイントです
+WM_PAINT メッセージが発行されると、無効リージョンが存在するということです
+まず、WM_PAINT の処理の最初としてデバイスコンテキストへのハンドルを取得しますが
+getDC() の方法では、PAINTSTRUCT 構造体にアクセスできません
+そこで、BeginPaint()関数を用います
+この関数は PAINTSTRUCT のポインタを受け取り、それをを初期化し
+無効領域を再び描きなおしてクライアントエリアを有効にします
+HDC BeginPaint(HWND hwnd , LPPAINTSTRUCT lpPaint);
+hwnd には再描画するウィンドウのハンドルを
+lpPaint には、PAINTSTRUCT へのポインタを指定します
+LPPAINTSTRUCT 型は、PAINTSTRUCTのポインタ型です
+戻り値は、デバイスコンテキストへのハンドルです
+WM_PAINT メッセージの処理には getDC() ではなく、この関数を使用します
+やはり、この場合でもデバイスコンテキストを解放する必要があります
+GDI 関数の処理が終了したなら EndPaint() 関数で解放します
+BOOL EndPaint(HWND hWnd , CONST PAINTSTRUCT *lpPaint);
+hWnd は、再描画したウィンドウのハンドルを
+lpPaint は、BeginPaint() で取得したPAINTSTRUCTへのポインタを指定します
+この関数は、常に0以外の値を返します
+#include<windows.h>
+LRESULT CALLBACK WndProc(HWND hwnd , UINT msg , WPARAM wp , LPARAM lp) {
+HDC hdc;
+PAINTSTRUCT ps;
+LPTSTR lptStr = TEXT("Kitty on your lap");
+switch(msg) {
+case WM_DESTROY:
+PostQuitMessage(0);
+return 0;
+case WM_PAINT:
+hdc = BeginPaint(hwnd , &ps);
+TextOut(hdc , 10 , 10 , lptStr , lstrlen(lptStr));
+EndPaint(hwnd , &ps);
+return 0;
+}
+return DefWindowProc(hwnd , msg , wp , lp);
+}
+int WINAPI WinMain(HINSTANCE hInstance , HINSTANCE hPrevInstance ,
+PSTR pCmdLine , int nCmdShow ) {
+HWND hwnd;
+WNDCLASS winc;
+MSG msg;
+winc.style		= CS_HREDRAW | CS_VREDRAW;
+winc.lpfnWndProc	= WndProc;
+winc.cbClsExtra	= winc.cbWndExtra	= 0;
+winc.hInstance		= hInstance;
+winc.hIcon		= LoadIcon(NULL , IDI_APPLICATION);
+winc.hCursor		= LoadCursor(NULL , IDC_ARROW);
+winc.hbrBackground	= (HBRUSH)GetStockObject(WHITE_BRUSH);
+winc.lpszMenuName	= NULL;
+winc.lpszClassName	= TEXT("KITTY");
+if (!RegisterClass(&winc)) return 0;
+hwnd = CreateWindow(
+TEXT("KITTY") , TEXT("Kitty on your lap") ,
+WS_OVERLAPPEDWINDOW  | WS_VISIBLE ,
+CW_USEDEFAULT , CW_USEDEFAULT ,
+CW_USEDEFAULT , CW_USEDEFAULT ,
+NULL , NULL ,
+hInstance , NULL
+);
+if (hwnd == NULL) return 0;
+while (GetMessage(&msg , NULL , 0 , 0)) DispatchMessage(&msg);
+return msg.wParam;
+}
+今度は、文字は消されることなく表示されます
+もし、ウィンドウプロシージャで WM_PAINT を処理する場合
+必ずこのように BeginPaint() と EndPaint() を使ってください
+重要なことは、無効矩形を有効矩形にするという処理なのです
+もし、WM_PAINT で getDC による処理をした場合
+たしかにウィンドウ全体が描かれますが、内部情報ではまだ無効矩形です
+そのため、Windows は永遠 WM_PAINT をキューに送りつづけることになります
+DefWindowProc では、WM_PAINT を次のように処理しています
+case WM_PAINT:
+BeginPaint(hwnd &ps);
+EndPaint(hwnd , &ps);
+return 0;
+これでも、無効リージョンを有効にするという意味がある行為なのです
+これが return 0 だけであれば、無効リージョンがいつまでも有効になれないのです
+getDC() は、クライアントエリア全体のデバイスコンテキストであったのに対し
+BeginPaint() のデバイスコンテキストは無効リージョンをクリップしているのです
+BeginPaint()
+HDC BeginPaint(HWND hwnd , LPPAINTSTRUCT lpPaint);
+描画領域をの無効矩形を消去し、描画の準備をします
+hwnd - 再描画するウィンドウのハンドルを指定します
+lpPaint - PAINTSTRUCT へのポインタを指定します
+戻り値 - デバイスコンテキストのハンドルを返します
+EndPaint()
+BOOL EndPaint(HWND hWnd , CONST PAINTSTRUCT *lpPaint);
+BeginPaint() で得たデバイスコンテキストを解放します
+hWnd - 再描画したウィンドウのハンドルを指定します
+lpPaint - BeginPaint() 関数が取得した、PAINTSTRUCT 構造体へのポインタを指定します
+戻り値 - 常に0以外の値
+無効リージョン

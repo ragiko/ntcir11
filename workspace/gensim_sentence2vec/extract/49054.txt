@@ -1,0 +1,67 @@
+[PHP]【ZendFramework】URLが正しく認識されない… 11:36  
+シンボリックリンク先に配置したZendFrameworkのプロジェクトが動かない、
+というお話(´・ω・`)
+元々のルートディレクトリである、
+「/home/cc/html」
+に、今回のルートディレクトリである(index.phpが置かれている)、
+「/home/choo/html/」
+へのシンボリックリンクが張られています。
+※「/home/cc/html/choo/−>/home/choo/html/」
+さらに、
+「/home/choo/html」
+の下に、
+「admin」
+というディレクトリがあり、そこに管理ツールのindex.phpが置かれています。
+元々のURL(上記「/home/cc/html」)は、
+「http://choochoo.jp/」
+なのですが、件のプロジェクトのURLは、ドキュメントルートが
+「/home/cc/html/choo/」ということもあり、
+「http://choochoo.jp/choo/」
+「http://choochoo.jp/choo/admin/」
+となります。
+「http://choochoo.jp/choo/admin/」
+を叩いた時はキチンと画面遷移する(ログイン画面が表示される)のですが、
+ログイン画面でログイン認証が通った後、404エラーが発生。
+その時のURLは、
+「http://choochoo.jp/choo/admin/index/login/」
+なのですが、パラメータ部分である「/index/login/」の部分が認識されて
+いない模様…(´・ω・`)
+似たような状況でハマる方も何名かいらっしゃったようで、そういう場合は、
+「rewriteが効いていない」
+ことが多いみたいです。
+「/home/choo/html/admin」
+には、
+「htaccess.htaccess」
+というファイルがあり、その中身はというと、
+RewriteEngine on
+RewriteBase /admin/
+RewriteRule !\.(js|ico|gif|jpg|png|css)$ index.php
+Order deny,allow
+Deny from all
+#
+# Password
+#
+AuthType Basic
+AuthName "Project Member Only"
+Require valid-user
+AuthUserFile /home/acm/.adminpwd
+Satisfy any
+となっていました。
+RewriteBaseの記述があったので、ここを
+RewriteBase /choo/admin/
+と修正してみたのですが…全く状況は改善されず(´・ω・`)
+他の環境を調べてみたところ、
+「htaccess.htaccess」
+のままでは、このファイルが有効にならないことに気付き、ファイル名を
+「.htaccess」
+としたところ、今度はBasic認証がかかるように(笑)
+上記のファイルの中身の「Password」以降が動いたようで、これで無事に
+「.htaccess」
+が認識されたことが確認されました(・∀・)
+Password以下の部分と、
+Order deny,allow
+Deny from all
+の部分をコメントアウトしたら、想定通りの動きをしてくれるように
+なりました!
+結局、シンボリックリンクは無関係だった、という結論…(´・ω・`)
+【ZendFramework】URLが正しく認識されない… - Chocotte de Choo

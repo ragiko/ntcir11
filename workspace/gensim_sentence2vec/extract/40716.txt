@@ -1,0 +1,64 @@
+
+WordNet EPWING
+～～ 日本語・英語WordNet(シソーラス)のEPWING版 ～～
+更新履歴
+2014/04/19 Jamming3.9.9用に英単語の改行禁止指定を追加
+2013/11/24 Brown Corpus付きPrinceton WordNet 3.1公開
+2013/10/28 Princeton WordNet 3.1の修正版公開(このページを暫定更新)
+2013/06/29 初版公開
+1. はじめに
+プリンストン大学が始めた、WordNetというプロジェクトがあります(Princeton WordNet)。信じられないほど優れた英語のシソーラスです。単語の意味と類語や関連語を調べられます。例文も時々あります。本当に素晴らしいものです。断言しますが、英語学習者必携です(高校以上くらいで)。英語の語学力が高い方ほど手放せなくなるでしょう。私は英検2級に過ぎませんが、プロの方にもお薦めできると思います。元データの語彙レベルは圧倒的です。単に見出し単語数が多いかどうかではありません。一度使えば分かります。
+[2013/11/24追記] Princetorn WordNetの意味分類の元になったのは、1960年代に開発された約百万語のBrown Corpusです。辞書で意味を調べたとき、その元になった用例にジャンプできるようになっています。この用例は本家のWebサイト検索では出てきません。
+これを元に作成した独立行政法人情報通信研究機構による日本語WordNetもあり、日本語シソーラスとしてこちらも無料で自由に使えます。日本語WordNetは、Princeton WordNet3.0を基準に作られています。Princeton WordNetの最新版はそれより進んで3.1になっています。[2013/10/30追記] 残念ながら、日本語WordNetの語彙選択は、Princeton WordNetほど洗練されていないように思います。Princetonに比肩するほどの日本語WordNetを作ろうとするなら、シェイクスピアの全作品翻訳者や辞書編集者のようなプロ中のプロの語学力が必要ではないかと思います。
+当サイトでは、これらのデータをEPWINGに変換したデータを公開しています。もちろん無料です。なお、EPWING版制作者の私は、プリンストン大とも情報通信研究機構とも一切関係ありません。
+Princeton WordNetの英単語見出しは約15万件、日本語WordNetの見出しは約9万件です。意味分類(Synset)数は約11万件です。
+他の日本語シソーラスをお探しなら、『日本語大シソーラス』を全語彙検索可能なEPWINGにする シソ改 をお薦めします。
+2. ダウンロード
+[2013/10/30追記] 日本語版・日英統合版は改良中です。後日更新する予定です
+[2014/04/19追記] 140419は英単語の改行禁止指定を追加しただけで、英文そのものは以前と変わりありません。改行禁止指定の効果があるのはJammingだけです。それ以外(EBWin/Logiphile)ではもともと禁則処理表示に対応しているので何も変わりません。
+Brown Corpus付きPronceton WordNet 3.1 - wordnet-en-140419.zip
+日本語WordNet 1.1 - wordnet-jp-130629.zip
+Princeton WordNet 3.0 と日本語WordNet 1.1の統合版 - wordnet-enjp-130629.zip
+適当なディレクトリに解凍して、EPWINGビューアーに辞書登録してください。特別な文字を表示するための外字は使っていません。
+3. 動作画面例
+3.1 Princeton WordNet 3.1 with corpus
+普通に単語を検索すると、その単語の語釈とそれに関係する単語の一覧が出ます。関連する単語をクリックすればその語の項にジャンプします。解説が長い語については、見出し語直後に品詞別の先頭へジャンプできる小見出し(下の画面例では adj, n, adv)も付けました。
+見出し語のの関係は、syn: 同一意味集合(synset)に含まれる他の単語、ant(Antonym:反意語)、sim(Similar to:似た意味の語)、see(Also see)、hype(rnym:上位語)、hypo(rnym:下位語) などの略語で示しています。全種類は後述。
+関係の略号の前に、その品詞が出ます。n=名詞、v=動詞、a=形容詞、s=adjective satellite(って何でしょう?)、r=副詞です。こちらの略号をそのまま使っています。
+語釈番号の右上に小さい数字(adj 1:190 の190など)がありますが、これはその単語のその意味でのある種の出現回数です(詳しくはこちらのtag_cntをご覧下さい)。通常1～200くらいです。0なら表示しません。EPWINGビューアーによっては、普通の大きさで表示されます。
+[2013/11/24追記] 語釈の最後に[corpus N]とある場合、その意味での用例がN件ある事を示します。corpusをクリックすると、用例一覧にジャンプします。用例がないこともあります。実はPrinceton大では辞書とコーパスの関係をもうメンテナンスしていないため、対応する語釈が不明になった用例もあります。そういう物は[corpus? N]で表示します。用例の対応がずれている物もあるかも知れません。WordNet3.0からWordNet3.1で語釈が変わった場合、両方の語釈を用例の前に表示します(actの名詞の4番目など)。行頭の出典情報をクリックすると、その文全体、さらに出典情報の詳細が出ます。出典情報の元はこちらです(元々一部欠けていたりします)。用例は最大320件で打ち切りとしています。
+関係の略語は以下の通りです。このページの第4項にある表も参考になります。
+ant = Antonym
+sim = Similar to
+hype = Hypernym
+ihype = Instance Hypernym
+hypo = Hyponym
+ihypo = Instance Hyponym
+mhln = Member holonym
+shln = Substance holonym
+phln = Part holonym
+mmrn = Member meronym
+smrn = Substance meronym
+pmrn = Part meronym
+attr = Attribute
+derv = Derivationally related form
+dtpc = Domain of synset - TOPIC
+mtpc = Member of this domain - TOPIC
+drgn = Domain of synset - REGION
+mrgn = Member of this domain - REGION
+dusg = Domain of synset - USAGE
+musg = Member of this domain - USAGE
+pert = Pertainym
+entl = Entailment
+caus = Cause
+vgrp = Verb Group
+part = Participle of verb
+pert = Pertainym (pertains to noun)
+see = Also see
+3.2 日本語WordNet
+Princeton WordNetと基本的に同じです。
+[2013/10/30追記] 改良中です。
+3.3 Princeton WordNetと日本語WordNetの統合版
+英語でも日本語でも語句を検索できます。Princeton WordNetに対応する日本語の項目があれば、それを表示します。日本語WordNetは、基本的にPrinceton WordNetの和訳なので、およそ英日対訳になります。訳がない事もあります。
+[2013/10/30追記] 改良中です。
+WordNet EPWING ～～ 日本語・英語WordNet(シソーラス)のEPWING版 ～～

@@ -1,0 +1,27 @@
+CoronaSDK製アプリでSEを鳴らすためには、Android用にはmp3形式の音声ファイル、iPhone用にはcaf形式の音声ファイルを用意する必要があるようです。
+CoronaSDKのサンプルコードを見ると、下のようにAndroidとシミュレーターではmp3を鳴らしていますね。
+if isAndroid or isSimulator then
+--	print("MP3を鳴らす")
+soundID = media.newEventSound( "hoge.mp3" )   -- for Android
+else
+--	print("CAFを鳴らす")
+soundID = media.newEventSound( "hoge.caf" )   -- for IOS
+end
+--鳴らすとき
+media.playEventSound( soundID )
+さて、mp3は用意できるものの、caf形式のファイルはどうすればいいかというと、ターミナルを開いて以下のコマンドを使ってcafファイルが生成できるそうです。CoronaSDKサイトにも記載あり。
+/usr/bin/afconvert -f caff -d LEI16 hoge.mp3 hoge.caf
+これでhoge.mp3をhoge.cafに書き出せました。
+追記:上のだとファイルサイズがwavと同じになる。こっちの方が軽くできる
+/usr/bin/afconvert -f caff -d ima4@32000 -c 1 input.wav output.caf
+32000のとこはお好きなサンプリングレート。ステレオサウンドにしたい場合は -c 1は必要ない
+/usr/bin/afconvert -f caff -d ima4@32000 input.wav output.caf
+ima4をaacにするともっとファイルサイズを軽くできる
+/usr/bin/afconvert -f caff -d aac input.wav output.caf
+(おまけ)
+追記:MP3形式だと再生ラグが発生するので、Andoroid用はwavファイルを用意したほうが良さそうです。下記方法で「WAVエンコーダー」を選択すれば、同様にwav形式書き出しができます。
+Macでwavファイルをmp3形式に変換する時は、僕はiTuneでやっています。
+iTunesメニューのの環境設定から、「CDをセットした時の動作:」の「読み込み設定」をクリックすると以下のパネルが開くので
+読み込み方法を「MP3 エンコーダー」に変更してやると、
+こんな感じで、iTunesライブラリの曲上を右クリックした時に「MP3バージョンを作成」することができます。
+CoronaSDK: iPhone音声用cafファイル書き出し | NIJIBOX: ニジボスマホ部

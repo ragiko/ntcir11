@@ -1,0 +1,10 @@
+
+サーブレットにおけるセッション管理を実現するには、HttpSessionを使用しますが、セッションの開始・継続・終了についてのコーディング方法を説明します。一般的なシステムでは、まず初めにログイン認証処理が行われ、次に買い物などの処理を行い、最後にログアウトが行われます。この場合、ログイン認証処理が成功した直後に、セッションの開始となります。次に買い物などを行う場合には、セッションの継続が必要となり、最後にログアウトを行うときが、セッションの終了となります。
+まず、セッションを開始するには、HttpServletRequestのgetSessionメソッドを実行します。このときの引数はtrueにする必要があります(引数の詳細は、後述参照)。
+public void doPost(HttpServletRequest 
+request,
+HttpServletResponse 
+response)
+throws ServletException, IOException {
+HttpSession session = request.getSession(true);
+Java Solution FAQ:セッションの開始・継続・終了

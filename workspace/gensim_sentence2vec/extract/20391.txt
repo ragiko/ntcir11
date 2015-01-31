@@ -1,0 +1,178 @@
+こんにちは、久保田です。
+2/16に行われたZendEngine勉強会で、「拡張ライブラリでなるべく簡単に構文を追加する方法」というタイトルで喋ってきました。
+勉強会を開催したyoyaさん、会場提供して頂いたGREEさんありがとうございます。お疲れさまでした。 
+ZendEngineとは、PHPの内部で利用されている仮想マシン(VirtualMachie)のことです。これを知ることは、拡張ライブラリを実装したり、PHPの内部実装に精通するためには避けては通れない道です。
+この記事では、ZendEngine勉強会で喋った内容をもう少し詳しくテキストにして解説します。
+はじめに
+PHPの拡張ライブラリには、単にC/C++言語で記述されたライブラリをPHPでも使えるようにする拡張ライブラリと、PHPそのものの振る舞いを変える拡張ライブラリの二種類があります。
+前者で有名なのは、画像を加工変換合成するImageMagickやGD、マルチバイト文字列を扱うmbstringモジュール、JSONデコードエンコードを行うためのjsonモジュールなどです。
+後者のPHPそのものの振る舞いを変える拡張ライブラリの例としては、コンパイル結果をキャッシュするAPC、デバッグ支援や関数トレースやコードカバレッジ取得などを行ってくれるXdebugなどが主に挙げられます。
+この記事では、後者のPHPそのものの振る舞いを変える拡張ライブラリについて記述しつつ、拡張ライブラリからの文法拡張はどのように行えば良いのかについて説明します。
+記事の前半では、後者の拡張ライブラリがどうやってPHPの振る舞いを変化させていくのかを解説する前に、まずは言語処理系としてのPHPを眺めつつPHPのソースコードがどのように実行されていくのかについてのおおまかな流れを解説します。
+次に、APCやXdebugがどのようにしてPHPの振る舞いを変化させているのかについての基本的な仕組みを解説していきます。ここでは、ZendEngineに予め用意されている拡張ポイントにどんなものがあるのかを解説します。 
+記事の後半では、PHPにXMLリテラルなどの独自文法を提供するXHP拡張ライブラリを紹介します。ここではXHP拡張の動きを解説しつつXHP拡張を改造して実際にPHPに独自文法を追加します。
+言語処理系としてのPHPの大まかな仕組み
+拡張ライブラリがどのようにPHPの振る舞いを変更しているかを知る前に、まずは言語処理系としてのPHPの大まかな仕組みを説明します。 
+まずは以下のようなPHPのソースコードがあるとします。
+<?php // helloworld.php
+echo "hello world";
+このソースコードをPHPに与えると当然ながら以下のように出力されます。
+$ php helloworld.phphello wolrd
+このソースコードがPHPに与えられ、実行されるプロセスを図に表すと以下になります。
+この図では実行プロセスが、字句解析、構文解析、VM用コードにコンパイル、VMによる実行、という四つのフェーズに大別されています。VMというのはVirtualMachine(仮想機械)のことで、PHPにおいてはZendEngineです。 
+以下ではこれらの個別のフェーズについて説明していきます。
+字句解析
+ソースコードをトークン(字句)のリストに切り分けるフェーズです。具体的にPHPのソースコードがどうトークンの列に分解されるかは、token_get_all()という関数を使って確かめられます。
+<?php
+$tokens = token_get_all('<?php // helloworld.php
+echo "hello world";');
+foreach ($tokens as $i => $token) {
+echo "{$i}: " . (is_array($token) ? $token[1] . ' (' . token_name($token[0]) . ')' : $token) . "\n";
+}
+これを実行すると以下になります。
+0:   (T_OPEN_TAG)1: // helloworld.php (T_COMMENT)2: (T_WHITESPACE)3: echo (T_ECHO)4:   (T_WHITESPACE)5: "hello world" (T_CONSTANT_ENCAPSED_STRING)6: ;
+トークンに種類を知るには、PHPマニュアルのパーサトークンの一覧を見ましょう。
+PHP内部での字句解析の実装を知るには、PHPソースコードのZend/zend_langugage_parser.lを覗けます。字句解析には字句解析のためのライブラリであるre2cが使われているのでそれのマニュアルも合わせて見るとよいでしょう。
+構文解析 
+次の構文解析のフェーズでは、字句解析の結果得たトークンの列からどの構文が利用されているかを解析していきます。ここではトークンの列が対応するPHPの文法としてif文であったりクラスの宣言であったり様々な構文が解析されていきます。不正な文法が与えられた場合はここでパースエラーとなって弾かれます。
+PHPはこの構文解析にbisonと呼ばれるパーサジェネレータを利用しています。PHPではZend/zend_language_parser.yにそれを使った文法の定義が載っています。これもbisonのマニュアルと共に読んでいくとよいでしょう。
+VM用コードにコンパイル
+VM用のコードはしばしばオペコードと呼ばれます。PHP内部のコンパイラはソースコードをオペコードにコンパイルしていきます。ここで初めてソースコードはZendEngineが実行出来るコードに変換されます。
+ソースコードをいちいち内部のVM用のコードに変換してから実行するのは高速化のためです。PHPに限らずPerl, Ruby, Pythonなど多くのスクリプト言語では高速化のためにソースコードを内部のVM用のコードに実行時コンパイルしてからVMで実行します。
+こういった言語の内部VMの概要については、Rubyist MagazineのVMってなんだろうという記事で解説されています。これはRubyのYARVを説明するために記述されているものですが、言語の内部VMの一般的な話として参考になります。
+このVM用コードへのコンパイラ部分のソースコードは、Zend/zend_compile.cに記述されています。これらの関数は構文解析フェーズでZend/zend_language_parser.yから呼ばれているものが多いので合わせて読むと理解しやすいです。
+VMによる実行
+最後に、ZendEngine用にコンパイルされたコードをZendEngineが実行します。
+ZendEngineのオペコードの種類を知るにはマニュアルのZendEngine2のオペコード一覧を参照します。
+通常のPHPソースコードからどういったオペコードの列が生成されるかは、parsekitモジュールやvldモジュールを用いてみることができます。
+ここではparsekitモジュールを用いて以下のように生成されるオペコードを確認できます。
+<?php
+$opcodes = parsekit_compile_string('
+echo "hello world";
+if (isset($b)) {
+echo "hoge";
+}
+', $errors, PARSEKIT_SIMPLE);
+foreach ($opcodes as $i => $opcode) {
+if (is_int($i)) {
+echo $opcode . "\n";
+}
+}
+以下結果です。ZEND_ECHOやZEND_JMPZなど行の先頭にあるのがオペコードの種類で、それに続くのがオペコードへの引数です。
+ZEND_ECHO UNUSED 'hello world' UNUSEDZEND_ISSET_ISEMPTY_VAR T(0) T(0) UNUSEDZEND_JMPZ UNUSED T(0) #5ZEND_ECHO UNUSED 'hoge' UNUSEDZEND_JMP UNUSED #5 UNUSEDZEND_RETURN UNUSED NULL UNUSED
+予めZendEngineに用意されている拡張ポイント
+以上、言語処理系としてのPHPがどのようにソースコードを実行しているのかをおおまかに解説しました。
+PHPそのものの振る舞いを変える拡張ライブラリでは、以上の4つのフェーズで行われる処理を追加、変更するものが多いです。
+具体的には、APCでは「字句解析+構文解析+VM用のコードにコンパイル」という三つのフェーズをキャッシュによって省略しようとします。また、Xdebugではテストカバレッジの計測や関数トレースのためにコンパイルフェーズと実行フェーズに振る舞いを追加します。
+これらの拡張ライブラリでは、PHPの振る舞いを変更するためのZendEngineに予め用意されている拡張ポイントを利用しています。
+先ほどソースコードが実行されるまでの4つのフェーズを説明しましたが、これらのフェーズを拡張するのにzend_compile_file, zend_compile_string, zend_executeという関数ポインタの変数が拡張ポイントとして用意されます。これらの関数ポインタにはあらかじめオリジナルのZendEngineの関数が設定されていますが、拡張ライブラリからはこれを自由に設定しなおすことができます。これらに設定されるデフォルトの振る舞いは以下になります。
+- zend_compile_file: ファイル名からそのファイルのソースコードを取得しVM用のオペコードにコンパイルする。
+- zend_compile_string: 文字列からそのファイルのソースコードを取得しVM用のオペコードにコンパイルする。evalを使う際に利用される。もしくはインタラクティブシェル。
+- zend_execute: VM用にコンパイルされたオペコードを実行する。
+zend_compile_file, zend_compile_stringにデフォルトで設定される関数は、上述したPHPの実行の流れの4つのフェーズのうち、「字句解析+構文解析+VM用コードにコンパイル」という三つのフェーズを担当します。
+拡張ポイントはこれ以外にもあるのですが、筆者自身が全ての詳細を把握してないのでとりあえずはこの三つを説明しました。これらの拡張ポイントが実際にどのように利用されているかを知るには、APCなどの拡張ライブラリのソースコードを眺めてみると良いでしょう。
+PHPに構文を追加する
+これまでPHPの大まかな実行の流れと拡張ポイントについて記述しました。これらのことを踏まえると、PHPにオリジナルの構文を拡張ライブラリから追加する方法というものが見えてくると思います。 
+zend_compile_string, zend_compile_fileという二つの関数ポインタに自分が作成した関数を設定すれば、「字句解析+構文解析+VM用コードにコンパイル」という三つのフェーズの振る舞いを取り替えられます。 つまり、ここで自分でパーサやコンパイラを実装することで、文法を自由にカスタマイズできます。
+実際に、それを行って様々な文法拡張や無名関数の導入などを行うQIQという拡張ライブラリも存在します。PHP5.3では無名関数が導入されましたが、この拡張ライブラリは無名関数のないPHP5.2時代に無名関数などを拡張ライブラリレベルで導入します。このライブラリではパーサの拡張のために前述したzend_compile_fileを拡張ライブラリから設定して構文解析器を取り替えることで実現しています。実装の中身については作者のrskyさんによる解説記事や資料を見ましょう。
+問題点:めんどうくさい
+というわけでやっと拡張ライブラリからどのようにして文法拡張できるのかだんだん流れを掴めてきたと思います。ただひとつ問題があります。
+上述したように、自分でパーサとコンパイラを実装すればオリジナルの文法を導入できるというのはいいのですが、ほんのちょっとPHPにオレオレ構文を追加したい、という時にPHP本体とほんの少し違うパーサやコンパイラをまるごと実装しなければならない、というのはなんとなく手に余る印象を受けます。
+ちょっとしたハックでPHPに独自文法を導入する方法は無いのでしょうか?
+XHP拡張ライブラリ
+ここでXHP拡張ライブラリを紹介します。
+facebookによるオープンソースプロジェクトとして公開されているこの拡張ライブラリは、PHPに以下のような拡張文法を導入します。これらの例はドキュメントから引用したものです。
+<?php
+$post =
+<div class="post">
+<h2>{$post}</h2>
+<p><span>Hey there.</span></p>
+<a href={$like_link}>Like</a>
+</div>;
+<?php
+$list = <ul />;
+foreach ($items as $item) {
+$list->appendChild(<li>{$item}</li>);
+}
+ご覧のとおり、PHPにXMLリテラルを埋め込める拡張文法を提供しています。
+XMLリテラルが生成するオブジェクトのクラスは以下のように宣言することができます。
+<?php
+// <fb:thing>というタグに対応
+class :fb:thing extends :x:element {
+...
+}
+文法だけではなく、属性や要素内にPHPの式をおくと勝手にエスケープしてくれます。
+XHP拡張ライブラリの仕組み
+XHP拡張がどう動いているかのドキュメントの冒頭からこの拡張ライブラリが何をやっているのかを引用します。
+The XHP PHP extension which hooks into compile_file and compile_string. XHP will intercept calls to these functions and run all the code through a preprocessing step. The XHP compilation stage parses a superset of PHP and then returns code that PHP can understand. Therefore, all XHP really gives you is syntatic sugar via automatic metaprogramming.
+このXHP拡張はcompile_file関数とcompile_string関数をフックする。XHPはこれらの関数の呼び出しを横取りし、プリプロセスしてから全てのコードを実行する。XHPのコンパイル段階では、PHPのスーパーセットの文法を解釈してPHPが理解できるコードを返す。つまりXHPが提供しているものは、自動的なメタプログラミングを通じての糖衣構文である。
+https://github.com/facebook/xhp/wiki/How-It-Works
+なんだか分かりやすいのか分かりにくいのかよくわからない記述ですが、compile_file, compile_stringという関数は、zend_compile_file, zend_compile_stringに予め設定されている関数です。つまり実行時コンパイルのデフォルトの振る舞いのことです。XHP拡張ではこのデフォルトの振る舞いに、拡張文法が入ったソースコードを通常のPHPのソースコードに変換するプリプロセスのフェーズを挿入します。自動的なメタプログラミングというのはそれのことです。
+わかりやすく図で説明すると、通常のPHPが左図のプロセスを経て実行されるのに対して、XHP拡張を読み込むと右図のプロセスを経て実行されるようになります。XHPの場合プリプロセスのフェーズが追加されているのがわかります。 
+XHPが具体的にどうコードを変換するのかを確認する場合は、xhp_preprocess_code関数を以下のように用います。
+<?php
+$code = xhp_preprocess_code('<?php
+if ($_POST["name"]) {
+echo <span>Hello, {$_POST["name"]}</span>;
+} else {
+echo
+<form method="post">
+What is your name?<br />
+<input type="text" name="name" />
+<input type="submit" />
+</form>;
+}
+');
+echo $code['new_code'];
+実行すると以下になります。
+<?phpif($_POST["name"]){echo new xhp_span(array(), array('Hello, ',$_POST["name"],), __FILE__, 4);}else {echonew xhp_form(array('method' => 'post',), array(' What is your name?',new xhp_br(array(), array(), __FILE__, 8),new xhp_input(array('type' => 'text','name' => 'name',), array(), __FILE__, 9),new xhp_input(array('type' => 'submit',), array(), __FILE__, 10),), __FILE__, 7);}
+XMLリテラルがオブジェクトを生成するコードに変換されています。
+XHP拡張の良いところとして、PHPのスーパーセットの字句解析器と構文解析器がすでに備わっており、しかも文法拡張にプリプロセスを行うだけという単純さがあるので、これを改造するだけで簡単に独自文法を追加することができます。
+branif*ck構文
+というわけでこのXHP拡張ライブラリに改造を施してbrainf*ck構文を追加してみました。
+brainf*ckは難解プログラミング言語の中ではおそらく最も有名な言語のひとつです。8つの命令しかありませんがチューリング完全で、理論的には普通のプログラミング言語と同じ表現力を持つと言われています。
+このハックではPHPのコード中にbrainf*ckを実行出来る構文を用意しました。"+"や">"など通常は演算子として用いられますが、XHPのパーサにbrainf*ck構文用の文法定義を追加してbrainf*ckのコードとして実行されるように拡張しています。以下の様にbrainf*ckを実行することができます。
+<?php
+require_once __DIR__ . '/init.php';
+brainf*ck 
++++++++++[
+>++++++++>++++++++++
++>+++++<<<-
+]>.>++.+++++++..+++.>-.
+------------.
+<++++++++.--------.+++.
+------.--------.>+.
+;
+これを実行すると以下になります。
+Hello, world!
+拡張ライブラリのソースコードはgithubにてxhp-brainf-ckという名前で公開しています。
+ビルドの方法はXHPと同じなのでXHPのドキュメントにあるビルド方法を参考にしてください。通常の拡張ライブラリのビルドの方法とも変わりはないので特に難しくないでしょう。
+XHPのどの辺を改造しているかはこのコミットログにdiffがあるので見てください。
+また、XHPを用いて実行する際はphp-lib/init.phpをincludeするのを忘れないでください。XHP拡張はあくまでPHPに糖衣構文を追加するだけのもので、実際に独自構文に対して新しい振る舞いをさせるにはそれを行うライブラリを読み込まなければなりません。
+結論
+- 拡張ライブラリではPHPの実行フェーズをフックできる
+- FacebookのXHP拡張はプリプロセスフェーズを作って文法拡張
+- XHP拡張を改造すると簡単に独自文法を導入できる
+参考資料
+以下に拡張ライブラリ関連の参考になる資料を挙げておきます。
+- PHP のコア: Zend Engine ハッカーの手引き - 公式マニュアルでの処理系コアや拡張ライブラリの解説。とりあえず見ましょう
+- 実例で学ぶPHP拡張モジュールの作り方  - おそらく日本で一番拡張ライブラリを書いているであろうrskyさんによるgihyoの連載記事
+- PHP Extension Writing
+- PHPのコミッタであるmoriyoshiさんによるPHPの内部実装の解説資料
+- 小泉守義のPHPソースコードウォッチ - moriyoshiさんによるPHP内部ソースの解説ブログ
+- Extension Writing Part I: Introduction to PHP and Zend - Zend本家のPHP拡張に関する連載記事その1
+- Extension Writing Part II: Parameters, Arrays, and ZVALs - その2
+- Extension Writing Part II: Parameters, Arrays, and ZVALs [continued] - その2の続き
+- Extension Writing Part III: Resources - その3
+- Wrapping C++ Classes in a PHP Extension
+- Anatomy of a PHP Request
+- PHP Compiler Internals
+- DSAS開発者の部屋:PHP Extension を作ろう第1回 - まずは Hello World
+- DSAS開発者の部屋:PHP Extension を作ろう第2回 - 引数と返値
+- DSAS開発者の部屋:PHP Extension を作ろう第3回 - クラスを作ろう
+- Build your own PHP extension
+- 30分でわかる PHP Extensionの作り方を学べる記事をかいたよー ＼(＾o＾)/
+- PHP extension の作り方
+- ZendEngine勉強会@東京 - ZendEngine勉強会のまとめ
+- Advanced PHP Programming - Part V:  Extensibilityの章に拡張について記述されています
+ZendEngine勉強会で「拡張ライブラリでなるべく簡単に構文を追加する方法」というタイトルで喋ってきました : アシアルブログ

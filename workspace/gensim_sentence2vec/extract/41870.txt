@@ -1,0 +1,166 @@
+
+概要
+新しい Cisco ユニファイド コンピューティング システム(UCS)の Cisco UCS ブレード サーバ B440 M1 では、UCS Manager(UCSM)のサービス プロファイルに仮想インターフェイス アダプタを配置できます。これは、仮想ホスト インターフェイスの配置割り当てと言います。 
+仮想ホスト インターフェイスの配置割り当ては、互いに独立したサーバ ハードウェア構成の物理ネットワーク インターフェイス(メザニン)に vNIC と vHBA を配置する方法について定義しています。論理サーバがブレードに関連付けられているとき、仮想インターフェイス アダプタが物理アダプタに割り当てられます。 
+新しい B440 M1 ブレード サーバでは、特定の仮想インターフェイス アダプタに vNIC/vHBA を割り当てることができる 2 つの仮想インターフェイス アダプタがあります(1 から 2)。vNIC/vHBA が仮想インターフェイス アダプタに割り当てられていない場合、Unified Computing Manager(UCM)は PCI to BDF の順番に従ってデフォルトのポリシーを適用します。また、UCSM では仮想インターフェイス アダプタそれぞれをカスタマイズし、サーバ ブレードの導入またはリカバリのあとで使用する仮想インターフェイス アダプタ プロファイルを作成できます。 
+前提条件
+要件
+次の項目に関する知識があることが推奨されます。 
+Cisco UCS 5108 シャーシ
+Cisco UCS 6100XP Fabric Interconnet リリース 4.1(3)N2
+Cisco UCS B440-M1 ブレード サーバ
+Cisco UCSM バージョン 1.3
+使用するコンポーネント
+このドキュメントの情報は、次のソフトウェアとハードウェアのバージョンに基づくものです。  
+Cisco UCS B440-M1 ブレード サーバ
+このドキュメントの情報は、特定のラボ環境にあるデバイスに基づいて作成されたものです。このドキュメントで使用するすべてのデバイスは、クリアな(デフォルト)設定で作業を開始しています。対象のネットワークが実稼働中である場合には、どのような作業についても、その潜在的な影響について確実に理解しておく必要があります。 
+表記法
+ドキュメント表記の詳細は、『シスコ テクニカル ティップスの表記法』を参照してください。 
+背景説明 
+Cisco UCSM では、次の 4 つの B440-M1 10Gb メザニン アダプタを定義できます。  
+QLogic Schultz ベース CNA(M72KR-Q)
+Emulex Tigershark ベース CNA(M72KR-E)
+Intel Niantic ベース NIC(M61KR-I)
+Broadcom Everest ベース NIC(M51KR-I)
+このドキュメントで使用する B440-M1 10Gb メザニン アダプタは、2 つの vHBA/vNIC をサポートする Emulex ベース CNA M72KR-E です。 
+次の例に、仮想インターフェイス アダプタあたり 2 つの HBA と 2 つの NIC を実装する 2 スロット(1 と 2)インターフェイス アダプタを示します。
+注: 上記の画面は、インストールされた Emulex アダプタを表示する Cisco UCSM の [Equipment] ビューです。 
+このほか、サービス プロファイルでは UCSM の GUI 内での vNIC/vHBA の配置をサポートします。これにより、仮想インターフェイス アダプタのプロパティを次の選択項目に応じて設定することができます。  
+All: この仮想インターフェイス アダプタに、どの vNIC/vHBA でも割り当てることができます。
+Assigned-Only: 明示的に割り当てられた vNIC/vHBA のみ、この仮想インターフェイス アダプタに所属することができます。
+Exclude-Dynamic: UCSM では、この仮想インターフェイス アダプタにダイナミック vNIC を割り当てることはできません。
+Exclude-Unassigned: UCSM では、この仮想インターフェイス アダプタにスタティック(非ダイナミック)vNIC を割り当てることはできません。
+上記の選択項目オプションは、vNIC/vHBA を割り当てるときに UCSM がこの仮想インターフェイス アダプタをどう使用するかを示したものです。 
+注: 番号順とは、vNIC/vHBA を仮想インターフェイス アダプタ内で整理できることを示しています。 
+次の画面は、vCon1 に all を、vCon2 に assigned-only を割り当てる選択項目です。
+サービス プロファイルの仮想インターフェイス アダプタ
+仮想インターフェイス アダプタのサービス プロファイルを設定するには、ソフトウェアがどのように B440-M1 にアダプタを割り当てるのかを理解する必要があります。  
+vNIC と vHBA は、ユーザによって明示的に、または LS 割り当て中に UCSM によって自動的に仮想インターフェイス アダプタへ割り当てられます。
+LS 割り当て中に、仮想インターフェイス アダプタは物理メザニン カードにマッピングされます。
+vNIC/vHBA の配置
+vNIC/vHBA のデフォルトの配置は、次のとおりです。  
+アダプタが 2 つある場合、デフォルトでは B440-M1 アダプタが右側のスロット(スロット 1)から vNIC/vHBA の割り当てを開始し、両アダプタに対して合計数を均等に割り当てます。次に、例を示します。vNIC が 4 つある場合(1、2、3、4)、1 と 2 をスロット 1 アダプタに割り当てて、3 と 4 をスロット 0 アダプタに割り当てます。   
+vNIC/vHBA の具体的な配置は、次のとおりです。  
+特定のアダプタに対して vNIC/vHBA の配置方法をさらに制御したい場合は、仮想インターフェイス アダプタの概念を活用します。
+サービス プロファイル
+次の手順を実行します。
+サービス プロファイルの作成は、Cisco UCS では以前からできました。詳細な作成方法は、『サービス プロファイルの作成』を参照してください。 
+Cisco UCSM でサービス プロファイルを作成するとき、希望する仮想インターフェイス アダプタを配置できます。または、[Network](vNIC)または [Storage](vHBA)の両方で [Actions] の下の [Modify vNIC/vHBA Placement] からでも配置できます。仮想インターフェイス アダプタのサービス プロファイル設定の詳細は、『vNIC/vHBA 配置の設定』を参照してください。 
+次の画面は、サービス プロファイル CE-B440-M1-SP の作成後に vNIC/vHBA の仮想インターフェイス アダプタを配置するところを示しています。 
+ネットワークにおける vNIC 仮想インターフェイス アダプタの配置
+ストレージにおける vHBA 仮想インターフェイス アダプタの配置
+ハードウェア アダプタの確認
+このセクションでは、Cisco UCS 5108 シャーシにインストールされた物理アダプタを確認する方法について説明します。  
+UCSM の [Equipment] タブで、サーバのインターフェイス カードから適切なものを選択します。UCSM の GUI の [Equipment] タブの詳細については、『ファームウェアの管理』を参照してください。 
+アダプタ ハードウェアの特定
+サービス プロファイルにおけるインターフェイス アダプタ カード 2 の仮想インターフェイス配置のデフォルトと選択
+「デフォルトの仮想インターフェイス配置」セクションでは、UCSM から Cisco B440-M1 Emulex インターフェイス アダプタ カード 2 を使って仮想インターフェイス配置のデフォルトと選択を使用する方法について説明します。 
+デフォルトの仮想インターフェイス配置
+次の手順を実行します。
+B440-M1 Emulex アダプタ インターフェイス カード 2 のハードウェアを確認します。  
+B440-M1 Emulex アダプタのハードウェアを確認します。 
+B440-M1 インターフェイス カードのアダプタ タイプの確認(スロット 1 とスロット 2)
+[Interface Card 2] の B440-M1 Emulex アダプタ詳細でハードウェアを確認します。 
+スロット 2 のインターフェイス カード 2 のインターフェイス アダプタ詳細を確認
+B440-M1 Emulex アダプタ インターフェイス カード 2 のサービス プロファイルを設定します。 
+デフォルトの仮想インターフェイス配置を確認します。 
+サービス プロファイルの作成
+サービス プロファイルの作成の詳細は、『サービス プロファイルの作成』を参照してください。  
+インターフェイス カード 2 のサービス プロファイルを作成します。
+作成したサービス プロファイルに対して vNIC を 2 つ作成します。 
+デフォルトの 2 つの vNIC が作成されたサーバ プロファイル
+次のスナップショットは、サービス プロファイルで定義された vNIC のインターフェイス カード 1 のスロット 1 のデフォルト配置が割り当てられた vCon 1 の配置順を示しています。 
+インターフェイス カード 1 に割り当てられた vNIC
+Pubs-B /org # scope service-profile server 1/7
+Pubs-B /org/service-profile # show vnic detail
+Name: vnic-emulex-a
+Fabric ID: A
+Dynamic MAC Addr: 00:25:B5:03:03:0B
+Desired Order: 1
+Actual Order: 1
+Desired VCon Placement: 1
+Actual VCon Placement: 1
+Equipment: sys/chassis-1/blade-7/adaptor-1/host-eth-1
+Name: vnic-emulex-b
+Fabric ID: B
+Dynamic MAC Addr: 00:25:B5:04:B2:07
+Desired Order: 2
+Actual Order: 2
+Desired VCon Placement: 1
+Actual VCon Placement: 1
+Equipment: sys/chassis-1/blade-7/adaptor-1/host-eth-2
+vNIC のデフォルトの仮想アダプタ配置を確認します。 
+デフォルトの仮想インターフェイス配置
+Pubs-B /org # scope service-profile server 1/7
+Pubs-B /org/service-profile # show vnic detail
+Name: vnic-emulex-c
+Fabric ID: A
+Dynamic MAC Addr: 00:25:B5:00:A5:00
+Desired Order: 3
+Actual Order: 1
+Desired VCon Placement: Any
+Actual VCon Placement: 2
+Equipment: sys/chassis-1/blade-7/adaptor-2/host-eth-1
+Name: vnic-emulex-d
+Fabric ID: B
+Dynamic MAC Addr: 00:25:B5:00:00:00
+Desired Order: 4
+Actual Order: 2
+Desired VCon Placement: Any
+Actual VCon Placement: 2
+Equipment: sys/chassis-1/blade-7/adaptor-2/host-eth-2
+仮想インターフェイス アダプタの手動での配置
+Cisco UCSM の [Modify vNICs/vHBAs Placement] の使い方は、『vNIC/vHBA 配置の設定』を参照してください。 
+新しい vNIC(vnic-emulex-c および vnic-emulex-d)をインターフェイス カード 1(スロット 1)からスロット 2 に割り当てて、vnic-emulex-a/b を vNIC に割り当てます。
+これを設定することで、vnic-emulex-c/d を手動で指定できるようになります。
+vNIC の配置を割り当てます。
+vNIC:
+Name: vnic-emulex-a
+Fabric ID: A
+Dynamic MAC Addr: 00:25:B5:03:03:0B
+Desired Order: 1
+Actual Order: 1
+Desired VCon Placement: 2
+Actual VCon Placement: 2
+Equipment: sys/chassis-1/blade-7/adaptor-2/host-eth-1
+Name: vnic-emulex-b
+Fabric ID: B
+Dynamic MAC Addr: 00:25:B5:04:B2:07
+Desired Order: 2
+Actual Order: 2
+Desired VCon Placement: 2
+Actual VCon Placement: 2
+Equipment: sys/chassis-1/blade-7/adaptor-2/host-eth-2
+Name: vnic-emulex-c
+Fabric ID: A
+Dynamic MAC Addr: 00:25:B5:00:A5:00
+Desired Order: 1
+Actual Order: 1
+Desired VCon Placement: 1
+Actual VCon Placement: 1
+Equipment: sys/chassis-1/blade-7/adaptor-1/host-eth-1
+Name: vnic-emulex-d
+Fabric ID: B
+Dynamic MAC Addr: 00:25:B5:00:00:00
+Desired Order: 2
+Actual Order: 2
+Desired VCon Placement: 1
+Actual VCon Placement: 1
+Equipment: sys/chassis-1/blade-7/adaptor-1/host-eth-2
+Pubs-B /org/service-profile # show vcon expand detail
+Virtual Network Interface:
+Virtual Network Interface ID: 1 This is Adapter ID:1 Slot1
+Selection Preference: All
+Virtual Network Interface ID: 2 This is Adapter ID:2 Slot2
+Selection Preference: All
+Pubs-B /chassis/server # show server adapter vnics
+Eth Interface:
+Adapter Interface Vnic Dn    Dynamic MAC Addr Type
+------- --------- ---------- ---------------- ----
+1    1 org-root/ls-CE-B440-M1-SP/ether-vnic-emulex-c 00:25:B5:00:A5:00 Ether
+1    2 org-root/ls-CE-B440-M1-SP/ether-vnic-emulex-d 00:25:B5:00:00:00 Ether
+2    1 org-root/ls-CE-B440-M1-SP/ether-vnic-emulex-a 00:25:B5:03:03:0B Ether
+2    2 org-root/ls-CE-B440-M1-SP/ether-vnic-emulex-b 00:25:B5:04:B2:07 Ether
+Cisco サポート コミュニティ - 特集対話 
+Cisco サポート コミュニティでは、フォーラムに参加して情報交換することができます。現在、このドキュメントに関連するトピックについて次のような対話が行われています。
+サービス プロファイルの仮想インターフェイス アダプタのシナリオ - Cisco Systems

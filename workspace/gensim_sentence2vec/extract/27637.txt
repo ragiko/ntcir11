@@ -1,0 +1,630 @@
+#!/usr/bin/perl
+# CLue Phrase Extraction Software 
+use strict;
+use Encode;
+use utf8;
+use lib ".";
+use bnstCabo;
+use MeCab;
+my $model = new MeCab::Model();
+my $mecab = $model->createTagger();
+# マルチスレッド
+use Parallel::ForkManager;
+my $pm = Parallel::ForkManager->new(8);
+# オプション解析
+use Getopt::Std;
+getopts('s:p:n:b:t:', \my %options);
+# 必須オプション
+if(!defined $options{s} || !defined $options{p} || 
+!defined $options{n})
+{
+print encode_utf8 {H};
+my $C = $TrafficAccident{$accident}->{core};
+print encode_utf8("[Common] $accident (H: $H) [C: $C] \n");
+}
+print encode_utf8("$t 回目\t共通頻出表現総数 : $CurrentOfAccident -> $AmountOfAccident \n\n");
+# 閾値の更新(エントロピー理論最大値) 
+my $H2 = log($AmountOfAccident)/log(2);
+my $Threshold_S = $beta2*$H2;
+# 手がかり表現を抽出.
+extract_Seed(\%TrafficAccident,\%Seed,$Threshold_S);
+$CurrentOfSeed = $AmountOfSeed;
+$AmountOfSeed = keys %Seed;
+# 表示
+foreach my $seed (keys %Seed)
+{
+my $H = $Seed{$seed}->{H};
+my $C = $Seed{$seed}->{core};
+print encode_utf8("[Clue] $seed (H: $H) [C: $C]\n");
+}
+print encode_utf8("$t 回目\t手がかり表現総数 : $CurrentOfSeed -> $AmountOfSeed \n\n");
+# 収束したら終了
+last if($CurrentOfAccident == $AmountOfAccident && $CurrentOfSeed == $AmountOfSeed);
+}
+# ------ 共通頻出表現、手がかり表現の出力 ------
+open(OUT,">cause.list");
+foreach my $accident (keys %TrafficAccident)
+{
+my $H = $TrafficAccident{$accident}->{H};
+my $C = $TrafficAccident{$accident}->{core};
+print OUT encode_utf8("[Common]\t$accident\t$C\t$H\n");
+}
+foreach my $seed (keys %Seed)
+{
+my $H = $Seed{$seed}->{H};
+my $C = $Seed{$seed}->{core};
+print OUT encode_utf8("[Clue]\t$seed\t$C\t$H\n");
+}
+close(OUT);
+undef %TrafficAccident;
+undef %Seed;
+}
+# ------------------------------------------
+#  手がかり表現のハッシュから、共通頻出表現を抽出
+# ------------------------------------------
+sub extract_Accident
+{
+my($ref_Seed,$ref_Accident,$threshold) = @_;   
+# 初期化
+my $AmountOfSeed = scalar(keys %{$ref_Seed});
+my $amount = 0;
+# 手がかり表現を含む文を取得(IndexOfSentenceに格納)
+print encode_utf8("検索処理\n");
+searchSentence($ref_Seed);
+# 構文解析処理
+print encode_utf8("構文解析処理\n");
+foreach my $seed (keys %{$ref_Seed})
+{
+$pm->start and next;
+my $core = $ref_Seed->{$seed}->{core};
+# CaboCha解析
+my $cabo_analy_result = mkCaboTokyo($core);
+# 一時ファイルの生成
+open(TMP,">>cabo_tmp.txt");
+flock(TMP,2);
+print TMP encode_utf8($cabo_analy_result);
+close(TMP);
+$pm->finish;    
+}
+$pm->wait_all_children;
+open(TMP,"cabo_tmp.txt");
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($code,$cabo_str) = split(/ :: /,$data);
+next if($code eq "");
+$CabochaCache{$code} = $cabo_str;
+}
+close(TMP);
+# 一時ファイルの削除
+unlink("cabo_tmp.txt");
+# 共通頻出表現の抽出
+print encode_utf8("共通頻出表現抽出処理\n");
+foreach my $seed (keys %{$ref_Seed})
+{
+next if(defined $TurnCache{$seed});
+next if($seed eq ""); 
+$pm->start and next;
+# 核文節の抽出   
+my $e_turn = getExpression($ref_Seed->{$seed}->{core});
+# 一時ファイルの生成
+open(TMP,">>turn_tmp.txt");
+flock(TMP,2);
+print TMP encode_utf8("$seed\t$e_turn\n");
+close(TMP);
+$pm->finish;
+}
+$pm->wait_all_children;
+open(TMP,"turn_tmp.txt");
+# キャッシュに格納
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($seed,$e_turn) = split(/\t/,$data);
+next if($seed eq "");
+$TurnCache{$seed} = $e_turn;
+}
+close(TMP);
+# 一時ファイルの削除
+unlink("turn_tmp.txt");
+# エントロピーを計算するための情報を取得
+my @aTurn;
+my %TFAccident;
+my %AccidentSeed;
+foreach my $seed (keys %TurnCache)
+{
+my $e_turn = $TurnCache{$seed};
+my @eTurn = split(/ /,$e_turn);
+foreach my $turn (@eTurn)
+{
+# 核文節の取得
+my @phrase = split(/:/,$turn);
+my $t_core = pop(@phrase);
+undef @phrase;
+$AccidentSeed{$t_core}{$seed}++;
+$TFAccident{$t_core}++;
+# 派生表現をマージ
+push(@aTurn,$turn);
+}
+undef @eTurn;
+}
+# シャノン情報量最大の派生表現を抽出
+my %Act = getFrequentExpCandidate(\@aTurn);
+# 共通頻出表現の獲得 
+my @CommonList;
+my %EntropyHash;
+foreach my $turn (keys %Act)
+{ 
+next if($turn eq "");
+# 核文節
+my $t_core = $Act{$turn};
+# パラメータを計算
+my $P = 0;   # 出現確率
+my $H = 0;   # エントロピー
+foreach my $seed (keys %{$AccidentSeed{$t_core}})
+{
+$P = $AccidentSeed{$t_core}{$seed}/$TFAccident{$t_core};
+$H = $H - $P*(log($P)/log(2));
+}
+# エントロピー $Threshold 以上なら共通頻出表現として採用
+if($H > $threshold)
+{
+push(@CommonList,$turn);
+$EntropyHash{$turn} = $H;
+}
+}
+undef %TFAccident;
+undef %AccidentSeed;
+foreach my $turn (@CommonList)
+{
+my $t_core = $Act{$turn};
+my $H = $EntropyHash{$turn};
+$$ref_Accident{$turn}->{core} = $t_core;
+$$ref_Accident{$turn}->{H} = $H;
+}
+undef @CommonList;
+undef @aTurn;
+undef %Act;
+undef %EntropyHash;
+}
+# --------------------------------------------------
+# 機能:手がかり表現から、共通頻出表現候補を抽出する
+# 引数:手がかり表現
+# --------------------------------------------------
+sub getExpression
+{
+my($core) = @_;
+my @SentenceList = split(/ /,$IndexOfSentence{$core});
+my $TurnStr = "";  
+foreach my $code (@SentenceList)
+{
+# 構文解析
+my $bnstknp = $CabochaCache{$code};
+print"ERROR -> $code\n" if($bnstknp eq "");
+my @bnst = bnstknp_output($bnstknp);
+my $i;
+for($i=0; $i{phrase} =~ $core)
+{
+# 係り元がなくなったら終了
+next if($bnst[$i]->{depended_by} eq "");
+# 係り元取得
+my @depended_list = split(/\,/, $bnst[$i]->{depended_by});
+# 手がかり表現の直近の係り表現
+my $j = pop(@depended_list);
+undef @depended_list;
+# 文節番号の文節を取得
+my $phrase = $bnst[$j]->{phrase};
+# 文節番号の節を取得(":"は区切り記号)
+my $passeage = $bnst[$j]->{passeage};
+# 整形(核文節の取得.文節から最後尾助詞を除去)
+my $pre = remodeled($phrase,$core,0);
+# 例外処理
+next if($pre eq "");
+# $phraseの最終文節を核文節に置き換える
+$passeage =~ s/$phrase/$pre/;
+# 核文節の取得
+my @phrase = split(/:/,$passeage);
+my $t_core = pop(@phrase);
+undef @phrase;
+# 長さ制限
+my $len = length($t_core);
+next if($len start and next;
+my $t_core = $ref_TrafficAccident->{$turn}->{core};
+# CaboCha解析
+my $cabo_analy_result = mkCaboTokyo($t_core);
+# 一時ファイルの生成
+open(TMP,">>cabo_tmp.txt");
+flock(TMP,2);
+print TMP encode_utf8($cabo_analy_result);
+close(TMP);
+$pm->finish;    
+}
+$pm->wait_all_children;
+open(TMP,"cabo_tmp.txt");
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($code,$cabo_str) = split(/ :: /,$data);
+next if($code eq "");
+$CabochaCache{$code} = $cabo_str;
+}
+close(TMP);
+# 一時ファイルの削除
+unlink("cabo_tmp.txt");
+# 手がかり表現抽出処理
+print encode_utf8("手がかり表現抽出処理\n");
+foreach my $turn (keys %{$ref_TrafficAccident})
+{
+next if(defined $SeedCache{$turn});
+next if($turn eq "");  
+$pm->start and next;
+# 核文節
+my $t_core = $ref_TrafficAccident->{$turn}->{core};
+# 手がかり表現の抽出
+my $seed_str = getSeed($t_core);
+# 一時ファイルの生成
+open(TMP,">>seed_tmp.txt");
+flock(TMP,2);
+print TMP encode_utf8("$t_core\t$seed_str\n");
+close(TMP);
+$pm->finish;
+}
+$pm->wait_all_children;
+# キャッシュに格納
+open(TMP,"seed_tmp.txt");
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($t_core,$seed_str) = split(/\t/,$data);
+next if($t_core eq "");
+$SeedCache{$t_core} = $seed_str;
+}
+close(TMP);
+# 一時ファイルの削除
+unlink("seed_tmp.txt");
+foreach my $t_core (keys %SeedCache)
+{
+my $seed_str = $SeedCache{$t_core};
+my @eSeed = split(/ /,$seed_str);
+foreach my $e_seed (@eSeed)
+{
+my($seed,$s_core) = split(/:/,$e_seed);
+$CoreSeed{$seed}{$t_core}++;
+$TFSeed{$seed}++;
+# 手がかり表現の核
+$CoreOfSeed{$seed} = $s_core;
+}
+undef @eSeed;
+}
+# 手がかり表現の取得
+my @SeedList;
+my %EntropyHash;
+foreach my $seed (keys %CoreOfSeed)
+{
+next if($seed eq "");
+my $s_core = $CoreOfSeed{$seed};
+my $P = 0;   # 出現確率
+my $H = 0;   # エントロピー
+foreach my $core (keys %{$CoreSeed{$seed}})
+{
+$P = $CoreSeed{$seed}{$core}/$TFSeed{$seed};
+$H = $H - $P*(log($P)/log(2));
+}
+# エントロピー $Threshold 以上なら採用
+if($H > $threshold)
+{
+push(@SeedList,$seed);
+$EntropyHash{$seed} = $H;
+}
+}
+undef %TFSeed;
+undef %CoreSeed;
+foreach my $seed (@SeedList)
+{
+my $s_core = $CoreOfSeed{$seed};
+my $H = $EntropyHash{$seed};
+$ref_Seed->{$seed}->{core} = $s_core;
+$ref_Seed->{$seed}->{H} = $H;
+}
+undef @SeedList;
+undef %CoreOfSeed;
+undef %EntropyHash;
+}
+# --------------------------------------------------
+# 機能: 手がかり表現を抽出する
+# --------------------------------------------------
+sub getSeed
+{
+my($core) = @_;
+my @SentenceList = split(/ /,$IndexOfSentence{$core});
+my $SeedStr = "";
+foreach my $code (@SentenceList)
+{
+# 構文解析
+my $bnstknp = $CabochaCache{$code};
+print"ERROR -> $code\n" if($bnstknp eq "");
+my @bnst = bnstknp_output($bnstknp);
+my $i;
+for($i=0; $i{phrase} =~ $core)
+{
+my $j = $bnst[$i]->{depend_on};
+# 係り先がない場合,終了
+next if($j == -1 || $j eq "");
+# 手がかり表現の整形
+# $bnst[$i]->{phrase} の後尾助詞を,
+# $bnst[$j]->{phrase} に追加する
+my $p1 = $bnst[$i]->{phrase};
+my $p2 = $bnst[$j]->{phrase};
+# 手がかり表現
+my $phrase = remodeled($p1,$p2,1);
+# 手がかり表現の核
+my $s_core = $p2;
+# 長さ制限
+my $len = length($s_core);
+next if($len parse(encode_utf8($contents));
+my $str = decode_utf8($mecab_results);
+my @Str = split(/\n/,$str);
+# 数値が含まれていれば、排除
+foreach my $s (@Str)
+{
+my($word,$pos_str) = split(/\t/,$s);
+# 品詞を取得
+my($pos,$spi) = split(/,/,$pos_str);
+# 数詞関連
+if($spi eq "数")
+{
+return "";
+}
+}
+# 前方から  核文節の生成
+my $i;
+my $flg = -1;
+my $core = "";
+for($i=0; $i=1; $i--)
+{
+my $ph = $phrase[$i];
+my $next_ph = $phrase[$i-1];
+if($next_ph ne "")
+{
+# 文節を結合して表現を構成
+$sub_phrase = $next_ph.$sub_phrase;
+# 表現の数
+$Hash{$sub_phrase}++;
+# 表現を構成する文節の数
+$NumPhrase{$sub_phrase} = $t-$i+2;
+}
+}
+undef @phrase;
+}
+# 表現の総数
+my $D = 0;
+foreach my $sp (keys %Hash)
+{
+$D = $D + $Hash{$sp};
+}
+# シャノン情報量の最大値
+my $max = 0;
+my $max_sp = "";
+my $max_n = 0;
+foreach my $sp (keys %Hash)
+{
+my $n = $Hash{$sp};
+my $p = $n/$D;
+# シャノン情報量
+my $info=0;
+# 偶然性を考慮し,2回以上出現の部分節に限定
+if($n > 1)
+{
+# 派生表現を構成する文節の数
+my $num_phrase = $NumPhrase{$sp};
+my $wp = sqrt($num_phrase);
+# 情報量を計算
+$info = -$wp*$n*log($p)/log(2);
+}
+if($info >= $max)
+{
+$max = $info;
+$max_sp = $sp;
+$max_n = $n;
+}
+}
+undef %Hash;
+undef %NumPhrase;
+# 情報量 0 なら却下
+if($max == 0)
+{
+next;
+}
+# 最大のシャノン情報量を持つ候補を格納
+$Expression{$max_sp} = $core;
+}
+return %Expression;
+}
+# 入力クエリーを含む文集合を出力
+sub searchSentence
+{
+my($ref_query) = @_;
+my @QueryList;
+foreach my $exp (keys %{$ref_query})
+{    
+my $core = $ref_query->{$exp}->{core};
+if(!defined $IndexOfSentence{$core})
+{
+push(@QueryList,$core);
+}
+}
+foreach my $query (@QueryList)
+{
+next if($query eq "");
+$pm->start and next;
+my $key = "";
+foreach my $code (keys %SentenceHash)
+{    
+my $contents = $SentenceHash{$code};
+next if($contents eq "");
+if($contents =~ $query)
+{
+$key .= $code." ";
+}      
+}
+# 一時ファイルの生成
+open(TMP,">>result_tmp.txt");
+flock(TMP,2);
+print TMP encode_utf8("$query\t$key\n");
+close(TMP);
+$pm->finish;
+}
+$pm->wait_all_children;
+open(TMP,"result_tmp.txt");
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($query,$key) = split(/\t/,$data);
+$IndexOfSentence{$query} = $key;
+}
+close(TMP);
+# 一時ファイルの削除
+unlink("result_tmp.txt");
+}
+# --------- ハッシュのvalueでソート -----------
+sub sort_hash_value
+{
+my($ref_hash) = @_;
+my(@keys);
+@keys = sort { $$ref_hash{$b}  $$ref_hash{$a} } keys %{$ref_hash};
+return @keys;
+}
+# 初期ハッシュの生成
+sub getPositiveHash
+{
+my($cause_list,$n_tag) = @_;
+my %PositiveHash;
+open(ORG,$cause_list) || die "Can't open $cause_list\n";
+my @ParticleList;
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($tag,$str) = split(/ /,$data);
+next if($tag =~ /^#/); # コメント
+if($tag eq "[Particle]")
+{
+push(@ParticleList,$str);
+}
+if($tag eq "[$n_tag]")
+{
+if($n_tag eq "Clue")
+{
+foreach my $pp (@ParticleList)
+{
+my $seed = $pp.$str;
+$PositiveHash{$seed}->{core} = $str;
+$PositiveHash{$seed}->{H} = 0;
+}
+}
+elsif($n_tag eq "Common")
+{
+$PositiveHash{$str}->{core} = $str;
+$PositiveHash{$str}->{H} = 0;
+}
+}
+}
+close(ORG);
+return %PositiveHash;
+}
+# 拒否ハッシュの生成
+sub getNegativeHash
+{
+my($cause_list,$n_tag) = @_;
+my %NoizeHash;
+open(NO,$cause_list) || die "Can't open $cause_list\n";
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($tag,$str) = split(/ /,$data);
+next if($tag =~ /^#/); # コメント
+if($tag eq "[$n_tag]")
+{
+$NoizeHash{$str} = 1;
+# 共通頻出表現、手がかり表現の場合は追加
+if($n_tag eq "Common" || $n_tag eq "Clue")
+{
+my $str_1 = $str."、";
+my $str_2 = $str."。";
+$NoizeHash{$str_1} = 1;
+$NoizeHash{$str_2} = 1;
+}
+}
+}
+close(NO);
+return %NoizeHash;
+}
+sub getSentenceHash
+{
+my($input_txt) = @_;
+open(IN,$input_txt) || die "Can't open sentence.txt [$input_txt]\n";
+my %SentHash;
+while(my $data_utf8 = )
+{
+my $data = decode_utf8($data_utf8);
+chomp($data);
+my($code,$sentence) = split(/ /,$data);
+$SentHash{$code} = $sentence;
+}
+close(IN);
+return %SentHash;
+}
+sub bnstknp_output
+{
+my($bnstknp) = @_;
+my @bnstlist = split(/\t/,$bnstknp);
+my @bnst;
+foreach my $data (@bnstlist)
+{
+my @element = split(/ /,$data);
+my $i = $element[0];
+my $depended_list = $element[2];
+my $depend_on = $element[6];
+my $phrase = $element[7];
+my $passeage = $element[8];
+$bnst[$i]->{phrase} = $phrase;
+$bnst[$i]->{depended_by} = $depended_list;
+$bnst[$i]->{passeage} = $passeage;
+$bnst[$i]->{depend_on} = $depend_on;
+undef @element;
+}
+undef @bnstlist;
+return @bnst;
+}
+# CaboCha解析
+sub mkCaboTokyo
+{
+my($query) = @_;
+my @SentenceList = split(/ /,$IndexOfSentence{$query});
+my $cabo_analy_result = "";
+foreach my $code (@SentenceList)
+{
+next if(defined $CabochaCache{$code});
+my $contents = $SentenceHash{$code};
+my $bnstknp = new bnstCabo(encode_utf8($contents));
+my @bnst = $bnstknp->output;
+my $key = "";
+for(my $i=0; $i{phrase};
+my $depended_list = $bnst[$i]->{depended_by};
+my $passeage = $bnstknp->getPasseage($i,":");
+my $depend_on = $bnst[$i]->{depend_on};
+$key .= "$i : $depended_list -> $i -> $depend_on $phrase $passeage\t";
+}
+undef @bnst;
+$cabo_analy_result .= "$code :: $key\n";
+}
+undef @SentenceList;
+return $cabo_analy_result;
+}
+

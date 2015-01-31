@@ -1,0 +1,87 @@
+
+このプログラムは、チャンネル数とトレース数の上限が9 チャンネル、9 
+トレースに設定されていることを前提に作られています。
+このVBA プログラムを実行させると、下記に示すようなユーザフォームが現れます。
+meas_srq.vbaのプログラム実行時のユーザフォーム
+上図の各部分について使用方法を説明します。
+各チャンネルの連続起動モードのオン/ オフを設定し、チャンネル毎の測定/非測定を決定します。
+トリガを掛けて測定を開始し、測定終了を待ってメッセージを表示させます。詳しくは、コード・ウィンドウの説明を参照ください。
+プログラムが終了し、ユーザフォームが消えます。
+Visual Basic エディタ上でユーザフォーム( オブジェクト名:frmSrqMeas) を開き、Meas 
+ボタンまたはExit ボタンをダブル・クリックするとコード・ウィンドウが現れます。以下に各ボタンに対応するサブ・プログラムについて説明します。
+ユーザフォーム上のExit ボタンをクリックした場合の処理(10 〜 50 行)
+30 行
+ユーザフォームをメモリから解放し、プログラムを終了しています。
+ユーザフォーム上のMeas ボタンをクリックした場合の処理(70 〜 390 行)
+110 行
+ユーザフォーム( オブジェクト名:frmSrqMeas) を画面上から消しています。
+130 行
+測定画面のチャンネル・ウィンドウを、9 チャンネル分表示させています。
+140 行
+トリガ・ソースをバス・トリガに設定しています。
+160 〜 240 行
+各チャンネルの連続起動モードのオン/ オフを、オプション・ボタンのオン/ オフによって設定しています。なお、初期設定値は、チャンネル1 
+のみオンになっています。
+260 〜 270 行
+オペレーション・ステータス・コンディション・レジスタのビット4 が1 から0 に遷移(負遷移)した場合のみ、オペレーション・ステータス・イベント・レジスタのビット4 
+が1 に設定されるよう設定しています。
+280 行
+オペレーション・ステータス・イベント・レジスタのビット4が有効になるよう設定しています。
+290 行
+ステータス・バイト・レジスタのビット7 が有効になるよう設定しています。
+300 行
+ステータス・バイト・レジスタ、オペレーション・ステータス・イベント・レジスタをクリアしています。
+310 行
+トリガを掛けて測定を開始しています。
+320 行
+測定中であることを確認して、測定終了を検出するまでプログラムを待機させています。なお、タイム・アウト時間を最大100 秒に設定しています。
+330 〜 350 行
+測定終了を検出できた場合に、測定終了のメッセージを表示させています。
+370 行
+ユーザフォーム( オブジェクト名:frmSrqMeas) を画面上に表示しています。
+SRQ を利用した測定終了検出( オブジェクト名:frmSrqMeas)
+10| Private Sub cmdExit_Click()
+20| 
+30| Unload Me
+40| 
+50| End Sub
+60| 
+70| Private Sub cmdMeas_Click()
+80| 
+90| Dim Cond As Boolean
+100| 
+110| frmSrqMeas.Hide
+120| 
+130| SCPI.DISPlay.Split = "d123_456_789"
+140| SCPI.TRIGger.SEQuence.Source = "bus"
+150| 
+160| SCPI.INITiate(1).CONTinuous = optOn1.Value
+170| SCPI.INITiate(2).CONTinuous = optOn2.Value
+180| SCPI.INITiate(3).CONTinuous = optOn3.Value
+190| SCPI.INITiate(4).CONTinuous = optOn4.Value
+200| SCPI.INITiate(5).CONTinuous = optOn5.Value
+210| SCPI.INITiate(6).CONTinuous = optOn6.Value
+220| SCPI.INITiate(7).CONTinuous = optOn7.Value
+230| SCPI.INITiate(8).CONTinuous = optOn8.Value
+240| SCPI.INITiate(9).CONTinuous = optOn9.Value
+250| 
+260| SCPI.STATus.OPERation.PTRansition = 0
+270| SCPI.STATus.OPERation.NTRansition = 16
+280| SCPI.STATus.OPERation.ENABle = 16
+290| SCPI.IEEE4882.SRE = 128
+300| SCPI.IEEE4882.CLS
+310| SCPI.IEEE4882.TRG
+320| WaitOnSRQ Cond, 100000
+330| If Cond = True Then
+340| MsgBox "Measurement Completion"
+350| End If
+360| 
+370| frmSrqMeas.Show
+380| 
+390| End Sub
+SCPI.TRIGger.SEQuence.SINGle 
+オブジェクトを利用する方法
+SCPI.TRIGger.SEQuence.SINGleオブジェクトを使ってトリガを掛ける場合、 SCPI.IEEE4882.OPCオブジェクトで測定終了までプログラムを待機させることが可能になります。
+サンプル・プログラム・ディスクの中に、 SCPI.TRIGger.SEQuence.SINGle 
+オブジェクトを利用して測定終了を待つプログラム例( ファイル名:meas_sing.vba) が保存されています。このVBA プログラムは、以下のモジュールから構成されています。
+測定終了の検出

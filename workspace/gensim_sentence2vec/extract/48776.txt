@@ -1,0 +1,33 @@
+タスクをグループにまとめると、同じグループのすべてのタスクをまとめて再開または一時停止でき、タスクごとに繰り返す必要がありません。
+アプリケーション固有のタスク:サーバーレベルでのスケジュールタスクとは別に、アプリケーションのみが認識できるアプリケーションレベルのタスクをスケジュールできます。次に例を示します。
+<cfcomponent implements="CFIDE.scheduler.ITaskEventHandler"> 
+<cffunction name="onTaskStart" returntype="boolean"> 
+<cfargument name="context" type="struct"/> 
+<cfmail from="a@adobe.com" subject="Scheduler_Scenario_Testing" to="a@adobe.com"> 
+The Report is about to be generated. 
+</cfmail> 
+<cfreturn true> 
+</cffunction> 
+<cffunction name="onMisfire" returntype="void"> 
+<cfargument name="context" type="struct" required="false"/> 
+<cfmail from="a@adobe.com" subject="Scheduler_Scenario_Testing" to="a@adobe.com"> 
+The Report generation task has misfired. 
+</cfmail> 
+</cffunction> 
+<cffunction name="onTaskEnd" access="public" returntype="void"> 
+<cfargument name="context" type="struct" required="false"/> 
+<cfmail from="a@adobe.com" subject="Scheduler_Scenario_Testing" to="a@adobe.com"> 
+The Report generation task has Completed. 
+</cfmail> 
+</cffunction> 
+<cffunction name="onError" returntype="void"> 
+<cfargument name="context" type="struct" required="false"/> 
+<cfmail from="a@adobe.com" subject="Scheduler_Scenario_Testing" to="a@adobe.com"> 
+The Report generation task has errored out. 
+</cfmail> 
+</cffunction> 
+<cffunction name="execute" returntype="void"> 
+<cffile action="append" file="#Expandpath('.')#/log.txt" output="<br><b>In Execute</b><br>"> 
+</cffunction> 
+</cfcomponent>
+Adobe ColdFusion 10 * スケジューラーの使用

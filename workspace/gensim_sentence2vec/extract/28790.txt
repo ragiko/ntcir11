@@ -1,0 +1,58 @@
+ 
+どうも、最近Java中毒ぎみのシンジです。
+今回は、以前社員のみなさんに自分が使っているツールを聞いてみたので、その結果を発表します。 アンケートに回答してくださった方、ご協力ありがとうございました。
+では、早速カテゴリ別に投票数が多かったものだけ、ランキング形式で発表していきます。
+icon-check-square-oテキストエディタ
+第1位 サクラエディタ         http://sakura-editor.sourceforge.net/icon-external-link 第2位   sublime text 2         http://www.sublimetext.com/2 1票     EmEditor           https://jp.emeditor.com/
+UnEditor           http://www.yokkasoft.net/
+xyzzy         http://www.jsdlab.co.jp/~kamei/
+サクラエディタを使っている理由
+・軽量、安定、高機能。カスタム可能。Ctrl+ホイールでフォントサイズ拡縮可。 ・フォルダ内のGrep検索が簡単。 ・英字を大文字にしたり、小文字にしたりなど、意外と知られていない機能あり。 ※ショートカットキー一覧の出力方法:Ctrl + Q ⇒ Ctrl + V
+・拡張子毎の細かい設定が出来て使いやすい。ファイルロックするのがやや欠点。 ・WindowsネイティブなEmacsライクなテキストエディタ。 ・シンプル、開発環境に入っている場合が多い。 ・テキスト同士の比較が可能。
+icon-check-square-oブラウザ
+第1位 Chrome          https://www.google.co.jp/chrome/browser/第2位   Firefox          https://www.mozilla.org/ja/firefox/new/1票     IE
+Chromeを使っている理由
+・Googleのウェブアプリが使える。Googleサービスとの親和性が高い。 ・vichromeとブラウザショートカットキー使えばキーボードだけでブラウジングできる。 ・Chromeデベロッパーツールでは、デバッグが行い易い。 ・Chromeのdeveloper toolsがないと仕事にならない。 ・UIがシンプルで、Googleアカウントによる同期が便利。豊富な拡張機能。
+icon-check-square-oメーラー
+第1位 Thunderbird         http://www.mozilla.jp/thunderbird/第2位   Outlook Express
+Thunderbirdを使っている理由
+・昔のOutlookは安全性がいまいちだったので利用している。 ・学習型の迷惑メールフィルタやフィッシング詐欺メール警告機能が搭載されているなど迷惑メールフィルタが充実。 ・機能を追加・拡張できる「アドオン」と呼ばれるプログラムをサポートしている。
+icon-check-square-oスクリーンキャプチャ
+第1位 WinShot          http://www.forest.impress.co.jp/library/software/winshot/第2位   Screenpresso          http://www.screenpresso.com/
+WinShotを使っている理由
+・キャプチャ後、印刷や保存といった動作を含めて1発で指定。
+・同じ作業を反復して実行でき、きめこまかいカスタマイズが可能。
+・各機能ごとのホットキーが設定可能。
+icon-check-square-o圧縮解凍
+第1位 Lhaplus         http://www.forest.impress.co.jp/library/software/lhaplus/icon-external-link 1票     7Zip          http://sevenzip.sourceforge.jp/
+Noah          http://www.kmonos.net/lib/noah.ja.html
+peaZip          http://www.forest.impress.co.jp/library/software/peazip/
+Lhaplusを使っている理由
+・軽量。コンテキストメニューから起動、操作ができる。 ・多数のアーカイブ形式への対応しており、細かい設定が可能。
+・20種類以上対応。標準で解凍できない昔のOSでよく利用していた。
+icon-check-square-o差分比較
+第1位 WinMerge         http://www.geocities.co.jp/SiliconValley-SanJose/8165/winmerge.htmlicon-external-link 第2位   DF         http://df.softonic.jp/icon-external-link 1票     UnEditor           http://www.yokkasoft.net/UnEditor/
+WinMergeを使っている理由
+・プラグインを使うとExcelの比較編集が可能になる。 ・ファイルだけでなくディレクトリも比較可能
+・比較だけでなくマージもOK。
+icon-check-square-o画像編集
+第1位 GIMP2         http://www.geocities.jp/gimproject2/download/gimp-download.htmlicon-external-link 第2位   inkscape         https://inkscape.org/ja/
+GIMP2を使っている理由
+・photoshop風エディタ。Photoshopでやりたいことは大抵できる。 ・PhotoShopに近い操作が可能
+icon-check-square-oSSHクライアント
+第1位 TeraTerm         http://sourceforge.jp/projects/ttssh2/icon-external-link 1票     PuTTy           http://www.putty.org/
+TeraTermを使っている理由
+・teratermよく使いますが、マクロ組んでおくと便利です。 ・パスワード入力以外は自動化できると思う。
+FTPクライアント
+第1位 WinSCP         http://winscp.net/eng/docs/lang:jpicon-external-link 
+第1位 FFFTP         http://www2.biglobe.ne.jp/sota/ffftp.htmlicon-external-link
+WinSCPを使っている理由
+・SSHを利用した暗号化ファイル転送が可能
+・マスターパスワードにも対応
+・コマンダーとエクスプローラのインターフェイスが選択可能
+icon-check-square-oランチャー
+第1位 bluewind         http://www.vector.co.jp/soft/win95/util/se240225.htmlicon-external-link 第2位   Claunch         http://www.forest.impress.co.jp/library/software/claunch/1票     Orchis Launcher         http://www.forest.impress.co.jp/library/software/orchis/icon-external-link         nrlaunch         http://michisugara.jp/archives/2014/nrlaunch.htmlicon-external-link         Windows標準のクリック起動
+bluewindを使っている理由
+・コマンドライン型。ホットキーで呼び出して、キーボードだけで操作可能。 ・登録したキーワードを入力してアプリやファイルを開く。 ・Win7以降ではデフォルトの起動キーが使えないので「Ctrl2回押し」に変更すると便利。
+番外編
+社員に聞いた!作業効率UPツールランキング | 株式会社デーコム

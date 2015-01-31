@@ -1,0 +1,200 @@
+
+1-5 構文解析2
+前回は BNF による文法の定義の仕方を説明した。今回は、いよいよ yacc を使って構文木を組み立てる。
+構文木
+一般に元のプログラムをそのまま木構造に変換しものを、parse tree (構文木)という。Parse
+tree の場合、元のプログラムの token は省略されることなく、全て木に含まれる。一方、token
+の中には人間の見やすさのためや、文法をあいまいでなくするために存在するものもあり、そのような
+token は構文解析が済んだ後はコンパイルには不要である。
+以降の処理に必要な token だけを残し、parse tree をより簡単にしたものを、abstract
+syntax tree (AST: 抽象構文木)という。構文解析する際、parse tree を作ってから、AST
+に変換してもよいが、コンパイルには parse tree は不要なので、今回は直接
+AST を作成する。
+Parse tree と AST の違いは、例えば括弧でくくられた式の扱いに表われる。括弧は、式の優先順位を決めるために必要だが、木構造になると括弧がなくても優先順位を表わすことができる。このため
+AST では括弧をはぶく。
+Tiny C の構文木
+構文木の作り方に特に定石はなく、作ろうとしているコンパイラに最も合ったデータ構造を採用すればよい。この講義では少々非効率だが、Lisp
+のインンタプリタを作るときに使ったリスト構造を流用して Tiny C の構文木を作ることにする。
+例えば (a + 3) * 2 という式の構文木は、(* (+ a 3) 2) というリストで表わすことにする。(リスト構造の括弧は、入れ子構造をあらわすためのもので、
+token ではないことに注意。)
+一見、Tiny C から Lisp への変換をおこなっているようだが、演算子が先頭になるよう(prefix
+notation)に並べかえるのが要点である。このように変換すると、次のコード生成のとき、Lisp
+のインタプリタ実行と同様の手順で機械語を生成することができる。元のプログラムでは
+a + 3 は括弧でくくられているが、リスト構造に直すと、括弧なしでも、優先順位を表わせるので除いてある。
+Tiny C の文法で使う各演算子は次のようなリスト構造で表わすことにする。
+2項演算子
+a + b
+=> (+ a b)
+a - b
+=> (- a b)
+関数呼び出し
+foo(i, 3)
+=> (foo i 3)
+bar()
+=> (bar)
+配列参照
+table[3]
+=> ([] table 3)
+最後の配列参照は、[] という演算子による計算と考える。
+各種の文も同様の方法で表わすことにしよう。
+変数宣言
+int i;
+=> (*var* i int)
+int* i;
+=> (*var* i int*)
+int k[3];
+=> (*var* k int 3)
+式文
+foo();
+=> (; (foo))
+foo(1, 2);
+=> (; (foo 1 2))
+その他
+a = 1;
+=> (= a 1)
+a = a + 1;
+=> (= a (+ a 1))
+return k;
+=> (return k)
+if(a == 3)
+a = 3;
+=> (if (== a 3) (= a 3))
+if(c)
+a = 3;
+else
+a = c;
+=> (if c (= a 3) (= a c))
+{
+int k;
+a = 3;
+}
+=> ({} (*var* k int) (= a 3))
+変数宣言は、*var* という演算子による計算と考える。
+もし変数が配列の場合は、変数名と型名に、配列の大きさを加える。
+関数呼出のように、式だけの文は、; という演算子による計算とする。
+また { } で囲まれたブロック文は {} という演算子で表わす。
+さてこのように変換していくと、最終的に Tiny C の関数定義は次のようなリスト構造になる。
+int foo(int k, int j)
+{
+k = k + j;
+return k - 1;
+}
+=>
+(int foo ((*var* k int) (*var* j int))
+(= k (+ k j))
+(return (- k 1)))
+Yacc の Action
+yacc の動きを今一度整理してみると、
+token を一個読む
+その token から始まる文法規則を探す
+その文法規則が完了するまで token を読み遷移 (shift) し続ける
+途中、非終端記号がきて遷移できなくなったら、その文法規則をスタックに積み、1
+からやり直す
+文法規則の最後まで遷移したら、その規則を還元 (reduce) する
+スタックからひとつ前に処理していた文法規則を取り出し、還元した結果得られる非終端記号を使って、さらに遷移(goto)する。
+3へ戻り繰り返す
+となる。
+Yacc に与える文法の中では、還元時に実行する C のプログラムを { } でくくって記述することができ、その中で還元されて得られる非終端記号の「値」を指定することができる。この各規則に付随するプログラムのことを
+action と呼ぶ。
+非終端記号の値として、その記号に対応する構文木を用いれば、還元するたびにより大きな構文木を組み立てていくことができ、最終的に非終端記号
+program が還元したときに、プログラム全体の構文木を得ることができる。
+例えば、
+expression
+: term
+{ $$ = $1; }
+| expression '+' term
+{ List* lst;
+lst = NullList();
+lst = AddList(lst, $1);
+lst = AddSymbol(lst, MakeSymbol("+"));
+lst = AddList(lst, $3);
+$$ = lst;
+}
+などと書くと、非終端記号 expression の値として、還元して得られた式を表わすリスト構造を指定できる。$$
+は還元された非終端記号 expression の値を表わす yacc の変数、$1, $2, ...
+は、左から順に規則の右辺に現われる非終端記号の値を表わす yacc の変数である。(注:上のプログラムは仮のものなので、課題を解く参考にはしないこと。)
+非終端記号の値の型であるが、これはプログラマが自由に指定できる。この
+Tiny C コンパイラの場合、値の型は List* なので、
+#define YYSTYPE    List*
+と指定する。(実際には yacc の実装上の問題を回避するため、List* 型を ListPtr
+として typedef し、ListPtr を YYSTYPE としている。)
+Lex との協調
+非終端記号の値の指定は上のようにすればよいが、文法規則の中には非終端記号だけではなく、token
+も表われる。この token の値はどのように決まるのだろうか。例えば
+term : Identifier
+{ $$ = $1; }
+| Number
+{ $$ = $1; }
+とした場合、Identifier と Number は非終端記号ではなく token であるが、$1
+の値は何であろうか。
+実はこの値は tinyc.l の中で、その token を読んだときに変数 yylval に代入された値である。yylval
+の型は YYSTYPE である。Tiny C コンパイラでは、Identifier と Number の定義を次のようにして、yylval
+に正しい値が代入されるようにしている。
+[0-9]+  {
+List* lst = NullList();
+yylval = AddInteger(lst, atoi(yytext));
+return Number;
+}
+[A-Za-z][A-Za-z0-9]* {
+List* lst = NullList();
+yylval = AddSymbol(lst, MakeSymbol(yytext));
+return Identifier;
+}
+それぞれ正規表現にマッチする文字列がきたら、{ } 内の C プログラムを実行することを意味する。Number
+の場合はその整数値を、Identifier の場合はその文字列を、それぞれ唯一の要素とするリストを
+yylval に代入する。
+このように定義されているため、例えば token 123 が還元されて term になったときには、term
+の値は (123)、token "xyz" が還元されたときには (xyz) となる。
+List データ構造を操作する関数
+Tiny C コンパイラの構文解析は、Lisp インタプリタの構文解析よりも複雑なので、扱うリスト構造も
+Lisp のインタプリタのときより複雑である。そこで、新たにいくつか List データ構造を操作する関数を用意した。(ソースファイルは
+list.h, list.cである。)
+List* ConcatLists(List* lst1, List* lst2)
+リスト lst1, lst2 を連結する。lst1, lst2 が (a b c), (d e f) なら結果は
+(a b c d e f)、(xyz), (123) なら結果は (xyz 123) である。lst1 と lst2 の一方が
+NULL リストつまり () でもよい。
+List* MakeList(List* lst)
+リスト lst を唯一の要素とするリストを返す。例えば lst が (a b c) なら結果は
+((a b c)) であり、(123) なら結果は ((123)) である。
+int ListLength(List* lst)
+リスト lst の長さを返す
+なぜ MakeList() のような関数を用意したかというと、それは expression の値を作る上である工夫をしたからである。
+expression の値は、素直に考えると、a + b - 1 に対しては (- (+ a b) 1))
+であるべきである。しかし、tinyc.y の定義では、((-
+(+ a b) 1)) と括弧が一組余計に外側についている。
+これは yylex() が返してくる Identifier と Number の値が、xyz や 123
+ではなく、(xyz) と (123) のように外側に括弧が一組余計についているのに合わせるためである。このようにすると、tinyc.y
+のように 比較的簡潔に expression 関連の action を定義することができる。
+もし expression の外側に括弧をつけないとすると、例えば文法規則
+additive.expression : additive.expression '+' term
+{
+List* lst = NullList();
+lst = AddSymbol(lst, MakeSymbol("+"));
+lst = ConcatLists(lst, $1);
+return ConcatLists(lst, $3);
+}
+の結果得られる additive.expression の値は、a + b + 1 に対して (+ + a b
+1) のようになってしまう。これを避けるために ConcatLists() の代わりに AddList()
+を使うと今度は (+ (+ a b) (1)) と 1 の前後に余計な括弧がついてしまう。
+課題5
+tinyc.yは Tiny C 言語の完全な文法定義である。抜けている
+action を埋め、Tiny C コンパイラの構文解析部を完成させよ。
+コンパイルの仕方は
+% yacc -dv tinyc.y
+% lex tinyc.l
+% gcc -o tinyc y.tab.c lex.yy.c list.c -ll
+今回は Makefile も用意した。
+% make
+でもコンパイルできる。
+コンパイルしたプログラムに
+% ./tinyc
+int foo(int k) {
+return k;
+}
+^D
+などと入力して、構文木(リスト)が正しく出力されることを確かめよ。とくに
+if 文の条件式に余分な括弧がついていないか注意せよ。
+目次へ戻る
+Copyright (C) 1999-2000 Shigeru Chiba
+Email: chiba@is.tsukuba.ac.jp
+Lecture Notes

@@ -1,0 +1,8 @@
+Query_Builder_Select クラス
+(Query_Builder_Where の拡張)
+Query_Builder_Select クラスは、クエリ構築のための、すべてのSELECT 操作を扱います。
+これは、Query_Builder_Where を継承しており、 すべてのメソッドが引き継がれます。 
+distinct($value = true)
+distinct メソッドは、 値を重複なしで取得するかをセットします。
+静的
+Query Builder Select - クラス - FuelPHP ドキュメント

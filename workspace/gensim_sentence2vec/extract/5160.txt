@@ -1,0 +1,66 @@
+今まで何度か動的頂点バッファについて触れてきましたが、実際のコードがどうなるのかは記事の中では紹介していませんでした。実は今までに紹介してきたサンプルの中でWritableVertexBuffer<T>というクラスがすでに実装されているので、このクラスを紹介します。
+「GPUはいつ描画するのか?」の記事の中でSetDataOptions.NoOverwriteの説明をしました。この記事の中でNoOverwriteというのはプログラムがドライバへ伝えるヒントで、GPUが頂点バッファをアクセスしている領域にはSetDataで上書きすることはありませんよということを述べました。
+では、実際にプログラムの中でこの処理をどうやったら良いでしょう?真っ先に思いつくのは以下のようなコードでしょう。
+// 動的頂点バッファの生成
+DynamicVertexBuffer vb = new DynamicVertexBuffer(
+graphicsDevice, typeof(MyVertexType), 100, BufferUsage.WriteOnly);
+// 書き込み先
+int currentPosition = 0;
+int strideSize = vb.VertexDeclaration.VertexStride;
+// バッファの最後まで来たら、バッファの先頭へ戻る
+if (currentPosition + myVertices.Length > vb.VertexCount)
+currentPosition = 0;
+// 現在の書き込み先へNoOverWriteオプションを使って書き込む
+vb.SetData(currentPosition * strideSize, myVertices, 0,
+myVertices.Length, strideSize, SetDataOptions.NoOverwrite);
+// 書き込み先を更新する
+currentPosition += myVertices.Length;
+考え方としては
+あらかじめ大きめの頂点バッファを生成する 
+現在の書き込み先(要素単位)を表すcurrentPosition変数を用意する 
+データの書き込み時にはcurrentPositionから書き込み先のオフセット(バイト単位)を計算して、NoOverwriteオプションを指定して書き込む 
+currentPositionを書き込んだ要素分だけ進める 
+バッファの最後まで書き込み位置が来た場合は、書き込み位置を先頭へ戻す 
+となります。
+このコードはこれで動作するのですが以下の点に注意する必要があります。
+確保するバッファサイズをあらかじめ知っている必要がある 
+バッファサイズを超える書き込みをしてしまうと、GPUの読み込みとバッティングしてしまい、描画結果がおかしくなってしまう 
+これらの問題を解決する方法の一つとして、十分に大きいバッファサイズを確保することですが、ゲーム開発の初期の段階でその数を決めるのは難しいことですし、むやみに大きな数字を設定するのはメモリの無駄になってしまいます。また、複数の頂点バッファを確保しておき、それらを切り替えながら使うという方法もありますが、管理が面倒になってしまいます。もう一つの方法は、書き込みが多すぎる場合をチェックして例外を投げるという手もありますが、友達のところで作ったゲームを自慢しようとしたら、たまたま最大確保数を超えてしまって例外発生、ゲームが停止というのも避けたいものです。
+DataSetOptions.Discardの使い道
+そこで便利なのがDataSetOptions.Discardです。ヘルプを読んだだけでは、なんのことを言っているの理解しずらいですが、これもドライバへのヒントで
+書き込んだデータを読み込んだりしないから、GPUを待たずにとくにかくパパッと書き込みませてよ
+と、いう要求をしていることになります。通常、動的頂点バッファを使う場合、既にゲーム側で書き込むデータを持っているので書き込んだ頂点バッファからデータを読み込む必要はありません。というより、GetDataメソッドは全てGPU待ちが発生するのでゲーム中は使うべきではありません。
+ドライバ内部では、このヒントを元に以下の処理がなされます。
+同じサイズ、フォーマットの頂点バッファを生成する 
+SetDataで書き込まれたデータは新しく生成された頂点バッファへ書き込まれる 
+これ以降の頂点バッファへのゲームからのアクセスは新しい頂点バッファに対して行われる 
+古い頂点バッファはGPUが使い終わった時点で自動的に解放される 
+XNA Game Studio 3.1までは、Windows版の場合は問題無く動作したのですがXbox 360版にはドライバが存在しないので、こういった処理は自分でする必要がありました。しかし、XNA Game Studio 4.0ではこの機能を実装したので、どのプラットフォームでも同じ手法を使うことができます。
+このDiscardとNoOverwriteオプションの組み合わせを使うと、以下のようなコードでGPU待ちなしで動的頂点バッファへの書き込みができるようになります。
+// ドライバへのヒント、通常はNoOverwrite
+SetDataOptions hint = SetDataOptions.NoOverwrite;
+// 最大要素数を超えるようであれば、頂点バッファの先頭に移動し、Dicardオプションを使う。
+if (currentPosition + elementCount > vb.VertexCount)
+{
+currentPosition = 0;
+hint = SetDataOptions.Discard;
+}
+// 頂点データを頂点バッファへ書き込む
+int strideSize = vb.VertexDeclaration.VertexStride;
+vb.SetData(currentPosition * strideSize, vertices, startIndex,
+elementCount, strideSize, hint);
+// 書き込み先を更新する
+currentPosition = currentPosition + elementCount;
+WritableVertexBuffer<T>クラス
+さて、上記の処理自体は難しくなくとも、複数の動的頂点バッファを扱う時���はそれぞれに現在の書き込み位置を用意しないといけないので面倒です。そこで、4.0用にアップデートしたGameFest Japan 2008デモプログラムではWritableVertexBuffer<T>クラスを作り、簡単に扱えるようにしてあります。
+http://higeneko.net/hinikeni/sample/xna40/WritableVertexBuffer.cs
+使い方は簡単で、以下のコードのように生成、データの書き込み、GraphicsDeviceへの設定をすることができます。通常の頂点バッファとの違いはSetDataメソッドが書き込んだ先のオフセットを返すということです。
+// 初期化
+WritableVertexBuffer<VertexPositionColor> writableVB =
+new WritableVertexBuffer<VertexPositionColor>(GraphicsDeivce, 1000);
+// データの書き込み
+int offset = writableVB.WriteData( ... );
+// GraphicsDeviceへの設定
+GraphicsDevice.SetVertexBuffer(writableVB.VertexBuffer, offset);
+動的頂点バッファを使っているけど、SetDataOptions列挙体のNoOverwriteやDiscardの意味を知らずにGPU待ちが発生していてゲームが遅くなってしまうケースもあると思うので、これを機にSetDataへの引数を再確認してみてはどうでしょうか?
+動的頂点バッファのNoOverwriteとDiscard - ひにけにGD - Site Home - MSDN Blogs

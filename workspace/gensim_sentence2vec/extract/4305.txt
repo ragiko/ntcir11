@@ -1,0 +1,53 @@
+
+名前: ZR
+日時: 2007-03-05 02:25:05
+IPアドレス: 59.140.98.*
+>>47300
+無闇に混乱させてしまって申し訳ありません。
+…といいながら、また蛇足を加えてしまいますが…。
+v2.0e の latin.ldf では
+(>>47274)
+>  - \LatinMarksOn/Off は廃止する。これらの定義を \extraslatin
+>    の中(\extraswithprosodicmarks でなく)に入れていることを
+>    考えると、これは withprosodicmarks なしで後から ^ = の
+>    shortcut を有効にしようと試みているように思えるが、当然
+>    これは上手くいかない。
+にあたる部分はありません。多分、主要な開発者でない人が仕様をよく
+理解しないで v2.0e 以降に追加したのでしょう。
+さらに、
+>  - \languageattribute{latin}{withprosodicmarks} がある場合
+>    は言語を latin に切り替えた直後は ^ = の shortcut が有効
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    (active になっている)。\ProsodicMarksOn/Off で有効/無効を
+>    切り替えられるが、無効のまま他の言語に切り替えると ^ = の
+>    shortcut は無効のままになる(これは \shorthandon/off と
+>    同じ動作)。(\ProsodicMarksOn/Off は catcode を変更する。)
+が正しい(開発者の意図通りの)仕様だとした(*)場合、
+「細かい不具合」(= ^ が簡単に出せない、\november の問題、等)
+を無視した場合の最低限の対処は
+babel 読込みの後のプリアンブル、または latin.cfg の中に
+\AtBeginDocument{\ProsodicMarksOn}
+を記述する(latin,ldf は変更不要)
+ということになります。
+(*) を主張する根拠を latin.dtx から挙げておくきます。
+>If this third style is used and interference is experienced,
+>there are special commands for turning on and off the specific
+>short hand commands of this style. [1 節第 3 段落]
+([active 文字による無用な衝突を避けるため韻律記号の shortcut
+は attiribute にするが] withprosodicmarks のスタイルを使用
+して、干渉が起こるなら、この shortcut の有効無効を切り替える
+命令が用意されている。)
+>It is reasonable that the breve and macron active characters
+>may be switched on and off at will, and in particular that they
+>are off by default if the attribute withprosodicmarks has not
+>been set. [2 節第 2 段落]
+([^ = は他の意味で使われ得て、また韻律記号は特定の場合にしか
+必要ないので] これらの acrive 文字は自由に有効無効を切り替え
+るのが妥当で、また特に、** withprosodicmarks 不使用の場合は** 
+既定で無効とすべきである。)
+この書き込みへの返事:
+お名前 
+題名  
+メッセージ(タグは <a href="...">...</a> だけ使えます。適宜改行を入れてください)
+>>47301
+[qa:47301] Re: babel でラテン語の韻律記号が正しく扱われない。

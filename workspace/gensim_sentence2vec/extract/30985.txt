@@ -1,0 +1,3 @@
+
+OS:XPAccess Version:2007いきなりですが下記のコードでなぜ構造のみのコピーができないのか分かりません。教えてください。データが全部はいってしまいます。--------------------------------------------------------        'テーブルCOPY (構造のみ)        DoCmd.TransferDatabase _                TransferType:=acExport, DatabaseType:="Microsoft Access", _                DatabaseName:=CurrentProject.FullName, ObjectType:=acTable, _                Source:=LOGTBL, Destination:=LOGTBL & "_New", StructureOnly:=True
+TransferDatabase 構造のみのコピーができない --Access Club 超初心者 FORUM--

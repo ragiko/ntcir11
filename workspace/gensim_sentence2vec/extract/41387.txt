@@ -1,0 +1,32 @@
+この記事はCSS 珍百景 Advent Calendar 2014の4日目の記事です。iOSで動作のうまく行かない:checked擬似クラスについて調べててわかったことです(中途半端です)。
+先日、擬似クラスを使ったCSSの指定を実験していたのですが、PCブラウザーでは動くのにスマートフォンでは動かない!みたいな状況に直面したのでそれについてちょっと書きます。
+:checked擬似クラスの2つ以上隣の隣接セレクター
+:checked擬似クラスはCSS3で追加されたセレクターで、ラジオボタンやチェックボックスがチェックされた状態を指定する擬似クラスです。
+See the Pen test :checked pseudo class by You Sakai (@webcre8) on CodePen.
+このデモはinput要素に隣接したラベルに、さらに隣接した非表示になっている要素をチェックの入ったときにのみ表示させるというものです。これがFirefoxやChrome(ちなみにMac)では動くんですが、iPhoneのSafariとChromeでうまく動きませんでした。Android(4.4)はいけました。
+原因
+これはどうやらWebkitのバグであるらしいです。FirefoxはGecko、ChromeはBlinkですが、iOSのSafariはWebkitですね。iOSはChromeもWebkitなので全滅です。もちろんその後PCのSafari(Webkit)でも検証しましたがやはり動かないですね。
+こういう用途をしたい状況がどの程度起きることなのかわからないですが、これについて質問していたらげこたん(@geckotang)が前例となる資料を見つけてきました。さすがすぎる。
+Chrome/webkit not rendering css display change on input:checked + element + element – Stack Overflow
+対処法
+原因についてはバグなんだーと諦めたので、次にやりたいことを代替する対応法を2つ。
+間接セレクターを使う
+間接セレクターを使えば同じことが問題なくできました。
+See the Pen test :checked pseudo class #02 by You Sakai (@webcre8) on CodePen.
+ただ、前述のリンク先で示しているように間接セレクターでやると同じ親要素内に同じ仕組みのセットがあると全てのチェックが起動してしまったような状態になるので、一つ一つラップしてそれ以降のdisplay:blockを起動しないようにしないといけません。
+:nth-child擬似クラスなどを併用する
+こんなもの正直思いつきもしないのですが、これも先ほどのリンク先で紹介されている方法です。デモは省きます。
+html – Why does the general-sibling combinator allow toggling pseudo-element’s content, but not the adjacent-sibling? – Stack Overflow
+単なる要素ではなく、擬似クラスを追加することで動作するようになります。さらに他のページでは別の擬似クラスを実験しています。
+この方法で動くようになるのはWebkit系だけっぽいです。ダメじゃん、っていうか新たな謎が出てきます(もう追求するのはやめました)。
+というわけでこれに対処するのは前述の、いちいちラップして間接セレクターという方法がオススメです。
+蛇足:隣接セレクター
+おまけです。隣接セレクターはいくつくらいまで連結できるのか試してみたんですけど、要素の数が3万越えるとタブが死んだので、私の環境でやる限りでは表示される限りいくつでもイケるという感じでした。実は100個くらい並べてプチプチゲームみたいなの作ろうと思ってたのでホッとしました。
+See the Pen CSS Checkbox PuchiPuchi by You Sakai (@webcre8) on CodePen.
+一応30000個の隣接セレクターのデモに一応リンク貼っておきますが、開くのは自己責任でお願いしますーw
+おわりに
+今回も遅刻してしまって申し訳ない限りのアドベントカレンダーなんですが、今日のCSS 珍百景 Advent Calendarはdskdの越智さん(@o_ti)です。押してしまいましたがよろしくですー!
+tweet
+hatena
+facebook_like
+:checked擬似クラスの隣接セレクターのWebkit系での挙動とか - WEBCRE8.jp

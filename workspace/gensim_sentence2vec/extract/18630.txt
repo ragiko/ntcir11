@@ -1,0 +1,45 @@
+12.2. テーブルとインデックス  前の節の例では、単純な文字列定数を使った全文検索照合を説明しました。この節では、テーブルのデータを検索する方法、そしてインデックスを使う方法を示します。
+12.2.1. テーブルを検索する   インデックスがなくても全文検索をすることは可能です。bodyフィールド中のfriendという単語を含む行のtitleを印刷する単純な問合わせは次のようになります。
+SELECT title
+FROM pgweb
+WHERE to_tsvector('english', body) @@ to_tsquery('english', 'friend');
+同時に、これは、friends、friendlyのように、関連する単語を見つけ出します。これらはすべて同じ正規化された語彙素に帰結するからです。
+上の問合わせはenglish設定を使って文字列をパースして正規化することを指定しています。別の方法としては、設定パラメータを省略することができます。
+SELECT title
+FROM pgweb
+WHERE to_tsvector(body) @@ to_tsquery('friend');
+この問い合わせはdefault_text_search_configで設定された設定を使用します。
+もっと複雑な例として、createとtableをtitleまたはbodyに含む文書のうち新しい順に10個選ぶというものを示します。
+SELECT title
+FROM pgweb
+WHERE to_tsvector(title || ' ' || body) @@ to_tsquery('create & table')
+ORDER BY last_mod_date DESC
+LIMIT 10;
+細かいことですが、この例では、ふたつのうち一つのフィールドにNULLを含む行を探すために必要なcoalesce関数の呼び出しを省略しています。
+これらの問合わせはインデックスなしでも動きますが、たまに実行する一時的な問合わせ用を除くと、たいていの用途には、たぶん不定期のその場その場の検索を除いて遅すぎます。実用上は、インデックスを作成することが必要なのが普通です。
+12.2.2. インデックスの作成    テキスト検索を高速化するために、GINインデックス(項12.9)を作ることができます。
+CREATE INDEX pgweb_idx ON pgweb USING gin(to_tsvector('english', body));
+2引数バージョンのto_tsvectorを使っていることに注意してください。設定名を指定するテキスト検索関数だけが、式インデックス(項11.7)で使えます。これは、インデックス内容が、default_text_search_configの影響を受けないためです。もし影響を受けるとすると、異なるテキスト検索設定で作られたtsvectorを持つエントリの間でインデックス内容が首尾一貫しなくなるからです。そして、どのエントリがどのようにして作られたのか、推測する方法はないでしょう。そのようなインデックスを正しくダンプ、リストアするのは不可能でしょう。
+上記のインデックスでは、2引数バージョンのto_tsvectorが使われているので、同じ設定名の2引数バージョンのto_tsvectorを使う問合わせ参照だけがそのインデックスを使います。すなわち、WHERE to_tsvector('english', body) @@ 'a & b'はインデックスが使えますが、WHERE to_tsvector(body) @@ 'a & b'は使えません。これにより、インデックスエントリを作ったときの設定と、同じ設定のときだけインデックスが使われることが保証されます。
+他の列によって設定名が指定されたより複雑な式インデックスを作ることができます。すなわち、
+CREATE INDEX pgweb_idx ON pgweb USING gin(to_tsvector(config_name, body));
+ここで、config_nameはpgwebテーブルの列です。これによって、各々のインデックスエントリで使用された設定を記録しつつ、同じインデックスの中で異なる設定を混在させることができます。これは、例えば文書の集まりが異なる言語の文書を含む場合に有用です。繰り返しになりますが、インデックスを使うよう考慮されている問合わせは、合致するように書かれなければなりません。すなわち、
+WHERE to_tsvector(config_name, body) @@ 'a & b'.
+インデックスには、列を連結することさえできます。
+CREATE INDEX pgweb_idx ON pgweb USING gin(to_tsvector('english', title || ' ' || body));
+別の方法として、to_tsvectorの出力を保持する別のtsvector列を作る方法があります。この例では、titleとbodyを連結、coalesceを使って、一つのフィールドがNULLであっても他のフィールドがインデックス付けされることを保証しています。
+ALTER TABLE pgweb ADD COLUMN textsearchable_index_col tsvector;
+UPDATE pgweb SET textsearchable_index_col =
+to_tsvector('english', coalesce(title,'') || ' ' || coalesce(body,''));
+そして、GINインデックスを作って検索速度を上げます。
+CREATE INDEX textsearch_idx ON pgweb USING gin(textsearchable_index_col);
+これで、高速全文検索を実行する準備ができました。
+SELECT title
+FROM pgweb
+WHERE textsearchable_index_col @@ to_tsquery('create & table')
+ORDER BY last_mod_date DESC
+LIMIT 10;
+tsvector形式を保存するために別の列を使う場合、titleあるいはbodyが変更されたらtsvector列を最新の状態にいつでも維持するためにトリガを作る必要があります。項12.4.3にその方法が説明されています。
+別列方式が式インデックスに勝る点の一つは、インデックスを使うために問合わせの中でテキスト検索設定を明示的に指定する必要がないことです。上の例で示したように、問合わせはdefault_text_search_configに依存できます。もう一つの利点は、インデックスの合致を検証するためにto_tsvectorを再実行する必要がないのでより高速だという事です。(この点はGINインデックスを使うときよりも、GiSTインデックスを使う場合に重要です。項12.9参照。)しかしながら、式インデックス方式はセットアップがより容易で、tsvector表現を明示的に保存する必要がないので、ディスクスペースの消費が少ないです。
+前のページホーム次のページ導入上に戻るテキスト検索の制御
+テーブルとインデックス

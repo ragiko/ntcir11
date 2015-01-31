@@ -1,0 +1,30 @@
+15.5 エンドツーエンド・セキュリティ・シナリオ
+この項では、認証と認可の両方を含むエンドツーエンド・セキュリティのシナリオについて説明します。
+次の表は、JPSベースのセキュリティ・シナリオを示しています。
+認証と認可の組合せを使用する手順は、次のとおりです。
+Single Sign-Onを有効化します。詳細は、「Single Sign-Onの有効化と無効化」を参照してください。
+JPSベース・セキュリティを有効化します。Enterprise Managerの「Reports Server拡張構成」ページで「セキュリティの有効化」チェック・ボックスを選択し、それから「Oracle Platform Security for Java」オプションを選択します。
+Single Sign-Onに使用するOracle Internet Directory内に存在するすべてのユーザーが、JPSで使用するIDストアに登録されていることを確認します。または、Single Sign-Onに使用するIDストアを指定するようにJPSを構成します。
+jps-config-jse.xmlファイルに次のプロパティを追加します。
+<property name="oracle.security.jps.enterprise.user.class" value="weblogic.security.principal.WLSUserImpl"/>
+ポリシー・ストアとしてJPS Oracle Internet Directoryを構成します。詳細は、「JPSベース・セキュリティ使用時に外部Oracle Internet Directoryをポリシー・ストアとして構成する方法」を参照してください。
+セキュリティ・ポリシーを作成します。Oracle Enterprise Managerを使用して、Oracle Internet Directoryに定義されているレポート用セキュリティ・ポリシーを更新するには、第7.8.2項「レポートのセキュリティ・ポリシーの定義」を参照してください。
+ユーザーをアプリケーション・ロールにマップします。ユーザーのアプリケーション・ロールへのマッピングの詳細は、「アプリケーション・ロールへのユーザーのマッピング」を参照してください。
+認証と認可の組合せを使用する手順は、次のとおりです。
+JPSベース・セキュリティを有効化します。Enterprise Managerの「Reports Server拡張構成」ページで「セキュリティの有効化」チェック・ボックスを選択し、それから「Oracle Platform Security for Java」オプションを選択します。
+jps-config-jse.xmlファイルに次のプロパティを追加します。
+<property name="oracle.security.jps.enterprise.user.class" value="weblogic.security.principal.WLSUserImpl"/>
+JPS-OIDをIDストアとして構成します。詳細は、「JPSベース・セキュリティ使用時に外部Oracle Internet DirectoryをIDストアとして構成する方法」を参照してください。
+JPS-OIDをポリシー・ストアとして構成します。詳細は、「JPSベース・セキュリティ使用時に外部Oracle Internet Directoryをポリシー・ストアとして構成する方法」を参照してください。
+セキュリティ・ポリシーを作成します。Oracle Enterprise Managerを使用して、Oracle Internet Directoryに定義されているレポート用セキュリティ・ポリシーを更新するには、第7.8.2項「レポートのセキュリティ・ポリシーの定義」を参照してください。
+ユーザーをアプリケーション・ロールにマップします。ユーザーのアプリケーション・ロールへのマッピングの詳細は、「アプリケーション・ロールへのユーザーのマッピング」を参照してください。
+認証と認可の組合せを使用する手順は、次のとおりです。
+Single Sign-Onを有効化します。詳細は、「Single Sign-Onの有効化と無効化」を参照してください。
+JPSベース・セキュリティを有効化します。Enterprise Managerの「Reports Server拡張構成」ページで「セキュリティの有効化」チェック・ボックスを選択し、それから「Oracle Platform Security for Java」オプションを選択します。
+Single Sign-Onに使用するOracle Internet Directory内に存在するすべてのユーザーが、JPSで使用するIDストアに登録されていることを確認します。または、Single Sign-Onに使用するIDストアを指定するようにJPSを構成します。
+jps-config-jse.xmlファイルに次のプロパティを追加します。
+<property name="oracle.security.jps.enterprise.user.class" value="weblogic.security.principal.WLSUserImpl"/>
+セキュリティ・ポリシーを作成します。第7.8.2項「レポートのセキュリティ・ポリシーの定義」を参照してください。
+ユーザーをアプリケーション・ロールにマップします。ユーザーのアプリケーション・ロールへのマッピングの詳細は、「アプリケーション・ロールへのユーザーのマッピング」を参照してください。
+system-jazn-data.xmlファイルをポリシー・ストアとして使用している場合、system-jazn-data.xmlファイルで「reports」アプリケーションを検索します。JPSを使用してOracle Internet Directoryでユーザーを認可するには、system-jazn-data.xmlファイルのメンバー・セクションに対応するユーザーを追加します。詳細は、第15.4.2項「認可用にJPSを使用する場合の追加手順」を参照してください。
+エンドツーエンド・セキュリティ・シナリオ

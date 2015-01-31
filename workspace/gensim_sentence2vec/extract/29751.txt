@@ -1,0 +1,69 @@
+
+ステートレスなモデルは、
+一組の名前の付いた論理的なイベントの結果 (outcome) から
+直接、結果として生じるビューのマッピングを定義します。
+ナビゲーション規則は、どのページがイベントのソースであったか以外、
+アプリケーションによって保持されたどのような状態も全く気にしません。
+これは、アクションリスナメソッドがページフローを決めなければならないことがあることを意味しています。
+なぜなら、それらだけがアプリケーションの現在の状態にアクセスできるのからです。
+これは JSF ナビゲーション規則を使用したページフローの例です。
+<navigation-rule>
+<from-view-id>/numberGuess.jsp</from-view-id>
+<navigation-case>
+<from-outcome>guess</from-outcome>
+<to-view-id>/numberGuess.jsp</to-view-id>
+<redirect/>
+</navigation-case>
+<navigation-case>
+<from-outcome>win</from-outcome>
+<to-view-id>/win.jsp</to-view-id>
+<redirect/>
+</navigation-case>
+<navigation-case>
+<from-outcome>lose</from-outcome>
+<to-view-id>/lose.jsp</to-view-id>
+<redirect/>
+</navigation-case>
+</navigation-rule>
+ナビゲーション規則が冗長過ぎると考えるならば、
+アクションリスナーメソッドから直接、view id を返すことが可能です。
+public String guess() {
+if (guess==randomNumber) return "/win.jsp";
+if (++guessCount==maxGuesses) return "/lose.jsp";
+return null;
+}
+これは、リダイレクトの結果であることに留意ください。
+リダイレクト中に使用するパラメータを指定することも可能です。
+public String search() {
+return "/searchResults.jsp?searchPattern=#{searchAction.searchPattern}";
+}
+ステートフルなモデルは、
+名前の付いた論理的なアプリケーションの状態間で起こる遷移の組み合わせを定義します。
+このモデルでは、jPDL ページフロー定義中に、どのようなユーザインタラクションのフロー表現も可能であり、
+インタラクションのフローを全く知らないアクションリスナメソッドを書くことも可能です。
+これは jPDL を使用したページフロー定義の例です。
+<pageflow-definition name="numberGuess">
+<start-page name="displayGuess" view-id="/numberGuess.jsp">
+<redirect/>
+<transition name="guess" to="evaluateGuess">
+<action expression="#{numberGuess.guess}" />
+</transition>
+</start-page>
+<decision name="evaluateGuess" expression="#{numberGuess.correctGuess}">
+<transition name="true" to="win"/>
+<transition name="false" to="evaluateRemainingGuesses"/>
+</decision>
+<decision name="evaluateRemainingGuesses" expression="#{numberGuess.lastGuess}">
+<transition name="true" to="lose"/>
+<transition name="false" to="displayGuess"/>
+</decision>
+<page name="win" view-id="/win.jsp">
+<redirect/>
+<end-conversation />
+</page>
+<page name="lose" view-id="/lose.jsp">
+<redirect/>
+<end-conversation />
+</page>
+</pageflow-definition>
+第4章 ページフローとビジネスプロセス

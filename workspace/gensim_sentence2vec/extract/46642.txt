@@ -1,0 +1,44 @@
+RESULT_CACHE_MODEパラメータ
+RESULT_CACHE_MODEパラメータを使用して、問合せで使用する表の結果キャッシュ・モードを決定できます。ALTER SESSIONおよびALTER SYSTEM文でこの句を使用するか、またはサーバー・パラメータ・ファイル(init.ora)内でこの句を使用して、結果キャッシュを決定します。RESULT_CACHE_MODEパラメータを設定して、SQL問合せ結果キャッシュをすべての問合せで使用するか、SQLヒントまたは表注釈を使用して結果キャッシュ・ヒントで注釈を付けられている問合せのみで使用するかを制御できます。
+表注釈
+表注釈を使用して、コードを変更しないで結果キャッシュを有効にできます。ALTER TABLEおよびCREATE TABLE文を使用すると、結果キャッシュ・モードで表に注釈を付けることができます。構文は次のとおりです。
+CREATE|ALTER TABLE [<schema>.]<table> ... [RESULT_CACHE (MODE {FORCE|DEFAULT})]
+次の例では、CREATE TABLE文で表注釈を使用する方法を示しています。
+CREATE TABLE foo (a NUMBER, b VARCHAR2(20)) RESULT_CACHE (MODE FORCE);
+次の例では、ALTER TABLE文で表注釈を使用する方法を示しています。
+ALTER TABLE foo RESULT_CACHE (MODE DEFAULT);
+SQLヒント
+SQLヒントを使用し、/*+ result_cache */または/*+ no_result_cache */のヒントの付いている問合せに注釈を付けることによってキャッシュする問合せを指定できます。たとえば、次のコードを見てください。
+String  query  = "select /*+ result_cache */ * from emp where empno < : 1";
+((oracle.jdbc.OracleConnection)conn).setImplicitCachingEnabled(true);
+((oracle.jdbc.OracleConnection)conn).setStatementCacheSize(10);
+PreparedStatement  pstmt;
+ResultSet rs;
+for (int j = 0 ; j < 10 ; j++ )
+{
+pstmt  = conn.prepareStatement (query);
+pstmt.setInt(1,7500);
+rs  = pstmt.executeQuery();
+while (rs.next( ) )
+{     // see the values  }
+rs.close;
+pstmt.close( ) ;
+}
+} 
+この例では、クライアント結果キャッシュのヒント/*+ result_cache */が、実際の問合せであるselect * from emp where empno < : 1に注釈として付けられています。したがって、問合せは最初にデータベースに対して実行され、その結果セットが、問合せの残り9回の実行用にキャッシュされます。これにより、アプリケーションのパフォーマンスは大幅に向上します。これは主として読取り専用データの場合に便利です。
+SQLヒントの例を次に示します。次の例はすべて、dept表が結果キャッシュのために次のコマンドによって注釈を付けられていることを前提にしています。
+ALTER TABLE dept result_cache (MODE FORCE);
+例
+SELECT * FROM emp
+結果セットはキャッシュされません。
+SELECT * FROM dept
+結果セットはキャッシュされます。
+SELECT /*+ result_cache */ empno FROM emp
+結果セットはキャッシュされます。
+SELECT /*+ no_result_cache */ deptno FROM dept
+結果セットはキャッシュされません。
+SELECT /*+ result_cache */ * FROM dept
+問合せヒントは不要ですが、結果セットはキャッシュされます。
+SELECT e.ename FROM emp e, dept d WHERE e.deptno = d.deptno
+問合せヒントが使用不可で、すべての表がFORCEとして注釈を付けられていないため、結果セットはキャッシュされません。
+JDBC OCIドライバ固有の機能

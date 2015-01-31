@@ -1,0 +1,88 @@
+アシアル株式会社(本社:東京都文京区、代表取締役:田中正裕)は、WordCamp Tokyo 2014にアシアルの岡本雄樹が登壇し、「WordPressAPIで作るモバイルアプリ」を講演することをお知らせいたします。
+こんばんは、笹亀です。
+最近は、もっぱらjavascriptとsymfony漬けです。
+普段よく使用するAjaxですが、Ajaxを実装する際の問題点について悩まされました。
+「クロスドメイン」という問題です。
+Ajaxのクロスドメイン対策について、難しいことやめんどくさいことが苦手な私は、簡単で手軽に実装する方法がないものかと調べました。
+調べている中、私にぴったりな手軽にクロスドメインのAjaxを実装する方法がありましたので紹介したいと思います。
+Ajaxを使用する際に、しばしば別ドメインのスクリプトを呼び出して使用したいことがあると思います。しかし、通常のAjaxで使用されるXMLHttpRequestなどはセキュリティ上の理由で使用しているページ以外のドメインに対してリクエストを送ることができません。使用しているページ以外のドメインではAjaxに限らず、使用しているページのJavascriptの属性などの変更や操作をすることもできません。
+これから紹介するDOMを使用することでクロスドメインでも手軽にAjaxを実装できます。
+以下にサンプルとして検索結果を表示するクロスドメイン対策したAjaxサンプルを記載します。
+Ajax使用側サンプル(ttp://++++.++++.+++/index.html
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<title>別ドメインのAJAX</title>
+<script type="text/javascript">
+<!--
+function search_start()
+{
+var result = document.getElementById('result');
+var out = document.createElement('script');
+var keyword = document.getElementById('search').value;
+if (keyword == "") {
+alert("検索するキーワードを入力してください。");
+} else {
+keyword = encodeURI(keyword);
+out.src='http://****.****.***/index.php?keyword=' + keyword;
+result.appendChild(out);
+}
+}
+//-->
+</script>
+</head>
+<body>
+<p>「テスト」や「アシアル」と検索すると結果が表示されます。</p>
+<form>
+検索:<input type="text" id="search" name="search" value=""> <input type="button" name="submit" value="検索する" onClick="search_start()">
+</form>
+<div id="result">
+ここに検索結果が表示されます。
+</div>
+</body>
+</html>上記javascript部分では、別ドメイン「****.****.***」へのindex.phpを呼び出すためのscriptタグを生成しています。
+次に、呼び出し側では単純な検索を行なうようにしました。
+配列内容から条件に一致するリストを返すPHPスクリプトです。
+Ajax呼び出し側サンプル(ttp://****.****.***/index.php
+<?php
+$title = array();
+$title[1] = 'アシアル';
+$title[2] = 'テスト';
+$title[3] = 'アシアル株式会社';
+$title[4] = 'テストコード';
+$title[5] = 'アシアルホームページ';
+$keyword = $_GET["keyword"];
+$result = array();
+foreach ($title as $value) {
+if (mb_strpos($value,$keyword) !== false) {
+$result[] = $value;
+}
+}
+$str  = "検索条件:「{$keyword}」<hr>";
+$str .= "検索結果:<br>";
+foreach ((array)$result as $value) {
+$str .= "{$value}<br>";
+}
+header("Content-type: application/x-javascript");
+print <<<END
+var view = document.getElementById('result');
+view.innerHTML = "{$str}";
+END;
+?>PHP側では、PHPで検索処理を行ない結果をjavascriptとして出力しています。
+出力する箇所は、Ajax使用側HTMLのdivタグを指定しています。
+<div id="result">
+ここに検索結果が表示されます。
+</div>
+実行イメージ
+このように、クロスドメインでも手軽にAjaxを実装することができます。
+DOMを利用することで、javascriptの制約もうまく回避して実装できます。
+単純な方法だとは思うのですが、クロスドメイン対策のAjaxが手軽にできることことが何よりすばらしいと思いました。
+今回は、以下のサイトを参考にさせて頂きました。ありがとうございました。
+・JS:Ajax:動的に別ドメインのスクリプト呼び出し
+http://www.res-system.com/item/536
+最近、symfonyの携帯用のプラグインやヘルパーを作っていたりします。まだ作成中のため、タイミングがあったときにご紹介できたらと思います＾＾
+簡単に別ドメインからAjax対応する方法 : アシアルブログ

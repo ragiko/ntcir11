@@ -1,0 +1,29 @@
+SQLのNULLが混乱の原因になるのはよくあることです。 データがないことを 示すNULLの基本的な考え方はシンプルなものですが、 独特な点がいくつかあります。例えば、= NULLの代わりに IS NULLを使わなくてはならないのもその1つです。さらに Oracleにおいては、それに加えてNULLの特異な点が存在します。 1つは、SQL標準では要求されていないNULLの扱いがあること、 もう1つは、インデックスにおいてNULLが「特別な」扱いを 受けることです。
+SQL標準では、NULLは値としてではなく、未知の値に 対するプレイスホルダとして定義しています。そのため、どんな値も NULLになることはできません。その代わり、Oracleは 以下のように空の文字列をNULLとして扱います。
+SELECT     '0 IS NULL???' AS "what is NULL?" FROM dual
+WHERE      0 IS NULL
+UNION ALL
+SELECT    '0 is not null' FROM dual
+WHERE     0 IS NOT NULL
+UNION ALL
+SELECT ''''' IS NULL???'  FROM dual
+WHERE    '' IS NULL
+UNION ALL
+SELECT ''''' is not null' FROM dual
+WHERE    '' IS NOT NULL
+what is NULL?
+--------------
+0 is not null
+'' IS NULL???
+さらに混乱することに、Oracleは以下のような場合はNULLを 空の文字列として扱います。
+SELECT dummy
+, dummy || ''
+, dummy || NULL
+FROM dual
+D D D
+- - -
+X X X
+DUMMY列(常に'X'を含む)と NULLを連結すると、NULLを返すはずです。
+NULLの考え方は、多くのプログラミング言語でも 使われています。それらのどれを見ても、Oracleのように空の文字列が NULLになることはありません。実際のところ、 VARCHAR2のフィールドに空の文字列を保存することは できません。やってみると、Oracleは代わりにNULLを 入れてしまいます。
+この特徴は、奇妙なだけでなく危険でもあります。これに加え、 OracleのNULLに関する特異性は、インデックスにも 同様にあるのです。
+OracleにおけるNULL

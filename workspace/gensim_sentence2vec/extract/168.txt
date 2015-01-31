@@ -1,0 +1,40 @@
+Inflector¶
+class Inflector¶
+Inflectorは文字列の複数形や大文字への変換を取り扱うクラスです。
+Example:
+Inflector::pluralize('example') returns “examples”.
+static Inflector::pluralize($singular)¶
+入力: Apple, Orange, Person, Man
+出力: Apples, Oranges, People, Men
+static Inflector::singularize($plural)¶
+入力: Apples, Oranges, People, Men
+出力: Apple, Orange, Person, Man
+static Inflector::camelize($underscored)¶
+入力: Apple_pie, some_thing, people_person
+出力: ApplePie, SomeThing, PeoplePerson
+static Inflector::underscore($camelCase)¶
+underscoreはキャメルケースの文字列をアンダースコア(_)に変換します。
+入力: applePie, someThing
+出力: apple_pie, some_thing
+static Inflector::humanize($underscored)¶
+入力: apple_pie, some_thing, people_person
+出力: Apple Pie, Some Thing, People Person
+static Inflector::tableize($camelCase)¶
+入力: Apple, UserProfileSetting, Person
+出力: apples, user_profile_settings, people
+static Inflector::classify($underscored)¶
+入力: apples, user_profile_settings, people
+出力: Apple, UserProfileSetting, Person
+static Inflector::variable($underscored)¶
+入力: apples, user_result, people_people
+出力: apples, userResult, peoplePeople
+static Inflector::slug($word, $replacement = '_')¶
+slugは特殊文字をラテン文字に変換したり、スペースをアンダースコアに変換します。slugはUTF-8を前提とします。
+入力: apple purée
+出力: apple_puree
+static Inflector::reset¶
+resetは文字列を変更前の状態に戻します。テストでの利用を想定しています。
+static Inflector::rules($type, $rules, $reset = false)¶
+rulesはInflectorに対して新しい変換ルールを定義します。
+inflection-configuration により詳細な情報があります。
+Inflector &mdash; CakePHP Cookbook 2.x ドキュメント

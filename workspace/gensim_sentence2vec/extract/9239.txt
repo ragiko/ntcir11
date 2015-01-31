@@ -1,0 +1,64 @@
+2014.10.20追記) 現在は AWS Marketplaceに Intel Lusterイメージがあるのでそれを使うのが簡単で速い。以下の手順は参考までに。
+Intel Cloud Edition for Lustre* Software - Global Support (HVM) on AWS Marketplace
+==
+Lustre on AWS Cloud
+http://cloudscale.com/index.php/technology/lustre-on-aws-cloud
+===
+アマゾンクラウドクラスター
+Amazon が最初にEC2をローンチした時、基本的に単純なウェブサービス向けだった。1 Gbit/sのネットワーク帯域、準仮想化マシンというように、ハードウェアはそれらの要望に合わせていた。しかし、仮想マシンの性能は物理マシンの性能と同じではない。事実、Amazonは同一マシン上で複数の仮想マシンを動かしているので、CPU、ネットワーク、I/Oバンド幅は共有されている。性能の平均は良いが、たまに2つの仮想マシンが同一のリソースを奪い合う(contend)。これはウェブサービスを動かす場合は問題ないが、大量の通信を伴う並列アプリケーションには不向きである。1Gbit/sのバンド幅は、スーパーコンピューティングで使われている 10GigEやInfinibandと比べると遅い。また、EC2のネットワーク性能のばらつき(variance)も、高性能アプリケーションは同時に多数の通信を行う必要があるので、大きな問題である。あるマシンのあるリンクが一時的に遅くなると、他の全マシンにも影響を与える。より大きな仮想クラスタになればなるほど、このばらつきは並列アプリケーションにより大きな影響を与える。
+2010年に、AmazonはHPCインスタンスを開始した。このマシンでのクラスタは10Gbit/sの高速なネットワーク帯域で接続されている。これらのHPCインスタンスで、並列アプリケーションを実行できるHPCクラスタをクラウドに構築できる。
+しかし、大量のAmazon EC2のHPCインスタンスを起動すると、たくさん(a bunch of )の遊休マシンを持つことになる。これらをどう活用するか?その一つとして、共有ファイルシステムが必要かもしれない。Amazonは2つのストレージ S3,EBSを提供している。高性能アプリケーションを実行させたいばあい、これらは役に立たないだろう。S3は永続性と可用性を目的にしているが、性能は貧弱である。EBSは信頼性のある高性能なブロックデバイスでマシンにアタッチできるが、共有できない。共有ファイルシステムが必要なら、クラスタ内で自前で実行させるしか無い。
+Linux環境では、いくつかのファイルシステムを選択できる。
+NFS 単一サーバ上のファイルシステムの特定のディレクトリを共有できる
+HDFS Google File Systemのクローンである Hadoop Distributed File System
+Lustre 高性能アプリケーションのための並列分散ファイルシステム
+NFSやHDFSのセットアップ方法についてのドキュメントはWebにたくさんある。しかし、EC2上にLustreをセットアップする方法については現在無い。Cloudscaleの ビッグデータ分析クラウドサービスはS3, HDFS, MapR, Lustreをバックエンドのファイルシステムとして利用できる。様々なバックエンドの中で、Lustreは最も高性能である。AWSでLustreを必要とするアプリケーションに有益になるように、クイックハウツーガイドを作った。
+Lustre
+Lustreは並列分散ファイルシステムである。複数のサーバにホストされ、1台の管理サーバ(management server, MGS)、1台のメタデータサーバ(metadata server, MDS)、複数のオブジェクトストレージサーバ(object storage server, OSS)から成り立っている。この組み合わせで、数千台のLinuxクライアントがマウントできるファイルシステムを提供する。Lustre jargon内にある複数のディスク:Object Storage Target(OST)上に、ファイルを分散・ストライブすることで超高速なI/Oスループットを実現している。HPCクラスタ用の理想的なネットワークファイルシステムであり、世界中のほとんどのHPCシステムで使われている。CLoudscaleは、Lustreの能力と性能をクラウドに持ち込むことを担っている。
+もしHDFSやMapRを使っていたら、セットアップがLustreとの違いに戸惑うだろう。簡潔にいえば、違いは極めて小さい。まず、違うハードウェアが必要になる。
+Lustreはソフトウェアで可用性を扱わない替りに、特殊なハードウェアに依存している。ストレージデバイスである、Management Target(MGT), Metadata Target(MDT), Object Storage Target(OSTs)はRAID6のような信頼性のあるハードウェア上に構築される前提である。さらに、高可用なファイルシステムが必要なら、ストレージデバイスは複数のサーバからアクセスできるべきなので、障害時は別のサーバのタスクを引き継ぐ(failover)。
+Lustreサーバはファイルシステムという単一の役割を持たされることを想定している。サーバをクライアントとしても使うなら、メモリ問題に遭遇するかもしれない。
+Lustreは、ストレージと計算ノードが同一マシンではないので、ノード間に高速なネットワークを要する。
+これらを踏まえ、MGT,MDT,OSTsのサーバには、パッチを当てたLinuxカーネルに置き換える。クライアントになるマシンにはパッチは必要ないが、カーネルモジュールのパッケージとLustre toolsが必要になる。
+必要んなることをまとめると
+MGT,MDT,OST用のサーバに信頼性のある高速なストレージデバイス
+MGT,MDT,OST用のサーバに大量のRAM。カスタムバージョンのカーネルへの置き換え
+高速なネットワーク
+高可用性が必要な場合、ストレージデバイスは自動で他サーバに再アタッチできるようになっており、ソフトウェアが切り替わること。
+一見、くじけそうに見えるが、AWSはLustreファイルシステムをセットアップするに必要となる全てのハードウェアを提供している。そして、Cloudscaleのハウツーを使って、構築可能である。
+EBSはMGT,MDT,OSTの要件を満たしている。(a)OSにとって通常のハードディスクとして振る舞い、(b)永続性があり、(c)クラスタ内の任意のサーバに接続できる。
+AWS Cluster Comute インスタンスタイプ c1.4xlargeとcc2.8xlargeは、10Gbit/sインターコネクトを備えて、EC2 API経由で他マシンにスイッチできるので適切である。
+クイックスタート
+STEP 1: AMIの準備
+セキュリティグループの作成:セキュリティグループ内のすべてのトラフィックを許可し、外部とのSSHポート(22)を開け、「lustre」と名前をつける。
+CentOS 5.4 AMI: ami-7ea24a17 をセキュリティグループ 'lustre'に入れて起動する
+rootユーザで'lustre'キーでログインする。
+yum -y upgrade を実行する
+yum -y install sysstat を実行する
+Whamcloud:http://downloads.whamcloud.com/public/からLutreパッケージをダウンロードする
+kernel-2.6.18-238.19.1.el5_lustre.g65156ed.x86_64.rpm
+lustre-2.1.0-2.6.18_238.19.1.el5_lustre.g65156ed_g9d71fe8.x86_64.rpm
+lustre-ldiskfs-3.3.0-2.6.18_238.19.1.el5_lustre.g65156ed_g9d71fe8.x86_64.rpm
+lustre-modules-2.1.0-2.6.18_238.19.1.el5_lustre.g65156ed_g9d71fe8.x86_64.rpm
+e2fsprogs-1.41.90.wc3-0redhat.x86_64.rpm
+uuidd-1.41.90.wc3-0redhat.x86_64.rpm
+パッケージをインストールするyum install --nogpgcheck e2fsprogs-1.41.90.wc3-0redhat.x86_64.rpm \ uuidd-1.41.90.wc3-0redhat.x86_64.rpm \ kernel-2.6.18-238.19.1.el5_lustre.g65156ed.x86_64.rpm \ lustre-2.1.0-2.6.18_238.19.1.el5_lustre.g65156ed_g9d71fe8.x86_64.rpm \ lustre-ldiskfs-3.3.0-2.6.18_238.19.1.el5_lustre.g65156ed_g9d71fe8.x86_64.rpm \ lustre-modules-2.1.0-2.6.18_238.19.1.el5_lustre.g65156ed_g9d71fe8.x86_64.rpm
+SELinuxを無効にする: /boot/grub/grub.confを編集し, selinux=0をLuxreカーネルのブートパラメータに追加する。例:title CentOS (2.6.18-238.19.1.el5_lustre.g65156ed)root (hd0,0)kernel /vmlinuz-2.6.18-238.19.1.el5_lustre.g65156ed ro root=/dev/VolGroup00/LogVol00 rhgb quiet console=tty0 console=ttyS0,115200n8initrd /initrd-2.6.18-238.19.1.el5_lustre.g65156ed.imgを、以下のようにするtitle CentOS (2.6.18-238.19.1.el5_lustre.g65156ed)root (hd0,0) kernel /vmlinuz-2.6.18-238.19.1.el5_lustre.g65156ed ro root=/dev/VolGroup00/LogVol00 rhgb quiet console=tty0 console=ttyS0,115200n8selinux=0initrd /initrd-2.6.18-238.19.1.el5_lustre.g65156ed.img
+EC2 API toolsをダウンロード、解凍し, AWSキーをインスタンスにコピーする。例えば, ec2 api tools を/root/ec2-api-toolsにダウンロードして、キーpk.pemとcert.pemを/root/keysにコピーした場合~/.bashrcに以下を追加するexport EC2_HOME=$HOME/ec2-api-toolsexport EC2_PRIVATE_KEY=$HOME/keys/pk.pemexport EC2_CERT=$HOME/keys/cert.pemexport PATH=$EC2_HOME/bin:$PATHexport JAVA_HOME=/usr
+lustreディレクトリを/rootディレクトリに作成し以下のスクリプトを保存する/root/lustre/make-mds#!/bin/bash# Default settings. Change these to your needs.FSNAME=lustre # The name by which your file system will be exported.MDT_SIZE=80 # (in GB) The size of the MDT & MGS. Should be around 1-2% of total storage.# the scriptif [ $(whoami) != root ]; then echo You need to be root to run this script exit 1fiif [ x$EC2_HOME = x ]; thenecho You should export your environment by using the -E option with sudoecho or you should set EC2_HOME, PATH, etc...exit 1fiinstance=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)zone=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)size=1024device=/dev/sdfif [ -e $device ]; thenecho Device $device already exists, so reusing that.elseecho Creating ${size}GB volume in zone $zonevolume=$(ec2-create-volume -s $size -z $zone | awk 'BEGIN { FS="\t" }; NR==1 { print $2 }' )echo Attaching volume $volume to device $deviceec2-attach-volume $volume -i $instance -d $devicesleep 10fiecho Making a partition of $MDT_SIZE GB.cylinders=$((133674 * $MDT_SIZE / 1000 ))sfdisk /dev/sdf <<EOF,$cylinders,LEOFsleep 2echo Formatting volume as MDT and MGSmkfs.lustre --fsname=$FSNAME --mgs --mdt --verbose --index 0 ${device}1sleep 2echo Mount itmkdir -p /mnt/mdt0mount -t lustre ${device}1 /mnt/mdt0/root/lustre/make-oss#!/bin/bash# parametersMDS=$1INDEX_OFFSET=$2FSNAME=lustreif [ x$MDS = x ]; thenecho You must supply the IP address of the MDS as the first parameterexit 1fiif [ x$INDEX_OFFSET = x ]; thenecho You must supply the OST index offset as the second parameterexit 1fi# the scriptif [ $(whoami) != root ]; thenecho You need to be root to run this scriptexit 1fiif [ x$EC2_HOME = x ]; thenecho You should export your environment by using the -E option with sudoecho or you should set EC2_HOME, PATH, etc...exit 1fiinstance=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)zone=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)size=1024devices="/dev/sdg /dev/sdh /dev/sdi /dev/sdj /dev/sdk /dev/sdl /dev/sdm /dev/sdn"echo Creating 8 volumes of ${size}GB in zone $zoneindex=$INDEX_OFFSETfor device in $devicesdovolume=$(ec2-create-volume -s $size -z $zone | awk 'BEGIN { FS="\t" }; NR==1 { print $2 }' )echo Attaching volume $volume to device $deviceec2-attach-volume $volume -i $instance -d $devicesleep 10echo Formatting volume as OSTmkfs.lustre --fsname=$FSNAME --ost --mgsnode=${MDS}@tcp --verbose --index $index ${device}echo Mount itmkdir -p /mnt/ost${index}mount -t lustre ${device} /mnt/ost${index}index=$(( $index + 1 ))done
+ユーザを追加したい場合、LustreはUIDとGIDが全マシンで同じであることが重要である。NIS/YPをセットアップできるが、この文章のスコープ外であるので、 adduserコマンドを行う。
+'root'ログインが嫌なら、/usr/local/sbin/get-credentials.shscript を編集して、キーを~/.ssh/authorized_keysに追加する。~/.ssh/authorized_keysのパーミッションを変更することを忘れないようにする。そして、このユーザをsudoersに追加するためにvisudoを実行する.
+/root/.ssh/authorized_keysから、キーを削除することで、次回にAMIから起動した時に別のキーを選択できる。
+インスタンスをstopする
+AMIを作成する. 'centos-5-lustre-2.1'と名前をつける.
+インスタンスをterminateする
+STEP 2: LUSTRE FILE SYSTEMを開始する
+ファイルシステムのサイズとスループットを決めることで、何台のLustreサーバが必要かを決められる。概算として(a ball-bark fiture)、 OSSは、cc1.4xlarge 1台にEBSを8ボリュームで リード200 MB/s,ライト100 MB/sになり、ストレージ容量は8TBである。各OSSのMDTのサイズは80-160GBの必要がある。詳細はlustre manualを参照のこと。この例では、MDS1台、OSS2台、クライアント1台とする。
+4台のCluster Compute インスタンスを、先程作った'centos-5-lustre-2.1' AMI で、同じplacement groupで起動する。セキュリティグループは'lustre'を使う。
+1台目にログインしたら、/root/lustre/make-mdsにあるMDT_SIZE を変更し、実行し、完了を待つ。
+2台目と3台目にログインして、/root/lustre/make-ossスクリプトを実行する。このスクリプトでは、MDSのホスト名とOSTのインデックスオフセットという2つのコマンド引数を使う。1つ目のパラメータは明らかだが、2つ目のパラメータはおそらく説明が必要だろう。Lustreでは、各OSTはそれぞれインデックス番号を取得する。1台のOSS上でスクリプトを実行するので、他のOSSが動いていることを知らない。そこでインデックスオフセット番号が各OSTインデックス番号となる。今の例だと、1台目のOSSで以下を実行しbash /root/lustre/make-ossMDS02台目のOSSで以下を実行する。bash /root/lustre/make-ossMDS8この際、MDSを、EC2の内部ホスト名に置き換える。
+OSSのスクリプトが完了する前に、4台目のインスタンスにログインして、lustreファイルシステムをマウントできる。マウントポイントを作成する。例えば/lustreとすると以下のコマンドでマウントする。mount -t lustre -o flockMDS@tcp:/lustre /lustre.ここでも、MDSをMDSのホスト名に置き換える。-o flockパラメータの替りに、-o localflock,を使うか省略できる。このパラメータについての議論は、lustre manualを参照のこと.
+クライアント上でlfs df -hコマンドを実行することで、OSTが実行可能か確認できる。
+すべてのOSTがアタッチされると、ファイルシステムが実際に高速になったことを確認できる。Bonnie++は素晴らしいベンチマークツールであり、ここからダウンロードできる。.bonnie++をインストールして実行するには、以下の手順に従う。yum -y install gcc-c++ cd $HOMEwget http://www.coker.com.au/bonnie++/bonnie++-1.03e.tgztar xzvf bonnie++-1.03e.tgzcd bonnie++-1.03./configure && makelfs setstripe -c -1 /lustrecd /lustremkdir bonnie chown nobody:nobody bonnie$HOME/bonnie++-1.03e/bonnie++ -u nobody:nobody
+lustreファイルシステムが遅い場合、EBSの1つが故障している場合がある。この場合、OSS上でiostatを使うか、AWSコンソールのモニタリングツールを使ってどのEBSボリュームが引き起こしているか見つける。その後、lustre manualに従い、不良のOSTを取り外し、EBSをあんまうとし、デタッチ、削除する。
+訳:HPC:EC2:Lustre on AWS - aws memo

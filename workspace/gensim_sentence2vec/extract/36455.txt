@@ -1,0 +1,330 @@
+
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM PlatformStandard Ed. 6
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要: 入れ子 | フィールド | コンストラクタ | メソッド
+詳細: フィールド | コンストラクタ | メソッド
+java.text
+クラス BreakIterator
+java.lang.Object
+java.text.BreakIterator
+すべての実装されたインタフェース: Cloneable
+public abstract class BreakIteratorextends Objectimplements Cloneable
+BreakIterator クラスは、テキスト内の境界の位置を見つけるメソッドを実装します。BreakIterator のインスタンスは現在の位置を維持し、テキストをスキャンして境界が発生する文字のインデックスを返します。内部的には、BreakIterator は CharacterIterator を使ってテキストをスキャンするため、このプロトコルを実装する任意のオブジェクトによって保持されるテキストをスキャンできます。StringCharacterIterator は、setText に渡された String オブジェクトのスキャンに使用されます。
+このクラスによって提供されるファクトリメソッドを使って、さまざまな型の分割反復子のインスタンスを生成します。特に、単語、行、文、および文字の境界解析を実行する BreakIterator を生成するには、それぞれ getWordIterator、getLineIterator、getSentenceIterator、および getCharacterIterator を使用します。単一の BreakIterator は、1 つのユニット (単語、行、文など) のみを処理するため、実行するユニット境界解析ごとに異なる反復子を使用する必要があります。
+行の境界解析では、テキスト文字列を行折り返しで分割する位置を判定します。句読点およびハイフネーションされた単語も、機構により正しく処理されます。実際の行分割は、使用可能な行幅も考慮する必要があるため、より高いレベルのソフトウェアによって処理されます。
+文の境界解析では、数字と略語の中のピリオド、さらに引用符や括弧などの終了文字の正しい解釈について選択が可能です。
+単語の境界解析は、検索置換機能で使用されます。また、テキスト編集アプリケーション内で、ダブルクリックによって単語が選択可能になります。単語選択では、句読点とともに、記号や句読点などのように単語の一部でない文字、前後に分割のある文字も正しく解釈されます。
+文字の境界解析では、たとえばカーソルをテキスト文字列に沿って動かすような場合に、ユーザーが予測するとおりの操作が行われるようにします。文字の境界解析により、文字の格納方法に依存せず、文字列の正しいナビゲーションが可能になります。返される境界は、補助文字、結合文字シーケンス、または合字クラスタの境界になる場合があります。たとえば、アクセント付きの文字は、基準文字と発音区別符号として格納されている場合があります。ユーザーの文字に対する認識は言語間で異なります。
+このクラスのファクトリメソッドから返される BreakIterator インスタンスは、自然言語での使用のみを想定しており、プログラミング言語のテキストには使用できません。ただし、プログラミング言語をトークン化するサブクラスを定義することはできます。
+例:
+テキスト境界を作成し使用します。
+public static void main(String args[]) {
+if (args.length == 1) {
+String stringToExamine = args[0];
+//print each word in order
+BreakIterator boundary = BreakIterator.getWordInstance();
+boundary.setText(stringToExamine);
+printEachForward(boundary, stringToExamine);
+//print each sentence in reverse order
+boundary = BreakIterator.getSentenceInstance(Locale.US);
+boundary.setText(stringToExamine);
+printEachBackward(boundary, stringToExamine);
+printFirst(boundary, stringToExamine);
+printLast(boundary, stringToExamine);
+}
+}
+各要素を順に出力します。
+public static void printEachForward(BreakIterator boundary, String source) {
+int start = boundary.first();
+for (int end = boundary.next();
+end != BreakIterator.DONE;
+start = end, end = boundary.next()) {
+System.out.println(source.substring(start,end));
+}
+}
+各要素を逆順に出力します。
+public static void printEachBackward(BreakIterator boundary, String source) {
+int end = boundary.last();
+for (int start = boundary.previous();
+start != BreakIterator.DONE;
+end = start, start = boundary.previous()) {
+System.out.println(source.substring(start,end));
+}
+}
+最初の要素を出力します。
+public static void printFirst(BreakIterator boundary, String source) {
+int start = boundary.first();
+int end = boundary.next();
+System.out.println(source.substring(start,end));
+}
+最後の要素を出力します。
+public static void printLast(BreakIterator boundary, String source) {
+int end = boundary.last();
+int start = boundary.previous();
+System.out.println(source.substring(start,end));
+}
+指定された位置にある要素を出力します。
+public static void printAt(BreakIterator boundary, int pos, String source) {
+int end = boundary.following(pos);
+int start = boundary.previous();
+System.out.println(source.substring(start,end));
+}
+次の単語を検索します。
+public static int nextWordStartAfter(int pos, String text) {
+BreakIterator wb = BreakIterator.getWordInstance();
+wb.setText(text);
+int last = wb.following(pos);
+int current = wb.next();
+while (current != BreakIterator.DONE) {
+for (int p = last; p 
+(BreakIterator.getWordInstance() によって返される反復子は一意であるため、返される分割位置は反復の開始と終了の両方を表すものではない。つまり、文を分割する反復子は、それぞれが 1 つの文の終了と次の文の開始を表す分割を返す。単語を分割する反復子では、2 つの境界間の文字が単語、句読点、または 2 つの単語間の空白文字の場合がある。上記のコードでは、単純なヒューリスティックを使用して、単語の開始の境界を判定している。ある境界と次の境界の間の文字が、少なくとも 1 つの文字 (アルファベット、CJK 統合漢字、ハングル文字、仮名など) を含む場合は、この境界と次の境界の間のテキストを単語とし、そうでない場合は、単語間のデータと見なす)
+関連項目:CharacterIterator
+フィールドの概要
+static int
+DONE
+DONE は、最初または最後のテキスト境界に到達したときに、previous()、next()、next(int)、preceding(int)、および following(int) によって返されます。
+コンストラクタの概要
+protected 
+BreakIterator()
+コンストラクタです。
+メソッドの概要
+Object
+clone()
+反復子のコピーを作成します。
+abstract  int
+current()
+next()、next(int)、previous()、first()、last()、following(int)、または preceding(int) によって最後に返されたテキスト境界の文字インデックスを返します。
+abstract  int
+first()
+最初の境界を返します。
+abstract  int
+following(int offset)
+指定された文字オフセットに続く最初の境界を返します。
+static Locale[]
+getAvailableLocales()
+このクラスの get*Instance メソッドが地域対応のインスタンスを返すことのできるロケールすべての配列を返します。
+static BreakIterator
+getCharacterInstance()
+デフォルトロケールの文字分割用の新しい BreakIterator インスタンスを返します。
+static BreakIterator
+getCharacterInstance(Locale locale)
+指定されたロケールの文字分割用の新しい BreakIterator インスタンスを返します。
+static BreakIterator
+getLineInstance()
+デフォルトロケールの行分割用の新しい BreakIterator インスタンスを返します。
+static BreakIterator
+getLineInstance(Locale locale)
+指定されたロケールの行分割用の新しい BreakIterator インスタンスを返します。
+static BreakIterator
+getSentenceInstance()
+デフォルトロケールの文分割用の新しい BreakIterator インスタンスを返します。
+static BreakIterator
+getSentenceInstance(Locale locale)
+指定されたロケールの文分割用の新しい BreakIterator インスタンスを返します。
+abstract  CharacterIterator
+getText()
+スキャンされるテキストを取得します。
+static BreakIterator
+getWordInstance()
+デフォルトロケールの単語分割用の新しい BreakIterator インスタンスを返します。
+static BreakIterator
+getWordInstance(Locale locale)
+指定されたロケールの単語分割用の新しい BreakIterator インスタンスを返します。
+boolean
+isBoundary(int offset)
+指定された文字オフセットがテキスト境界である場合は true を返します。
+abstract  int
+last()
+最後の境界を返します。
+abstract  int
+next()
+現在の境界に続く境界を返します。
+abstract  int
+next(int n)
+現在の境界から n 番目の境界を返します。
+int
+preceding(int offset)
+指定された文字オフセットより前方にある最後の境界を返します。
+abstract  int
+previous()
+現在の境界に先行する境界を返します。
+abstract  void
+setText(CharacterIterator newText)
+スキャンされる新しいテキストを設定します。
+void
+setText(String newText)
+スキャンされる新しいテキスト文字列を設定します。
+クラス java.lang.Object から継承されたメソッド
+equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait
+フィールドの詳細
+DONE
+public static final int DONE
+DONE は、最初または最後のテキスト境界に到達したときに、previous()、next()、next(int)、preceding(int)、および following(int) によって返されます。
+関連項目:定数フィールド値
+コンストラクタの詳細
+protected BreakIterator()
+コンストラクタです。BreakIterator には状態がなく、デフォルトの動作がありません。
+メソッドの詳細
+clone
+public Object clone()
+反復子のコピーを作成します。
+オーバーライド:クラス Object 内の clone
+戻り値:この反復子のコピー関連項目:Cloneable
+first
+public abstract int first()
+最初の境界を返します。反復子の現在位置は最初のテキスト境界に設定されます。
+戻り値:最初のテキスト境界の文字インデックス
+last
+public abstract int last()
+最後の境界を返します。反復子の現在位置は最後のテキスト境界に設定されます。
+戻り値:最後のテキスト境界の文字インデックス
+next
+public abstract int next(int n)
+現在の境界から n 番目の境界を返します。最初または最後のテキスト境界に到達した場合、BreakIterator.DONE が返され、現在位置は到達した最初または最後のテキスト境界に設定されます。それ以外の場合、反復子の現在位置は新しい境界に設定されます。たとえば、反復子の現在位置が m 番目のテキスト境界にあり、現在の境界から最後のテキスト境界まで 3 つの境界が存在している場合、next(2) を呼び出すと m + 2 が返され、新しいテキスト位置は (m + 2) 番目のテキスト境界に設定されます。next(4) を呼び出すと BreakIterator.DONE が返され、最後のテキスト境界が新しいテキスト位置になります。
+パラメータ:n - 返される境界。値が 0 の場合、
+何もしない。負の値は前方の境界へ移動し、
+正の値は後方の境界へ移動する
+戻り値:現在位置から n 番目の境界の文字インデックス。
+あるいは、最初または最後のテキスト境界に到達した場合は、 
+BreakIterator.DONE
+next
+public abstract int next()
+現在の境界に続く境界を返します。現在の境界が最後のテキスト境界の場合、BreakIterator.DONE が返され、反復子の現在位置は変更されません。それ以外の場合、反復子の現在位置は、現在の境界に続く境界に設定されます。
+戻り値:次のテキスト境界の文字インデックス。
+あるいは、現在の境界が最後のテキスト境界の場合は、 
+BreakIterator.DONE  
+next(1) に等しい関連項目:next(int)
+previous
+public abstract int previous()
+現在の境界に先行する境界を返します。現在の境界が最初のテキスト境界の場合、BreakIterator.DONE が返され、反復子の現在位置は変更されません。それ以外の場合、反復子の現在位置は、現在の境界に先行する境界に設定されます。
+戻り値:前のテキスト境界の文字インデックス。
+あるいは、現在の境界が最初のテキスト境界の場合は、 
+BreakIterator.DONE
+following
+public abstract int following(int offset)
+指定された文字オフセットに続く最初の境界を返します。指定されたオフセットが最後のテキスト境界に相当する場合、BreakIterator.DONE が返され、反復子の現在位置は変更されません。それ以外の場合、反復子の現在位置は返された境界に設定されます。返される値は常にオフセットより大きいか、または値 BreakIterator.DONE です。
+パラメータ:offset - スキャン開始位置を示す文字オフセット。
+戻り値:指定されたオフセットのあとの最初の境界。
+あるいは、オフセットとして最後のテキスト境界が指定された場合は、 
+BreakIterator.DONE
+例外:
+IllegalArgumentException - 指定されたオフセットが最初のテキスト境界より小さいか、
+最後のテキスト境界より大きい場合
+preceding
+public int preceding(int offset)
+指定された文字オフセットより前方にある最後の境界を返します。指定されたオフセットが最初のテキスト境界に相当する場合、BreakIterator.DONE が返され、反復子の現在位置は変更されません。それ以外の場合、反復子の現在位置は返された境界に設定されます。返される値は常にオフセットより小さいか、または値 BreakIterator.DONE です。
+パラメータ:offset - スキャン開始位置を示す文字オフセット。
+戻り値:指定されたオフセットの前の最後の境界。
+あるいは、オフセットとして最初のテキスト境界が指定された場合は、 
+BreakIterator.DONE
+例外:
+IllegalArgumentException - 指定されたオフセットが最初のテキスト境界より小さいか、
+最後のテキスト境界より大きい場合導入されたバージョン:
+1.2
+isBoundary
+public boolean isBoundary(int offset)
+指定された文字オフセットがテキスト境界である場合は true を返します。
+パラメータ:offset - チェック対象の文字オフセット
+戻り値:オフセットが境界位置の場合は true、 
+そうでない場合は false導入されたバージョン:
+1.2
+current
+public abstract int current()
+next()、next(int)、previous()、first()、last()、following(int)、または preceding(int) によって最後に返されたテキスト境界の文字インデックスを返します。最初または最後のテキスト境界に到達したためにこれらのメソッドから BreakIterator.DONE が返された場合は、到達した最初または最後のテキスト境界を返します。
+戻り値:上記のメソッドから返されたテキスト境界、
+あるいは最初または最後のテキスト境界関連項目:next(), 
+next(int), 
+previous(), 
+first(), 
+last(), 
+following(int), 
+preceding(int)
+getText
+public abstract CharacterIterator getText()
+スキャンされるテキストを取得します。
+戻り値:スキャンされるテキスト
+setText
+public void setText(String newText)
+スキャンされる新しいテキスト文字列を設定します。現在のスキャン位置は first() にリセットされます。
+パラメータ:newText - スキャン対象の新しいテキスト
+setText
+public abstract void setText(CharacterIterator newText)
+スキャンされる新しいテキストを設定します。現在のスキャン位置は first() にリセットされます。
+パラメータ:newText - スキャン対象の新しいテキスト
+getWordInstance
+public static BreakIterator getWordInstance()
+デフォルトロケールの単語分割用の新しい BreakIterator インスタンスを返します。
+戻り値:単語分割のための分割反復子
+getWordInstance
+public static BreakIterator getWordInstance(Locale locale)
+指定されたロケールの単語分割用の新しい BreakIterator インスタンスを返します。
+パラメータ:locale - 目的のロケール
+戻り値:単語分割のための分割反復子
+例外:
+NullPointerException - locale が null の場合
+getLineInstance
+public static BreakIterator getLineInstance()
+デフォルトロケールの行分割用の新しい BreakIterator インスタンスを返します。
+戻り値:行分割のための分割反復子
+getLineInstance
+public static BreakIterator getLineInstance(Locale locale)
+指定されたロケールの行分割用の新しい BreakIterator インスタンスを返します。
+パラメータ:locale - 目的のロケール
+戻り値:行分割のための分割反復子
+例外:
+NullPointerException - locale が null の場合
+getCharacterInstance
+public static BreakIterator getCharacterInstance()
+デフォルトロケールの文字分割用の新しい BreakIterator インスタンスを返します。
+戻り値:文字分割のための分割反復子
+getCharacterInstance
+public static BreakIterator getCharacterInstance(Locale locale)
+指定されたロケールの文字分割用の新しい BreakIterator インスタンスを返します。
+パラメータ:locale - 目的のロケール
+戻り値:文字分割のための分割反復子
+例外:
+NullPointerException - locale が null の場合
+getSentenceInstance
+public static BreakIterator getSentenceInstance()
+デフォルトロケールの文分割用の新しい BreakIterator インスタンスを返します。
+戻り値:文分割のための分割反復子
+getSentenceInstance
+public static BreakIterator getSentenceInstance(Locale locale)
+指定されたロケールの文分割用の新しい BreakIterator インスタンスを返します。
+パラメータ:locale - 目的のロケール
+戻り値:文分割のための分割反復子
+例外:
+NullPointerException - locale が null の場合
+getAvailableLocales
+public static Locale[] getAvailableLocales()
+このクラスの get*Instance メソッドが地域対応のインスタンスを返すことのできるロケールすべての配列を返します。返される配列は、Java ランタイムおよびインストールされている BreakIteratorProvider 実装によってサポートされているロケールの和集合を表します。これには、Locale.US と等価な Locale インスタンスが少なくとも 1 つ含まれている必要があります。
+戻り値:ローカライズされた BreakIterator インスタンスを
+使用可能なロケールの配列
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+JavaTM PlatformStandard Ed. 6
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要: 入れ子 | フィールド | コンストラクタ | メソッド
+詳細: フィールド | コンストラクタ | メソッド
+バグの報告と機能のリクエストさらに詳しい API リファレンスおよび開発者ドキュメントについては、Java SE 開発者用ドキュメントを参照してください。開発者向けの詳細な解説、概念の概要、用語の定義、バグの回避策、およびコード実例が含まれています。Copyright 2006 Sun Microsystems, Inc. All rights reserved. Use is subject to license terms. Documentation Redistribution Policy も参照してください。
+BreakIterator (Java Platform SE 6)

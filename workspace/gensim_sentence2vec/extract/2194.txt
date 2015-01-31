@@ -1,0 +1,51 @@
+CMS「HeartCore」は、内蔵のコンテンツエディターによって、すべての作業をWebブラウザ上で実行できます。ユーザーの要件に応じて最適な構築が可能です。
+また、従来のLinux/Apache、MySQL&reg;、PostgresSQL、PHPへの対応に加え、ビジネスユースで定評のあるIIS&reg;、ASP、Tomcat、JSPおよびデータベースサーバのOracle 8i/9i/10g/11g、IBM&reg; DB2に新たに対応しました。幅広い対応力によって、既存環境の継続利用が可能となり、導入コストをさらに抑えることができます。
+ハードウェア構成
+CPU:各OSに依存
+メモリ:1GB以上
+オプション:バックアップ環境など
+OS
+Microsoft Windows&reg; 2000/2003/2008 Server(32bit,64bit)
+Linux(Red Hat 3/4/5,Turbo,Miracle,CentOS,Debian)
+Solaris
+HP-UX
+AIX
+Mac&reg; OS X
+ブラウザー
+Microsoft&reg; Internet Explorer 5.5 SP2 以上
+Microsoft&reg; Internet Explorer 5.0 for Macintosh 以上
+Mozila&reg;1.3、MacOS&reg; Safari&reg;2.0、FireFox&reg; 他
+データベース
+Oracle 8i/9i/10g/11g
+Microsoft&reg; SQL Server 2000/2005/2008
+IBM&reg; DB2
+MySQL&reg; 4.1以降
+PostgreSQL
+Webサーバー
+Apache 1.3/2.0/2.2
+IIS&reg; 5/6/7 他
+アプリケーションサーバー
+Tomcat 5/5.5/6
+JBoss
+Oracle&reg; WebLogic
+IBM&reg; WebSphere
+日立&reg; Cosminexus
+Resin  PHP 4.3.x - PHP 5.2.x
+※HeartCore_v7.1からPHP4.xはサポートしておりません。
+IIS&reg; 5/6/7
+サーバーサイドテクノロジー
+PHP 4.3 以上、ASP 3.0 以上、JSP 2.0 以上 
+LDAPサーバー
+LDAP準拠のLDAPサーバー
+(エンタープライズエディションをご利用時に必要。ActiveDirectry&reg; など) 
+メールサーバ
+SMTP接続でメール発信が行えるサーバー 
+※管理者用ブラウザWYSIWYGコンテンツ編集
+Microsoft&reg; Internet Explorer(V4.0以降)on Microsoft Windows&reg;
+Mozilla&reg;(V1.3以降)on Microsoft Windows&reg;,Mac&reg;,Linux,Unix
+Mozilla&reg; Firefox/Firebird(V0.7以降)on Microsoft Windows&reg;,Mac&reg;,Linux,Unix
+Netscape&reg;(V7.1以降)on Microsoft Windows&reg;,Mac&reg;,Linux,Unix
+Safari&reg;(V2.0.1以降)on Mac&reg; OS X Tiger
+単純なテキスト編集とHTMLコンテンツ編集のみであれば他のブラウザでも可能
+※2011年1月現在
+システム構成・動作環境 | CMSならHeartCore

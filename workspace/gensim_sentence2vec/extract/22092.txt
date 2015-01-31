@@ -1,0 +1,3 @@
+グラフG=(V,E)の点被覆は,辺集合Eの任意の辺の端点のうち少なくとも一方が含まれるような頂点集合Vの部分集合Nである.点被覆問題(MWVCと略す)は,拡張点v(∈V)が点重みw(v)を持つグラフG=(V,E)に対する重み総和最小の点被覆を求める問題である.本稿では,各点の重みは正の整数であるMWVCを考え,5つの既存近似解法を実装し,計算機実験によりこれらの性能を評価する.
+A vertex cover of a given graph G=(V,E) is a subset N of V such that N contains either u of v for any edge (u,v)of E. The minimum weight vertex cover problem (MWVC for short) is the problem of finding a vertex cover N of any given graph G=(V,E), with weight w(v) for each vertx v of V, such that the sum w(N) of w(v) over all v of N is minimum. In this report, we consider MWVC with w(v) of any v of V being a positive integer. Five existing approximation algorithms are implimented, and they are evaluated through computing experiment.
+

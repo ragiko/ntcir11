@@ -1,0 +1,81 @@
+
+日本人1200人による英語コーパス・The NICT JLE (Japanese Learner English) Corpus
+English Page
+本コーパスについて
+The NICT JLE Corpusは、日本語を母語とする英語学習者1,281名分の英語インタビューテスト(株式会社アルクによるStandard Speaking Test)における発話を書き起こしたデータを中心に構成されています。話し言葉の学習者コーパスとしては、世界最大級の規模のデータを収録しています(書き起こしテキストのデータのみで、音声データは含まれておりません)。
+本コーパスは、独立行政法人情報通信研究機構が株式会社アルクの協力のもと、構築しました。
+※本Webサイトからダウンロードできるコーパスは、2004年既刊の書籍『日本人1200人の英語スピーキングコーパス』に付属のコーパスと同様の内容です。一部スペルミスなどの細かな誤りが修正されておりますが、大幅な内容の変更、データの追加などはございません。ただし、データのフォーマットが異なっており、前者はテキスト(txt)形式、後者は専用ブラウザ(同じく書籍に付属)でのみ閲覧可能なstt形式です。用途に応じてお使い分けください。
+特徴
+インタビューは1名につき15分間で、内容は自己紹介・イラスト描写・ロールプレイ・ストーリー性のあるイラストの説明です。
+各データには、発話者の熟達度レベルが9段階で示されています。
+一部のデータ(167名分)には、文法的・語彙的誤りを対象とした47種類のエラータグが付与されています。
+比較のための補助的コーパスとして、英語母語話者へのインタビューを書き起こした母語話者コーパスが付属しています。
+目次
+新着情報
+注意事項
+ファイルサンプル
+ダウンロード
+License
+新着情報
+2012-10-17 The NICT JLE Corpus Ver. 4.1 公開Webサイトオープン
+注意事項
+本コーパスでは、インタビュー内で発話されたあらゆる情報がそのまま書き起こされています。本コーパスをご利用の際は第三者への誹謗中傷、差別用語、個人情報などに十分な注意をお願いいたします。
+(独)情報通信研究機構では、本コーパスにより獲得される情報の信頼性について責任を持ちません。また、本コーパスの使用に関連して生ずる損失、損害等について、いかなる場合においても一切責任を負いません。
+本コーパスの内容における著作権侵害やその他問題を発見された場合は、お手数ですが、E-mailにて、JLE-Corpus[あっとまーく]khn[どっと]nict[どっと]go[どっと]jp([あっとまーく]を@に、[どっと]を.にそれぞれ変換してください)までご連絡ください。ご指摘内容を検討の後、必要な場合は修正を施します。
+ファイルサンプル
+コーパスに収録されているデータは、1インタビューごとにファイル化されています(txt形式。計1,281ファイル)。
+以下の点線枠内はファイルのサンプルです。
+主なタグの意味は、次の通りです。
+<head version="1.3">性別(sex)、海外経験(overseas)、熟達度レベル(SST_Level)等の学習者のプロフィール</head>
+<A>インタビュアーの発話</A>
+<B>学習者(受験者)の発話</B>
+<task>インタビュー内で課せられるタスク部分</task>
+<followup>タスク後の雑談</followup>
+<F>つなぎ言葉(フィラー)</F>
+<R>言い直し&lt/R>
+<SC>言い淀み&lt/SC>
+その他の仕様については、書き起こし・基本タグ付与ガイドラインおよびエラータグ付与ガイドラインをご参照ください。
+<head version="1.3">
+<date>1999-12-16</date>
+<sex>female</sex>
+<age></age>
+<country>Japan</country>
+<overseas></overseas>
+<category></category>
+<step>1.5</step>
+<TOEIC>765</TOEIC>
+<TOEFL></TOEFL>
+<other_tests></other_tests>
+<SST_level>6</SST_level>
+<SST_task2>restaurant</SST_task2>
+<SST_task3>train_advanced</SST_task3>
+<SST_task4>department store</SST_task4>
+</head>
+中略
+<stage2>
+<task>
+<A>I see. O K. Now, let me show you the first picture. Please describe this picture.</A>
+<B>O K. <F>Er</F> <R>this is a</R> this is a <.></.> room in a hotel. And <.></.> <F>oh</F> sorry, it's not. Yeah, I think it's a restaurant. And there are three tables, <R>and</R> and there are three couples and <SC>two server</SC> two <R>waiter</R> waiter are serving. And <R>in the</R> in the middle of the restaurant, the couple is <F>er</F> drinking wine. And <F>err</F> the man is <.></.> testing the wine and saying something to the waiter. Maybe he is sommelier. And <R>he</R> he show the bottle to the man. I guess he is explaining something. And <F>er</F> the couple, <F>er</F> they dressed very nicely. <CO><R>And</R> <.></.> <F>mhmm</F> <R>and</R> <.></.> <R>and</R> <F>well</F> and</CO>. <.></.></B>
+</task>
+<followup>
+<A>O K.</A>
+<B>O K?</B>
+<A>O K. Thank you very much. <F>Er</F> how do you spend time with your husband?</A>
+<B><.></.> You mean, in our free time?</B>
+<A><F>Mhmm</F>.</A>
+<B><F>Er</F> like this? <.></.> <F>Well</F> <F>er</F> <R>I</R> I sometimes eating out with my husband. But we don't get dressed like this. <nvs>laughter</nvs> <..></..></B>
+<A>Can you compare the restaurant you often go to to this picture?</A>
+<B><nvs>laughter</nvs> It's very different from restaurant to we often go. We often go to a kind of family style restaurant <.></.> such as Denny's or Skylark. So I wish I could <SC>go like</SC> go to a nice restaurant like this.</B>
+<A><F>Er</F> what is good about family-type restaurant?</A>
+<B><F>Well</F> <SC>fir</SC> at first, it's very cheap and they served very quickly. And, <F>er</F> most of the cases, <F>er</F> that kind of restaurant is in suburb, so <SC>people are very</SC> <F>er</F> people can go there very easily. I think they are good point of family-type restaurant.</B>
+</followup>
+</stage2>
+後略
+ダウンロード
+The NICT JLE Corpus Version 4.1: NICT_JLE_4.1.zip (約7MB)
+License
+『The NICT JLE Corpus』の利用、再配布は、Creative Commons Attribution-Share-Alike License 3.0 の条件の下に、許諾されます。
+詳細はhttp://creativecommons.org/licenses/by-sa/3.0/をご参照ください。
+情報分析研究室(2011年度より言語基盤グループから改称)独立行政法人 情報通信研究機構
+Copyright 2004-2012 NICT All Rights Reserved. 
+日本人1200人による英語コーパス・The NICT JLE Corpus

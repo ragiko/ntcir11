@@ -1,0 +1,193 @@
+
+文字列情報取得のサンプル(C言語):
+#define INFONUM 4
+#define BUFMAX 1000
+void DispCompStrInfo(hDispWnd, hTargetWnd)
+HWND hDispWnd; /* 情報を表示するウィンドウ */
+HWND hTargetWnd; /* 情報を取得するウィンドウ */
+{
+HIMC hImc;
+char InfoResult[BUFMAX], InfoMsg[BUFMAX];
+LONG RetSize;
+HDC hDC;
+RECT r;
+int i;
+DWORD InfoType[INFONUM] = {
+GCS_COMPREADSTR, 
+GCS_COMPSTR, 
+GCS_RESULTSTR, 
+GCS_RESULTREADSTR, 
+};
+char *InfoTitle[INFONUM] = {
+"入力されている文字列の1バイトカタカナによる表現",
+"入力されている文字列", 
+"最後に変換した際の変換結果",
+"最後に変換した際の変換結果の1バイトカタカナによる表現",
+};
+/* 表示領域の初期化 */
+hDC = GetDC(hDispWnd);
+GetClientRect(hDispWnd, &r);
+FillRect(hDC, &r, (HBRUSH)GetStockObject(DKGRAY_BRUSH));
+/* 入力コンテキストの取得 */
+hImc = ImmGetContext(hTargetWnd);
+/* 文字列情報 */
+for(i=0; i<INFONUM; i++) {
+/* 情報の取得 */
+RetSize = ImmGetCompositionString(hImc, InfoType[i], InfoResult, BUFMAX);
+InfoResult[RetSize] = '\0';
+/* 情報の表示 */
+wsprintf(InfoMsg, "%s: %s", InfoTitle[i], InfoResult);
+TextOut(hDC, 0, i*20, InfoMsg, lstrlen(InfoMsg));
+}
+/* 入力コンテキストの解放 */
+ImmReleaseContext(hTargetWnd, hImc);
+/* 後処理 */
+ReleaseDC(hDispWnd, hDC);
+}
+文節情報取得のサンプル(C言語):
+#define BUFMAX 1000
+#define INFONUM 4
+void DispCompClauseInfo(hDispWnd, hTargetWnd)
+HWND hDispWnd; /* 情報を表示するウィンドウ */
+HWND hTargetWnd; /* 情報を取得するウィンドウ */
+{
+HIMC hImc;
+DWORD ClauseOffset[BUFMAX];
+char InfoMsg[BUFMAX];
+LONG ClauseNum, j;
+HDC hDC;
+RECT r;
+int i, y = 0;
+DWORD InfoType[INFONUM] = {
+GCS_COMPCLAUSE,
+GCS_COMPREADCLAUSE,
+GCS_RESULTCLAUSE,
+GCS_RESULTREADCLAUSE
+};
+char *InfoTitle[INFONUM] = {
+"入力されている文字列のバイト単位の文節位置及び文字列サイズ:",
+"入力されている文字列の文字単位の文節位置及び文字列サイズ:", 
+"最後に変換した際の変換結果のバイト単位の文節位置および文字列サイズ:",
+"最後に変換した際の変換結果の文字単位の文節位置および文字列サイズ:",
+};
+/* 表示領域の初期化 */
+hDC = GetDC(hDispWnd);
+GetClientRect(hDispWnd, &r);
+FillRect(hDC, &r, (HBRUSH)GetStockObject(DKGRAY_BRUSH));
+/* 入力コンテキストの取得 */
+hImc = ImmGetContext(hTargetWnd);
+/* 文字列情報 */
+for(i=0; i<INFONUM; i++) {
+/* タイトルの表示 */
+TextOut(hDC, 0, (y++)*20, InfoTitle[i], lstrlen(InfoTitle[i]));
+/* 情報の取得 */
+ClauseNum = ImmGetCompositionString(hImc, InfoType[i], ClauseOffset, BUFMAX);
+ClauseNum = ClauseNum / sizeof(DWORD); /* バイトサイズを配列の要素数に変換 */
+/* 情報の表示 */
+for(j=0; j<ClauseNum; j++) {
+if(j < ClauseNum-1) { /* j番目の文節の位置を表示 */
+wsprintf(InfoMsg, "    %d番目の文節: %d", j+1, ClauseOffset[j]);
+TextOut(hDC, 0, (y++)*20, InfoMsg, lstrlen(InfoMsg));
+} else { /* 末尾の配列要素の場合、総計を表す */
+wsprintf(InfoMsg, "    総計: %d", ClauseOffset[ClauseNum-1]);
+TextOut(hDC, 0, (y++)*20, InfoMsg, lstrlen(InfoMsg));
+}
+}
+}
+/* 入力コンテキストの解放 */
+ImmReleaseContext(hTargetWnd, hImc);
+/* 後処理 */
+ReleaseDC(hDispWnd, hDC);
+}
+文字属性取得のサンプル(C言語):
+#define BUFMAX 1000
+#define INFONUM 2
+void DispCompCharAttr(hDispWnd, hTargetWnd)
+HWND hDispWnd; /* 情報を表示するウィンドウ */
+HWND hTargetWnd; /* 情報を取得するウィンドウ */
+{
+HIMC hImc;
+BYTE CharAttr[BUFMAX];
+char InfoMsg[BUFMAX], *AttrMsg;
+LONG CharNum, j;
+HDC hDC;
+RECT r;
+int i, y = 0;
+DWORD InfoType[INFONUM] = {
+GCS_COMPREADATTR,
+GCS_COMPATTR,
+};
+char *InfoTitle[INFONUM] = {
+"変換途中の文字列の文字単位での属性:",
+"入力されている文字列のバイト単位での属性:"
+};
+/* 表示領域の初期化 */
+hDC = GetDC(hDispWnd);
+GetClientRect(hDispWnd, &r);
+FillRect(hDC, &r, (HBRUSH)GetStockObject(DKGRAY_BRUSH));
+/* 入力コンテキストの取得 */
+hImc = ImmGetContext(hTargetWnd);
+/* 文字列情報 */
+for(i=0; i<INFONUM; i++) {
+/* タイトルの表示 */
+TextOut(hDC, 0, (y++)*20, InfoTitle[i], lstrlen(InfoTitle[i]));
+/* 情報の取得 */
+CharNum = ImmGetCompositionString(hImc, InfoType[i], CharAttr, BUFMAX);
+for(j=0; j<CharNum; j++) {
+/* 文字属性のメッセージ設定 */
+switch(CharAttr[j]) {
+case ATTR_INPUT: 
+AttrMsg = "選択されていなく、変換されていない文字"; 
+break;
+case ATTR_TARGET_CONVERTED:
+AttrMsg = "選択されていて、変換されている文字";
+break;
+case ATTR_CONVERTED:
+AttrMsg = "選択されていなく、変換されている文字";
+break;
+case ATTR_TARGET_NOTCONVERTED:
+AttrMsg = "選択されていて、変換されていない文字";
+break;
+case ATTR_INPUT_ERROR:
+AttrMsg = "無効な文字";
+break;
+}
+/* 情報表示 */
+wsprintf(InfoMsg, "    %d番目の文字: %s", j+1, AttrMsg);
+TextOut(hDC, 0, (y++)*20, InfoMsg, lstrlen(InfoMsg));
+}
+}
+/* 入力コンテキストの解放 */
+ImmReleaseContext(hTargetWnd, hImc);
+/* 後処理 */
+ReleaseDC(hDispWnd, hDC);
+}
+カーソル位置取得のサンプル(C言語):
+void DispCompCursorPos(hDispWnd, hTargetWnd)
+HWND hDispWnd; /* 情報を表示するウィンドウ */
+HWND hTargetWnd; /* 情報を取得するウィンドウ */
+{
+HIMC hImc;
+char InfoMsg[BUFMAX];
+LONG CursorPos;
+HDC hDC;
+RECT r;
+/* 表示領域の初期化 */
+hDC = GetDC(hDispWnd);
+GetClientRect(hDispWnd, &r);
+FillRect(hDC, &r, (HBRUSH)GetStockObject(DKGRAY_BRUSH));
+/* 入力コンテキストの取得 */
+hImc = ImmGetContext(hTargetWnd);
+/* カーソル位置取得 */
+CursorPos = ImmGetCompositionString(hImc, GCS_CURSORPOS, NULL, 0);
+/* カーソル位置表示 */	
+wsprintf(InfoMsg, "    カーソル位置: %d", CursorPos);
+TextOut(hDC, 0, 0, InfoMsg, lstrlen(InfoMsg));
+/* 入力コンテキストの解放 */
+ImmReleaseContext(hTargetWnd, hImc);
+/* 後処理 */
+ReleaseDC(hDispWnd, hDC);
+}
+メモ:
+GCS_DELTASTARTの挙動が不明。
+ImmGetCompositionString

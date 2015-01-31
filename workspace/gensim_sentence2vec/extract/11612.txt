@@ -1,0 +1,81 @@
+list7.txt  Threshold2DByGaussian1.java と Threshold2DByGaussian2.java
+(2次元の識別境界(直線)の計算の実装例)
+//
+//	同一の正規分布に基づく2次元の特徴量の閾値の計算クラス
+//
+class  Threshold2DByGaussian1 implements ThresholdDeterminer2D
+{
+・・・・・・
+// 両グループの特徴量から閾値を決定
+public void  determine( float[][] features0, float[][] features1 )
+{
+// 特徴量の平均値を計算
+int  i;
+mean0x = 0.0f;
+mean0y = 0.0f;
+for ( i=0; i<features0.length; i++ )
+{
+mean0x += features0[ i ][ 0 ];
+mean0y += features0[ i ][ 1 ];
+}
+mean0x = mean0x / features0.length;
+mean0y = mean0y / features0.length;
+mean1x = 0.0f;
+mean1y = 0.0f;
+for ( i=0; i<features1.length; i++ )
+{
+mean1x += features1[ i ][ 0 ];
+mean1y += features1[ i ][ 1 ];
+}
+mean1x = mean1x / features1.length;
+mean1y = mean1y / features1.length;
+// 境界の方程式を計算(2つの平均値からの距離が等しくなる直線を境界とする)
+border_ox = ( mean0x + mean1x ) * 0.5f;
+border_oy = ( mean0y + mean1y ) * 0.5f;
+border_dy = - ( mean1x - mean0x ) / ( mean1y - mean0y );
+// 境界の符号を判定(グループ0が特徴量が境界よりも下にあれば真)
+if ( mean0y < getThreshold( mean0x ) )
+is_first_smaller = true;
+else
+is_first_smaller = false;
+// 特徴量データを記録(グラフ描画用)
+this.features0 = features0;
+this.features1 = features1;
+}
+・・・・・・
+}
+//
+//	特徴量ごとに異なる正規分布に基づく2次元の特徴量の閾値の計算クラス
+//
+class  Threshold2DByGaussian2 extends Threshold2DByGaussian1
+{
+・・・・・・
+// 両グループの特徴量から閾値を決定
+public void  determine( float[][] features0, float[][] features1 )
+{
+// 基底クラスの処理を実行(特徴量の平均値の計算)
+super.determine( features0, features1 );
+// 特徴量の分散を計算
+variance_x = 0.0f;
+variance_y = 0.0f;
+for ( int i=0; i<features0.length; i++ )
+{
+float  dx = features0[ i ][ 0 ] - mean0x;
+float  dy = features0[ i ][ 1 ] - mean0y;
+variance_x += dx * dx / ( features0.length + features1.length ); 
+variance_y += dy * dy / ( features0.length + features1.length ); 
+}
+for ( int i=0; i<features1.length; i++ )
+{
+float  dx = features1[ i ][ 0 ] - mean1x;
+float  dy = features1[ i ][ 1 ] - mean1y;
+variance_x += dx * dx / ( features0.length + features1.length ); 
+variance_y += dy * dy / ( features0.length + features1.length ); 
+}
+// 境界の方程式の傾きを修正
+//(2つの平均値からの距離を分散で割ったものが等しくなる直線を境界とする)
+border_dy = - ( ( mean1x - mean0x ) * variance_y ) / ( ( mean1y - mean0y ) * variance_x );
+}
+・・・・・・
+}
+

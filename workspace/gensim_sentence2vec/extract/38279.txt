@@ -1,0 +1,164 @@
+問題
+git
+では空気を吸うようにブランチを作り空気を吐くようにマージを行います。
+gitでマージ作業を中止して元の状態に戻す
+ではマージに際してよくある問題の対処方法について紹介しました。
+運用をきちんとしていればトピックブランチのマージでコンフリクトが発生することは稀です。
+しかし稀とはいえコンフリクトが発生するときは発生します。
+例えば新機能Xの実装を始めるとしましょう:
+$ git checkout -b topic-x master
+$ $EDITOR
+$ git commit -am 'Fix outdated comments'
+$ $EDITOR
+$ git commit -am 'Revise existing API'
+$ $EDITOR
+$ git commit -am 'Implement X'
+o---o---o  <- topic-x
+/
+o---o---o  <- master
+新機能Xを実装している間に他の人がバグ修正Yを行い、
+それが master に取り込まれていたとしましょう:
+$ git checkout -b topic-y master
+$ $EDITOR
+$ git commit -am 'Fix apple'
+$ $EDITOR
+$ git commit -am 'Fix banana'
+$ git checkout master
+$ git fetch
+$ git merge origin/master
+$ git merge topic-y
+$ git push origin master
+o---*---o  <- topic-x
+/
+o---o---o---*---o  <- master, topic-y
+さて新機能Xを master にマージしたところ、
+偶然にも topic-x と topic-y で変更範囲が重なっていたためコンフリクトが発生しました
+(グラフの * で示したコミットです)。
+コンフリクトの解決は問題なく終わり、マージ作業を終えたとします:
+$ git checkout master
+$ git fetch
+$ git merge origin/master
+$ git merge topic-x  # (c1)
+$ $EDITOR
+$ git commit -a  # (r1)
+o---*---o  <- topic-x
+/         \
+o---o---o---*---o---o  <- master
+^
+topic-y
+しかしマージ作業を終えたところで実は topic-x に致命的なミスがあったことに気付きました。
+まだ git push する前だったので、
+一度マージ作業を巻き戻してから topic-x を修正して再度マージすることにします:
+$ git checkout topic-x
+$ $EDITOR
+$ git commit -am 'Fix $&*!)($&'
+$ git checkout master
+$ git fetch
+$ git merge origin/master
+$ git merge topic-x  # (c2)
+o---*---o---o  <- topic-x
+/             \
+o---o---o---*---o-------o  <- master
+^
+topic-y
+これで手順としては何も間違っていないのですが、
+当然ながら(c2)でも(c1)と同様のコンフリクトが発生します。
+一度(r1)で解決したにもかかわらず、
+同様の作業を繰り返すことになります。
+いくらなんでもこれは面倒です。
+どうにかして自動化できないでしょうか。
+解決方法
+git rerere
+を使います。
+といってもこのコマンドは他のコマンドから自動的に呼び出されるため、
+ユーザーが直接を実行することはありません。
+ただしデフォルトでは無効になっているため、
+$ git config rerere.enabled true
+として有効にする必要があります。
+一旦有効にしておけばコンフリクトを解決してコミットを行った際に
+どのように解決を行ったかが自動的に記録されます。
+例えば(c1)の解決結果(r1)が既に記録されていた場合、
+(c2)のマージでは全く同じコンフリクトが発生するので、
+(r1)の解決結果を利用して自動でコンフリクトを解決します。
+自動でコンフリクトが解決された場合は git merge の際に以下のようなメッセージが表示されます:
+$ git merge topic-x
+Auto-merging file.x
+CONFLICT (content): Merge conflict in file.x
+Resolved 'file.x' using previous resolution.
+Automatic merge failed; fix conflicts and then commit the result.
+この場合 file.x でコンフリクトが発生したものの、
+過去に同じコンフリクトを解決していたため、
+その結果を利用して解決を自動で行ったという意味です。
+ただコンフリクトの解決が以前と全く同じでよいかどうかは場合によります。
+そのためコンフリクト箇所が全て自動解決されたとしてもコミットは自動では行われません。
+ユーザーが確認してからコミットする必要があります。
+とはいえ、同じ作業を何度も繰り返す手間が省けるのでとても便利です。
+補足
+別の例も紹介しましょう。
+例えばとあるプロジェクトの開発を行っているとします。
+このプロジェクトでの典型的な作業の流れは以下のようになります:
+機能追加やバグ修正等のタスクが山盛りになっています。
+この中から取りかかるタスクを決めて、
+タスク毎にトピックブランチを作成して作業を進めます。
+$ git checkout -b fix-apple master
+$ $EDITOR
+$ git commit -am 'Fix apple'
+$ git checkout -b add-banana master
+$ $EDITOR
+$ git commit -am 'Add banana'
+各タスクがある程度できたところでテスト環境にデプロイしてレビューしてもらいます。
+ここではテスト環境用の統合ブランチ next があり、
+そこにマージしてからデプロイを行います。
+$ git push origin fix-apple add-banana
+$ git checkout next
+$ git fetch
+$ git merge origin/next
+$ git merge origin/fix-apple  # (1)
+$ git merge origin/add-banana  # (2)
+$ make
+$ git push origin next
+$ make deploy
+レビューの結果、実は add-banana にいくつか不備があると判明しました。
+それを修正して再度テスト環境にデプロイするとします。
+$ git checkout add-banana
+$ $EDITOR
+$ git commit -am 'Fix minor bananas'
+$ git push origin add-banana
+$ git checkout next
+$ git fetch
+$ git merge origin/next
+$ git merge origin/add-banana
+$ make
+$ git push origin next
+$ make deploy
+このような作業を繰り返して各タスクの修正内容が完全になったら、
+今度は本番環境にリリースします。
+ここでは本番環境用の統合ブランチ master があり、
+そこに各トピックブランチをマージしてからリリースを行います
+(next にはまだレビュー中の物が含まれていることが多いので
+master とは分けてあります)。
+$ git checkout master
+$ git fetch
+$ git merge origin/master
+$ git merge origin/fix-apple  # (3)
+$ git merge origin/add-banana  # (4)
+$ make
+$ git push origin master
+$ make deploy
+これがこのプロジェクトでの典型的な作業の流れになります。
+これを一定間隔で繰り返していくのですが、
+トピックブランチのマージの際にコンフリクトが発生すると少々面倒になります。
+例えば fix-apple と add-banana の変更範囲がたまたま重なっていたため
+コンフリクトが発生したとしましょう。
+このプロジェクトでは next と master という2つの統合ブランチがあり、
+各トピックブランチは両方の統合ブランチにマージされます。
+つまり、上記のコマンド例の(2)と(4)では同じコンフリクトが発生することになります。
+next でのマージ作業で既に解決したにもかかわらず、
+master でのマージ作業で同じコンフリクトを解決することになります。
+本文中の例の場合は巻き戻しすることがなければ
+同じコンフリクトを何回も解決することにはなりませんが、
+このプロジェクトの場合は next でのマージ作業でコンフリクトが発生すると
+master でのマージ作業で同じコンフリクトが発生するため、回避することができません。
+こういう場合に git rerere が有効だとスムーズに作業を進めることができます。
+(続く)
+gitでコンフリクトの解決結果を再利用する - TIM Labs

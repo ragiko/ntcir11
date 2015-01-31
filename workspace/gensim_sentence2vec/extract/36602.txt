@@ -1,0 +1,41 @@
+以下の記事では、広く入手できる、いかなるopenリファレンス端末向けにも強く推奨するベストプラクティスの提供を狙います。最近の Firefox OS リファレンス端末は全てがこのプラクティスに従っていて、来るFlameもそうです。
+端末は以下を備えます:
+容易にアクセス・インストール可能なビルド
+完全にロックされないOS
+世界中で入手可能
+コンシューマー機と同等の機能サポート
+交換用電池が入手可能
+言語選択が容易に可能
+Easily accessible and installable builds
+Reference devices are largely aimed at developers and other groups with a greater degree of technical knowledge than average device consumers. But even so, we shouldn't expect users of these devices to compile their own builds if they don't wish to — for many of them this is a complete waste of time.
+Open reference devices should have a maintained set of unlocked builds for current and future releases that are easy to access and install. This means having multiple tiers of builds available, at least:
+Release/Current
+Stable/Beta
+Nightly
+They should be made easily available on a dedicated download page, and updated regularly and often. Devices should also have OTA updates made available to them.
+The OEMs should be responsible for providing these builds since they are the only ones who can legally distribute all the required binaries, etc.
+It may make sense to follow a similar model to the Firefox browser, where each of the release, stable and nightly channels are based on subsequent versions of the source code.
+Completely unlocked operating system
+The device operating system platform should be completely unlocked, so that app and platform developers can have the necessary freedom of control available over their devices to perform any desired tests and development work. This includes:
+SIM unlocked
+Bootloader unlocked
+Root access
+Worldwide availability
+If you want your reference devices to be a universal standard, then it follows that you should make them available worldwide. If this is not the case, people in different locales will have to make do with different devices, which may carry different behaviours.
+Feature support equivalent to consumer phones
+There is no point in creating a reference device that does not have support for the same technologies and associated features as the consumer devices you will ultimately be distributing Firefox OS builds and open web apps on.
+These include:
+AGPS/other associated geolocation hardware
+Phone compass/gyroscope/accelerometer
+Phone camera(s) with image and video capabilities
+Vibration hardware
+SDCard storage
+Phone ringer
+Appropriate hardware buttons
+3G or better connectivity
+Availability of replacement batteries
+Replacement batteries can often be really hard to obtain for different devices, and can lead to otherwise useful devices being rendered useless. It is therefore a good idea to make replacement batteries as available as possible.
+Easily enabled language choices
+Since these device will be distributed worldwide, it is important to make localised builds available for as many languages as possible, taking into account availability of resources and most popular target market locales.
+The most likely solution to this is localised Gaia builds or language packs that can be flashed onto the device separately, and Mozilla is working on a solution to make creation and installation of these as easy as possible.
+open リファレンス端末用ベストプラクティス - Mozilla | MDN

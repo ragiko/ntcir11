@@ -1,0 +1,6 @@
+Flash アプリケーションと対話する ColdFusion ページが含まれているディレクトリ名は、ActionScript で呼び出すサービス名になります。 このディレクトリに含まれている個別の ColdFusion ページ名は、ActionScript で呼び出すサービス関数名になります。
+ColdFusion ページでは、Flash 変数スコープを使用して、Flash アプリケーションとやり取りするパラメータにアクセスします。Flash アプリケーションから渡されたパラメータにアクセスするには、パラメータ名の前に Flash スコープ接頭辞を付けるか、Flash.Params 配列を使用します。Flash アプリケーションに値を返すには、Flash.Result 変数を使用します。クエリーオブジェクトのレコードをいくつかに分割して Flash アプリケーションに返す場合は、Flash.Pagesize 変数を使用して、1 分割あたりのレコード数を設定できます。 次の表に、Flash スコープに含まれる変数を示します。
+変数
+説明
+詳細情報
+ColdFusion ページでの Flash Remoting サービスの使用

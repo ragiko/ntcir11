@@ -1,0 +1,668 @@
+
+目次
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート
+機能情報の確認
+目次
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する前提条件
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する制約事項
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートの利点
+サービス インスタンスまたは疑似ワイヤにスタティック MAC アドレスを設定する方法
+サービス インスタンスにスタティック MAC アドレスを設定する方法
+疑似ワイヤにスタティック MAC アドレスを設定する方法
+設定されたスタティック MAC アドレスの表示方法
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートの設定例
+サービス インスタンスへのスタティック MAC アドレスの設定:例
+疑似ワイヤへのスタティック MAC アドレスの設定:例
+その他の参考資料
+関連資料
+規格
+MIB
+RFC
+シスコのテクニカル サポート
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する機能情報
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート機能では、疑似ワイヤでのスタティック MAC アドレスの設定がサポートされます。スタティック MAC アドレスを、Broadband Network Gateway(BNG)のアップストリーム トラフィックで使用すると、MAC テーブルのリソースを維持し、マルチキャスト グループの作成によるトラフィック フラッディング制御を行いながら、トラフィックを転送できます。
+機能情報の確認
+お使いのソフトウェア リリースが、このモジュールで説明されている機能の一部をサポートしていないことがあります。最新の機能情報と注意事項については、ご使用のプラットフォームとソフトウェア リリースに対応したリリース ノートを参照してください。このモジュールで説明される機能に関する情報、および各機能がサポートされるリリースの一覧については、「サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する機能情報」を参照してください。
+プラットフォーム サポートと Cisco IOS および Catalyst OS ソフトウェア イメージ サポートに関する情報を入手するには、Cisco Feature Navigator を使用します。Cisco Feature Navigator には、 
+http://www.cisco.com/go/cfn 
+からアクセスしてください。Cisco.com のアカウントは必要ありません。
+目次
+•	「サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する前提条件」
+•	「サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する制約事項」
+•	「サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート」
+•	「サービス インスタンスまたは疑似ワイヤにスタティック MAC アドレスを設定する方法」
+•	「その他の参考資料」
+•	「サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する機能情報」
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する前提条件
+•	ポートとブリッジ ドメインの両方の制限に関する知識。
+•	サービス インスタンスに関する知識。
+•	Layer 2 Virtual Forwarding Instance(L2VFI)が、ブリッジ ドメインに組み込まれていること。
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する制約事項
+•	マルチキャスト スタティック MAC アドレスは、MAC アドレスのセキュリティ設定では許可されません。
+•	スタティック MAC アドレスは、スイッチ プロセッサ(アクティブとスタンバイの両方)にのみプログラムできます。
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート
+スタティック MAC アドレスをサポートするようサービス インスタンスまたは疑似ワイヤを設定するには、次の概念を理解しておく必要があります。
+•	「サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート」
+•	「サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートの利点」
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート
+サービス インスタンスおよび疑似ワイヤにスタティック MAC アドレスを設定すると、トラフィック転送に必要な MAC アドレス ラーニングが不要になります。アップストリーム方向で MAC アドレス ラーニングがなくなると、MAC アドレス テーブルのリソースを節約し、ネットワークのリソースを最適化できます。
+スタティック MAC アドレスを設定するには、L2VFI がブリッジ ドメインに組み込まれている必要があります。L2VFI によって、ブリッジ ドメイン上に疑似ワイヤ用の疑似ポートを作成できるようになります。疑似ポートを作成したら、スタティック MAC 設定を、そのブリッジ ドメインの疑似ポートに関連付けることができます。
+マルチキャスト スタティック MAC アドレスは、同じブリッジ ドメインの複数の疑似ポートで許可されます。
+図 1 に、Broadband Remote Access Server(BRAS; ブロードバンド リモート アクセス サーバ)を冗長化した構成のネットワーク内のスタティック MAC アドレスを示します。
+図 1	 アクティブ/アクティブ集約ノードおよび BRAS 冗長化
+サービス インスタンスまたは L2VFI のブリッジ ドメイン ID が変更または削除されると、すべてのスタティック MAC アドレスが除去されます。
+サービス インスタンスまたは疑似ワイヤが削除されると、その疑似ワイヤ上のすべてのスタティック MAC アドレスが除去されます。
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートの利点
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレス サポートには、次の利点があります。
+•	ネットワーク リソースの最適化に役立ちます。
+•	アップストリームのトラフィックに使用すると、MAC テーブル リソースを節約できます。
+サービス インスタンスまたは疑似ワイヤにスタティック MAC アドレスを設定する方法
+サービス インスタンスまたは疑似ワイヤにスタティック MAC アドレスを手動で設定したり、スタティック MAC アドレスを表示するには、次のタスクを実行します。
+•	「サービス インスタンスにスタティック MAC アドレスを設定する方法」
+•	「疑似ワイヤにスタティック MAC アドレスを設定する方法」
+•	「設定されたスタティック MAC アドレスの表示方法」
+サービス インスタンスにスタティック MAC アドレスを設定する方法
+サービス インスタンスにスタティック MAC アドレスを手動で設定するには、次のタスクを実行します。
+手順の概要
+1.	
+enable
+2.	
+configure
+terminal
+3.	
+interface 
+type number
+4.	
+service instance
+id
+ethernet
+[
+evc-id
+]
+5.	
+encapsulation dot1q
+vlan-id
+[
+,
+vlan-id 
+[
+-
+vlan-id
+]] [
+native
+]
+6.	
+bridge-domain
+bridge-id
+[
+split-horizon 
+[
+group 
+group-id
+]]
+7.	
+mac static address 
+mac-addr 
+[
+auto-learn
+] [
+disable-snooping
+]
+8.	
+exit
+手順の詳細
+コマンドまたはアクション
+目的
+ステップ 1
+enable
+Router> enable
+特権 EXEC モードをイネーブルにします。
+•	プロンプトが表示されたら、パスワードを入力します。
+ステップ 2
+configure
+terminal
+Router# configure terminal
+グローバル コンフィギュレーション モードを開始します。
+ステップ 3
+interface
+type
+number
+Router(config)# interface ethernet 1/0
+インターフェイスのタイプを指定し、Command-line Interface(CLI; コマンドライン インターフェイス)をインターフェイス コンフィギュレーション モードにします。
+ステップ 4
+service instance
+id
+ethernet
+[
+evc-id
+]
+Router(config-if)# service instance 1 ethernet
+インターフェイス上にイーサネット サービス インスタンスを設定し、CLI をサービス インスタンス コンフィギュレーション モードにします。
+ステップ 5
+encapsulation dot1q
+vlan-id
+[
+,
+vlan-id[
+-
+vlan-id
+]] [
+native
+]
+Router(config-if-srv)# encapsulation dot1q 100
+VLAN の指定されたサブインターフェイス上で、トラフィックの IEEE 802.1Q カプセル化をイネーブルにします。
+ステップ 6
+bridge-domain
+bridge-id 
+[
+split-horizon 
+[
+group 
+group-id
+]]
+Router(config-if-srv)# bridge-domain 100
+サービス インスタンスをブリッジ ドメイン インスタンスにバインドします。
+ステップ 7
+mac static address 
+mac-addr 
+[
+auto-learn
+] [
+disable-snooping
+]
+Router(config-if-srv)# mac static address 0000.bbbb.cccc
+スタティック MAC アドレスを設定します。
+ステップ 8
+exit
+Router(config-if-srv)# exit
+CLI を特権 EXEC モードに戻します。
+疑似ワイヤにスタティック MAC アドレスを設定する方法
+疑似ワイヤにスタティック MAC アドレスを手動で設定するには、次のタスクを実行します。
+手順の概要
+1.	
+enable
+2.	
+configure
+terminal
+3.	
+l2 vfi
+name
+manual
+4.	
+vpn 
+{
+vrf 
+vrf-name 
+|
+id
+vpn-id
+}
+5.	
+bridge-domain 
+bridge-id 
+vlan
+vlan-name
+6.	
+neighbor 
+remote-router-id
+vc-id
+{
+encapsulation 
+encapsulation-type
+| 
+pw-class 
+pw-name
+} [
+no-split-horizon
+]
+7.	
+mac static address 
+mac-addr 
+[
+auto-learn
+] [
+disable-snooping
+]
+8.	
+exit
+手順の詳細
+コマンドまたはアクション
+目的
+ステップ 1
+enable
+Router> enable
+特権 EXEC モードをイネーブルにします。
+•	プロンプトが表示されたら、パスワードを入力します。
+ステップ 2
+configure
+terminal
+Router# configure terminal
+グローバル コンフィギュレーション モードを開始します。
+ステップ 3
+l2 vfi 
+name
+manual
+Router(config)# l2 vfi test-core manual
+レイヤ 2 VFI を作成し、レイヤ 2 VFI マニュアル コンフィギュレーション モードを開始します。
+ステップ 4
+vpn 
+{
+vrf 
+vrf-name 
+|
+id
+vpn-id
+}
+Router(config-vfi)# vpn id 100
+Virtual Private Dialup Network(VPDN)グループの送信元および宛先 IP アドレスが、指定した Virtual Private Network Routing and Forwarding(VRF)インスタンスに属するように指定します。
+ステップ 5
+bridge-domain 
+bridge-id
+vlan
+vlan-name
+Router(config-vfi)# bridge-domain 100 vlan vlan10
+ブリッジ ドメインに VLAN を設定します。
+ステップ 6
+neighbor
+remote-router-id
+vc-id
+{
+encapsulation
+encapsulation-type
+| 
+pw-class
+pw-name
+} [
+no-split-horizon
+]
+Router(config-vfi)# neighbor 209.165.202.129 5 pw-class TestClass
+Virtual Private LAN Service(VPLS; バーチャル プライベート LAN サービス)のピアごとに、トンネル シグナリングおよびカプセル化方式のタイプを指定し、CLI を VFI ネイバー コンフィギュレーション モードにします。
+ステップ 7
+mac static address 
+mac-addr 
+[
+auto-learn
+] [
+disable-snooping
+]
+Router(config-vfi-neighbor)# mac static address 0000.aaaa.bbbb
+スタティック MAC アドレスを設定します。
+ステップ 8
+exit
+Router(config-vfi-neighbor)# exit
+CLI を特権 EXEC モードに戻します。
+設定されたスタティック MAC アドレスの表示方法
+設定されたスタティック MAC アドレスを表示するには、次のタスクを実行します。これらのコマンドの出力は、トラブルシューティングに役立ちます。これらの 
+show
+コマンドは、任意の順序で実行できます。
+手順の概要
+1.	
+enable
+2.	
+show bridge-domain
+[[
+bridge-id
+] [
+c-mac
+] [
+mac 
+{
+security
+[
+address
+| 
+last violation
+| 
+statistics
+] | 
+static address 
+| 
+table 
+[
+mac-address
+| 
+aging-time
+| 
+count
+]}] | 
+split-horizon
+[
+group
+{
+group-number
+| 
+all
+| 
+none
+}] | 
+stats
+]
+3.	
+show ethernet service instance
+[
+detail
+| 
+id
+id
+interface
+type
+number
+[
+detail
+| 
+mac
+{
+security
+[
+address
+| 
+last
+violation
+| 
+statistics
+] | 
+static
+address
+}] | 
+platform
+| 
+stats
+] | 
+interface
+type
+number
+[
+detail
+| 
+platform
+| 
+stats
+|
+summary
+] | 
+mac
+security
+[
+address
+| 
+last
+violation
+| 
+statistics
+] | 
+platform
+| 
+policy-map
+| 
+stats
+| 
+summary
+]
+4.	
+show vfi
+[
+checkpoint
+[
+summary
+] |
+mac static address
+| 
+memory
+[
+detail
+] | 
+name
+vfi-name
+[
+checkpoint
+| 
+mac static address
+] | 
+neighbor 
+ip-addr
+vcid 
+vcid
+mac static address
+]
+5.	
+exit
+手順の詳細
+コマンドまたはアクション
+目的
+ステップ 1
+enable
+Router> enable
+特権 EXEC モードをイネーブルにします。
+•	プロンプトが表示されたら、パスワードを入力します。
+ステップ 2
+show bridge-domain
+[[
+bridge-id
+] [
+c-mac
+] [
+mac 
+{
+security
+[
+address
+| 
+last violation
+| 
+statistics
+] | 
+static address 
+| 
+table 
+[
+mac-address
+| 
+aging-time
+| 
+count
+]}] | 
+split-horizon
+[
+group
+{
+group-number
+| 
+all
+| 
+none
+}] | 
+stats
+]
+Router# show bridge-domain 100 mac static address
+ブリッジ ドメインに関する情報を表示します。
+ステップ 3
+show ethernet service instance
+[
+detail
+| 
+id
+id
+interface
+type
+number
+[
+detail
+| 
+mac
+{
+security
+[
+address
+| 
+last
+violation
+| 
+statistics
+] | 
+static
+address
+}] | 
+platform
+| 
+stats
+] | 
+interface
+type
+number
+[
+detail
+| 
+platform
+| 
+stats
+| 
+summary
+] | 
+mac
+security
+[
+address
+| 
+last
+violation
+| 
+statistics
+] | 
+platform
+| 
+policy-map
+| 
+stats
+| 
+summary
+]
+Router# show ethernet service instance id 1 interface ethernet 0/0 mac static address
+イーサネット サービス インスタンスに関する情報を表示します。
+ステップ 4
+show vfi
+[
+checkpoint
+[
+summary
+] |
+mac static address
+| 
+memory
+[
+detail
+] | 
+name
+vfi-name
+[
+checkpoint
+| 
+mac static address
+] | 
+neighbor 
+ip-addr
+vcid 
+vcid
+mac static address
+]
+Router# show vfi name VFI2 mac static address
+VFI に関する情報を表示します。
+ステップ 5
+exit
+Router# exit
+CLI をユーザ EXEC モードに戻します。
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートの設定例
+次に、サービス インスタンスおよび疑似ワイヤにスタティック MAC アドレスを設定する例を示します。
+•	「サービス インスタンスにスタティック MAC アドレスを設定する方法」
+•	「疑似ワイヤにスタティック MAC アドレスを設定する方法」
+サービス インスタンスへのスタティック MAC アドレスの設定:例
+次に、サービス インスタンスにスタティック MAC アドレスを設定する方法の例を示します。
+Router> enableRouter# configure terminalRouter(config)# interface ethernet 1/0Router(config-if)# service instance 1 ethernetRouter(config-if-srv)# encapsulation dot1q 100Router(config-if-srv)# bridge-domain 100Router(config-if-srv)# mac static address 0000.bbbb.ccccRouter(config-if-srv)# exitRouter#
+疑似ワイヤへのスタティック MAC アドレスの設定:例
+次に、疑似ワイヤにスタティック MAC アドレスを設定する方法の例を示します。
+Router> enableRouter# configure terminalRouter(config)# l2 vfi test-core manualRouter(config-vfi)# vpn id 100Router(config-vfi)# bridge-domain 100 vlan vlan10Router(config-vfi)# neighbor 209.165.202.129 5 pw-class TestClassRouter(config-vfi-neighbor)# mac static address 0000.aaaa.bbbbRouter(config-vfi-neighbor)# exitRouter#
+その他の参考資料
+ここでは、サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート機能に関連する参考資料について説明します。
+関連資料
+関連項目
+参照先
+キャリア イーサネットのコマンド
+『Cisco IOS Carrier Ethernet Command Reference』
+コンフィギュレーション ガイド
+『
+Cisco IOS Carrier Ethernet Configuration Guide
+, Release 12.2SR』
+Cisco IOS マスター コマンド リスト
+『Cisco IOS Master Command List, All Releases』
+規格
+規格
+タイトル
+なし
+--
+MIB
+MIB
+MIB リンク
+なし
+選択したプラットフォーム、Cisco IOS リリース、および機能セットの MIB の場所を検索しダウンロードするには、次の URL にある Cisco MIB Locator を使用します。
+http://www.cisco.com/go/mibs
+RFC
+RFC
+タイトル
+なし
+--
+シスコのテクニカル サポート
+説明
+リンク
+右の URL にアクセスして、シスコのテクニカル サポートを最大限に活用してください。
+以下を含むさまざまな作業にこの Web サイトが役立ちます。
+・テクニカル サポートを受ける
+・ソフトウェアをダウンロードする
+・セキュリティの脆弱性を報告する、またはシスコ製品のセキュリティ問題に対する支援を受ける
+・ツールおよびリソースへアクセスする
+- Product Alert の受信登録
+- Field Notice の受信登録
+- Bug Toolkit を使用した既知の問題の検索
+・Networking Professionals(NetPro)コミュニティで、技術関連のディスカッションに参加する
+・トレーニング リソースへアクセスする
+・TAC Case Collection ツールを使用して、ハードウェアや設定、パフォーマンスに関する一般的な問題をインタラクティブに特定および解決する
+この Web サイト上のツールにアクセスする際は、Cisco.com のログイン ID およびパスワードが必要です。
+http://www.cisco.com/cisco/web/support/index.html
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する機能情報
+表 1
+に、この機能のリリース履歴を示します。
+ここに記載されていないこのテクノロジーの機能情報については、『
+Cisco IOS Carrier Ethernet Features Roadmap
+』を参照してください。
+ご使用の Cisco IOS ソフトウェア リリースによっては、コマンドの中に一部使用できないものがあります。特定のコマンドのリリース情報については、コマンド リファレンス マニュアルを参照してください。
+Cisco Feature Navigator を使用すると、プラットフォームおよびソフトウェア イメージのサポート情報を検索できます。Cisco Feature Navigator を使用すると、Cisco IOS および Catalyst OS ソフトウェア イメージがサポートする特定のソフトウェア リリース、機能セット、またはプラットフォームを確認できます。Cisco Feature Navigator には、
+http://www.cisco.com/go/cfn
+からアクセスします。Cisco.com のアカウントは必要ありません。
+(注)	表 1 には、一連の Cisco IOS ソフトウェア リリースのうち、特定の機能が初めて導入された Cisco IOS ソフトウェア リリースだけが記載されています。その機能は、特に断りがない限り、それ以降の一連の Cisco IOS ソフトウェア リリースでもサポートされます。
+表 1	サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポートに関する機能情報 
+機能名
+リリース
+機能情報
+Static Mac for Open(インフラストラクチャ)
+12.2(33)SRE
+サービス インスタンスおよび疑似ワイヤでのスタティック MAC アドレスのサポート機能では、疑似ワイヤでのスタティック MAC アドレスの設定がサポートされます。スタティック MAC アドレスを、BNG のアップストリーム トラフィックで使用すると、MAC テーブルのリソースを節約し、マルチキャスト グループの作成によるトラフィック フラッディング制御を行いながら、トラフィックを転送できます。
+次のコマンドが、新たに導入または変更されました。
+mac static address
+、
+neighbor
+、
+show bridge domain
+、
+show ethernet service instance
+、
+show vfi
+Cisco and the Cisco Logo are trademarks of Cisco Systems, Inc. and/or its affiliates in the U.S. and other countries. A listing of Cisco's trademarks can be found at 
+www.cisco.com/go/trademarks
+. Third party trademarks mentioned are the property of their respective owners. The use of the word partner does not imply a partnership relationship between Cisco and any other company. (1005R)
+このマニュアルで使用している IP アドレスおよび電話番号は、実際のアドレスおよび電話番号を示すものではありません。マニュアル内の例、コマンド出力、ネットワーク トポロジ図、およびその他の図は、説明のみを目的として使用されています。説明の中に実際のアドレスおよび電話番号が使用されていたとしても、それは意図的なものではなく、偶然の一致によるものです。
+© 2009 Cisco Systems, Inc. 
+All rights reserved.
+Copyright © 2009-2011, シスコシステムズ合同会社.
+All rights reserved.
+キャリア イーサネット コンフィギュレーション  ガイド、Cisco IOS Release 15.1S - サービス インスタンスおよび疑似ワイヤでの スタティック MAC アドレスのサポート - Cisco Systems

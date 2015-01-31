@@ -1,0 +1,143 @@
+
+「BigQueryは120億行を5秒でフルスキャン可能」は本当か?
+先日、kaheiさんがGoogle BigQuery(Googleクラウドの大規模クエリサービス)について、こんなエントリを書いていた。
+とにかくパフォーマンスがすごい。(Fluentd Meetupでの)プレゼン中のデモで、ディスクに収められた5億件のデータをSQLでフルスキャンするのに3秒しかかからない。9億件のデータを正規表現を含んだSQLでスキャンしても、7秒で終わる(これ、記憶がちょっとあいまい。もう少しかかったかも)。これには驚いた。佐藤さんがGoogleに入社して一番驚いた技術が、一般公開される前のBigQueryだったと言っていたが、その気持ちはわかる。
+From Fluentd Meetupに行ってきました
+これを読んだ時、BigQueryの検索スピードについてちょっと補足したくなった。確かにFluentd Meetupのデモでは9億件を7秒程度で検索していたが、BigQueryの真の実力はこれより1〜2ケタ上だからだ。ちょっと手元で少し大きめのテーブルで試してみたら、120億行の正規表現マッチ付き集計が5秒で完了した。論より証拠で、デモビデオ(1分16秒)を作ってみた:
+From The Speed of Google BigQuery
+これは速すぎる。何かのインチキである(最初にデモを見た時そう思った)。正規表現をいろいろ変えてみてもスピードは変わらない。つまり、インデックスを事前構築できないクエリに対してこのスピードなのである。
+価格も安い。さすがに120億行のクエリは1回で200円もかかって気軽に実行できなさそうであるが、1.2億行なら2円だ(2014年5月現在)。この価格とスピードなら、望み通りの結果が得られるまでクエリを調整しながら何回でも試行錯誤できる。この規模のデータをまともなレスポンスで処理するために数千万〜数億もする大型のデータウェアハウス専用マシンを買っている企業が数多く存在することを考えると、データウェアハウス・ベンダーにとっては非常に迷惑な価格付けなのである。
+1TBのデータを1秒でフルスキャンにするには5,000台のディスクが必要
+なぜBigQueryはこんなインチキ臭いほどに高速なのか。BigQueryは、Cloudera Impara等のいまどきの大規模並列(Massively Parallel Processing/MPP)クエリエンジンや過去のデータウェアハウスマシンと同じくカラム型のデータ分析専用データベースである。しかし、他の多くのカラム型DBとBigQueryとの間には量子的飛躍が存在する。それは、並列度のオーダーだ。BigQueryでは、ひとつひとつのクエリを実行するたびに数百台〜数千台のマシンが同時並列に検索を実行している(ケタ間違えていません)。文字通り、massivellyな並列処理だ。その上、インデックスは一切作らず、すべてディスクのフルスキャン(テーブルスキャン)で処理する。
+1クエリに数千台、すべてフルスキャン。。この2点を初めて聞いた時はしばらく信じられなくて、BigQueryを開発したGoogleエンジニアに2〜3回は確認してしまった。
+この恐ろしいまでの並列性には理由がある。Google社内において、「1TBのデータを1秒でフルスキャンするには、いったい何台のディスクドライブを並列に回せばよいのか?」という実験をし、その結果得られた答えが5,000台。それならば、Googleのデータセンターにすでに無数にあるディスクでクエリを並列実行できるカラム型DBを作ってみよう、というのがBigQueryの生まれた発想である。Google、おおざっぱすぎる。
+数十程度の並列度のMPPクエリサービスとは、"massively"の意味がまるきり違う。私はつねづね、こういうのが本来の意味でのクラウド(=データや計算をデータセンター全体に薄く広く分散させるアーキテクチャ)なんだなと思う。
+要するに、アクセスログでもエラーログでもIoTでも、あらゆるデータをとりあえずBigQueryにつっこんでおけば、実用上はデータセットのサイズ上限を気にすることなく、その場で思いついたクエリを数秒〜数10秒のオーダーで実行できる。巨大データの高速検索やインデックス構築やアーカイブについて人類が頭を悩ませる必要はついになくなったのだ。こんな虎の子を2006年から社内のあらゆるログ分析で使ってきて2年前まで一般公開せずにいたなんて、Googleずるい。Clouderaの元CEOが「ビッグデータ処理の未来を知りたければとりあえずGoogleのペーパー今すぐ読んどけ」と言うのももっともなのである。
+FluentdユーザーがいますぐBigQueryを使い始めるべき2つの理由
+USでは、Snapchatをはじめ、P&G、Electronic Arts、Motorola、Evernote、United Airlines等の大手企業によるBigQueryの大規模事例が多数生まれつつある。では、なぜこんなに速くて安い大規模クエリサービスが、これまであまり国内では広く使われてこなかったのか。
+その大きな理由は、データのインポートに時間がかかる上に面倒で、Fluentdにも非対応だった点だ。従来、BigQueryにデータをインポートするにはGoogle Cloud Storageに一度CSVファイルをアップロードし、そこからさらにBigQueryに読み込ませる方法が主流だった。すると、ログをファイルに集約してアップロードしたり読み込ませたり等のツールをユーザーが自ら記述する必要がある上に、収集したログがBigQueryに反映されるまでのタイムラグも長くかかっていた。
+BigQuery Streamingで速度も管理も気にせずリアルタイム・インポート可能に
+今年3月25日にGoogleが開催したイベントGoogle Cloud Platform Liveで、この状況が大きく変化した。ここでは、BigQuery StreamingによるREST API経由での毎秒10万行のリアルタイム・インポート機能が発表された。Google Cloud Storageの経由が不要となり、BigQueryにRESTでデータを送るだけでクエリ結果に即座に反映される。ちなみに、10万行/秒というインポート性能は1テーブルあたりの値であり、テーブルを分割することで実用上は速度上限を気にする必要はなくなる。
+BimoticsのRobertoさんは、こんな速度でインポートしながらも並行してまったく普通にクエリできる点がスゴイと指摘する。その他、インポート後のデータに対してインデックスを構築したりデフラグしたり最適化したりといった作業が不要な点、データセットの肥大化や運用管理の手間を考えずにどこまでも貯めこんでいける点も挙げている。
+@tagomorisさんによるfluent-plugin-bigqueryリリース
+もうひとつ、Fluentdユーザーにとってきわめて意味のある転換点が、LINEエンジニアでありFluentdのコミッターである@tagomorisさんによるfluent-plugin-bigqueryのリリースである。このプラグイン開発では、Rubyの元リリースマネージャでGoogleエンジニアの@yuguiさんも強力にcontributeしている。
+fluent-plugin-bigqueryは、Fluentdのイベントログを上述のBigQuery Streamingを用いて流し込むプラグインである。このプラグインの登場によって、Fluentdをインストールして設定ファイルを記述するだけで、特別なインポート・ツールを構築することなくBigQueryに簡単かつ高速にデータを流し込めるようになった。
+またテーブルのシャーディングにも標準で対応しているため、foo0,foo1,foo3とカンマ区切りで複数のテーブル名を指定するだけで簡単に負荷分散が可能で、1テーブルの上限である10万行/秒の数倍を超えるログのリアルタイム・インポートもごく簡単に行える。
+Fluentで集めた12万行/秒のログをBigQueryにリアルタイム・インポートしてグラフを描いてみた
+私もこのプラグインをここ2か月ほど利用しているが、ほんの10行ほどの設定でとても安定したログのインポート&分析基盤を簡単に実装することができた。ログを集めている各ノードのFluentdに以下のような設定を書いておけばよい。
+# to BQ
+<store>
+type bigquery
+auth_method compute_engine
+project gcp-samples
+dataset gcp_samples
+tables nginx0,nginx1,nginx2
+flush_interval 1
+buffer_chunk_records_limit 1000
+buffer_queue_limit 1024
+num_threads 50 
+time_format %s
+time_field time
+field_string agent,code,host,method,path,referer,user
+field_integer time,size
+</store>
+From fluentd-nginx-bq/td-agent.conf
+このように書くだけで、各ノードのnginxのログをBigQuery上のnginx0,1,2という3テーブルに分散インポートできる。BigQueryでクエリを実行するときも、FROM nginx0,nginx1,nginx2と書くだけで高速にUNIONされる。またログの送り元としてGoogle Compute Engineを使っていれば、OAuthまわりの認証を気にする必要もない。もちろん、Googleクラウド以外のクラウドからBigQueryにインポートすることも可能だ。
+以下のデモビデオは、このfluent-plugin-bigqueryを使ってnginxログをBigQueryにリアルタイム・インポートしつつNorikraの集計結果と合わせてGoogle Spreadsheet上に表示した例である。
+From Lambda Architecture Demo
+この例では、70インスタンスから集めたnginxログを12万行/秒で安定してBigQueryにインポートし、一分に一回の割合でグラフ(左上)を更新している。すばらしい。。fluent-plugin-bigqueryあっぱれ! ちなみに12万行/秒というのは私の環境のインスタンス不足による上限であり、BigQueryもNorikraもおそらくは100万行/秒程度は難なくさばけそうだ(誰もそこまでいらないって)。このBigQueryとNorikraによるLambda Architectureについては明日5/20のLinuxConでもデモするけど、コードを公開できる頃には解説エントリを書きたい。
+Hadoopとユーザー定義関数に対応
+さらにダメ押しで、今後多くのFluentdユーザーがBigQueryを使わざるを得なくなると思われる理由を述べておこう。Hadoop対応とUDF(ユーザー定義関数)対応だ。
+HDFSへインポートせずにHadoopからアクセス
+4月16日にPreviewリリースされたのが、BigQuery Connector for Hadoop。これは、BigQuery上のデータをHDFSへインポートせずともHadoopのストレージとして利用できる仕組みである。
+From Announcing Google BigQuery and Datastore Connectors for Hadoop
+このコネクタを使うと、これまでのように「HDFSにデータを入れてHadoopでバッチ処理」、「カラム型DBにデータを入れてMPPクエリエンジンで分析処理」といった二度手間を大幅に減らすことができる。上述の方法でいちどBigQueryにすべてのデータを入れてしまえば、それを後からBigQueryでクエリしたりHadoopでバッチ処理したりを簡単に記述できる。これは嬉しい人が多いだろう。
+ユーザー定義関数(UDF)に対応
+もうひとつ、Google Cloud Platform Liveで近日リリース予定として発表されたのが、BigQueryのユーザー定義関数(User Defined Function/UDF)である。
+例えば、JavaScriptで定義された関数を以下のように記述して、
+From Google Cloud Platform Live: The Power of BigData on Google Cloud Platform
+これをBigQueryのクエリの中に埋め込みできるようになるという。
+もともとBigQueryはBig JOINと呼ばれる巨大テーブル同士のJOIN処理にも対応していた。この2つの機能が出揃うことがなにを意味するかというと、大規模ジョインや非構造化データの詳細分析・変換等、これまでHadoopでコードを書いて対応せざるを得なかったバッチ処理のうち、かなりの部分をBigQueryだけでさくっと書けてしまいそうなのである。もちろん、冒頭で述べたBigQueryの恐ろしい並列性とスピードで。この発表を聞いた時に私の頭に浮かんだ言葉は、「Hadoopとは何だったのか」である。
+BigQueryの課題
+BigQueryのいいところばっかり述べてきたので、最後にデメリットも触れておきたい。それは、国内ではまだまだユーザー数が少ない点だ。Twitter上で #gcpja タグを付けて質問してみれば反応が期待できるものの、例えば日本語の書籍はまだないし、ドキュメントも英語のみ。製品としては安定動作してるものの(なにせGoogle社内では2006年から使われているので)、コミュニティの規模という意味ではまだまだアーリーアダプター期だ。そうした状況を「面白い!」と思えるエンジニアには、ぜひとも触れてみてほしいサービスだ。
+ちなみに、BigQueryは毎月1TBまで無償で使える。初めから用意されているサンプルのテーブルをクエリで叩きながら試してみるのがおすすめだ。BigQueryの最新動向については6/5と6/6にそれぞれ東京と大阪で開催されるCloud Platform Developer Roadshow 2014でのセッションがあるのだけれど、残念ながら東京会場はすでに満席。この記事を書いている時点では大阪にはまだ席があるようす。
+追記:Fluentd+BigQueryをさくっと体験したいときは
+Fluentd+BigQueryの$300無料体験版を30分で試す手順をお試しあれ。
+Disclaimer この記事は個人的なものです。ここで述べられていることは私の個人的な意見に基づくものであり、私の雇用者には関係はありません。
+## 「BigQueryは120億行を5秒でフルスキャン可能」は本当か?
+先日、kaheiさんが[Google BigQuery](https://developers.google.com/bigquery/)(Googleクラウドの大規模クエリサービス)について、こんなエントリを書いていた。
+```
+とにかくパフォーマンスがすごい。(Fluentd Meetupでの)プレゼン中のデモで、ディスクに収められた5億件のデータをSQLでフルスキャンするのに3秒しかかからない。9億件のデータを正規表現を含んだSQLでスキャンしても、7秒で終わる(これ、記憶がちょっとあいまい。もう少しかかったかも)。これには驚いた。佐藤さんがGoogleに入社して一番驚いた技術が、一般公開される前のBigQueryだったと言っていたが、その気持ちはわかる。
+```
+From [Fluentd Meetupに行ってきました](http://kahei.org/blog/2014/05/fluentd-meetup.html)
+これを読んだ時、BigQueryの検索スピードについてちょっと補足したくなった。確かにFluentd Meetupのデモでは9億件を7秒程度で検索していたが、BigQueryの真の実力はこれより1〜2ケタ上だからだ。ちょっと手元で少し大きめのテーブルで試してみたら、120億行の正規表現マッチ付き集計が5秒で完了した。論より証拠で、[デモビデオ(1分16秒)](https://www.youtube.com/watch?v=swsS12c1VGE&rel=0)を作ってみた:
+![kobito.1400417945.045693.png](https://qiita-image-store.s3.amazonaws.com/0/38290/234c71f8-d0d4-254b-f98e-498c7cf03f74.png "kobito.1400417945.045693.png")
+From [The Speed of Google BigQuery](https://www.youtube.com/watch?v=swsS12c1VGE&rel=0)
+これは速すぎる。何かのインチキである(最初にデモを見た時そう思った)。正規表現をいろいろ変えてみてもスピードは変わらない。つまり、インデックスを事前構築できないクエリに対してこのスピードなのである。
+価格も安い。さすがに120億行のクエリは1回で200円もかかって気軽に実行できなさそうであるが、1.2億行なら2円だ(2014年5月現在)。この価格とスピードなら、望み通りの結果が得られるまでクエリを調整しながら何回でも試行錯誤できる。この規模のデータをまともなレスポンスで処理するために数千万〜数億もする大型のデータウェアハウス専用マシンを買っている企業が数多く存在することを考えると、データウェアハウス・ベンダーにとっては非常に迷惑な価格付けなのである。
+## 1TBのデータを1秒でフルスキャンにするには5,000台のディスクが必要
+なぜBigQueryはこんなインチキ臭いほどに高速なのか。BigQueryは、Cloudera Impara等のいまどきの大規模並列(Massively Parallel Processing/MPP)クエリエンジンや過去のデータウェアハウスマシンと同じく[カラム型](http://www.publickey1.jp/blog/13/4_1.html)のデータ分析専用データベースである。しかし、他の多くのカラム型DBとBigQueryとの間には量子的飛躍が存在する。それは、並列度のオーダーだ。BigQueryでは、ひとつひとつのクエリを実行するたびに数百台〜数千台のマシンが同時並列に検索を実行している(ケタ間違えていません)。文字通り、massivellyな並列処理だ。その上、インデックスは一切作らず、すべてディスクのフルスキャン(テーブルスキャン)で処理する。
+1クエリに数千台、すべてフルスキャン。。この2点を初めて聞いた時はしばらく信じられなくて、BigQueryを開発したGoogleエンジニアに2〜3回は確認してしまった。
+この恐ろしいまでの並列性には理由がある。Google社内において、「1TBのデータを1秒でフルスキャンするには、いったい何台のディスクドライブを並列に回せばよいのか?」という実験をし、その結果得られた答えが5,000台。それならば、Googleのデータセンターにすでに無数にあるディスクでクエリを並列実行できるカラム型DBを作ってみよう、というのがBigQueryの生まれた発想である。Google、おおざっぱすぎる。
+数十程度の並列度のMPPクエリサービスとは、"massively"の意味がまるきり違う。私はつねづね、こういうのが本来の意味でのクラウド(=データや計算をデータセンター全体に薄く広く分散させるアーキテクチャ)なんだなと思う。
+![kobito.1400419700.594409.png](https://qiita-image-store.s3.amazonaws.com/0/38290/5765b5cb-4660-a711-6665-53771e0c7c52.png "kobito.1400419700.594409.png")
+要するに、アクセスログでもエラーログでもIoTでも、あらゆるデータをとりあえずBigQueryにつっこんでおけば、実用上はデータセットのサイズ上限を気にすることなく、その場で思いついたクエリを数秒〜数10秒のオーダーで実行できる。巨大データの高速検索やインデックス構築やアーカイブについて人類が頭を悩ませる必要はついになくなったのだ。こんな虎の子を2006年から社内のあらゆるログ分析で使ってきて2年前まで一般公開せずにいたなんて、Googleずるい。Clouderaの元CEOが[「ビッグデータ処理の未来を知りたければとりあえずGoogleのペーパー今すぐ読んどけ」](http://www.wired.com/2012/08/googles-dremel-makes-big-data-look-small/)と言うのももっともなのである。
+## FluentdユーザーがいますぐBigQueryを使い始めるべき2つの理由
+USでは、Snapchatをはじめ、P&G、Electronic Arts、Motorola、Evernote、United Airlines等の大手企業によるBigQueryの大規模事例が多数生まれつつある。では、なぜこんなに速くて安い大規模クエリサービスが、これまであまり国内では広く使われてこなかったのか。
+その大きな理由は、データのインポートに時間がかかる上に面倒で、Fluentdにも非対応だった点だ。従来、BigQueryにデータをインポートするにはGoogle Cloud Storageに一度CSVファイルをアップロードし、そこからさらにBigQueryに読み込ませる方法が主流だった。すると、ログをファイルに集約してアップロードしたり読み込ませたり等のツールをユーザーが自ら記述する必要がある上に、収集したログがBigQueryに反映されるまでのタイムラグも長くかかっていた。
+### BigQuery Streamingで速度も管理も気にせずリアルタイム・インポート可能に
+今年3月25日にGoogleが開催したイベント[Google Cloud Platform Live](https://www.youtube.com/watch?v=GrD7ymUPt3M)で、この状況が大きく変化した。ここでは、[BigQuery Streaming](https://developers.google.com/bigquery/streaming-data-into-bigquery)によるREST API経由での毎秒10万行のリアルタイム・インポート機能が発表された。Google Cloud Storageの経由が不要となり、BigQueryにRESTでデータを送るだけでクエリ結果に即座に反映される。ちなみに、10万行/秒というインポート性能は1テーブルあたりの値であり、テーブルを分割することで実用上は速度上限を気にする必要はなくなる。
+[BimoticsのRobertoさん](http://www.bimotics.com/blog/google-bigquery-7-fascinating-facts)は、こんな速度でインポートしながらも並行してまったく普通にクエリできる点がスゴイと指摘する。その他、インポート後のデータに対してインデックスを構築したりデフラグしたり最適化したりといった作業が不要な点、データセットの肥大化や運用管理の手間を考えずにどこまでも貯めこんでいける点も挙げている。
+### @tagomorisさんによるfluent-plugin-bigqueryリリース
+もうひとつ、Fluentdユーザーにとってきわめて意味のある転換点が、LINEエンジニアでありFluentdのコミッターである@tagomorisさんによる[fluent-plugin-bigquery](https://github.com/tagomoris/fluent-plugin-bigquery)のリリースである。このプラグイン開発では、Rubyの元リリースマネージャでGoogleエンジニアの@yuguiさんも強力にcontributeしている。
+![kobito.1400422032.841329.png](https://qiita-image-store.s3.amazonaws.com/0/38290/d7e415c1-b10f-a0ad-c30f-9ae379c882bc.png "kobito.1400422032.841329.png")
+fluent-plugin-bigqueryは、Fluentdのイベントログを上述のBigQuery Streamingを用いて流し込むプラグインである。このプラグインの登場によって、Fluentdをインストールして設定ファイルを記述するだけで、特別なインポート・ツールを構築することなくBigQueryに簡単かつ高速にデータを流し込めるようになった。
+またテーブルのシャーディングにも標準で対応しているため、foo0,foo1,foo3とカンマ区切りで複数のテーブル名を指定するだけで簡単に負荷分散が可能で、1テーブルの上限である10万行/秒の数倍を超えるログのリアルタイム・インポートもごく簡単に行える。
+## Fluentで集めた12万行/秒のログをBigQueryにリアルタイム・インポートしてグラフを描いてみた
+私もこのプラグインをここ2か月ほど利用しているが、ほんの10行ほどの設定でとても安定したログのインポート&分析基盤を簡単に実装することができた。ログを集めている各ノードのFluentdに以下のような設定を書いておけばよい。
+```td-agent.conf
+# to BQ
+<store>
+type bigquery
+auth_method compute_engine
+project gcp-samples
+dataset gcp_samples
+tables nginx0,nginx1,nginx2
+flush_interval 1
+buffer_chunk_records_limit 1000
+buffer_queue_limit 1024
+num_threads 50 
+time_format %s
+time_field time
+field_string agent,code,host,method,path,referer,user
+field_integer time,size
+</store>
+```
+From [fluentd-nginx-bq/td-agent.conf](https://github.com/kazunori279/dockerfiles/blob/master/fluentd-nginx-bq/td-agent.conf)
+このように書くだけで、各ノードのnginxのログをBigQuery上のnginx0,1,2という3テーブルに分散インポートできる。BigQueryでクエリを実行するときも、FROM nginx0,nginx1,nginx2と書くだけで高速にUNIONされる。またログの送り元としてGoogle Compute Engineを使っていれば、OAuthまわりの認証を気にする必要もない。もちろん、Googleクラウド以外のクラウドからBigQueryにインポートすることも可能だ。
+以下の[デモビデオ](http://youtu.be/EZkw5TDcCGw?t=1m34s&rel=0)は、このfluent-plugin-bigqueryを使ってnginxログをBigQueryにリアルタイム・インポートしつつNorikraの集計結果と合わせてGoogle Spreadsheet上に表示した例である。
+![kobito.1400422856.098303.png](https://qiita-image-store.s3.amazonaws.com/0/38290/d502eba5-f867-bc2b-8188-0457014d210b.png "kobito.1400422856.098303.png")
+From [Lambda Architecture Demo](http://youtu.be/EZkw5TDcCGw?t=1m34s&rel=0)
+この例では、70インスタンスから集めたnginxログを12万行/秒で安定してBigQueryにインポートし、一分に一回の割合でグラフ(左上)を更新している。すばらしい。。fluent-plugin-bigqueryあっぱれ! ちなみに12万行/秒というのは私の環境のインスタンス不足による上限であり、BigQueryもNorikraもおそらくは100万行/秒程度は難なくさばけそうだ(誰もそこまでいらないって)。このBigQueryとNorikraによるLambda Architectureについては明日5/20のLinuxConでもデモするけど、コードを公開できる頃には解説エントリを書きたい。
+## Hadoopとユーザー定義関数に対応
+さらにダメ押しで、今後多くのFluentdユーザーがBigQueryを使わざるを得なくなると思われる理由を述べておこう。Hadoop対応とUDF(ユーザー定義関数)対応だ。
+### HDFSへインポートせずにHadoopからアクセス
+4月16日にPreviewリリースされたのが、[BigQuery Connector for Hadoop](http://googlecloudplatform.blogspot.jp/2014/04/google-bigquery-and-datastore-connectors-for-hadoop.html)。これは、BigQuery上のデータをHDFSへインポートせずともHadoopのストレージとして利用できる仕組みである。
+![kobito.1400424512.188093.png](https://qiita-image-store.s3.amazonaws.com/0/38290/9f06f8c1-def6-5df7-8272-bcb1b708f5ff.png "kobito.1400424512.188093.png")
+From [Announcing Google BigQuery and Datastore Connectors for Hadoop](http://googlecloudplatform.blogspot.jp/2014/04/google-bigquery-and-datastore-connectors-for-hadoop.html)
+このコネクタを使うと、これまでのように「HDFSにデータを入れてHadoopでバッチ処理」、「カラム型DBにデータを入れてMPPクエリエンジンで分析処理」といった二度手間を大幅に減らすことができる。上述の方法でいちどBigQueryにすべてのデータを入れてしまえば、それを後からBigQueryでクエリしたりHadoopでバッチ処理したりを簡単に記述できる。これは嬉しい人が多いだろう。
+### ユーザー定義関数(UDF)に対応
+もうひとつ、Google Cloud Platform Liveで近日リリース予定として発表されたのが、BigQueryのユーザー定義関数(User Defined Function/UDF)である。
+例えば、JavaScriptで定義された関数を以下のように記述して、
+![kobito.1400424791.884877.png](https://qiita-image-store.s3.amazonaws.com/0/38290/5c6ae0a6-276a-0133-ae6e-3c4b59080f14.png "kobito.1400424791.884877.png")
+From [Google Cloud Platform Live: The Power of BigData on Google Cloud Platform](https://www.youtube.com/watch?v=GrD7ymUPt3M)
+これをBigQueryのクエリの中に埋め込みできるようになるという。
+もともとBigQueryは[Big JOINと呼ばれる巨大テーブル同士のJOIN処理](http://googledevelopers.blogspot.jp/2013/03/bigquery-gets-big-new-features-to-make.html)にも対応していた。この2つの機能が出揃うことがなにを意味するかというと、大規模ジョインや非構造化データの詳細分析・変換等、これまでHadoopでコードを書いて対応せざるを得なかったバッチ処理のうち、かなりの部分をBigQueryだけでさくっと書けてしまいそうなのである。もちろん、冒頭で述べたBigQueryの恐ろしい並列性とスピードで。この発表を聞いた時に私の頭に浮かんだ言葉は、「Hadoopとは何だったのか」である。
+## BigQueryの課題
+BigQueryのいいところばっかり述べてきたので、最後にデメリットも触れておきたい。それは、国内ではまだまだユーザー数が少ない点だ。Twitter上で #gcpja タグを付けて質問してみれば反応が期待できるものの、例えば日本語の書籍はまだないし、ドキュメントも英語のみ。製品としては安定動作してるものの(なにせGoogle社内では2006年から使われているので)、コミュニティの規模という意味ではまだまだアーリーアダプター期だ。そうした状況を「面白い!」と思えるエンジニアには、ぜひとも触れてみてほしいサービスだ。
+ちなみに、[BigQueryは毎月1TBまで無償で使える](https://developers.google.com/bigquery/sign-up)。初めから用意されているサンプルのテーブルをクエリで叩きながら試してみるのがおすすめだ。BigQueryの最新動向については6/5と6/6にそれぞれ東京と大阪で開催される[Cloud Platform Developer Roadshow 2014](http://googledevjp.blogspot.jp/2014/05/cloud-platform-developer-roadshow-2014.html)でのセッションがあるのだけれど、残念ながら東京会場はすでに満席。この記事を書いている時点では大阪にはまだ席があるようす。
+## 追記:Fluentd+BigQueryをさくっと体験したいときは
+[Fluentd+BigQueryの$300無料体験版を30分で試す手順](http://qiita.com/kazunori279/items/7367e725d7827e37a38f)をお試しあれ。
+----
+Disclaimer この記事は個人的なものです。ここで述べられていることは私の個人的な意見に基づくものであり、私の雇用者には関係はありません。
+hadoop - Googleの虎の子「BigQuery」をFluentdユーザーが使わない理由がなくなった理由 #gcpja - Qiita

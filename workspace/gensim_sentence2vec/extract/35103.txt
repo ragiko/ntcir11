@@ -1,0 +1,28 @@
+
+まず最初に、word2vec の仕様 を ① Mikolov 氏ほか共著論文 と ② O'Reilly本 から適宜 転載しつつ確認
+Mikolov 氏 他 word2vec 論文 を読み解くと、、、以下の知見が掲載されている
+Mikolov ほか共著 ( 論文 )"Efficient Estimation of Word Representation in Vector Space"
+① コーパスの単語数が多けれは多いほど、モデルの次元数が大きければ大きいほど、意味演算の正確性の精度は高まる。(モデルの次元数が大きい場合は、コーパスサイズも相応にないと精度は落ちる)
+② 文法的 ( Syntactic )には、 NNLM が、意味的 ( Semantic ) には Skip-gram が精度が高い
+③ コーパスのサイズが2倍になれば、モデルの次元数も2倍にするべきである
+( 以下、Mikolov ほか共著論文 より引用・転載 )
+( リンク )"Efficient Estimation of Word Representation in Vector Space" ( PDF )    
+【 Mikolov ほか が word2vec 意味演算の正解率の検証に用いたデータの出所 】
+【 コーパスの単語数 / モデルの次元数 と 意味演算の正解率 】
+( 単語数が2倍になるのに対応して、モデル次元数も2倍にすべき(線形増加させる) )
+( 上で言及されている equation 4 は、以下のとおり )
+【 モデル演算アルゴリズムの種類 と 意味演算の正解率 】
+※ 総合的にみて、Skip-gram がもっとも秀逸
+Python 版の word2vec では、モデル生成メソッド実行時に、sg オプション で、解析アルゴリズムを選択。( ※ デフォルト設定は、skip-gram )
+( リンク ) gensim models.word2vec – Deep learning with word2vec 
+【 出力結果には、「類義語」、「対義語」、「前後の数字」、「分かち書きで誤って分断された単語の断片対(ペア)」など、意味合いの異なる単語が混在する 】
+O'Reilly 出版 e-Pub (電子書籍)『word2vec による自然言語処理』
+( 上の要点部分を拡大 )
+モデルの引数とオプションを変えて、結果を比較してみる
+使用するコーパス (青空文庫)西田幾多郎 『善の研究』
+[ ( リンク ) 青空文庫 図書カード: No.946 西田幾多郎 善の研究 ]
+(http://www.aozora.gr.jp/cards/000182/card946.html#download)
+( 以下から zip ファイルをダウンロードして、unzip コマンドで解凍 )
+【 解凍後、右のファイルを使う】 zennokenkyuu_ruby.txt
+( nkf コマンドで、文字コードを確認後、utf-8 形式にファイル変換 )
+Python - word2vec ～ モデル仕様の詳細調査 と モデルのパラメータ設定ケース別 意味「類似度」計算結果の比較・考察(①モデル次元数 ②window幅を変えて挙動を確認)～ コーパス事例: 和文 学術論文 (西田幾多郎)『善の研究』 - Qiita

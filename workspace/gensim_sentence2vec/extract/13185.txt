@@ -1,0 +1,3 @@
+
+This paper proposes a novel method of incorporating pitch information into an HMM speech recognition system by exploiting the correlation between pitch and spectral parameters, e. g. cepstrum. Pitch patterns are not used explicitly ; instead, spectral parameters are normalized framewise according to the pitch value. Evidence is given to show that the use of pitch information consistently improves the recognition performance. Experiments with 24 phoneme labels showed that the phoneme error rate for fast continuous speech could be improved by about 10%. Using these pitch-normalized phone models in an HMM-LR speech recogniton system improved the phrase recognition accuracy for the top 5 candidates from 96% to 97. 5%, i. e. the error rate was nearly halved
+

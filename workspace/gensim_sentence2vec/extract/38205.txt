@@ -1,0 +1,17 @@
+講演や討論などの話し言葉の音声認識における問題を分析した上で、音響モデル・発音モデル・言語モデル・デコーダなどを検討・実装・評価した。学習・評価用のデータとして、開放的融合研究「話し言葉工学」プロジェクトで構築されている日本語話し言葉コーパスを用いた。
+話し言葉は書き言葉の読上げ音声と大きく性質が異なるため、それに合致したモデル化と認識手法の検討が必要となる。音響モデルについては発話スタイルとデータ量の影響を調べた。言語モデルについては,話し言葉コーパスのデータ量不足を補うために他のコーパスと混合する方法、特に混合重みの最適化手法を提案した。また認識に際して、事前の発話のセグメンテーションが容易でないため、ショートポーズの自動認識に基づいて区分化と認識結果の確定を行う逐次デコーディング方式を提案・実装した。
+これに加えて、以下のような高精度化を図り、学会等における講演の音声に対して平均で約70%の認識率を得た。
+(1)発話速度に依存したデコーディングと音響モデルの適応
+(2)講演音声認識のための発音モデルと言語モデルの教師なし適応
+さらに、以下のような音声言語処理に関する研究も行った。
+(3)談話標識の抽出に基づいた講演音声の自動インデキシング
+(4)講演の書き起こしに対する統計的手法を用いた文体の整形
+(5)談話標識と話題語に基づく統計的尺度による講演からの重要文抽出
+Automatic transcription of lectures is addressed using the corpus of spontaneous Japanese collected under the priority research project in Japan. First, we investigate the effect of speaking style and data amount for acoustic modeling. Then, to complement training data for language model, incorporation of other text corpora with optimization of mixture weights is performed. We also implement a sequential decoding method that does not need prior segmentation of lecture recordings
+Then, we investigate the acoustic, pronunciation and language modeling for improving the accuracy focusing the following issues
+(1) Speaking-rate dependent decoding and adaptation of acoustic model
+(2) Statistical modeling of pronunciation variations and unsupervised adaptation of language model Furthermore, we also study the following spoken language processings
+(3) Automatic indexing of lecture audio by extracting topic-independent discourse markers
+(4) Automatic transformation of lecture transcription into document style using statistical framework
+(5) Extraction of important sentences from lectures using statistics of discourse markers and topic words
+KAKEN - 講演・会議音声の自動書き起こしのための柔軟な音声言語処理モデル(12480085)

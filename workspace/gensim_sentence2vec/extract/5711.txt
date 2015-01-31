@@ -1,0 +1,171 @@
+DelphiのADOでOracle にアクセスする
+この文書は,ネット上で見つけた,Usign ADO with Oracleという文書を翻訳したものです。
+この件についてのOracleに関する記述はあるものの、Delphiにはほとんど言及していない。検索サイトを詳しく調べれば、VBから OracleにアクセスするためのADOの使用法については数例出てくる。例えば、Jenny Besaw著の非常に優れた白書「Oracle Provider for OLE DB(2000/11/30)」では、ADOを使用する重要な場面を明示するために、もっぱらVBを使用している。
+役に立つリンクはあるが、C++に関する記述はたまにあるものの、Delphiの記述がない。Delphi IDEは市場で最良のものの一つだと思っているのは私だけではないだろう。Oracleは明らかにBorland社のやり方と類似している、結局すべての Javaデベロッパーシステムの基本は、Delphiの相棒であるJbuilderである。Oracleにアクセスするアプリケーションを作るのに Delphiを使うとして、何の不都合があるというのか。
+何もないのである。あまり多くの文献があるわけではないかもしれないが、できるのである!Delphiが提供するADOのカプセル化は簡単にマス ターでき、少し根気よくやれば、Oracleとお互いにやりとりができるようになる。しかしながら、一般的なサポートが不足しているので、学習曲線は急で ある。本稿では、ADOの使用に関してキーとなる点のいくつかについて一般的な用語で説明することで、学習曲線を少しでもやわらげることを目指す。
+ADOとは何か?
+Microsoft ActiveX&reg; Data Objects (ADO) は、レコードセットから独立したデータベースを含む一連のオブジェクトをアプリケーション・プログラマに提供するOLE DBへの高度なオブジェクト指向インターフェースである。
+皆さんの会社で、パフォーマンス至上主義者が抽象的レイヤーを加えることに文句を言い始める前に、次のよう場合においては、Oracleのネイティブ・ドライバを使用することは必ずしも適切ではないことを認識しておくべきである。
+・ 異種のデータベース・プラットフォームに同時にアクセスするアプリケーション
+・ どんな顧客が設定したデータベース・バックエンドででも使える必要があるアプリケーション。
+・ 低レベルのデータベース経験がある(高給取りの)C++プログラマは獲得できにくいが、DelphiやVBのスキルは、見つけやすい環境にある。
+いずれの場合でも、ここに影響するパフォーマンス・オーバーヘッドは、初期のODBCドライバの古き悪しき時代ほどではない。
+こ れが、マイクロソフトの「標準」であるにもかかわらず、多くの開発者にとってやっかいなもののようだ。ADOを使用するもう一つの恩恵は、クライアントが MS-Windowsを立ち上げていればデータベース・アクセス・レイヤーは、既にいつもの決まったところにあると一応考えられることである。というの も、ADOやOLD DBは、マイクロソフトが供給しているもので、Windowsと一緒にインストールされているからである。アプリケーションと一緒にクライアント・マシン にBDE(Borland Database Engine)のような余分なものをインストールする心配は無用である。ADOベースのアプリケーションは、クライアント・コンピュータにADO2.1が インストールされていることが必要である。
+一般的ADOプログラミング・モデル
+図1
+図1では、プロバイダの左側にADOのオブジェクト・モデルがあり、ADOオブジェクト名の下にあるイタリック体字は、これらのオブジェクトを含むDelphiコンポーネントである。
+Commandアイテムには接続情報を指定できるので、分離したTADOConnectionコンポーネントを作ることは必須ではない。しかしなが ら、それは往々にして推奨されている。というのは、TADOConnectionは、アプリケーション内のあらゆるCommandオブジェクトに対するコ ネクションの属性と条件をコントロールできるからである。コネクションを作ると、開発者はプロパティをセットすることで、カーソル・ロケーション(クライ アントまたはサーバ)とコネクション・タイムアウトなどのコネクションの重要な面をコントロールことができる。さらにコネクションの関連づけメソッドを用 いると、トランザクション処理をインプリメントしたり、このコンポーネントが接続しているデータベースに関するメタデータを検索することが可能になる。
+データセットを返すのに使用される二つの主要なコマンド・オブジェクトは、TADOQueryとTADOStoredProcである。開発者は、前 者ではどのようなSQLクエリでもSQLプロパティ(文字列リスト)にセットすることができる。それがSELECT文だったら、レコードセットが返され る。DDLあるいはOUTパラメータを持たないストアド・プロシージャ呼び出しのような、データを返さないコマンドでは、TADOCommandは、デー タベース・コンポーネントを使用するオーバーヘッドを少なくするために使うことができる。
+TADOStoredProcは、OUTパラメータをREF_CURSORだと宣言することで、レコードセットを返すことができる。 ExecQueryメソッドをコールした後、TParametersプロパティから取り出すことができる。アプリケーションにデータを返すこのテクニック はストアド・プロシージャのセクションで説明する。 
+OLE DB
+現実世界の情報システムは、ますます異なる技術テクノロジー構成されてきている。組織にはたいがいメインフレームとクライアント・サーバ・システム の両方があって、それぞれに異なるデータベースとアプリケーションがある。さらに、情報の表示にデスクトップPCが必要となることがよくある。
+OLEDBは、標準的な方法で多くのタイプのデータストアに対して作用するため、一組の低レベル・データ・アクセス・インターフェースの仕様を設計 してこのシナリオに対応する。OLDDBメソッドを直接呼び出すことも可能ではあるが、ADOのカプセル化は低レベルの複雑なものを隠蔽して、開発者はア プリケーションの構築に集中することができる。
+開発者が最初に行う選択は、どのプロバイダを使用するかである。マイクロソフトがOLEDBを立ち上げたとき、データベース・ベンダーなどが独自の OLEDBプロバイダを作ることができるように、マイクロソフトはデベロッパー・キットを利用できるようにしたが、Oracle用には特別にOLEDBプ ロバイダを提供した。
+Oralceは、独自のOLEDBプロバイダを作ってきた。Oracleのプロバイダを使う方が好まれる理由は、それがネイティブOLEDBプロバ イダであり、LOBsのサポート、PL/SQLストアドプロシージャおよびREF_CURSORのようなOracleに特化したデータベースの機能にアク セスできるからである。Oracle 8i以上のデータベースにアクセスするためには、バージョン7.3.4以上のOLEDBを使用する必要がある。COMベースなので1台のマシンには一つの バージョンのOraOLEDBしか存在できず、OLEDBは複数のOralceホームに対処することはできない。
+接続
+Delphiにおいては、ADO Connectionオブジェクトは、TADOConnectionコンポーネントによりカプセル化される。一つのADOConnectionを使用する ことによって、ADOのクエリやストアドプロシージャにデータベースへのアクセスを提供できる。
+接続文字列(Connection String)は、セミコロンで区切られた複数の項目から構成される。
+Provider=OraOLEDB.Oracle.1;Password=a_password;Persist Security Info=True;User ID=a_user;Data Source=sms7;Extended Properties="plsqlrset=1"
+PLSQLRSetプロパティはドキュメント化されていない。これは接続データタイプの拡張プロパティ(Extended Properties)で、その初期値はゼロである。しかし、ストアドプロシージャからデータセットを返したければ、この値を1にする必要がある。このプ ロパティのセットミスは、(ORA-06550: Wrong number of type of arguments in call )というわけのわからないエラーを発生するが、この点に関してドキュメントが整備されていないので、初心者の開発者には、問題が接続文字列にあるという手 がかりをつかむことはできない!
+Deiphiでは接続文字列の代わりに、データリンクファイル(.UDL)を用いると便利である。デザイン時に接続文字列をハードコーディングしな いのは、柔軟な設計という点から見て、明らかに好都合である。理論上クライアント・マシン上で、指定された場所にあるファイルから、接続情報を得るといっ たようなアプリケーション・コードを書くことができ、その際はクライアントがどのようなプロバイダを使用しているのか気にしなくてもよい。とはいえプロバ イダ間には実装に相違があるので、実際には、使われそうなプロバイダに対して、アプリケーションをテストしておくことは不可欠である。
+UDL ファイルは、Microsoft Data Link ファイルである。拡張子は自動的にWindowsにより認識され、新しいUDLファイルは、Windows 98の場合は、エクスプローラからファイル(F)&rarr;新規作成(N)&rarr;データリンクファイルを選んで作ることができ、ユーザーが設定すべき情報をセットする ためにウィザードが起動する。NT(とWindows 2000)の場合は、メニューから新しいUDLファイルを作ることはできない。その代わりエディタなどを使って空のファイルを作り、その拡張子を.UDL にして保存する。それからそのファイルをエクスプローラで右クリックして、プロパティを選択する。こうすれば98と同じウィザードが起動する。
+必要な情報をセットしてUDLを保存する。UDLを保存するデフォルトの場所は、Program Files\Common Files\System\OLE DB\Data Linksである。ファイル名をセットするときに、フルパスを与えなかった場合は、アプリケーションはこのディレクトリを見に行く。
+コネクションをつくるまで
+UDLファイルの作成:最初のタブで、前の章で述べたように、プロバイダOracle Provider for OLEDBを選択する。次に接続タブで、必要な情報をセットし「接続のテスト」ボタンをクリックする。下の図では、sms7という名前のOracleデー タベースに、a_userというユーザー名で接続する例を示す。
+図2
+ストアド・プロシージャからレコードセットを取得する場合は、「すべて」のタブにある、「Extended Properties」をダブルクリックして、「plsqlrset=1」をセットすることを忘れずに。
+図3
+Delphiでは:データベース・アクセス・オブジェクトを配置するデータモジュールを作り、そこにTADOConnectionオブジェクトを配 置する。コンポーネントパレットのADOタブから、ADOConnectionを追加し、F11を押して、プロパティを編集する。
+図4
+デザイン時にConnectプロパティをTrueにセットすることは気をつけるように。アクティブなコネクションオブジェクトがあるフォームを開い た時、コネクションが何らかの理由で実際に張られなかった場合には、Delphiは警告なしにフリーズする。そうなってしまったら、Delphiを起動す る前に、テキストエディタで.DFMを開き、プロパティ値を手動で変更しなければならなくなる。
+最善の解決策は、そのフォームのOnCreateイベントなどで、実行時にこのプロパティをセットすることである。また、アプリケーションにとって 必要なら、Oracleに直接ログインさせずに、ある特定のユーザーでログインさせることもできる。あるユーザーでログインさせる場合は、 ADOConnectionのLoginPromptプロパティをFalseにセットする。
+procedure TStaff_DMF.DataModuleCreate(Sender: TObject);
+begin
+//when we start up, let&rsquo;s get the ADO connection sorted
+TRY
+PersonnelConnection.Open('a_user','a_password');
+EXCEPT
+MessageDlg('Fatal error: Invalid Connection String (Please refer to user manual)',
+mtWarning,[mbOK],0) ;
+halt ;
+END ; //try
+end ; //procedure
+図5
+図5では、実行時にテータモジュールが生成されるときに、PersonnelConnectionオブジェクトのOpenメソッドを呼び出して、コ ネクションが張られる。Openメソッドの呼び出しが、Tryブロックの中で行われるので、接続に失敗した場合は、ダイアログが表示される。
+PL/SQLのEXCEPTIONブロックと同様に、開発者はExceptブロックを使って、すべての例外あるいは特定の例外を処理することができる。この例の場合、どんな例外が発生してもユーザーにメッセージを表示する。
+接続が完了すると、データベースに取り組むことができるようになる。次の例はデータを様々な方法で簡単なDelphiのフォームに返すものである。 データを返すためにストアドプロシージャを使用するのかしないのかという議論はあるが、ここではその意見は言わないでおく。その代わり、クエリとストアド プロシージャを使用した両方の例をあげ、議論は別の機会に譲ることにする。
+レコードセット
+RecordSetオブジェクトは、ADOの心臓部である。RecordSetには、ユーザーが操作できる、選択されたデータを保持する一組の行 (またはレコード)と列(またはフィールド)がある。RecordSetは、データベースと通信して、訂正・削除・更新を可能にする。
+しかし、何ができるかという範囲は、ADOモデル自体よりも、むしろデータ・プロバイダの機能性によって設定されるということは、忘れてはならない。
+データ型
+データベースとプログラム言語が、違ったやり方でデータ型を扱うという事実は、データベースのプロフェッショナルにとっての、唯一最大の頭痛のタネ で、OracleとDelphiを使っていてもそれは例外ではない。いつものごとく日付型は面倒なことになりうる。TO_DATE関数(Oracle)と DateToStr関数(Delphi)を上手に使って、日付をvarcher型とString型に変換してやりとりすることで、この問題をたやすく解決 することができる。
+思いもよらないことだが、問題になるのは単純なINTEGER型である。不幸にも数値ですら問題になりうるのである。ここでの問題の核心は、 NUMBER(38)という整数をストアする時のOracleの初期設定である。Delphiは、この値は非常に大きい値なので、整数型を使うのをやめ て、BCD(Binary Coded Decimal)型として扱おうとして、混乱を来す。図6に示したエラーを見れば、この問題が発生しているということである。
+図6
+図6のエラーは、図7で定義されたOralceテーブルにアクセスするために、ADOTableを使うという普通のコードを書いただけで発生する。
+CREATE TABLE CD ( 
+CATALOGUE_NUMBER  NUMBER NOT NULL, 
+TITLE             VARCHAR2 (30)  NOT NULL, 
+Etc&hellip;.
+同様な問題は,上記のNUMBERがINTEGERかSMALLINTでも発生する。
+図7
+この問題を避けるには二つの方法がある。データベースをアプリケーション構築の一部分として作成しているのなら、OracleのCREATEステートメントで、NUMBER型のサイズを明示的に指定する。
+CATALOGUE_NUMBER  NUMBER(9) NOT NULLこの簡単なステップによって、アプリケーションで整数を使用できて、Oralceとの間に何の問題も起こさなくなる。
+しかし、運悪くいくつかのフィールドがNUMBER型と定義された既存のデータベース上で動くアプリケーションを開発するとなると、DelphiがOracleデータを扱う方法を変更する必要がある。
+Delphi にレコードセットのフィールドを自動的に生成させずに、フィールドエディタを使って、問題のNUMBER型フィールドと同じ名前のフィールドを作り、 フィールドタイプをTVariantFieldに修正する。ところが、TVariantFieldオブジェクトを通じてアクセスした数値は、計算ができな い。計算の必要があるならば、再度フィールドエディタを使って、クライアント・サイドに計算フィールドを作り、OnCalcFieldイベントが発生する 時に、図8のように、バリアント型をコンバートする。
+procedure TPersonnelDM.ADOTable1CalcFields(DataSet: TDataSet);
+begin
+ADOTable1Cat_int.value:=ADOTable1Catalogue_Number.AsInteger ;
+end;
+図8
+テーブルとクエリ
+Oralceのテーブルからレコードセットを作る一番簡単な方法はTADOTableである。TableNameプロパティをセットすると、デフォ ルトで編集可能な「SELECT * FROM TABLENAME」と等価のレコードセットを得ることができる。ユーザーがレコードセットを修正したら、データベースは更新されコミットされる。デフォ ルトでOraOLEDBは、自動コミットモードになる。ReadOnlyプロパティをTrueにセットすると、修正を防ぐことができる。 Connectionプロパティに、正しいADOConnectionオブジェクトをセットすれば、コネクションにある全テーブルをTableNameプ ロパティのドロップダウンリストから選択できる。図9では前に作った、PersonnelConnectionを使用している。
+SQLのSELECT文に基づくレコードセットを返したい場合は、TADOQueryコンポーネントを使用する。SQLプロパティには、 DDL(データ定義言語)を含むどのようなSQL文でも記述することができる。対してTADOCommandコンポーネントは、レコードセットを返さない SQLに使われる。というのは、TADOCommandコンポーネントは、単純なコンポーネントであり、データセットが存在することでのオーバーヘッドが 発生しないからある。
+ADOTableとADOQueryには、共通するプロパティが多い(図9)。しかし一般的に、ユーザーにデータを編集させるために ADOQueryを使うべきではない。テーブル結合を使ったレコードセットの場合、プロバイダによってはどのみちリードオンリーとなってしまう。
+図9
+ADOがプロバイダによって機能を制限されている例として、悲観的ロックが使えるように見えるLockTypeプロパティをあげよう。事実、そのプ ロパティにltPessimisticをセットできるが、Oracle Provider for OLEDBでは、デフォルトのltLockOptimisticと全く同じ扱いになる。サポートされるLockTypeの値は、ReadOnley、 BatchOptimisticとOptimisticだけである。同様にCursorTypeプロパティでは、ctOpenKeysetや ctDynamicをセットしても、Oracle Provider for OLEDBではサポートされない。
+この2つのプロパティをデフォルト値にしておくのは一般的に正しいが、パフォーマンスの理由からこれらを変更することを考慮してもよい。最初に決め るのは、カーソル処理をどこで行うかである。デフォルトではクライアント側にある。サーバ側ではサポートされないやり方でレコードセットを処理できるとい う柔軟性があるので、通常はこの方が好まれる。しかしクライアントPCが四苦八苦しなければならなくなるような、大きなレコードセットの場合、 CursorLocationプロパティにclUseServerをセットした方がよい。
+カーソルロケーションがUseClientの場合は、ローカルに行のコピーをとる静的カーソルを使うべきである。カーソルがサーバサイドにある場合 は、パフォーマンス向上のためForwardOnlyカーソルを使ってもよいが、その名のとおりデータセットをナビゲートする機能は少なくなる。
+どちらの場合でも、MaxRecordsプロパティにはゼロがセットされるので、返されるレコーッド数には制限がないということになる。クライアン トに非常に大量なデータが返されないように、ここに正の値をセットすることは有益だが、CachSizeプロパティの方がより有益である。これはローカル メモリに一度にどれだけの行を取得するかを定義する。例えば、これを50にセットしてみると、データセットが最初にアクティブになる時に、プロバイダは最 初の50行をローカルメモリに入れる。行ポインタがレコードセットの中を移動すると、プロバイダはローカルメモリにバッファからデータを取得する。サーバ からローカルバッファに入ってきたデータは、同時利用中の他のユーザーからは変更が加えられることはない。
+ADOQueryのオブジェクト・インスペクタで、SQLプロパティをダブルクリックすると、レコードセットの元になるSQLを記述できるコード・エディタがポップアップする。
+(図10)
+図10
+動的SQLは、Parametersプロパティを使って生成する。例では、:dcの値は実行時にバインドすることができ、ユーザーに値を選んでもら うことができる。dcパラメータは、オブジェクト・インスペクタでは、1.5という値が設定されているが、ユーザーが設定した値を使うことができる。図 11のコードは、ユーザーがエディット・ボックス(名称はeCost)に入っている値をdcにセットして、Openメソッドを呼び出して、再クエリする。
+With PersonnelDM.ADOQuery2 do begin
+close ;
+Parameters.ParamByName('dc').value := StrToFloat(eCost.Text);
+open ;
+end ;図11
+ストアドプロシージャ
+ストアドプロシージャは、多くのRDBMSにある機能で、開発者はADOStoredProcコンポーネントで、サーバサイドのPL/SQLプロシージャやパッケージを使って、既存のビジネス・ルールを利用できる。
+Parametersプロパティをマスターすることが、ADOStoredProcを使いこなすキーとなる。それぞれのプロシージャに対し、パラ メータはいくつあるのか、パラメータリスト定義の中での順序、どちら向きなのか(IN、OUTまたはINOUT)、どんな型なのか、を知っておくべきであ る。
+図12
+図12では、InsertACDというストアドプロシージャをコールするADOStoredProcを作り、サーバに渡されるパラメータを3つ作っ ている。PtitleとpCostはINパラメータであり、INSERT文で使われる。PMaxValはOUTパラメータである。図13にプロシージャ定 義を示す。
+PROCEDURE InsertACD(pTitle IN CD2.TITLE%type, pCost IN CD2.DAILY_COST%type,  pMaxCost OUT CD2.DAILY_COST%type)
+IS
+BEGIN
+INSERT INTO CD2 (CATALOGUE_NUMBER, TITLE, DAILY_COST)
+VALUES		 ( seq_cd.nextval,pTitle ,pCost ) ;
+Commit ;
+SELECT Max(DAILY_COST)INTO pMaxCost
+FROM CD2 ;
+END InsertACD;
+図13
+ADOStoredProcオブジェクト上のパラメータ名はPL/SQLのパラメータ名と関係がないことに注意すること。OUTパラメータは、 ADOオブジェクトでは、pMaxValという名前だが、PL/SQLではPmaxCostという名前である。パラメータは、名前ではなく順序で渡され る。図14のコードは、INパラメータのセットとOUTパラメータの取り出しを示している。ADOStoredProcのパラメータは ParamByNameメソッドを使うか、直接パラメータ番号(最初のパラメータはゼロ)を指定して取り出せる。両方のテクニックが使われている。
+with PersonnelDM.ADOStoredProc1 do begin
+//set the params = to the edit box values
+parameters.ParamByName('pTitle').Value:=eTitle.Text ;
+parameters.ParamByName('pCost').Value:=StrToFloat(eDailyCost.Text) ;
+ExecProc ;	//fire the procedure
+txtMax.Caption:=IntToStr(parameters[2].Value) ;
+end ; //with
+図14
+ExceProcメソッドがコールされると、PL/SQLプロシージャが実行され、新しい行がCD2テーブルに追加される。そのとき DAILY_COSTの最大値がOUTパラメータにバインドされ、コードの最終行で、それが取り出され、Form上のテキストボックスに値をセットする。
+Oracle Provider for OLE DBでは、プロシージャはREF_CURSORタイプの引数を持てるので、TADOStoredProcコンポーネントを使用すれば、ストアドプロシー ジャからリードオンリーのレコードセットを取得することができる。OLEDBの仕様では、REF_CURSORに対応する既成のデータタイプはないので、 このパラメータをバインドしない。その代わり、レコード競っては、Openをコールするのに成功すると、レコードセットが自動的に生成され、 ADOStoredProcコンポーネントは、他のレコードセットを持つコンポーネントのようにふるまう。
+上記と同様に、Oracleサイドでも REF_CURSOR型を定義しなければならない。Weakなタイプのカーソルを使うと、同じカーソルで異なるタイプの行を返す柔軟性がある。もっともそ うすると処理によっては間違いを起こしやすくなるのだが。下の例では、CD_cursorという名前のパッケージ仕様部にWeakタイプのカーソルを定義 している。このタイプは、CDLISTプロシージャのOUTパラメータで使われる。あるいは、一つのCURSORSパッケージにアプリケーションで使うす べてのカーソルを定義することもできる。
+CREATE OR REPLACE PACKAGE CD_package IS
+TYPE CD_cursor IS REF CURSOR;
+PROCEDURE CDList ( pCost IN Number, pList OUT CD_Cursor ) ;
+END CD_package;
+/
+CREATE OR REPLACE PACKAGE BODY CD_package AS
+PROCEDURE CDList ( pCost IN Number, pList OUT CD_Cursor ) IS
+-- returns a list of titles available at cost pCost
+BEGIN
+OPEN pList FOR
+SELECT Distinct Title
+FROM CD
+WHERE daily_cost = pCost ;
+END CDList;
+END CD_package;
+/
+図15
+パッケージ本体では、SELECT文を続けて記述したOPEN pList FORをコールすると、OUTパラメータに要求したカーソルがセットされる。しかし、OPENへのコールの後、レコードセットとして ADOStoreProcを簡単に扱うことができる。図16ではレコードセットの最後のレコードにレコードポインタを移動させるためにLastメソッドを コールする例を示している。また、この例ではオブジェクト・インスペクタを使わずに、コード内でCreateParameterを用いてパラメータを実行 時に生成している。TdataSourceを通してデータコントロールを使用すれば、グリッドやリストボックスの中にレコードを表示することができる。
+Procedure TmainForm.bFillClick(Sender: TObject);
+begin
+With PersonnelDM.ADOStoredProc2 do begin
+Close ;
+//start by creating IN param
+Parameters.clear ;        //get rid of any previous params
+Parameters.CreateParameter('pCost', ftFloat, pdInput, 0, StrToFloat(eDailyCost.text));
+//nb: OUT parameter is NOT created
+Open ;
+Last ;
+end ; //with
+end; //procedure
+図16
+ストアドプロシージャを使って編集可能なデータを作る方がより複雑である。比較的簡単な解決策の一つは、生成されたレコードセットをローカルのメモ リテーブルにコピーし、TdataSourceをアタッチしてユーザーが操作できるようにすることである。ユーザーが操作を完了すると、ストアドプロシー ジャをコールして、データの更新、追加、削除を行うことができる。
+エラー
+ADOプログラミング・モデル(図1)を参照すると、エラー・オブジェクトがあることがわかる。実際、エラー・オブジェクトを扱うのはDelphi では本当にうまくいかないものなのである。「Error Collectionオブジェクトを直接使用するのはコネクション・オブジェクトの操作になじみがなければおすすめできません。ADO エラー・コレクション・オブジェクトを用いる際、スペック情報を求めるのにMicrosoft Data Store SDKのヘルプを参照してください」といったようなコメントが出てユーザーを驚かそうとし、その次には何のコメントもない。
+おそらく、うまくいかなかった時に、ユーザーにおこったことをコントロールすればよい。実はADOConnection.Errors.itemに は、とても便利なDiscriptionというプロパティがある。下の図17では、TRYブロックの例外ハンドラの部分に返されたエラーを簡単にキャプ チャする例が出ている。この場合、コールに失敗した時はストアドプロシージャInsertACDは実行されず、MessageDlg関数がコールされ、 OracleからADOに返されたエラーメッセージを含んだメッセージダイアログをユーザーにポップアップする。
+Try
+InsertACD.ExecProc ;
+Except
+MessageDlg('Database unable to commit this record because:'+ #10 + #13 +
+PersonnelConnection.Errors.Item[0].Description,
+mtWarning,[mbOK],0) ;
+end ; //try block
+図17
+結論
+ADOがマイクロソフト独自のものなので、敬遠する開発者が多いのは事実だが、やはりそれはいいという意見も少なからずある。OLD DB呼び出しの複雑さはADOのカプセル化でうまく隠蔽されており、開発者はノン・リレーショナル・データベースやスプレッドシートを含む多くの異なる データソースを使うデータ処理・アプリケーションを素早く開発できる。
+通常ボーランドの解釈は使いやすく、すでにDelphiを使っていればなおのことである。ADOは、Delphi Professional Version 6 についてくる。60日間のトライアル版は、ボーランドのサイト(http://www.borland.com/delphi/tryitnow.html)からダウンロードできる。この稿ではふれていないが同サイトにはDelphiのスペックも掲載されている。お好みのIDEがなんであれ、ADOを使用すれば開発者は、データ処理RADソリューションを早く、しかも効果的に作り出す手助けとなる。
+DelphiのADOでOracle にアクセスする

@@ -1,0 +1,261 @@
+ Capistrano による Deploy
+Deploy, Development, Ruby, Ruby on Rails
+信頼性の高いシステムを構築
+課題として、以下があります。
+デプロイ方法の確立
+テスト技法の確立
+今回はデプロイに関連して、Capistrano を使ったリモートサーバでのタスク実行について調査してみました。
+現状のデプロイ法
+テストサーバから本番サーバへ Rsync。
+Rsync については以下に記述あり。
+rsyncを使った熟練者レベルのバックアップ
+Rsync は以下のようなスクリプトを書いて実行できる。
+#!/bin/sh
+rsync -av $1 /path/to/yourapp/ \
+haida@deploy_to_server:/path/to/deploy_to/ \
+--exclude='tmp/cache/*' \
+--exclude='tmp/pids/*' \
+--exclude='tmp/sessions/*' \
+--exclude='tmp/sockets/*' \
+--exclude='log/*' \
+--exclude='*.fuse_hidden*' \
+--exclude='*~' \
+--exclude='.svn'
+"--link-dist" オプションを考慮すると尚 Good。
+問題点
+各プロジェクト毎に専用の deploy スクリプトを書いている
+共通化した方がオーバーヘッドが減少するはず
+サーバ台数が増加してくると deploy スクリプトのメンテナンスが大変
+デプロイツールとして Capistrano を検討してみる。
+Capistrano のバージョンは 1.x 系と 2.x 系があり、バージョン間で結構異なるようだ。以下では、2.x 系の説明をする。
+Capistrano is...
+Great for automating tasks via SSH on remote servers, like software installation, application deployment, configuration management, ad hoc server monitoring, and more.
+Ideal for system administrators, whether professional or incidental.
+Easy to customize. Its configuration files use the Ruby programming language syntax, but you don't need to know Ruby to do most things with Capistrano.
+Easy to extend. Capistrano is written in the Ruby programming language, and may be extended easily by writing additional Ruby modules.
+Capistrano: Home
+Capistrano とは、、
+SSH 経由でリモートサーバへのタスクの自動化ツール
+ソフトウェアのインストール、APP デプロイ、設定管理、アドホックなサーバの監視などに利用できる
+カスタマイズ簡単
+設定ファイルは Ruby 記法を使っているけれど、Ruby についての深い理解は必要はなし
+拡張簡単
+Ruby のモジュールを書いて簡単に拡張できる
+サーバにログインしては小さなシェルスクリプトを書く手間を省略する
+Exit Tedium.
+Simply put, Capistrano is a tool for automating tasks on one or more remote servers.
+It executes commands in parallel on all targeted machines, and provides a mechanism for rolling back changes across multiple machines. 
+It is ideal for anyone doing any kind of system administration, either professionally or incidentally.
+Capistrano: Home
+退屈からの脱出
+Capistrano は 1 つ以上のリモートサーバにおけるタスクの自動生成ツール
+ターゲットサーバで、コマンドを並列実行する。
+複数サーバにおけるロールバック機能を装備
+Capistrano was originally written to ease the pain of deploying Rails applications. Although it can be (and is) used for a lot more than that now, Rails application deployment is still the primary way that most people use Capistrano, at least initially.
+Capistrano: Getting Started
+Rails APP のデプロイ軽減のために作成されたもの。
+Rails APP 以外の用途にも利用できる。
+インストール
+RubyGems で ok。
+# gem install capistano
+前提条件
+Capistrano の利用に際し、以下の前提条件をクリアしているか確認する。
+リモートマシンへ SSH できること(FTP, telnet は× )
+POSIX 互換のシェルがインストールされていること
+シェルは sh でかつ、デフォルトのシステムパスにあること
+サーバに共通の公開鍵でアクセスできること
+鍵には破られにくいパスワードをつけておくこと
+公開鍵ではなく全サーバ共通のパスワードでも良いが、公開鍵を利用した方がセキュリティ上より良い
+コマンドラインでの操作や Ruby には慣れていた方が良い
+Capfiles
+Capfile から Capistrano に指示
+Capfile は Makefile や Rakefile と似た概念
+Capfile には接続先のサーバとそのサーバ上でのタスクを Ruby で記述
+ヘルパ記法によって簡単に記述できる
+簡単な例
+Rake の記法については、Rake ことはじめ を参照。
+task :search_libs, :hosts => 'www.capfy.org' do
+run 'ls -x1 /usr/lib | grep -i xml'
+end
+www.capfy.org で指定されるサーバの /usr/lib 以下で xml という文字列を含む ファイル、またはディレクトリ名を表示する。
+run はコンソールに出力を表示する。
+前述のプログラムを、 Capfile として保存し、cap コマンドの引数にタスク名を与えて実行する。
+# cap search_libs
+この要領でタスクをどんどん追加できる。
+task :search_libs, :hosts => 'www.capfy.org' do
+run 'ls -x1 /usr/lib | grep -i xml'
+end
+# /usr/lib 内のファイル数 (サブディレクトリ 1 つも数に加える) を出力
+task :count_libs, :hosts => 'www.capify.org' do
+run 'ls -x1 /usr/lib | wc -l'
+end
+ロール
+前述のプログラムに Role を追加して、サーバの宣言を一箇所に固める。
+role :libs, 'www.capify.org'
+task :search_libs do
+run 'ls -x1 /usr/lib | grep -i xml'
+end
+# /usr/lib 内のファイル数 (サブディレクトリ 1 つも数に加える) を出力
+task :count_libs do
+run 'ls -x1 /usr/lib | wc -l'
+end
+ゲートウェイ登録
+多くのデプロイのケースではゲートウェイの設定が必要である。Capistrano では role と同じ要領でゲートウェイを登録する。
+以下では、crimson.capify.org は NAT 越しにあるとする。以下のスクリプトにより、Capisrtano はゲートウェイへのコネクションを作り、続くコネクションをトンネリングする。
+set  :gateway, 'www.capify.org'
+role :libs, 'crimson.capify.org'
+複数サーバに対応
+複数サーバに同様の役割を持たせるには、以下のようにロール名の後ろにサーバ名を "," 区切りで記述する。
+role :libs, 'crimson.capify.org', 'magenta.capify.org'
+これを使い、サーバごとの役割を記述する Capfile は以下のようになる。
+role :libs, 'crimson.capify.org', 'magenta.capify.org'
+role :files, 'fuchasia.capify.org'
+task :search_libs, :roles => :libs do
+run 'ls -x1 /usr/lib | grep -i xml'
+end
+task :count_libs,  :roles => :libs do
+run 'ls -x1 /usr/lib | wc -l'
+end
+task :show_free_space, :roles => :files do
+run 'df -h /'
+end
+もし複数のロールに同様のタスクを割り当てたい場合は以下のように roles オプションに配列で渡す。
+task :do_something, :roles =>[:libs, :files]
+.....
+end
+ドキュメンテーション
+Rake と同じように、description を記述すると、タスクコレクションを参照するコマンド "cap -T" により表示される。先程作成した cap ファイルに以下のように description を加えてみる。
+role :libs, 'crimson.capify.org', 'magenta.capify.org'
+role :files, 'fuchasia.capify.org'
+desc 'Search /usr/lib for files named xml.'
+task :search_libs, :roles => :libs do
+run 'ls -x1 /usr/lib | grep -i xml'
+end
+desc 'Show the number of entries in /usr/lib.'
+task :count_libs,  :roles => :libs do
+run 'ls -x1 /usr/lib | wc -l'
+end
+desc 'Show the amount of free disk space.'
+task :show_free_space, :roles => :files do
+run 'df -h /'
+end
+次に、 "cap -T" コマンドを叩くと以下のようにタスク名とともに description が参照可能になる。
+# cap -T
+cap count_libs      # Show the number of entries in /usr/lib.
+cap invoke          # Invoke a single command on the remote servers.
+cap search_libs     # Search /usr/lib for files named xml.
+cap shell           # Begin an interactive Capistrano session.
+cap show_free_space # Show the amount of free disk space.
+Extended help may be available for these tasks.
+Type `cap -e taskname` to view it.
+上記のように、自分で作成したタスクの他に、"invoke", "shell" というタスクがあることが分かる。
+これらのタスクは Capistrano ではいつでも参照可能である。
+cap invoke
+invoke タスクは、上記のようにタスクを記述した Capfile を用意しなくてもリモートサーバでコマンドを発行できるタスクである。以下のように、role だけ記述した Capfile を用意しておく。
+role :staging, 'example.org'
+staging で実行したいコマンドを以下のように COMMAND パラメータを通じて渡す。
+# cap invoke COMMAND='df -h'
+* executing `invoke'
+* executing "df -h"
+servers: ["example.org"]
+[tsudoi.jp] executing command
+** [out :: example.org] Filesystem            Size  Used Avail Use% Mounted on
+** [out :: example.org] /dev/simfs             20G  1.4G   19G   7% /
+command finished
+ロールを明示的に指定して実行する場合には、ROLES パラメータとして渡す。
+# cap invoke COMMAND="df -h" ROLES=staging
+.....
+HOSTS パラメータを使ってホスト名を明示的に指定することも可能。
+# cap invoke COMMAND="df -h" HOSTS=example.org
+.....
+cap shell
+invoke タスクではコマンド毎にリモートサーバへの接続が必要だが、shell コマンドは shell セッション中、コネクションをキャッシュして再利用可能にする。利用例を見た方が早い。
+# cap shell ROLES=staging
+* executing `shell'
+====================================================================
+Welcome to the interactive Capistrano shell! This is an experimental
+feature, and is liable to change in future releases. Type 'help' for
+a summary of how to use the shell.
+--------------------------------------------------------------------
+cap> touch hello.txt
+cap> ls -l hello.txt
+** [out :: exmple.org] -rw-rw-r--  1 haida haida 0 Dec 10 07:24 hello.txt
+cap> rm hello.txt
+cap> ls -l hello.txt
+*** [err :: tsudoi.jp] sh: cap: command not found
+error: command "cap hello.txt" failed on tsudoi.jp
+cap> exit;
+exiting
+# 
+Namespaces
+Rakefile と同様。タスクの名前空間を設定しておくとタスクが増えたときに便利。
+namespace :libs do
+task :search, :roles => :libs do
+run 'ls -x1 /usr/lib | grep -i xml'
+end
+task :count,  :roles => :libs do
+run 'ls -x1 /usr/lib | wc -l'
+end
+end
+namespace :disk do
+task :free, :roles => :files do
+run 'df -h /'
+end
+end
+名前空間を設定したタスクは以下のように実行する。
+#cap libs:search
+変数
+変数を利用することで再利用性や拡張性を高めることができる。
+role :staging, 'example.org'
+set :term, 'xml'
+task :serach, :roles => :staging do
+run "ls -x1 /home/haida | grep -i #{term}"
+end
+変数の設定は、set メソッドで指定する。
+set 変数名(シンボル指定) 値
+これを以下のように、コマンドラインから指定できるように変更する。
+set(:term) do
+print "Gimme a search term: "
+STDOUT.flush
+STDIN.gets.chomp
+end
+さらに、Capistrano に用意されているヘルパメソッドを利用すると簡潔になる。
+set(:term) do
+Capistrano::CLI.ui.ask 'Gimme a search term: '
+end
+変数は cap コマンドの "-s" または "-S" オプションを利用して、以下のようにコマンドラインから指定することも可能。
+cap -s term=cap libs:search
+"-s" と "-S" の違いは、
+"-s" (小文字) は全ての Capfile ロード後にセットされる
+"-S" (大文字) は全ての Capfile ロード前にセットされる (後で上書きされるかもしれない。)
+トランザクション
+デプロイ中にアクシデントが発生した場合、他のサーバに加えた処理を全て元の状態にロールバックする必要がある。こうした場合は transaction を導入を考える。
+task :deploy do
+transaction do
+update_code
+symlink
+end
+end
+task :update_code do
+on rollback { run "rm -rf #{release_path}"}
+source.checkout(release_path)
+end
+task :symlink do
+on_rollback { run "rm #{current_path}; ln -s #{previous_release} #{current_path}"}
+run "rm #{current_path}; ln -s #{release_path} #{current_path}"
+end
+上記のコードでは、 deploy タスクがトランザクションをラップし、update_code と symlink タスクを実行する。実行中の異常を検知すると、on_rollback が逆順に実行される。
+このようにトランザクション処理は Capistrano が自動実行するのではなく、開発者が定義する。
+ロードファイルの指定
+Capfile を複数ディレクトリに配置した場合は以下のようにロードパスを指定して読み込む。
+load "libs"
+load "files"
+これだとカレントディレクトリを基点に見ることになるので以下のように指定することもできる。
+load_path << "config/stages"
+勿論コマンドラインからも指定可能で、その場合は、"-f ファイル名" または "-F" オプションを使う。
+cap -f libs libs:search
+"-f", "-F" オプションの違いは次の通り。
+"-f" (小文字) : デフォルトの -f で指定された指定されたファイルのみロードする
+"-F" (大文字) : デフォルトの Capfile (カレントディレクトリの Capfile) のみロードする。
+Permalink | コメント(0) | トラックバック(0) | 17:37   
+Capistrano による Deploy - Haida’s private weblog

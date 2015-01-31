@@ -1,0 +1,70 @@
+BreakIterator クラスは、テキスト内の境界の位置を見つけるメソッドを実装します。BreakIterator のインスタンスは現在の位置を維持し、テキストをスキャンして境界が発生する文字のインデックスを返します。内部的には、BreakIterator は CharacterIterator を使ってテキストをスキャンするため、このプロトコルを実装する任意のオブジェクトによって保持されるテキストをスキャンできます。StringCharacterIterator は、setText に渡された String オブジェクトのスキャンに使用されます。
+このクラスによって提供されるファクトリメソッドを使って、さまざまな型の分割イテレータのインスタンスを生成します。特に、単語、行、文、および文字の境界解析を実行する BreakIterator を生成するには、それぞれ getWordInstance、getLineInstance、getSentenceInstance、および getCharacterInstance を使用します。単一の BreakIterator は、1 つのユニット (単語、行、文など) のみを処理します。実行するユニット境界解析ごとに異なるイテレータを使用する必要があります。
+行の境界解析では、テキスト文字列を行折り返しで分割する位置を判定します。句読点およびハイフネーションされた単語も、メカニズムにより正しく処理されます。実際の行分割は、使用可能な行幅も考慮する必要があるため、より高いレベルのソフトウェアによって処理されます。
+文の境界解析では、数字と略語の中のピリオド、さらに引用符や括弧などの終了文字の正しい解釈について選択が可能です。
+単語の境界解析は、検索置換機能で使用されます。また、テキスト編集アプリケーション内で、ダブルクリックによって単語が選択可能になります。単語選択では、後続を含む単語内で句読点の正しい解釈が提供されます。また、記号や句読点などのように単語の一部でない文字、前後に分割のある文字も正しく解釈されます。
+文字の境界解析では、たとえばカーソルをテキスト文字列に沿って動かすような場合に、ユーザーが予測するとおりの操作が行われるようにします。文字の境界解析により、文字の格納方法に依存せず、文字列の正しいナビゲーションが可能になります。返される境界は、補助文字、結合文字シーケンス、または合字クラスタの境界になる場合があります。たとえば、アクセント付きの文字は、基準文字と発音区別符号として格納されている場合があります。ユーザーの文字に対する認識は言語間で異なります。
+このクラスのファクトリメソッドから返される BreakIterator インスタンスは、自然言語での使用のみを想定しており、プログラミング言語のテキストには使用できません。ただし、プログラミング言語をトークン化するサブクラスを定義することはできます。
+例:
+テキスト境界を作成し使用します。
+public static void main(String args[]) {
+if (args.length == 1) {
+String stringToExamine = args[0];
+//print each word in order
+BreakIterator boundary = BreakIterator.getWordInstance();
+boundary.setText(stringToExamine);
+printEachForward(boundary, stringToExamine);
+//print each sentence in reverse order
+boundary = BreakIterator.getSentenceInstance(Locale.US);
+boundary.setText(stringToExamine);
+printEachBackward(boundary, stringToExamine);
+printFirst(boundary, stringToExamine);
+printLast(boundary, stringToExamine);
+}
+}
+各要素を順に出力します。
+public static void printEachForward(BreakIterator boundary, String source) {
+int start = boundary.first();
+for (int end = boundary.next();
+end != BreakIterator.DONE;
+start = end, end = boundary.next()) {
+System.out.println(source.substring(start,end));
+}
+}
+各要素を逆順に出力します。
+public static void printEachBackward(BreakIterator boundary, String source) {
+int end = boundary.last();
+for (int start = boundary.previous();
+start != BreakIterator.DONE;
+end = start, start = boundary.previous()) {
+System.out.println(source.substring(start,end));
+}
+}
+最初の要素を出力します。
+public static void printFirst(BreakIterator boundary, String source) {
+int start = boundary.first();
+int end = boundary.next();
+System.out.println(source.substring(start,end));
+}
+最後の要素を出力します。
+public static void printLast(BreakIterator boundary, String source) {
+int end = boundary.last();
+int start = boundary.previous();
+System.out.println(source.substring(start,end));
+}
+指定された位置にある要素を出力します。
+public static void printAt(BreakIterator boundary, int pos, String source) {
+int end = boundary.following(pos);
+int start = boundary.previous();
+System.out.println(source.substring(start,end));
+}
+次の単語を検索します。
+public static int nextWordStartAfter(int pos, String text) {
+BreakIterator wb = BreakIterator.getWordInstance();
+wb.setText(text);
+int last = wb.following(pos);
+int current = wb.next();
+while (current != BreakIterator.DONE) {
+for (int p = last; p 
+(BreakIterator.getWordInstance() によって返されるイテレータは一意であるため、返される分割位置は反復の開始と終了の両方を表すものではない。つまり、文を分割するイテレータは、それぞれが 1 つの文の終了と次の文の開始を表す分割を返す。単語を分割するイテレータでは、2 つの境界間の文字が単語、句読点、または 2 つの単語間の空白文字の場合がある。上記のコードでは、単純なヒューリスティックを使用して、単語の開始の境界を判定している。ある境界と次の境界の間の文字が、少なくとも 1 つの文字 (アルファベット、CJK 統合漢字、ハングル文字、仮名など) を含む場合は、この境界と次の境界の間のテキストを単語とし、そうでない場合は、単語間のデータと見なす)。
+BreakIterator (Java Platform SE 7)

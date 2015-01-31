@@ -1,0 +1,104 @@
+
+Web サービスの管理
+以下の節では、WebLogic Web サービスの管理について説明します。
+WebLogic Web サービスの管理タスクの概要
+WebLogic Web サービスを管理するツール
+Administration Console の使用
+WebLogic Scripting Tool の使用
+WebLogic Ant タスクの使用
+Java Management Extensions (JMX) の使用
+J2EE Deployment API の使用
+WebLogic Web サービスの管理タスクの概要
+jwsc Ant タスクを使用して WebLogic Web サービスをコンパイルおよびパッケージ化すると、Web サービスはエンタープライズ アプリケーションの一部としてパッケージ化されます。Web サービス自体は、その実装に応じて、EJB JAR または Web アプリケーション WAR ファイルとしてエンタープライズ アプリケーションの内部にパッケージ化されます。したがって、Web サービスの基本的な管理は、標準の J2EE アプリケーションおよびモジュールの基本的な管理と非常に似ています。標準的なタスクは以下のとおりです。
+Web サービスを含むエンタープライズ アプリケーションをインストールする。
+デプロイされたエンタープライズ アプリケーションを起動および停止する。
+エンタープライズ アプリケーションと、実際の Web サービスを実装するアーカイブ ファイルをコンフィグレーションする。エンタープライズ アプリケーションの一般的な特性 (デプロイメント順など) や、モジュールに固有の特性 (Web アプリケーションのセッション タイムアウト、EJB のトランザクションの種類など) をコンフィグレーションできます。
+エンタープライズ アプリケーションのデプロイメント プランを作成および更新する。
+エンタープライズ アプリケーションをモニタする。
+エンタープライズ アプリケーションをテストする。
+Web サービス固有の管理タスクは以下のとおりです。
+Web サービスの信頼性のあるメッセージングや JMS 転送に使用する JMS リソースをコンフィグレーションする。
+Web サービスのエンドポイントまたはそのオペレーションに関連付けられた WS-Policy ファイルをコンフィグレーションする。
+警告 :	 JWS ファイルのプログラミング時に Web サービスの @Policy アノテーションを使用して関連付ける WS-Policy ファイルを指定した場合は、実行時に Administration Console などの管理ツールを使用してこの関連付けを変更することはできません。関連付けることができるのは新しい WS-Policy ファイルのみで、関連付けを解除できるのも実行時に追加した WS-Policy ファイルのみです。
+Web サービスに関連付けられた SOAP ハンドラを表示する。
+Web サービスの WSDL を表示する。
+Web サービスのセキュリティ コンフィグレーションを作成する。
+WebLogic Web サービスを管理するツール
+WebLogic Server で動作する J2EE モジュールおよびアプリケーションの管理方法には、Web サービスを含めさまざまな方法があります。ニーズに最も適合するツールを使用してください。
+Administration Console の使用
+WebLogic Scripting Tool の使用
+WebLogic Ant タスクの使用
+Java Management Extensions (JMX) の使用
+J2EE Deployment API の使用
+Administration Console の使用
+BEA WebLogic Server Administration Console は、サーバやクラスタにデプロイされた WebLogic Server ドメイン、1 つまたは複数の WebLogic Server インスタンス、クラスタ、およびアプリケーション (Web サービスを含む) の管理に使用する Web ブラウザ形式のグラフィカル ユーザ インタフェースです。
+各ドメイン内の WebLogic Server インスタンスの 1 つは、管理サーバとしてコンフィグレーションされます。管理サーバでは WebLogic Server ドメインを一元的に管理できます。ドメイン内の他のすべての WebLogic Server インスタンスは、管理対象サーバと呼ばれます。1 つの WebLogic Server インスタンスしか含まれないドメインでは、そのサーバが管理サーバおよび管理対象サーバとして機能します。Administration Console は、管理サーバによってホストされる Web アプリケーションであり、サポートされている任意の Web ブラウザから、管理サーバへのネットワーク アクセスを使用してアクセスできます。
+システム Administration Console を使用して、以下の作業を行うことができます。
+エンタープライズ アプリケーションのインストール
+デプロイされたエンタープライズ アプリケーションの起動と停止
+エンタープライズ アプリケーションのコンフィグレーション
+Web アプリケーションのコンフィグレーション
+EJB のコンフィグレーション
+デプロイメント プランの作成
+デプロイメント プランの更新
+エンタープライズ アプリケーションのモジュールのテスト
+信頼性のある SOAP メッセージングのためのリソースのコンフィグレーション
+WS-Policy ファイルと Web サービスとの関連付け
+Web サービスの SOAP メッセージ ハンドラの表示
+Web サービスの WSDL の表示
+Web サービス セキュリティ コンフィグレーションの作成
+Administration Console の起動
+ブラウザで Administration Console を起動するには、次の URL を入力します。
+http://host:port/console
+各要素の説明は次のとおりです。
+host は、管理サーバが動作しているコンピュータの名前を指す。
+port は、管理サーバが接続リクエストのリスニングを行っているポート番号を指す。管理サーバのデフォルトのポート番号は 7001 です。
+Administration Console の右上にある [ヘルプ] ボタンをクリックすると、Administration Console の詳しい使い方を説明するオンライン ヘルプが表示されます。
+次の図は、Administration Console のメイン ウィンドウを示しています。
+図 10-1 WebLogic Server Administration Console のメイン ウィンドウ
+Administration Console での Web サービスの表示
+通常、Web サービスはエンタープライズ アプリケーションの一部として WebLogic Server にデプロイされます。エンタープライズ アプリケーションは、EAR としてアーカイブするか、展開されたディレクトリの形式とすることができます。Web サービス自体は、その実装に応じて、Web アプリケーションまたは EJB としてパッケージ化されます。Web サービスは、アーカイブ形式 (Web アプリケーションの場合は WAR ファイル、EJB の場合は JAR ファイル) または展開されたディレクトリ形式とすることができます。
+Web サービスは、必ずしもエンタープライズ アプリケーションの一部としてインストールする必要はありません。Web サービスは、Web アプリケーションまたは EJB としてそのままインストールすることもできます。ただし、BEA では、Web サービスをエンタープライズ アプリケーションの一部としてインストールすることをお勧めしています。Web サービスの作成に使用される WebLogic Ant タスク (jwsc) は、生成された Web サービスを常にエンタープライズ アプリケーションにパッケージ化します。
+Administration Console を使用して Web サービスに関する Web サービス固有のコンフィグレーション情報を表示および更新するには、左ペインの [デプロイメント] ノードをクリックし、右ペインに表示される [デプロイメント] テーブルで Web サービスがパッケージ化されているエンタープライズ アプリケーションを探します。[+] ノードをクリックしてアプリケーションを展開すると、[Web サービス] カテゴリにアプリケーション内の Web サービスのリストが表示されます。コンフィグレーションを表示または更新するには、その Web サービスの名前をクリックします。 
+次の図では、Administration Console の [デプロイメント] テーブルに、GlobalHandler エンタープライズ アプリケーションにパッケージ化されている HandlerChainService Web サービスが表示されています。
+図 10-2    Administration Console の [デプロイメント] テーブルに表示された Web サービス
+Web サービスのセキュリティ コンフィグレーションの作成
+デプロイ済みの WebLogic Web サービスがメッセージ レベルのセキュリティ (WS-Security 仕様で定義されている暗号化およびデジタル署名) を使用するようにコンフィグレーションされている場合、Web サービス ランタイムは、その Web サービスに Web サービス セキュリティ コンフィグレーションが関連付けられているかどうかを判断します。このセキュリティ コンフィグレーションでは、ID の認証に X.509 証明書を使用するかどうか、パスワード ダイジェストを使用するかどうか、暗号化にキーストアを使用するかどうかなどを指定します。1 つのセキュリティ コンフィグレーションを多数の Web サービスに関連付けることができます。
+Web サービスのセキュリティ コンフィグレーションはドメイン全体を対象とするため、Administration Console では [デプロイメント] タブではなく [domainName｜Web サービス セキュリティ] タブから作成します。次の図に、このタブの場所を示します。
+図 10-3    Administration Console での Web サービスのセキュリティ コンフィグレーション
+WebLogic Scripting Tool の使用
+WebLogic Scripting Tool (WLST) は、コマンドライン形式のスクリプト インタフェースです。WLST を使用すると、WebLogic Server のドメインやインスタンスと対話してコンフィグレーションしたり、J2EE モジュールおよびアプリケーション (Web サービスを含む) を特定の WebLogic Server インスタンスにデプロイしたりできます。システム管理者およびオペレータは、WLST を使用して WebLogic Server のコンフィグレーションの変更を開始、管理、および永続化できます。
+通常、Web サービスの管理に使用する WLST コマンドの種類は、デプロイメント カテゴリに分類されます。 
+WLST の使い方については、『WebLogic Scripting Tool ガイド』を参照してください。
+WebLogic Ant タスクの使用
+WebLogic Server には、コンフィグレーション タスクや管理タスクの多くを単一の Ant ビルド スクリプトに一元化するのに使用できるさまざまな Ant タスクが用意されています。これらの Ant タスクを使用すると、以下のことが行えます。
+wlserver および wlconfig Ant タスクを使用して、新しい WebLogic Server ドメインを作成、起動、およびコンフィグレーションする。 
+wldeploy Ant タスクを使用して、新しく作成したドメインに、コンパイル済みアプリケーションをデプロイする。 
+Web サービスに関係のない WebLogic Ant タスクに固有の情報については、「Ant タスクを使用した WebLogic Server ドメインのコンフィグレーション」および「wldeploy Ant タスクのリファレンス」を参照してください。
+Java Management Extensions (JMX) の使用
+管理対象 Bean (MBean) は、Java Management Extensions (JMX) インタフェースを提供する Java Bean です。JMX は、ネットワーク上のリソースをモニタおよび管理するための J2EE ソリューションです。SNMP やその他の管理規格と同様に、JMX は公開された仕様で、一般に使用されている監視製品を提供する多くのベンダによってサポートされています。
+BEA WebLogic Server には、JMX を使用して WebLogic Server リソースをコンフィグレーション、モニタ、および管理するためのさまざまな MBean が用意されています。WebLogic Web サービスにも、Web サービスの管理タスクを実行するのに使用する専用の MBean が複数あります。
+MBean には 2 種類あります。読み取り専用のモニタ情報の表示に使用する実行時 MBean と、デプロイ済みの Web サービスのコンフィグレーションに使用するコンフィグレーション MBean です。 
+以下に、コンフィグレーション Web サービス MBean を挙げます。
+WebserviceSecurityConfigurationMBean
+WebserviceCredentialProviderMBean
+WebserviceSecurityMBean
+WebserviceSecurityTokenMBean
+WebserviceTimestampMBean
+WebserviceTokenHandlerMBean
+以下に、実行時 Web サービス MBean を挙げます。
+WseeRuntimeMBean
+WseeHandlerRuntimeMBean
+WseePortRuntimeMBean
+WseeOperationRuntimeMBean
+WseePolicyRuntimeMBean
+JMX の詳細については、以下を参照してください。
+「Understanding WebLogic Server MBeans」
+「Accessing WebLogic Server MBeans with JMX」
+「Managing a Domain's Configuration with JMX」
+『WebLogic Server&reg; MBean リファレンス』
+J2EE Deployment API の使用
+J2EE 1.4 では、J2EE Application Deployment 仕様 (JSR-88) により、対象アプリケーション サーバ環境へのデプロイメント用にアプリケーションをコンフィグレーションするのに使用できる標準 API が定義されています。 
+この仕様には、J2EE 1.4 Deployment アーキテクチャが記述されています。このアーキテクチャでは、ツールやアプリケーション プログラマがあらゆる J2EE プラットフォーム製品でアプリケーションをコンフィグレーションおよびデプロイできるようにするための規約を定義しています。この規約では、アプリケーションのデプロイメント コンフィグレーションとデプロイメントについて、ツールと J2EE プラットフォーム製品の間での共通モデルが定義されています。Deployment アーキテクチャを使用すると、アプリケーションのデプロイメントがより容易に行えます。多様な J2EE プラットフォーム製品にアプリケーションをデプロイするために、さまざまな J2EE デプロイメント ツールのすべての機能を理解する必要はありません。
+詳細については、『WebLogic Server 9.0 アプリケーションのデプロイメント』を参照してください。
+Web サービスの管理

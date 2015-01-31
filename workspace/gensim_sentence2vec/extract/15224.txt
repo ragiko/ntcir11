@@ -1,0 +1,106 @@
+正規表現エンジンを作ろう(3)
+regexp
+第三回の公開です。今回は字句解析と構文解析を自作しました。
+本格的な構文解析器は、通常 yacc 等のツールを利用して自動で作ることが多いですが、今回の正規表現の文法は単純なので自作してしまいます。
+じゃあ、ツールを利用するとどうなるの? ってのをやってみましょう。PLYを使って今回の記事の処理を作ってみます。PLYは、lexとyaccをPythonで実装し直したツールです。
+インストール
+easy_installで入れちゃって下さい。
+% easy_install ply
+使い方
+ドキュメントが和訳されちゃってるので見ちゃって下さい。			基本的には ply.lexとply.yaccをimportして、指定された命名*1でルールを記述し、lex.lex() とか yacc.yacc() して初期化してやる感じです。初期化したら、lex.input()やらlex.token()やらyacc.parse()が使えるようになります。
+なお、初回実行時に、勝手にparser.outとかparsetab.pyってファイルが作られます。
+字句解析
+以下のような感じです。doc stringの位置に、トークンを正規表現で指定します。
+from ply import lex
+tokens = (
+'OPE_UNION',
+'OPE_STAR',
+'LPAREN',
+'RPAREN',
+'VALUE',
+)
+def t_OPE_UNION(t):
+ur'\|'
+return t
+def t_OPE_STAR(t):
+ur'\*'
+return t
+def t_LPAREN(t):
+ur'\('
+return t
+def t_RPAREN(t):
+ur'\)'
+return t
+def t_VALUE(t):
+ur'\\?(.)'
+t.value = t.value[-1:]
+return t
+def t_error(t):
+print "Illegal character '%s'" % t.value[0]
+raise t
+# 互換性のため、OOPなインタフェースを用意
+class Lexer(object):
+def __init__(self, regexp):
+self.lexer = lex.lex()
+self.lexer.input(regexp)
+記事のAPIとあわせるため、Lexerクラスを用意してます。単にplyのlexオブジェクトを保持するコンテナです。			scan() は実装してませんが、改修後のParserはscan()を使わない*2ので省略しました。
+構文解析
+以下のようになります。doc stringの部分に、CFGを書きます。
+なお、本編で実装したのはpredictive parserだったので左再帰を避けましたが、ここではより自然な左再帰に変えてます。
+from ply        import yacc
+from lexer      import tokens
+from nfabuilder import Character, Star, Concat, Union, Context
+def p_expression(p):
+'expression : subexpr'
+p[0] = p[1]
+def p_subexpr1(p):
+'subexpr : subexpr OPE_UNION seq'
+p[0] = Union(p[1], p[3])
+def p_subexpr2(p):
+'subexpr : seq'
+p[0] = p[1]
+def p_seq1(p):
+'seq : subseq'
+p[0] = p[1]
+def p_seq2(p):
+'seq : '
+p[0] = Character('')
+def p_subseq1(p):
+'subseq : subseq star'
+p[0] = Concat(p[1], p[2])
+def p_subseq2(p):
+'subseq : star'
+p[0] = p[1]
+def p_star1(p):
+'star : factor OPE_STAR'
+p[0] = Star(p[1])
+def p_star2(p):
+'star : factor'
+p[0] = p[1]
+def p_factor1(p):
+'factor : LPAREN subexpr RPAREN'
+p[0] = p[2]
+def p_factor2(p):
+'factor : VALUE'
+p[0] = Character(p[1])
+def p_error(p):
+raise Exception("syntax error")
+# 互換性のため、OOPなインタフェースを用意
+class Parser(object):
+def __init__(self, lexer):
+self.yacc  = yacc.yacc()
+self.lexer = lexer
+def expression(self):
+# コンパイル
+node = self.yacc.parse(lexer=self.lexer.lexer)
+# 構文木からNFAへ
+context  = Context()
+fragment = node.assemble(context)
+return fragment.build()
+記事のAPIと揃えるためのParserクラスを用意しましたが、expression()って名前がちょっと浮くようになってしまいました。中では、単純にplyのyacc.parse()を呼んでるだけです。
+まとめ
+非常にすっきりしました! PLYは大変いいツールです。
+が、難点が一つ。字句解析見るとわかると思うんですが、こいつって内部的にreを使ってるんですよね・・・正規表現の字句解析を正規表現で実現みたいな。
+ツイートする
+Permalink | コメント(0) | トラックバック(0) | 15:36  
+正規表現エンジンを作ろう(3) - 北海道苫小牧市出身のPGが書くブログ

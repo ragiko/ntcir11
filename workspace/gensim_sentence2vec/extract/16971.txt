@@ -1,0 +1,41 @@
+PEAR マニュアル前のページ次のページPEAR::raiseError()PEAR::raiseError() -- 新規に PEAR_Error オブジェクトを生成し、
+オプションでエラー処理手順を指定する概要require_once 'PEAR.php';PEAR_Error PEAR::raiseError (string $message [, int $code [, int $mode [, int|array $options [, mixed $userinfo [, string $error_class [, boolean $skipmsg]]]]]])説明   raiseError()
+パラメータ   string
+$message       エラーメッセージ。空白のままとした場合、デフォルトのメッセージは、
+"unknown error" です。
+integer
+$code       エラーコード。エラー処理を簡単にするため、
+最も簡単なエラーに対してもエラーコードを使用することが推奨されます。
+integer
+$mode       エラーモード。これは、PEAR_ERROR_RETURN,
+PEAR_ERROR_PRINT,
+PEAR_ERROR_TRIGGER,
+PEAR_ERROR_DIE,
+PEAR_ERROR_CALLBACK,
+PEAR_ERROR_EXCEPTIONのいずれかとします。
+詳細な情報とこれらの定数の意味の例については、
+setErrorHandling()
+を参照してください。
+mixed
+$options       エラーオプション。これは、$mode の値に依存します。
+これについては、       setErrorHandling() に記述されています。
+mixed
+$userinfo       ユーザ情報(オプション)。
+特定のエラーに固有の情報を保存するために使用し、
+任意のフォーマットを使用できます。
+string
+$error_class       エラーオブジェクトとして使用するエラークラスの名前。デフォルト
+のエラークラスは PEAR_Error です。
+PEAR_Error を拡張したカスタムクラスのような
+他のクラスを使用する場合にはこのパラメータを使用して下さい。
+boolean
+$skipmsg       コンストラクタの中でエラーメッセージを受け付けないカスタムクラ
+スを使用する場合にはこのパラメータを使用して下さい。
+$error_class パラメータを使用しない場合に
+このパラメータを使用しないで下さい。その場合には動作しません。
+返り値   PEAR_Error オブジェクトが返されます。
+ただし、
+PEAR_ERROR_DIE が実行を終了するか、
+PEAR_ERROR_EXCEPTION がハンドルされない場合を除きます。
+前のページホーム次のページPEAR::isError()上に戻るPEAR::setErrorHandling()
+PEAR::raiseError()

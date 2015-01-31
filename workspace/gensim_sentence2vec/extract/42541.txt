@@ -1,0 +1,735 @@
+管理コマンド実行ログの取得(dsmadmcの引数としてid&passwordの前に指定)
+-outfile=<FileName>         実行結果を指定ファイルに記録  
+-displaymode=<list/table>   ファイルに記録するフォーマット(list:列,table:行)を指定
+-commandlimited             コンマで区切った文字列として出力
+-tabdelimited               タブで区切った文字列として出力
+ANR9999Dエラーの詳細表示指定
+set
+contextmessaging on
+コンソールメッセージの表示
+-mountmode
+パフォーマンス関連
+・サーバーオプションファイル
+bufpoolsize        TSM
+DBの入出力のためのバッファーサイズ。
+DBのキャッシュヒット率が98%以上になるよう増やしてパフォーマンス向上。
+256[kb]〜、デフォルト2048[kb]。
+logpoolsize        TSM
+LOGの入出力のためのバッファーサイズ。
+LOGのキャッシュヒット率を参考に増やす。
+128[kb]〜、デフォルト512[kb]。2048〜8192[kb]が推奨値。
+txngroupmax        ここで指定したファイル数を受信するとTSM
+DBコミットされる。
+大きくすることによりパフォーマンス向上。
+4〜256,デフォルト40。最大値の256を推奨。
+movebatchsize      同一トランザクション内での、バッチで移動するファイル数。
+ストレージプーツのバックアップ、リストア、マイグレーション、再利用などでパフォーマンス向上
+1〜1000
+movesizethresh     同一サーバトランザクション内での、バッチで移動するデータ量の閾値
+ストレージプーツのバックアップ、リストア、マイグレーション、再利用などでパフォーマンス向上
+1〜500[mb]、デフォルト500[mb]
+selftunetxnsize    yesでTSMが自動的にtxngroupmax,movebatchsize,movesizethreshの設定値を変更します。
+スループット向上のため、それぞれ最大値に設定します。
+デフォルト
+no
+expinterval        自動インベントリ
+setftunebufpoolsize
+yesでTSMが自動的にTSM DBのバッファープールサイズを調整します
+デフォルトはno
+tcpwindowsze       TCP・IPでデータ受信時のバファーサイズ。バックアップやアーカイブ時のパフォーマンス向上
+0〜2048[kb]
+uselargebuffer     クライアントとサーバの通信にラージバッファを利用することを指定。
+デフォルトyes
+・クライアントシステムオプションファイル
+txnbytelimit       ここで指定したバイト数の送信を行うとTSM
+DBがコミットされる。
+TSM
+DB更新量を削減するため最大値を利用することを推奨。
+300〜25600[kb]、デフォルトは2048[kb]
+tcpbuffsize        TCP/IP通信バッファー用サイズ。サイズ増加に伴いメモリを消費するが、パフォーマンスは向上。
+1〜512[kb],デフォルトは31[kb]
+tcpwindowsize      TCP・IPでデータ受信時のバッファーサイズ。リストアやリストーブ時のパフォーマンスを向上。
+バックアップやアーカイブ時の設定は、サーバーオプションファイルで行う。
+1〜2048kb
+デフォルト32[kb]
+shedmode polling:一定の時間間隔でクライアントがサーバにスケジュールを問い合わせる
+間隔はサーバかqueryschedperiodで指定
+prompted:サーバーがクライアントに接続しスケジュールを送信(TCP/IPのみ)
+schedlogname       スケジュールで実行された内容を記録するファイル名。
+デフォルトはカレントディレクトリのdsmsched.log
+tcpnodelay         yesで最大伝送単位(MTU)未満のデータパケットを即時に送信
+デフォルトはno。yesとすることによりパフォーマンス向上。
+compression        TSMにファイルを転送する前に圧縮する。高速ネットワークの場合、パフォーマンスが悪くなる。
+低速ネットワークで高速CPUの場合は有利。
+changingretries    バックアップ試行回数の設定
+resourceutilization         TSMサーバとクライアント間の最大セッション数。
+largecommbuffers   大量のデータを転送するために増加バッファーを利用させる。
+AIXはデフォルトyes。
+errorlogname       エラーを記録するファイル名。デフォルトは/usr/tivoli/tsm/client/ba/bin/dsmerror.log
+errorlogretention  エラーログを保持しておく日数
+virtualnodename    仮想ノード名の指定
+virtualmountpoint  AIXのファイスシステム単位ではなく、ここで指定したディレクトリ名を仮想ファイルシステムとして定義します。
+(q
+filespaceで見たときに異なる)
+/usr/samples/kernel/vmtune
+サーバ   vmtune -R 64 -F 184 -c 1
+クライアント       vmtune -R
+64 -F 376 -c 1
+q dbより
+Avalable
+Space{MB] 利用可能なスペースの容量
+Assigned
+Capacity(MB)       割り当て済ストレージ容量
+Maximum
+Extension(MB)       拡張可能データベース最大容量
+Maximum
+Reduction(MB)       縮小可能データベース最大容量
+Page Size(byte)             データベースのページサイズ
+Total Usable
+Pages 利用可能な合計ページ数
+Used Pages                  現利用ページ総数
+Pct Util                    現在の利用率
+Max Pct Util                最大データベース利用率
+Physical Volumes            データベースボリューム及びコピー数
+Buffer Pool
+Pages           データベースバッファープールのページ数
+Total Buffer
+Requests       最後のReset
+Bufpool(またはTSMサーバの再起動)後の、
+データベースページへの要求累積数
+Cache Hit Pct.              既にバッパープールに入っているデータベースページの要求数を、
+要求の総数に対するパーセンテージ
+Cache Wait Pct.             (全てのバッファープールが占有されているために)利用不能だった、
+データベースバッファープールページの要求数のパーセンテージ
+Backup in
+Progress?         現在バックアップが実行中か否か?
+Type of Backup
+in Progress? 現在実行中なのはフルバックアップか差分バックアップか?
+Incremental
+Since Last Full 最後のフルバックアップ以降に取得された差分バックアップの実行回数
+Changed Since
+Last Backup(MB}        最後にバックアップが取得されてから変更されたデータベース容量
+Percentage
+Changed 最後のバックアップ以降に変更したページ数のパーセンテージ
+Last Complete
+Backup Date/Time       最後にバックアップを完了した日時
+q logより
+Avalable
+Space{MB] 利用可能なスペースの容量
+Assigned
+Capacity(MB)       割り当て済ストレージ容量
+Maximum
+Extension(MB)       拡張可能データベース最大容量
+Maximum
+Reduction(MB)       縮小可能データベース最大容量
+Page Size(byte)             ログのページサイズ
+Total Usable
+Pages 利用可能な合計ページ数
+Used Pages                  現利用ページ総数
+Pct Util                    現在の利用率
+Max Pct Util                最大データベース利用率
+Physical Volumes            ログボリューム及びコピー数
+Log Pool Pages              ログバッファープールのページ数
+Log Pool Pct.
+Util          トランザクションコミット後に利用されたバッファープーツのページ数を、
+全ログページ数で割ったパーセンテージ
+Log Pool Pct.
+Wait          (全てのバッファープールが占有されているために)利用不能だった、
+バッファープールページの要求数のパーセンテージ
+Comulative
+Consumption(MB)  統計を最後にリセットしてからサーバが利用したログスペースの量
+Consumption
+Reset Date/Time ログの累積利用統計を最後にリセットした日時
+q stgpoolより
+Storage Pool
+Name  名
+Storage Pool
+Type           タイプ(プライマリかコピー)
+Device Class
+Name  割り当てたデバイスクラス名
+Estimated
+Capacity(MB)      ストレージプールの見積もり容量
+Pct Util                    ストレージプールの利用率見積もり
+Pct Migr                    マイグレーション可能なデータの率
+Pct Logical                 論理占有率
+High Mig Pct                マイグレーション開始閾値
+Low Mig Pct                 マイグレーション停止閾値
+Migration Delay             マイグレーションするまでファイルを置いておく最低日数
+Migration
+Continue Migration Delayを満たさなくてもマイグレーションするか否か
+Migration
+Processses        マイグレーションに利用するプロセス数。最大数は占有可能なドライブ数を超えてはいけない
+Next Storage
+Pool  マイグレーション先ストレージプール
+Recraim Storage
+Pool        リクラメーション処理用ストレージプール
+Maximum Size Threshold      ストアされるファイルの最大サイズ
+Acess                       アクセス方式。ReadOnly,ReadWrite
+Description                 説明
+Overflow Location           move
+mediaコマンドで自動化ライブラリから排出されたときにストアされる場所
+Cache Migrated
+Files?       キャッシュが次のストレージプールにマイグレーションされたファイルを利用できるか否か
+Collocate?                  コロケーションが利用可能か否か
+Reclamation
+Threshold       リクラメーション閾値
+Maximum Scratch
+Volumes Allowd       スクラッチボリュームの最大利用可能数
+Delay Period for
+Volume Reuse        無効になったボリュームを再利用するまでに経過させる日数
+Migrration in
+Progress?     マイグレーション中?
+Amount
+Migrated(MB)         マイグレーションし終わったデータ容量
+Elapsed
+Migration Time(sec) マイグレーション経過時間。
+Reclamation in
+Progress?    リクラメーション中?
+Volume Being
+Migrated/Reclaimed      マイグレーションまたはリクラメーション中のボリューム名
+Last Update by              最終更新ユーザ
+Last Update
+Date/Time       最終更新日時
+q volより
+q volhistoryより
+DATE/TIme 作成日時
+Volume Type        タイプ
+BACKUPFULL         DBフルバックアップボリューム
+BACKUPINCR         差分DBバックアップ
+DBDump             オンラインDBダンプボリューム
+BACKUPSET バックアップセットボリューム
+DBSnapshot         DBスナップショットバックアップボリューム
+DBRpf              DBBackupとRPFileに関する情報
+EXPort             エクスポートボリューム
+RPFile             回復計画ファイルオブジェクト
+RPFSnapshot        スナップショット回復計画ファイルオブジェクト
+STGNew             新規順次アクセスストレージボリューム
+STGReuse 再利用順次アクセスストレージボリューム
+STGDelete 削除順次アクセスストレージボリューム
+Backup Seriese     バックアップ集合ID
+Backup Operation   DBバックアップまたはスナップショットバックアップの場合は操作番号。その他は0
+Volume Seq         バックアップ集合内のボリュームの順序または位置
+Device Class       関連するデバイスクラス
+Volume Name        名前
+Volume Location    ロケーション。ただしタイプが、BACKUPFULL,BACKUPINCR,DBDUMP,EXPORT,RPFILEのときのみ
+Command  タイプがEXPORTまたはBACKUPSETの時に利用されたコマンド
+Determine Backup
+output destination
+1. Tape Library
+define
+library <Library_name> librypt=<Library type> device=<Device
+File Name>
+2. Tape Drive
+define
+drive <Library name> <Drive Name> device=<Device File Name>
+element=<Element No.>
+3. Device Class
+define
+devclass <Device class name> devtype=<Device Type>
+format=<format> library=<library name> <mount parameta>
+4. Storage Pool
+define
+stgpool <Storage Pool Name> <Device Class Name>
+maxscratch=<Number of Max Scratch Volumes>
+5. Tape Volume
+label
+libvolume <Library Name> <Volume Name>
+define
+volume <storage pool name> <volume name>
+-- or --
+label
+libvolume <library name> search=yes labelsource=<barcode -or-
+prompt>
+6. Checkin
+checkin
+libvolume <Library Name> <Volume Name> status=<scratch -or-
+private>
+--
+or --
+checkin
+libvolume <Library Name> search=yes status=<scrach -or- private>
+checklabel=<barcode -or- yes>
+5-6. checkin
+& Label
+label
+libvolume <Library Name> <Volume Name> checkin=<scratch -or
+private>
+-- or --
+label
+libvolume <Library Name> search=yes labelsource=<barcode -or-
+prompt> checkin=<scratch -or- private>
+DRM
+ステータス
+mountable 通常の状態
+notmountable       災害回復拠点への移動開始(まだオンサイトにある)
+courier            オンサイトから災害回復拠点に移動中
+vault              災害回復拠点に到着
+vaultetreve        災害回復拠点にあるが、期限切れ等のためオンサイトに移動すべき状態
+curierretrieve     災害回復拠点からオンサイトに移動中
+onsiteretrieve     災害回復拠点からオンサイトに戻った状態
+-> private/scratch
+query drmedia      メディア状態の確認
+move drmedir
+<volume_name> wherestate=mountable remove=no dbbackup=no wait=yes
+移送
+保存期間はCopy
+Stgpoolのreusedelayで設定
+set
+drmdbbackupexpiredays   災害回復用TSM
+DB Backupの保存日数
+EXPORT/IMPORT
+export node
+<* -or- Node Name> filespace=<* -or- Filespace Name> domains=<*
+-or- Domain Name> filedata=<backup type>
+preview=<yes -or- no>
+devclass=<Device Class Name> scratch=<yes -or- no> 
+export server
+filedata=<Backup type> preview=<yes -or- no> devclass=<Device
+Class Name> scratch=<yes -or- no>
+...
+admin & policy ...
+import node
+<* -or- Node Name> filespace=<* -or- Filespace Name> domains=<*
+-or- Domain Name> filedata=<backup type>
+preview=<yes -or- no>
+devclass=<Device Class Name> dates=<Absolute -or- Relative>
+volumenames=<Volume Name>
+replacedefs=<yes -or- no>
+absolute ... ファイルの日付を、エクスポート時に指定した値に設定
+relative ... ファイルの日付を、インポートの日付にあわせる
+replacedefs  yesで管理者定義を置き換える。noで置き換えない。
+特殊やその他
+dbbackuptrigger    TSM LOGがロールフォワードモードの時のみ利用可能。
+TSM
+Logの利用率が指定値を超えたときに、DBの差分バックアップを取得する)
+define
+spacetrigger         DB&LOGの自動拡張機能
+reset
+logconsumption        累積ログ利用統計のリセット
+reset
+logmaxutilization     ログの利用率統計のリセット
+reset bufpool      DBバッファープール統計のリセット
+reset
+dbmaxutilization      DB利用率統計のリセット
+mirring db&
+log    define
+dbcopy&logcopy TSM DBまたはLogの二重化または三重化を行う
+対象ボリュームは予めdsmfmtにて作成する
+Copy Strage Pool   二重化または外部保管の為のストレージプール。backup
+stgpoolにて二重化。
+初回以外は差分のみコピーされる
+Migration          閾値設定によりNext
+Stgpoolにデータを移行する。
+Disk Cashing       
+expire inventory   ポリシーから外れたデータの削除
+audit library      ライブラリ内のボリュームとcheckin情報の整合性検査
+checklabel=barcodeでバーコードのみ検査。
+yesでラベル情報をチェックする
+audit volume       TSM DB情報とボリュームに記録された情報の整合性検査
+move data 同一ストレージプール内のボリューム間でのデータ移動
+コピーストレージプールが対象になっても、
+コピーストレージに含まれるOffsiteボリュームをマウントする必要はない。
+query content      ボリューム内のファイルに関する情報照会         
+query occupancy    クライアントデータの場所と占有情報照会
+export node        クライアント情報と一緒にバックアップ・アーカイブファイルをエクスポート
+ファイルスペース定義もexport可能
+import node        エクスポートされたデータのインポート
+query auditoccupancy        クライアントノードのストレージ(テープ)利用率情報
+query backupset    バックアップセットの照会
+set accounting     会計レコードを作成するように設定
+dsmaccnt.logに記録
+expire inventory   有効期限処理を手動で実行。expintervalのサーバーオプションで自動起動可
+validate
+policyet  ポリシーセットの妥当性検査
+User
+Administrato ... System,Support,Reporting,Client
+grant authority    class=   system   TSM最高レベルの権限
+policy   ポリシードメインの更新が可能。ただし定義や削除、コピーは不可
+storage  ストレージプールの更新が可能。ただし定義や削除は不可
+operator サーバの即時操作及びストレージメディアの可用性を制御可能
+analyst  サーバ統計と追跡するカウンタをリセット可能
+node     クライアントノードにリモートアクセス及び操作が可能
+domains=...権限が有効なドメイン指定
+stgpools=...権限が有効なストレージプール指定
+node=...権限が有効なクライアントノード指定(class=nodeと同時に指定,domain=と同時指定不可)
+lock admin         管理者のロック
+unlock admin       管理者ロックの解除
+Include/Exclude
+File
+ディスク装置
+ランダムアクセス
+define
+stgpool <Storage Pool Name> disk
+define
+volume <Storage Pool Name> <File Name> formatsize=<size in
+MB>
+順次ファイル
+define
+devclass <Device Class Name> devtype=file directory=<Directory
+Name> maxcapacity=<Size of one file in K,M,G>
+define
+stgpool <Storage Pool Name> <Device Class Name> maxscratch=<Maximum
+number of files>
+TSMが自動的にファイルを作成。define
+volで事前定義も可能
+TSM Schedule for
+administrative
+define schedule
+<Schedule Name> type=administrative cmd='<commands>' active=yes
+description='<Descriptions>'
+priority=<Priority No.> startdate=<date of start>
+starttime=<time of start>
+duration=<nomber of
+duration> durunits=<unit of duration> period=<number of period>
+perunit=<unit of period>
+dayofweek=<week that you want
+to do this task> expiration=<valild date>
+query schedule
+<Schedule Name -or- *> type=administrative 
+query event
+<* -or-  Domain Name> <*
+-or- Schedule Name> type=administrative begindate=<date of begin>
+enddate=<end of date>
+TSM Schedule for
+Client
+define schedule
+<Schedule Name> type=client description=`<Descriptions>'
+action=<task of action>
+option=<option for action>
+objects=<objects name for action> 
+priority=<Priority No.>
+startdate=<date of start>
+starttime=<time of start> duration=<nomber of duration>
+durunits=<unit of duration>
+period=<number of period>
+perunit=<unit of period> dayofweek=<week that you want to do this
+task> expiration=<for valild date>
+q schedule
+define
+association <Domain Name> <Schedule Name> <Client Node Name>
+q event  <* -or-  Domain Name> <* -or- Schedule
+Name>  begindate=<date of
+begin> enddate=<end of date>
+Edit dsm.opt
+passwordaccess
+generate
+schedmode <polling -or- prompted>
+クライアントポーリングモード
+クライアントは一定インターバルでサーバに次の実行時間とオペレーションを確認
+サーバから通知された時刻になると処理を実行
+サーバープロンプト
+クライアントはネットワークアドレスをサーバに通知
+サーバーは実行時間になると通知されたアドr巣を元にクライアントにコンタクト
+TCP/IP環境のみ
+set schedmods
+<polling -or- prompted -or- any>
+Schedule Admini             スケジュールのactive属性をyesにする
+Schedule client             define
+associateで該当クライアントノードとスケジュールを関連付ける
+バックアップセット(Active属性のみ)
+generate
+backupset <Node Name> <Backup Set Name> <* -or- Filespace
+Name> devclass=<Output Device Class>
+scratch=<yes -or- no>
+retention=<days -or- nolimit> description=<Descriptions>
+wait=<no -or- yes>
+query
+backupset
+query
+backupsetcontents
+define
+backupset <Original Node Name> <Backupset Name> devclas=<Device
+Class Name> volumes=<Volume Names>
+retenstion=<validate days -or-
+nolimit>
+他のクライアントで取得したバックアップのリストア
+irtualnodeオプションを利用した方法
+1.
+sp01上で
+$ dsmc q ba /work/ -virtualn=ss2
+*アクセス権などの設定は不要ですが、
+利用時にss2のクライアントパスワードが要求されます。
+クライアントパスワードはdsmc set passwordで設定する。
+fromnodeオプションを利用した方法
+1.
+ss2でアクセス設定
+$ dsmc "set access ba /work/
+sp01"
+2.
+sp01上で
+$ dsmc q ba /work/  -fromnode=ss2   
+* ss2クライアント上でset accessによるアクセス権を利用するノードに対して予め与えておかないと、
+ANS1092Eでエラー終了し、何もすることができません。
+ちなみにアクセス権を消去するには delete access、
+確認するにはq accessで行います。
+クライアントオプションセット                   クライアントオプションセットは、バックアップ操作(incr,sel,archive,retrieve,restore)の
+オプションのまとまりをクライアントに割り当てます
+define cloptset
+<Option Set Name> description=<Descriptions>
+define clientopt
+<Option Set Name> <Option Name> <Option value> force=<no
+-or- yes> seqnumber=<Number>
+audit license      TSMライセンスの適合性検査
+set
+licenseauditperiod      TSMライセンスの整合性検査周期の設定
+query
+auditocupancy         クライアントノード単位でのストレージ利用率表示
+query media        ボリュームの状態を表示
+setopt             dsmserv.optの設定を、動的に設定する。dsmserv.optにも反映される
+DB snapshot        通常のTSM
+DB Backupとは別管理。snapshot Backupを取得しても、
+TSM
+Logがリセットされない。(ロールフォワードモードのとき)
+あとはTSM
+DB Full Backupと同様
+TSM Log ...
+Noral Mode & ROLLFORWARD Mode
+ノーマルモードはDBに情報がコミットされて時点でLogをクリアする
+ロールフォワードモードは、DBのバックアップが取得された時点でLogをクリアする
+HSM
+dsm.sys
+defaultserver      TSMのバックアップやアーカイブするサーバを指定
+migrateserver      TSM HSMのマイグレーションサーバを指定。未指定時はdafaultserverの指定が利用される
+checkthresholds    HSMがスペース管理対象ファイルシステムの利用率をチェックする周期を指定(デフォルト5秒)
+reconcileinterval  HSMがスペース管理対象ファイルシステムに対し自動的にリコンサイルを行う周期を指定
+デフォルト24時間。0指定で自動起動しない
+maxreconcileproc   リコンサイルプロセスの最大同時稼動数
+maxthresholdproc   最大同時自動マイグレーション動作ファイスシステム数
+migfileexpiation   マイグレーションまたはプリマイグレーションファイルがローカルファイルシステムから削除または更新されたとき、
+TSMサーバ上に存在するファイル本体を保持する日数を指定。デフォルト7日
+minrecalldaemons   最小常駐リコールデーモン数。デフォルト3
+maxrecalldaemons
+最大同時動作可能リコールデーモン化す。最低2,デフォルト20
+kernelmessages     カーネルが出力するHSM関連のメッセージを表示するか田舎の指定。デフォルトyes.
+passwordaccess
+generate     透過的リコール及び自動マイグレーション実施時に必須
+errorprog          HSM処理中に重大なエラーが発生した場合にHSMからのメッセージ送信先となるプログラムを指定
+これらの設定は、passworkaccess,errorprogのみservernameより下に記述し、それ以外はdsm.sysの最初に記述しなければならない。
+マイグレーション   ローカルファイルシステムからHSMサーバにファイルを移動すること
+リコール           HSMサーバからローカルがいるシステムにファイルを戻すこと(サーバーからデータは削除されない)
+リコンサイル       自動マイグレーション候補リストファイル(.../.SpaceMan/candidates)を作成
+透過再呼び出し     マイグレーションされたファイルにアクセスしたとき、自動的リコールされる
+選択再呼び出し     マイグレーションファイルを選択してリコールする
+Resident(常駐)     ファイルがローカルファイルシステム上にだけ存在する状態
+Migrated(移行済)   ローカルファイルシステムからTSMサーバにコピーされて、スタブファイルに置き換わった状態
+Premigrated(事前移行済)    ファイルがローカルにもTSMサーバにも存在する状態。ローカルファイルはスタブファイルではなくその実体。
+リコールが発生しない操作    ls,find,mv,touch(premigratedの場合residentに変わる),file/head(サイズによる),chmod,chown,chgrp,df,du,rm/del
+WebShellの利用方法
+1.dsm.sysに
+passwordaccess generate
+2.dsmcadの実行
+/usr/tivoli/tsm/client/ba/bin/dsmcad
+3.Webからアクセス
+http:://ノード名 or IPアドレス:1581/
+SAN環境下でのライブラリ共有
+1.ライブラリマネージャで
+・ライブラリの定義 define library     share=yes
+・ドライブの定義
+・デバイスクラスの定義(マウント待ち時間は各サーバ毎に異なる値を利用)
+・ストレージプールの定義    
+・テープボリュームのcheckin/label付け
+2.ライブラリクライアントで
+・ライブラリマネージャとなるサーバの定義
+define
+server <server_name> serverpassword=<password> hladdress=<IP
+address> lladdress=<Port No.> crossdefine=yes
+・共用ライブラリの定義(ライブラリ名はライブラリサーバと同じ名前にする)
+define
+library <library_name> libtype=shared
+primarylibmanager=<library_manager_server_name>
+・ドライブの定義(共用ライブラリではエレメントアドレスは不要。ドライブ名は同一にする)
+・デバイスクラスの定義(マウント待ち時間は各サーバ毎に異なる値を利用)
+・ストレージプールの定義
+ライブラリ環境下でのライブラリクライアントでは、q
+libv,label libvは実行不可。その他のライブラリに関わるコマンドを実行すると、
+その要求がライブラリマネージャに送信され、ライブラリマネージャが実行する。
+(ライブラリクライアントは要求のし、ライブラリマネージャがその要求を受け実行する)
+エンタープライズ構成
+1.a 通信設定(個別定義方法)
+・構成マネージャ上で
+set
+servername <config manager name>
+set
+serverpassword <config manager password>
+define
+server <config manager client name> serverpassword=<config client
+password>
+hladdress=<config
+client IP address> lladdress=<config client Port number>
+・構成クライアント上で
+set
+servername <config client name>
+set
+serverpassword <config clientpassword>
+define
+server <config manager name> serverpassword=<config manager  password>
+hladdress=<config
+manager server IP address> lladdress=<config manager Port number>
+1.b 通信設定(相互定義)
+・構成マネージャ上で
+set
+server name <config manager server name>
+set
+serverpassword <config manager password>
+set
+serverhladdress <config manager IP address>
+set
+serverlladdress <config manager Port number>
+define
+server <config client name> serverpassword=<config manager
+password>
+hladdress=<config
+manager IP address> lladdress=<config manager Port number>
+crossdefine=yes
+・構成クライアント上で
+set
+servername <config client name>
+set
+serverpassword <config client server password>
+set
+serverhladdress <config client IP address>
+set
+serverlladdress <config client port number>
+set
+crossdefine on
+ping
+server <Server Name> ... サーバ間通信の確認
+2 構成マネージャのセットアップ
+・構成マネージャ上で
+set
+configmanager on
+define
+profile <Profile Name> description='<Description>'
+define
+profassociation admins=<admin name> domain=<domain name>
+adscheds=<Schedule Name> scripts=<Script Name>
+cloptsets=<Option
+Set Name> servers=<Server Name> servergroups=<Server Group Name>
+変更など
+lock
+profile <Profile Name> <Time[min]>
+unlock
+profile <Profile Name>
+notify
+subscribers profile=<Profile Name> 
+・構成クライアント上で
+q
+profile server=<Config Manager Name> 
+... 確認
+define
+subscription <Profile Name> server=<Config Manager Name>
+set
+configrefresh <Time[min]>  ...
+デフォルト60[分]
+q
+subscription  ... プロファイル加入の照会
+配布された管理スケジュールは、各々で活動化する必要がある。
+profassociationの各項目で*を指定した場合、後から追加した定義もプロファイルを通じ自動的に配布されます。
+同一名の管理者情報が配布された場合、その定義と権限は上書きされます。(配布元優先)
+同一名のサーバ情報が配布された場合、デフォルトではその定義は上書きされません。
+serverのallowreplace=yesと設定されているときのみ上書きされます。
+nodeが利用しているコピーグループは上書きされません。
+3.リモートコマンドの実行
+事前にサーバ間通信ができていること、サーバ名は複数及びサーバグループも可能
+サーバ名:
+コマンド  -- or ( <Server_Name> )
+<command>
+ws2:
+q vol
+(ws2)
+q vol
+4.サーバーグループ
+define servergroup <Server Group
+Name> description='<Description>'
+define grpmember <Server Group
+Name> <Member Name>
+5.仮想ボリューム  
+ソースサーバ  .. 仮想ボリュームを利用する側(DB,STGPool,Client
+Data,DRM,Server Infoなど)
+ターゲットサーバ .. 実際にデータを保存しているサーバ
+仮想ボリュームは、ソースサーバ上で順次メディアのように見えますが、
+実際にはターゲットサーバ上のアーカイブファイルとして保管されます。
+よってnode登録時のdomeinとそのdomainのarchive
+copygroupにより、
+ターゲットサーバ上での保存先が決定します。
+ソースサーバにて
+define
+-or- update server <Target Server Name> passowrd=<Target Server
+Password>
+hladdress=<Target Server IP Address>
+lladdress=<Target Server Port No.>
+nodename=<Source Server
+Name>
+define
+devclass <Device Class Name> devtype=server servername=<Target Server
+Name>
+ターゲットサーバにて
+register
+node <Source Server Name> <Source Server Password>
+domain=<Domain Name>
+type=server
+define
+-or- update copygroup <Domain Name> <Policy Set Name>
+<Management Class Name>
+type=archive
+destinatin=<Destination Storage Pool Name>
+仮想ボリューム及びアーカイブファイルの調整
+reconcile
+volumes  <Device Class Name>
+fix=<yes -or- no>
+Storage Agentのセットアップ
+1. Edit  dsm.opt file on TSM Client
+ENABLELanfree               yes
+LANFREECommmethod  TCPip
+LANFREETCPport              1500
+2. Edit
+dsmsta.opt file on StorageAgent
+commmethod         tcpip
+devconfig /usr/tivoli/tsm/StorageAgent/devconfig
+tsngroupmax        256
+<--- TSM Serverと同じ値にする
+3. Configure
+Storage Agent
+dsmsta setstorageserver
+myname=<StorageAgent名> mypassword=<StorageAgentパスワード> \
+myhladdress=<StorageAgenet IPアドレス>
+servername=<TSM Server名> serverpassword=<TSM Serverパスワード> \
+hladdress=<TSM Server IPアドレス>
+lladdress=<TSM Serverポート番号>
+4. Configure TSM
+Server
+set servername <TSM Server名>
+set serverpassword <TSM Serverパスワード>
+set serverhladdress <TSM Server IPアドレス>
+set serverlladdress <TSM Server ポート番号>
+5. Register
+StorageAgent on TSM Server
+define server
+<StorageAgent名> serverpassword=<StorageAgentパスワード>
+hladdress=<StorageAgent IPアドレス> lladdress=<ポート番号>
+6. Update
+Library Configuration on TSM Server
+update library
+<ライブラリ名> shared=yes
+7. Define
+DriveMapping on TSM Server
+define
+drivemapping <StorageAgenet名> <ライブラリ名> <ドライブ名>
+device=<StorageAgentでのデバイスファイル名>
+8. Start
+Storage Agent
+dsmsta
+イベントログ
+enable events
+<Destination(All,console,actlog,eventserver,file,dileext,snmp,tivoli,userexit)>
+<event name(all,info,warning,error,server)>
+nodename=<node name>
+servername=<server name>
+fileexit
+yes <Filename append>
+userexit
+yes <program name>
+begin
+eventlogging userexit
+define eventserver <server name>
+

@@ -1,0 +1,68 @@
+
+SpeechRecognizerクラス
+音声認識フロントエンド機能にアクセスする手段を提供します。
+音声認識フロントエンド機能は音声入力から特徴量の抽出を行います。
+音声認識フロントエンド機能にアクセスするには、getInstance() メソッドを呼び出し、音声認識フロントエンド機能を表すインスタンスを取得する必要があります。
+インスタンス取得後、start(String, SpeechListener) メソッドを呼び出すことで特徴量の抽出処理が開始されます。
+start(String, SpeechListener) メソッドの呼び出し後、実際に音声入力が可能になるまでの時間をレディ時間といいます。
+このレディ時間は getReadyTime(String) メソッドで取得することができます。
+start(String, SpeechListener) メソッドに指定できるコーデックは getAvailableCodec() メソッドを用いて調べることができます。
+特徴量抽出処理において発生したイベントは start(String, SpeechListener) メソッドに指定した SpeechListener インスタンスに通知されます。
+音声認識フロントエンド機能に蓄積されている特徴量データは getFeature() メソッドで取得します。
+特徴量抽出処理は最大発話時間に達するか、stop() メソッドを呼び出すことで終了します。
+取得した特徴量データはDDP通信を利用して音声認識バックエンドサーバに送信し、認識結果チャンクを取得します。
+認識結果チャンクを指定して getResultInformation(byte[], String) メソッドを呼び出すことで認識結果情報を取得できます。
+アプリケーションがサスペンド、非活性状態、休眠状態に遷移すると音声認識フロントエンド機能のインスタンスは利用不能になります。
+音声認識フロントエンド機能が利用不能になった場合、新たに getInstance() メソッドを呼び出し、インスタンスを取得しなおすことで、再度音声認識フロントエンド機能を利用することが可能になります。
+導入されたバージョン:
+DoJa-5.1(905i)
+メソッドの概要
+String[]
+getAvailableCodec()
+音声認識フロントエンド機能が対応しているコーデックを取得します。
+int[]
+getAvailableType()
+音声認識フロントエンド機能が対応している認識種別を取得します。
+SpeechFeatureData
+getFeature()
+音声認識フロントエンド機能に蓄積されている特徴量データを取得します。
+static SpeechRecognizer
+getInstance()
+音声認識フロントエンド機能のインスタンスを取得します。
+int
+getMaxSpeechTime()
+最大発話時間を取得します。
+String
+getName()
+音声認識フロントエンド機能の名前とバージョンを取得します。
+int
+getReadyTime(String codec)
+レディ時間を取得します。
+SpeechResultInformation
+getResultInformation(byte[] data,
+String charSet)
+認識結果情報を取得します。
+boolean
+isAvailable()
+音声認識フロントエンド機能のインスタンスが利用可能であるか確認します。
+void
+reset()
+特徴量抽出処理をリセットします。
+void
+start(String codec,
+SpeechListener listener)
+特徴量抽出処理を開始します。
+void
+stop()
+特徴量抽出処理を停止します。
+クラス Object から継承したメソッド
+equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait
+メソッドの詳細
+getInstance
+public static SpeechRecognizer getInstance()
+音声認識フロントエンド機能のインスタンスを取得します。
+利用可能な音声認識フロントエンド機能のインスタンスが存在する間は、このメソッドを複数回呼び出しても利用可能な音声認識フロントエンド機能の同一インスタンスを返します。
+利用可能な音声認識フロントエンド機能のインスタンスが無い場合は、新たにインスタンスを生成して返します。
+パーミッションとして音声認識APIの利用が許可されているトラステッドiアプリのみ、 このメソッドを呼び出すことができます。
+端末によっては、音声認識フロントエンド機能をサポートしていない場合があります。 その場合には、例外 UnsupportedOperationException が発生します。
+SpeechRecognizer (DoJa-5.1 (APIリファレンス))

@@ -1,0 +1,6 @@
+TF・IDF
+索引後の重み付け方法。
+TF(Term Frequency)は文書に置ける単語の頻度
+IDF(Inverted Document Frequency)は索引語が現れる相対文書頻度の逆数の対数
+1文書に同一の索引語が多く出現すればTF・IDFの値は大きくなる。多くの文書に索引後が出現すれば値は小さくなる。
+NLP(自然言語処理)用語まとめ - Web就活日記

@@ -1,0 +1,14 @@
+Home > JUNE 2011 > 技術情報 > Cadence System Development SuiteとHW/SW協調開発Platform
+3. System Development Suiteの特長
+ケイデンスのSystem Development Suiteは、Open、Connected、Scalableという新しいコンセプトにより、従来のシステム検証Platformの課題を解決しました。
+Scalable
+単一のPlatformでシステム検証を実現するのではなく、仮想プロトタイプ・システム(Virtual System Platform:VSP)、Incisive® Enterprise Simulator(IES)を中核とする Incisive Verification Platform、アクセラレータ/エミュレータ装置Palladium® XP Verification Computing Platform、 FPGAベースのプロトタイピング装置Rapid Prototyping Platform(RPP)の4つのPlatformより構成され、各Platformそれぞれの特徴に合わせた使用用途を推奨します。
+例えば、より抽象度の高いモデルを使用することにより仮想プロトタイプ・システムは、高速なソフトウェア検証が可能になりますが、一方、RTLの完成度が増した段階で精度の低いモデルにこだわることは有効ではありません。また、精度の高いCモデルの作成はモデル化のための開発工数・開発コストの増大につながります。RTLの完成度が高くなれば、FPGAプロトタイプにより、ドライバなどのハードに依存するソフトウェアを検証した方が検証用途に適しています。近年、SoCの回路規模はますます増大しており、シミュレータによりSoC全体を検証することは、もはや現実的な解とはいえません。SoCの回路規模を考慮すれば、アクセラレータ、あるいはエミュレータによる検証が威力を発揮します。同時に、1億ゲートを越える規模に対応可能なエミュレータ装置が求められます。ケイデンスのSystem Development Suiteは、これら4つのPlatformの特長を最大限に生かすことにより、検証速度、回路規模の要求に応えます。
+Connected
+ケイデンスの各Platformは、データベース、フローにおいて互換性を持っています。VSPとIESは単一のシミュレーション・エンジンをベースに開発されています。したがって、VSPとIESの組み合わせにより、仮想環境の一部のモデルをRTLに置き換えて検証することが可能になります。
+既に、Palladium XPとIESはデータベースの互換性を実現しており、Hotswap機能により、Palladium XPに実装されている回路をIESに移して検証を実行し、検証途中でその回路をPalladium XPに戻すことが可能です。さらに、VSPとIESが単一のシミュレーション・エンジン上に構築されている利点を生かし、VSPとPalladium XPを接続することも可能になります。
+RPPは、Palladium XPのIn-circuit環境(実装置や実チップを組み合わせた検証環境)と互換性があります。Palladiumシステムは、マルチクロック対応など数々の特許を有していますが、RPPのコンパイラは、Palladiumのコンパイラ(HDLICE)をフロントエンドに使用しており、FPGAプロトタイプの構築における課題(FPGA向け回路変更、マルチクロック対応)を解決し、短時間でプロトタイプ装置を構築できます。
+Open
+検証用IPは多岐にわたりますが、ケイデンスはSCE-MI、UVM、IP-XACTなど標準インターフェースをサポートすることにより、サードパーティのモデルの組み込みを容易にします。また、VSPにおける検証モデルにおいては、TLMモデルをより容易にするため、モデル生成機能を組み込んでいます。
+<< 前へ
+日本ケイデンス・デザイン・システムズ｜THE SOUND OF CADENCE ONLINE

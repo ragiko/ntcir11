@@ -1,0 +1,142 @@
+出処:回帰分析の基礎、早川毅著、朝倉出版
+(経済企画庁調査局、消費者動向調査による)
+>年度<-c(1966:1984)
+>普及率<-c(0.003,0.016,0.054,0.139,0.263,423,0.611,0.758,0.859,0.903,0.937,0.954,0.978,0.978, 0.982,0.985,0.989,0.988,0.992)
+> tv<-glm(普及率~年度,family=binomial)
+関数glmによる当てはめ値はfittedで返すことができる。図2にカラーテレビの普及率の実測値と関数glmを用いたロジスティック回帰モデルの予測値の折れ線プロットを示す。
+>plot(年度,普及率,type="l")
+>lines(年度,fitted(tv),lty=2,col="red",lwd=2)
+>legend(1975,0.5,c("実測値","予測値"), col=1:2,lty=1:2)
+関数predictでリンク関数空間上の予測値を返すことができる。ただし、次のように引数typeを指定するとfiittedと同じ結果が返される。
+>predict(tv,type=response)
+関数glmの要約の出力は関数lmと同じくsummaryを用いる。
+図2 実測値と予測値の折れ線プロット
+(2) 2値データのロジスティック回帰分析
+関数glmの二項分布を用いて、2値(binary)になっている被説明変数を予測するモデルを構築することも可能である。ここでは、Rの中のデータToothGrowthを用いて説明する。
+データToothGrowthは各々10匹のギニアピッグ(モルモット)の造歯細胞(歯)の成長について、ビタミン C の投与量(0.5,
+1, 2mg)を異なる摂取法(オレンジジュースまたはアスコルビン酸)で、計測を行った60行×3列の実験データである。3変数のラベルを次に示す。 
+[,1] 
+len   歯の長さ 
+[,2] 
+supp  摂取法 (VC 又は
+OJ) 
+[,3] 
+dose  投与量(0.5, 1, 2mg)  
+通常では、このデータは「歯の長さ」が「摂取法」と「投与量」の影響を受けているかを分析するのに用いられているが、ここでは、「歯の長さ」と「投与量」を説明変数とし、どのような「摂取法」を用いたかを予測する例題の題材とする。データToothGrowthの中から5行をランダムサンプリングしたデータを次に示す。
+>data(ToothGrowth)
+> samp<-sample(60,5)
+> ToothGrowth[samp,]
+len supp dose
+50 27.3   OJ  1.0
+53 22.4   OJ  2.0
+11 16.5   VC  1.0
+13 15.2   VC  1.0
+32 21.5   OJ  0.5
+関数glmでは、被説明変数が2値の場合は、引数famailyに二項分布binomialを指定する。関数glmによる使用例を次に示す。
+>attach(ToothGrowth)
+>Tooth.glm<-glm(supp~len+dose, family=binomial)
+結果の要約はsummaryで返されるが、ここでは省略する。ここで興味を持っているのは予測値がどのような形式であり、実測値とどのような関係を持っているかである。次に実測値と予測値の対応のサンプルを示す。
+>実測値<-supp[samp]
+>予測値<-fitted(Tooth.glm)
+> data.frame(実測値,予測値[samp])
+実測値  予測値.samp.
+50     OJ    0.1015566
+53     OJ    0.7212634
+11     VC    0.5292075
+13     VC    0.5971142
+32     OJ    0.1201745
+関数glmでは、2値のカテゴリカルデータを1、0のダミー変数に自動的に置き換えて計算を行う。返された、予測値は確率データであり、確率の値はダミー変数1(ここではVC)に対する予測確率である。よって、得られた予測値の値が小さいとダミー変数0(ここではOJ)に対応するカテゴリを予測したことになる
+2値データであるので、確率値0.5を境として、0.5より大きければダミー変数1、0.5より小さければダミー変数0であると見なすこともできる。
+四捨五入関数roundを用いることで、予測値を0、1で返すことができる。
+>予測値1<-round(予測値)
+> data.frame(実測値,予測値1[samp])
+実測値 予測値1.samp.
+50     OJ            
+0
+53     OJ            
+1
+11     VC            
+1
+13     VC            
+1
+32     OJ            
+0
+次のように関数teableを用いて実測値と予測値のクロス表を作成することができる。
+> table(supp,予測値1)
+予測値1
+supp  0   1 
+OJ 17  13
+VC  7  23
+返された実測値と予測値のクロス表から分かるように、カテゴリOJの場合は、30の中の17が正しく予測され、VCでは30の中の23が正しく予測されている。このような回帰分析応用法は、一種の2群判別分析として解釈することもできる。
+関数attach(ToothGrowth)を用いた場合は、ToothGrowthの解析が終ったら、次のように関数detachを用いて、検索リストから切り離すことをお薦めする。
+>detach(ToothGrowth)
+3.分散分析と一般化線形モデル
+通常の分散分析は線形モデルである。例えば、一元配置の分散分析モデルは次のように被説明変数は平均と誤差の線形式で表し、残差は正規分布に従うと仮定している。
+Rでは回帰モデルの結果から分散分析の結果を返すことができる。ここでは、異なる6種類の農薬を散布し、昆虫への薬剤噴霧の効果を調べた農業実験データInsectSpraysを用いることにする。
+データInsectSpraysは2 変数、72 個の観測値を持つデータフレームである。次にその2変数のラベルを示す。
+[,1]count  昆虫の数 
+[,2]spray  噴霧剤の種類(A,B,C,D,E,F) 
+> data(InsectSprays)
+> InsectSprays[1,]
+count   spray
+1    10     A
+6種類噴霧剤ごとの箱ひげ図を図3に示す。図3から、噴霧剤の種類によって殺虫効果が明らかに異なることが読み取られる。
+図3 InsectSpraysの箱ひげ図
+次に関数lm,glmの結果に関数aov、anovaを用いた分散分析の例を示す。結果から3種類の結果は基本的に同じであることが分かる。
+>attach(InsectSprays)
+>summary(aov(count~spray))
+Df  Sum Sq Mean Sq F
+value    Pr(>F)    
+spray        5
+2668.83  533.77  34.702 < 2.2e-16 ***
+Residuals   66 1015.17   15.38                     
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1
+` ' 1 
+>anova(lm(count~spray))
+Analysis of Variance Table
+Response: count
+Df  Sum Sq Mean Sq F
+value    Pr(>F)    
+spray      5 2668.83  533.77  34.702 < 2.2e-16 ***
+Residuals 66 1015.17   15.38                     
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1
+` ' 1 
+>anova(glm(count~spray,family=gaussian),test="F")
+Analysis of Deviance Table
+Model: gaussian, link: identity
+Response: count
+Terms added sequentially (first to last)
+Df Deviance Resid. Df Resid. Dev      F    Pr(>F)    
+NULL                    
+71     3684.0                    
+spray  5   2668.8       
+66     1015.2
+34.702 < 2.2e-16 ***
+---
+Signif. codes:  0 `***'
+0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+次に関数glmの正規分布を用いた場合とポアソン分布を用いた場合の当てはめの良さについて比較してみる。当てはめの良さの判断基準はAICを用いる。
+>AIC(glm(count~spray,family=gaussian))
+[1] 408.8494
+>AIC(glm(count~spray,family=poisson))
+[1] 376.5892
+AICの値からポアソン分布を用いた場合の当てはめが、正規分布を用いた場合より良いと判断される。次にポアソン分布による分散分析の結果を示す。
+>anova(glm(count~spray,family=poisson),test="F")
+Analysis of Deviance Table
+Model: poisson, link: log
+Response: count
+Terms added sequentially (first to last)
+Df Deviance Resid. Df Resid. Dev      F    Pr(>F)    
+NULL                    
+71     409.04                    
+spray  5   310.71       
+66     
+98.33 62.142 < 2.2e-16 ***
+---
+Signif. codes:  0 `***'
+0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+>detach(InsectSprays)
+このデータではいずれの方法でもPr(>F)が非常に小さいので、「< 2.2e-16」(より小さい値)が返されている。しかし、F値はポアソン分布の場合は62.142で正規分布の34.702より大きく、同じではないことが分かる。
+Brownleeの排気損失率データ

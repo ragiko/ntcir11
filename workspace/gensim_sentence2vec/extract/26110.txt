@@ -1,0 +1,109 @@
+
+ターゲットの文字列にパターンを適用しマッチしているかどうか調べるにはMatcherクラスで定義されているfindメソッドを使って調べていました。
+String str = "abcdef";
+String regex = "abc";
+Pattern p = Pattern.compile(regex);
+Matcher m = p.matcher(str);
+if (m.find()){
+System.out.println("マッチしました");
+}
+findメソッドによってマッチが成功した場合は、start、end、および group メソッドを使用することで、マッチした部分に関する情報を取得することができます。
+まずターゲット文字列のどの部分にマッチしたのかを取得するにはMatcherクラスで定義されているgroupメソッドを使います。
+group
+public String group()
+前回のマッチで一致した入力部分シーケンスを返します。
+正規表現エンジン m に入力シーケンス s が指定されている場合、m.group() と 
+s.substring(m.start(), m.end()) は同じ表現になります。
+パターン (a* など) によっては、空の文字列とマッチすることがあります。これらのパターンが入
+力シーケンス内の空の文字列とマッチした場合、空の文字列が返されます。 
+戻り値:
+前回のマッチで一致した部分シーケンス (空の場合もある)。文字列形式 
+例外:
+IllegalStateException - マッチがまだ試みられていない場合、または前回のマッチ操作が失敗し
+た場合
+groupメソッドを呼び出すと、ターゲット文字列の中でマッチした部分文字列を取得することができます。
+例えば次のように記述します。
+String str = "abcdef";
+String regex = "abc";
+Pattern p = Pattern.compile(regex);
+Matcher m = p.matcher(str);
+if (m.find()){
+String matchstr = m.group();
+System.out.println(matchstr + "の部分にマッチしました");
+}
+またマッチした部分のターゲット文字列全体に対するインデックスを取得することもできます。開始インデックスを取得するにはMatcherクラスで定義されているstartメソッドを使い、終了インデックスを取得するにはMatcherクラスで定義されているendメソッドを使います。
+startメソッド :
+start
+public int start()
+前回のマッチの開始インデックスを返します。
+戻り値:
+マッチした最初の文字のインデックス 
+例外:
+IllegalStateException - マッチがまだ試みられていない場合、または前回のマッチ操作が失敗し
+た場合
+endメソッド :
+end
+public int end()
+最後にマッチした文字の後のオフセットを返します。 
+戻り値:
+最後にマッチした文字の後のオフセット
+例外:
+IllegalStateException - マッチがまだ試みられていない場合、または前回のマッチ操作が失敗し
+た場合
+starメソッド及びendメソッドを呼び出すと、ターゲット文字列の中でマッチした部分の開始インデックスと終了インデックスを取得することができます。
+例えば次のように記述します。
+String str = "abcdef";
+String regex = "abc";
+Pattern p = Pattern.compile(regex);
+Matcher m = p.matcher(str);
+if (m.find()){
+int start = m.start();
+int end = m.end();
+System.out.println("マッチしました");
+System.out.println("位置は " + start + " to " + end);
+}
+またgroupメソッドを使って取得したマッチした部分の文字列について、startメソッドとendメソッドを使うことで同じように取得することができます。
+String str = "abcdef";
+String regex = "abc";
+Pattern p = Pattern.compile(regex);
+Matcher m = p.matcher(str);
+if (m.find()){
+int start = m.start();
+int end = m.end();
+System.out.println(str.substring(start, end) + "の部分にマッチしました");
+}
+この3つのメソッドを使うことで、ターゲット文字列のどの部分にマッチしたのかを取得することができます。
+サンプルプログラム
+では実際に試してみます。 
+JSample1_1.java
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+class JSample1_1{
+public static void main(String args[]){
+String str1 = "10 years old";
+String str2 = "What would you like to have?";
+String str3 = "Search results";
+String regex = " .+ ";
+Pattern p = Pattern.compile(regex);
+System.out.println("パターン : " + regex);
+check(p, str1);
+check(p, str2);
+check(p, str3);
+}
+private static void check(Pattern p, String target){
+Matcher m = p.matcher(target);
+if (m.find()){
+int start = m.start();
+int end = m.end();
+String str  = target.substring(0, start) + "[" + m.group() + "]"
++ target.substring(end, target.length());
+System.out.println(" " + target);
+System.out.println("   " + str);
+}else{
+System.out.println("× " + target);
+}
+}
+}
+ではコンパイルを行った上で実行してみます。 
+今回のサンプルでは、マッチした場合にどの部分にマッチしたのかを[]で囲って表示しています。
+マッチした文字列全体を取得 - マッチ部分の取得と後方参照 - Java正規表現の使い方

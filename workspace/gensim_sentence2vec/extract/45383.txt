@@ -1,0 +1,121 @@
+その①の記事では「enterprise.wsdl」を利用した接続を行いました。
+強い型付けを利用した方法なので、コーディングはすっきりしますが、ファイル生成を手動で行うなど、すこし、コーディングするまでの手間もかかりますね。
+もうひとつ、「Partner WSDL」を利用した方法もありますので、この記事ではその方法を解説します。
+こちらは弱い型付けを利用するので、組織固有のカスタムオブジェクトではなく、標準オブジェクトに対する操作のみでいい場合はこちらの方式の方が手順が楽です。
+ 
+WSDLファイルの生成とダウンロード
+管理コンソールでSalesforceにログインし、「アプリケーションの設定」⇒「開発」⇒「API」を開いてください。
+「パートナー WSDL の生成」をクリックします。
+すると、以下のようなxmlファイルが生成されますので、ローカルのPCに保存します。
+ 
+その後、「その①」の記事と同様の手順で、プロジェクトを右クリックして、「サービス参照の追加」を選択します。
+ 
+OKボタンを押すと、プロジェクトに、以下のようにサービスの参照が追加されているはずです。
+ 
+コーディング
+それでは、ログインとユーザ情報の取得、ログアウト処理を記述してみます。
+※「logger.Debug」の部分はlog4netによるログ出力のコードなので、「Console.WriteLine」などに適宜変更してください。   log4netによるログ出力を行いたい場合は、別記事を参照してください。
+最初に必要な名前空間を定義します。以下の2つは必要です。
+private void login()
+{
+try {			
+SoapClient sfClient = new SoapClient();
+String sfLogin = "xxxxxx";
+String sfPassword = "xxxxxxx";
+//String sfSecurityToken = "xxx";
+//LoginResult lr = sfClient.login(null, null, sfLogin, sfPassword + sfSecurityToken);
+LoginResult lr = sfClient.login(null, null, sfLogin, sfPassword);			
+logger.Debug(lr.sessionId+lr.serverUrl);			
+SoapClient sc = new SoapClient("Soap", new EndpointAddress(new Uri(lr.serverUrl)));			
+SessionHeader sh = new SessionHeader();
+sh.sessionId = lr.sessionId;			
+GetUserInfoResult userInfo = lr.userInfo;
+logger.Debug("UserID: " + userInfo.userId);
+logger.Debug("User Full Name: " + userInfo.userFullName);
+logger.Debug("User Email: " + userInfo.userEmail);
+logger.Debug("SessionID: " + lr.sessionId);
+logger.Debug("Service End Point: " + lr.serverUrl);			
+sc.logout(sh, null);
+logger.Debug("\nLogged out\n");			
+sc.Close();
+sfClient.Close();			
+} catch (Exception e) {
+logger.Debug("An unexpected error has occurred: " +
+e.Message + "\n" + e.StackTrace);
+}
+}
+ 
+以上で、OKです。コンパイルして実行すると、一連の流れが実行されるはずです。
+注意
+An unexpected error has occurred: UNKNOWN_EXCEPTION: Destination URL not reset. The URL returned from login must be set in the SforceService
+といったエラーがでる場合は、logoutメソッドの呼ばれるSoapClientのインスタンスにきちんとServerURLがセットされていないのが原因の場合が多いです。
+logout処理を呼んでいるSoapClientのインスタンスが、EndpointAddressをセットした方のものであることを確認してみてください。
+タグ
+.net、C#、Salesforce
+バッチプログラムやクライアントアプリからSalesforceにログインして情報を登録・更新・取得したり、別なサイトから同じようなことを行うにはいくつか方法があります。
+今回はその中で、.NETを使って、Webサービス経由で行う方法について解説したいと思います。
+開発環境はVisualStudio2010、言語はC#を利用しましたが、VB.NETでもほとんど同じ手順でOKです。
+ 
+プロジェクトを作成する。
+まず最初に簡単なプロジェクトを作成するところから始めます。
+解説にはASP.NETを使いますが、クライアントのプロジェクトでも構いません。
+プロジェクト名は「SFDCService」としました。
+ 
+WSDLファイルの生成とダウンロード
+次にやるのは、SalesForceの組織から、Webサービス経由で接続するためのメソッドやオブジェクト情報の記述された「.wsdl」ファイルをダウンロードしてくることです。
+VisualStudioは、「.wsdl」ファイルに記述された組織情報をもとに、接続や更新等を行うためのクラスを自動生成しますので、それをプログラミングに利用することができます。
+管理コンソールでSalesforceにログインし、「アプリケーションの設定」⇒「開発」⇒「API」を開いてください。以下のような設定画面になるはずです。
+ 
+外部からWebサービスで接続するための情報を生成するには「Enterprise WSDL」と「Partner WSDL」の2つが利用できますが、ここでは「Enterprise WSDL の生成」をクリックします。
+※「Enterprise WSDL」の方が強い型付け情報が生成されます。その組織特有の型付けなので、ある組織に特化されますが、プログラミングは容易です。   逆に「Partner WSDL」は弱い型付け情報が生成されます。複数の組織に対する接続にも利用可能なゆるい型付け情報が生成されます。ただし、プログラミングで型の定義をハンドリングしなければならないため、コードが複雑になりがちです。(カスタムオブジェクトを使用しないシンプルな操作の場合はむしろこちらの方が簡単です。)    「Partner WSDL」を使用したコード例は別記事を参照ください。
+ 
+「Generate」ボタンを押して、wsdlを生成しましょう。生成されるwsdlの実体はXMLで記述された型付け情報です。
+FireFoxならこうなるので、右クリックして「名前を付けてページを保存」します。
+ 
+保存したファイルの名称が「enterprise.wsdl」でなければ、リネームしておきましょう。
+ 
+「enterprise.wsdl」からWebサービス用参照の生成
+それでは次に、ダウンロードした「enterprise.wsdl」を元に、Webサービス用の定義情報を生成してみましょう。
+プロジェクトを右クリックして、「サービス参照の追加」を選択します。
+ 
+すると、以下のような「サービス参照の追加」ダイアログが開きますので、以下の情報を入力します。
+アドレス・・・「enterprise.wsdl」の場所    名前空間・・・参照名です。お好きな名前で構いません。私は「sforce」としました。
+ 
+OKボタンを押すと、プロジェクトに、以下のようにサービスの参照が追加されているはずです。
+ 
+コーディング
+それでは、ログインとユーザ情報の取得、ログアウト処理を記述してみます。
+※「logger.Debug」の部分はlog4netによるログ出力のコードなので、「Console.WriteLine」などに適宜変更してください。   log4netによるログ出力を行いたい場合は、別記事「aspxページ内(ASP.NET)でログ出力を行う方法(log4net編)」を参照してください。
+private void login()
+{			
+string username = "xxxxxxxx";
+string password = "xxxxxxx";
+//String securityToken = "xxxxx";			
+// Create a service object  			
+binding = new SforceService();			
+LoginResult lr;
+try
+{
+logger.Debug("\nLogging in...\n");
+lr = binding.login(username, password);
+//lr = binding.login(username, password + securityToken);			
+String authEndPoint = binding.Url;
+binding.Url = lr.serverUrl;			
+binding.SessionHeaderValue = new SessionHeader();
+binding.SessionHeaderValue.sessionId = lr.sessionId;			
+GetUserInfoResult userInfo = lr.userInfo;
+logger.Debug("UserID: " + userInfo.userId);
+logger.Debug("User Full Name: " + userInfo.userFullName);
+logger.Debug("User Email: " + userInfo.userEmail);
+logger.Debug("SessionID: " + lr.sessionId);
+logger.Debug("Service End Point: " + lr.serverUrl);			
+binding.logout();
+logger.Debug("\nLogged out\n");			
+}
+catch (SoapException e)
+{
+logger.Debug("An unexpected error has occurred: " +
+e.Message + "\n" + e.StackTrace);
+}			
+}			
+Salesforce | Pa-kun plus idea

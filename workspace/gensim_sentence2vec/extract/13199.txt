@@ -1,0 +1,4 @@
+A data writing-out part 260 writes the correspondence relation between the phoneme label and the phoneme pitch data after learning, into the voice synthesis dictionary 202.データ書き出し部260は、学習後の音素ラベルと音素ピッチデータとの対応関係を音声合成辞書202に書き込む。 - 特許庁
+Phoneme data of which signal level is judged to be 0 (shown in half-tone dot meshing) out of generated phoneme data is removed from the connection object.作成された音素データのうち、信号レベルが0であると判断されるもの(網掛けで示す)は、連結対象から外される。 - 特許庁
+A parameter of the phoneme model is updated from a data for sound model adaptation and the phoneme model cluster, and the sound model after adaptation is created (555).音響モデル適応化用データと音素モデルクラスタから、音素モデルのパラメータを更新して、適応化後音響モデルを生成する(555)。 - 特許庁
+「phoneme」に関連した英語例文の一覧(3ページ目) - Weblio英語例文検索

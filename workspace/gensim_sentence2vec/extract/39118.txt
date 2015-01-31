@@ -1,0 +1,357 @@
+一致サフィックス規則は概念上も実装上も不一致文字規則より格段に複雑である。ボイヤー-ムーア法が最後尾から照合を始めるのはこの規則のためである。形式的には次のように説明される[3]。
+T に対して P がある位置に置かれ、T の部分文字列 t が P のサフィックスと一致しているが、その左隣の文字で不一致になったとする。そこで、t の左端からの部分文字列 t' が P のサフィックス以外の部分にないかを捜す。このとき、P のサフィックスの t の左隣の文字と P 内の t' の左隣の文字が違うものでなければならない。そして、P 内の部分文字列 t' が T の部分文字列 t と一致する位置に P をシフトする。t' が存在しなければ、P の左端が T における t の左端を過ぎた位置になるようシフトし、T 内の t のサフィックスとパターンのプレフィックスが一致するように配置する。そのようなシフトが不可能な場合、P の長さ n のぶんだけシフトする。P 全体が一致した場合、P のサフィックスとプレフィックスに一致があればそれを考慮してシフト量を最小にする。そのような一致がない場合は、P の長さ n のぶんだけシフトする。
+前処理[編集]
+一致サフィックス規則には2つのテーブルを必要とする。1つは通常使用し、もう1つは前者が意味のある結果を返さない場合や一致が起きた場合に使う。前者のテーブルを L、後者のテーブルを H とする。これらの定義は次の通りである[3]。
+各 i について L[i] は、文字列 P[i..n] が P[1..L[i]] のサフィックスに一致し、そのサフィックスの前の文字が P[i-1] と同じでない場合の最大の値を格納する。そのような条件を満たす位置がない場合 L[i] にはゼロを格納する。
+H[i] には P のプレフィックスでもある P[i..n] の最大サフィックスの長さを格納する(もしあれば)。そのような一致が存在しない場合 H[i] をゼロとする。
+どちらのテーブルも構築には O(n) の時間と O(n) の領域を必要とする。提案されるシフト量は n - L[i] または n - H[i] で、H は L[i] がゼロとなるか、P 全体が一致した場合にのみ使われる。
+ガリル規則[編集]
+1979年、Zvi Galil はボイヤー-ムーア法に単純だが重要な改良を施した[4]。追加されたガリル規則はシフト量を決めるものではなく、各位置での照合を高速化するものである。位置 k1 で P と T を照合して T 上の文字 c まで照合し、次にシフトした位置 k2 によりパターンの先頭の位置が c と k1 の間になったとき、P のプレフィックスは部分文字列 T[(k2 - n)..k1] と必ず一致する。したがってこの際の文字照合は T の k1 の位置まででよく、k1 より前の照合は省略できる。ガリル規則はボイヤー-ムーア法の効率を向上させるだけでなく、最悪ケースでも線型時間であることを保証するのに必須である。
+性能[編集]
+オリジナルの論文では、パターンがテキスト内に存在しない場合のボイヤー-ムーア法の最悪ケースは O(n+m) だとされている。これは1977年、ドナルド・クヌース、James H. Morris、Vaughan Pratt が初めて証明した[5]。さらに1980年、Leonidas J. Guibas と Andrew Odlyzko が最悪ケースの文字比較回数の上限を 5m 回以下だと証明した[6]。1991年、Coleは最悪ケースの比較回数の上限が 3m 回以下であることを証明した[7]。
+パターンがテキスト内に出現する場合、オリジナルのアルゴリズムの最悪ケースは O(nm) となる。これはパターンもテキストも同じ文字の羅列の場合に容易に発生する。ただし、ガリル規則を加えるとあらゆるケースで線型時間となる[4][7]。
+実装例[編集]
+"""
+Returns the index of the given character in the English alphabet, counting from 0.
+"""
+def alphabet_index(c):
+return ord(c.lower()) - 97 # 'a' is ASCII character 97
+"""
+Returns the length of the match of the substrings of S beginning at idx1 and idx2.
+"""
+def match_length(S, idx1, idx2):
+if idx1 == idx2:
+return len(S) - idx1
+match_count = 0
+while idx1 < len(S) and idx2 < len(S) and S[idx1] == S[idx2]:
+match_count += 1
+idx1 += 1
+idx2 += 1
+return match_count
+"""
+Returns Z, the Fundamental Preprocessing of S. Z[i] is the length of the substring 
+beginning at i which is also a prefix of S. This pre-processing is done in O(n) time,
+where n is the length of S.
+"""
+def fundamental_preprocess(S):
+if len(S) == 0: # Handles case of empty string
+return []
+if len(S) == 1: # Handles case of single-character string
+return [1]
+z = [0 for x in S]
+z[0] = len(S)
+z[1] = match_length(S, 0, 1)
+for i in range(2, 1+z[1]): # Optimization from exercise 1-5
+z[i] = z[1]-i+1
+# Defines lower and upper limits of z-box
+l = 0
+r = 0
+for i in range(2+z[1], len(S)):
+if i <= r: # i falls within existing z-box
+k = i-l
+b = z[k]
+a = r-i+1
+if b < a: # b ends within existing z-box
+z[i] = b
+elif b > a: # Optimization from exercise 1-6
+z[i] = min(b, len(S)-i)
+l = i
+r = i+z[i]-1
+else: # b ends exactly at end of existing z-box
+z[i] = b+match_length(S, a, r+1)
+l = i
+r = i+z[i]-1
+else: # i does not reside within existing z-box
+z[i] = match_length(S, 0, i)
+if z[i] > 0:
+l = i
+r = i+z[i]-1
+return z
+"""
+Generates R for S, which is an array indexed by the position of some character c in the 
+English alphabet. At that index in R is an array of length |S|+1, specifying for each
+index i in S (plus the index after S) the next location of character c encountered when
+traversing S from right to left starting at i. This is used for a constant-time lookup
+for the bad character rule in the Boyer-Moore string search algorithm, although it has
+a much larger size than non-constant-time solutions.
+"""
+def bad_character_table(S):
+if len(S) == 0:
+return [[] for a in range(26)]
+R = [[-1] for a in range(26)]
+alpha = [-1 for a in range(26)]
+for i, c in enumerate(S):
+alpha[alphabet_index(c)] = i
+for j, a in enumerate(alpha):
+R[j].append(a)
+return R
+"""
+Generates L for S, an array used in the implementation of the strong good suffix rule.
+L[i] = k, the largest position in S such that S[i:] (the suffix of S starting at i) matches
+a suffix of S[:k] (a substring in S ending at k). Used in Boyer-Moore, L gives an amount to
+shift P relative to T such that no instances of P in T are skipped and a suffix of P[:L[i]]
+matches the substring of T matched by a suffix of P in the previous match attempt.
+Specifically, if the mismatch took place at position i-1 in P, the shift magnitude is given
+by the equation len(P) - L[i]. In the case that L[i] = -1, the full shift table is used.
+Since only proper suffixes matter, L[0] = -1.
+"""
+def good_suffix_table(S):
+L = [-1 for c in S]
+N = fundamental_preprocess(S[::-1]) # S[::-1] reverses S
+N.reverse()
+for j in range(0, len(S)-1):
+i = len(S) - N[j]
+if i != len(S):
+L[i] = j
+return L
+"""
+Generates F for S, an array used in a special case of the good suffix rule in the Boyer-Moore
+string search algorithm. F[i] is the length of the longest suffix of S[i:] that is also a
+prefix of S. In the cases it is used, the shift magnitude of the pattern P relative to the
+text T is len(P) - F[i] for a mismatch occurring at i-1.
+"""
+def full_shift_table(S):
+F = [0 for c in S]
+Z = fundamental_preprocess(S)
+longest = 0
+for i, zv in enumerate(reversed(Z)):
+longest = max(zv, longest) if zv == i+1 else longest
+F[-i-1] = longest
+return F
+"""
+Implementation of the Boyer-Moore string search algorithm. This finds all occurrences of P
+in T, and incorporates numerous ways of pre-processing the pattern to determine the optimal 
+amount to shift the string and skip comparisons. In practice it runs in O(m) (and even 
+sublinear) time, where m is the length of T. This implementation performs a case-insensitive
+search on ASCII alphabetic characters, spaces not included.
+"""
+def string_search(P, T):
+if len(P) == 0 or len(T) == 0 or len(T) < len(P):
+return []
+matches = []
+# Preprocessing
+R = bad_character_table(P)
+L = good_suffix_table(P)
+F = full_shift_table(P)
+k = len(P) - 1      # Represents alignment of end of P relative to T
+previous_k = -1     # Represents alignment in previous phase (Galil's rule)
+while k < len(T):
+i = len(P) - 1  # Character to compare in P
+h = k           # Character to compare in T
+while i >= 0 and h > previous_k and P[i] == T[h]:   # Matches starting from end of P
+i -= 1
+h -= 1
+if i == -1 or h == previous_k:  # Match has been found (Galil's rule)
+matches.append(k - len(P) + 1)
+k += len(P)-F[1] if len(P) > 1 else 1
+else:   # No match, shift by max of bad character and good suffix rules
+char_shift = i - R[alphabet_index(T[h])][i]
+if i+1 == len(P):   # Mismatch happened on first attempt
+suffix_shift = 1
+elif L[i+1] == -1:   # Matched suffix does not appear anywhere in P
+suffix_shift = len(P) - F[i+1]
+else:               # Matched suffix appears in P
+suffix_shift = len(P) - L[i+1]
+shift = max(char_shift, suffix_shift)
+previous_k = k if shift >= i+1 else previous_k  # Galil's rule
+k += shift
+return matches
+#include <stdint.h>
+#include <stdlib.h>
+#define ALPHABET_LEN 255
+#define NOT_FOUND patlen
+#define max(a, b) ((a < b) ? b : a)
+// delta1 table: delta1[c] contains the distance between the last
+// character of pat and the rightmost occurence of c in pat.
+// If c does not occur in pat, then delta1[c] = patlen.
+// If c is at string[i] and c != pat[patlen-1], we can
+// safely shift i over by delta1[c], which is the minimum distance
+// needed to shift pat forward to get string[i] lined up 
+// with some character in pat.
+// this algorithm runs in alphabet_len+patlen time.
+void make_delta1(int *delta1, uint8_t *pat, int32_t patlen) {
+int i;
+for (i=0; i < ALPHABET_LEN; i++) {
+delta1[i] = NOT_FOUND;
+}
+for (i=0; i < patlen-1; i++) {
+delta1[pat[i]] = patlen-1 - i;
+}
+}
+// true if the suffix of word starting from word[pos] is a prefix 
+// of word
+int is_prefix(uint8_t *word, int wordlen, int pos) {
+int i;
+int suffixlen = wordlen - pos;
+// could also use the strncmp() library function here
+for (i = 0; i < suffixlen; i++) {
+if (word[i] != word[pos+i]) {
+return 0;
+}
+}
+return 1;
+}
+// length of the longest suffix of word ending on word[pos].
+// suffix_length("dddbcabc", 8, 4) = 2
+int suffix_length(uint8_t *word, int wordlen, int pos) {
+int i;
+// increment suffix length i to the first mismatch or beginning
+// of the word
+for (i = 0; (word[pos-i] == word[wordlen-1-i]) && (i < pos); i++);
+return i;
+}
+// delta2 table: given a mismatch at pat[pos], we want to align 
+// with the next possible full match could be based on what we
+// know about pat[pos+1] to pat[patlen-1].
+//
+// In case 1:
+// pat[pos+1] to pat[patlen-1] does not occur elsewhere in pat,
+// the next plausible match starts at or after the mismatch.
+// If, within the substring pat[pos+1 .. patlen-1], lies a prefix
+// of pat, the next plausible match is here (if there are multiple
+// prefixes in the substring, pick the longest). Otherwise, the
+// next plausible match starts past the character aligned with 
+// pat[patlen-1].
+// 
+// In case 2:
+// pat[pos+1] to pat[patlen-1] does occur elsewhere in pat. The
+// mismatch tells us that we are not looking at the end of a match.
+// We may, however, be looking at the middle of a match.
+// 
+// The first loop, which takes care of case 1, is analogous to
+// the KMP table, adapted for a 'backwards' scan order with the
+// additional restriction that the substrings it considers as 
+// potential prefixes are all suffixes. In the worst case scenario
+// pat consists of the same letter repeated, so every suffix is
+// a prefix. This loop alone is not sufficient, however:
+// Suppose that pat is "ABYXCDEYX", and text is ".....ABYXCDEYX".
+// We will match X, Y, and find B != E. There is no prefix of pat
+// in the suffix "YX", so the first loop tells us to skip forward
+// by 9 characters.
+// Although superficially similar to the KMP table, the KMP table
+// relies on information about the beginning of the partial match
+// that the BM algorithm does not have.
+//
+// The second loop addresses case 2. Since suffix_length may not be
+// unique, we want to take the minimum value, which will tell us
+// how far away the closest potential match is.
+void make_delta2(int *delta2, uint8_t *pat, int32_t patlen) {
+int p;
+int last_prefix_index = patlen-1;
+// first loop
+for (p=patlen-1; p>=0; p--) {
+if (is_prefix(pat, patlen, p+1)) {
+last_prefix_index = p+1;
+}
+delta2[p] = last_prefix_index + (patlen-1 - p);
+}
+// second loop
+for (p=0; p < patlen-1; p++) {
+int slen = suffix_length(pat, patlen, p);
+if (pat[p - slen] != pat[patlen-1 - slen]) {
+delta2[patlen-1 - slen] = patlen-1 - p + slen;
+}
+}
+}
+uint8_t* boyer_moore (uint8_t *string, uint32_t stringlen, uint8_t *pat, uint32_t patlen) {
+int i;
+int delta1[ALPHABET_LEN];
+int *delta2 = malloc(patlen * sizeof(int));
+make_delta1(delta1, pat, patlen);
+make_delta2(delta2, pat, patlen);
+i = patlen-1;
+while (i < stringlen) {
+int j = patlen-1;
+while (j >= 0 && (string[i] == pat[j])) {
+--i;
+--j;
+}
+if (j < 0) {
+free(delta2);
+return (string + i+1);
+}
+i += max(delta1[string[i]], delta2[j]);
+}
+free(delta2);
+return NULL;
+}
+/**
+* Returns the index within this string of the first occurrence of the
+* specified substring. If it is not a substring, return -1.
+* 
+* @param haystack The string to be scanned
+* @param needle The target string to search
+* @return The start index of the substring
+*/
+public static int indexOf(char[] haystack, char[] needle) {
+if (needle.length == 0) {
+return 0;
+}
+int charTable[] = makeCharTable(needle);
+int offsetTable[] = makeOffsetTable(needle);
+for (int i = needle.length - 1, j; i < haystack.length;) {
+for (j = needle.length - 1; needle[j] == haystack[i]; --i, --j) {
+if (j == 0) {
+return i;
+}
+}
+// i += needle.length - j; // For naive method
+i += Math.max(offsetTable[needle.length - 1 - j], charTable[haystack[i]]);
+}
+return -1;
+}
+/**
+* Makes the jump table based on the mismatched character information.
+*/
+private static int[] makeCharTable(char[] needle) {
+final int ALPHABET_SIZE = 256;
+int[] table = new int[ALPHABET_SIZE];
+for (int i = 0; i < table.length; ++i) {
+table[i] = needle.length;
+}
+for (int i = 0; i < needle.length - 1; ++i) {
+table[needle[i]] = needle.length - 1 - i;
+}
+return table;
+}
+/**
+* Makes the jump table based on the scan offset which mismatch occurs.
+*/
+private static int[] makeOffsetTable(char[] needle) {
+int[] table = new int[needle.length];
+int lastPrefixPosition = needle.length;
+for (int i = needle.length - 1; i >= 0; --i) {
+if (isPrefix(needle, i + 1)) {
+lastPrefixPosition = i + 1;
+}
+table[needle.length - 1 - i] = lastPrefixPosition - i + needle.length - 1;
+}
+for (int i = 0; i < needle.length - 1; ++i) {
+int slen = suffixLength(needle, i);
+table[slen] = needle.length - 1 - i + slen;
+}
+return table;
+}
+/**
+* Is needle[p:end] a prefix of needle?
+*/
+private static boolean isPrefix(char[] needle, int p) {
+for (int i = p, j = 0; i < needle.length; ++i, ++j) {
+if (needle[i] != needle[j]) {
+return false;
+}
+}
+return true;
+}
+/**
+* Returns the maximum length of the substring ends at p and is a suffix.
+*/
+private static int suffixLength(char[] needle, int p) {
+int len = 0;
+for (int i = p, j = needle.length - 1;
+i >= 0 && needle[i] == needle[j]; --i, --j) {
+len += 1;
+}
+return len;
+}
+ボイヤー-ムーア文字列検索アルゴリズム - Wikipedia

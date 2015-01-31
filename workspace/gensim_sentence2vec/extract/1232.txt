@@ -1,0 +1,13 @@
+						LinuxでオンボードのLANが認識されない
+CUP:Celeron G530
+MB:GA-H61M-DS2
+メモリ:DDR3 1GX2
+電源:600W
+HDD:500G
+これにLinuxをインストールしたのですがオンボードのLANが認識されずに困っています
+どのようにすればLANが使えるようになりますか?
+OS:Red Hat Enterprise Linux 6.1
+カーネル:2.6.32-220.e16.x86_64
+もしオンボードLANが使えないときは、PCIeにネットワークカードを追加すれば使えるようになりますか?
+宜しくお願いします
+LinuxでオンボードのLANが認識されないCUP:Celeron G530MB:GA-H61M-DS2... - Yahoo!知恵袋

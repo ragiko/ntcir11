@@ -1,0 +1,243 @@
+
+interfaceとabstractの特徴と違いを捉える
+今回もPHP話。(正しくないことは @ahomu に教えてもらえると助かりマス)
+PHP5では、interface(インターフェイスの宣言)やabstract(抽象化)が使用できます。これらの説明を読むと、一見して同じような役割を持っているように見えます。
+それは両者とも、メソッドの実装を「インターフェイスを実装したクラス」や、「抽象クラスを継承したクラス」に強制的に任せる機能を持っているからです。これらの挙動は、外見上とても似ています。少なくとも自分はそこで引っかかりました。
+interfaceもabstractも便利なオブジェクト指向機能ですが、使い分けができないと、もったいないです。ありがちな話だと、いつまでもabstract一辺倒で、interfaceの出番が見つからない、とか。
+今回はそのへんを自分の理解を整理しつつ書き留めてみます。
+そもそも、それらはどんな機能なのか?
+interfaceとabstractが、どんな機能なのかまとめなおしてみます。自分は業務だと、普段使ってるのがPHP4だったりするので、これらの機能は活かせません。たまたまJavaのテキストを読んだときに、PHP4のオブジェクト指向関連機能の窮屈さを感じて、別腹でPHP5から使える実装方法を自習してました。
+interfaceとは
+PHP: オブジェクト インターフェイス - Manual
+interface Communication
+{
+// インターフェイスでは、実装を伴うメソッドやプロパティの宣言はできない
+public function talk();
+public function touch();
+public function gesture();
+}
+class Human implements Communication
+{
+public function talk()
+{
+// 話す
+}
+public function touch()
+{
+// 触る
+}
+public function gesture()
+{
+// 身振り手振り
+}
+}
+定義したinterfaceは、implements演算子によってクラスに実装されます。この際、クラスはインターフェイスで宣言されたメソッドをすべて実装しなくてはいけません。
+例では、Communicationインターフェイスで宣言されたtalk・touch・gestureの各メソッドを、Humanクラスで実装しています。Humanは、Communication手段を備えていなければならない、という前提をCommunicationインターフェイスの実装が強制しています。
+ほんとは、返り値の型も強制できたらいいんですけどね。Interfaceはクラスではないので、インスタンス化はもちろんできません。
+abstractとは
+PHP: クラスの抽象化 - Manual
+abstract Human
+{
+abstract public function getSkinColor();
+public function punch()
+{
+echo '殴る';
+}
+public function kick()
+{
+echo '蹴る';
+}
+}
+class Caucasoid extends Human
+{
+public function getSkinColor()
+{
+return 'white';
+}
+}
+class Negroid extends Human
+{
+public function getSkinColor()
+{
+return 'black';
+}
+}
+class Mongoloid extends Human
+{
+public function getSkinColor()
+{
+return 'yellow';
+}
+}
+$Ahomu = new Mongoloid();
+$Ahomu->kick(); // 蹴る
+$skinColor = $Ahomu->getSkinColor();
+echo $skinColor; // yellow
+$Human = new Human();
+// abstractクラスは、インスタンスを生成できないのでエラーになる
+ちょっと例が微妙(プロパティで良いじゃん)ですが、こんな感じ。
+抽象クラス(abstrastクラス)を継承したサブクラスは、抽象クラス内でabstract宣言されたメソッドを、すべて実装しなくてはいけません。
+例では、Humanクラスで宣言されたgetSkinColorメソッドを、Caucasoid・Negroid・Mongoloidクラスが実装しています。各クラスは、抽象クラスを継承しているので、Humanクラスで実装されているpunch・kickの両メソッドも使用できます。
+抽象クラスはクラスですが、直接インスタンスを生成することはできません。クラスの継承は普通にできるので、サブクラスにメソッドを与えることができます。
+抽象クラスは、サブクラスにメソッドの実装を強制できる上に、共通処理になるメソッドは、サブクラスに分け与えることが出来るので、インターフェイスより便利に見えなくもありません。
+そこでinterfaceとabstractは何が違うのか?
+interfaceとabstractを同時に使ったサンプルコードで比較してみます。abstractは根本的には継承の一種であり、interfaceは必要性の宣言であることを意識します。
+// コミュニケーション
+interface Communication
+{
+// 話す
+public function talk();
+// 聞く
+public function hear($words);
+}
+// 生物
+abstract class Creature
+{
+abstract public function eat();
+public function sleep()
+{
+// おやすみなさい
+}
+}
+// ヒューマン
+class Human extends Creature implements Communication
+{
+public function talk()
+{
+echo 'こんにちは';
+}
+public function hear($words)
+{
+// 耳で聞く
+}
+public function eat()
+{
+echo 'かゆうま';
+}
+}
+// エイリアン
+class Alien extends Creature implements Communication
+{
+public function talk()
+{
+echo '█████!?';
+}
+public function hear($words)
+{
+// 頭頂部で聞く
+}
+public function eat()
+{
+echo 'ヒトうま';
+}
+}
+// ロボット
+class Robot implements Communication
+{
+public function talk()
+{
+echo 'ガガピー';
+}
+public function hear($words)
+{
+// 内蔵マイクで聞く
+}
+}
+interfaceとabstractは、クラスに役割を強制するだけの機能ではありません。さらに2つを並べて比べてみると、機能の使用意図として、両者の立場がまるで違うことが分かります。
+抽象化(abstract)された、Creatureクラスは量産性と共通性を示します。生物に「喰う(eat)」「寝る(sleep)」という基本機能を定義しています。ただし、eatメソッドは生物によって主食が異なるので、生物ごとに実装を預けています。抽象化が入っている点以外は、普通のクラスの継承と何ら変わりない考え方です。
+インターフェイスは、Communicationの手段を宣言します。外部からは、HumanやAlien、RobotをCommunication可能なものとして同じように扱うために、インターフェイスで宣言されたメソッドが利用されます。
+Communicationインターフェイスで宣言されたメソッドを持たないと、HumanやAlienは互いのコミュニケーションを成立できません。反面、それらを実装さえしていれば、HumanやAlienのようなCreatureであろうと、全く別モノのRobotであろうと、Communicationインターフェイスで同じように、コミュニケーションできます。
+abstractとinterfaceは似てるけど別モノ
+abstractとinterfaceは、文字に起こすと似た機能を持っていますが、そもそもabstractはクラス継承の一環であり、interfaceはそれとは全く異なります。だからこそ、extendsとimplementsで併用できるわけですね。
+abstractはクラス継承の延長線上でそのまま捉えてしまって良いと思いますが、interfaceの考え方は特に気をつけて理解する必要があるようです。
+ここまでの内容を踏まえて、自分なりの使い分けのキモはこんな感じです。
+abstract
+複数の派生先クラスで、一部の実装が異なる場合。
+interface
+不特定のクラスを共通の方法で、取り扱えるようにしたい場合。
+混乱したときには、デザインパターンを例にした好例があるので、下記の参考URLを見ると良い感じです。
+参考URLの内容は、元々書籍だったのですが、絶版に伴ってウェブ上のコンテンツとして公開されています。書籍のを持っていますが、自分のオブジェクト指向に関する初学本でした。おすすめ。
+デザインパターンの参考URL
+abstractの好例 - Template Method - GoFデザインパターン〜STEP1:まずはここから - PHPによるデザインパターン入門 - Do You PHP?
+interfaceの好例 - Factory Method - GoFデザインパターン〜STEP2:少し慣れたら - PHPによるデザインパターン入門 - Do You PHP?
+書籍「PHPによるデザインパターン入門」の原稿テキストを公開します - Do You PHP はてな
+Amazon.co.jp: PHPによるデザインパターン入門: 下岡 秀幸, 道端 良, 畑 勝也: 本
+以下、interfaceやabstractの例(蛇足)
+もう少し、interfaceとabstractを使った宣言・実装の方法を例示してみます。
+継承によるインターフェイスの実装
+// ヒーローの条件
+interface Hero
+{
+public function fly();
+public function beam();
+public function punch();
+public function kick();
+public function withHeroine();
+}
+// ただの人
+class Human
+{
+public function punch()
+{
+// 殴る
+}
+public function kick()
+{
+// 蹴る
+}
+}
+// スーパーマン
+class SuperMan extends Human implemtns Hero
+{
+public function fly()
+{
+// 飛ぶ
+}
+public function beam()
+{
+// ビーム
+}
+public function withHeroine()
+{
+// ヒロインがいる!
+}
+}
+Implementsは継承によって、実装を満たしていても構いません。
+HeroがHeroとして扱われるためには、飛行(fly)・ビーム(beam)・パンチ(punch)・キック(kick)・ヒロインがいる(withHeroine)の計5つのメソッドを要求されています。Humanの時点で2メソッドを実装し、SuparManになった時点で残りの3メソッドを実装することで、最終的にHeroインターフェイスの要件を満たしています。
+手軽にインターフェイスを満たす、装飾クラス
+// 悪役の条件
+interface Heel
+{
+public function desire();
+public function violence();
+public function madness();
+}
+// 悪い人の素養
+abstract class Karman
+{
+public function desire()
+{
+// 欲望
+}
+public function violence()
+{
+// 暴力
+}
+public function madness()
+{
+// 頭のネジの緩み
+}
+}
+// 悪い人
+class Human extends Karman implements Heel
+{
+}
+インターフェイスを満たすためだけの、装飾用クラスをつくっても良いと思います。
+Karmanを継承することで、Humanは簡単にHeelインターフェイスの条件を満たします。Humanでなくとも、どんな生物でも、Karmanを継承すればHeelになれる可能性を持っています。
+使って慣れて、感覚で理解すること
+最終的には、そういうことなのだと思います。文字に頑張って書き起こそうとすると、理解できるようになっていたつもりなのに、また混乱しそうでした。ここまでの内容も、interfaceとabstractを正しく説明できてるのか、あまり自信ないです。:-(
+PHP4ばっかりやってた身から考えると、PHP5には、今回のオブジェクト指向関連だけでなく、SPLだとか、5.3になればActiveRecordだとか、面白い機能が沢山ありますね。またメモエントリーします。
+tagPHP
+tagオブジェクト指向
+tagデザインパターン
+PHPのinterfaceとabstractを正しく理解して使い分けたいぞー ::ハブろぐ

@@ -1,0 +1,56 @@
+この例では、PID 調整器のツールを使用して良好な外乱抑制性能をもつ PI コントローラーを設計する方法を示します。また、良好な外乱の抑制と設定値追従の両方を達成する ISA-PID コントローラーの設計法を説明します。
+初期 PID 設計をもつ PID 調整器の起動プラント モデルは以下のようになります。
+G = zpk(-5,[-1 -2 -3 -4],6,'OutputDelay',1);
+G.InputName = 'u';
+G.OutputName = 'y';
+次のコマンドを使用して PID 調整器を起動し、プラント G のための並列型 PI コントローラーを設計します。pidtool(G,'pi')
+PID 調整器により、初期 PI コントローラーが自動的に設計されます。[パラメーターを表示する] ボタンをクリックして、コントローラーのゲインと性能の判定基準を表示します。
+ステップ設定値追従では、整定時間は約 12 秒、オーバーシュートは約 6.3 パーセントで、この例では許容範囲にあります。外乱の抑制に対する PID の調整ステップ外乱は、プラント入力で発生すると想定されます。PI コントローラーの主な目的は、この外乱をすばやく抑圧することです。この節の残りの部分では、PID 調整器でより優れた外乱抑制を行う PI コントローラーを設計する方法を示します。また、外乱の抑制性能が向上するにつれて、設定値追従性能が低下すると予想されます。低周波数外乱の減衰は積分ゲイン Ki に反比例するため、積分ゲインを最大化することは、外乱の抑制に優れた PI コントローラーを得るための有益な経験則です。詳細は、Karl Astrom et al., "Advanced PID Control", Chapter 4 "Controller Design", 2006, The ISA Society を参照してください。[プロットの追加] をクリックし、[入力外乱の抑制] を選択してから [追加] をクリックして、入力外乱のステップ応答をプロットします。ピーク偏差は約 1 で、約 9 秒で 0.1 未満になります。
+設定値追従と入力外乱応答の両方を表示するには、プロットを並べて表示します。応答速度 (開ループ帯域幅) を高めるため、応答時間スライダーを右に動かします。コントローラー パラメーター テーブルの Ki ゲインはまず上がってから下がります。最大値は 0.3 です。Ki が 0.3 になると、ピーク偏差は 0.9 に下がります (約 10% 向上)。そして、約 6.7 秒後に 0.1 未満に整定します (約 25% 向上)。
+帯域幅を上げたため、ステップ設定値追従応答は、より大きく振動します。また、オーバーシュートは 15% を超え、通常は許容範囲外となります。設定値追従と外乱の抑制との間にはこうした性能上のトレードオフがよく見受けられますが、これは単一の PID コントローラーでは両方の設計目標が同時に達成できないためです。[エクスポート] をクリックして、設計した PI コントローラーを MATLAB ワークスペースにエクスポートします。コントローラーは PID オブジェクトによって表現され、次のセクションで ISA-PID コントローラーを作成する際に必要となります。
+pid コマンドを使用すれば、MATLAB ワークスペースで同じ PI コントローラーを手動で作成することもできます。このコマンドで、PID 調整器のパラメーター テーブルで取得した Kp ゲインや Ki ゲインを直接指定できます。C = pid(0.64362,0.30314);
+C.InputName = 'e';
+C.OutputName = 'u';
+C
+C =
+1 
+Kp + Ki * ---
+s 
+with Kp = 0.644, Ki = 0.303
+Continuous-time PI controller in parallel form.
+PID コントローラーの ISA-PID コントローラーへの拡張設定値追従と外乱の抑制の両方について PI コントローラーの性能を高める簡単な解決法は、ISA-PID コントローラーにアップグレードすることです。このコントローラーは、基準信号の比例アクションへの影響を独立に制御できる追加の調整パラメーター b が提供されることで、設定値追従応答が向上しています。
+上記の ISA-PID 構造では、フィードバック コントローラー C とフィードフォワード フィルター F があります。この例では、C は、PID オブジェクトで表現可能な標準の並列 PI コントローラーです。
+F は、C のゲイン Kp と Ki に加え、設定値の重み b を用いるプレフィルターです。
+したがって、ISA-PID コントローラーには、入力が 2つ (r および y)、出力が 1 つ (u) あります。設定値の重み b は 0 ～ 1 の実数です。これが減少すると、設定値追従応答におけるオーバーシュートが小さくなります。この例では、b は 0.7 が選択されています。b = 0.7;
+% The following code constructs an ISA-PID from F and C
+F = tf([b*C.Kp C.Ki],[C.Kp C.Ki]);
+F.InputName = 'r';
+F.OutputName = 'uf';
+Sum = sumblk('e','uf','y','+-');
+ISAPID = connect(C,F,Sum,{'r','y'},'u');
+tf(ISAPID)
+ans =
+From input "r" to output "u":
+0.4505 s^2 + 0.5153 s + 0.1428
+------------------------------
+s^2 + 0.471 s
+From input "y" to output "u":
+-0.6436 s - 0.3031
+------------------
+s
+Continuous-time transfer function.
+性能の比較ISA-PID コントローラーでは、オーバーシュートがずっと小さくなっています。これは、設定値の重み b によりオーバーシュートが削減されるためです。% Closed-loop system with PI controller for reference tracking
+sys1 = feedback(G*C,1);
+% Closed-loop system with ISA-PID controller
+sys2 = connect(ISAPID,G,{'r','u'},'y');
+% Compare responses
+step(sys1,'r-',sys2(1),'b.');
+legend('show','location','southeast')
+title('Reference Tracking')
+設定値の重み b は設定値追従のみに影響するため、外乱の抑制応答は同じです。% Closed-loop system with PI controller for disturbance rejection
+sys1 = feedback(G,C);
+% Compare responses
+step(sys1,'r-',sys2(2),'b.');
+legend('PID','ISA-PID');
+title('Disturbance Rejection')
+PID 調整器を使用した外乱の抑制用 PID の設計 - MATLAB & Simulink - MathWorks 日本

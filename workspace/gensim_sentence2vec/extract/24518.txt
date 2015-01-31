@@ -1,0 +1,23 @@
+
+条件式の中でカラムに含まれる値がnullかどうかを調べたい場合はIS NULL句を使います。ここではIS NULL句の使い方について解説します。
+IS NULL句を使用する場合の書式は次の通りです。
+SELECT カラム名 , ... FROM テーブル名 WHERE カラム IS NULL;
+カラムの値がNULLのデータだけを取得します。IS NULLの代わりにISNULLも使用できます。
+またカラムの値がNULLではないデータを取得するにはIS NOT NULL句を使います。
+SELECT カラム名 , ... FROM テーブル名 WHERE カラム IS NOT NULL;
+カラムの値がNULLではないデータだけを取得します。IS NOT NULLの代わりにNOTNULLやNOT NULLも使用できます。
+----
+では実際に試してみます。次のようなテーブルを作成しました。
+create table user(id integer, name text, address text);
+いくつかのデータが格納されています。取得するデータの条件を指定しないでデータを取得した場合は次のようになります。「address」カラムにnullが格納されているデータがあります。
+select * from user;
+それではIS NULL句を使って「address」カラムの値にnullが含まれているデータだけを取得してみます。
+select * from user where address is null;
+カラムにnullが含まれているデータを取得することができました。今度はIS NOT NULL句を使って先ほどとは逆にカラムの値がnullではないデータを取得してみます。
+select * from user where address is not null;
+カラムにnullが含まれていないデータを取得することができました。
+なお「=」演算子を使ってカラムの値をnullと比較しても正しい結果はかえってきません。次の例を見て下さい。2つのSELECT文を実行しています。
+select * from user where address = null;
+select * from user where not address = null;
+カラムの値がnullと等しい場合と等しくない場合でそれぞれ条件式を記述していますが、どちらの場合もデータは1件も帰ってきません。このように直接カラムの値をnullと等しいかどうか比較することはできませんのでご注意下さい。
+値がNULLのものを取得(IS NULL句) - SQLite入門

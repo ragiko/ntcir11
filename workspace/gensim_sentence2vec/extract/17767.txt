@@ -1,0 +1,62 @@
+ 形態素解析するときは未知語の扱いに注意
+Java, NLP
+僕が全文検索システムを作るときに使っている方法は、
+Senでテキストを形態素に分解して、FULLTEXTインデックスを張ったMySQLのMyISAMテーブルに突っ込む。
+LuceneにJapaneseAnalyzer(Sen)を組み合わせて使う。
+のどちらかです。MySQL+FULLTEXTよりLuceneの方が高パフォーマンスなので最近はLuceneばかり使ってますが、いずれにしてもSenによる形態素解析処理が必要になります。
+N-gramではなく形態素解析を選ぶ以上、多少の検索漏れの発生は我慢しないといけない訳ですが、「さすがにそれはまずいだろ」と思っていることがあるので書きます。それは未知語の扱いです。
+Senの場合(他の形態素解析エンジンでも同様だと思いますが)、辞書にない語句入力が長々と続いた場合に、その語句群全体を1つの未知語として切り出します。この結果を素直に全文インデックスに入れてしまうと、部分語を検索キーワードとして使っても、全くヒットしない状態になってしまいます。
+例えば、Senは「シミュレーテッドアニーリング」を全体で1つの未知語と見なすので、「シミュレーテッドアニーリング」を含む文書は「アニーリング」で検索してもヒットしません。これは「東京都」が「京都」でヒットしないこととは別問題で、さすがに良くないと思います。
+そこで僕は、デフォルトでは形態素解析を使って、未知語に遭遇したときだけN-gram扱いにするハイブリッド方式が有効なのかなと思っています。以下は、Lucene用のSenトークナイザをこの方式で拡張したものです(unigramを使用)。
+package com.kaiseh.search.impl;
+import java.io.IOException;
+import java.io.Reader;
+import net.java.sen.StreamTagger;
+import org.apache.lucene.analysis.Token;
+import org.apache.lucene.analysis.Tokenizer;
+/**
+* @author Kaisei Hamamoto
+*/
+public class HybridTokenizer extends Tokenizer {
+private static final String POS_UNKNOWN = "未知語";
+private StreamTagger tagger = null;
+private net.java.sen.Token ukToken = null;
+private int ukOffset = -1;
+public HybridTokenizer(Reader in, String configFile) throws IOException {
+input = in;
+tagger = new StreamTagger(input, configFile);
+}
+public Token next() throws IOException {
+if(ukToken != null) { // 未知語処理中
+if(ukOffset < ukToken.getBasicString().length()) {
+ukOffset++;
+return new Token(
+ukToken.getBasicString().substring(ukOffset - 1, ukOffset),
+ukToken.start() + ukOffset - 1, 
+ukToken.start() + ukOffset, ukToken.getPos());
+}
+else {
+ukToken = null;
+}
+}
+if(!tagger.hasNext()) {
+return null;
+}
+net.java.sen.Token token = tagger.next();
+if(token == null) {
+return next();
+}
+if(POS_UNKNOWN.equals(token.getPos())) { // 未知語処理開始
+ukToken = token;
+ukOffset = 1;
+return new Token(token.getBasicString().substring(0, 1), 
+token.start(), token.start() + 1, POS_UNKNOWN);
+}
+else {
+return new Token(token.getBasicString(), token.start(), token.end(), token.getPos());
+}
+}
+}
+ツイートする
+Permalink | コメント(0) | トラックバック(0) | 11:54   
+形態素解析するときは未知語の扱いに注意 - kaisehのブログ

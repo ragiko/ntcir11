@@ -1,0 +1,5 @@
+ jQuery Mobileは、jQueryを拡張するライブラリ(プラグイン)の一種で、名前の通り、スマホ/タブレットに代表されるモバイル対応アプリを開発するための機能を提供します。jQuery Mobileの導入方法や使い方、jQuery Mobileが提供する主要機能については、「jQuery Mobile逆引きリファレンス: jQuery Mobileを利用するには?」を参照してください。
+jQuery MobileはjQueryをベースにしていることから、自前でコードを記述しなければならない局面でも、jQueryで養った知識をほぼそのままに活用できます。「ほぼ」とは、jQuery Mobile固有の注意しなければならないポイントもあるということです。本稿では、その中でもフォームを操作する際の注意点にフォーカスして解説していきます。
+フォーム要素の値を変更する
+JavaScript(jQuery)コードでフォーム要素の値を変更するには、valメソッドを利用します。
+jQuery Mobile: JavaScriptからフォーム要素を操作するには? - Build Insider

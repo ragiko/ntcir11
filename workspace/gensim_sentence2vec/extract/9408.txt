@@ -1,0 +1,207 @@
+PerlとJavaScriptの文法・関数対応表
+Perlをある程度マスターした後にJavaScriptを学習する人向けのテキストです。Perlでできたことを、JavaScriptではどのように記述するのかということがわかる資料になっています。
+JavaScriptの実行
+<script type="text/javascript">//<![CDATA[
+// JavaScriptのソースコード
+//]]</script>
+これを「ファイル名.html」という名前で保存して、Internet Explorer、Fire Fox、Safari、Google ChromeなどのWebブラウザで開くだけです。
+ただ練習のために記述するだけなら以下のように記述するのが楽でしょう。
+<script>
+// JavaScriptのソースコード
+</script>
+Hello World
+# Perl
+print "Hello World!";
+// JavaScript
+alert("Hello World!");
+Hello Worldと表示するにはalert関数を使用します。ダイアログが表示されその中に「Hello World!」と表示されます。
+複雑なデータのダンプ
+# Perl
+my $data = {name => 'Ken', age => 19};
+use Data::Dumper 'Dumper';
+print Dumper $data;
+//JavaScript
+var data = {name : "Ken", age : 19};
+alert(JSON.stringify(data));
+複雑なデータはJSONオブジェクトのstringifyメソッドを使ってJSONにしてから出力するのが簡単です。(IEの場合は8以降の標準レンダリングモードで利用できます。)
+変数宣言
+# Perl
+my $num = 1;
+// JavaScript
+var num = 1;
+JavaScriptの変数宣言はvarで行ないますが、Perlと異なり注意しなければならないことは、トップレベルで宣言された変数はスコープを持たずグローバル変数になるということです。関数内で定義されたときだけ、スコープを持ちます。JavaScriptではグローバル変数はwindowオブジェクトに保存されています。
+<script>
+// トップレベルで宣言された変数はグローバル変数になる
+var num = 5;
+alert(window.num); // 5 と表示
+// 関数内で宣言された変数はスコープを持つ
+function sum (x, y) {
+var total = x + y;
+return total;
+}
+</script>
+関数
+# Perl
+sub sum {
+my ($x, $y) = @_;
+my $total = $x + $y;
+return $total;
+}
+print sum(1, 2);
+// JavaScript その1
+function sum (x, y) {
+var total = x + y;
+return total;
+}
+alert(sum(1, 2));
+// JavaScript その2
+var sum = function(x, y) {
+var total = x + y;
+return total;
+}
+alert(sum(1, 2));
+関数の定義はfunctionを使って行います。JavaScriptには2とおりの関数定義の方法があります。ひとつ目は関数を定義する方法で、二つ目は関数オブジェクトを変数に代入する方法です。どちらも同じ方法で関数を呼び出すことができます。
+JavaScriptの関数がPerlのサブルーチンと異なる大きな点は、Perlのサブルーチンがスコープを持たずグローバルなものであるのに対して、JavaScriptの関数はスコープを持つということです。
+# Perlのサブルーチンはスコープを持たずにグローバル
+sub func1 {
+sub func2 {
+return 5;
+}
+}
+print func2; # func2が見える。
+// JavaScriptの関数はスコープを持つ
+function func1() {
+function func2() {
+return 5;
+}
+}
+alert(func2()); // ここでは見えずにエラーになる。
+つまりPerlではサブルーチンにスコープを持たせるためには、無名サブルーチンを利用する必要がありましたが、JavaScriptではその必要はないということです。
+条件分岐
+# Perl
+my $num = 4;
+if ($num == 4) {
+}
+elsif ($num == 5) {
+}
+else {
+}
+// JavaScript
+var num = 4;
+if (num === 4) {
+alert(4);
+}
+else if (num === 5) {
+}
+else {
+}
+条件分岐で異なる部分はPerlのelsifが、JavaScriptではelse ifになっているところだけです。
+比較演算子
+文字列
+文字列の長さ
+# Perl
+length $str;
+# JavaScript
+str.length
+文字列の結合
+# Perl
+$str1 . $str2
+# JavaScript
+str1 + str2
+文字列の切り出し
+# Perl
+substr($str, $start, $length);
+# JavaScript
+str.substring(start, length)
+文字列の検索(前方)
+# Perl
+index($str, $substr, $pos);
+# JavaScript
+str.indexOf(str, substr, pos); 
+大文字小文字の変換
+# Perl
+my $ret = uc $str;
+my $ret = lc $str;
+# JavaScript
+var ret = str.toUpperCase();
+var ret = str.toLowerCase();
+文字列の検索(後方)
+# Perl
+rindex($str, $substr, $pos);
+# JavaScript
+str.lastIndexOf(str, substr, pos); 
+指定した文字での文字列の分割
+# Perl
+split(/,/, $str);
+# JavaScript
+str.split(/,/);
+比較演算子
+文字列比較
+# Perl
+$str1 eq $str2
+# JavaScript
+str1 === str2
+数値比較
+# Perl
+$str1 == $str2
+# JavaScript
+str1 === str2
+正規表現
+パターンマッチ
+# Perl
+$str =~ /$regex/;
+# JavaScript
+str.match(/regex/)
+置換
+# Perl
+$str =~ s/$regex/$replace_str/;
+# JavaScript
+str.replace(/regex/,replace_str)
+その他
+オブジェクトの比較
+# Perl
+my $type = ref $obj;
+# JavaScript
+var type = typeof obj;
+値は以下のとおり。配列もobjectとして返されることに注意してください。
+typeof 1            = number
+typeof 'Hello'      = string
+typeof true         = boolean
+typeof null         = object
+typeof NaN          = number
+typeof undefined    = undefined
+typeof オブジェクト = object
+typeof 配列         = object
+typeof 関数         = function
+おまけ
+Perlな人がJavaScriptを使うと間違うところをいくつか解説。
+オブジェクト(連想配列)の最後のカンマはつけてはいけない
+古いIEでは最後のカンマをつけると動かなくなります。
+# JavaScript
+# 以下は最後にカンマがあるので古いIEでは動かない
+var obj = {
+name : "ken",
+age : 19,
+}
+returnの後ろには必ず何らかの式を置くこと
+# 以下は動きません
+return 
+{
+message : "Hello"
+};
+# 以下は動く
+return {
+message : "Hello"
+};
+配列をfor inではなくforでループさせること
+JavaScriptでは配列はforでループさせましょう。for in 構文はオブジェクトのためにあります。
+var array = [1, 2, 3];
+for (var i = 0; i < array.length; i++) {
+}
+# 以下は間違い
+for (var i in array) {
+}
+Webアプリケーション基礎へ
+ツイートする
+Permalink | コメント(5) | トラックバック(0) | 12:01
+PerlとJavaScriptの文法・関数対応表 - サンプルコードによるPerl入門 〜 安定と信頼のPerlを学ぼう 〜

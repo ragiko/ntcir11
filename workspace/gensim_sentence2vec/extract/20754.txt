@@ -1,0 +1,165 @@
+間違った記述が含まれている可能性があるので自己責任でお使いください.
+修正すべき箇所を教えてくださるとうれしいです.
+詳細まで動作確認をおこなっておりません.
+ここでは音声認識時などに,雑音を誤って受理しないための一つの方法を述べます.
+手法は,音声と雑音をそれぞれGMMでモデル化し,音声認識時にそれらのモデルの尤度を比べることで,
+音声か雑音かを判定し,音声ならば認識を行います.
+使用ツール
+wavesurfer
+HTK
+Julius(音声認識時のみ,GMMを作成する分には不要)
+作成手順
+音声・雑音ファイルの準備
+まず,wav ディレクトリを作成します.
+$ mkdir wav 
+$ ls 
+. .. wav
+wav ディレクトリにモデル化するための学習データを格納します.
+音声ファイル・雑音ファイルそれぞれwav形式とします.
+wavesurferによる録音・保存でもいいですし,
+元々音声,雑音が手元にあるかたならば,それを用いてください.
+wavディレクトリ以下に保存します.
+下記はwavsurfer で録音したときのスクリーンショットです.
+前半に雑音(ぴー),後半に音声をいれています.
+何種類かの音声を録音・保存してください.
+雑音を学習しやすいようにデータ中に故意に雑音をいれてもみてもいいです.
+(例:「ガタン」,「ふー」,「おっほん」など.)      
+上記の操作により,100のwav ファイルができたとします.
+それぞれの名前は,1.wav, 2.wav ,... 100.wavとします.
+$ ls ./wav 
+1.wav 2.wav   ... 10.wav ... 99.wav 100.wav 
+タグづけ
+ここでは,先ほど録音したwav ファイルのどの部分が"音声"区間で,どの部分か,"雑音"区間なのか,
+計算機がわかるように,個々のファイルにそれぞれの区間をタグづけします.
+まずタグづけ結果のファイルを格納するディレクトリを作成しておきます.
+$ mkdir label 
+$ ls label 
+. ..
+wavesurferで先ほど作成したwavファイルを開いて,
+音声区間と雑音区間のラベルづけをします.
+ラベルづけのためにwavesurferを開くときは[HTK transcription]を選択してください.
+雑音部分のスペクトラムをドラッグし,.labバー上で右クリックし,[insert label]で"noise"といれます.
+同様に音声部分のスペクトラムをドラッグし,.labバー上で右クリックし,[insert label]で"voice"といれます.
+下記のようになります.	
+この状態でlabel/ディレクトリに*.labの名前で保存します.
+1.wav から,1.labを作成,のようにwav ファイルとlabファイルの拡張子以外のファイル名は一致させておいてください.
+雑音だけのwav ファイル,音声だけのwav ファイルを扱うひとは,
+上記のようなタグづけは必要なく,
+label ファイルに"noise"だけ,"voice"だけを記述しておけばよかったと思います(ほんまか?).
+$ ls ./label 
+1.lab 2.lab   ... 10.lab ... 99.lab 100.lab 
+特徴量抽出
+音声ファイル*.wavからMFCCの特徴を抽出し, *.mfcファイルに入れます.
+まず,*.mfc を格納するディレクトリを作成しておきます.
+$ mkdir mfcc
+ここで抽出するMFCCの特徴はMFCC_E_D_Z:26次元とします.
+HTKのHCopyコマンドを用います.
+HCopy -C config.hcopy \
+-S script.hcopy 
+config.hcopy : 抽出する特徴を指定
+script.hcopy : 特徴抽出の入力ファイルと出力ファイルを指定
+これにより,wav/ディレクトリのwav ファイルから,MFCC/の特徴量が抽出され,
+mfccファイルに格納されます.
+(入力ファイルと出力先の設定はscript.hcopyに記述します)
+$ ls ./mfcc 
+1.mfc 2.mfc   ... 10.mfc ... 99.mfc 100.mfc 
+GMMの初期モデル作成
+1状態8混合で構成します.
+HMMの場合は3状態が多いですが,
+GMMの場合は1状態です.
+GMMなのにNumStatesタグにおいて3と指定しているのは,
+HTKではシンボルを出力しない初期状態と終了状態を設ける必要があるからです.
+もしHMMになると,NumStatesタグには5を指定します(たぶん).
+voice.gmm
+noise.gmm
+を作成し(コピペでおしまい),
+proto/以下においておきます
+$ ls ./proto 
+noise.gmm voice.gmm
+GMMの初期化(?)と学習
+*.labと*.mfcを用いてnoise.gmm, voice.gmm の初期化・学習を行なう.
+このときにMFCC_E_D_ZからMFCC_E_D_N_Z: 25次元に変換
+以下のようなスクリプトになる.
+#!/bin/sh
+# initialize a voice gmm
+HInit -T 1 \
+-S trainlist.txt \
+-M gmm0 \
+-H proto/voice.gmm \
+-l voice \
+-L label voice \
+-C train.conf
+# initialize a noise gmm
+HInit -T 1 \
+-S trainlist.txt \
+-M gmm0 \
+-H proto/noise.gmm \
+-l noise \
+-L label noise \
+-C train.conf
+# training a voice gmm
+HRest -T 1 \
+-S trainlist.txt \
+-M gmm1 \
+-H gmm0/voice.gmm \
+-l voice \
+-L label voice \
+-C train.conf
+# training a voice gmm
+HRest -T 1 \
+-S trainlist.txt \
+-M gmm1 \
+-H gmm0/noise.gmm \
+-l noise \
+-L label noise \
+-C train.conf
+cat gmm1/* > gmmsdef
+trainlist.txt : .MFCファイルのリスト
+train.conf : MFCC_E_D_ZからMFCC_E_D_N_Z: 25次元へ変換するための設定ファイル
+結局できあがったGMMは,gmm1/noise.gmm とgmm1/voice.gmmであり,それをまとめたのがgmmsdefです.
+最終的に下記のようなディレクトリ構成になると思います.
+.	
+|-- config.hcopy
+|
+|-- gmm0
+|   |-- noise.gmm
+|   `-- voice.gmm
+|
+|-- gmm1
+|   |-- noise.gmm
+|   `-- voice.gmm
+|
+|-- label
+|   |-- 1.lab
+|   |-- 2.lab
+|   |-- ~~~~
+|   `-- 100.lab
+|
+|-- labellist.txt
+|-- makeGMM.sh
+|-- mfcc
+|   |-- 1.mfc
+|   |-- 2.mfc
+|   |-- ~~~
+|   `-- 100.mfc
+|
+|-- proto
+|  |-- noise.gmm
+|   `-- voice.gmm
+|
+|-- script.hcopy
+|-- train.conf
+|-- trainlist.txt
+`-- wav
+|-- 1.wav
+|-- 2.wav
+|-- ~~~
+`-- 100.wav
+Juliusで音声認識時のnoise区間棄却
+julius -C Sample.conf -input mic -gmm gmmsdef -gmmreject "noise"
+これは,GMMとして,gmmsdef (voice とnoiseのGMMを入ったもの)を用いて,
+noiseのGMMの尤度が高いとき棄却してください,
+という意味です.
+Back To Katsumaru's Top page
+Back To Member page
+雑音棄却用GMMの作成方法

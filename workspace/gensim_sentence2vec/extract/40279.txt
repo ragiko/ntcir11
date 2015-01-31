@@ -1,0 +1,100 @@
+NTT オープンソースソフトウェアセンタ 板垣 貴裕
+スロークエリ (時間のかかるSQL) を発見するまでの手順を解説します。スロークエリ分析と改善は以下の流れで行うことになります。この記事では主に 1. のスロークエリの特定方法について解説します。2.については『スロークエリの改善』を参考にしてください。
+どのSQLが遅いのかを見つける。
+そのSQLがなぜ時間がかかるのかを判断する。
+設定パラメータ、SQL、スキーマなどを改善する。
+着目したSQLの性能を再測定し、2. から繰り返す。
+着目したSQLのチューニングが完了したら、他のボトルネックを探すため 1. から繰り返す。
+スロークエリの見つけ方
+スロークエリを見つけるには、大きく分けて統計情報ビューを使う方法と、サーバログを使う方法の2つがあります。統計情報ビューを使う方法は PostgreSQL 8.4 以降でしか利用できませんが、分析が容易なため可能ならばこちらを使いましょう。一方、サーバログを使う方法はすべてのバージョンで利用できます。
+方式1: 統計情報ビュー
+(8.4以降) 実行されたSQLの履歴を確認できる統計情報ビューを使って特定する方法です。
+方式2: サーバログへスロークエリを出力する
+(全バージョン) 時間のかかったクエリをサーバログに出力させ、集計してスロークエリを特定する方法です。
+方式1: 統計情報ビュー
+統計情報ビューを使う方式は PostgreSQL 8.4 以降でしか利用できませんが、サーバログ経由で解析する方法に比べて手間がかかりません。新しい PostgreSQL を利用しているのであれば、まずはこちらの方式を試してみてください。以下の2つのビューを使ってプロファイリングすることができます。
+pg_stat_user_functions
+ストアド・プロシージャを利用している場合に使います。
+contrib/pg_stat_statements
+SQLを直接利用している場合に使います。
+pg_stat_user_functions
+ストアド・プロシージャ (関数) のプロファイリングを行うビューです。関数ごとに以下の情報を取得できます。total_time と self_time は複数回実行した累積値ですので、calls で割ると「1回あたりの平均時間」が計算できます。
+funcid, schemaname, funcname : 関数のID
+calls : 実行回数
+total_time : 関数全体の実行時間 (単位 / 精度 = ミリ秒)
+self_time : 他の関数呼び出しを含まない実行時間 (単位 / 精度 = ミリ秒)
+出力のサンプルを以下に示します。proc_3 はそれ自身の処理時間は短く (5ms)、その中で呼び出している他の関数で時間がかかっている (76 - 5 = 71ms) ことが分かります。self_time の大きな関数はチューニングの効果も大きいと考えられますので、優先して改善しましょう。
+=# SELECT * FROM pg_stat_user_functions; funcid | schemaname | funcname | calls | total_time | self_time--------+------------+----------+-------+------------+-----------  16434 | public     | proc_1   |     4 |        185 |       185  16738 | public     | proc_2   |     5 |         91 |        91  16741 | public     | proc_3   |     2 |         76 |         5(3 rows)
+この機能を使うためには、設定パラメータ track_functions を none から pl または all に変更する必要があります。設定ファイル postgresql.conf で指定するのが良いでしょう。
+track_functions = pl # none, pl, all
+none : 関数の記録を取りません。(デフォルト)
+pl : PL/pgSQL など、SQL関数とC言語関数を除く関数の記録を取ります。PL/pgSQL などのストアド・プロシージャを調査するために使用します。
+all : SQL関数とC言語関数を含む全ての関数の記録を取ります。通常、SQL関数やC言語関数は軽量な組み込み関数が多いですが、例えば contrib/pgcrypto で提供される暗号化のように時間のかかる SQL/C の関数がある場合は調査に利用できます。
+contrib/pg_stat_statements
+SQLのプロファイリングを行うビューです。SQLごとに以下の情報を取得できます。total_time は複数回実行した累積値ですので、calls で割ると「1回あたりの平均時間」が計算できます。
+userid : SQLを実行したユーザのID
+dbid : データベースのID
+query : SQLのクエリテキスト
+calls : 実行回数
+total_time : 実行時間 (単位=秒 / 精度=マイクロ秒)
+rows : 処理行数 (返却行数 or 影響行数)
+出力のサンプルを以下に示します。total_time の大きなSQLはチューニングの効果も大きいと考えられますので、優先して改善しましょう。注意としては、適切な分析をするためには拡張プロトコルまたは Prepared Statement を使う必要があることが挙げられます。さもないと WHERE 句の値が異なるだけの SQL を別々に集計してしまいます。SQLテキストを含む関係で表示幅が広くなるので、psql から実行する場合には \x オプションで列を展開すると見やすいかもしれません。
+=# \x=# SELECT query, calls, total_time, rows     FROM pg_stat_statements ORDER BY total_time DESC LIMIT 3;-[ RECORD 1 ]------------------------------------------------------------query      | UPDATE branches SET bbalance = bbalance + $1 WHERE bid = $2;calls      | 3000total_time | 35.9654100rows       | 3000-[ RECORD 2 ]------------------------------------------------------------query      | UPDATE tellers SET tbalance = tbalance + $1 WHERE tid = $2;calls      | 3000total_time | 34.7969816rows       | 3000-[ RECORD 3 ]------------------------------------------------------------query      | UPDATE accounts SET abalance = abalance + $1 WHERE aid = $2;calls      | 3000total_time | 0.6603847rows       | 3000
+この機能は contrib モジュールとして提供されています。「share/contrib/pg_stat_statements.sql」を実行し、別途インストールをして下さい。また、サーバ起動時にモジュールをロードする必要があるので、postgresql.conf で以下の設定をしてください。
+shared_preload_libraries = 'pg_stat_statements'custom_variable_classes = 'pg_stat_statements'
+pg_stat_statements の動作は以下のパラメータで調整できます。通常の用途ではデフォルト (特に追加の指定無し) で十分だとは思いますが、必要があれば変更してください。追加で必要な共有メモリは「pg_stat_statements.max × track_activity_query_size」ほどになります (デフォルトでは約1MB)。
+pg_stat_statements.max
+記録に残すSQL数です。これを超えると使用頻度の低いSQLから順に統計情報が捨てられます。デフォルトは 1000 ですが、SQLのバリエーションが多い場合は増やしてください。
+pg_stat_statements.track
+記録に残すSQLパターンです。top は直接実行したSQLのみを記録します (デフォルト)。all は関数の中から呼ばれたSQLも記録します。none は全く記録しません。
+pg_stat_statements.save
+サーバの終了時に統計情報をファイルに保存するかを指定します。デフォルトは on です。記録ファイルのパスは $PGDATA/global/pg_stat_statements.stat です。ただし、サーバがクラッシュして正常終了できない場合、記録は失われます。
+track_activity_query_size
+保持する SQL 文字列の長さ (バイト数) です。デフォルトは 1024 バイトですが、長いSQLを実行する場合には増やしても良いでしょう。
+方式2: サーバログへスロークエリを出力する
+サーバログを使う方式はすべてのバージョンの PostgreSQL で利用できます(一部の機能は新しいバージョンのみ)。以下の機能を利用できます。
+log_min_duration_statement
+実行に一定時間以上かかった SQL をログに出力します。
+contrib/auto_explain
+(8.4以降) 実行に一定時間以上かかった SQL とその実行計画をログに出力します。
+csvlog
+(8.3以降) 実行に一定時間以上かかった SQL をログに出力します。
+ログ集計ツール
+実行に一定時間以上かかった SQL とその実行計画をログに出力します。
+log_min_duration_statement
+実行に一定時間以上かかった SQL をログに出力します。ここで取得したSQLログは後述するログ集計ツールなどを使って集計することになります。例えば 3秒以上かかるクエリを特定するには、設定ファイル postgresql.conf にて、以下のように設定を行います。
+log_min_duration_statement = 3s
+-1 は無効化 (デフォルト)、0 はすべての SQL を出力します。ただし、多くの SQL を出力するとオーバーヘッドがあるため性能が低下します (環境によっては 30% 程度)。あまり低い値には設定しないほうが良いでしょう。
+出力のサンプルを以下に示します。「duration 実行時間 ms statement: クエリ」の形式でSQLが出力されます。特定のクエリが何度も出力されているようであれば、そのクエリで時間がかかっていると特定できます。
+LOG: duration: 4016.724 ms statement: SELECT count(*)  FROM pg_class, pg_index WHERE oid = indrelid AND indisunique;
+contrib/auto_explain
+PostgreSQL 8.4 から利用できる方法です。スロークエリの実行計画をサーバログに出力する機能です。スロークエリのSQLを出力する log_min_duration_statement に似ていますが、SQLだけでなく実行計画も記録するのが違いです。出力のサンプルを以下に示します。
+LOG:  duration: 4016.724 ms  plan:  Aggregate  (cost=14.90..14.91 rows=1 width=0)    -> Hash Join  (cost=3.91..14.70 rows=81 width=0)         Hash Cond: (pg_class.oid = pg_index.indrelid)          -> Seq Scan on pg_class  (cost=0.00..8.27 rows=227 width=4)          -> Hash  (cost=2.90..2.90 rows=81 width=4)                -> Seq Scan on pg_index  (cost=0.00..2.90 rows=81 width=4)                     Filter: indisuniqueSTATEMENT:  SELECT count(*)              FROM pg_class, pg_index             WHERE oid = indrelid AND indisunique;
+この機能は contrib モジュールとして提供されています。SQLの実行などの登録作業は不要ですが、サーバ起動時にモジュールをロードしておいたほうが便利なので、postgresql.conf で以下の設定をしてください。スロークエリの閾値は auto_explain.log_min_duration で指定します(デフォルトは -1 で、無効化されています)。
+shared_preload_libraries = 'auto_explain'
+custom_variable_classes = 'auto_explain'
+auto_explain.log_min_duration = 3s
+auto_explain の動作は以下のパラメータで調整できます。
+auto_explain.log_min_duration (= -1)
+ここで設定した以上に時間がかかったSQLの実行計画を出力します。多くのサーバログを出力する傾向があるため、運用環境ではスロークエリのみが出力されるよう数秒程度に設定することをお勧めします。
+auto_explain.log_analyze (= off)
+出力が EXPLAIN ではなく EXPLAIN ANALYZE 相当になります。クエリにストップウォッチを仕掛けることになり、性能が低下する可能性があるのでご注意ください。
+auto_explain.log_verbose (= off)
+出力が EXPLAIN ではなく EXPLAIN VERBOSE 相当になります。
+auto_explain.log_nested_statements (= off)
+関数内で実行されるSQLも対象にするか否かです。デフォルトは off で、直接発行したSQLのみが監視対象になります。
+csvlog
+CSV 形式のサーバログは、PostgreSQL 8.3 から利用できる方法です。設定パラメータを以下のように設定することで利用できます。
+log_destination = 'csvlog' # 2箇所に出力する場合は 'stderr, csvlog' と設定logging_collector = on
+PostgreSQL は CSV 形式のファイルをテーブルに取り込む機能があるので、『CSV書式のログ出力の利用』で提示されている定義のテーブルを作成し、そのテーブルに CSV 形式のサーバログをロードします。つまり、PostgreSQL がいったんログとして出力したスロークエリのリストを、もう一度 PostgreSQL に取り込んで解析することになります。取り込みを行うサーバは別サーバでも構いません。
+取り込んだサーバログはスロークエリ以外のメッセージ (エラーメッセージなど) も含んでいます。スロークエリを含む行を抽出するために、以下のようなビュー pg_query_log を定義しておくと良いでしょう。
+=# CREATE VIEW pg_query_log AS    SELECT      substring(message,        E'^duration: ([0-9]*\\.[0-9]*)')::numeric(1000,3) AS duration,      (regexp_matches(message,        '^duration: .*ms  (execute|statement).*: (.*)'))[2] AS sql,      *      FROM postgres_log     WHERE error_severity = 'LOG'       AND command_tag IN ('SELECT', 'INSERT', 'UPDATE', 'DELETE');
+このビューを利用して、以下のように集計できます。duration の単位はミリ秒 / 精度はマイクロ秒です。
+=# \x=# SELECT sql, count(*) AS calls, sum(duration) AS total_ms     FROM pg_query_log    GROUP BY sql    ORDER BY total_ms DESC    LIMIT 3;-[ RECORD 1 ]------------------------------------------------------------sql      | UPDATE branches SET bbalance = bbalance + $1 WHERE bid = $2;calls    | 200total_ms | 1403.625-[ RECORD 2 ]------------------------------------------------------------sql      | UPDATE accounts SET abalance = abalance + $1 WHERE aid = $2;calls    | 200total_ms | 531.250-[ RECORD 3 ]------------------------------------------------------------sql      | SELECT abalance FROM accounts WHERE aid = $1;calls    | 200total_ms | 95.423
+ログ集計ツール
+csvlog を使わない場合はテキスト形式のログから目視や grep などでSQLを抽出する必要があります。この作業を自動化するためのレポートツールとして pgFouine と PQA を紹介します。どちらも「SQL種別ごとの比率」「総時間の長いSQL」「実行回数の多いSQL」などを集計し、HTML レポートを作成してくれます。ツールによってはログの出力形式 log_line_prefix を特定の値に変更するよう指示される場合がありますので、それぞれのマニュアルに従ってください。
+pgFouine
+SQLログを集計し、HTML レポートを作成します。PHP 製です。
+PQA: Practical Query Analysis
+SQLログを集計し、HTML レポートを作成します。Ruby 製です。
+

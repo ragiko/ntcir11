@@ -1,0 +1,29 @@
+
+c - Why doesn't GCC optimize a*a*a*a*a*a to (a*a*a)*(a*a*a)? - Stack Overflow
+俺は科学技術計算の数値計算の最適化をしてたんだけどさ。GCCはpow(a, 2)をa*aにしてくれるんだな。うん。で、pow(a, 6)は最適化されずに、ライブラリ関数であるpowを呼んじゃうんだ。パフォーマンス的に最悪。(Intel C++ Compilerはpow(a,6)のライブラリ関数呼び出しを消し去ってくれるんだけどな)
+どうもよくわからんのが、pow(a, 6)をa*a*a*a*a*aで置き換えて、GCC 4.5.1をオプション"-O3 -lm -funroll-loops -msse4"で使ったら、mulsd命令を5個使う。
+movapd  %xmm14, %xmm13
+mulsd   %xmm14, %xmm13
+mulsd   %xmm14, %xmm13
+mulsd   %xmm14, %xmm13
+mulsd   %xmm14, %xmm13
+mulsd   %xmm14, %xmm13
+だが、(a*a*a)*(a*a*a)と書いたら、出力は、
+movapd  %xmm14, %xmm13
+mulsd   %xmm14, %xmm13
+mulsd   %xmm14, %xmm13
+mulsd   %xmm13, %xmm13
+これは、乗算命令が3個になっている。iccもGCCとほぼ同じだ。
+なんでコンパイラーはこれを最適化できないんだ？
+答え：浮動小数点数演算では、結果が変わってしまうおそれがあるから。
+それは、浮動小数点数は結合法則を満たさないからだ。浮動小数点乗算のオペランドの囲み方により、結果の数値精度に影響を及ぼすからだ。
+その結果、ほとんどのコンパイラーは、浮動小数点数演算のリオーダリングに対して極めて保守的なのだ。答えが変わらないと確信できるときや、数値精度を気にしない場合にしか最適化できない。たとえば、GCCの-ffast-mathだ。
+c - Why doesn't GCC optimize a*a*a*a*a*a to (a*a*a)*(a*a*a)? - Stack Overflow
+GCCに-ffast-mathオプションを指定すると、浮動小数点数演算の誤差を気にしないとコンパイラーに伝えたことになる。このオプションを指定すると、GCCは浮動小数点数の演算に対して、大胆な最適化ができるようになる。もちろん、演算精度に注意しなければならない。
+What Every Computer Scientist Should Know About Floating-Point Arithmetic(すべてのコンピューター科学者が浮動小数点数演算について知っておくべきこと)
+ドワンゴ広告
+この記事はC++とは直接関係がないが、ドワンゴ勤務中に書かれた。
+ドワンゴはIEEE 754フォーマットを忘れたくても忘れられない本物のプログラマーを募集しています。
+採用情報｜株式会社ドワンゴ
+CC BY-ND 4.0: Creative Commons — Attribution-NoDerivatives 4.0 International — CC BY-ND 4.0
+本の虫: なんでGCCはa*a*a*a*a*a を (a*a*a)*(a*a*a) に最適化できないの？っと

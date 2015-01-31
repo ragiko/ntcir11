@@ -1,0 +1,65 @@
+
+論点番号:107 サンプリング概論 問題番号:438
+An advantage of statistical sampling over nonstatistical sampling is that statistical sampling helps an auditor to
+A. Eliminate the risk of nonsampling errors.
+B. Reduce the level of audit risk and materiality to a relatively low amount.
+C. Measure the sufficiency of the evidential matter obtained.
+D. Minimize the failure to detect errors and fraud.	
+正解:C
+<問題解説>
+統計的サンプリングが監査人の役に立つ点は、
+(1)効率的にサンプリングを設計出来る
+(Design an efficient sampling)
+(2)入手した実証的証拠が十分かどうか測定出来る
+(Measure the sufficiency of the evidential matter obtained)
+(3)サンプリングの結果を数字で評価できる
+(Make quantitative statements about the results)
+である。 非サンプリング誤謬は影響を受けないので、aは誤り。監査リスク、重要性レベルはサンプリングの方法によらないので、bは誤り。不正、誤謬の発見はどちらの方法でも同じように可能なので、dは誤り。従って答えはc。 
+※非統計的サンプリングの例
+依頼人の売掛金残高が1000人の顧客から構成されていたが、金額が大きい顧客が少数だった場合、その金額の大きい顧客のみ検証の対称とする。		
+論点番号:107 サンプリング概論 問題番号:439
+An advantage of using statistical over nonstatistical sampling methods in tests of controls is that the statistical methods
+A. Can more easily convert the sample into a dual-purpose test useful for substantive testing.
+B. Eliminate the need to use judgment in determining appropriate sample sizes.
+C. Afford greater assurance than a nonstatistical sample of equal size.
+D. Provide an objective basis for quantitatively evaluating sample risk.	
+正解:D
+<問題解説>
+統計的サンプリング(statistical sampling)は監査人に次の点で役立つ。
+(1) 効率的なサンプル計画の設計
+(2) 入手した証拠の充分性の測定
+(3) サンプルの結果の評価
+統制のテスト(test of control)と実証性テスト(substantive test)の両目的で用いられる二重目的テスト(dual-purpose tests)は、統計的または非統計的サンプルのどちらで実施し
+てもよいのでAは誤り。統計的サンプリングを使用した場合、判断は量的に表わされなくてはならないが、統計的サンプリングも非統計的サンプリング(nonstatistical sampling)もどちらも判断が必要であるのでBは誤り。統計的サンプリングも非統計的サンプリングも、監査人に対し等しい保証を提供するのでCは誤り。従って答えはD。 
+D.(非量的評価ではなくて)量的評価(という形をとっている)サンプルリスクに客観的な根拠を与える
+※dual-purpose test 
+1つのサンプルで Test of controls と Substantive test を実施する。それぞれに必要とされるサンプル量が異なって見積もられた場合、大きい方をもちろん用いてサンプリングを行う。問445		
+論点番号:107 サンプリング概論 問題番号:440
+If certain forms are not consecutively numbered
+A. Selection of a random sample probably is not possible.
+B. Systematic sampling may be appropriate.
+C. Stratified sampling should be used.
+D. Random number tables cannot be used.	
+正解:B
+<問題解説>
+系軸サンプリングは、任意の場所からスタートしてn番目ごとに抽出するので、元の書式が連番でない場合でも問題なく抽出できる。 乱数(無作為)抽出は連番でなくとも可能なので、aは誤り。階層化サンプリングは可能であるが、それを使用する必要は特にないので、cは誤り。乱数表の使用は可能で、例えば実在しない番号に対してはそれを無視することでサンプルの抽出は続けられるので、dは誤り。従って答えはb。
+① Random-number sampling 
+- Random number table(乱数表)やコンピュータを使って生成される。すべてのサンプル項目は同じ確立で選択される可能性を有する。
+② Systematic sampling (系軸サンプリング)
+任意のところからスタートして、常にn番目のものを抽出するやり方。母集団が体系的な順序で並んでいると逆に偏ったサンプルを抽出する可能性がある。
+③ Haphazard sampling 行き当たりばったり
+④ Block sampling 母集団の中から1つの塊を選んでしまうやり方。最初から10番、とか真ん中の10個、とか。
+consecutively = 連番で		
+論点番号:107 サンプリング概論 問題番号:441
+When performing a test of a control with respect to control over cash receipts, an auditor may use a systematic sampling technique with a start at any randomly selected item. The biggest disadvantage of this type of sampling is that the items in the population
+A. Must be systematically replaced in the population after sampling.
+B. May systematically occur more than once in the sample.
+C. Must be recorded in a systematic pattern before the sample can be drawn.
+D. May occur in a systematic pattern, thus destroying the sample randomness.	
+正解:D
+<問題解説>
+母集団(population)中で系統的(systematic)な項目の発生が存在した場合、サンプルの無作為性を損なう可能性がある。 
+母集団中の項目を入れ替える必要はないので、aは誤り。系統的サンプリング(systematic sampling)が使用された場合、個々の項目がサンプル中に複数回抽出されることはないのでbは誤り。系統的サンプリングは、使用されるサンプリング抽出計画の種類のことであり、母集団中の項目の記録方法ではないのでcは誤り。
+むしろ、dにあるように、母集団中の系統的パターン(systematic pattern)は系統的サンプリングの妨害となる。従って答えはd。 
+「母集団の中のアイテムが系統的なパターンで発生し、そのためサンプルの任意性を損なう」		
+A&A 12 Audit Sampling flashcards | Quizlet

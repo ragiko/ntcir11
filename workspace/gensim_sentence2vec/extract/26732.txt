@@ -1,0 +1,84 @@
+
+PHP Advent Calendar jp 2010 : ATND
+ってことで、アドベントカレンダーが回ってきたので書きます。なに書こうか迷いましたが、とりあえず、最近自分でも真面目に使い始めたPHP 5.3向けのClassLoaderと名前空間についての話です。
+世の中的にずいぶん「これからはPHP 5.3だよね」的な流れがきているので、名前空間の区切りと、ディレクトリ構成、ファイル名、クラス名など、これから書くならどうするんだろ?ってところについておさらいしておきます。
+SplClassLoader を使ってみよう!
+で、本題。標準的な名前空間とクラス名などの命名規則が決まれば、標準的なAutoloadクラスが作れるよねってことで作られたのが、SplClassLoaderです。SPLって名前が付いてるけど、別に組み込みでもないし、PHP的に標準になっているわけでもないので、「提案」レベルのものですが、SymfonyもこれをベースにClassLoaderをもっているし、まあ実質標準的なものであると考えてもらって問題ないです。
+https://gist.github.com/221634
+ってことで、これを使ってみましょう。
+標準的なディレクトリ構成とクラスのファイルを用意
+今回は、以下のような感じで作ってみました。
+%  tree
+.
+|-- Hoge
+|   |-- Hogege.php
+|   `-- Hogera
+|       `-- Aho.php
+|-- SplClassLoader.php
+|-- entry_point.php
+`-- libs
+`-- vendors
+`-- Fuga
+`-- Foo.phpentry_point.php が実際にライブラリを使う側のファイル、Hoge と Fuga が、読み込まれる側のライブラリファイルだと想定し、Fuga はどこか変なとこにディレクトリがあるものだとします。まあ、よくある構成だはと思います。Aho.php Hogera.php Foo.php には実際にクラスが定義されていて、とりあえずコンストラクタが呼ばれると自分自身の名前空間とクラス名を出力するようにしてあります。
+例えば次のような感じ:
+<?php
+namespace Hoge\Hogera;
+class Aho
+{
+public function __construct()
+{
+echo __CLASS__, PHP_EOL;
+}
+}
+実際に使ってみる
+entry_point.php では、次のよう register() メソッドを呼び出し、名前空間とディレクトリのルートを指定したものを登録します。
+<?php
+require 'SplClassLoader.php';
+$class_loader_hoge = new SplClassLoader('Hoge', __DIR__);
+$class_loader_hoge->register();
+$class_loader_fuga = new SplClassLoader('Fuga', __DIR__ . '/libs/vendors');
+$class_loader_fuga->register();
+$a = new Hoge\Hogege();
+$b = new Hoge\Hogera\Aho();
+$c = new Fuga\Foo();
+この出力は、
+Hoge\Hogege
+Hoge\Hogera\Aho
+Fuga\Fooとなります。
+正しくHogeやFugaの名前空間のクラスが読み込まれましたね。
+ClassLoaderの動きを追ってみる
+ClassLoader の実装は簡単で、一言で説明すると、
+登録された名前空間とパスを結合して \ を / に変えて .php を付ける
+これだけです。では、
+$class_loader_hoge = new SplClassLoader('Hoge', __DIR__);
+$class_loader_hoge->register();この設定でAutoloadの設定をし、
+$b = new Hoge\Hogera\Aho();こう使ったときに、どう読み込まれるかというと、
+<?php
+// 以下は、SplClassLoaderのロード部分の実装。
+public function loadClass($className)
+{
+if (null === $this->_namespace || $this->_namespace.$this->_namespaceSeparator === substr($className, 0, strlen($this->_namespace.$this->_namespaceSeparator))) {
+$fileName = '';
+$namespace = '';
+if (false !== ($lastNsPos = strripos($className, $this->_namespaceSeparator))) {
+// 名前空間区切りが見つかれば、それを最後の名前空間区切り以下をクラス名として、
+// クラス名と名前空間に分解する
+$namespace = substr($className, 0, $lastNsPos);
+// => "Hoge\Hogera"
+$className = substr($className, $lastNsPos + 1);
+// => "Aho"
+$fileName = str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+// 名前空間の区切り文字 "\" を "/" に変換して、パス名にする
+// => "Hoge/Hogera/"
+}
+$fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
+// クラス名のアンダースコア "_" を "/" に変換して、拡張子をつける
+// そしてそれを、パス名に結合し、これをファイル名とする
+// => "Hoge/Hogera/Aho.php"
+require ($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '') . $fileName;
+// 最後に、設定してあるインクルードパスにファイル名を結合してrequireする
+// => "/home/sotarok/tmp/splclassloader/Hoge/Hogera/Aho.php"
+}
+}
+だいたいこんなかんじで、SplClassLoaderのコンストラクタに指定したインクルードパスと、それ以下のパスが名前空間を含んだクラス名とマッピングされ、クラスが読み込まれます。実に単純ですね。
+名前空間とautoload、標準的なClassLoaderの実装 (#phpadvent2010) - 肉とビールとパンケーキ by @sotarok

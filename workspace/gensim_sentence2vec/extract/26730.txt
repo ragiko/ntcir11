@@ -1,0 +1,10 @@
+すべての名前空間を列挙、するためにまず"root"名前空間のすべての"__NAMESPACE"インスタンスに対するクエリに接続してくださいの各インスタンスを再帰的にこの手順を繰り返します。次の Microsoft Visual Basic コード スニペットは、パラメーターで指定した名前空間のルート名前空間ツリーの下の名前空間を列挙する再帰サブルーチンです。
+Sub PrintNamespaces(namespace As String)
+Debug.Print namespace
+Set locator = CreateObject("WbemScripting.SWbemLocator")
+Set wmi = locator.ConnectServer(".", namespace)
+For Each obj In wmi.InstancesOf("__NAMESPACE")
+PrintNamespaces namespace + "\" + obj.Name
+Next
+End Sub
+Windows の管理の実装の名前空間を列挙する方法

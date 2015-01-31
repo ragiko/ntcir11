@@ -1,0 +1,79 @@
+[プログラム]最速の符号反転
+概要
+符号反転で最も速い計算はなんだろう、とふと気になった。
+今回の候補は以下3点。反転対象の値はひとまずaとする。
+a - a * 2
+a * (-1)
+(~a) + 1
+1番は値が壊れるかなぁと思っていたのだが、意外に平気。ナンデ?
+やってみる
+こんなんやってみた。
+#include <stdio.h>
+#include <windows.h>
+#include <mmsystem.h>
+#define COUNT 20000 // 2乗
+#define INT_MAX 0x0FFFFFFF
+#define INT_MIN 0xFFFFFFFF
+int test1(int v) {
+return v-v*2;
+}
+int test2(int v) {
+return v*(-1);
+}
+int test3(int v) {
+return (~v)+1;
+}
+int main(int argc, char* argv[]) {
+int a=100,b;
+int i,j,k, valueIndex;
+int values[] = { 0, 100, INT_MAX, INT_MIN };
+int (*po[])(int) = { test1, test2, test3 };
+char* text[] = { "a-a*2", "a*(-1)", "(~a)+1" };
+DWORD startValue;
+DWORD endValue;
+for (j=0; j<3; j++) {
+printf("================== %s ==================\n", text[j]);
+for (valueIndex=0; valueIndex<4; valueIndex++) {
+a=values[valueIndex];
+startValue = timeGetTime();
+for (k=0; k<COUNT; k++)
+for (i=0; i<COUNT; i++)
+b=(*po[j])(a);
+endValue = timeGetTime();
+printf("%d : %s : %d\n", a, text[j], (*po[j])(a));
+printf("%d\n", endValue - startValue);
+}
+}
+return 0;
+}
+timeGetTimeの取得のためにwindows.h系を使っている辺りに手抜き臭がするが、気にしない。
+結論
+ほとんど変わらず。
+2番か3番が速そうで、僅差で3番か。
+関数ポインタなんて使ったせいで余計な時間がかかってイマイチなのだが、多分正しい。
+でも大差はないんで、ほんとどれでもいいんじゃない?という感じ。
+浮動小数点でも汎用的にやりたいなら、2がお薦め。
+15:43追記。
+なんか寝ぼけてたのかな俺(笑)
+これでいいじゃん。
+return -v;
+パフォーマンスは2とおんなじ。
+というかアセンブラで見るとこんなん。
+(value*-1)
+mov         eax,dword ptr [esp+4]
+neg         eax
+ret
+(-value)
+mov         eax,dword ptr [esp+4]
+neg         eax
+ret
+(not)
+mov         eax,dword ptr [esp+4]
+not         eax
+inc         eax
+ret
+2と(-value)はnegで計算するので、アセンブラ的にはこれが正しいんだろうな。
+not, incはいまいち意味がわからんが、これが結構速い理由も意味わからん。
+やはりこういう速度検証は、アセンブラとコンパイラの生成するアセンブラコードも検証しないと駄目か。
+Permalink | コメント(0) | トラックバック(2) | 11:30  
+最速の符号反転 - tsuge development page

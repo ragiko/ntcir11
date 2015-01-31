@@ -1,0 +1,9 @@
+パッてファイル書き出しとか書きたいときにメンドクサイときは、
+良くSystem.setOut(PrintStream ps)を使ってるんだけど、
+それを戻す方法が分からなかったのでちょいと調べてみた。
+方法はこんな感じ。
+FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
+System.setOut(new PrintStream(new BufferedOutputStream(fdOut, 128), true));
+ネットで調べても良く分からなかったのでOpenJDK6のソースから調べた。
+System#initializeSystemClassらへんに書いてある。System.out.println()とかJava始めた時から使っているのに、こんなことも知らないなぁ。
+変更した標準出力の出力先を元の標準出力に戻す方法 - 418 | I'm a teapot

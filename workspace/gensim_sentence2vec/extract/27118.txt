@@ -1,0 +1,228 @@
+HTML5 でやりがちな間違いHTML5 Doctor で 「Avoiding common HTML5 mistakes」 という記事が上がっていましたので稚拙ではありますが翻訳など。HTML5 でマークアップする際にやりがちな間違いをいくつか挙げて、さらに正しいマークアップ例も紹介くれていますので、参考にしてみてはいかがでしょうか。
+HTML5 Doctor で 「Avoiding common HTML5 mistakes」 という記事が上がっていましたので稚拙ではありますが翻訳など。HTML5 でマークアップする際にやりがちな間違いをいくつか挙げて、さらに正しいマークアップ例も紹介くれていますので、参考にしてみてはいかがでしょうか。
+Avoiding common HTML5 mistakes : HTML5 Doctor
+翻訳といっても要約みたいな感じですので、書いてあることをそのまま日本語にしたものではありません。正しくは原文を見てください。ちなみに 「注)」 として書いてあるのは私の補足です。参考まで。
+それでは始めましょう。
+スタイリング用に section 要素を使うのはやめましょう
+Don't use section as a wrapper for styling
+One of the most common problems I see in people's markup is the arbitrary replacement of <div>s with HTML5 sectioning elements - specifically, replacing wrapper <div>s (used for styling) with <section>s. In XHTML or HTML4, I would see something like this:
+Avoiding common HTML5 mistakes | HTML5 Doctor から引用
+スタイルを適用するための 「wrapper」 として使っていた div 要素を、section 要素に置き換えるという使い方は、よくある間違いの 1つです。
+例えば、HTML4 で下記のようなソースがあった場合、
+<!-- HTML4 でのマークアップ例 -->
+<div id="wrapper">
+<div id="header">
+<h1>My super duper page</h1>
+<!-- Header content -->
+</div>
+<div id="main">
+<!-- Page content -->
+</div>
+<div id="secondary">
+<!-- Secondary content -->
+</div>
+<div id="footer">
+<!-- Footer content -->
+</div>
+</div>
+下記のような section 要素の使い方は間違いです。
+<!-- スタイリング目的のdiv 要素を section 要素に置き換えてしまった例(これは間違った例です) -->
+<section id="wrapper">
+<header>
+<h1>My super duper page</h1>
+<!-- Header content -->
+</header>
+<div id="main">
+<!-- Page content -->
+</div>
+<section id="secondary">
+<!-- Secondary content -->
+</section>
+<footer>
+<!-- Footer content -->
+</footer>
+</section>
+section 要素は 「wrapper」 ではありません。ドキュメントアウトラインを生成するためのセクションを示すものです。スタイリングのために、あるブロックを包含する要素が欲しい場合は、div 要素を使いましょう。
+注)HTML5 におけるアウトラインについては 「HTML5 におけるアウトラインに関して簡単解説」 も参考まで。
+それを踏まえて、最初の HTML4 でのマークアップを正しく HTML5 (role 属性も使って)にするなら、下記のようにします(デザインのために div 要素をいくつか足す必要があるかもしれませんが)。
+<body>
+<header>
+<h1>My super duper page</h1>
+<!-- Header content -->
+</header>
+<div role="main">
+<!-- Page content -->
+</div>
+<aside role="complementary">
+<!-- Secondary content -->
+</aside>
+<footer>
+<!-- Footer content -->
+</footer>
+</body>
+要素の選択で迷ったなら、「HTML5 sectioning content element flowchart」 を見てください。
+注)「HTML5 sectioning content element flowchart」 はリンク先の記事、下部にある画像、または PDF ファイルへのリンクで見られます。例えば画像版だとこちら (PNG / 110KB)。
+header 要素と hgroup 要素は本当に必要な時だけ使いましょう
+2013年 4月 30日追記
+hgroup 要素は HTML5 勧告候補から削除されました。詳しくは 「hgroup 要素が HTML5 勧告候補から削除される」 をご覧ください。
+Only use header and hgroup when they're required
+There's no sense writing markup when you don't have to, right? Unfortunately, I often see <header> and <hgroup> being used when there's no need for them. You can get up to speed with our articles on the <header> element and the <hgroup> element, but I'll briefly summarise:
+Avoiding common HTML5 mistakes : HTML5 Doctor から引用
+header 要素は、イントロダクションやナビゲーションの支援となるグループを示します。
+hgroup 要素は、小見出し、副題、キャッチフレーズなど、見出しが複数のレベルを持つとき、h1～h6 要素をグルーピングしてセクションの見出しを示します。
+header 要素を使いすぎないように
+下記のようなマークアップは header 要素が必須ではないのに使っている例です。
+注)下記はマークアップ自体が間違いなわけではありません。
+<!-- マークアップが過剰な例 -->
+<article>
+<header>
+<h1>My best blog post</h1>
+</header>
+<!-- Article content -->
+</article>
+上の例では、header 要素が 1つの見出し要素しか含んでいませんし、article 要素と見出し要素で問題なくアウトラインが生成されているので、header 要素がなくても同じです。こういう場合は下記のように省略していいでしょう。
+<article>
+<h1>My best blog post</h1>
+<!-- Article content -->
+</article>
+hgroup 要素の間違った使い方
+hgroup 要素はよく間違った使い方をされています。
+hgroup 要素内に見出し要素が1つしかないのに使われている。
+hgroup 要素は header 要素内じゃないと使えないわけではありません。
+例えば下記のようなソースは見出しが1つしかないので、hgroup 要素を使う意味がありません。
+<!-- これは間違った例 -->
+<header>
+<hgroup>
+<h1>My best blog post</h1>
+</hgroup>
+<p>by Rich Clark</p>
+</header>
+下記のように書けばいいので、hgroup 要素は不要。
+<header>
+<h1>My best blog post</h1>
+<p>by Rich Clark</p>
+</header>
+次に、下記のような例ですが、これなら hgroup だけで問題なし。header 要素は不要ですね。
+<!-- これは間違った例 -->
+<header>
+<hgroup>
+<h1>My company</h1>
+<h2>Established 1893</h2>
+</hgroup>
+</header>
+下記のようにシンプルに書きましょう。
+<hgroup>
+<h1>My company</h1>
+<h2>Established 1893</h2>
+</hgroup>
+hgroup 要素についてもう少し知りたい場合は、「The hgroup element」 を参照してください。
+すべてのリストを nav 要素でマークアップしたりしないように
+Don't wrap all lists of links in <nav>
+With 30 new elements (at the time of writing) introduced in HTML5, we're somewhat spoilt for choice when it comes to creating meaningful, structured markup. That said, we shouldn't abuse the super-semantic elements now made available to us. Unfortunately, that's what I see happening with <nav>. The spec describes <nav> as follows:
+Avoiding common HTML5 mistakes : HTML5 Doctor から引用
+HTML5 では (現時点で) 30の新しい要素が追加されました。新要素はその使用箇所に関して比較的自由度が高くなっていますが、乱用すべきではありません。しかし、nav 要素はそういったことが起こりやすい要素です。
+注)「ナビゲーションをマークアップする要素」 と言っても 「ナビゲーション」 の定義は結構曖昧ですから、使おうと思えば色んな部分に nav 要素を使えてしまいます。でもなんでも nav じゃなくて、使う場所を考えましょうねというお話です。
+HTML5 の仕様で、nav 要素は下記のように説明されています。
+The nav element represents a section of a page that links to other pages or to parts within the page: a section with navigation links.
+Note: Not all groups of links on a page need to be in a nav element - the element is primarily intended for sections that consist of major navigation blocks. In particular, it is common for footers to have a short list of links to various pages of a site, such as the terms of service, the home page, and a copyright page. The footer element alone is sufficient for such cases; while a nav element can be used in such cases, it is usually unnecessary.
+WHATWG HTML spec から引用
+ここで重要なのは「major(主要な) navigation」 という点です。「主要な」 の定義については議論があると思いますが、私 (HTML5 Doctor) は下記のように考えます。
+プライマリナビゲーション
+サイト内検索
+セカンダリナビゲーション(文書内で明らかに)
+ページ内ナビゲーション(例えば長い記事内にあるような)
+一方で、これも異論はあるでしょうが、私 (HTML5 Doctor) の解釈と周囲に聞いた結果としては、下記のようなものは、nav 要素でマークアップすべきでないと考えます。
+ページ分割のナビゲーション
+ソーシャルなリンク(例えば外部のプロフィールサイトなどへのリンク)
+ブログ記事のタグ
+ブログ記事のカテゴリ
+優先順位の低いナビゲーション
+ファットフッタ
+注)ファットフッタは、色々なナビゲーションを含んだページフッタのことです(よね…)。
+nav 要素を使うべきか迷った場合は「それは主要なナビゲーションか?」という点を考えてみるといいでしょう。また、下記の点を考慮してみるといいかもしれません。
+その部分を section 要素と hx 要素 (h1～h6) によるマークアップで置き換えても適切だと思いますか?
+その部分に対してスキップリンクを設定したりしますか?
+上記2つの質問に対する答えが「No」なら、それは nav 要素が適さない部分です。
+注)スキップリンクを設置するか?という部分はちょっと微妙な気がしますが、要するに 「そのナビゲーションがサイト全体を閲覧するにあたって、重要な役割を果たすものなのか」 を基準にすればいいと思います。
+figure 要素に関するよくある間違い
+Common mistakes with the figure element
+Ah, <figure>. The appropriate use of this element, along with its partner-in-crime <figcaption>, is quite difficult to master. Let's look at a few common problems I see with <figure>.
+Avoiding common HTML5 mistakes : HTML5 Doctor から引用
+すべての画像が figure なわけではない
+figure 要素と figcaption 要素の使い方は難しいです。画像をなんでも figure 要素でマークアップするのは間違いです。仕様では 「figure 要素は自己完結したもので、ドキュメントのメインのフローから単独のユニットとして参照されるもの」 と説明されています。また、ドキュメントのフローに影響を与えることなく、主要なコンテンツから、サイドバーなどへ切り離すことができます。
+まず、その画像が、現在の文脈を理解するために必要かを考えてみてください。また、その部分を他の付属ページなどへ移動しても意味が通じるかを考えてみます。両方の答えが 「Yes」 なら、恐らくそれは figure 要素でしょう。
+あなたのロゴは figure ではない
+下記の例は、figure 要素の間違った例です。
+<!-- これは間違った例 -->
+<header>
+<h1>
+<figure>
+<img src="/img/mylogo.png" alt="My company" class="hide" />
+</figure>
+My company name
+</h1>
+</header>
+<!-- これは間違った例 -->
+<header>
+<figure>
+<img src="/img/mylogo.png" alt="My company" />
+</figure>
+</header>
+上記の例の場合、figure 要素でマークアップする必要がありません。下記のように書けば問題ありません。
+<header>
+<h1>My company name</h1>
+<!-- More stuff in here -->
+</header>
+注)元記事では正しい書き方の例で img 要素を使わなくなっていますが、ロゴを img 要素で配置したいなら下記のような感じ。つまり言いたいことは figure 要素が必要ないよねっていうことです。
+<header>
+<h1><img src="/img/mylogo.png" alt="My company" /></h1>
+<!-- More stuff in here -->
+</header>
+figure 要素は画像以外にも使えます
+ありがちな誤解として、figure 要素が画像にしか使えないというものがありますがそれは間違いです。figure 要素はビデオ、オーディオ、引用文やソースコードなど、様々な部分で使えます。
+figure 要素についてもう少し知りたい場合は、「The figure & figcaption elements」 を参照してください。
+不要な type 属性は含めないようにしましょう
+HTML5 では、script 要素、style 要素に対する、type 属性は不要です。HTML5 においては、script 要素 の場合、type 属性のデフォルト値として 「text/javascript」 が、style 要素の場合は 「text/css」 がセットされます。
+例えば、下記のようなソースは、
+<!-- これは間違った例 -->
+<link type="text/css" rel="stylesheet" href="css/styles.css" />
+<script type="text/javascript" href="js/scripts" /></script>
+下記のように省略して書くことが可能です。
+<link rel="stylesheet" href="css/styles.css" />
+<script href="js/scripts" /></script>
+その他にも、ページの文字コードを指定する記述も簡略化することが可能です。詳しくは 「Semantics - Dive Into HTML5」 で解説されています。
+注)Dive Into HTML5 の翻訳版もありますので参考まで。「結局どうすればいいの? - Dive Into HTML5」
+フォーム属性の間違った使用
+Incorrect use of form attributes
+You may be aware that HTML5 has introduced a range of new attributes for forms. We'll cover them in more detail in the coming months, but in the meantime, I'll quickly show you a few things not to do.
+Avoiding common HTML5 mistakes : HTML5 Doctor から引用
+HTML5 ではフォーム用の新しい属性が追加されています。
+論理属性
+HTML5 では、いくつかの新しい論理属性が追加されました。例えば下記の属性が挙げられます。
+autofocus
+autocomplete
+required
+注)原文の通り、「Boolean attributes」=「論理属性」として訳しましたが、論理属性とは、「値を指定せずに、その属性が存在するかしないかだけで意味を持つ属性のこと」 です。ただ、autocomplete 属性は論理属性ではなく、列挙属性 (あらかじめ決められたキーワードのみ値として指定できる属性のこと) なのでちょっと迷っております…
+例えば、required 属性の使い方で下記のような間違いがあります。
+<!-- これは間違った例 -->
+<input type="email" name="email" required="true" />
+<!-- 悪い例をもう一つ -->
+<input type="email" name="email" required="1" />
+上記の例の場合、実際には required 属性が書かれているので、HTML パーサは required 属性を有効なものとして扱い、(書き方は間違っているけれど) 動作としては意図した通りに動いて特に弊害はないでしょう。しかし下記のような場合はどうでしょう。
+<!-- これは間違った例 -->
+<input type="email" name="email" required="false" />
+この場合もパーサは required 属性があるという点だけを見て、required 属性を有効なものとして扱います。つまり、意図した通りに動作しなくなるということです。
+論理属性である、required 属性を正しく適用するには下記の書き方があります (XHTML で書く場合は、2つ目、3つ目の記述のみ有効です ※1)。
+required
+required=""
+required="required"
+つまり、HTML として記述する場合は下記のようにします。
+<input type="email" name="email" required />
+全体の一部に関して触れただけですが、上記のような点を気を付けてマークアップを行うと良いと思います。
+参考リンク
+HTML5 : W3C Working Draft 25 May 2011 (現時点での最新)
+Dive Into HTML5
+結局どうすればいいの? - Dive Into HTML5 (翻訳)
+HTML5 におけるアウトラインに関して簡単解説
+※1 記事公開時「2つ目、3つ目の記述は XHTML 時のみ有効な記述です」 と書いていましたが、これだと HTML 構文で 2、3番目の書き方ができないように読めてしまうとのご指摘を頂いたため変更しました。
+HTML5 でやりがちな間違い | WWW WATCH

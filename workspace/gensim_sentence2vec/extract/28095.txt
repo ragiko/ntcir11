@@ -1,0 +1,2 @@
+では、Swiftでのクロージャの文法をより詳しく見ていきます。先程の例の波括弧の中に、クロージャ自身の引数と返り値を書いていきます。「 ( 引数1, 引数2 ) -> ( 返り値1, 返り値2 ) 」という関数と同じ文法です。その後ろに「 in 」と書いたら、後は実行する処理を書いていきます。 func downloadAndSaveImage( aUrl : Url , aDownloadPath : String ) {  receiveData( aUrl , { ( aUrl : String ) -> () in   : ファイルへの保存処理   println( aDownloadPath ) // OK!  } ) }
+では、Swiftでのクロージャの文法をより詳しく見ていきます。先程の例の波括弧の... : やっぱりSwift : 関数 #3 : クロージャ基礎 - NAVER まとめ

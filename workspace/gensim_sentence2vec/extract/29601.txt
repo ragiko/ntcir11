@@ -1,0 +1,199 @@
+形態素解析器のデコーダ部分を作ってみた
+プログラミング, 自然言語処理
+はじめに
+形態素解析器のデコーダ部分を超簡単に書いてみた。いつも通り速度などは考えずに流れを学ぶために書いているので遅い。。。あと「辞書の構築(コスト計算)」と「未知語処理」ができればそれっぽいものができそうな予感。速度の改善などは、double arrayにしたりバイナリ読み込みにしたり。。。
+やっていること
+辞書ファイルの読み込み
+単語辞書
+隣接可能性行列
+解析したい文を入力する
+ラティスの構築
+解の探索
+ビタビアルゴリズムでコストが最小のパスを探索
+パスの単語リストを出力する
+辞書の準備
+辞書のダウンロード
+NIST NAIST Japanese Dic(for MeCab)を使わせていただきます
+「mecab-naist-jdic-0.6.3b-20111013」
+http://sourceforge.jp/projects/naist-jdic/
+ちょっと修正
+文字コード変換
+「naist-jdic.csv」の文字コードをUTF-8に直した
+「naist-jdic.csv」のカンマを半角スペースにして、各行の5つ目以降は削除
+ファイル内の一つ目の全角スペースの行だけ削除
+ファイル名の変更
+単語辞書「naist-jdic.csv」->「dic.txt」
+隣接可能性辞書「matrix.def」->「adjmat.txt」
+コード
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm>
+const static int COST_MAX = 100000000;
+//単語の情報を保持する構造体
+struct WORD_DATA {
+std::string word;
+short l_id, r_id;
+std::string cat;
+int score;
+WORD_DATA(const std::string &word, const short& l_id, const short&r_id, const std::string &cat, const int &score):
+word(word),l_id(l_id),r_id(r_id),cat(cat),score(score){}
+};
+//単語辞書
+std::multimap<std::string, WORD_DATA> dic;
+//隣接可能性行列
+std::vector<std::vector<int> > adj_mat;
+//グラフの頂点を表す構造体
+struct NODE {
+int start_pos;
+std::string word; //単語の表記
+short l_id, r_id; //左文脈ID, 右文脈ID
+std::string cat; //単語の品詞
+int score; //スコア
+NODE* prev;
+NODE(const int &start_pos, const std::string &word, const short &l_id, const short &r_id, const std::string &cat, const int &score):
+start_pos(start_pos),word(word),l_id(l_id),r_id(r_id),cat(cat),score(score){
+prev = NULL;
+}
+};
+//辞書引き
+std::vector<WORD_DATA> dic_lookup(const std::string & word){
+std::vector<WORD_DATA> ret;
+typedef std::multimap<std::string,WORD_DATA>::iterator dic_itr;
+std::pair<dic_itr,dic_itr> itr_range = dic.equal_range(word);
+for(dic_itr itr = itr_range.first; itr != itr_range.second; ++itr){
+ret.push_back(itr->second);
+}
+return ret;
+}
+//ラティス構造を作成
+std::vector< std::vector<NODE> > graph_construct(const std::string& str){
+std::vector< std::vector<NODE> > graph(str.length()+2, std::vector<NODE>());
+graph[0].push_back(NODE(0,"BOS",0,0,"BOS",0));
+graph[str.length()+1].push_back(NODE(str.length()+1,"EOS",0,0,"EOS",0));
+for(int i=0; i<str.length(); i++){
+for(int j=i+1; j<str.length()+1; j++){
+std::string sbstr = str.substr(i,j-i);
+std::vector<WORD_DATA> hret = dic_lookup(sbstr);
+for(int k=0; k<hret.size(); k++){
+graph[j].push_back(NODE(i+1,hret[k].word,hret[k].l_id,hret[k].r_id,hret[k].cat,hret[k].score));
+}
+}
+}
+return graph;
+}
+//nodeの生起コスト
+int get_node_cost(NODE &node){
+return node.score;
+}
+//node_aからnode_bへの連接コスト
+int get_edge_cost(NODE &node_a, NODE &node_b){
+return adj_mat[node_a.r_id][node_b.l_id];
+}
+//ビタビアルゴリズムによるコスト最小法
+std::vector<NODE> viterbi(std::vector< std::vector<NODE> > &graph){
+int n = graph.size();
+for(int i=1; i<n; i++){
+for(int j=0; j<graph[i].size(); j++){  
+int node_cost = get_node_cost(graph[i][j]);
+int cost = COST_MAX;
+NODE *shortest_prev = NULL;
+if(graph[graph[i][j].start_pos-1].size()==0) continue;
+for(int k=0; k<graph[graph[i][j].start_pos-1].size(); k++){
+int edge_cost = get_edge_cost(graph[graph[i][j].start_pos-1][k], graph[i][j]);
+int tmp_cost = get_node_cost(graph[graph[i][j].start_pos-1][k]) + edge_cost + node_cost;
+if(tmp_cost < cost){
+cost = tmp_cost;
+shortest_prev = &graph[graph[i][j].start_pos-1][k];
+}
+}
+graph[i][j].prev = shortest_prev;
+graph[i][j].score = cost;
+}
+}
+NODE *node = &graph[n-1][0]; //EOS
+std::vector<NODE> ret;
+while(node->word != "BOS"){
+ret.push_back(*node);
+node = node->prev;
+if(node == NULL) return std::vector<NODE>(); //失敗(空の配列を返す)
+}
+std::reverse(ret.begin(), ret.end());
+return ret;
+}
+//辞書の構築
+void create_dic(std::string filename){
+std::ifstream ifs(filename.c_str());
+std::string word, cat;
+short l_id, r_id;
+int score;
+while(ifs >> word >> l_id >> r_id >> score >> cat){
+dic.insert(std::multimap<std::string, WORD_DATA >::value_type(word, WORD_DATA(word,l_id,r_id,cat,score)));
+}
+}
+//隣接可能性行列の構築
+void create_adjmat(std::string filename){
+std::ifstream ifs(filename.c_str());
+int num;
+short l_id, r_id;
+int score;
+ifs >> num >> num;
+for(int i=0; i<num; i++){
+adj_mat.push_back(std::vector<int>(num,0));
+}
+while(ifs >> l_id >> r_id >> score){
+adj_mat[l_id][r_id] = score;
+}
+}
+int main(){
+using namespace std;
+//単語辞書・隣接可能性行列の読み込み
+create_dic("dic.txt");
+cerr << "dic load complete." << endl;
+create_adjmat("adjmat.txt");
+cerr << "adj-mat load complete." << endl;
+//形態素解析
+string sentence;
+while(cin >> sentence){
+//ラティスを作成
+vector< vector<NODE> > graph = graph_construct(sentence);
+//ビタビアルゴリズムでコストが最小となるパスを検索
+vector<NODE> ret = viterbi(graph);
+//結果の表示
+if(ret.size()==0){
+cout << "解析失敗..." << endl;
+continue;
+}
+for(int i=0; i<ret.size(); i++){
+cout << ret[i].word << "\t" << ret[i].cat << endl;
+}
+}
+return 0;
+}
+実行結果
+$ ls
+a.out         adjmat.txt    decode.cc  dic.txt
+$ ./a.out
+dic load complete.
+adj-mat load complete.
+今日は晴天なり
+今日	名詞
+は	助詞
+晴天	名詞
+なり	助動詞
+EOS	EOS
+すもももももももものうち
+すもも	名詞
+も	助詞
+もも	名詞
+も	助詞
+もも	名詞
+の	助詞
+うち	名詞
+EOS	EOS
+あっちょんぶりけ
+解析失敗...
+Permalink | コメント(0) | トラックバック(0) | 02:06 
+形態素解析器のデコーダ部分を作ってみた - Negative/Positive Thinking

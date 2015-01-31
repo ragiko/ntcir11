@@ -1,0 +1,52 @@
+Internet Explorer の「フレームのドメイン照合」の変種が Web サイト オペレータによるファイル読み取りを許可 (IeFrameVerificationVariant)  
+Vuln ID:
+6748
+危険度:
+中危険度  
+IeFrameVerificationVariant
+プラットフォーム:
+Windows 2000: 任意のバージョン, Microsoft Internet Explorer:  5.01, Microsoft Internet Explorer: 5.5, Windows: Me, Windows: 98, Windows: 98 Second Edition, Windows NT: 4.0, Windows: 95, Windows: XP  
+説明:
+Microsoft Internet Explorer バージョン 5.01 および 5.5 のフレーム ドメインのチェックにおける脆弱点のため、悪意のある Web サイトのオペレータが、訪問者のコンピュータ上にあるファイルにアクセスする可能性があります。Internet Explorer は、別々のドメインに属している同じウィンドウ内のフレームを、正しく分割することができません。悪意のある Web サイトのオペレータが、自分のドメインでフレームを開き、同様に、訪問者のファイル システムを参照するフレームを開いて、ユーザーのファイル システムから自分のファイル システムへ情報を転送するおそれがあります。攻撃者がファイルの名前と場所を知っているか推測できる場合、および Web ブラウザ ウィンドウにファイルを表示可能である場合は、悪意のある Web サイトのオペレータとして、訪問者のコンピュータから任意のファイルを読み取る可能性があります。  
+この脆弱点は、Microsoft Security Bulletin MS00-033 で取り上げられていた「フレームのドメイン照合 (Frame Domain Verification)」脆弱点の新たな複数の変種を組み合わせたものです。「フレームのドメイン照合」脆弱点の詳細については、Microsoft Security Bulletins MS00-033、MS00-055、MS00-093、および MS01-015 を参照してください。  
+対処法:
+Microsoft Security Bulletin MS01-027 を参照して、この脆弱点に対するパッチを適用します。  
+IE 5.5 SP1 の場合: Microsoft は、この脆弱点に対するパッチを当初 MS01-015 で提供していましたが、これは MS01-027 でリリースされたパッチに変更されました。  
+False Negative:   
+このチェックを実行するユーザーが、対象ホストにおける管理者権限 (またはレジストリとファイル システムを読み取るための同等の権利) を持たない場合、脆弱なホストに対する False Negative が発生します。  
+必要とされる権限:
+このチェックを実行するユーザーが、対象ホストにおける管理者権限 (またはレジストリとファイル システムを読み取るための同等の権利) を持たない場合、脆弱なホストに対する False Negative が発生します。  
+参照:
+Microsoft Security Bulletin 
+MS01-027
+Flaws in Web Server Certificate Validation Could Enable Spoofing
+http://www.microsoft.com/technet/security/bulletin/ms01-027.mspx
+Microsoft Security Bulletin MS00-033
+Patch Available for "Frame Domain Verification", "Unauthorized 
+Cookie Access", and "Malformed Component Attribute" 
+Vulnerabilities
+http://www.microsoft.com/technet/security/bulletin/ms00-033.mspx
+Microsoft Security Bulletin MS00-055
+Patch Available for 'Scriptlet Rendering' Vulnerability
+http://www.microsoft.com/technet/security/bulletin/ms00-055.mspx
+Microsoft Security Bulletin MS00-093
+Patch Available for "Browser Print Template" and "File Upload 
+via Form" Vulnerabilities
+http://www.microsoft.com/technet/security/bulletin/ms00-093.mspx
+Microsoft Security Bulletin MS01-015
+IE can Divulge Location of Cached Content
+http://www.microsoft.com/technet/security/bulletin/ms01-015.mspx
+Microsoft Security Bulletin MS02-001
+Trusting Domains Do Not Verify Domain Membership of SIDs in Authorization Data
+http://www.microsoft.com/technet/security/bulletin/ms02-001.mspx
+ISS X-Force
+Internet Explorer 'frame domain verification' variant allows Web site 
+operators to read files
+http://www.iss.net/security_center/static/6748.php
+CVE CVE-2001-0246
+http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2001-0246
+CVE CVE-2001-0332
+http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2001-0332
+Know Your Risks
+Common Vulnerabilties & Exposures
+Internet Explorer の「フレームのドメイン照合」の変種が Web サイト オペレータによるファイル読み取りを許可 (IeFrameVerificationVariant)

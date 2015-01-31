@@ -1,0 +1,13 @@
+ 今回は、最新のAndroid 2.1を使用していますが、Android MapsはAPI Level 4なので、少なくともAndroid 1.6以上を指定する必要があります。
+AndroidManifest.xmlの設定
+AndroidManifest.xmlには以下、4つの設定が必要です。
+<?xml version="1.0" encoding="utf-8"?>
+<manifest ...>
+<application ...>
+<uses-library android:name="com.google.android.maps" /><!-- 【1】 -->
+</application>
+<uses-permission android:name="android.permission.INTERNET" /><!-- 【2】 -->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/><!-- 【3】 -->
+<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/><!-- 【4】 -->
+</manifest>
+Androidで動く携帯Javaアプリ作成入門(16):地図/位置情報/GPSを使うAndroidアプリを作るには (2/3) - @IT

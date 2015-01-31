@@ -1,0 +1,25 @@
+ログの出力先ディレクトリの準備  &dagger;
+本手順では、例として
+/var/log/mysql/query.log
+にクエリーログを作成します。
+[root@cent01 log]# pwd
+/var/log
+[root@cent01 log]#
+[root@cent01 log]# mkdir mysql
+[root@cent01 log]#
+[root@cent01 log]# touch /var/log/mysql/query.log
+[root@cent01 log]#
+[root@cent01 log]# chmod 755 /var/log/mysql/
+[root@cent01 log]#
+[root@cent01 log]# chmod 666 /var/log/mysql/*
+[root@cent01 log]#
+[root@cent01 log]# chown -R mysql. /var/log/mysql/
+[root@cent01 log]#
+[root@cent01 log]# ll -d /var/log/mysql
+drwxr-xr-x 2 mysql mysql 4096 11月 13 23:34 /var/log/mysql
+[root@cent01 log]#
+[root@cent01 log]# ll /var/log/mysql
+合計 0
+-rw-rw-rw- 1 mysql mysql 0 11月 13 23:34 query.log
+[root@cent01 log]#
+MySQL クエリーログの有効化 - インフラ検証覚書

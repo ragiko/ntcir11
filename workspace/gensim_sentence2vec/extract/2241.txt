@@ -1,0 +1,66 @@
+
+Oracle Textとは
+検索対象の文書の「本文」そのものを検索対象とすることを全文検索と呼びます。
+通常、全文検索のエンジンは、検索対象の文書全文に対し特別な索引付けを行います。
+検索時には索引を問い合わせて結果を返すような仕組みを取ります。
+Oracle Text はこの全文検索を行う為の機能です。
+ライセンス
+Oracle Text は、Oracle Database 本体のライセンスだけで利用できる機能です。
+Oracle Text を利用するために追加のオプション・ライセンスは必要ありません。
+以下のEditionで利用可能です。
+- Oracle Database Enterprise Edition(EE)
+- Oracle Database Standard Edition(SE)
+- Oracle Database Standard Edition One
+- Oracle Database Express Edition(XE)
+インストール
+Oracle データベースを Database Configuration Assistant(DBCA)を使用して作成した場合は、Oracle Text はデフォルトでインストールされます。
+データベース内の表に格納された日本語データへのテキスト問合せ例
+テーブル内に格納されている日本語データ(英語も含む)に対してテキスト索引を作成し、テキスト検索を行なう例を紹介します。
+テキスト検索を行うためには、事前にテキスト索引を作成しておく必要があります。
+(1) ～ (4)は、テキスト索引作成までの事前準備です。
+(1) 権限の付与
+Oracle Textの管理ユーザー(ctxsys)でテキスト索引を作成するユーザ(今回の場合 SCOTT)に対して CTXAPPロールを付与します。
+SQL> connect ctxsys/
+SQL> grant ctxapp to scott;
+(2) 表の作成 と データの挿入
+SQL> connect scott/tiger
+SQL> create table test  (
+2>  id     number primary key,
+3>  text   varchar2(80)  );
+SQL> insert into test ( id, text ) values ( 1, 'The cat sat on the mat' );
+SQL> insert into test ( id, text ) values ( 2, 'The dog barked like a dog' );
+SQL> insert into test ( id, text ) values ( 3, '日本オラクル株式会社' );
+SQL> commit;
+(3) レクサーの設定(定義)
+索引付けを行なう際の言語を指定します。
+プリファレンス作成: test_lexer プリファレンスを JAPANESE_VGRAM_LEXERレクサーとして作成
+SQL> connect scott/tiger
+SQL> execute ctx_ddl.create_preference('test_lexer','JAPANESE_VGRAM_LEXER');
+用語解説
+トークン
+OracleTextでは検索対象の文字列を分解し、短い文字列に分解して管理します。この短い文字列のことをトークンと呼びます。
+レクサー
+トークンに分解する仕組みがレクサーです。
+日本語を使用する場合には、日本語用のレクサーを指定する必要があります。
+日本語レクサー
+- JAPANESE_VGRAM_LEXER:日本語を2文字を基本に分割しトークンを作成します。
+- JAPANESE_LEXER (Oracle Text 9.0.1以降で使用可能):内部辞書を用いて、単語を基本にしたトークンを作成します。
+プリファレンス
+レクサーには、対象となる言語によっていくつかの種類があります。どのレクサーを使うかなどの設定をするのがプリファレンスです。
+(4) テキスト索引の作成
+TEST表に対するテキスト索引を作成します。
+SQL> create index test_idx on test ( text ) 
+2  indextype is ctxsys.context
+3  parameters ('lexer test_lexer');
+(5) テキスト検索の実行
+"日本"という文字を含むデータを検索します。
+SQL> col text for a30
+SQL> select id, text from test
+2  where contains ( text, '日本') > 0;
+ID TEXT
+---------- ------------------------------
+3 日本オラクル株式会社
+参考資料
+【セミナー動画/資料】Oracle Text 概要
+【セミナー資料】Oracle Text 詳細解説
+Oracle Textの使い方～ライセンス、インストール、テキスト索引、全文検索 (オラクルエンジニア通信 - 技術資料、マニュアル、セミナー)

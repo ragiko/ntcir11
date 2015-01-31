@@ -1,0 +1,140 @@
+//=============強化学習エージェントの基本クラス=========================
+//                                                                     |
+// このクラスを派生させ、仮想関数を独自に記述することで、              |
+// 共通インターフェースを持った様々な強化学習アルゴリズムを実現する。  |
+//                                                                     |
+//======================================================================
+import java.io.*;
+public class AGENT { 
+//-----------------------エージェント外部から指定されるパラメータ
+public int    observation_dim;       // 観測入力ベクトルの次元数
+public int[]  observation_attribute; // 観測入力ベクトルの各要素の属性
+public int    action_dim;            // 行動出力ベクトルの次元数
+public int[]  action_attribute;      // 行動出力ベクトルの各要素の属性
+public double[] observation;   // 観測入力ベクトル格納領域へのポインタ
+public double[] action;        // 行動出力ベクトル格納領域へのポインタ
+public static final int AT_UNKNOWN = 0; //ベクトルの要素の属性=離散値か連続値か、
+//                      定義域も不明な場合
+public static final int AT_CONTINUOUS = 1; //ベクトルの要素の属性=0以上1未満の
+//                      連続値を指定する場合
+//コンストラクタ------------------------------------------------
+AGENT( int   obs_dim,         // 状態入力ベクトルの次元数
+int[] obs_attribute,   // 状態入力ベクトルの各要素の属性
+int   act_dim,         // 行動出力ベクトルの次元数
+int[] act_attribute ){ // 行動出力ベクトルの各要素の属性
+observation_dim       = obs_dim ;
+observation_attribute = obs_attribute ;
+action_dim            = act_dim ;
+action_attribute      = act_attribute ;
+observation           = new double [obs_dim]; 
+action                = new double [act_dim];
+int dim;
+for( dim = 0; dim = 0) && (no < GetActionDimension()) ){
+return( action_attribute[no] );
+}else{
+return( -1 ); // エラー
+}
+}
+//-----初期設定----(返り値 true=正常終了, false=異常終了)
+public boolean Init(){ return( true );} 
+public boolean Init( InputStream inp_st ){ return( true );}
+//------------------観測入力に応じて行動を出力-------------------
+public double[] SelectAction( double[] observation_ptr ){
+return( action ); // 返り値=行動出力ベクトルへのポインタ
+}
+//報酬で行動を強化-----------------------------------------------		 
+public void Reinforce( double reward ){ return; } 
+//学習結果を出力する---------------------------------------------
+public void     Report( PrintStream out_st ){ return; }  
+public double[] ReportGain( int dimnum ){return( observation );}
+public double   ReportSigma( int dimnum ){return(0.0);}
+}
+// [補足説明]===========================================================
+//
+//【観測、行動データの仕様】**************************************
+// エージェントの状態入力、行動出力は全てdouble型の配列として扱う。
+// 外部とは double型の配列のポインタをやりとりする。
+//     observation[] = 観測入力ベクトルを格納する配列
+//     action[]      = 行動出力ベクトルを格納する配列
+// 
+// 配列の要素数は、
+//     状態入力の要素数 = obsevation_dim で、
+//     行動出力の要素数 = action_dim で外部(環境)から指定される。
+//  
+// 配列の要素がどのような値をとるのか(属性)も外部(環境)から指定される。
+//     observation_attribute[] = 観測入力ベクトルの各要素の属性
+//     action_attribute[]      = 行動出力ベクトルの各要素の属性
+// 
+// 属性として以下のような値が指定される、
+//     AT_UNKNOWN     要素の値が離散値か連続値か、定義域も不明な場合
+//     AT_CONTINUOUS  要素の値が0以上1未満の連続値を指定する場合
+//     2以上の整数n   要素の値が0からn-1までの離散的な整数値をとる場合
+//
+//【クラスの生成と初期化】***************************************** 
+// (1) エージェントクラスのコンストラクタの引数として、上に挙げた
+//        1.状態入力の要素数 
+//        2.観測入力ベクトルの各要素の属性
+//        3.行動出力の要素数 
+//        4.行動出力ベクトルの各要素の属性
+//     を、環境に適合するように指定する。
+// (2) 次にメンバー関数の Init() または Init(InputStream inp_st)
+//     を呼び出して割引率や学習率などの初期設定を行う。
+//     エージェントのアルゴリズムの仕様が、コンストラクタで指定され
+//     た要素数や属性に対応していない場合、ここでエラーを発生する。
+// 
+//【行動選択と強化】***********************************************
+// (1) まずは環境において状態を観測する。
+//     環境には、状態を観測して観測ベクトルに格納し、返り値として
+//     格納アドレスを返す。 
+//     環境のクラスENVIRONMENTには、上記のメンバ関数として
+//     double[] ENVIRONMENT::GetObservation() が用意されている。
+// (2) 観測入力ベクトルへのポインタを引数として
+//     メンバー関数 double[] SelectAction( double[] observation_ptr )
+//     を呼び出して、観測入力に応じた行動を選択する。
+//     返り値は、行動出力ベクトルへのポインタなのでこれを環境へ渡す
+// (3) 環境では、引数で示された行動を実行して、状態遷移を行い、
+//     返り値として報酬を返す。 
+//     環境のクラスENVIRONMENTには、上記のメンバ関数として 
+//     double ENVIRONMENT::ExecuteAction( double[] Action )
+//     が用意されている。 
+// (4) 環境から受け取った報酬によって、行動を強化する。
+//     メンバ関数 reinforce( double reward )  を呼び出す。
+// (5) 次の時間ステップへ進んで (1) へ戻る。
+//
+//
+// [具体例]=========================================================
+//
+// エージェントの接する環境が 
+//     (観測) = 0,1,2,3 の4種類の離散値
+//     (行動) = 0,1,2   の3種類の離散値
+// をとる場合を考える。、
+//
+// これは 状態入力は1次元すなわち(状態入力の変数の要素数 = 1)で, 
+// この変数が 0,1,2,3 の4種類の離散値をとり、
+// 行動出力も1次元すなわち(行動出力の要素数 = 1)で
+// この変数は0,1,2 の3種類の離散値をとる と考える。
+// 上記の環境のクラスを ENVIRONMENT とする。
+//
+// サンプルプログラム:
+//
+// void main( int maxLoop ){
+//      //----環境のクラス生成
+//      ENVIRONMENT Environment; 
+//      int obs_att[1] = { 4 };  // 観測入力ベクトルの要素の属性を指定(4種類の離散値)
+//      int act_att[1] = { 3 };  // 行動出力ベクトルの要素の属性を指定(3種類の離散値)
+//      //----エージェントクラス生成
+//      AGENT Agent( 1, obs_att, 1, act_att ); // 状態入力は1次元, 行動出力も1次元
+//      //----エージェント初期化、エラーチェック
+//      if( ! Agent.Init() ){ 
+//           return; // error!
+//      } 
+//      //----以下、学習ループ処理
+//      double reward;
+//      for( int loop = 0; loop < MaxLoop; loop++ ){
+//         reward = Environment.ExecuteAction( 
+//                     Agent.SelectAction( Environment.GetObservation() )
+//                  );
+//         Agent.Reinforce( reward );
+//      }
+// }
+

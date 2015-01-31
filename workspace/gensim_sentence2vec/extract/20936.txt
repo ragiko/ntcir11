@@ -1,0 +1,4 @@
+そして、韻律モデル更新部110は、入力音声の韻律的特徴量時間パターンによって話者別単語韻律モデルを更新する。Then a prosodic model update part 110 updates word prosodic models by the speakers with the prosodic feature quantity time pattern of the input speech. - 特許庁
+韻律的特徴量抽出部102は、入力音声を音響分析して韻律的特徴量を算出し、時間パターン作成部107は、その韻律的特徴量の時間パターンを作成する。In this feeling recognition device, a prosodic feature quantity extraction part 102 performs an acoustic analysis of an input speech to calculate a prosodic feature quantity and a time pattern generation part 107 generates the time pattern of the prosodic feature quantity. - 特許庁
+話者別単語韻律モデル記憶部108は予め話者ごと、単語ごとに登録されている韻律的特徴量の時間パターンの統計量である話者別単語韻律モデルを記憶している。A prosodic-model-by-speaker storage part 108 preliminarily stores word prosodic models by speakers as statistics of time patterns of prosodic feature quantities preliminarily registered by the speakers and words. - 特許庁
+韻律的特徴の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

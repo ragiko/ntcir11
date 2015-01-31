@@ -1,0 +1,180 @@
+この記事は公開されてから1年以上経過しています。情報が古い可能性がありますので、ご注意ください。
+単一のStoryboardでうまく画面遷移を表現できない
+Storyboardを使ってアプリを作成していると、画面遷移の定義が楽な反面、巨大なStoryboardが生まれてしまったり、うまくSegueで表現できずに同じような画面遷移を2度定義してしまったりすることがあります。このため、Storyboardの使用をあきらめようとする事もあるかと思いますが、Storyboardを分割するとうまい具合に実装できることもあります。
+そこで今回は、複数のStoryboardを利用して画面遷移を作成する方法をご紹介したいと思います。
+開発環境
+今回の開発環境は下記の通りです。
+OSX 10.8
+Xcode 4.6.1
+iOS SDK 6.1
+ソースコードはGitHubで公開しています。
+共通の画面遷移を別のStoryboardに切り出す
+共通の画面遷移部分を再利用したい
+NavigationControllerを使った画面遷移を持ったアプリを作成する際には、複数の画面から表示される共通の画面遷移が存在する事が多いです。そこで、まず最初に共通の画面遷移を別のStoryboardに切り出すケースについて考えてみたいと思います。
+ここで作成する画面遷移の概要は、下記の通りです。
+メインの画面遷移は、TabBarControllerのタブから派生する2つの経路
+上記2経路の最後の画面から共通の画面をモーダルで表示する
+特に難しそうなところはありません。早速作ってみましょう。
+メインの画面遷移を作成する
+まず、プロジェクトを作成します。新規プロジェクト作成ウィザードからSingle View Applicationでプロジェクトを作成して下さい。途中のUse StoryboardsとUse Automatic Reference Countingにはチェックを入れておいて下さい。
+画面遷移の作成
+プロジェクトを作成したら、Xcodeが生成したMainStoryboardに以下のような画面遷移を作成します。TabBarControllerをInitial ViewControllerにして、そのChildViewControllerとしてNavigationControllerと通常のViewControllerを追加しています。NavigationControllerは2つViewControllerの遷移を管理しています。
+UIViewControllerサブクラスの作成
+あとは、3つのViewControllerのためにそれぞれUIViewControllerのサブクラスを作成します。作成したクラスはStoryboardのIdentity inspectorからそれぞれのViewControllerに割り当てて下さい。これでとりあえずメインの画面遷移は出来上がりです。
+共通画面の画面遷移を別のStoryboardで作成する
+先程作成した画面遷移からモーダルで表示させる共通画面の画面遷移を作成します。下図のように、2つのタブから遷移した最後の画面から表示させます。
+画面遷移の作成
+では、共通画面の画面遷移を先程とは別のStoryboardで作成します。新規ファイル作成ウィザードのUserInterfaceからStoryboardを選択して作成して下さい。ここでは、SubStoryboardという名前にしました。
+作成したSubStoryboardを開くと何も定義されておらず空になっています。ここに以下のような画面遷移を作成します。
+UIViewControllerサブクラスの作成
+先程と同じように、2つのViewControllerのためにそれぞれUIViewControllerのサブクラスを作成します。作成したクラスはStoryboardのIdentity inspectorからそれぞれのViewControllerに割り当てて下さい。また、開いた共通画面を閉じるためにStoryboard上でModalViewController1にCloseボタンを追加します。このボタンのTouchUpInsideイベント時のアクションを実装ファイルに接続して、dismissViewControllerAnimated:completion:メソッドを呼び出すよう実装しておきます。
+ModalViewController.m
+- (IBAction)closeButtonDidTouch:(id)sender
+{
+[self dismissViewControllerAnimated:YES completion:nil];
+}
+これで共通画面の画面遷移は出来上がりです。
+Storyboardを読み込んでViewControllerをインスタンス化する
+さて、必要な画面の定義ができましたので、MainStoryboardのViewControllerからSubStoryboardをロードして表示してみます。
+まずは、MainStoryboardのTab1ChildViewController2とTab2ChildViewControllerに共通画面のモーダル表示のトリガとなるボタンを配置し、アクションを接続します。アクションを接続したメソッドには、下記コードのようにSubStoryboardをロードしてその中で定義されているInitialViewControllerをインスタンス化する処理を記述します。
+Tab1ChildViewController2.m, Tab2ChildViewController.m
+- (IBAction)openButtonDidTouch:(id)sender
+{
+UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SubStoryboard" bundle:[NSBundle mainBundle]];
+UIViewController *initialViewController = [storyboard instantiateInitialViewController];
+[self presentViewController:initialViewController animated:YES completion:nil];
+}
+StoryboardはUIStoryboardというクラスでのクラスメソッドである、storyboardWithName:bundle:でロードします。1番目のパラメータにストーリーボードのファイル名を渡すとUIStoryboardのインスタンスが返されます。さらに、instantiateInitialViewControllerメソッドでSubStoryboardのInitialViewControllerをインスタンス化しています。今回の場合、インスタンス化されて戻されるのはUINavigationControllerのインスタンスです。あとは、手に入れたViewControllerのインスタンスをいつも通りモーダルで表示する処理を記述するだけです。
+この処理をTab1ChildViewController2とTab2ChildViewControllerに実装すれば目的の画面遷移を作れます。下図は実行時のイメージです。
+UIWindowのrootViewControllerを差し替えて別の画面遷移を追加する
+アプリ実行時に画面遷移の定義をごっそり差し替えたい
+ここまで作成してきたプロジェクトでは、MainStoryboardのInitialViewControllerであるTabBarControllerがUIWindowのrootViewControllerになっています。しかし、アプリの初回起動時にチュートリアルを差し込みたい場合や、アプリ起動時にトップ画面を表示してそこからさらにナビゲーションメニューを持ったホーム画面に遷移したい場合など、rootViewControllerをアプリ実行時に差し替えたいこともあります。
+そこでここからは、別のStoryboardにもう1つの画面遷移を定義しておき、実行時にrootViewControllerを別のStoryboardのInitialViewControllerに差し替えるケースについて考えてみたいと思います。ついでに、こちらにも先程の共通画面を表示させます。
+rootViewControllerの差し替え
+rootViewControllerを差し替えるトリガの実装
+先程作成したサンプルにそのまま追加で実装していきます。まずは、rootViewControllerを差し替えるトリガを作ります。
+Tab1ChildViewController1のナビゲーションバーにBarButtonItemを追加して、TouchUpInsideイベントのアクションをViewControllerと接続します。接続した先のメソッドでは、これから作成するStoryboardの画面に切り替える処理を行います。色々やり方はありますが、ここではApplicationDelegateに画面を切り替えるよう通知するNotificationを発行します。
+Tab1ChildViewController1.m
+- (IBAction)showAnotherViewButtonDidTouch:(id)sender
+{
+NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+[center postNotificationName:ShowAnotherViewNotification object:nil];
+}
+別途、Notificationの定数も定義しておきます。
+Notifications.h
+static NSString * const ShowMainViewNotification = @"ShowMainViewNotification";
+static NSString * const ShowAnotherViewNotification = @"ShowAnotherViewNotification";
+差し替える画面を持つ新たなStoryboardの作成
+次に、差し替える画面を持つ新たなStoryboardを作成します。先程と同じように、新規ファイル作成ウィザードのUser InterfaceからStoryboardを選択して下さい。ここではAnotherStoryboardという名前にしました。このStoryboardには単一のViewControllerを追加します。AnotherViewControllerという名前のUIViewControllerサブクラスを作成し、AnotherStoryboard上のViewControllerに割り当てます。
+DoneボタンにはTouchUpInsideイベントのアクションをViewControllerと接続しておき、MainStoryboardで定義される画面に戻るトリガを実装します。Openボタンには共通画面のモーダル表示処理を実装します。
+- (IBAction)doneButtonDidTouch:(id)sender
+{
+NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+[center postNotificationName:ShowMainViewNotification object:nil];
+}
+- (IBAction)openButtonDidTouch:(id)sender
+{
+UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SubStoryboard" bundle:[NSBundle mainBundle]];
+UIViewController *initialViewController = [storyboard instantiateInitialViewController];
+[self presentViewController:initialViewController animated:YES completion:nil];
+}
+rootViewControllerの差し替え処理の実装
+AppDelegateでは、画面切り替え指示のNotificationを受け取って画面を切り替える処理を実装します。
+AppDelegate.m
+#import "AppDelegate.h"
+#import "Notifications.h"
+@interface AppDelegate () {
+UIViewController *_anotherViewRootViewController;
+}
+@property (nonatomic) UIViewController *mainViewRootViewController;
+@property (nonatomic, readonly) UIViewController *anotherViewRootViewController;
+@end
+@implementation AppDelegate
+#pragma mark - Accessor methods
+- (UIViewController *)anotherViewRootViewController
+{
+if (!_anotherViewRootViewController) {
+UIStoryboard *anotherStoryboard = [UIStoryboard storyboardWithName:@"AnotherStoryboard" bundle:[NSBundle mainBundle]];
+_anotherViewRootViewController = [anotherStoryboard instantiateInitialViewController];
+}
+return _anotherViewRootViewController;
+}
+#pragma mark - Lifecycle methods
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+// MainStoryboardのInitialViewControllerの参照を保持する
+self.mainViewRootViewController = self.window.rootViewController;
+__weak typeof(self) weakSelf = self;
+NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+NSOperationQueue *queue = [NSOperationQueue mainQueue];
+[center addObserverForName:ShowMainViewNotification object:nil queue:queue usingBlock:^(NSNotification *note) {
+[weakSelf showMainView];
+}];
+[center addObserverForName:ShowAnotherViewNotification object:nil queue:queue usingBlock:^(NSNotification *note) {
+[weakSelf showAnotherView];
+}];
+return YES;
+}
+#pragma mark - Private methods
+- (void)showMainView
+{
+if (self.window.rootViewController == self.mainViewRootViewController) {
+return;
+}
+self.window.rootViewController = self.mainViewRootViewController;
+// rootViewController差し替え時のトランジション
+__weak typeof(self) weakSelf = self;
+self.mainViewRootViewController.view.hidden = YES;
+[UIView transitionWithView:self.window
+duration:0.6f
+options:UIViewAnimationOptionTransitionFlipFromRight | UIViewAnimationOptionShowHideTransitionViews
+animations:^{
+weakSelf.mainViewRootViewController.view.hidden = NO;
+}
+completion:nil];
+}
+- (void)showAnotherView
+{
+if (self.window.rootViewController == self.anotherViewRootViewController) {
+return;
+}
+self.window.rootViewController = self.anotherViewRootViewController;
+// rootViewController差し替え時のトランジション
+__weak typeof(self) weakSelf = self;
+self.anotherViewRootViewController.view.hidden = YES;
+[UIView transitionWithView:self.window
+duration:0.6f
+options:UIViewAnimationOptionTransitionFlipFromRight | UIViewAnimationOptionShowHideTransitionViews
+animations:^{
+weakSelf.anotherViewRootViewController.view.hidden = NO;
+}
+completion:nil];
+}
+@end
+画面切り替え指示のNotificationを受け取った際に、画面の切り替え処理を呼び出しています。ただ切り替えるだけだと面白くありませんので、UIViewのトランジションメソッドを利用してFlipトランジションを適用しています。この際、UIViewAnimationOptionShowHideTransitionViewsオプションを設定して、表示対象rootViewControllerのviewのhidden属性でトランジションを行わないと、初回表示時に画面レイアウトが崩れた状態でトランジションエフェクトが再生されてしまいますので注意が必要です。
+これでrootViewControllerの切り替えが実装できました。下図は実行時のイメージです。
+アプリ起動時にロードするStoryboardを変更する
+先程作ったAnotherStoryboardの画面をアプリ起動時にロードするよう変更することも可能です。アプリ起動時にロードするStoryboardは、プロジェクト設定画面からアプリのビルドターゲットを選択して、Summary - iPhone / iPod Deployment Info(iPad Deployment Info) - Main Storyboardから設定できます。作成したプロジェクトではMainStoryboardになっているはずですので、AnotherStoryboardに変えてみましょう。
+これでAnotherStoryboardの画面が起動時に表示されるようになります。
+Storyboardを分ける意味
+単一のStoryboardでの実装を検討
+目的の画面遷移を実装することができましたが、わざわざStoryboardを分ける意味はあったのでしょうか。そもそも、最初に作成した共通画面遷移部分の実装は下図のように1つのStoryboardで実現する事ができます。
+また、共通画面が大量のビューから呼び出されるなどの事情があってStoryboardでModalSegueを全て接続するのが難しい場合など、動的にViewControllerをインスタンス化したい場合にも別の実現方法があります。
+Storyboard上のViewControllerにはStoryboard IDを設定する事ができます。Storyboard IDを設定した上で、UIStoryboardのメソッドinstantiateViewControllerWithIdentifier:のパラメータにStoryboard IDを与えて呼び出すと、対応するStoryboard上のViewControllerをインスタンス化して返してくれます。下図は、Storyboard IDの設定です。
+IDを設定したViewControllerのインスタンス化処理のソースコードです。
+- (IBAction)openButtonDidTouch:(id)sender
+{
+// このUIViewControllerが定義されているStoryboard(ここではMainStoryboard)の
+// UIStoryboardクラスのインスタンスは、self.storyboardで参照できる
+UIViewController *viewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ModalNavigationController"];
+[self presentViewController:viewController animated:YES completion:nil];
+}
+この機能を利用すれば、MainStoryboardのみで目的の画面遷移を実現する事ができます。
+画面遷移のモジュール化
+しかし、今回はrootViewControllerを差し替えるサンプルで作成した別のStoryboardからも共通画面遷移を利用しています。このケースでは共通画面遷移部分は複数のStoryboardから利用されるので、独立したStoryboardにしておいた方が、後からこのアプリのコードを見た際に画面遷移が再利用されているということが分かりやすいです。Storyboard自体の肥大化を防ぐ効果もあります。これはちょうど、一つのクラスに全てのロジックを詰め込まずに機能を分散させた方が見通しがよくなることと似ています。
+とはいえ、似たような画面がある場合にいつでも再利用できるかというと、現実には微妙な仕様の違いから再利用できないことも多いのが微妙なところではあります。
+まとめ
+Storyboardを分割することによって、単一のStoryboardを利用する場合より少し柔軟に扱えました。Storyboardを機能など意味のある単位で分割しておくと、後からの変更要求に対して柔軟に対応できる余地を作る事ができます。分割することによって、その部分はSegueでの手軽な接続ができなくなってしまいますが、その部分の接続は少量のコードの記述でできますのでStoryboardのメリットを殺すことにはならないかと思います。もちろん、分割しすぎはStoryboardの意味がなくなってしまうので良くありません。
+また、複数人数での開発の場合は、ある程度Storyboardを分割しておいた方がコミット時のコンフリクトを回避しやすいです。Storyboardの実体はただのXMLファイルなのである程度は手動でのマージも可能ですが、Xcodeによってジェネレートされている以上、なるべくマージは避けたいところです。
+Storyboardの特徴は、画面遷移定義の手軽さもさることながら、画面の定義と画面間の遷移の定義をグルーピングして1つのモジュールとして扱えることだと私は思っています。これはXibにはない機能です。しかし、細かなUIコンポーネントの定義はStoryboardには向いていません。こちらはXibまたはソースコードで定義して再利用可能な状態にした方がいいです。それぞれ得意な事と不得意な事があるので、使い分けが大切だと思います。
+[iOS] 複数のStoryboardを使って画面遷移を作成する ｜ Developers.IO

@@ -1,0 +1,9 @@
+
+Connectsコレクションの既定のプロパティは、項目です。
+接続オブジェクト (接着)の図形の指定したオブジェクトが接続されているすべてのShapeオブジェクトのConnectsコレクションを取得するのには、 ShapeオブジェクトのConnectsプロパティを使用します。
+接続オブジェクトが接続されているすべてのShapeオブジェクトのConnectsコレクションを取得するには、 ShapeオブジェクトのFromConnectsプロパティを使用して (図形の指定したオブジェクトに接着)。
+PageオブジェクトのConnectsプロパティを使用して、エントリを接続ごとに、 PageオブジェクトのConnectsコレクションを取得します。
+MasterオブジェクトのConnectsプロパティを使用して、 Masterオブジェクト内のすべての接続のエントリのConnectsコレクションを取得します。
+Visual StudioソリューションをMicrosoft.Office.Interop.Visioへの参照が含まれている場合は、このコレクションは次の種類に対応しています。
+Microsoft.Office.Interop.Visio.IVConnects.GetEnumerator()( Connectのオブジェクトを列挙します。)
+オブジェクト (Visio) 接続します。(機械翻訳)

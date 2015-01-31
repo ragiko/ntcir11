@@ -1,0 +1,4 @@
+当選確率算出部140は、照合結果に基づいて、ユーザが保有する宝くじの番号と宝くじの当選番号との適合確率を算出し、照合応答出力部150は適合確率をユーザが保有する宝くじの当選確率としてユーザ端末装置200に送信する。An odds calculation part 140 calculates a matching probability of the number of the public lottery ticket owned by the user with the winning number of the public lottery, and a collation response output part 150 transmits the matching probability to the user terminal device 200 as the odds of the public lottery ticket owned by the user. - 特許庁
+次に、背景モデルパラメータを使用して、問題となる適合データセットに固有の適合確率モデルのパラメータの事前モデルを定義する。Then, using the background model parameter, a previous model of a parameter of the conformance probability model specific to an interest conformance data set is defined. - 特許庁
+さらに、適合データセットと事前モデルに基づいて、適合確率モデルに関する第2のモデルパラメータセットが特定される。Based on the conformance data set and the prior model, a second model parameter set about the conformance probability model is specified. - 特許庁
+適合確率の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

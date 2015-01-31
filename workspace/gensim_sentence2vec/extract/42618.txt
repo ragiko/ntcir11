@@ -1,0 +1,74 @@
+
+bash で標準で使えるデータ構造は配列くらいです。  
+その扱いについてまとめました。
+## 配列を生成する
+たとえば、空の配列を生成するには以下のようにします。
+array=()
+また、declare 文で生成することも可能です。以下の例では、初期化もまとめています。
+declare -a array=("a" "b" "c")
+## 配列の要素数
+echo ${#array[@]}              # 3
+echo ${#array[*]}              # 3
+差異はないようです。
+## 配列のデータを操作する
+### 追加
+# 先頭に追加
+array=(3 "${array[@]}")        # arrayは(3 a "b" "c")
+# 末尾に追加
+array=("${array[@]}" 4)        # arrayは(3 "a" "b" "c" 4)
+array+=( 5 )                   # arrayは(3 "a" "b" "c" 4 5)
+### 取り出す
+# 先頭を取り出す
+array=("${array[@]:1}")        # arrayは("a" "b" "c" 4 5)
+# 末尾を取り出す
+declare -i num=${#array[@]}-1
+array=("${array[@]:0:$num}")   # arrayは("a" "b" "c" 4)
+### 中身の参照
+i=0
+for e in ${array[@]}; do
+echo "array[$i] = ${e}"
+let i++
+done
+array[0] = a
+array[1] = b
+array[2] = c
+array[3] = 4
+# C言語風に記述する
+for ((i = 0; i < ${#array[@]}; i++)) {
+echo "array[$i] = ${array[i]}"
+}
+array[0] = a
+array[1] = b
+array[2] = c
+array[3] = 4
+# Bash 独自の記述 1
+echo "${array[@]}"
+a b c 4
+# Bash 独自の記述 2
+IFS=$'\n'
+echo "${array[*]}"
+a
+b
+c
+4
+### データを削除する
+# ある要素を削除
+unset array[1]
+echo "${array[@]}"             # arrayは("a" "c" 4)
+echo ${array[0]}               # array[0]は"a"
+echo ${array[1]}               # array[1]は空
+echo ${array[2]}               # array[2]は"c"
+配列の中身は削除できても配列自体は削除できない。  
+添字を詰めたければ、
+array=("${array[@]}"
+代入しなおせば良い。
+unset array[@]                 # 全削除する
+echo "${array[@]}"             # 配列arrayは空
+echo "${#array[@]}"            # 要素数は0
+### データを格納する
+array[0]=1
+array[1]="a"
+以上です。
+==================================================
+※ この記事は、新たな発見などがあれば追記・加筆していきます。
+bash 配列まとめ - Qiita

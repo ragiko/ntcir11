@@ -1,0 +1,86 @@
+35pt
+use strict;
+opendir(DIR, "./abc");
+while(my $file = readdir(DIR)){
+next if -d $file;
+next if $file !~ /\.html$|\.htm$/i;
+open(INFH, '<', "./abc/$file");
+my $inputfile = '';
+my $outputfile = '';
+while(my $line = <INFH>){
+# Shift_JIS 全角チェック
+if($line =~ /[\x81-\x9f\xe0-\xfc][\x40-\x7e\x80-\xfc]/i){
+$outputfile .= $line;
+$line = "\n";
+}
+$inputfile .= $line;
+}
+close(INFH);
+if($outputfile){
+open(OUTFH, '>', "./xyz/$file");
+print OUTFH $outputfile;
+close(OUTFH);
+open(OUTFH, '>', "./abc/$file");
+print OUTFH $inputfile;
+close(OUTFH);
+}
+}
+closedir(DIR);
+これでどうでしょう?
+ありがとうございます。
+これはperlですか?
+すみませんが実行方法を教えてもらえないでしょうか?
+ちなみにローカルで作業をしたいと思っています。Apacheなどのインストールは避けたいと思っています。
+35pt
+何度も同じ回答者ですみません。
+下記でできると思います。WSHにしたかったのですが、全角判定が一発でできないので、Excelマクロにしました(VBでも動くと思います)。
+Option Explicit
+Const sInPath = "C:\temp\abc\"
+Const sOutPath = "C:\temp\xyz\"
+Const sTmpFile = "C:\temp\abc\temp.txt"
+'Const ForWriting = 2 'FSO
+Sub getKanjiLine()
+Dim sInName As String   'フォルダ含まない名前
+Dim sInFile As String
+Dim sOutFile As String
+Dim sTextLine As String
+'出力ファイル用にのみFSOを利用(printが化けるため)
+Dim oFSO As Object
+Dim oOutTextStrm As Object
+Set oFSO = CreateObject("Scripting.FileSystemObject")
+sInName = Dir(sInPath & "*.html") '最初のファイル名を持ってくる
+Do While sInName <> ""
+sInFile = sInPath & sInName
+sOutFile = sOutPath & sInName
+Open sInFile For Input As #1
+Set oOutTextStrm = oFSO.CreateTextFile(sOutFile, True)
+With oFSO.CreateTextFile(sTmpFile, True) '入力ファイル更新用
+Do While Not EOF(1)
+Line Input #1, sTextLine
+'全角の有無判定
+If Len(sTextLine) <> _
+LenB(StrConv(sTextLine, vbFromUnicode)) Then
+.WriteLine  '入力ファイルを改行にする
+oOutTextStrm.WriteLine (sTextLine)  '日本語行は、別に出力
+Else
+.WriteLine (sTextLine)
+End If
+Loop
+'日本語行がないなら出力は消す お好みでCloseのみにしてください
+If oOutTextStrm.Line = 1 Then
+oOutTextStrm.Close
+Kill sOutFile
+Else
+oOutTextStrm.Close
+End If
+.Close
+Close #1
+'作業ファイルを元のファイルに上書き
+FileCopy sTmpFile, sInFile
+Kill sTmpFile
+End With
+sInName = Dir
+Loop
+End Sub
+行番号をつけたり、xyzへ出す日本語分ファイルは.txtで出すなどの変更を加えると更に使いやすいかも知れません。
+★文字列判別&抽出プログラム★ ■採用回答に 500 pt 程度■ 「… - 人力検索はてな

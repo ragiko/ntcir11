@@ -1,0 +1,411 @@
+
+発表論文概要
+FY2006
+Instrogram: Probabilistic Representation of Instrument 
+Existence for Polyphonic Music
+Tetsuro Kitahara, 
+Masataka Goto, 
+Kazunori Komatani, 
+Tetsuya Ogata, 
+and 
+Hiroshi G. Okuno
+IPSJ Journal, 
+Vol.48, No.1, January 2007. 
+Instrument Identification in Polyphonic Music: 
+Feature Weighting to Minimize Influence of Sound Overlaps
+Tetsuro Kitahara, 
+Masataka Goto, 
+Kazunori Komatani, 
+Tetsuya Ogata, 
+and 
+Hiroshi G. Okuno
+Abstract
+This paper provides a new solution to the problem of feature variations 
+caused by the overlapping of sounds in instrument identification in 
+polyphonic music. When multiple instruments simultaneously play, 
+partials (harmonic components) of their sounds overlap and interfere, 
+which makes the acoustic features different from those of monophonic sounds. 
+To cope with this, we weight features based on how much they are affected 
+by overlapping. 
+First, we quantitatively evaluate the influence of overlapping on each 
+feature as the ratio of the within-class variance to the between-class 
+variance in the distribution of training data obtained from polyphonic sounds. 
+Then, we generate feature axes using a weighted mixture that minimizes 
+the influence via linear discriminant analysis.
+In addition, we improve instrument identification using 
+musical context. 
+Experimental results showed that the recognition rates using 
+both feature weighting and musical context were 
+84.1% for duo, 77.6% for trio, and 72.3% for quartet; 
+those without using either were 53.4, 49.6, and 46.5%, respectively.
+EURASIP Journal on Applied Signal Processing, 
+Vol.2007, No.51979, pp.1--15, 2007. 
+多重奏を対象とした音源同定:
+混合音テンプレートを用いた音の重なりに頑健な特徴量の重みづけ
+および音楽的文脈の利用
+北原 鉄朗, 
+後藤 真孝, 
+駒谷 和範, 
+尾形 哲也, 
+奥乃 博
+あらまし
+本論文では,多重奏に対する音源同定において不可避な課題である
+「音の重なりによる特徴変動」について新たな解決法を提案する.
+多重奏では複数の楽器が同時に発音するため,各々の周波数成分が
+重なって干渉し,音響的特徴が変動する.
+本研究では,混合音から抽出した学習データに対して,
+各特徴量のクラス内分散・クラス間分散比を求めることで,
+周波数成分の重なりの影響の大きさを定量的に評価する.
+そして,線形判別分析を用いることで,
+これを最小化するように特徴量を重みづけした新たな特徴量軸を生成する.
+これにより,周波数成分の重なりの影響をできるだけ小さくした特徴空間が得られる.
+さらに,音楽的文脈を利用することで音源同定のさらなる高精度化を図る.
+実楽器音データベースから作成した二〜四重奏の音響信号を用いた
+実験により,二重奏では50.9%から84.1%へ,
+三重奏では46.1%から77.6%へ,四重奏では43.1%から72.3%へ
+認識率の改善を得,本手法の有効性を確認した.
+電子情報通信学会論文誌, 
+Vol.J89-D, No.12, December 2006. 
+伴奏音抑制と高信頼度フレーム選択に基づく楽曲の歌手名同定手法
+藤原 弘将, 
+北原 鉄朗, 
+後藤 真孝, 
+駒谷 和範, 
+尾形 哲也, 
+奥乃 博
+あらまし
+本論文では,実世界の音楽音響信号に対する歌手名の同定手法について述べる.歌手名の同定を行う際に大きな問題となるのは,混在する伴奏音の影響である.本論文ではこの問題を解決するため,伴奏音抑制と高信頼度フレーム選択の手法を提案する.前者では,優勢なメロディの調波構造を抽出し再合成することで,伴奏音の影響を低減させることができる.後者は,歌声と非歌声を表す2種類の混合正規分布を用いて,それぞれのフレームが歌声として信頼できるか否かを判定するものである.実験の結果,本手法によって,10歌手40曲に対して95%の識別率を達成し,本手法を用いない場合と比較して誤り率を約89%削減した.また,20歌手256曲に対する実験の結果,約93%の識別率を達成し,誤り率を約65%削減した.
+情報処理学会論文誌, 
+Vol.47, No.6, pp.1831--1843, July 2006. 
+Instrogram: A New Musical Instrument Recognition Technique 
+without Using Onset Detection nor F0 Estimation
+Tetsuro Kitahara, 
+Masataka Goto, 
+Kazunori Komatani, 
+Tetsuya Ogata, 
+and 
+Hiroshi G. Okuno
+Abstract
+This paper describes a new technique for recognizing musical instruments
+in polyphonic music. Because the conventional framework for musical 
+instrument recognition in polyphonic music had to estimate the onset time 
+and fundamental frequency (F0) of each note, instrument recognition strictly 
+suffered from errors of onset detection and F0 estimation. 
+Unlike such a note-based processing framework, our technique calculates 
+the temporal trajectory of instrument existence probabilities for 
+every possible F0, and the results are visualized with a spectrogram-like 
+graphical representation called instrogram. 
+The instrument existence probability is defined as the product of 
+a nonspecific instrument existence probability
+calculated using PreFEst and 
+a conditional instrument existence probability
+calculated using the hidden Markov model.
+Experimental results show that the obtained instrograms reflect the actual 
+instrumentations and facilitate instrument recognition. 
+Proceedings of the 2006 IEEE International Conference 
+on Acoustics, Speech, and Signal Processing
+(ICASSP 2006), 
+Vol.V, pp.229--232, May 2006. 
+F0 Estimation Method for Singing Voice in Polyphonic Audio Signal 
+based on Statistical Vocal Model and Viterbi Search
+Hiromasa Fujihara, 
+Tetsuro Kitahara, 
+Masataka Goto, 
+Kazunori Komatani, 
+Tetsuya Ogata, 
+and 
+Hiroshi G. Okuno
+Proceedings of the 2006 IEEE International Conference 
+on Acoustics, Speech, and Signal Processing
+(ICASSP 2006), 
+Vol.V, pp.253--256, May 2006. 
+FY2005
+Pitch-dependent Identification of Musical Instrument Sounds
+Tetsuro Kitahara, 
+Masataka Goto, 
+and 
+Hiroshi G. Okuno
+Abstract
+This paper describes a musical instrument identification method 
+that takes into consideration the pitch dependency of 
+timbres of musical instruments. 
+The difficulty in musical instrument identification resides in 
+the pitch dependency of musical instrument sounds, 
+that is, acoustic features of most musical instruments vary according to 
+the pitch (fundamental frequency, F0). 
+To cope with this difficulty, 
+we propose an F0-dependent multivariate normal distribution, 
+where each element of the mean vector is represented 
+by a function of F0. 
+Our method first extracts 129 features (e.g., the spectral centroid, 
+the gradient of the straight line approximating the power envelope) from 
+a musical instrument sound and then reduces the dimensionality 
+of the feature space into 18 dimension. 
+In the 18-dimensional feature space, it calculates an F0-dependent 
+mean function and an F0-normalized covariance, and finally 
+applies the Bayes decision rule. 
+Experimental results of identifying 6,247 solo tones of 19 musical
+instruments shows that the proposed method improved the recognition rate 
+from 75.73% to 79.73%. 
+Applied Intelligence, 
+Vol.23, No.3, pp.267--275, December 2005. 
+Instrument Identification in Polyphonic Music: 
+Feature Weighting with Mixed Sounds, Pitch-dependent Timbre Modeling, 
+and Use of Musical Context
+Tetsuro Kitahara, 
+Masataka Goto, 
+Kazunori Komatani, 
+Tetsuya Ogata, 
+and 
+Hiroshi G. Okuno
+Abstract
+This paper addresses the problem of identifying musical
+instruments in polyphonic music. Musical instrument
+identification (MII) is an improtant task in music information
+retrieval because MII results make it possible to automatically
+retrieving certain types of music (e.g., piano
+sonata, string quartet). Only a few studies, however, have
+dealt with MII in polyphonic music. In MII in polyphonic
+music, there are three issues: feature variations caused
+by sound mixtures, the pitch dependency of timbres, and
+the use of musical context. For the first issue, templates
+of feature vectors representing timbres are extracted from
+not only isolated sounds but also sound mixtures. Because
+some features are not robust in the mixtures, features
+are weighted according to their robustness by using
+linear discriminant analysis. For the second issue, we use
+an F0-dependent multivariate normal distribution, which
+approximates the pitch dependency as a function of fundamental
+frequency. For the third issue, when the instrument
+of each note is identified, the a priori probablity of the note
+is calculated from the a posteriori probabilities of temporally
+neighboring notes. Experimental results showed that
+recognition rates were improved from 60.8% to 85.8% for
+trio music and from 65.5% to 91.1% for duo music.
+Proceedings of the 6th International Conference on 
+Music Information Retrieval 
+(ISMIR 2005), 
+pp.558--563, September 2005. 
+Singer Identification based on Accompaniment Sound Reduction and 
+Reliable Frame Selection
+Hiromasa Fujihara, 
+Tetsuro Kitahara, 
+Masataka Goto, 
+Kazunori Komatani, 
+Tetsuya Ogata, 
+and 
+Hiroshi G. Okuno
+Abstract
+This paper describes a method for automatic singer identification
+from polyphonic musical audio signals including
+sounds of various instruments. Because singing voices
+play an important role in musical pieces with a vocal part,
+the identification of singer names is useful for music information
+retrieval systems. The main problem in automatically
+identifying singers is the negative influences caused
+by accompaniment sounds. To solve this problem, we
+developed two methods, accompaniment sound reduction
+and reliable frame selection. The former method makes it
+possible to identify the singer of a singing voice after reducing
+accompaniment sounds. It first extracts harmonic
+components of the predominant melody from sound mixtures
+and then resynthesizes the melody by using a sinusoidal
+model driven by those components. The latter
+method then judges whether each frame of the obtained
+melody is reliable (i.e. little influenced by accompaniment
+sound) or not by using two Gaussian mixture models for
+vocal and non-vocal frames. It enables the singer identification 
+using only reliable vocal portions of musical pieces.
+Experimental results with forty popular-music songs by
+ten singers showed that our method was able to reduce
+the influences of accompaniment sounds and achieved an
+accuracy of 95%, while the accuracy for a conventional
+method was 53%.
+Proceedings of the 6th International Conference on 
+Music Information Retrieval 
+(ISMIR 2005), 
+pp.329--336, September 2005. 
+ism: Improvisation Supporting Systems with Melody Correction 
+and Key Vibration
+Tetsuro Kitahara, 
+Katsuhisa Ishida, 
+and 
+Masayuki Takeda
+Abstract
+This paper describes improvisation support for musicians
+who do not have sufficient improvisational playing experience. The goal
+of our study is to enable such players to learn the skills necessary for improvisation
+and to enjoy it. In achieving this goal, we have two objectives:
+enhancing their skill for instantaneous melody creation and supporting
+their practice for acquiring this skill. For the first objective, we developed
+a system that automatically corrects musically inappropriate notes
+in the melodies of users' improvisations. For the second objective, we
+developed a system that points out musically inappropriate notes by vibrating
+corresponding keys. The main issue in developing these systems
+is how to detect musically inappropriate notes. We propose a method for
+detecting them based on the N-gram model. Experimental results show
+that this N-gram-based method improves the accuracy of detecting musically
+inappropriate notes and our systems are effective in supporting
+unskilled musicians' improvisation.
+Entertainment Computing: 
+Proceedings of the 4th International Conference on Entertainment 
+Computing (ICEC 2005), 
+Lecture Notes in Computer Science 3711, F. Kishino, Y. Kitamura, H. Kato and N. Nagata (Eds.), pp.315--327, September 2005. 
+N-gramによる旋律の音楽的適否判定に基づいた即興演奏支援システム
+石田 克久, 
+北原 鉄朗, 
+武田 正之
+あらまし
+本論文では,即興演奏未習得者のための演奏支援について述べる.我々の最終目標は,即興演奏未習得者が通常の楽器を用いて即興演奏を行えるようになることである.この目標を達成するために,我々は「即時的旋律創作能力の補助」と「即興演奏の練習環境の提供」の2つのアプローチで,即興演奏の未習得者をサポートする.「即時的旋律創作能力の補助」に対しては,旋律中の不適切な音を自動的に補正する演奏支援システムismを開発した.これは,演奏された旋律中の不自然な個所をリアルタイムに検出し,適切な音に変換することで,即時的な旋律創作を容易にするためのものである.「即興演奏の練習環境の提供」に対しては振動により不適切な音を指摘する学習支援システムismvを構築した.このような支援システムを実現するうえで中心となる課題は,どのように不適切な音を検出するかである.これに対し我々は,N-gramで旋律をモデル化し,その確率値が小さなもののみを不適切と判定する手法を提案する.実験の結果,提案手法により旋律中の不適切な個所の検出精度を上させることができ,ism/ismvが即興未習得者の演奏支援に有効であることが示された.
+情報処理学会論文誌, 
+Vol.46, No.7, pp.1549--1559, July 2005. 
+FY2004
+Automatic Chord Transcription with Concurrent Recognition of 
+Chord Symbols and Boundaries
+Takuya Yoshioka, 
+Tetsuro Kitahara, 
+Kazunori Komatani, 
+Tetsuya Ogata, 
+and 
+Hiroshi G. Okuno
+Abstract
+This paper describes a method that recognizes musical
+chords from real-world audio signals in compact-disc
+recordings. The automatic recognition of musical chords
+is necessary for music information retrieval (MIR) systems,
+since the chord sequences of musical pieces capture
+the characteristics of their accompaniments. None
+of the previous methods can accurately recognize musical
+chords from complex audio signals that contain vocal
+and drum sounds. The main problem is that the chordboundary-detection 
+and chord-symbol-identification processes
+are inseparable because of their mutual dependency.
+In order to solve this mutual dependency problem,
+our method generates hypotheses about tuples of chord
+symbols and chord boundaries, and outputs the most plausible
+one as the recognition result. The certainty of a hypothesis
+is evaluated based on three cues: acoustic features,
+chord progression patterns, and bass sounds. Experimental
+results show that our method successfully recognized
+chords in seven popular music songs; the average
+accuracy of the results was around 77%.
+Proceedings of the 5th International Conference on 
+Music Information Retrieval 
+(ISMIR 2004), 
+pp.100--105, October 2004. 
+ism: Improvisation Supporting System based on Melody Correction
+Katsuhisa Ishida, 
+Tetsuro Kitahara, 
+and 
+Masayuki Takeda
+Abstract
+In this paper, we describe a novel improvisation supporting
+system based on correcting musically unnatural melodies.
+Since improvisation is the musical performance style that
+involves creating melodies while playing, it is not easy even
+for the people who can play musical instruments. However,
+previous studies have not dealt with improvisation support
+for the people who can play musical instruments but cannot
+improvise. In this study, to support such players' improvisation,
+we propose a novel improvisation supporting system
+called ism, which corrects musically unnatural melodies automatically.
+The main issue in realizing this system is how
+to detect notes to be corrected (i.e., musically unnatural or
+inappropriate). We propose a method for detecting notes to
+be corrected based on the N-gram model. This method first
+calculates N-gram probabilities of played notes, and then
+judges notes with low N-gram probabilities to be corrected.
+Experimental results show that the N-gram-based melody
+correction and the proposed system are useful for supporting
+improvisation.
+Proceedings of the International Conference on New Interfaces 
+for Musical Expression (NIME 04), 
+pp.177--180, June 2004. 
+Category-level Identification of Non-registered Musical Instrument Sounds
+Tetsuro Kitahara, 
+Masataka Goto, 
+and 
+Hiroshi G. Okuno
+Abstract
+This paper describes a method that identifies sounds
+of non-registered musical instruments (i.e., musical instruments
+that are not contained in the training data) at a category
+level. Although the problem of how to deal with
+non-registered musical instruments is essential in musical
+instrument identification, it has not been dealt with in previous
+studies. Our method solves this problem by distinguishing
+between registered and non-registered instruments
+and identifying the category name of the non-registered instruments.
+When a given sound is registered, its instrument
+name, e.g. violin, is identified. Even if it is not registered, its
+category name, e.g. strings, can be identified. The important
+issue in achieving such identification is to adopt a musical
+instrument hierarchy reflecting the acoustical similarity. We
+present a method for acquiring such a hierarchy from a musical
+instrument sound database. Experimental results show
+that around 77% of non-registered instrument sounds, on
+average, were correctly identified at the category level.
+Proceedings of the 2004 IEEE International Conference 
+on Acoustics, Speech, and Signal Processing
+(ICASSP 2004), 
+Vol.IV, pp.253--256, May 2004. 
+Comparing Features for Forming Music Streams 
+in Automatic Music Transcription
+Yohei Sakuraba, 
+Tetsuro Kitahara, 
+and 
+Hiroshi G. Okuno
+Abstract
+In formating temporal sequences of notes played by the same instrument
+(referred to as music streams), timbre of musical instruments
+may be a predominant feature. In polyphonic music, the
+performance of timber extraction based on power-related features
+deteriorates, because such features are blurred when two or more
+frequency components are superimposed in the same frequency.
+To cope with this problem, we integrated timbre similarity and
+direction proximity with success, but left using other features as
+future work. In this paper, we investigate four features, timbre
+similarity, direction proximity, pitch transition and pitch relation
+consistency to clarify the precedence among them in music stream
+formation. Experimental results with quartet music show that direction
+proximity is themost dominant feature, and pitch transition
+is the secondary. In addition, the performance of music stream
+formation was improved from 63.3% by only timbre similarity to
+84.9% by integrating four features.
+Proceedings of the 2004 IEEE International Conference 
+on Acoustics, Speech, and Signal Processing
+(ICASSP 2004), 
+Vol.IV, pp.273--376, May 2004. 
+FY2003
+音響的類似性を反映した楽器の階層表現の獲得と
+それに基づく未知楽器のカテゴリーレベルの音源同定
+北原 鉄朗, 
+後藤 真孝, 
+奥乃 博
+あらまし
+本論文では,音響的特徴から得られる楽器の階層表現に基づいた未知楽器(学習データに含まれない楽器)のカテゴリーレベルの音源同定について述べる.未知の楽器をどのように扱うかという問題は,楽器音の音源同定において不可避な問題であるにも関わらず,これまでの研究では扱われてこなかった.本研究では,未知の楽器をカテゴリーレベルで認識することを提案する.まず,未知楽器のカテゴリーレベルの認識に適した楽器の階層表現を自動的に獲得する手法について述べ,この手法に基づいて得られた楽器の階層表現を用いて,未知の楽器のカテゴリーレベルの認識を行う.さらに,楽器音が既知か未知か(すなわち,学習データに含まれる楽器か否か)を判定する処理を導入することで,既知の楽器は楽器名レベルで,未知の楽器はカテゴリーレベルで認識することを実現する.実験の結果,平均約77%の未知の楽器音をカテゴリーレベルで認識することができた.
+情報処理学会論文誌, 
+Vol.45, No.3, pp.680--689, March 2004. 
+音高による音色変化に着目した楽器音の音源同定:
+F0依存多次元正規分布に基づく識別手法
+北原 鉄朗, 
+後藤 真孝, 
+奥乃 博
+あらまし
+本論文では,音高による音色変化を考慮する楽器音の音源同定手法を提案する.楽器音の音色が音高によって変化することは,従来から広く知られているにも関わらず,これを適切に扱える音源同定手法については,研究されてこなかった.本論文では,音高による音色変化を適切に扱うため,平均が基本周波数によって変化する多次元正規分布を提案する.そして,音色空間(楽器音の特徴空間)上で各楽器音データがこの分布に従うと仮定し,この分布のための識別関数をベイズ決定規則から定式化する.提案手法を実装・実験した結果,音高による音色変化を考慮しない多次元正規分布を用いた場合の誤認識全体のうち,個々の楽器レベルでは16.48\%,カテゴリーレベルでは20.67\%の誤認識を削減することができた.
+情報処理学会論文誌, 
+Vol.44, No.10, pp.2448--2458, October 2003. 
+Musical Instrument Identification based on 
+F0-dependent Multivariate Normal Distribution
+Tetsuro Kitahara, 
+Masataka Goto, 
+and 
+Hiroshi G. Okuno
+Abstract
+The pitch dependency of timbres has not been fully exploited in musical instrument identification.  In this paper, we present a method
+using an F0-dependent multivariate normal distribution of which mean is represented by a function of fundamental frequency (F0).  This F0-dependent mean function represents the pitch dependency of each feature, while the F0-normalized covariance represents the non-pitch dependency.  Musical instrument sounds are first analyzed by the F0-dependent multivariate normal distribution, and then identified by using the discriminant function based on the Bayes decision rule. Experimental results of identifying 6,247 solo tones of 19 musical instruments by 10-fold cross validation showed that the proposed method improved the recognition rate at individual-instrument level from 75.73% to 79.73%, and the recognition rate at category level from 88.20% to 90.65%. 
+Proceedings of the 2003 IEEE International Conference 
+on Acoustics, Speech, and Signal Processing
+(ICASSP 2003), 
+Vol.V, pp.421--424, April 2003. 
+

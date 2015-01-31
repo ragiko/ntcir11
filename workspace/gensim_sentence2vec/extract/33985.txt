@@ -1,0 +1,59 @@
+CakePHPをAN HTTPD+SQLiteで動かす
+PHP
+以前から使ってみたかった、CakePHPを試してみました。
+うちのこの環境で、CakePHPのScaffoldingを一通り動作させることができました。
+ただその際、環境特有と思われる設定や変更が発生したので、メモ。
+環境
+AN HTTPD 1.42n
+PHP 5.1.4
+SQLite 2
+【AN HTTPD関係】
+mod_rewriteは使えないので、CakePHPをmod_rewriteを使わないモードに切り替える。
+/app/config/core.phpを変更
+下のような行のコメントを外す: 
+define ('BASE_URL', env('SCRIPT_NAME'));
+参考:A.5. mod_rewrite について
+Routesの設定
+参考:4.3. Routes の設定
+REQUEST_URIの取得部分を変更
+AN HTTPDでは、「/index.php/control_name/action_name/...」という形式のリクエストがされたとき、「index.php」より後の部分「/control_name/action_name/...」がenv('REQUEST_URI')から抜けてしまう模様?
+そのため、/cake/basics.phpのsetUri関数内を、以下のように変更。
+if (env('HTTP_X_REWRITE_URL')) {
+$uri = env('HTTP_X_REWRITE_URL');
+} elseif (env('REQUEST_URI')) {
+//$uri = env('REQUEST_URI');
+$uri = env('REQUEST_URI') . env('ORIG_PATH_INFO');	// ここを変更
+} else {
+:
+【SQLite関係】
+/cake/libs/dbo/dbo_sqlite.phpを変更
+SQLのINSERT文で、プライマリキーであるidの値の指定が、id='' となっていて、datatype errorが発生してしまう。dbo_sqlite.phpの不具合? 
+解決方法は以下の記事が参考になりました。感謝。
+cakePHPとSQLite(&MySQL) - CPA-LABテクニカル
+Permalink | コメント(0) | トラックバック(0) | 02:04
+HTML 5 における HTML 4 からの変更点
+HTML 5 における HTML 4 からの変更点
+ドラフト。とりあえずチェック。
+header要素やfooter要素など、文書の構造を表すのに使う要素がいろいろ増えていますね。
+特にaudio要素とかvideo要素が気になりました。「製作者がスクリプトを用い、独自のユーザーインターフェースを作成できるようなAPIが提供されます」とのこと。
+アクセシビリティ関連の属性の追加や、input typeの追加などもあります。
+表層的な要素が削除されているあたり、完全に文書の構造を表す言語になるということでしょうか。ドキュメントの記述などには適したものになったとは思いますが、表層的な要素もなんだかんだ言って直感的でわかりやすかったので、少しさびしいですね。
+Webページの表層的な部分、レイアウトを直感的に記述できる言語が、HTMLとは別にあったらいいのに、と思いました。ドキュメントのような文章中心のページはHTMLで、例えばYahooのトップページのようなページはそっちの言語で、みたいな感じで。レイアウトは、FlexやXULのVBox/HBoxといったボックスモデルがベストかな。
+Permalink | コメント(0) | トラックバック(0) | 21:47
+権利者の戦略
+「iPod課金」は「文化を守るため」——権利者団体が「Culture First」発表 - ITmedia News
+ところで強者は、自分の有利な場所へと誘導して戦うものだとか。
+それにのせられてしまっては弱者は対抗できないので、やるなら違うやり方で、ということになるでしょうか。
+しかし、戦うっていう表現も変ですよね、誰が何と戦っているというのだろう。
+・・・なんてことを、はてブコメントを見ながら考えていました。
+Permalink | コメント(0) | トラックバック(0) | 00:33
+CodeReposに2つのFlexコンポーネントを追加
+Flex
+一昨日に引き続き、私の作成した2つのFlexコンポーネントをCodeReposに追加しました。
+AccelerativeScrollBar
+つまみを動かした分だけ、加速させてスクロールさせることのできる、スクロールバーコンポーネント。
+PagingChunk
+画面のページング用の、ページ切り替えボタン群コンポーネント。ページを切り替える時に、イベントを発生させることができる。
+今度はcommit時のコメント、間違えなかった!
+Permalink | コメント(0) | トラックバック(0) | 16:47
+genmsのblog

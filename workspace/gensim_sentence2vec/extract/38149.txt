@@ -1,0 +1,15 @@
+[機械学習]SVM実践ガイド (A Practical Guide to Support Vector Classification)
+SVMツールで有名なLIBSVMの作者らがまとめた "A Practical Guide to Support Vector Classification" という良資料[1]の日本語解説資料をまとめてみたので公開.
+元資料はこちら
+本資料作成のきっかけは,まわりの人に「SVMとかいう手法使ったんだけど,機械学習よくわからなくてさ」という感じで相談を受けて「カーネルは何使ってるの?」「素性のスケーリングはした?」「Cパラメータは調整した?」というようなことを聞くのだけれど,「???」というやりとりにうんざりしたから.			その都度,Cパラメータというものがありまして〜,カーネルというものがありまして〜,そもそも機械学習というものはですね〜,というところから説明するとこちらも疲れるし,使うことが主眼の相手にとっても「いや,別に中身に興味ねーし,コイツ話長ぇwww」とお互い不幸になる.僕自身も使うことにしか興味がない人にとってマージンとかカーネル などを理解することはあまり重要ではない気がする*1.
+そんなときに "A Practical Guide to Support Vector Classification" の存在を知って「これだ!これ!」という気持ちになり,以降は相談を受けるたびに「これ読んで」と本資料を薦めていた.ただ,英語だとB4のような若い学生の場合はどうも読んでくれないし,せっかくだからこれを日本語資料にまとめよう,と思ったのが2年くらい前.そのまま放置されて,ようやく資料を作ったのが今年のGW,そしてブログ記事を書いたのが今日,という流れ.
+本資料は,LIBSVMやLIBLINEARを使ったことがあることを前提にしているため,ツール自体の使い方については書いていない.			これで「SVM使ったんすけど,精度出なかったんすよー(キリッ」「え,カーネルって何すか?」「ツールデフォルトパラメータでやりましたが何か?」というかつての自分のようなゆとり学生*2が日本からひとりでも減ることを願っている.
+References
+[1] Chih-Wei Hsu, Chih-Chung Chang, and Chih-Jen Lin, "A Practical Guide to Support Vector Classification", http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf
+LIBSVM http://www.csie.ntu.edu.tw/~cjlin/libsvm/
+LIBSVM Tools http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/
+隠れた便利ツールの宝庫
+LIBLINEAR http://www.csie.ntu.edu.tw/~cjlin/liblinear/
+ツイートする
+Permalink | コメント(0) | トラックバック(3)  
+SVM実践ガイド (A Practical Guide to Support Vector Classification) - 睡眠不足?!

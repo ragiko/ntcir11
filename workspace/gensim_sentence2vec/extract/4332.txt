@@ -1,0 +1,16 @@
+どの係数も分母が2のべき乗です。
+ということはビットシフト演算が使えるので割り算しなくて済みます。
+分子については加算とシフトで掛け算も防げます
+もし扱うベクトルがfloat型の小さい値ならば、何十倍かしてint型にしましょう。
+もし扱うベクトルの長さが100より大きかったら十分です。この手法を使っても大して誤差がでないでしょう。
+given that we are only accurateto ±8% to begin with.
+If the span is, say, 1.0, then we need to scale up.
+More generally, this algorithm is an alternative to finding the square root of the sum of three squares, which need not mean distance,
+or anything spatial at all.
+次のコードは±13%のバージョンのコードです。
+where scaling is needed. A
+scale of 1024 is used, which can be accomplished by shifting by 10.
+10シフトしているのは1024倍にスケーリングしているだけです。
+This means that the code contains no multiplies, divides, or square roots, and
+is all in fixed point.
+ユークリッド距離 - code snippets

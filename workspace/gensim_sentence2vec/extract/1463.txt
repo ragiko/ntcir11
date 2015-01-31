@@ -1,0 +1,108 @@
+今日のはまりです。
+エクスプローラー風のファイル一覧表示を作ろうと思ってこんなコードを書いた。
+<li>
+<nobr style="word-spacing:0px;" >
+<span onclick="JSCP.getJSCPNode(this).toggleDir(this,'<%= path%>')">
+<img src="images/led-icons/bullet_add_1.png"/>
+<img src="images/led-icons/bullet_del_2.png" style="display:none;"/>
+</span>
+<span onclick="dirTree.select('<%= path%>',this)"><%= names[i]%></span>
+</nobr>
+<span style="display:none;"></span></nobr>
+</li>
+処理関数はこんな感じでボタンが押されたら3つ目の<span>に<ul>～</ul>を埋め込んでネストさせる。
+node.toggleDir = function(_this, path) {
+var tgt = JSCP.getChildren(_this.parentNode, "span")[2];
+var blet = JSCP.getChildren(_this, "img");
+if (tgt.style.display == "none") {
+tgt.style.display = "block";
+tgt.innerHTML = "<ul>"+thisMe({pathname: path}, tgt)+"</ul>";
+JSCP.activate(document.body);
+blet[0].style.display = "none";
+blet[1].style.display = "inline";
+} else {
+tgt.style.display = "none";
+tgt.removeChild(tgt.childNodes[0]);
+blet[0].style.display = "inline";
+blet[1].style.display = "none";
+}
+}
+で
+tgt.innerHTML = "<ul>"+thisMe({pathname: path}, tgt)+"</ul>";
+の所で「未知の実行時エラーです」が出た。
+このエラーは大体
+- 書き込み不可のタグに書き込み
+- 代入HTMLの構文が間違っている
+のどちらかなのだが今回はいくら調べてもどちらでも無い。
+感でこうしてみたら動いた。
+var ul = document.createElement("ul");
+ul.innerHTML = thisMe({pathname: path}, ul);
+tgt.appendChild(ul);
+訳分からんけどまあいいやと思ったのだがこの記事を書くのにエラーを確認しようとしたら前のコードでも動く。
+さらに訳分からん。
+途中で修正したコードを思い出してしらべた所、<ul>を入れる<span>を<nobr>の外に出してあった。
+ここのサイトでは<nobr>は書き込みOKになってるしそもそも書き込んでるのは<span>なんだよね。
+http://www.drk7.jp/MT/archives/001314.html
+まさに「未知のエラー」を踏んじゃったのか?
+Subject: IEでULの下に空白行のできるバグ
+Content-type: lovelog/text
+Tags: JavaScript
+Date: 2009/12/07
+Public: yes
+ファイル一覧で良く分からないバグが出てたんで記録。
+<%
+var dir = ctx.pathname;
+if (dir == null) dir = eval(ctx.dirname);
+var names = Editor.getDirList(dir);
+if (names == null) names = [];
+var thisMe = arguments.callee;
+if (!node.toggleDir) {
+node.toggleDir = function(_this, path) {
+//var tgt = JSCP.getChildren(_this.parentNode.parentNode, "span")[0];
+var tgt = JSCP.getChildren(_this.parentNode, "span")[2];
+//var blet = JSCP.getChildren(_this, "img");
+if (tgt.style.display == "none") {
+_this.innerText = "-";
+tgt.style.display = "inline";
+var ul = document.createElement("ul");
+ul.innerHTML = thisMe({pathname: path}, ul);
+tgt.appendChild(ul);
+JSCP.activate(document.body);
+//blet[0].style.display = "none";
+//blet[1].style.display = "inline";
+} else {
+_this.innerText = "+";
+tgt.style.display = "none";
+if (tgt.childNodes.length>0) {
+tgt.removeChild(tgt.childNodes[0]);
+}
+//blet[0].style.display = "inline";
+//blet[1].style.display = "none";
+}
+}
+}
+%>
+<% for (var i=0; i<names.length; i++) { %>
+<%     var path = dir+"/"+names[i]; %>
+<li><nobr>
+<span onclick="JSCP.getJSCPNode(this).toggleDir(this,'<%= path%>')">+</span>
+<span onclick="dirTree.select('<%= path%>',this)"><%= names[i]%></span>
+<span style="display:block;"></span>
+</nobr></li>
+<% } %>
+これでディレクトリを開くと1行分の空白ができる。
+回避方法は
+_this.innerText = "-"; を止める。
+又は
+3つ目の<span>をを display:inline; にする。
+<span style="display:block;"></span>
+又は
+CSS で <li> に padding: 1px; を付ける。0pxではダメ。
+.DirTree li {
+padding: 1px;
+}
+参考:http://css-bug.jp/win/ie/ver6/0161/
+となる。
+関連性が全く見出せない。
+逆に言うとこの条件が揃わないと再現しないがはまったら簡単には抜け出せない。
+IEで「未知の実行時エラーです」 : 時々、失業SEの開発日誌

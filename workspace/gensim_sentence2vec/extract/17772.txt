@@ -1,0 +1,34 @@
+
+ローカライズ版 (中国語版/日本語版/韓国語版) インストーラについて
+WebLogic Server には、ローカライズ版 (中国語, 日本語, 韓国語) インストーラと英語版インストーラがあります。ローカライズ版は、米国 BEA Systems Inc の Web サイト (中国語, 韓国語) と、日本 BEA Web サイト (日本語) からダウンロードできます。また、ローカライズ版インストーラのファイル名のロケール部分は、9.2MP1以降 ccjk に変更されました。(例: server921_ccjk_win32.exe) 
+英語版インストーラとの違い
+WebLogic Server の動作にかかわるプログラムファイルは全て同一であり、同じソフトウェアとして扱われます。また、英語版インストーラを使用して起動した WebLogic Server と、ローカライズ版インストーラを使用して起動した WebLogic Server の相互運用についても問題はありません。このように、ローカライズ版は、ソフトウェアの動作として英語版との一致を保ちながら、以下に関して変更を加えています。
+バージョン文字列のビルド番号 (ビルド番号は、翻訳されたリソースをビルドするために、英語版に比べてインクリメントしています)
+翻訳されたリソースファイル
+WebLogic Server 9.2 ローカライズ版では以下は使用できません。
+Smart Update による Maintenance Pack アップグレード
+インストールする場合のディレクトリ名
+BEA_HOME や WL_HOME にマルチバイト文字を含む場合にいくつかの問題が確認されており、BEA_HOME、WL_HOME にマルチバイト文字を使用することはできません。このため、BEA_HOME や WL_HOME のパスにマルチバイト文字を含めてインストールすることは避けてください。
+HP-UX/Itanium、IBM AIX 、Sun Solaris/SPARC (Sun 64-bit JDK) 環境におけるインストール
+ローカライズ版インストーラを使用する場合、コマンドラインで -Xmx256M 引数を指定して、最大ヒープ サイズを 256MB に増やす必要があります。たとえば、以下のコマンドを入力します。
+$ java -Xmx256m -jar server921_ccjk_generic.jar
+既知の問題点
+インストール プログラム、コンフィグレーション ウィザード、および Template Builder のグラフィカル ユーザ インタフェースで韓国語文字が文字化けする (CR330541)
+韓国語文字セットを使用してコンフィグレーションされた Red Hat Enterprise Linux 5.0 システムでは、インストール プログラム、コンフィグレーションウィザード、および Template Builder のグラフィカル ユーザ インタフェースが正しく表示されない場合があります。この問題は、Red Hat Enterprise Linux5.0 システムの韓国語文字セット用の fontconfig.properties ファイルがないという Sun JDK の制限のために発生します。
+オペレーティング システム : Red Hat Enterprise Linux 5.0
+解決策 : これらのアプリケーションではコンソール モードのインタフェースを使用してください。
+注意 : この制限は、Red Hat Enterprise Linux 4.0 システムにはありません。Red Hat Enterprise Linux 5.0 systems に対し、Sun によりレポートされています。  http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6546060
+インストール プログラム、コンフィグレーション ウィザード、および Template Builder のグラフィカル ユーザ インタフェースで日本語文字が文字化けする (CR237216/CR241625)
+日本語文字セットを使用してコンフィグレーションされた Red Hat Enterprise Linux 4.0 システムでは、インストール プログラム、コンフィグレーションウィザード、および Template Builder のグラフィカル ユーザ インタフェースが正しく表示されない場合があります。この問題は、Red Hat Enterprise Linux 4.0 システムの日本語文字セット用の font.properties ファイルがないという Sun JDK の制限のために発生します。
+オペレーティング システム : Red Hat Enterprise Linux 4.0
+解決策 : これらのアプリケーションではコンソール モードのインタフェースを使用してください。
+注意 : この制限は、Red Hat Enterprise Linux 3.0 システムにはありません。Red Hat Enterprise Linux 4.0 systems に対し、Sun が 解決策 http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6235633 を提供しており、9.2MP1 以降では解決されています。
+IBM AIX 環境で簡体字中国語、韓国語のロケールを使用した場合、インストールに失敗する (CR272539)
+AIX 上で、インストール時に簡体字中国語、韓国語のロケールを使用した場合、インストールに失敗する場合があります。
+オペレーティング システム : IBM AIX
+解決策 : インストールに使用されるロケールに対し、以下のオプションを使用します。
+ロケールが ko_KR の場合 : -Dibm.stream.nio=true または -Dfile.encoding=KSC5601
+ロケールが Zh_CN の場合 : -Dibm.stream.nio=true または -Dfile.encoding=GB2312
+ロケールが zh_CN の場合 : -Dfile.encoding=GB2312
+例 : java –jar -Dibm.stream.nio=true server910_generic.jar
+ローカライズ版 (中国語版/日本語版/韓国語版) インストーラについて

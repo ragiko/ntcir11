@@ -1,0 +1,21 @@
+ 本当に必要なN-gramは2割しかない
+Entropy-based Pruning of Backoff Language Models
+を読んだ.単語N-gramはとてもよくできていて言語モデルとしての性能はかなりのものなのだが,なんの枝刈りもせずに中規模〜大規模なデータに適用しようとするとサイズが馬鹿でかくなってしまう.そのための対策としてよくあるのが語彙のサイズを制限する方法と,N-gramの頻度が一定以下のものを切り捨てるという方法(後者の場合は語彙も自動的に制限される).Google 日本語N-gramなども頻度20以上のものが配布されており,効率よくデータサイズを減らすためには頻度でカットオフする方式がよく使われていると思う(語彙だけだとかなり制限しないとサイズが減らない).しかしカットオフしすぎると性能はかなり落ち込むので,うまい方法はないものかと考えられたのがこの論文の手法である.N-gramのデータには頻度の高いものでも(N-1)-gramを使って同じような確率を計算できるものが含まれており,無駄が多いと考えられるので,それを使う.
+この論文では元のN-gramモデルと枝刈り後の(バックオフ)N-gramモデルの相対エントロピー(KLダイバージェンス)が小さくなるようにN-gramの切り捨てを行なう手法を提案している.切り捨てるN-gramの組合せを最適化するのは困難なので,1つのN-gramを切り捨てた場合の差分がしきい値以下なら切り捨てを行なうという戦略を取る.KLダイバージェンスの差分は式変形をすると効率的に計算できることが示されている.従来手法のScalable backoff language modelsはこのモデルの近似となっていて,
+という式を使って枝刈りをすれば実用的には簡単で良いと書かれている.ただしwは予測対象の単語,hは履歴,p(w|h)は元のN-gram確率で,p'(w|h)は枝刈り後のN-gram確率である.論文ではしきい値を1e-8としたときに性能をほとんど落とさずにデータサイズを20%程度に削減できたとしている.
+著者のAndreas StolckeはSRILMの作者として有名で,この論文の手法もSRILMに実装されていてオプション1つ加えるだけで使うことができる.というわけでWikipediaのデータで試してみた.
+$ time ./bin/macosx/ngram -lm ngram.txt  -prune 1e-7 -write-lm prune.txt
+./bin/macosx/ngram -lm ngram.txt -prune 1e-7 -write-lm prune.txt  52.49s user 1.92s system 98% cpu 54.977 total
+$ ./bin/macosx/ngram -lm prune.txt -ppl ~/data/wikipedia/text/test.txt
+file /Users/nokuno/data/wikipedia/text/test.txt: 10000 sentences, 408705 words, 7994 OOVs
+0 zeroprobs, logprob= -914573 ppl= 168.58 ppl1= 191.592
+SRILMをMac OS Xで - Yoh Okunoの日記
+もとのN-gramと比べても大きくパープレキシティを悪化させずにテキストで73MBまでサイズを小さくできている.元は352MBなのでちょうど元論文と同じ20%程度になったことになる.
+ちなみにリファレンスを辿って出てきた論文も面白くて,これ自体は可逆圧縮の論文だけど前処理としてStolckeの枝刈りを使うと書かれていた.
+Compressing Trigram Language Models With Golomb Coding
+MSRの論文らしく「この手法はMS Office 2007に組み込まれている」「EMNLPコミュニティはこれらの(NLPの)技術が多くの人に使われていることを喜ぶべきだ」「この手法がなければこの機能(スペラー)はリリースされなかっただろう」などとぶっちゃけ話が異彩を放っていたが,よく見たら第1著者がKen Church御大だったので納得した.この論文で従来手法とされているZipTBOはMS IMEに使われているらしい.
+なおこの論文は第5回TokyoNLPの町永さんの発表でも紹介されていた(けど読むまで忘れていた).
+第5回自然言語処理勉強会を開催しました #TokyoNLP - Yoh Okunoの日記
+ツイートする
+Permalink | 23:01
+本当に必要なN-gramは2割しかない - Yoh Okunoの日記

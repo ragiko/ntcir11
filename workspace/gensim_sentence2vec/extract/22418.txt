@@ -1,0 +1,143 @@
+C
+#include <cv.h>
+#include <highgui.h>
+int
+main(int argc, char **argv)
+{
+IplImage *src_img=0, *gray_img;
+IplImage *bin_img, *bininv_img, *trunc_img, *tozero_img, *tozeroinv_img;
+IplImage *adaptive_img;
+char *imagename;
+// (1)load a specified file and convert it into grayscale image.
+//    allocate destination images.
+imagename = argc > 1 ? argv[1] : "../image/trains.png";
+src_img = cvLoadImage(imagename, CV_LOAD_IMAGE_COLOR);
+if(src_img == 0)
+return -1;
+gray_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+cvCvtColor(src_img, gray_img, CV_BGR2GRAY);  
+bin_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+bininv_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+trunc_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+tozero_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+tozeroinv_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+adaptive_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+// (2)apply a fixed-level threshold to each pixel
+cvThreshold(gray_img, bin_img, 0, 255, CV_THRESH_BINARY|CV_THRESH_OTSU);
+cvThreshold(gray_img, bininv_img, 0, 255, CV_THRESH_BINARY_INV|CV_THRESH_OTSU);
+cvThreshold(gray_img, trunc_img, 0, 255, CV_THRESH_TRUNC|CV_THRESH_OTSU);
+cvThreshold(gray_img, tozero_img, 0, 255, CV_THRESH_TOZERO|CV_THRESH_OTSU);
+cvThreshold(gray_img, tozeroinv_img, 0, 255, CV_THRESH_TOZERO_INV|CV_THRESH_OTSU);
+// (3)apply an adaptive threshold to a grayscale image
+cvAdaptiveThreshold(gray_img, adaptive_img, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 7, 8);
+// (4)show source and destination images 
+cvNamedWindow("Source", CV_WINDOW_AUTOSIZE);
+cvNamedWindow("Binary", CV_WINDOW_AUTOSIZE);
+cvNamedWindow("Binary Inv", CV_WINDOW_AUTOSIZE);
+cvNamedWindow("Trunc", CV_WINDOW_AUTOSIZE);
+cvNamedWindow("ToZero", CV_WINDOW_AUTOSIZE);
+cvNamedWindow("ToZero Inv", CV_WINDOW_AUTOSIZE);
+cvNamedWindow("Adaptive", CV_WINDOW_AUTOSIZE);
+cvShowImage("Source", src_img);
+cvShowImage("Binary", bin_img);
+cvShowImage("Binary Inv", bininv_img);
+cvShowImage("Trunc", trunc_img);
+cvShowImage("ToZero", tozero_img);
+cvShowImage("ToZero Inv", tozeroinv_img);
+cvShowImage("Adaptive", adaptive_img);
+cvWaitKey (0);
+cvDestroyWindow("Source");
+cvDestroyWindow("Binary");
+cvDestroyWindow("Binary Inv");
+cvDestroyWindow("Trunc");
+cvDestroyWindow("ToZero");
+cvDestroyWindow("ToZero Inv");
+cvDestroyWindow("Adaptive");
+cvReleaseImage(&src_img);
+cvReleaseImage(&gray_img);
+cvReleaseImage(&bin_img);
+cvReleaseImage(&bininv_img);
+cvReleaseImage(&trunc_img);
+cvReleaseImage(&tozero_img);
+cvReleaseImage(&tozeroinv_img);
+cvReleaseImage(&adaptive_img);
+return 0;
+}
+// (1)指定ファイルをカラー画像として読み込み,それをグレースケールに変換します.
+指定されたファイルを3チャンネルのカラー画像として読み込み,関数 cvCvtColor を用いてグレースケールに変換します.また,さまざまな閾値処理後の画像を格納する領域を確保します.これらは,入力画像と同じサイズで,ビット深度8,チャンネル1の画像領域になります.
+// (2)画像に対し,さまざまな固定閾値処理を行います.
+関数 cvThreshold を用いて,入力画像から作成されたグレースケール画像に対して,以下のような固定閾値処理を行います.
+CV_THRESH_BINARY : 閾値を超えるピクセルは maxVal に,それ以外のピクセルは 0 になります.
+CV_THRESH_BINARY_INV : 閾値を超えるピクセルは 0 に,それ以外のピクセルは maxVal になります.
+CV_THRESH_TRUNC : 閾値を超えるピクセルは threshold に,それ以外のピクセルは変更されません.
+CV_THRESH_TOZERO : 閾値を超えるピクセルは変更されず,それ以外のピクセルは 0 になります.
+CV_THRESH_TOZERO_INV : 閾値を超えるピクセルは 0 に,それ以外のピクセルは変更されません.
+また,このサンプルでは,全ての手法に対して CV_THRESH_OTSU を指定することで,大津の手法を用いて自動的に閾値を決定します.もちろん,これを行わずに自分で閾値を決定することも可能です.
+// (3)画像に対し,適応的な閾値処理を行います.
+関数 cvAdaptiveThreshold を用いて,入力画像から作成されたグレースケール画像に対して,適応的な閾値処理を行います.閾値が適応的に決定されるので,対象ピクセルは,画像全体ではなく,その近傍領域に対して明暗を決定されます.
+ここでは第4引数で CV_ADAPTIVE_THRESH_GAUSSIAN_C を指定しているので,blockSize(第6引数)x blockSize の近傍領域に対してガウシアンを重みとして総和をとり,そこから param1(第7引数)の値を引いた値を閾値として利用します.
+このように求められた閾値を超えるピクセルは maxVal (第3引数)に,それ以外は 0 になります.
+// (4)入力画像と処理結果画像を表示します.
+入力画像と,処理されたそれぞれの二値化画像を表示します.また,何かキーが押されるとプログラムを終了します.
+C++
+#include <cv.h>
+#include <highgui.h>
+using namespace cv;
+int
+main(int argc, char **argv)
+{
+// (1)load a specified file and convert it into grayscale image
+const char *imagename = argc > 1 ? argv[1] : "../image/trains.png";
+Mat src_img = imread(imagename);
+if(!src_img.data)
+return -1;
+Mat gray_img;
+cvtColor(src_img, gray_img, CV_BGR2GRAY);
+// (2)apply a fixed-level threshold to each pixel
+Mat bin_img, bininv_img, trunc_img, tozero_img, tozeroinv_img;
+threshold(gray_img, bin_img, 0, 255, THRESH_BINARY|THRESH_OTSU);
+threshold(gray_img, bininv_img, 0, 255, THRESH_BINARY_INV|THRESH_OTSU);
+threshold(gray_img, trunc_img, 0, 255, THRESH_TRUNC|THRESH_OTSU);
+threshold(gray_img, tozero_img, 0, 255, THRESH_TOZERO|THRESH_OTSU);
+threshold(gray_img, tozeroinv_img, 0, 255, THRESH_TOZERO_INV|THRESH_OTSU);
+// (3)apply an adaptive threshold to a grayscale image
+Mat adaptive_img;
+adaptiveThreshold(gray_img, adaptive_img, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 7, 8);
+// (4)show source and destination images 
+namedWindow("Source", CV_WINDOW_AUTOSIZE);
+namedWindow("Binary", CV_WINDOW_AUTOSIZE);
+namedWindow("Binary Inv", CV_WINDOW_AUTOSIZE);
+namedWindow("Trunc", CV_WINDOW_AUTOSIZE);
+namedWindow("ToZero", CV_WINDOW_AUTOSIZE);
+namedWindow("ToZero Inv", CV_WINDOW_AUTOSIZE);
+namedWindow("Adaptive", CV_WINDOW_AUTOSIZE);
+imshow("Source", src_img);
+imshow("Binary", bin_img);
+imshow("Binary Inv", bininv_img);
+imshow("Trunc", trunc_img);
+imshow("ToZero", tozero_img);
+imshow("ToZero Inv", tozeroinv_img);
+imshow("Adaptive", adaptive_img);
+waitKey(0);
+return 0;
+}
+// (1)指定ファイルをカラー画像として読み込み,それをグレースケールに変換します.
+指定されたファイルを3チャンネルのカラー画像として読み込み,関数 cvtColor を用いてグレースケールに変換します.
+// (2)画像に対し,さまざまな固定閾値処理を行います.
+関数 threshold を用いて,入力画像から作成されたグレースケール画像に対して,以下のような固定閾値処理を行います(C インタフェースとは,定数の名前が異なることに注意してください).
+THRESH_BINARY : 閾値を超えるピクセルは maxVal に,それ以外のピクセルは 0 になります.
+THRESH_BINARY_INV : 閾値を超えるピクセルは 0 に,それ以外のピクセルは maxVal になります.
+THRESH_TRUNC : 閾値を超えるピクセルは threshold に,それ以外のピクセルは変更されません.
+THRESH_TOZERO : 閾値を超えるピクセルは変更されず,それ以外のピクセルは 0 になります.
+THRESH_TOZERO_INV : 閾値を超えるピクセルは 0 に,それ以外のピクセルは変更されません.
+また,このサンプルでは,全ての手法に対して THRESH_OTSU を指定することで,大津の手法を用いて自動的に閾値を決定します.もちろん,これを行わずに自分で閾値を決定することも可能です.
+// (3)画像に対し,適応的な閾値処理を行います.
+関数 adaptiveThreshold を用いて,入力画像から作成されたグレースケール画像に対して,適応的な閾値処理を行います.閾値が適応的に決定されるので,対象ピクセルは,画像全体ではなく,その近傍領域に対して明暗を決定されます.
+ここでは第4引数で ADAPTIVE_THRESH_GAUSSIAN_C を指定しているので,blockSize(第6引数)x blockSize の近傍領域に対してガウシアンを重みとして総和をとり,そこから C(第7引数)の値を引いた値を閾値として利用します.
+このように求められた閾値を超えるピクセルは maxVal (第3引数)に,それ以外は 0 になります.
+// (4)入力画像と処理結果画像を表示します.
+入力画像と,処理されたそれぞれの二値化画像を表示します.また,何かキーが押されるとプログラムを終了します.
+実行結果例
+(左から)入力画像,固定閾値処理後の画像(BINARY,BINARY_INV)
+(左から)﻿固定閾値処理後の画像(TRUNC,TOZERO,TOZERO_INV),適応的閾値処理後の画像
+画像の二値化 | OpenCV.jp

@@ -1,0 +1,63 @@
+
+Go to the first, previous, next, last section, table of contents.
+シンボルの値を参照/変更する
+(通常)変数を参照するためには、その変数を名指すシンボルを(評価可能な) フォーム
+の中に書きます。以下に示すものは、シンボルの値や関数セルを参照/変更するための
+(別の)方法を提供しています。
+Function: symbol-value symbol
+この関数は、 symbol の値を返します。これは(そのシンボルの)最もローカルなバ
+インディングか、 (バインドされてない場合は)そのグローバル値になります。
+symbol がバインディングもグローバル値も持たない場合、エラーになります。
+(setq abracadabra 5)
+=> 5
+(let ((abracadabra 'foo))
+(symbol-value 'abracadabra))
+=> foo
+(symbol-value 'abracadabra)
+=> 5
+Function: set symbol object
+この関数は、 symbol の値に object を設定します。 (set は関数であるため)
+symbol を評価し、その値(シンボルでなくてはいけません)に object を設定しま
+す。通常、これは(その)変数に設定された最もローカルなバインディングになりま
+す。
+(set one 1)
+-> ERROR Symbol's value as variable is void: one
+(set 'one 1)
+=> 1
+(set 'two 'one)
+=> one
+(set two 2)
+=> 2                    ;two は one に評価されるため one の値に
+one                     ;2 が設定される。
+=> 2
+(let ((one 1))          ;グローバル値ではなく、
+(set 'one 3)       ;one の(この)バインディングが設定される。
+one)
+=> 3
+one
+=> 2
+----------------
+CN: Common Lisp では、set は(常に)グローバル環境に対し操作を行ない、シンボルの
+グローバル値は変更しますが、ローカルバインディングは変更しません。 GNU Emacs
+Lisp はそうではありません。
+----------------
+Special Form: setq [symbol object]*
+この特殊フォームは、シンボルの値を変える (最も)普通の方法です。各 symbol
+に対し、(symbol の評価は行なわず) object の評価結果をその symbol の値(その
+ローカルバインディングか、それが存在しない場合グローバル値) に設定します。
+symbol と object の pair が 2 つ以上存在する場合、順に設定を行ない、最後の
+object の値を返します。
+(setq x (1+ 2))
+=> 3
+(setq x 10
+y (1+ x))         ;x は前に設定されていて、(訳注:結果は?)
+y
+=> 11                   ;y は その値を用いている点に注意。
+(let ((x 5))
+(setq x 6)
+x)
+=> 6                    ;x のローカルバインディングが設定されている。
+x
+=> 11                   ;グローバル値は変更されていない。
+Go to the first, previous, next, last section, table of contents.
+GNU Emacs Lisp Reference Manual - シンボルの値を参照/変更する

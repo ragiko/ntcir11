@@ -1,0 +1,50 @@
+Random Forest (又はRandom Forests, Randomized Trees)は、Leo Breiman によって提案された [1] 機械学習アルゴリズムであり、識別、回帰、クラスタリングに用いられる。 決定木を弱学習器とする集団学習アルゴリズムであり、 この名称は、ランダムサンプリングされたトレーニングデータによって学習した多数の決定木を使用することによる。 対象によっては、同じく集団学習を用いるブースティングよりも有効とされる。
+アルゴリズム[編集]
+学習[編集]
+学習を行ないたい観測データから、ランダムサンプリングによりB組のサブサンプルを生成する(ブートストラップサンプル)
+各サブサンプルをトレーニングデータとし、B 本の決定木を作成する
+指定したノード数  に達するまで、以下の方法でノードを作成する
+トレーニングデータの説明変数のうち、m 個をランダムに選択する
+選ばれた説明変数のうち、トレーニングデータを最も良く分類するものとそのときの閾値を用いて、ノードのスプリット関数を決定する
+要点は、ランダムサンプリングされたトレーニングデータとランダムに選択された説明変数を用いることにより、相関の低い決定木群を作成すること。
+パラメータの推奨値
+: 識別の場合は1、回帰の場合は5
+m: 説明変数の総数をpとすると、識別の場合は、回帰の場合は p/3
+評価[編集]
+最終出力は以下のように決定する
+識別: 決定木の出力がクラスの場合はその多数決、確率分布の場合はその平均値が最大となるクラス
+回帰: 決定木の出力の平均値
+特徴[編集]
+長所
+説明変数が多数であってもうまく働く
+学習・評価が高速
+決定木の学習は完全に独立しており、並列に処理可能
+説明変数の重要度(寄与度)を算出可能
+Out of Bag エラーの計算により、クロスバリデーションのような評価が可能
+AdaBoost などと比べて特定の説明変数への依存が少ないため、クエリデータの説明変数が欠損していても良い出力を与える
+短所
+説明変数のうち意味のある変数がノイズ変数よりも極端に少ない場合にはうまく働かない
+実装[編集]
+オープンソースによる実装
+The Original RF by Breiman and Cutler. Written in Fortran 77. May be difficult to configure.
+ALGLIB contains implementation of modified random forest algorithm in C#, C++, Pascal, VBA.
+FastRandomForest Efficient implementation in Java, utilitizes multiple cores. Integrates into the Weka environment.
+orngEnsemble module within Orange data mining software suite
+PARF Written in Fortran 90. Can distribute work over a cluster of computers using MPI.
+party an implementation of Breiman's random forests based on conditional inference trees for R
+randomForest for R
+Random Jungle is a fast implementation of for high dimensional data. (C++, parallel computing, sparse memory, Linux+Windows)
+TMVA Toolkit for Multivariate Data Analysis implements random forests.
+Waffles A C++ library of machine learning algorithms, including RF.
+Matlab version.
+商業実装
+Random Forests.
+外部リンク[編集]
+Random Forests classifier description (Leo Breiman と Adele Cutler による解説)
+Liaw, Andy & Wiener, Matthew "Classification and Regression by randomForest" R News (2002) Vol. 2/3 p. 18 (Discussion of the use of the random forest package for R)
+Ho, Tin Kam (2002). "A Data Complexity Analysis of Comparative Advantages of Decision Forest Constructors". Pattern Analysis and Applications 5, p. 102-112 (Comparison of bagging and random subspace method)
+Prinzie, A., Van den Poel, D. (2007). Random Multiclass Classification: Generalizing Random Forests to Random MNL and Random NB, Dexa 2007, Lecture Notes in Computer Science, 4653, 349-358. Generalizing Random Forests framework to other methods. The paper introduces Random MNL and Random NB as two generalizations of Random Forests.
+Prinzie, A., Van den Poel, D. (2008). Random Forests for multiclass classification: Random MultiNomial Logit, Expert Systems with Applications, 34(3), 1721-1732. Generalization of Random Forests to choice models like the Multinomial Logit Model (MNL): Random Multinomial Logit.
+Stochastic Discrimination and Its Implementation (Site of Eugene Kleinberg).
+文献[編集]
+Random forest - Wikipedia

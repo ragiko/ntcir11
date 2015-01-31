@@ -1,0 +1,15 @@
+貴重なご意見を有り難うございました!  あなたの貴重なご意見はより良いドキュメント作成の手助けとなります 内容の品質向上と追加コメントのためのアンケートに参加されますか?
+構文
+/etc/pci.conf = <system section><device section>
+<system section> = "[System_Configuration]" {<framework subsection>}*
+<device section> = "[Device_Configuration]" {<device subsection>}*
+<framework subsection> = <label> [ {filter>}* ]
+[ {<framework action>}+ ]
+<device subsection> = <label> [ {<filter>}+* ] <devicenvlist>
+<filter> = [ "[[" "id" "=" (vendorid>) "," (<deviceid>) "," (<revisionid>) "," (<subsystem-vendorid>) "," 
+(<subsystemid>)"]]"] 
+| ["[[" "classcode" "=" <classcode> (,<mask>) "]]" ] | [ "[[" "path"
+"=" ,devpath> "]]"]
+<framework action> = [ "num-vf" "=" <val>]
+<deice nvlist> = [ {name string> "=" <value string>} +]
+構文 - デバイスドライバの記述

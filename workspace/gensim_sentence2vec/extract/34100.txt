@@ -1,0 +1,38 @@
+
+三浦文法は、時枝誠記により提唱され三浦つとむにより発展的に継承された言語過程
+説に基づく日本語文法である。言語過程説によれば、言語は対象-認識-表現の過程
+的構造をもち、対象のあり方が話者の認識を通して表現されている。本論文では、三
+浦文法に基づいて体系化した日本語品詞体系および形態素処理用の文法記述形式を提
+案し、日本語の形態素処理や構文解析におけるその有効性を論じた。日本語の単語を、
+対象の種類とその捉え方に着目し、約400通りの階層化された品詞に分類して、き
+め細かい品詞体系を作成した。本論文で提案した品詞体系と形態素処理用文法記述形
+式に基づき、実際に形態素処埋用の日本語文法を構築した結果によれば、本文法記述
+形式により例外的な規則も含めて文法を簡潔に記述できるだけでなく、拡張性の点で
+も優れていることが分かった。本品詞体系により、三浦の入れ子構造に基づく意味と
+整合性の良い日本語構文解析が実現できるものと期待される。
+キーワード:
+形熊素処理, 構文解析, 日本語文法, 品詞, 言語過程説, 三浦文法
+A Japanese Syntactic Category System Based on the Constructive Process Theory and its Use
+MASAHIRO MIYAZAKI+, SATOSHI SHIRAI++ and SATORU IKEHARA++
+Miura grammar is a Japanese grammar based on the Constructive Process Theory
+proposed by M.Tokieda, and developed by T.Miura. In this theory, language is
+composed of three processes: object, recognition and expression. These processes
+are combined by the law of causality. The state of an object is reflected in the
+speaker's recognition, and the way the speaker recognizes, the object gives rise to
+an expression. This paper proposes a Japanese syntactic category system (part of
+speech system) based on Miura grammar and formal description method of grammar
+rules for morphological processing, and discusses its use in Japanese morphological
+processing and syntactic analysis. Japanese words are classified into 400 hierarchi-
+cal syntactic categories from the viewpoints of the class of the object itself and the
+manner of the speaker's recognition. The results of designing Japanese grammar
+rules for morphological processing using the proposed syntactic categories system
+and formal description method, show that it is easy to design and improve grammar
+rules, including nongeneral rules, by the proposed method. The proposed syntactic
+category system can be used to develop Japaneso syntactic analysis, using nested
+structure models based on Miura grammar, without a gap between syntactic and
+semantic analysis.
+KeyWords:
+morphological processing, syntactic analysis, Japanese grammar, part of speech, the Constructive Process Theory, Miura grammar
++新潟大学工学部情報工学科, Dept. of Information Engineering, Faculty of Engineering, Niigata University
+++NTTコミュニケーション科学研究所, NTT Communication Science Laboratories
+Masahiro Miyazaki, Satoshi Shirai & Satoru Ikehara, Journal of Natural Language Processing, July 7, 1995, Vol.2, No.3, pp.3-25.

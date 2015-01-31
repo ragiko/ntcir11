@@ -1,0 +1,19 @@
+
+Book3 言語マニュアルVersion 6.2
+4.2 構成節
+構成節(configuration section)は、原始プログラムの環境部に置かれる。構成節は、翻訳用計算機(source-computer)及び実行用計算機(object-computer)の特性を扱う。この節は、通貨編集用記号を指定したり、小数点を選択したり、記号文字を指定したり、利用者が指定した呼び出し名にACUCOBOL-GTの語を関連付けたり、文字集合や文字及び日本語文字の大小順序に符号系名を関連付けたり、字類名を文字又は日本語文字の組に関連付けたりする手段を与える。構成節は、COBOL原始プログラムの環境部中で書いても書かなくてもよい。 
+構成節の節の見出しは、書いても書かなくてもよい。 
+構成節の一般形式は、次のとおりとする。 
+[CONFIGURATION SECTION.］
+[SOURCE-COMPUTER.［翻訳用計算機記述項］］
+[OBJECT-COMPUTER.［実行用計算機記述項］］
+[SPECIAL-NAMES.［特殊名記述項］]
+4.2.1 翻訳用計算機段落
+4.2.2 実行用計算機段落
+4.2.3 特殊名段落
+4.2.3.1 CURSOR句
+4.2.3.2 CRT STATUS句
+4.2.3.3 SCREEN CONTROL句
+4.2.3.4 EVENT STATUS句
+Copyright (C) 2004 Acucorp, Inc. All rights reserved.
+4.2 構成節

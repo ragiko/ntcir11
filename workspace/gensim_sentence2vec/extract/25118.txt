@@ -1,0 +1,6 @@
+
+Office2010 などに読み上げ機能を追加するためのモジュール「Microsoft Speech Platform」が、無料で提供されています。音声合成エンジン「SAPI5」と内容的には、ほぼ同じですが、アプリケーション側で対応していなければ利用できません。
+2011/09/01 に、Version 11 がリリースされました。サンプリング周波数が、8kHzから16kHzに変更されているので、音質が向上しています。
+動作環境
+正式にサポートされているOSは、Windows Vista / 7 、Windows Server 2003 / 2008 です。Windows XP は非サポートですが、.NET Framework をインストールしてあれば使用可能です。
+無料の音声合成エンジン 「Microsoft Speech Platform 11」::まほろば

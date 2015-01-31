@@ -1,0 +1,146 @@
+Pythonで音声信号処理(2011/05/14)の第18回目。今回は、音声の特徴量としてよく使われるMFCC(Mel-Frequency Cepstrum Coefficients: メル周波数ケプストラム係数)抽出に向けた第一歩としてケプストラム分析を試しました。Wikipediaでケプストラムの定義を見てみると。
+ケプストラムは1963年、Bogertらの論文で定義された。ケプストラムの定義は以下の通り。
+口語的定義: (信号の)ケプストラムとは、(信号の)フーリエ変換の対数(位相アンラッピングを施したもの)をフーリエ変換したものである。スペクトルのスペクトルとも呼ばれる。
+数学的定義: 信号のケプストラムは FT(log(|FT(信号)|)+j2πm) である。ここで m は、複素対数関数の虚数成分または角度の位相アンラッピングを正しく行うのに必要とされる整数である。
+アルゴリズム的定義: 信号  FT  abs()  log  位相アンラッピング  FT  ケプストラム
+処理過程を FT  log  IFT(フーリエ逆変換)として説明しているものがよく見受けられる。すなわち、ケプストラムを「スペクトルの対数のフーリエ逆変換」と定義しているのである。これはオリジナルの論文にある定義ではないが、広く用いられている。ケプストラム - Wikipedia
+これだけだと何の役に立つのかよくわかりませんが、ケプストラムを使うとスペクトルの細かな変動(スペクトル微細構造)とスペクトルのなだらかな変動(スペクトル包絡)を分離できます。そのうちスペクトル包絡は、人間の声道の特性を表しているため音声認識や音声合成では重要な情報とのこと。そういうわけでこの手順に従ってさっそく試してみます。今回のコードは、Miyazawa&rsquo;s Pukiwiki 公開版を参考にしました。このサイトは音声信号処理に関するたくさんのMatlabコードがあります。この記事ではMatlabではなく、Pythonで実装します。まあ似てるんですがね(笑)上のサイトと結果を比較できるように同じデータを使いました。
+信号の生成
+まず、適当な波形を作ります。4つの正弦波を足し合わせてプロットしてみます。
+#coding:utf-8
+import numpy as np
+import pylab
+if __name__ == "__main__":
+# 複雑な波を作る
+fs = 8820.0
+time = np.arange(0.0, 0.05, 1 / fs)
+sinwav1 = 1.2 * np.sin(2 * np.pi * 130 * time)  # 振幅1.2、周波数130Hz
+coswav1 = 0.9 * np.cos(2 * np.pi * 200 * time)  # 振幅0.9、周波数200Hz
+sinwav2 = 1.8 * np.sin(2 * np.pi * 260 * time)  # 振幅1.8、周波数260Hz
+coswav2 = 1.4 * np.cos(2 * np.pi * 320 * time)  # 振幅1.4、周波数320Hz
+wavdata = 1.4 + (sinwav1 + coswav1 + sinwav2 + coswav2)
+pylab.plot(time * 1000, wavdata)
+pylab.xlabel("time [ms]")
+pylab.ylabel("amplitude")
+pylab.show()
+今回は、waveファイルに出力して音として鳴らす必要はないので振幅は適当ですが、鳴らしたい場合は、正弦波の合成(2011/6/7)を参照。
+フーリエ変換してスペクトルを分析
+次に音声をフーリエ変換してスペクトルを求めます。複雑な波形を、元の正弦波の組み合わせに分解し、各正弦波の振幅(またはパワー)を求める技術です。フーリエ変換の詳細は、離散フーリエ変換(2011/6/11)または高速フーリエ変換(2011/6/18)を参照。
+# 離散フーリエ変換
+n = 2048  # FFTのサンプル数
+dft = np.fft.fft(wavdata, n)
+# 振幅スペクトル
+Adft = np.abs(dft)
+# パワースペクトル
+Pdft = np.abs(dft) ** 2
+# 周波数スケール
+fscale = np.fft.fftfreq(n, d = 1.0 / fs)
+# 振幅スペクトルを描画
+pylab.subplot(211)
+pylab.plot(fscale[0:n/2], Adft[0:n/2])
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("amplitude spectrum")
+pylab.xlim(0, 1000)
+# パワースペクトルを描画
+pylab.subplot(212)
+pylab.plot(fscale[0:n/2], Pdft[0:n/2])
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("power spectrum")
+pylab.xlim(0, 1000)
+pylab.show()
+コードは前の続きです。FFTのサンプル数が2048とかなり大きいので周波数解像度がかなり高いなぁ。実行すると下のように振幅スペクトルとパワースペクトルが表示されます。高周波成分はほとんどないので1000Hzまでしか表示していません。元の合成波は、130Hz、200Hz、260Hz、320Hzの4つの正弦波を合成したものでした。スペクトルを見るとその部分が立っているので問題なさそうです。振幅の高さも問題なさそうです。
+対数スペクトル
+スペクトルの縦軸をdB(デシベル)表記に変換した対数スペクトルを表示してみます。dBに直す場合は、振幅スペクトルとパワースペクトルで係数が変わってくるので注意。対数スペクトルを使うと高周波の小さな振幅(パワー)も大きくなるので見やすくなりますね。
+# 対数振幅スペクトルを描画
+pylab.subplot(211)
+pylab.plot(fscale[0:n/2], 20 * np.log10(Adft[0:n/2]))
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("log amplitude spectrum [dB]")
+pylab.xlim(0, 1000)
+# 対数パワースペクトルを描画
+pylab.subplot(212)
+pylab.plot(fscale[0:n/2], 10 * np.log10(Pdft[0:n/2]))
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("log power spectrum [dB]")
+pylab.xlim(0, 1000)
+pylab.show()
+音声波形のスペクトル分析
+次は、人間の声で同じような分析をします。サンプルは、上のサイトからお借りした「あ」という母音をしゃべっている音声です。私の声ではありません(笑)上のサイトの音声は、Pythonで読み込めるwaveとは違ったフォーマット(拡張形式?)みたいだったのでフォーマットを変換しました。 音声を再生するには、audioタグをサポートしたブラウザが必要です。まず、波形を表示と。
+#coding:utf-8
+import numpy as np
+import pylab
+import wave
+def wavread(filename):
+wf = wave.open(filename, "r")
+fs = wf.getframerate()
+x = wf.readframes(wf.getnframes())
+x = np.frombuffer(x, dtype="int16") / 32768.0  # (-1, 1)に正規化
+wf.close()
+return x, float(fs)
+if __name__ == "__main__":
+# 波形を表示
+wav, fs = wavread("a.wav")
+t = np.arange(0.0, len(wav) / fs, 1/fs)
+pylab.plot(t * 1000, wav)
+pylab.xlabel("time [ms]")
+pylab.ylabel("amplitude")
+pylab.show()
+次に、母音の定常部分(音声ファイルの真ん中あたり)のスペクトルを求めてみます。ハニング窓をかけてからスペクトルを求めました。窓関数の使い方は、短時間フーリエ変換(2011/7/16)を参照。まず、窓関数をかける前とかけた後の波形を描画します。
+# 母音の定常部分(中心部)のスペクトルを
+center = len(wav) / 2  # 中心のサンプル番号
+cuttime = 0.04         # 切り出す長さ [s]
+wavdata = wav[center - cuttime/2*fs : center + cuttime/2*fs]
+time = t[center - cuttime/2*fs : center + cuttime/2*fs]
+pylab.subplot(211)
+pylab.plot(time * 1000, wavdata)
+pylab.ylabel("amplitude")
+# ハニング窓をかける
+hanningWindow = np.hanning(len(wavdata))
+wavdata = wavdata * hanningWindow
+pylab.subplot(212)
+pylab.plot(time * 1000, wavdata)
+pylab.xlabel("time [ms]")
+pylab.ylabel("amplitude")
+pylab.show()
+窓関数をかけて両端をすぼめると繰り返し部分がなめらかにつながり、フーリエ変換の要件を満たすことができます。窓関数をかけた波形をフーリエ変換してみます。
+# 切り出した音声のスペクトルを求める
+n = 2048  # FFTのサンプル数
+# 離散フーリエ変換
+dft = np.fft.fft(wavdata, n)
+# 振幅スペクトル
+Adft = np.abs(dft)
+# パワースペクトル
+Pdft = np.abs(dft) ** 2
+# 周波数スケール
+fscale = np.fft.fftfreq(n, d = 1.0 / fs)
+# プロット
+pylab.subplot(211)
+pylab.plot(fscale[0:n/2], Adft[0:n/2])
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("amplitude spectrum")
+pylab.xlim(0, 5000)
+pylab.subplot(212)
+pylab.plot(fscale[0:n/2], Pdft[0:n/2])
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("power spectrum")
+pylab.xlim(0, 5000)
+pylab.show()
+音声の対数スペクトラム
+次、先の「あ」の対数スペクトルを求めます。
+# 対数振幅スペクトル
+AdftLog = 20 * np.log10(Adft)
+# 対数パワースペクトル
+PdftLog = 10 * np.log10(Pdft)
+# プロット
+pylab.subplot(211)
+pylab.plot(fscale[0:n/2], AdftLog[0:n/2])
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("log amplitude spectrum")
+pylab.xlim(0, 5000)
+pylab.subplot(212)
+pylab.plot(fscale[0:n/2], PdftLog[0:n/2])
+pylab.xlabel("frequency [Hz]")
+pylab.ylabel("log power spectrum")
+pylab.xlim(0, 5000)
+pylab.show()
+ケプストラム分析 - 人工知能に関する断創録

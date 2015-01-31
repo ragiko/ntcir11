@@ -1,0 +1,9 @@
+Configuration¶
+設定は単体の JSON で与えられる。
+JSON の各フィールドは以下のとおりである。
+method
+近傍探索に使用するアルゴリズムを指定する。
+以下のアルゴリズムを指定できる。
+設定値
+類似度尺度
+Nearest Neighbor &mdash; Jubatus

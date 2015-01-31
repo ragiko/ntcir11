@@ -1,0 +1,38 @@
+
+問題: ユーザーが
+Windows
+アプリケーションを閉じたあとに再起動すると、シームレスウィンドウの問題が発生することがあります。この問題は、アプリケーションが
+Windows Server 2008 R2
+サーバーにホストされているときに見られます。
+原因:
+一部のバージョンの SGE
+拡張モジュールに関する既知の問題です。
+解決策: Windows
+アプリケーションサーバー上で実行している SGD
+拡張モジュールのバージョンが、SGD
+サーバーのバージョンと同じであることを確認してください。
+問題: Solaris 10 OS x86
+プラットフォームでは、root
+ユーザーでのログイン時に統合モードを有効にすると、アプリケーションが
+Solaris 10
+の「起動」メニューに追加されません。次の警告が表示されることもあります。
+gnome-vfs-modules-WARNING **: Error writing vfolder configuration file 
+"//.gnome2/vfolders/applications.vfolder-info": File not found.
+原因: Gnome Virtual File
+System (VFS) の既知の問題です。
+解決策:
+現在利用できる解決策がありません。
+問題: Microsoft Windows
+Vista プラットフォームで Internet Explorer 7
+を使用していると、SGD Client
+を自動的にダウンロードおよびインストールできません。SGD
+Client
+は、手動でインストールするか、または、Firefox
+などの別のブラウザを使用して、自動的にインストールできます。
+原因: Internet Explorer
+には、SGD Client
+の自動ダウンロードおよびインストールを妨げる保護モードがあります。
+解決策: Internet Explorer
+の「セキュリティ設定」の「信頼済みサイト」のリストに
+SGD サーバーを追加します。
+3.1. 既知のバグと問題

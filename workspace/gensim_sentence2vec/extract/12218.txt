@@ -1,0 +1,45 @@
+ 雛形(Template)ファイルの中に使える変数は、基本的にヘッダに使われている語と同じです。
+To,From,Subject,Date……。X-mailer, X-Statusなどの、拡張系のヘッダでもOKです。ただし、全て大文字で記述してください。
+その他、本文を引用したり、他からファイルを取り込んだりするための変数もあります。それらから一部分を取り出す記法も存在します。
+返信・転送用のテンプレートの場合、変数の値は返信・転送の元となるメールから探してきた値が代入されます。
+ヘッダ変数
+元のメールのヘッダフィールド(From:、Date:、Message-ID:など)は全て変数として使用できます。 
+例えば、$FROM, $DATE, $MESSAGE-ID という記述になります。
+元のメールにそのヘッダフィールドが含まれていない場合は、変数の内容は空になります。
+例) 元のメールのFrom:行を使った雛形を
+$FROMさん、こんにちは。
+ように作ったとします。
+これを使うとき、元のメールに
+From: gon@bei.or.jp
+と書かれていれば、
+gon@bei.or.jpさん、こんにちは。
+とその部分が埋まります。
+もし万が一、From:行のないメールが来た場合は、 さん、こんにちは。 となります。
+$RECOMMENDED-FROM, $RECOMMENDED-TO, $RECOMMENDED-CC, $RECOMMENDED-BCC, $RECOMMENDED-SUBJECT, $RECOMMENDED-IN-REPLY-TO
+一連の$RECOMMENDEDで始まる変数には、返信(転送)メールのヘッダとしてふさわしい値が自動的に入るようになっています。 
+$ORIGINAL-SUBJECT
+もとのSubjectから、「Re:および類する単語を除いたもの」が入っています。
+$RECOMMENDED-SUBJECTの場合、Re:hogehogeに対する返信が、Re^2:hogehogeになってしまうのですが、
+Subject: Re: $ORIGINAL-SUBJECT
+と記述すれば、Re^2:という記法でない返信を書けます。
+$BODY
+もとのメールの本文そのままです。転送などで、行頭に引用符の付かない本文が欲しいときに使います。
+$BODY[a-b](a,bは数値)とするとa行目からb行目までが取り出せます。
+$QUOTED-BODY
+元の文章の本文の行頭に設定の[メール作成][引用]で指定した引用符をつけたものです。$BODYと同じく$QUOTED-BODY[a-b]が使えます。
+$HEADERS
+転送元のヘッダ全体が入ります。
+$BOUNDARY
+添付ファイルの区切りを示す文字列が入ります。
+$SKIPEDIT=Yes;
+これが書かれていると、転送テンプレートを使ってメールを作成した後、エディタを立ち上げずに保存します。
+$INCLUDE<ファイル名>
+$ENV{環境変数名} 
+${変数名}
+送信用テンプレートと同じく、これらの変数も使用できます。
+例えば、相手の名前だけを抜き出して使いたい、ということがあります。
+こういうときには、変数名に[a](aは整数(自然数))をつけて指定すると、そのヘッダの左からa番目の単語のみが抜き出されて挿入されます。
+例えば、$FROM[1]であれば、返信するメールのFromヘッダが、
+From: Gonbei Nanashino <gonbei@nanashino.or.jp>なら、Gonbeiがその内容に、
+From: gonbei@nanashino.or.jp (Gonbei Nanashino)なら、gonbeiがその内容になります。
+Template特有の表現

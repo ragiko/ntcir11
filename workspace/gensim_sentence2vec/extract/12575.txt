@@ -1,0 +1,311 @@
+
+これらのアルゴリズムの詳細は、「集団アルゴリズム」を参照してください。集団アルゴリズムの一般的な特徴-  Bag では一般的に深いツリーが作成されます。この作成処理は時間がかかり、メモリの消費量も非常に多くなります。このため、予測は比較的低速になります。Boost アルゴリズムでは一般的に非常に浅いツリーが使用されます。この作成処理にかかる時間は比較的短く、メモリの消費量も少なくなります。ただし、効果的な予測を行うには、ブースティング ツリーで必要な集団メンバーの数がバギング ツリーの場合より多くなることがあります。そのため、どちらのアルゴリズムが優れているかは一概には言えません。Bag では、追加の交差検定を行わずに一般化誤差を推定できます。oobLossを参照してください。Subspace を除くすべてのブースティングおよびバギング アルゴリズムはツリー学習器に基づいています。Subspace では判別分析または k 最近傍点学習器を使用できます。各集団メンバーの特徴の詳細は、「アルゴリズムの特性」を参照してください。集団メンバー数の設定速度と精度のバランスが適切に保たれる集団のサイズを選択します。集団のサイズが大きいと、学習や予測の生成に時間がかかります。アルゴリズムのタイプによっては、サイズが大きすぎると、過学習になる (精度が低下する) 可能性があります。適切なサイズを設定するには、集団のメンバー数を数十から数百程度から開始して、集団を学習させ、その後で「集団の特性テスト」で説明している方法で集団の特性をチェックします。メンバー数を増やす必要があると判断できる場合は、コマンド ラインで resume メソッド (分類木の場合)、または resume メソッド (回帰木の場合) を使用します。メンバーを追加しても集団の特性が改善されなくなるまで手順を繰り返します。
+弱学習器の準備現在、弱学習器タイプには次のものがあります。'Discriminant' (Subspace 集団用)'KNN' (Subspace 集団用)'Tree' (Subspace を除くすべての集団用)集団で弱学習器のタイプを設定するには、2 つの方法があります。既定の弱学習器オプションで集団を作成するには、弱学習器として文字列を渡します。次に、例を示します。ens = fitensemble(X,Y,'AdaBoostM2',50,'Tree');
+% or
+ens = fitensemble(X,Y,'Subspace',50,'KNN');既定の設定でない弱学習器オプションで集団を作成するには、適切な template メソッドを使用して既定の設定でない弱学習器を作成します。たとえば、欠損データがあり、サロゲート分離を含むツリーを使用する場合は次のようにします。templ = templateTree('Surrogate','all');
+ens = fitensemble(X,Y,'AdaBoostM2',50,templ);ツリーごとに約 10 の葉ノードをもつツリーを大きくするには、次のようにします。templ = templateTree('MinLeaf',size(X,1)/10);
+ens = fitensemble(X,Y,'AdaBoostM2',50,templ);学習器のテンプレートのセル配列に fitensemble を指定するときに、最もよく使用されるのは、弱学習器を 1 つだけ指定する方法です。テンプレートの使用例は、「例:不等価な分類コスト」と「サロゲート分割」を参照してください。決定木では、X の NaN 値を処理できます。そのような値は、"欠損している" と呼ばれます。X 行の一部に欠損値が存在する場合は、決定木は欠損していない値のみを使用して最適分割を検出します。行全体が NaN で構成されている場合には、fitensemble はその行を無視します。X のデータに含まれる欠損値の割合が高い場合は、サロゲート決定分割を使用します。サロゲート分割の例は、「例:不等価な分類コスト」と「サロゲート分割」を参照してください。ツリー弱学習器の一般的な設定-  弱学習器のツリーの深さによって、学習時間、メモリ使用量および予測精度が変化します。深さは次の 2 つのパラメーターで制御します。MinLeaf — 各リーフには少なくとも MinLeaf の観測値があります。深いツリーを作成するには、MinLeaf に小さい値を指定します。MinParent — ツリーの各分岐ノードには少なくとも MinParent の観測値があります。深いツリーを作成するには、MinParent に小さい値を指定します。MinParent と MinLeaf 両方を指定する場合は、学習器ではリーフ数が多くなる方の設定を使用します。MinParent = max(MinParent,2*MinLeaf)Surrogate — Surrogate が 'on' のときに、サロゲート分割をもつ決定木を成長させます。サロゲート分割はデータに欠損値があるときに使用します。 
+fitensemble の呼び出しfitensemble の構文は、次のようになります。ens = fitensemble(X,Y,model,numberens,learners)X は、データの行列です。各行には 1 つの観測値、各列には 1 つの予測子変数が含まれます。Y は応答で、X の行で表される観測値の数と同じ数になります。model は集団のタイプを表す名前の文字列です。numberens は、learners の各要素にある ens の弱学習器の数です。そのため、ens の要素数は、learners の要素数を numberens 倍した数になります。learners は、弱学習器の名前を表す文字列であり、弱学習器のテンプレート、またはそのような文字列やテンプレートのセル配列です。fitensemble の結果は、新しいデータに対する予測の作成に適した集団オブジェクトです。分類集団の作成に関する基本的な例は、「分類集団の作成」を参照してください。回帰集団の作成に関する基本的な例は、「回帰集団の作成」を参照してください。名前と値のペアを設定する状況-  関数 fitensemble に渡したり、弱学習器 (templateDiscriminant、templateKNN、templateTree および templateTree) に適用できる名前と値のペアがあります。集団または弱学習器では、適切なオプション (名前と値のペア) を判断するために、次のように使用されます。テンプレートの名前と値のペアを使用して、弱学習器の特性を制御します。fitensemble の名前と値のペアを使用して、アルゴリズムまたは構造体のいずれに対しても、集団を全体として制御します。たとえば、ブースティングされた分類木の集団の各ツリーを既定より深くするには、templateTree 名前と値のペア (MinLeaf と MinParent) を既定の設定よりも小さな値に設定します。これにより、ツリーのリーフ数が増加し、ツリーは深くなります。集団の予測子の名前を指定するには (集団の構造体の一部にするには)、fitensemble の PredictorNames 名前と値のペアを使用します。
+基本的な集団の例分類集団の作成フィッシャーのアヤメのデータの分類木集団を作成して、平均測定値で花の分類を予測するのに使用します。データを読み込みます。load fisheriris予測データ X は行列 meas です。応答データ Y はセル配列 species です。3 個以上のクラスがある分類木の場合、「適切な集団アルゴリズムの選択に関するヒント」では 'AdaBoostM2' 集団の使用が推奨されています。この例では、100 本のツリーを指定するものとします。既定のツリー テンプレートを使用します。集団を作成します。ens = fitensemble(meas,species,'AdaBoostM2',100,'Tree')ens = 
+classreg.learning.classif.ClassificationEnsemble
+PredictorNames: {'x1'  'x2'  'x3'  'x4'}
+ResponseName: 'Y'
+ClassNames: {'setosa'  'versicolor'  'virginica'}
+ScoreTransform: 'none'
+NumObservations: 150
+NumTrained: 100
+Method: 'AdaBoostM2'
+LearnerNames: {'Tree'}
+ReasonForTermination: [1x77 char]
+FitInfo: [100x1 double]
+FitInfoDescription: {2x1 cell}
+Properties, Methods平均測定値の花の分類を予測します。flower = predict(ens,mean(meas))flower = 
+'versicolor'回帰集団の作成馬力と重量に基づいて自動車の燃費を予測するための回帰集団を作成し、carsmall データで学習させます。作成された集団を使用して、150 馬力、重量 2750 lbs の自動車の燃費を予測します。データを読み込みます。load carsmall入力データを準備します。X = [Horsepower Weight];応答データ Y は MPG です。ただ 1 つのブースティングされた回帰集団のタイプは 'LSBoost' です。この例では、100 本のツリーを指定するものとします。既定のツリー テンプレートを使用します。集団を作成します。ens = fitensemble(X,MPG,'LSBoost',100,'Tree')ens = 
+classreg.learning.regr.RegressionEnsemble
+PredictorNames: {'x1'  'x2'}
+ResponseName: 'Y'
+ResponseTransform: 'none'
+NumObservations: 94
+NumTrained: 100
+Method: 'LSBoost'
+LearnerNames: {'Tree'}
+ReasonForTermination: [1x77 char]
+FitInfo: [100x1 double]
+FitInfoDescription: {2x1 cell}
+Regularization: []
+Properties, Methods150 馬力、重量 2750 lbs の自動車の燃費を予測します。mileage = ens.predict([150 2750])
+mileage =
+22.4180
+集団の特性テスト通常、集団の予測特性を学習データでの性能に基づいて評価することはできません。集団は過学習になる傾向があり、予測性能について過度に楽観的な予測が行われます。つまり、通常は分類の resubLoss (回帰では resubLoss) の結果は、新しいデータで予測する場合より小さい誤差を示すことを意味します。集団の特性をより正確に把握できるようにするには、次のいずれかの方式を使用します。独立したテスト セットで集団を評価します (十分な学習データがあるときに適しています)。交差検定によって集団を評価します (十分な学習データがないときに適しています)。out-of-bag データで集団を評価します (fitensemble でバギングされた集団を作成するときに適しています)。集団の特性テスト
+この例では、集団の特性を評価する 3 つの方式をすべて使用できるように、バギングされた集団を使用します。
+20 の予測子を指定して疑似データセットを生成します。各エントリは 0 ～ 1 の乱数です。最初の分類は、
+の場合は 
+、それ以外の場合は 
+です。
+rng(1,'twister') % for reproducibility
+X = rand(2000,20);
+Y = sum(X(:,1:5),2) > 2.5;
+さらに、結果にノイズを追加するために、分類の 10% をランダムに入れ替えます。
+idx = randsample(2000,200);
+Y(idx) = ~Y(idx);
+独立したテスト セット交差検定out-of-bag 推定独立したテスト セット独立した学習セットとテスト セットのデータを作成します。cvpartition を holdout オプションを指定して呼び出すことによって、データの 70% を学習セットに使用します。cvpart = cvpartition(Y,'holdout',0.3);
+Xtrain = X(training(cvpart),:);
+Ytrain = Y(training(cvpart),:);
+Xtest = X(test(cvpart),:);
+Ytest = Y(test(cvpart),:);
+学習データを基にツリー数 200 のバギングされた分類集団を作成します。bag = fitensemble(Xtrain,Ytrain,'Bag',200,'Tree',...
+'Type','Classification')
+bag = 
+classreg.learning.classif.ClassificationBaggedEnsemble
+PredictorNames: {1x20 cell}
+ResponseName: 'Y'
+ClassNames: [0 1]
+ScoreTransform: 'none'
+NumObservations: 1400
+NumTrained: 200
+Method: 'Bag'
+LearnerNames: {'Tree'}
+ReasonForTermination: 'Terminated normally after completing the reques...'
+FitInfo: []
+FitInfoDescription: 'None'
+FResample: 1
+Replace: 1
+UseObsForLearner: [1400x200 logical]
+検定データの損失 (誤判別) を集団内の学習済みのツリー数の関数としてプロットします。figure;
+plot(loss(bag,Xtest,Ytest,'mode','cumulative'));
+xlabel('Number of trees');
+ylabel('Test classification error');
+交差検定5 分割交差検定を使用したバギングされた集団を生成します。cv = fitensemble(X,Y,'Bag',200,'Tree',...
+'type','classification','kfold',5)
+cv = 
+classreg.learning.partition.ClassificationPartitionedEnsemble
+CrossValidatedModel: 'Bag'
+PredictorNames: {1x20 cell}
+CategoricalPredictors: []
+ResponseName: 'Y'
+NumObservations: 2000
+KFold: 5
+Partition: [1x1 cvpartition]
+NumTrainedPerFold: [200 200 200 200 200]
+ClassNames: [0 1]
+ScoreTransform: 'none'
+交差検定損失を集団内のツリー数の関数として検査します。figure;
+plot(loss(bag,Xtest,Ytest,'mode','cumulative'));
+hold on;
+plot(kfoldLoss(cv,'mode','cumulative'),'r.');
+hold off;
+xlabel('Number of trees');
+ylabel('Classification error');
+legend('Test','Cross-validation','Location','NE');
+Cross validating gives comparable estimates to those of the independent
+set.out-of-bag 推定out-of-bag 推定の損失曲線を生成し、他の曲線と共にプロットします。figure;
+plot(loss(bag,Xtest,Ytest,'mode','cumulative'));
+hold on;
+plot(kfoldLoss(cv,'mode','cumulative'),'r.');
+plot(oobLoss(bag,'mode','cumulative'),'k--');
+hold off;
+xlabel('Number of trees');
+ylabel('Classification error');
+legend('Test','Cross-validation','Out of bag','Location','NE');
+out-of-bag 推定でも、他の手法と同等の結果が示されています。
+不均衡データでの分類
+この例では、1 つのクラスに他のクラスより多くの観測値が含まれる場合の分類方法を示します。このような場合に対応する RUSBoost アルゴリズムを試してみましょう。
+この例では、UCI 機械学習アーカイブの "Cover type" データ (詳細は「http://archive.ics.uci.edu/ml/datasets/Covertype」を参照) を使用します。このデータでは、森林被覆の種類を、標高、土壌の種類、水源までの距離などの予測子に基づいて分類しています。このデータには 500,000 件を超える観測と 50 を超える予測子があるため、トレーニングや分類器の使用には時間がかかる場合があります。
+Blackard と Dean [1] がこのデータのニューラル ネット分類について説明しています。それによると、分類の精度は 70.6% になっています。RUSBoost の分類の精度は 76% を超えます (手順 6 および 7 を参照してください)。
+手順 1. データを取得する。手順 2. データをインポートして分類の準備をする。手順 3. 応答データを調べる。手順 4. データを分割して品質評価する。手順 5. 集団を作成する。手順 6. 分類エラーを検証する。手順 7. 集団を圧縮します。手順 1. データを取得する。urlwrite('http://archive.ics.uci.edu/ml/machine-learning-databases/covtype/covtype.data.gz','forestcover.gz');次に、forestcover.gz ファイルからデータを抽出します。データは covtype.data ファイルにあります。手順 2. データをインポートして分類の準備をする。データをワークスペースにインポートします。最後のデータ列を抽出して Y という名前の変数に格納します。load covtype.data
+Y = covtype(:,end);
+covtype(:,end) = [];手順 3. 応答データを調べる。tabulate(Y)  Value    Count   Percent
+1    211840     36.46%
+2    283301     48.76%
+3    35754      6.15%
+4     2747      0.47%
+5     9493      1.63%
+6    17367      2.99%
+7    20510      3.53%データ点は何十万個もあります。クラス 4 のデータ点は全体の 0.5% 未満です。このような不均衡なデータには、RUSBoost アルゴリズムが適切です。手順 4. データを分割して品質評価する。データの半分は分類器の近似に使用し、残りの半分は生成された分類器の品質評価に使用します。part = cvpartition(Y,'holdout',0.5);
+istrain = training(part); % data for fitting
+istest = test(part); % data for quality assessment
+tabulate(Y(istrain))  Value    Count   Percent
+1    105920     36.46%
+2    141651     48.76%
+3    17877      6.15%
+4     1374      0.47%
+5     4746      1.63%
+6     8683      2.99%
+7    10255      3.53%手順 5. 集団を作成する。深いツリーを使用して集団の精度を上げます。そのためには、ツリーの最小の葉のサイズを 5 に設定します。また、LearnRate を 0.1 に設定し、精度が高くなるようにします。データは大規模で、深いツリーがあると集団の作成に時間がかかります。t = templateTree('minleaf',5);
+tic
+rusTree = fitensemble(covtype(istrain,:),Y(istrain),'RUSBoost',1000,t,...
+'LearnRate',0.1,'nprint',100);
+tocTraining RUSBoost...
+Grown weak learners: 100
+Grown weak learners: 200
+Grown weak learners: 300
+Grown weak learners: 400
+Grown weak learners: 500
+Grown weak learners: 600
+Grown weak learners: 700
+Grown weak learners: 800
+Grown weak learners: 900
+Grown weak learners: 1000
+Elapsed time is 918.258401 seconds.手順 6. 分類エラーを検証する。集団のメンバー数に対して分類エラーをプロットします。figure;
+tic
+plot(loss(rusTree,covtype(istest,:),Y(istest),'mode','cumulative'));
+toc
+grid on;
+xlabel('Number of trees');
+ylabel('Test classification error');Elapsed time is 775.646935 seconds.
+この集団は、使用しているツリー数が 150 以上の場合に、分類エラーが 24% 未満となっています。ツリーの数が 400 以上になると、エラーが最低水準となります。各クラスの混合行列を、真のクラスのパーセンテージとして調べます。tic
+Yfit = predict(rusTree,covtype(istest,:));
+toc
+tab = tabulate(Y(istest));
+bsxfun(@rdivide,confusionmat(Y(istest),Yfit),tab(:,2))*100Elapsed time is 427.293168 seconds.
+ans =
+Columns 1 through 6
+83.3771    7.4056    0.0736         0    1.7051    0.2681
+18.3156   66.4652    2.1193    0.0162    9.3435    2.8239
+0    0.0839   90.8038    2.3885    0.6545    6.0693
+0         0    2.4763   95.8485         0    1.6752
+0    0.2739    0.6530         0   98.6518    0.4213
+0    0.1036    3.8346    1.1400    0.4030   94.5187
+0.2340         0         0         0    0.0195         0
+Column 7
+7.1705
+0.9163
+0
+0
+0
+0
+99.7465クラス 2 を除くすべてのクラスで分類の精度が 80% を超え、クラス 3 ～ 7 では精度が 90% を超えています。ただし、クラス 2 はデータの約半分を占めているため、全体の精度はそれほど高くなりません。手順 7. 集団を圧縮します。集団は大きくなっています。メソッド compact を使ってデータを除去します。cmpctRus = compact(rusTree);
+sz(1) = whos('rusTree');
+sz(2) = whos('cmpctRus');
+[sz(1).bytes sz(2).bytes]ans =
+1.0e+09 *
+1.6947    0.9790圧縮された集団のサイズは、元の集団の約半分です。ツリーの半分を cmpctRus から削除します。この操作による予測性能への影響は最小限に抑えられます。これは、1000 個のツリーのうち 400 個を使用すれば最適な精度が得られるという観測に基づいています。cmpctRus = removeLearners(cmpctRus,[500:1000]);
+sz(3) = whos('cmpctRus');
+sz(3).bytesans =
+475495669圧縮された集団で消費されるメモリは、完全な状態の集団の場合と比べて約 4 分の 1 になります。全体での損失の割合は 24% 未満となります。L = loss(cmpctRus,covtype(istest,:),Y(istest))L =
+0.2326集団の精度にバイアスがある可能性があるため、新しいデータについての予測精度は異なる場合があります。このバイアスが発生するのは、集団サイズの圧縮に集団の評価と同じデータが使用されるためです。必要な集団サイズについて不偏推定値を得るには、交差検定を実行します。ただし、この処理は時間がかかります。
+分類の場合:不均衡なデータまたは不等価な誤判別のコスト実世界で応用する場合には、データのクラスを非対称的に処理したい場合があります。たとえば、データに他のクラスより多くの観測値をもつクラスがあるとします。または、取り組んでいる問題で、他のクラスで発生した場合より深刻な結果をもたらす誤判別が、1 つのクラスで発生するとします。そのような状況では、関数 fitensemble で prior と cost の 2 つのオプション パラメーターが使用できます。prior を使用することによって、優先クラス確率 (つまり、学習に使用されるクラスの確率) を設定します。学習セットに過小または過大に表現されるクラスがある場合に、このオプションを使用します。たとえば、シミュレーションによって学習データを取得するとします。シミュレートするクラス A は、クラス B よりも計算の負荷が高いため、クラス A の観測値は少なめに、また B の観測値は多めに生成される傾向になります。しかし、実世界ではクラス A とクラス B がそれとは異なる比率で混在していると考えられます。このケースでは、実世界で観測される値に近い比率になるように、クラス A と B に事前確率を設定します。fitensemble は事前確率を正規化して、合計 1 になるようにします。すべての事前確率に同じ正因子を乗算しても、分類の結果には影響しません。学習データでクラスが適切に表現されていても、それらを非対称的に処理したい場合には、cost パラメーターを使用します。癌患者の良性腫瘍と悪性腫瘍を分類したいとします。悪性腫瘍の特定に失敗すること (偽陰性) は、良性を悪性と誤診する (偽陽性) よりも深刻な結果をもたらします。悪性を良性と誤診する場合には高いコストを、良性を悪性と誤診する場合には低いコストを割り当てなければならないはずです。誤判別のコストは、非負の要素をもつ正方行列として渡さなければなりません。この行列の要素 C(i,j) は、真のクラスが i である場合に、観測値をクラス j に分類するコストを表します。コスト行列 C(i,i) の対角要素は、0 でなければなりません。前の例では、悪性腫瘍をクラス 1、良性腫瘍をクラス 2 として選択できます。次に、コスト行列を次のように設定します。[0c10]ここで、c > 1 は、悪性腫瘍を良性と誤診した場合のコストを表します。コストは相対値です。すべてのコストに同じ正因子を乗算しても、分類の結果に影響はありません。クラスが 2 つしかない場合は、fitensemble はクラス i = 1,2 と j ≠ i に対して、P˜i=CijPi を使用して、事前確率を調整します。Pi は事前確率であり、fitensemble に渡されるか、学習データでのクラスの頻度から計算されます。また、P˜i は、調整済みの事前確率です。次に、fitensemble は既定のコスト行列を使用します。[0110]さらに、これらの調整済みの確率を弱学習器の学習に使用します。つまり、コスト行列の操作は事前確率の操作と等価です。3 つ以上のクラスを使用する場合も、fitensemble は入力コストを調整済み事前確率に変換します。この変換はさらに複雑です。まず、fitensemble は、Zhou と Liu の[20]で説明されている行列方程式を解こうとします。解を求めるのに失敗した場合は、fitensemble は Breiman などによって説明されている "平均コスト" を適用します。 「[6]」。詳細は、Zadrozny、Langford および Abe [19] を参照してください。例:不等価な分類コストこの例では、肝炎患者に関するデータを使用して、疾病によって生存するか、または死亡するかを確認します。データは http://archive.ics.uci.edu/ml/datasets/Hepatitis で説明されています。データを hepatitis.txt という名前のファイルに読み込みます。s = urlread(['http://archive.ics.uci.edu/ml/' ...
+'machine-learning-databases/hepatitis/hepatitis.data']);
+fid = fopen('hepatitis.txt','w');
+fwrite(fid,s);
+fclose(fid);データ hepatitis.txt をテーブルに読み込みます。データのフィールドを記述する変数名は次のようにします。VarNames = {'die_or_live' 'age' 'sex' 'steroid' 'antivirals' 'fatigue' ...
+'malaise' 'anorexia' 'liver_big' 'liver_firm' 'spleen_palpable' ...
+'spiders' 'ascites' 'varices' 'bilirubin' 'alk_phosphate' 'sgot' ...
+'albumin' 'protime' 'histology'};
+Tbl = readtable('hepatitis.txt','Delimiter',',',....
+'ReadVariableNames',false,'TreatAsEmpty','?',...
+'Format','%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f');
+Tbl.Properties.VariableNames = VarNames;
+Tbl は、155 の観測値と 20 の変数をもつテーブルです。size(Tbl)ans =
+155    20テーブルのデータを集団の形式に変換します。つまり、予測子の数値行列と'Die' または 'Live' の出力名をもつセル配列に変換します。テーブルの最初のフィールドに結果が格納されます。X = table2array(Tbl(:,2:end));
+ClassNames = {'Die' 'Live'};
+Y = ClassNames(Tbl.die_or_live);欠損値についてデータを検査します。figure;
+bar(sum(isnan(X),1)/size(X,1));
+xlabel('Predictor');
+ylabel('Fraction of missing values');
+ほとんどの予測子に欠損値があり、その 1 つでは 45% 近くが欠損値となっています。そのため、サロゲート分割をもつ決定木を使用することによって精度を高めます。データセットのサイズが小さいため、サロゲート分割を使用した場合でも学習時間はそれほど長くはなりません。サロゲート分割を使用する分類木のテンプレートを作成します。rng(0,'twister') % for reproducibility
+t = templateTree('surrogate','all');データまたはデータの説明を検証して、カテゴリカル予測子を特定します。X(1:5,:)ans =
+Columns 1 through 6
+30.0000    2.0000    1.0000    2.0000    2.0000    2.0000
+50.0000    1.0000    1.0000    2.0000    1.0000    2.0000
+78.0000    1.0000    2.0000    2.0000    1.0000    2.0000
+31.0000    1.0000       NaN    1.0000    2.0000    2.0000
+34.0000    1.0000    2.0000    2.0000    2.0000    2.0000
+Columns 7 through 12
+2.0000    1.0000    2.0000    2.0000    2.0000    2.0000
+2.0000    1.0000    2.0000    2.0000    2.0000    2.0000
+2.0000    2.0000    2.0000    2.0000    2.0000    2.0000
+2.0000    2.0000    2.0000    2.0000    2.0000    2.0000
+2.0000    2.0000    2.0000    2.0000    2.0000    2.0000
+Columns 13 through 18
+2.0000    1.0000   85.0000   18.0000    4.0000       NaN
+2.0000    0.9000  135.0000   42.0000    3.5000       NaN
+2.0000    0.7000   96.0000   32.0000    4.0000       NaN
+2.0000    0.7000   46.0000   52.0000    4.0000   80.0000
+2.0000    1.0000       NaN  200.0000    4.0000       NaN
+Column 19
+1.0000
+1.0000
+1.0000
+1.0000
+1.0000予測子 2 ～ 13、および予測子 19 はカテゴリカルであると判断されます。この推論は、http://archive.ics.uci.edu/ml/datasets/Hepatitis のデータセットの説明によって確認できます。カテゴリカル変数をリストします。ncat = [2:13,19];150 の学習器と GentleBoost アルゴリズムを使用して、交差検定を使用した集団を作成します。a = fitensemble(X,Y,'GentleBoost',150,t,...
+'PredictorNames',VarNames(2:end),'LearnRate',0.1,...
+'CategoricalPredictors',ncat,'kfold',5);
+figure;
+plot(kfoldLoss(a,'mode','cumulative','lossfun','exponential'));
+xlabel('Number of trees');
+ylabel('Cross-validated exponential loss');
+混合行列を検査して、集団によって正しく予測された人々を確認します。[Yfit,Sfit] = kfoldPredict(a); % 
+confusionmat(Y,Yfit,'order',ClassNames)ans =
+18    14
+11   112生存した 123 名については、112 名の生存が正しく予測されています。しかし、肝炎で死亡した 32 名については、実際に肝炎で死亡した患者の約半数が正しく予測されただけです。集団による予測で発生する誤差には、次の 2 つのタイプがあります。患者の生存を予測したにも関わらず、患者が死亡した場合患者の死亡を予測したにも関わらず、患者が生存した場合1 番目の誤差は 2 番目の誤差より 5 倍の悪影響をもたらすという前提があるとします。この前提を反映した新しい分類コスト行列を作成します。cost.ClassNames = ClassNames;
+cost.ClassificationCosts = [0 5; 1 0];誤判別のコストに cost を使用する新しい交差検定集団を作成して、結果の混合行列を検査します。aC = fitensemble(X,Y,'GentleBoost',150,t,...
+'PredictorNames',VarNames(2:end),'LearnRate',0.1,...
+'CategoricalPredictors',ncat,'KFold',5,...
+'cost',cost);
+[YfitC,SfitC] = kfoldPredict(aC);
+confusionmat(Y,YfitC,'order',ClassNames)ans =
+19    13
+8   115予想どおり、新しい集団では死亡する患者の分類機能が向上しています。意外なことに、新しい集団では、統計的には飛躍的な改善ではないものの、生存する患者の分類においても向上が見られます。交差検定の結果は無作為であるため、この結果は単なる統計変動です。結果によれば、生存する患者の分類については、コストに大きな影響は与えないことが示されていると判断されます。
+カテゴリカル レベルの数が多い分類一般に、カテゴリカル予測子では、31 を超えるレベルの分類は使用できません。ただし、2 つのブースティング アルゴリズムを使用すれば、カテゴリカル予測子レベルやバイナリ応答の多いデータを分類できます。これらは LogitBoost と GentleBoost の 2 つです。詳細は、LogitBoost と GentleBoost を参照してください。この例では、http://archive.ics.uci.edu/ml/machine-learning-databases/adult/ で公開されている、米国の国勢調査から人口統計学データを使用します。データを掲載した研究者の目的は、各種の特性に基づいて、ある人が年間 5000 ドル以上の収入を得ることが可能かどうかを予測することにあります。予測子の名前など、データの詳細については、サイトにある adult.names ファイルで確認できます。UCI 機械学習リポジトリから 'adult.data' ファイルを読み込みます。s = urlread(['http://archive.ics.uci.edu/ml/' ...
+'machine-learning-databases/adult/adult.data']);adult.data  では、欠損データは '?' で表されています。欠損データのインスタンスを NaN に置き換えます。s = strrep(s,'?','');
+データを MATLAB® テーブルに読み込みます。fid = fopen('adult.txt','w');
+fwrite(fid,s);
+fclose(fid);
+clear s;
+VarNames = {'age' 'workclass' 'fnlwgt' 'education' 'education_num' ...
+'marital_status' 'occupation' 'relationship' 'race' ...
+'sex' 'capital_gain' 'capital_loss' ...
+'hours_per_week' 'native_country' 'income'};
+Tbl = readtable('adult.txt','Delimiter',',',....
+'ReadVariableNames',false,...
+'Format','%f%s%f%s%f%s%s%s%s%s%f%f%f%s%s');
+Tbl.Properties.VariableNames = VarNames;
+% Logical indices of categorical variables
+cat = ~table2array(varfun(@isnumeric,Tbl(:,1:end-1)));
+catcol = find(cat); % indices of categorical variables
+データ内の多くの予測子はカテゴリカルです。テーブルのそれらのフィールドを nominal に変換します。Tbl.workclass = double(nominal(Tbl.workclass));
+Tbl.education = double(nominal(Tbl.education));
+Tbl.marital_status = double(nominal(Tbl.marital_status));
+Tbl.occupation = double(nominal(Tbl.occupation));
+Tbl.relationship = double(nominal(Tbl.relationship));
+Tbl.race = double(nominal(Tbl.race));
+Tbl.sex = double(nominal(Tbl.sex));
+Tbl.native_country = double(nominal(Tbl.native_country));
+Tbl.income = nominal(Tbl.income);
+テーブルを fitensemble の数値変数に変換します。X = Tbl{:,1:end-1};
+Y = Tbl.income;一部の変数には複数のレベルがあります。各予測子のレベルの数をプロットします。ncat = zeros(1,numel(catcol));
+for c=1:numel(catcol)
+[~,gn] = grp2idx(X(:,catcol(c)));
+ncat(c) = numel(gn);
+end
+figure;
+bar(catcol,ncat);
+xlabel('Predictor');
+ylabel('Number of categories');
+予測子 14 ('native_country') には、40 を超えるカテゴリカル レベルがあります。二項分類の場合、fitctree では、計算のショートカットを使用して、多くのカテゴリを含むカテゴリカル予測子の最適な分割を見つけます。3 つ以上のクラスを含む分類の場合は、経験則アルゴリズムを選択して最適な分割を見つけることができます。カテゴリカル予測子の分割 を参照してください。LogitBoost および GentleBoost を使用して、分類集団を作成します。rng(1); % For reproducibility
+lb = fitensemble(X,Y,'LogitBoost',300,'Tree',...
+'CategoricalPredictors',cat,'PredictorNames',VarNames(1:end-1),...
+'ResponseName','income');
+gb = fitensemble(X,Y,'GentleBoost',300,'Tree',...
+'CategoricalPredictors',cat,'PredictorNames',VarNames(1:end-1),...
+'ResponseName','income');2 つの集団の再置換誤差を検査します。figure;
+plot(resubLoss(lb,'mode','cumulative'));
+hold on
+plot(resubLoss(gb,'mode','cumulative'),'r--');
+hold off
+xlabel('Number of trees');
+ylabel('Resubstitution error');
+legend('LogitBoost','GentleBoost','Location','NE');
+GentleBoost アルゴリズムの再置換誤差はやや少なめです。交差検定によって、2 つのアルゴリズムの一般化誤差を推定します。lbcv = crossval(lb,'kfold',5);
+gbcv = crossval(gb,'kfold',5);
+figure;
+plot(kfoldLoss(lbcv,'mode','cumulative'));
+hold on
+plot(kfoldLoss(gbcv,'mode','cumulative'),'r--');
+hold off
+xlabel('Number of trees');
+ylabel('Cross-validated error');
+legend('LogitBoost','GentleBoost','Location','NE');
+交差検定損失は、再置換誤差とほとんど同じです。
+アンサンブル法 - MATLAB & Simulink - MathWorks 日本

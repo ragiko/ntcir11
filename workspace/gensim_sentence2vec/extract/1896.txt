@@ -1,0 +1,9 @@
+http://api.hitonobetsu.com/mp/analysis?str=対象とする文章
+文字コードはUTF-8、戻りはjson形式です(希望が多ければxmlもサポートするかもしれません)。
+以下のようにcallbackを指定してjsonp形式とすることも可能です。
+http:///api.hitonobetsu.com/mp/analysis?str=対象とする文章&callback=callbackの値
+文字列が長くなる際は、POSTでの呼び出しを推奨します。その際もパラメータはstrとcallbackとなります。
+一度の解析は3000文字までとしてください。
+読み、及び発音の精度が特に低いため今後改善していきたい。
+Return
+日本語形態素解析API■140note

@@ -1,0 +1,71 @@
+活断層のずれ情報を利用したBPT過程の事前分布によるベイズ型予測について
+A Bayesian predictor based on
+prior distributions of BPT model with slip rates 
+統計数理研究所
+The
+Institute of Statistical Mathematics
+地震調査委員会(ERC)による日本の活断層データ1)が詳細に公開されて,各活断層の30年確率予測などが公表されている.長期地震予測では主にBrownian Passage
+Time (BPT)分布による更新過程モデルを当てはめて推定している(図1参照).μとαは平均とばらつきを表すパラメタである.これらの最尤推定値 (MLE) をパラメタに代入して予測分布(プラグイン予測)
+(1)
+から将来の一定期間の地震発生確率を計算する.ただしERCの活断層の長期評価においては,平均のパラメタ は ERC が推定した平均活動間隔を適用し,ばらつきのパラメタは全活断層で一律 = 0.24 を適用している.しかし,この値は当時最も多い地震活動履歴が判明していた4 断層からの,AIC の比較により得られた共通のαのMLE値である.その後のトレンチ調査により多数の活断層の地震活動履歴が明らかになるに伴い,α= 0.24 を全活断層に適用すべきでないとする解析結果が示されてきている2−5).第2図には各断層の,地震間隔データに対する,ずれ速度情報から期待される平均活動間隔(本文下記参照)をプロットしている.それぞれ対角線沿いに分布しているが,α= 0.24 を仮定すると,緑色の線で示された95%限界を逸脱した異常値の活断層が多すぎる.
+本報告では BPT 分布のパラメタμとαは活断層ごとに異なる値としながらも,全体としてある事前分布から発生していると考える.他の活断層から得られたパラメタの先験情報(事前分布)と,個々の活断層の地震履歴データから得たパラメタの情報(尤度関数)の両方を用いた事後分布を使って,活断層の長期地震確率は次の関数(ベイズ予測分布)により推定できる.
+(2)
+ここで,最適な事前分布を構成すること(経験的ベイズ法)が重要である.そのために活断層の1回の地震のずれの量Uを累積的なずれの速度 V で除した平均活動間隔 T = U / V で基準化した ERC の 36 データを含む 79 データを同時に尤度に使い,μ/ T  とαの事前分布の候補の中から 赤池ベイズ情報量規準ABIC を最小化するような事前分布を選ぶ.ただし,ずれの情報が無い残りの 43 データは実際の間隔データを直接使い,平均活動間隔の事前分布には
+1/μ を共通に使った.結果としてμ/T  とαの最良の事前分布は表1のモデルの中では共に
+Weibull 分布である(表1および第3図参照)が,指数分布を除けば大差はない.αも大きくばらついており0.34あたりを平均とするように分布していることが分かる.しかしα= 0.34のプラグイン予測での95%限界(第1図の対角青線)でも95%限界を逸脱した異常値が多すぎる.それに対してベイズ予測では合理的な95%限界(第1図の対角赤線)が与えられている.
+かくして全国共通の事前分布(第3図)を使って計算された各断層の事後分布のαの平均値(ベイズ推定値)は興味深い結果を示唆している(第4図参照).例えば東北沖の孤立アスペリティの相似地震はαが小さく,他方で活断層の混み合っている中部地方や大分県の地溝帯ではα値が大きくなっている.活断層間の地震発生の相互作用とα値のばらつきは関係している.事実,第1図から示唆されるように,パラメタαはBrownian
+Passage過程の揺らぎの標準偏差に比例しており,これが断層間のストレス変化の相互作用を反映している.
+更に,事後分布を基にした (2) 式の予測分布と実際のデータの比較が第5図に示されている.
+上記手法で構成した事前分布や無情報の事前分布による予測分布と現行の ERC による予測分布について,シミュレーションによる予測精度を平均相対エントロピーで測定した比較結果(第6図左図)を示す.上記のベイズ型予測が他のどの手法よりも安定して平均的に優れていることが示される.第6図右図は,ずれ情報を使った平均活動間隔が真のものの0.5~2.0倍の中に納まればベイズ型予測の誤差は約2倍以内に収まることを示している.
+ERC 予測とベイズ型予測で活断層帯への適用結果を比較すると殆どの活断層帯で地震確率は概ね合致したが,一部の活断層帯で有意な差が出た(表1).それらは平均活動間隔が同程度だがばらつき α が大きく異なるデータと「活動間隔の平均値」と「ずれの量・速度の割合」による平均活動間隔が大きく異なるために平均μが大きく異なるデータがある(表1).
+(野村俊一, 尾形良彦)
+参考文献
+1) 地震調査研究推進本部地震調査委員会,活断層の長期評価 http://www.jishin.go.jp/main/p_hyoka02_danso.htm 
+2) 石関隆幸・隈元 崇,活断層研究 27 (2007),63-73.
+3) 岡田正美・高山博之・弘瀬冬樹・内田直希,地震 2 60 (2007),85-100.
+4) Kumamoto, T.
+and Y, Hamada, Active Fault Research, 25 (2005), 9-22.
+5) 林 豊・前田憲二,活断層研究
+30 (2009),27-365) 
+表1 事前分布とABICの相対値
+Table. 1. Prior
+distribution models and the relative ABIC values
+表2 BPT分布m, aの推定と30年確率の地震調査委員会予測とベイズ予測の比較.(※)ベイズ事後分布の「(期待値)±(標準偏差)」
+で表示
+Table 2. Comparison of the m, a estimates and 30 year
+probability between the ERC and the Bayes predictor. (※) means average
+probability (±standard error)
+第1図 BPT分布とBPT過程の関係
+Fig. 1. Relationship between the BPT probability distribution and the BPT process
+第2図 各断層の地震間隔データ対ずれ速度から期待される活動間隔のプロット及びそれぞれの推定誤差.対角線沿いの緑線、青線、赤線はそれぞれ地震調査委(α= 0.24)の予測分布、最尤推定量(α= 0.34)の予測分布、提案手法の予測分布から予測した活動間隔の95%限界.
+Fig. 2. Occurrence
+time intervals of a fault against the expected
+interval from the estimate of the ratio of slip size to
+deformation rate of a fault. Pink bars are data given in range, and the green,
+blue and red diagonal lines show 95% error bounds of the BPT prediction intervals
+from the expected time interval assuming α= 0.24, 0.34 for
+the plug-in predictor and the proposed Bayesian predictor, respectively.
+第3図 ずれ情報のあるデータから求めた最尤推定値/ T と(水色スパイク)とそのヒストグラム.実曲線は表1で得られた最適な事前確率密度分布.縦の緑線と青線はそれぞれ地震調査委のαの推定値(0.24)と全データから推定したαの最尤推定量(0.34)の位置を示している.
+Fig. 3. The blue spikes
+and the histograms of the MLEs(normalized recurrence time) and obtained
+from respective fault segments, and the solid curves show the estimated prior
+densities. The green and blue vertical lines shows the value of ERC's estimate
+(0.24) and MLE from all data (0.34).
+第4図 各断層のBPT分布のa  のベイズ推定値(事後分布の平均値)
+Fig. 4. Posterior mean (Bayes estimate) of the BPT a value for
+respective fault
+第5図 地震活動間隔のBPTベイズ予測分布(赤線)とBPTプラグイン予測分布(a =
+0.34,青線)とERC BPT予測分布(a =
+0.24,緑線)と正規化した地震の間隔データの重ね合わせの比較.(左図) 基準化された地震活動間隔のスパイク表示と密度分布とヒストグラム,(右図)それらの累積分布.
+Fig. 5. Comparison between the Bayesian
+predictive distribution (red lines), plug-in predictive distributions (= 0.34, blue lines) and the ERC (= 0.24, green lines) for the empirical distributions
+of normalized recurrence intervals. (Left) Histogram and the corresponding
+probability density functions, (Right) Empirical distribution function and the
+corresponding cumulative distribution.
+第6図 (左図)シミュレーションによりαを変化させたときの各予測分布の予測誤差(平均相対エントロピー)の比較.ERC方式 (a = 0.24; 緑線),MLE (a = 0.34; 青線),ずれ情報無しのベイズ予測(紫線)及び十分正しいずれ情報(μ/T = 1のとき)を使ったベイズ予測(赤線).(右図)ずれ情報を使ったベイズ予測のμ / Tとαを変化させたときの予測誤差の等高線.赤点線の断面が左図の赤曲線に対応する.
+Fig. 6. Prediction error for simulated data
+(Mean Relative Entropy) of the plug-in predictor with= 0.34 (blue curve), plug-in predictor with= 0.24 (green curve), Bayesian predictor using only
+occurrence data (purple line) and Bayesian predictor using the loading and slip
+data when m/T = 1 (red curve) for the sampled data
+with various a.
+「活断層のずれ情報を利用したBPT過程の事前分布によるベイズ型予測について」

@@ -1,0 +1,20 @@
+シェルで文字列のマッチング
+シェルで文字列のマッチングするには、シェルの構文だけではできないので
+次のように test をうまく使います。
+$ if [ ! -z `echo $文字列 | grep "パターン"` ]; then
+"-z" は、文字列の長さが 0 なら真になるオプションです。
+バッククォーテーション内で echo した文字列が
+パターンにマッチすると
+その文字列を返すので
+それを比較に利用しています。
+$ FILE=test_file_0209.csv
+$ if [ ! -z `echo $FILE | grep "^test_file_....\.csv$"` ]; then
+>      echo "match"
+> else
+>     echo "no match"
+> fi
+match
+といった感じになります。
+perl の正規表現を使いたい場合は "-P" オプションを付けます。
+$ if [ ! -z `echo $文字列 | grep -P "パターン"` ]; then
+Studio ODIN - blog風小ネタ集 > シェルで文字列のマッチング

@@ -1,0 +1,9 @@
+はじめまして。
+カテゴリーページにて、ループ内にテンプレートタグを記述し、カテゴリに属する商品の各内容を表示させようとしているのですが、こちらのページで書かれていた、SKU情報を取得準備タグループ内に<?php usces_have_skus(); ?>を挿入すると、下記のようなエラーコードが出てしまいます。
+Variable passed to each() is not an array or object in **********/wp-content/plugins/usc-e-shop/functions/template_func.php  on line 98
+また、現在は上記のコードを外して記述しているのですが、一部の内容が正しく表示されません。
+たとえば、usces_the_itemImage()は正常に表示されますが、
+usces_the_itemQuant()、usces_the_itemPrice()は表示されず、usces_the_itemSkuButton()に関しては、ボタン自体は表示されるのですが、カートページに移行した際、金額、単価、在庫状態がそれぞれ、0, 0, Arrayと表示されてしまいます。
+(原因は、usces_have_skus()を記述していないせいかとは思いますが・・・。)
+こちらが正常に表示されるようにするにはどうすればよろしいでしょうか?
+ループ内に挿入したテンプレートタグがカートへ移行した際に正しく認識されない。

@@ -1,0 +1,77 @@
+Modellerの基本的使い方 1 (Basic example)
+構造予測, modeller, protein
+タンパク質のホモロジーモデリングソフトModellerの使い方(Linux/MacOSXの場合)以下のチュートリアルにあるBasic Exampleの要約http://salilab.org/modeller/tutorial/basic.htmlチュートリアルによると、modellerの使用方法は簡単だそうです。 ※ただし、Python使いに限るということで、Pythonがろくに使えない自分のためにも、modellerの使い方(single template)をまとめました。Modellerはプログラム言語Pythonのモジュールとして提供されており、単体で動作するプログラムではありません。そのため、モデリングをするためには自分でPythonスクリプトを書く必要があります。そのスクリプトは簡単ですが、Pythonをまったく知らないと書くのはちょっときついです。チュートリアルにはいろいろと書かれていますが、前半はアライメントファイルの作り方です。しかし、アライメントファイルを自分で作ったのならそこを飛ばして以下のようにすればよいです。(Modellerチュートリアルの方法だと、アライメントの出来はあまり良くないです。しかも、使い方がかなり面倒です。自分でBlastなどで相同性のあるタンパクを探してきて、ClustalW等を使って作った方がよいと思います。私はNCBI-BLAST(PSI-BLAST)でデータベースをProtein Data Bankに指定して検索し、ヒットした上位いくつかをEMBL-EBI等のClustalWでアライメントしています。clustalWでアライメントを作る場合はドメインに切り出してから行った方が綺麗にアライメントができます。特に配列一致率が低い場合は全長でアライメントを行うと間違った結果が得られることがよくあります。)モデリングのためには、3つのファイル(アライメントファイルとPythonで書いた実行ファイル、それと鋳型のPDBファイル)が必要になります。
+アライメントファイル
+アライメントはPIRフォーマットを使用します。アライメント・エディタJalviewを使えばPIRフォーマットで保存できます。Jalviewの右クリックからPIRフォーマットで保存が可能です。EMBL-EBIのclustalwを使った場合、Web上からJalviewが使えます。保存したPIRフォーマットそのままではModellerで使えないので以下のように変更してください。unknownStructure-PhoQ.ali
+>P1;unknownStructure
+sequence:unknownStructure::::::::
+IEDIRVSDLLLNAQERALKDAQLGGVTLAVECEEDVGLIRGDGKRLAQTLDHLVENALRQTPPGGRVTLSAR
+RALGEVRLDVSDTGRGVPFHVQAHIFDR--FVGRDRGGPGLGLALVKALVELHGGWVALESEPGNGSTFTCH
+LPETQQPGAMQPELGF*
+>P1;PhoQ
+structure:1ID0:FIRST:A:LAST:A::::
+RELHPVAPLLDNLTSALNKVYQRKGVNISLDISPEISFV-GEQNDFVEVMGNVLDNACKYCL--EFVEISAR
+QTDEHLYIVVEDDGPGIPLSKREVIFDRGQRVDTLRPGQGVGLAVAREITEQYEGKIVAGESMLGGARMEVI
+FGRQHSAPKDE-----*
+各1行目は>P1;の後に適当なタンパク質名を以下のように入力します。
+>P1;unknownStructure
+#構造未知のタンパク質名(例:unknownStructure)は
+#pythonスクリプト内のsequenceで指定する名前と同じにします。
+>P1;PhoQ
+#鋳型タンパク質名(例:PhoQ)は
+#pythonスクリプト内のknownsで指定する名前と同じにします。
+各2行目のコロン区切りのフォーマットは以下のように入力します。
+フィールド1
+構造未知配列はsequence,
+テンプレートはstructureと書く
+フィールド2
+適当なタンパク名 #構造未知配列の場合
+鋳型のファイル名 #テンプレート構造の場合。
+#PDBファイルのファイル名。通常はPDBID
+#大文字小文字も合わせます。
+#ファイルのパスを指定してはいけません。.pdfも付けません
+フィールド3〜6
+構造未知配列の場合は入力不要。
+テンプレート構造は、
+入力した配列がPDBファイルに書かれているどのチェーンの、どの部分かを指定。
+指定する最初の残基:チェーン名:指定する終わりの残基:チェーン名
+チェーンAの100-250なら        100:A:250:A
+チェーンAの全部なら          FIRST:A:LAST:A
+チェーンA最初から200残基なら FIRST:A:+200:A
+残りはオプション
+Field 7: 
+Protein name. Optional. 
+Field 8: 
+Source of the protein. Optional. 
+Field 9: 
+Resolution of the crystallographic analysis. Optional. 
+Field 10: 
+R-factor of the crystallographic analysis. Optional. 
+Pythonスクリプト
+書き換えが必要なところは、ファイル名/タンパク名のところ3つ(赤色)と、いくつモデルを作るかということろ(下から2〜3行目)です。*実行時に、 command not found: /usr/bin/pythonや bad interpreter と表示されたら、which python というコマンドをコマンドラインに入力するとpythonのパスが表示されますので、Pythonスクリプトの一番上の行のパス(#!以降)を書き換えてください。たいてい、/usr/local/bin/pythonに代えれば動くと思います。model-single.py
+#!/usr/bin/python
+from modeller import *
+from modeller.automodel import *
+env = environ()
+a = automodel(env,
+alnfile        = 'unknownStructure-PhoQ.ali', #アライメントファイル指定
+knowns         = 'PhoQ',                      #構造既知のタンパク名 .ali内の記述に合わせる
+sequence       = 'unknownStructure',          #構造未知のタンパク名 .ali内の記述に合わせる
+assess_methods = (assess.DOPE, assess.GA341)
+)
+a.starting_model = 1    # 1番から
+a.ending_model   = 5    # 5番までのモデルを作成
+a.make()                # モデリング開始
+鋳型構造のPDFファイル
+さらに鋳型のPDBファイル(PDB text形式)をPDBからダウンロードして、この同じディレクトリに配置する。PhoQのPDBファイルPDBファイル名は、.aliファイル内に書いたファイル名に.pdbをつけたものとする必要があります。通常は『PDBID.pdf』となっているはずです。大文字小文字も合わせる必要があります。
+モデリングの実行
+以上の3つのファイルを揃えて適当な場所(同じディレクトリ)に配置する。
+>ls
+1ID0.pdb    model-single.py   unknownStructure-PhoQ.ali
+Pythonスクリプトに実行権限を付与して、モデリングを実行する。
+>chmod +x model-single.py
+>./model-single.py
+同じディレクトリ内にPDB形式のモデル構造が5個できます。Pymolなどで表示できます。モデル一つ作るのに10秒程度です。しかし、これを実行してもエラーが起こることがあります。つづく・・・
+ツイートする
+Permalink | コメント(6) | トラックバック(1) | 02:04   
+Modellerの基本的使い方 1 (Basic example) - バイオ研究用サーバ設定と実験のメモと・・・

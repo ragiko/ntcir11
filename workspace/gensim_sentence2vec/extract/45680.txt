@@ -1,0 +1,8 @@
+「ワード vba 単語の数を返す」
+「vba word 単語数 取得 selection.information」
+といった検索で、このサイト・インストラクターのネタ帳へのアクセスがあることに気づきました。
+単語数をカウントするWordマクロ・Word VBA(Visual Basic for Applications)のコードを探している方による検索です。
+「vba word 単語数 取得 selection.information」
+という検索をなさった方は、SelectionオブジェクトのInformationプロパティで、単語数も取得できると考えたのでしょう。
+残念ながら単語数は、Selection.Informationプロパティでは取得できません。
+単語数をカウントするWordマクロ:Word(ワード)の使い方-マクロ・VBA

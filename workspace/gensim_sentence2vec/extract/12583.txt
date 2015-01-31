@@ -1,0 +1,51 @@
+LibSVMで重みベクトルを求めるコードを書いたので公開します。
+こんなコードを書くに至った経緯
+LIBSVMというSVMを簡単に使える便利なライブラリがあります。カーネルの選択から結果出力までかなり楽にできる作りで非常に便利なのですが、学習した重みベクトルを求める機能がないのが唯一残念なところです。
+いろいろ調べてみたのですが、結局モデルファイル(学習後にできるファイル)を解析するコードを自分で書く他ありませんでした。
+参考ページ
+日本語ページで良いリファレンスになるものはありませんでした(Googleで調べた限りは)。なので、結局公式のQandAページを参考にしました。一部抜粋します。
+Q: Can you explain more about the model file?
+In the model file, after parameters and other informations such as labels , each line represents a support vector. Support vectors are listed in the order of “labels” shown earlier. (i.e., those from the first class in the “labels” list are grouped first, and so on.) If k is the total number of classes, in front of a support vector in class j, there are k-1 coefficients y*alpha where alpha are dual solution of the following two class problems:
+1 vs j, 2 vs j, …, j-1 vs j, j vs j+1, j vs j+2, …, j vs k
+and y=1 in first j-1 coefficients, y=-1 in the remaining k-j coefficients.
+引用元
+これがモデルファイルの中身の説明。何やら多値分類を行った前提で書いてあるけど、自分は2値分類なのでこんな複雑な説明はいらない。とりあえず最初にパラメータが書いてあって、それ以降Support Vectorがずらーっと書いてあると認識した。そして最後にこっちも参考にしてねって書いてあったので、そっちも抜粋。
+Q: How could I generate the primal variable w of linear SVM?
+Let’s start from the binary class and assume you have two labels -1 and +1. After obtaining the model from calling svmtrain, do the following to have w and b:
+w = model.SVs’ * model.sv_coef;
+b = -model.rho;
+if model.Label(1) == -1
+w = -w;
+b = -b;
+end
+引用元
+このwがまさに今欲しているもの。丁寧に求め方も書いてある。後半の、ラベルが-1だった場合の処理ですが、これはラベルが-1のものをPositiveクラスにした際に効いた素性を求めたい場合ですね。単純に正負逆転させれば良いだけです(2値分類の場合はPositiveクラスの重みを昇順に並べて、正負逆転させればそれがNegativeクラスの重みになりますよねという話)。
+モデルファイルの構成
+パラメータ
+coefficient sv
+coefficient sv
+coefficient sv
+(略)
+で、結局どうやって求めるのか
+説明のため、変数の数をm、学習データ数をnとします。すると、coefficientは1×nの行列、svはm×nの行列になります。あとはsv * coefficientの行列演算を行えば良いだけです。
+言葉で説明すると、それぞれの学習データの同じベクトル成分に、それぞれの学習データのcoefficientをかけたものの和を取ると、その成分(素性)の重みが求まるということになります。
+重みベクトルを求めるコード
+追記:2013年7月11日
+以前公開したコードに誤りがあるというご指摘を頂きましたので、訂正します。
+正確には、誤りがあるというよりは学習データの作り方に依るものです。
+LIBSVMの入力データは、ある変数が0の場合、それを省いても同様の処理ができます。
+すなわち、
+[ラベル番号] 1:1 2:0 3:1 4:1
+というデータは、2番目の変数が0なので、
+[ラベル番号] 1:1 3:1 4:1
+と書いても同じです。
+しかし、モデルファイルの中身が異なってきます。以前公開していたコードは前者のフォーマットのみ対応していたため、後者のフォーマットには対応していませんでした。
+両方に対応できるようにソースコードを修正しましたので、再度公開致します。
+なお、以前のソースコードはこの記事中にコメントアウトしていますので、興味のある方はこのページのHTMLをご覧下さい。
+# coding: utf-8
+# LIBSVMのモデルファイルを解析するスクリプト
+# 素性とその重みを出力する (ソートはされていない)
+# 使い方: ruby calc_weight.rb 
+おわりに
+自分はこの方法で尤もらしい重みベクトルが求まったので、間違いないと思いますが、おかしな箇所がある場合は教えて下さい(@kei500まで)。
+Klog  » Blog Archive   » LibSVMで重みベクトルを求める方法

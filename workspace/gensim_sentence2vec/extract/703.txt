@@ -1,0 +1,260 @@
+ナビゲーション:前へ   上へ   次へ
+13 
+文字列操作
+13.1 文字列の連結
+13.2 代入において文字列長が一致しない場合
+13.3 文字列の一部分を指定する方法
+13.4 文字列内の文字列を検索する方法
+13.5 文字列長を知るには
+13.6  練習課題:単語の文字数を出力する
+13.7 文字列を引数として渡す方法
+13.8 任意の長さの文字を返す方法
+13.9  練習課題:単語を3回繰り返して表示する
+13.1 
+文字列の連結
+文字列の連結は以下の例のように、連結演算子 // を用いて行います。
+[
+concat.f90
+] - 文字列の連結のサンプル
+program concat
+implicit none
+character a*4, b*3, c*7
+a = "abcd"
+b = "efg"
+c = a//b  ! a と b を連結する
+print *, c
+end program concat
+出力例:
+abcdefg
+13.2 
+代入において文字列長が一致しない場合
+代入時に右辺と左辺の文字列長が一致しない場合は以下のような処理が行われます。
+右辺が左辺よりも短い場合には空白が補われます。
+右辺が左辺よりも長い場合には切り捨てが行われます。
+[
+truncate-padding.f90
+] - 文字列の切り捨てとパッディングのサンプル
+program truncate_padding
+implicit none
+character a*4, b*2, c*6
+b = "XY"
+c = "ABCDEF"
+a = b        ! aは "XY  " となる(2つの空白が後ろにつく)
+print *, '"', a, '"'
+a = c        ! aは "ABCD" となる("EF"は切り捨てられる)
+print *, '"', a, '"'
+end program truncate_padding
+出力例:
+"XY  "
+"ABCD"
+13.3 
+文字列の一部分を指定する方法
+文字列の一部分は以下のように 変数名(開始位置:終了位置)と指定して行います。
+[
+substring.f90
+] - 文字列の一部分のサンプル
+program substring
+implicit none
+character(len=5) a
+a = "abcde"
+print *, a(1:3)     ! 1文字目から3文字目が出力されます
+print *, a(3:5)     ! 3文字目から5文字目が出力されます
+end program substring
+出力例:
+abc
+cde
+文字列の中からある1文字のみを指定したい場合、
+例えば文字列 a の2文字目を指定するにはa(2:2)と記述します。(a(2)ではありません)
+また以下のように指定部分だけを変更することも可能です。
+[
+substring-edit.f90
+] - 文字列の一部分を変更するサンプル
+program substring_edit
+implicit none
+character b*5
+b = "abcde"
+print *, b
+b(2:3) = "XY"
+print *, b
+end program substring_edit
+出力例:
+abcde
+aXYde
+13.4 
+文字列内の文字列を検索する方法
+文字列内の検索文字列の位置は index(文字変数,検索文字列[,後ろから]) 組込み関数により検索できます。
+もしも指定の文字列が見つからなかった場合には0が返されます。
+以下に例を示します。
+[
+search-string.f90
+] - 文字列内の文字列を検索するサンプル
+program search_string
+implicit none
+character a*8
+a = "ABCDABCD"
+print *, index(a,"CD")
+print *, index(a,"CD", back=.true.)   ! 反対方向に(文字列の後ろから)検索
+end program search_string
+出力例:
+3
+7
+index()は与えた文字列の最初から検索を行いますので、検索文字列が複数含まれているような場合には
+最初のもの(back=.true.を指定した場合は最後のもの)が検索されます。
+複数の検索文字列をすべて探し出す例を以下に示します。
+[
+search-all-string.f90
+] - 文字列内の文字列(複数)をすべて検索するサンプル
+program search_all_string
+implicit none
+character(20) :: s = "ABCDEFGCDXYZCDIJKLCD"
+integer i,j
+i = 1
+do
+j = index(s(i:),'CD')
+If (j==0) exit
+print *, "'CD' found at position", i+j-1
+i = i + j
+end do
+end program search_all_string
+出力例:
+'CD' found at position 3
+'CD' found at position 8
+'CD' found at position 13
+'CD' found at position 19
+13.5 
+文字列長を知るには
+文字列の長さを知るにはlenもしくはlen_trimを用います。lenは文字列変数の長さを
+調べる時に利用でき、右側の空白も含めてすべての長さが返されますが、
+len_trimは右側の空白をカウントしません。またtrim組込み関数で空白を取り去ることが可能です。
+[
+string-len.f90
+] - 文字列長を調べるサンプル
+program string_len
+implicit none
+character a*6
+a = "AB"
+print *, "len =", len(a)
+print *, "len_trim =", len_trim(a)
+print *, 'trim(a) = "', trim(a), '"'
+end program string_len
+出力例:
+len = 6
+len_trim = 2
+trim(a) = "AB"
+13.6 
+練習課題:単語の文字数を出力する
+英単語を入力し、入力された単語の文字数を出力するプログラムを作成して下さい。
+処理手順例
+変数を宣言する
+例)character(len=20) word   ! 最大20文字まで
+単語を入力してほしい旨を画面に出力する(print文)
+単語をキーボードから入力する(read文)
+長さを出力する(len_trim組込関数を利用)
+実行例:
+Please enter a word:
+FORTRAN
+Length = 7
+[
+kadai-wordlen.f90
+] - 単語の文字数を出力するプログラム例
+13.7 
+文字列を引数として渡す方法
+文字列は受け取り側でアスタリスクを指定して受け取ることが可能です。
+これにより任意の長さの文字列を受けることができます。
+以下に例を示します。
+[
+string-arg.f90
+] - 文字列を引数として渡すサンプル
+program string_arg
+implicit none
+character a*10, b*5
+a = "AbCde"
+b = "xyZ"
+print *, "INFO for a:"
+call string_info(a)
+print *      ! 改行
+print *, "INFO for b:"
+call string_info(b)
+contains
+subroutine string_info(s) ! 渡された文字列の情報を表示するサブルーチン
+character(*) s          ! ここでアスタリスクを指定する
+integer i, n
+print *, "Length =", len(s)
+print *, "Trimmed Legth =",len_trim(s)
+n = 0
+do i = 1, len(s)
+if ( s(i:i) >= 'A' .and. s(i:i) <= 'Z') then   ! 'A'-'Z'の範囲ならば
+n = n + 1
+end if
+end do
+print *, "Number of Capital Letters =", n   ! 含まれる大文字の数
+end subroutine string_info
+end program string_arg
+出力例:
+INFO for a:
+Length = 10
+Trimmed Legth = 5
+Number of Capital Letters = 2
+INFO for b:
+Length = 5
+Trimmed Legth = 3
+Number of Capital Letters = 1
+13.8 
+任意の長さの文字を返す方法
+関数から戻される文字列の長さを自由に設定するには
+関数の戻り値の宣言においてその指定を行います。
+例えば以下の例ではnで指定した長さの文字列を返します。
+function mystr( n )
+integer,intent(in) :: n
+character(n) mystr
+...
+end function mystr
+また、渡ってきた文字の長さから返す文字列の長さを決めたい場合には
+以下のようにlenもしくは場合によってはlen_trim組み込み関数を利用できます。
+function mystr( src )
+character(*),intent(in) :: src
+character(len(src)*2) :: mystr   ! 入力の倍の長さの文字列を返す
+mystr = src // src
+end function mystr
+以下に任意の文字を受け取りそれを繰り返した文字列を返すサンプルを示します。
+[
+string-result.f90
+] - 任意の長さの文字列を返すサンプル
+program string_result
+implicit none
+print *, mystr("ABC")
+contains
+function mystr( src )
+character(*),intent(in) :: src
+character(len(src)*2) :: mystr   ! 入力の倍の長さの文字列を返す
+mystr = src // src
+end function mystr
+end program string_result
+出力例:
+ABCABC
+13.9 
+練習課題:単語を3回繰り返して表示する
+英単語を入力し、入力された単語を空白で区切って3回繰り返して表示するプログラムを作成して下さい。
+この際に入力単語を繰り返して連結する部分は関数により行い、
+表示する部分はメインプログラムにより行って下さい。
+処理手順例
+変数を宣言する
+例)character(20)   word  ! 最大20文字
+単語を1つ入力してほしい旨を画面に出力する(print文)
+単語をキーボードから入力する(read文)
+単語を一つ与えるとそれを空白で区切って3回繰り返した結果を返す関数を呼び出してその結果を出力する
+3回繰り返す関数の処理手順例
+引数で与えられる入力文字の長さをもとに、結果として返す文字の宣言を行う
+例)character(*) original
+character(len_trim(original)*3+2) three_times  ! 3回分 + 2つの空白
+空白で区切って3回繰り返した結果を生成する
+例)three_times = trim(original) // " " // trim(original) // " " // trim(original)
+実行例:
+Please enter a word:
+Love
+Love Love Love
+[
+kadai-word-repeat.f90
+] - 単語の文字数を出力するプログラム例
+ナビゲーション:前へ   上へ   次へ
+Fortran入門: 文字列操作

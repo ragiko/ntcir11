@@ -1,0 +1,140 @@
+TypeScript Advent Calendarの4日目。
+TypeScriptのロードマップを見てもES6対応以外は "Investigate top-rated feature requests" とか書いてあるぐらいで、GitHub Issuesのコメントのやりとりを見ていても割りと流動的に良い提案があったら取り入れる感じで開発を進めている印象。
+ということで、GitHub Issuesからおもしろそうなものをいくつか拾って紹介してみる。
+個人的な希望として、TypeScriptにはES6 + 型付けというコンセプトを突き進めて欲しいと思っていて(詳細はこの辺のスライドを参照)、言語機能追加系よりも型関連の強化に期待しているので、そっちがメインで。
+TypeScript 1.4のおさらい
+とはいえ1.4で型関連の重要な機能追加がいくつか入ったのでまずはおさらい(MSDN Blogsの記事 TypeScript 1.4 sneak peek: union types, type guards, and more を読んだ人は飛ばしてOK)。
+まず Union types で、string|numberみたいに"AまたはB"という型を定義できるようになった。悲願。
+次に Type alias で、型に別名をつけることができるようになった。Closure Compiler Annotationでは@typedefと言われていたやつだ。
+この2つの活用例として、TypeScript本体のES6型定義を引用する。
+declare type PropertyKey = string | number | Symbol;
+interface Object {
+hasOwnProperty(v: PropertyKey): boolean;
+propertyIsEnumerable(v: PropertyKey): boolean;
+}
+type aliasによってunion typeである型PropertyKeyを定義している。
+union typeが無いとそもそもPropertyKeyを定義できないし、type aliasが無いと以下のようにすべての箇所でunion typeを長々と指定する必要があって大変見苦しい。
+// type aliasを使わない見苦しい例
+interface Object {
+hasOwnProperty(v: string | number | Symbol): boolean;
+propertyIsEnumerable(v: string | number | Symbol): boolean;
+}
+また、union typeが入ると必然とtype guardが欲しくなる。ので入った。
+type guardとは特定の条件文によってunion型の値が持つ型の可能性を狭められる機能。こんな感じ。
+var a: string | number;
+// この時点ではstringとnumberに共通してあるメソッドしか呼べない。
+a.toString(); // ok
+a.trim(); // error TS2339: Property 'trim' does not exist on type 'string | number'.
+if (typeof a === 'string') {
+// string型に確定するのでstringのメソッドを呼べる
+a.trim();
+} else {
+// number型に確定するのでnumberのメソッドを呼べる
+a.toFixed();
+}
+type guardはstingのようなプリミティブにはtypeof、オブジェクトにはinstanceofが使える。が、まだ細かい動きはいろいろ微妙なところがある。
+#1003 Singleton types under the form of string literal types 
+前述のtype guardを強化する提案。typeofやinstanceofだけでなく、プロパティの文字列リテラルによるタイプガード。
+おそらく、これはASTの処理とかを書いてると超絶便利な機能。例えば、
+interface IfStatement extends Statement {
+type: "IfStatement";
+test: Expression;
+consequent: Statement;
+alternate?: Statement;
+}
+interface LabeledStatement extends Statement {
+type: "LabeledStatement";
+label: Identifier;
+body: Statement;
+}
+var s: IfStatement | LabeledStatement;
+switch (s.type) {
+case "IfStatement":
+// 型がIfStatementに確定する!
+console.log(s.consequent);
+break;
+case "LabeledStatement":
+// 型がLabeledStatementに確定する!
+console.log(s.label);
+break;
+}
+typeの文字列はクラス名じゃなくてもユニークに決まれば何でも良い。ユニークじゃない場合はunion型になる。
+おそらく他言語の人からは「何でパターンマッチじゃないの」とか言われてしまいそうだけど、TypeScriptは実体がJavaScriptなので、コンパイル結果との整合性を考えるとパターンマッチは難しい。
+また、TypeScriptで上から下まで作るならいいんだけど、例えばJavaScriptで書かれたesprimaのような既存のASTパーサーが吐き出すAST定義はクラスベースではなくてtype: "HogeType"のようなプロパティベースで実装されているわけで、そのASTの利用者側のライブラリをTypeScriptで書きたいと思ったらこういうやり方しか無いと思う。
+もし実現したら、自前で型キャストする必要もなくなるっていうか、条件文書いてドット打ったら勝手に正しいプロパティが補完されるなんで最高じゃないですか!
+#1007 Support user-defined type guard functions
+isキーワードを導入してtype guardを自分で制御していこうという提案。
+function isCat(a: Animal): a is Cat {
+return a.name === 'kitty';
+}
+var x: Animal;
+if(isCat(x)) {
+x.meow(); // OK, x is Cat in this block
+}
+ES6ES5でもArray.isArray()とかあるから、ある程度は必要そう。
+Closure Compilerの場合、goog.isString()やgoog.isArray()などいくつかのClosure Libraryの関数にCompiler側が組み込みで対応することで、ユーザー定義はできないけどよくありそうなtype guardは実現できている。
+必要性はわかるが、ここまでくるとちょっと複雑すぎるか。
+#513 Meta-issue: this disambiguator
+thisのバインドに関するmeta-issueでいくつかの種類の提案が入っている。
+今のところ、TypeScriptはthisを型付けすることはできない。例えばDOMイベントリスナのthis。
+elem.addEventListener('click', listener);
+function listener(e: MouseEvent) {
+// ここでthisに型付けできないのでキャストが必要。
+(<HTMLElement>this).innerHTML = ...;
+}
+キャストが必要で面倒という点と、引数に指定した関数の型検査ができないという両面で問題がある。
+提案の一つとしてはこんな感じ。
+// addEventListenerの型定義でのthis型指定
+addEventListener(type: "click", listener: (this: HTMLElement, ev: MouseEvent) => any, useCapture?: boolean): void;
+// listener側のthis型指定
+function listener(this: HTMLElement, e: MouseEvent) {
+// キャスト不要
+this.innerHTML = ...;
+}
+// こういう関数は指定できない。
+function invalid_listener(this: Date, e: MouseEvent) {
+}
+elem.addEventListener('click', invalid_listener); // error!
+Closure Compilerでも同じように書くので個人的には違和感ない。これも既存JSコードやDOMに対応するためには必要なのでぜひいれてほしい。
+#212 bind(), call(), and apply() are untyped
+これもthisに関連するのだけど、Function.prototype.bind, call, applyの型付けが現状単純に効いてない件についてのissue。順序としてはおそらく前述のthis型付けが定まってからということになるだろう。
+昔のissueに自分が投げたときは、良いんだけど実装大変だ的なこと言われたのだけど、ぜひよろしくね。
+#185 Suggestion: non-nullable type
+TypeScriptは現在プリミティブ型を含めてすべてがnullableである。
+これはvar a: !stringでnon-nullableな型を定義できるようにする提案。関数引数で
+function f(a: !Array<string>): string {
+return a.join(', ');
+}
+と書いたらヌルポが起きないことをコンパイラが保証してくれる。
+Closureでも同じ!を使う型定義だが、プリミティブ型はデフォルトでnon-nullableなのが大きく違う。Flowも型推論でできるだけnon-nullableになる。
+TypeScriptはあとづけになるので、コンパイルオプションでベースをnon-nullableにするとか決められると良さそう。
+これも必須でお願いします。
+#1295 Suggestion: Type Property type
+Backboneスタイルのfoo.get('bar')に型付けしようという試み。
+やりたい気持ちはわかるが、個人的にはminifyとの相性が悪いのであまり使わないかな。
+#1265 Comparison with Facebook Flow Type System
+Facebook Flowとの型システムの比較。
+おもしろいので読み物として読んでみましょう。
+追記: vvakame先生が悲しみに暮れているので追加!
+#1283 proposal: type guards by constructor signature
+decomposed class patternでtype guardを使えるようにするvvakame先生の提案。
+decomposed class patternとは何かというと、主にd.tsでクラス定義をするときに使われるパターンで、普通にclassで定義するのと比べて外からメンバーを拡張できるメリットがある。(逆に継承できないデメリットもある)
+// standard class
+class A {
+static st: string;
+inst: number;
+constructor(m: any) {}
+}
+// decomposed class pattern
+interface A_Static {
+new(m: any): A_Instance;
+st: string;
+}
+interface A_Instance {
+inst: number;
+}
+declare var A: A_Static;
+詳しくはHandbookの該当箇所を見ていただくとわかる。
+で、このissueはdecomposedパターンで定義されたクラスでもtype guardが効くようにしようよ、という提案。
+DefinitelyTypedを考えたらもっともな提案だと思います。ぜひどうぞ。実装されたらvvakame本Ver.1.4対応版が出版されるはずです!
+TypeScriptの注目の型関連issue - teppeis blog

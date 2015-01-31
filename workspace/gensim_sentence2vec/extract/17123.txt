@@ -1,0 +1,45 @@
+
+概要[編集]
+CRFは無向性のグラフィカルモデルであり、それぞれの頂点は分布が推論されるべき確率変数を表現する。辺は二確率変数間の依存性を表現する。詳細はグラフィカルモデルの項を参照のこと。モデルにおいては、確率変数間の対での依存性のみがモデル化される。一般的な場合は、高次CRFsを参照のこと。各ノードやモデル全体は指数分布族となることが多い。この分布はギブス分布にあるようにエネルギー項を記述する。 おおよそ興味ある分布に相当するグラフ構造は既知であると仮定される。一方で分布のパラメータは学習される。 CRFのパラメータの学習の基本的な前提は、変数が推論されるべきであるのに対し変数は常に観測されるということである。このことは、同時確率の最大化とは対照的に、条件付き確率の最大化を可能にさせる。この計算はモデルの識別学習に相当する。
+マルコフ確率場との関連性[編集]
+CRFは特徴的に訓練されたマルコフ確率場である。したがって、観測変数の分布をモデル化する必要はなく、モデル内の観測変数の複雑な特徴を任意に含められる。
+推論[編集]
+CRFにおける厳密な推論(inference)は、一般のグラフでは困難である。これは基本的にマルコフ確率場におけるものと同じである。ただし、連鎖や木構造グラフなどの特殊ケースでは、厳密推論が可能である。その場合に使用されるアルゴリズムは、HMMで使用されるフォワードバックワードアルゴリズムやビタビアルゴリズムに類似していて、動的計画法などが用いられる。
+パラメータの学習[編集]
+パラメータの学習は通常について最尤法を用いて行われる。 もし全てのノードが指数的な分布を持ち訓練において観測されるのなら、この最適化関数は凸型である。en:L-BFGSアルゴリズムのような勾配法半ニュートン法を使用してサンプルに沿って解かれる。 一方で、幾つかの変数が観測されないとき、推定問題は観測されない変数についても解かれる必要がある。これは一般的なグラフにおいて厳密に推定するため手に負えず、推測が使用される必要がある。
+例[編集]
+連続モデルにおいて、関心のあるグラフは連鎖グラフであることが多い。観測変数の入力列は観測列を表現し、は観測によって推測されるべき必要な隠れた(若しくは未知の)状態変数を表現する。 は連鎖形に構成され、各と間に辺を持つ。入力列のそれぞれの要素に対してラベルとしての簡単な説明を持つのと同様に、このレイアウトは次の事柄に対して効果的なアルゴリズムを導く。
+モデルの訓練: 訓練データ中のあるコーパスからと特徴関数の間の条件付き分布を学習する
+推定: 与えられたに対して与えられたラベル列の確率を決定する
+解読:与えられたに対して尤もらしいラベル列を決定する
+における各の条件付き従属は形の特徴関数の不変集合を通して定義される。それはに対して各々の可能な値の尤度を部分的に決定する入力列の測りとして、くだけて考えられる。このモデルはそれぞれの特徴に数値的な重みを割り当て、に対して一定の値の確率を決定するためにそれらを統合する。
+線形連鎖CRFは、概念上の簡単な隠れマルコフモデル(HMM) として同様の応用を多く持つが、HMMに対して入力及び出力列の分布についての制約を緩めたものである。HMMは、状態遷移と出力をモデル化するために決 まった分布を使用するような特殊な特徴関数を持つCRFとして大雑把に理解される。逆にCRFは、隠れた状態列の中で自由に変化する任意の関数の中に一定 の遷移分布を入力列に依存して生成するようなHMMの一般化として大雑把に理解される。
+HMMに対しては特に対照的に、CRFsは特徴関数を幾つも含めることができ、また特徴関数は観測における様々な点で入力列の全体を精査でき、その値域は確率的解釈を必要としない。
+高次CRFsとセミマルコフCRFs[編集]
+CRFsは整数に指定された手前の変数に依存するを考えることでより高次のモデルに拡張される。訓練と推定は実際にはの小さい値に対してのみ行われる。これは計算コストがに従って指数的に増加するためである。
+別のCRFsの一般化として、セミマルコフ条件付き確率場(semi-CRF)があり、これはラベル列の可変長セグメンテーションをモデル化したものである。これはの計算コストの大きい長値域依存性をモデル化することで高次CRFsに相当する能力を提供する。
+ソフトウェア[編集]
+以下はCRFを実行するためのソフトウェアの例である。
+Conrad CRF based gene predictor (Java)
+MALLET (Java)
+Kevin Murphy's MATLAB CRF code (Matlab)
+Sunita Sarawagi's CRF package (Java)
+HCRF library (including CRF and LDCRF) (C++, Matlab)
+CRFSuite Fast CRF implementation (C)
+CRF++ (C++):和製
+JProGraM (Java)
+Stanford Named Entity Recognizer (NER) (Java)
+BANNER (Java)
+Monte Python
+関連項目[編集]
+ベイジアンネットワーク
+マルコフ過程
+マルコフ確率場
+参考文献[編集]
+McCallum, A.: Efficiently inducing features of conditional random fields. In: Proc. 19th Conference on Uncertainty in Artificial Intelligence. (2003)
+Wallach, H.M.: Conditional random fields: An introduction. Technical report MS-CIS-04-21, University of Pennsylvania (2004)
+Sutton, C., McCallum, A.: An Introduction to Conditional Random Fields for Relational Learning. In "Introduction to Statistical Relational Learning". Edited by Lise Getoor and Ben Taskar. MIT Press. (2006) Online PDF
+Klinger, R., Tomanek, K.: Classical Probabilistic Models and Conditional Random Fields. Algorithm Engineering Report TR07-2-013, Department of Computer Science, Dortmund University of Technology, December 2007. ISSN 1864-4503. Online PDF
+翻訳元[編集]
+en:conditional random field 2011-3-7 18:12 UTCから翻訳。
+条件付き確率場 - Wikipedia

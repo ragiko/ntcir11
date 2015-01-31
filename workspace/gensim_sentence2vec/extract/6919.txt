@@ -1,0 +1,26 @@
+サポート情報記事のコメント エンティティ属性のメタデータの例を次に示します。
+EntityLogicalName
+IsCustomizableEntity
+IsIntersect
+LogicalName
+内容
+「
+スキーマ名
+IsCustomAttribute
+IsCustomizable
+RequiredLevel
+IsValidForCreate
+IsValidForRead
+IsValidForUpdate
+CanBeSecuredForCreate
+CanBeSecuredForRead
+CanBeSecuredForUpdate
+IsAuditEnabled
+IsManaged
+IsPrimaryId
+IsPrimaryName
+IsRenameable
+IsSecured
+IsValidForAdvancedFind
+DisplayName
+サポート情報記事 (記事のコメント) エンティティのメタデータ

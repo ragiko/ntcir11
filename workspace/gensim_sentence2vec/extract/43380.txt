@@ -1,0 +1,105 @@
+[PHP]二次元配列のソート。追記:複数項目でのソート
+<?php
+$array   = array();
+$array[] = array('name' => 'リンゴ', 'price' => '100',  'order' => 4);
+$array[] = array('name' => 'ミカン', 'price' => '60',   'order' => 3);
+$array[] = array('name' => 'バナナ', 'price' => '100',  'order' => 2);
+$array[] = array('name' => 'メロン', 'price' => '5000', 'order' => 1);
+$array[] = array('name' => 'スイカ', 'price' => '100',  'order' => 2);
+$array[] = array('name' => 'イチゴ', 'price' => '100',  'order' => 4);
+/********** ソート処理 **********/
+foreach($array as $_key_ => $_line_)
+{
+$_arrayName_[$_key_] = $_line_['price'];
+}
+array_multisort($_arrayName_, SORT_ASC, $array);
+/********* /ソート処理 **********/
+ソート前
+Array
+(
+[a] => Array
+(
+[name] => りんご
+[price] => 100
+)
+[b] => Array
+(
+[name] => みかん
+[price] => 60
+)
+[c] => Array
+(
+[name] => バナナ
+[price] => 300
+)
+[d] => Array
+(
+[name] => メロン
+[price] => 5000
+)
+[e] => Array
+(
+[name] => スイカ
+[price] => 1500
+)
+)
+ソート後
+Array
+(
+[b] => Array
+(
+[name] => みかん
+[price] => 60
+)
+[a] => Array
+(
+[name] => りんご
+[price] => 100
+)
+[c] => Array
+(
+[name] => バナナ
+[price] => 300
+)
+[e] => Array
+(
+[name] => スイカ
+[price] => 1500
+)
+[d] => Array
+(
+[name] => メロン
+[price] => 5000
+)
+)
+キーとの関係を保持しつつ、値段で昇順にソートされています。
+複数の項目でソート
+$array変数をキーprice、order、nameの順で昇順ソート。
+※配列長が2未満の場合はエラーが出るので注意。
+<?php
+$array   = array();
+$array[] = array('name' => 'リンゴ', 'price' => '100',  'order' => 4);
+$array[] = array('name' => 'ミカン', 'price' => '60',   'order' => 3);
+$array[] = array('name' => 'バナナ', 'price' => '100',  'order' => 2);
+$array[] = array('name' => 'メロン', 'price' => '5000', 'order' => 1);
+$array[] = array('name' => 'スイカ', 'price' => '100',  'order' => 2);
+$array[] = array('name' => 'イチゴ', 'price' => '100',  'order' => 4);
+/********** 列方向の配列を得る **********/
+foreach($array as $_key_ => $_line_)
+{
+$_array_price_[$_key_] = $_line_['price'];
+$_array_order_[$_key_] = $_line_['order'];
+$_array_name_[$_key_]  = $_line_['name'];
+}
+/********* /列方向の配列を得る **********/
+/********** ソート処理 **********/
+array_multisort
+(
+$_array_price_, SORT_ASC,
+$_array_order_, SORT_ASC,
+$_array_name_,  SORT_ASC,
+$array
+);
+/********* /ソート処理 **********/
+Permalink | コメント(0) | トラックバック(0)   
+二次元配列のソート。追記:複数項目でのソート - おもしろ日記パワー

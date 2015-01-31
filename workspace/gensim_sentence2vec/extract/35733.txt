@@ -1,0 +1,99 @@
+豊橋技術科学大学 工学部 情報工学系 自然言語処理研究室 に於て (2000年4月〜2002年12月)
+研究テーマその3:大語彙連続音声認識における複数モデルの利用
+西崎博光さん 
+(中川聖一教授研究室所属,1998年3月学部卒業,2000年3月修士課程修了,
+2003年3月博士後期課程修了.2003年より,山梨大学助手.現在,同助教.)
+Confidence of Agreement among Multiple LVCSR Models and Model Combination by SVM.
+(pdf file 257,132 bytes)    
+Takehito Utsuro, Yasuhiro Kodama, Tomohiro Watanabe, Hiromitsu Nishizaki 
+and Seiichi Nakagawa,
+Proceedings of the 28th IEEE International Conference on
+Acoustics, Speech and Signal Processing,
+pp. 16-19, Vol.I, April 2003.
+"An Empirical Study on Multiple LVCSR Model Combination by Machine Learning",
+Takehito Utsuro, Yasuhiro Kodama, Tomohiro Watanabe, Hiromitsu Nishizaki, 
+and Seiichi Nakagawa,
+Proceedings of the Human Language Technology Conference of 
+the North American Chapter of the Association for
+Computational Linguistics, 
+pp. 13-16, May 2004.
+複数モデルを混合する際に,なるべく異なるモデルを選んで追加していくのがよい
+という結果を報告しました.
+小玉康広さん (2001年3月学部卒業,2003年3月修士修了.
+現在,So*y勤務)
+"機械学習を用いた複数の大語彙連続音声認識モデルの出力の混合" 
+宇津呂武仁, 小玉康広, 渡邉友裕, 西崎博光, 中川聖一.
+電子情報通信学会論文誌, D--II, Vol.J87--D--II, No.7,
+pp. 1428-1440, July, 2004.
+"複数の大語彙連続音声認識モデルの出力の共通部分を用いた高信頼度部分の推定"
+(pdf file 1,439,966 bytes) 
+宇津呂武仁, 西崎博光, 小玉康広, 中川聖一.
+電子情報通信学会論文誌, D--II, Vol.J86--D--II, No.7,
+pp. 974--987, July, 2003.
+"Experimental Evaluation on Confidence of Agreement
+among Multiple Japanese LVCSR Models",
+Yasuhiro Kodama, Takehito Utsuro, Hiromitsu Nishizaki, and Seiichi Nakagawa.
+Proceedings of the 7th European Conference on Speech
+Communication and Technology, 
+pp.2549-2552, September 2001.
+渡邊友裕さん (2003年3月学部卒業.2005年3月(中川聖一教授研究室)修士修了.
+現在,IT関連企業勤務)
+"An Unsupervised Speaker Adaptation Method 
+for Lecture-Style Spontaneous Speech Recognition 
+Using Multiple Recognition Systems" 
+Seiichi Nakagawa, Tomohiro Watanabe, Hiromitsu Nishizaki, 
+and Takehito Utsuro,
+Transactions of the Institute of Electronics, Information
+and Communication Engineers, Vol.E88--D, No.3,
+pp. 463-471, March, 2005.
+Unsupervised Speaker Adaptation 
+Using High Confidence Portion Recognition Results 
+by Multiple Recognition Systems,
+Tomohiro Watanabe, Hiromitsu Nishizaki, 
+Takehito Utsuro, and Seiichi Nakagawa,
+Proceedings of the 8th International Conference on Spoken Language Processing,
+pp. 1989-1992, October 2004.
+"複数の大語彙連続音声認識モデルの出力の共通部分を用いた信頼度
+-単語の特徴と信頼度の相関-", 
+渡邉 友裕, 原田 哲志, 宇津呂 武仁, 西崎 博光, 中川 聖一.
+日本音響学会2002年春季研究発表会講演論文集, 第I巻, pp.201-202, March 2002. 
+電子情報通信学会論文誌に2003に出た論文の一部.    
+松下雅彦さん (2002年3月学部卒業,2004年3月(中川聖一教授研究室)修士修了.
+現在,IT関連企業勤務)
+"Improving Keyword Recognition of Spoken Queries 
+by Combining Multiple Speech Recognizer's Outputs 
+for Speech-driven WEB Retrieval Task" 
+Masahiko Matsushita, Hiromitsu Nishizaki, 
+Takehito Utsuro, and Seiichi Nakagawa,
+Transactions of the Institute of Electronics, Information
+and Communication Engineers, Vol.E88--D, No.3,
+pp. 472-480, March, 2005.
+Keyword Recognition and Extraction 
+by Multiple-LVCSRs with 60,000 Words 
+in Speech-driven WEB Retrieval Task,
+Masahiko Matsushita, Hiromitsu Nishizaki, 
+Takehito Utsuro, and Seiichi Nakagawa,
+Proceedings of the 8th International Conference on Spoken Language Processing,
+pp. 1625-1628, October 2004.
+"Evaluating Multiple LVCSR Model Combination
+in NTCIR-3 Speech-Driven Web Retrieval Task",
+(pdf file 383,873 bytes) 
+Masahiko Matsushita, Hiromitsu Nishizaki, Takehito Utsuro,
+Yasuhiro Kodama, Seiichi Nakagawa,
+Proceedings of the 8th European Conference on Speech
+Communication and Technology, 
+pp. 1205-1208, September 2003.
+原田哲志さん (2002年3月修士課程修了.)
+A Confidence Measure based on Agreement among
+Multiple LVCSR Models 
+--- Correlation between Pair of Acoustic Models and Confidence ---.
+Takehito Utsuro, Tetsuji Harada, Hiromitsu Nishizaki 
+and Seiichi Nakagawa,
+Proceedings of the 7th International Conference on Spoken Language Processing,
+pp. 701-704, Vol.I, September 2002.
+"複数の大語彙連続音声認識モデルの出力の共通部分を用いた信頼度
+-音響モデルの組合せと信頼度の相関-"
+原田 哲志, 宇津呂 武仁, 西崎 博光, 小玉 康広, 中川 聖一.
+日本音響学会2002年春季研究発表会講演論文集, 第I巻, pp.199-200, March 2002.
+Copyright (c) Natural Language Processing Laboratory, 2006-.
+研究テーマその3:大語彙連続音声認識における複数モデルの利用

@@ -1,0 +1,253 @@
+単一セル
+Range プロパティには A1形式のセル参照文字列を指定します。R1C1形式のセル参照は使えません。絶対参照と相対参照のどちらを指定しても結果は同じです。
+'A1を選択
+Range("A1").Select
+'× 誤り。R1C1形式のセル参照は指定できない
+Range("R1C1").Select
+Cells プロパティを使うときは行番号と列番号を数値または文字列で指定します。A1形式の列番号(A, B, C...)も指定できます。引数の順番が (行, 列) であることに注意してください。
+'B1を選択
+Cells(1, 2).Select
+'B1を選択
+Cells(1, "B").Select
+セル範囲
+Range プロパティにはセル参照を1つ指定する書き方と、2つ指定する書き方があります。2つ指定する書き方では、セル範囲の左上と右下のセルを指定します。
+'A1:C3を選択
+Range("A1:C3").Select
+'A1:C3を選択
+Range("A1", "C3").Select
+引数に Range オブジェクト(Range プロパティや Cells プロパティの結果)を指定することもできます。文字列と Range オブジェクトを組み合わせることもできます。
+'A1:C3を選択
+Range(Range("A1"), Range("C3")).Select
+'A1:C3を選択
+Range(Cells(1, 1), Cells(1, 3)).Select
+'A1:C3を選択
+Range("A1", Cells(1, 3)).Select
+シートを指定するときには、引数の Range プロパティや Cells プロパティのシートも指定する必要があります。
+'× Range()とCells()の対象シートが一致すれば成功、一致しないと失敗
+Sheets("Sheet1").Range(Cells(1, 1), Cells(1, 3)).Copy
+' Range()とCells()の対象シートが一致
+Sheets("Sheet1").Range(Sheets("Sheet1").Cells(1, 1), Sheets("Sheet1").Cells(1, 3)).Copy
+With 文を使うと簡潔に記述できます。
+'With を使うときは、Range( )とCells( )の前の"."を忘れずに
+With Sheets("Sheet1")
+.Range(.Cells(1, 1), .Cells(1, 3)).Copy
+End With
+セル参照文字列で指定する場合は、シートの指定は不要です。
+'"A1"と"C3"にはシートの指定は不要
+Sheets("Sheet1").Range("A1", "C3").Copy
+シートの指定
+シートを指定するには、Range プロパティや Cells プロパティの対象オブジェクトとして、Sheets( ) または Worksheets( ) を記述します。
+'Sheet1のA1をコピー
+Sheets("Sheet1").Range("A1").Copy
+'Sheet1のA1をコピー
+Worksheets("Sheet1").Range("A1").Copy
+ブックを指定するには、Sheets( ) や Worksheets( ) の対象オブジェクトとして、Workbooks( ) を記述します。Workbooks( )にはパスは付けず、ブック名だけを指定します。ブック名の拡張子(.xls)は省略しないでください。OSの設定によっては正しく動作しません。
+'Book1.xls の Sheet1 の A1 をコピー
+Workbooks("Book1.xls").Sheets("Sheet1").Range("A1").Copy
+'× 誤り。パス名は不可。Workbooks( )にはブック名を書く
+Workbooks("C:\Book1.xls").Sheets("Sheet1").Range("A1").Copy
+シート名やブック名の代わりに、インデックス番号を使ってシートやブックを指定することもできます。インデックス番号は複数のシートや複数のブックを順番に処理する場合に使われることが多いです。通常はあまり使いません。
+'左から2番目のシートのA1をコピー
+Sheets(2).Range("A1").Copy
+'最初に開いたブックを選択
+Workbooks(1).Activate
+アクティブなブック、シート、セルの使用
+アクティブブックを指定するには、ActiveWorkbook を使います。
+'アクティブブックの Sheet1 の A1 をコピー
+ActiveWorkbook.Sheets("Sheet1").Range("A1").Copy
+アクティブシートを指定するには、ActiveSheet を使います。対象オブジェクトを省略すると「アクティブウィンドウのアクティブシート」が返されます。
+'アクティブシートの A1 をコピー
+ActiveSheet.Range("A1").Copy
+アクティブシートはブックのウィンドウごとに存在します。1つのブックに対して複数のウィンドウを開いている場合、同じブックでもアクティブシートはウィンドウごとに異なる場合があります。そのため ActiveSheet プロパティは基本的には Window オブジェクトのプロパティです。
+'Book1.xlsの1番手前のウィンドウのアクティブシートのA1をコピー
+Workbooks("Book1.xls").Windows(1).ActiveSheet.Range("A1").Copy
+アクティブセルは ActiveCell プロパティで取得します。ActiveCell も ActiveSheet と同じく、基本的には Window オブジェクトのプロパティです。Worksheet オブジェクトにはないので注意してください。
+アクティブセルはシートごと、ウィンドウ枠(ウィンドウペイン)ごとに存在しますが、VBA では各ウィンドウのアクティブペインのアクティブセルの取得のみが可能です。ActiveCell の対象オブジェクトを省略すると「アクティブウィンドウのアクティブセル」が返されます。
+'アクティブセルをコピー
+ActiveCell.Copy
+'Book1.xlsの一番手前のウィンドウのアクティブセルをコピー
+Workbooks("Book1.xls").Windows(1).ActiveCell.Copy
+'× 誤り。ブックにActiveSheetプロパティはあるが(ブックの最前面ウィンドウのアクティブシートを返す)
+'シートにActiveCellプロパティはない。シートのアクティブセルを直接取得する方法は用意されていない。
+ActiveWorkbook.ActiveSheet.ActiveCell.Copy
+選択範囲は、Selection プロパティまたは Window オブジェクトの RangeSelection プロパティ(Excel 97 以降)で取得します。図形オブジェクトが選択されているとき、Selection プロパティはそのオブジェクトを返します。RangeSelection プロパティは Range オブジェクトを返します。
+'選択範囲をコピー
+'ただし図形オブジェクトが選択されていればそれがコピーされる
+Selection.Copy
+'選択範囲をコピー
+'図形オブジェクトが選択されていてもセル範囲がコピーされる
+ActiveWindow.RangeSelection.Copy
+オブジェクト名(CodeName)の使用
+Excel 97 以降では、コードを記述したブック内のシートを指定する際にオブジェクト名(CodeName)を使うことができます。オブジェクト名は Visual Basic Editor の [プロジェクト] ウィンドウに表示されます。
+'コードを記述したブックの Sheet1 というオブジェクト名のシートの A1 をコピー
+Sheet1.Range("A1").Copy
+オブジェクト名はプロパティウィンドウの[(オブジェクト名)]の欄で変更することができます。
+オブジェクト名を使って他ブックのシートのオブジェクトを取得するには、ブック間の参照設定が必要です。(オブジェクト名は参照設定をしなくても CodeName プロパティで取得できます)
+オブジェクト名は、ブックに VBA プロジェクトが作成されるときに自動的に作成されます。ブックを新規作成した時点で必ず VBA プロジェクトが作成されるとは限らないため、シートのオブジェクト名は存在していないこともあります。
+外部参照の使用
+セル参照文字列にシート名やブック名を含めることができます。このようなセル参照を外部参照と言います。ブック名は [ ] で囲み、! の前の部分は ' ' で囲みます。(ブック名とシート名が空白などを含まず、英数字のみであれば ' ' で囲まなくても動作します)
+対象オブジェクトは省略するか Application を指定します。
+'アクティブブックの Sheet1 の A1 をコピー
+'シートモジュールでは Application を省略すると他のシートを指定できない
+Range("'Sheet1'!A1").Copy
+'アクティブブックの Sheet1 の A1 をコピー
+Application.Range("'Sheet1'!A1").Copy
+'Book1.xls の Sheet1 の A1 をコピー
+Range("'[Book1.xls]Sheet1'!A1").Copy
+'Book1.xls の Sheet1 の A1 をコピー
+Application.Range("'[Book1.xls]Sheet1'!A1").Copy
+※ VBA でセルを処理するには、セルを含むブックファイルを、実行中のエクセルで開く必要があります。例外的に、ADO や DAO などのデータアクセス機能を利用したり、エクセルの外部リンク式を利用して、開かれていないブックのセルを処理することもできます。
+外部リンク式ではセルの値の読み取りのみが可能です。シート名の取得、数式、書式等の取得はできません。データの書き込みもできません。
+'外部リンク式を使い、開かれていないBook1.xlsのSheet1!A1の値を取得する
+MsgBox Application.ExecuteExcel4Macro("'C:\My Documents\[Book1.xls]Sheet1'!R1C1")
+Range や Cells の対象オブジェクトを省略した場合は、モジュールによってデフォルトのシートが異なるので注意してください。標準モジュールではアクティブシートがデフォルトのシートです。シートに対応するシートモジュールではそのシートがデフォルトのシートになります。
+'標準モジュールに書くと、アクティブシートの A1 をコピー
+Range("A1").Copy
+'Sheet1 のシートモジュールに書くと、Sheet1 の A1 をコピー
+Range("A1").Copy
+同様に標準モジュールではアクティブブックがデフォルトのブックになり、ThisWorkbookのモジュールではそのブックがデフォルトのブックになります。
+'標準モジュールに書くと、アクティブブックの Sheet1 の A1 をコピー
+Sheets("Sheet1").Range("A1").Copy
+'ThisWorkbook モジュールに書くと、コードを記述したブックの Sheet1 の A1 をコピー
+Sheets("Sheet1").Range("A1").Copy
+'ThisWorkbookモジュールでは...
+'× 誤り。ThisWorkbook.CommandBars の意味になる
+CommandBars("Cell").ShowPopup
+' 正しい。セルのショートカットメニューを表示する
+Application.CommandBars("Cell").ShowPopup
+すべてのセルを取得するには Cells プロパティを使います。Rows プロパティ(すべての行)、Columns プロパティ(すべての列)も利用できます。
+'すべてのセルを選択
+Cells.Select
+'RowsやColumnsでも結果は同じ
+'すべての行を選択
+Rows.Select
+'すべての列を選択
+Columns.Select
+行の指定には Range プロパティの他に Rows プロパティも利用できます。数値またはセル参照文字列を指定します。
+'1行目を選択
+Range("1:1").Select
+'1行目を選択
+Rows(1).Select
+'1行目から3行目までを選択
+Range("1:3").Select
+'1行目から3行目までを選択
+Rows("1:3").Select
+'× Rows( ) には行番号を2つ指定することはできない
+Rows(1, 3).Select
+'× Rows( ) には行全体を指定する必要がある
+Rows("A1:C1").Select
+列の指定には Range プロパティの他に Columns プロパティも利用できます。数値またはセル参照文字列を指定します。
+'A列を選択
+Range("A:A").Select
+'A列を選択
+Columns("A").Select
+'A列を選択
+Columns(1).Select
+'A列からC列までを選択
+Range("A:C").Select
+'A列からC列までを選択
+Columns("A:C").Select
+'× Columns( ) には列番号を2つ指定することはできない
+Columns(1, 3).Select
+'× Columns( ) には列全体を指定する必要がある
+Columns("A1:C1").Select
+あるセル範囲を含む行全体を取得するには EntireRow プロパティを使います。
+'A1:A2の行全体である1:2を選択
+Range("A1:A2").EntireRow.Select
+あるセル範囲を含む列全体を取得するには EntireColumn プロパティを使います。
+'A1:B2の列全体であるA:Bを選択
+Range("A1:B2").EntireColumn.Select
+Range オブジェクトには、セルのコレクション、行のコレクション、列のコレクションの3つの種類があります。(単一のセル範囲の場合)
+Range プロパティ、Cells プロパティ等はセルのコレクションを返します。Rows プロパティと EntireRow プロパティは行のコレクションを返します。Columns プロパティと EntireColumn プロパティは列のコレクションを返します。(コレクションの中の要素を Item プロパティで取り出すと、それも同じ種類のコレクションになります)
+セル範囲を一括処理するときは区別を気にする必要はありませんが、使い分けが必要になることもあります。
+'Rangeプロパティはセルのコレクションを返すのでセル数(512)が表示される
+MsgBox Range("1:2").Count
+'Rowsプロパティは行のコレクションを返すので、行数(2)が表示される
+MsgBox Rows("1:2").Count
+'Rangeプロパティはセルのコレクションを返すのでセル数(131072)が表示される
+MsgBox Range("A:B").Count
+'Columnsプロパティは列のコレクションを返すので列数(2)が表示される
+MsgBox Columns("A:B").Count
+コレクションの中の要素(個々のセル、行、列)を取り出すには、Item プロパティを使います。多くのコレクションで".Item" の記述は省略が可能です。(Range オブジェクトの既定のプロパティ(_Default)が Item の機能も持っているため)
+'A1:C3の中で2行3列の位置にあるC2を選択
+'Itemは省略できる
+Range("A1:C3").Item(2, 3).Select
+Range("A1:C3")(2, 3).Select
+'すべてのセルの中で2行3列の位置にあるC2を選択
+'Itemは省略できる。Cells( ) は Cells.Item( ) の省略形
+Cells.Item(2, 3).Select
+Cells(2, 3).Select
+'すべての行の中から1:3行を選択
+'Rows( ) は Rows.Item( ) の省略形
+Rows.Item("1:3").Select
+Rows("1:3").Select
+'すべての列の中からA:C列を選択
+'Columns( ) は Columns.Item( ) の省略形
+Columns.Item("A:C").Select
+Columns("A:C").Select
+'2:3行の中で2行目の位置にある3行目を選択
+Rows("2:3").Item(2).Select
+Rows("2:3")(2).Select
+'B:C列の中で2列目の位置にあるC列を選択
+Columns("B:C").Item(2).Select
+Columns("B:C")(2).Select
+セルのコレクションの Item プロパティに 1つだけ数値を指定すると、セル範囲の左上隅から指定数だけ数えた位置のセルを指定できます。列方向を優先して数えます。
+'A1 から5番目のセルである B2 を選択(列方向を優先して数える)
+Range("A1:C2").Item(5).Select
+Range("A1:C2")(5).Select
+Item プロパティではコレクションの範囲外のセルを指定することができます。つまり、Item プロパティを使うと特定のセルを基準にした相対指定ができます。
+'B3:C4の-1行0列の位置にあるA1を選択
+Range("B3:C4").Item(-1, 0).Select
+Range("B3:C4")(-1, 0).Select
+'A2 から5番目のセルである B3 を選択(列方向を優先して数える)
+Range("A2:C2").Item(5).Select
+Range("A2:C2")(5).Select
+'引数に1以下の数を1つ指定すると、左上セルから左方向と上方向にカウントして行く。
+'列数はプラスのときと同じ。列方向優先でカウントすることも同じ。
+'C3(1)->B3(0)->C2(-1)->B2(-2)->C1(-3) の順にカウントされ C1が選択される
+Range("C3:D4").Item(-3).Select
+'3:4行の0行の位置にある2行目を選択
+Rows("3:4").Item(0).Select
+'3:4行の2行目から3行目の位置にある4:5行を選択
+Rows("3:4").Item("2:3").Select
+'C:D列の-1列の位置にあるA列を選択
+'(ただし、Excel5.0/95では0以下の指定は不可)
+Columns("C:D").Item(-1).Select
+'C:D列から見てB列からC列の位置にあるD:E列を選択
+Columns("C:D").Item("B:C").Select
+特定のセルを基準にした相対指定は、Item プロパティの他にも、Range プロパティ、Cells プロパティ、Rows プロパティ、 Columns プロパティなどを使ってできます。
+'B2をA1に見なしたときのA1:C3の範囲、すなわちB2:D4を選択
+Range("B2").Range("A1:C3").Select
+Range オブジェクトの Rows プロパティを使うと、元の範囲を行方向にシフトさせた範囲を取得できます。Range プロパティで行全体を指定した場合とは異なります。
+'A1:C1 を基準に2行目の範囲である A2:C2 を選択
+Range("A1:C1").Rows(2).Select
+'A1:C1 を基準に2行目から3行目の範囲である A2:C3 を選択
+Range("A1:C1").Rows("2:3").Select
+'× 存在しない列(A列の左)からの範囲になる。もしA2が基準なら2行目全体が選択される
+Range("B2").Range("1:1").Select
+Range オブジェクトの Columns プロパティを使うと、元の範囲を列方向にシフトさせた範囲を取得できます。Range プロパティで列全体を指定した場合とは異なります。
+'A1:A3 を基準に2列目の範囲である B1:B3 を選択
+Range("A1:A3").Columns(2).Select
+'A1:A3 を基準に2列目から3列目の範囲である B1:C3 を選択
+Range("A1:A3").Columns("B:C").Select
+'× 存在しない0行からの範囲になる。もしB1が基準ならB列全体が選択される
+Range("B2").Range("A:A").Select
+相対指定をする場合、コレクションの種類を変更する必要がなければ、基準となるセル範囲の Item プロパティまたは Range プロパティを使うことができます。コレクションの種類を変更したいときや明示したいときは、Cells Rows Columns の各プロパティを使います。
+'B列を基準に2行2列の位置にあるC2を選択(Cellsを明示的に実行)
+Range("B:B").Cells.Item(2, 2).Select
+'Rangeプロパティはセルのコレクションを返すので、CellsがなくてもItem(行,列)のセル指定は可能
+Range("B:B").Item(2, 2).Select
+'Itemを省略
+Range("B:B")(2, 2).Select
+'× Columnsプロパティは列のコレクションを返すので、Item(行,列)のセル指定はできない
+Columns("B").Item(2, 1).Select
+' Cellsプロパティでセルのコレクションに変換すればItem(行,列)のセル指定ができる
+Columns("B").Cells.Item(2, 1).Select
+'Itemを省略
+Columns("B").Cells(2, 1).Select
+Offset プロパティを使うと、元の範囲を移動した範囲を取得できます。引数には何行何列シフトするかを指定します。移動量の指定なので、Item プロパティの引数(座標の指定)より 1 だけ小さい数値になります。
+'B1 から見て「1行下、2列右のセル」である D2 を選択
+Range("B1").Offset(1, 2).Select
+'B1:B2 を「1行下、2列右」にシフトした範囲、つまり D2:D3 を選択
+Range("B1:B2").Offset(1, 2).Select
+Rangeオブジェクトの使い方(1)

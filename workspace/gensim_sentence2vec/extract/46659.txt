@@ -1,0 +1,26 @@
+
+音声認識
+専門は主に言語モデルです。詳しくは、言語モデルの講義資料で
+説明しています。ここでは、まず音声認識の言語モデル構築を簡単に説明します。次に、実際に
+音声認識システムを構築する際に不可欠な言語処理ツールの分野適応を紹介します。
+音声認識の言語モデル構築
+まず、音声認識したい文に近いテキスト $STEM.text を用意し、全ての文字が EUC 全角である
+ことを確認します。
+KyTea のインストール
+汎用モデル (EUC) のダウンロード
+単語分割
+% kytea -notags -model 2011-08-07.kbm  $STEM.word
+発音推定
+% kytea -nows -model 2011-08-07.kbm  $STEM.lmtext
+高頻度の既知語からLMツールキット (SRI LM tools, Palm Kit, etc.) で語彙を作成
+発音辞書の作成 ($STEM.vocab から)
+% ./vocab2htkdic.perl $STEM.vocab >$STEM.htkdic
+LMツールキット (SRI LM tools, Palm Kit, etc.) で言語モデルを作成
+音声認識 (Julius, etc.)
+認識結果(単語列: RECO.word)に対する品詞推定 (任意)
+ツールとKyTeaのモデル(00readme)
+単語分割と発音推定の適応
+言語処理ツール適応の流れ
+@plata (こちらで)
+@your_site (そちらで)
+Zzz Eee Lll Ccc Hhh

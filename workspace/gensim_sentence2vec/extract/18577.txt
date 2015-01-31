@@ -1,0 +1,112 @@
+
+Utility ノード 3
+Light Info ノード
+Light Info ノードによってサンプル点に対するライトの情報を得ることができます。
+主なアトリビュートは以下のとおりです。
+pointCamera
+サンプル点の位置
+lightPosition
+光源の位置
+lightDirection
+光源からサンプル点への向き
+SampleDistance
+光源からサンプル点までの距離
+その他の Utility ノード
+Distance Between
+2 点間の距離を出力
+Plus Minus Average
+複数の値を加減算
+Multiply Divide
+3 つまでの値を乗除算
+Clamp
+入力値を一定の範囲にして出力する
+Light Info ノードの使用例
+Light Info ノードを使って、
+Raytracing のソフトシャドーをシュミレーションするシェーディングネットワークを
+Depth Map Shadow によって作成してみましょう。
+Raytracing のソフトシャドーのように、
+オブジェクトから遠ざかるにつれて影の色とボケ具合が変化してゆくようにするために、
+ロケーターを 3 つ作り、
+ライトと同じ位置に 1 つ、オブジェクトのある床に 2 つを配置しておきます。
+サンプリングされている点までの距離(sampleDistance)が
+ライトから他の 2 つのロケーターまでの距離(startDistance, endDistance)の間にあるときに
+徐々に影の色とボケ具合を変化させてゆきます。
+(sampleDistance - startDistance) ÷
+(endDistance - startDistance )
+の計算結果を Ramp ノードの入力として使用して、
+影の色とボケ具合をコントロールします。
+適当にシーンを作成します。
+ライトを作成し、Depth Map Shadow にチェックをいれておきます。
+Locator を 3 つ作成し、それぞれに lightLocator, startLocator, endLocator という名前をつけておきます。
+lightLocator はライトに Point Constrain して同じ位置になるようにしておき、
+startLocator はオブジェクトと同じ位置、 endLocator はライトの反対側の板上に配置します。
+distanceBetween ノードを作成します。
+作成された distanceBetween ノードの名前を startDistance に変更しておきます。
+lightLocator と startLocator を startDistance にコネクトします。
+lightLocator の Center(または worldPosition[0]) を startDistance の point1 に、
+startLocator の Center(または worldPosition[0]) を startDistance の point2 にコネクトします。
+2 つ目の distanceBetween ノードを作成します。
+作成された distanceBetween ノードの名前を endDistance に変更します。
+lightLocator と endLocator を endDistance にコネクトします。
+lightLocator の Center(または worldPosition[0]) を endDistance の point1 に、
+endLocator の Center(または worldPosition[0]) を endDistance の point2 にコネクトします。
+Light Info ノードを作成します。
+ライトの worldMatrix を Light Info ノードの worldMatrix にコネクトします。
+Plus Minus Average ノードを作成します。
+名前を startEndDistance に変更しておきます。
+endDistance ノードと startDistance ノードを startEndDistance にコネクトします。
+endDistance ノードの distance アトリビュートを
+startEndDistance の input1D[0] に、
+startDistance ノードの distance アトリビュートを
+startEndDistance の input1D[1] にコネクトします。
+Connection Editor でうまくいかないときは、
+以下の MEL コマンドを実行します。
+connectAttr endDistance.distance startEndDistance.input1D[0];
+connectAttr startDistance.distance startEndDistance.input1D[1];
+startEndDistance の Operation を Subtract にしておきます。
+2 つ目の Plus Minus Average ノードを作成します。
+名前を startSampleDistance に変更しておきます。
+startDistance ノードと Light Info ノードを startSampleDistance にコネクトします。
+Light Info ノードの sampleDistance アトリビュートを
+startSampleDistance の input1D[0] に、
+startDistance ノードの distance アトリビュートを
+startSampleDistance の input1D[1] にコネクトします。
+Connection Editor でうまくいかないときは、
+以下の MEL コマンドを実行します。
+connectAttr lightInfo1.sampleDistance startSampleDistance.input1D[0];
+connectAttr startDistance.distance startSampleDistance.input1D[1];
+startSampleDistance の Operation を Subtract にしておきます。
+Multiply Divide ノードを作成します。
+アトリビュートエディタを開き、Operation を Divide にしておきます。
+startEndDistance ノードと startSampleDistance ノードを Multiply Divide ノードにコネクトします。
+startEndDistance ノードの output1D と startSampleDistance ノードの output1D を
+Multiply Divide ノードの input1X と intpu2X にコネクトします。
+Clamp ノードを作成します。
+Multiply Divide ノードの出力からは 1.0 以上と 0.0 以下の値が出力されてしまうので
+Ramp ノードに入力するために Clamp ノードを使用します。
+Multiply Divide ノードの output を Clamp ノードの input にコネクトします。
+Clamp ノードの Max を (1.0, 0.0, 0.0) にしておきます。
+これによって、入力値が 1.0 以上の場合は出力が 1.0 に、
+0.0 以下の場合は出力が 0.0 になります。
+Ramp ノードを作成します。
+このノードは影の色をコントロールします。
+Clamp ノードの outputR を Ramp ノードの vCoord にコネクトします。
+Ramp ノードの vCoord が 0.0 の場合の色を RGB で (-0.5, -0.5, -0.5) に、
+vCoord が 1.0 の場合の色を RGB で (0.5, 0.5, 0.5) にしておきます。
+Ramp ノード の outColor をライトの shadowColor にコネクトします。
+2 つ目の Ramp ノードを作成します。
+このノードはボケ具合をコントロールします。
+Clamp ノードの outputR を Ramp ノードの vCoord にコネクトします。
+Ramp ノードの vCoord が 0.0 の場合の色を RGB で (32, 32, 32) に、
+vCoord が 1.0 の場合の色を RGB で (2, 2, 2) にしておきます。
+Ramp ノード の outColorR をライトの dmapFilterSize にコネクトします。
+ここまででシェーディングネットワークは以下のようになります。
+レンダリングを実行します。
+(普通の Depth Map Shadow)
+(Raytracing のソフトシャドー)
+参考
+Maya 
+Maya, MEL 関係(Tips, FAQ, コマンド)のページ
+Index | Home
+Mail
+Utility Node 3 ( Maya Study - 05AD )

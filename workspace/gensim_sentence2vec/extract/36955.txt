@@ -1,0 +1,55 @@
+『入門 自然言語処理』2章 テキストコーパスと語彙資源へのアクセス (2)
+昨日に引き続き。
+2.2 条件付き頻度分布
+異なる条件ごとに頻度の分布を調べて、特徴を比較する。
+条件を用いた頻度分布の調べ方
+前節で書いたコード(ジャンルごとに単語の頻度を数える):
+from nltk.corpus import brown
+cfd = nltk.ConditionalFreqDist(
+(genre, word)
+for genre in brown.categories()
+for word in brown.words(categories=genre))
+(genre, word)は(条件, 事象)のペアを表している。
+genre_word = [(genre, word)
+for genre in ['news', 'romance']
+for word in brown.words(categories=genre)]
+cfd = nltk.ConditionalFreqDist(genre_word)
+cfd['romance']['could']
+# 193
+上はnewsとromanceの単語の頻度分布を得るコード。cfd['romance']['could']が193ということは、('romance', 'could')というペアが193個あったということ。
+from nltk.corpus import inaugural
+cfd = nltk.ConditionalFreqDist(
+(target, fileid[:4])
+for fileid in inaugural.fileids()
+for w in inaugural.words(fileid)
+for target in ['america', 'citizen']
+if w.lower().startswith(target))
+前回意味がわからないと書いた、大統領演説からamerica,citizenで始まる単語の出現頻度を得るコード。これはConditionalFreqDist()に('america', 2009)のようなペアがたくさん(2009年の演説に含まれるamericaから始まる単語の数だけ)渡されているということだった。
+頻度分布の表し方
+前節で使ったように、tabulate()やplot()などのメソッドが用意されている。
+from nltk.corpus import udhr
+languages = ['Chickasaw', 'English', 'German_Deutsch', 'Greenlandic_Inuktikut', 'Hungarian_Magyar', 'Ibibio_Efik']
+cdf = nltk.ConditionalFreqDist(
+(lang, len(word)) # 言語と文字数のペア
+for lang in languages
+for word in udhr.words(lang + '-Latin1'))
+# 表示
+cdf.tabulate(conditions=['English', 'German_Deutsch'], samples=range(10), cumulative=True)
+#                   0    1    2    3    4    5    6    7    8    9
+#        English    0  185  525  883  997 1166 1283 1440 1558 1638
+# German_Deutsch    0  171  263  614  717  894 1013 1110 1213 1275
+バイグラムによるランダムテキストの生成
+def generate_model(cfdist, word, num=15):
+for i in range(num):
+print word,
+word = cfdist[word].max()
+text = nltk.corpus.genesis.words('english-kjv.txt')
+bigrams = nltk.bigrams(text)
+cfd = nltk.ConditionalFreqDist(bigrams)
+generate_model(cfd, 'I')
+# I will not be a son , and the land of the land of the
+nltk.bigram()は創世記に出てくる単語のバイグラムを生成する。ペアの総数は44763。cdf[<word>]で、に続く単語の頻度が得られる。最後はバイグラムによる文生成。NグラムのN=2の場合。こんなに簡単に実装できる。
+2.3 Pythonをもっと活用する:コードの再利用
+コードをファイルに書いたり、関数やモジュールを使うことについて。
+次回で2章読み終わる(予定)
+入門 自然言語処理(O'Reilly) 2章 (2) - rn102.hatenablog

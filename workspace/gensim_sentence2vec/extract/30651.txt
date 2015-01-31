@@ -1,0 +1,73 @@
+以前の投稿でご紹介した Cisco TelePresence SX10 Quick Set をはじめとするCisco TelePresence SX/MX/EX シリーズでは、「TC」と呼ばれるソフトウェアが搭載されています。この TC の新しいバージョン 7.2 が先週リリースされました。Cisco TelePresence SX10 に日本語や Touch 10 のサポートが加わるなど、注目の新機能がありますので、今回はそれをご紹介します。
+TC 7.2 の Release Notes には、新機能として下記のようなリストが掲載されています。
+Support for Touch 10" network pairing for all new endpoints
+Improved failover support for endpoints registered through Collaboration Edge
+Intelligent Proximity with slide change detection on MX200 G2, MX300 G2 and SX20
+Added new provisioning parameters that can be provisioned from CUCM (10.5)
+Briefing room mode for specific room setups
+Improved language support for SX10 in active mode
+Collaboration Edge provisioning option added to the setup assistant of SX10
+OSD and touch panel screenshots can be captured from the web interface
+xStatus Video Output will print EDID information about the display
+Touch 10 や SX10 多言語サポートを除くと管理者向けの機能ばかりです。これらを順に紹介することにします。
+Support for Touch 10" network pairing for all new endpoints
+Touch 10 とは、タッチパネルでの操作が可能なリモート コントロール デバイスです。これまで Cisco TelePresence MX シリーズ、 SX80 で利用可能でしたが、そのサポート範囲が SX 10、 SX20 にまで拡がりました。これにより、SX10、SX20、SX80、MX200 G2、MX300 G2、MX700、MX800 で同じコントローラが利用でき、機種ごとの操作の違いに悩まされることはありません。
+Touch 10 は、Cisco TelePresence 本体とネットワーク上でペアリングすることで利用可能となり、本体とのケーブル接続は必要ありません。また Power Over Ethernet(POE) に対応しているため電源ケーブルも不要です。Ethernet ケーブル一本で、どのMX/SX デバイスにも利用できます。
+Added new provisioning parameters that can be provisioned from CUCM (10.5)
+Cisco Unified Communications Manager(CUCM)で設定可能なパラメータが増えました。デフォルトの音量、ダウンストリーム/アップストリームのビットレート、システム名、スタンバイ モード設定、会議情報の表示設定が集中管理可能となっています。
+この機能を利用するには、Cisco Unified Communications Manager 側に最新のデバイス パックをインストールしておく必要があります。Compatibility Matrix から TC 7.2 をサポートする バージョンを選択して事前にインストールしてください。
+なお、この最新のデバイス パッケージをインストールすることで Cisco Unified Communications Manager から TC エンドポイントの「自動応答」の設定が可能になります。 TC 7.1 も同機能を利用できます。
+Briefing room mode for specific room setups
+教室型のインテグレーションに最適化されたビデオの入出力が設定できるようになりました。対応機種は、Cisco TelePresence SX80、MX700、MX800 で、Touch デバイスから Local Presenter、 Remote Presenter、 Discussion の 3種類のディスプレイ レイアウトが追加で選択できます。Project Workplace で10人以上を選ぶとその詳細をご覧いただけます。
+Improved language support for SX10 in active mode
+SX10 のスクリーン画面が複数言語対応となり、日本語を含む 23 言語から選択することができます。
+Collaboration Edge provisioning option added to the setup assistant of SX10
+Cisco TelePresence SX10 にて、Cisco Expressway 経由でインターネットから社内への接続ができる Cisco Collaboration Edgeがサポートされています。
+OSD and touch panel screenshots can be captured from the web interface
+画面上(OSD:On Screen Display)の表示や Touch 8 / Touch 10 のスクリーン ショットを取る機能です。これは、利用環境に合わせたビデオ会議の利用マニュアルを独自に作成するときなどに非常に役立ちます。
+Web 管理画面から Diagnostics - User Interface Screenshots を選び、表示画面の場合は「Take screenshot of OSD 」、タッチパネルの表示は「Take screenshot of Touch Panel 」を選択します。
+xStatus Video Output will print EDID information about the display
+ビデオ エンドポイントに接続したディスプレイに関する情報(EDID:Extended Display Identification Data)を取得する xStatus Video Output コマンドが追加されました。このコマンドを SSH やシリアル コンソールから実行することで、EDID 情報が画面に表示されます。
+シリアル コンソールはデバッグ用 USB ポートに接続します。以下、Cisco TelePresence SX10 でのコマンド出力例を示します。SX10 のデバッグ用 USB ポートは本体裏側にあります。
+シリアル ポートのボーレートは 115200 です。Mac OS の screen コマンドの場合、次のように入力します。
+$ screen /dev/tty.usbserial-AH01YZC4 115200
+login: admin
+Password:
+Welcome to demo tky sx10 Office SX10 APAC
+Cisco Codec Release TC7.2.0.aea6651
+SW Release Date: 2014-08-20
+*r Login successful
+OK
+SSH でログインする場合は次のようになります。
+$ ssh -l admin IP Address
+The authenticity of host 'IP Address' can't be established.
+RSA key fingerprint is
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'IP Address' (RSA) to the list of known hosts.
+Password:
+Welcome to demo tky sx10 Office SX10 APAC
+Cisco Codec Release TC7.2.0.aea6651
+SW Release Date: 2014-08-20
+*r Login successful
+OK
+コマンド xStatus Video Output コマンドを指定し、ディスプレイ情報を表示します。
+xStatus Video Output
+*s Video Output Connector 1 Connected: True
+*s Video Output Connector 1 ConnectedDevice Name: "EV2116W"
+*s Video Output Connector 1 ConnectedDevice PreferredFormat: "1920x1080@60Hz"
+*s Video Output Connector 1 MonitorRole: First
+*s Video Output Connector 1 Resolution Height: 1080
+*s Video Output Connector 1 Resolution RefreshRate: 60
+*s Video Output Connector 1 Resolution Width: 1920
+*s Video Output Connector 1 Type: HDMI
+** end
+OK
+TC 7.2 の新機能のご紹介は以上になります。
+シスコのコラボレーション エンドポイントは、ハードウェアだけでなく、ソフトウェアのインストールによって進化していきます。TC ベースのエンドポイントを導入済みのお客様、これから導入予定のお客様のご参考になれば幸いです。
+参考リンク
+コラボレーション エンドポイント
+TC 7.2 End User Guides [英語]
+TC 7.2 Administrator Guides [英語]
+TC 7 Release Notes[英語]
+タグ: Collaboration, Lab, sx10, SX20, TC, video
+Cisco Japan Blog » (実験室) TC 7.2 : SX10 Touch 10 / 日本語サポート

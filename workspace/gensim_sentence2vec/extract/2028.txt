@@ -1,0 +1,81 @@
+こんにちわ小池です。
+今回は全文検索サーバーFessについてです。
+FessはJavaでつくられた全文検索サーバーで、内部的にSolrをつかったApacheLicenseのOSSです。
+検索だけでなく、クローラーやWEBページ、管理画面などもある高機能なソフトです。
+http://fess.sourceforge.jp/ja/
+それでは早速インストールしてみましょう。
+まずJDKをインストールします。今回はCentOS5.5にて実施しました。
+# yum install java-1.7.0-openjdk*
+以下のものがインストールされました。
+Installing:
+java-1.7.0-openjdk         
+java-1.7.0-openjdk-demo    
+java-1.7.0-openjdk-devel   
+java-1.7.0-openjdk-javadoc 
+java-1.7.0-openjdk-src     
+次にFessをサイトからダウンロードします。
+wget http://sourceforge.jp/projects/fess/downloads/57508/fess-server-7.0.2.zip
+ダウンロードしたら解凍して、実行ファイルを起動します。
+# unzip fess-server-7.0.2.zip
+# cd ./fess-server-7.0.2
+# chmod +x bin/*.sh
+# ./bin/startup.sh
+Using CATALINA_BASE:   /var/www/fess-server-7.0.2
+Using CATALINA_HOME:   /var/www/fess-server-7.0.2
+Using CATALINA_TMPDIR: /var/www/fess-server-7.0.2/temp
+Using JRE_HOME:        /usr/java/default
+Using CLASSPATH:       /var/www/fess-server-7.0.2/bin/bootstrap.jar:/var/www/fes
+これでインストールおよび動作が完了です!
+さっそく以下のページにアクセスしてみます。
+http://[URL]:8080/fess/
+するとデフォルトのWEBインターフェイスが表示されました。本当に5分で構築可能です。
+次に設定です。
+管理画面へアクセスします。
+http://[URL]:8080/fess/admin
+デフォルトはadmin/adminでログインできます。
+設定としてクロールする間隔とクロールするURLをウィザードに従って登録します。
+ここでは、1時間ごとにville.jpをクロールするようにしました。
+デフォルトでは30sに1度クローラーが新しいページを取得しています。
+それではさっそく検索をしてみましょう!
+もちろんデフォルトのWEBインターフェイスからも検索できるのですが
+今回はいろいろな汎用性を考えてAPI経由で検索してみます。
+http://[URL]:8080/fess/json?query=小池
+{
+response: {
+version: 2,
+status: 0,
+query: "小池",
+execTime: 0.17,
+pageSize: 20,
+pageNumber: 1,
+recordCount: 15,
+pageCount: 1,
+result: [
+{
+site: "ville.jp/members/koike",
+contentDescription: "場 TOP > メンバー紹介 > 小池秀行 小池秀行Hideyuki Koike 役割取締役・プログラマー 出身地千葉県 船橋市 愛称そんちょう プロフィール 学生時代、大学...ぱり海です。夏は最高です。 他の社員からのコメント 「この人が案件に入ってたら絶対失敗しないだろうな」と思わせるのが小池さんです。 もちろん人間なので小さい失敗はあると思うのですが、小池さんは失敗したとしても、じゃ...",
+host: "ville.jp",
+lastModified: "1360914122807",
+clickCount_i: "0",
+score: "0.3498988",
+hl_content: "場 TOP > メンバー紹介 > 小池秀行 小池秀行Hideyuki Koike 役割取締役・プログラマー 出身地千葉県 船橋市 愛称そんちょう プロフィール 学生時代、大学...ぱり海です。夏は最高です。 他の社員からのコメント 「この人が案件に入ってたら絶対失敗しないだろうな」と思わせるのが小池さんです。 もちろん人間なので小さい失敗はあると思うのですが、小池さんは失敗したとしても、じゃ...あその上でプロジェクトを成功させるためには何をすればいいの? ということを常に気にかけることが出来る。 しかも気にかけるだけでなく、爆速で動いて実際に取り戻す。 だから「小さいミスが雪だるま方式で膨れ上がって炎上」という悲劇が絶対に起こらない。そんな小池",
+digest: "小池秀行 | メンバー紹介 | WEBサイトの受託開発、ビジョン作りの鎌倉合宿「dan」、手仕事のマーケットプレイス「iichi」やクラウドファンディングサイト「COUNTDOWN」の制作・運営など、様々なサービスをお届けしています。",
+tstamp: "1360914122813",
+url: "http://ville.jp/members/koike",
+favoriteCount_i: "0",
+id: "http://ville.jp/members/koike;type=au,docomo,pc,softbank",
+title: "小池秀行 | メンバー紹介 | 鎌倉のWEBサイト制作会社 | 村式",
+mimetype: "text/html",
+contentTitle: "小池秀行 | メンバー紹介 | 鎌倉のWEBサイト制作会社 | 村式",
+boost: "1.0",
+contentLength: "18092",
+urlLink: "http://ville.jp/members/koike"
+},
+...
+]
+}
+}
+出ました。検索結果!
+それぞれページのURLとDescriptionとハイライトされた結果、スコアなどがでていい感じです。
+とってもお手軽に全文検索ができるので是非お試しあれ
+全文検索システムFessを試してみる | 村式エンジニアブログ

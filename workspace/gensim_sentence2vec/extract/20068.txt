@@ -1,0 +1,67 @@
+データマイニングは大量のデータに解析手法を適用することで、それまで未知だったデータの特徴を発見し、新たな知見を獲得することですが、しばしば機械学習と共通の技法が利用されます。
+ごく単純な考え方として教師なし学習の結果をもってすれば残りのその他のデータも同様に知識の適用が可能であり、結果を訓練データとして正確性を向上させたりすることができるわけです。
+学年全体の生徒の成績を分類する
+前回は生徒の科目ごとの成績からその傾向ごとに班分けをする例を紹介しました。この生徒たちを受け持っている先生はこの班分け結果をもとに学年全体の生徒も分類できるのではないかと考えました。
+識別関数の一種であるサポートベクトルマシンと、確率的分類器であるナイーブベイズは考え方も手法もまったく別のものです。
+scikit-learn を使う
+scikit-learn の素晴らしいところはたくさんありますが、その中のひとつとして異なる手法でも一貫性のある API が設計されており、よく似たコードで実装可能なところではないかと筆者は考えています。
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.naive_bayes import GaussianNB
+from sklearn import svm
+# データの掲載が冗長なのでカンマ区切りの .csv を読み込む形式に
+features = np.genfromtxt('data.csv', delimiter=',')
+# K-means クラスタリングでラベルを分類する
+kmeans_model = KMeans(n_clusters=3, random_state=10).fit(features)
+labels = kmeans_model.labels_
+clf = GaussianNB() # ガウシアンカーネルによるナイーブベイズ分類器
+#clf = svm.SVC(kernel='rbf', C=1) # RBF カーネルによるサポートベクトルマシン
+# クラスタリング結果をもとに分類器を鍛える
+clf.fit(features, labels)
+# テスト対象のデータ (学年の他の生徒たちの成績) を読み込む
+test_X = np.genfromtxt('test.csv', delimiter=',')
+# 分類器で分類する
+results = clf.predict(test_X)
+# 結果をソートして表示
+ranks = []
+for result, feature in zip(results, test_X):
+ranks.append([result, feature, feature.sum()])
+ranks.sort(key=lambda x:(-x[2]))
+for rank in ranks:
+print(rank)
+データマイニングは大量のデータに解析手法を適用することで、それまで未知だったデータの特徴を発見し、新たな知見を獲得することですが、しばしば機械学習と共通の技法が利用されます。
+ごく単純な考え方として教師なし学習の結果をもってすれば残りのその他のデータも同様に知識の適用が可能であり、結果を訓練データとして正確性を向上させたりすることができるわけです。
+## 学年全体の生徒の成績を分類する
+[前回](http://qiita.com/ynakayama/items/1223b6844a1a044e2e3b)は生徒の科目ごとの成績からその傾向ごとに班分けをする例を紹介しました。この生徒たちを受け持っている先生はこの班分け結果をもとに学年全体の生徒も分類できるのではないかと考えました。
+識別関数の一種であるサポートベクトルマシンと、確率的分類器であるナイーブベイズは考え方も手法もまったく別のものです。
+### scikit-learn を使う
+scikit-learn の素晴らしいところはたくさんありますが、その中のひとつとして異なる手法でも[一貫性のある API](http://scikit-learn.org/stable/modules/classes.html) が設計されており、よく似たコードで実装可能なところではないかと筆者は考えています。
+```py3
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.naive_bayes import GaussianNB
+from sklearn import svm
+# データの掲載が冗長なのでカンマ区切りの .csv を読み込む形式に
+features = np.genfromtxt('data.csv', delimiter=',')
+# K-means クラスタリングでラベルを分類する
+kmeans_model = KMeans(n_clusters=3, random_state=10).fit(features)
+labels = kmeans_model.labels_
+clf = GaussianNB() # ガウシアンカーネルによるナイーブベイズ分類器
+#clf = svm.SVC(kernel='rbf', C=1) # RBF カーネルによるサポートベクトルマシン
+# クラスタリング結果をもとに分類器を鍛える
+clf.fit(features, labels)
+# テスト対象のデータ (学年の他の生徒たちの成績) を読み込む
+test_X = np.genfromtxt('test.csv', delimiter=',')
+# 分類器で分類する
+results = clf.predict(test_X)
+# 結果をソートして表示
+ranks = []
+for result, feature in zip(results, test_X):
+ranks.append([result, feature, feature.sum()])
+ranks.sort(key=lambda x:(-x[2]))
+for rank in ranks:
+print(rank)
+```
+## まとめ
+実際にサンプルデータを用意してやってみるとわかりますが、それぞれの手法でクラスごとの境界がどのように変わるか目で見て把握できるかと思います。ここから先はそれぞれの理論の話になってくるわけです。
+MachineLearning - クラスタリングの結果を再利用する - Qiita

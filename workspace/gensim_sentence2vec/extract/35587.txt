@@ -1,0 +1,41 @@
+.NET TIPS
+文字列に特定の文字列が含まれているかを調べるには?(Contains編)［2.0のみ、C#、VB］
+デジタルアドバンテージ 遠藤 孝信
+2006/02/17
+「TIPS:文字列に特定の文字列が含まれているかを調べるには?」で解説しているように、文字列に文字列が含まれているかどうかを調べるには、ある文字列内での部分文字列の位置を調べるためのStringクラス(System名前空間)のIndexOfメソッドを利用するのが一般的だった。
+しかし.NET Framework 2.0のStringクラスには、文字列が含まれているかどうかを調べるための専用のメソッドであるContainsメソッドが新しく追加されている。
+Containsメソッドは、含まれているかどうかを調べる文字列をパラメータに指定し、文字列のインスタンスに対して呼び出す。戻り値はその有無を示すbool値(VBではBoolean値)となる。以下にそのサンプル・プログラムを示す。
+// contains.cs
+using System;
+public class StringContains {
+static void Main() {
+string str = "ろうにゃくなんにょ";
+Console.WriteLine(str.Contains("にゃく")); // 出力:True
+Console.WriteLine(str.Contains("にゃん")); // 出力:False
+Console.WriteLine(str.Contains(""));       // 出力:True
+Console.WriteLine(str.IndexOf(""));        // 出力:0
+}
+}
+// コンパイル方法:csc contains.cs
+Containsメソッドを使用したC#のサンプル・プログラム(contains.cs)
+contains.csのダウンロード
+' contains.vb
+Imports System
+Class StringContains
+Shared Sub Main()
+Dim str As String = "ろうにゃくなんにょ"
+Console.WriteLine(Str.Contains("にゃく")) ' 出力:True
+Console.WriteLine(Str.Contains("にゃん")) ' 出力:False
+Console.WriteLine(Str.Contains(""))       ' 出力:True
+Console.WriteLine(Str.IndexOf(""))        ' 出力:0
+End Sub
+End Class
+' コンパイル方法:vbc contains.vb
+Containsメソッドを使用したVBのサンプル・プログラム(contains.vb)
+contains.vbのダウンロード
+なお、パラメータに空文字列("")を指定した場合には、戻り値は常にtrueとなる。空の文字列はどのような文字列にも含まれるということである。これはIndexOfメソッドで空文字列の位置が常に0となるのと同様に、使用する際には注意が必要だ。
+Containsメソッドは、内部的にはIndexOfメソッドを呼び出しているだけのようだが、もはや
+if (str.IndexOf(……) >= 0) {
+……
+のような条件式を書く必要がなくなるため、コードはすっきりし、その意味も明確になる。
+文字列に特定の文字列が含まれているかを調べるには?(Contains編)［2.0のみ、C#、VB］ − @IT

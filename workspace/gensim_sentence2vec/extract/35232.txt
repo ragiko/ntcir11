@@ -1,0 +1,12 @@
+
+モード: グローバルコンフィグモード
+カテゴリー: IP付加機能 / DHCPv6サーバー
+(config)# ipv6 local pool POOLNAME X:X::X:X/M SUB_PLEN [exclude-local-prefix]
+(config)# ipv6 local pool POOLNAME PREFIXNAME SLA_ID SUB_PLEN [exclude-local-prefix]
+(config)# no ipv6 local pool
+DHCPv6サーバー機能(IA_PD)のプレフィックスプールを作成する。
+no形式で実行した場合はプレフィックスプールを削除する。
+1つ目の書式は、任意のアドレスブロック(X:X::X:X/M)からプレフィックスを割り当てるためのもの。
+2つ目の書式は、DHCPv6 PDクライアント機能によって上位のDHCPv6サーバーから取得したプレフィックス(PREFIXNAME)を再割り当てするためのもの。
+パラメーター
+SwitchBlade x8100シリーズ コマンドリファレンス 5.4.3: ipv6 local pool

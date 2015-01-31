@@ -1,0 +1,369 @@
+ 
+OpenURL
+OpenURLとは、論文や図書・雑誌などの情報をシステム間でURLとして受け渡す際の規格です。図書館の蔵書検索システム(OPAC)やリンクリゾルバ等との連携に使用します。OpenURLの詳細については「OpenURL - Wikipedia, the free encyclopedia」もご参照ください。
+CiNiiは、OpenURLの受信機能を持っています。OpenURL形式でリンクを記述することで、CiNiiの特定の論文や雑誌情報、検索結果にリンクをすることができます。
+また、CiNiiでは、OpenURLの送信機能(CiNii Articlesの論文詳細表示画面およびCiNii Booksの図書・雑誌詳細表示画面に、リンクリゾルバやOPACへのリンクを表示させる機能)も持っています。詳しくは 「OpenURL送信機能」をご覧ください。
+【利用イメージ】(図中のOpenURLは略式化したものです。)
+受信できるパラメータなど、詳細は各APIのページをご覧ください。
+CiNii Article
+CiNii Articles のOpenURL 受信機能についてへ>>
+CiNii Articles のOpenURL 送信機能についてへ>>
+CiNii Books
+CiNii BooksのOpenURL 受信機能についてへ>>
+OpenSearch
+OpenSearchは、Webサービスにおいて、検索結果を他のサイトから自由に利用するための規格です。OpenSearchの詳細については、「Open Search 仕様書 1.1 ドラフト4版」をご参照ください。
+OpenSearchは、以下の3通りの方法でご利用いただけます。
+A. ブラウザの検索バーからCiNiiを検索する
+Firefoxの検索バーからCiNiiを検索することができます。Internet Explorerなどのブラウザでも同等のことが可能です。
+FirefoxでCiNiiのページを表示します。検索バー左端のをクリックし、「CiNii を追加」(または「CiNii Author を追加」等)を選択し、追加します(この作業は初回に一度だけ行うものです)。
+検索バー左端のをクリックし、「CiNii OpenSearch」(または「CiNii Author OpenSearch」等)を選択します。
+検索バーにキーワードを入力すると、ブラウザに論文検索結果画面が表示されます。
+B. RSS, Atomフィードを利用する
+キーワードの検索結果をRSS、AtomフィードでRSSリーダに登録すれば、データが更新された際、そのキーワードでの検索結果の更新をチェックできるようになります。
+例:Internet Explorere 9のRSSリーダに登録する。
+検索結果画面を表示する。
+「ツール」>「フィード探索」から「RSS 1.0」か「Atom 1.0」を選択。
+RSSまたはAtomのフィード内容の画面が表示される。「このフィードを購読する」のリンクをクリックする。
+フィードの追加先を選択する画面が表示される。保存先を指定する。
+「お気に入り」の「フィード」タブで確認でき、更新があった場合に通知される。
+C. OpenSearchのクエリをCiNiiにリクエストする
+OpenSearchのクエリを作成し、CiNiiにリクエストすることで、CiNiiの画面での検索と同等の検索を行うことができます。システム間連携等に利用できます。
+レスポンスの際のhttpヘッダに「Access-Control-Allow-Origin: *」を指定していますので、クロスドメイン間での非同期通信をご利用いただけます。
+クエリ例(CiNii Articles論文検索の例)
+http://ci.nii.ac.jp/opensearch/search?q=%E5%AE%89%E9%81%94&count=20&start=1&lang=ja&title=library&author=&affiliation=&journal=&issn=&volume=&issue=&
+page=&publisher=&references=&year_from=&year_to=&range=&sortorder=&format=rss
+レスポンス例(RSSフィード)
+クエリ仕様とレスポンス仕様
+CiNiiでは検索種別ごとにAPIを用意しています。各検索のクエリとレスポンスの仕様は各APIのページをご覧ください。
+CiNii Articles
+CiNii Articles 論文検索のOpenSearchへ>>
+CiNii Articles 著者検索のOpenSearchへ>>
+CiNii Articles 全文検索のOpenSearchへ>>
+CiNii Books
+CiNii Books 図書・雑誌検索のOpenSearchへ>>
+CiNii Books 著者検索のOpenSearchへ>>
+CiNii Books 図書館検索のOpenSearchへ>>
+CiNii Books 所蔵検索のOpenSearchへ>>
+RDFの取得方法
+URIを指定して取得する方法
+詳細表示画面を表示させます。(論文、著者、図書・雑誌、図書館のそれぞれでRDFを出力できます)
+アドレス欄のURLに「.rdf」を追記します。なお、RDFのURIは、「詳細表示画面のURL」+「.rdf」になりますので、直接RDFのURIを入力しても同じ結果が表示されます。
+例:http://ci.nii.ac.jp/naid/110004744915  http://ci.nii.ac.jp/naid/110004744915.rdf
+詳細表示画面の内容がRDFで出力されます。
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:prism="http://prismstandard.org/namespaces/basic/2.0/" xmlns:con="http://www.w3.org/2000/10/swap/pim/contact#" xmlns:cinii="http://ci.nii.ac.jp/ns/1.0/">
+<rdf:Description rdf:about="http://ci.nii.ac.jp/naid/110004744915#article">
+<foaf:isPrimaryTopicOf rdf:resource="http://ci.nii.ac.jp/naid/110004744915.rdf" />
+<dc:title>情報爆発時代の研究基盤構想 : データマイニング、次世代サーチなどの研究(「自動化:推論,発見,学習,データマイニング」及び一般)</dc:title>
+<dc:creator>安達 淳</dc:creator>
+<dc:publisher>社団法人電子情報通信学会</dc:publisher>
+<prism:publicationName>電子情報通信学会技術研究報告. AI, 人工知能と知識処理</prism:publicationName>
+<prism:issn>09135685</prism:issn>
+<prism:volume>106</prism:volume>
+<prism:number>38</prism:number>
+<prism:startingPage>29</prism:startingPage>
+<prism:endingPage>32</prism:endingPage>
+<prism:publicationDate>2006-05-11</prism:publicationDate>
+<dc:description>2006年度から実質的に開始した、科研費による大規模な共同研究「情報爆発IT基盤」の概要について紹介し、何をねらって5年間に渡る研究を進めるかについて概要を述べる。</dc:description>
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/%E6%83%85%E5%A0%B1%E7%88%86%E7%99%BA" dc:title="情報爆発" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/%E3%83%87%E3%83%BC%E3%82%BF%E3%83%9E%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0" dc:title="データマイニング" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/%E6%83%85%E5%A0%B1%E6%A4%9C%E7%B4%A2" dc:title="情報検索" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%88%E7%AE%97%E5%9F%BA%E7%9B%A4" dc:title="スケーラブル計算基盤" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/%E5%A4%A7%E8%A6%8F%E6%A8%A1%E3%82%B3%E3%83%BC%E3%83%91%E3%82%B9" dc:title="大規模コーパス" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/%E5%AE%9F%E4%B8%96%E7%95%8C%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%A9%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3" dc:title="実世界インタラクション" />
+<dc:date>2006-05-11</dc:date>
+<cinii:naid>110004744915</cinii:naid>
+<cinii:ncid>AN10013061</cinii:ncid>
+<cinii:ndljpi>7937888</cinii:ndljpi>
+<dc:language>JPN</dc:language>
+<dc:source>CJP</dc:source>
+<dc:source>NDL</dc:source>
+<dc:source>NII-ELS</dc:source>
+<cinii:fulltext>1</cinii:fulltext>
+<dcterms:isPartOf rdf:resource="http://ci.nii.ac.jp/ncid/AN10013061" dc:title="電子情報通信学会技術研究報告. AI, 人工知能と知識処理" />
+<rdfs:seeAlso rdf:resource="http://ci.nii.ac.jp/lognavi?name=web&tourl=opac.ndl.go.jp%2farticleid%2f7937888%2fjpn" dc:title="NDL-OPAC - 国立国会図書館で本をさがす" />
+</rdf:Description>
+<rdf:Description rdf:about="http://ci.nii.ac.jp/naid/110004744915#article" xml:lang="en">
+<dc:title>Research Project on Cyber Infrastructure for Information-explosion Era</dc:title>
+<dc:creator>ADACHI Jun</dc:creator>
+<dc:publisher>The Institute of Electronics, Information and Communication Engineers</dc:publisher>
+<prism:publicationName>IEICE technical report. Artificial intelligence and knowledge-based processing</prism:publicationName>
+<dc:description>We has just started a large-scale collaborative research project which is titled "Cyber Infrastructure for Information-explosion Era" from April 2006, supported by the Grant-in-Aid for Scientific Research provided by the Ministry of Education, Culture, Sports, Science and Technology. In this talk, the aims and the structure of this project is outlined.</dc:description>
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/information_explosion" dc:title="information_explosion" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/data_mining" dc:title="data_mining" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/information_retrieval" dc:title="information_retrieval" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/scalable_computing_platform" dc:title="scalable_computing_platform" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/large-scale_corpora" dc:title="large-scale_corpora" />
+<foaf:topic rdf:resource="http://ci.nii.ac.jp/keyword/real-world_interaction" dc:title="real-world_interaction" />
+</rdf:Description>
+<rdf:Description rdf:about="http://ci.nii.ac.jp/naid/110004744915#article">
+<foaf:depiction>
+<foaf:Image rdf:about="http://ci.nii.ac.jp/pdfthumbnail/11/1100/110004/110004744915.jpg" />
+</foaf:depiction>
+<foaf:maker>
+<foaf:Person rdf:about="http://ci.nii.ac.jp/nrid/1000080143551">
+<foaf:name>安達 淳</foaf:name>
+<foaf:name xml:lang="en">ADACHI Jun</foaf:name>
+<con:organization>
+<foaf:Organization rdf:about="http://ci.nii.ac.jp/org/%E5%9B%BD%E7%AB%8B%E6%83%85%E5%A0%B1%E5%AD%A6%E7%A0%94%E7%A9%B6%E6%89%80">
+<foaf:name>国立情報学研究所</foaf:name>
+<foaf:name xml:lang="en">National Institute of Informatics</foaf:name>
+</foaf:Organization>
+</con:organization>
+</foaf:Person>
+</foaf:maker>
+</rdf:Description>
+</rdf:RDF>
+コンテントネゴシエーション
+コンテントネゴシエーションに対応しています。RDFのURIを指定しなくても、HTTPヘッダから判断してRDFを返します。論文詳細表示画面(例:http://ci.nii.ac.jp/naid/110009544496)において、HTTPリクエストヘッダのAcceptフィールドにて「application/rdf+xml」 の指定が他のどの指定よりも優先度が高い場合には、RDFのURIへ誘導します。
+JSON-LDの取得方法
+URIを指定して取得する方法
+詳細表示画面を表示させます。(論文、著者、図書・雑誌、図書館のそれぞれでJSON-LDを出力できます)
+アドレス欄のURLに「.json」を追記します。なお、JSON-LDのURIは、「詳細表示画面のURL」+「.json」になりますので、直接JSON-LDのURIを入力しても同じ結果が表示されます。
+例:http://ci.nii.ac.jp/naid/110004744915  http://ci.nii.ac.jp/naid/110004744915.json
+詳細表示画面の内容がJSON-LDで出力されます。
+{
+"@context": {
+"rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+"dc": "http://purl.org/dc/elements/1.1/",
+"dcterms": "http://purl.org/dc/terms/",
+"foaf": "http://xmlns.com/foaf/0.1/",
+"prism": "http://prismstandard.org/namespaces/basic/2.0/",
+"con": "http://www.w3.org/2000/10/swap/pim/contact#",
+"cinii": "http://ci.nii.ac.jp/ns/1.0/"
+},
+"@id": "http://ci.nii.ac.jp/naid/110004744915.json",
+"@graph": [
+{
+"@id": "http://ci.nii.ac.jp/naid/110004744915#article",
+"foaf:isPrimaryTopicOf": {
+"@id": "http://ci.nii.ac.jp/naid/110004744915.json"
+},
+"dc:title": [
+{
+"@value": "情報爆発時代の研究基盤構想 : データマイニング、次世代サーチなどの研究(「自動化:推論,発見,学習,データマイニング」及び一般)"
+},
+{
+"@value": "Research Project on Cyber Infrastructure for Information-explosion Era",
+"@language": "en"
+}
+],
+"dc:creator": [
+[
+{
+"@value": "安達 淳"
+},
+{
+"@value": "ADACHI Jun",
+"@language": "en"
+}
+]
+],
+"dc:publisher": [
+{
+"@value": "一般社団法人電子情報通信学会"
+},
+{
+"@value": "The Institute of Electronics, Information and Communication Engineers",
+"@language": "en"
+}
+],
+"prism:publicationName": [
+{
+"@value": "電子情報通信学会技術研究報告. AI, 人工知能と知識処理"
+},
+{
+"@value": "IEICE technical report. Artificial intelligence and knowledge-based processing",
+"@language": "en"
+}
+],
+"prism:issn": "09135685",
+"prism:volume": "106",
+"prism:number": "38",
+"prism:startingPage": "29",
+"prism:endingPage": "32",
+"prism:publicationDate": "2006-05-11",
+"dc:description": [
+{
+"@value": "2006年度から実質的に開始した、科研費による大規模な共同研究「情報爆発IT基盤」の概要について紹介し、何をねらって5年間に渡る研究を進めるかについて概要を述べる。"
+},
+{
+"@value": "We has just started a large-scale collaborative research project which is titled "Cyber Infrastructure for Information-explosion Era" from April 2006, supported by the Grant-in-Aid for Scientific Research provided by the Ministry of Education, Culture, Sports, Science and Technology. In this talk, the aims and the structure of this project is outlined.",
+"@language": "en"
+}
+],
+"foaf:topic": [
+{
+"@id": "http://ci.nii.ac.jp/keyword/%E6%83%85%E5%A0%B1%E7%88%86%E7%99%BA",
+"dc:title": [
+{
+"@value": "情報爆発"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/%E3%83%87%E3%83%BC%E3%82%BF%E3%83%9E%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0",
+"dc:title": [
+{
+"@value": "データマイニング"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/%E6%83%85%E5%A0%B1%E6%A4%9C%E7%B4%A2",
+"dc:title": [
+{
+"@value": "情報検索"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%88%E7%AE%97%E5%9F%BA%E7%9B%A4",
+"dc:title": [
+{
+"@value": "スケーラブル計算基盤"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/%E5%A4%A7%E8%A6%8F%E6%A8%A1%E3%82%B3%E3%83%BC%E3%83%91%E3%82%B9",
+"dc:title": [
+{
+"@value": "大規模コーパス"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/%E5%AE%9F%E4%B8%96%E7%95%8C%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%A9%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3",
+"dc:title": [
+{
+"@value": "実世界インタラクション"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/information_explosion",
+"dc:title": [
+{
+"@value": "information_explosion",
+"@language": "en"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/data_mining",
+"dc:title": [
+{
+"@value": "data_mining",
+"@language": "en"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/information_retrieval",
+"dc:title": [
+{
+"@value": "information_retrieval",
+"@language": "en"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/scalable_computing_platform",
+"dc:title": [
+{
+"@value": "scalable_computing_platform",
+"@language": "en"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/large-scale_corpora",
+"dc:title": [
+{
+"@value": "large-scale_corpora",
+"@language": "en"
+}
+]
+},
+{
+"@id": "http://ci.nii.ac.jp/keyword/real-world_interaction",
+"dc:title": [
+{
+"@value": "real-world_interaction",
+"@language": "en"
+}
+]
+}
+],
+"dc:date": "2006-05-11",
+"cinii:naid": "110004744915",
+"cinii:ncid": "AN10013061",
+"cinii:ndljpi": "7937888",
+"dc:language": "JPN",
+"dc:source": [
+{
+"@value": "CJP"
+},
+{
+"@value": "NDL"
+},
+{
+"@value": "NII-ELS"
+}
+],
+"cinii:fulltext": "1",
+"cinii:references": "1",
+"dcterms:isPartOf": {
+"@id": "http://ci.nii.ac.jp/ncid/AN10013061#entity",
+"dc:title": "電子情報通信学会技術研究報告. AI, 人工知能と知識処理"
+},
+"rdfs:seeAlso": [
+{
+"@id": "http://id.ndl.go.jp/bib/7937888",
+"dc:title": "NDL-OPAC - 国立国会図書館でさがす"}
+],
+"foaf:depiction": {
+"@id": "http://ci.nii.ac.jp/pdfthumbnail/11/1100/110004/110004744915.jpg",
+"@type": "foaf:Image"
+},
+"prism:publicationDate": "2006",
+"dc:date": "2006",
+"cinii:fulltext": "0",
+"cinii:citedBy": "1"
+}
+],
+"foaf:maker": [
+{
+"@id": "http://ci.nii.ac.jp/nrid/1000080143551#me",
+"@type": "foaf:Person",
+"foaf:name": [
+{
+"@value": "安達 淳"
+},
+{
+"@value": "ADACHI Jun",
+"@language": "en"
+}
+],
+"con:organization": [
+{
+"@id": "http://ci.nii.ac.jp/org/%E5%9B%BD%E7%AB%8B%E6%83%85%E5%A0%B1%E5%AD%A6%E7%A0%94%E7%A9%B6%E6%89%80",
+"@type": "foaf:Organization",
+"foaf:name": [
+{
+"@value": "国立情報学研究所"},
+{
+"@value": "National Institute of Informatics","@language": "en"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+コンテントネゴシエーション
+コンテントネゴシエーションに対応しています。JSON-LDのURIを指定しなくても、HTTPヘッダから判断してJSON-LDを返します。論文詳細表示画面(例:http://ci.nii.ac.jp/naid/110009544496)において、HTTPリクエストヘッダのAcceptフィールドにて「application/json」 あるいは「application/ld+json」 の指定が他のどの指定よりも優先度が高い場合には、JSON-LDのURIへ誘導します。
+CiNii全般 - メタデータ・API - サポート - 学術コンテンツサービス - 国立情報学研究所

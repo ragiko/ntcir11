@@ -1,0 +1,63 @@
+以前紹介した「形態素解析もどき」を改良し、
+「キーワード自動抽出もどき」を作成してみた。
+中身は単純で、形態素解析もどき結果を回して、
+文字数を比較して、大きいものが抽出される仕組み。
+この時、条件として、
+全てひらがな、もしくは全てアルファベット・数字の場合、
+文字数を2分の1として数える
+と重み付け機能を追加。
+そうすると、結構精度良く結果を取得できるっぽい。
+おもろいからもっと拡張したいね。
+function Analyzer() {
+this.re = new RegExp;
+this.re.compile("[一-龠々〆ヵヶ]+|[ぁ-ん]+|[ァ-ヴー]+|[a-zA-Z0-9]+|[a-zA-Z0-9]+|[,.、。!!??()()「」『』]+|[  ]+", "g");
+this.joshi = new RegExp;
+this.joshi.compile("(でなければ|について|ならば|までを|までの|くらい|なのか|として|とは|なら|から|まで|して|だけ|より|ほど|など|って|では|は|で|を|の|が|に|へ|と|て)", "g");
+this.alpharbet = new RegExp;
+this.alpharbet.compile("([0-9a-zA-Z])", "g");
+this.hira = new RegExp;
+this.hira.compile("[ぁ-ん]", "g");
+}
+Analyzer.prototype.parse = function(str) {
+if (typeof(str) == "string") {
+var s = str.replace(this.joshi, "$1|");
+var ary = s.split("|");
+var result = [];
+for (var i = 0; i < ary.length; i++) {
+var token = ary[i].match(this.re);
+if (token) {
+for (var n = 0; n < token.length; n++) {
+result.push(token[n]);
+}
+}
+}
+return result;
+}
+};
+function getKeyword(str){
+var analyzer = new Analyzer();
+var results = analyzer.parse(str);
+var result = null;
+for(var i = 0; i < results.length; i++){
+if(results[i].length < 3)
+continue;
+if(result == null) {
+result = results[i];
+continue;
+}
+var resultLength = result.length;
+if(result.match(analyzer.alpharbet))
+resultLength = resultLength / 2;
+else if(result.match(analyzer.hira))
+resultLength = resultLength / 2;
+var childLength = results[i].length;
+if(results[i].match(analyzer.alpharbet))
+childLength = childLength / 2;
+else if(results[i].match(analyzer.hira))
+childLength = childLength / 2;
+if(childLength >= resultLength)
+result = results[i];
+}
+return result;
+}
+[JavaScript]形態素解析もどき→キーワード自動抽出もどき→??? | RwJ

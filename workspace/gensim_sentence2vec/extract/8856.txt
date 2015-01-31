@@ -1,0 +1,11 @@
+ photo credit: ◄ccdoh1” target=”_blank”>◄ccdoh1
+EclipseにてJavaのソースコードを保存したときに、使っていないクラスのimport文を自動的に削除するための設定方法をメモ。
+ちなみに、当方の環境はEclipse 3.6 (Helios)です。
+まず、Eclipseのメニューバーから「Eclipse環境設定」を選択し、設定ウインドウを表示させます。
+次に、左メニューから「JavaEditorSave Actions」を選択し、「Perform the selected actions on save」と「Organize imports」の二つのチェックボックスにチェックを入れます(下図参照。)
+あとは「OK」ボタンをクリックして設定完了。
+Javaソースコードを保存したときに、使っていないクラスのimport文が自動的に削除されるようになったかと思います。
+また、アスタリスクでimportしている部分は、そのソースコード内で使われている具体的なクラスが個別にimportされるように自動的に修正されるはず。
+設定、お疲れ様でした。
+それでは!
+[Eclipse][Java] 使っていないクラスのimport文を自動的に削除するための設定 | CreativeStyle

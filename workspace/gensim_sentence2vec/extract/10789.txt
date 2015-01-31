@@ -1,0 +1,54 @@
+LightDM は X サーバーの標準ディスプレイマネージャになることを目指しているクロスデスクトップのディスプレイマネージャです。主な特徴は以下の通り:
+軽量なコードベース
+標準準拠 (PAM, logind, etc)
+サーバーとユーザーインターフェースの間に定義されているインターフェイス
+クロスデスクトップ (あらゆるツールキットを使ってユーザーインターフェースを書くことができます)
+LightDM の設計に関する詳細は ここ から見れます。
+インストール
+公式リポジトリから lightdm をインストールしてください。リリースバージョンについては、安定版は偶数 (1.8, 1.10) 開発版は奇数 (1.9, 1.11) が付けられています。開発ブランチは AUR から lightdm-devel か lightdm-bzr をインストールすることで使えます。
+Greeter
+greeter (LightDM のユーザーインターフェース) もインストールする必要があります。基準となる greeter は lightdm-gtk-greeter で lightdm-gtk2-greeter や lightdm-gtk3-greeter に入っています。KDE ユーザーは Qt ベースの greeter である lightdm-kde-greeter をインストールできます。
+他の greeter は AUR からインストールすることができます:
+lightdm-another-gtk-greeter: カスタムテーマをサポートする GTK3 greeter。
+lightdm-webkit-greeter: テーマに Webkit を使用する greeter。
+lightdm-crowd-greeter: プロファイルとして動き回る 3D のキャラクターを選べる 3D greeter。
+lightdm-unity-greeter: Ubuntu の Unity で使われている greeter。
+lightdm-razor-greeter: Razor-qt デスクトップ環境の greeter。
+lightdm-pantheon-greeter: ElementaryOS プロジェクトの greeter。
+設定ファイルの [SeatDefaults] 以下を変更することでデフォルトの greeter を変えることが可能です:
+/etc/lightdm/lightdm.conf
+[SeatDefaults]
+…
+greeter-session=lightdm-yourgreeter-greeter
+LightDM を有効にする
+systemctl を使って lightdm.service デーモンを有効にしてください、それで LightDM がブート時に起動するようになります。
+コマンドラインツール
+LightDM はコマンドラインツール dm-tool を提供しています。これを使うことで現在のシートのロック、セッションの切り替えなどができます。'最小主義の'ウィンドウマネージャを使っている場合やテストに便利です。利用できるコマンドを表示するには、次を実行してください:
+$ dm-tool --help
+テスト
+まず、公式リポジトリから xorg-server-xephyr をインストールしてください。
+そして X アプリケーションとして LightDM を起動してください:
+$ lightdm --test-mode --debug
+任意の設定と調整
+greeter によっては固有の設定ファイルを持っているものがあります。例えば lightdm-gtk2-greeter や lightdm-gtk3-greeter は次のファイルを持っています:
+/etc/lightdm/lightdm-gtk-greeter.conf
+lightdm-kde-greeter は次のファイルを持っています:
+/etc/lightdm/lightdm-kde-greeter.conf
+さらに KDE のシステム設定にセクションもあります (推奨)。
+設定スクリプトを直接修正したり /usr/lib/lightdm/lightdm/ にある lightdm-set-defaults アプリケーションを使うことで LightDM の設定を行えます。利用できるオプションを見るには、次を実行してください:
+$ man lightdm-set-defaults
+また、設定ファイルを編集するほうが lightdm-set-defaults アプリケーションを使うよりも多くの変数を使うことができます。
+背景画像・色を変更する
+単色 (画像なし) を使いたい場合は background 変数を十六進数の色コードに設定してください。
+例:
+background=#000000
+画像を使いたい場合は以下を参照してください。
+GTK+ Greeter
+greeter 画面の壁紙をカスタマイズするには /etc/lightdm/lightdm-gtk-greeter.conf を編集して background 変数を定義する必要があります。
+例:
+background=/usr/share/pixmaps/black_and_white_photography-wallpaper-1920x1080.jpg
+Unity Greeter
+lightdm-unity-greeter を使っている場合 /usr/share/glib-2.0/schemas/com.canonical.unity-greeter.gschema.xml ファイルを編集して次を実行してください:
+# glib-compile-schemas /usr/share/glib-2.0/schemas/
+このページを参照。
+LightDM (日本語) - ArchWiki

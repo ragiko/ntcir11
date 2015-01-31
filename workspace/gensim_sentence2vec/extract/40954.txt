@@ -1,0 +1,29 @@
+当初の計画に従って、研究期間の前半ではデータの整備をおこなった。具体的には以下のデータを新規に生成した。また既存のデータのエラー修正も実施した。
+1.『日本語話し言葉コーパス』コア部分(約44万語)について、韻律情報その他をアクセント句単位に再編成した韻律研究用XMLデータを設計し、作成した(担当:菊池)。
+2.『日本語話し言葉コーパス』の異なり語(約4万語)に対して、和語、漢語、外来語等の語種情報を付与した(小椋)。
+3.『日本語話し言葉コーパス』からガ行鼻濁音を含みうる語を文脈とともに切り出した鼻濁音研究用データベースを作成した(前川・日比谷)。
+4.『日本語話し言葉コーパス』全体(約752万語)を対照として、語形の変異現象を包括的に記録した語形変異研究用RDBを整備した(前川)。
+これらのデータを利用して、『日本語話し言葉コーパス』に記録された各種の言語変異現象の研究を実施した。具体的には以下の現象を分析した。
+1.母音の無声化(前川・菊池)
+2.母音の非語彙的延長(伝)
+3.助詞の撥音化(小磯)
+4.ガ行鼻濁音(日比谷)
+5.語形変異(前川)
+6.アクセント句末イントネーションのうち上昇調の変異(前川・菊池)
+7.文末の文体的特徴(小椋)
+研究成果は国際学会を含む各種学会で報告した他、3年分の成果をまとめた報告書(252頁)を刊行した
+The first half of the three-year research project was devoted for the derivation of new research data from the Corpus of Spontaneous Japanese (CSJ), including,
+1) Prosodic and morphological information of the CSJ-Core (about 44 hours) is reorganized for the study of prosodic variations. The new data is encoded as an XML document whose hierarchical structure reflects those of Japanese prosody. The most basic node of the new XML document corresponds to so-called 'accentual phrase' of the Japanese language. (Done by Kikuchi)
+2) The word-origin information (i.e., Native, Sino-Japanese, Borrowing, and mixture of these) is given to the total of forty thousand short-unit-word recorded in the CSJ (by Ogura).
+3) Phonetic database for the study of the variation of the velar nasal in Tokyo Japanese (by Maekawa and Hibiya).
+4) RDB containing the whole word-from variations observed in the whole CSJ (7.52 million SUW.) (by Maekawa).
+Based upon these data, we analyzed language variations recorded in the CSJ including,
+1) Devoicing of vowels (by Maekawa & Kikuchi)
+2) Non-lexical lengthening of vowels (by Den)
+3) Moraic nasalization of particles (by Koiso)
+4) Variation of velar nasal (by Hibiya)
+5) Word-form variation of the whole CSJ (by Maekawa)
+6) Variation in the accentual-phrase-final rising intonation (by Maekawa & Kikuchi)
+7) Variation of morphological features at the end of sentence (by Ogura)
+The results of these studies were presented in international and domestic conferences, and reprinted in the 252-page final report of the project.
+KAKEN - 話し言葉コーパスに基づく言語変異現象の定量的分析(16320060)

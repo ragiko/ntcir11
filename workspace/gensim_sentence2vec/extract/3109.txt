@@ -1,0 +1,187 @@
+
+getLatLngメソッドでは引数に指定した住所から一つの候補を帰しましたが、指定して住所によっては複数の候補が見つかる場合があります。ここでは候補の一覧を全て取得する方法を確認します。
+指定した住所から候補の一覧を取得するにはGClientGeocoderクラスで用意されているgetLocationsメソッドを使います。
+getLocations(query:String|GLatLng, callback:function)
+このメソッドでは、リクエストが Google ジオコーディング サービスに送信され、指定
+の query の解析と指定 callback での応答の処理が依頼されます。
+このジオコーディング サービスを利用するには、このメソッドを呼び出して query をジ
+オコードに渡します。住所表記可能な String としてクエリが提供される場合、サービス
+は標準的なジオコードの処理を行います。ただし、query に GLatLng が含まれる場合、
+サービスは逆ジオコードの処理を行います。
+このメソッドは Google サーバーへの呼び出しを必要とするので、応答の処理には callback 
+メソッドも渡す必要があります。この応答には Status コードが含まれ、正常に処理され
+ると、1 つまたは複数の  Placemark オブジェクトも含まれます。GClientGeocoder.getLatLng 
+メソッドとは異なり、コールバック関数は Status フィールドを調べて、失敗の理由を特
+定する場合があります。 
+1番目の引数に座標を調べたい住所を文字列で指定して下さい(座標を指定した場合いはリバースジオコーディングになります。こちらは次のページで確認します)。サーバからの応答には時間がかかる場合がありますので、2番目の引数にコールバック関数を指定します。
+コールバック関数には複数の候補地に関する情報が含まれるオブジェクトが引数として渡されてきます。
+実際には次のように記述します。
+var map = new GMap2(document.getElementById("map"));
+map.setCenter(new GLatLng(35.658517, 139.745493), 15);
+var geocoder = new GClientGeocoder();
+geocoder.getLocations("東京都千代田区", markAddress);
+function markAddress(obj){
+if (obj.Status.code == G_GEO_SUCCESS){
+/* ... */
+}else{
+alert("データの取得に失敗しました");
+}
+}
+上記では取得したオブジェクトの中のステータスコードを調べて成功だったかどうかを判定しています。
+オブジェクトにどのようなプロパティが含まれているのかは後のサンプルを参照して下さい。
+サンプルプログラム
+では試してみます。まずは候補地が見つかった場合にどのようなオブジェクトが返されてくるのかを確認するためのサンプルです。
+code2_1.js
+var map;
+var geocoder;
+function initialize() {
+if (GBrowserIsCompatible()) {
+map = new GMap2(document.getElementById("map_canvas"));
+map.setCenter(new GLatLng(36.004673,137.351074), 5);
+geocoder = new GClientGeocoder();
+}
+}
+function getAddress() {
+var address = document.getElementById("address").value;
+geocoder.getLocations(address, markAddress);
+}
+function markAddress(obj) {
+if (obj.Status.code == G_GEO_SUCCESS){
+var names = check(obj, "");
+alert(names);
+}
+}
+function check(obj, str){
+var names = "";
+for (var name in obj){
+if (typeof obj[name] == "object"){
+names += check(obj[name], str + name + ".") + "&yen;n";
+}else{
+names += str + name + "=" + obj[name] + "&yen;n";
+}
+}
+return names;
+}
+map2_1.html
+<!DOCTYPE html "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<title>サンプル:候補一覧を取得</title>
+<script src="http://maps.google.com/maps?file=api&v=2&key=(key)&sensor=false"
+type="text/javascript" charset="utf-8"></script>
+<script src="./js/code2_1.js" type="text/javascript"></script>
+</head>
+<body onload="initialize()" onunload="GUnload()">
+<div id="map_canvas" style="width: 400px; height: 400px"></div>
+<form>
+<p>
+<input type="text" id="address" size="30" value="住所を入力" />
+<input type="button" id="addressbtn" value="座標取得" onclick="getAddress()" />
+</p>
+</form>
+</body>
+</html>
+ではブラウザで上記のURLを見てみます。
+地図下のテキストボックスに"東山"と入力して「座標取得」ボタンを押して下さい。ダイアログが開き次のように表示されます。
+name=東山
+Status.code=200
+Status.request=geocode
+Placemark.0.id=p1
+Placemark.0.address=日本京都府京都市東山区
+Placemark.0.AddressDetails.Accuracy=4
+Placemark.0.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName=京都府
+Placemark.0.AddressDetails.Country.AdministrativeArea.Locality.LocalityName=京都市東山区
+Placemark.0.AddressDetails.Country.CountryName=日本
+Placemark.0.AddressDetails.Country.CountryNameCode=JP
+Placemark.0.ExtendedData.LatLonBox.north=35.016626
+Placemark.0.ExtendedData.LatLonBox.south=34.9800649
+Placemark.0.ExtendedData.LatLonBox.east=135.8072006
+Placemark.0.ExtendedData.LatLonBox.west=135.743171
+Placemark.0.Point.coordinates.0=135.7751858
+Placemark.0.Point.coordinates.1=34.9983475
+Placemark.0.Point.coordinates.2=0
+Placemark.1.id=p2
+Placemark.1.address=東山
+Placemark.1.AddressDetails.Accuracy=0
+Placemark.1.AddressDetails.AddressLine.0=東山
+Placemark.1.ExtendedData.LatLonBox.north=34.5624744
+Placemark.1.ExtendedData.LatLonBox.south=34.5561792
+Placemark.1.ExtendedData.LatLonBox.east=135.6332695
+Placemark.1.ExtendedData.LatLonBox.west=135.6269743
+Placemark.1.Point.coordinates.0=135.6301219
+Placemark.1.Point.coordinates.1=34.5593268
+Placemark.1.Point.coordinates.2=0
+__shared=undefined
+まずStatus.codeを確認することで正常に結果が返ったのかどうかを確認できます。値が200だった場合には「エラーは発生しませんでした。住所は正常に解析され、ジオコードが返されました。」を表しています。それ以外の場合には何らかのエラーが発生しています。
+Placemarkプロパティに含まれるオブジェクトの一つ一つが候補地となります。今回の場合であれば2つの候補が見つかったことになります。
+Placemarkプロパティの中のaddrssプロパティの値が一致した住所を表しています。またAddressDetails.Accuracyプロパティの値でどの程度の精度で一致したのかが分かります。精度の一覧は次の通りです。
+0  不明な場所。
+1  国レベルの精度。
+2  地域 (州、省、県など) レベルの精度。
+3  準地域 (郡、市区町村など) レベルの精度。
+4  町 (番地) レベルの精度。
+5  郵便番号レベルの精度。
+6  通りレベルの精度。
+7  交差点レベルの精度。
+8  住所レベルの精度。
+9  建物(建物名、不動産名、ショッピングセンターなど)レベルの精度。
+最初の候補はAddressDetails.Accuracyプロパティの値が4ですので「町レベルの精度」で指定した住所に一致したことを表します。
+座標についてはPoint.coordinates.0プロパティの値が緯度を表し、Point.coordinates.1プロパティの値が経度を表します。
+これらのプロパティの値から必要な情報を取得してください。
+サンプルプログラム
+では試してみます。今度は見つかった候補地に全てマーカーを立てるようにしてみます。
+code2_2.js
+var map;
+var geocoder;
+function initialize() {
+if (GBrowserIsCompatible()) {
+map = new GMap2(document.getElementById("map_canvas"));
+map.setCenter(new GLatLng(36.004673,137.351074), 5);
+geocoder = new GClientGeocoder();
+}
+}
+function getAddress() {
+var address = document.getElementById("address").value;
+geocoder.getLocations(address, markAddress);
+}
+function markAddress(obj){
+if (obj.Status.code == G_GEO_SUCCESS){
+for (var i = 0; i < obj.Placemark.length; i++){
+var lat = obj.Placemark[i].Point.coordinates[1];
+var lng = obj.Placemark[i].Point.coordinates[0];
+var point = new GLatLng(lat, lng)
+var marker = new GMarker(point);
+map.addOverlay(marker);
+}
+}else{
+alert("データを取得できませんでした");
+}
+}
+map2_2.html
+<!DOCTYPE html "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<title>サンプル:候補一覧を取得</title>
+<script src="http://maps.google.com/maps?file=api&v=2&key=(key)&sensor=false"
+type="text/javascript" charset="utf-8"></script>
+<script src="./js/code2_2.js" type="text/javascript"></script>
+</head>
+<body onload="initialize()" onunload="GUnload()">
+<div id="map_canvas" style="width: 400px; height: 400px"></div>
+<form>
+<p>
+<input type="text" id="address" size="30" value="住所を入力" />
+<input type="button" id="addressbtn" value="座標取得" onclick="getAddress()" />
+</p>
+</form>
+</body>
+</html>
+ではブラウザで上記のURLを見てみます。
+地図下のテキストボックスに"銀座"と入力して「座標取得」ボタンを押して下さい。
+数多くのマーカーが表示されました。ではこの中の宮崎県にあるマーカーの箇所をズームインしてみます。
+かなりズームインしてみると「銀座」という表記が現れました。
+候補一覧を取得(getLocationsメソッド) - ジオコーディング(GClientGeocoder) - Google Maps API入門

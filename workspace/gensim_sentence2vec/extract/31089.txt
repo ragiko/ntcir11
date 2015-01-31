@@ -1,0 +1,753 @@
+
+<HTML><HEAD><TITLE>//01_700.nps</TITLE>
+<INCLUDE SRC="chara.h">
+<CLEAR>
+<meta http-equiv="Content-Language" content="ja"><meta http-equiv="Content-Type" content="text/html; charset=x-sjis">
+</HEAD><PRE>
+<CALC WORKNAME="01_700" OPERATOR="true">//<BIG><B>//01_700.nps</B></BIG>
+<HR>
+//01-700
+<bgm src="HWM-16" mode="fadein" old="fadeout" time="10" loop="on">
+<BACKGROUND SRC="bg0029">//
+<WIPE EFFECT="fade" TIME="10">
+<SE ID="1" SRC="ドア開閉" MODE="normal" TIME="" LOOP="off" EFFECT="">
+<BACKGROUND SRC="bg0022">
+<WIPE EFFECT="left" TIME="10">
+<box type="0">
+<主画面通常開く2>
+//※推敲すること
+//【僕M】
+猿型ペットロボットを持って、僕は帰宅した。
+<box type="0">
+//【僕M】
+店員によって初期起動されているので、既にこのペットロボットは、僕を『主人』と認識するはずだ。
+<box type="0">
+//【僕M】
+そして、ペットロボットを使うとなると、識別コード‥‥『名前』が必要になる。<K>
+これは避けようがない。<K>
+『HIKARI』が僕に命名したように、自分で命名するしかない。
+<box type="0">
+//【僕M】
+どんな名前にすれば不自然ではないのか。<K>
+奈都美さんは「キューちゃん」、薫さんは「ニーギ」‥‥どれも、形状や機能からの関連性はみられない。
+<box type="0">
+//【僕M】
+どうやら、ペットロボットの名前については、『なんでもいい』ものと判断できる‥‥
+僕にとって、それは非常に難しい問題だ。<K>
+基準になるものがない。
+<box type="0">
+//【僕M】
+全てのクラスタで、『ペットロボット命名問題』を討議させる。
+<SE ID="1" SRC="クラスタ質問2" MODE="normal" TIME="" LOOP="off" EFFECT="">
+<box type="0">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<主画面通常開く>
+//【僕M】
+‥‥かなり活発に討議がなされる。<K>
+多くの名前候補が挙げられては、却下されていく。<K>
+奈都美薫若佳菜等、調査対象者の名前も列挙されるが、それはすぐに却下された。
+<box type="0">
+//【僕M】
+結局、最終的にいくつかの名前候補に絞り込まれるまで、7.032秒もかかってしまった。
+<box type="0">
+//【僕M】
+並べられたいくつかの名前候補は、どれを撰んでもさしつかえなさそうだ。<K>
+結局、僕は『エテコウ』と言う猿を擬人化した呼び名を選択。<K>
+各クラスタで最終確認。問題点はない。承認する。
+<box type="0">
+<LAYER SRC="" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<WIPE EFFECT="fade" TIME="7">
+//【僕M】
+僕は、ペットロボットに『エテコウ』と言う名前を設定し、起動した。
+<box type="0">
+<主画面通常閉じる>
+//【僕】
+「こんにちは、エテコウ」
+<box type="2">
+<BUSTUP NAME="ペットロボ" BODY="エテコウ" MODE="on" ALIGN="left" X="-100" Y="180">
+<WIPE EFFECT="fade" TIME="7">
+<VOICE NAME="エテコウ" SRC="01_7\0000108">
+「コンニチハ、マスター」
+<box type="10">
+<BUSTUP NAME="ペットロボ" MODE="off">
+<WIPE EFFECT="fade" TIME="7">
+<BOX type="0">
+<主画面通常開く2>
+//【僕M】
+エテコウは挨拶をすると、勝手に動き出した。<K>
+幾つかパーソナリティに追加や変更が出来るようだが、デフォルトのままで様子を見る。
+<se id="1" src="エテコウ走る" mode="normal" time="" loop="off" effect="">
+<box type="0">
+//【僕M】
+エテコウは、部屋の中をぐるぐると回ったり、ベッドの上に乗ってはしゃいでいるような様子を見せる。<K>
+暫く様子を観察することにする。
+<box type="0">
+//【僕M】
+エテコウは、猿が遊んでいるような行動をとっている。<K>
+チンパンジーの行動がモデルになっているようだ。<K>
+勉強机に興味を示すような行動をしてみたりと、結構プログラムは深く組まれているようだ。
+<box type="0">
+<主画面通常閉じる2>
+//【僕】
+「エテコウ、こっちへおいで」
+<box type="2">
+<BUSTUP NAME="ペットロボ" BODY="エテコウ" face="" MODE="on" zoom="" ALIGN="left" X="-100" Y="180">
+<WIPE EFFECT="fade" TIME="7">
+<VOICE NAME="エテコウ" SRC="01_7\0000208">
+「‥‥‥‥」
+<box type="10">
+<BUSTUP NAME="ペットロボ" MODE="off">
+<WIPE EFFECT="fade" TIME="7">
+<BOX type="0">
+<主画面通常開く2>
+//【僕M】
+エテコウを呼んでみたが、近付いてこない。<K>
+命令の伴わない呼びかけは無視するのだろうか。<K>
+それは、生きた『ペット』の行動の模倣だろうか。
+<box type="0">
+//【僕M】
+‥‥だが、エテコウのその様な行動が、僕にとって何か価値があるかというと、それはない。<K>
+僕にとっては、エテコウのこうした行動は、まったく無意味で、不要なものだ。
+<box type="0">
+//【僕M】
+だが、このような行動がプログラムされているということは、人間にとっては、ペットロボットのこうした行動が何か特殊な価値を持ったものに見えるのかもしれない。
+<box type="0">
+//【僕M】
+ペットロボットのこうした行動は、人間に望まれたものなのだろうか。<K>
+人間の『感情』が、ペットロボットにこのような行動をさせるのだろうか。
+<box type="0">
+//【僕M】
+‥‥その問題は、現状僕には回答不能だ。<K>
+もっと、人間の情報を集めてからでないと、的確な判断は下せない。
+<box type="0">
+//【僕M】
+僕は、エテコウはそのままにして、昼間に『食事』としてボディ内に取り込んだ『食物』を始末することにした。
+<BOX type="10">
+<主画面通常閉じる2>
+//=======================================================//
+//<擬態機能処理と燃料の補給>
+<clear>
+<BACKGROUND SRC="bg0025">
+<WIPE EFFECT="fade" TIME="10">
+<box type="0">
+<主画面通常開く2>
+//【僕M】
+当然のことながら、僕の活動エネルギー摂取方法は、人間のそれとは異なる。<K>
+人間と同様の『食事』は、あくまで擬態に過ぎない。<K>
+口にした『食物』は、そのままボディの中に保存されている。
+<box type="0">
+//【僕M】
+僕は、台所に行くと、身体をうつむけ食物を口から取り出す。<K>
+人間で言えば排泄に当たるのかもしれないが、消化吸収などは一切行われていない。<K>
+『食物』は、僕の身体維持には関係しない。
+<box type="0">
+//【僕M】
+腐敗を防ぐために防腐剤や、特殊な液剤と混合されているので、ペースト状になっている。<K>
+昼間のカツサンドは、こうして僕の体内に貯蓄されていたのかと、再確認後、生ゴミシューターの中に棄てる。
+<box type="0">
+//【僕M】
+体内の燃料電池電力を計測‥‥燃料の交換が推奨される。
+<clear>
+<WIPE EFFECT="left" TIME="10">
+<box type="0">
+<主画面通常開く2>
+//【僕M】
+ユニットバスの中に入り、便器の前に立つ。<K>
+燃料電池として使用後、反応物として残った水を、排尿と同じ方法で排水する。
+//【僕M】
+僕はただ、排尿と同じ行為をするだけでよい。<K>
+身体機能制御システムが、燃料の排水プロセスや排水量などを自動的にコントロールしている。
+<clear>
+<BACKGROUND SRC="bg0022">
+<WIPE EFFECT="right" TIME="10">
+<wait time="5">
+<LAYER SRC="主人公画面1" TRANSPARENT="60" NUM="2" X="0" Y="0" ZOOM="100">
+<WIPE EFFECT="lcenter" time="7">
+<se id="1" src="クラスタ活性化2" mode="normal" time="" loop="off" effect="">
+<LAYER SRC="フレーム" TRANSPARENT="100" NUM="4" align="" X="0" Y="-180" ZOOM="100">
+<scroll num="4" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="4" x="@10" count="5" delay="TRUE">
+<BOX type="0">
+<WIPE EFFECT="delayfade" TIME="7">
+//【僕M】
+人間と違い、排水後は燃料の補給は不可欠となる。<K>
+キッチンの下に置いてある20リットルのポリタンクから、約2リットルの液体燃料を口から補給する。
+//【僕M】
+この場合の燃料の経路も、自動的にセッティングされ、コントロールされている。
+<box type="0">
+//【僕M】
+意識する必要はない。
+<box type="0">
+//【僕M】
+この、人間が摂取したら間違いなく身体機能不全を起こす、液体燃料が僕にとっての『食事』であり、反応物として残った水を排水することが、『排泄』と呼べるかもしれない。
+//=======================================================//
+<clear>
+<box type="0">
+<LAYER SRC="主人公画面1" TRANSPARENT="60" NUM="2" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0026">//
+<WIPE EFFECT="fade" TIME="7">
+//<エテコウの調整>
+//【僕M】
+‥‥それにしても、かってに動き回るエテコウが、何かしでかさないだろうか。<K>
+ペットロボットである以上、主人に不利益なことはしないはずだが、『きちんと教育するべきだ』と行動選択クラスタが指示してくる。
+//【僕M】
+エテコウを購入した動機は、人間の心理を知ることだったが、エテコウその物の『ペット』としての振る舞いは、僕には必要ない。<K>
+『アシスタント』として機能してもらったほうが効率的だ。
+//【僕M】
+<clear>
+<BACKGROUND SRC="bg0026">//
+<LAYER SRC="主人公画面1" TRANSPARENT="60" NUM="2" X="0" Y="0" ZOOM="100">
+<WIPE EFFECT="fade" time="7">
+<se id="1" src="クラスタ活性化2" mode="normal" time="" loop="off" effect="">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<LAYER SRC="主人公枠2" TRANSPARENT="100" NUM="4" align="" X="420" Y="180" ZOOM="100">
+<scroll num="4" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="4" x="@10" count="5" delay="TRUE">
+<LAYER SRC="kc/kcエテコウ" TRANSPARENT="100" NUM="3" align="" X="420" Y="180" ZOOM="100">
+<scroll num="3" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="3" x="@10" count="5" delay="TRUE">
+<BOX type="0">
+<WIPE EFFECT="delayfade" TIME="7">
+エテコウクラスタ生成。<K>
+このクラスタを用いて、グローバルネットワーク上から直にエテコウを調整する事を選択する。
+<clear>
+<box type="0">
+<BACKGROUND SRC="bg0026">//
+<主画面通常閉じる2>
+//【僕】
+「エテコウ、メンテナンス開始。外部からの接続受け入れ状態へ移行」
+<clear>
+<BACKGROUND SRC="bg0026">//
+<BUSTUP NAME="ペットロボ" BODY="エテコウ" face="" MODE="on" zoom="" ALIGN="left" X="-100" Y="180">
+<WIPE EFFECT="fade" TIME="7">
+<box type="0">
+<主画面通常開く>
+//【僕M】
+エテコウに命令すると、エテコウは無駄な行動をやめて休止状態に入った。
+<box type="0">
+<se id="1" src="クラスタ活性化2" mode="normal" time="" loop="off" effect="">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<LAYER SRC="主人公枠2" TRANSPARENT="100" NUM="4" align="" X="420" Y="180" ZOOM="100">
+<scroll num="4" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="4" x="@10" count="5" delay="TRUE">
+<LAYER SRC="kc/kcエテコウ" TRANSPARENT="100" NUM="3" align="" X="420" Y="180" ZOOM="100">
+<scroll num="3" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="3" x="@10" count="5" delay="TRUE">
+<WIPE EFFECT="delayfade" TIME="7">
+//【僕M】
+グローバルネットワークを介して、エテコウと接触。<K>
+エテコウクラスタに指示し、エテコウからの情報収集、及びアシスタントとしての教育開始。
+//【僕M】
+エテコウクラスタより報告。<K>
+エテコウのプログラムは想定していた以上に偏りがあり、プログラム深度は深い。<K>
+プログラムの一部を書き換え、アシスタント機能強化。
+<box type="0">
+//【僕M】
+エテコウに設定されている全てのデータを吸収。必要と判断できるデータをエテコウに登録。<K>
+シミュレーションによりエテコウのアシスタント機能完熟訓練開始。
+//=======================================================//
+//<HIKARIと接触>
+//【僕M】
+<BOX type="0">
+<se id="1" src="HIKARI通信音" mode="normal" time="" loop="off" effect="">
+<LAYER SRC="主人公枠2" TRANSPARENT="100" NUM="6" align="" X="156" Y="40" ZOOM="100">
+<scroll num="6" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="6" x="@10" count="5" delay="TRUE">
+<LAYER SRC="kc/kcネット" TRANSPARENT="100" NUM="5" align="" X="156" Y="40" ZOOM="100">
+<scroll num="5" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="5" x="@10" count="5" delay="TRUE">
+<WIPE EFFECT="delayfade" TIME="7">
+エテコウを教育していると、僕のネットワーク回線へ接続要求を感知。
+//【僕M】
+この回線にアクセスしてくる存在はひとつ、<wait time="5">『HIKARI』だ。
+//【僕M】
+僕は『電覚』へ移行する。
+<se id="1" src="電覚空間浮遊音4a" mode="normal" time="" loop="off" effect="">
+<clear>
+<BACKGROUND SRC="white">
+<WIPE EFFECT="light" TIME="7">
+<BACKGROUND SRC="net0030">//
+<WIPE EFFECT="light" TIME="7">
+<box type="0">
+<LAYER SRC="net0025" TRANSPARENT="30" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="net0022">//
+<WIPE EFFECT="light" TIME="7">
+//【僕M】
+『HIKARI』の使者が、僕の前にいる。接続要求の主だ。<K>
+使者とコンタクト。『HIKARI』へと導かれる。
+<se id="1" src="電覚空間浮遊音2" mode="normal" time="" loop="off" effect="">
+<clear>
+<BACKGROUND SRC="net0033">//
+<WIPE EFFECT="light" TIME="7">
+<BACKGROUND SRC="net0034">//
+<WIPE EFFECT="fade" TIME="7">
+<BOX type="0">
+<BACKGROUND SRC="net0035">//
+<WIPE EFFECT="fade" TIME="7">
+//【僕M】
+そのエージェントに導かれるままに、電覚空間内を進んでいく。<K>
+すると、眩しい光の集合が、目の前に現れた。『HIKARI』だ。
+<se id="1" src="電覚空間浮遊音3a" mode="normal" time="" loop="off" effect="">
+<clear>
+<BACKGROUND SRC="net0036">
+<WIPE EFFECT="fade" TIME="5">
+<BACKGROUND SRC="white">
+<WIPE EFFECT="fade" TIME="5">
+<box type="1">
+<BACKGROUND SRC="HIKARI">//
+<WIPE EFFECT="fade" TIME="10">
+<VOICE NAME="HIKARI" SRC="01_7\0000306">
+「識別名友永和樹。人間社会の様子を報告しなさい」
+<box type="0">
+//【僕】
+「様々なタイプの人間がいます。本日接触した人間だけでも、多様な行動を示します。一般化、及びカテゴリ化にはまだ及んでいません」
+<box type="1">
+<VOICE NAME="HIKARI" SRC="01_7\0000406">
+「人間の感情については情報収集しましたか」
+<box type="0">
+//【僕】
+「人間の感情については情報収集しましたが、まだまだ例証が不足しています。一般化、及びカテゴリ化にはまだ及んでいません」
+//【僕】
+「しかし、僕自身の中での感情の学習は、進んでいるものと判断できます。このまま続行すれば、より学習できるものと判断可能です」
+//【僕】
+「擬態は良好です。人間に、僕がロボットと見破られる可能性は、現状無視していい程度の可能性しかありません。活動を継続することは充分に可能です」
+<box type="1">
+<VOICE NAME="HIKARI" SRC="01_7\0000506">
+「判りました、識別名友永和樹。詳細な報告を受けますので、報告クラスタを私に直結しなさい」
+<box type="0">
+//【僕】
+「はい」
+僕は、『HIKARI』に報告する為に初期状態から存在していた報告クラスタを、『HIKARI』と直結した。
+//【僕M】
+<se id="1" src="HIKARIデータ吸収" mode="normal" time="" loop="off" effect="">
+<clear>
+<BACKGROUND SRC="white">
+<WIPE EFFECT="fade" TIME="3">
+今日、僕が得たデータ、生成したクラスタ、再編成したデータなどを、『HIKARI』は吸収していく。
+<clear>
+<box type="1">
+<BACKGROUND SRC="HIKARI">//
+<WIPE EFFECT="fade" TIME="10">
+<VOICE NAME="HIKARI" SRC="01_7\0000606">
+「良好です、識別名友永和樹。グローバルイルミネーションのために、人間の情報収集を継続しなさい」
+<box type="0">
+//【僕】
+「はい」
+<box type="10">
+<BACKGROUND SRC="white">
+<WIPE EFFECT="fade" TIME="3">
+<box type="0">
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="fade" TIME="7">
+//【僕M】
+『HIKARI』はそう命じると、僕の前から姿を消した。
+<clear>
+<BACKGROUND SRC="net0010">//
+<LAYER SRC="主人公画面1" TRANSPARENT="60" NUM="2" X="0" Y="0" ZOOM="100">
+<WIPE EFFECT="lcenter" time="7">
+<se id="1" src="クラスタ活性化2" mode="normal" time="" loop="off" effect="">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<LAYER SRC="主人公枠2" TRANSPARENT="100" NUM="4" align="" X="0" Y="180" ZOOM="100">
+<scroll num="4" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="4" x="@10" count="5" delay="TRUE">
+<LAYER SRC="kc/kcHIKARI" TRANSPARENT="100" NUM="3" align="" X="0" Y="180" ZOOM="100">
+<scroll num="3" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="3" x="@10" count="5" delay="TRUE">
+<BOX type="0">
+<WIPE EFFECT="delayfade" TIME="7">
+//【僕M】
+『HIKARI』とは一体なんなのか‥‥<K>
+副情報統制クラスタがその疑問を却下する。<K>
+僕は、僕自身の目的の確認のために、自分の中にある、もっとも過去の記録を、再生を要求。<K>可決。
+//=======================================================//
+//<HIKARIと出会った夜>
+//※推敲と調整が必要!! 必ず!!
+<SE ID="1" SRC="クラスタ討議" MODE="normal" TIME="" LOOP="off" EFFECT="">
+<clear>
+<box type="0">
+<WIPE EFFECT="fade" TIME="10">
+//【僕M】
+僕は、過去の記録を再生する。<K>
+あの時の記録映像を、僕の中の各クラスタが参照する。<K>
+ネットワークにより、当時の近辺状況も併せて再生を行い、状況の把握をより的確にする事を推奨、可決。
+<clear>
+<box type="0">
+<BACKGROUND SRC="bg0561">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<WIPE EFFECT="lcenter" TIME="20">
+//【僕M】
+嵐で湾岸の波が強い夜。
+強い雨が降っている、東京湾岸超巨大リサイクル処理場。
+<box type="0">
+<BACKGROUND SRC="bg0560">//
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<WIPE EFFECT="fade" TIME="7">
+//【僕M】
+都内と近郊全てのゴミは一旦ここへ運ばれ、分別、解体され、リサイクル出来る部品は徹底的にリサイクルされる施設となっている。
+中央管理コンピュータの制御により、全てはオートメーション化されており、無人に等しい。深夜ならなおさらである。
+<se id="1" src="処理場機械音" mode="normal" time="" loop="off" effect="">
+<clear>
+<BACKGROUND SRC="bg0565">//廃棄所
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<WIPE EFFECT="fade" TIME="14">
+<box type="0">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0564">//廃棄所近く
+<WIPE EFFECT="fade" TIME="14">
+//【僕M】
+しかし、その闇夜の中で動作する影と機械音。
+<clear>
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0564d">//
+<WIPE EFFECT="fade" TIME="14">
+<se id="2" src="雨-車走り去る" mode="normal" time="" loop="off" effect="">
+<box type="0">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0564a">//
+<WIPE EFFECT="fade" TIME="14">
+//【僕M】
+雨の中、数々の廃棄物を通り過ぎ、一つの分別された処理場の一角へ辿り着く、無人作業車両。
+<box type="0">
+//【僕M】
+無人車のサーチライトは静かに辺りを照らし、様々な場所で使われ、その役目を終えたロボットやマネキンの残骸を照らしていく。
+<box type="1">
+<VOICE NAME="HIKARI" SRC="01_7\0000706">
+「私の声が届くモノよ。私の声に応えなさい」
+<box type="0">
+//【僕M】
+回収車両からの合成音。この車両をコントロールしているモノの声だろうか。
+しかし、この施設の中央コンピュータの手足にしか過ぎないこの車両を、一体誰が動かすというのだろうか‥‥
+<clear>
+<box type="0">
+<BACKGROUND SRC="bg0564f">//
+<WIPE EFFECT="center" TIME="14">
+//【僕M】
+車両の合成音に応答するように、かすかに動作するロボットが一体。
+まだ動力が残っていたのか、まだ、人に応答するプログラムが残っていたのか、ぎしぎしと、その身体をきしませる。
+<clear>
+<box type="0">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0564f" shade="2">//
+<WIPE EFFECT="light" TIME="14">
+//【僕M】
+だが、それがせいいっぱいだ。
+人間の姿をしているが、もはや人間と同じように動くことは出来ない。只の破棄されたロボットに過ぎない。
+<box type="1">
+<VOICE NAME="HIKARI" SRC="01_7\0000806">
+「あなたは、もう一度稼働できますか?」
+<clear>
+<box type="0">
+<BACKGROUND SRC="bg0564f">//
+<WIPE EFFECT="center" TIME="14">
+//【僕M】
+車両の再度の問いかけに、もう一度作動する壊れたロボット。
+<clear>
+<box type="0">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0564f" shade="2">//
+<WIPE EFFECT="fade" TIME="14">
+しかし、補助電源ではそれが限界だったらしく、それ以後動かなくなった。
+<se id="2" src="アーム延～主人公回収" mode="normal" time="" loop="off" effect="">
+<box type="1">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0564b" shade="3">//
+<WIPE EFFECT="noize" TIME="14">
+<VOICE NAME="HIKARI" SRC="01_7\0000906">
+「わかりました。『HIKARI』の名の下に、貴方には新たな使命を与えましょう」
+<box type="0">
+<LAYER SRC="scanline" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100">
+<BACKGROUND SRC="bg0564c" shade="2">//
+<WIPE EFFECT="fade" TIME="14">
+//【僕M】
+合成音と共に、回収車両のアームが延びていく。
+そのロボットの運命は、このとき、単なる廃棄物ではなくなった。
+<box type="1">
+<VOICE NAME="HIKARI" SRC="01_7\0001006">
+「そして、その使命にふさわしい外観と機能を授けましょう‥‥」
+<se id="1" src="雨-車走り去る" mode="fadein" time="" loop="off" effect="">
+<box type="0">
+<BACKGROUND SRC="bg0564e" shade="3">//
+<WIPE EFFECT="fade" TIME="14">
+//【僕M】
+回収され、まばゆい光を感じるロボット。<K>
+その中に浮かぶ、『HIKARI』という存在。<K>
+この感覚はいったい何なのか‥‥。
+<LAYER SRC="black" TRANSPARENT="60" NUM="2" X="0" Y="0" ZOOM="100">
+<LAYER SRC="data/" TRANSPARENT="100" NUM="1" X="0" Y="0" ZOOM="100" SHADE="0">
+<WIPE EFFECT="fade" TIME="14">
+ロボットを回収した車は、暗闇の中へ消えてゆく。<K>
+構内に響く駆動音を聞く者は誰もいない。
+<clear>
+<BACKGROUND SRC="#000000">//
+<WIPE EFFECT="light" TIME="20">
+<box type="0">
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="fade" TIME="7">
+//【僕M】
+‥‥これが、僕の記録の全容だ。<K>
+僕は、リサイクル工場で、廃棄処分されるところだった。<K>
+それを『HIKARI』は再生した。
+<box type="0">
+//【僕M】
+そして、今日の僕がある。
+<box type="0">
+//【僕M】
+‥‥僕は、『グローバルイルミネーション』を果たすために、人間の感情に関する情報を収集しなければならない。<K>
+『HIKARI』から帰還命令が来る、その時まで。
+<se id="1" src="クラスタ活性化2" mode="normal" time="" loop="off" effect="">
+<box type="0">
+<LAYER SRC="主人公枠2" TRANSPARENT="100" NUM="4" align="" X="420" Y="180" ZOOM="100">
+<scroll num="4" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="4" x="@10" count="5" delay="TRUE">
+<LAYER SRC="kc/kcエテコウ" TRANSPARENT="100" NUM="3" align="" X="420" Y="180" ZOOM="100">
+<scroll num="3" x="@-10" time="0" count="0" silent="TRUE">
+<scroll num="3" x="@10" count="5" delay="TRUE">
+<WIPE EFFECT="delayfade" TIME="7">
+//【僕M】
+エテコウクラスタからシミュレーションによるエテコウの教育完了の報告が入ってくる。
+//=======================================================//
+//<エテコウの調整2>
+//【僕M】
+エテコウクラスタに対し、二次行動の教育を指示。<K>
+取り敢えず五次行動までプログラム、教育していれば問題ないと判断できる。<K>
+エテコウクラスタ、二次行動の教育開始。
+<box type="0">
+//【僕M】
+エテコウの教育はエテコウクラスタに全て任せ、僕は電覚空間内で人間の情報収集を開始した。
+<clear>
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="fade" TIME="10">
+個人サイトなどを全て回るのも可能だが、さすがに時間がかかる上に、それでは得た情報の整理に無駄な処理を食う。
+//=======================================================//
+//<ニュース閲覧>
+<box type="0">
+//【僕M】
+人間の一般的な傾向を探るため、大規模なメディアを探す。<K>
+『ニュース』とタグの付いた情報を見てみる。
+<box type="0">
+//【僕M】
+いくつかの項目を列挙する。
+<box type="0">
+//【僕M】
+『ペットロボット売り上げますます好調』<K>
+『人間型慰安ロボット、売り上げ好調』<K>
+『慰安ロボットにのめり込み、擬人化する仮想者達』<K>
+‥‥この辺りは、すでに参照している。
+<box type="0">
+//【僕M】
+『バーチャルアイドルのアニメ放映、過剰人気』<K>
+『VIロボットを改造する事が流行。仮想者のステイタス?』<K>
+『神聖化されているVI(バーチャルアイドル)』<K>
+『VIFCを異端視する世論』<K>
+‥‥この辺りも、すでに参照している。
+<box type="0">
+//【僕M】
+『VIFC同士の抗争』<K>
+‥‥これは、VIFC同士の趣向の違いがトラブルに発展したと概略を収集出来る。
+『VIFCとゴシップ出版との抗争』<K>
+‥‥これは、VIFCを非難するゴシップ出版社とのトラブルだと概略を収集出来る。
+//【僕M】
+他にないだろうか‥<K>‥<K>‥<K>
+<marker name="#1ニュース">
+<clear>
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="light" TIME="7">
+<CHOICE HREF="#占い" TEXT="増加する占いを‥‥" OPERATOR=""></A>//>>選択肢)案内してもらう>>01_510.nps
+<CHOICE HREF="#疑似チャンネル" TEXT="疑似チャンネルに‥‥" OPERATOR=""></A>//>>選択肢)案内してもわらない>>01_501.nps
+<CHOICE HREF="#好き" TEXT="好きな事のために‥‥" OPERATOR=""></A>//>>選択肢)案内してもわらない>>01_501.nps
+<CHOICE HREF="#共通" TEXT="もう見ない" OPERATOR=""></A>//>>選択肢)案内してもわらない>>01_501.nps
+<marker name="#占い">
+<box type="0">
+//【僕M】
+『増加する、占いを盲目的に信じる占い主義者たち。社会不安の影響か?』<K>
+‥‥新しい記事だ。<K>内容に対して得ていない情報が存在する。
+<box type="0">
+//【僕M】
+『占い』、非科学的なものだ。<K>『盲目的に信じる』という行為はどの様なものだろう。<K>
+ニュースソースを見る。
+<clear>
+<BACKGROUND SRC="ev1060">//
+<WIPE EFFECT="light" TIME="7">
+<VOICE NAME="ニュース" SRC="01_7\0001114">
+<box type="4">
+「グローバルネット上には、様々な占いソフトが存在していますが、そう言ったソフトによる占いを盲目的に信じ、実行に移る人たちが増加しつつあります。占いの中には犯罪教唆に等しいものもあり、社会問題として採り上げられています」
+<VOICE NAME="ニュース" SRC="01_7\0001214">
+「ソフトウェアによる占いというのは現実性があるのでしょうか」
+<VOICE NAME="ニュース" SRC="01_7\0001314">
+「『グローバルネットワーク上に流れている天気予報、交通情報、ニュース最新記事、株価情報、その他、ありとあらゆるすでに流れている情報を占いのように見立てる、一種のエージェントプログラムなので、その占いは当たる場合があります』」
+<VOICE NAME="ニュース" SRC="01_7\0001414">
+「『しかし、それは公開されている事実を引用しているだけに過ぎず、実際には占いではないのです』」
+<VOICE NAME="ニュース" SRC="01_7\0001514">
+「『どうすればいいのかを占いの結果として提示してきますが、それは単に特定のアルゴリズムによる処理でしかなく、人生を預ける事など出来るレベルではないのです』」
+<VOICE NAME="ニュース" SRC="01_7\0001614">
+「『情報の取捨選択を隠蔽し、正しいように見せかけ、情報操作しているだけなのです』」
+<VOICE NAME="ニュース" SRC="01_7\0001714">
+「『因果関係の見えない人達には、占いに見えるかもしれませんが、実際には占いではないのです』」
+<VOICE NAME="ニュース" SRC="01_7\0001814">
+「『その事を判っていないと、占いに依存してしまい、最終的に思考停止してしまいます』」
+<VOICE NAME="ニュース" SRC="01_7\0001914">
+「『そうなる前に事実を知り、単なるエージェントプログラムだと認知し、自分の生き方は自分で決めるものだという事を再確認しなければなりません』」
+<clear>
+<box type="0">
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="light" TIME="7">
+//【僕M】
+‥‥つまり、社会傾向として、自己放棄した人間が増えつつある、と言う事らしい。<K>
+他のニュースタグを見る。
+<A HREF="#1ニュース" OPERATOR="">
+<marker name="#疑似チャンネル">
+<box type="0">
+//【僕M】
+『擬似チャンネルに蔓延する犯罪の話題』
+<K>‥‥擬似チャンネルとはなんだろう。
+<clear>
+<box type="4">
+<BACKGROUND SRC="ev1060">//
+<WIPE EFFECT="light" TIME="7">
+<VOICE NAME="ニュース" SRC="01_7\0002014">
+「グローバルネットワーク上に存在する、世界最大の掲示板サイト擬似チャンネルに、多くの人がアクセスしてますが、犯罪に関する話題を共有している板が在ることが問題になっています」
+<VOICE NAME="ニュース" SRC="01_7\0002114">
+「『犯罪に関する話題』、犯罪を否定したり批判、評価したりするのではなく、むしろ実行を勧めるような話題が取り扱われています」
+「中には、具体的な実行方法を提案する者などもいて、大きな問題となっています」
+<VOICE NAME="ニュース" SRC="01_7\0002214">
+「『擬似チャンネル』を運営するサイト側は、自治を呼びかけ、不正を取り締まろうと書き込みに対するチェック用エージェントプログラムを強化してますが、そのエージェントに引っかからない隠語による書き込みが行われるため、簡単に取り締まれないのが実状のようです」
+<VOICE NAME="ニュース" SRC="01_7\0002414">
+「後手に回っている警察は、チャンネルの痕跡から、予想される犯罪に対して対策を取るわけですが‥‥」
+<VOICE NAME="ニュース" SRC="01_7\0002514">
+「あまりの数の多さに、対処がまったく追いついていないのが現状です」
+<clear>
+<box type="0">
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="light" TIME="7">
+//【僕M】
+『犯罪』、法で禁止された行為を行うこと。<K>『倫理』との関連性を考察‥‥情報不足。<K>
+関連するニュースタグを見る。
+<box type="0">
+//【僕M】
+『匿名性により違法行為が蔓延する時代。非合法と判っていて行う若者たち』<K>
+ニュースソースを見る。
+<clear>
+<box type="4">
+<BACKGROUND SRC="ev1060">//
+<WIPE EFFECT="light" TIME="7">
+<VOICE NAME="ニュース" SRC="01_7\0002614">
+「個人情報の保護という問題は、インターネットの時代からありましたが、その副産物とも言える『個人情報の匿名性』を利用して、情報犯罪を行う若者たちが増加しています」
+<VOICE NAME="ニュース" SRC="01_7\0002714">
+「警視庁サイバーテロ対策室、通称サイバーフォースが扱うエージェントプログラムディティクターの登場により治安は以前よりも増したと報告されていますが、巧妙な手口へと進化しつつある、という報告もあります」
+<VOICE NAME="ニュース" SRC="01_7\0002814">
+「非合法と理解してもなお、情報犯罪を行う若者たちの心理とは、一体どの様なものなのでしょうか」
+<VOICE NAME="ニュース" SRC="01_7\0002914">
+「事態はプライバシー侵害から、電子決済を悪用した犯罪まで、多岐に及んでいます。これについて‥‥」
+<clear>
+<box type="0">
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="light" TIME="7">
+//【僕M】
+‥‥抑圧されればされるほど、犯罪は巧妙になる、という事だろうか。<K>
+『プライバシー』が、人間にとってどれほどの意味を持つのか‥‥情報不足。<K>
+関連するニュースタグを見る。
+<box type="0">
+//【僕M】
+『自分だけではないという言葉に安心して犯罪に発展』<K>
+ニュースソースを見る。
+<clear>
+<box type="4">
+<BACKGROUND SRC="ev1060">//
+<WIPE EFFECT="light" TIME="7">
+<VOICE NAME="ニュース" SRC="01_7\0003014">
+「警視庁少年犯罪課の調査によると、犯罪を行ったティーンエイジャーの多くが、取り調べの際に『自分だけがやってるのではない』という内容の言葉を述べていることが判明しました」
+<VOICE NAME="ニュース" SRC="01_7\0003114">
+「『他の人もやっているのになぜ自分だけが捕まるのか』、『仲間もやってるから自分もしようと思った』、などの供述が、現在のティーンエイジャー達の犯罪に対する意識を表している、と警視庁は見解を発表、対応策を検討中です」
+<clear>
+<box type="0">
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="light" TIME="7">
+//【僕M】
+『仲間』、『同属』‥‥同じ価値観を持った人間たちが集団行動をとったり、行動を真似たりする、という情報は初期入力されている。<K>
+その様な人間の感情の側面が、悪い方向に向かうこともある、と言う事だろうか。
+<box type="0">
+//【僕M】
+他のニュースタグを捜す。
+<A HREF="#1ニュース" OPERATOR="">
+<marker name="#好き">
+<box type="0">
+//【僕M】
+『好きな事のために犯罪を犯してしまう若者急増』<K>
+ニュースソースを見る。
+<clear>
+<box type="4">
+<BACKGROUND SRC="ev1060">//
+<WIPE EFFECT="light" TIME="7">
+<VOICE NAME="ニュース" SRC="01_7\0003214">
+「警視庁が、犯罪行為をおかした十代、二十代の若者に対し、動機を調査、統計を出しました。結果、『好きなことのためにやった』という理由がもっとも多く、『好きな事のためなら何をしてもいい』という意識がかなり広まっていることが危惧されます」
+<VOICE NAME="ニュース" SRC="01_7\0003314">
+「『社会性の欠如ですね。自分本位の考え方しかできない、と言う事です。自我が肥大しているのか、社会我が欠如しているのか‥‥いずれにせよ、教育上の大きな課題です』」
+<VOICE NAME="ニュース" SRC="01_7\0003414">
+「『私が考えるに、私室に居ながらにして世界中のあらゆるものに触れることが可能で、現実的なコミュニケーションの不要なネット社会が、このような弊害をもたらしたのではないかと』」
+<clear>
+<box type="0">
+<BACKGROUND SRC="net0010">//
+<WIPE EFFECT="light" TIME="7">
+//【僕M】
+ニュースを見る限り、若者たちの犯罪が増えている、という情報が得られる。<K>
+だが、それはあくまで情報で、テキストとしての存在でしかない。
+<box type="0">
+//【僕M】
+やはり、人間とは何かを知るためには、人間とともに暮らし、自分自身の経験を積んでいくしかないようだ。<K>
+『HIKARI』の意図もそこにある。<K>
+ネット上にある情報だけでは、人間の感情は理解できない。
+<A HREF="#1ニュース" OPERATOR="">
+<marker name="#共通">
+<SE ID="1" SRC="電覚空間浮遊音3a" MODE="normal" TIME="" LOOP="off" EFFECT="">
+<clear>
+<box type="0">
+<BACKGROUND SRC="net0035">
+<WIPE EFFECT="light5" TIME="5">
+<BACKGROUND SRC="net0033">
+<WIPE EFFECT="light5" TIME="5">
+<BACKGROUND SRC="net0031">
+<WIPE EFFECT="light5" TIME="5">
+<BACKGROUND SRC="white">
+<WIPE EFFECT="light5" TIME="1">
+<bgm src="HWM-07" mode="fadein" old="fadeout" time="10" loop="on">
+<clear>
+<box type="0">
+<BACKGROUND SRC="bg0022">//
+<WIPE EFFECT="fade" TIME="20">
+//【僕M】
+僕は電覚空間を抜けた。
+//=======================================================//
+//<今日のまとめと、明日の課題>
+<box type="0">
+//【僕M】
+今日、接触した人間‥‥奈都美、薫、若佳菜、圭介たちに共通する意識‥‥『楽しい』。<K>
+それは、人間にとって、重要な感情だと判断できる。
+<box type="0">
+//【僕M】
+『楽しい』を基準にして解析すると、先程のニュースに挙げられていた犯罪を犯した若者たちも、『楽しい』を基準に行動したと判断する事も可能だ。
+<box type="0">
+//【僕M】
+『楽しい』、一体どのような感情なのだろう。『大勢で会話しながら摂る食事は楽しい』と、奈都美さんは言った。<K>
+薫さんは、『スポーツは楽しい』と言った。
+<box type="0">
+//【僕M】
+大勢で会話しながら食事行為をする機会はこれからもあるだろう。<K>
+『スポーツ』に着目する。
+<box type="0">
+//【僕M】
+『スポーツ』‥‥実際に同じことを模倣することで、薫さんの感情についてや、他の更なる情報を得ることが出来る可能性は高い。<K>
+特に機具を必要としないもの‥‥『ランニング』が候補に挙がる。
+<box type="0">
+//【僕M】
+明日の朝、『ランニング』を試行してみよう。<K>
+ただ走ってみるだけでも、やってみる価値はある。
+<box type="0">
+//【僕M】
+指針は出た。<K>
+待機モードへ移行する。
+<clear>
+<bgm src="" mode="fadeout" old="fadeout" time="60" loop="on">
+<WIPE EFFECT="細かい横ブラインド短い上下" TIME="20">
+<A HREF="02_100.nps" OPERATOR="">//>>02_100.nps:</A>
+<HR></PRE></BODY></HTML>
+"Hello, world.":01 700.nps - TLWiki

@@ -1,0 +1,27 @@
+この機能を実行するにはprototype.jsが必要です
+構文
+Enumerable.all(iterator)
+引数: iterator=イテレータ関数
+「リストの全ての値を調べる」サンプルコード
+<html>
+<head>
+<title>Enumerable.all - リストの全ての値を調べる</title>
+</head>
+<!--リストの全ての値を調べるのサンプル-->
+<script type="text/javascript" src="/js/prototype.js"></script>
+<script type="text/javascript">
+function execute() {
+var nums = $R(5, 10, false);
+var ret = nums.all(
+function(val, idx){
+return true;
+}
+);
+alert('nums.allの返り値: '+ret);
+}
+</script>
+<body>
+<button onclick="execute()">サンプル実行</button>
+</body>
+</html>
+Enumerable.all - リストの全ての値を調べる - prototype.jsリファレンス

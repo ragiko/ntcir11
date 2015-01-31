@@ -1,0 +1,46 @@
+
+ブロケード製品では、LAGグループやTrunkグループ内にThresholdを設けることがで
+きる。この機能は、LAGグループやTrunkグループ内で活性になっているポート数を設
+定し、活性になっているポート数がこの設定値を下回る場合に、これらのグループ内
+に所属する全てのポートを非活性にするコマンドだ。
+例えば、以下のような構成を想定しよう。
+Server Area
++-----------------+
+|             |
+Rtr#1         Rtr#2
+\          /
+\        /
+\      /
+BRCD Rtr
+この図で、BRCD Rtr(ブロケード・ルータ)は、帯域不足を強化するために、1GbEで、
+Rtr#1(ルータ#1)とRtr#2(ルータ#2)に、それぞれ4本のLAG/Trunkで接続されていると
+しよう。通常時は、Rtr#1を経由して、サーバ・エリアとの接続を実現しているが、
+Rtr#1とBRCD Rtrとの間のLAG/Trunkグループのうち2本がダウンした場合に、 サーバ
+エリアとの接続が半分の2Gbpsに制限されてしまう。ただ、この時、BRCD RtrとRtr#2
+との間は4Gbpsが利用可能で、Rtr#1経由の2Gbpsに制限されたまま利用するより、
+Rtr#2の経路に切り替えて、4Gbpsの帯域を利用した方が、より高速なネットワークを
+継続して利用可能となる。
+このように、LAG/Trunkグループで活性になっているべきポート数を設定し、それを
+下回る物理構成になってしまった場合に、他の経路へ切り替えるような場合に最適な
+機能だ。
+設定は、以下のように行なう。
+「NetIronシリーズ」
+NetIron MLX-4 Router#(config)# lag blue static
+NetIron MLX-4 Router#(config-lag-blue)# ports ethernet 3/1 to 3/4
+NetIron MLX-4 Router#(config-lag-blue)# trunk-threshold 3
+「FastIronシリーズ」
+FastIron(config)#trunk e 3/1 to 3/4
+FastIron(config-trunk-3/31-3/34)#threshold 3
+上記の場合、どちらもThresholdが「3」となっているため、これらのグループ内で、
+3本以上、活性になっていれば、そのまま利用可能な状態を維持し、2本以下になると、
+LAG/Trunkグループ内の全てのポートを「Blocking」ステータスに変更し、ダウンさ
+せることが出来る。
+例えば、この設定値を「4」とした場合は、 上記設定だとLAG/Trunkグループが4本と
+なっているため、1本でもダウンすると、LAG/Trunkグループ内の全てのポートがダウ
+ンすることになる。デフォルト設定は「1」となっている。 つまり、設定を行わなけ
+れば、最後の1本まで活性の状態を維持する。
+また、NetIronシリーズでは、「static」「dynamic」どちらでも利用可能だが、
+FastIronシリーズの場合は、「static」のみとなり、UDLDとの併用も出来ない実装
+となっているので注意が必要だ。
+これで、君もブロケードマスター!!
+trunk-threshold | Brocade Communications Systems, Inc.

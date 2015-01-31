@@ -1,0 +1,5 @@
+
+注意: 
+Dreamweaver CC 以降では、ユーザーインターフェイスが簡素化されています。そのため、この記事で説明されているオプションの一部が Dreamweaver CC 以降には存在しない場合があります。詳しくは、この記事を参照してください。
+ASP アプリケーションからデータベースに接続するには、ODBC(Open Database Connectivity)ドライバー、または OLE DB(Object Linking and Embedding Database)プロバイダーを使用する必要があります。ドライバーやプロバイダーは、Web アプリケーションがデータベースと通信できるようにインタープリターの役割を果たします。次の表には、Microsoft Access、Microsoft SQL Server、および Oracle データベースで使用できるドライバーの一部が示されています。 
+Dreamweaver ヘルプ | ASP デベロッパーのためのデータベース接続

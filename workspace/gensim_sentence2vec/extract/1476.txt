@@ -1,0 +1,37 @@
+
+トップページ | HTML5編・目次
+既存のIEにHTML5の新要素を認識させる
+Internet Explore9ではHTML5の新要素がサポートされるようになるものの、IEv8以下では、HTML5の新要素は未知の要素として扱われ、無視されてしまいます。HTML5の新要素に未対応のIEのブラウザに対しては、HTML5文書のhead要素内に、以下のJavaScriptを配置すると認識させることができるようになります。
+例)
+<script type="text/javascript">
+document.createElement('新要素名');
+document.createElement('新要素名');
+document.createElement('新要素名');
+document.createElement('新要素名');
+</script>
+このように既存のエレメント(要素)に新たに要素を追加する場合に、document.createElement(
+)メソッを使って新たな要素を生成します。ですが、HTML5の新要素は多いのでひとつずつ記述しては大変なので「html5shiv(http://code.google.com/p/html5shiv/)」で公開されているJavaScriptライブラリを利用するといいでしょう。これをhead要素内のCSSを組み込んでいる部分よりも前に配置すればv8以前のIEでもHTML5の新要素が認識されるようになります。
+例)
+<!--[if lt IE 9]>
+<script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+[if lt IE 9]>と<![endif]が、「<!--」と「-->」のコメントで囲まれていますが、IEの独自仕様で「もしもIEのバージョンがv9未満だったならば、～を実行する」というコードとしてIEのブラウザに解釈されるようになります。
+なお、このJavaScriptライブラリはHTML5の新要素に未対応のIEのブラウザに新要素を認識させるスクリプトですから新要素に対して、CSSの設定をしている場合、CSSの設定よりも先に指定しなければなりません。それには内部スタイルシートであるstyle要素がある場合はその前に記述し、外部スタイルシートのCSSファイルへの指定であるlink要素がある場合は、それよりも前に記述します。順番を間違えると新要素のスタイルが反映されませんのでご注意ください。
+例)
+<head>
+・・・
+<title>HTML5</title>
+<!--[if lt IE 9]>
+<script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="./sample.css">
+<style type="text/css">
+header,footer,nav,section,article,figure,aside {
+display:block;
+}
+</style>
+</head>
+注意:script要素にtype="text/javascript"を指定していますが、HTML4.01ではtype属性の指定は必須でしたがHTML5の場合、script要素のtype属性の初期値は"text/javascript"なので、type属性の値が"text/javascript"に限り、type属性の指定を省略することができます。同様に、HTML5の場合、style要素のtype属性の初期値は、"text/css"なので、style要素のtype属性であるtype="text/css"は省略することができます。
+サイト・目次 | HTML5編・目次
+Copyright (C) 2011 http://www.xml.vc/ All Rights Reserved.
+既存のIEにHTML5の新要素を認識させる｜HTML5速攻マスター

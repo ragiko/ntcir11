@@ -1,0 +1,72 @@
+MySQLにはストレージエンジンがいくつかあるので、その辺はちょっとごっちゃになってると思います。InnoDBかMyISAMかで、少し話が違ってくるとは思うけど、そこまでは追えてません。
+VARCHAR(n)は文字数
+昔はバイト数だったような気もするけど、今は文字数を設定します。
+VARCHAR(255)で良いと思う
+CHAR とは対照的に、VARCHAR 値は必要な文字数と、長さを記録する為の1バイト(255よりも長いカラムは2バイト)だけを利用して格納できます。
+http://dev.mysql.com/doc/refman/5.1/ja/char.html
+VARCHARは可変長なので、余分に設定してもストレージを無駄に食う事は無いと思います。ただVARCHAR(256)以上は、長さの記録が1バイト増えるみたいなので、特に理由が無ければVARCHAR(255)に設定しておくのが良いんじゃないかなと思っています。
+きっちり定義しすぎて、後で足りないとか言われるとめんどうだし。
+VARCHAR(65535)が最大値だけど、実際は通らない
+VARCHAR カラム内の値は可変長の文字列です。長さは 0 から 65,535 までの値で指定できます。VARCHAR カラムの有効な最大長は、最大行サイズ (65,535 バイト、すべてのカラムで共有される) と使用されるキャラクタセットによって決まります。
+http://dev.mysql.com/doc/refman/5.1/ja/char.html
+さらっと書いてあるけど、行サイズ(Row size)と文字コードで左右されます。
+行サイズ
+VARCHAR カラム内の値は可変長の文字列です。長さは0から65,535の値で指定できます。(VARCHAR の最大有効長さは、最大行サイズと利用される文字サイズによって決まります。最大カラム長さは65,532バイトの行サイズによります。)
+http://dev.mysql.com/doc/refman/5.1/ja/char.html
+さっきと同じ引用だけど、MySQLでは1行に格納出来るデータの最大値が決まっていて、1行65,535バイトまでとなってます。1カラムだけのテーブルならVARCHAR(65535)に近い数値も設定出来ると思うけど、普通カラムはいくつか使うのでVARCHAR(65535)を設定出来る事はほぼ無いはずです。
+CHAR とは対照的に、VARCHAR 値は必要な文字数と、長さを記録する為の1バイト(255よりも長いカラムは2バイト)だけを利用して格納できます。
+http://dev.mysql.com/doc/refman/5.1/ja/char.html
+細かい話で、確認もしてないけど、長さの記録の1 or 2バイトも、一応行サイズに含むんじゃないだろうか。
+文字コード
+The maximum row size constrains the number (and possibly size) of columns because the total length of all columns cannot exceed this size. For example, utf8 characters require up to three bytes per character, so for a CHAR(255) CHARACTER SET utf8 column, the server must allocate 255 × 3 = 765 bytes per value. Consequently, a table cannot contain more than 65,535 / 765 = 85 such columns.
+http://dev.mysql.com/doc/refman/5.1/en/column-count-limit.html
+何故かこのページの日本語版が無いので英語の方から。UTF-8が1文字は1〜3バイトになります。どうやら、MySQLは1文字3バイトと仮定するみたいなので、UTF-8だと65535/3でVARCHAR(21845)辺りが最大値になると思います。
+前述の行サイズやVARCHARの長さの記録の事もあるので、現実的にはVARCHAR(21845)でカラムは作れないと思いますが。
+エラーメッセージ
+mysql> ALTER TABLE users MODIFY `bio` VARCHAR(20813) DEFAULT NULL;
+ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. You have to change some columns to TEXT or BLOBs
+行サイズを超えるカラムに変更しようとしたら、こんなエラーメッセージが出ました。
+大きすぎるVARCHARはMEDIUMTEXTとして定義される
+エラーメッセージが出ると書いたけど、数値を大きくしていくとエラーにならずにテーブル作成・カラム変更が通る場合がありました。ただ、カラムの型はVARCHARじゃなくMEDIUMTEXTになりました。
+・65535きっちり入らないのはストレージエンジンの内部仕様
+・65536以上でTEXTに変換されるのは本体の機能(設定変更可)
+http://dev.mysql.com/doc/refman/5.1/en/silent-column-changes.html
+ちぐはぐな印象はありますね。
+http://d.hatena.ne.jp/kameid/20091201/1259638882
+Silent Column Specification Changesという、暗黙的に変える機能があります。引用元の記事は、もっとつっこんだバグの話をしていて、どこを引用するかちょっと迷いました。
+暗黙的にMEDIUMTEXTにされるくらいなら、自分で定義したいし、ここは深追いはしないでおきます。
+InnoDBの行サイズは話が違うっぽい
+VARCHAR、BLOB そして TEXT カラム以外の最大行長は、データベース ページの半分よりも少し短いです。これは、最大行長は約8000バイトであるという事です。LONGBLOB と LONGTEXT カラムは4GB 以下である必要があり、BLOB と TEXT カラムを含んだ合計行長は4GB 以下でなければいけません。InnoDB が行内の VARCHAR、BLOB、または TEXT カラムの最初の768バイトを格納し、残りは別のページに格納されます。
+InnoDB は内部的にサイズ65535以上の行をサポートしますが、65535以上のサイズの VARCHAR カラムを含む行を定義する事はできません:
+http://dev.mysql.com/doc/refman/5.1/ja/innodb-restrictions.html
+上の方で1行65,535バイトまで的な事を書いたけど、InnoDBの場合は違うっぽい。そのまま読むと、InnoDBでは行サイズは約8000バイトで、VARCHAR, TEXT, BLOBの場合、768バイト以上は行サイズのカウントからは除外されるという事になります。
+InnoDBの行サイズの上限はページサイズの約半分で、デフォルトでは約8000バイト
+可変長カラム(VARBINARY, VARCHAR, BLOB, TEXT)のデータは行の外部に保存されるが、先頭の768バイトだけは行の内部に保存される
+よって例えば一つのテーブルに11個のTEXT型フィールドを作り、それぞれに768バイト以上のデータを入れよう> * とすると、768*11=8448 > 8000 なので保存できない
+http://tkyk.name/blog/2010/12/13/MySQL-Server-innodbgot-error-139-from-storage-engine/
+実際、そういう風に書いてる記事もいくつかあります。
+http://maruta.be/intfloat_staff/132
+http://www.softel.co.jp/blogs/tech/archives/2580
+疑問点
++------------+------------------+------+-----+---------+----------------+
+| Field      | Type             | Null | Key | Default | Extra          |
++------------+------------------+------+-----+---------+----------------+
+| id         | int(10) unsigned | NO   | PRI | NULL    | auto_increment |
+| group_id   | int(10) unsigned | NO   | UNI | NULL    |                |
+| foo        | varchar(255)     | YES  |     | NULL    |                |
+| bar        | varchar(255)     | YES  |     | NULL    |                |
+| baz        | varchar(255)     | YES  |     | NULL    |                |
+| qux        | varchar(255)     | YES  |     | NULL    |                |
+| quux       | varchar(255)     | YES  |     | NULL    |                |
+| created    | datetime         | NO   |     | NULL    |                |
+| modified   | datetime         | YES  |     | NULL    |                |
++------------+------------------+------+-----+---------+----------------+
+手元のInnoDBを使ったこんなテーブルで、VARCHARのサイズを変更してみました。
+mysql> ALTER TABLE users MODIFY `foo` VARCHAR(20813) DEFAULT NULL; #OK
+mysql> ALTER TABLE users MODIFY `foo` VARCHAR(20814) DEFAULT NULL; #ERROR 1118 (42000): Row size too large. [snip]
+InnoDBではVARCHARやTEXTは最初の768バイトだけが、行サイズのカウントに入るということで、大体11個くらいは作れるという話でした。INTは4バイトで、DATETIMEは8バイトなので、VARCHARより全然小さい訳だし、全部で9カラムしかないので、エラーにならないはずじゃ無いかと思っています。
+VARCHAR(65535)は超えられないけど、それ以下なら行サイズとしては最初の768バイトだけ見るという事なら、全部足しても8000バイトは全然超えないです。まぁ何か見落としや勘違いしてるのかもだし、混乱してきたので、とりあえずメモ残すだけ残しておきます。古いMAMPで作った環境なので、その辺のバージョン的な問題もあるかも。
+環境
+環境
+バージョン
+MySQLのVARCHARについて調べ直してみた | kanonjiのブログ

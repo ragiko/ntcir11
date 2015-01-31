@@ -1,0 +1,88 @@
+divなどで実装したパネル、複数の画像やエレメントを配置したスライダーなどにさまざまなアニメーションを適用できるjQueryのプラグインを紹介します。
+は、エレメントのデモです。
+demo: エレメントのエフェクト
+Pogo Sliderの使い方
+Step 1: 外部ファイル
+当スクリプトとスタイルシート、jquery.jsを外部ファイルとして記述します。
+<head>
+...
+<link rel="stylesheet" href="pogo-slider.min.css">
+</head>
+<body>
+...
+<script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="jquery.pogo-slider.min.js"></script>
+</body>
+STep 2: HTML
+まずはHTMLの基本構成。コンテンツをdiv要素で配置し、ラッパーで囲います。
+<div class="pogoSlider">
+<div>>
+<h2>
+一枚目のスライド
+</h2>
+</div>
+<div>
+二枚目のスライド
+</div>
+</div><!-- .pogoSlider -->
+各エレメントへのアニメーションはdata属性を使い、エフェクトの種類や時間などを設定します。
+<div class="pogoSlider">
+<div class="pogoSlider-slide" data-transition="slideOverLeft" data-duration="1000"  style="background-image:url(img/slide1.jpg);">
+<h2 class="pogoSlider-slide-element" data-in="slideDown" data-out="slideUp" data-duration="750" data-delay="500">
+一枚目のスライド
+</h2>
+</div>
+<div class="pogoSlider-slide " data-transition="fold" data-duration="1000"  style="background-image:url(img/slide2.jpg);">
+二枚目のスライド
+</div>
+</div><!-- .pogoSlider -->
+エレメントに適用する場合は、下記のようになります。
+<div class="elementDemos-single" data-transition="slideDown">
+<h4>エレメント</h4>
+</div>
+Step 3: JavaScript
+jQueryのセレクタでラッパーを指定し、スクリプトを実行します。
+var mySlider = $('.pogoSlider').pogoSlider(/* opts */).data('plugin_pogoSlider');
+スライドのエフェクトは、下記が用意されています。
+fade
+slide
+verticalSlide
+slideLeft
+slideRight
+slideUp
+slideDown
+slideRevealLeft
+slideRevealRight
+slideOverLeft
+slideOverRight
+expandReveal
+shrinkReveal
+verticalSplitReveal
+horizontalSplitReveal
+zipReveal
+barRevealDown
+barRevealUp
+barReveal
+blocksReveal
+fold
+foldLeft
+foldRight
+エレメントのエフェクトは、下記が用意されています。
+slideDown
+slideUp
+slideRight
+slideLeft
+expand
+contract
+spin
+sideFall
+horizontal3DFlip
+vertical3DFlip
+3DPivot
+rollLeft
+rollRight
+glideLeft
+glideRight
+flipX
+flipY
+[JS]エレメントやスライドにさまざまなアニメーションを適用できるスクリプト -Pogo Slider | コリス

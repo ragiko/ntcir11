@@ -1,0 +1,25 @@
+
+班ごとの実験課題
+音響モデルを置き換えた実験
+音響モデルを、モノフォンに切替えると認識時間・認識率がどのように変化するか調べよ。
+モノフォンに切り替えるには.jconfファイルを以下のように変更する。
+exp2.jconfファイルの例
+##
+## 音響HMM定義ファイル
+##
+#-h c:\usr\local\julius\data\hmmdefs,tmix.gz
+#-hlist c:\usr\local\julius\data\LogicalTri.added
+-h c:\cygwin\usr\local\julius\phone_m\hmmdefs_monof_mix16_gid.binhmm
+各種の音響モデルファイルは
+/usr/local/julius/phone_m
+にある。ディレクトリの中身を調べて、選択可能なファイルの種類を確認せよ。
+tri
+状態共有型トライフォン音素モデル(前後の音素環境を考慮する)
+monof
+モノフォン音素モデル(前後の音素環境を考慮しない)
+PTM
+Phonetic Tied Mixtureモデル(精度を維持しつつ効率化したもの)
+ささやき声の認識実験
+ささやき声で再録音し、認識率の変化を調べよ。また、音響モデルを
+exp2.jconfファイルの例
+音声認識実験マニュアル

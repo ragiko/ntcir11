@@ -1,0 +1,5 @@
+<span style="width: 10em; background-color: #87cefa; color: #000000">横幅サイズ</span> と指定した場合は
+横幅サイズ
+10emの青色背景色の中に「横幅サイズ」という文字が表示される。また、
+<table style="border-width: thin; border-style: solid; width: 100%"> のように表の横幅のサイズ指定もできる。
+表と線、枠に対するスタイル指定

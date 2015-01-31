@@ -1,0 +1,29 @@
+
+今日は自分の勉強を兼ねて少し固い話題で。
+Claude Lévi-Straussの『構造人類学』を読んでいると、音韻論 La phonologie について言及される部分に多々ぶつかります。
+たとえば、
+La naissance de la phonologie a bouleversé cette situation. Elle n’a pas seulement renouvelé les perspectives linguistiques : une transformation de cette ampleur n’est pas limitée à une discipline particulière. La phonologie ne peut manquer de jouer, vis-à-vis des sciences sociales, le même rôle rénovateur que la physique nucléaire, par exemple, a joué pour l’ensemble des sciences exactes. En quoi consiste cette révolution, quand nous essayons de l’envisager dans ses implications les plus générales? C’est l’illustre maître de la phonologie, N. Troubetzkoy, qui nous fournira la réponse à cette question. Dans un article-programme (i), il ramène, en somme, la méthode phonologique à quatre démarches fondamentales : en premier lieu, la phonologie passe des l’étude des phénomènes linguistiques conscients à celle de leur infrastructure inconsciente; elle refuse de traiter les termes comme des entités indépendantes, prenant au contraire comme base de son analyse les relations entre les termes ; elle introduit la notion de système :  La phonologie actuelle ne se borne pas à déclarer que les phonèmes sont toujours membres d’un système, elle montre des systèmes phonologiques concrets et met en évidence leur structure (2) ;  enfin elle vise à la découverte de lois générales soit trouvées par induction,  soit… déduites logiquement, ce qui leur donne un caractère absolu (3). 
+(“Antholopologie Structurale Chapter2 L’analyse structurale en linguistique et en anthoropologie P.39)
+音韻論の誕生がこの状況を激変させた。音韻論は言語学の展望を新しくしただけではない。このように大きな変化は、ある特定の学問分野にとどまるものではなかった。音韻論は社会科学に対して革新的な役割を与える。たとえば、精密科学の全体に対して核物理学が与えたのと同じような革新的な役割を。最も一般的な意味において考察しようとするとき、この革命的な変化はどのような点で成り立つのだろうか。音韻論の大家である、ニコライ・トルベツコイはこの問に対する答えを提供している。
+ある雑誌論文の中で、彼は音韻論という学問の方法を全体として四つの基本的手続きに帰着させている。まず第一に、音韻論は意識的な言語現象の研究から、無意識的なインフラストラクチュア(下部構造)の研究へと移行する。(第二に)、音韻論は事象を独立した実体として扱うことを拒否する。そして反対に、事象と事象との関係を分析の基礎とする。第三に、それは体系の概念を導入する。(トルベツコイによれば)「現代の音韻論は音素が常にあるシステムの要素だということを明言するだけには留まらない。現代の音韻論は具体的な音素体系を明示してその構造を明らかにする。」のである。
+最後に、音韻論は一般的法則の発見を目的とする。これらの法則は、或る時には帰納によって発見されるが、「ある時には論理的に演繹される。そして、そのことが(帰納ではなく、論理的に演繹されることが)それらに絶対的性格を付与する。」
+(『構造人類学』第二章「言語学と人類学における構造分析」、拙訳)
+とあります。しかし一体、音素とは何なのか?とりあえずwikipediaを引いてみると、
+音素(おんそ)とは、音韻論で、任意の個別言語において意味の区別(弁別)に用いられる最小の音の単位を指す。音声学の最小の音声単位である単音とは異なり、実際的な音ではなく、言語話者の心理的な印象で決められる。音素は/ /で囲んで表記する。音素に使う記号は自由であり、各言語固有の音素文字が使われることもあるし、国際音声字母が使われることがある。なるべく簡便な記号が使われるのが普通である。ロシアの言語学者ボードゥアン・ド・クルトネが初めてその概念を提唱した。
+という解説が出てきます。次に『ソシュール一般言語学講義 コンスタンタンのノート』を引いてみるとソシュール自身の解説として、
+「音素は、調音上の動きの一定のまとまりであると同時に、一定の与えられた聴覚への効果からなっています。私たちにとって、音素はどれも連鎖の中の切片です。それらは鎖の輪なのです。(中略)それ以上細かく出来ない鎖の輪tそのものはそれ自身、もはや鎖の輪として、切片として考察されるのではなく、抽象的に、時間の外で考察されます。弁別的な素性 caractère distinctif だけに注目し、時間上の連続に依存するすべてのことを気にかけることなく論ずることができます。それは音符の連なりに似ています。ドレミは決して抽象的には語れませんが、連鎖の中から一様でそれ以上は分割できない切片ドを取りだせば、完全に時間(波動の分析)の外でそれについて語る事ができます。」(P.74)
+分かったような分からないような微妙なところなので、少し纏めてみましょう。(自学した内容なので正しいかは不明ですが)
+要するに、発話の最小単位である音節に対して、音素は「音」の最小単位なのです。
+では、「音」の最小単位である音素は、各言語で異なるものなのか?たとえ異なる(恣意的なもの)だとしても言語体系を超えた
+「一般的な音素体系」は打ちたてられないのか?この問題を考えるとき、ソシュールの議論を振り返ってみる必要があります。
+ソシュール言語学の核の一つは「対象(シニフィエ)と指し示す言語(シニフィアン)の関係は恣意的なもの」であり、あるシニフィエは
+「Aでもない。Bでもない。よってこのような特徴を持つものを、Cと呼ぼう。」というように差異化のシステムによって
+指示され、認識されるということでした。
+では、この議論を音素についても適用できないか?
+つまりある音素とある音素を「違うもの」とする判断基準、すなわち差異化の軸に注目してみるわけです。
+各言語体系を超えて共通している音素の差異化の軸を見つけ、それに従って音素を分類していくことによって「一般的な音素体系」を
+確立するという発想です。そして、この「音素の差異化の軸」こそが、上に引いた『ソシュール一般言語学講義』の中に見られた
+「弁別的素性 caractère distinctif 」に他なりません。
+音素を弁別的素性に基づいて分類していくこと。では、その弁別的素性はどのようなものに分けられているのでしょうか。
+かなり長くなってしまったので、弁別的素性の諸要素については次の記事で書くことにしましょう。
+音韻論と構造主義 その1「音素 phonème 」 « Nuit Blanche

@@ -1,0 +1,22 @@
+
+部品の線形変位、速度、加速度をプロット(Plotting the Linear Displacement, Velocity, or Acceleration of a Part)
+動いている部品の線形変位、角速度、角加速度を他の部品と相対する動作として、またはアセンブリの原点に対する動作としてプロットすることができます。   
+モーション解析スタディで、結果とプロット
+(MotionManager ツールバー) をクリックします。
+PropertyManagerの結果(Result)、カテゴリ(Category)で、変位/速度/加速度(Displacement/Velocity/Acceleration)を選択します。
+サブカテゴリ(Subcategory)で、次の一つを選択します:
+線形変位
+並進速度
+並進加速度
+結果の成分を選択(Select result component)に、次のオプションを選択します: 
+X 成分(X Component)、Y 成分(Y Component)、またはZ 成分(Z Component) : 選択方向の結果の大きさを計算します。
+大きさ(Magnitude)は、長方形の座標で結果ベクトルの方向に大きさを変換します。
+ラジアル構成部品(Radial Component)、(並進速度(Linear Velocity)のみ)は、極座標で、速度ベクトルの並進成分を変換します。
+正接構成部品(Tangential Component)、(並進加速度(Linear Acceleration)のみ)は、動作パスに正接する加速度ベクトルの成分を指定します。
+垂直構成部品(Tangential Component)、(並進加速度(Linear Acceleration)のみ)は、動作パスに垂直な加速度ベクトルの成分を指定します。
+フィーチャーの選択:
+アセンブリ原点に関する部品の動作に対する結果を計算するために、1つの部品面、点、または頂点を選択します。 
+2番目の選択された部品の原点に関して、最初に選択された部品の原点の動作に対する結果を計算するために、2つの部品面、点、または、頂点を選択します。
+モーターの最初の位置に関するモーターの動作の結果を計算するためにモーターを選択します。 
+モーター(Motor) PropertyManager でモーターを指定するとき、モーターの位置を定義します。   次に関連して動作する構成部品(Component to Move Relative to)で、構成部品を選択することによって、モーター(Motor) PropertyManager でモーターの動作のためにオプションとして参照フレームを定義するか、または、次に関連して動作する構成部品(Component to Move Relative to)をブランクのままにしておくことによって、アセンブリ原点から参照フレームを定義することができます。
+2012 SOLIDWORKS ヘルプ - 部品の線形変位、速度、加速度をプロット(Plotting the Linear Displacement, Velocity, or Acceleration of a Part)

@@ -1,0 +1,138 @@
+
+C# から文字列を返す C の関数を呼ぶ
+概要
+この記事は、
+C# のアセンブリから C/C++ で作ったネイティブな
+C 型 DLL の関数を呼び出す方法についての覚え書きです。
+ただし、その関数は「呼び出し側に文字列を返す」ものである場合の話です。
+普通に P/Invoke (プラットフォーム呼び出し)しようとしたら、
+ちょっとだけ「はまって」しまったので覚え書きしました。
+なお「C 型 DLL」という言葉を勝手に発明しましたが、
+要するに、
+引数の型などを C 言語と互換性をとれる関数を公開した DLL を指しています。
+つまり C 言語から自然に使える DLL という事です。
+そのため、C と関数を公開する DLL を作れさえすれば言語は
+B でも D でも構いません(B 言語は冗談ですが(笑))。
+具体例
+具体例の概要
+具体例に登場するプログラムは二つです。
+一つは「文字列を返す関数を公開するネイティブコードの DLL」で、
+もう一つは「それを P/Invoke して文字列を受け取る C# プログラム」です。
+またネイティブコード DLL の名前は native.dll とし、
+native.c と native.def から生成します。
+C# プログラムの方は InvokeTest というクラスで
+Main メソッドと P/Invoke 用の関数宣言を含むものを作ります。
+C 側が公開する関数
+ネイティブコード DLL のソース例を次に挙げます。
+native.c
+#include <windows.h>
+#include <stdio.h>
+BOOL APIENTRY
+DllMain( HANDLE moduleHdl, DWORD  callReason, void * reserved )
+{
+return TRUE;
+}
+int WINAPI
+GetFoobar( char * out_str, int maxLength )
+{
+const char * foobarString = "foobar";
+// check argument
+if( out_str == NULL )
+{
+fprintf( stderr, "[native] NULL argument was given" );
+return -1;
+}
+// check buffer size
+if( maxLength < (int)strlen(foobarString) )
+{
+fprintf( stderr, "[native] too small buffer given" );
+return -1;
+}
+// output string
+strcpy( out_str, foobarString );
+return 0;
+}
+native.def
+EXPORTS
+GetFoobar
+P/Invoke する C# プログラム
+続いて C# プログラムのソースを示します。
+注意するのは、
+ネイティブコードでは char* である第一引数の型を、
+string ではなく StringBuilder に指定している事だけです。
+using System;
+using System.Text;
+using System.Runtime.InteropServices;
+public class InvokeTest
+{
+static void Main() 
+{
+int rc; // result code
+StringBuilder str = new StringBuilder( "hoge", 10 );
+// print string before invoking
+Console.WriteLine( "before call : " + str );
+// invoke native DLL and get string from that
+rc = GetFoobar( str, str.Capacity );
+if( rc != 0 )
+{
+Console.WriteLine( "error occured." );
+}
+// print again
+Console.WriteLine( "after call : " + str );
+return;
+}
+[DllImport("nativecode.dll", CharSet=CharSet.Ansi)]
+public static extern int GetFoobar( StringBuilder out_str, int maxLength );
+}
+説明
+具体例の説明
+唯一のポイントは、書き換えてもらうバッファへのポインタを
+String (C# の string は String の別名)
+ではなく StringBuilder の型にして P/Invoke させる事です。
+当初、私は「文字列=string」という固定観念に縛られていたため型を
+"out string" にしたりと試行錯誤していましたが、
+分かってしまえば何という事はありませんでした。
+まず理解すべき事は、C# の String クラスが「書き換え不可能な文字列」だという事です。
+string の内容は変更できないのですから、
+「書き換えてもらうべき引数の型が string」
+というのは確かに不自然です。
+一方、StringBuilder は「書き換え可能な文字列」です。
+そのため、このような場合に
+StringBuilder を指定するのは意味的にも自然です。
+この点を理解しておけば、間違えて string を指定して P/Invoke する事も無くなるでしょう。
+ちなみに StringBuilder
+の仕様を見てみると、
+非常に「C の文字配列」に近い構造になっている事が分かると思います。
+バッファサイズについて
+ところで、StringBuilder のバッファサイズは
+「格納可能な最大文字数」
+で指定できます
+(バッファサイズは文字数 + 1)。
+C# で StringBuilder を使う分には自動的にバッファサイズを拡張してもらえますが、
+P/Invoke するとネイティブコード側が StringBuilder の仕様など知るはずもなく、
+自動的には拡張されません。
+したがって P/Invoke するコードを書く場合には、
+作法として次の二点をしっかりと確認しましょう。
+与える StringBuilder のバッファサイズは十分か(可能な状況ならば確認)
+バッファサイズが足りずに関数実行に失敗していないか(必ず確認)
+C# でエラーが発生した場合は .NET Framework が分かりやすくエラーを報告してくれますが、
+P/Invoke した関数中や P/Invoke の過程でエラーが起こると
+「エラーが起きている事に気づかない」
+ような非常にやっかいな問題になり得ます。
+・・・いや、まあ当然の話ではあるのですが。
+この記事で扱った例を少し変更してみましょう。
+StringBuilder のコンストラクタで最大文字数を 10 に設定しているところを、
+4 にしてみましょう。
+初期値の "hoge" は 4 文字なので問題無く格納できますが、
+"foobar" という文字列は収まりません。
+この状態でプログラムを実行すると、
+C# 側が P/Invoke した関数の返り値をチェックして失敗を検知する事を確認できます。
+こういった作法は守っておけば問題を未然に防げます。
+ほとんどの場合、大きな手間にはならないのでしっかり守るべきでしょう。
+ダウンロード
+なんとなく、
+具体例のプログラムをダウンロードできるようにしてみました。
+特に何も得るものは無いと思いますが(苦笑)、
+興味のある方はどうぞ。
+cs_pinvoke_string_out.zip
+碧落 - Calling C function that returns string from C#

@@ -1,0 +1,443 @@
+sobelフィルタは空間1次微分を計算し、輪郭を検出するフィルタです。上、右、下、左、右上、右下、左下、左上の8方向、上下左右の4方向同時、8方向同時の10種類から選択できます。例えば、「右上から左下へ」階調差のある部分のみを検出するといったことができます。ここでは10種類の方向をそれぞれ実行し、比較します。                 
+原画1 とsobelフィルタ
+原画2
+sobelフィルタの実行
+フィルタの方向 : 「下から上へ」		: 「上から下へ」
+フィルタの方向 : 「右から左へ」		: 「左から右へ」
+フィルタの方向 : 「左上から右下へ」		: 「右下から左上へ」
+フィルタの方向 : 「右上から左下へ」		: 「左下から右上へ」
+フィルタの方向 : 「8方向」			: 「4方向」
+ライブラリ関数
+MvcFlt2_Sobel_Toward_T
+int MvcFlt2_Sobel_Toward_T ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(上に向かって)処理後画像
+hSrcA	ソーベルフィルタ(上に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(上に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_Toward_B
+int MvcFlt2_Sobel_Toward_B ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(下に向かって)処理後画像
+hSrcA	ソーベルフィルタ(下に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(下に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_Toward_L
+int MvcFlt2_Sobel_Toward_L ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(左に向かって)処理後画像
+hSrcA	ソーベルフィルタ(左に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(左に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_Toward_R
+int MvcFlt2_Sobel_Toward_R ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(右に向かって)処理後画像
+hSrcA	ソーベルフィルタ(右に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(右に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_Toward_RB
+int MvcFlt2_Sobel_Toward_RB ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA)
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(右下に向かって)処理後画像
+hSrcA	ソーベルフィルタ(右下に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(右下に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_Toward_LT
+int MvcFlt2_Sobel_Toward_LT ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(左上に向かって)処理後画像
+hSrcA	ソーベルフィルタ(左上に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(左上に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_Toward_LB
+int MvcFlt2_Sobel_Toward_LB ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(左下に向かって)処理後画像
+hSrcA	ソーベルフィルタ(左下に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(左下に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_Toward_RT
+int MvcFlt2_Sobel_Toward_RT ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ(右上に向かって)処理後画像
+hSrcA	ソーベルフィルタ(右上に向かって)処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ(右上に向かって)
+処理を行います。
+使用している係数は以下の通りです。
+MvcFlt2_Sobel_8nbd
+int MvcFlt2_Sobel_8nbd ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ8方向処理後画像
+hSrcA	ソーベルフィルタ8方向処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ処理を8方向から行います。
+8方向は上、下、左、右、右上、左上、右下、左下です。
+MvcFlt2_Sobel_4nbd
+int MvcFlt2_Sobel_4nbd ( HANDLE hDst, HANDLE hSrcA,
+RECT* rcDst, RECT* rcSrcA )
+戻り値
+0:正常終了  1:DIB画像がない
+引数
+hDst	ソーベルフィルタ4方向処理後画像
+hSrcA	ソーベルフィルタ4方向処理元画像
+rcDst	処理範囲hDst
+rcSrcA	処理範囲hSrcA
+説明
+選択範囲内の画面に対して、ソーベルフィルタ処理を4方向から行います。
+4方向は上、下、左、右です。
+ソースコード
+/////////////////////////////////////////////////////////
+// Sobel.cpp : ソーベルフィルタのサンプルプログラム
+//
+// このプログラムは画像ファイルを入力し、
+// ソーベルフィルタ処理を実行するサンプルプログラムです。
+//
+// フィルタのパラメータはファイルから入力します。
+// ファイル名:Sobel.txt
+//
+// 1行目:選択
+//
+// 選択
+// 0 : 下から上への変化
+// 1 : 上から下への変化
+// 2 : 右から左への変化
+// 3: 左から右への変化
+// 4 : 左上から右下への変化
+// 5 : 右下から左上への変化
+// 6 : 右上から左下への変化
+// 7 : 左下から右上への変化
+// 8 : 8近傍
+// 9 : 4近傍
+/////////////////////////////////////////////////////////
+#include "stdafx.h"
+#include <windows.h>
+#include <stdio.h>
+#include <math.h>
+#include <conio.h>
+#include "MvcFlt2.h"
+#include "MvcDib.h"
+#include "MvcUtil.h"
+#include "MicroViewer.h"
+#include <algorithm> // for std::swap
+char *img_name = "Image/Filter/Filter01.bmp";	// 画像ファイル名
+char *img_name2 = "Image/Filter/Filter03.bmp";	// 画像ファイル名
+char text1[256];							// 結果表示用テキストバッファ
+DWORD dwTime;
+int main(int argc, char* argv[])
+{
+RECT rcP = {-1, -1, -1, -1};
+int Width ,Height;
+if(MvcFlt2_Init() != 0)
+{
+printf("MvcFlt2 初期化処理エラー\n");
+exit(1);
+}
+if(MvcUtil_Init() != 0)
+{
+printf("MvcUtil 初期化処理エラー\n");
+exit(1);
+}
+printf("ソーベルフィルタのサンプルプログラム\n");
+printf("ソーベル の10種類を実行します。\n\n");
+printf("【設定パラメータ】\n");
+HANDLE Input = mvLoadFromFile(img_name,8);		// 画像を読み込む
+MvViewer Viewer1 = mvCreate("入力画像表示");	// ビュアーを作る
+mvShow(Viewer1, Input);						// 入力画像を表示する
+// mvGetRect(Viewer1, &rcP);						// 検索範囲の設定
+// 出力用の画像を作る
+Width  = MvcDib_GetXsize(Input);
+Height = MvcDib_GetYsize(Input);
+rcP.top    = 0;
+rcP.bottom = Height -1;
+rcP.left   = 0;
+rcP.right  = Width -1;
+HANDLE Output = MvcDib_Create(Width, Height, 1, 4);  // 画像処理エリアの確保
+//	MvcDib_GrayFromColor(Output, Input, 0);         // カラーからグレー変換
+//	MvViewer Viewer2 = mvCreate("濃淡画像表示");	// ビュアーを作る
+//	mvShow(Viewer2, Output);						// 濃淡画像を表示する
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_Toward_T(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer2 = mvCreate("下から上への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer2, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【下から上への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, "下から上への変化  : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer2));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_Toward_B(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer3 = mvCreate("上から下への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer3, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【上から下への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 上から下への変化 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer3));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルター の実行
+MvcFlt2_Sobel_Toward_L(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer4 = mvCreate("右から左への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer4, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【右から左への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 右から左への変化 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer4));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_Toward_R(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer5 = mvCreate("左から右への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer5, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【左から右への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 左から右への変化 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer5));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_Toward_RB(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer6 = mvCreate("左上から右下への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer6, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【左上から右下への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 左上から右下への変化 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer6));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_Toward_LT(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer7 = mvCreate("右下から左上への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer7, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【右下から左上への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 右下から左上への変化 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer7));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルター の実行
+MvcFlt2_Sobel_Toward_LB(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer8 = mvCreate("右上から左下への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer8, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【右上から左下への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 右上から左下への変化 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer8));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_Toward_RT(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer9 = mvCreate("左下から右上への変化");      
+// 濃淡画像を表示する
+mvShow(Viewer9, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【左下から右上への変化 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 左下から右上への変化 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer9));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_8nbd(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer10 = mvCreate("8近傍");      
+// 濃淡画像を表示する
+mvShow(Viewer10, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【8近傍 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 8近傍 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer10));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_4nbd(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer11 = mvCreate("4近傍");      
+// 濃淡画像を表示する
+mvShow(Viewer11, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【4近傍 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 4近傍 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer11));
+/*---------------------ソーベルフィルタ----------------------------------------*/
+Input = mvLoadFromFile(img_name2,8);		// 画像を読み込む
+// 処理時間計測開始
+Vstart_timer();
+// フィルターの実行
+MvcFlt2_Sobel_8nbd(Output, Input, &rcP, &rcP);
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// ビュアーを作る
+MvViewer Viewer12 = mvCreate("8近傍");      
+// 濃淡画像を表示する
+mvShow(Viewer12, Output);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+printf("\n【8近傍 処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+sprintf(text1, " 8近傍 : %.2lf msec",(double)dwTime / 1000);
+MvcUtil_DrawText(rcP.left + 20, rcP.top + 20,text1, GREEN);
+MvcUtil_Paint(mvGetDC(Viewer12));
+/*----- キー待ち -----------------------------*/
+printf("\n キー入力すると終了します\n");
+mvWait();
+/*----- キー待ち -----------------------------*/
+MvcFlt2_Fini();
+MvcUtil_Fini();	
+// ビュアーを破棄
+mvDestroy(Viewer1);
+mvDestroy(Viewer2);
+mvDestroy(Viewer3);
+mvDestroy(Viewer4);
+mvDestroy(Viewer5);
+mvDestroy(Viewer6);
+mvDestroy(Viewer7);
+mvDestroy(Viewer8);
+mvDestroy(Viewer9);
+mvDestroy(Viewer10);
+mvDestroy(Viewer11);
+mvDestroy(Viewer12);
+// 画像メモリの開放
+MvcDib_Destroy(Input);
+MvcDib_Destroy(Output);
+return 0;
+}
+Copyright 2007 The Micro Vision, CO.,LTD.
+sobelフィルタ

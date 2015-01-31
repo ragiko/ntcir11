@@ -1,0 +1,16 @@
+Juliusのサンプル音響モデル・テストデータセットで試す  &dagger;
+JULIUS/segment_julius4.pl の以下の行を書き換えます。
+JULIUS/bin/julius-*****.exe のバージョン番号に書き換え。2014/07/17 時点では以下の通り。
+16行目 $julius4bin="./bin/julius-4.1.5";
+> $julius4bin="./bin/julius-4.3.1";
+パスの区切り記号は「/」でなく「\\」で記述して下さい。*7  ※ PCによって違うようです。「/」「\」「\\」のうち、ご自分の環境に合わせた(エラーの出ない)記述をして下さい。
+絶対パスで記述して下さい。*8  ※ PCによっては相対パスでもうまくいくようです。JULIUS/ のところを ./ と記述してエラーが出なければ、以降そのように表記してかまいません(絶対パスでもOK)
+音響モデルの正しい場所を指定。ご自分の環境に合わせて書き換えてください。
+19行目 $hmmdefs="./models/hmmdefs_monof_mix16_gid.binhmm"; # monophone model
+> $hmmdefs="./model/phone_m/hmmdefs_monof_mix16_gid.binhmm"; # monophone model
+コマンドラインで以下を実行します。
+cd JULIUS/
+perl segment_julius4.pl JULIUS/sample/sample.wav JULIUS/sample/sample.trans
+Array @words missing the @ ... の警告は、69行目の word を @word に書き換えれば消えますが、とりあえずどちらでも問題ありません(詳細)。
+ここではパスの区切り記号は「/」でも「\」でも「\\」でもOK。
+JuliusとJulian/音素自動ラベリング - Miyazawa’s Pukiwiki 公開版

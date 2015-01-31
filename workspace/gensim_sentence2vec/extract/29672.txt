@@ -1,0 +1,6 @@
+対象ソフトウェア:Windows XP/Windows Vista/Windows 7/Windows 8/Windows 8.1/Windows Server 2003/Windows Server 2008/Windows Server 2008 R2/Windows Server 2012/Windows Server 2012 R2、Internet Explorer 6/7/8/9/10/11
+解説
+コンピューターで使われる文字コード体系にはさまざまなものがある。Windowsで使われる文字コードとしては、MS-DOSの時代から「シフトJIS」コードがほぼ標準であった。だが、UNIX/LinuxやMac、スマートフォン/タブレット、そしてインターネット環境などでは、その他の文字コードも多く使われている。
+また日本語だけでなく、世界中の言語もコンピューターで統一的に取り扱うために、現在のWindows OSでは、内部的には「Unicode」を使って処理を行っている。そして外部との入出力時に他の文字コードと相互に変換を行っている。
+日本語に限っていえば、現在のWindows環境では以下のような文字コード形式がよく使われている。
+Windows TIPS:WindowsでInternet Explorerを使って文字コードを変換する - @IT

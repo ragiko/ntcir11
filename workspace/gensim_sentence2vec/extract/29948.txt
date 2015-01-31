@@ -1,0 +1,65 @@
+
+研究テーマの詳細
+[中野の研究紹介] 
+[中野の目次]
+手書き文字認識
+英数字・片仮名認識手法の開発 (1978--1989)
+手書き数字の認識精度は世界最高、と褒められた時期もある。
+その理由は、数字認識での誤認識を少くすることに意を払ったからである。 
+経理伝票など、金額に関連するデータは誤りが許されない
+認識手法比較の際の注意事項
+認識手法比較において注意すべきNagy の法則
+とコンテスト
+文字認識手法を比較する際
+R+10E 
+という尺度を用いていた。これは誤認識に高いペナルティを課すことにより、 
+誤認識の少い認識手法開発を目指したものである。 
+しかし外部に発表していなかったため、同様なアイデアについて、
+最初に公表論文を書いた郵政研究所の提案と考えられているのは残念である
+数字の誤認識を少くしたり、英字などでの類似文字を識別するのに 有効な処理として
+二段判定と検定がある。
+実際に提案され実施されたのは1970年前後であるが、
+発案者が論文を書いてないため、あまり知られていない。 
+われわれの英数字・片仮名認識手法でもこの考えを採用していた
+文字認識に関する外野からの雑音
+手書き漢字認識
+漢字認識手法開発への協力 (1984、1988)
+漢字認識では誤認識は避けられず、知識処理 
+による回復が必要となる。多少、文字認識率が低くても、
+知識処理によって総合的な性能が実用レベルに達することが可能である
+文字認識における知識処理の研究自体に着手したのは早く、 多少の成果も出たが、
+実用上重要な手書き漢字認識への適用では大きく立ち遅れた
+詳細は書けないが、 手書き漢字認識を研究できなかった時期があったためである
+手書き英数字認識への再挑戦
+新しい文字認識手法開発の努力 (1999〜)
+非常に新しいという訳でもないが、最近流行している HMM や SVM も少しかじっている
+参考文献
+西村、小林、丸山(健一)、中野; 
+多方向特徴抽出 HMMと Bagging による多数決を利用した文字認識, 
+電子情報通信学会論文誌,J82-DII [9], pp.1429-1434 (1999)
+H. Nishimura, M. Kobayashi, M. Maruyama and Y. Nakano; 
+Off-line Character Recognition Using HMM by Multiple Directional Feature Extraction and 
+Voting with Bagging Algorithm, 
+Proceedings of 5th International Conference on Document Analysis and Recognition
+(ICDAR'99), pp. 49-52 (1999)
+西村、堤、丸山(健一)、宮尾、中野; 
+画像連結方向成分を利用した方向性 HMM オフライン文字認識,
+情報処理学会論文誌, pp. 4051-4058 (2002)
+丸山(健一)、丸山(稔)、宮尾、中野; 
+SVM を用いた高累積正解率を持つ多クラスパターン識別,
+情報処理学会論文誌, pp. 2270-2273 (2003)
+K. Maruyama, M. Maruyama, H. Miyao and Y. Nakano;
+A Method to make multiple Hypotheses with high cumulative recognition rate using SVMs,
+Pattern Recognition, Vol. 37, pp.241-251 (2004)
+手書き英数カタカナ文字認識の論文が少い理由
+についての言い訳は別に書く。
+[中野の研究紹介] 
+[中野の目次]
+mail address:
+お手数ですが打ち込んで下さい
+First Written Before January 10, 1995
+Transplanted to KSU Before June 20, 2003
+Divided June 20, 2003
+Transplanted to So-net May 4, 2005
+Last Update July 11, 2005
+Handwritten Character Recognition

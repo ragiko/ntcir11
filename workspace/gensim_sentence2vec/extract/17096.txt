@@ -1,0 +1,4 @@
+過去の問合せ事例をデータベース12に蓄積し、新たな問合せ内容をセンタサーバ10で分析し、この分析結果から過去の問合せ事例を問合事例DB12から検索する。Past inquiry cases are accumulated in a database 12, a new inquiry content is analyzed in a center server 10, and the past inquiry cases are retrieved from the inquiry case DB 12 from this analyzed result. - 特許庁
+電子カルテデータベース102のデータを用いて、階層構造的にバリアンス発生原因を、バリアンスが発生した事例毎に記述した個別事例分析結果を個別事例分析結果構築手段104にて構築する。An individual case analysis result construction means 104 uses data in an electronic medical chart database 102, to construct individual case analysis results hierarchically describing the causes of variances for each case where variance has occurred. - 特許庁
+次に、類似事例抽出手段107にて、個別事例分析結果の階層構造的な類似性に着目して、現在直面しているバリアンスに類似した過去のバリアンス分析事例を抽出する。A similar case extraction means 107 extracts, focusing on the hierarchical similarities of the individual case analysis results, a previous variance analysis case similar to the current variance. - 特許庁
+分析事例の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

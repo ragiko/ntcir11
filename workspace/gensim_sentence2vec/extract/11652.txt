@@ -1,0 +1,35 @@
+以前、第4回「契約書に登場する代表的な条項とその特徴(2)」の講座で、一般条項の1つである「守秘義務」条項についてお話しました。契約によって他の企業と特定の関係を結んだことにより、自社の大事な秘密情報が不正に使用されたり、第三者に漏れてしまったりするのを防ごうという目的で挿入される条項でした。
+この守秘義務について、もっと詳しく決めておきたい場合、別個の契約として秘密保持契約書を交わしておくことも多いのです。また、企業同士の守秘義務契約だけではなく、その企業と従業員の間にも、その従業員が相手方企業の秘密にアクセスする可能性があれば、秘密保持契約を締結することを求める場合もあります。
+私たち翻訳者も、翻訳という仕事を通してクライアントさんの企業秘密に触れることになりますので、秘密保持契約を締結するのが普通です。
+では、具体的に条文を見ていきましょう。
+秘密保持契約書
+秘密保持契約書に必要な要素は、主に次の5つです。
+・誰が情報を共有するか?
+・どんな情報が機密情報であるか/ないか?
+・どのように情報を利用することができるか/できないか?
+・秘密を保持する期間は?
+・情報の取扱い方
+【例文】
+Confidentiality  Agreement
+This  Confidentiality Agreement (this "Agreement") is entered into by  and between ABC, Inc., a Delaware corporation with its principal  office at ("ABC"), and the undersigned recipient of  information from ABC, including the undersigned recipient's  officers, directors, employees, agents and representatives  (collectively, "Recipient"), with reference to the following  facts:
+【訳文】
+第8回 契約書の種類③
+秘密保持契約書
+本秘密保持契約(「本契約」)は、  (住所)  に主たる事業所を有するデラウェア州の企業、ABC社(「ABC」)および、下記に署名をするABCからの情報の受領者の間において、以下の事実に関して締結されるが、かかる受領者には、下記に署名する受領者の役員、取締役、従業員、代理人、および代表者(総称的に「本件受領者」)も含まれる。
+契約書のタイトルは、Confidential  Agreement の他に、Non-Disclosure  Agreement、Secrecy  Agreement なども使われます。Non-Disclosure  Agreement  は「NDA(エヌ・ディー・エー)」と呼んだりもします。訳語も「守秘義務契約」「非開示契約」「機密保持契約」(順不同)などがありますが、それぞれ違いはありません。Secret  よりもConfidential  の方が秘密の度合いが重大だろうとか逆だとか、そういうこともありません。防衛・軍事のような国家機密の問題などでは、重要度合い別に  Confidential、Secret、Top  Secret、などに分類することがありますが、秘密保持契約の中では、この分類は関係ありません。
+秘密保持契約の最初の要素、「誰が」については、このように冒頭の部分で示されることがほとんどです。契約の両当事者が相互に情報の開示者であると同時に受領者になることもありますが、例文ではABCが開示者、他方当事者が受領者になっています。
+さらに例文では、受領者の方は、役員や従業員も「受領者」に含まれる、ということも定められています。
+開示者を Disclosing  Party、Discloser  とする場合もあります。受領者の Recipient  の代わりに Receiving  Party ということもあります。
+【例文】
+WHEREAS  ABC envisages that it may and will, in the course of its business  relationship with Recipient, disclose certain Confidential  Information (as defined in Article 1 below) to Recipient, and WHEREAS,  prior to ABC's disclosure of the Confidential Information to  Recipient, Recipient is required to enter into this Agreement to  preserve the confidentiality and restrict its use of such  Confidential Information,
+【訳文】
+ABC  は、受領者との取引関係において、一定の機密情報(以下第1条に定義する)を受領者に開示する場合があることを予測する。
+ABCによる機密情報の開示の前に、受領者は、かかる機密情報の機密を保持し、その使用を制限するために、本契約を締結しなければならない。
+例文はWhereas  条項で、開示側の当事者と受領側当事者がどのような経緯でこの秘密保持契約を締結するのか、また何を要求されるかの概要が示されています。
+この例文では、in  its business relationship with Recipient  と、具体的にどのような取引なのかは示されていませんが、具体的に「年月日付の契約の履行において」などと、基本となる契約が明示される場合もありますし、「開示者側のこれこれの製品に使用する何々の部品を受領者に製造・供給させる過程において」など、具体的な取引の内容が書かれる場合もあります。
+Confidential  Information の代わりに、Proprietary  Information という表現が使われることがありますが、同じ意味になります。訳は「機密情報」でも「秘密情報」でも構いません。
+【例文】
+"Confidential  Information" includes or involves certain information of a  character regarded by ABC as confidential, including but not limited  to, trade secrets, know-how, techniques, designs, drawings,  specifications, and data, as well as any and all improvements and  modifications made to the said items above either by ABC or  Recipient.
+【訳文】
+「機密情報」は、ABC  が機密であるとみなす性質を持つ一定の情報を含む、またはこれに関与するものであり、トレードシークレット、ノウハウ、技術、設計、図面、仕様、およびデータ、ならびにABCまたは受領者によって上記のものに加えられた改良または変更の全てを含むが、これらに限定されない。
+カンタン法律文書講座 第九回 契約書の種類(3) - ハイキャリア - 翻訳

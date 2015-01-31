@@ -1,0 +1,113 @@
+
+Cach&eacute; SQL リファレンス
+Static Version
+CREATE VIEW
+ビューを作成します。
+Synopsis
+CREATE VIEW view-name (column-commalist) AS select-statement WITH READ ONLY
+CREATE VIEW view-name (column-commalist) AS select-statement WITH [level] CHECK OPTION
+引数
+view-name
+作成するビュー名。名前付け規約はテーブル名と同じです。ビュー名は修飾 (schema.viewname)、未修飾のどちらでもかまいません。同じスキーマ内では、テーブルとビューに同じ名前を使用することはできません。
+column-commalist
+オプション  ビューを構成する列名。指定されている場合、このリストは括弧で囲み、リストの項目はコンマで区切られます。
+AS select-statement
+ビューを定義する SELECT 文。
+WITH READ ONLY
+オプション  挿入、更新、削除のオペレーションは、ビューの基であるテーブル上のこのビュー経由で実行されないことを指定。以下に示す制限を条件として、既定はビュー経由でこれらの操作を許可します。
+WITH level CHECK OPTION
+オプション  挿入、更新、削除の操作は、ビューの基であるテーブル上のこのビュー経由でどのように実行されるかを指定。level には、キーワード LOCAL または CASCADED を指定できます。level を指定しない場合、WITH CHECK OPTION は既定で CASCADED になります。
+概要
+CREATE VIEW コマンドは、ビューの内容を定義します。ビューを定義する SELECT 文には、複数のテーブルや他のビューを使用できます。作成されるビューの SELECT 節内で参照されるオブジェクトから選択するには、適切な特権が必要です。それには、ビューによって参照されるすべてのテーブル (またはビュー) に対して、SELECT 特権を持っている必要があります。ビュー経由でのデータ変更が許可されている場合に (つまり、WITH READ ONLY が指定されていない場合に) 許可される変更の種類 (INSERT、UPDATE、DELETE) は、ビューによって参照されているテーブルに対して持っている変更特権と同じになります。
+埋め込み SQL 内では CREATE TABLE 文を使用する前に、%msql ローカル変数を %CREATE_VIEW 特権を持つユーザに設定する必要があります。これを設定しないと、SQLCODE 99 エラー (特権違反) が返されます。%CREATE_VIEW 特権は、GRANT コマンドを使用して割り当てます。ただし、Cach&eacute; 構成マネージャの [SQL セキュリティ有効] オプションが いいえ に設定されている場合は、ユーザを指定しなくてもビューを作成できます。この場合、SQL マネージャはユーザとして _SYSTEM を、埋め込み SQL はユーザとして "" (空文字列) を割り当てます。SQL セキュリティの構成の詳細は、"Cach&eacute; セキュリティ" の技術情報を参照してください。
+ビューは、特定のテーブルの行や列の単純なサブセットである必要はありません。ビューは、任意の複雑度を持つ SELECT 節で、複数のテーブルや他のビューを使用して作成できます。ただし、ビュー定義に使用する SELECT 節には、いくつかの制約があります。CREATE VIEW 文には、以下の内容が適用されます。 
+ORDER BY 節を含まない。
+INTO キーワードを含まない。
+臨時のテーブルを参照しない
+GROUP BY 節を持つことが可能。
+関数を使用可能
+ビューに列名リストを指定することによって、クエリに列名を含めないこともできます。以下はその例です。
+CREATE VIEW MyView (ViewCol1, ViewCol2, ViewCol3) AS
+SELECT TableCol1, TableCol2, TableCol3 FROM MyTable
+上記の例は、以下と同じです。
+CREATE VIEW MyView AS SELECT TableCol1 AS ViewCol1,
+TableCol2 AS ViewCol2,
+TableCol3 AS ViewCol3
+FROM MyTable
+CREATE VIEW には、2 つのテーブルの UNION 結合から列を選択する UNION 文を含めることができます。UNION の指定方法を、以下の例に示します。
+SET %msql="_SYSTEM"
+&sql(CREATE VIEW MyView (vname,vstate) AS
+SELECT t1.name,t1.home_state
+FROM Sample.Person AS t1
+UNION
+SELECT t2.name,t2.office_state
+FROM Sample.Employee AS t2)
+WRITE !,"SQL error code is: ",SQLCODE
+上記の例のように、ビュー名が未修飾の場合は、ビューによって参照されるテーブルが Sample スキーマに属していたとしても、システム全体の既定 SQL スキーマ名 (この場合は User.MyView) が既定のスキーマになることに注意してください。ビューが関連するテーブルとともに格納されることを確実にするために、ビュー名は常に修飾することをお勧めします。
+ビューの名前付け規約
+ビュー名の名前付け規約は、テーブル名の名前付け規約と同じです。同じスキーマ内では、テーブルとビューに同じ名前を使用できません。同じ名前にすると、SQLCODE 201 が返されます。
+ビュー名は、識別子 の規則に従い、以下のような制約を受けます。既定のビュー名は、簡単な識別子です。ビュー名は 128 文字を超えることはできません。
+Cach&eacute; はビュー名を使用して、対応するクラス名を生成します。クラス名には英数字 (文字および数字) のみが使用され、その長さは最大 25 文字です。このクラス名を生成するには、Cach&eacute; は最初にビュー名から句読点を削除し、次に 25 文字 (未満) の一意の識別子を生成します。その際、クラス名の一意性を保証するために、必要に応じて最後の文字を数字に置き換えます。Cach&eacute; は有効なビュー名から一意のクラス名を生成しますが、ビューの名前を付ける際には、この名前の生成に伴う以下の制約について考慮する必要があります。
+ビュー名には、最低でも 1 文字を含める必要があります。ビュー名の先頭の文字または最初の句読点に続く文字は、数字以外の文字にする必要があります。
+Cach&eacute; は Unicode システムで、16 ビット (ワイド) 文字のビュー名をサポートします。$ZNAME テストに合格した文字は、有効な文字です。
+生成されたクラス名には句読点が含まれないため、句読点のみが異なるビュー名およびテーブル名の作成は可能ですが、お勧めできません。
+ビュー名は 25 文字よりも大幅に長くすることができますが、最初の 25 英数字が異なるようにビュー名を作成すると処理がはるかに容易になります。
+ビュー名は修飾、未修飾のどちらでもかまいません。ビュー名を修飾する場合は、以下の構文を使用します。
+schema.viewname
+未修飾のビュー名には、既定として SQLUser スキーマ (または事前構成されたシステム既定のスキーマ名) が使用されます。Cach&eacute; はスキーマ名を使用して、対応するクラス・パッケージ名を生成します。SQLUser からは、パッケージ名 User が生成されます。スキーマ名と既定値の詳細は、"テーブル参照" を参照してください。
+ビュー経由の更新
+ビューを使用して、ビューの基であるテーブルの更新が可能です。ビュー経由で、新しい行の INSERT、行データの UPDATE、および、行の DELETE が可能です。CREATE VIEW 文がこの機能を指定すれば、INSERT 文、UPDATE 文、DELETE 文がビューに発行されます。ビュー経由の更新を許可するには、WITH CHECK OPTION (既定) を指定します。
+ビュー経由の更新を防止するには、WITH READ ONLY を指定します。WITH READ ONLY で生成されているビュー経由で  INSERT、UPDATE、または DELETE 文を実行すると、SQLCODE=35 エラーが返されます。
+ビュー経由の更新を実行するは、GRANT コマンドで指定される通り、テーブルやビューの更新に適切な特権が必要です。
+ビュー経由で更新するには、以下の制限に従います。
+ビューは、ビューとして投影されたクラス・クエリではありません
+ビューのクラスはクラス・パラメータ READONLY=1 を含むことはできません
+ビューを定義する SELECT 文は GROUP BY、HAVING、SELECT DISTINCT、UNION、または SELECT TOP 節を含むことができません。
+ビューの SELECT リストにある値式は、すべて列参照でなければなりません。
+ビューは 1 つのテーブル参照を持つことが可能なだけで、更新可能テーブルか更新可能ビューのどちらかを指定する必要があります
+WITH CHECK OPTION 節を指定すると、挿入または更新オペレーションの際に、その結果行がビュー定義の WHERE 節に対して検証されます。これで、挿入または変更した行が生成されたビュー・テーブルの一部であることを確実にします。利用可能なはチェック・オプションは以下に示す 2 点です。
+WITH LOCAL CHECK OPTION では、INSERT または UPDATE 文で指定されたビューの WHERE 節のみがチェックされます。
+WITH CASCADED CHECK OPTION では、INSERT または UPDATE 文で指定されたビューおよびすべての基本ビューで指定された WHERE 節がチェックされます。これは、基本ビューで WITH LOCAL CHECK OPTION 節であればいずれもオーバーライドします。CASCADED は既定で、更新可能なビューすべてに推奨します。
+INSERT オペレーションで WITH CHECK OPTION 検証 (上記の説明にある) に失敗すると、SQLCODE=136 エラーが返されます。
+UPDATE オペレーションで WITH CHECK OPTION 検証 (上記の説明にある) に失敗すると、SQLCODE=137 エラーが返されます。
+例
+以下の例は、PhoneBook テーブルから "CityPhoneBook" という名前のビューを作成します。
+CREATE VIEW CityPhoneBook AS
+SELECT Name FROM PhoneBook WHERE City='Boston'
+以下の例は、Guides テーブルから "GuideHistory" という名前のビューを作成します。すべてのタイトル (Title 列から) と、その人が退職したか否かをリストにします。 
+CREATE VIEW GuideHistory AS
+SELECT Guides, Title, Retired, Date_Retired 
+FROM Guides
+以下の埋め込み SQL 例は、テーブル MyTest を作成し、次に MyTest から 1 つのフィールドを選択するビュー MyTestView を作成します。
+SET %msql="_SYSTEM"
+&sql(CREATE TABLE Sample.MyTest (
+TESTNUM     INT NOT NULL,
+FIRSTWORD   CHAR (30) NOT NULL,
+LASTWORD    CHAR (30) NOT NULL,
+CONSTRAINT MyTestPK PRIMARY KEY (TESTNUM))
+)
+WRITE !,"SQL create table code is: ",SQLCODE
+&sql(CREATE VIEW Sample.MyTestView AS
+SELECT FIRSTWORD FROM Sample.MyTest
+WITH CASCADED CHECK OPTION)
+WRITE !,"SQL create view code is: ",SQLCODE
+以下の例は、3 つのテーブル (Proj、Staff、Works) から "StaffWorksDesign" という名前のビューを作成します。Name 列、Cost 列、Project 列はデータ提供します。 
+CREATE VIEW StaffWorksDesign (Name,Cost,Project)
+AS SELECT EmpName,Hours*2*Grade,PName
+FROM Proj,Staff,Works 
+WHERE Staff.EmpNum=Works.EmpNum 
+AND Works.PNum=Proj.PNum AND PType='Design'
+以下の例は、UNION を使用して b.table2 と a.table1 から選択することにより v_3 という名前のビューを作成します。
+CREATE VIEW v_3(fvarchar)
+AS SELECT DISTINCT * 
+FROM
+(SELECT fVARCHAR2 FROM b.table2 
+UNION ALL
+SELECT fVARCHAR1 FROM a.table1) 
+関連項目
+テーブル参照 ALTER VIEW DROP VIEW CREATE TABLE
+Copyright
+&copy; 1997-2005, InterSystems Corp.
+Last updated: 2005-05-26 15:11:56
+Source: RSQL_createview.xml
+CREATE VIEW

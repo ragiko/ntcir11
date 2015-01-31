@@ -1,0 +1,11 @@
+
+複数のシステムを連携動作させる際、連携ソフトにはMOM(Message Oriented Middleware、メッセージ指向ミドルウエア)が使われることが多い。MOMはキューを介してメッセージやデータ交換を行う仕組みを提供するミドルウエアである。この仕組みには、相互のシステムが相手の動作状況に依存することなく処理を進められるというメリットがある。例えば、本社データベースのマスターを全国の支店や店舗データベースに配布するケースで、配布先の一部システムがメンテナンスで停止していたとしても、本社システムはデータ送信処理を終えて、別の処理を実施できる(図1)。
+現状、UNIX/Linux系のサーバーにおいてMOMとしては、Java EE(Java Platform、 Enterprise Edition)の一部であるJMS(Java Message Service)と呼ばれるAPIを実装したプロダクト(以下、JMSプロダクト)が普及している。ただし、JMSプロダクトには異なる実装のものを接続できないという問題がある。JMSはJavaシステムとMOM間のAPIであり、両者間でデータをどのようにやり取りするかといった細かな通信規約までは定めていない。それにより、異なる実装のプロダクト間で、メッセージを正しくやり取りできることが保証されないのである。
+この問題を解消するため、細かな通信規約まで定めた規格の「AMQP(Advanced Message Queuing Protocol)」(http://www.amqp.org/)や「STOMP(Simple Text Oriented Messaging Protocol)」(http://stomp.github.com/)が策定された。最近になって、それら規格を実装したオープンソースのMOMプロダクトが登場し始めた。
+AMQPおよびSTOMPはJMSと比べて包括的な標準仕様であることから、場合によっては対応プロダクトのパフォーマンスがJMSよりも劣る可能性がある。そこで、JMS、AMQP、STOMPのそれぞれの規格に対応する代表的なMOMを使ってパフォーマンスを検証してみた。
+HornetQ、RabbitMQ、Apolloの性能を検証
+検証対象のプロダクトは次の通りである。
+JMSプロダクトには、JBossと呼ばれる開発コミュニティーにより開発されている「HornetQ」(http://www.jboss.org/hornetq)を用いた。Apache v2.0ライセンスで配布されており、サーバーおよびクライアントともにJavaが稼働する環境で利用できる。
+またAMQPのプロダクトとしては、米VMwareが開発する「RabbitMQ」(http://www.rabbitmq.com/)を選んだ。Mozilla Publicライセンスで配布されており、サーバーはErlang言語が、またクライアントはJavaやC、Ruby、Pythonなどの言語が動作する環境で利用できる。
+STOMPのプロダクトとしては、米Apache Software Foundationのプロジェクトとして開発されている「Apollo」(http://activemq.apache.org/apollo)を使った。Apache v2.0ライセンスで配布されており、サーバーはJava言語が稼働する環境、またクライアントはJavaやC、Ruby、Pythonなどの言語が動作する環境で利用できる。なお、STOMPの仕様は前述のHornetQやRabbitMQにも実装されている。
+IT検証ラボ - 新規格MOM、AMQPやSTOMP対応、プロダクトの性能はJMSと同等以上:ITpro

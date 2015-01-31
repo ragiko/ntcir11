@@ -1,0 +1,13 @@
+
+USB CANインターフェース USB-8473 と Frame API for C を使用してプログラミングしていますが、まだ対向デバイスがないので実地にいろいろと確認できない状況です。
+http://digital.ni.com/public.nsf/allkb/E1A44077DA6C819186257288006B76D7
+上記ページに847xでのFrame API 制約等の記述がありますが、関数名等が NI-CAN Hardware and Software Manual Capter11 と一致しておりません。少し内容が古いのかとも思われますが、現行2.5に一致するものをご紹介いただけたらと思います。
+基本的には、ネットワークオブジェクトのサポートだけで、CANオブジェクトはサポートしていないと理解しておりますが、細部に関して自信が持てずにおります。
+1) 
+ncConfig() で指定可能なパラメータがボーレートとStartAtOpenの二者のみとのことですが、例えば NCATTR_WRITE_Q_LEN は、なにかデフォルト値が適用されるということでしょうか?ncWriteMultはタイプスタンプ以外使用可能と思いますが。
+2)
+ncCreateNotification() は制約無しでしょうか?
+3)
+ncWaitForState() は、現在でもncRead/WriteMult() をサポートしていないのでしょうか?
+以上、USB-CANに関する質問です。
+847x USB-CANにおけるFrame APIのサポート内容 - Discussion Forums

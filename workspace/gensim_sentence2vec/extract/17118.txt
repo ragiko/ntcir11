@@ -1,0 +1,4 @@
+マルコフ確率場モデルは、最大エントロピーモデルである。The model of the Markov random field is a maximum entropy model. - 特許庁
+音楽情報を、マルコフ確率場を用いて周辺の文脈に依存するとしてモデル化し、前記マルコフ確率場モデルを用いて、入力された音楽情報に対してラベル付与を行う、音楽情報解析方法である。In a music information analysis method, music information is modeled assuming that it depends on surrounding contexts by using a Markov random field model, and a label is attached to the input music information by using a model of the Markov random field. - 特許庁
+加えて、切り出された領域とその周辺の領域とにマルコフ確率場モデルを導入し、当該領域間の境界形状を最適化する。Additionally, the device introduces the Markov random field model to the cut out area and its surrounding area and optimizes a boundary shape among the areas. - 特許庁
+マルコフ確率場の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

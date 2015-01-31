@@ -1,0 +1,3 @@
+IDX = knnsearch(X,Y)[IDX,D] = knnsearch(X,Y)[IDX,D] = knnsearch(X,Y,'Name',Value)
+説明IDX = knnsearch(X,Y) は、Y の各ポイントにおける X の最近傍点を検出します。X は mx 行 n 列の配列で、Y は my 行 n 列の配列です。X と Y の行は観測に、列は変数に対応します。IDX は、my 行の列ベクトルです。IDX の各行には、Y 内の対応する行について X 内の最近傍点のインデックスが含まれます。[IDX,D] = knnsearch(X,Y) は、Y 内の各観測と X 内の対応する最も近い観測の間の距離を含む my 行 1 列のベクトル D を返します。つまり、D(i) は、X(IDX(i),:) と Y(i,:) の間の距離です。[IDX,D] = knnsearch(X,Y,'Name',Value) は、コンマで区切られた、1 つ以上のオプションの名前と値のペアを受け入れます。単一引用符で囲んで Name を指定します。knnsearch は、探索オブジェクトを保存しません。探索オブジェクトを作成するには、createns を使用します。
+データを使用して k 最近傍点を検出する - MATLAB knnsearch - MathWorks 日本

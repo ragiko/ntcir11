@@ -1,0 +1,88 @@
+STR07-C. 境界チェックインタフェースを使用し、文字列操作を行う既存のコードの脅威を緩和する
+C 標準の附属書 K (規定) "Bounds-checking interfaces" [ISO/IEC 9899:2011] は、既存の標準文字列処理関数に代わり、より安全に利用できるように設計された代替関数を規定している。たとえば、strcpy()、strcat()、strncpy() および strncat() の代替関数として、それぞれ strcpy_s()、strcat_s()、strncpy_s() および strncat_s() 関数を定義している。
+附属書 K の関数は、過去 10 年間に起きた広く知られている多数のセキュリティインシデントに対応して、レガシーコードの改善に役立てる目的で Microsoft によって作成された。これらの関数はその後、プログラミング言語 C の国際標準化ワーキンググループ(ISO/IEC JTC1/SC22/WG14)へ、標準化のために提案された。
+たとえば、strcpy_s() の関数原型は次のとおりである。
+errno_t strcpy_s(
+char * restrict s1,
+rsize_t s1max,
+const char * restrict s2
+);
+関数原型は strcpy() に似ているが、コピー先バッファの最大長を指定する rsize_t 型の引数を 1 つ余分に取る。rsize_t 型の引数を取る関数は、引数の値が RSIZE_MAX を超えている場合に制約違反と診断する。極端に大きなオブジェクトサイズは、オブジェクトのサイズが正しく計算されなかったことを示していることが多い。たとえば、負の数は、size_t のような符号無しの型に変換されたときに非常に大きな正の数となる。このような理由から、オブジェクトサイズの範囲を制限してエラーを検出することが有効な場合がある。アドレス空間が大きなマシンの場合、C 標準の附属書 K は、RSIZE_MAX を、サポートされている最も大きなオブジェクトのサイズまたは (SIZE_MAX >> 1) のうち、小さいほうの値として定義することを推奨している。これは、たとえこの制限が、正当な(ただし非常に大きい)オブジェクトよりも小さくてもである。「INT01-C. オブジェクトのサイズを表現するすべての整数値に rsize_t もしくは size_t を使用する」も参照すること。
+strcpy_s() は、意味規則も strcpy() に似ている。入力違反エラーがなければ、strcpy_s() 関数はコピー元の文字列からコピー先の文字配列へ、終端の null 文字までの文字を null 文字も含めてコピーする。この関数は、成功するとゼロを返す。
+strcpy_s() 関数は、コピー元の文字列をコピー先へ、コピー先バッファをオーバーフローさせずに完全にコピーできた場合に限り成功する。具体的には以下のチェックが行われる。
+コピー元とコピー先のポインタが NULL であるか。
+コピー先バッファの最大長が、ゼロか、RSIZE_MAX よりも大きいか、またはコピー元文字列の長さ以下であるか。
+領域の重なり合うオブジェクト間のコピーはできない。
+実行時制約違反が検出された場合、コピー先バッファが NULL ポインタではなく、その最大長が、ゼロよりも大きく RSIZE_MAX 以下であれば、コピー先文字列は null 文字列に設定され、関数はゼロ以外の値を返す。次の例では、strcpy_s() 関数を使用して src1 を dst1 にコピーしている。
+char src1[100] = "hello";
+char src2[8] =  {'g','o','o','d','b','y','e','\0'};
+char dst1[6], dst2[5];
+int r1, r2;
+r1 = strcpy_s(dst1, sizeof(dst1), src1);
+r2 = strcpy_s(dst2, sizeof(dst2), src2);
+しかし、8 文字からなる文字列全体をコピー先バッファにコピーするための十分な領域がないため、src2 を dst2 にコピーする呼び出しは失敗する。結果として、r2 にはゼロ以外の値が代入され、dst2[0] には null 文字が設定される。
+C11 附属書 K の関数を使用すると、コピー先バッファのサイズと追加される文字の最大数を指定する必要があるため、セキュリティ上の欠陥を引き起こす可能性は低い。ISO/IEC TR 24731 Part II [ISO/IEC TR 24731-2:2010] では、もう 1 つの方法として、関数の結果に対して十分なメモリを割り当てる関数が提案される予定である。ISO/IEC TR 24731 関数は、コピー先文字列の null 終端も保証する。
+ただし ISO/IEC TR 24731-1 [ISO/IEC TR 24731-1:2007] 関数を使ったとしても、コピー先バッファの最大長およびコピーする文字の数が間違って指定された場合、依然としてバッファオーバーフローを引き起こす可能性はある。ISO/IEC TR 24731-2 関数を使うと解放しなくてはならないメモリを把握しずらくなり、メモリリークを引き起こすおそれがある。それゆえ ISO/IEC TR 24731 関数は特別安全なわけではないが、脆弱性の予防を目的とした保守に用い、レガシーコードの脆弱性を低減する役には立つだろう。
+違反コード
+次のコードは、msg が長すぎる場合にバッファオーバーフローを引き起こし、msg が NULL ポインタの場合に未定義の動作を引き起こす。
+void complain(const char *msg) {
+static const char prefix[] = "Error: ";
+static const char suffix[] = "\n";
+char buf[BUFSIZ];
+strcpy(buf, prefix);
+strcat(buf, msg);
+strcat(buf, suffix);
+fputs(buf, stderr);
+}
+適合コード (実行時検査)
+次の適合コードでは、バッファオーバーフローは生じない。
+void complain(const char *msg) {
+errno_t err;
+static const char prefix[] = "Error: ";
+static const char suffix[] = "\n";
+char buf[BUFSIZ];
+err = strcpy_s(buf, sizeof(buf), prefix);
+if (err != 0) {
+/* エラー処理 */
+}
+err = strcat_s(buf, sizeof(buf), msg);
+if (err != 0) {
+/* エラー処理 */
+}
+err = strcat_s(buf, sizeof(buf), suffix);
+if (err != 0) {
+/* エラー処理 */
+}
+fputs(buf, stderr);
+}
+適合コード (コンパイル時に部分的に検査)
+次の適合コードは、静的アサートを使用して、コンパイル時にいくつかのチェックを行っている(「DCL03-C. 定数式の値をテストするには静的アサートを使う」を参照)。
+void complain(const char *msg) {
+errno_t err;
+static const char prefix[] = "Error: ";
+static const char suffix[] = "\n";
+char buf[BUFSIZ];
+/* 2 文字以上がmsg のために用意
+* されていることを保証する。 */
+static_assert(sizeof(buf) > sizeof(prefix) + sizeof(suffix),
+"Buffer for complain() is too small");
+strcpy(buf, prefix);
+err = strcat_s(buf, sizeof(buf), msg);
+if (err != 0) {
+/* エラー処理 */
+}
+err = strcat_s(buf, sizeof(buf), suffix);
+if (err != 0) {
+/* エラー処理 */
+}
+fputs(buf, stderr);
+}
+リスク評価
+C 標準 [ISO/IEC 9899:2011] セクション 7.24 やその他で定義されている文字列処理関数を使うと、深刻かつ悪用可能な脆弱性につながる、ありがちなプログラミングエラーを引き起こしやすい。TR 24731 関数を適切に使用することで、これらの問題の大部分を排除できる。
+レコメンデーション
+深刻度
+可能性
+修正コスト
+優先度
+レベル
+STR07-C. 境界チェックインタフェースを使用し、文字列操作を行う既存のコードの脅威を緩和する

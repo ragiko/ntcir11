@@ -1,0 +1,480 @@
+
+［rfcディレクトリーのトップへ］
+Network Working Group                                 R. Gellens, Editor
+Request for Comments: 2646                                      Qualcomm
+Updates: 2046                                                August 1999
+Category: Standards Track
+Text/Plain書式パラメーター(助変数)
+この覚書の位置付け
+この文書はインターネット交流のためのインターネット標準トラックプロト
+コールを特定し、改善への議論と示唆を求めています。この文書の標準化状
+況と位置付けについては、最新の"Internet Official Protocol Standards"
+(STD 1) を参照してください。この覚書の配布には、制限はありません。
+著作権注意
+Copyright (C) The Internet Society (1999).  All Rights Reserved.
+目次
+1.  要約 . . . . . . . . . . . . . . . . . . . . . . . . . . . .  2
+2.  この文書で使われる約束事 . . . . . . . . . . . . . . . . . .  2
+3.  問題点   . . . . . . . . . . . . . . . . . . . . . . . . . .  2
+3.1.  パラグラフ文   . . . . . . . . . . . . . . . . . . . . .  3
+3.2.  行ラップの戸惑い . . . . . . . . . . . . . . . . . . . .  3
+3.3.  新メディアタイプ . . . . . . . . . . . . . . . . . . . .  4
+4.  メディアタイプText/Plainの書式助変数   . . . . . . . . . . .  4
+4.1.  Format=Flowed(書式=流動)生成  . . . . . . . . . . . .  5
+4.2.  Format=Flowed(書式=流動)解釈  . . . . . . . . . .  . . 6
+4.3.  Usenet記載変換  . . . . . . . . . . . . . . . . . . . . . 7
+4.4.  空白補充  . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.5.  引用符号. . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.6.  デジタル署名と暗号化  . . . . . . . . . . . . . . . . . . 9
+4.7.  行の解析表  . . . . . . . . . . . . . . . . . . . . . . .10
+4.8.  例  . . . . . . . . . . . . . . . . . . . . . . . . . . .10
+5.  拡張BNF(ABNF)  . . . . . . . . . . . . . . . .  . . . . . .11
+6.  失敗モード  . . . . . . . . . . . . . . . . . . . . . . . .  11
+6.1.  後続空白の脱落  . . . . . . . . . . . . . . . . . . . .  11
+7.  安全問題  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+8.  IANAへの配慮 . . . . . . . . . . . . . . . . . . . . . . . . 12
+9.  国際化問題   . . . . . . . . . . . . . . . . . . . . . . . . 12
+10.  謝辞 . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+11.  参考書 . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+12.  編集者連絡   . . . . . . . . . . . . . . . . . . . . . . . . 13
+13.  著作権全文 . . . . . . . . . . . . . . . . . . . . . . . . . 14
+Gellens                     Standards Track                     [Page 1]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+1.要約
+パラグラフ文が間違ってText/Plainとして表示され、「行ラップを戸惑わせ
+る」色々な書式により、相互操作上の問題が生じています(セクション 3)。
+Text/Enriched [RICH]やText/HTML [HTML]といった新しいメディアタイプを採
+用する試みは、後方互換性がなく往々にして好ましくないユーザーの反応を受
+け取る側で引き起こしています。
+必要なのは、それなりの方法全でText/Plainであると分かり、だからText/Plain
+の表示が適切であり、しかもどの行が論理的なパラフラフと考えられ、それ故
+に正しく文が流れる(折り返され、また結合され)か、を送信者が受信者に表
+現できる書式です。
+この覚書はText/Plainと伴に使用される新しい助変数(パラメーター)を提案
+し、この助変数があれば流動する行を指示すために後続空白の使用を提案して
+います。その結果、より旧い装備で普通のText/Plainとして、実際普通の
+Text/Plainで、表現するコード化になります。
+2.この文書で使用されている約束
+この文書での"REQUIRED"・"MUST"・"MUST NOT"・"SHOULD"・"SHOULD NOT"そし
+て"MAY"は、"Key words for use in RFCs to Indicate Requirement Levels" 
+[KEYWORDS]で記載されているように解釈されるべきです。
+3.問題点
+Text/Plainメディアタイプは、インターネットメールの最低限の普通の共通点
+で、一行997文字を超さない(慣例では通常80を超さない)で、CRLF流動体が行
+改行を示しています[MIME-IMT]。
+Text/Plainはよく整形文としてしばしば固定文字で表示されます。つまり、文
+字は表示画面の左端から始まり、CRLF流動体が来るまで右へ進み、そこで新し
+い行が再度左縁ではじまります。行の長さが表示画面をこえる場合、クライア
+ントは行を折り返すものもあり、別のものは水平スクロールバーに依存します。
+この記載に合うTextは、この覚書で"fixed"(固定)と定義されます。
+相互操作上の問題点が、このメディアタイプで、見られています:
+Gellens                     Standards Track                     [Page 2]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+3.1. パラグラフ文
+最近のプログラムの多くは、プロポーショナルな文字とCRLFでパラグラフ・ブ
+リーク(行中断)を表現しています。行の中断は、表示上必要なものとして生
+じ、柔軟性"soft"があります。つまり文字は、CRLF流動体が見られそこで新し
+い行を開始する点迄一つのパラグラフ(一段落)になっています。各パラグラ
+フは、左縁からはじまり残りの表示幅に合わない文字が出る迄右に続いて、表
+示されます。この単語は次の行の左縁に表示されます。これが、パラグラフ終
+(CRLFが来ます)までつづきます。余分な垂直方向空間が、パラグラフ間に置
+かれます。
+この記載に合ったテキストは、この覚書で"flowed"と定義されます。
+多くのソフトウェアー製品が、このメディアタイプを間違ってText/Plainとラ
+ベルし、利用者を不愉快な思いにする結果になっています。
+3.2.戸惑う行折り返し
+返信または転送メッセージでText/Plainは引用符号化されていますので、各行
+はだんだん長くなり、「戸惑う行折り返し」をもたらします。そのため、非常
+に読みづらく、しばしば特性の区別がつかなくなります。
+例:
+>>>>>>This is a comment from the first message to show a
+>quoting example.
+>>>>>This is a comment from the second message to show a
+>quoting example.
+>>>>This is a comment from the third message.
+>>>This is a comment from the fourth message.
+上記の行2と行4に、特性を割り当てるのに区別がつかなくなります。
+更に、80文字以下の小さい表示画面装備がだんだん普及してきているので、戸
+惑う行折り返しは、非引用文でも、より一般的になります。
+Gellens                     Standards Track                     [Page 3]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+例:
+This is paragraph text that is
+meant to be flowed across
+several lines.
+However, the sending mailer is
+converting it to fixed text at
+a width of 72
+characters, which causes it to
+look like this when shown on a
+PDA with only
+30 character lines.
+3.3.新しいメディアタイプ
+Text/Enriched [RICH] やText/HTML [HTML]といった新しいメディアタイプを採
+用する試みは後方互換性に欠け、しばしば受信側で利用者の迷惑な反応をもた
+らしています。
+特にText/Enrichedは開いた括弧("<")と固定的な(hard)行中断が二重
+に重なり、Text/Plainとして閲覧する際利用者に不愉快さをもたらす結果と
+なっています。 Text/HTMLはテキストの代い替え以上のことを必要とし、利用
+者の不満を拡大しています。
+パラグラフ書式を正確に表わすように新しいメディアタイプを定義する提案は、
+最近採用されたソフトウェアーとの互換性がなくなります。プログラムによっ
+ては、テキストの未知のサブタイプを添付として処理するものもあります。
+望まれているのは、全てのそれなりの方法でText/Plainであるとし、それ故に
+Text/Plainとして表示が適切にされ、しかも送信者がどの行が論理的なパラグ
+ラフと考えられ適切に流動(折り返しと結合し)するかを、受信者に表現でき
+る書式です。
+4.Text/Plainメディアタイプの書式助変数
+この文書はText/Plain随伴して使う新しいMIME助変数を定義しています:
+Name:  Format
+Value:  Fixed, Flowed
+(助変数名とその値は、大文字小文字を区別します。)
+特定されていない場合、値Fixedと推定されます。値Fixedの意味は、Text/
+Plainに伴う通常の意味です[MIME-IMT]。
+Gellens                     Standards Track                     [Page 4]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+値Flowedは、流動テキストの定義(この覚書で特定されたように)が生成時に
+使用され受信時に使用されることを指示しています。
+このセクションは流動テキスト(flowed text)に言及します;セクション5で
+正式な書式を提示します。
+流動テキスト行は、実際上固定テキスト行と区別がありませんので、最近採用
+されたソフトウェアーは流動行を普通のText/Plain(それはどんなものか)と
+して処理します。かくて、相互操作問題はなんら期待できません。
+この覚書は通信上の書式を記載していることに注意してください。局所のファ
+イル保存の書式について言っているのではありません。
+4.1.  Format=Flowed(書式=流動)の生成
+Format=Flowed(書式=流動)テキストを生成する場合。行は80文字以下にすべ
+きです(SHOULD)。指定される値として、全長で79文字より長いパラグラフは
+如何なるものでも72文字若くはそれ以下に折り返せます(could)。特別な行長
+は好みと初期優先値に係わりるとはいえ、長い行は再度折り返えされ、旧い
+メーラーでは困難になります。66文字(記号)が最も判読しやすいことが示唆
+されています。
+(通信上でCRLF間で79若くはより少ない文字に制限しているのは、全行、
+流動を認識しないプログラムでも、が標準の80列スクリーン画面に確実
+に一致するようにするためです。79であって80ではありません、という
+のは80は一行に合っていすが、最後の列はしばしば行の折り返し指示と
+して予約されているからです。)
+流動文(flowed text)を生成する場合、制作代行手段は折り返し、言い替える
+と必要に応じて柔軟な("soft")行中断を挿入します。柔軟な行中断は単語間
+に付け加えられます。柔軟な行中断はSP CRLF連続体で、制作代行手段は、スペ
+ース(space)がくる後にCRLFを挿入して生成します。
+制作代行手段は、単語内に空白を挿入すべきではありません(SHOULD NOT)
+(一連の符号化printable文字は空白を内容としていません)。79文字を超える
+単語に遭遇した場合(79文字を超えるが998より少なく単語)、代行手段はその
+単語をそのまま送信すべきで(SHOULD) 、行で79文字限度を超えるべきです。
+Gellens                     Standards Track                     [Page 5]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+制作代行手段は以下のようにすべきです(SHOULD):
+1.  全ての行(固定と流動)が長さが79文字若くはより少ない、
+単語自体が79文字を超えていないなら後続空白は数えCRLFは
+数えません、ことを確認します。
+2.  利用者が挿入した固定行中断の前のスペースを切り取ります。
+3.  スペースで始まる空白補足行、"From "もしくは">"
+Format=Fixed(流動書式)として閲覧する際空白補足を必要としないくそれゆ
+えにより嗜好的な楽しみであるメッセージを作制するには、制作代行手段は"&
+#62;", "From "もしくはスペース直前での折り返しを回避しても構いません
+(MAY)。
+(空白補足と引用符についての詳しい情報は、それぞれセクション 4.4 と 
+4.5を見てください。)
+流動(Format=Flowed) メッセージはゼロ若くはそれ以上のパラグラフから構成
+され、それぞれ一つの固定行に続く一つ以上の流動行を内容としています。普
+通の場合、一連の流動テキスト行には空白(空の)固定行が間にきます。
+パラグラフ間には、幾つでも固定行が現われえます。
+[Quoted-Printable]符号化は、絶対に必要でない限り、流動形式で使用される
+べきでは(SHOULD NOT)ありません(例えば、非米アスキーII( 8ビット)文字が
+非拡張SMTP といった厳密な7ビット転送上で)。特にメッセージは、ボディ部
+分が絵文字署名や暗号化されていない限り、流動行で後続スペースを保持する
+目的だけでQuoted-Printableに符号化されるべきではありません(セクション
+4.6参照)。
+流動書式の目的は、利用者代行手段が、そのままの生の流動テキスト(以下な
+る符号化もなされていない)として閲覧され際、不快でない流動テキストを生
+成できることです;Quoted-Printableの使用はこれを隠し最終利用者によって
+流動書式が受け入れられないことになりえます。
+4.2.  流動文(Format=Flowed)の解釈
+行の最初の文字が引用符号( ">")なら、その行は引用されていると
+みなされます(セクション 4.5参照)。論理的に、全ての引用符号を数
+え削除され、ゼロでない引用層と内容の行になります。(代行手段は、
+勿論引用符号で内容を表示するのは自由でありまたバーもしくはその他
+のものを選ぶのも自由です。)論理的に、引用された行のこのテストは
+その他の以下なるテストより前になされます(つまり、空白補足と流動
+書式のチェックの前に)。
+Gellens                     Standards Track                     [Page 6]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+行の最初の文字がスペースなら、その行は空白で補足(セクション 4.4
+参照)されています。論理的にこの先導スペースはその行をさらに調査
+する前に削除されます(つまり、流動書式をチェックする前に)。
+行が一つ以上のスペースで終わっていると、その行は流動化されていま
+す。それ以外は固定化されています。後続スペースはその行の内容です
+が、柔軟な行中断のCRLFは違います。
+一連の一つ以上の流動性行に引き続いて一つの固定行があるものは、パ
+ラグラフとみなされ、表示や新しいメッセージの構築の際に適切に流動
+化(折り返されたり折り返されなかったりして)されえます(MAY)
+(セクション 4.5参照)。
+一つ以上のスペースからなる行(補足されたスペースを削除後)は、流
+動化行とみなされます。
+4.3.  Usenet署名変換
+本体とメッセージ署名間の分離行として"-- "を使用するUsenetニュースでの変
+換があります。署名の前にUsenet様式を内容とする流動書式メッセージを生成
+する場合、その分離行は、そのままで送信されます。これは特別なケースで;
+ダッシュ ダッシュ スペースからなる行(時に引用され)は流動書式とはみ
+なされません。
+4.4.  空白追加(Space-Stuffing)
+">"ではじまる非引用行を考慮し、"From-munge"を自動的におくるシステム
+に対抗するために("From "ではじまる如何なる行をも">From "に修正する
+こと)、流動書式(Format=Flowed)は空白追加を用意しています。
+空白追加(Space-Stuffing)は、メッセージが生成される際防御の必要な、如
+何なる行の最初に単一スペースを付け加えます。受信では、行の最初の文字が
+スペースであれば、それは論理的に削除されます。これは、引用された行のテ
+スト後で流動行のテスト前に、なされます。
+生成に際し、">"ではじまる引用された行とスペース若くは "From "ではじ
+まる行はいかなるものであっても、スペースが追加されるべきです
+(SHOULD)。その他の行は必要に応じてスペース追加されるえます(MAY)。
+(スペース追加は、[SMTP]で特定されるドット追加に類似していることに注意
+して下さい。)
+Gellens                     Standards Track                     [Page 7]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+スペース追加メッセージを、流動書式を処理する代行手段が受け取った場合そ
+のスペース追加メッセージは元に戻しかくてそのメッセージは変化されないで
+表現されます。流動書式が分からない代行手段は勿論スペース追加を元に戻さ
+ないので、スペース追加メッセージは行によっては先行スペースを伴って現わ
+れるかもしれません(スペースや">"、引用識別子でない、若くは"From "
+ではじまる行)。スペース追加を必要とする行は稀にしかおこらないので、こ
+のことは意味ある問題になるとは思えません。)
+4.5.  引用(Quoting)
+流動書式で正当な引用識別子(または引用印)は一つ以上の閉じる鈎括弧
+(">)です。この引用識別子ではじまる行は、引用されているとみなされ
+ます。その行の開始点での ">"文字の数は、引用の深さを特定します。引
+用もされている流動行は表示や新メッセージに移す場合特別な処理を必要とす
+るかもしれません。
+引用される流動行を生成する場合。そのような各行は引用識別子ではじまりま
+す。
+スペース追加のために、その行は、
+>> Exit, Stage Left
+そして
+>>Exit, Stage Left
+は、意味上では同等で;両者とも二つの引用深度で、"Exit, Stage Left"の内
+容を持っています。
+しかし、この行
+> > Exit, Stage Left
+は、異なります。一つの引用深度で、その内容は
+"> Exit, Stage Left".
+引用された流動書式を生成する際代行手段は引用の深度にそった変化に注意を
+払う必要があります。同じ引用深度の一連の引用流動行は一つのパラグラフと
+して、最後の行は固定化され先行行は流動書式として、符号化されるべき
+(SHOULD)です。
+受信代行手段は、表示や新しいメッセージを生成する際、流動引用行を(結合
+/折り返しをして)再書式化する場合、その行は引用を外すし再書式化してか
+ら再度引用化されるべきです(SHOULD)。引用外しには、各行の開始引用識別
+子の閉じた鈎括弧の数を数えます。引用の同じ深度に続く行は一つのパラグラ
+フとみなされ、一緒に再書式化されます。再書式化後再引用化するために、元
+に在ったと同じ数の閉じた鈎括弧引用識別子が各行の前につけられます。
+Gellens                     Standards Track                     [Page 8]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+受理に際して、引用深度の変更が流動行で起こった場合、これは不適切に書式
+化されたメッセージです。受取側は 、その流動識別子を無視しその行を固定さ
+れたものとして処理する'quote-depth-wins'規則を使って、このエラーを処理
+すべきです(SHOULD)。つまり、引用深度のこの変更は、そのパラグラフで終
+ります。
+例えば、以下の一連の行を考えてみましょう('*'で柔軟な行中断、SP CRLF
+を、そして'#'で固定的な行中断、CRLFを示しています):
+> Thou villainous ill-breeding spongy dizzy-eyed*
+> reeky elf-skinned pigeon-egg!*     <--- 問題 ---<
+>> Thou artless swag-bellied milk-livered*
+>> dismal-dreaming idle-headed scut!#
+>>> Thou errant folly-fallen spleeny reeling-ripe*
+>>> unmuzzled ratsbane!#
+>>>> Henceforth, the coding style is to be strictly*
+>>>> enforced, including the use of only upper case.#
+>>>>> I've noticed a lack of adherence to the coding*
+>>>>> styles, of late.#
+>>>>>> Any complaints?#
+二番目の行は柔軟な行中断で、それが一層の深度の引用区域の最後の行であっ
+ても、終わります。次の行は二層深度の引用区域の最初の行であることを考え
+ると、この行はどのように解釈されるべきなのかという疑問が浮かんできま
+す。
+上のテキスト例は、quote-depth winsに従って処理されると、一つの引用され
+た流動化セクションで引用深度1とみなされる最初の二行ということになりま
+す;三番目と四番目の行は引用され流動化されたセクションで引用深度2です。
+制作代行手段は、この状況を生成すべきではありません(SHOULD NOT);受信
+代行手段がquote-depth winsを使ってそれを取り扱うべきです(SHOULD)。
+4.6.  デジタル署名と暗号化(Digital Signatures and Encryption)
+メッセージがデジタルで署名もしくは暗号化されている場合、暗号図式処理は
+通信上の流動書式を使っていることが重要です。つまり、生成中そのメッセー
+ジは転送の準備をすべき(SHOULD)で、デジタルで署名もしくは暗号化される
+前の柔軟な行中断・スペース追加そして[Quoted-Printable] 符号化(柔軟な行
+中断を保護するため)などもこれにふくまれます;同様に受信に際してその
+メッセージは、[Quoted-Printable] 復元と暗号解読され追加スペースの削除・
+柔軟な行中断・引用記号そして再流動化の前に、署名の検証若くは暗号解読が
+なされるべきです(SHOULD)。
+Gellens                     Standards Track                     [Page 9]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+4.7.  行の解析表(Line Analysis Table)
+Text/Plain体部に流動書式で含まれている行は、行の開始と終了を調査し解析
+されます。その行が引用識別子ではじまっている場合、それは引用されていま
+す。その行が一つ以上のスペース文字ではじまっている場合、それは流動書式
+です。このことを以下の表に要約しています:
+Starts          Ends in
+with            One or             Line
+Quote           More Spaces        Type
+------          -----------        ---------------
+no              no                 unquoted, fixed
+yes             no                 quoted,   fixed
+no              yes                unquoted, flowed
+yes             yes                quoted,   flowed
+4.8.  例
+以下の例には、三つのパラグラフがあります。
+`Take some more tea,' the March Hare said to Alice, very
+earnestly.
+`I've had nothing yet,' Alice replied in an offended tone, `so I
+can't take more.'
+`You mean you can't take LESS,' said the Hatter: `it's very easy
+to take MORE than nothing.'
+これは以下のように符号化されます( '*' で柔軟な行中断、SP CRLF連続体
+を、'#'で固定行中断、CRLFを示しています。):
+`Take some more tea,' the March Hare said to Alice, very*
+earnestly.*
+#
+`I've had nothing yet,' Alice replied in an offended tone, `so*
+I can't take more.'*
+#
+`You mean you can't take LESS,' said the Hatter: `it's very*
+easy to take MORE than nothing.'#
+Gellens                     Standards Track                    [Page 10]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+引用化された例を示すために、同じ交換をして一連の直接引用として、ここに
+提示しています:
+>>>Take some more tea.#
+>>I've had nothing yet, so I can't take more.#
+>You mean you can't take LESS, it's very easy to take*
+>MORE than nothing.#
+5.  拡張BNF(ABNF)
+(訳者注:Augmented Backus-Naur Form(BNF) for Syntax Specifications)
+Text/Plain; Format=Flowed体部で使用される構造は、 [ABNF]を使って、基本
+規則も含めて、記載されます:
+paragraph     = 1*flowed-line fixed-line
+fixed-line    = fixed / sig-sep
+fixed         = [quote] [stuffing] *text-char non-sp CRLF
+flowed-line   = flow-qt / flow-unqt
+flow-qt       = quote [stuffing] *text-char 1*SP CRLF
+flow-unqt     = [stuffing] *text-char 1*SP CRLF
+non-sp        = %x01-09 / %x0B / %x0C / %x0E-1F / %x21-7F
+; any 7-bit US-ASCII character, excluding
+; NUL, CR, LF, and SP
+quote         = 1*">"
+sig-sep       = [quote] "--" SP CRLF
+stuffing      = [SP] ; space-stuffed, added on generation if
+; needed, deleted on reception
+text-char     = non-sp / SP
+6.  失敗モード(Failure Modes)
+6.1.  後続空白の脱落(Trailing White Space Corruption)
+通過するメッセージの追加空白スペースを変更するシステムも存在します。そ
+のようなシステムは、RFC 821 [SMTP] セクション 4.5.2.に反して、追加空白
+スペースを取ったり稀には追加したりします。
+後続空白行を取れば流動行を固定行に変換しその結果、流動書式が使われてい
+ない場合より悪くないメッセージになる、という効果もあります。
+流動書式メッセージに後続空白行を追加すれば、その結果おかしな表示もしく
+は応答になるかもしれません。
+後続空白行を追加するシステムは、インターネット記録書式を満たす行を生成
+するためにそのようにしますので、その結果偶数の文字を内容とすることにな
+ります(追加後続空白スペース数えると)。
+Gellens                     Standards Track                    [Page 11]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+従って、行の長さが奇数になる流動行を指すために一つないしは二つの後続空
+白文字を使って流動書式を定義することで、このことを回避することが可能で
+す。しかし、そのようなシステムは稀れであることを考えると、複雑さを増大
+する価値はありません。
+7.  安全性への配慮
+この助変数は、Text/Plainに適用する以上の安全性についての考慮はなんらあ
+りません。
+セクション 4.6は、流動書式とデジタル署名若くは暗号化との相互関係を論じ
+ています。
+8.  IANAへの配慮
+Text/Plain Media Type登録にこの仕様への参照を追加するように、IANAに申請
+しています。
+9.  国際化への配慮
+流動書式(Format=Flowed)の行おり返しと引用仕様は、右から左へ読む
+ArabicやHebrew文字のような或種の文字には適していません。これらに流動書
+式を適用するには注意すべきで、quoted-printableエンコードと組み合わされ
+た固定書式(format=fixed)がより適しているかもしれません。
+10.  謝辞
+この提案は、IETF 822メーリングリストでおこったChris NewmanのText/
+Paragraphドラフトの議論から、発展しました。Ian Bell・Steve Dorner・
+Brian Kelley・Dan Kohn・Laurence LundbladeそしてDan Wingには、批評・コ
+メント・示唆・議論において、感謝致します。
+11.  参考書
+[ABNF]             Crocker, D. and  P. Overell, "Augmented BNF for
+Syntax Specifications: ABNF", RFC 2234, November
+1997.[翻訳]
+[KEYWORDS]         S. Bradner, "Key words for use in RFCs to Indicate
+Requirement Levels", BCP 14, RFC 2119, March 1997.[翻訳]
+[RICH]             Resnick, P. and A. Walker, "The text/enriched MIME
+Content-type", RFC 1896, February 1996.[翻訳]
+Gellens                     Standards Track                    [Page 12]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+[MIME-IMT]         Freed, N. and N. Borenstein, "Multipurpose
+Internet Mail Extensions (MIME) Part Two: Media
+Types", RFC 2046, November 1996.[翻訳]
+[Quoted-Printable] Freed, N. and N. Borenstein, "Multipurpose
+Internet Mail Extensions (MIME) Part One: Format
+of Internet Message Bodies", RFC 2045, November
+1996.[翻訳]
+[SMTP]             Postel, J., "Simple Mail Transfer Protocol", STD
+10, RFC 821,  August 1982.[翻訳]
+[HTML]             Berners-Lee, T. and D. Connolly, "Hypertext Markup
+Language -- 2.0", RFC 1866, November 1995.[翻訳]
+12.  Editor's Address
+Randall Gellens
+QUALCOMM Incorporated
+5775 Morehouse Dr.
+San Diego, CA  92121-2779
+USA
+Phone: +1 619 651 5115
+EMail: randy@qualcomm.com
+Gellens                     Standards Track                    [Page 13]
+RFC 2646            The Text/Plain Format Parameter          August 1999
+13.  著作件宣言全文
+Copyright (C) The Internet Society (1999).  All Rights Reserved.
+この文書とその翻訳を複写や他人に供与してもかまいませんし、コメン
+トを付けたり若くは別途にそれを解説したりまた装備を補佐するといっ
+た派生的な作品を作製し、複写・発行・配布、全文であれ抜粋であれ如
+何なる種類の制限なしに、してもかまいませんが、上記の著作件覚書と
+この段落を全ての複写と派生作品に含むようにしておきます。しかし、
+この文書自体は如何なる方法、著作件覚書やInternet Societyやその他
+のInternet organizationsへの参照をを外したりといった、でも修正さ
+れないかもしれませんが、インターネット標準の発展の目的に必要な場
+合を除くが、その場合インターネット標準過程で定義されている著作件
+の手順、また必要に応じて英語以外の言語にそれを翻訳するために、に
+従わなければなりません。
+This document and translations of it may be copied and furnished to
+others, and derivative works that comment on or otherwise explain it
+or assist in its implementation may be prepared, copied, published
+and distributed, in whole or in part, without restriction of any
+kind, provided that the above copyright notice and this paragraph are
+included on all such copies and derivative works.  However, this
+document itself may not be modified in any way, such as by removing
+the copyright notice or references to the Internet Society or other
+Internet organizations, except as needed for the purpose of
+developing Internet standards in which case the procedures for
+copyrights defined in the Internet Standards process must be
+followed, or as required to translate it into languages other than
+English.
+上記で与えられたこの制限付許可は恒久的なもので、Internet Society
+若くはその継承者もしくは譲渡人によって破棄されるものではありませ
+ん。
+The limited permissions granted above are perpetual and will not be
+revoked by the Internet Society or its successors or assigns.
+この文節を内容としているこの文書と情報は、「現状のまま」の原理で提供さ
+れ、THE INTERNET SOCIETYとTHE INTERNET ENGINEERING TASK FORCEは、この文
+節の情報の使用は商業向き若くはある特殊な目的への適合の如何なる正当性や
+暗黙の保証責任に反する保証責任、これだけに限りませんが、を含み、全ての
+明示的暗黙的な保証責任を負いません。
+This document and the information contained herein is provided on an
+"AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
+TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+謝辞
+RFC編集機関への基金は、現在Internet Societyによって提供されています。
+Gellens                     Standards Track                    [Page 14]
+rfc2646(jp)

@@ -1,0 +1,41 @@
+
+Tweet
+Tweet
+「コインを n 回投げた。表の出る回数 k が従う分布は?」
+これは確率 p = 1/2、サイズ n の二項分布に従います。
+「表のでる確率が p のバイアスがあるコインを n 回投げた。表の出る回数 k が従う分布は?」
+これは確率 p、サイズ n の二項分布に従います。
+「バイアスのあるコインがたくさん入った袋がある。そこから一枚コインを一枚抜き出して、n 回投げた。表の出る回数 k が従う分布は?ただし袋の中のコインの表の出る確率 p はベータ分布に従うこととする」
+これはベータ二項分布という分布に従います。
+二項分布は 0 から n までの値を取る離散確率分布です:
+\begin{align*}P(k|n,p)=_nC_kp^k(1-p)^{n-k}\end{align*}
+ベータ分布は 0 から 1 までの値を取る連続確率分布です:
+\begin{align*}P(p|\alpha,\beta)=\frac{p^{\alpha-1}(1-p)^{\beta-1}}{B(\alpha,\beta)}\end{align*}
+ただし B はベータ関数
+\begin{align*}B(\alpha,\beta)=\int_0^1p^{\alpha-1}(1-p)^{\beta-1}dp\end{align*}
+です。このふたつの分布を混合することで、上の確率はつぎのように計算できます:
+\begin{align*}
+P(k|\alpha,\beta)&=\int_0^1P(k|n,p)P(p|\alpha,\beta)dp\\
+&=\frac{_nC_k}{B(\alpha,\beta)}\int_0^1p^{k+\alpha-1}(1-p)^{n-k+\beta-1}dp\\
+&=_nC_k\frac{B(k+\alpha,n-k+\beta)}{B(\alpha,\beta)}
+\end{align*}
+微妙な発生メカニズムの違いに注意!
+すこしちがうコイン投げゲームを考えてみましょう。
+「バイアスのあるコインがたくさん入った袋がある。そこからコインを一枚抜き出して、1 回投げる。そのコインを袋に戻す。これを n 回くりかえした。表の出る回数 k が従う分布は?ただし袋の中のコインの表の出る確率 p はベータ分布に従うこととする」
+これはベータ二項分布に従うでしょうか?
+R で数値実験してみるとぜんぜん違うことがわかります。上で挙げた例はどちらかというとフツーの二項分布に近い形になっています。理由はちょっと考えてみるとわかります。ソースコードは一番下に書いておきました。
+rbetabinom1 <- function(nsample, n, a, b){
+p=rbeta(nsample,a,b)
+rbinom(nsample,n,p)
+}
+rbetabinom2 <- function(nsample, n, a, b){
+sapply(1:nsample, function(i){p=rbeta(n,a,b);sum(p>runif(n))})
+}
+par(mfrow=c(3,1))
+plot(table(rbetabinom1(100000,20,5,4)),xlim=c(0,20),ylab="frequency")
+title("Pick up a coin once, then play it n times")
+plot(table(rbetabinom2(100000,20,5,4)),xlim=c(0,20),ylab="frequency")
+title("Pick up a coin n times, then play it once for each")
+plot(table(rbinom(100000,20,0.5488)),xlim=c(0,20),ylab="frequency")
+title("Binomial distribution with p=0.5488")
+ベータ二項分布 | singular point

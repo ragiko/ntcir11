@@ -1,0 +1,114 @@
+あてはまりの良い曲線をカーブフィットで得られない場合、方程式のオプションに変更を加えることで、あてはまりの良さが改善するか否かを確認することができます。回帰分析のオプションを設定するには、Regression Wizard、Dynamic Fit Wizard、Global Fit Wizard  の Variables パネルにある Options ボタンをクリックします。
+Equation Options ダイアログボックスを使えば以下のことができます:
+初期パラメータ値の変更
+制約条件の追加または変更
+定数の値の変更
+重み付きフィッティングの使用 (対応している場合のみ)
+収束オプションの変更
+15.1.11.1 パラメータ
+Initial Parameters (初期パラメータ) のデフォルト値は、Automatic に設定されています。Automatic 設定が利用できるのは、初期パラメータの推定値をデータから予測するアルゴリズムを使った SigmaPlot にビルトインされた方程式です。この設定は、全てのケースで動作する訳ではありませんので、場合によっては、別の値を入力する必要があるかもしれません。その場合は、変更したいパラメータをクリックして、編集ボックスに変更内容を入力してください。
+Initial Parameters ドロップダウンリストには、パラメータ値として前回入力された値が表示されます。入力したパラメータ値はいずれも、セッション間で保持されます。
+図 15.7 
+Equation Options ダイアログで初期パラメータの数値を選択した例
+パラメータには、数値または関数のいずれかを代入することができます。パラメータの値は、カーブフィット機能が妥当な結果にたどりつくようにするために、できるだけ最終結果に近いものにすべきですが、方程式の複雑さとパラメータの数によってこれは変動します。初期パラメータが最終結果に程遠いものであっても、問題なく機能することは良くあります。しかし、適切な初期推定値を入力することは、あてはまりの良さと計算スピードを担保するのに役立ちます。
+15.1.11.2 制約条件
+Constraints (制約条件) を使用すれば、回帰分析の探索範囲を制限し、カーブフィット機能のスピードと精度を改善する、パラメータ値の取り得る限界と条件を設定することができます。制約条件は不要である場合も多いですが、モデルで使用するのが良いとみなされるときは常に使用するのがいいでしょう。
+制約条件は、カーブフィット機能が現実とはかけ離れたパラメータ値を検定しないようにしたい場合にも役立ちます。例えば、パラメータが常に負の値をとることが既知である場合、制約条件としてパラメータが常にゼロ以上になるような定義を入力することができます。
+回帰式が明らかに不正確なパラメータ値を出力する場合も、制約条件を利用することができます。初期結果のパネルから Back ボタンをクリックし、Options ボタンをクリックしたら、間違ったパラメータ値が出ないような制約条件を入力するだけです。
+あてはめの終了時にパラメータと制約条件の値が等しい場合、その制約条件は active となる点にご注意ください。こうした制約条件は初期結果パネルの View Constraints ボタンをクリックすることで確認できます。
+15.1.11.3 パラメータ制約条件の入力
+制約条件を入力するには、Constraints 編集ボックスをクリックして、トランスフォーム言語の演算子を使用して目的の制約条件を入力します。
+制約条件は、等号 (=) または不等号 (< または >) を使用した方程式パラメータの線形方程式である必要があります。例えば、パラメータ a, b, c, d, e に対して以下に示す制約条件を入力することができます:
+例
+a<1
+10*b+c/20>2
+d-e=15
+a>b+c+d+e
+しかし、次に示す制約条件は、x がパラメータではなく変数になっているので正しくありません。
+a*x<1
+次に示す制約条件も、非線形になっているので正しくありません。
+b+ c^2> 4
+d*e=1
+矛盾や対立のある制約条件は、カーブフィット機能が判断し自動的に排除されます。
+15.1.11.4 定数の定義
+Constants (定数) 編集ウィンドウには、回帰分析で決定されるパラメータではなく、前回定義した定数の内容が表示されます。定数の値を編集したり、定数の値を新規に定義するには、Regression Wizard、Dynamic Fit Wizard、Global Fit Wizard  のダイアログボックスにある Edit Code をクリックします。
+定数は、方程式の作成時に定義します。回帰方程式のコードの編集で定義できるのは、現在のところ、新規の定数のみとなっていますが、既存の定数はいずれも定義しなおすことができます。
+変更できるのは、定数の値のみです。定数の値を新規に追加することはできません。すなわち、定数の値は、必ず方程式の中に存在していなければならず、また、変数やパラメータの下に事前に定義することはできませんので、これらを定義できるのは、方程式のコード内に限定されることになります。
+15.1.11.5 重み付きあてはめ
+リストに登録されている任意の重み (Weight) を選択することができます。ビルトイン方程式には、あらかじめ定義された値を持つものも一部あります。使用したい方程式に選択できる重みオプションがない場合、選択できるのは None オプションのみとなります。
+重みオプションは、Fit with Weight ドロップダウンリストに表示されます。あてはめに適用される重みはデフォルトでは (none) に設定されています。これとは別な設定を適用するには、ドロップダウンリストから重み付けオプションを選択します。
+重み変数は、必ず回帰コードの編集によって定義する必要があります。
+15.1.11.6 反復回数
+反復回数 (Iterations) オプションは、あてはめの試行を繰り返す最大数を設定するものです。カーブフィットが反復される毎に、モデルのあてはめに最適なパラメータの探索が試行されます。反復計算の度に、カーブフィット機能はパラメータの値を徐々に増加させ、実験データに対するモデルの適合度を検定します。ある反復計算と次の反復計算の間において、Tolerance (許容値) オプションで指定した値よりあてはめの改善が小さくなると、カーブフィット機能は計算を停止し、その結果を表示します。
+図 15.8 反復回数の変更例
+特に複雑なあてはめにおいて、デフォルトで指定された 100 を超えるような反復回数が必要となるような場合には、反復回数を変更してスピードアップを図るか回帰処理を改善してください。反復計算があまりにも多く、進捗の途中で処理を中断し、その内容をチェックしたいという場合も、反復回数を減らすことができます。
+Iterations を 0 に設定すると、初期パラメータ値を使用するあてはめ方程式の従属変数のみが評価されることになります。
+反復回数の最大数を変更するには、使用する反復回数の数字を直接入力するか、ドロップダウンリストから前回使用した反復回数を選択します。
+反復計算の回数が最大数に達したら、回帰処理が停止し、Initial parameters パネルに現在の結果が表示されます。さらに反復計算を継続したい場合は、Regression Wizard にある More Iterations ボタンをクリックしてください。
+15.1.11.7 ステップサイズ
+カーブフィット機能ではパラメータ値を変えながら反復計算、すなわち、計算を繰り返してゆく訳ですが、ステップサイズ (Step size) は、そのパラメータ値を変化させる最初の幅をあらわす値です。この設定によってスピードや回帰処理を改善することができます。
+ステップサイズを大きく取り過ぎれば、カーブフィットで求まるパラメータは最適な値からはるかに外れてしまう可能性があります。一方、ステップサイズがあまりにも小さければ、最適なパラメータに収束するまでの時間が長くかかります。
+ほとんどの関数では、デフォルトのステップサイズが 1 に設定されています。ステップサイズの値を変更するには、Step Size 編集ボックスに変更したいステップサイズの値を直接入力するか、ドロップダウンリストを使って前回定義した値を選択します。
+15.1.11.8 許容値
+Tolerance (許容値) オプションは、回帰処理を終了するために必要な条件を制御するものです。反復計算の間の残差平方和 (残差の平方和の平方根) の差の絶対値がここで定めた許容値よりも小さい場合は、反復計算が停止します。
+許容値の条件が満たされた場合、すなわち、一般に平方和の最小値が見つかった場合は、正しい解が求められたことをあらわします。しかし、それが平方和の極小値 (local minima) である場合は、カーブフィットで求められた解は誤りとなります。
+許容値の値を小さくすると、それだけ求める解の許容範囲の要件は厳しくなります。反対に、許容値の値を大きくすると、それだけ要件は緩くなります。
+許容値のデフォルトは 1e-10 に設定されています。許容値を変更するには、Tolerance 編集ボックスに変更したい許容値を直接入力するか、ドロップダウンリストを使って前回定義した値を選択します。
+15.1.11 Equation Options
+If the curve fitter fails to find a good fit for the curve, you can try changing the equation options to see if you can improve the fit. To set options for a regression, click the Options button in the Variables panel of the Regression, Dynamic Fit, or Global Fit Wizard.
+Note: If you want to edit the settings in the equation document manually, click the Edit Code button.
+Use the Equation Optionsdialog box to:
+Change initial parameter values.
+Add or change constraints.
+Change constant values.
+Use weighted fitting, if it is available.
+Change convergence options.
+15.1.11.1 Parameters
+The default setting for the initial parameter value is shown Automatic. The Automatic setting available with the built-in SigmaPlot equations uses algorithms that analyze your data to predict initial parameter estimates. These do not work in all cases, so you may need to enter a different value. Just click the parameter you want to change, and make the change in the edit box.
+The values that appear in the Initial Parameters drop-down list were previously entered as parameter values. Any parameter values you enter will also be retained between sessions.
+Figure 15.7 Selecting Numeric Initial Parameters in the Equation Options dialog
+Parameters can be either a numeric value or a function. The value of the parameter should approximate the final result, in order to help the curve fitter reach a valid result, but this depends on the complexity and number of parameters of the equation. Often an initial parameter nowhere near the final result will still work. However, a good initial estimate helps guarantee better and faster results.
+15.1.11.2 Constraints
+Use constraints to set limits and conditions for parameter values, restricting the regression search range and improving curve fitter speed and accuracy. Constraints are often unnecessary, but should always be used whenever appropriate for your model.
+Constraints are also useful to prevent the curve fitter from testing unrealistic parameter values. For example, if you know that a parameter should always be negative, you can enter a constraint defining the parameter to be always less than 0.
+You can also use constraints if the regression produces parameter values that you know are inaccurate. Simply click Back from the initial results panel, click the Options button, and enter constraint(s) that prevent the wrong parameter results.
+Note that a parameter equals a constraint value at the completion of the fit, the constraint is called active. You can view these constraints from the initial results panel by clicking View Constraints.
+15.1.11.3 Entering Parameter Constraints
+To enter constraints, click the Constraints edit box, and type the desired constraint(s), using the transform language operators.
+A constraint must be a linear equation of the equation parameters, using an equal (=) or inequality (< or >) sign. For example, you could enter the following constraints for the parameters a, b, c, d, and e:
+例
+a<1
+10*b+c/20>2
+d-e=15
+a>b+c+d+e
+However, the constraint
+a*x<1
+is illegal, since x is a variable, not a parameter, and the constraints
+b+ c^2> 4
+d*e=1
+are illegal because they are nonlinear. Inconsistent and conflicting constraints are automatically rejected by the curve fitter.
+15.1.11.4 Defining Constants
+Constants that appear in the Constants edit window have been previously defined as a constant, rather than a parameter to be determined by the regression. To edit a constant value, or define new constant values, click Edit Code on the Regression Wizard, Dynamic Fit Wizard or Global Fit Wizarddialog box.
+Constants are defined when an equation is created. Currently, you can only define new constants by editing the regression equation code. However, you can redefine any existing constants.
+Change only the value of the constant. Do not add new constant values; constant variables must exist in the equation and not be defined already under variables or parameters, so they can only be defined within the code of an equation.
+15.1.11.5 Fit with Weight
+You can select from any of the weights listed. Some built-in equations have some predefined values, although most do not. If no weighting options are available for your equation, only the None option will be available.
+Weighting options appear in the Fit with Weight drop-down list. By default, the weighting applied to the fit is (none). To apply a different weighting setting, select a weighting option from the drop-down list.
+Weight variables must be defined by editing the regression code.
+15.1.11.6 Iterations
+The Iterations option sets the maximum number of repeated fit attempts before failure. Each iteration of the curve fitter is an attempt to find the parameters that best fit the model. With each iteration, the curve fitter varies the parameter values incrementally, and tests the fit of that model to your data. When the improvement in the fit from one iteration to the next is smaller than the setting determined by the Tolerance option, the curve fitter stops and displays the results.
+Figure 15.8 Changing iterations
+Change the number of iterations to speed up or improve the regression process, especially if a complex fit requires more than the default of 100 iterations. You can also reduce the number of iterations if you want to end a fit to check on its interim progress before it takes too many iterations.
+Setting Iterations to 0 will simply evaluate the dependent variable of the fit equation using the initial parameter values.
+To change the maximum number of iterations, enter the number of iterations to use, or select a previously used number of iterations from the drop down list.
+When the maximum number of iterations is reached, the regression stops and the current results are displayed in the initial parameters panel. If you want to continue with more iterations, you can click More Iterations on the Regression Wizard.
+15.1.11.7 Step Size
+Step size, or the limit of the initial change in parameter values used by the curve fitter as it tries, or iterates, different parameter values, is a setting that can be changed to speed up or improve the regression process.
+A large step size can cause the curve fitter to wander too far away from the best parameter values, whereas a step size that is too small will result in slow convergence to the best parameters.
+For most functions, the default step size value is 1. To change the Step Size value, type the desired step size in the Step Size edit box, or select a previously defined value from the drop-down list.
+15.1.11.8 Tolerance
+The Tolerance option controls the condition that must be met in order to end the regression process. When the absolute value of the difference between the sum of squares of the residuals (square root of the sum of squares of the residuals), from one iteration to the next, is less than the tolerance value, the iteration stops.
+When the tolerance condition has been met, a minimum of the sum of squares has usually been found, which indicates a correct solution. However, local minima in the sum of squares can also cause the curve fitter to find an incorrect solution.
+Decreasing the value of the tolerance makes the requirement for finding an acceptable solution more strict; increasing the tolerance relaxes this requirement.
+The default tolerance setting is1e-10. To change the tolerance value, type the desired value in the Tolerance edit box, or select a previously defined value from the drop-down list.
+HULINKS | SigmaPlot ユーザーガイド | 15.1.11 方程式のオプション

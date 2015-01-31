@@ -1,0 +1,11 @@
+本報告では,講義における講師と受講者の間に存在するインタラクションにおいて,(i) 講師の動作,(ii) 他の受講者の動作,(iii) 受講者自身の動作が,特定の受講者に対して及ぼす影響について検討する.ここでは,講師の顔画像を検出し,顔領域を構成する画素数や頭の位置を動作に対する特徴量とする.同様に,受講者の顔画像を検出し,顔領域を構成する画素数を動作に対する特徴量とする.つぎに,講義における講師と受講者による動作 (特徴量) の関係を階層型ニューラルネットワークを用いることにより分析する.さらに,忘却付き構造学習法により,上述の特徴量間の関係解明を行う. 
+In this report, we discuss the influence the following three behaviors on the behavior by a 
+specific student in lecturers; (i) the behavior by the lecturer, (ii) the behaviors by other students, 
+and (iii) the behavior by oneself.  First, we adopt the following features as behaviors by lecturer 
+and students; (i) the face movement and the head position by lecturer, and face movements by 
+students.  Next, the relations among the above features concerning on the behaviors by the 
+lecturer and students can be approximated by multi-layered neural networks.  Furthermore, we 
+use a learning method with forgetting for neural networks for the purpose of extraction of rules. 
+Finally, we have analyzed the interaction between behaviors by lecturer and students based on 
+the internal representations.
+研究会 - 講義における受講者の動作の分析

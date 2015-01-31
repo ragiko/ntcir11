@@ -1,0 +1,29 @@
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.placeholder.js"></script>
+<style type="text/css">
+/* 設定提示字的文字顏色 */
+::-webkit-input-placeholder {
+color: red;
+}
+:-moz-placeholder {
+color: red;
+}
+.placeholder {
+color: #ccc;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+// 幫有 placeholder 屬性的輸入框加上提示效果
+$('input[placeholder]').placeholder();
+});
+</script>
+<body>
+<h2>有使用 placeholder</h2>
+<p><input type="text" placeholder="提示" name="a"></p>
+<p><input type="password" placeholder="密碼" name="b"></p>
+<h2>沒有使用 placeholders</h2>
+<p><input type="text" name="c"></p>
+<p><input type="password" name="d"></p>
+</body>
+[jQ]jQuery-Placeholder | 男丁格爾's 脫殼玩

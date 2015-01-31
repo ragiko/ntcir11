@@ -1,0 +1,84 @@
+なかなか需要がありそうだったので
+備忘録的にご紹介。WordPressを
+使っているWebサイトで、最近でも
+よく寄稿者を募っているところを見か
+けますが、その記事の寄稿を簡略化
+出来る、というプラグインです。寄稿者
+をユーザー登録する必要もありません。
+User Submitted Postsはコンタクトフォームから寄稿すれば、その内容がそのまま下書き記事として保存してくれるので管理側は寄稿記事を管理しやすく、やり方次第で寄稿者側も寄稿するハードルが低くなるかも知れませんね。
+メールなどによる寄稿者とのやりとりが無いので結構楽になるんじゃないですかね。設定もいろいろ出来るのでマルチユーザーサイトやニュース、マガジンサイトに良さそうですよ。
+コンタクトフォームから直接寄稿できるようにするプラグインです。寄稿記事の管理もしやすくなりそう。
+使い方
+使い方は簡単で、プラグインを有効化し、設定後にフォームを設置するだけ。フォームの設置は
+[user-submitted-posts]
+というショートコードを「ページ」等で使うか、
+<?php if(function_exists('public_submission_form')) public_submission_form(true); ?>
+テンプレートファイルで使いたい場合は上記コードを挿入すればOKです。
+スクリーンショット
+フォームの英語部分はview/submission-form.phpファイル内を日本語に修正すれば良さそうです。
+フォームで送られた内容がそのまま記事になってくれます。上図はレビュー待ちになっていますが、設定を変えれば寄稿直ぐに記事アップにすることも可能です。
+セッティング
+プラグインを有効化するとセッティングできるようになります。簡単に解説しますので分からない項目は確認してみてください。
+Customize Form Display
+寄稿フォームに含める項目です。
+User Name / 寄稿者の名前
+投稿の URL / 多分勝手に日本語になります。
+Post Title / 記事タイトル
+投稿タグ / タグです。自動で日本語化します。
+Post Category / カテゴリ
+Post Content / 記事内容
+Post Images / 画像
+上記をフォームに含めるかどうかをそれぞれ決めます。
+Upload Message
+Post Images(画像)をフォームに含めた場合に、画像のアップロード箇所に挿入するテキストです。画像のファイルサイズなんかを説明する時に。
+Error Message
+項目の入力不備等で表示されるエラーメッセージです。デフォルトでは英語なので必要に応じて変更してください。
+Assigned Author
+寄稿記事をどのユーザーにあてるか、を決めます。記事では寄稿者の名前を入力項目に含めた場合、寄稿者の名前が表示されますが、実際にユーザーが増えるわけでは無く、管理者をここで振り分ける形になります。
+Redirect URL
+フォーム送信後にサンキューページに飛ばしたい、などの際に利用するリダイレクト項目です。リダイレクトさせたいURLを入れて下さい。なければ空白で問題ありません。尚、リダイレクト先のURLには?success=nといったパラメーターが付きます。
+Automatically Publish
+寄稿された記事をそのまま直ぐに公開させるか、下書きにするか、などを決めます。個人的には下書きにしておくことをお勧めします。
+カテゴリー
+寄稿者が選択できるカテゴリーを決めます。複数選択できます。新しく作るのが一般的ですかね・・
+Minimum Number of Images
+Post Images(画像)をフォームに含めた場合に、最低アップロードする画像の数です。画像数が足りない場合はエラーを表示します。
+Maximum Number of Images
+Post Images(画像)をフォームに含めた場合に、アップロード出来る画像の最大数です。
+Minimum Image Size
+画像の最低サイズです。
+Maximum Image Size
+画像の最高サイズです。
+文字化けを直す
+テストしたら一部文字化けしました。寄稿内容には大きな影響は寄稿者名以外は特に有りませんでしたが、一応修正する箇所を書いておきます。
+僕の場合は文字コードがUTF-8だったから文字化けしたのですが、同じように文字化けした方は以下の手順で修正して下さい。
+設定画面の「カテゴリ」部分
+寄稿者フォームの「カテゴリ」部分
+寄稿者の名前
+の3箇所。以下修正部分です
+user-submitted-posts.phpを開いて312行目。
+update_post_meta($newPost, $this->_post_meta_Submitter, htmlentities(($authorName)));
+を
+update_post_meta($newPost, $this->_post_meta_Submitter, htmlentities($authorName, ENT_QUOTES, "UTF-8"));
+に修正。
+views/settings.phpを開いて165行目。
+<?php echo htmlentities($category->name); ?>
+を
+<?php echo htmlentities($category->name, ENT_QUOTES, "UTF-8"); ?>
+に修正。
+views/submission-form.phpを開いて51行目の
+<?php $category = get_category($categoryId); echo htmlentities($category->name); ?>
+の部分を
+<?php $category = get_category($categoryId); echo htmlentities($category->name, ENT_QUOTES, "UTF-8"); ?>
+に修正。
+これで文字化けは解消されるはずです。修正後、保存する際も文字コードにお気をつけ下さい。
+文字化けの原因
+僕はノンプログラマーの普通のおじさんなので詳しいことはよくわかってませんが、上記コードでXSS対策として使用されているhtmlentities()は、基本的にISO-8859-1として処理してるようなので、第3引数を指定しないと文字化けしてしまうかも知れない、という事っぽいです。
+という訳で、先程の3箇所は
+echo htmlentities($category->name)
+のような箇所を
+echo htmlentities($category->name, ENT_QUOTES, “UTF-8″)
+と修正しただけです。他は文字化けしてないハズですが、他にもあったらごめんなさい。
+日本語化も簡単そうなので暇を見てやってみようかな。フォームもWYSIWYGと絡めればより使いやすくなるかも。本プラグインは以下よりダウンロード出来ます。
+User Submitted Posts(via:Perishable Press)
+ユーザーからの記事の寄稿を簡略化するWordPressプラグイン・User Submitted Postsと文字化けの直し方 - かちびと.net

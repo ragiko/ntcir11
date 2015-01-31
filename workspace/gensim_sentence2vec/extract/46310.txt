@@ -1,0 +1,37 @@
+
+利用例
+GUIでの利用例
+1.コンパイル
+Intel Inspectorを使用する場合,デバッグオプション -g を指定してコンパイルを行ってください.コンパイルオプションについては こちら および こちら も参考にしてください.
+$ icc -g test.c
+2. Inspector の起動
+Exceed onDemand で, inspxe-gui コマンドを実行するとInspectorが起動します. xrun コマンドの詳細は 会話型処理 をご覧ください.
+$ xrun inspxe-gui
+3. プロジェクトを作成する
+File => New => Project を選択すると以下のような画面が表示されますので,適切な Project name を入力して, Create Project を押してください.
+4.プロジェクトの設定
+続いて,Project Properties の画面が表示されますので,対象とするプログラムを Application で指定して OK を押してください.引数等が必要な場合はここで指定します.
+5.チェック開始
+Configure Analysis Type の画面が表示されますので,チェックの対象を指定した上で, Start
+を押してください.
+6.チェック結果の確認
+Inspectorでのチェックの結果が表示されます.この例では,メモリリークが1件発見されています.
+7.結果の詳細表示
+上図で報告された問題をダブルクリックすると,以下のような詳細を確認することができます.
+CUIでの利用例
+1.コンパイル
+Intel Inspectorを使用する場合,デバッグオプション -g を指定してコンパイルを行ってください.コンパイルオプションについては こちら および こちら も参考にしてください.
+$ icc -g test.c
+2.チェックの実行
+CUI版のInspectorは inspxe-cl コマンドで利用できます.この例では,ワーキングディレクトリと結果出力先のディレクトリを指定してメモリリークおよびその他のメモリの問題の場所を検出しています. tssrun コマンドの詳細は 会話型処理 をご覧ください.
+$ tssrun inspxe-cl -collect=mi3 -app-working-dir=./work -r=./result $PWD/a.out
+Used suppression file(s): []
+1 new problem(s) found 
+1 Memory leak problem(s) detected
+3. 結果の確認
+チェックの結果問題が発見された場合, Exceed onDemand で, inspxe-gui コマンドを実行し,GUI版のInspectorで結果を確認してください. xrun コマンドの詳細は 会話型処理 をご覧ください.
+$ xrun inspxe-gui ./result/result.inspxe
+マニュアル
+Intel® Inspector XE 2011 Documentation
+Intel® Inspector XE 2013 Documentation
+Intel Inspector | スーパーコンピュータシステムの使い方

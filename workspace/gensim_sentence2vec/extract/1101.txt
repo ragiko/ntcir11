@@ -1,0 +1,212 @@
+データベースからデータを読み込みます。
+まずAndroid SQLiteデータベースを作成するするで作成したSQLiteOpenHelperクラスを継承したDatabaseHelper.javaのインスタンスを作成します。
+このDataBaseHelperインスタンスのgetWritableDatabase()メソッドもしくはgetReadableDatabase()メソッドでSQLiteDatabaseインスタンスを取得します。
+DatabaseHelper dbHelper = new DatabaseHelper(this);   
+SQLiteDatabase db = dbHelper.getWritableDatabase(); 
+SELECT文を実行するにはSQLiteDatabaseインスタンスのrawQuery()メソッドやquery()メソッドを使用します。
+rawQuery()メソッド
+Cursor rawQuery (String sql, String[] selectionArgs) 
+引数sqlには、sql文を指定します。
+引数selectionArgsにはsql文のパラメータ（？で指定）に置き換わる値を指定します。
+query()メソッド
+Cursor query (String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) 
+Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit)
+引数distinctには、trueを指定すると検索結果から重複する行を削除します。
+引数tableには、テーブル名を指定します。
+引数columnsには、検索結果に含める列名を指定します。nullを指定すると全列の値が含まれます。
+引数selectionには、検索条件を指定します。
+引数selectionArgsには、検索条件のパラメータ（？で指定）に置き換わる値を指定します。
+引数groupByには、groupBy句を指定します。
+引数havingには、having句を指定します。
+引数orderByには、orderBy句を指定します。
+引数limitには、検索結果の上限レコードを数を指定します。
+データベースからデータを取り出し、TextViewに表示するサンプルです。
+MainActivity.java
+package my.study.android;  
+import android.app.Activity;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+public class MainActivity extends Activity {
+/* CreateDumyボタンClickリスナー */
+private OnClickListener buttonCreateDumy_OnClickListener = new OnClickListener(){
+public void onClick(View v) {buttonCreateDumyData_OnClick(v);}};
+/* buttonRowQueryボタンClickリスナー 　*/
+private OnClickListener buttonRowQuery_OnClickListener = new OnClickListener(){
+public void onClick(View v) {buttonRowQuery_OnClick(v);}};
+/* buttonQueryボタンClickリスナー 　*/
+private OnClickListener buttonQuery_OnClickListener = new OnClickListener(){
+public void onClick(View v) {buttonQuery_OnClick(v);}};
+/*
+* onCreate
+*/
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.main);
+//
+Button btnCreateDumy = (Button)this.findViewById(R.id.btnCreateDumy);
+btnCreateDumy.setOnClickListener(buttonCreateDumy_OnClickListener);
+Button btnRowQuery = (Button)this.findViewById(R.id.buttonRowQuery);
+btnRowQuery.setOnClickListener(buttonRowQuery_OnClickListener);
+Button btnQuery = (Button)this.findViewById(R.id.buttonQuery);
+btnQuery.setOnClickListener(buttonQuery_OnClickListener);
+} 
+/*
+* ダミーデータ作成ボタン　クリック処理
+*/
+private void buttonCreateDumyData_OnClick(View v){
+DatabaseHelper dbHelper = new DatabaseHelper(this);
+SQLiteDatabase db=dbHelper.getWritableDatabase();
+try{
+ContentValues values = new ContentValues();  
+for (int i=0; i<10; i++){
+values.put("Name", "yan" + (i+1));   
+values.put("Tel", "000-000-0000");   
+values.put("Age", 20+i);  
+db.insert("MyTable", null, values);
+values.clear();
+} 
+}finally{
+db.close();
+}
+}
+/*
+* RowQueryボタン　クリック処理
+*/
+private void buttonRowQuery_OnClick(View v){
+//SQL作成
+StringBuilder sql = new StringBuilder();
+sql.append(" SELECT");
+sql.append(" No");
+sql.append(" ,Name");
+sql.append(" ,Tel");
+sql.append(" ,Age");
+sql.append(" FROM MyTable;");
+//rawQueryメソッドでデータを取得
+DatabaseHelper dbHelper = new DatabaseHelper(this);
+SQLiteDatabase db=dbHelper.getReadableDatabase();
+try{
+Cursor cursor = db.rawQuery(sql.toString(), null); 
+//TextViewに表示
+StringBuilder text = new StringBuilder();
+while (cursor.moveToNext()){
+text.append(cursor.getInt(0));
+text.append("," + cursor.getString(1));
+text.append("," + cursor.getString(2));
+text.append("," + cursor.getString(3));
+text.append("\n");
+}
+}finally{
+db.close();
+}
+TextView lblList = (TextView)this.findViewById(R.id.labelList);
+lblList.setText(text);
+}
+/*
+* queryボタン　クリック処理
+*/
+private  void buttonQuery_OnClick(View v){
+//queryメソッドでデータを取得
+String[] cols = {"No","Name","Tel","Age"};
+String selection = "No = ?";
+String[] selectionArgs = {"5"};
+String groupBy = null;
+String having = null;
+String orderBy = null;
+DatabaseHelper dbHelper = new DatabaseHelper(this);
+SQLiteDatabase db=dbHelper.getReadableDatabase();
+try{
+Cursor cursor = db.query("MyTable", cols, selection, selectionArgs, groupBy, having, orderBy);
+//TextViewに表示
+StringBuilder text = new StringBuilder();
+while (cursor.moveToNext()){
+text.append(cursor.getInt(0));
+text.append("," + cursor.getString(1));
+text.append("," + cursor.getString(2));
+text.append("," + cursor.getString(3));
+text.append("\n");
+}
+}finally{
+db.close();
+}
+TextView lblList = (TextView)this.findViewById(R.id.labelList);
+lblList.setText(text);
+}
+}
+DatabaseHelper.java 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+public class DatabaseHelper extends SQLiteOpenHelper {
+/* データベース名 */
+private final static String DB_NAME = "androidstudydb";
+/* データベースのバージョン */
+private final static int DB_VER = 1;
+/*
+* コンストラクタ
+*/
+public DatabaseHelper(Context context) {
+super(context, DB_NAME, null, DB_VER);
+}
+/*
+* onCreateメソッド
+* データベースが作成された時に呼ばれます。
+* テーブルの作成などを行います。
+*/
+@Override
+public void onCreate(SQLiteDatabase db) {
+String sql = "";
+sql += "create table MyTable (";
+sql += " No integer primary key autoincrement";
+sql += ",Name text not null";
+sql += ",Tel text";
+sql += ",Age integer";
+sql += ")";
+db.execSQL(sql);
+}
+/*
+* onUpgradeメソッド
+* onUpgrade()メソッドはデータベースをバージョンアップした時に呼ばれます。
+* 現在のレコードを退避し、テーブルを再作成した後、退避したレコードを戻すなどの処理を行います。
+*/
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+}
+}
+main.xml(MainActivityのレイアウト)
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+>
+<TextView 
+android:layout_width="wrap_content" android:layout_height="wrap_content" 
+android:id="@+id/labelList">
+</TextView>
+<Button 
+android:layout_width="wrap_content" android:layout_height="wrap_content" 
+android:id="@+id/btnCreateDumy" android:text="CreateDumy">
+</Button>
+<Button 
+android:layout_width="wrap_content" android:layout_height="wrap_content" 
+android:text="rowQuery()" android:id="@+id/buttonRowQuery">
+</Button>
+<Button 
+android:layout_width="wrap_content" android:layout_height="wrap_content" 
+android:text="query()" android:id="@+id/buttonQuery">
+</Button>
+</LinearLayout>
+【関連項目】
+Android SQLiteデータベースを作成する 
+Android SQLiteのGUIツール 
+Android データベースにデータを書き込む（Insert、Update、Delete）
+Android データベースのデータを読み込む（Select)
+Android SQLiteデータベースを作成する（SQL文をリソースファイルに定義する） 
+yan note: Android データベースのデータを読み込む（Select)

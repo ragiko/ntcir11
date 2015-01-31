@@ -1,0 +1,31 @@
+Electron Cyclotron Resonance (ECR) plasmas have a wide field of application. The only required
+power input is given by microwaves. This allows an electrode less design which makes ECR plasmas
+attractive for laboratory usage and the near contamination less calibration [1,2] of space born particle
+detectors as well as for space flight ion thrusters. The latter benefit from an increased reliability and
+life time over competing plasma thruster concepts without ECR plasmas. 
+The Mu10 ion thruster powering the HAYABUSA[3] space craft, scheduled for return from asteroid
+Itokawa on June 13th, 2010, features a flight heritage which only a very small selection of space
+propulsion devices ever achieved. It is this flight heritage which makes Mu10 attractive for the
+application in the sub 1-tonne class geostationary satellites. However, in its current state, Mu10 is
+leaking a significant amount of its ECR feeding microwaves [4] into outer space, interfering with C-band
+communication. Suppressing these microwaves without changing the overall design of Mu10 is the
+main topic of the current research. 
+Because the microwaves pass through the Mu10 ECR plasma before they escape into outer space, the
+microwave suppression involves not only the Mu10 structure but also the Mu10 ECR plasma itself. To
+model, realize and to test an effective suppression mechanism, detailed numerical simulations of the
+microwave propagation are being performed[5]. Due to its large size, the numerical problem is being
+solved by using Graphics Processing Units (GPUs) and the CUDA (Compute Unified Device
+Architecture) interface, both combined provide near supercomputer performance on a desktop system
+but without the high cost and the constraints of a large super computer facility such as scheduling and
+dedicated system coding.
+1. Bodendorfer et al. Field structure and electron life times in the MEFISTO Electron Cyclotron Resonance Ion Source,
+Nuclear Instruments and Methods in Physics research B, 266, p.820-828, 2008.
+2. Bodendorfer et al. Identification of the ECR zone in the SWISSCASE ECR ion source, Nuclear Instruments and Methods
+in Physics Research B, Volume 266, Issue 21, November 2008, pages 4788-4793
+3. H. Kuninaka et. al. Powered Flight of HAYABUSA in Deep Space, 42nd AIAA Joint Propulsion Conference & Exhibit, 9-
+12 July 2006, Sacramento, California, USA.
+4. K. Nishiyama et al, Measurement of the Electromagnetic Emissions from the MUSES-C Ion Engine System, IEPC-01-
+112, 27th International Electric Propulsion Conference, 15-19 October 2001, Pasadena, California, USA.
+5. Bodendorfer et al. First economic massive parallel (CUDA) Finite Difference Time Domain (FDTD) simulation of the
+μ10 ion thruster head, Space Transport Symposium, February 2010, ISAS, JAXA, Japan
+太陽地球系物理コロキウム

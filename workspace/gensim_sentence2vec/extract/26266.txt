@@ -1,0 +1,46 @@
+HP-UX 11i
+HP-UX 11i は、PA-RISC プラットフォーム上でのみサポートされます。
+最小限の必須パッチレベルは次のとおりです。
+B.11.11.0203 &ndash; HP-UX 11i オペレーティング環境コンポーネント
+B.11.11.0306.1 &mdash; 11i に付属する必要なパッチ (2003 年 6 月)
+B.11.11.0306.4 &mdash; HP-UX 11i 用 Gold Base パッチ (2003 年 6 月)
+B.11.11.0306.4 &mdash; HP-UX 11i 用 Gold Application パッチ (2003 年 6 月)
+PHCO_29109 &mdash; Pthread の拡張および修正
+PHCO_30544 &mdash; Pthread.h の修正および新しい拡張
+PHCO_29328 &mdash; libc man ページ累積パッチ
+PHCO_29495 &mdash; libc 累積パッチ
+Java Out-of-Box &mdash; JAVAOOB, 1.0.00.0
+以下のパッチレベルも保証されます。
+バンドル版 JDK の場合
+BUNDLE11i &mdash; B.11.11.0306.1 &mdash; HP-UX 11i に付属する必要なパッチ (2003 年 6 月)
+HPUX11i-OE &mdash; B.11.11.0412 &mdash; HP-UX 11i オペレーティング環境コンポーネント
+GOLDAPPS11i &mdash; B.11.11.0412.5 &mdash; HP-UX 11i v1 用 Gold Application パッチ (2004 年 12 月)
+GOLDBASE11i &mdash; B.11.11.0412.5 &mdash; HP-UX 11i v1 用 Gold Base パッチ (2004 年 12 月)
+GOLDAPPS11i &mdash; B.11.11.0506.4 &mdash; HP-UX 11i v1 用 Gold Application パッチ(2005 年 6 月)
+GOLDBASE11i &mdash; B.11.11.0506.4 &mdash; HP-UX 11i v1 用 Gold Base パッチ (2005 年 6 月)
+GOLDBASE11i.PHCO_29960 &mdash; 1.0 &mdash; Pthread の拡張および修正
+GOLDBASE11i.PHCO_31061 &mdash; 1.0 &mdash; libc 累積パッチ
+PHCO_30544 &mdash; 1.0 &mdash; Pthread の拡張および修正
+PHCO_31923 &mdash; 1.0 &mdash; libc の累積ヘッダーファイルパッチ JAVAOOB, 1.0.00.02
+PHCO_33711 &ndash; 1.0 &mdash; libc 累積パッチ
+JDK 1.5.0_01 の場合: 
+BUNDLE11i &mdash; B.11.11.0306.1 &mdash; HP-UX 11i に付属する必要なパッチ (2003 年 6 月)
+GOLDAPPS11i &mdash; B.11.11.0506.4 &mdash; HP-UX 11i v1 用 Gold Application パッチ(2005 年 6 月)
+GOLDBASE11i &mdash; B.11.11.0506.4 &mdash; HP-UX 11i v1 用 Gold Base パッチ (2005 年 6 月)
+HPUX11i-OE &mdash; B.11.11.0312 &mdash; HP-UX 11i オペレーティング環境コンポーネント
+PHCO_30544 &mdash; 1.0 &mdash; Pthread の拡張および修正
+PHCO_32761 &mdash; 1.0 &mdash; libc 累積パッチ
+PHCO_33711 &ndash; 1.0 &mdash; libc 累積パッチ
+Java15JDK &ndash; 1.5.0.01.00 &mdash; HP-UX 用 Java 1.5 JDK
+JAVAOOB &mdash; 2.03.01 &mdash; HP-UX 用 Java2 Out-of-box
+Java Out-of-Box ツールは、必要なカーネル調整可能パラメータを構成するのに使用されます。カーネルの値を変更する場合には、このツールを使用することをお勧めします。必要に応じて、次に示す調整可能パラメータが右側の値以上になるように変更してください。
+nkthreads &mdash; 3635
+maxfiles &mdash; 60
+maxfiles_lim &mdash; 1024
+max_thread_proc &mdash; 512
+maxswapchunks &mdash; 2048
+nfile &mdash; 4136
+ncallout &mdash; 3651
+nproc &mdash; 2068
+注意 &ndash; カーネル調整可能パラメータの変更は、システムに悪影響を及ぼす可能性があります。
+HP-UX 11i (Sun Java System Web Server 6.1 SP6 リリースノート)

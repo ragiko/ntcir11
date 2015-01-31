@@ -1,0 +1,48 @@
+
+<script type="text/javascript">
+<!--
+var today = new Date();
+var year = today.getYear();
+var num_month = today.getMonth();
+var month;
+var date = today.getDate();
+var num_day = today.getDay();
+var day;
+....
+....
+if (0 <= num_day && num_day <= 4)
+document.write("今日は平日だ", "<br>")
+else if (5 <= num_day && num_day <= 6)
+document.write("今は休日だ", "<br>");
+....
+....
+// -->
+</script>
+<script type="text/javascript">
+<!--
+var today = new Date();
+var year = today.getYear();
+var num_month = today.getMonth();
+var month;
+var date = today.getDate();
+var num_day = today.getDay();
+var day;
+....
+....
+switch (num_day) {
+case 0:
+case 1:
+case 2:
+case 3:
+case 4:
+document.write("今日は平日だ", "<br>");
+break;
+case 5:
+case 6:
+document.write("今は休日だ", "<br>");
+}
+....
+....
+// -->
+</script>
+複合条件文

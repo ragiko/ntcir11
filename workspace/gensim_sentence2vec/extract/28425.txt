@@ -1,0 +1,104 @@
+ 北米時間2013年4月23日,NVIDIAは,Release 319世代に属する公式最新β版グラフィックスドライバ「GeForce 320.00 Driver Beta」を公開した。現在のところ,Release 319世代がどこまで続くのかの見通しは示されていないが※,ともあれ,今回の320.00ドライバは,公開されたものとして,Release 319世代初ということになる。
+すぐに入手したい人は下に示したリンクからどうぞ。なお,統合される「HD Audio Driver」と「PhysX System Software」のバージョンは1.3.24.2,9.12.1031で,前者は,現在の公式最新版ドライバである「GeForce 314.22 Driver」から新しくなっている。
+32bit版Windows 8・7・Vista用GeForce 320.00 Driver Beta(163MB)
+64bit版Windows 8・7・Vista用GeForce 320.00 Driver Beta(211MB)
+Windows XP用GeForce 320.00 Driver Beta(142MB)
+ノートPC向けの32bit版Windows 8・7・Vista用GeForce 320.00 Driver Beta(167MB)
+ノートPC向けの64bit版Windows 8・7・Vista用GeForce 320.00 Driver Beta(215MB)
+GeForce公式情報サイト「GeForce.com」の当該記事によれば,今回の320.00β版は,「Dead Island: Riptide」「Neverwinter」「Star Trek: The Video Game」に向けた最適化版とのこと。ただ,本稿の最後にアップデート内容をまとめたが,「TOMB RAIDER」で最大20.1%,「DiRT Showdown」で最大20.5%といった具合に,Radeon向けの最適化が入るタイトルで性能を大きく改善し,さらに,そのほかの主要タイトルでも最適化が進むなど,かなりの気合いを感じるものとなっている。
+バグフィックス関連でも,「ファイナルファンタジーXI」が特定条件でクラッシュする問題が潰されるなど,なかなかに規模は大きい印象だ。
+NVIDIAは,ゲーマーに向けて,公式β版の導入を推奨している。β版は導入しないというポリシーで動いている人は待ったほうがよさそうだが,そうでないなら,連休中のゲームプレイに向けて,自己責任でアップデートしておくのもアリではなかろうか。
+## 以下,GeForce.comの関連記事および英文リリースノートまとめ ##
+GeForce 320.20 Driver Betaの対応製品
+GeForce GTX TITAN
+デスクトップPC向けGeForce 600〜200シリーズ
+デスクトップPC向けGeForce 9&8シリーズ
+デスクトップPC向けQuadro Kシリーズ,Quadro 4x0シリーズ,Quadro x000シリーズ,Quadro FXシリーズ,NVSシリーズ
+ノートPC向けGeForce GT 730M
+ノートPC向けGeForce 600M〜100Mシリーズ
+ノートPC向けGeForce 9M&8Mシリーズ
+ノートPC向けQuadro Kシリーズ,Quadro 5000M〜1000Mシリーズ
+ノートPC向けNVS 5000M〜100Mシリーズ
+Tesla Kシリーズ,Tesla 2000シリーズ
+IONプラットフォーム
+GeForce 320.00 Driver Betaにおける性能向上
+(※GeForce GTX 680の例。比較対象はGeForce 314.22 Driverとされる)
+「Deus Ex: Human Revolution」で最大5.6%
+「DiRT Showdown」で最大20.2%
+「Far Cry 3」で最大3.1%
+「Metro 2033」で最大6.2%
+「StarCraft II: Wings of Liberty」で最大10.9%
+「TOMB RAIDER」で最大20.1%
+GeForce 320.00 Driver Betaにおける性能向上
+(※GeForce GTX 680 SLIの例。比較対象はGeForce 314.22 Driverとされる)
+「Assassin's Creed III」で最大3.7%
+「Batman: Arkham City」で最大5.8%
+「Bioshock Infinite」で最大4.3%
+「Crysis 3」で最大3.5%
+「Deus Ex: Human Revolution」で最大5.9%
+「DiRT Showdown」で最大20.5%
+「F1 2012」で最大4.9%
+「Far Cry 3」で最大4.1%
+「Just Cause 2」で最大5%
+「Metro 2033」で最大9%
+「Shogun 2: Total War」で最大3.7%
+「Sniper Elite V2」で最大5.7%
+「StarCraft II: Wings of Liberty」で最大13.6%
+「The Witcher 2」で最大3%
+「TOMB RAIDER」で最大18.5%
+GeForce 320.00 Driver Betaにおける性能向上
+(※GeForce GTX 660の例。比較対象はGeForce 314.22 Driverとされる)
+「Deus Ex: Human Revolution」で最大4.5%
+「DiRT Showdown」で最大19.6%
+「F1 2012」で最大4.8%
+「Far Cry 3」で最大6%
+「HITMAN ABSOLUTION」で最大3.7%
+「Metro 2033」で最大6.3%
+「Shogun 2: Total War」で最大3.4%
+「Sniper Elite V2」で最大4.8%
+「StarCraft II: Wings of Liberty」で最大8.5%
+「The Elder Scrolls V: Skyrim」で最大3.3%
+「TOMB RAIDER」で最大17.8%
+GeForce 320.00 Driver Betaにおける性能向上
+(※GeForce GTX 660 SLIの例。比較対象はGeForce 314.22 Driverとされる)
+「Assassin's Creed III」で最大8.5%
+「Batman: Arkham City」で最大3.6%
+「Bioshock Infinite」で最大5%
+「Deus Ex: Human Revolution」で最大5.6%
+「DiRT Showdown」で最大16.9%
+「Far Cry 3」で最大5%
+「Just Cause 2」で最大5%
+「Metro 2033」で最大8.5%
+「Sid Meier's Civilization V」で最大7.3%
+「StarCraft II: Wings of Liberty」で最大7.1%
+「The Elder Scrolls V: Skyrim」で最大8.9%
+「TOMB RAIDER」で最大18.2%
+GeForce 320.00 Driver Betaの新要素
+・SLIの拡張
+「Alien Fear」「Call of Juarez: Gunslinger」「Dead Island: Riptide」「Dragon Sword」「Far Cry 3: Blood Dragon」「GRID 2」「Human Head 2」
+「Neverwinter」「Remember Me」「The Walking Dead: Survival Instinct」に向けたSLIプロファイルの追加
+「Natural Selection 2」「TrackMania 2 Canyon」「バイオハザード6」に向けたSLIプロファイルの更新
+GeForce 320.00 Driver Betaで解決した問題(Windows 7&Vista)
+Windows 7で拡大鏡のウインドウがちらつく問題
+グラフィックスドライバのインストール後,デフォルト設定が3D立体視モードへ切り替わる問題
+GeForce GT 330M搭載環境で,グラフィックスドライバのインストール後,システムを再起動すると,ノートPCの液晶パネルに何も表示されなくなる問題
+「Crysis 3」で,ゲーム中に黒いアーティファクトが表示される問題
+「DiRT 3」でアンビエントオクルージョンを有効化すると,画面2分割モードで描画がおかしくなる問題
+3DTV Play接続時に,NVIDIAコントロールパネルの「Override Antialiasing」(アプリケーション 設定を変更)が「Mass Effect」に対して正常に機能しない問題
+「Microsoft Flight Simulator」向けのLevel D Simulations製アドオンで,飛行機の計器が正常に描画されない問題
+GeForce 500シリーズ搭載環境で,3D立体視を有効化していると,「Two Worlds II」の実行時にウインドウモードへ切り替えたときにアプリケーションがクラッシュする問題
+GeForce GTX 660 Ti搭載環境で「APB Reloaded」を実行すると,時おり,画面が黒と灰,赤色に変わって,その後アプリケーションがクラッシュすることのある問題
+GeForce GTX 680搭載環境で「Red Orchestra 2: Heroes of Stalingrad」を実行すると,ゲームの終了後に,画面が赤くなってクラッシュすることのある問題(※クラッシュする主体は明らかになっていない。原文は「[Geforce GTX 680][Red Orchestra 2 Heroes of Stalingrad]: Red-screen crash occurs after exiting the game.」)
+GeForce 6シリーズ搭載環境で「ファイナルファンタジーXI」をプレイしているときに,青魔法「Smite of Rage」(怒りの一撃)を唱えると,TDR(Timeout Detection and Recovery)エラーによりグラフィックスドライバがクラッシュする問題
+GeForce GTX TITANによるNVIDIA Surround構成時に,「TOMB RAIDER」で高解像度設定を行い,かつ,ゲーム側のグラフィックス設定を「Ultra」とすると,画面表示がおかしくなってシステムがハングする問題
+GeForce 500シリーズによるSLI構成時に3D Vision Surroundを有効化すると,NVIDIAコントロールパネルから対象ディスプレイをすべて選択しているにもかかわらず,3D Vision Surround用として認識されないディスプレイが出てくることのある問題
+SLI構成時に3D Visionを有効化すると,「StarCraft II: Wings of Liberty」がクラッシュする問題
+GeForce GTX 680のSLI構成時に,「TOMB RAIDER」のゲーム側グラフィックス設定を「Ultra」もしくは「Ultimate」とすると,ゲームがクラッシュし,TDR(Timeout Detection and Recovery)エラーによりグラフィックスドライバもクラッシュする問題
+・SLI構成時に「Call of Duty: Black Ops 2」を実行すると,プレイヤーのエムブレムが正常に描画されない問題
+GeForce 320.00 Driver Betaで解決した問題(Windows 8)
+「Pinball FX2」でゲーム側のグラフィックス設定モードを「high-graphics」もしくは「high-details」とするとゲーム中にアプリケーションがクラッシュする問題
+GeForce 320.00 Driver Betaで解決した問題(Windows XP)
+リリースノートに記載なし
+※2013年4月25日追記
+Release 319世代は319.00〜321.99にあたると,NVIDIAに確認が取れました。
+最大で約20%の性能向上を実現した「GeForce 320.00 Driver Beta」登場。FFXIなど複数のゲームに向けたバグ修正も進む - 4Gamer.net

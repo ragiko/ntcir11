@@ -1,0 +1,54 @@
+作った。いつかは表示させたい。
+Googleの「検索結果内の検索ボックス」って、何?
+Google ウェブマスター向け公式ブログ: 検索結果内の検索ボックスが新しくなりました
+こんなご贔屓をしてくれる機能です。
+検索テクニックの一つとしてsite:を使って検索するという方法がありますが、それに近い事が出来るようになります。
+「誰でも表示してくれる」という訳ではなく、このサイトは情報量満載で良い感じですね という判定があると表示されるようなものです。いつかはこのような表示が出てくるようなブログが出てくると良いですね。
+というわけで、備えあれば何とやらです。
+使い方
+デザインの「サイドバー」に検索モジュールを追加します。
+デザインのフッタにスクリプトを入れます。きちんとコピー&貼り付けしてくださいね。
+<script src="//niyari.github.io/hatenablog-modules/microdata-search.js" charset="utf-8" async defer></script>
+これだけ? はい、これだけです。これだけで大丈夫です。
+「変更を保存する」ボタンを押すのも忘れずに。
+サイドバーに検索モジュール入れてないですが?
+検索モジュールが設置されていない場合、スクリプト側で自動的に埋め込みを行います。ただし、わりとお節介な設置をするので、是非とも検索モジュールを導入してあげてください。
+どんな感じに認識されるの?
+このようになります。
+JSON-LD(後述)との比較の為、スクリプトの結果(上)とJSON-LDの結果(下)の二種類が表示されています。どちらか一方があれば大丈夫です。
+JSON-LDで管理したい
+We recommend JSON-LD. Alternatively, you can use microdata.(意訳:JSON-LDを薦めるけど、microdataも使えますよ。)
+Rich Snippets - Webmaster EDU - Webmasters — Google Developers
+上記のスクリプトを使って、ウェブマスターツールのデータ反映、構造化データテストツール(HTMLプレビュー)の抽出結果を見る事ができますが、直接JSON-LDを埋め込む場合は、こちらを使用します。
+<script type="application/ld+json">
+{
+"@context": "http://schema.org",
+"@type": "WebSite",
+"url": "はてなブログのURL",
+"potentialAction": {
+"@type": "SearchAction",
+"target": "はてなブログのURL/search?q={htn_q}",
+"query-input": "required name=htn_q"
+}
+}
+</script>
+「はてなブログのURL」となっている部分を、設置したいURLに置き換えます。一例として、このブログのURLに置き換えたものがこちらです。
+<!-- 例えば、すなばいじりの場合 -->
+<script type="application/ld+json">
+{
+"@context": "http://schema.org",
+"@type": "WebSite",
+"url": "http://psn.hatenablog.jp/",
+"potentialAction": {
+"@type": "SearchAction",
+"target": "http://psn.hatenablog.jp/search?q={htn_q}",
+"query-input": "required name=htn_q"
+}
+}
+</script>
+設置したいURLに置き換えたものをフッターに埋め込みます。JSON-LDを使用した場合は、検索モジュールの設置は必要ありません。
+夢のあるブログライフになればいいと思います。表示されたらご一報頂けると幸いです。
+どうぞご利用ください。
+あいつ…糞コード書いてない?
+どうする兄ちゃん処す?処す?
+Googleの「検索結果内の検索ボックス」を設定するやつを作った - すなばいじり

@@ -1,0 +1,49 @@
+
+ZTEST
+Z 統計量が、標本から計算された値を超える確率を計算します。
+構文
+ZTEST(データ; μ; 母分散)
+データ は正規分布母集団から抽出した標本です。
+μ は母集団の既知の平均値です。
+母分散(シグマ) (オプション) は母集団の標準偏差です。このパラメータを省略すると、標本の標準偏差が使われます。
+Wiki pageを参照してください。
+Z.TEST
+Calculates the probability of observing a z-statistic greater than the one computed based on a sample.
+Syntax
+Z.TEST(Data; mu; Sigma)
+Data is the given sample, drawn from a normally distributed population.
+mu is the known mean of the population.
+Sigma (optional) is the known standard deviation of the population. If omitted, the standard deviation of the given sample is used.
+Example
+=Z.TEST(A2:A20; 9; 2) returns the result of a z-test on a sample A2:A20 drawn from a population with known mean 9 and known standard deviation 2.
+TRIMMEAN
+データの上下限から指定の割合を除いたデータセットの平均値を求めます。
+構文
+TRIMMEAN(データ;割合)
+データ は、標本におけるデータの行列です。
+割合 は、計算対象から除外する上限と下限のデータの割合です。
+例
+=TRIMMEAN(A1:A50; 0.1) は、最大値を表す値の 5 パーセントと最小値を表す値の 5 パーセントを考慮せずに、A1:A50 の数の平均値を計算します。パーセント数は、加数の数ではなく、調整していない平均値を指します。
+HYPGEOM.DIST
+Returns the hypergeometric distribution.
+Syntax
+HYPGEOM.DIST(X; NSample; Successes; NPopulation; Cumulative)
+X is the number of results achieved in the random sample.
+NSample is the size of the random sample.
+Successes is the number of possible results in the total population.
+NPopulation is the size of the total population.
+Cumulative : 0 or False calculates the probability density function. Other values or True calculates the cumulative distribution function.
+Examples
+=HYPGEOM.DIST(2;2;90;100;0) yields 0.8090909091. If 90 out of 100 pieces of buttered toast fall from the table and hit the floor with the buttered side first, then if 2 pieces of buttered toast are dropped from the table, the probability is 81%, that both will strike buttered side first.
+=HYPGEOM.DIST(2;2;90;100;1) yields 1.
+HYPGEOMDIST
+超幾何分布を返します。
+構文
+HYPGEOMDIST(X; 標本数; 成功回数; 母集団数)
+X は、無作為標本内で成功する数です。
+標本数 は、無作為標本の大きさです。
+成功回数 は、母集団内で成功する数です。
+母集合数 は、母集合全体の大きさです。
+例
+=HYPGEOMDIST(2;2;90;100) は、0.81 を返します。バターを塗ったトースト 100 枚のうち 90 枚がテーブルから落ち、バターを塗った面が先に床につく場合、バターを塗ったトースト 2 枚をテーブルから落としたときに両方ともバターを塗った面が先に床につく確率密度は 81% です。
+統計関数 2 - LibreOffice Help

@@ -1,0 +1,20 @@
+
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+C:\>xcopy sample\text1.txt sample\text2.txt
+1 個のファイルをコピーしました。
+C:\>
+C:\>xcopy sample target\dir1\
+sample\text1.txt
+sample\text2.txt
+2 個のファイルをコピーしました
+C:\>
+C:\>xcopy C:\sample c:\target\dir2 /D:01/01/2007
+C:\target\2 は受け側のファイル名ですか、
+またはディレクトリ名ですか
+(F= ファイル、D= ディレクトリ)? d
+C:\sample\text1.txt
+C:\sample\text2.txt
+2 個のファイルをコピーしました
+C:\>
+コマンドプロンプト xcopy - [ファイルをディレクトリ構造ごとコピーする]

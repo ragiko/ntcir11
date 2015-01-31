@@ -1,0 +1,40 @@
+外部検索エンジン等から来られた方は「第0回:無料で立てるSSL-VPNサーバ:目次」へどうぞ
+つづいて、DH (Diffie Hellman) パラメータを生成します。
+先程のコマンドプロンプトに以下のように入力してください。
+build-dh
+すると設定や環境によって処理時間は異なりますが、1024bitで大体5～10分ほど(長くて30分ほど)、
+2048bitで45分～2時間ほどで処理が終了し、以下のようなものが表示されます。
+(この説明を書くために試しに、PC環境で紹介しているSubPC1で2048bitのDHパラメータを生成したところ1時間半かかりました。)
+C:\Program Files\OpenVPN\easy-rsa>build-dh
+Loading 'screen' into random state - done
+Generating DH parameters, 2048 bit long safe prime, generator 2
+This is going to take a long time
+........................................+.................................+.+.+.+.............................
+......................++.....................+........+.+.....................................................
+<中略>
+......................++..................................*........................*+......
+C:\Program Files\OpenVPN\easy-rsa>
+これで、DH (Diffie Hellman) パラメータを生成は完了です。
+次の説明へ進んでください。
+つづいて、セキュリティー強化のために、tls-authを有効にするための作業の一部を行います。
+先程のコマンドプロンプトに以下のように入力してください。
+(インストール先を初期状態から変更した場合はcdの後ろをインストール先+\binとしてください。)
+cd C:\Program Files\OpenVPN\bin
+すると以下のように表示されます。
+C:\Program Files\OpenVPN\easy-rsa>cd C:\Program Files\OpenVPN\bin
+C:\Program Files\OpenVPN\bin>
+続いて以下のように入力してください。
+openvpn --genkey --secret tls-auth.key
+すると以下のように表示されます。
+C:\Program Files\OpenVPN\easy-rsa>cd C:\Program Files\OpenVPN\bin
+C:\Program Files\OpenVPN\bin>openvpn --genkey --secret tls-auth.key
+C:\Program Files\OpenVPN\bin>
+ご苦労様です。これで一通りの証明書並びに鍵の作成が終了しました。
+以下のようにコマンドプロンプトの画面に入力しエンターキーを押してください。
+exit
+すると、コマンドプロンプトが終了されたと思います。
+っということで、馴染みのない方には鬱陶しく感じたかもしれない、コマンドプロンプトを使った作業はこれにて終了です。
+あともう一息なので頑張ってください。
+ゴールまであと少し、それでは次の説明に進んでください。
+続きは、「第7回:OpenVPNサーバ・クライアント設定ファイルの作成<前編>」です。
+EarthRiZE <MCT-Lab_Master@rNote> - 第6回:DH (Diffie Hellman) パラメータの生成とtls-authの設定

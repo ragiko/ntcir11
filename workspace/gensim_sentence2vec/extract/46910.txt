@@ -1,0 +1,64 @@
+
+キャラクターの移動
+onClipEvent (load) {
+rot = 0;
+speed = 0;
+_root.AnimePlay(0);	
+}
+onClipEvent (enterFrame) {
+// 左上を押したとき
+if (Key.isDown(Key.UP) && Key.isDown(Key.LEFT)) {
+rot = 215;
+speed = 2;
+_root.AnimePlay(1);
+// 左下を押したとき
+} else if (Key.isDown(Key.DOWN) && Key.isDown(Key.LEFT)) {
+rot = 135;
+speed = 2;
+_root.AnimePlay(0);
+// 右上を押したとき
+} else if (Key.isDown(Key.UP)  && Key.isDown(Key.RIGHT)) {
+rot = 315;
+speed = 2;
+_root.AnimePlay(1);
+// 右下を押したとき
+} else if (Key.isDown(Key.DOWN) && Key.isDown(Key.RIGHT)) {
+rot = 45;
+speed = 2;
+_root.AnimePlay(0);
+// 上を押したとき
+} else if (Key.isDown(Key.UP)) {
+rot = 270;
+speed = 2;
+_root.AnimePlay(1);
+// 下を押したとき
+} else if (Key.isDown(Key.DOWN)) {
+rot = 90;
+speed = 2;
+_root.AnimePlay(0);
+// 左を押したとき
+} else if (Key.isDown(Key.LEFT)) {
+rot = 180;
+speed = 2;
+_root.AnimePlay(2);
+// 右を押したとき
+} else if (Key.isDown(Key.RIGHT)) {
+rot = 0;
+speed = 2;
+_root.AnimePlay(3);
+// 何も押さなかったとき
+}else{
+speed = 0;		
+}
+// 移動量を求める
+dx = Math.cos(rot * Math.PI / 180) * speed;	
+dy = Math.sin(rot * Math.PI / 180) * speed;
+_x += dx;
+_y += dy;
+// 画面ループ
+if(_x  400)	_x = 0;
+if(_y  300)	_y = 0;
+}
+AnimePlay()
+自作関数。引数に番号を指定するとその番号に用意されたアニメを再生。
+Flashゲーム講座&ASサンプル集【三角関数を使った計算について】

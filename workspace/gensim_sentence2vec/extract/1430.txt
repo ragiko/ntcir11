@@ -1,0 +1,12 @@
+を確率変数 X の分散という。この分散の正の平方根を標準偏差という。
+標準偏差の推定[編集]
+母標準偏差が未知のときは、標本から得られた標本標準偏差から推定することができる。母標準偏差を σ、標本数 N の標本標準偏差を s とすると母集団分布が正規分布ならば σ2 は次の自由度 N - 1 の χ2 分布に従う。
+σ の推定値の95%信頼限界は P = 0.975 の χ2 から P = 0.025 の χ2 までの範囲で、s と σ の比は N = 5 では 0.31 から 1.49、N = 20 では 0.67 から 1.28 となり、標本が少数の場合はかなり範囲が広いことに留意すべきである。
+脚注[編集]
+^ 例えば、標本サイズが1の場合、ばらつきがないので標本の分散は必ず0となるが、母集団のばらつきは通常0ではない。
+^ 吉澤康和『新しい誤差論 - 実験データ解析法』共立出版、1989年、pp.78-79。
+^ Richard M. Brugger, "A Note on Unbiased Estimation of the Standard Deviation", The American Statistician (23) 4 p.32 (1969)
+^ 例: 東京大学教養学部統計学教室編『統計学入門』東京大学出版会、1991年。ISBN 4-13-042065-8。
+^ 分散または標準偏差の図による解説と具体例は、村瀬洋一他『SPSSによる多変量解析』オーム社、2007年、pp.52-53 (ISBN 4-27-406626-6) などを参照。
+^ Wikipedia英語版のStandard deviationの説明では、不偏分散による標準偏差(平均からの偏差平方和をn-1で割った値の平方根)のことをCorrected sample standard deviationと表記し、平均からの偏差平方和をnで割った値の平方根をUncorrected sample standard deviationまたはThe standard deviation of the sampleと表記している。アメリカのFundamentals of Engineering (FE) の試験問題では、Sample Standard Deviationを求めよと書かれていたら  で割るほうが答えである。しかしアメリカでも、異なる解説をする場合がある。例えば、ユタ大学 (The University of Utah) のTom Malloyは、統計学の学習者向けウェブページEstimating Parameters Web Pageで、Sample standard deviationを大文字Sという記号で表し、平均からの偏差平方和をnで割った値の平方根、と解説している。
+標準偏差 - Wikipedia

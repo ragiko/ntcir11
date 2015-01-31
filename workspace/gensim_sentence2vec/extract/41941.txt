@@ -1,0 +1,4 @@
+また、信号帯域幅より大きく逆フーリエ変換される帯域幅より小さい通過帯域を有する帯域制限フィルタ114を通すことにより、逆フーリエ変換される帯域幅を超える範囲外の歪信号が除去される。Moreover, the distorted signal outside the range exceeding the bandwidth to be converted with the inverse Fourier conversion method is eliminated by applying the signal to a bandpass filter 114 having the pass band narrower than the frequency band to be converted largely with the inverse Fourier conversion method than the signal frequency band. - 特許庁
+最小の帯域幅を用いて、複数のソース信号を送信する方法を提供する。To provide a method to transmit a plurality of source signals using a minimum band width. - 特許庁
+これにより、小振幅部分においても互いの相関が高い、ミキシング信号MA_0およびミキシング信号MA_1が生成されるので、帯域信号A_0と帯域信号A_1を、品質が劣化しないように符号化することができる。Since mixing signals MA0 and MA1 which have high mutual correlation even in short amplitude parts are generated, band signals A0 and A1 are so encoded that the quality cannot be degraded. - 特許庁
+小信号帯域幅の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

@@ -1,0 +1,42 @@
+
+実際には次のように記述します。
+DefaultPieDataset data = new DefaultPieDataset();
+data.setValue("海外", 30);
+data.setValue("国内", 60);
+data.setValue("行かない", 8);
+data.setValue("未定", 2);
+サンプルプログラム
+では簡単なサンプルを作成して試してみます。
+Test2_1.java
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.ChartFactory;
+import org.jfree.data.general.DefaultPieDataset;
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import org.jfree.chart.ChartPanel;
+public class Test2_1 extends JFrame{
+public static void main(String[] args) {
+Test2_1 frame = new Test2_1();
+frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+frame.setBounds(10, 10, 500, 500);
+frame.setTitle("グラフサンプル");
+frame.setVisible(true);
+}
+Test2_1(){
+DefaultPieDataset data = new DefaultPieDataset();
+data.setValue("海外", 30);
+data.setValue("国内", 60);
+data.setValue("行かない", 8);
+data.setValue("未定", 2);
+JFreeChart chart = 
+ChartFactory.createPieChart("夏の旅行",
+data,
+true,
+false,
+false);
+ChartPanel cpanel = new ChartPanel(chart);
+getContentPane().add(cpanel, BorderLayout.CENTER);
+}
+}
+上記をコンパイルした後で実行すると次のようにJavaアプリケーションが起動します。
+円グラフのデータ(DefaultPieDatasetクラス) - 円グラフ(PieChart, PieChart3D) - JFreeChartを使ったグラフ作成

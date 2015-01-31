@@ -1,0 +1,285 @@
+
+//// dp.cpp 
+//// DPマッチング: 動的計画法による文字列類似度計算
+//// (C) Toru Nakata,  toru-nakata@aist.go.jp
+//// 2004 Oct 19
+//// 原典:Needleman, S. B. and Wunsch, C. D. //// "A general method applicable to the search for similarities in the amino acid sequence of two proteins," 
+//// Journal of Molecular Biology, vol.48, pp.443-453, 1970.
+//// 
+//// DPマッチングとは、系列になってるデータ同士の類似度を比較する方法です。//// 
+//// 原理は至極簡単で、一致や不一致に応じて、罰金や得点を勘定するだけです。
+//// 例えば、「字が合わないなら−3点」で、「字が一つずれることに−1点」 //// というペナルティーを決めておきます。
+//// 例えば、 //// 「よこはま」
+//// 「よこすか」
+//// と比較すると、2箇所で字が合わないので総ペナルティは−6点です。
+//// 
+//// 「よこはま」
+//// 「おだわら」 //// とでは、4箇所で字が合わないので総ペナルティは−12点です。
+//// 「おだわら」よりも、「よこすか」の方が「よこはま」に比較的似ていると言えます。
+//// 
+//// 「しんよこはま」
+//// 「よこはま」
+//// とでは、6箇所で字が合わないと考えると、−18点ですが、
+//// 温情を発揮すると「字が2個ずれた・停滞した」と考えて、 //// 「しんよこはま」
+//// 「よよよこはま」 
+//// 字ずれ2個、不一致2個で、総ペナルティは−8点になります。 
+//// 
+//// 温情は発揮する方が、データの検索や照合には適しています。 //// 温情が最も発揮できるように字のずらし方を自動でやる方法を
+//// 「DPマッチング」といいます。
+//// 
+//// データが長いものでの照合の場合、計算機に作業させなければ //// 大変です。しかし、短いデータなら、人手でやれます。
+//// データの長さや量に応じて考えてみてください。
+//// 
+//// 評価結果の信憑性は、ペナルティの点の設定次第です。
+//// ペナルティの決め方には決定版がありません。試行錯誤して適当と思われるものを自分で決めます。
+//// ちなみに文字列の不一致度を、正式にはLevenshtein Distance レーベンスタイン距離といいます。
+//// HMMとの関係については、この文章の末尾をご覧ください。
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int main()
+{
+long
+i, j, k;
+char
+StrA[64]; // 入力文字列A
+char
+StrB[64]; // 入力文字列B
+double
+ZurePenalty = 1; // 1文字ずれたことへのペナルティ
+double
+AwazuPenalty = 5; // 1文字不一致へのペナルティ
+double
+Distance = 0; // 2つの文字列の不一致度
+long
+LengthA; //Aの長さ
+long
+LengthB; //Bの長さ
+int
+MissMatch[64][64]; //一致結果バッファ
+double
+Cost[64][64]; //各経路点の到達コスト
+int
+From[64][64]; //最短経路はどこから来たか 0:斜め、1:i増え,2:j増え
+double
+dtemp1, dtemp2, dtemp3;
+//マッチング結果
+char
+ResultA[128];
+char
+ResultB[128];
+long
+LenAB;
+printf("\n
+============== DP Matching ================\n\n");
+printf("Input
+String A >> ");
+scanf("%s",StrA); //scanfはスペースで読み込みを打ち切るので注意。
+//C++系の関数 (getline(cin, StrA); など)を用いた方が何かと安全である。
+printf("Input
+String B >> ");
+scanf("%s",StrB);
+LengthA
+= strlen(StrA);
+LengthB
+= strlen(StrB);
+///////////////
+総当たりで一致の確認
+for(i
+= 0; i < LengthA; i++) {
+printf("\n%3d:
+",i+1);
+for(j
+= 0; j < LengthB; j++) {
+if(StrA[i]
+== StrB[j]) {
+MissMatch[i][j]
+= 0;
+printf("O");
+}
+else
+{
+MissMatch[i][j]
+= 1;
+printf(".");
+}
+}
+}
+printf("\n");
+////////// コスト計算
+Cost[0][0]
+= MissMatch[0][0] * AwazuPenalty;
+From[0][0]
+= 0;
+////
+i側の縁
+for(i
+= 1; i < LengthA; i++) {
+Cost[i][0]
+= Cost[i-1][0] + ZurePenalty + MissMatch[i][0] * AwazuPenalty;
+From[i][0]
+= 1;
+}
+////
+j側の縁
+for(j
+= 1; j < LengthB; j++) {
+Cost[0][j]
+= Cost[0][j-1] + ZurePenalty + MissMatch[0][j] * AwazuPenalty;
+From[0][j]
+= 2;
+}
+////
+中間部
+for(i
+= 1; i < LengthA; i++) {
+for(j
+= 1; j < LengthB; j++) {
+dtemp1
+= Cost[i-1][j-1] + MissMatch[i][j] * AwazuPenalty; //斜めで来た場合のコスト
+dtemp2
+= Cost[i-1][j  ] + MissMatch[i][j] * AwazuPenalty + ZurePenalty; //i増えで来た場合のコスト
+dtemp3
+= Cost[i  ][j-1] + MissMatch[i][j] * AwazuPenalty + ZurePenalty; //j増えで来た場合のコスト
+if(dtemp1
+<= dtemp2 && dtemp1 <= dtemp3) {
+Cost[i][j]
+= dtemp1;
+From[i][j]
+= 0;
+}
+else
+if(dtemp2 <= dtemp3) {
+Cost[i][j]
+= dtemp2;
+From[i][j]
+= 1;
+}
+else
+{
+Cost[i][j]
+= dtemp3;
+From[i][j]
+= 2;
+}
+}
+}
+Distance
+= Cost[LengthA -1][LengthB-1];///DPマッチングの不一致度はこれ。以降は結果観察のための整形手続きです
+//////ゴールからスタートへ逆に辿る
+LenAB
+= LengthA + LengthB;
+i
+= LengthA -1;
+j
+= LengthB -1;
+for(k
+= LenAB; i >= 0 && j >= 0; k--) {
+ResultA[k]
+= StrA[i];
+ResultB[k]
+= StrB[j];
+//printf("%c
+%c  ", ResultA[k], ResultB[k]);
+switch(From[i][j])
+{
+case
+0: 
+i--;
+j--;
+break;
+case
+1: 
+i--;
+break;
+case
+2: 
+j--;
+break;
+default:
+printf("Error\n");
+break;
+}
+}
+LenAB
+-= k; //マッチ結果の文字列の長さ
+for(i
+= 0; i < LenAB; i++) {
+ResultA[i]
+= ResultA[i+k+1];
+ResultB[i]
+= ResultB[i+k+1];
+}
+ResultA[LenAB]
+= ResultB[LenAB] = '\0';
+printf("\n
+=== Matching Result ===\n");
+printf("\nDifference
+= %6.1f\n",Distance);
+for(i
+= 0; i < LengthA; i++) {
+printf("\n%3d:
+",i+1);
+for(j
+= 0; j < LengthB; j++) {
+//                                        printf("%1d",From[i][j]);
+switch(From[i][j])
+{
+case
+0: printf("\\"); break;
+case
+1: printf("|"); break;
+case
+2: printf("-"); break;
+default:
+break;
+}
+}
+}
+printf("\n");
+printf("A: 
+%s\n",ResultA);
+printf("B: 
+%s\n",ResultB);
+return
+0;
+}
+//// 参考 隠れマルコフモデル (Hidden Markov Model, HMM) への発展
+//// 隠れマルコフモデルとは、DPマッチングを高度化した判定手法といえます。
+//// 次のように改良していくと、HMMになっていきます。
+//// 計算は大変なので、フリーソフトなどを使うことになります。
+//// 1) 文字不一致のペナルティを、単一値ではなく、文字の組に応じて調節する。
+////   そのために、見本が直接に文字列として出力されると想定するのではなく、間に一段かませる。
+////   見本の内部状態と、その各内部状態において出力される文字列を分けて考える。
+////   同一の内部状態であっても、別の文字が出力される可能性を許す。
+////   同一の文字であっても、別の内部状態から出力された可能性を許す。
+////   ペナルティは、こうしたいろいろな確率から算出する。(正確には「ありえそう度」=「尤度」を用いる。)
+//// 2) 照合の見本である文字列(A)を、列としてではなく、文字の移り変わりの確率の行列として保持する。
+//// 3) マッチングの経路についての制限を、ユーザの自由で定める。
+////  (見本の状態遷移について通れる遷移の設定をトポロジーと呼ぶ。
+////  実際は、自由設定がうれしいというより、
+////  うまくトポロジーを設定しないと、学習が適切に進行しないという困った問題として語られる。)
+//// 4) サンプル文字列(B)を複数用意して、それら共通の原型である見本を作り出す。
+////  ペナルティの値を、最っも尤もらしい値に自動で設定する。
+//// 
+//// 改良1のように、見本を一段後に隠すことから、「隠れ」と呼ばれ、
+//// 改良2のように、確率遷移過程(マルコフ過程)で考えるから、「マルコフ」と呼ばれます。
+//// 
+//// HMMの長所は、複雑な時系列現象の識別を、かなり自動で行えることでしょう。
+//// 高次元で複雑なデータベクトル量子化文字列データHMMに学習させて判定
+//// という処理手順は、定石になっています。
+////
+//// DPマッチングと比較したHMMの欠点は、
+//// a) 多数のパラメータ(確率とか内部状態とか)を仮定するので、その推定が大変。
+////  見本を定めるのに充分な量のデータと、それを処理する計算が必要になります。
+////  学習計算の収束は、初期値依存性、つまりは運の影響があります。
+//// b) (多くの場合は)見本を1次マルコフ過程に仮定している。
+////  つまり、直前の1文字だけが、次の文字を支配すると仮定しています。
+////  もちろん、大きな構造のHMMモデルを採用すれば、高次マルコフ過程と同等物になります。
+////  とはいえ、それは学習が大変になりますので、
+////  比較的に低次(短履歴性)のモデルを想定して使われることが多いです。
+////  文章データのように、かなり長い列として意味を持っているものには不向き。
+////  逆に、物理現象の信号など、解析的で、比較的低履歴性のものには適する。
+////
+//// いずれにせよ、HMMのモデルの格好を定めることは、深遠で時として悩ましい問題です。
+DPマッチングのプログラム、ソースコード

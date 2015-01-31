@@ -1,0 +1,27 @@
+6 月 23 日に The Aquarium へ関連記事が投稿されていますが、GlassFish 4.0.1 の FishCAT プログラムが始まっています。今回は FishCAT についてお伝えします。
+FishCAT プログラムとは何か?
+FishCAT (GlassFish Community Acceptance Testing program) とは、コミュニティー全体で GlassFish をテストしてみようという一種のキャンペーンのようなもので、GlassFish のメジャー・アップデート直前に毎回実施されています。GlassFish v3 や GlassFish 4 のリリース直前には大々的に行われたので、ご存じの方もいらっしゃるかもしれません。
+今回の FishCAT プログラムについて、GlassFish Community から実施要領が公開されています。目指すところは、コミュニティー全体で GlassFish 4.0.1 の早期版をテストすることで正式リリースまでにより多くのバグを修正できるようにすることと、FishCAT を通じて参加者が何か良い経験を得ることです (それが具体的に何なのかは、各々異なることでしょう)。
+FishCAT プログラムへ参加するには?
+FishCAT への参加は簡単で、GlassFish 4.0.1 の最新版の開発ビルドをダウンロードし、使ってみて、何か不具合があったら Issue Tracker (JIRA) の「課題の作成」で報告することです (事前に Java.net への登録が必要です)。その際、Tags の欄に必ず "fishcat" を含めてください。このタグがあることでコミッターが FishCAT で報告されたバグであることを認識できます (筆者は GlassFish 4.0 の FishCAT で 1 件 "fishcat" タグを入れ忘れるミスを犯しました...)。
+念のために記しておきますが、報告はすべて英語でお願いします。システム上は日本語も通るはずですが、担当のコミッターはほぼ間違いなく日本語が読めないので。
+報告内容とその後のやりとりの具体例は、以下を参考にしてください (この例では "fishcat" タグはありませんが)。Tags の記載内容は、後で担当のコミッターが見直してくれます。
+GLASSFISH-20597 : UnsatisfiedDependencyException is thrown by JAX-RS, Bean Validation and CDI integration
+以下、参考までに FishCAT プログラムの実施要項を要約します。
+GlassFish 4.0.1 のゴール
+JDK 8 対応。
+優先度の高いバグの修正 (特に Java EE 7 の互換性を揺るがしかねないもの)。
+セキュリティーの強化とセキュリティー関連のバグの解決。
+GlassFish の全コンポーネントのアップデート (例: Mojarra、Jersey、Grizzly、OpenMQ、HK2、EclipseLink、JAXB、Weld)。これらには多くのバグ修正といくつかの新機能追加が含まれる。
+テストして欲しい機能
+glassfish.org から GlassFish 4.0.1 の最新 Promoted build (Full Platform または Web Profile の ZIP) をダウンロードし、インストールする。インストール手順は "GlassFish Instration Guide の 1～12 ページを参照のこと (筆者注: 基本的にはダウンロードした ZIP を展開するだけです)。
+GlassFish がメジャーな IDE (NetBeans、IntelliJ IDEA または Eclipse) から利用できること (筆者注: Eclipse の場合は別途 Oracle Enterprise Pack for Eclipse の GlassFish Tools が必要です)。
+既に GlassFish 4.0 上で動作しているアプリケーションがそのまま動作することを確認する。
+GlassFish 4.0.1 が JDK 8 Update 5 以降で動作することを確認する。
+GlassFish の既知のバグがきちんと修正されていること (修正済みバグ一覧を参照) を確認する。
+様々な GlassFish のコンポーネントを試してみること。特に試して欲しいのは、Weld 2.2 (CDI 1.2)、Jersey、OpenMQ、Tyrus あたり。
+まとめ
+本稿執筆時点で GlassFish 4.0.1 は Promoted build 8 であり、次回の build 9 がリリース候補版となります (注: 予定よりやや遅れているようです)。現時点でも主要機能が問題なく動作するレベルで、OSS のアプリケーション・サーバーとしては及第点に達していると思われます。しかし、開発サイドとしては (たとえ GlassFish 4 の商用サポートがなくなっても) GlassFish が当初から掲げていた「商用レベルの品質」を維持したいと考えており、+0.0.1 のアップデートとしては異例の FishCAT プログラムを実施しています。
+GlassFish 4.0.1 は NetBeans 8.1 とともに JavaOne には間に合うよう、開発を進めています。先日発表された Java EE 8 の RI にも引き続き GlassFish が選ばれ、今後も高品質な RI として GlassFish は育っていくことになります。
+最後に、FishCAT の報告は英語でお願いしていますが、決して流暢な英語である必要はありません。片言の英語であっても、少々文法がおかしくても、報告して頂けることをコミッターは待っています。
+GlassFish 4.0.1 の FishCAT プログラムについて - GlassFish Japan

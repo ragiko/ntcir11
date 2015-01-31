@@ -1,0 +1,128 @@
+
+概要
+Facebookとの通信をmockするgemを作ってみたの続き。
+FacebookとのOAuthをMockするfacemock-oauthというgemを作ったので紹介。
+背景・目的
+device + omniauth (omniauth-facebook)でやっているOAuthをMockに差し替えられるようにしたかった。
+具体的には、
+devise, omniauthの処理を通過しない
+facemockを使って事前にユーザ登録をしておき、そのユーザでログイン出来る
+ようにしたい。
+要素技術
+ruby (2.1.1, 2.1.0, 2.0.0, 1.9.3)
+gem (versionはそれぞれ最新を使用)
+rspec
+simplecov
+rack
+方針
+omniauth, deviseが処理する前にmockでhookして処理させる。
+Facebookのログイン画面に相当する画面をmockで返し、認証させる。
+deviseとomniauthを使ったFacebookとのOAuthの詳細は多数記事があると思うので詳細は割愛。
+ざっくりとした流れ
+WebアプリからFacebookログイン画面へリダイレクトさせる
+Facebookログイン画面が返る
+Facebookで認証・認可する
+WebアプリへCallbackされる
+Callbackで受け取ったAuthorization Codeからアクセストークンを取得する
+アクセストークンを使ってユーザ情報を取得
+ユーザ情報からAuthHashを生成し、ヘッダに載せてCallback用のWebアプリのメソッドを呼ぶ
+mockでの流れ
+WebアプリからFacebookログイン画面へのリダイレクトをhookして、mockのログイン画面へリダイレクトさせる
+mockのログイン画面を返す
+mockで認証する
+mockでAuthorization Codeを発行・付与して、WebアプリへCallbackさせる
+CallbackをhookしてAuthorizaton Codeを元にアクセストークンを取得する
+アクセストークンを使ってユーザ情報を取得
+ユーザ情報からAuthHashを生成し、ヘッダに載せてCallback用のWebアプリのメソッドを呼ぶ
+実現方法
+4つのRackミドルウェアを作成して実現する。
+ログイン画面へのリダイレクトをhookしてmockに流すRackミドルウェア
+ログイン画面を返すRackミドルウェア
+認証・WebアプリへのCallbackを実現するRackミドルウェア
+WebアプリへのCallbackをhookするRackミドルウェア
+やったこと
+rack middlewareをざっくり触ってみた
+rack middlewareのテストをrspecで書いてみた
+作ったもの
+facemock-oauth
+github
+rubygems
+使い方
+READMEを参照
+付けたバッジ
+facemockと同じ。
+Travis Ci : CI
+Coveralls : カバレッジ計測
+Gemnasium : 依存gemの更新状況通知
+Code Climate : コード品質計測
+Version Badge : バージョン表示
+参考
+開発環境でのみ、リクエスト毎になんか処理をフックしたい in Ruby
+Rackミドルウェアの作り方を勉強した
+HTTP Request Headerがどういう感じでRackのenvに変換されるか
+How to read POST data in rack request?
+Rack MiddlewareのGemに対するRspecの書き方
+## 概要
+[Facebookとの通信をmockするgemを作ってみた](http://qiita.com/ogawatti/items/caecc36e9cb14345635e)の続き。
+FacebookとのOAuthをMockする[facemock-oauth](https://github.com/ogawatti/facemock-oauth)というgemを作ったので紹介。
+## 背景・目的
+device + omniauth (omniauth-facebook)でやっているOAuthをMockに差し替えられるようにしたかった。
+具体的には、
+* devise, omniauthの処理を通過しない
+* [facemock](https://github.com/ogawatti/facemock)を使って事前にユーザ登録をしておき、そのユーザでログイン出来る
+ようにしたい。
+## 要素技術
+* ruby (2.1.1, 2.1.0, 2.0.0, 1.9.3)
+* gem (versionはそれぞれ最新を使用)
+* rspec
+* simplecov
+* rack
+## 方針
+omniauth, deviseが処理する前にmockでhookして処理させる。
+Facebookのログイン画面に相当する画面をmockで返し、認証させる。
+deviseとomniauthを使ったFacebookとのOAuthの詳細は多数記事があると思うので詳細は割愛。
+#### ざっくりとした流れ
+1. WebアプリからFacebookログイン画面へリダイレクトさせる
+2. Facebookログイン画面が返る
+2. Facebookで認証・認可する
+3. WebアプリへCallbackされる
+3. Callbackで受け取ったAuthorization Codeからアクセストークンを取得する
+4. アクセストークンを使ってユーザ情報を取得
+5. ユーザ情報からAuthHashを生成し、ヘッダに載せてCallback用のWebアプリのメソッドを呼ぶ
+#### mockでの流れ
+1. WebアプリからFacebookログイン画面へのリダイレクトをhookして、mockのログイン画面へリダイレクトさせる
+2. mockのログイン画面を返す
+2. mockで認証する
+3. mockでAuthorization Codeを発行・付与して、WebアプリへCallbackさせる
+4. CallbackをhookしてAuthorizaton Codeを元にアクセストークンを取得する
+5. アクセストークンを使ってユーザ情報を取得
+6. ユーザ情報からAuthHashを生成し、ヘッダに載せてCallback用のWebアプリのメソッドを呼ぶ
+## 実現方法
+4つのRackミドルウェアを作成して実現する。
+1. ログイン画面へのリダイレクトをhookしてmockに流すRackミドルウェア
+2. ログイン画面を返すRackミドルウェア
+3. 認証・WebアプリへのCallbackを実現するRackミドルウェア
+4. WebアプリへのCallbackをhookするRackミドルウェア
+## やったこと
+* [rack middlewareをざっくり触ってみた](http://qiita.com/ogawatti/items/06d0d822b65138bf6301)
+* [rack middlewareのテストをrspecで書いてみた](http://qiita.com/ogawatti/items/4db6dbdfb2405342e0da)
+## 作ったもの
+* **facemock-oauth**
+* [github](https://github.com/ogawatti/facemock-oauth)
+* [rubygems](http://rubygems.org/gems/facemock-oauth)
+## 使い方
+[READMEを参照](https://github.com/ogawatti/facemock-oauth#usage)
+## 付けたバッジ
+facemockと同じ。
+* [Travis Ci](https://travis-ci.org/) : CI
+* [Coveralls](https://coveralls.io/) : カバレッジ計測
+* [Gemnasium](https://gemnasium.com/) : 依存gemの更新状況通知
+* [Code Climate](https://codeclimate.com/) : コード品質計測
+* [Version Badge](http://badge.fury.io/) : バージョン表示
+## 参考
+* [開発環境でのみ、リクエスト毎になんか処理をフックしたい in Ruby](http://nekogata.hatenablog.com/entry/2014/08/22/162243)
+* [Rackミドルウェアの作り方を勉強した](http://shokai.org/blog/archives/8233)
+* [HTTP Request Headerがどういう感じでRackのenvに変換されるか](http://qiita.com/udzura/items/b558baffcd1421773d97)
+* [How to read POST data in rack request?](http://stackoverflow.com/questions/15458334/how-to-read-post-data-in-rack-request)
+* [Rack MiddlewareのGemに対するRspecの書き方](http://a-newcomer.com/32)
+Ruby - FacebookとのOAuthをmockするgemを作ってみた - Qiita

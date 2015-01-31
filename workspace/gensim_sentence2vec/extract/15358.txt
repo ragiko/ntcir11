@@ -1,0 +1,59 @@
+スタイルシート部分は外部ファイル(sample.css)に記述。
+p.sample1, p.sample2 {background-color:limegreen;} 
+p.sample1 img, p.sample2 img{
+-moz-transform: rotate(-45deg);
+-webkit-transform: rotate(-45deg);
+-o-transform: rotate(-45deg);
+-ms-transform: rotate(-45deg); 
+}
+p.sample2 img {
+transform-origin:right bottom;
+}
+HTMLソース
+<html>
+<head>
+<link rel="stylesheet" href="sample.css" type="text/css">
+</head>
+<body>
+<p class="sample1">
+rotate(-45deg)を指定、transform-originプロパティは未指定<br>
+<img src="../images/kaeru.gif">
+</p>
+<p class="sample2">
+rotate(-45deg)を指定、transform-origin:right bottomを指定<br>
+<img src="../images/kaeru.gif">
+</p>
+</body>
+</html>
+スタイルシート部分は外部ファイル(sample.css)に記述。
+p.prefix_sample1, p.prefix_sample2 {background-color:limegreen;} 
+p.prefix_sample1 img, p.prefix_sample2 img{
+-moz-transform: rotate(-45deg);
+-webkit-transform: rotate(-45deg);
+-o-transform: rotate(-45deg);
+-ms-transform: rotate(-45deg);	
+}
+p.prefix_sample2 img {
+-moz-transform-origin:200px 150px;
+-webkit-transform-origin:200px 150px;
+-o-transform-origin:200px 150px;
+-ms-transform-origin:200px 150px;
+}
+HTMLソース
+<html>
+<head>
+<link rel="stylesheet" href="sample.css"
+type="text/css">
+</head>
+<body>
+<p class="prefix_sample1">
+rotate(-45deg)を指定、transform-originプロパティは未指定<br>
+<img src="../images/kaeru.gif">
+</p>
+<p class="prefix_sample2">
+rotate(-45deg)を指定、transform-origin:right bottomを指定<br>
+<img src="../images/kaeru.gif">
+</p>
+</body>
+</html>
+transform-origin−CSS3リファレンス

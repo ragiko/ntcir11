@@ -1,0 +1,78 @@
+
+[[20140320214345]] 『VLOOKUPの別ブックからの範囲参照がうまくゆかなax(黄金の桃) >>BOT
+[ 
+初めての方へ | 
+一覧(最新更新順) | 
+| 
+| 
+全文検索 | 
+過去ログ | 
+HOME ]
+『VLOOKUPの別ブックからの範囲参照がうまくゆかない(マクロ)』(黄金の桃)
+皆様、はじめまして。
+TEST1 というエクセルのブックのある範囲に名前を付けました。
+Set HABA = Workbooks("TEST1.xlsx").Sheets("sheet1").Range("a1:d3")
+HABA.Name = "幅"
+この範囲を別ブック、TEST2で参照するVLOOKUPの式を書きました。
+Workbooks("TEST2.xlsx").Sheets("sheet1").Range("B1:B1") = "=vlookup(a1,幅,2,0)"
+しかしエラーが出てしまいます。
+別ブックで定義した範囲(haba)をきちんと認識してくれません。
+const HABA などと定数にして、"=vlookup(a1,HABA幅,2,0)"としてもうまくゆきませんでした。
+お知恵をお貸しください。お願いいたします。
+< 使用 Excel:Excel2007、使用 OS:Windows8 >
+こうじゃないですか?
+Workbooks("TEST2.xlsx").Sheets("sheet1").Range("B1:B1").FormulaLocal = "=VLOOKUP(A1,test1.xlsx!幅,2,FALSE)"
+(半平太) 2014/03/20(木) 22:31
+半平太さま、早速のご回答ありがとうございます。
+実は、Xlsx!幅の部分はその都度変わってしまいます。
+つまりある時はtest1ですが、あるときはtest2,test3,test4とブックがその都度変わってしまいます、
+そこで変数で扱おうとしているのですが、xlsx!幅 の部分を、
+hensu = ActiveWorkbook.Name
+hani = hansu & "!" & "幅" としても
+つまり"=VLOOKUP(A1,hani,2,FALSE)"
+としても、
+vlookupの範囲指定として認識してくれません。
+単なる文字として認識しているようです。
+ここを変数として認識させるにはどうすればよいのでしょうか。
+(黄金の桃) 2014/03/21(金) 00:23
+>単なる文字として認識しているようです。 
+複数の文字列を結合する方法を理解する必要があります。
+変数haniの値が "Test1!幅" と云う文字列だったとします。
+[&] 記号で結合すると   こうなってくれます。
+"=A1+" & hani & "+C1"   "=A1+Test1!幅+C1"
+※くれぐれもhaniをダブルクォーテーションで囲わないようにしてください
+(半平太) 2014/03/21(金) 09:02
+半平太さま、何度も本当にありがとうございます。
+ただ自分の力不足で、自分のマクロがどうしても、vlookupとして機能いたしません。
+業務で必要ですので、よろしければ、もう少しお教えいただきたく思います。
+test1のワークブックの表を範囲指定する範囲と名付ける
+test1のワークブック名を取得する。
+test2の特定セルにvlookup式を自動入力し、結果として、vlookupの答えを入れる。
+以上のことを踏まえて、下記のようなプログラムを書いたのですが、やはり最後のvlooupがきちんと機能してくれません。
+Sub 試作マクロ()
+Workbooks("test1.xlsx").Activate
+Set han = Workbooks("test1.xlsx").Sheets("sheet1").Range("a1:d3")
+han.Name = "範囲"
+QQ = ActiveWorkbook.Name & "!範囲"
+Workbooks("test2.xlsx").Activate
+Workbooks("test2.xlsx").Sheets("sheet1").Range("B1:B1").FormulaLocal = "=VLOOKUP(A1,QQ,2,FALSE)"
+End Sub
+また QQ = ActiveWorkbook.Name & "!範囲"
+ではなく、ZZ = ActiveWorkbook.Name
+最終行を
+"=VLOOKUP(A1,ZZ&"!範囲",2,FALSE)"としても構文エラーになってしまいました。
+どこが問題点なのかお教えください。お願いいたします。
+(黄金の桃) 2014/03/21(金) 11:46
+>  = "=VLOOKUP(A1,QQ,2,FALSE)" 
+(正) = "=VLOOKUP(A1," & QQ & ",2,FALSE)"
+(半平太) 2014/03/21(金) 15:02
+半平太さま
+見事、vlookupが機能しました。
+," & QQ & ",
+こういう書き方は今まで知りませんでしたので、とても勉強になりました。
+昨晩から、貴重な休みの時間にもかかわらず、長時間、私の質問にお付き合いしてくださいまして、
+まことに、ありがとうございました。
+早速、来週から業務で使わせていただきます。
+(問題解決済み)
+(黄金の桃) 2014/03/21(金) 18:44
+『VLOOKUPの別ブックからの範囲参照がうまくゆかなax(黄金の桃) エクセル Excel [エクセルの学校]

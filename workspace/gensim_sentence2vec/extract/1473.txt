@@ -1,0 +1,30 @@
+よろしくお願いします。
+WIN2000 Pro
+VS.NET 2003
+.NET Framework バージョン :1.1.4322.2032
+参照元記事を参考にWeb サービスを作ってみようと思い、
+まずWebサービスの作成に入りました。ほぼ説明の通りに作成(接続先SQLServerは違う)し、
+デバッグしてみたのですが、「図10」の画面の続き(GetCistomersのリンク先)で 
+[起動]ボタンを押してみると、
+「ページを表示できません 
+検索中のページには問題があるため表示できません。」との画面になってしまいます。
+さらにブラウザ(IE6SP1)の[更新]ボタンを押してみると、
+'/WebService1' アプリケーションでサーバー エラーが発生しました。
+--------------------------------------------------------------------------------
+要求形式が認識されません。 
+説明 : 現在の Web 要求を実行中に、ハンドルされていない例外が発生しました。
+エラーに関する詳細および例外の発生場所については、スタック トレースを参照してください。 
+例外の詳細: System.InvalidOperationException: 要求形式が認識されません。
+ソース エラー: 
+現在の Web 要求の実行中にハンドルされていない例外が生成されました。障害の原因および発生場所に関する情報については、下の例外スタック トレースを使って確認できます。  
+スタック トレース: 
+[InvalidOperationException: 要求形式が認識されません。]
+System.Web.Services.Protocols.WebServiceHandlerFactory.CoreGetHandler(Type type, HttpContext context, HttpRequest request, HttpResponse response)
+System.Web.Services.Protocols.WebServiceHandlerFactory.GetHandler(HttpContext context, String verb, String url, String filePath)
+System.Web.HttpApplication.MapHttpHandler(HttpContext context, String requestType, String path, String pathTranslated, Boolean useAppConfig) +699
+System.Web.MapHandlerExecutionStep.System.Web.HttpApplication+IExecutionStep.Execute() +95
+System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously) +173
+とのエラー画面が出てしまいます。
+何かの設定がおかしいのでしょうか?
+ご教授をお願いします。
+要求形式が認識されません。 − Insider.NET − @IT

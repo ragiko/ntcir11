@@ -1,0 +1,12 @@
+このドキュメントでは、Microsoft(R) Exchange 2000 Server と、既存の Exchange 4.0 や Exchange 5.x の展開との共存について説明し、Exchange 2000 へアップグレードする際の手順について紹介します。
+このドキュメントを読むと、Exchange 2000 と既存の Exchange サイトとの連携方法、Exchange と Active Directory の共存の実現方法、および Exchange 2000 が既存の Exchange ネットワークにもたらすメリットについて理解することができます。また、2つの例を使用して、現在展開されている Exchange を Exchange 2000 にアップグレードする方法を紹介します。単純なサイトのアップグレードと、複数のサイトとドメインを持つ複雑なアップグレードの両方について説明します。さらにこのドキュメントでは、迅速なアップグレード方法や、複数の段階にわけたアップグレードについても説明します。
+ここで紹介する情報は、Exchange 2000 Server の学習の一部として使用してください。Exchange 2000 のテクノロジについて十分に理解するには、このシリーズのほかの文書も読むことをお勧めします。次に該当文書を示します。
+PT100 - Windows 2000 および Exchange 2000 Server の入門用語集
+PT101 - Active Directory Connector の展開
+PT102 - Exchange 2000 Server のディレクトリ アクセスと Windows 2000 との統合
+PT104 - Exchange 2000 Server のメッセージ ルーティングの理解
+PT105 - Exchange 2000 Server の記憶領域テクノロジの理解
+PT106 - Exchange 2000 Server のリアルタイム コラボレーション サービスの理解
+PT107 - Exchange 2000 Server とのコラボレーション
+注意  この文書の情報は、Microsoft(R) Windows(R) 2000 および Microsoft Exchange 2000 Server プレリリース版に基づくものです。Exchange 2000 Server のこのリリースでは、Exchange の以前のリリースからの上書きアップグレードはサポートされません。したがって、このバージョンの文書では基本的なアップグレード情報のみ提供します。
+この文書の目的と適用範囲

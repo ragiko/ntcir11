@@ -1,0 +1,4 @@
+API経由でパラメータ値をセットする場合に使用します。
+このパラメータが設定された抽出条件が1つでも存在するクエリからは、データ参照を作成することができません。
+詳しくは、jp.co.intra_mart.foundation.viewcreator.model.Query#executeを参照してください。
+抽出条件の設定 &mdash; intra-mart Accel Platform /

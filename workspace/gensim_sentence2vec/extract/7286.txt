@@ -1,0 +1,114 @@
+
+目次
+シスコの呼管理レコードの K-Factor データ
+K-Factor データ
+関連項目
+関連資料
+シスコの呼管理レコードの K-Factor データ
+この章では、シスコの呼管理レコード(CMR)に存在する K-Factor データについて説明します。この章の構成は、次のとおりです。
+•	「K-Factor データ」
+•	「関連項目」
+•	「関連資料」
+K-Factor データ
+K-Factor は、ITU 規格 P.VTQ で定義されている、エンドポイントの平均オピニオン評点(MOS)推定アルゴリズムを示します。これは、特定の障害パターンに対する Perceptual Evaluation of Speech Quality(PESQ)数の平均値を推定するのに使用される、一般的な推定量を示します。
+MOS は、適切に設計されたリスニング試験の結果に関連しています。すべての MOS 試験では、ITU 規格 P.862.1 で定義されたとおりに 5 段階の PESQ スケールを使用します。ITU 規格 P.862.1 では、狭帯域電話網および音声コーデックのエンドツーエンドの音声品質アセスメントのための客観的方法として PESQ が説明されています。
+MOS 推定値は、フレーム損失密度に反比例する数値を示します。受信側で損失または廃棄されるフレームが多くなるにつれて、明瞭さが低下します。これらのフレームの損失または廃棄を秘匿と考えます。秘匿統計情報は、障害の発生したネットワークでのパケット(フレーム)損失およびその音声品質への影響を測定します。
+K-Factor は、ドロップアウトや震音などの実際のパケット損失が原因となって引き起こされる歪みによる、平均ユーザ不快感の重み付け推定値となります。エコーなどの遅延に関係する障害の影響は、推定しません。これにより、会話品質(MOS-CQO)ではなくリスニング品質(MOS-LQO)の推定値、および 1(音声品質が悪い)から 5(音声品質が非常に良い)までの範囲の平均ユーザ不快感の測定値が提供されます
+K-Factor は、多数の音声データベースからの音声サンプルによって、適応または調整されます。これらの音声データベースで、P.862.1 値に関連する適応用文章またはネットワーク状態のそれぞれの持続期間は、8 秒間です。より正確なスコアのために、アクティブな音声の 8 秒ごとにシステムが K-Factor 推定値を生成します。
+K-Factor および他の MOS 推定値は、問題が重大になった場合のみ、ネットワーク オペレータにフレーム損失を警告するため、二次統計または派生統計と考えます。パケット カウント、秘匿率、および秘匿秒数カウンタは、ネットワーク障害が音声の影響を伴うか、MOS で表示される前にネットワーク オペレータに警告するため、一次統計となります。
+表 9-1
+に Cisco Unified Communications Manager CMR に保存される K-Factor デートを示します。
+表 9-1	Cisco Unified Communications Manager CMR に保存される K-Factor データ 
+フィールド名
+電話表示名
+D&I ユーザ インターフェイスのテキストおよび説明
+CCR
+Cum Conceal Ratio
+[Cumulative Conceal Ratio] は、コール開始後に測定された発話時間について秘匿時間の累積率を示します。
+ICR
+Interval Conceal Ratio
+[Interval Conceal Ratio] は、アクティブな音声の最後の 3 秒の発話時間について、秘匿時間の割合である間隔ベースの平均秘匿率を示します。
+ICRmx
+Max Conceal Ratio
+[Interval Conceal Ratio Max] は、コールの間に測定された最大秘匿率を示します。
+CS
+Conceal Secs
+[Conceal Secs] は、コールの間に秘匿が測定された時間を示します。
+SCS
+Severely Conceal Secs
+[Severely Conceal Secs] は、大量に秘匿が測定された時間を示します。測定される秘匿が、通常 50 ミリ秒または約 5 % を超える場合、音声が非常に聞き取りにくくなる可能性があります。
+MLQK
+MOS LQK
+[MOS Listening Quality K-factor] は、受信信号パス上の音声の最後の 8 秒の MOS スコアの推定値を提供します。
+MLQKmn
+Min MOS LQK
+[MOS Listening Quality K-factor Min] は、コールの開始から測定された最小スコアを示し、最も品質の悪い音声を 8 秒間隔で示します。
+MLQKmx
+Max MOS LQK
+[MOS Listening Quality K-factor Max] は、コールの開始から測定された最大スコアを示し、最も品質の良い音声を 8 秒間隔で示します。
+MLQKav
+Avg MOS LQK
+[MOS Listening Quality K-factor Avg8] は、コールの開始から測定されたスコアの実行中の平均値を示します。
+表 9-2
+に CMR 内の K-Factor(varQMetrics)をサポートするデバイスを示します。
+K-Factor サポートの凡例は次のとおりです。
+•	X:SCCP と SIP の両方を実行している電話機によるサポート
+•	S:SCCP 機能のみ
+•	SI:SIP 機能のみ
+•	G:Cisco 5510 DSP でのみ使用可能
+表 9-2	CMR で K-Factor(varVQMetrics)をサポートするデバイス 
+デバイス
+CMR での K-Factor(varVQMetrics)サポート
+Cisco Unified IP Phone 7906
+X
+Cisco Unified IP Phone 7911
+X
+Cisco Unified IP Phone 7921
+X
+Cisco Unified IP Phone 7931
+X
+Cisco Unified IP Phone 7940
+S
+Cisco Unified IP Phone 7941
+X
+Cisco Unified IP Phone 7942-G
+X
+Cisco Unified IP Phone 7942-G/GE
+X
+Cisco Unified IP Phone 7945
+X
+Cisco Unified IP Phone 7960
+S
+Cisco Unified IP Phone 7961
+X
+Cisco Unified IP Phone 7962-G
+X
+Cisco Unified IP Phone 7962-G/GE
+X
+Cisco Unified IP Phone 7965
+X
+Cisco Unified IP Phone 7970
+X
+Cisco Unified IP Phone 7971
+X
+Cisco Unified IP Phone 7972-G/GE
+X
+Cisco Unified IP Phone 7975
+X
+3x MGCP ゲートウェイ
+G
+5x MGCP ゲートウェイ
+G
+関連項目
+•	「呼管理レコードについて」
+•	「Cisco 呼管理レコード フィールドの説明」
+•	「Cisco 呼管理レコードの例」
+関連資料
+次のマニュアルには、CDR に関する詳細情報が記載されています。
+•	
+『Cisco Unified Serviceability Administration Guide
+』
+•	
+『CDR Analysis and Reporting Administration Guide
+』
+Cisco Unified Communications Manager 呼詳細レコード アドミニストレーション ガイド リリース 8.6(1) - シスコの呼管理レコードの K-Factor データ - Cisco Systems

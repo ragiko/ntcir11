@@ -1,0 +1,34 @@
+「Media Queries(メディアクエリ)」は、画面サイズや解像度など、閲覧環境の条件に応じて適用するスタイルを切り替えられるCSS3の機能です。従来のCSSにもあった、端末の種類に応じてスタイルの適用対象を限定する「Media Type」の仕様を拡張したものです。
+この「Media Queries」によって、描画領域の広さによって適用するスタイルを変更するような、細かな装飾が可能になります。
+従来の条件指定では:
+従来は、以下のHTMLソース(link要素)に示すように、「印刷用(print)」や「画面用(screen)」など、ざっくりした括りでしかCSSの適用対象を指定できませんでした。
+<link rel="stylesheet" href="screen.css"
+type="text/css" media="screen">
+<link rel="stylesheet" href="print.css"
+type="text/css" media="print">
+上記の場合は、画面上に表示される際にだけ「screen.css」が適用され、印刷される際には「print.css」だけが適用されます。
+CSS3での条件指定では:
+CSS3の「Media Queries」では、以下のHTMLソースのように、「表示領域の横幅が480px以下の場合にのみ適用」や「表示領域の横幅が900px以上の場合にのみ適用」など、同じ「画面」でも細かな条件が指定できるようになっています。
+<link rel="stylesheet" href="phone.css" type="text/css"
+media="screen and (max-width: 480px)">
+<link rel="stylesheet" href="pc.css" type="text/css"
+media="screen and (min-width: 900px)">
+上記の場合は、ブラウザの表示領域の横幅が480px以下の場合にだけ「phone.css」が適用され、900px以上の場合にだけ「pc.css」が適用されます。
+link要素のmedia属性だけでなく、CSSソース内でも指定可能
+適用対象の条件は、CSSソースの中に下記のように記述することもできます。この方法なら、すべてのスタイルを1つのCSSソース中に含めておけるため、対象ごとにCSSファイルを分割する必要はありません。
+@media screen and (max-width: 320px) {
+/* 表示領域が320px以下の場合に適用するスタイル */
+div#sidebar { width: 100%; }
+}
+@media screen and (min-width: 800px) {
+/* 表示領域が800px以上の場合に適用するスタイル */
+div#sidebar { width: 240px }
+}
+なお、単位は「px(ピクセル)」に限りません。例えば以下のように記述すれば、「画面内の1行に何文字を表示できるか」という条件を基準にして分岐ができます。
+@media screen and (max-width: 25em) {
+/* 1行の文字数が25文字以下の場合に適用するスタイル */
+div#sidebar { width: 100%; }
+}
+Media Queriesで、閲覧環境に応じたデザインの適用が容易に
+この「Media Queries」を利用すると、複雑なスクリプトを用いてユーザエージェント名や画面サイズなどの情報を判別しなくても、ユーザの閲覧環境に合わせたデザイン(=レスポンシブ・ウェブデザイン)が簡単に実現できるようになります。
+Media Queriesで、画面サイズ別にCSSを切り替える方法 [ホームページ作成] All About

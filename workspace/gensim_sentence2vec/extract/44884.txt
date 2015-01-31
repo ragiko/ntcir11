@@ -1,0 +1,29 @@
+think statsで、likelihood とか Bayesian と言う言葉が出てきて、'わかんねー('A`)' となってしばらく放置してしまった。
+年も明けてやる気も回復したので、まずはlikelihood をグラフ化する関数を自分なりに書いてみた。
+勉強用資料として、北海道大学 久保先生の "生態学のデータ解析"を参考にした。
+サンプルデータの条件は、ここの第4回の講義資料をそのまま使い、同じようなグラフが出ればOKという感じで進めた。
+この講義では、Rの使用を推奨しているけど、ここはPythonでやってみる。
+Rの関数をそのままコピーしてもつまらないしね。
+import numpy as np
+import scipy.misc as smi
+import pylab as pl
+'''input parameter'''
+p_sample = 0.5
+Ni_sample = 8
+size_sample = 100
+'''making data'''
+sampledata = np.random.binomial(Ni_sample, p_sample, size_sample)
+q = np.arange(0.01, 1, 0.01)
+def log_likelihood(q, Ni, data):
+return sum([np.log(smi.comb(Ni, k)) + (k * np.log(q) + (Ni - k)*np.log(1 - q)) for k in data])
+'''making graph'''
+y = log_likelihood(q, Ni_sample, sampledata)
+pl.plot(q, y)
+pl.show()
+うん、それっぽいのが出来た。
+例えばこのinput parameter の部分で、Ni_sample = 1にすれば、コインの表裏的な問題も作れる。
+例として
+ここにコインが1枚ある。コインを投げて、表が出た回数をカウントする。4回投げて2回表が出たときと、100回投げて50回表が出たときで、どのように尤度が変わるのか。みたいな。4回投げるときは、size_sample=4にして、size_sample=100なら100回投げた事になる。(実はまだよくわかってないけど)
+そうすると、この2つのようなグラフが作れる。
+なお、わかりやすいように、結果はlogを外している。(計算はlogの足し算でやって、exp(結果) とした。)
+イヌダイスキ: 尤度(likelihood)の勉強・・・Pythonメモ

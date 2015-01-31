@@ -1,0 +1,67 @@
+
+ツイート
+次のサンプルでは、非連結のフォームに入力されたデータをもとに、［住所録］テーブルを更新します。
+手順 
+次のテーブルを用意します。
+［住所録］テーブル
+----------------------------------------------------------
+フィールド名   データ型         フィールドサイズ    
+----------------------------------------------------------
+ID              オートナンバー	長整数型
+氏名            テキスト型         20文字      
+会社名          テキスト型         40文字      
+郵便番号        テキスト型         8文字       
+住所            テキスト型         100文字     
+電話番号        テキスト型         13文字      
+年齢            整数型             整数型
+----------------------------------------------------------
+次に［住所録］フォームを作成します。フォームを作成する方法には2種類あります。
+(1) オートフォームを使用し、住所録テーブルをレコードソースにした連結フォームを作成する。その後にレコードソースと各テキストボックスのコントロールソースを削除(空白に)する。
+(2) フォームの新規作成から「デザイン」を選択し、住所録テーブルの全てのフィールドに対応するテキストボックスを作成する。
+どちらで作っても良いですが、オートフォームを使ったほうが簡単でしょう。
+データを追加するため、フォームフッターに[保存]、[クリア]、 [閉じる]という名前の3つのコマンドボタンを作成します。
+サンプルコード 
+各コマンドボタンのクリック時イベントには、以下のプロシージャを記述します。
+Private Sub 保存_Click()
+Dim Rst As DAO.Recordset
+Set Rst = CurrentDb.OpenRecordset("住所録", dbOpenTable)
+With Rst
+.AddNew
+.Fields("氏名") = Me!氏名
+.Fields("会社名") = Me!会社名
+.Fields("郵便番号") = Me!郵便番号
+.Fields("住所") = Me!住所
+.Fields("電話番号") = Me!電話番号
+.Fields("年齢") = Me!年齢
+.Update
+End With
+Rst.Close
+Set Rst = Nothing
+Call ClearControls
+End Sub
+Private Sub クリア_Click()
+Call ClearControls
+End Sub
+Private Sub 閉じる_Click()
+DoCmd.Close acForm, "住所録", acSaveNo
+End Sub
+Sub ClearControls()
+Dim Ctl As Control
+For Each Ctl In Me.Controls
+If Ctl.ControlType = acTextBox Then
+Ctl = Null
+End If
+Next Ctl
+End Sub
+DAOのレコードセットを使用して、非連結フォームのデータでテーブルを更新します。
+RecordsetオブジェクトのAddNewメソッドで新しいレコードを挿入し、各テキストボックスに入力された値をレコードセットに代入していきます。
+最後にUpdateメソッドでレコードセットを更新し、ClearContorlsプロシージャですべてのテキストボックスをクリアします。
+ClearControlsプロシージャは、フォームのテキストボックスを一括でクリアするためのサブルーチンです。［住所録］フォームのフォームモージュールの中に記述して下さい。
+For Each...NextステートメントでフォームのControlsコレクションの中のすべてのコントロールを参照し、コントロールがテキストボックスの場合にのみ、内容をクリアします。
+注意
+AccessでDAOを使用するには、参照設定が必要です。
+Acceess2007以降では、［参照設定］ダイアログボックスで「Microsoft Office XX.X Access database engine Object Library(XX.Xはバージョン番号)」にチェックがついていることを確認してください。
+Access2003では、「Microsoft DAO 3.6 Object Library」にチェックがついていることを確認してください。
+Access2003以降は、既定でDAOのライブリに参照設定されていますが、Access2000/2002の場合、既定では参照設定されてないので、［参照設定］ダイアログボックスで「Microsoft DAO 3.6 Object Library」にチェックを入れて下さい。
+その際、ADOのライブラリ「Microsoft ActiveX Data Object X.X Library」よりも上に、DAOのチェックを持ってきて下さい。
+非連結のフォームでデータを追加する(DAO):Access VBA｜即効テクニック｜Excel VBAを学ぶならmoug

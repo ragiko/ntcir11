@@ -1,0 +1,6 @@
+子音音節発声の明瞭化や、各音節の発声時間のバランスを向上させることにある。To make consonant syllable pronunciation articulate and to improve the balance of the voicing time of each syllable. - 特許庁
+音節内のF0傾きの時間変化は、音節内を適宜等分して各領域ごとに決定木を学習してモデル化する。Time change of the F0 tilt in a syllable is modeled, by learning a decision tree for each region into which the syllable is suitably and equally divided. - 特許庁
+-mで終わる音節と-nで終わる音節は当初区別されていたが、中世日本語の中期には両者/N/と同化した。At first syllables which ended with -m and ones which ended with -n were distinguished, but in the middle of Middle Japanese they were assimilated into/N/.
+- Wikipedia日英京都関連文書対訳コーパス
+このように、歌唱者音声データの時間軸を伸縮しガイドボーカルデータの時間軸と合わせ、音節区切りデータで区切られた音節ごとの音量変化を比較することで、各音節内の微妙な変化についても評価を行うことができる。Thus, a time axis of a singer voice data is expanded or contracted, and matched to a time axis of a guide vocal data, and by comparing the sound volume change for each syllable which is separated with syllable separation data, even delicate change in each syllable is evaluated. - 特許庁
+「音節化」に関連した英語例文の一覧 - Weblio英語例文検索

@@ -1,0 +1,13 @@
+
+著者
+稲葉 通将
+神園 彩香
+高橋 健一
+出版者
+一般社団法人 人工知能学会
+雑誌
+人工知能学会論文誌
+巻号頁・発行日
+vol.29, no.1, pp.21-31, 2014 (Released:2014-01-07)
+Recently, computerized dialogue systems are studied actively. Non-task-oriented dialogue systems that handle domain-free dialogues like chats are expected be applied in various fields, but many challenges still exist in developing them. This paper addresses the problem of utterance generation for non-task-oriented dialogue systems. We search twitter data by topic words and acquire sentences. The sentences are filtered by rules and scored on the basis of training data. We acquire the sentences which have a high score as utterances. The results of an experiment demonstrate that the proposed method can generate appropriate utterances with a high degree of accuracy.
+Twitterを用いた非タスク指向型対話システムのための発話候補文獲得 - 文献詳細 - Ceek.jp Altmetrics

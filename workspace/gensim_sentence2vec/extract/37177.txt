@@ -1,0 +1,435 @@
+39.6. 制御構造制御構造はおそらくPL/pgSQLの最も有用(かつ重要)な部分です。
+PL/pgSQLの制御構造を使用して、PostgreSQLのデータを非常に柔軟、強力に操作することができます。
+39.6.1. 関数からの復帰関数からデータを返すために使用できるコマンドが2つあります。
+RETURNおよびRETURN NEXTです。
+39.6.1.1. RETURNRETURN expression;式を持つRETURNは関数を終了し、expressionの値を呼び出し元に返します。
+この形式は集合を返さないPL/pgSQL関数で使用されます。
+スカラ型を返す場合は任意の式を使用することができます。
+この式の結果は、代入のところで説明したように、自動的に関数の戻り値の型にキャストされます。
+複合(行)値を返すためには、expressionとしてレコードもしくは行変数を記述しなければなりません。
+出力パラメータを持った関数を宣言した時は、式の無いRETURNを記述してください。
+その時点における出力パラメータの値が返されます。
+voidを返すように関数を宣言した場合でも、関数を直ちに抜け出すためにRETURNを使用できますが、RETURNの後に式を記述しないでください。
+関数の戻り値は未定義とさせたままにすることはできません。
+制御が、RETURN文が見つからない状態で関数の最上位のブロックの終わりまで達した時、実行時エラーが発生します。
+しかし、この制限は出力パラメータを持った関数及びvoidを返す関数には当てはまりません。
+このような場合は最上位のブロックが終わった時、RETURN文が自動的に実行されます。
+39.6.1.2. RETURN NEXTおよびRETURN QUERYRETURN NEXT expression;
+RETURN QUERY query;
+RETURN QUERY EXECUTE command-string [ USING expression [, ... ] ];PL/pgSQL関数がSETOF sometypeを返すように宣言した場合、後続の処理が多少違います。
+この場合、戻り値の個々の項目は、RETURN NEXTコマンドまたはRETURN QUERYコマンドで指定されます。
+そして、引数のない最後のRETURNコマンドにより、関数が実行を終了したことが示されます。
+RETURN NEXTは、スカラ型および複合型の両方で使用することができます。
+複合型の場合、結果の"テーブル"全体が返されます。
+RETURN QUERYは、問い合わせを実行した結果を関数の結果集合に追加します。
+RETURN NEXTとRETURN QUERYは、単一の集合を返す関数の中で自由に混合できます。
+この場合、連結されたものが結果となります。
+実際には、RETURN NEXTおよびRETURN QUERYは関数から戻りません。
+単に関数の結果集合に行を追加しているだけです。
+そして、その実行はPL/pgSQL関数内の次の文に継続します。
+RETURN NEXTまたはRETURN QUERYコマンドが連続して実行されると、結果集合が作成されます。
+最後の、引数を持ってはならないRETURNにより、関数の終了を制御します
+(または制御を関数の最後に移すことができます)。
+RETURN QUERYにはRETURN QUERY EXECUTEという亜種があり、それは問い合わせが動的に実行されることを指定します。
+パラメータ式を、EXECUTEコマンド内と全く同じように、USINGによって演算された問い合わせ文字列に挿入することができます。
+出力パラメータを持つ関数を宣言した時は、式の無いRETURN NEXTだけを記述してください。
+実行の度に、その時点における出力パラメータの値が、関数からの戻り値のために結果の行として保存されます。
+出力パラメータを持つ集合を返す関数を作成するためには、出力パラメータが複数の時はSETOF recordを返すように関数を宣言し、単一のsometype型の出力パラメータの時はSETOF sometypeを返すように関数を宣言しなければならないことに注意してください。
+RETURN NEXTを使用する関数の例を以下に示します。
+CREATE TABLE foo (fooid INT, foosubid INT, fooname TEXT);
+INSERT INTO foo VALUES (1, 2, 'three');
+INSERT INTO foo VALUES (4, 5, 'six');
+CREATE OR REPLACE FUNCTION getAllFoo() RETURNS SETOF foo AS
+$BODY$
+DECLARE
+r foo%rowtype;
+BEGIN
+FOR r IN SELECT * FROM foo
+WHERE fooid > 0
+LOOP
+-- can do some processing here
+RETURN NEXT r; -- return current row of SELECT
+END LOOP;
+RETURN;
+END
+$BODY$
+LANGUAGE 'plpgsql' ;
+SELECT * FROM getallfoo();
+注意: 上記のように、RETURN NEXTおよびRETURN QUERYの現在の実装では、関数から返される前に結果集合全体を保管します。
+これにより、PL/pgSQL関数が非常に大量の結果集合を返した場合、性能が低下する可能性があります。
+メモリの枯渇を避けるため、データはディスクに書き込まれます。
+しかし、関数自体は結果集合全体が生成されるまでは戻りません。
+将来のPL/pgSQLのバージョンでは、この制限を受けずに集合を返す関数をユーザが定義できるようになるかもしれません。
+現在、データがディスクに書き込まれ始まる時点はwork_mem設定変数によって制御されています。
+大量の結果集合を保管するのに十分なメモリがある場合、管理者はこのパラメータの値を大きくすることを考慮すべきです。
+39.6.2. 条件分岐IFとCASE文はある条件に基づいて代わりのコマンドを実行させます。
+PL/pgSQLには、以下のような3つのIFの形式があります。
+IF ... THENIF ... THEN ... ELSEIF ... THEN ... ELSE IFIF ... THEN ... ELSIF ... THEN ... ELSE
+また、以下のような2つのCASEの形式があります。
+CASE ... WHEN ... THEN ... ELSE ... END CASECASE WHEN ... THEN ... ELSE ... END CASE
+39.6.2.1. IF-THENIF boolean-expression THEN
+statements
+END IF;IF-THEN文は最も単純なIFの形式です。
+THENとEND IFの間の文が条件が真の場合に実行されます。
+さもなければそれらは飛ばされます。
+例:
+IF v_user_id <> 0 THEN
+UPDATE users SET email = v_email WHERE user_id = v_user_id;
+END IF;
+39.6.2.2. IF-THEN-ELSEIF boolean-expression THEN
+statements
+ELSE
+statements
+END IF;IF-THEN-ELSE文はIF-THENに加え、条件評価が偽の場合に実行すべき代替となる文の集合を指定することができます。
+(これには条件がNULLと評価した場合も含まれることに注意してください。)
+例:
+IF parentid IS NULL OR parentid = ''
+THEN
+RETURN fullname;
+ELSE
+RETURN hp_true_filename(parentid) || '/' || fullname;
+END IF;
+IF v_count > 0 THEN 
+INSERT INTO users_count (count) VALUES (v_count);
+RETURN 't';
+ELSE
+RETURN 'f';
+END IF;
+39.6.2.3. IF-THEN-ELSIFIF boolean-expression THEN
+statements
+[ ELSIF boolean-expression THEN
+statements
+[ ELSIF boolean-expression THEN
+statements
+...]]
+[ ELSE
+statements ]
+END IF;選択肢が2つだけではなくより多くになる場合があります。
+IF-THEN-ELSIFは、順番に複数の代替手段を検査する、より便利な方法を提供します。
+IF条件は最初の真である結果が見つかるまで連続して検査されます。
+そして関連した文が実行され、その後END IF以降の次の文に制御が渡されます。
+(以降にあるIF条件の検査はすべて実行されません。)
+全てのIF条件が真でない場合、ELSEブロックが(もし存在すれば)実行されます。
+機能的には、IF-THEN-ELSE-IF-THENコマンドを入れ子にしたものと同じですが、必要なEND IFは1つだけです。
+以下に例を示します。
+IF number = 0 THEN
+result := 'zero';
+ELSIF number > 0 THEN 
+result := 'positive';
+ELSIF number < 0 THEN
+result := 'negative';
+ELSE
+-- ふうむ、残る唯一の可能性はその値がNULLであることだ
+result := 'NULL';
+END IF;
+ELSIFキーワードはELSEIFのように書くことができます。
+同じ作業を遂行する別の方法は、以下の例のようにIF-THEN-ELSE文を入れ子にすることです。
+IF demo_row.sex = 'm' THEN
+pretty_sex := 'man';
+ELSE
+IF demo_row.sex = 'f' THEN
+pretty_sex := 'woman';
+END IF;
+END IF;
+しかし、この方法はそれぞれのIFに対応するEND IFの記述が必要です。
+従って、多くの選択肢がある場合ELSIFを使用するよりも厄介です。
+39.6.2.4. 単純なCASECASE search-expression
+WHEN expression [, expression [ ... ]] THEN
+statements
+[ WHEN expression [, expression [ ... ]] THEN
+statements
+... ]
+[ ELSE
+statements ]
+END CASE;      
+CASEの単純な形式はオペランドの等価性にもとづく条件的実行を提供します。
+search-expressionは(一度だけ)評価され、その後WHEN句内のそれぞれのexpressionと比較されます。
+一致するものが見つかると、関連したstatementsが実行され、END CASEの次の文に制御が渡されます。
+(以降のくWHEN式は評価されません。)
+一致するものが見つからない場合、ELSE statementsが実行されますが、ELSEが無いときはCASE_NOT_FOUND例外を引き起こします。
+以下は簡単な例です。
+CASE x
+WHEN 1, 2 THEN
+msg := 'one or two';
+ELSE
+msg := 'other value than one or two';
+END CASE;
+39.6.2.5. 検索付きCASECASE
+WHEN boolean-expression THEN
+statements
+[ WHEN boolean-expression THEN
+statements
+... ]
+[ ELSE
+statements ]
+END CASE;      
+CASEの検索された形式は論理値式の真の結果に基づく条件付き実行を提供します。
+それぞれのWHEN句のboolean-expressionはtrueとなる1つが見つかるまで順番に評価されます。
+その後、関連するstatementsが実行され、その結果END CASEの次の文に制御が渡されます。
+(以降のWHEN式は評価されません。)
+真となる結果が見つからない場合、ELSE statementsが実行されますが、ELSEが存在しないときはCASE_NOT_FOUND例外を引き起こします。
+以下は簡単な例です。
+CASE
+WHEN x BETWEEN 0 AND 10 THEN
+msg := 'value is between zero and ten';
+WHEN x BETWEEN 11 AND 20 THEN
+msg := 'value is between eleven and twenty';
+END CASE;
+この形式のCASEは、判定基準が省略されたELSE句に達した場合に何もしないのではなくエラーなる点を除き、IF-THEN-ELSIFと全く同一です。
+39.6.3. 単純なループLOOP、EXIT、CONTINUE、WHILE、FOR、FOREACH文を使用して、PL/pgSQL関数で、一連のコマンドを繰り返すことができます。
+39.6.3.1. LOOP[ <<label>> ]
+LOOP
+statements
+END LOOP [ label ];LOOPは、EXIT文またはRETURN文によって終了されるまで無限に繰り返される、条件なしのループを定義します。
+省略可能なlabelは、入れ子状になったループにおいてEXITおよびCONTINUE文がどのレベルの入れ子を参照するかを指定するために使用されます。
+39.6.3.2. EXITEXIT [ label ] [ WHEN boolean-expression ];labelが指定されない場合、最も内側のループを終わらせ、END LOOPの次の文がその後に実行されます。
+labelが指定された場合、それは現在またはその上位の入れ子になったループやブロックのラベルである必要があります。
+その後、指名されたループまたはブロックを終わらせ、そのループまたはブロックの対応するENDの次の文に制御を移します。
+WHENが指定された場合、boolean-expressionが真の場合のみループの終了が起こります。
+さもなければ、EXITの後の行に制御が移ります。
+EXITは、すべての種類のループと共に使用できます。
+条件なしのループでの使用に限定されません。
+BEGINブロックと共に使用した時、EXITによりブロックの次の文に制御が移ります。
+この目的のためにラベルが使用されなければならないことに注意してください。
+ラベル無しのEXITはBEGINブロックに対応するとは決して考えられません。
+(これは、ラベル無しのEXITがBEGINブロックに対応することを許容するPostgreSQLの8.4より前のリリースからの変更です。)
+例:
+LOOP
+-- 何らかの演算
+IF count > 0 THEN
+EXIT;  -- ループを抜け出す
+END IF;
+END LOOP;
+LOOP
+-- 何らかの演算
+EXIT WHEN count > 0;  -- 上例と同じ結果
+END LOOP;
+<<ablock>>
+BEGIN
+-- 何らかの演算
+IF stocks > 100000 THEN
+EXIT ablock;  -- これによりBEGINブロックを抜け出す
+END IF;
+-- stokcs > 100000 であればここでの演算は省略
+END;
+39.6.3.3. CONTINUECONTINUE [ label ] [ WHEN boolean-expression ];labelが無い場合、すぐ外側のループの次の繰り返しが開始されます。
+すなわち、ループ本体の残りの文は飛ばされて、他のループの繰り返しが必要かどうかを決めるため、制御がループ制御式(もし存在すれば)に戻ります。
+labelが存在する場合、実行を継続するループのラベルを指定します。
+WHENが指定された場合、boolean-expressionが真の場合のみループにおける次の繰り返しが始まります。
+さもなければ、CONTINUEの後の行に制御が移ります。
+CONTINUEは全ての種類のループで使用可能です。
+条件なしのループに限定されません。
+例
+LOOP
+-- 何らかの演算
+EXIT WHEN count > 100;
+CONTINUE WHEN count < 50;
+-- 50から100を数える、何らかの演算
+END LOOP;
+39.6.3.4. WHILE[ <<label>> ]
+WHILE boolean-expression LOOP
+statements
+END LOOP [ label ];WHILE文はboolean-expressionの評価が真である間、一連の文を繰り返します。
+条件式は、ループ本体に入る前にのみ検査されます。
+以下に例を示します。
+WHILE amount_owed > 0 AND gift_certificate_balance > 0 LOOP
+-- ここで演算をいくつか行います。
+END LOOP;
+WHILE NOT done LOOP
+-- ここで演算をいくつか行います。
+END LOOP;
+39.6.3.5. FOR(整数FORループ)[ <<label>> ]
+FOR name IN [ REVERSE ] expression .. expression [ BY expression ] LOOP
+statements
+END LOOP [ label ];この形式のFORは整数値の範囲内で繰り返すループを生成します。
+name変数はinteger型として自動的に定義され、ループ内部のみで存在します
+(ループ外部で定義しても、ループ内部では全て無視されます)。
+範囲の下限、上限として与えられる2つの式はループに入った時に一度だけ評価されます。
+BY句を指定しない時の繰り返し刻みは1ですが、BY句を用いて指定でき、ループに入った時に一度だけ評価されます。
+REVERSEが指定された場合、繰り返し刻みの値は加算されるのではなく、繰り返しごとに減算されます。
+整数FORループの例を以下に示します。
+FOR i IN 1..10 LOOP
+-- i はループ内で 1、2、3、4、5、6、7、8、9、10 の値を取ります。
+END LOOP;
+FOR i IN REVERSE 10..1 LOOP
+-- i はループ内で 10、9、8、7、6、5、4、3、2、1 の値を取ります。
+END LOOP;
+FOR i IN REVERSE 10..1 BY 2 LOOP
+-- i はループ内で 10、8、6、4、2 の値を取ります。
+END LOOP;
+下限が上限よりも大きい(REVERSEの場合はより小さい)場合、ループ本体はまったく実行されません。
+エラーは発生しません。
+labelをFORループに付加することにより、labelを用いて修飾した名前の整数ループ変数を参照できます。
+39.6.4. 問い合わせ結果による繰り返し別の種類のFORループを使用して、問い合わせの結果を繰り返し、そのデータを扱うことができます。
+以下に構文を示します。
+[ <<label>> ]
+FOR target IN query LOOP
+statements
+END LOOP [ label ];
+targetは、レコード変数、行変数またはカンマで区切ったスカラ変数のリストです。
+targetには順次、queryの結果の全ての行が代入され、各行に対してループ本体が実行されます。
+以下に例を示します。
+CREATE FUNCTION cs_refresh_mviews() RETURNS integer AS $$
+DECLARE
+mviews RECORD;
+BEGIN
+RAISE NOTICE 'Refreshing materialized views...';
+FOR mviews IN SELECT * FROM cs_materialized_views ORDER BY sort_key LOOP
+-- ここで"mviews"はcs_materialized_viewsの1つのレコードを持ちます
+RAISE NOTICE 'Refreshing materialized view %s ...', quote_ident(mviews.mv_name);
+EXECUTE 'TRUNCATE TABLE ' || quote_ident(mviews.mv_name);
+EXECUTE 'INSERT INTO '
+|| quote_ident(mviews.mv_name) || ' '
+|| mviews.mv_query;
+END LOOP;
+RAISE NOTICE 'Done refreshing materialized views.';
+RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+このループがEXIT文で終了した場合、最後に割り当てられた行の値はループを抜けた後でもアクセスすることができます。
+この種類のFOR文のqueryとしては、呼び出し元に行を返すSQLコマンドをすべて使用できます。
+通常はSELECTですが、RETURNING句を持つINSERT、UPDATEまたはDELETEも使用できます。
+EXPLAINなどのユーティリティコマンドも作動します。
+PL/pgSQL変数は問い合わせテキストに置き換えられます。
+問い合わせ計画は、項39.10.1および項39.10.2で述べたように、再利用のためにキャッシュされます。
+FOR-IN-EXECUTE文は行を繰り返すもう1つの方法です。
+[ <<label>> ]
+FOR target IN EXECUTE text_expression [ USING expression [, ... ] ] LOOP
+statements
+END LOOP [ label ];
+この方法は、問い合わせのソースが文字列式で指定される点を除き、前の形式と似ています。
+この式はFORループの各項目で評価され、再計画が行われます。
+これにより、プログラマは、通常のEXECUTE文と同じように事前に計画された問い合わせによる高速性と、動的な問い合わせの持つ柔軟性を選択することができます。
+EXECUTEの場合と同様、パラメータ値はUSINGにより動的コマンドに挿入できます。
+結果を通して繰り返さなければならない問い合わせを指定するもう1つの方法として、カーソルの宣言があります。
+これは項39.7.4で説明します。
+39.6.5. 配列を巡回FOREACHループはFORループにとてもよく似ています。
+しかし、SQL 問い合わせが抽出した行を繰り返す代わりに、配列の要素を繰り返します。
+(一般的にFOREACHは、複合値で表現される構成要素の巡回を意味しますが、配列でない複合値も巡回する亜種が将来は追加されるかもしれません。)
+配列を巡回するFOREACH文を示します。
+[ <<label>> ]
+FOREACH target [ SLICE number ] IN ARRAY expression LOOP
+statements
+END LOOP [ label ];
+SLICEがない、またはSLICE 0が指定された場合、ループはexpressionによって評価されて作成された配列の各要素を繰り返します。
+target変数が各要素の値に順次割り当てられ、各要素に対してループ本体が実行されます。
+整数配列の要素を巡回する例を示します。
+CREATE FUNCTION sum(int[]) RETURNS int8 AS $$
+DECLARE
+s int8 := 0;
+x int;
+BEGIN
+FOREACH x IN ARRAY $1
+LOOP
+s := s + x;
+END LOOP;
+RETURN s;
+END;
+$$ LANGUAGE plpgsql;
+配列の次元数に関係なく、要素は格納した順番で処理されます。
+通常targetは単一の変数ですが、複合値(レコード)の配列を巡回するときは、変数のリストも可能です。
+その場合、配列の各要素に対して、変数は複合値(レコード)の列から連続的に割り当てられます。
+正のSLICE値を持つ場合、FOREACHは単一の要素ではなく多次元配列の低次元部分配列を通して繰り返します。
+SLICE値は、配列の次元数より小さい整数定数でなければなりません。
+target変数は配列でなければなりません。
+この変数は、配列値から連続した部分配列を受けとります
+ここで部分配列はSLICEで指定した次数となります。
+以下に1次元の部分配列を通した繰り返しの例を示します。
+CREATE FUNCTION scan_rows(int[]) RETURNS void AS $$
+DECLARE
+x int[];
+BEGIN
+FOREACH x SLICE 1 IN ARRAY $1
+LOOP
+RAISE NOTICE 'row = %', x;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+SELECT scan_rows(ARRAY[[1,2,3],[4,5,6],[7,8,9],[10,11,12]]);
+NOTICE:  row = {1,2,3}
+NOTICE:  row = {4,5,6}
+NOTICE:  row = {7,8,9}
+NOTICE:  row = {10,11,12}
+39.6.6. エラーの捕捉デフォルトでは、PL/pgSQL関数の内部で発生したエラーは関数の実行を中止し、実際に上位のトランザクションをアボートします。
+BEGINブロックおよびEXCEPTION句を使用すれば、エラーを捕捉してその状態から回復できます。
+その構文は通常のBEGINブロックの構文を拡張したものです。
+[ <<label>> ]
+[ DECLARE
+declarations ]
+BEGIN
+statements
+EXCEPTION
+WHEN condition [ OR condition ... ] THEN
+handler_statements
+[ WHEN condition [ OR condition ... ] THEN
+handler_statements
+... ]
+END;
+エラーが発生しない時、この形式のブロックは単に全てのstatementsを実行し、ENDの次の文に制御が移ります。
+しかし、statementsの内部でエラーが発生すると、それ以後のstatementsの処理は中断され、EXCEPTIONリストに制御が移ります。
+そしてリストの中から、発生したエラーと合致する最初のconditionを探します。
+合致するものがあれば、対応するhandler_statementsを実行し、ENDの次の文に制御が移ります。
+合致するものがなければ、EXCEPTION句が存在しないのと同じで、エラーは外側に伝播します。
+EXCEPTIONを含んだ外側のブロックはエラーを捕捉できますが、失敗すると関数の処理は中断されます。
+全てのconditionの名前は付録Aに示したもののいずれかを取ることができます。
+分類名はそこに分類される全てのエラーに合致します。
+OTHERSという特別の状態名はQUERY_CANCELED以外の全てのエラーに合致します。
+(QUERY_CANCELEDを名前で捕捉することは可能ですが、賢明ではありません。)
+状態名は大文字小文字を区別しません。
+同時に、エラー状態はSQLSTATEコードで指定可能です。
+例えば以下は等価です。
+WHEN division_by_zero THEN ...
+WHEN SQLSTATE '22012' THEN ...
+エラーが該当するhandler_statements内部で新たに発生した時、EXCEPTION句はそのエラーを捕捉できずエラーは外側に伝播します。
+なお、上位のEXCEPTION句はそのエラーを捕捉できます。
+EXCEPTION句がエラーを捕捉した時、PL/pgSQL関数のローカル変数はエラーが起こった後の状態を保ちます。
+しかし、ブロック内部における永続的なデータベースの状態は、ロールバックされます。
+そのような例を以下に示します。
+INSERT INTO mytab(firstname, lastname) VALUES('Tom', 'Jones');
+BEGIN
+UPDATE mytab SET firstname = 'Joe' WHERE lastname = 'Jones';
+x := x + 1;
+y := x / 0;
+EXCEPTION
+WHEN division_by_zero THEN
+RAISE NOTICE 'caught division_by_zero';
+RETURN x;
+END;
+制御が変数yの代入に移ると、division_by_zeroエラーとなり、EXCEPTION句がそのエラーを捕捉します。
+RETURN文による関数の戻り値は、1を加算した後のxの値となりますが、UPDATEコマンドによる結果はロールバックされます。
+しかし、前のブロックのINSERTコマンドはロールバックされません。
+したがって、データベースの内容の最終結果はTom Jonesであり、Joe Jonesではありません。
+ティップ: EXCEPTION句を含んだブロックの実行に要する時間は、含まないブロックに比べてとても長くなります。
+したがって、必要のない時にEXCEPTIONを使用してはいけません。
+例外ハンドラの内部では、SQLSTATE変数が起こった例外に対応したエラーコード(表A-1のエラーコード表を参照してください)を保有します。
+SQLERRM変数は例外に対応したエラーメッセージを保有します。
+これらの変数は、例外ハンドラの外部では定義されていません。
+例 39-2. UPDATE/INSERTの例外これはUPDATEまたはINSERTの実行における例外処理を使用した適当な例題です。
+CREATE TABLE db (a INT PRIMARY KEY, b TEXT);
+CREATE FUNCTION merge_db(key INT, data TEXT) RETURNS VOID AS
+$$
+BEGIN
+LOOP
+-- 最初にキーを更新する
+UPDATE db SET b = data WHERE a = key;
+IF found THEN
+RETURN;
+END IF;
+-- キーが存在しないので、キーの挿入を試行する
+-- 他者がすでに同一のキーを挿入していたならば
+-- 一意性に違反する欠陥となります
+BEGIN
+INSERT INTO db(a,b) VALUES (key, data);
+RETURN;
+EXCEPTION WHEN unique_violation THEN
+-- 何もしないで、更新を再試行します
+END;
+END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+SELECT merge_db(1, 'david');
+SELECT merge_db(1, 'dennis');
+この例ではunique_violationエラーの原因がINSERTによるものであり、テーブルのINSERTトリガ関数によるものでないと仮定します。
+前のページホーム次のページ基本的な文上に戻るカーソル
+制御構造

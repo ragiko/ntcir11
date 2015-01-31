@@ -1,0 +1,27 @@
+適応的閾値処理 (Adaptive Thresholding) を使うサンプルです。始めからぶっちゃけますと cvAdaptiveThreshold を使え、という話になりますが、本記事はそれだけでは終わりません! OpenCvSharpでは、OpenCV標準では用意されていない適応的閾値処理を、こっそり組み込んでいます。今回、初めてそれを公にしておきます。OpenCvSharpをつかう　記事一覧
+背景
+適応的閾値処理は、様々な応用がありますが、特に文書画像処理においては必須の処理です。例えば以下のような画像(左)を二値化したいとします。このとき、みなさんご存じ 大津の手法 では、(右)のようになってしまいます。
+カメラで撮影した場合や古い文書の画像では特に、このような影やシミ等があるのが普通で、明るい部分でうまくいく閾値では高すぎて影部分では全部真っ黒になります。 もし仮に影がもっと大きければ、今度は閾値が暗め方向に引っ張られ、明るい箇所の文字が全部消えてしまうでしょう。
+using (IplImage src = new IplImage("kodama.png", LoadMode.GrayScale))
+using (IplImage binaryOtsu = src.Clone())
+{
+Cv.Threshold(src, binaryOtsu, 0, 255, ThresholdType.Otsu);
+CvWindow.ShowImages(src, binaryOtsu);
+}
+敗因は、画像全体である一つの閾値を設定したことです。明るい部分では明るめの閾値を、暗い部分では暗めの閾値を設定してあげればよいわけです。それが適応的閾値処理です。
+解説
+OpenCVで用意される適応的閾値処理は、Cv.AdaptiveThreshold から使うことができます。詳細はリファレンスをご覧ください。ざっくり説明しますと、このメソッドでは入力画像srcの1ピクセルごとに、個別の閾値を計算して決めます。どう計算するかというと、そのピクセルの周囲を見て決めます。周りが明るそうなら高めの閾値に、暗そうなら低めの閾値にするわけです。以下のコード例ではGaussianCを指定しているので、blockSize x blockSize(ここでは9x9)の近傍領域に対してガウシアンによる重み付けで総和をとります。つまり、近いピクセルほど重視するということです。もう1つのMeanCにした場合は、重み付けなしで単純な相加平均で決めます。
+最後の引数(ここでは12)は、こうして求めた値から減算する定数です。減算後の値が、そのピクセルの最終的な閾値です。
+using (IplImage src = new IplImage("C:\\kodama.png", LoadMode.GrayScale))
+using (IplImage binaryAdaptive = src.Clone())
+{
+Cv.AdaptiveThreshold(src, binaryAdaptive, 255, 
+AdaptiveThresholdType.GaussianC, ThresholdType.Binary, 9, 12);
+CvWindow.ShowImages(src,  binaryAdaptive);
+}
+減算定数の意味
+最後の減算定数は何のためにあるのでしょうか。今回の対象は文書画像ですが、これは一般に背景が白で、つまり画像の大部分のピクセルは白で占められます。そうすると、1ピクセルごとに周囲を見ていくときに以下の傾向があります。
+文字が有る領域: 周囲の画素値はバラエティ豊か(白地に黒い細い線、で構成されるので)
+文字が無い領域: 周囲の画素値はほぼ同じ(周りじゅうが白)
+周り中が似たような色のとき、減算定数が有ることで、減算後は対象ピクセルは閾値を上回ることになり、白くなります。これにより、背景領域では多少のノイズ・色の揺らぎに負けずに白で塗りつぶしやすくし、文字領域では黒いエッジを残しやすくなります。賢いですね。
+OpenCvSharpをつかう その15(適応的閾値処理) - schima.hatenablog.com

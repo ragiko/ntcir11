@@ -1,0 +1,5 @@
+
+パラメーターなしで、または最初のパラメーターだけを指定して sp_configure を実行する権限は、既定ですべてのユーザーに付与されます。
+両方のパラメーターを指定した sp_configure を実行して構成オプションを変更したり RECONFIGURE ステートメントを実行したりするには、ALTER SETTINGS サーバーレベル権限がユーザーに付与されている必要があります。 ALTER SETTINGS 権限は、sysadmin 固定サーバー ロールと serveradmin 固定サーバー ロールでは暗黙のうちに付与されています。 
+[先頭に戻る]
+max degree of parallelism サーバー構成オプションの構成

@@ -1,0 +1,2 @@
+相関係数r の見方  0.7<|r|≦1     相関が強い  0.4<|r|<0.7   中間の強さ  0.2<|r|<0.4   相関が弱い  0≦|r|<0.2     相関がない(1)%5c Linear:%5chspace{75} y=A+Bx%5c%5c[10](2)%5c Logarithmic:%5chspace{30}  y=A+B%5cln (x)%5c%5c[10](3)%5c e-Exponential:%5chspace{10} y=Ae^{Bx}%5c%5c[10](4)%5c ab-Exponential:%5c y=AB^{x}%5c%5c[10](5)%5c Power:%5chspace{78} y=Ax^{B}%5c%5c[10](6)%5c Inverse:%5chspace{73} y=A+{%5cfrac{B}{x}}%5c%5c[10](7)%5c Quadratic:%5chspace{50} y=A+Bx+Cx^2%5c%5c[10]">
+回帰分析(統合) - 高精度計算サイト

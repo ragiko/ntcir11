@@ -1,0 +1,55 @@
+本投稿はProcessing Advent Calendar 2013の9日目の記事です。(2013-12-24 13:00 追記) 日本時間で多分2013年12月23日に、Processing 2.1対応のruby-processing-2.4.1がリリースされました。これに伴い、内部の実装やインストール方法などが多少変わっていますので、本記事の内容は参考になりません。近日中に補足記事を書く予定です。(2013-12-25 00:10 追記) ruby-processing-2.4.1導入記事を書きました
+ruby-processing 2.4.1 がリリースされました - 雑念日記
+突然ですがruby-processingというProcessingのRubyラッパーをご存知でしょうか。
+https://github.com/jashkenas/ruby-processing
+Processing Advent Calendar 2012でも@koki_hさんが紹介記事を書かれております。
+@koki_hさんの功績によってイケメン御用達と名高いことで有名ですね。あれから1年が経過し、ruby-processingを取り巻く環境も少し変化しているので、本投稿を2013年版ruby-processing紹介記事とさせていただきたいと思います。以下、インデックスです。
+ruby-processingって何?
+最新版インストール方法
+どうやって動いているの?
+終わりに
+ruby-processingって何?
+Processing Advent Calendar 2012の@koki_hさんの記事を見ていただければ大体のことは書かれているのでこの項は無くてもいいのですが、簡単におさらいしましょう。Processingのスケッチは以下のように記述しますよね。
+void setup() {
+size(200, 200);
+}
+void draw() {
+rect(50, 50, 100, 100);
+}
+ruby-processingを使うと、以下のようにrubyの文法で全く同じスケッチを描くことが可能です。
+def setup
+size(200, 200)
+end
+def draw
+rect(50, 50, 100, 100)
+end
+ruby-processingをインストールするとrp5というコマンドが使用できるようになります。
+上のように書いたスケッチを仮にsketch.rbファイルに保存したとすると、次のようにrp5コマンドを実行することで、sketch.rbに書いたスケッチを実行することが可能となります。
+$ rp5 run sketch.rb
+# または
+$ rp5 --nojruby run sketch.rb単純に互換があるだけではなく、Module、Class、ProcなどRubyが持つさまざまな便利機能も使用できるようになります。もともとProcessingが持つ機能に、Rubyが持つパワーや便利なツールを加えてアプリケーションが作成できるというのがruby-processingの強みでしょう。
+ruby-processingのサンプルのひとつ、fern.rb
+最新版インストール方法
+前出の@koki_hさんの記事では、以下のようにRubyGemsと呼ばれるRubyのパッケージ管理用システムとその配布サイト(RubyGems.org)を利用する方法が紹介されていました。
+$ gem install ruby-processingこれでもインストールされることはされるのですが、2013年12月現在、@koki_hさんも記事内で言及しておられるようにRubyGems.org上のruby-processingは2011年9月末から更新されておらず、バージョン1.0.11で停止しております。*1しかしGithub上では今もプロジェクトは動いており、現在以下のような状況となっております。
+2013年11月、バージョン2.3.0リリース
+Processing 2.1 対応
+JRuby 1.7.6 対応
+しっかりと最新のProcessing事情に追随しています。ならばGithubから取得する以外ありませんね。
+準備
+では下準備から始めましょう。
+javaのインストール
+rubyのインストール
+rubygemsのインストール
+rakeのインストール
+wgetのインストール
+gitのインストール(可能ならば)
+すみませんがそれぞれについてインストール方法を詳細には記載しませんので、わからない方は「ruby インストール」などでググってみてください。
+以下のコマンドを実行して、エラーが表示されずバージョンが表示されれば準備はOKです。
+$ java -version
+$ ruby -v
+$ gem -v
+$ rake -V
+$ wget -V
+$ git --version
+ruby-processingをもっと知って更なるイケメンになろう - 雑念日記

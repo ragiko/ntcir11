@@ -1,0 +1,2 @@
+It is typically used to add extra directories to perl's search path so that later use or require statements will find modules which are not located on perl's default search path.
+lib - コンパイル時に @INC を操作する - perldoc.jp

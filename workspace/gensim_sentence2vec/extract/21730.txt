@@ -1,0 +1,184 @@
+symfony において、コントローラーレイヤーはビジネスロジックとプレゼンテーションを結びつけるコードを格納し、異なる目的で利用するためにいくつかのコンポーネントに分割されます:
+フロントコントローラー (front controller) はアプリケーションへの唯一のエントリーポイント (entry point - 入り口) です。設定をロードし、実行するアクションを決定します。
+アクション (action) はアプリケーションのロジックを格納します。リクエストの整合性をチェックし、プレゼンテーションレイヤーが必要なデータを準備します。
+リクエスト、レスポンス、セッションオブジェクトはリクエストパラメーター、レスポンスヘッダー、永続的なユーザーデータにアクセスできます。これらはコントローラーレイヤー内部でよく使われます。
+フィルター (filter) は、アクションの前あとで、すべてのリクエストに対して実行されるコードの一部です。たとえば、セキュリティとバリデーション (検証) フィルターはWebアプリケーションで共通に使われます。独自フィルターを作成することでフレームワークを拡張できます。
+この章では、これらすべてのコンポーネントを説明しますが、数の多さに怖がらないでください。基本的なページに対して必要なことはアクションクラスのなかで数行のコードを書くことだけです。ほかのコントローラーコンポーネントは特定の状況のみに使われます。
+フロントコントローラー
+すべての Web リクエストは1つのフロントコントローラーによって処理されます。フロントコントローラーは特定の環境におけるアプリケーション全体への唯一のエントリーポイントです。
+フロントコントローラーはリクエストを受けとるとき、ユーザーが入力した (もしくはクリックした) URL を用いてアクションとモジュールの名前をマッチさせるルーティングシステムを使います。たとえば、つぎのリクエストURLはindex.php スクリプト (フロントコントローラー) を呼び出し、mymodule モジュールの myActionアクションの呼び出しとして解釈されます:
+http://localhost/index.php/mymodule/myAction
+symfony の内部にご興味がなければ、フロントコントローラーについて知る必要のあることはこれだけです。これは symfony の MVC アーキテクチャの不可欠なコンポーネントですが、変更が必要になることはほとんどありません。フロントコントローラーの内部構造を本当に理解したいと思わなければ、つぎのセクションに飛ぶことができます。
+フロントコントローラーの仕事の詳細
+フロントコントローラーはリクエストのディスパッチ (dispatch - 発送) を行いますが、このことは単に実行するアクションを決定することよりも少し多くのことが行われていることを意味します。実際、つぎのようなすべてのアクションに共通なコードを実行します:
+プロジェクトの設定クラスと symfony のライブラリをロードする
+アプリケーションの設定と symfony の内容を作成する
+symfony のコアクラスをロードして初期化する
+設定をロードする
+実行するアクションとリクエストパラメーターを決定するためにリクエスト URL をデコードする
+アクションが存在しない場合、404エラーのアクションにリダイレクトする
+フィルターを有効にする (たとえば、リクエストが認証を必要とする場合)
+フィルターを実行する (ファーストパス部分)*
+アクションを実行しビューをレンダリングする
+フィルターを実行する (セカンドパス部分)*
+レスポンスを出力する
+(訳注)* は、図6-3およびリスト6-30を参照
+デフォルトのフロントコントローラー
+デフォルトのフロントコントローラーは、index.php という名前でプロジェクトの web/ ディレクトリに設置されています。これはリスト6-1で示されるシンプルな PHP ファイルです。
+リスト6-1 - 運用環境用のデフォルトのフロントコントローラー
+<?php
+require_once(dirname(__FILE__).'/../config/ProjectConfiguration.class.php');
+$configuration = ProjectConfiguration::getApplicationConfiguration('frontend', 'prod', false);
+sfContext::createInstance($configuration)->dispatch();
+フロントコントローラーはアプリケーションの設定のインスタンスを作成します。これはステップ2から4に該当します。sfController オブジェクトの dispatch() メソッドの呼び出し( symfonyの MVC アーキテクチャのコアコントローラー) はリクエストをディスパッチします。これはステップ5から7に該当します。最後のステップはフィルターチェーンによって処理されます。これはこの章のあとで説明します。
+環境を切り替えるためにほかのフロントコントローラーを呼び出す
+環境ごとに1つのフロントコントローラーが存在します。当然のことながら、これは環境を定義するフロントコントローラーそのものです。環境は ProjectConfiguration::getApplicationConfiguration() メソッドの呼び出しに渡す2番目の引数によって定義されます。
+ブラウザーでアプリケーションを見ながら環境を変更するには、ほかのフロントコントローラーを選びます。generate:app タスクで新しいアプリケーションを作成するときに利用できるデフォルトのフロントコントローラーは運用環境用のindex.php と開発環境用の frontend_dev.php です (アプリケーションの名前が frontend であることが前提)。URLがフロントコントローラーのスクリプト名を含まないとき、デフォルトの mod_rewrite 設定は index.php を使います。両方の URL は運用環境で同じページ (mymodule/index) を表します:
+http://localhost/index.php/mymodule/index
+http://localhost/mymodule/index
+そしてこの URL は開発環境で同じページを表示します:
+http://localhost/frontend_dev.php/mymodule/index
+新しい環境を作成することは新しいフロントコントローラーを作成することと同じぐらい簡単です。たとえば、運用環境に移行するまえに顧客がアプリケーションをテストできるようにステージング環境 (staging environment) が必要になることがあります。このステージング環境を作成するには、web/frontend_dev.php の内容をweb/frontend_staging.php にコピーして、ProjectConfiguration::getApplicationConfiguration()の呼び出しの2番目の引数の値を staging に変更します。すべての設定ファイルにおいて、リスト6-2で示されるように、この環境に対して特定の値を設定するために、新しい staging: セクションを追加できます。
+リスト6-2 - ステージング環境のための特別な設定を格納する app.yml のサンプル
+staging:
+mail:
+webmaster:    dummy@mysite.com
+contact:      dummy@mysite.com
+all:
+mail:
+webmaster:    webmaster@mysite.com
+contact:      contact@mysite.com
+この新しい環境でアプリケーションがどのように反応するのかを見たければ、関連するフロントコントローラーを呼び出します:
+http://localhost/frontend_staging.php/mymodule/index
+アクション
+アクションはすべてのアプリケーションのロジックを格納するので、アプリケーションの中心的な役割を担います。アクションはモデルをコールし、ビューのための変数を定義します。symfony のアプリケーションで Web リクエストを作成するとき、URL はアクションとリクエストパラメーターを定義します。
+アクションクラス
+アクションは sfActions クラスを継承する moduleNameActions クラスの executeActionName メソッドであり、モジュールによって分類されます。モジュールのアクションクラスは、モジュールの actions/ ディレクトリの actions.class.php ファイルに保存されます。
+リスト6-3は全体の mymodule モジュールに対して index アクションだけを持つ actions.class.php ファイルの例を示しています。
+リスト6-3 - アクションクラスのサンプル (apps/frontend/modules/mymodule/actions/actions.class.php)
+class mymoduleActions extends sfActions
+{
+public function executeIndex($request)
+{
+// ...
+}
+}
+アクションをリクエストするには、パラメーターとしてモジュール名とアクション名を使いフロントコントローラーのスクリプトを呼び出す必要があります。デフォルトでは、この作業はスクリプトに module_name/action_name の組を追加することで行われます。このことはリスト6-4で定義されたアクションがつぎのURLで呼び出されることを意味します:
+http://localhost/index.php/mymodule/index
+リスト6-4で示されるように、より多くのアクションを追加することは sfActions オブジェクトにより多くの execute メソッドを追加することを意味します。
+リスト6-4 - 2つのアクションを持つアクションクラス (frontend/modules/mymodule/actions/actions.class.php)
+class mymoduleActions extends sfActions
+{
+public function executeIndex($request)
+{
+// ...
+}
+public function executeList($request)
+{
+// ...
+}
+}
+アクションクラスのサイズが大きくなりすぎたら、リファクタリングを行いコードをモデルレイヤーに移動させることが必要でしょう。通常は、アクションのコードを短く保ち(数行以内)、すべてのビジネスロジックをモデル内部に保つべきです。
+それでも、1つのモジュール内部にたくさんのアクションが存在するのであれば、そのモジュールを2つに分割することが重要です。
+sidebar
+symfony のコーディング規約
+この本で示されたコードの例において、開き波かっこと閉じ波かっこ ({ と }) がそれぞれ一行を占めることにおそらくお気づきでしょう。この規約によってコードはより読みやすくなります。
+symfony のほかのコーディング規約では、インデントはつねに2つの空白文字で行われます: タブは使いません。これはテキストエディタによってタブは異なる空白文字の値を持つので、タブと空白のインデントが混在するコードを見分けることが不可能だからです。
+symfony コアと生成されたPHPファイルは通常の閉じタグの ?> で終わりません。これは本当に必要がないからと、このタグの後ろに空白がある場合、出力の問題が引き起こされる可能性があるからです。
+そして本当に注意を払っているのであれば、symfony では決して空白文字では終わりません。今回の場合、理由はつまらないことです: Fabien (筆者の一人) のテキストエディタでは空白で終わる行が不細工に見えるからです!
+アクションクラスの代替構文
+アクションの代替構文は、個別のファイル、アクションごとに1つのファイルのアクションをディスパッチするために使えます。この場合、それぞれのアクションクラスは (sfActions の代わりに) sfAction を継承し、actionNameAction と名づけられます。実際のアクションメソッドはたんに execute と名づけられます。ファイルの名前はクラスの名前と同じです。このことはリスト6-4の同等の内容はリスト6-5と6-6で示される2つのファイルで書けることを意味します。
+リスト6-5 - 単一アクションのファイル (frontend/modules/mymodules/action/indexAction.class.php)
+class indexAction extends sfAction
+{
+public function execute($request)
+{
+// ...
+}
+}
+リスト6-6 - 単一アクションのファイル (frontend/modules/mymodules/actions/listAction.class.php)
+class listAction extends sfAction
+{
+public function execute($request)
+{
+// ...
+}
+}
+アクションの情報をとり出す
+アクションクラスはコントローラー関連の情報と symfony のコアオブジェクトにアクセスする方法を提供します。リスト6-7はこれらの方法の実際の例を示しています。
+リスト6-7 - sfActions の共通メソッド
+class mymoduleActions extends sfActions
+{
+public function executeIndex(sfWebRequest $request)
+{
+// リクエストパラメーターを読みとる
+$password    = $request->getParameter('password');
+// コントローラー情報をとり出す
+$moduleName  = $this->getModuleName();
+$actionName  = $this->getActionName();
+// symfonyのコアオブジェクトをとり出す
+$userSession = $this->getUser();
+$response    = $this->getResponse();
+$controller  = $this->getController();
+$context     = $this->getContext();
+// テンプレートに情報を渡すためにアクション変数を設定する
+$this->setVar('foo', 'bar');
+$this->foo = 'bar';            // 短いバージョン
+}
+}
+アクションの終了方法
+アクションの実行結果においてさまざまなふるまいが可能です。アクションメソッドが返す値はビューをレンダリングする方法を決定します。sfView クラスの定数はアクションの結果の表示に使われるテンプレートを指定するために使われます。
+呼び出すビューのデフォルトが存在する場合 (もっとも共通の事例)、アクションはつぎのように終わります:
+return sfView::SUCCESS;
+symfony は actionNameSuccess.php という名前のテンプレートを探します。これはアクションのデフォルトのふるまいとして定義されているので、アクションメソッド側で return 文が省略されると、symfony は actionNameSuccess.php テンプレートも探します。空のアクションでも同じふるまいをします。成功したアクションの終了方法の例はリスト6-8をご覧ください。
+リスト6-8 - indexSuccess.php と listSuccess.php テンプレートを呼び出すアクション
+public function executeIndex()
+{
+return sfView::SUCCESS;
+}
+public function executeList()
+{
+}
+呼び出すエラービューが存在する場合、アクションはつぎのように終わります:
+return sfView::ERROR;
+symfony は actionNameError.php という名前のテンプレートを探します。
+カスタムビューを呼び出すには、つぎのように終わらせます:
+return 'MyResult';
+symfony は actionNameMyResult.php によって呼び出されたテンプレートを探します。
+呼び出すビューが存在しない場合、たとえばバッチプロセスのなかで実行されたアクションの場合、アクションはつぎのように終わります:
+return sfView::NONE;
+この場合、テンプレートは実行されません。このことはビューレイヤーを完全に回避して、アクションから直接 HTML コードを出力できることを意味します。リスト6-9で示されるように、この事例のために symfony は特別な renderText() メソッドを提供します。これは11章で検討される Ajax インタラクションなどのアクションの非常に高い反応性を必要とするときに役立ちます。
+リスト6-9 - sfView::NONE を返すことでビューを回避してレスポンスを直接出力する
+public function executeIndex()
+{
+echo "<html><body>Hello, World!</body></html>";
+return sfView::NONE;
+}
+// つぎの内容と同等
+public function executeIndex()
+{
+return $this->renderText("<html><body>Hello, World!</body></html>");
+}
+いくつかの場合において、定義されたヘッダー以外のヘッダー (特に X-JSON ヘッダー)をともなう空のレスポンスを送信する必要があります。つぎの章で検討しますがリスト6-10で示されているように、sfResponse オブジェクト経由でヘッダーを定義して sfView::HEADER_ONLY 定数を返します。
+リスト6-10 - ビューのレンダリングを回避してヘッダーのみを送信する
+public function executeRefresh()
+{
+$output = '<"title","My basic letter"],["name","Mr Brown">';
+$this->getResponse()->setHttpHeader("X-JSON", '('.$output.')');
+return sfView::HEADER_ONLY;
+}
+アクションを特定のテンプレートによってレンダリングしなければならない場合、return 文を無視して、代わりに setTemplate() メソッドを使います。
+public function executeIndex()
+{
+$this->setTemplate('myCustomTemplate');
+}
+このコードを書くことで、symfonyは indexSuccess.php ファイルの代わりに myCustomTemplateSuccess.php ファイルを探そうとします。
+別のアクションにスキップする
+アクションの実行が新しいアクションの実行をリクエストすることで終わることがあります。たとえば POST リクエストフォームでは通常の場合、投稿を処理するアクションはデータベースを更新したあとで別のアクションにリダイレクトします。
+アクションクラスは別のアクションを実行するためのメソッドを2つ提供します:
+アクションが別のアクションにフォワードする場合:
+$this->forward('otherModule', 'index');
+アクションが Web リダイレクトの結果になる場合:
+$this->redirect('otherModule/index');
+$this->redirect('http://www.google.com/');
+- Symfony

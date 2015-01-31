@@ -1,0 +1,10 @@
+2010-11-12SQL クエリの結果をファイル出力リダイレクトで出力先を指定するターミナルからリダイレクトを利用して、ファイルへ出力することができる。SQL クエリをファイルに用意しておき、以下のようなコマンドを実行する。mysql -u user -p my_database < select.sql > output.tsvMySQL コマンドで外部ファイル出力するMySQL へ接続して、コマンドラインツール上でSQL クエリを実行した結果を外部ファイルへ出力する事が出来る。SELECT * FROM <table> INTO OUTFILE 'FILE_NAME';カンマ区切りで出力する正確な CSV 形式ではないので、カラム内のデータにカンマ (,) やダブルクォーテーション () が含まれていると正確に吐き出せない可能性があります。SELECT * FROM <table> INTO OUTFILE '/tmp/output.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"' 
+ESCAPED BY '\\'
+LINES TERMINATED BY '\r\n'
+;タブ区切りで出力するSELECT * FROM <table> INTO OUTFILE '/tmp/output.tsv'
+FIELDS TERMINATED BY '\t'
+LINES TERMINATED BY '\n'
+;Tweet
+SQL クエリの結果を外部ファイルへ出力する方法 :: yulii.net

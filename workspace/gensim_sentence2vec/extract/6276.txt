@@ -1,0 +1,93 @@
+【機能】
+DSAデータベースをバックアップします。本コマンドはバックアップしたいDSAの格納先ディレクトリで実行する必要があります。
+【指定方法】
+odsbu [-d directory|-n number|-c comment|-x] [-V]
+【オプション】
+以下のオプションがあります。
+-c
+コメントを記述することができます。なお、コメントを記述する場合は、 ' (クウォーテンマーク)もしくは"(ダブルクォーテンマーク)で先頭と最後を囲む必要があります。
+-d
+指定したディレクトリにDSAデータベースをバックアップすることができます。ただし、このコマンドを実行する前にあらかじめ、バックアップするディレクトリを作成しておく必要があります。バックアップするDSAデータベースは、すべてこの指定したディレクトリに移動されます。
+このオプションを指定しない場合、DSAの格納先ディレクトリにバックアップされます。
+-n
+世代数を指定します。デフォルトは5です。
+-x
+必要としないバックアップDSAデータベースを削除します。最新のバックアップファイルだけ-nオプションで指定した分、保持されます。
+-V
+バージョン情報が表示されます。
+【復帰値】
+正常 : 0
+異常 : 0以外
+【メッセージ一覧】
+メッセージ
+Usage :  odsbu [-d directory | -n number | -c comment | -x]
+-d sets the backup directory to "directory"
+-n sets the number of backups recorded to "number"
+-x deletes any backups that are not required
+-c creates a backup with a comment of "comment"
+the default is to create a backup with no comment
+【意味】
+指定したオプションに誤りがあります。
+【対処方法】
+指定したオプションを確認してください。
+メッセージ
+ODSBU : Creating backup.ctrl file
+【意味】
+バックアップ制御用のbackup.ctrlというファイルを作成しました。
+【対処方法】
+対処は必要ありません。
+メッセージ
+ODSBU : Backing up to backupX.000
+ODSBU : DSA successfully backed up
+【意味】
+backupX.000というファイルにバックアップを行いました。
+【対処方法】
+対処は必要ありません。
+メッセージ
+moving backupX.000 to YYYY
+…
+ODSBU: Backup files moved
+【意味】
+backupX.000というファイルをYYYYに移動しました。
+【対処方法】
+対処は必要ありません。
+メッセージ
+ODSBU : Number of backup logs recorded set to X
+【意味】
+世代数をXに設定しました。
+【対処方法】
+対処は必要ありません。
+メッセージ
+Deleting backupX.000
+【意味】
+backupX.000というファイルを削除しました。
+【対処方法】
+対処は必要ありません。
+メッセージ
+ODSBU : Number of backup logs recorded set to n
+【意味】
+バックアップ世代数を、n に設定します。
+【対処方法】
+対処は必要ありません。
+メッセージ
+No accessible ODS directory in the Current working directory
+【意味】
+カレントディレクトリにDSAが作成されていません。
+【対処方法】
+DSAが作成されているディレクトリで実行してください。
+メッセージ
+ODSBU : XXX is not a directory: no action taken
+【意味】
+指定したディレクトリ(XXX)はディレクトリではありません。
+【対処方法】
+指定したディレクトリが正しいか確認してください。
+メッセージ
+Since there is no Administrators authority, a command cannot be executed.
+【意味】
+Administrators権限がないため、コマンドを実行することができません。
+【対処方法】
+Administrators グループに所属しているユーザでログオンしてコマンドを実行してください。
+目次
+索引
+All Rights Reserved, Copyright (C) 富士通株式会社 2003
+16.9 odsbuコマンド

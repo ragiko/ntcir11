@@ -1,0 +1,241 @@
+埋め込みクエリの書き方について
+C#, ADO.NET, VB.NET |  01:15 |  
+埋め込みクエリの書き方については、昨年 Yahoo! のブログでも色々議論があり、恥をかきつつも大変勉強させて頂きました。あれからだいぶ経ちましたが、今更ながら整理してみたいと思います。
+以降、以下のクエリを叩き台にして考えてみます。(ちなみに MySQL のクエリである)
+SELECT
+MKW.kokyaku_id,
+MRK.id AS ryoukin_id,
+MRK.name,
+CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1 
+THEN 0 ELSE 1 END AS waribiki_kubun_id,
+COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu, 
+COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku
+FROM 
+(SELECT DISTINCT id, name
+FROM m_ryoukin
+ORDER BY id) AS MRK
+LEFT JOIN
+m_waribiki MKW
+ON  MRK.id = MKW.ryoukin_id
+AND MKW.id = @kokyaku_id
+まず従来のありがちなパターン。
+まずは、ありがちなクエリの書き方を挙げてみます。VB と C# のサンプルを用意しました。
+VB
+Dim query As String = _
+"SELECT " + _
+"    MKW.kokyaku_id, " + _
+"    MRK.id AS ryoukin_id, " + _
+"    MRK.name, " + _
+"    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " + _
+"                    THEN 0 ELSE 1 END AS waribiki_kubun_id, " + _
+"    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,  " + _
+"    COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku " + _
+"FROM  " + _
+"    (SELECT DISTINCT id, name " + _
+"        FROM m_ryoukin " + _
+"        ORDER BY id) AS MRK " + _
+"    LEFT JOIN " + _
+"        m_waribiki MKW " + _
+"        ON  MRK.id = MKW.ryoukin_id " + _
+"        AND MKW.id = @kokyaku_id "
+C#
+string query =
+"SELECT " +
+"    MKW.kokyaku_id, " +
+"    MRK.id AS ryoukin_id, " +
+"    MRK.name, " +
+"    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " +
+"                    THEN 0 ELSE 1 END AS waribiki_kubun_id, " +
+"    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,  " +
+"    COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku " +
+"FROM  " +
+"    (SELECT DISTINCT id, name " +
+"        FROM m_ryoukin " +
+"        ORDER BY id) AS MRK " +
+"    LEFT JOIN " +
+"        m_waribiki MKW " +
+"        ON  MRK.id = MKW.ryoukin_id " +
+"        AND MKW.id = @kokyaku_id ";
+VB は行末のアンダーバーがとってもうざいですね。でも VisualStudio 2010 なら、改行する際のアンダーバーとやっとおさらばできます。うれしいですね♪ (この機能、暗黙の行連結というそうだ・・・)
+まぁ動かすことだけ考えるなら別にこれでいいのでしょうが、データベース側でクエリーログを取得した場合、以下のように一行だけのクエリになってしまい、非常に読みづらくなってしまいます。
+SELECT    MKW.kokyaku_id,    MRK.id AS ryoukin_id,    MRK.name,    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1                     THEN 0 ELSE 1 END AS waribiki_kubun_id,    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,     COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gakuFROM     (SELECT DISTINCT id, name        FROM m_ryoukin        ORDER BY id) AS MRK    LEFT JOIN        m_waribiki MKW        ON  MRK.id = MKW.ryoukin_id        AND MKW.id = @kokyaku_id
+ちょっと工夫を加えてみる
+前項の書き方の欠点として、データベース側でログを見たとき、改行が全くないのでログが見にくくなります。そこでクエリに改行を入れてみましょう。クエリログが見やすくなるので、デバッグも非常にしやすくなります。
+VB
+Dim query As String = _
+"SELECT " + vbCrLf + _
+"    MKW.kokyaku_id, " + vbCrLf + _
+"    MRK.id AS ryoukin_id, " + vbCrLf + _
+"    MRK.name, " + vbCrLf + _
+"    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " + vbCrLf + _
+"                    THEN 0 ELSE 1 END AS waribiki_kubun_id, " + vbCrLf + _
+"    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,  " + vbCrLf + _
+"    COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku " + vbCrLf + _
+"FROM  " + vbCrLf + _
+"    (SELECT DISTINCT id, name " + vbCrLf + _
+"        FROM m_ryoukin " + vbCrLf + _
+"        ORDER BY id) AS MRK " + vbCrLf + _
+"    LEFT JOIN " + vbCrLf + _
+"        m_waribiki MKW " + vbCrLf + _
+"        ON  MRK.id = MKW.ryoukin_id " + vbCrLf + _
+"        AND MKW.id = @kokyaku_id "
+C#
+string query =
+"SELECT \n" +
+"    MKW.kokyaku_id, \n" +
+"    MRK.id AS ryoukin_id, \n" +
+"    MRK.name, \n" +
+"    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  \n" +
+"                    THEN 0 ELSE 1 END AS waribiki_kubun_id, \n" +
+"    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu, \n" +
+"    COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku \n" +
+"FROM \n" +
+"    (SELECT DISTINCT id, name \n" +
+"        FROM m_ryoukin \n" +
+"        ORDER BY id) AS MRK \n" +
+"    LEFT JOIN \n" +
+"        m_waribiki MKW \n" +
+"        ON  MRK.id = MKW.ryoukin_id \n" +
+"        AND MKW.id = @kokyaku_id ";
+ログは見やすくなりますが、今度はコードが見にくくなってしまいました。C# はまだ許せるとしても、VB は可読性が劇的に下がった感がいたします。そこで、改行を先頭に移動してみましょう。
+VB
+Dim query As String = _
+vbCrLf + "SELECT " + _
+vbCrLf + "    MKW.kokyaku_id, " + _
+vbCrLf + "    MRK.id AS ryoukin_id, " + _
+vbCrLf + "    MRK.name, " + _
+vbCrLf + "    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " + _
+vbCrLf + "                    THEN 0 ELSE 1 END AS waribiki_kubun_id, " + _
+vbCrLf + "    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,  " + _
+vbCrLf + "    COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku " + _
+vbCrLf + "FROM  " + _
+vbCrLf + "    (SELECT DISTINCT id, name " + _
+vbCrLf + "        FROM m_ryoukin " + _
+vbCrLf + "        ORDER BY id) AS MRK " + _
+vbCrLf + "    LEFT JOIN " + _
+vbCrLf + "        m_waribiki MKW " + _
+vbCrLf + "        ON  MRK.id = MKW.ryoukin_id " + _
+vbCrLf + "        AND MKW.id = @kokyaku_id "
+C#
+string query =
+"\n SELECT " +
+"\n     MKW.kokyaku_id, " +
+"\n     MRK.id AS ryoukin_id, " +
+"\n     MRK.name, " +
+"\n     CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " +
+"\n                     THEN 0 ELSE 1 END AS waribiki_kubun_id, " +
+"\n     COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,  " +
+"\n     COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku " +
+"\n FROM  " +
+"\n     (SELECT DISTINCT id, name " +
+"\n         FROM m_ryoukin " +
+"\n         ORDER BY id) AS MRK " +
+"\n     LEFT JOIN " +
+"\n         m_waribiki MKW " +
+"\n         ON  MRK.id = MKW.ryoukin_id " +
+"\n         AND MKW.id = @kokyaku_id ";
+どうです?かなり読みやすくなったと思いませんか?
+さらにもうひと工夫加えてみる。
+データベース側でクエリを拾っても、どのクラスから投げられたクエリかよく判らないため、すぐにデバッグできないという問題があります。そこでクエリの先頭にコメントを入れてみましょう。
+データベースの種類によって、実行プラン生成時にコメントが削られてしまう製品もあるようですが、MySQL ならログにしっかりコメントが出力されます。スロークエリログでどのクエリが時間がかかっているか調べる時などに、コメントをクエリに埋め込んでいれば、どのクラスのどのメソッドから投げられたクエリが時間がかかっているかすぐ調べられるため、たいへん便利です。
+VB
+Dim query As String = _
+vbCrLf + "/* Company.Technology.Feature.ClassName.MethodName */ " + _
+vbCrLf + "SELECT " + _
+vbCrLf + "    MKW.kokyaku_id, " + _
+vbCrLf + "    MRK.id AS ryoukin_id, " + _
+vbCrLf + "    MRK.name, " + _
+vbCrLf + "    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " + _
+vbCrLf + "                    THEN 0 ELSE 1 END AS waribiki_kubun_id, " + _
+以下略・・・
+C#
+string query =
+"\n /* Company.Technology.Feature.ClassName.MethodName */ " +
+"\n SELECT " +
+"\n     MKW.kokyaku_id, " +
+"\n     MRK.id AS ryoukin_id, " +
+"\n     MRK.name, " +
+"\n     CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " +
+"\n                     THEN 0 ELSE 1 END AS waribiki_kubun_id, " +
+以下略・・・
+さて、ここまでは + 演算子を使ってクエリ文を結合してきたのですが、VB.NET なら & 演算子の方がいいという話がありましたね。以下 MSDN より引用します。
+& 演算子 (Visual Basic) は、String オペランドに対してだけ定義されており、Option Strict の設定にかかわらず、常にオペランドを String に拡大変換します。文字列の連結には & 演算子を使用することをお勧めします。この演算子は文字列だけに定義されているので、意図しない変換が発生する可能性を減らすことができます。
+http://msdn.microsoft.com/ja-jp/library/te2585xw%28VS.80%29.aspx
+だそうです。で、& 演算子を使えば、以下のようになるわけです。ちなみに C# では & 演算子を使って文字列の結合はできません。
+VB
+Dim query As String = _
+vbCrLf & "/* Company.Technology.Feature.ClassName.MethodName */ " & _
+vbCrLf & "SELECT " & _
+vbCrLf & "    MKW.kokyaku_id, " & _
+vbCrLf & "    MRK.id AS ryoukin_id, " & _
+vbCrLf & "    MRK.name, " & _
+vbCrLf & "    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  " & _
+vbCrLf & "                    THEN 0 ELSE 1 END AS waribiki_kubun_id, " & _
+以下略・・・
+StringBuilder を使った書き方
+クエリ文字列を作成するには、文字列を演算子で結合させるだけでなく、StringBuilder を使って生成する方法もあります。
+VB
+Dim query As New System.Text.StringBuilder()
+With query
+.AppendLine("SELECT ")
+.AppendLine("    MKW.kokyaku_id, ")
+.AppendLine("    MRK.id AS ryoukin_id, ")
+.AppendLine("    MRK.name, ")
+.AppendLine("    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  ")
+.AppendLine("                    THEN 0 ELSE 1 END AS waribiki_kubun_id, ")
+.AppendLine("    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,  ")
+.AppendLine("    COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku ")
+.AppendLine("FROM  ")
+.AppendLine("    (SELECT DISTINCT id, name ")
+.AppendLine("        FROM m_ryoukin ")
+.AppendLine("        ORDER BY id) AS MRK ")
+.AppendLine("    LEFT JOIN ")
+.AppendLine("        m_waribiki MKW ")
+.AppendLine("        ON  MRK.id = MKW.ryoukin_id ")
+.AppendLine("        AND MKW.id = @kokyaku_id ")
+End With
+C#
+System.Text.StringBuilder query = new System.Text.StringBuilder();
+query.AppendLine("SELECT ");
+query.AppendLine("    MKW.kokyaku_id, ");
+query.AppendLine("    MRK.id AS ryoukin_id, ");
+query.AppendLine("    MRK.name, ");
+query.AppendLine("    CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1  ");
+query.AppendLine("                    THEN 0 ELSE 1 END AS waribiki_kubun_id, ");
+query.AppendLine("    COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu,  ");
+query.AppendLine("    COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku ");
+query.AppendLine("FROM  ");
+query.AppendLine("    (SELECT DISTINCT id, name ");
+query.AppendLine("        FROM m_ryoukin ");
+query.AppendLine("        ORDER BY id) AS MRK ");
+query.AppendLine("    LEFT JOIN ");
+query.AppendLine("        m_waribiki MKW ");
+query.AppendLine("        ON  MRK.id = MKW.ryoukin_id ");
+query.AppendLine("        AND MKW.id = @kokyaku_id ");
+AppendLine がうざいよ〜という意見もありますが、StringBuilder 使うメリットは一行一文として扱えるので、途中改行をいれたり、メソッドをクエリの途中に挿入できたりするので、個人的には気に入ってます。
+後 vbCrLf ってVB6時代の遺物だと思っているので個人的にあまり好きではありません。こちらの方が、いかにも「俺どっとねっと使ってるぜぇ〜」的な書き方なので、自己満足に浸れるというオマケも付いてますしねw
+結局ストアドが一番いいという意見も。
+SQLServer なら、ストアドにしておけば、プログラム内のクエリを減らせる上に、データベース側で実行プランが生成され、プリコンパイルされた状態で保存されるため、同じクエリでもプログラム側から発行するより速度の向上が見込めます。ただし、残念ながら MySQL の場合はストアドがプリコンパイルして保存されないため、ストアドの性能は期待できないそうです。
+2010/10/10 追記
+今更な感がありますが、結構このエントリー見てる方も多いようなんで、コンテンツ見直しついでに追記しておきます。
+コメントで shela さんが指摘されてるとおり、C# なら逐語的文字列を使うという方法もありますね。
+string sql = @"SELECT
+MKW.kokyaku_id,
+MRK.id AS ryoukin_id,
+MRK.name,
+CASE WHEN COALESCE( MKW.waribiki_kubun_id, 0 ) <= 1 
+THEN 0 ELSE 1 END AS waribiki_kubun_id,
+COALESCE( MKW.waribiki_ritsu, 0 ) AS waribiki_ritsu, 
+COALESCE( MKW.waribiki_gaku,  0 ) AS waribiki_gaku
+FROM 
+(SELECT DISTINCT id, name
+FROM m_ryoukin
+ORDER BY id) AS MRK
+LEFT JOIN
+m_waribiki MKW
+ON  MRK.id = MKW.ryoukin_id
+AND MKW.id = @kokyaku_id";
+ちなみにこれを知ったのが 2010年の5月、この2か月後に MVP を頂いているわけですが・・・まだまだ修行が足りないです。orz
+もっとも MVP 受賞するなら VB だろうと思ってたら、まさか C# で受賞するとは、完全予想外だったのですがね(苦笑
+ツイートする
+埋め込みクエリの書き方について - 憂国のプログラマ Hatena版

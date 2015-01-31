@@ -1,0 +1,97 @@
+iOSで音声を録音するのはもちろんできますが、FFTのライブラリも標準で組み込まれていて手軽に使えます。今日は録音した音声ファイルを解析して周波数特性(パワースペクトル)を得るところまでを紹介します。意外とそのものずばりの方法はなかなか見つからないので。なお、サンプルコードはエラー処理を省いているので必要であれば適宜追加する必要有りです。
+音声を録音するまで
+まずAudioSessionの初期化が必要です。これをやっておかないと録音できません。このコードは起動時に実行されれば良いのでAppDelegateのdidFinishLaunchingWithOptionsあたりで呼んでおけばOKです。
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+NSError *error = nil;
+AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+if(audioSession.isInputAvailable){
+[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
+[audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+}
+[audioSession setActive:YES error:&error];
+// …
+}
+次に録音開始します。ボタンのイベントとかに書いておきます。録音結果をファイルへ残す場合は開始時に書き出すファイルを指定しておきます。
+- (void)start:(id)sender
+{
+NSString *path = soundPath; // NSDocumentDirectory配下とかに置く
+NSError *error = nil;
+NSURL *url = [NSURL URLWithString:path];
+self.audioRecorder = [[AVAudioRecorder alloc] initWithURL:url settings:[self recordingSettings] error:&error];
+if(error != nil){
+NSLog(@"Error when preparing audio recorder :%@", [error localizedDescription]);
+return;
+}
+[self.audioRecorder prepareToRecord];
+[self.audioRecorder record];
+}
+// 録音時のパラメータ
+- (NSDictionary*)recordingSettings
+{
+NSMutableDictionary *settings = [[NSMutableDictionary alloc] init];
+[settings setValue:[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
+[settings setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+[settings setValue:[NSNumber numberWithInt:2] forKey:AVNumberOfChannelsKey];
+[settings setValue:[NSNumber numberWithInt:16] forKey:AVLinearPCMBitDepthKey];
+[settings setValue:[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsBigEndianKey];
+[settings setValue:[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsFloatKey];
+return settings;
+}
+次が録音終了。こちらはほぼ何もしません。
+- (void)stop:(id)sender
+{
+[self.audioRecorder stop];
+self.audioRecorder = nil;
+}
+これで録音が完了しました。
+音声ファイルを少しずつ処理する
+音声データをFFTで処理するというときに、全データを使うということは通常やらないと思います。つまり、ファイルを少しずつ読み、その分データをFFTに渡すということをやる必要があります。その部分のコードは次の通りです。長いので大雑把に言うと前半は読み取りのための設定、後半はファイルの終わりまで少しずつ読み出すというwhileループです。途中FFTの部分を別のクラスに任せてありますが、これについては後述します。
+#import <AudioToolbox/AudioToolbox.h>
+#import "MyFFT.h"
+- (void)process
+{
+NSString* soundPath; // さっき録音したファイル
+CFURLRef cfurl = (__bridge CFURLRef)[NSURL fileURLWithPath:soundPath];
+ExtAudioFileRef audioFile;
+OSStatus status;
+status = ExtAudioFileOpenURL(cfurl, &audioFile);
+const UInt32 frameCount = 1024;
+const int channelCountPerFrame = 1;
+AudioStreamBasicDescription clientFormat;
+clientFormat.mchannelCountPerFrame = channelCountPerFrame;
+clientFormat.mSampleRate = 44100;
+clientFormat.mFormatID = kAudioFormatLinearPCM;
+clientFormat.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
+int cmpSize = sizeof(float);
+int frameSize = cmpSize*channelCountPerFrame;
+clientFormat.mBitsPerChannel = cmpSize*8;
+clientFormat.mBytesPerPacket = frameSize;
+clientFormat.mFramesPerPacket = 1;
+clientFormat.mBytesPerFrame = frameSize;
+status = ExtAudioFileSetProperty(audioFile, kExtAudioFileProperty_ClientDataFormat, sizeof(clientFormat), &clientFormat);
+// 後述するMyFFTクラスを使用
+MyFFT* fft = [[FFT alloc] initWithCapacity:frameCount];
+while(true) {
+float buf[channelCountPerFrame*frameCount];
+AudioBuffer ab = { channelCountPerFrame, sizeof(buf), buf };
+AudioBufferList audioBufferList;
+audioBufferList.mNumberBuffers = 1;
+audioBufferList.mBuffers[0] = ab;
+UInt32 processedFrameCount = frameCount;
+status = ExtAudioFileRead(audioFile, &processedFrameCount, &audioBufferList);
+if(processedFrameCount == 0){
+break;
+} else {
+[fft process:buf];
+}
+}
+status = ExtAudioFileDispose(audioFile);
+}
+FFT
+こちらで解説されているMyFFTクラスをほぼそのまま流用できます(ARCに対応するためautoreleaseなどの部分を削除するだけ)。vDSPを使う(高速フーリエ変換編 その6) | なんてこったいブログ先ほどのコードに少し追加すれば、周波数特性を得られます。
+[fft process:buf];
+float vdist[NumFrames];
+vDSP_vdist([fft realp], 1, [fft imagp], 1, vdist, 1, NumFrames);
+// vdist[0] 〜vdist[NumFrames-1]が周波数特性
+iPhoneで音声解析!FFTで周波数特性を得る方法 - 株式会社CFlatの明後日スタイルのブログ

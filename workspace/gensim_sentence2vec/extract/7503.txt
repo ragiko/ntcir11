@@ -1,0 +1,236 @@
+
+入門自然言語処理
+これによって学べること(p.ix)
+簡単なプログラムを用いて、言語データの操作や解析を行える
+自然言語処理と言語学の概念、および言語の記述と解析における概念の使用の理解
+自然言語処理において用いられるデータ構造とアルゴリズム
+言語データの形式、自然言語処理のツールの性能評価における言語データの使用方法
+第1章
+生データ: (これから学ぶような分析/タグ付けなどされていない)テキスト
+NLTK(自然言語処理Pythonモジュール)の紹介---インストール方法、コーパスデータなど
+コーパスに対する基礎的な統計処理: 単語やバイグラムの頻度を数えるPythonを使った方法
+自然言語処理におけるいろいろな問題の紹介
+Pythonの基礎: リスト、変数、文字列、条件式、繰り返し(ループ)
+特に重要なPython式: [ w for w in text if 条件式](wは任意の変数、if以下は省略可能)、 [ 式 for w in text if 条件式](「式」はwを用いた式--例えば len(w)や w.upper()---がくる)
+1.1 言語の計算処理
+NLTKのインストール: ネットに接続された環境でPythonを起動してからNLTKをimportし(import nltk)、nltk.download()により本でとりあげるサンプルデータ(book)とコーパスデータ(corpora)をダウンロードする
+from nltk.book import *により、bookの内容をPythonに取込み、text1, text2, などの変数を使えるようにする
+どのようなものがbookで登録されているかはdir(nltk.book)で調べられる
+text1はMelvilleのMoby Dick(出版は1851年、「白鯨」)、text2はAustenのSense and sensibility(出版は1811年、「分別と多感」)のテキスト(Text型のオブジェクト)---関数typeを用いる
+Textクラスで何が定義されているかを知るにはdir(Text)(詳しい説明はhelp(Text))とする
+Textクラスで定義されているメソッドの例: concordance, similar, common_contexts, dispersion_plot, generate
+トークンとアイテム、述べ語と異なり語
+延べアイテム数の計算方法(len(text))、異なりアイテム数の計算(len(set(text)))、語彙の多様性の計算(lexical_diversity)
+def lexical_diversity(text):
+return float(len(set(text))) / len(text)
+def percentage(count, total):
+return 100.0 * count / total
+1.2 テキストと単語のリスト
+Pythonのリスト: 添字(インデックス)、スライシング
+ソート(sorted)
+1.3 簡単な統計処理
+頻度分布(FreqDist)およびそのメソッド(plot, keys、items, max, freqなど(表1-2参照)
+表1-2のfreqの説明訂正:「指定されたデータの頻度の割合」
+[w for w in V if p(w)]形式のリスト記法
+コロケーション(collocations)、バイグラム(bigram)
+1.4 Pythonの制御構造
+単純比較演算子 
+単語比較に使える演算子: startswith, endswith, in, islower, isupper, isalpha, isalnnum, isdigit, istitle
+大文字に変換(upper)、小文字に変換(lower)
+繰り返しと条件分岐: for, if, elif, else
+1.5 自然言語処理における諸問題
+語義曖昧性解消、代名詞解析(照応解析、意味役割付与)、言語出力生成、機械翻訳、音声対話システム、含意関係
+1.8 演習問題
+満月マーク()は簡単な問題、半月マークは中級、新月マーク()は難問
+12 / (4+1) は 2となる
+26**100 (およそ3.14 * 10141)
+計算方法: 
+>&t;> import math
+>&t;> print 100*math.log10(26)
+141.49733479708181     # この結果から10**141 
+>&t;> print 10**0.4973
+3.1426788298792263     # これから 3.14 * 10**141 であることがわかる
+>>> 3 * sent1
+['Call', 'me', 'Ishmael', '.', 'Call', 'me', 'Ishmael', '.', 'Call', 'me', 'Ishmael', '.'] 
+単純にやると;
+>>> len(text2)      # 延べ 
+141576
+>>> len(set(text2))  # 異なり 
+6833
+記号や数字を除くとすると
+>>> x = [w for w in text2 if w.isalpha()]
+>>> len(x)     # 延べ 
+120733
+>>> len(set(x))      # 異なり 
+6713
+>>> rest = len([w for w in text2 if not w.isalpha()])  # 記号や数字 
+>>> len(rest)
+20843
+>>> len(set(rest))
+120
+次章(2章)の内容を先取りしないと解けない? ブラウンコーパスを用いる。
+>>> from nltk.corpus import brown
+>>> humor = brown.words(categories="humor")
+>>> romance = brown.words(categories="romance")
+>>> print lexical_diversity(humor),  lexical_diversity(romance)
+0.231251440424 0.12070492131
+登場人物 Elinor, Marianne, Edward, Willoughby の分散プロット(下図)
+から、Elinorが主人公、Marianneが副主人公(女性の視点からの話であり、男性は時々にしか現れない、それもEdwardとWilloughbyが重なることはほとんどない)、EdwardとElinor、MarianneとWilloughbyがカップルと予想される(共起パタンから判断)---ウィキペディアの記事を参考のこと
+from nltk.book import *
+text2.dispersion_plot(["Elinor", "Marianne","Edward", "Willoughby"])
+text5からコロケーションを見つける:
+>>> text5.collocations()
+wanna chat; PART JOIN; MODE #14-19teens; JOIN PART; cute.-ass MP3; MP3
+player; times .. .; ACTION watches; guys wanna; song lasts; last
+night; ACTION sits; -...)...- S.M.R.; Lime Player; Player 12%; dont
+know; lez gurls; long time; gently kisses; Last seen
+len(set(text4))は(1)set(text4)、(2)len(.)という2段階。
+(1)でtext4の異なり語のセットを取り出し、(2)でその語数をカウントする
+リストと文字列の復習:
+>>> my_string = 'My Song'
+>>> print my_string
+My Song
+>>> my_string
+'My Song'
+>>> my_string + my_string
+'My SongMy Song'
+>>> my_string *3
+'My SongMy SongMy Song'
+>>> (my_string+" ")*3
+'My Song My Song My Song '
+(b)は訳し間違い:「(a)の結果の文字列に対してsplit()を使い、元のリストとおなじになるかどうか確かめてみよう」
+>>> my_sent = ['Python','is','a',"powerful","language"]
+>>> ' '.join(my_sent)
+'Python is a powerful language'
+>>> ' '.join(my_sent).split()
+['Python', 'is', 'a', 'powerful', 'language']
+一つの例:
+a = ['Once','upon','a','time']
+b=['there','were','a','king','and','his','wife','.']
+a+b
+len(phrase1 + phrase 2) = len(phrase1) + len(phrase2)
+左辺はリストを結合したリストを作ってから長さを計算、右辺はそれぞれのリストの
+長さの和を求める
+(a) のほうと答えるときは、文字列処理に焦点を当てた場合、
+(b)と答える場合は、単語の処理に焦点を当てた場合。
+sent1[2][2]は、次のように、sent1の3番目の要素('Ishmael')の、
+3文字目。
+>>> sent1
+['Call', 'me', 'Ishmael', '.']
+>>> sent1[2]
+'Ishmael'
+>>> sent1[2][2]
+'h'
+sent3の値は
+['In', 'the', 'beginning', 'God', 'created', 'the', 'heaven', 'and', 'the',
+'earth', '.']である。そこで、1,5,8の添字であることはわかる。
+なお、次のような答え方もできる
+>>> for x in range(len(sent3)):
+if sent3[x] == 'the': print x
+1
+5
+8
+また、indexメソッドを用いてもできる:
+>>> sent3.index('the')
+1
+>>> sent3.index('the',2)
+5
+>>>  sent3.index('the',6)
+8
+>>>  sent3.index('the',9)
+Traceback (most recent call last):
+File "", line 1, in 
+ValueError: 'the' is not in list
+>>> sorted([w for w in set(text5) if w.startswith('b')])
+['b', 'b-day', 'b/c', 'b4', 'babay', 'babble', 'babblein', 'babe', 'babes',
+'babi', 'babies',..]
+>>> range(10)
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+>>> range(10,20,2)
+[10, 12, 14, 16, 18]
+>>> range(20,10,-2)
+[20, 18, 16, 14, 12]
+>>> text9.index("sunset")
+629
+>>> text9.tokens[620:640]
+['PARK', 'THE', 'suburb', 'of', 'Saffron', 'Park', 'lay', 'on', 'the', 'sunset', 'side', 'of', 'London', ',', 'as', 'red', 'and', 'ragged', 'as', 'a']
+>>> text9[600:700].index('.')
+6
+>>> text9[620:700].index('.')
+23
+>>> text9[606:644]
+['.', 'G', '.', 'K', '.', 'C', '.', 'CHAPTER', 'I', 'THE', 'TWO', 'POETS', 'OF', 'SAFFRON', 'PARK', 'THE', 'suburb', 'of', 'Saffron', 'Park', 'lay', 'on', 'the', 'sunset', 'side', 'of', 'London', ',', 'as', 'red', 'and', 'ragged', 'as', 'a', 'cloud', 'of', 'sunset', '.']
+>>> text9[621:644]
+['THE', 'suburb', 'of', 'Saffron', 'Park', 'lay', 'on', 'the', 'sunset', 'side', 'of', 'London', ',', 'as', 'red', 'and', 'ragged', 'as', 'a', 'cloud', 'of', 'sunset', '.']
+>>> len(set(sent1+sent2+sent3+sent4+sent5+sent6+sent7+sent8))
+75
+>>> len(sent1+sent2+sent3+sent4+sent5+sent6+sent7+sent8)
+99
+>>> (sent1+sent2+sent3+sent4+sent5+sent6+sent7+sent8)
+['Call', 'me', 'Ishmael', '.', 'The', 'family', 'of', 'Dashwood', 'had', 'long', 'been', 'settled', 'in', 'Sussex', '.', 'In', 'the', 'beginning', 'God', 'created', 'the', 'heaven', 'and', 'the', 'earth', '.', 'Fellow', '-', 'Citizens', 'of', 'the', 'Senate', 'and', 'of', 'the', 'House', 'of', 'Representatives', ':', 'I', 'have', 'a', 'problem', 'with', 'people', 'PMing', 'me', 'to', 'lol', 'JOIN', 'SCENE', '1', ':', '[', 'wind', ']', '[', 'clop', 'clop', 'clop', ']', 'KING', 'ARTHUR', ':', 'Whoa', 'there', '!', 'Pierre', 'Vinken', ',', '61', 'years', 'old', ',', 'will', 'join', 'the', 'board', 'as', 'a', 'nonexecutive', 'director', 'Nov.', '29', '.', '25', 'SEXY', 'MALE', ',', 'seeks', 'attrac', 'older', 'single', 'lady', ',', 'for', 'discreet', 'encounters', '.']
+>>> len(sorted(set([w.lower() for w in text1])))
+17231
+>>> len(sorted([w.lower() for w in set(text1)]))
+19317
+後者だと大文字を含む語が重複する(setにおいて大文字と小文字は区別されるため)
+すべて大文字とか、すべて小文字の場合は等しくなるはず---text1～text8まですべて後者のほうが多い
+w.isupper() は大文字ならTRUE、記号や小文字はFALSE;
+not w.islower()は小文字でなければFALSE、つまり記号はTRUEとなる
+. 
+>>> text2[-2:]
+['THE', 'END']
+>>> allFour = [w.lower() for w in text5 if len(w)==4 ]
+>>> fdist = FreqDist(allFour)
+>>> fdist.plot(50)
+>>> fdist.tabulate(50)
+part join that what here have .... like with chat your good just lmao know room this from well hiya yeah they back dont want love guys some been talk nice when time haha girl make need mode song u122 will then much over were does take work even come
+1022 1021  284  201  185  171  170  160  154  146  142  132  128  128  104  103  98   96   91   85   85   84   79   77   71   63   59   59   58   58   54   54   52   46   45   44   44   42   42   42   42   41   40   40   39   38   38   38   37   36
+>>> fdist.items()[:50]
+[('part', 1022), ('join', 1021), ('that', 284), ('what', 201), ('here', 185), ('have', 171), ('....', 170), ('like', 160), ('with', 154), ('chat', 146), ('your', 142), ('good', 132), ('just', 128), ('lmao', 128), ('know', 104), ('room', 103), ('this', 98), ('from', 96), ('well', 91), ('hiya', 85), ('yeah', 85), ('they', 84), ('back', 79), ('dont', 77), ('want', 71), ('love', 63), ('guys', 59), ('some', 59), ('been', 58), ('talk', 58), ('nice', 54), ('when', 54), ('time', 52), ('haha', 46), ('girl', 45), ('make', 44), ('need', 44), ('mode', 42), ('song',42), ('u122', 42), ('will', 42), ('then', 41), ('much', 40), ('over', 40), ('were', 39), ('does', 38), ('take', 38), ('work', 38), ('even', 37), ('come', 36)]
+ここは誤訳あり:
+for文とif文を組み合わせて、「モンティ・パイソンとホーリーグレイル」(text6)の映画脚本の単語を繰り返し処理し、
+「モンティ・パイソンとホーリーグレイル」(text6)の映画脚本の単語に対し、for文とif文を組み合わせた繰り返し処理により、
+for w in text6:
+if w.isupeer():  print w
+a. 
+>>> [w for w in text6 if w.endswith('ize')]
+[]
+b. 
+>>> z = set([w.lower() for w in text6 if 'z' in w.lower()])
+>>> z
+set(['zhiv', 'zone', 'frozen', 'amazes', 'zoo', 'zoop', 'zoosh', 'amazing', 'zoot', 'fetchez'])
+c. 
+>>> pt = set([w.lower() for w in text6 if 'pt' in w.lower()])
+>>> pt
+set(['chapter', 'temptress', 'temptation', 'excepting', 'thppt', 'thppppt', 'thpppt', 'ptoo', 'thpppppt', 'aptly', 'empty'])
+d. 
+>>> q = [w for w in text6 if w.istitle()]
+>>> q[:10]
+['Whoa', 'Halt', 'Who', 'It', 'I', 'Arthur', 'Uther', 'Pendragon', 'Camelot', 'King']
+25. 
+>>> shs = ['she','sells','sea','shells','by','the','sea','shore']
+>>> [w for w in shs if w.startswith('sh')]
+['she', 'shells', 'shore']
+>>> [w for w in shs if len(w)>4]
+['sells', 'shells', 'shore']
+26. 
+>>> float(sum([len(w) for w in text1]))/len(text1)
+3.830411128023649
+27. 
+>>> def vocab_size(text):
+return(len(set(text)))
+>>> vocab_size(text1)
+19317
+>>> vocab_size(text2)
+6833
+>>> vocab_size(text3)
+2789
+28. 
+>>> def percent(word,text):
+fdist = FreqDist(text)
+return(fdist.freq(word)*100.0)
+>>> percent("monster",text1)
+0.018786974875296663
+>>> percent("the",text1)
+5.260736372733581
+Webpage for Natural Langauge Processing: Ch. 1

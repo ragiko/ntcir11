@@ -1,0 +1,5 @@
+
+<center>この部分は中央に表示されます</center>
+<div align="center">この部分は中央に表示されます</div>
+HTML5では、<center> や align属性は廃止され、代わりにスタイルシートを用います。テキストをセンタリングするには、text-align を用います。
+レイアウト

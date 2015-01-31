@@ -1,0 +1,4 @@
+タスクの重要なデータを他のタスクからアクセスされることを防止できるタスク管理システムを提供する。To provide a task management system capable of preventing access to important data of a task from another task. - 特許庁
+その際、必要なQoS制御量を満足できるようにタスク情報記憶部12aに記憶されたタスクの重要度の情報を用い重要度の低いタスクからのQoS制御レベルとQoS制御時間とを決定しQoS制御レベル時間記憶部12dへ記憶する。In this case, the QoS determination part determines the QoS level and the QoS control time from a less important task using task importance information stored in a task information storage part 12a so as to satisfy the necessary QoS controlled variable and stores them in a QoS control level/time storage part 12d. - 特許庁
+充電池に対する充電を行っていない場合において重要な充電監視タスク以外のタスクを優先的に実行することができるプリンタ、プログラムおよびタスク制御方法を提供する。To provide a printer which can preferentially execute tasks other than a charge monitoring task important when a battery is not being charged, and to provide a program and a task control method. - 特許庁
+重要タスクの英語・英訳 - 英和辞典・和英辞典 Weblio辞書

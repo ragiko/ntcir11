@@ -1,0 +1,10 @@
+相当にヒューリスティックであるが、これで充分なログインフォームが発見できる
+m = Mechanize.new
+m.get 'どっかログインフォームのあるURL'
+form = m.page.forms.select{|e| e.fields_with(:type=>"password").size == 1 and e.fields_with(:type=>"text").size > 0 }
+追加
+ユーザーIDのinput でtype=text 省略した場合もあるね。input type=text の場合 type省略可能だから
+m = Mechanize.new
+m.get 'どっかログインフォームのあるURL'
+form = m.page.forms.select{|e| e.fields_with(:type=>"password").size == 1 and e.fields_with(:type=> nil ).size > 0 }
+ログインフォームを見つける簡単な一つの手法 - それマグで!

@@ -1,0 +1,24 @@
+MeCabは 京都大学情報学研究科/日本電信電話株式会社コミュニケーション科学基礎研究所の共同研究ユニットプロジェクトを通じて開発されたオープンソース形態素解析エンジンです。これを4Dで使用できるようにすれば,日本語の全文検索インデックスの作成,ふりがなの追加など,さまざまな目的に応用することができます。
+以前のプラグインでは,バージョン0.98を使用したのに対し,今回,MeCab 0.994を使用しました。このバージョンの特徴は,マルチスレッドに対応したことで,単一のMeCab::Modelから複数のMeCab::Taggerのインスタンスをスレッドセーフに作成できるようになりました。その他,再学習,ユーザ辞書の単語コストの自動推定などの新機能も追加されています。
+プラグインは,前述したマルチスレッドのモデルを活用し,辞書ファイルをいつでも手軽に切り替えられるようにしました。辞書ごとに品詞分解の仕方が違っていることを比較することができます。
+ipadic-2.7.0
+jumandic-5.1
+naist-jdic-0.4.3
+unidic-1.3.12
+Mac OS X Mecab 0.98までは,Mac OS X 10.4 (PPC/Intel) 向けまでコンパイルすることができたのですが,0.994は,どうしても10.5が限界でした。(PPCは,さすがにもう要らないだろうということでサポートをやめました。)OS X 10.8 (Mountain Lion) のマシンにXcode 3(10.6以前のSDKをインストールするため)および Xcode 4のコマンドラインツールをインストールし,gcc-/g++の4.2でビルドを試みたところ,10.8/10.7/10.6のSDKが成功し,10.5は失敗しました。Mountain Lionのマシンにコマンドラインのgcc-/g++の4.0がインストールされていなかったので,Snow leopardのマシンにプラットフォームを移し,再度ビルドを試みたところ,10.5は成功しましたが,10.4uはやはり駄目でした。動作確認に使用しているのは,10.8 (Mountain Lion) です。
+Mountain LionでSnow Leopard向けにビルド
+export CXX="gcc -arch i386"
+export CC="gcc -arch i386"
+export LD="g++ -arch i386"
+export CFLAGS="-arch i386 -isysroot /Xcode3/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6" 
+export LDFLAGS="-arch i386 -headerpad_max_install_names -isysroot /Xcode3/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6" 
+export CXXFLAGS="-arch i386 -isysroot /Xcode3/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6"
+./configure --with-charset=utf8 --enable-utf8-only --prefix=
+export CXX="gcc-4.0 -arch i386"
+export CC="gcc-4.0 -arch i386"
+export LD="g++-4.0 -arch i386"
+export CFLAGS="-arch i386 -isysroot /Xcode3/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" 
+export LDFLAGS="-arch i386 -headerpad_max_install_names -isysroot /Xcode3/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" 
+export CXXFLAGS="-arch i386 -isysroot /Xcode3/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" 
+./configure --with-charset=utf8 --enable-utf8-only --prefix=
+MeCabプラグイン 9.9.4 - 4D

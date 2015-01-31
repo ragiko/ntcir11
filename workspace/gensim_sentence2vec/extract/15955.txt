@@ -1,0 +1,49 @@
+by Graham Neubig
+English
+prontronは日本語の未知語発音推定プログラムです。構造化パーセプトロンを日本語の発音推定に使えるのではないかと思って作ってみました。もし興味があったら使ってみてください。
+ダウンロード
+使い方
+仕組み
+精度
+開発・TODO
+ダウンロード
+最新版:
+prontron 0.1
+開発版: @github
+過去のバージョン: 
+まだ
+prontronはCommon Public License v 1.0に従ってダウンロード、再配布できます。
+使い方
+発音推定
+modelディレクトリの中のモデルを利用して発音を推定することができます。1行1単語の入力ファイルinput.txtを用意して、以下のコマンドを実行します:
+$ prontron.pl model/model.dict model/model.feat < input.txt > output.txt
+1行ずつ単語の発音をoutput.txtへ出力します。
+モデル学習
+学習は2段階で行います。まず、「サブワード・発音」の組からなる辞書を構築してから、モデルの重みを学習します。
+1行1単語のtrain.wordと1行1発音のtrain.pronを作成し、アライメントプログラムを実行すると、model/model.dictに辞書が作成されます:
+$ mono-align.pl train.word train.pron model/model.dict
+学習が終わって、辞書ファイルに不具合が見つかったら手で直したり、エントリーを付け加えたりしても問題ありません。また、mono-align.plは単純なアライメント法を利用しているので、他のツール(例えばmpaligner)で作るとより高い精度が得られる可能性もあります。次はパーセプトロンでモデルの重みファイルmodel/model.featを作成します(時間がかかります):
+$ prontron-train.pl train.word train.pron model/model.dict model/model.feat
+以上です!プログラムに以下のオプションがあります(minとmaxは両プログラムで揃えなければなりません):
+Both:
+-fmin  入力単位の最小文字数 (1)
+-fmax  入力単位の最大文字数 (1)
+-emin  出力単位の最小文字数 (0)
+-emax  出力単位の最大文字数 (5)
+-iters イタレーションの上限 (10)
+-word  文字ではなく、空白で区切られた単語を利用
+mono-align.pl:
+-cut   最大事後確率がこれ以下だと出力しないしきい値。
+小さくすると後段の学習が遅くなるが、精度は多少
+あがるかもしれません (0.001)
+prontron-train.pl only:
+-inarow  X回以上成功している学習例を一旦飛ばす
+-recheck 飛ばした学習例をX回ごとに再探索する
+仕組み
+Prontronは構造化パーセプトロンに基づいた識別学習を利用しています。これにより、発音推定に多くの素性を利用することができます。構造化パーセプトロンのアルゴリズムを簡単に説明すると:
+素性の重みhに従って、単語wに対する最もスコアの高い発音pを探索し、pの素性f(p)とします。
+pが正解p*と異なる場合、f(p)の重みを減らし、f(p*)の重みを増やします。
+いい重みが学習されるまでコーパスの各単語に対して何回も繰り返します。
+発音推定の場合p、f(p)、f(p*)はViterbiアルゴリズムで探索します。prontronの現在の素性は4つの系列に対して素性を定義します:
+単語:
+prontron - PRONunciation percepTRON

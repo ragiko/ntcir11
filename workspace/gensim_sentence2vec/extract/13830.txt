@@ -1,0 +1,41 @@
+
+<p style="line-height:150%">
+文章の一部に<span style="border-bottom:solid 3px #ff0000;">赤い実線で
+下線を引く</span>方法です。<br>
+文章の一部に<span style="border-bottom:dotted 3px #ff0000;">赤い点線で
+下線を引く</span>方法です。<br>
+文章の一部に<span style="border-bottom:dashed 3px #ff0000;">赤い破線で
+下線を引く</span>方法です。<br>
+文章の一部に<span style="border-bottom:double 3px #ff0000;">赤い二重線で
+下線を引く</span>方法です。
+</p>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css">
+<!--
+body     { line-height:150%}
+.sample1 { border-bottom:solid 3px #ff0000;}
+.sample2 { border-bottom:dotted 3px #ff0000;}
+.sample3 { border-bottom:dashed 3px #ff0000;}
+.sample4 { border-bottom:double 3px #ff0000;}
+-->
+</style>
+</head>
+<body>
+<p>
+文章の一部に<span class="sample1">赤い実線で下線を引く</span>
+方法です。<br>
+文章の一部に<span class="sample2">赤い点線で下線を引く</span>
+方法です。<br>
+文章の一部に<span class="sample3">赤い破線で下線を引く</span>
+方法です。<br>
+文章の一部に<span class="sample4">赤い二重線で下線を引く</span>
+方法です。
+</p>
+</body>
+</html>
+ホームページ作成 - 下線を引きたい(線種や色も変えたい)

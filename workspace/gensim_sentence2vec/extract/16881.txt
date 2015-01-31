@@ -1,0 +1,317 @@
+9.4. 文字列関数と演算子   
+本節では文字列の値の調査や操作のための関数と演算子について説明します。
+ここでの文字列とはcharacterデータ型、character varyingデータ型、およびtextデータ型の値を含みます。補足説明のない限り、下記に挙げている全ての関数はこれら全てのデータ型に対して使用できますが、characterデータ型を使用した場合、自動的に空白文字がパッドされるという潜在的作用がありますので注意してください。バイナリ列データ型にたいしてもともとから存在するいくつかの関数もあります。
+SQLでは引数の区切りにカンマではなくキーワードを使用する文字列関数をいくつか定義しています。
+詳細については表9-5を参照してください。
+またPostgreSQLは、これらの関数に対して通常の関数呼び出し構文を使用するバージョンを提供します(表9-6を参照してください)。
+注意:     
+PostgreSQL 8.3以前において、これらの関数はいくつかの非文字列データ型の値を警告なしに受け付けたのは、それらデータ型を暗黙的にtext型に型変換していたことによります。この強制的な変換は、頻繁に予期しない動作の原因となったので削除されました。しかし、文字列連結演算子(||)は表9-5で示されるように、少なくともひとつの入力が文字列型であれば、依然として非文字列入力を受け付けます。その他の場合、以前と同じ動作を期待するのなら、textへの明示的な変換を行ってください。
+表 9-5. SQL文字列関数と演算子関数戻り値型説明例結果string ||
+string text        
+文字列結合
+'Post' || 'greSQL'PostgreSQL       
+文字列 ||
+非文字列
+または、
+非文字列 ||
+文字列
+text        
+ひとつの非文字列のある入力の文字列結合
+'Value: ' || 42Value: 42        
+bit_length(string)
+int文字列中のビット数bit_length('jose')32        
+char_length(string) または character_length(string)
+int       
+文字列中の文字数
+char_length('jose')4        
+lower(string)
+text文字列を小文字に変換lower('TOM')tom        
+octet_length(string)
+int文字列中のバイト数octet_length('jose')4        
+overlay(string placing string from int [for int])
+text       
+部分文字列の置換
+overlay('Txxxxas' placing 'hom' from 2 for 4)Thomas        
+position(substring in string)
+int指定した部分文字列の場所position('om' in 'Thomas')3        
+substring(string [from int] [for int])
+text       
+部分文字列の取り出し
+substring('Thomas' from 2 for 3)homsubstring(string from pattern)text       
+POSIX正規表現に一致する副文字列を取り出します。パターンマッチに関してより詳細は、項9.7を参照してください。
+substring('Thomas' from '...$')massubstring(string from pattern for escape)text       
+SQL正規表現に一致する部分文字列を取り出します。パターンマッチに関してより詳細は、項9.7を参照してください。
+substring('Thomas' from '%#"o_a#"_' for '#')oma        
+trim([leading | trailing | both]
+[characters] from
+string)
+text       
+characters(デフォルトでは空白)で指定された文字のみを含む最も長い文字列を、stringの先頭、末尾、そしてその両方から削除します。
+trim(both 'x' from 'xTomxx')Tom        
+upper(string)
+text文字列を大文字に変換upper('tom')TOM   
+この他、表9-6に列挙する文字列操作関数が使えます。そのいくつかは、表9-5で一覧した標準SQLの文字列関数を実装するため、内部的に使用されます。
+表 9-6. その他の文字列関数関数戻り値型説明例結果        
+ascii(string)
+int       
+引数の最初の文字のASCIIコード。UTF8に対しては文字のUnicodeコードポイントを返します。その他のマルチバイト符号化方式の場合、引数はASCII文字でなくてはなりません。
+ascii('x')120        
+btrim(string text
+[, characters text])
+text       
+characters(デフォルトは空白文字)で指定された文字のみを有する最長の文字列を、stringの先頭と末尾から削除します。
+btrim('xyxtrimyyx', 'xy')trim        
+chr(int)
+text       
+与えられたコードの文字。UTF8では引数はUnicodeコードポイントとして扱われます。その他のマルチバイト符号化方式で引数はASCII文字である必要があります。
+NULL (0)文字はテキストデータ型がそのようなバイトを格納することができないので許可されません。
+chr(65)A        
+concat(str "any"
+[, str "any" [, ...] ])
+text        すべての引数の結合。ただしNULLは無視される。
+concat('abcde', 2, NULL, 22)abcde222        
+concat_ws(sep text,
+str "any"
+[, str "any" [, ...] ])
+text        第一引数を区切り文字とし、残りのすべての引数を結合する。最初の引数は区切り文字列として使われる。NULLは無視される。
+concat_ws(',', 'abcde', 2, NULL, 22)abcde,2,22        
+convert(string bytea,
+src_encoding name,
+dest_encoding name)
+bytea      
+文字列をdest_encodingに変換します。元の符号化方式はsrc_encodingで指定されます。stringはこの符号化方式で有効でなければなりません。変換はCREATE CONVERSIONで定義されます。有効な変換については表9-7を参照してください。
+convert('text_in_utf8', 'UTF8', 'LATIN1')Latin-1(ISO 8859-1)符号化方式のtext_in_utf8        
+convert_from(string bytea,
+src_encoding name)
+text       
+データベースの符号化方式に文字列を変換します。元の符号化方式はsrc_encodingで指定されます。stringはこの符号化方式で有効なものでなければなりません。
+convert_from('text_in_utf8', 'UTF8')現在のデータベース符号化方式のtext_in_utf8        
+convert_to(string text,
+dest_encoding name)
+bytea       
+文字列をdest_encodingに変換します。
+convert_to('some text', 'UTF8')UTF8符号化方式のsome text        
+decode(string text,
+format text)
+bytea       
+stringからバイナリデータを復号します。オプションのformatはencode()と同じです。
+decode('MTIzAAE=', 'base64')\x3132330001        
+encode(data bytea,
+format text)
+text       
+バイナリデータをテキスト表現形式に符号化します。サポートされている形式は、base64、hex、escapeです。escapeは0バイトと最上位ビットがセットされているバイトを8進数のシーケンス(\nnn)に変換し 、バックスラッシュを二重化します。
+encode(E'123\\000\\001', 'base64')MTIzAAE=        
+format(formatstr text
+[, formatarg "any" [, ...] ])
+text         引数の書式をフォーマット文字列に従って整えます。
+この関数はC言語関数のsprintfと似ています。
+項9.4.1を参照してください。
+format('Hello %s, %1$s', 'World')Hello World, World        
+initcap(string)
+text       
+それぞれの単語の第一文字を大文字にし、残りは小文字のまま残します。ここで単語とは、英数字以外の文字で区切られた、英数字からなる文字の並びのことです。
+initcap('hi THOMAS')Hi Thomas        
+left(str text,
+n int)
+text         文字列の先頭からn文字を返します。nが負数の場合、|n|の数だけ文字列の末尾から切り取った文字列を返します。
+left('abcde', 2)ab        
+length(string)
+int       
+string内の文字数
+length('jose')4length(stringbytea,
+encoding name )int       
+与えられたencodingでのstring内の文字数。stringはこの符号化方式で有効でなければなりません。
+length('jose', 'UTF8')4        
+lpad(string text,
+length int
+[, fill text])
+text       
+文字fill(デフォルトは空白文字)を文字列の前に追加して、stringをlengthの長さにします。stringが既にlengthの長さを超えている場合は(右側が)切り捨てられます。
+lpad('hi', 5, 'xy')xyxhi        
+ltrim(string text
+[, characters text])
+text       
+stringの最初から、characters(デフォルトはスペース)で指定された文字だけを有する最長の文字列を削除します。
+ltrim('zzzytrim', 'xyz')trim        
+md5(string)
+text       
+stringのMD5ハッシュを計算し、16進数で結果を返します。
+md5('abc')900150983cd24fb0 d6963f7d28e17f72        
+pg_client_encoding()
+name       
+現在のクライアントの符号化方式の名前。
+pg_client_encoding()SQL_ASCII        
+quote_ident(string text)
+text       
+与えられた文字列を、SQL問い合わせ文字列で識別子として使用できるように、適切な引用符を付けて返します。引用符は、必要な場合(例えば、文字列に識別子として使用できない文字が含まれる場合や、大文字変換される場合)にのみ追加されます。埋め込まれた引用符は、適切に二重化されます。
+例40-1も参照してください。
+quote_ident('Foo bar')"Foo bar"        
+quote_literal(string text)
+text       
+与えられた文字列を、SQL問い合わせ文字列で文字リテラルとして使用できるように、適切な引用符を付けて返します。埋め込まれた単一引用符およびバックスラッシュは、適切に二重化されます。
+quote_literalはNULL入力に対してNULLを返すことに注意してください。引数がNULLとなる可能性がある場合、よりquote_nullableの方がしばしば適しています。
+例40-1も参照してください。
+quote_literal(E'O\'Reilly')'O''Reilly'quote_literal(value anyelement)text       
+与えられた値をテキストに強制し、そしてリテラルとして引用符付けします。組み込まれた一重引用符と逆スラッシュは適切に二重化されます。
+quote_literal(42.5)'42.5'        
+quote_nullable(string text)
+text       
+与えられた文字列を、SQL問い合わせ文字列で文字リテラルとして使用できるように、適切な引用符を付けて返します。
+また、引数がNULLの場合、NULLを返します。
+埋め込まれた単一引用符およびバックスラッシュは適切に二重化されます。
+例40-1も参照してください。
+quote_nullable(NULL)NULLquote_nullable(value anyelement)text       
+与えられた値をテキストに強制し、そしてリテラルとして引用符付けします。そうでないと、引数がNULLの場合はNULLを返します。埋め込まれた単一引用符とバックスラッシュは適切に二重化されます。
+quote_nullable(42.5)'42.5'        
+regexp_matches(string text, pattern text [, flags text])
+setof text[]       
+stringに対してPOSIX正規表現でマッチし、捕捉されたすべての部分文字列を返します。より詳細は項9.7.3を参照してください。
+regexp_matches('foobarbequebaz', '(bar)(beque)'){bar,beque}        
+regexp_replace(string text, pattern text, replacement text [, flags text])
+text       
+POSIX正規表現に一致する部分文字列を置換します。より詳細は項9.7.3を参照してください。
+regexp_replace('Thomas', '.[mN]a.', 'M')ThM        
+regexp_split_to_array(string text, pattern text [, flags text ])
+text[]       
+POSIX正規表現を区切り文字に使ってstringを分割します。詳しくは項9.7.3を参照ください。
+regexp_split_to_array('hello world', E'\\s+'){hello,world}        
+regexp_split_to_table(string text, pattern text [, flags text])
+setof text       
+POSIX正規表現を区切り文字に使ってstringを分割します。詳しくは項9.7.3を参照ください。
+regexp_split_to_table('hello world', E'\\s+')helloworld (2 rows)        
+repeat(string text, number int)
+text指定されたnumberの数だけstringを繰り返します。repeat('Pg', 4)PgPgPgPg        
+replace(string text,
+from text,
+to text)
+textstringに出現する全てのfrom部分文字列をto部分文字列に置換します。
+replace('abcdefabcdef', 'cd', 'XX')abXXefabXXef        
+reverse(str)
+text        逆順にした文字列を返します。
+reverse('abcde')edcba        
+right(str text,
+n int)
+text        文字列の末尾からn文字を返します。nが負数の場合は、|n|の数だけ文字列の末尾から切り取った文字列を返します。
+right('abcde', 2)de        
+rpad(string text,
+length int
+[, fill text])
+text       
+文字fill(デフォルトはスペース)を文字列に追加して、stringをlengthの長さにします。stringが既にlengthの長さを超えている場合は切り捨てられます。
+rpad('hi', 5, 'xy')hixyx        
+rtrim(string text
+[, characters text])
+text       
+stringの末尾から、characters(デフォルトはスペース)で指定された文字のみを有する最長の文字列を削除します。
+rtrim('trimxxxx', 'x')trim        
+split_part(string text,
+delimiter text,
+field int)
+textstringをdelimiterで分割し、その結果から(1から始まるように数える)指定したフィールドを返します。
+split_part('abc~@~def~@~ghi', '~@~', 2)def        
+strpos(string, substring)
+int       
+指定した部分文字列の位置を特定します(position(substring in string) と同じですが、引数の順序が逆になっていることに注意してください)。
+strpos('high', 'ig')2        
+substr(string, from [, count])
+text       
+指定した部分文字列を取り出します(substring(string from from for count)と同じです)。
+substr('alphabet', 3, 2)ph        
+to_ascii(string text
+[, encoding text])
+text       
+stringを他の符号化方式からASCIIに変換します。LATIN1、LATIN2、LATIN9、WIN1250符号化方式からの変換のみをサポートします。)
+to_ascii('Karel')Karel        
+to_hex(number int
+or bigint)
+textnumberを、同等の16進数表現に変換します。
+to_hex(2147483647)7fffffff        
+translate(string text,
+from text,
+to text)
+text       
+from集合で指定された文字と一致するstringにある全ての文字は、それに対応するtoで指定された文字に置き換えられます。
+もしfromがtoより長い場合、fromで指定される余分な文字に一致するものは削除されます。
+translate('12345', '143', 'ax')a2x5   
+concat、concat_wsおよびformat関数はVariadicです。従って、キーワードVARIADICで標しをつけられた配列のように、値を連結またはフォーマットした形で受け渡すことが可能です(項35.4.5を参照してください)。
+配列の要素は関数に対して分割された通常の引数のように扱われます。もしvariadic配列引数がNULLであれば、concat
+および concat_wsはNULLを返しますが、formatはNULLを要素を持たない配列と扱います。
+項9.20内のstring_agg集約関数も参照してください。
+表 9-7. 組み込みの変換変換名
+[a]
+変換前の符号化方式変換後の符号化方式ascii_to_micSQL_ASCIIMULE_INTERNALascii_to_utf8SQL_ASCIIUTF8big5_to_euc_twBIG5EUC_TWbig5_to_micBIG5MULE_INTERNALbig5_to_utf8BIG5UTF8euc_cn_to_micEUC_CNMULE_INTERNALeuc_cn_to_utf8EUC_CNUTF8euc_jp_to_micEUC_JPMULE_INTERNALeuc_jp_to_sjisEUC_JPSJISeuc_jp_to_utf8EUC_JPUTF8euc_kr_to_micEUC_KRMULE_INTERNALeuc_kr_to_utf8EUC_KRUTF8euc_tw_to_big5EUC_TWBIG5euc_tw_to_micEUC_TWMULE_INTERNALeuc_tw_to_utf8EUC_TWUTF8gb18030_to_utf8GB18030UTF8gbk_to_utf8GBKUTF8iso_8859_10_to_utf8LATIN6UTF8iso_8859_13_to_utf8LATIN7UTF8iso_8859_14_to_utf8LATIN8UTF8iso_8859_15_to_utf8LATIN9UTF8iso_8859_16_to_utf8LATIN10UTF8iso_8859_1_to_micLATIN1MULE_INTERNALiso_8859_1_to_utf8LATIN1UTF8iso_8859_2_to_micLATIN2MULE_INTERNALiso_8859_2_to_utf8LATIN2UTF8iso_8859_2_to_windows_1250LATIN2WIN1250iso_8859_3_to_micLATIN3MULE_INTERNALiso_8859_3_to_utf8LATIN3UTF8iso_8859_4_to_micLATIN4MULE_INTERNALiso_8859_4_to_utf8LATIN4UTF8iso_8859_5_to_koi8_rISO_8859_5KOI8Riso_8859_5_to_micISO_8859_5MULE_INTERNALiso_8859_5_to_utf8ISO_8859_5UTF8iso_8859_5_to_windows_1251ISO_8859_5WIN1251iso_8859_5_to_windows_866ISO_8859_5WIN866iso_8859_6_to_utf8ISO_8859_6UTF8iso_8859_7_to_utf8ISO_8859_7UTF8iso_8859_8_to_utf8ISO_8859_8UTF8iso_8859_9_to_utf8LATIN5UTF8johab_to_utf8JOHABUTF8koi8_r_to_iso_8859_5KOI8RISO_8859_5koi8_r_to_micKOI8RMULE_INTERNALkoi8_r_to_utf8KOI8RUTF8koi8_r_to_windows_1251KOI8RWIN1251koi8_r_to_windows_866KOI8RWIN866koi8_u_to_utf8KOI8UUTF8mic_to_asciiMULE_INTERNALSQL_ASCIImic_to_big5MULE_INTERNALBIG5mic_to_euc_cnMULE_INTERNALEUC_CNmic_to_euc_jpMULE_INTERNALEUC_JPmic_to_euc_krMULE_INTERNALEUC_KRmic_to_euc_twMULE_INTERNALEUC_TWmic_to_iso_8859_1MULE_INTERNALLATIN1mic_to_iso_8859_2MULE_INTERNALLATIN2mic_to_iso_8859_3MULE_INTERNALLATIN3mic_to_iso_8859_4MULE_INTERNALLATIN4mic_to_iso_8859_5MULE_INTERNALISO_8859_5mic_to_koi8_rMULE_INTERNALKOI8Rmic_to_sjisMULE_INTERNALSJISmic_to_windows_1250MULE_INTERNALWIN1250mic_to_windows_1251MULE_INTERNALWIN1251mic_to_windows_866MULE_INTERNALWIN866sjis_to_euc_jpSJISEUC_JPsjis_to_micSJISMULE_INTERNALsjis_to_utf8SJISUTF8tcvn_to_utf8WIN1258UTF8uhc_to_utf8UHCUTF8utf8_to_asciiUTF8SQL_ASCIIutf8_to_big5UTF8BIG5utf8_to_euc_cnUTF8EUC_CNutf8_to_euc_jpUTF8EUC_JPutf8_to_euc_krUTF8EUC_KRutf8_to_euc_twUTF8EUC_TWutf8_to_gb18030UTF8GB18030utf8_to_gbkUTF8GBKutf8_to_iso_8859_1UTF8LATIN1utf8_to_iso_8859_10UTF8LATIN6utf8_to_iso_8859_13UTF8LATIN7utf8_to_iso_8859_14UTF8LATIN8utf8_to_iso_8859_15UTF8LATIN9utf8_to_iso_8859_16UTF8LATIN10utf8_to_iso_8859_2UTF8LATIN2utf8_to_iso_8859_3UTF8LATIN3utf8_to_iso_8859_4UTF8LATIN4utf8_to_iso_8859_5UTF8ISO_8859_5utf8_to_iso_8859_6UTF8ISO_8859_6utf8_to_iso_8859_7UTF8ISO_8859_7utf8_to_iso_8859_8UTF8ISO_8859_8utf8_to_iso_8859_9UTF8LATIN5utf8_to_johabUTF8JOHAButf8_to_koi8_rUTF8KOI8Rutf8_to_koi8_uUTF8KOI8Uutf8_to_sjisUTF8SJISutf8_to_tcvnUTF8WIN1258utf8_to_uhcUTF8UHCutf8_to_windows_1250UTF8WIN1250utf8_to_windows_1251UTF8WIN1251utf8_to_windows_1252UTF8WIN1252utf8_to_windows_1253UTF8WIN1253utf8_to_windows_1254UTF8WIN1254utf8_to_windows_1255UTF8WIN1255utf8_to_windows_1256UTF8WIN1256utf8_to_windows_1257UTF8WIN1257utf8_to_windows_866UTF8WIN866utf8_to_windows_874UTF8WIN874windows_1250_to_iso_8859_2WIN1250LATIN2windows_1250_to_micWIN1250MULE_INTERNALwindows_1250_to_utf8WIN1250UTF8windows_1251_to_iso_8859_5WIN1251ISO_8859_5windows_1251_to_koi8_rWIN1251KOI8Rwindows_1251_to_micWIN1251MULE_INTERNALwindows_1251_to_utf8WIN1251UTF8windows_1251_to_windows_866WIN1251WIN866windows_1252_to_utf8WIN1252UTF8windows_1256_to_utf8WIN1256UTF8windows_866_to_iso_8859_5WIN866ISO_8859_5windows_866_to_koi8_rWIN866KOI8Rwindows_866_to_micWIN866MULE_INTERNALwindows_866_to_utf8WIN866UTF8windows_866_to_windows_1251WIN866WINwindows_874_to_utf8WIN874UTF8euc_jis_2004_to_utf8EUC_JIS_2004UTF8utf8_to_euc_jis_2004UTF8EUC_JIS_2004shift_jis_2004_to_utf8SHIFT_JIS_2004UTF8utf8_to_shift_jis_2004UTF8SHIFT_JIS_2004euc_jis_2004_to_shift_jis_2004EUC_JIS_2004SHIFT_JIS_2004shift_jis_2004_to_euc_jis_2004SHIFT_JIS_2004EUC_JIS_2004注意:a. 	 
+変換名は、標準命名体系に従っています。変換元符号化方式の公式名の内、英数字以外の文字をアンダースコアで置き換え、その後に_to_を付け、そして変換先符号化方式名を同様に処理したものを続けたものです。したがって、これらの名称は慣習的なコード名とは異なる可能性があります。
+9.4.1. format    
+関数formatは、C関数のsprintf同様の形式で、format文字列に従ってフォーマットされた出力を生成します。
+format(formatstr text [, formatarg "any" [, ...] ])
+formatstrは結果がどのようにフォーマットされるかを指定するformat文字列です。
+format specifiersが使用されている以外、format文字列のテキストは結果に直接こーピーされます。
+引き続く関数の引数がどのようにフォーマットされなければならないか、そして結果に挿入されるべきかを定義して、format指示子は文字列の中で代替物のように振舞います。
+それぞれのformatarg引数はそのデータ型にたいする通常の出力規定に従ってテキストに変換され、その後format指示子に従いフォーマットされ、結果文字列に挿入されます。
+format指示子は%文字で導入され、以下の形式です。
+%[position][flags][width]type
+ここで要素フィールドとは以下になっています。
+position (任意)	
+形式n$の文字列で、nは出力する引数のインデックスです。
+インデックス1はformatstrの後の最初の引数です。
+positionが省略されると、一連の中の次の引数がデフォルトとして使用されます。
+flags (任意)	
+format指示子の出力がフォーマットされるかを制御する追加の任意の要素です。
+現在、サポートされているflagはマイナス記号(-)のみで、format指示子の出力が左詰めになるようにします。
+これはwidthフィールドが同時に指定されていない場合効果はありません。
+width (任意)	
+format指示子の出力を表示するminimum文字数を指定します。
+出力は(- flagによって)幅を満たすのに必要な空白が左または右に埋め込まれます。
+余りにも小さな幅は出力の切り取りに効果を及ぼさず、単に無視されます。
+幅は次のいずれかでも指定できます。
+それらは、正の整数、幅としての次の関数引数として使用する星印 (*)、またはnthの関数引数を幅として使用するform  *n$ 文字列です。
+幅が関数引数に起因される場合、その引数はformat指示子の値に使用される引数より先に消費されます。
+幅の引数が負の場合、フィールド長abs(width)の範囲内で結果は(あたかも- flagが指定されたように)左詰めになります。
+type (必須)	
+format指示子の出力を生成するのに使用されるフォーマット変換の型。
+以下の型がサポートされています。
+sは引数の値を単純文字列にフォーマットします。
+NULL値は空文字列として扱われます。
+Iは、必要とされれば二重括弧で括られたSQL識別子として引数値を取り扱います。
+NULL値はエラーです。
+Lは引数値をSQLリテラルとして引用します。NULL値は引用符無しでNULL文字列として表示されます。
+上記で説明したformat指示子に加え、特別の並びの%%がリテラル%文字を出力するために使用することもできます。
+基本的なformat変換の例を幾つか下記に紹介します。
+SELECT format('Hello %s', 'World');
+Result: Hello World
+SELECT format('Testing %s, %s, %s, %%', 'one', 'two', 'three');
+Result: Testing one, two, three, %
+SELECT format('INSERT INTO %I VALUES(%L)', 'Foo bar', E'O\'Reilly');
+Result: INSERT INTO "Foo bar" VALUES('O''Reilly')
+SELECT format('INSERT INTO %I VALUES(%L)', 'locations', E'C:\\Program Files');
+Result: INSERT INTO locations VALUES(E'C:\\Program Files')
+widthフィールドと- flagを使用した例は以下のようです。
+SELECT format('|%10s|', 'foo');
+Result: |       foo|
+SELECT format('|%-10s|', 'foo');
+Result: |foo       |
+SELECT format('|%*s|', 10, 'foo');
+Result: |       foo|
+SELECT format('|%*s|', -10, 'foo');
+Result: |foo       |
+SELECT format('|%-*s|', 10, 'foo');
+Result: |foo       |
+SELECT format('|%-*s|', -10, 'foo');
+Result: |foo       |
+These examples show use of position fields:
+SELECT format('Testing %3$s, %2$s, %1$s', 'one', 'two', 'three');
+Result: Testing three, two, one
+SELECT format('|%*2$s|', 'foo', 10, 'bar');
+Result: |       bar|
+SELECT format('|%1$*2$s|', 'foo', 10, 'bar');
+Result: |       foo|
+標準C関数sprintfとは違って、PostgreSQLの format関数はformat指示子に対し、同一のformat文字列の中でpositionフィールドがあっても無くっても問題としません。
+positionフィールドが無いformat指示子は常に最終の引数が消費された後に次の引数を使用します。
+さらに、format関数はformat文字列で使用されるべき全ての関数引数を要求しません。
+例を示します。
+SELECT format('Testing %3$s, %2$s, %s', 'one', 'two', 'three');
+Result: Testing three, two, three
+%I および %Lのformat指示子は特に動的SQL命令を構築する場合に便利です。
+例40-1を参照してください。
+前のページホーム次のページ算術関数と演算子上に戻るバイナリ文字列関数と演算子
+文字列関数と演算子

@@ -1,0 +1,66 @@
+
+内容(3行)
+memoryの使用量を監視している所からアラートが来て調査した
+アプリケーションのheap使用率は高くなく、top等を見ても他に怪しいプロセスが存在しない
+/proc/meminfoからslab領域の肥大を確認、slabtopでdentry_cacheが肥大化している事がわかったので、echo 2 > /proc/sys/vm/drop_caches を実施した
+何があったのか
+運用中のとあるサーバーのmemoryが残り20%を切ったとアラートが来たため、調査を行った。
+当初は何かしらのプロセスがメモリリークしているか何かだろうとあたりをつけていた。
+freeで現状確認
+キャプチャとるの忘れた…
+が、一旦確かにfree(buffers, cahceを足したもの)がtotalの20%を切っていることを確認。
+topで確認する
+アプリケーションプロセスにメモリを大量消費しているプロセスは無い。
+/proc/meminfoを確認
+同スペック、同系統のアプリケーションが稼働しているサーバーと比較したところ、Slabの項目が消費しているメモリが大きいことが判明。
+slabtopで内容を確認
+確認すると「dentry_cache」「size-64」の項目が使用量の上位を占めていることがわかる。また先程比較した同スペックの他のアプリケーションサーバーと比較しても、この項目の差異が大きいため、dentry_cacheについて調べた。
+dentry(cache)とは
+dentry、これを機に知ったのですが、何かというとファイル名やディレクトリの階層構造、またディレクトリ名とinode情報を関連付けるもの(構造体)らしい。dentry_cacheは、それらの情報のキャッシュだと思って良さそう。
+またdentry_cacheは存在しないディレクトリ情報(inodeを持たないdentry)なんかもキャッシュする(これをnegative dentryというらしい)。negative dentryは、sarコマンド(-vオプション)で確認する事ができる。
+dentunusdがnegative dentryの数になる。
+dentry_cacheについてはいくつかの記事を参考にさせていただいたが、このマシンでnegative dentryが有効に利用される用途が想定できないことから、このcacheを解放しても良いだろうと判断した。(実際には同じ名前で一時ファイルを定期的に作る処理が、実は監視の中であるのだが、同様の処理他のマシンでも実施しているため、今回の問題の最大の原因ではないと考えた)
+cacheの削除
+これについては、詳しい記事が沢山あるのでここでは割愛。
+#内容(3行)
+* memoryの使用量を監視している所からアラートが来て調査した
+* アプリケーションのheap使用率は高くなく、top等を見ても他に怪しいプロセスが存在しない
+* /proc/meminfoからslab領域の肥大を確認、slabtopでdentry_cacheが肥大化している事がわかったので、echo 2 > /proc/sys/vm/drop_caches を実施した
+# 何があったのか
+運用中のとあるサーバーのmemoryが残り20%を切ったとアラートが来たため、調査を行った。
+当初は何かしらのプロセスがメモリリークしているか何かだろうとあたりをつけていた。
+## freeで現状確認
+キャプチャとるの忘れた…
+が、一旦確かにfree(buffers, cahceを足したもの)がtotalの20%を切っていることを確認。
+## topで確認する
+![スクリーンショット 2014-11-04 13.19.07.png](https://qiita-image-store.s3.amazonaws.com/0/9140/e9968bd8-793a-ddb8-b3d1-f5409365e4aa.png "スクリーンショット 2014-11-04 13.19.07.png")
+アプリケーションプロセスにメモリを大量消費しているプロセスは無い。
+## /proc/meminfoを確認
+![スクリーンショット 2014-11-04 13.24.50.png](https://qiita-image-store.s3.amazonaws.com/0/9140/788381fc-79ce-92d9-3df8-998b21eeb564.png "スクリーンショット 2014-11-04 13.24.50.png")
+同スペック、同系統のアプリケーションが稼働しているサーバーと比較したところ、Slabの項目が消費しているメモリが大きいことが判明。
+## slabtopで内容を確認
+![スクリーンショット 2014-11-04 16.09.55.png](https://qiita-image-store.s3.amazonaws.com/0/9140/0608aa08-25de-fbea-924e-b6c2dd615f00.png "スクリーンショット 2014-11-04 16.09.55.png")
+確認すると「dentry_cache」「size-64」の項目が使用量の上位を占めていることがわかる。また先程比較した同スペックの他のアプリケーションサーバーと比較しても、この項目の差異が大きいため、dentry_cacheについて調べた。
+## dentry(cache)とは
+dentry、これを機に知ったのですが、何かというとファイル名やディレクトリの階層構造、またディレクトリ名とinode情報を関連付けるもの(構造体)らしい。dentry_cacheは、それらの情報のキャッシュだと思って良さそう。
+またdentry_cacheは存在しないディレクトリ情報(inodeを持たないdentry)なんかもキャッシュする(これをnegative dentryというらしい)。negative dentryは、sarコマンド(-vオプション)で確認する事ができる。
+![スクリーンショット 2014-11-05 13.39.15.png](https://qiita-image-store.s3.amazonaws.com/0/9140/d2fd460d-7f2a-e52e-42d0-fac8ee6e413d.png "スクリーンショット 2014-11-05 13.39.15.png")
+dentunusdがnegative dentryの数になる。
+dentry_cacheについてはいくつかの記事を参考にさせていただいたが、このマシンでnegative dentryが有効に利用される用途が想定できないことから、このcacheを解放しても良いだろうと判断した。(実際には同じ名前で一時ファイルを定期的に作る処理が、実は監視の中であるのだが、同様の処理他のマシンでも実施しているため、今回の問題の最大の原因ではないと考えた)
+## cacheの削除
+これについては、詳しい記事が沢山あるのでここでは割愛。
+```
+echo 2 > /proc/sys/vm/drop_caches
+```
+上記コマンドでdentry, inodeのキャッシュを削除する。
+## 結果
+slabtop
+![スクリーンショット 2014-11-05 14.18.29.png](https://qiita-image-store.s3.amazonaws.com/0/9140/8d0dfbde-e2cf-8a5a-441d-b86745576c27.png "スクリーンショット 2014-11-05 14.18.29.png")
+free
+![スクリーンショット 2014-11-05 14.20.14.png](https://qiita-image-store.s3.amazonaws.com/0/9140/5bd67679-a761-da24-80a0-f5cf553ab4cf.png "スクリーンショット 2014-11-05 14.20.14.png")
+意図したとおり、dentry_cacheが解放され、freeの容量が増えた。
+## 参考資料
+* [ファイル名を管理するキャッシュdentry](http://monoist.atmarkit.co.jp/mn/articles/1010/06/news107.html)
+* [一時ファイルとdentry cacheとメモリ](http://blog.nomadscafe.jp/2014/01/tmpfile-and-dentry-cache.html)
+* [negative dentry と tmpfs で negative dentry がキャッシュされない理由について調べた](http://d.hatena.ne.jp/hiboma/20140212/1392131530)
+Linux - slab肥大化とdentry_cacheに辿り着くまでの話 - Qiita

@@ -1,0 +1,213 @@
+ マルチコンディション学習
+典型的なトライフォンベースの音響モデルの作成の基本的な流れを下記に示す. 
+学習データの生成 音響特徴量抽出 モノフォンモデルの学習 コンテキスト非依存トライフォンモデルの学習 状態クラスタリング コンテキスト依存トライフォンモデルの学習 
+マルチコンディション学習では,クリーンな音声信号に加えて, ロボットで収録した音声を用いて学習を行う.HARK で音声認識に 用いる音声データは, マイクロホンアレイを用いて収録した音声データに対して,音源分離や 音声強調を行った後のデータである.このため,学習データも 同様に 音源分離や音声強調を行った後のデータを用いる.しかし,音響モデルの学習には 大量の音声データが必要なため,実際にこのようなデータを収録する ことは現実的ではない.このため,音源とマイクロホンアレイの伝達系のインパルス応答を 計測しておき,このインパルス応答をクリーンな音声に畳み込むことよって, マイクロホンアレイを用いて収録した音声データを擬似的に生成して用いる. 具体的なデータの作成は, #.#.# –  節を参照されたい.  音響特徴量抽出  音響特徴量は メル周波数ケプストラム係数 (MFCC) が用いられることが多 い.HARK では,MFCC を用いることもできるが,メルスケール対数スペクトラ ル係数 (MSLS) を用いることを推奨している.MSLS は HARK のネットワークを 用いて,wav ファイルから簡単に作成することができる.MFCC も同様にHARK のネットワークを用いて作成できるが,HTK では MFCC を抽出するため,同様 のツール HCopy が提供されており,MFCC を抽出するという点では,HARK より もパラメータの設定自由度が高い.HCopy の使い方は,HTKBook など他の文献 を参考にされたい.いずれにしても,特徴量抽出後は,HTK を用いて音響モデ ルを作成する. 詳しくは, 10 節を参照されたい.  辞書,MLF(Mater Label File) の準備  
+データの修正 一般的に,配布されているコーパスを用いる場合でも,完全に表記の揺れや, 記述エラーを取り除くことは難しい.事前に気が付くことは難しいが,こうした エラーが性能の低下につながるため,発見し次第修正することが望ましい. words.mlf の作成 特徴量に対応する(仮想的な)ラベル用のファイル名とそのファイルに含ま れる発話を単語単位で書き下した words.mlf を作成する.words.mlf ファイ ルは,ファイルの先頭行が #!MLF!# となっている必要がある.各エントリ は,で囲んだラベルファイル名を先頭行に記述した後,そのラベルファ イル名に含まれる発話を単語ごとに行を分けて記述する.また各エントリの 最後の行には 半角ピリオド . を記述する. 
+#!MLF!#
+"/data/JNAS/pb/bm001a02.lab"
+IQSHUKANBAKARI
+SP
+NYUYOKUO
+SP
+SHUZAISHITA
+.
+"/data/JNAS/pb/bm001a03.lab"
+TEREBIGEMUYA
+SP
+PASOKONDE
+SP
+GEMUO
+SP
+SHITE
+SP
+ASOBU
+.
+単語辞書の作成 音素列と単語を関係付ける単語辞書を作成する. 単に,音素列とそれに対応する単語を以下のように記述する. 
+AME a m e
+TOQTE t o q t e
+SILENCE sil
+SP      sp
+音素MLFの作成 辞書と単語MLFを用いて,音素MLF(phones1.mlf)を作成する.具体的には,HLEd を用いる. 
+% HLEd -d dic -i phones1.mlf phones1.led words.mlf
+phones1.led には,例えば以下のようなルールを記述する. 
+EX
+IS silB silE
+音素MLFのフォーマットは,行の単位が単語から音素に変わったことを除けば, 単語MLFとほぼ同じである.phones1.mlf の例を以下に示す. 
+------------------------------
+#!MLF!#
+"/data/JNAS/pb/bm001a02.lab"
+silB
+i
+q
+sh
+u
+k
+a
+N
+(中略)
+sh
+u
+z
+a
+i
+sh
+i
+t
+a
+silE
+.
+"/data/JNAS/pb/bm001a03.lab"
+特徴量ファイルのリスト train.scp の準備  基本的には,特徴量ファイル名を絶対パスで羅列(一行に1つのファイル名)し たファイルを作成すればよい.ただし,特徴量ファイルの中身に異常な値が含 まれる場合があるので,HList などを用いて値をチェックした上で正常なファ イルのみをリストアップすることが望ましい.  triphone の準備  この作業は,monphone の学習をしてからでもよいが,チェックの結果次第で は phones1.mlf を作り直す可能性があるので,時間を節約する意味でここで行 う. 
+tri.mlf の作成 まず,単純に音素の三つ組みを作成する. 
+% HLEd -i tmptri.mlf mktri.led phones1.mlf
+mktri.led の例を以下に示す. mktri.led に記述している音素は音素コンテクストから除かれる. 
+------------------
+WB sp
+WB silB
+WB silE
+TC
+------------------
+さらに,前後の長母音コンテクストは短母音コンテクストと同一視するなどの 処理を行ってパラメータ数を減らす. 作成された tri.mlf の例を示す. 
+------------------------------
+#!MLF!#
+"/data/JNAS/pb/bm001a02.lab"
+silB
+i+q
+i-q+sh
+q-sh+u q-sh+u
+sh-u+k y-u+k
+u-k+a u-k+a
+k-a+N
+a-N+b
+N-b+a
+b-a+k
+a-k+a
+k-a+r
+a-r+i
+r-i
+sp
+ny+u ny+u
+ny-u+y y-u+y
+u-y+o u-y+o
+y-o+k
+o-k+u o-k+u
+------------------------------
+triphones の作成 triphones は tri.mlf に含まれる音素の三つ組みのリストに相当する. 
+grep -v lab tri.mlf | grep -v MLF | grep -v "\."| sort | uniq > triphones
+physicalTri  学習時(tri.mlf)に出現しない音素コンテクストまで含めた triphone リスト. 整合性のチェック triphones と physicaiTri のチェックを行う. このチェックは重要. 
+monophone の準備  
+HMMのプロトタイプ(proto-ini)を作成 proto は HTK のツール MakeProtoHMMSet を使って作成することができる. MSLS 用の proto-ini の例は以下の通り. 
+~o
+<STREAMINFO> 1 27
+<VECSIZE> 27<NULLD><USER>
+~h "proto"
+<BEGINHMM>
+<NUMSTATES> 5
+<STATE> 2
+<MEAN> 27
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+0.0 0.0 0.0 0.0 0.0 0.0 0.0
+<VARIANCE> 27
+<VARIANCE> 27
+1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+<STATE> 3
+<MEAN> 27
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+<VARIANCE> 27
+1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+<STATE> 4
+<MEAN> 27
+0.0 0.0 0.0 0.0 0.0 0.0 0.0
+<VARIANCE> 27
+1.0 1.0 1.0 1.0 1.0 1.0 1.0
+<TRANSP> 5
+0.0 1.0 0.0 0.0 0.0
+0.0 0.6 0.4 0.0 0.0
+0.0 0.0 0.6 0.4 0.0
+0.0 0.0 0.0 0.7 0.3
+0.0 0.0 0.0 0.0 0.0
+<ENDHMM>
+初期モデルの作成  HCompV を用いて初期 HMM を作成する. 
+%   mkdir hmm0
+%   HCompV -C config.train -f 0.01 -m -S train.scp -M hmm0 proto-ini
+MSLS 用の config.train は以下の通り. 
+SOURCEKIND=USER
+TARGETKIND=USER
+RAWENERGY=F
+この結果, hmm0/ の下に, train.scp に含まれる学習データ全てから 分散と平均を学習した proto と vFloor (初期モデル)が作成される. データ量にもよるが,時間がかかるので注意. 
+初期 monophone の作成 
+hmm0/hmmdefs hmm0/proto のh "proto" の proto を各音素に置き換える.これ を monophone1.list に含まれるすべての音素について行う. monophone1.list は sp を含む音素のリストである. hmm0/macros macro というファイルを vFloor の中身を少し書き換えることで作成する. これは,データが足りないときなどのフロアリングに用いるファイルである. vFloor を macro という名前でコピーした後, MSLS では,下記を macro のヘッダとして追加する. 一般には,ヘッダの記述は,hmmdefs の記述と同じになるようすること. (つまりprotoの内容に依存する) 
+-----
+~o
+<STREAMINFO> 1 27
+<VECSIZE> 27<NULLD><USER>
+-----
+monophone の学習  
+% cd ../ 
+% mkdir hmm1 hmm2 hmm3
+最低 3回は繰り返し学習する.(hmm1 hmm2 hmm3) * hmm1 
+% HERest -C config.train -I phones1.mlf -t 250.0 150.0 1000.0 -T 1 \
+-S train.scp -H hmm0/macros -H hmm0/hmmdefs -M hmm1 
+* hmm2 
+% HERest -C config.train -I phones1.mlf -t 250.0 150.0 1000.0 -T 1 \
+-S train.scp -H hmm1/macros -H hmm1/hmmdefs -M hmm2
+* hmm3 
+% HERest -C config.train -I phones1.mlf -t 250.0 150.0 1000.0 -T 1 \
+-S train.scp -H hmm2/macros -H hmm2/hmmdefs -M hmm3
+再度アライメントを取り直す場合は,この後行うこと.ここでは省略.  triphone の作成  
+monophone から triphone の生成 
+%  mkdir tri0
+%  HHEd -H hmm3/macro -H hmm3/hmmdefs -M tri0 mktri.hed monophones1.list
+triphone の初期学習 
+%  mkdir tri1
+%  HERest -C config.train -I tri.mlf -t 250.0 150.0 1000.0 -T 1 -s stats \
+-S train.scp -H tri0/macro -H tri0/hmmdefs -M tri1 triphones
+10回程度繰り返し学習する. 
+クラスタリング  
+2000状態にクラスタリング 
+% mkdir s2000
+% mkdir s2000/tri-01-00
+% HHEd -H tri10/macro -H tri10/hmmdefs -M s2000/tri-01-00 2000.hed \
+triphones > log.s2000
+ここで,2000.hed は下記の通り. 1 行目の stats は 9.2 で得られる出力ファイル, また,thres はとりあえず,1000前後の値に置き換えて, その後,実行logを見て, 試行錯誤で状態数が2000になるように設定すること. 
+--------------------------------------------------------------
+RO 100.0 stats
+TR 0
+QS "L_Nasal"   { N-*,n-*,m-* }
+QS "R_Nasal"   { *+N,*+n,*+m }
+QS "L_Bilabial"       { p-*,b-*,f-*,m-*,w-* }
+QS "R_Bilabial"       { *+p,*+b,*+f,*+m,*+w }
+…
+TR 2
+TB thres "TC_N2_" {("N","*-N+*","N+*","*-N").state[2]}
+TB thres "TC_a2_" {("a","*-a+*","a+*","*-a").state[2]}
+…        
+TR 1 
+AU "physicalTri"
+ST "Tree,thres"
+--------------------------------------------------------------
+QS
+質問 
+TB
+ここに書いたものがクラスタリングの対象となる. この例では,中心音素が同じもので同じ状態にあるもの以外はまとめない. 
+thres
+分割しきい値 適当に変化させて(1000,1200 など)最終状態数を制御(logをみて確認) 
+学習 クラスタリング後,学習を行う. 
+% mkdir s2000/tri-01-01
+% HERest -C config.train -I tri.mlf -t 250.0 150.0 1000.0 -T 1 \
+-S train.scp -H s2000/tri-01-00/macro -H s2000/tri-01-00/hmmdefs \
+-M s2000/tri-01-01 physicalTri
+3回以上繰り返す. 
+混合数の増加  
+混合数の増加(1mix  2mix の例) 
+%  cd s2000
+%  mkdir tri-02-00
+%  HHEd -H tri-01-03/macro -H tri-01-03/hmmdefs -M tri-02-00 \
+tiedmix2.hed physicalTri
+学習 混合数増加後,学習を行う. 
+%  mkdir tri-02-01
+%  HERest -C config.train -I tri.mlf -t 250.0 150.0 1000.0 -T 1 \
+-S train.scp -H s2000/tri-02-00/macro -H s2000/tri-02-00/hmmdefs \
+-M tri-02-01 physicalTri
+3回以上繰り返す. これらの手順を繰り返し,混合数を16程度まで順次増加させる. なお混合数は,倍々で増加させるのがよい.(2mix  4mix  8mix  16mix) 
+HARK クックブック: マルチコンディション学習

@@ -1,0 +1,52 @@
+次の例では、名前が「E」で始まるすべての市を見つけます。 select distinct city from users
+where city like 'E%' order by city;
+city
+---------------
+East Hartford
+East Lansing
+East Rutherford
+East St. Louis
+Easthampton
+Easton
+Eatontown
+Eau Claire
+...
+次の例では、姓に「ten」が含まれるユーザーを見つけます。select distinct lastname from users
+where lastname like '%ten%' order by lastname;
+lastname
+-------------
+Christensen
+Wooten
+...
+次の例では、3 番目と 4 番目の文字が「ea」になっている市を見つけます。コマンドでは ILIKE を使用して、大文字小文字の区別なしを実演します。 select distinct city from users where city ilike '__EA%' order by city;
+city
+-------------
+Brea
+Clearwater
+Great Falls
+Ocean City
+Olean
+Wheaton
+(6 rows)
+次の例では、デフォルトのエスケープ文字列（\\）を使用して「_」を含む文字列を検索します。 select tablename, "column" from pg_table_def 
+where "column" like '%start\\_%'
+limit 5;
+tablename     |    column
+-------------------+---------------
+stl_s3client      | start_time
+stl_tr_conflict   | xact_start_ts
+stl_undone        | undo_start_ts
+stl_unload_log    | start_time
+stl_vacuum_detail | start_row
+(5 rows)次の例では、エスケープ文字として '^' を指定し、エスケープ文字を使用して「_」を含む文字列を検索します。 select tablename, "column" from pg_table_def 
+where "column" like '%start^_%' escape '^' 
+limit 5;
+tablename     |    column
+-------------------+---------------
+stl_s3client      | start_time
+stl_tr_conflict   | xact_start_ts
+stl_undone        | undo_start_ts
+stl_unload_log    | start_time
+stl_vacuum_detail | start_row
+(5 rows)
+LIKE - Amazon Redshift

@@ -1,0 +1,660 @@
+
+ナイーブベイズ分類器、あるいは単純ベイズ分類器という分類器について解説したいと思います。
+何それ?という方。まずはわけがわからないとしてもWikipediaのエントリを見てみましょう。
+http://ja.wikipedia.org/wiki/単純ベイズ分類器
+上の説明でよくわかったという方はこれ以上先に進む必要はありません。
+ナイーブベイズ分類器は、一言でいうと、
+分類問題ってベイズの定理を使えば解けるんじゃね?
+というものです。入力 $X$ が与えられた時に出力 $Y$ が得られる確率 $P(Y|X)$ は以下の等式で表す事が出来ます:
+$$
+P(Y|X) = \frac{P(Y) P(X|Y)}{P(X)}
+$$
+これがベイズの定理です。 $P(Y)$ は事前分布と呼ばれ、 $P(X|Y)$ は尤度とか条件付き確率とか呼ばれます。例を挙げると、
+X=受信メール, Y={迷惑メールである, 迷惑メールでない}
+X=今日のテレビ番組, Y={見たい, そこそこ見たい, 見たくない}
+X=仕事休んだ, Y={病気です, ずる休みです, 日曜だと思ってました}
+のように、Xには何らかの起こった事象や入力データを、Yにはそこから推論したい事柄などを当てはめるわけです。
+ナイーブベイズ分類器は上の式の右辺を求めるわけですが、右辺を完璧に求めたいわけではなく、あるXに対して
+最も確からしい、つまり最も値が大きくなるYを求めます。この時、Xはもう固定されて変数ではなく定数なので、次の
+右辺に比例する式を求めれば十分です:
+$$
+P(Y|X) \propto P(Y) P(X|Y)
+$$
+分母の $P(X)$ がなくなりました。最終的にはこの式の右辺を求めて、右辺が最大になるYを答えとして求める事になります。
+このままでは単なるベイズ分類器です。ナイーブベイズ分類器は確率分布 $P(X|Y)$ をシンプルな分布に限定します。
+いま、 Xはなんかよくわからんものですが、これを多次元変数であるとしましょう:
+$$
+X = \{x_1, x_2, x_3, \dots, x_N \}
+$$
+なので、みなさんは自分で解きたい問題を頑張って多次元変数にする必要があります。X=俺の今の気持ち、とかしても無理です。
+それはさておき、 $P(X|Y)$ を以下の形に限定します:
+$$
+P(X|Y) = \prod_{i=1}^N P(x_i|Y)
+$$
+これがナイーブベイズ分類器です。以上終わり。
+・・・とこれで終わってしまうと味気なさすぎるので、もうちょっと突っ込んでいきます。
+ナイーブベイズを解く
+今、学習データとしてD個の正解を今持っているとします:
+$$
+\{ (S, T) \} = (X=S_1, Y=T_1), (X=S_2, Y=T_2), ..., (X=S_D, Y=T_D)
+$$
+$(S_j, T_j)$ は入力と出力の正解データのペアを表しています。また、取りうるYの値は離散値で、1, 2, ..., Kのうちのどれかだとします。ちゃんと書くと、
+$$
+Y \in \{ 1, 2, \dots, K \}
+$$
+です。
+正解データはそれぞれ独立していて、データの順番は関係ないものとします。
+独立していない場合というのは、例えば時系列データ等で、 $T_2$ や $S_2$ が $T_1$ や $S_1$ に依存して
+してしまうようなものです。
+具体的な例を挙げると、昨日の試合でボロ負けした場合、チームメンバーの闘志に火がついてしまって、実は今日の試合結果に影響してしまう、といったようなことです。
+さて、求める確率分布はこれら正解データをちゃんと再現出来ていなければなりません。
+その一つのやり方として、(S, T)のデータを全部当てはめてみたら確率が一番大きくなっているものを選びます。
+すなわち、
+$S_1$ だった時 $T_1$ で、かつ $S_2$ だった時 $T_2$ で、かつ ... で、かつ $S_D$ だった時 $T_D$ である確率を最大化する
+先ほどのベイズモデルをちょっと具体的にして、
+$$
+P(Y; \Theta, \Phi) P(X; \Theta|Y)
+$$
+とします。ここで $\Theta = \{ \theta_1, \theta_2, ..., \theta_M \}$、$\Phi = \{ \phi_1, \phi_2, ..., \phi_L \}$ は確率分布を特徴付けるパラメータです。この式を使うと、最大化する確率は
+$$
+M(\Theta, \Phi) = \prod_{j=1}^D P(T_j; \Theta, \Phi) P(S_j; \Theta|T_j)
+$$
+と書くことが出来ます。この時点で、変数はもはや $\Theta$ と $\Phi$ だけです。つまり、やるべきことはMを最大にする $\Theta$ と $\Phi$ を求める事です。
+この式はもう少しだけ整理することが出来ます。 $T_j$ は1からKのどれかなので、正解データを綺麗に1から順番になるように並び替えましょう。正解データは独立なのでいくら並び替えても文句はないはずです。Y=kの正解データの個数を $Q_k$ と書くと、
+$$
+\begin{align*}
+M(\Theta, \Phi) &= P(1; \Theta, \Phi) P(S_1; \Theta|1) \times P(1; \Theta, \Phi) P(S_2; \Theta|1) \times \cdots \times P(1; \Theta, \Phi) P(S_{Q_0}; \Theta|1) \\
+& \times P(2; \Theta, \Phi) P(S_{Q_0 + 1}; \Theta|2) \cdots \\
+&= \prod_{k=1}^K P(k; \Theta, \Phi) \prod_{i = 1}^{Q_k} P(S_{ki}; \Theta|k)
+\end{align*}
+$$
+ここで、 $S_{ki}$ はY=kになるSのi番目、という意味です。
+これでより見通しがよくなりました。
+Mが最大になる必要条件は?それは、微分して0になることです:
+$$
+\begin{align*}
+0 &= \frac{\partial}{\partial \Phi} M(\Theta, \Phi) \\
+0 &= \frac{\partial}{\partial \Theta} M(\Theta, \Phi)
+\end{align*}
+$$
+一般化したのでとりあえずこれ以上先には進めません。次にいくつかの具体例でこの条件を解いてみます。
+ガウスモデル
+$P(x_i|Y)$ にガウス分布を仮定したモデルです:
+$$
+P(X|Y) = \prod_i P(x_i|Y) = \prod_i \frac{1}{\sqrt{2 \pi \sigma_Y^2}} \exp \left( - \frac{1}{2 \sigma_Y^2} (x_i - \mu_{Yi})^2 \right)
+$$
+一つのYにつき、一組の $(\mu_Y, \sigma_Y)$ でモデル化しています。 $\mu_Y$はN次元の量である事に注意です。
+ではガウスモデルを解いてみます。一例として、事前分布 $P(Y)$ は一様分布(定数)だとします。この時、変数 $\Phi$ に相当するものは無いので考える必要はありません。変数 $\Theta$ に対応するのは $(\mu_Y, \sigma_Y)$ です。最大化すべきMは、
+$$
+\begin{align*}
+M(\Theta) &= \prod_{k=1}^K \text{Const} \prod_{q_k = 1}^{Q_k} P(S_{ki}; \Theta|k) \\
+M(\vec{\mu}, \vec{\sigma}) & \propto \prod_{k=1}^K \prod_{i = 1}^{Q_k} \prod_{j = 1}^N \frac{1}{\sqrt{2 \pi \sigma_k^2}} \exp \left( - \frac{1}{2 \sigma_k^2} (s_{kij} - \mu_{kj})^2 \right)
+\end{align*}
+$$
+です。小文字sがえらい事になっていますが、"Y=kになる正解データのi番目の入力データのj番目の要素"です。
+$\vec{\mu}$ のある一つの要素 $\mu_{lm}$ について微分したものが0になる条件は、
+$$
+\begin{align*}
+0 &= \frac{\partial M}{\partial \mu_{lm}} \\
+0 &= \prod_{j \ne m} \prod_{k \ne l} \prod_{i = 1}^{Q_k} \exp \left( - \frac{1}{2 \sigma_k^2} (s_{kij} - \mu_{kj})^2 \right) \frac{\partial}{\partial \mu_{lm}} \prod_{i = 1}^{Q_l} \exp \left( - \frac{1}{2 \sigma_l^2} (s_{lim} - \mu_{lm})^2 \right) \\
+0 &= \frac{\partial}{\partial \mu_{lm}} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \\
+0 &= \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \frac{\partial}{\partial \mu_{lm}} \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \\
+0 &= \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm}) \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \\
+0 &= \left( \sum_{i = 1}^{Q_l} s_{lim} - Q_l \mu_{lm} \right) \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right)
+\end{align*}
+$$
+$\mu_{lm}$ が無限大、という解は置いておいて、
+$$
+\mu_{lm} = \frac{1}{Q_l} \sum_{i = 1}^{Q_l} s_{lim}
+$$
+が得られました。直感的に当たり前な感じでいい感じですね!
+次に、ある $\sigma_l$ について微分したものが0になる条件は、
+$$
+\begin{align*}
+0 &= \frac{\partial M}{\partial \sigma_l} \\
+0 &= \frac{\partial}{\partial \sigma_l} \prod_{k=1}^K (2 \pi \sigma_k^2)^{- \frac{NQ_k}{2}} \exp \left( - \frac{1}{2 \sigma_k^2} \sum_{i = 1}^{Q_k} \sum_{j = 1}^N (s_{kij} - \mu_{kj})^2 \right) \\
+0 &= \frac{\partial}{\partial \sigma_l} \sigma_l^{- NQ_l} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \\
+0 &= - NQ_l \sigma_l^{- NQ_l - 1} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) + \sigma_l^{- NQ_l - 3} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \\
+0 &= - \sigma_l^{- NQ_l - 1} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \left( NQ_l - \sigma_l^{-2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \\
+\end{align*}
+$$
+$\sigma_l$ が無限大、という解は置いておいて、
+$$
+\sigma_l^2 = \frac{1}{NQ_l} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \\
+$$
+が得られました。こちらも直感的に当たり前な感じでいいですね!
+得られた $\vec{\mu}$ 、 $\vec{\sigma}$ を $P(X|Y)$ の式に入れてあげればモデルの完成です。
+ベルヌーイ分布
+各 $x_i$ が二値でしか表されない時に用いられる最もシンプルなモデルです。値はなんでもいいんですが、例えば0か1しかない、つまり
+$$
+{}^\forall i, \quad x_i \in \{ 0, 1 \}
+$$
+な状況において、次のような式で表されます:
+$$
+P(x_i|Y) = \delta(1, x_i) p_i + \delta(0, x_i)(1 - p_i)
+$$
+ここで、 $\delta(\cdot)$ はデルタ関数です。 $p_i$ は $x_i=1$ となる確率そのものを表している変数です。
+またも、事前分布 $P(Y)$ は一様分布(定数)だとします。この時、変数 $\Phi$ に相当するものは無いので考える必要はありません。変数 $\Theta$ に対応するのは $p_i$ です。最大化すべきMは、
+$$
+\begin{align*}
+M(\Theta) &= \prod_{k=1}^K \text{Const} \prod_{q_k = 1}^{Q_k} P(S_{ki}; \Theta|k) \\
+M(\vec{p}) & \propto \prod_{k=1}^K \prod_{i = 1}^{Q_k} \prod_{j = 1}^N \left( \delta(1, s_{kij}) p_{kj} + \delta(0, s_{kij})(1 - p_{kj}) \right)
+\end{align*}
+$$
+です。$p_{kj}$ はY=kの時の $x_j$ の確率そのものを表しています。 $\vec{p}$ のある一つの要素 $p_{lm}$ について微分したものが0になる条件は、
+$$
+\begin{align*}
+0 &= \frac{\partial M}{\partial p_{lm}} \\
+0 &= \frac{\partial}{\partial p_{lm}} \prod_{i = 1}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\
+0 &= \sum_{u=1}^{Q_l} \frac{\partial}{\partial p_{lm}} \left( \delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm}) \right) \prod_{i \ne u}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\
+0 &= \sum_{u=1}^{Q_l} \left( \delta(1, s_{lum}) - \delta(0, s_{lum}) \right) \prod_{i \ne u}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\
+0 &= \left( \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum}) - \delta(0, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} \right) \prod_{i = 1}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\
+\end{align*}
+$$
+最初のカッコの中を0にすればいいので、
+$$
+\begin{align*}
+0 &= \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum}) - \delta(0, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} \\
+0 &= \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} - \sum_{u=1}^{Q_l} \frac{\delta(0, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} \\
+0 &= \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum})}{\delta(1, s_{lum}) p_{lm}} - \sum_{u=1}^{Q_l} \frac{\delta(0, s_{lum})}{\delta(0, s_{lum})(1 - p_{lm})} \\
+0 &= \sum_{u=1}^{Q_l} \delta(1, s_{lum}) \frac{1}{p_{lm}} - \sum_{u=1}^{Q_l} \delta(0, s_{lum}) \frac{1}{1 - p_{lm}} \\
+\end{align*}
+$$
+これで、確率の比
+$$
+\begin{align*}
+\frac{\sum_{u=1}^{Q_l} \delta(1, s_{lum})}{\sum_{u=1}^{Q_l} \delta(0, s_{lum})} &= \frac{p_{lm}}{1 - p_{lm}}
+\end{align*}
+$$
+が得られます。 $p_{lm}$ は、
+$$
+Q_l = \sum_{u=1}^{Q_l} \delta(0, s_{lum}) + \sum_{u=1}^{Q_l} \delta(1, s_{lum})
+$$
+という関係を使って、
+$$
+\begin{align*}
+p_{lm} \sum_{u=1}^{Q_l} \delta(0, s_{lum}) &= (1 - p_{lm}) \sum_{u=1}^{Q_l} \delta(1, s_{lum}) \\
+p_{lm} &= \frac{\sum_{u=1}^{Q_l} \delta(1, s_{lum})}{\sum_{u=1}^{Q_l} \delta(0, s_{lum}) + \sum_{u=1}^{Q_l} \delta(1, s_{lum})} \\
+p_{lm} &= \frac{1}{Q_l} \sum_{u=1}^{Q_l} \delta(1, s_{lum})
+\end{align*}
+$$
+で得ることができます。この式の右辺は $s_{lum} = 1$となる正解データの個数を全体で割ったものです。
+当たり前だと思われている事実をちゃんと導けましたね!
+多項分布モデルと文書分類
+この節では、文書分類を具体例に多項分布のモデルを解いてみます。
+ナイーブベイズがよく使われる例に文書分類タスクがあります。文書分類タスクというのは、文書が与えられた時に例えばそのカテゴリやトピック、タグのようなものを割り当てるというタスクです。別に文書と言っていますがメールだったりツイートだったり、なんかまとまったテキストの事です。迷惑メールの自動振り分けなんかもこれで、迷惑メールであるかそうでないかの2つのカテゴリを割り当てる事に対応します。
+文書分類タスクをナイーブベイズで解く際に用いられる最も単純なモデルは多項分布モデルです。このモデルは文書を確率で表現する際に、
+文書は単語の並びである
+文書中、ある単語が現れる確率は他の単語に依存しない
+文書中、ある単語がi番目に現れる確率はiに依存しない
+という条件を課す事で得られます。この条件でモデルを作ってみましょう。事前分布 $P(Y)$ はひとまず置いておきます。
+条件付き確率 $P(X|Y)$ は、Xを単語の並び $X = \{w_1, w_2, \dots, w_N \}$ ( $w_i$ はある単語)として
+$$
+P(X|Y) = \prod_{i=1}^N P(w_i|Y)
+$$
+と書けます。条件2があるので確率が単語毎にバラバラになりますね。次に、条件3があるので、 $P(w_i|Y)$ は文書中の出現位置iに依存しません。なので、単語 $w_i$ を50音順にソートしてしまいましょう。例えば、この りんご は おいしい りんご だという文はおいしい この だ は りんご りんごになります。単語にIDを1から順に振って、 $P(\text{ID}|Y) = p_{\text{ID}}$ とすると、
+$$
+P(X|Y) = \prod_{i=1}^V p_i^{c_i}
+$$
+ここで、Vは単語数(単語IDの上限)、 $c_i$ は単語ID i番の単語の文書X中での出現数になります。
+実は、この節のタイトルは多項分布モデルとなっていますが、厳密な意味では多項分布の形にはなっていません。原因は、文書を多次元変数として捉えるときに、今回の様に一次元系列として捉えるか、単語の出現頻度を文書の表現として捉えるかの立場の違いによります。
+私は今回のように問題を捉える方が直感的で理解しやすいと思います。なのでここではbag of wordsとか一切出てきません。
+事前分布を一様として解いてみる
+まずは一様な事前分布を仮定して解いてみます。最大化すべき関数Mは
+$$
+\begin{align*}
+M(\Theta, \Phi) &= \prod_{k=1}^K P(k; \Theta, \Phi) \prod_{i = 1}^{Q_k} P(S_{ki}; \Theta|k) \\
+& \propto \prod_{k=1}^K \prod_{i = 1}^{Q_k} \prod_{j=1}^V p_{kj}^{c_{kij}} \\
+\end{align*}
+$$
+です。事前分布は定数項なのでカットします。また、 $S_{ki}$ に対応するのは $p_{kj}$ と $c_{kij}$ です。 $p_{kj}$ はカテゴリがkである文書が持つ、単語IDがjの単語の確率です。 $c_{kij}$ はカテゴリがkである文書の、i番目の正解データの、単語IDがjの単語が出てくる数、です。
+ちょっと見通しが悪いので、iに関する積をまとめて指数の肩に載せましょう:
+$$
+\begin{align*}
+M(\vec{p}) &\propto \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\sum_{i = 1}^{Q_k} c_{kij}} \\
+\end{align*}
+$$
+ここで、
+$$
+\tau_{kj} = \sum_{i = 1}^{Q_k} c_{kij}
+$$
+はカテゴリがkである正解データに含まれる単語ID jの単語の総数、です。
+$$
+\begin{align*}
+M(\vec{p}) &\propto \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\
+\end{align*}
+$$
+さて、Mを $\vec{p}$ のある一つの要素 $p_{lm}$ で微分して極値を求めましょう。ただし、今回は $p_{kj}$ に以下の条件が付きます:
+$$
+1 = \sum_{j = 1}^V p_{kj}
+$$
+この条件をみたすようにMを最大化するためにラグランジュの未定定数法を使います。
+$$
+\begin{align*}
+0 &= \frac{\partial}{\partial p_{lm}} \left( \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} - \beta \left(1 - \sum_{j = 1}^V p_{kj} \right) \right) \\
+0 &= \tau_{lm} p_{lm}^{\tau_{lm} - 1} \prod_{k \ne l}^K \prod_{j \ne m}^V p_{kj}^{\tau_{kj}} - \beta \\
+0 &= \tau_{lm} p_{lm}^{- 1} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} - \beta \\
+p_{lm} &= \frac{\tau_{lm}}{\beta} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\
+\end{align*}
+$$
+ここで、
+$$
+1 = \sum_{j = 1}^V p_{kj}
+$$
+の条件を使って、両辺和を取ると、
+$$
+\begin{align*}
+1 &= \sum_{m=1}^V \frac{\tau_{lm}}{\beta} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\
+\beta &= \sum_{m=1}^V \tau_{lm} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}}
+\end{align*}
+$$
+これを $\beta$ に代入してあげれば、
+$$
+\begin{align*}
+p_{lm} &= \frac{\tau_{lm}}{\beta} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\
+&= \frac{\tau_{lm}}{\sum_{m=1}^V \tau_{lm}}
+\end{align*}
+$$
+もう一度説明すると、 $\tau_{lm}$ は、カテゴリがlである正解データに含まれる単語ID mの単語の総数、です。
+頻度0問題とディリクレ事前分布
+上で解いた分布には実用上大きな問題があります。それは、
+正解データに一つも含まれない単語(未知語)があると確率が0になってしまう
+というものです。式中では $\tau_{lm}$ に相当します。せっかくなので、この問題に事前分布を設定することによって対処します。業界では、この事を事前知識を与える等と言ったりします。
+多項分布モデルでよく使われる事前分布はディリクレ分布です。ディリクレ分布というのは下の形のような分布です:
+$$
+\begin{align*}
+& P(Y) = P(\vec{p}; \vec{\alpha}) = \frac{1}{Z({\vec{\alpha}})} \prod_{i=1}^V p_i^{\alpha_i - 1} \\
+& Z(\vec{\alpha}) = \frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} \\
+& 1 = \sum_{i=1}^V p_i
+\end{align*}
+$$
+$\Gamma$はガンマ関数です。
+これをいまの問題設定に当てはめてみます。この分布はこのままだと連続的に変化するベクトル $\vec{p}$ に対する分布になっているので、
+離散的な、すなわち、空間上のあるK点でだけ値を持つような分布に限定します。
+$$
+\int d\vec{p} = \int \left( \sum_{k=1}^K \delta(p, \vec{p_k}) \right) d\vec{p}
+$$
+要は確率の定義域を変えます。すると、 $P(Y)$ のあるY=kでの確率は以下の様に書けるはずです:
+$$
+\begin{align*}
+& P(\vec{p}; \vec{\alpha}) = \frac{1}{Z({\vec{\alpha}})} \prod_{i=1}^V p_{ki}^{\alpha_i - 1} \\
+& Z(\vec{\alpha}) = \sum_{k=1}^K \prod_{i=1}^V p_{ki}^{\alpha_i - 1} \\
+& 1 = \sum_{i=1}^V p_{ki}
+\end{align*}
+$$
+2つ目の式、kに関する和が確率全部足したら1、という条件を満たすための定数項を表しています。この関数 $Z$ は分配関数とも呼ばれています(今回はこのあたりには突っ込んでいきません)。
+この事前分布を持つような多項分布モデルにおけるMは次のようになります:
+$$
+\begin{align*}
+M(\vec{p}; \vec{\alpha}) &= \prod_{k=1}^K P(k; \Theta, \Phi) \prod_{i = 1}^{Q_k} P(S_{ki}; \Theta|k) \\
+& \propto \frac{1}{Z({\vec{\alpha}})} \prod_{k=1}^K \prod_{i=1}^V p_{ki}^{\alpha_i - 1} \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\
+&= \frac{1}{Z({\vec{\alpha}})} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj} + \alpha_j - 1} \\
+\end{align*}
+$$
+事前分布が一様の場合と比べてほとんど形が一緒ですね。定数項のZを除くと $\tau_{kj}$ が $\tau_{kj} + \alpha_j - 1$ に変わっただけです。つまり、 $p_{lm}$ は
+$$
+\begin{align*}
+p_{lm} &= \frac{\tau_{lm} + \alpha_m - 1}{\sum_{m=1}^V (\tau_{lm} + \alpha_m - 1) }
+\end{align*}
+$$
+である、という事です。これでディリクレ事前分布を仮定した多項分布モデルが解けました。
+で、この $\alpha_i$ って一体どうやって決めればいいのでしょうか?ひとつの方法は、適当に決めるです。いや、本当です。
+例えば、 $\alpha_m = \alpha + 1$ ( $\alpha$ は定数)とおいて、
+$$
+\begin{align*}
+p_{lm} &= \frac{\tau_{lm} + \alpha}{\sum_{m=1}^V \tau_{lm} + V \alpha}
+\end{align*}
+$$
+とする事ができます。これは加算スムージングと呼ばれている方法になります。あとは $\alpha = 1$ なりなんなり適当に設定してください。
+周辺尤度最大化法と呼ばれる方法もあります。周辺尤度は入力データの出現確率 $P(S_1, S_2, \dots, S_D)$ を最大にするようにパラメータを調整するというものです。 $S_i$ は正解の入力データです。それではやってみましょう。周辺尤度を $L$ とします。
+$$
+\begin{align*}
+L &= \prod_{i=1}^D P(S_i) \\
+&= \prod_{i=1}^D \int P(S_i|Y) P(Y) dY \\
+&= \prod_{i=1}^D \int \left( \prod_{j=1}^V p_j^{c_ij} \frac{1}{Z({\vec{\alpha}})} \prod_{u=1}^V p_u^{\alpha_u - 1} \right) d \vec{p} \\
+&= \left( \frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} \right)^{-D} \prod_{i=1}^D \int \left( \prod_{u=1}^V p_u^{c_{iu} + \alpha_u - 1} \right) d\vec{p} \\
+&= \left( \frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} \right)^{-D} \prod_{i=1}^D \left( \frac{\prod_{j=1}^V \Gamma(c_{ij} + \alpha_j)}{\Gamma(\sum_{j=1}^V (c_{ij} + \alpha_j))} \right) \\
+&= \prod_{i=1}^D \frac{\prod_{j=1}^V \Gamma(c_{ij} + \alpha_j) \Gamma(\alpha_j)}{\Gamma(\sum_{j=1}^V (c_{ij} + \alpha_j)) \Gamma(\sum_{j=1}^V \alpha_j)}
+\end{align*}
+$$
+途中でディリクレ分布の正規化に関する等式
+$$
+\frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} = \int \prod_{i=1}^V p_i^{\alpha_i - 1} d\vec{p}
+$$
+を使いました。あとは $\alpha$を色々動かして、最大値を探せばOKです。多分この式は解析的に解けず、数値的に解くことになります。
+おわりに
+いかがでしたでしょうか?なるべく途中式を書いていたので数式アレルギーの人はきつかったかもしれません。
+しかし、ナイーブベイズ分類器は文書分類の文脈での解説は良くありますが、解の導出を含めた詳細な日本語の解説があまり見当たらなかったので書いてみました。ナイーブベイズ分類器は、分布を相関の無い独立なものに限定したベイズモデルである事を理解できれば、自分で色々いじることも可能です。
+=============================================
+ナイーブベイズ分類器、あるいは単純ベイズ分類器という分類器について解説したいと思います。
+何それ?という方。まずはわけがわからないとしてもWikipediaのエントリを見てみましょう。
+http://ja.wikipedia.org/wiki/単純ベイズ分類器
+上の説明でよくわかったという方はこれ以上先に進む必要はありません。
+ナイーブベイズ分類器は、一言でいうと、
+分類問題ってベイズの定理を使えば解けるんじゃね?
+というものです。入力 $X$ が与えられた時に出力 $Y$ が得られる確率 $P(Y|X)$ は以下の等式で表す事が出来ます:
+$$
+P(Y|X) = \frac{P(Y) P(X|Y)}{P(X)}
+$$
+これがベイズの定理です。 $P(Y)$ は事前分布と呼ばれ、 $P(X|Y)$ は尤度とか条件付き確率とか呼ばれます。例を挙げると、
+* X=受信メール, Y={迷惑メールである, 迷惑メールでない}
+* X=今日のテレビ番組, Y={見たい, そこそこ見たい, 見たくない}
+* X=仕事休んだ, Y={病気です, ずる休みです, 日曜だと思ってました}
+のように、Xには何らかの起こった事象や入力データを、Yにはそこから推論したい事柄などを当てはめるわけです。
+ナイーブベイズ分類器は上の式の右辺を求めるわけですが、右辺を完璧に求めたいわけではなく、あるXに対して
+最も確からしい、つまり最も値が大きくなるYを求めます。この時、Xはもう固定されて変数ではなく定数なので、次の
+右辺に比例する式を求めれば十分です:
+$$
+P(Y|X) \propto P(Y) P(X|Y)
+$$
+分母の $P(X)$ がなくなりました。最終的にはこの式の右辺を求めて、右辺が最大になるYを答えとして求める事になります。
+このままでは単なるベイズ分類器です。ナイーブベイズ分類器は確率分布 $P(X|Y)$ をシンプルな分布に限定します。
+いま、 Xはなんかよくわからんものですが、これを多次元変数であるとしましょう:
+$$
+X = \\{x_1, x_2, x_3, \dots, x_N \\}
+$$
+なので、みなさんは自分で解きたい問題を頑張って多次元変数にする必要があります。X=俺の今の気持ち、とかしても無理です。
+それはさておき、 $P(X|Y)$ を以下の形に限定します:
+$$
+P(X|Y) = \prod_{i=1}^N P(x_i|Y)
+$$
+これがナイーブベイズ分類器です。以上終わり。
+・・・とこれで終わってしまうと味気なさすぎるので、もうちょっと突っ込んでいきます。
+ナイーブベイズを解く
+------------------
+今、学習データとしてD個の正解を今持っているとします:
+$$
+\\{ (S, T) \\} = (X=S_1, Y=T_1), (X=S_2, Y=T_2), ..., (X=S_D, Y=T_D)
+$$
+$(S_j, T_j)$ は入力と出力の正解データのペアを表しています。また、取りうるYの値は離散値で、1, 2, ..., Kのうちのどれかだとします。ちゃんと書くと、
+$$
+Y \in \\{ 1, 2, \dots, K \\}
+$$
+です。
+正解データはそれぞれ独立していて、データの順番は関係ないものとします。
+独立していない場合というのは、例えば時系列データ等で、 $T_2$ や $S_2$ が $T_1$ や $S_1$ に依存して
+してしまうようなものです。
+具体的な例を挙げると、昨日の試合でボロ負けした場合、チームメンバーの闘志に火がついてしまって、実は今日の試合結果に影響してしまう、といったようなことです。
+さて、求める確率分布はこれら正解データをちゃんと再現出来ていなければなりません。
+その一つのやり方として、(S, T)のデータを全部当てはめてみたら確率が一番大きくなっているものを選びます。
+すなわち、
+> $S_1$ だった時 $T_1$ で、かつ $S_2$ だった時 $T_2$ で、かつ ... で、かつ $S_D$ だった時 $T_D$ である確率を最大化する
+先ほどのベイズモデルをちょっと具体的にして、
+$$
+P(Y; \Theta, \Phi) P(X; \Theta|Y)
+$$
+とします。ここで $\Theta = \\{ \theta_1, \theta_2, ..., \theta_M \\}$、$\Phi = \\{ \phi_1, \phi_2, ..., \phi_L \\}$ は確率分布を特徴付けるパラメータです。この式を使うと、最大化する確率は
+$$
+M(\Theta, \Phi) = \prod_{j=1}^D P(T_j; \Theta, \Phi) P(S_j; \Theta|T_j)
+$$
+と書くことが出来ます。この時点で、変数はもはや $\Theta$ と $\Phi$ だけです。つまり、やるべきことはMを最大にする $\Theta$ と $\Phi$ を求める事です。
+この式はもう少しだけ整理することが出来ます。 $T_j$ は1からKのどれかなので、正解データを綺麗に1から順番になるように並び替えましょう。正解データは独立なのでいくら並び替えても文句はないはずです。Y=kの正解データの個数を $Q_k$ と書くと、
+$$
+\begin{align\*}
+M(\Theta, \Phi) &= P(1; \Theta, \Phi) P(S_1; \Theta|1) \times P(1; \Theta, \Phi) P(S_2; \Theta|1) \times \cdots \times P(1; \Theta, \Phi) P(S_{Q_0}; \Theta|1) \\\\
+& \times P(2; \Theta, \Phi) P(S_{Q_0 + 1}; \Theta|2) \cdots \\\\
+&= \prod_{k=1}^K P(k; \Theta, \Phi) \prod_{i = 1}^{Q_k} P(S_{ki}; \Theta|k)
+\end{align\*}
+$$
+ここで、 $S_{ki}$ はY=kになるSのi番目、という意味です。
+これでより見通しがよくなりました。
+Mが最大になる必要条件は?それは、微分して0になることです:
+$$
+\begin{align\*}
+0 &= \frac{\partial}{\partial \Phi} M(\Theta, \Phi) \\\\
+0 &= \frac{\partial}{\partial \Theta} M(\Theta, \Phi)
+\end{align\*}
+$$
+一般化したのでとりあえずこれ以上先には進めません。次にいくつかの具体例でこの条件を解いてみます。
+ガウスモデル
+-----------
+$P(x_i|Y)$ にガウス分布を仮定したモデルです:
+$$
+P(X|Y) = \prod_i P(x_i|Y) = \prod_i \frac{1}{\sqrt{2 \pi \sigma_Y^2}} \exp \left( - \frac{1}{2 \sigma_Y^2} (x_i - \mu_{Yi})^2 \right)
+$$
+一つのYにつき、一組の $(\mu_Y, \sigma_Y)$ でモデル化しています。 $\mu_Y$はN次元の量である事に注意です。
+ではガウスモデルを解いてみます。一例として、事前分布 $P(Y)$ は一様分布(定数)だとします。この時、変数 $\Phi$ に相当するものは無いので考える必要はありません。変数 $\Theta$ に対応するのは $(\mu_Y, \sigma_Y)$ です。最大化すべきMは、
+$$
+\begin{align\*}
+M(\Theta) &= \prod_{k=1}^K \text{Const} \prod_{q_k = 1}^{Q_k} P(S_{ki}; \Theta|k) \\\\
+M(\vec{\mu}, \vec{\sigma}) & \propto \prod_{k=1}^K \prod_{i = 1}^{Q_k} \prod_{j = 1}^N \frac{1}{\sqrt{2 \pi \sigma_k^2}} \exp \left( - \frac{1}{2 \sigma_k^2} (s_{kij} - \mu_{kj})^2 \right)
+\end{align\*}
+$$
+です。小文字sがえらい事になっていますが、"Y=kになる正解データのi番目の入力データのj番目の要素"です。
+$\vec{\mu}$ のある一つの要素 $\mu_{lm}$ について微分したものが0になる条件は、
+$$
+\begin{align\*}
+0 &= \frac{\partial M}{\partial \mu_{lm}} \\\\
+0 &= \prod_{j \ne m} \prod_{k \ne l} \prod_{i = 1}^{Q_k} \exp \left( - \frac{1}{2 \sigma_k^2} (s_{kij} - \mu_{kj})^2 \right) \frac{\partial}{\partial \mu_{lm}} \prod_{i = 1}^{Q_l} \exp \left( - \frac{1}{2 \sigma_l^2} (s_{lim} - \mu_{lm})^2 \right) \\\\
+0 &= \frac{\partial}{\partial \mu_{lm}} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \\\\
+0 &= \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \frac{\partial}{\partial \mu_{lm}} \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \\\\
+0 &= \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm}) \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right) \\\\
+0 &= \left( \sum_{i = 1}^{Q_l} s_{lim} - Q_l \mu_{lm} \right) \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} (s_{lim} - \mu_{lm})^2 \right)
+\end{align\*}
+$$
+$\mu_{lm}$ が無限大、という解は置いておいて、
+$$
+\mu_{lm} = \frac{1}{Q_l} \sum_{i = 1}^{Q_l} s_{lim}
+$$
+が得られました。直感的に当たり前な感じでいい感じですね!
+次に、ある $\\sigma_l$ について微分したものが0になる条件は、
+$$
+\begin{align\*}
+0 &= \frac{\partial M}{\partial \sigma_l} \\\\
+0 &= \frac{\partial}{\partial \sigma_l} \prod_{k=1}^K (2 \pi \sigma_k^2)^{- \frac{NQ_k}{2}} \exp \left( - \frac{1}{2 \sigma_k^2} \sum_{i = 1}^{Q_k} \sum_{j = 1}^N (s_{kij} - \mu_{kj})^2 \right) \\\\
+0 &= \frac{\partial}{\partial \sigma_l} \sigma_l^{- NQ_l} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \\\\
+0 &= - NQ_l \sigma_l^{- NQ_l - 1} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) + \sigma_l^{- NQ_l - 3} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \\\\
+0 &= - \sigma_l^{- NQ_l - 1} \exp \left( - \frac{1}{2 \sigma_l^2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \left( NQ_l - \sigma_l^{-2} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \right) \\\\
+\end{align\*}
+$$
+$\sigma_l$ が無限大、という解は置いておいて、
+$$
+\sigma_l^2 = \frac{1}{NQ_l} \sum_{i = 1}^{Q_l} \sum_{j = 1}^N (s_{lij} - \mu_{lj})^2 \\\\
+$$
+が得られました。こちらも直感的に当たり前な感じでいいですね!
+得られた $\vec{\mu}$ 、 $\vec{\sigma}$ を $P(X|Y)$ の式に入れてあげればモデルの完成です。
+ベルヌーイ分布
+-------------
+各 $x_i$ が二値でしか表されない時に用いられる最もシンプルなモデルです。値はなんでもいいんですが、例えば0か1しかない、つまり
+$$
+{}^\forall i, \quad x_i \in \\{ 0, 1 \\}
+$$
+な状況において、次のような式で表されます:
+$$
+P(x_i|Y) = \delta(1, x_i) p_i + \delta(0, x_i)(1 - p_i)
+$$
+ここで、 $\delta(\cdot)$ はデルタ関数です。 $p_i$ は $x_i=1$ となる確率そのものを表している変数です。
+またも、事前分布 $P(Y)$ は一様分布(定数)だとします。この時、変数 $\Phi$ に相当するものは無いので考える必要はありません。変数 $\Theta$ に対応するのは $p_i$ です。最大化すべきMは、
+$$
+\begin{align\*}
+M(\Theta) &= \prod_{k=1}^K \text{Const} \prod_{q_k = 1}^{Q_k} P(S_{ki}; \Theta|k) \\\\
+M(\vec{p}) & \propto \prod_{k=1}^K \prod_{i = 1}^{Q_k} \prod_{j = 1}^N \left( \delta(1, s_{kij}) p_{kj} + \delta(0, s_{kij})(1 - p_{kj}) \right)
+\end{align\*}
+$$
+です。$p_{kj}$ はY=kの時の $x_j$ の確率そのものを表しています。 $\vec{p}$ のある一つの要素 $p_{lm}$ について微分したものが0になる条件は、
+$$
+\begin{align\*}
+0 &= \frac{\partial M}{\partial p_{lm}} \\\\
+0 &= \frac{\partial}{\partial p_{lm}} \prod_{i = 1}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\\\
+0 &= \sum_{u=1}^{Q_l} \frac{\partial}{\partial p_{lm}} \left( \delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm}) \right) \prod_{i \ne u}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\\\
+0 &= \sum_{u=1}^{Q_l} \left( \delta(1, s_{lum}) - \delta(0, s_{lum}) \right) \prod_{i \ne u}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\\\
+0 &= \left( \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum}) - \delta(0, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} \right) \prod_{i = 1}^{Q_l} \left( \delta(1, s_{lim}) p_{lm} + \delta(0, s_{lim})(1 - p_{lm}) \right) \\\\
+\end{align\*}
+$$
+最初のカッコの中を0にすればいいので、
+$$
+\begin{align\*}
+0 &= \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum}) - \delta(0, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} \\\\
+0 &= \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} - \sum_{u=1}^{Q_l} \frac{\delta(0, s_{lum})}{\delta(1, s_{lum}) p_{lm} + \delta(0, s_{lum})(1 - p_{lm})} \\\\
+0 &= \sum_{u=1}^{Q_l} \frac{\delta(1, s_{lum})}{\delta(1, s_{lum}) p_{lm}} - \sum_{u=1}^{Q_l} \frac{\delta(0, s_{lum})}{\delta(0, s_{lum})(1 - p_{lm})} \\\\
+0 &= \sum_{u=1}^{Q_l} \delta(1, s_{lum}) \frac{1}{p_{lm}} - \sum_{u=1}^{Q_l} \delta(0, s_{lum}) \frac{1}{1 - p_{lm}} \\\\
+\end{align\*}
+$$
+これで、確率の比
+$$
+\begin{align\*}
+\frac{\sum_{u=1}^{Q_l} \delta(1, s_{lum})}{\sum_{u=1}^{Q_l} \delta(0, s_{lum})} &= \frac{p_{lm}}{1 - p_{lm}}
+\end{align\*}
+$$
+が得られます。 $p_{lm}$ は、
+$$
+Q_l = \sum_{u=1}^{Q_l} \delta(0, s_{lum}) + \sum_{u=1}^{Q_l} \delta(1, s_{lum})
+$$
+という関係を使って、
+$$
+\begin{align\*}
+p_{lm} \sum_{u=1}^{Q_l} \delta(0, s_{lum}) &= (1 - p_{lm}) \sum_{u=1}^{Q_l} \delta(1, s_{lum}) \\\\
+p_{lm} &= \frac{\sum_{u=1}^{Q_l} \delta(1, s_{lum})}{\sum_{u=1}^{Q_l} \delta(0, s_{lum}) + \sum_{u=1}^{Q_l} \delta(1, s_{lum})} \\\\
+p_{lm} &= \frac{1}{Q_l} \sum_{u=1}^{Q_l} \delta(1, s_{lum})
+\end{align\*}
+$$
+で得ることができます。この式の右辺は $s_{lum} = 1$となる正解データの個数を全体で割ったものです。
+当たり前だと思われている事実をちゃんと導けましたね!
+多項分布モデルと文書分類
+-----------------------
+この節では、文書分類を具体例に多項分布のモデルを解いてみます。
+ナイーブベイズがよく使われる例に文書分類タスクがあります。文書分類タスクというのは、文書が与えられた時に例えばそのカテゴリやトピック、タグのようなものを割り当てるというタスクです。別に文書と言っていますがメールだったりツイートだったり、なんかまとまったテキストの事です。迷惑メールの自動振り分けなんかもこれで、迷惑メールであるかそうでないかの2つのカテゴリを割り当てる事に対応します。
+文書分類タスクをナイーブベイズで解く際に用いられる最も単純なモデルは多項分布モデルです。このモデルは文書を確率で表現する際に、
+1. 文書は単語の並びである
+2. 文書中、ある単語が現れる確率は他の単語に依存しない
+3. 文書中、ある単語がi番目に現れる確率はiに依存しない
+という条件を課す事で得られます。この条件でモデルを作ってみましょう。事前分布 $P(Y)$ はひとまず置いておきます。
+条件付き確率 $P(X|Y)$ は、Xを単語の並び $X = \\{w_1, w_2, \dots, w_N \\}$ ( $w_i$ はある単語)として
+$$
+P(X|Y) = \prod_{i=1}^N P(w_i|Y)
+$$
+と書けます。条件2があるので確率が単語毎にバラバラになりますね。次に、条件3があるので、 $P(w_i|Y)$ は文書中の出現位置iに依存しません。なので、単語 $w_i$ を50音順にソートしてしまいましょう。例えば、この りんご は おいしい りんご だという文はおいしい この だ は りんご りんごになります。単語にIDを1から順に振って、 $P(\text{ID}|Y) = p_{\text{ID}}$ とすると、
+$$
+P(X|Y) = \prod_{i=1}^V p_i^{c_i}
+$$
+ここで、Vは単語数(単語IDの上限)、 $c_i$ は単語ID i番の単語の文書X中での出現数になります。
+実は、この節のタイトルは多項分布モデルとなっていますが、厳密な意味では多項分布の形にはなっていません。原因は、文書を多次元変数として捉えるときに、今回の様に一次元系列として捉えるか、単語の出現頻度を文書の表現として捉えるかの立場の違いによります。
+私は今回のように問題を捉える方が直感的で理解しやすいと思います。なのでここではbag of wordsとか一切出てきません。
+### 事前分布を一様として解いてみる
+まずは一様な事前分布を仮定して解いてみます。最大化すべき関数Mは
+$$
+\begin{align\*}
+M(\Theta, \Phi) &= \prod_{k=1}^K P(k; \Theta, \Phi) \prod_{i = 1}^{Q_k} P(S_{ki}; \Theta|k) \\\\
+& \propto \prod_{k=1}^K \prod_{i = 1}^{Q_k} \prod_{j=1}^V p_{kj}^{c_{kij}} \\\\
+\end{align\*}
+$$
+です。事前分布は定数項なのでカットします。また、 $S_{ki}$ に対応するのは $p_{kj}$ と $c_{kij}$ です。 $p_{kj}$ はカテゴリがkである文書が持つ、単語IDがjの単語の確率です。 $c_{kij}$ はカテゴリがkである文書の、i番目の正解データの、単語IDがjの単語が出てくる数、です。
+ちょっと見通しが悪いので、iに関する積をまとめて指数の肩に載せましょう:
+$$
+\begin{align\*}
+M(\vec{p}) &\propto \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\sum_{i = 1}^{Q_k} c_{kij}} \\\\
+\end{align\*}
+$$
+ここで、
+$$
+\tau_{kj} = \sum_{i = 1}^{Q_k} c_{kij}
+$$
+はカテゴリがkである正解データに含まれる単語ID jの単語の総数、です。
+$$
+\begin{align\*}
+M(\vec{p}) &\propto \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\\\
+\end{align\*}
+$$
+さて、Mを $\vec{p}$ のある一つの要素 $p_{lm}$ で微分して極値を求めましょう。ただし、今回は $p_{kj}$ に以下の条件が付きます:
+$$
+1 = \sum_{j = 1}^V p_{kj}
+$$
+この条件をみたすようにMを最大化するためにラグランジュの未定定数法を使います。
+$$
+\begin{align\*}
+0 &= \frac{\partial}{\partial p_{lm}} \left( \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} - \beta \left(1 - \sum_{j = 1}^V p_{kj} \right) \right) \\\\
+0 &= \tau_{lm} p_{lm}^{\tau_{lm} - 1} \prod_{k \ne l}^K \prod_{j \ne m}^V p_{kj}^{\tau_{kj}} - \beta \\\\
+0 &= \tau_{lm} p_{lm}^{- 1} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} - \beta \\\\
+p_{lm} &= \frac{\tau_{lm}}{\beta} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\\\
+\end{align\*}
+$$
+ここで、
+$$
+1 = \sum_{j = 1}^V p_{kj}
+$$
+の条件を使って、両辺和を取ると、
+$$
+\begin{align\*}
+1 &= \sum_{m=1}^V \frac{\tau_{lm}}{\beta} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\\\
+\beta &= \sum_{m=1}^V \tau_{lm} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}}
+\end{align\*}
+$$
+これを $\beta$ に代入してあげれば、
+$$
+\begin{align\*}
+p_{lm} &= \frac{\tau_{lm}}{\beta} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\\\
+&= \frac{\tau_{lm}}{\sum_{m=1}^V \tau_{lm}}
+\end{align\*}
+$$
+もう一度説明すると、 $\tau_{lm}$ は、カテゴリがlである正解データに含まれる単語ID mの単語の総数、です。
+### 頻度0問題とディリクレ事前分布
+上で解いた分布には実用上大きな問題があります。それは、
+* 正解データに一つも含まれない単語(未知語)があると確率が0になってしまう
+というものです。式中では $\tau_{lm}$ に相当します。せっかくなので、この問題に事前分布を設定することによって対処します。業界では、この事を事前知識を与える等と言ったりします。
+多項分布モデルでよく使われる事前分布はディリクレ分布です。ディリクレ分布というのは下の形のような分布です:
+$$
+\begin{align\*}
+& P(Y) = P(\vec{p}; \vec{\alpha}) = \frac{1}{Z({\vec{\alpha}})} \prod_{i=1}^V p_i^{\alpha_i - 1} \\\\
+& Z(\vec{\alpha}) = \frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} \\\\
+& 1 = \sum_{i=1}^V p_i
+\end{align\*}
+$$
+$\Gamma$はガンマ関数です。
+これをいまの問題設定に当てはめてみます。この分布はこのままだと連続的に変化するベクトル $\vec{p}$ に対する分布になっているので、
+離散的な、すなわち、空間上のあるK点でだけ値を持つような分布に限定します。
+$$
+\int d\vec{p} = \int \left( \sum_{k=1}^K \delta(p, \vec{p_k}) \right) d\vec{p}
+$$
+要は確率の定義域を変えます。すると、 $P(Y)$ のあるY=kでの確率は以下の様に書けるはずです:
+$$
+\begin{align\*}
+& P(\vec{p}; \vec{\alpha}) = \frac{1}{Z({\vec{\alpha}})} \prod_{i=1}^V p_{ki}^{\alpha_i - 1} \\\\
+& Z(\vec{\alpha}) = \sum_{k=1}^K \prod_{i=1}^V p_{ki}^{\alpha_i - 1} \\\\
+& 1 = \sum_{i=1}^V p_{ki}
+\end{align\*}
+$$
+2つ目の式、kに関する和が確率全部足したら1、という条件を満たすための定数項を表しています。この関数 $Z$ は分配関数とも呼ばれています(今回はこのあたりには突っ込んでいきません)。
+この事前分布を持つような多項分布モデルにおけるMは次のようになります:
+$$
+\begin{align\*}
+M(\vec{p}; \vec{\alpha}) &= \prod_{k=1}^K P(k; \Theta, \Phi) \prod_{i = 1}^{Q_k} P(S_{ki}; \Theta|k) \\\\
+& \propto \frac{1}{Z({\vec{\alpha}})} \prod_{k=1}^K \prod_{i=1}^V p_{ki}^{\alpha_i - 1} \prod_{j=1}^V p_{kj}^{\tau_{kj}} \\\\
+&= \frac{1}{Z({\vec{\alpha}})} \prod_{k=1}^K \prod_{j=1}^V p_{kj}^{\tau_{kj} + \alpha_j - 1} \\\\
+\end{align\*}
+$$
+事前分布が一様の場合と比べてほとんど形が一緒ですね。定数項のZを除くと $\tau_{kj}$ が $\tau_{kj} + \alpha_j - 1$ に変わっただけです。つまり、 $p_{lm}$ は
+$$
+\begin{align\*}
+p_{lm} &= \frac{\tau_{lm} + \alpha_m - 1}{\sum_{m=1}^V (\tau_{lm} + \alpha_m - 1) }
+\end{align\*}
+$$
+である、という事です。これでディリクレ事前分布を仮定した多項分布モデルが解けました。
+で、この $\alpha_i$ って一体どうやって決めればいいのでしょうか?ひとつの方法は、適当に決めるです。いや、本当です。
+例えば、 $\alpha_m = \alpha + 1$ ( $\alpha$ は定数)とおいて、
+$$
+\begin{align\*}
+p_{lm} &= \frac{\tau_{lm} + \alpha}{\sum_{m=1}^V \tau_{lm} + V \alpha}
+\end{align\*}
+$$
+とする事ができます。これは加算スムージングと呼ばれている方法になります。あとは $\alpha = 1$ なりなんなり適当に設定してください。
+周辺尤度最大化法と呼ばれる方法もあります。周辺尤度は入力データの出現確率 $P(S_1, S_2, \dots, S_D)$ を最大にするようにパラメータを調整するというものです。 $S_i$ は正解の入力データです。それではやってみましょう。周辺尤度を $L$ とします。
+$$
+\begin{align\*}
+L &= \prod_{i=1}^D P(S_i) \\\\
+&= \prod_{i=1}^D \int P(S_i|Y) P(Y) dY \\\\
+&= \prod_{i=1}^D \int \left( \prod_{j=1}^V p_j^{c_ij} \frac{1}{Z({\vec{\alpha}})} \prod_{u=1}^V p_u^{\alpha_u - 1} \right) d \vec{p} \\\\
+&= \left( \frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} \right)^{-D} \prod_{i=1}^D \int \left( \prod_{u=1}^V p_u^{c_{iu} + \alpha_u - 1} \right) d\vec{p} \\\\
+&= \left( \frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} \right)^{-D} \prod_{i=1}^D \left( \frac{\prod_{j=1}^V \Gamma(c_{ij} + \alpha_j)}{\Gamma(\sum_{j=1}^V (c_{ij} + \alpha_j))} \right) \\\\
+&= \prod_{i=1}^D \frac{\prod_{j=1}^V \Gamma(c_{ij} + \alpha_j) \Gamma(\alpha_j)}{\Gamma(\sum_{j=1}^V (c_{ij} + \alpha_j)) \Gamma(\sum_{j=1}^V \alpha_j)}
+\end{align\*}
+$$
+途中でディリクレ分布の正規化に関する等式
+$$
+\frac{\prod_{i=1}^V \Gamma(\alpha_i)}{\Gamma(\sum_{i=1}^V \alpha_i)} = \int \prod_{i=1}^V p_i^{\alpha_i - 1} d\vec{p}
+$$
+を使いました。あとは $\alpha$を色々動かして、最大値を探せばOKです。多分この式は解析的に解けず、数値的に解くことになります。
+おわりに
+--------
+いかがでしたでしょうか?なるべく途中式を書いていたので数式アレルギーの人はきつかったかもしれません。
+しかし、ナイーブベイズ分類器は文書分類の文脈での解説は良くありますが、解の導出を含めた詳細な日本語の解説があまり見当たらなかったので書いてみました。ナイーブベイズ分類器は、分布を相関の無い独立なものに限定したベイズモデルである事を理解できれば、自分で色々いじることも可能です。
+ナイーブベイズ分類器を頑張って丁寧に解説してみる - Qiita

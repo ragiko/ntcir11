@@ -1,0 +1,66 @@
+スタイルシート部分は外部ファイル(sample.css)に記述。
+div.sample {
+animation-name: anime1;
+animation-duration: 5s;
+animation-timing-function: ease;
+animation-iteration-count: infinite;
+}
+@keyframes anime1 {
+0% {width: 50px; height: 50px; background-color: aqua;}
+100% {width: 200px; height: 50px; background-color: blue;}
+}
+HTMLソース
+<html>
+<head>
+<link rel="stylesheet" href="sample.css" type="text/css">
+</head>
+<body>
+<div class="sample">animation効果のサンプル</div>
+</body>
+</html>
+スタイルシート部分は外部ファイル(sample.css)に記述。
+div.prefix_sample {
+-moz-animation-name: anime1;
+-moz-animation-duration: 5s;
+-moz-animation-timing-function: ease;
+-moz-animation-iteration-count: infinite;
+-webkit-animation-name: anime1;
+-webkit-animation-duration: 5s;
+-webkit-animation-timing-function: ease;
+-webkit-animation-iteration-count: infinite;
+-o-animation-name: anime1;
+-o-animation-duration: 5s;
+-o-animation-timing-function: ease;
+-o-animation-iteration-count: infinite;
+-ms-animation-name: anime1;
+-ms-animation-duration: 5s;
+-ms-animation-timing-function: ease;
+-ms-animation-iteration-count: infinite;
+}
+@-moz-keyframes anime1 {
+0% {width: 50px; height: 50px; background-color: aqua;}
+100% {width: 200px; height: 50px; background-color: blue;}
+}
+@-webkit-keyframes anime1 {
+0% {width: 50px; height: 50px; background-color: aqua;}
+100% {width: 200px; height: 50px; background-color: blue;}
+}
+@-o-keyframes anime1 {
+0% {width: 50px; height: 50px; background-color: aqua;}
+100% {width: 200px; height: 50px; background-color: blue;}
+}
+@-ms-keyframes anime1 {
+0% {width: 50px; height: 50px; background-color: aqua;}
+100% {width: 200px; height: 50px; background-color: blue;}
+}
+HTMLソース
+<html>
+<head>
+<link rel="stylesheet" href="sample.css"
+type="text/css">
+</head>
+<body>
+<div class="prefix_sample">animation効果のサンプル</div>
+</body>
+</html>
+animation-iteration-count−CSS3リファレンス

@@ -1,0 +1,5 @@
+独立行政法人 情報処理推進機構セキュリティセンター(IPA/ISEC)および一般社団法人 JPCERT コーディネーションセンター(JPCERT/CC)は10月4日、Investintech.comが提供するPDFファイル閲覧ソフト「SlimPDF Reader」に複数の脆弱性が存在すると「Japan Vulnerability Notes(JVN)」で発表した。
+「SlimPDF Reader」には複数の脆弱性が存在する。これらの脆弱性が悪用されると、細工されたPDFファイルを開くことでアプリケーションを実行している権限で任意のコードを実行される可能性がある。現在のところ対策方法は公開されておらず、JVNでは、対策版が公開されるまでの間、Enhanced Mitigation Experience Toolkit(EMET)を利用する、あるいはData Execution Prevention(DEP)を有効にすることで、本脆弱性の影響を軽減することが可能としている。
+(吉澤亨史)
+http://jvn.jp/cert/JVNVU275036/
+「SlimPDF Reader」に複数の脆弱性、現時点で対策方法は未公開(JVN) | ScanNetSecurity (脅威、セキュリティホール・脆弱性のニュース)

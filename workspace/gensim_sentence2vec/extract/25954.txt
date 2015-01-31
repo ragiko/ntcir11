@@ -1,0 +1,16 @@
+This paper presents a framework for Active
+Audio-Visual (AAV) integration which integrates
+audio, visual and motion information
+to improve robots perception, and its application
+to Voice Activity Detection (VAD) to
+show the effectiveness of the proposed framework.
+For the AAV framework, we propose to
+use a Causal Bayesian Network (CBN) to make
+a robot predict an optimal active motion in the
+current situation. We implemented a prototype
+system based on the proposed AAV integration
+framework for a humanoid robot and experimental
+results showed that the proposed system
+successfully estimated the optimal paths
+to improve VAD in different conditions.
+アクティブ視聴覚統合による発話区間検出の検討: 因果モデルベースアプローチ | 論文検索(Publications) | HRI-JP - ホンダ・リサーチ・インスティチュート・ジャパン -

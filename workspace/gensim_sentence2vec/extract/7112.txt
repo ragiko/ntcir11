@@ -1,0 +1,110 @@
+
+今回は一般化線形モデルでの信頼区間(Confidence Interval)、予測区間を(Prediction Interval)、求めてグラフに追加しようと思います。
+以前、ポアソン回帰をした時の回帰曲線に信頼区間、予測区間を同時にプロットします。途中までは普通にポアソン回帰しているだけなので、読み飛ばして大丈夫です。
+＊信頼区間はwald CI、予測区間は近似的(apploximately)に求めています。
+Generalized Linear Model:Confidence interval and Prediction interval
+1.はじめに
+今回は一般化線形モデルでの信頼区間、予測区間を求めようと思います。
+以前、ポアソン回帰をした時の回帰曲線に信頼区間、予測区間を同時にプロットします。
+2.使用データの説明
+目的変数がカウントデータで、説明変数が連続変数とカテゴリ変数をひとつずつある場合をやります。
+データはパッケージ{HSAUR2}のpolypsを使います。
+polypsデータにおいて、目的変数はポリープの個数(number)でカウントデータです。
+連続変数は年齢で、カテゴリ変数は処置の種類（placeboかdrugか）。これらとpolypsの関係を知りたい。
+目的変数：polyp(ポリープ)の個数
+説明変数：age(年齢：連続変数)、およびtreat(処置の種類：placeboかdrug)
+3.ポアソン回帰
+まずパッケージの読み込み。
+library(HSAUR2)
+library(ggplot2)
+library(GGally)
+polypsデータを見てみる。1列目はpolypsの数(number)、2列目は処置(treat)、3列目が年齢(age)。
+data <-polyps
+head(data)
+number   treat age
+1     63 placebo  20
+2      2    drug  16
+3     28 placebo  18
+4     17    drug  22
+5     61 placebo  13
+6      1    drug  23
+ポアソン回帰の実行
+glm.model   <- glm(number ~ treat + age ,  
+data = data, 
+family=poisson("log"))
+summary(glm.model)
+Call:
+glm(formula = number ~ treat + age, family = poisson("log"), 
+data = data)
+Deviance Residuals: 
+Min      1Q  Median      3Q     Max  
+-4.22   -3.05   -0.18    1.45    5.83  
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  4.52902    0.14687   30.84   <2e-16 ***
+treatdrug   -1.35908    0.11764  -11.55   <2e-16 ***
+age         -0.03883    0.00596   -6.52    7e-11 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+(Dispersion parameter for poisson family taken to be 1)
+Null deviance: 378.66  on 19  degrees of freedom
+Residual deviance: 179.54  on 17  degrees of freedom
+AIC: 273.9
+Number of Fisher Scoring iterations: 5
+フィッティング結果をdataに付け加えておく（今回は使いませんが。。。）
+data <- data.frame(data, predict=predict(glm.model, type="response"))
+ここまでは前と同じです！！
+4.滑らかな回帰曲線を作る
+滑らかな回帰曲線を作る準備。作ったモデルから回帰曲線を作るにはpredict関数に説明変数のデータフレームを渡せばよい。よってまず説明変数のデータフレーム：dfを作る。
+treat <- c(rep("placebo",100),rep("drug",100)) #placeboとdrugを縦に100個ずつ。
+age   <- seq(min(data$age),max(data$age),length=100 )
+age   <- c(age,age) 
+df    <- data.frame(age=age, treat=treat)
+predict関数で予測する。ここで、『se.fit=TRUE』とすることで回帰曲線の標準誤差Standard Errorが出力される。
+予測値はfitで、標準誤差はfit.seでアクセスできる。
+glm.predict <- predict(glm.model, type="response",df, se.fit=TRUE)
+5.信頼区間(confidence interval)
+95%信頼区間(wald CI)を求めることにするので、正規分布の97.5%点を取得しておく。 
+critval <- qnorm(0.975,0,1) #about 1.96
+標準誤差から回帰曲線の95%信頼区間を求める。(confidence interval:wald)
+(fit ± 1.96×標準誤差)
+conf.upr <- glm.predict$fit + critval * glm.predict$se.fit
+conf.lwr <- glm.predict$fit - critval * glm.predict$se.fit
+6.予測区間(prediction interval)
+次に、上で求めた回帰曲線の信頼区間の上限(conf.upr)を平均値としたポアソン分布の95%点を取ることで近似的に95%予測区間の上限を得る。下限値についても同様で、回帰曲線の信頼区間の下限(conf.lwr)を平均値としたポアソン分布の2.5%点を取ることで近似的に95%予測区間の下限を得る。
+というのは、平均値がlwr～uprでばらついており、その値を平均としたポアソン分布によって観測値がばらつきを持つから。→あくまで近似(だいたい)です！！（もっと簡単な予測区間の出し方がわかる人いたら教えてくださーい。）
+pred.upr <- qpois(0.975, conf.upr)
+pred.lwr <- qpois(0.025, conf.lwr)
+6.プロット
+まずは、上で求めた回帰曲線と95%信頼区間、95%予測区間をデータフレームに入れます。
+predict.line <- data.frame(df, 
+glm.predict, 
+conf.lwr=conf.lwr  ,conf.upr=conf.upr,
+pred.lwr=pred.lwr  ,pred.upr=pred.upr)
+それではプロットします。
+まずは回帰曲線＋95%信頼区間です。
+ggplot(NULL) +
+geom_point(data=data , 
+aes(x=age,y=number, color=treat), size=5) +
+geom_line(data=predict.line, 
+aes(x=age, y=fit, color=treat), size=1.2)+
+geom_ribbon(data=predict.line, 
+aes(x=age, ymin=conf.lwr, ymax=conf.upr, fill=treat),
+alpha=0.2)+
+labs(x = "age", y = "number", size=2) +
+theme(axis.title.x = element_text(size=20),
+axis.title.y = element_text(size=20))
+次は回帰曲線＋95%予測区間です。
+ggplot(NULL) +
+geom_point(data=data, 
+aes(x=age,y=number, color=treat), size=5) +
+geom_line(data=predict.line, 
+aes(x=age, y=fit, color=treat), size=1.2)+
+geom_ribbon(data=predict.line, 
+aes(x=age, ymin=pred.lwr, ymax=pred.upr, fill=treat),
+alpha=0.2)+
+labs(x = "age", y = "number", size=2) +
+theme(axis.title.x = element_text(size=20),
+axis.title.y = element_text(size=20))
+おわりーん。
+Generalized Linear Model:Confidence interval and Prediction interval ~ Tempest

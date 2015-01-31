@@ -1,0 +1,173 @@
+ハフ変換には、標準的ハフ変換と確率的ハフ変換があります。確率的ハフ変換は、画像の中から端点を持つ線分として線を検出する際に用います。検出された線分は、始点と終点で表され、それぞれの座標を取得することができます。
+実行例
+濃淡画像にキャニーフィルタをかけることで、エッジ検出を行った画像に変換します。この画像に対して確率的ハフ変換を行うことで、画像から線分を検出します。
+結果
+結果は検出された線分の始点と終点の座標で表されます。
+ライブラリ関数
+MvcClp_Init
+int MvcClp_Init( void )
+戻り値
+正常終了の時は、0を返します。それ以外は、以下の値を返します。
+-1:プロテクトキーがありません
+-2:プロテクトキーの値が異なります
+引数
+なし
+説明
+キャリパーライブラリを使用するための初期化処理を行います。
+※アプリケーション起動時に1回だけCALLしてください。
+MvcClp_Canny
+void MvcClp_Canny( HANDLE hSrc, HANDLE hDst, 
+int iThresh1, int iThresh2, int iSobelSize, int iGaussSize )
+戻り値
+正常終了の時は、0を返します。それ以外は、以下の値を返します。
+-1:入力画像ハンドルがNULL
+-2:出力画像ハンドルがNULL
+-3:入力画像が濃淡画像ではない
+-4:iSobelSizeの値が不正(3,5,7以外)
+-5:iGaussSizeの値が不正(2以下または偶数)
+-6:オブジェクト作成エラー
+-9:キーチェックエラー
+引数
+hSrc	濃淡画像ハンドル
+hDst	処理結果格納用画像ハンドル
+iThresh 1	抽出終了する勾配強度の最低値
+iThresh 2	抽出開始する勾配強度の最低値
+iSobelSize	Sobelフィルタのフィルタサイズ
+iGaussSize	ガウシアンフィルタのサイズ
+説明
+原画像の輪郭を抽出した画像を返します。
+原画像ハンドルは濃淡画像を使用してください。
+SobelSizeは3・5・7を指定できます。(初期値は3)
+MvcClp_ProbHoughLine
+int MvcClp_ProbHoughLine( HANDLE hSrc, RECT *rc, float fRadianPix, float fLengthPix,
+float fThreshold, int iMinLineLen, int iLineGap, int *iLineCount, MvcLine *pLines )
+戻り値
+正常終了の時は、0を返します。それ以外は、以下の値を返します。
+NULL : 原画像がNULLまたは2値画像ではない
+-1 : 画像がNULL
+-2 : 画像が8bit画像ではない
+-3 : 処理範囲オーバー
+-5 : パラメータエラー
+-9 : キーチェックエラー
+引数
+hSrc	エッジ画像ハンドル
+rc	処理範囲
+dRho	ρの解像度
+dTheta	θの解像度
+iThreshold	しきい値(投票数)
+dMinLen	線の長さの最小値
+dMaxCut	切れ目の長さの最大値
+mvcLines	直線構造体
+説明
+直線ハフ変換関数です。
+原画像ハンドルはMvcClp_Cannyで求められた画像ハンドルを使用して下さい。
+MvcClp_Fini
+void MvcPoc_Fini( void )
+戻り値
+なし
+引数
+なし
+説明
+キャリパーライブラリの終了処理を実行します。
+※アプリケーション終了時時に1回だけCALLしてください。
+ソースコード
+/////////////////////////////////////////////////////////
+// Line.cpp : ハフ変換(直線)のサンプルプログラム
+//
+// このプログラムは画像ファイルを入力し、
+// ハフ変換(直線)を実行するサンプルプログラムです。
+//
+// パラメータはファイルから入力します。
+// ファイル名:cLine_C.txt
+//
+// 1行目:解像度(ρ)
+// 2行目:解像度(θ)
+// 3行目:しきい値
+// 4行目:線の最小の長さ
+// 5行目:最大切れ目
+/////////////////////////////////////////////////////////
+#include "stdafx.h"
+#include "Line.h"
+#include <math.h>
+#include <conio.h>
+#include <tchar.h>
+#include <stdio.h>
+//#include <windows.h>
+#include "MvcDib.h"
+#include "MvcClp.h"
+#include "MvcUtil.h"
+#include "MicroViewer.h"
+#include  // for std::swap
+#define PI 3.14159265358979323846
+char *img_name = "Image/Caliper/Caliper01.bmp"; // 画像ファイル名
+char text1[256];	// 結果表示用テキストバッファ
+DWORD dwTime;
+///////////////////////////////////////////////////////
+// main関数
+///////////////////////////////////////////////////////
+int main()
+{
+int i;
+RECT rc;
+int iWidth,iHeight;
+// 直線ハフ変換パラメータ
+double rho = 1;
+double theta = PI/180.0;
+int thresh = 5;
+double param1 = 5;
+double param2 = 3;
+/*---- 前処理 -----------------------------------*/
+// MVCライブラリの初期化処理
+if(MvcUtil_Init() ||
+MvcClp_Init())
+{
+printf("Mvcライブラリ 初期化処理エラー\n");
+exit(1);
+}
+// 画像を読み込む
+HANDLE Input = mvLoadFromFile(img_name,8);	
+// ビュアーを作る
+MvViewer Viewer1 = mvCreate("入力画像1表示");
+// 入力画像を表示する
+mvShow(Viewer1, Input);							
+// 画像サイズを求める
+iWidth  = MvcDib_GetXsize(Input);	// 横幅
+iHeight = MvcDib_GetYsize(Input);	// 縦幅
+// 属性の表示
+printf("ハフ変換(直線)のサンプルプログラム\n\n");
+// 設定パラメータの表示
+printf("【設定パラメータ】\n");
+printf("\t解像度(ρ)\t:%lf\n", rho);
+printf("\t解像度(θ)\t:%lf\n", theta);
+printf("\tしきい値\t:%d\n", thresh);
+printf("\t線の最小の長さ\t:%lf\n", param1);
+printf("\t最大切れ目\t:%lf\n\n", param2);
+// 表示範囲を設定(画面全体)
+rc.top = 0;
+rc.left = 0;
+rc.right = iWidth - 1;
+rc.bottom = iHeight - 1;
+/*---- ハフ変換処理 -------------------------------*/
+HANDLE Output = MvcDib_Create(iWidth, iHeight, 1, 4);
+// エッジ画像へ変換
+MvcClp_Canny(Input, Output, 20, 50, 3, 5);
+// 処理時間計測開始
+Vstart_timer();
+MvcLine *pLine = NULL;
+MvcLine *pLine0 = NULL;
+int iRet;
+int iDataCount = 1000;
+pLine0 = pLine = new MvcLine[ iDataCount ];
+iRet = MvcClp_ProbHoughLine( Output, &rc, theta, rho, thresh, param1, param2, &iDataCount, pLine );
+// 処理時間計測終了
+Vread_Utimer(&dwTime);
+// グラフィクス表示の消去
+MvcUtil_DrawClear();
+/*---- 処理結果の表示 ----------------------------*/
+printf("【処理結果】\n");
+printf("\t処理時間 : %.2lf msec\n",(double)dwTime / 1000);
+if ( iRet == 0 )
+{
+for ( i = 0; i 
+Copyright 2007 The Micro Vision, CO.,LTD.
+確率的ハフ変換(直線)

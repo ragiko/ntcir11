@@ -1,0 +1,3 @@
+コーパスのアノテーション作業では、重要な部分のみへのラベル付与が効率的であり,また一部のラベルが一つに決定できずラベルの曖昧性が残ってしまうことが発生する.本研究では,このような部分的かつ曖昧なラベルが付与された学習データを使用してマルコフ条件付確率場を学習する方法を提案する.日本語単語境界認識の分野適応における部分的アノテーションと英語品詞タグ付けデータに存在する曖昧なアノテーションに対して実験を行い,本手法の有効性を検証した.
+We address corpus building situations which we only annotate important part of given data, or which we cannot resolve label ambiguities with reference to the linguistic context. We proposed a parameter estimation method for Conditional Random Fields (CRFs) using the partial and ambiguous annotations of structured data. We show the promising results of our method applied to the domain adaptation task of Japanese word segmentation and Part of Speech tagging task using the ambiguous tags in Penn Treebank Corpus.
+

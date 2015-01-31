@@ -1,0 +1,3 @@
+
+In this research, we propose the system which discriminates a vowel only by operation comparatively simple for mobile apparatus. Mobile apparatus, such as a cellular phone, is small. It is difficult in hardware of small mobile apparatus to apply the speech recognition system currently developed. Then, we extract the features from a vowel amplitude waveform directly, and vowel recognition is performed by the Mahalanobis distance. Finally, in order to illustrate the  effectiveness of the proposed method, computer simulations are done.
+振幅特徴量を用いたマハラノビス距離による母音解析と識別

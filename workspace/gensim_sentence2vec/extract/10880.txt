@@ -1,0 +1,12 @@
+
+このテンプレートは科学技術振興事業団オブジェクト識別子 (JOI: Japan Science and Technology Agency Object Identifier) [1]を用いた外部リンクを作成するためのものです[2]。JOIはJ-STAGEという日本の論文公開サイトで、論文を指定するためのIDとして使用されています。
+使用例[編集]
+J-STAGEの「記事検索」にて目的の記事を検索します。
+目的の記事の上部(論文タイトルのすぐ上)に「JOI JST.JSTAGE/johokanri/42.126」という記述が出てきます。
+「JST.JSTAGE/johokanri/42.126」の部分を使って、{{JOI|JST.JSTAGE/johokanri/42.126}}と入力します。
+「JOI:JST.JSTAGE/johokanri/42.126」と表示されます。
+意義[編集]
+JOIを使う意義は、リンク切れの防止です。JOIでリンクを貼っておくと、サイト側でドメイン移動が起きた場合でも、リンク先(リダイレクト先)が新しいURLに自動で変更されるので、リンク切れが発生しません。
+しかし普通のURL(例えば http...../document/ronbun.pdf のような)を使ってJ-STAGEの論文ファイルへ直リンクを貼っていると、サイト側のドメインやアドレス構成が変化した際に、リンク切れが発生します。つまり検索し直さないと読者が論文にアクセスできなくなります。
+脚注[編集]
+Template:JOI/doc - Wikipedia

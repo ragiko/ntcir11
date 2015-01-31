@@ -1,0 +1,11 @@
+本一般研究は、実際に動作する音声対話システムを構築するために重要である音声発話文のあいまいさについて広い範囲の検討を行なった。
+1.言語のあいまいさ エルゴディックHMMを用いて4ヵ国語の言語識別を行ない、HMMの尤度とHMMの最適状態系列を用いる識別基準で、98%の識別率を得た。
+2.音韻認識のあいまいさ 間投詞や未知語を含む音声を認識するために間投詞・未知語を任意の音韻系列でモデル化する認識手法を検討し、この手法が全出現間投詞の辞書登録法よりも高い認識精度を持ち、未知語にも対応できることを示した。
+3.話者のあいまいさ 最大事後確率推定法を用いた連結学習による教師あり話者適応化と、教師なし話者適応化について提案・検討を行ない、言語情報に基づく文認識結果をそのまま教師信号とする教師なし話者適応化手法が、教師あり話者適応手法に匹敵する性能を持つことを明らかにした。
+4.自然な発話のあいまいさ 音声対話文における助詞落ち、倒置、間投詞、ポーズ、言い直しについて統計的な分析と処理手法の提案を行なった。
+5.解釈・生成のあいまいさ 音声対話システムが入力文の認識・解釈と応答文生成を行なう段階でのあいまいさを排除するためのいくつかの手法を検討した。
+6.入力表出のあいまいさ 連続文音声認識手法を用いた音声対話システムでは、ユーザにとってどのように発声すればよいかがあいまいである。このあいまいさを削減するために、メニューに基づく音声入力手法と、画像やタッチパネルと音声入力を併用したマルチモーダルな入力手法を提案・評価した。
+We proposed an unsupervised speaker adaptation method on sequencial concatenation training that used the theory of MAPE(Maximum A Posteriori probabitity Estimation) for continuous parameter HMM.In this method, we should only specify the syllable label sequence for the utterrance. The label sequences were provided automatically by the recognizer which used a speaker-independent model in advance. The experimental results on continuous speech recognition showed that the better model gave a performance comparable to that of supervised adaptation.
+Secondly, we proposed a method to process interjection and unknown words so that a speech recognition system could deal with spontaneous speech in dialog. We have evaluated the peerformance of our speech recognition system using test sentence sets including interjection or unknown words, and confirmed that the proposed method worked well.
+Thirdly we investigated the menu-guided spoken natural language understanding system that could understand all user's inputs. This work was motivated by the following fact that a user could not understand what to say or how to say to a computer in natural language. The system displays a menu that consists of acceptable content words and the usur chooses one word from the menu and speaks out phrase that includes the word. The experimental showed that our system performed well for the novice users.
+KAKEN - 音声入力を想定したあいまいな発話文の理解システムに関する研究(03452167)

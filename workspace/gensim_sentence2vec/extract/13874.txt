@@ -1,0 +1,85 @@
+PrefixSpan-relで取得した未知語をMeCabの辞書に登録する
+モチベーション
+ある文章中にどのような単語がよく出現するか調べることは、基本的な分析手法の1つです。1文節のみを対象とする場合は形態素に分けて頻度を数えればいいですし、2文節以上でも既知語ならば簡単に取得できます。しかし、複数の単語からなる未知語も考慮する場合には一工夫必要になります。例えばブログから人気商品を調べたい場合、「午後/の/紅茶」などの複数の文節からなる商品名を辞書に登録する必要があります。そこでどのようなパターンが出現しやすいかを調べ、出現回数の多いパターンを未知語として登録する処理を行いました。
+手法
+PrefixSpan-relとMeCabという2つのライブラリを利用して未知語に対応した出現頻度測定を行います。まずはPrefixSpanで系列パターンごとの頻度を測定し、頻度が多い系列パターンをMeCabの辞書に登録します。その後文章をMeCabで形態素に分解し、形態素ごとの出現頻度を測定します。
+準備
+PrefixSpanとは頻出する部分系列パターンを高速に抽出する手法です。今回はPrefixSpanを実装したライブラリであるPrefixSpan-relを利用します。ただしダウンロードしたファイルをmakeすると
+% make
+prefixspan.cpp: In function int main(int, char**):
+prefixspan.cpp:492: error: atoi was not declared in this scope
+make: *** [prefixspan.o] エラー 1
+と怒られてしまうので、prefixspan.cppに
+#include <stdlib.h>
+を追加しておきます。
+MeCab
+MeCabはオープンソースの形態素解析エンジンです。Ubuntuの場合は
+% sudo apt-get install mecab mecab-ipadic-utf8
+とすれば簡単にインストールできます。
+実験
+データ
+今回は以下のような文章sample.txtを対象にして実験を行います。
+私は午後の紅茶が好きですね。午後の紅茶はおいしいですよ。
+僕は三ツ矢サイダーがいいな。
+午後の紅茶のほうがいいです。
+いや、三ツ矢サイダーだ!三ツ矢サイダーのほうがおいしいよ!
+文章を形態素に分解
+まずはMeCabを使って文章を形態素に分解します。ここで"-O wakati"というオプションはわかち書きをすることを意味しています。
+% mecab -O wakati sample.txt > sample_wakati.txt
+% cat sample_wakati.txt
+私 は 午後 の 紅茶 が 好き です ね 。 午後 の 紅茶 は おいしい です よ 。 
+僕 は 三ツ矢 サイダー が いい な 。 
+午後 の 紅茶 の ほう が いい です 。 
+いや 、 三ツ矢 サイダー だ ! 三ツ矢 サイダー の ほう が おいしい よ ! 
+頻出パターンの抽出
+このままでは文章をBOWモデルで見ているので、どの単語が連続して出現するか(e.g., 午後の紅茶) がわかりません。そこでprefix-spanで系列パターンの頻度を調べます。以下のコマンドを打つことで「パターン単位で (-c token) 3回以上出現した (-m 3) 2単語以上からなる (-M 2) 連続する (-S 0) パターンを表示」できます。
+% ./prefixspan -M 2 -m 3 -S 0 -c token < sample_wakati.txt
+の/5 紅茶/3
+三ツ矢/3 サイダー/3
+午後/3 の/3 紅茶/3
+この結果から、「午後の紅茶」「三ツ矢サイダー」という単語がよく出現していることが分かります。
+未知語の登録
+先ほどのステップで得られた2つの未知語をMeCabの辞書に登録することを考えます。MeCabに単語を登録する方法はここに詳しく書かれています。まずはMeCabの形式に合わせて辞書product_names.csvを作成します。
+午後の紅茶,0,0,0,名詞,一般,*,*,*,*,午後の紅茶,ゴゴノコウチャ,ゴゴノコーチャ
+三ツ矢サイダー,0,0,0,名詞,一般,*,*,*,*,三ツ矢サイダー,ミツヤサイダー,ミツヤサイダー
+このCSVファイルをMeCabに追加していきます。現在/home/hoge/fugaで作業している場合、
+% /usr/lib/mecab/mecab-dict-index -d /usr/share/mecab/dic/ipadic -u product_names.dic -f utf-8 -t utf-8 product_names.csv
+とすると/home/hoge/fuga/product_names.dicというファイルが作成されます。
+次にMeCabの辞書のあるディレクトリを調べます。
+% mecab -D
+filename:	/var/lib/mecab/dic/debian/sys.dic
+version:	102
+charset:	UTF-8
+type:	0
+size:	392126
+left size:	1316
+right size:	1316
+/var/lib/mecab/dic/debianに辞書があることが分かったので、同じディレクトリにあるdicrcファイルに
+userdic = /home/hoge/fuga/product_names.dic
+を追加します。もう一度mecab -Dを実行すると以下のようになり、正しく辞書がインストールされたことを確認できます。
+% mecab -D
+filename:	/var/lib/mecab/dic/debian/sys.dic
+version:	102
+charset:	UTF-8
+type:	0
+size:	392126
+left size:	1316
+right size:	1316
+filename:	/home/hoge/fuga/product_names.dic
+version:	102
+charset:	utf-8
+type:	1
+size:	2
+left size:	1316
+right size:	1316
+さきほど登録した辞書を利用して、もう一度samle.txtを解析してみます。
+% mecab -O wakati sample.txt
+私 は 午後の紅茶 が 好き です ね 。 午後の紅茶 は おいしい です よ 。 
+僕 は 三ツ矢サイダー が いい な 。 
+午後の紅茶 の ほう が いい です 。 
+いや 、 三ツ矢サイダー だ ! 三ツ矢サイダー の ほう が おいしい よ ! 
+sample_wakati.txtと比較すると、商品名を正しく分割できていることが分かります。
+あとはこれらの出現頻度を数えることで、どの商品が人気があるか判断することが可能です。
+ツイートする
+Permalink | コメント(0) | トラックバック(0) | 12:35
+PrefixSpan-relで取得した未知語をMeCabの辞書に登録する - tanihitoの日記

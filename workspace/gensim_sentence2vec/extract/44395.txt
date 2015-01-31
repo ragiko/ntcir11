@@ -1,0 +1,71 @@
+神徳信志
+kotoku @ itup.co.jp
+2005年 1月  6日 (木) 22:33:39 JST
+前の記事 [Namazu-win32-users-ja 199] Re: namazu --C や mknmz の文字化け(namaz u --helpはOK )
+次の記事 [Namazu-win32-users-ja 195] Re: 日本語検索の不具合
+記事の並び順: 
+[ 日付 ]
+[ スレッド ]
+[ 件名 ]
+[ 著者 ]
+はじめまして、神徳と申します。
+現在、windows2000にnamazu2.0.14をIIS上でインストールしました。
+formで検索すると、日本語だとマッチせず
+半角英数字だとマッチするのですが、表示がeucをsjisで行われているように
+文字化けします。
+リンクは正常に変換されており、移動先もきちんと表示されます。
+検索後で表題と内容の表示がおかしくなるのです。
+mknmzのコマンドも下記のように設定し
+perl C:\namazu\bin\mknmz.bat -a -L -U -O C:\namazu\var\namazu\index
+C:\wwwroot\ 1>C:\namazu\temp\namazu.log 2>C:\namazu\temp\namazu_err.log
+エラーログに不具合は出ていません。
+setコマンドを叩いてもLANGは、ja_JP.SJISとなっています。
+templateは、NMZ.headerとfooterを変更し、eucで保存しました。
+なぜ、日本語検索が動かないのか分からないので教えていただけませんでしょうか。
+コマンドの結果は以下のようになっております。
+perl -v
+This is perl, v5.6.1 built for MSWin32-x86-multi-thread
+(with 1 registered patch, see perl -V for more detail)
+Copyright 1987-2001, Larry Wall
+Binary build 638 provided by ActiveState Corp. http://www.ActiveState.com
+ActiveState is a division of Sophos.
+Built Apr 13 2004 19:24:21
+mknmz -C
+読み込んだ設定ファイル: C:/namazu/etc/namazu/mknmzrc
+システム: MSWin32
+Namazu: 2.0.14
+Perl: 5.006001
+File-MMagic: 1.22
+NKF: module_nkf
+KAKASI: module_kakasi -ieuc -oeuc -w
+茶筌: chasen -j -F '%m '
+わかち書き: module_kakasi -ieuc -oeuc -w
+メッセージの言語: ja_JP.SJIS
+言語: ja_JP.SJIS
+文字コード: sjis
+CONFDIR: C:/namazu/etc/namazu
+LIBDIR: C:\namazu\share\namazu/pl
+FILTERDIR: C:\namazu\share\namazu/filter
+TEMPLATEDIR: C:\namazu\share\namazu/template
+namazu -C
+読み込んだ設定ファイル: C:\namazu\etc\namazu\namazurc
+--
+インデックス (Index):    C:\namazu\var\namazu\index
+ログの記録 (Logging):    on
+使用する言語 (Lang):     ja_JP.SJIS
+スコア計算 (Scoring):    tfidf
+テンプレート (Template): C:\namazu\share\namazu\template
+ヒット件数の上限 (MaxHit):      10000
+マッチする語の上限 (MaxMatch):  1000
+-- 
+株式会社 イットアップ
+ネットセキュア事業部 神徳 信志 mailto:kotoku @ itup.co.jp
+前の記事 [Namazu-win32-users-ja 199] Re: namazu --C や mknmz の文字化け(namaz u --helpはOK )
+次の記事 [Namazu-win32-users-ja 195] Re: 日本語検索の不具合
+記事の並び順: 
+[ 日付 ]
+[ スレッド ]
+[ 件名 ]
+[ 著者 ]
+Namazu-win32-users-ja メーリングリストの案内
+[Namazu-win32-users-ja 194] 日本語検索の不具合

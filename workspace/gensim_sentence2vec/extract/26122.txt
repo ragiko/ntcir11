@@ -1,0 +1,137 @@
+Javaにおける正規表現
+Javaには正規表現に関する機能を実現するためのパッケージ
+java.util.regex
+があります (Java SDK 1.4 で導入)。
+このパッケージにより、強力な正規表現の機能を持つ Perl とほぼ同等の機能が実現されています。
+クラス java.util.regex.Pattern が正規表現を表すクラスで、このクラスの matcher メソッドによって、実際にマッチングを行うクラス java.util.regex.Matcher のインスタンスを生成します。
+クラス Pattern は new ではなく、compile という static メソッドによりインスタンスを生成します。なお、static メソッドはクラスに属し、インスタンスがなくても呼び出すことができます。通常のメソッド呼び出しは「インスタンス名.メソッド名」ですが、static メソッドの場合は「クラス名.メソッド名」、つまり Pattern.compile と呼び出します。
+クラス Pattern のメソッド
+static Pattern compile(String regex)
+指定された正規表現 regex をパターンにコンパイルし、Pattern クラスのインスタンスとして返す。
+Matcher matcher(CharSequence input)
+指定された入力 input と、このパターンとをマッチする正規表現エンジンを作成する。
+String や StringBuffer クラスは CharSequence インタフェースを実装しているので、引数として与えることができる。
+static boolean matches(String regex, CharSequence input)
+指定された正規表現をコンパイルして、指定された入力とその正規表現をマッチする。
+String[] split(CharSequence input)
+このパターンを区切り文字列として、指定された入力シーケンスを分割する。
+クラス Matcher のメソッド
+int end()
+最後にマッチした文字のインデックスに 1 を加えたものを返す。
+int end(int group)
+前回のマッチ操作で指定されたグループによって前方参照された部分シーケンスの、最後の文字のインデックスに 1 を加えたものを返す。
+boolean find()
+入力シーケンスからこのパターンとマッチする次の部分シーケンスを検索する。
+boolean find(int start)
+この正規表現エンジンをリセットし、指定されたインデックス以降の入力シーケンスから、このパターンとマッチする次の部分シーケンスを検索する。
+String group()
+前回のマッチで一致した入力部分シーケンスを返す。
+String group(int group)
+前回のマッチ操作で指定されたグループによって前方参照された入力部分シーケンスを返す。
+int groupCount()
+この正規表現エンジンのパターンに指定されている前方参照を行う正規表現グループの数を返す。
+boolean lookingAt()
+入力シーケンスの先頭からパターンとマッチする。
+boolean matches()
+入力シーケンス全体をこのパターンとマッチする。
+String replaceAll(String replacement)
+パターンとマッチする入力シーケンスの部分シーケンスを、指定された置換文字列に置き換える。
+String replaceFirst(String replacement)
+パターンとマッチする入力シーケンスの部分シーケンスのうち、最初の部分シーケンスを指定された置換文字列に置き換える。
+Matcher reset(CharSequence input)
+新しい入力シーケンスを使用してこの正規表現エンジンをリセットする。
+int start()
+前回のマッチの開始インデックスを返す。
+int start(int group)
+前回のマッチ操作で指定されたグループによって前方参照された部分シーケンスの、開始インデックスを返す。
+テスト用プログラム
+キーボードから入力して確認できるプログラムを示します。
+import java.util.*;
+import java.util.regex.*;
+class PatternTester {
+public static void main(String[] args) {
+Scanner scanner = new Scanner(System.in);
+System.out.println("テストする正規表現を入力してください。");
+Pattern pattern = Pattern.compile(scanner.nextLine());
+System.out.println("マッチさせる文字列を入力してください(Ctrl-dで終了)。");
+while (scanner.hasNext()) {     // Ctrl-d が来ない限り繰り返す
+// 1行分の文字列を読み込む
+String nextLine = scanner.nextLine();
+// nextLine に対してパターンマッチをする Matcher インスタンスを生成
+Matcher matcher = pattern.matcher(nextLine);
+// 先頭から探せる限り探す
+while (matcher.find()) {
+System.out.println("マッチしました: " + matcher.group());
+}
+}
+}
+}
+PatternTester.java
+なお、Scanner クラスはそれ自体が正規表現に対応しているため、
+Matcher を明示的に使わない書き方もできます。
+System.out.println("マッチさせるテキストを入力してください(Ctrl-dで入力終了)。");
+while(true) {
+String string = scanner.findInLine(pattern);
+if(string == null)
+break;
+else
+System.out.println("マッチしました: " + string);
+}
+コード例 - HTMLのタグ除去
+HTMLなどのタグを除去します。<.+?> という正規表現で、
+< > に囲まれた1文字以上の文字列を表します。
+なお、.+? は最短のマッチを表します。
+ちょっと考えると .+ (任意の文字の1文字以上の連続)でよさそうに思えますが、
+そうすると以下のような場合、
+<em>content</em>
+.+ がマッチする範囲は「 em>content</em 」となってしまいます。
+import java.util.*;
+import java.util.regex.*;
+public class TagRemover {
+public static void main(String[] args) {
+Pattern pattern = Pattern.compile("<.+?>", Pattern.DOTALL);
+Scanner scanner = new Scanner(System.in);
+while (scanner.hasNext()) {
+// 1行分の文字列を読み込む
+String nextLine = scanner.nextLine();
+// nextLine に対してパターンマッチをする Matcher インスタンスを生成
+Matcher matcher = pattern.matcher(nextLine);
+// 行内のすべてのタグを取り除く
+String string = matcher.replaceAll("");
+System.out.println(string);
+}
+}
+}
+TagRemover.java
+メソッド compile の第2引数 Pattern.DOTALL は、
+「.」で改行もマッチさせるための指定です。
+タグの途中で改行があった場合には有効です。
+なお、<.+?> ではなく、<[^>]+> としてもよいはずです。
+ここで、[^>] は > 以外の文字1文字を表しています。しかし、
+実際には [^>] は > だけでなく漢字などにもマッチしない現象があるため、
+うまく動作しません。
+コード例 - リンク先の抽出
+正規表現では () でグループを表し、
+その部分にマッチした文字列を参照することができます。
+グループには先頭から 1,2,... と番号がつけられていますので、
+group(番号n) で n番目のグループにマッチした文字列が得られます。
+import java.util.regex.*;
+class LinkFinder {
+public static void main(String args[]) {
+Pattern pattern = Pattern.compile("href=\"(.+?)\"");
+Matcher matcher = pattern.matcher("<a href=\"index.html\">トップへ</a>");
+if(matcher.find())
+System.out.println(matcher.group(1));
+}
+}
+LinkFinder.java
+String の正規表現関連メソッド
+文字列の置換と分割については、
+String クラスから直接行えるメソッドが用意されています。
+String replaceAll(String regex, String replacement)
+指定された正規表現に一致する、この文字列の各部分文字列に対し、指定された置換を実行する。
+String replaceFirst(String regex, String replacement)
+指定された正規表現に一致する、この文字列の最初の部分文字列に対し、指定された置換を実行する。
+String[] split(String regex)
+この文字列を、指定された正規表現に一致する位置で分割する。
+正規表現

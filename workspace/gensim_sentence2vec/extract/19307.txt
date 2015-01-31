@@ -1,0 +1,101 @@
+
+研究内容概要
+大変不思議なことに、 多くの動物では卵の減数分裂の途中で、精子と卵は合体(受精)します。すでに精子の減数分裂は終わっているので、受精したときの卵の細胞周期と精子の細胞周期は違っています。卵の減数分裂が終わると、精子の核は膨れて卵の核と融合し、精子の持ち込んだ中心体が新たに分裂装置を形作り、体細胞分裂が開始されます。
+ではなぜ、減数分裂途中で受精するのでしょうか?卵の減数分裂が終わってから受精した方が、卵・精子の細胞周期が一致しているので都合がいいようにも思えます。しかし残念ながら、この答えは、まだわかっていません。それだけでなく、どのように精子が卵内で減数分裂を邪魔しないでいられるのかについても良く分かっていないのです。さらに不思議なことに、受精しなかった卵は、アポトーシスして、自ら死を選びます。
+いのちがはじまる、初めの一歩が減数分裂と受精なのですが、その仕組みは謎に満ちているのです。
+本研究室では、減数分裂と受精がどのように干渉しあい、生命の連続性を成り立たしているのかを明らかにすることを目標としています。 短い時間で研究内容を理解していただくために、ここでは主に以下の2点に絞って説明します。
+研究内容詳細
+ヒトデ卵の減数第一分裂中期再開機構
+ヒトデ卵の減数第一分裂中期休止機構
+減数分裂過程における受精膜形成能の獲得機構
+ヒトデ卵は受精しないとアポトーシスを起こして死んでしまう
+in vivo における細胞内プロテアーゼ活性の測定法の開発
+マウスなど哺乳類の卵を用いた減数分裂ー受精研究
+参考論文
+I)  ヒトデ卵の減数第一分裂中期再開機構
+一般に卵母細胞は、第一減数分裂の前期で停止しており、ホルモンなどの適当な刺激で減数分裂を再開します。たとえば、私達ヒトでも、海の底に静かに生活しているヒトデでも、この点に関して言えば同じなのです。減数分裂の再開なしには、受精も初期発生もうまくいきませんので、たいへん重要な現象といえます。そこで私達は、簡単に減数分裂を再開させることができ、かつ容易に入手できるヒトデを材料にして、実験を行ってきました(実際、自分たちで海に行って潜って採ってきたりもします)。
+ヒトデ卵母細胞は、1969年に金谷晴夫博士らが発見された1-メチルアデニン(1-MA)によって減数分裂を再開し成熟します。これまでに私達は、1-MA情報伝達系に三量体GTP結合蛋白質(G)が関与することを明らかにしてきました。すなわち『1-MAはヒトデ卵表のレセプターに結合し、その情報は三量体Gのαに伝達される。その結果、Gαから解離したβγがPI3Kに働き、MPFが形成される』(研究業績1)と考えられます。
+これらを明らかにするために、ヒトデ卵のcell-free系(研究業績2)を用いています。このcell free系は、減数分裂を再開したヒトデ卵を破砕したもので、細胞分裂の中期活性や終期活性を保持しています。cell free系で有名なものに増井禎夫博士によって開発されたアフリカツメガエル卵を用いたものがありますが、私達はヒトデ卵において同様な実験系を実現しました。 
+ヒトデ卵cell-free系。ヒトデ未成熟卵母細胞の破砕物に、MPF活性の高いMI期の卵母細胞破砕物を混ぜると、GVBDを引き起こすことができました。in vivoで見られる現象が、cell-free系でも再現できたことが分かります。
+スケールバー:50μm。
+pagetopへ
+II)  ヒトデ卵の減数第一分裂中期休止機構
+どんな動物でも、正常に発生するためには、特定の時期の卵母細胞に受精することが必要です。両生類やホ乳類では、卵減数分裂の第2分裂中期(MII)がその時期です。つまり減数分裂が終わる前に受精が成立します。この時、卵母細胞は減数分裂を停止して精子を待ちます。この現象をMII停止と呼び、受精刺激によって停止は解除され、減数分裂は再開されます。MII停止を実現する因子として1971年に増井禎夫博士は、カエル卵のCSFを報告されました。1989年には、佐方功幸博士らはMosがCSFの基本要素であることを証明されました。そして2007年に岸本健雄博士ら、佐方功幸博士らによってMosMAPKp90Rsk-Erp1経路がMII休止の分子的実体であることが明らかにされています。
+さて、研究者には馴染み深いMII停止も、広く動物界を見渡せば特殊なケースであって、多くの無脊椎動物では第1分裂中期(MI)に停止します(MI arrestとも呼びます)。しかし、MI休止機構の解明は、ずっと手付かずのままでした。中期休止における普遍的な機構を解明することは、減数分裂と受精の関係を理解するためにも必要です。そのためには、MI停止機構を解き明かす必要があります。ここでヒトデが登場します。
+これまでヒトデ卵母細胞の減数分裂は、1-MAの刺激によって第一減数分裂前期の停止を解除された後は、停止なしに進行すると考えられており、教科書的にもそのように記載されていました。しかし私達の研究によって、卵巣内では放卵されるまで減数第一分裂中期(MI)で停止していることが判明しました。MI停止機構を探っていくと、卵巣内で細胞内pH(pHi)が低い状態(pH7以下)で保たれることが、重要であることが分かってきました(研究業績3)。MI停止は、放卵されると起るpHi上昇によって最終的には解除されますが、すぐには解除されません。すなわち卵母細胞は体外に放卵されると、引き続きMI期で休止するのです。この休止は、卵巣内での停止と区別するためにMI休止(MI pause)と名付けられました(研究業績4)。
+MI休止過程で、受精し、減数分裂が終了後、発生開始します。このMI休止を含む複数の現象(すなわち、第2分裂の継続;DNA合成阻害、アポトーシスなど)は、全てMAPKカスケードによって制御されています。一見、大雑把な仕組みであるようにも思えますが、実際は、pHi上昇が起こると、MAPKMI休止だけが解除されることが判明しました。他の現象(MAPKDNA合成阻害など)はpHi上昇によってもなんら影響されず、MAPKカスケードの働きで減数分裂は継続されるので。実に精妙な制御法です。 
+それでは、なぜMI停止/休止機構が進化してきたのでしょうか。実は、卵母細胞には精子はいつでも侵入できるのですが、MI期以外の時期に受精すると、多精(一つの卵に多くの精子が侵入してしまう現象:後述)になりやすいことが知られています(研究業績5)。MI停止/休止機構があれば、MI期に放卵できますし、さらにMI休止でMI期の期間を延長できますので、卵が正常に受精しやすくなります。すなわち、卵が正常に受精できる時期に(MI期)に、受精できるようにMI停止/休止機構が進化してきたのではないかと考えています。
+ヒトデ雌個体から放卵された卵母細胞を受精させたところ、遅れて放卵された卵母細胞でも、極体放出は放卵後30分ほどで見られました。つまり、卵母細胞は放卵されるまでの間、卵巣内で減数分裂を休止していることが示唆されました。写真右下の数字は、雌個体に1-MAを注射してからの時間(分)。
+スケールバー:50μm。 
+pagetopへ
+III) 減数分裂過程における受精膜形成能の獲得機構
+前の項(I〜II)でヒトデ卵母細胞は1-MAで減数分裂を再開することを説明しました。減数分裂再開後に受精が起こり、受精膜が形成されます。たいへんおもしろいことに、減数分裂再開前の卵に精子をかけてやると、精子は卵に入ることは出来るのですが、受精膜が形成されませんし、1つの卵にたくさんの精子が侵入して多精となり、発生に失敗してしまいます。疑問に思い実験した結果、カルシウム濃度の調節に関係しているIP3に対する感受性が、MI期以降に上昇し、IP3レセプターの分布も変化することが分かりました(研究業績6)。
+さらに未成熟卵では、IP3への感受性だけでなく、カルシウム濃度の上昇に対する表層顆粒の反応性も低いことが明らかになりました。減数分裂が再開されるとそれぞれの感受性や反応性が高まり、正常に受精できるようになると考えられます(研究業績7)。
+これらの現象は何を意味しているのでしょうか?先に説明しましたように、卵母細胞は特定の時期(ヒトデだとMI期)に達すると、多精拒否ができるようになります。さらに、ヒトデではMI期以降では、再び多精になりやすくなり、多精拒否機構が失われていきます。すべての動物において、多精拒否機構が確立するちょうどその時期に、卵は精子に出会えるように、排卵/放卵される仕組みが働いており、正常に発生できる基盤となっているのです。
+pagetopへ
+IV) ヒトデ卵は受精しないとアポトーシスを起こして死んでしまう
+前の項(III)では、ヒトデ卵の受精について説明しました。では、もしも実験的に受精させなければ、成熟卵はどうなるのでしょうか? そのうちに力尽きて死んでしまうのでしょうか? 試してみたところ、減数分裂再開から約10時間で、同調性よく死滅することが分かったのです。ヒトデ未成熟卵ならば、海水中で1週間は生き続けます。したがって成熟卵が10時間程度で死んでしまうのは、決して「力尽きる」のではなく、むしろ"積極的"に、死んでいると言えるでしょう。この現象を詳細に調べてみたところ、カスパーゼ3が活性化されて、アポトーシスが引き起こされることが分かりました(研究業績8, 9)。アポトーシスとは"プログラムされた細胞死"とも呼ばれる現象で、手(指)の形成や、オタマジャクシの尾が消えてなくなるときに起こります。形態形成過程ではしばしば観察されており、発生を理解する上では、大変重要な現象です。現在MAPキナーゼがどのようにしてカスパーゼ3を活性化しているのかを、研究しています。
+ヒトデ成熟卵のアポトーシスの様子。図の上の数字は減数分裂再開からの時間(時間:分)。
+スケールバー:50μm。
+pagetopへ
+V) in vivo における細胞内プロテアーゼ活性の測定法の開発
+細胞を生かしたまま、その中で何が起こっているかを、目で見てみたい!こんな願望が、この研究の出発点でした。
+細胞内で起こるさまざまな現象は、ほとんどが酵素によって支配されています。酵素活性は、細胞をすりつぶして、酵素を取り出してから、測定します。でも、一旦単離されると、その酵素活性の制御機構が取除かれてしまう恐れがあるのです。そこで私達は、細胞を生かしたまま、1個の細胞内の酵素活性を測定してみようと考えました。そのためにまず、プロテアーゼ活性を測定する手法を開発してきました。原理はいたって単純で、細胞にプロテアーゼ用の蛍光基質をマイクロインジェクションした後に、増加してくる蛍光量を定量します。この目的に合致する蛍光物質、7-aminocoumarin-4-methanesulfonic acid(ACMS)は水に溶けやすく、7位のアミノ基にペプチドを結合することによって、プロテアーゼ基質が合成できます。蛍光基質は、プロテアーゼによって分解されると、蛍光を発するようになるのです。
+さて、この実験では、ヒトデ卵母細胞内に存在する高分子量プロテアーゼ(プロテアソーム)測定用にSuc-Phe-Leu-Arg-ACMSを合成しました(Suc-:保護基であるスクシニル基を示す)。プロテアソームは、細胞周期の制御に関わっている、重要な細胞内プロテアーゼです。この基質の水溶液をヒトデ卵母細胞にマイクロインジェクションすると、速やかに細胞内に拡散し、蛍光量が増加していきました。この蛍光量の増加速度を、顕微鏡に接続した光電子増倍管で検出したところ、卵1個での基質分解初速度(V0)だけでなくVmax、そしてKmなどの速度論的パラメータ求めることが出来たのです(研究業績10)。大変興味深いことにV0は、減数分裂を再開させる1-MA処理によって上昇することが明らかになりました。すなわち卵母細胞が減数分裂を再開すると同時にV0は上昇し始め、サイクリンがプロテアソームによって分解される時期(M期終了時)に最大となりました。このことから、プロテアソーム活性の制御機構が、卵内に存在することが明らかになったのです。またM期終了時のVmaxとKmは、ホルモン処理以前の卵よりも大きな値を示しました。したがって、プロテアソームが、減数分裂過程でなんらかの質的変化を起こしていることが示唆されたのです。またアポトーシスの際に活性化されるカスパーゼに対する蛍光基質も開発し、カスパーゼ活性がいつ上昇するのか等、細胞を生かしたまま、酵素活性を測定することで、アポトーシスの研究も進展しつつあります(研究業績11)。  
+ヒトデ卵母細胞にマイクロインジェクトしたSuc-Phe-Leu-Arg-ACMSが、プロテアソームにより分解される様子。分解産物ACMの蛍光強度が速やかに上昇しています。
+スケールバー:50μm。
+pagetopへ
+参考論文
+Nakano,T., Kontani,K., Kurosu,H., Katada,T., Hoshi, M., and Chiba, K. 1999.
+G-protein subunit-dependent phosphorylation of 62-kDa protein in early signaling pathway of starfish oocyte maturation induced by 1-methyladenine.
+Dev. Biol. 209, 200-209.
+Chiba, K., Nakano,T., and Hoshi, M. 1999. 
+Induction of germinal vesicle breakdown in a cell-free preparation from starfish oocytes. 
+Dev. Biol.  205, 217-223.
+Harada, K., Oita, E., and Chiba, K. 2003. 
+Metaphase I arrest of starfish oocytes induced via the MAP kinase pathway is released by an increase of intracellular pH.
+Development.  130, 4581-4586.
+Usui, K., Hirohashi, N., and Chiba, K., 2008.
+Involvement of mitogen-activating protein kinase and intracellular pH in the duration of the metaphase I (MI) pause of starfish oocytes after spawning.
+Dev. Growth Differ., 50, 357-364.
+Matsuura, R. and Chiba, K., 2004.
+Unequal cell division regulated by the contents of germinal vesicles.
+Dev. Biol. 273, 76-86.
+Iwasaki, H., Chiba, K., Uchiyama, T., Yoshikawa, F., Suzuki, F., Ikeda, M., Furuichi, T., and Mikoshiba, K. 2002.
+Molecular characterization of the starfish 1,4,5-trisphosphate receptor and its role during oocyte maturation and fertilization.
+J. Biol. Chem. 277, 2763-2772.
+Hirohashi, N., Harada, K. and Chiba, K., 2008.
+Hormone-induced cortical maturation ensures the slow block to polyspermy and does not couple with meiotic maturation in starfish.
+Dev. Biol. 318, 194-202.
+Sasaki, K., and Chiba, K. 2001.
+Fertilization blocks apoptosis of starfish eggs by inactivation of the MAP kinase pathway.
+Dev. Biol. 237, 18-28.
+Sasaki, K., and Chiba, K. 2004.
+Induction of apoptosis in starfish eggs requires spontaneous inactivation of MAPK (ERK) followed by activation of p38 MAPK.
+Mol. Biol. Cell. 15, 1387-1396.
+Chiba, K., Sato, E., Hoshi, M. 1997.
+Detection of in vivo proteasome activity in a starfish oocyte using membrane-impermeant substrate.
+J. Biochem. 122, 286-293.
+Sakaue,M., Motoyama,Y., Yamamoto,K., Shiba,T., Teshima,T., and Chiba, K., 2006.
+Quantitative measurement of caspase-3 activity in a living starfish egg.
+Biochem. Biophys. Res. Commun. 350, 878-883.
+Hyslop, L. A., Nixon, V. L., Levasseur, M., Chapman, F., Chiba, K., McDougall, A., Venables, J. P., Elliott, D. J., and Jones, K. T. 2004.
+Ca2+-promoted cyclin B1 degradation in mouse oocytes requires the establishment of a metaphase arrest.
+Dev. Biol. 269, 206-219.
+Otsuki, J., Nagai, Y., and Chiba, K., 2007.
+Peroxidation of mineral oil used in droplet culture is detrimental to fertilization and embryo development.
+Fertil. Steril. 88, 741-743.
+Otsuki, J., Nagai, Y., and Chiba, K., 2007.
+Lipofuscin bodies in human oocytes as an indicator of oocyte quality.
+J Assist Reprod Genet. 24, 263-270.
+Otsuki, J., Nagai, Y., and Chiba, K., 2009.
+Association of spindle midzone particles with polo-like kinase 1 during meiosis in mouse and human oocytes.
+RBM Online. 18, 522-528.
+Otsuki, J., Nagai, Y., and Chiba, K., 2009.
+Damage of embryo development caused by peroxidized mineral oil and its association with albumin in culture.
+Fertil. Steril. 91, 1745-1749.
+Jin, M., Fujiwara, E., Kakiuchi, Y., Okabe, M., Satouh Y., Baba, S., Chiba, K., Hirohashi, N. 2011.
+Most fertilizing mouse spermatozoa begin their acrosome reaction before contact with the zona pellucida during in vitro fertilization.
+Proc. Natl. Acad. Sci. USA, 108, 4892-4896
+pagetopへ
+Untitled Page

@@ -1,0 +1,695 @@
+つまり:
+foreach (e; range) { ... }
+このコードは以下のように変形されます:
+for (auto __r = range; !__r.empty; __r.popFront())
+{
+auto e = __r.front;
+...
+}
+同様に:
+foreach_reverse (e; range) { ... }
+このコードは以下のように変形されます:
+for (auto __r = range; !__r.empty; __r.popBack())
+{
+auto e = __r.back;
+...
+}
+レンジとしてのプロパティが存在しない場合は、代わりに opApply
+メソッドが使用されます。
+opApply を持つ構造体やクラスに対する foreach
+構造体やクラスオブジェクトについては、 foreach の順序は特別な
+opApply メンバ関数で定義されます。
+foreach_reverse の動作は
+opApplyReverse メンバ関数の定義によります。
+対応する foreach 文を使用するためには、
+型ごとにこれらの特別な関数をユーザー定義する必要があります。
+これらの関数の型は次の通りです:
+int opApply(int delegate(ref Type [, ...]) dg);
+int opApplyReverse(int delegate(ref Type [, ...]) dg);
+Type は foreach で
+Identifier の宣言に使われた Type と一致するものです。複数の ForeachType は、
+opApply や opApplyReverse へ渡されるdelegateの複数の
+Type に対応します。
+複数個の opApply や opApplyReverse が存在してもかまいません。
+適切な物が、
+ForeachStatement の ForeachType と dg
+の型が合うように選択されます。関数の本体では、
+そのオブジェクト内の要素を順にたどり、
+それぞれを dg
+へ渡します。dg が 0 を返せば、
+処理を次の要素へと進めます。
+dg  が 0以外の値を返すと、
+繰り返しを止めてその値をreturnする必要があります。
+それ以外で、全ての要素をたどり終わったならば、最後に0をreturnします。
+例えば、二つの要素を含むコンテナクラスを考えてみましょう:
+class Foo {
+uint[2] array;
+int opApply(int delegate(ref uint) dg)
+{
+int result = 0;
+for (int i = 0; i < array.length; i++)
+{
+result = dg(array[i]);
+if (result)
+break;
+}
+return result;
+}
+}
+これを使った例は次のようになるでしょう:
+void test() {
+Foo a = new Foo();
+a.array[0] = 73;
+a.array[1] = 82;
+foreach (uint u; a)
+{
+writefln("%d", u);
+}
+}
+出力はこうです:
+73
+82
+デリゲートに対する foreach
+Aggregate には、
+opApply と同じ型のデリゲートを指定することも可能です。これによって、
+一つのクラスや構造体に
+多くのループ方法を名前付きで共存させることができます。
+タプルに対する foreach
+集成体としてタプルを指定した場合は、
+一つか二つの変数を宣言できます。一つの場合、
+その値にはタプルの要素が一つずつセットされます。
+変数の型を指定した場合、
+タプルの中身と合う型でなければなりません。
+型が指定されていないときは、
+変数の型はタプルの要素の型になり、繰り返し毎に変化します。
+二つ変数を宣言した場合、
+一つめが index、
+二つめが value となります。index
+は int 型か uint 型のどちらかで、ref  にはできません。
+タプルのいくつ目の要素であるかが格納されます。
+タプルが型のリストであった場合、
+foreach文はそれぞれの型に対して一度ずつ実行され、
+変数はその型へのaliasとなります。
+import std.stdio;
+import std.typetuple; // TypeTupleテンプレート
+void main() {
+alias TypeTuple!(int, long, double) TL;
+foreach (T; TL)
+{
+writeln(typeid(T));
+}
+}
+この出力は:
+int
+long
+double
+foreach の ref パラメータ
+元の要素を書き換えるためには、ref が使えます。
+void test() {
+static uint[2] a = [7, 8];
+foreach (ref uint u; a)
+{
+u++;
+}
+foreach (uint u; a)
+{
+writefln("%d", u);
+}
+}
+出力:
+8
+9
+ref はインデックス値には適用できません。
+ForeachType に型指定がなかった場合は、
+Aggregate
+の型から自動で推論されます。
+foreach の制限事項
+foreachの繰り返しの最中に、
+集成体自身をサイズ変更や再割り当て、
+解放や再代入、破棄などすることはできません。
+int[] a;
+int[] b;
+foreach (int i; a)
+{
+a = null;       // エラー
+a.length += 10; // エラー
+a = b;          // エラー
+}
+a = null;         // ok
+foreach range 文
+foreach range 文は指定された範囲の値をループします。
+ForeachRangeStatement:
+Foreach (ForeachType ; LwrExpression .. UprExpression ) ScopeStatement
+LwrExpression:
+Expression
+UprExpression:
+Expression
+ForeachType では変数を明示的な型指定付きで宣言するか、
+LwrExpression と UprExpression から暗黙に推論される型で宣言します。
+n を
+UprExpression - LwrExpression としたとき、ScopeStatement は n 回実行されます。
+もし UprExpression が LwrExpression 以下であったならば、
+ScopeStatement の実行回数はゼロになります。
+Foreach が foreach のとき、変数はまず
+LwrExpression に設定され、本体を1回実行するたびにその後に1ずつ増えていきます。
+Foreach が foreach_reverse の時は、変数はまず
+UprExpression に設定され、本体実行の前に1ずつ減っていきます。
+ScopeStatement
+の実行回数に関係なく、
+LwrExpression と UprExpression はどちらもちょうど1回だけ実行されます。
+import std.stdio;
+int foo() {
+write("foo");
+return 10;
+}
+void main() {
+foreach (i; 0 .. foo())
+{
+write(i);
+}
+}
+出力:
+foo0123456789
+foreach からの break と continue による脱出
+foreach 内での BreakStatement はforeachのループを終了し、
+ContinueStatement 
+はすぐに制御を次の要素に移します。
+switch 文
+switch文は、
+式の値に応じて
+case文のうちの一つへ処理を移します。
+SwitchStatement:
+switch ( Expression ) ScopeStatement
+CaseStatement:
+case ArgumentList : ScopeStatementList
+CaseRangeStatement:
+case FirstExp : .. case LastExp : ScopeStatementList
+FirstExp:
+AssignExpression
+LastExp:
+AssignExpression
+DefaultStatement:
+default : ScopeStatementList
+ScopeStatementList:
+StatementListNoCaseNoDefault
+StatementListNoCaseNoDefault:
+StatementNoCaseNoDefault
+StatementNoCaseNoDefault StatementListNoCaseNoDefault
+StatementNoCaseNoDefault:
+;
+NonEmptyStatementNoCaseNoDefault
+ScopeBlockStatement
+Expression が評価されます。
+結果の型 T は整数型か、
+char[], wchar[], dchar[].
+のいずれかです。結果はcaseの式の各々と
+比較され、マッチしたcase文へ処理が移ります。
+case の ArgumentList は、
+コンマで区切られた式のリストです。
+CaseRangeStatement は、
+FirstExp から LastExp までの case ラベルを並べるための省略記法です。
+どのcaseの式ともマッチしなかった場合、default文があれば、
+処理はdefault文へ移ります。
+switch 文には必ず default 節が必要です。
+caseの式は、定数値か定数配列、または実行時初期化された
+整数型の const/immutable
+変数でなければなりません。
+また、switch の
+Expression の型へと暗黙変換可能である必要があります。
+case の式は全て異なる値へと評価される必要があります。
+const/immutable 変数には必ず全て違う変数を指定します。
+値が同じだった場合、
+その値をもつ最初のcase節に制御が渡ります。
+default 節は必ずちょうど一個書かなければいけません。
+ScopeStatementList は新しいスコープを作ります。
+switch文に関連付けられたcase文やdefault文は、
+ネストしたブロックの中にあっても構いません。
+例えば次は許されます:
+switch (i) {
+case 1:
+{
+case 2:
+}
+break;
+}
+ScopeStatementList は空であるか、または最後の case 以外、
+ContinueStatement, BreakStatement,
+ReturnStatement, GotoStatement, ThrowStatement
+, assert(0) のいずれかで終える必要があります。
+これは C言語の間違いやすい暗黙の fall-through から決別するための処置です。
+fall-throught を明示するには goto case; を使います。
+int number;
+string message;
+switch (number)
+{
+default:    // 正しい: 'throw' で終わる
+throw new Exception("unknown number"); 
+case 3:     // 正しい: 'break' で終わる ('switch' を抜けます)
+message ~= "three ";
+break;
+case 4:     // 正しい: 'continue' で終わる (周囲のループを continue します)
+message ~= "four ";
+continue;
+case 5:     // 正しい: 'goto' で終わる (次の case への明示 fall-through)
+message ~= "five ";
+goto case;
+case 6:     // エラー: 暗黙の fall-through
+message ~= "six ";
+case 1:     // 正しい: case の中身が空
+case 2:     // 正しい: これはswitch文の最後のcase
+message = "one or two";
+}
+break 文は switch の BlockStatement を抜けます。
+文字列もswitch文で使用できます。
+例えば:
+char[] name;
+...
+switch (name) {
+case "fred":
+case "sally":
+...
+}
+コマンドラインスイッチの処理などへの応用では、
+この構文によって、直接的でエラーの少ないコードが書けるようになります。
+char, wchar, dchar 文字列のいずれも使用できます。
+実装ノート:
+コンパイラのコード生成器は、
+caseは実行頻度の高い順に並べられていると仮定して構いません。
+プログラムの正しさの面ではこの仮定は無関係ですが、
+パフォーマンスの面を考えると
+意味があります。
+final switch 文
+FinalSwitchStatement:
+final switch ( Expression ) ScopeStatement
+final switch 文は基本的には switch 文ですが、
+以下の違いがあります:
+DefaultStatement は使用できない
+CaseRangeStatement は使用できない
+switch の Expression がenum型の場合、
+全てのenumメンバが CaseStatement に現れなければならない。
+case 式に、
+実行時に決まる値を書くことはできない
+continue 文
+ContinueStatement:
+continue Identifieropt ;
+continue文はループの現在の処理を中断し、
+ループの先頭へ処理を戻します。
+continueは、最内周のwhile,for,foreach,doループにはたらきます。
+for文のincrement節は実行されます。
+continue の後ろに Identifier が続いている時は、
+その Identifier
+はcontinue文を囲うループのラベルでなければならず、
+continue文によってそのループの先頭へ処理を戻します。
+そのラベルの付いたループが存在しなければエラーです。
+関連するfinally節は全て実行され、
+同期オブジェクトは解放されます。
+注:
+finally節でreturn,throw文やfinallyの外へのgoto文が実行された場合、
+continueの目的地へは処理は到達しません。
+for (i = 0; i < 10; i++)
+{
+if (foo(i))
+continue;
+bar();
+}
+break 文
+BreakStatement:
+break Identifieropt ;
+break文は、そのbreak文を含む文を終了します。
+breakは最内周のwhile,for,foreach,do,switch文を終了させ、
+それらの次にある文へ処理を移します。
+break の後ろに Identifier が続いている時は、その Identifier
+はbreak文を囲うループやswitchのラベルでなければならず、
+break文によってそのループ等を終了します。
+そのラベルの付いたループ等が存在しなければエラーです。
+関連するfinally節は全て実行され、
+同期オブジェクトは解放されます。
+注:
+finally節でreturn,throw文やfinallyの外へのgoto文が実行された場合、
+breakの目的地へは処理は到達しません。
+for (i = 0; i < 10; i++)
+{
+if (foo(i))
+break;
+}
+return 文
+ReturnStatement:
+return Expressionopt ;
+返値を定めて、
+現在の関数を終了します。
+void以外の返値型を持つ関数ならば、
+Expression が必要です。
+Expression
+は暗黙の内に返値型へ変換されます。
+void以外の返値型を持つ関数では、インラインアセンブラを含まない場合、
+最低でも1つのreturn, throw, あるいは
+assert(0) 文が必要です。
+関数が完全にreturnする前に、
+scope記憶クラスを持つオブジェクトが破棄され、
+finally節は実行され、
+scope(exit) 文が実行され、
+scope(success) 文も実行され、
+同期オブジェクトは
+解放されます。
+finally節でfinally節を抜けるgoto文やthrow文、return文が実行された場合、
+関数からは戻りません。
+out事後条件
+(契約プログラミング 参照)
+がある場合は、
+Expression の評価後、
+関数が処理を戻す前にout節が実行されます。
+int foo(int x)
+{
+return x + 3;
+}
+goto 文
+GotoStatement:
+goto Identifier ;
+goto default ;
+goto case ;
+goto case Expression ;
+ラベル Identifier
+の付いた文へ処理を移します。
+if (foo)
+goto L1;
+x = 3;
+L1:
+x++;
+二番目の形 goto default; では、
+このgoto文を囲む最も内側の SwitchStatement
+DefaultStatement へ処理を移します。
+三番目の形 goto case; では、
+このgoto文を囲む最も内側の SwitchStatement における、
+直後の CaseStatement へ処理を移します。
+四番目の形 goto case Expression; では、
+このgoto文を囲む最も内側の SwitchStatement における、
+Expression とマッチする CaseStatement
+へ処理を移します。
+switch (x)
+{
+case 3:
+goto case;
+case 4:
+goto default;
+case 5:
+goto case 4;
+default:
+x = 4;
+break;
+}
+関連するfinally節は全て実行され、
+同期オブジェクトは解放されます。
+初期化をスキップするような GotoStatement
+は不正です。
+with 文
+with文によって、
+同じオブジェクトへの参照の繰り返しを簡単化できます。
+WithStatement:
+with ( Expression ) ScopeStatement
+with ( Symbol ) ScopeStatement
+with ( TemplateInstance ) ScopeStatement
+Expression はクラスの参照か、
+構造体のインスタンスへと評価されるものを指定します。
+WithStatement の本体では、シンボルを探す名前空間として、
+まずそのオブジェクトへの参照が用いられるようになります。次のようなwith文
+with (expression)
+{
+...
+ident;
+}
+は、意味的に次と同値です:
+{
+Object tmp;
+tmp = expression;
+...
+tmp.ident;
+}
+Expression は一度しか実行されません。
+with文では、this や
+super の指す対象は変わりません。
+Symbol には、スコープかまたは TemplateInstance を指定し、
+対応するスコープからシンボルが検索されるようになります。
+例えば:
+struct Foo {
+alias int Y;
+}
+...
+Y y;        // エラー、Y が未定義
+with (Foo) {
+Y y;      // Foo.Y y; と同じ
+}
+ローカルシンボルを同じ識別子で隠してしまうような、
+with 式の使い方は禁止されています。
+これは、オブジェクトの宣言に新しいメンバが追加された場合に、
+意図せずコードの動作を変えてしまうような危険を避けるためです。
+struct S {
+float x;
+}
+void main() {
+int x;
+S s;
+with (s) {
+x++;  // エラー。x の宣言を隠している
+}
+}
+synchronized 文
+synchronize文は、クリティカルセクションで他の文を包んで、
+複数のスレッドが同時に文を実行することを禁止します。
+SynchronizedStatement:
+synchronized ScopeStatement
+synchronized ( Expression ) ScopeStatement
+同時に高々1つのスレッドのみが
+ScopeStatement を実行することが許されます。
+どの mutex によってこの動作が実現されるかは、Expression.
+によって決まります。Expression が指定されなかった場合、
+一つのsynchronized文につき一つグローバルなmutexが作成されます。
+異なるsynchronized文は異なるグローバルmutexを使用します。
+Expression がある場合は、
+オブジェクトへの参照か、Interface の場合は
+Interface を実装するオブジェクトへとキャストで評価されます。
+使用される mutex はそのオブジェクトのインスタンス毎に用意されるもので、
+同じインスタンスを参照する全てのsynchronized文で共有されます。
+ScopeStatement が例外,goto,returnなどで終了した場合であっても、
+ロックは解除されます。
+例:
+synchronized { ... }
+これは標準的なクリティカルセクションの実装です。
+synchronized 文は再帰ロックに対応しています。つまり、
+synchronized でラップされた関数が自分自身を再帰呼び出しすることは可能で、
+期待した通りの動作になります:
+mutex は再帰の回数分のロックとアンロックを行います。
+try 文
+例外処理は、try-catch-finally 文で行われます。
+TryStatement:
+try ScopeStatement Catches
+try ScopeStatement Catches FinallyStatement
+try ScopeStatement FinallyStatement
+Catches:
+LastCatch
+Catch
+Catch Catches
+LastCatch:
+catch NoScopeNonEmptyStatement
+Catch:
+catch ( CatchParameter ) NoScopeNonEmptyStatement
+CatchParameter:
+BasicType Identifier
+FinallyStatement:
+finally NoScopeNonEmptyStatement
+CatchParameter は型 T の変数 v を宣言します。
+型 T は Throwable またはその派生クラスです。
+型 T の派生クラスがthrowされた場合、
+そのオブジェクトで v が初期化され、
+catch文の中身が実行されます。
+型Tだけが書かれ変数名vが無いときも、
+catch文は実行されます。
+もし CatchParameter の型T1が後ろに続く
+型T2の Catch を隠していた場合、つまりT1がT2と同じ型か
+T2の基底クラスの場合は、エラーになります。
+LastCatch は全ての例外をキャッチします。
+The FinallyStatement は、
+try ScopeStatement がgoto,break,continue,return,例外,
+正常終了のいずれで終わる場合も必ず実行されます。
+例外が FinallyStatement の中で発生し、元の例外が catch
+されるより前に catch されなかった場合、Throwable の next
+メンバによって前の例外にチェインされます。
+注意点として、他の多くのプログラミング言語と違って、
+D では新しい例外が古い例外を置き換えることはありません。
+代わりに、新しい例外は最初のれいがいによって引き起こされた '連鎖ダメージ' と見なされます。
+キャッチすべきは元々の例外の方で、そちらをキャッチすると、
+連鎖した例外もそこから取得できます。
+Error から派生したオブジェクトがthrowされたときの扱いは異なります。
+これらの例外は通常のチェインメカニズムを迂回し、
+Error のみがcatch可能となるように処理されます。
+それ以降に発生した例外のリストに加え Error には、迂回が起こったときには、
+一番最初に発生した元々の例外へのポインタも含まれます。
+これによって、例外階層全体が手に入ることになります。
+import std.stdio;
+int main() {
+try {
+try {
+throw new Exception("first");
+}
+finally {
+writefln("finally");
+throw new Exception("second");
+}
+}
+catch(Exception e) {
+writefln("catch %s", e.msg);
+}
+writefln("done");
+return 0;
+}
+これは次のような表示になります:
+finally
+catch first
+done
+FinallyStatement から goto, break, continue, return
+などで脱出したり、gotoで中に飛び込んだりしてはいけません。
+FinallyStatement の中には Catches を含むことはできません。
+この制約は将来的には緩和される予定です。
+throw 文
+例外を投げます。
+ThrowStatement:
+throw Expression ;
+Expression は  Throwable 型の参照へと評価される必要があります。
+そのオブジェクトが例外として送出されます。
+throw new Exception("message");
+スコープガード文
+ScopeGuardStatement:
+scope(exit) NonEmptyOrScopeBlockStatement
+scope(success) NonEmptyOrScopeBlockStatement
+scope(failure) NonEmptyOrScopeBlockStatement
+ScopeGuardStatement は、指定された NonEmptyOrScopeBlockStatement を、
+この文自体が現れた箇所ではなく、
+現在のスコープの終了時に実行します。
+scope(exit) は、スコープから通常終了するときと例外で抜ける時の両方で
+NonEmptyOrScopeBlockStatement を実行します。
+scope(failure) は、スコープを例外で抜ける時のみ
+NonEmptyOrScopeBlockStatement を実行します。
+scope(success) は、スコープから通常終了するときのみ
+NonEmptyOrScopeBlockStatement を実行します。
+一つのスコープに複数の ScopeGuardStatement があった場合は、
+ソースコード文字列上で現れた順番の逆順で実行されます。
+そのスコープ終了時に破棄されるscopeインスタンスが存在する場合も、
+それらのデストラクタも、ソースコード上の逆順で ScopeGuardStatement
+の間に挟まって実行されます。
+write("1"); {
+write("2");
+scope(exit) write("3");
+scope(exit) write("4");
+write("5");
+}
+writeln();
+というプログラムは以下を出力します:
+12543
+{
+scope(exit) write("1");
+scope(success) write("2");
+scope(exit) write("3");
+scope(success) write("4");
+}
+writeln();
+の場合はこうなります:
+4321
+class Foo {
+this() { write("0"); }
+~this() { write("1"); }
+}
+try {
+scope(exit) write("2");
+scope(success) write("3");
+scope Foo f = new Foo();
+scope(failure) write("4");
+throw new Exception("msg");
+scope(exit) write("5");
+scope(success) write("6");
+scope(failure) write("7");
+}
+catch (Exception e) {
+}
+writeln();
+の時は:
+0412
+scope(exit) と scope(success) 文は、
+throw, goto, break, continue, return 文で終了したり、
+goto で中に飛び込んだりしてはいけません。
+asm 文
+インラインアセンブラはasm文によってサポートされます。
+AsmStatement:
+asm { }
+asm { AsmInstructionList }
+AsmInstructionList:
+AsmInstruction ;
+AsmInstruction ; AsmInstructionList
+asm文は、アセンブラ言語の命令を直接使うことを可能にします。
+これによって、外部のアセンブラを用いずにCPUの特殊命令の
+実行などが簡単に実現できます。
+関数の呼び出し規約やスタックの処理などは、
+Dコンパイラが行います。
+命令のフォーマットは、
+CPUの命令セットに大きく依存しますので、
+実装ごとに定義
+されています。
+しかし、フォーマットは次の規約に従っています:
+D言語と同じトークンを使う。
+コメント形式はDのコメント形式と合わせる。
+アセンブラ命令は行末ではなく ;
+で終わるものとする。
+これらのルールは、Dのソースコードが構文解析,意味解析と独立に
+確実にトークン分割できるために定められています。
+例えばIntelプラットホームでは:
+int x = 3;
+asm {
+mov EAX,x; //  xをロードしてEAXレジスタに入れる
+}
+インラインアセンブラによってハードウェアの直接制御も可能です:
+int gethardware() {
+asm {
+mov EAX, dword ptr 0x1234;
+}
+}
+Dの実装によっては、例えばDからCへのトランスレータなどでは、
+インラインアセンブラは意味をなしません。この場合は、
+インラインアセンブラが実装されている必要があります。これを確かめるには、version文を使うことができます:
+version (D_InlineAsm_X86)
+{
+asm {
+...
+}
+}
+else
+{
+/* ... なんらかの代替案 ... */
+}
+意味的に連続している AsmStatement 文の間には、
+余計な命令
+(レジスタの退避や復元等)がコンパイラによって勝手に挿入されることはありません。
+pragma 文
+PragmaStatement:
+Pragma NoScopeStatement
+mixin 文
+MixinStatement:
+mixin ( AssignExpression ) ;
+AssignExpression
+にはコンパイル時に定数文字列に評価される式を指定します。
+文字列の中身は文法的に妥当な
+StatementList でなければならず、そのような文の列としてコンパイルされます。
+import std.stdio;
+void main() {
+int j;
+mixin("
+int x = 3;
+for (int i = 0; i < 3; i++)
+writefln(x + i, ++j);
+");    // ok
+const char[] s = "int y;";
+mixin(s);  // ok
+y = 4;     // ok, mixin が y を宣言している
+char[] t = "y = 3;";
+mixin(t);  // エラー、t はコンパイル時評価できない
+mixin("y =") 4; // エラー、文字列は完全な文でないといけない
+mixin("y =" ~ "4;");  // ok
+}
+文 - プログラミング言語 D (日本語訳)

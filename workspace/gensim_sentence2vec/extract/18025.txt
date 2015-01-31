@@ -1,0 +1,93 @@
+2012年10月1日以降、日本国内で「DVDFab HD Decrypter」を用いて「技術的保護手段」が施されたDVD・Blu-rayのコンテンツをHDD等の記憶媒体へコピーする行為は違法となります。日本国に在住の方は法令違反を避けるため、後述する運用方法を参考に「技術的保護手段」が施されていないディスクを対象に使用するようにしてください。
+「DVDFab HD Decrypter」は2014年11月現在も開発が続くフリーのDVD・Blu-rayリッパーです。
+DVDだけでなくBlu-rayのリッピングにも対応している点が「DVD Decrypter」と異なっており、後でメディアに書き込む際に便利なISOイメージ形式での読み込みにも対応しています。
+「DVDFab HD Decrypter」は「技術的保護手段」の施されていないDVD・Blu-rayだけでなく、「DVD Decrypter」の開発終了後に登場した「RipGuard」、「ARccOS」、「Fake VTS」といったプロテクトのかけられたDVD、「AACS」や「BD+」といったプロテクトのかけられたBlu-rayのリッピングにも対応しています。(原則、日本国外向けの機能です)
+Blu-ray のプロテクトは常にバージョンアップ(2012年10月現在、市販のタイトルで確認されている 「AACS MKB」の最新版はv31、「BD+」の最新版はgeneration 13)されていく特徴があり、フリーの 「DVDFab HD Decrypter」 が最新バージョンのプロテクトに対応するのは、有料の「DVDFab Blu-ray Copy」が対応した1〜2ヶ月後 とされています。
+裏を返せばフリーの 「DVDFab HD Decrypter」 は、最新バージョン以外のプロテクトのかけられた Blu-ray ならたいていリッピングできるわけで、実際、ほとんどすべてのBlu-rayは、フリーの 「DVDFab HD Decrypter」 でリッピング可能な状況となっています。
+また、「DVDFab HD Decrypter」 は v8.1.7.3 より、地デジを録画した BD-R / BD-R DL のリッピングにも対応しました。(v8.1.7.8 まではBD-REに録画した地デジ番組の読み込みができない問題がありましたが、v8.1.8.5 よりBD-REの読み込みもできるようになっています。また、v8.2.1.5 まではMain Movieモードでしか読み込めない問題がありましたが、v8.2.1.8 よりFull Discモードでの読み込みにも対応しました。)
+「DVDFab HD Decrypter」 は、バージョン 5.x.x.x から 「DVDFab」 というツールに統合された形で配布されていますが、すべてのDVD・Blu-ray(Blu-rayに関しては最新バージョンのプロテクトがかけられたものを除く)のリッピング機能は無料で使うことができます。
+冒頭で述べた通り、2012年10月1日以降、日本国内では私的複製の過程でDVDやBDの技術的保護手段を回避することが禁止されているため、日本国在住の方はDVDやBlu-rayをコピーする際に次のような運用をする必要があります。
+「Source Info」&rarr;「Information」 を参照し、リッピング予定のディスクの「技術的保護手段」の有無を確認する
+「技術的保護手段」 が確認されなかったディスクに限り、「技術的保護手段の回避」につながる機能を無効化した上でリッピングする
+» 上述したようなプロテクト・アクセスコントロールがかけられたDVD・BDのリッピングは日本国内では違法となりますのでご注意ください。
+» この記事は、2014年11月28日現在の最新版 「DVDFab HD Decrypter 9.1.7.6」 に対応しています。
+» v8.1.3.6 より Mac OS X に対応 (DVDFab HD Decrypter for Mac) しています。使用方法は Windows 版とまったく一緒です。この記事では、Windows 版をもとに説明していきます。
+» 「DVDFab HD Decrypter」 は、バージョン 9.x.x.x からユーザーインターフェースが大きく変更されました。2013年4月23日まではv8とv9の両方が開発され、v8がメインのバージョンとして提供されていましたが、v9.0.3.6のリリースをもってv9がメインのバージョンとなりました。この記事ではv9をもとに説明をしていきます。
+» シェアウェアながら3週間無料で使える「AnyDVD HD」は、「DVDFab HD Decrypter」にはない再生支援機能を備えたDVD・BDリッパーで、こちらもおすすめです!
+Step 1 - 「DVDFab HD Decrypter」 のダウンロード&インストール
+Step 2 - 「DVDFab HD Decrypter」 の初期設定の方法
+Step 3 - 「技術的保護手段」の有無の確認
+Step 4a - DVD / Blu-ray Disc全体をリッピング&コピーする方法 (Full Disc モード) オススメ !! (ファイル形式、ISOイメージ形式のどちらも出力可能)
+Step 4b - DVD / Blu-ray Discを部分的にリッピングする方法 (Main Movie モード)
+「DVDFab HD Decrypter」 のダウンロード&インストール
+「DVDFab HD Decryptrer」の最新版 を、右の公式サイトからダウンロードしましょう。
+「ダウンロード」と書かれたリンクをクリックして、ファイルを適当なフォルダに保存してください。
+公式サイトの掲示板では 「ベータ版」 のダウンロードも可能です。最新の機能をいち早く試せるメリットがありますが、まだ動作が不安定なので予期せぬ不具合が発生する可能性があり、使用の際は注意が必要です。(DVDFab HD Decrypter(ベータ版)のダウンロードはこちら)
+「Internet Explorer」 の場合、ファイルのダウンロードがブロックされてしまうことがありますが、そのような場合は、画面上部のエラーメッセージをクリックし、 「ファイルのダウンロード」 を選択してやることで、ダウンロードを再開することができます。
+ダウンロードした 「DVDFab9xxxQt.exe」 なるファイルを開くと、インストーラーが立ち上がるので、指示に従ってインストール作業を進めていきましょう。
+インストール完了直後に上のようなウィンドウが表示されたら、「No, thank you」を選択することをおすすめします。
+「Join our user experience improvement program (Recommended)」の方を選択した場合、使用中のOSやハードウェアに関する情報、「DVDFab HD Decrypter」のどの機能がよく使われているか、クラッシュ発生時のログ情報(DVD/Blu-rayのタイトル情報を含む)等が「DVDFab HD Decrypter」の開発元へ送信されるようになります。
+これは今後の「DVDFab HD Decrypter」の機能改善が目的で行われ、個人を特定できない匿名のデータとして収集されるとのことですが、知らぬ間にPC内の情報が外部へ送信されるのは好ましいことではないため、調査への協力の意思がない場合は「No, thank you」の方を選択するようにしてください。
+「DVDFab HD Decrypter」 の初期設定の方法
+「DVDFab HD Decrypter」 を使う前に、初期設定を済ませておきましょう!
+左のように、画面右上のアイコンをクリックして「Common Settings」を選択すると、下のような設定画面が開きます。
+まずは言語を英語に変更します。
+「一般」 &rarr; 「言語」 &rarr; 「English (United States)」 と選択していってください。
+「DVDFab HD Decrypter」 の日本語訳はバージョン 6.0.1.0 以前はひどくて使いものにならなかったのですが、現在はかなり改善されてきています。
+もちろん日本語のままお使いいただいて問題ないのですが、バージョンが変わるたびに日本語のテキストが大きく変更される傾向がありますので、この記事では英語版をもとに説明をさせていただきます。。。
+言語が英語に変わったら上端に注目してください。
+「General」、「Drives」、「DVD」、「Blu-ray」、「Streams」、「Conversion」 なる項目の下にそれぞれ設定項目があるのが確認できると思います。
+それではまず、「General」の項目を選択してみてください。
+まず「Create files in subfolders of output directory」 についているチェックを外します。
+「Temporary Directory」 では、「DVDFab HD Decrypter」 が作業中に一時的にファイルを整理するのに使用する作業用フォルダを、それぞれ設定してやりましょう!
+「Join our user experience improvement program」 は冒頭で説明した匿名の利用状況調査への参加有無の設定です。調査に協力しない場合はチェックを外しておいてください。
+「Add AutoPlay handler(Optionally, start DVDFab when DVD/Blu-ray Disc inserted)」 はチェックを入れておくと、DVDやBDをドライブにマウントした瞬間にいきなり 「DVDFab HD Decrypter」 が立ち上がるようになる設定項目です。(この時、DVD再生ソフトなど、他のソフトを選択することはできません。)これは非常に煩わしいため、チェックを外しておいてください。
+「Allow running multiple instances of DVDFab」(DVDFab を複数起動できるようにする) はチェックを入れておくことで 「DVDFab HD Decrypter」 のウィンドウを複数立ち上げることができるようになります。DVD(または Blu-ray)ドライブを複数お持ちで、同時に複数枚のDVDのリッピングをすることがあるならばチェックを入れておいてください!
+「Check for DMA automatically」 を選択できる場合はチェックを入れておいてください。
+「General」 の設定には、「Temporary Directory」の行の「Settings」ボタンで開くウィンドウも含めると、全部で12のチェックボックスと1つのボタン、3つのドロップダウンリストがあり、個々の設定項目の意味合いはだいたい以下の通りです。。。
+---- 「Create files in subfolders of output directory」 ----
+チェックを外しておくと、ファイルの出力先に指定したフォルダ内に自動的に新しいフォルダが作成されて(フォルダ名はリッピングするDVDやBDのボリュームラベル)リッピングしたファイルを保存できるので便利です。
+---- 「Open output directory when done」 ----
+チェックを入れておくと、作業完了時にファイルの出力先フォルダが自動的に開くようになります。
+---- 「Allow upgrading to Beta version」 ----
+チェックを入れておくと、新しくベータ版がリリースされた際にもアップグレードが実施されるようになります。ベータ版は新しい機能が試せるメリットがある反面、動作が不安定な恐れもあるため、通常はチェックを外しておくことをおすすめします。
+---- 「Join our user experience improvement program」 ----
+チェックを入れておくと、利用状況に関する様々なログが匿名で「DVDFab HD Decrypter」の開発元へ送信されるようになります。「DVDFab HD Decrypter」の機能向上に協力する意思がなければチェックを外しておいてください。
+---- 「Shut down the main interface」 ----
+「DVDFab HD Decrypter」のメインウィンドウを閉じた際に、プログラムを終了する (= Exit program) のか、終了せずにシステムトレイ内に最小化する (= Minimize to systray) のかを選択できます。「Ask me before exiting or minimizing program」を選択すると、終了ボタンをクリックした直後にどちらを選ぶかを問うポップアップが表示されるようになります。ここはあなたのお好みで設定してください。
+---- 「CPU cores running for DVDFab」 ----
+大きな値を選択するほど処理が高速化します。選択できる値は、あなたがお使いのCPUのコア数 (Intel製ならHyper-Threadingに対応しているか否かも関係) によります。
+-- 「Move program icon to systray when minimizing the main interface」--
+チェックを入れておくと、ウィンドウを最小化した際に画面右下のシステムトレイ内に収納されるようになります。この設定はあなたのお好みで。。。
+--「Add AutoPlay handler(Optionally, start DVDFab when DVD inserted)」--
+チェックを入れておくと、DVDやBDを挿入した直後にこちらの許可なく「DVDFab HD Decrypter」が起動するようになります。
+--「Add context menu to open video source by DVDFab」--
+チェックを入れておくと、エクスプローラの画面上で映像ファイルを右クリックした際に「Open with DVDFab」(DVDFabで開く)という項目が表示されるようになります。Windows 8.1  / 8 / 7 / Vistaでこの項目を有効にするためには、DVDFabを管理者として実行しておく必要があります。
+---- 「Allow running multiple instances of DVDFab」 ----
+チェックを入れておくと、上のように「DVDFab HD Decrypter」のプロセスを複数同時に起動することができるようになります。複数台のDVD/BDドライブを使って、同時に複数のDVDやBlu-ray Discのリッピングができるようになるので大変便利です。
+---- 「Prevent standby/hibernation/screensaver when processing」 ----
+チェックを入れておくと、作業中にスクリーンセーバーが起動したり、スリープ状態(XPだとスタンバイ状態)になるのを防いでくれます。
+---- 「Check for on-the-fly decrypter automatically」 ----
+チェックを入れておくと、AnyDVD HD や DVD43 といった競合するDVDリッパーが起動している場合に警告を発してくれるオプションです。「DVDFab HD Decrypter」を使用する場合は、他の種類のDVDリッパーを起動しないようにすることをおすすめします。
+---- 「Check for DMA automatically」 ----
+メモリー・DVDドライブ間のデータ転送を高速化する Direct Memory Access が有効になっているかを起動時にチェックしてくれるオプションです。当然ONにセット!
+---- 「Reset DMA」ボタン ----
+DVDドライブの読み込み速度が、本来出るはずのスピードと比較して圧倒的に遅い場合、DMAが無効になっている可能性が考えられます。DMAを有効にすると、CPUを介さずにメモリーとDVDドライブ間で直接データの転送を行うことができるようになります。これによって作業のスピードはUPしますし、CPUの負荷も小さくすることができて一石二鳥です。
+「Reset DMA」ボタンをクリックすると、簡単にDMAを有効にすることができるので一度は実行しておいた方が良いでしょう。。。
+その際、上のように 「DMAを有効にするために再起動する必要があります。今すぐ再起動しますか?」 というウィンドウが立ち上がりますので、再起動の準備を整えてから 「Yes」 をクリックしてください。
+---- 「Delete temporary files when done」 ----
+(「Temporary Directory」の「Settings」ボタンから呼び出し)
+一時的に作成したファイルを、作業終了時に自動的に削除してくれます。
+「A/V Codec」 では、Main Movie モード でプレビュー画面を確認する際にビデオカードの再生支援機能を有効にして、パソコンの動作が重くなるのを防ぐ設定ができます。
+また、「DVDFab HD Decrypter」 とは直接関係ありませんが、「DVDFab DVD Ripper」、「DVDFab Blu-ray Ripper」 などで、DVDやBlu-ray Discから直接AVIファイル、iPhone・iPod・PSP用動画を作成する際、ビデオカードのハードウェアエンコードを有効にして作業を高速化する設定もできます。
+画面下部の「Codec Information」 欄を確認して、あなたのビデオカードが 「CUDA」・「AMD APP」 のどちらかに対応しているか確認してください。
+「CUDA」・「AMD APP」 どちらかに対応しているようなら、「Disable all GPU codecs for decoding and encoding」 についているチェックを外し、「Video Decoder」欄・「Video Encoder」欄をそれぞれ対応している方に設定してください。
+ここで、ビデオカードが「CUDA」・「AMD APP」 どちらにも対応していなくても、Intel製のCPU(2011年以降に発売された、Sandy Bridge 以降のアーキテクチャのもの)をお使いの場合、「Intel Quick Sync Video」に対応していることがあります。その場合は、「Disable all GPU codecs for decoding and encoding」 についているチェックを外し、「Video Decoder」欄・「Video Encoder」欄をそれぞれ「Intel Quick Sync」に設定してください。
+上記のいずれにも対応していない場合は、「Disable all GPU codecs for decoding and encoding」 にチェックを入れ、すべての項目を 「Software」 に設定してください。
+最後に、「Enable Lightning-Recoding when applicable」 と 「Enable Lightning-Shrink when applicable」(v9.0.7.0より追加) の両方にチェックを入れます。
+チェックを入れることで、Blu-ray Discのトランスコーディング(片面2層式のBlu-ray Disc(50GB)を片面1層式のBlu-ray Disc(25GB)に収まるサイズに圧縮する作業)の際の処理速度を20〜150%(※)程度高速化することができます。これにより、トランスコーディングを含めておよそ1時間程度でBlu-ray1枚をコピーできるようになります。(このBlu-ray Disc圧縮機能は有料の機能ですが、30日間は無料でお試しができます。)
+※「Lightning-Recoding」は単体で20〜40%程度、「Lightning-Shrink」は単体で60〜130%程度、それぞれトランスコーディングを高速化する効果があります。2つは独立に動作するため、設定の際は両方にチェックを入れておくことでより短時間で作業を終えることができるようになります。ただし、「Lightning-Shrink」を有効にするためには、「CUDA」に対応したNVIDIA製ビデオカード(2009年以降発売のもの)か、「Intel Quick Sync Video」に対応したIntel製CPU(2011年以降発売のもの)のいずれかが必要となります。
+ちなみにこのBlu-ray Discのトランスコーディングは無料でやることもできます!
+DVDに 「DVD Shrink」 があるように、Blu-ray Discには 「BD Rebuilder」 というツールがあり、片面2層式のBlu-ray Discを片面1層式のサイズに収まるようサイズダウンさせることができます。
+(「BD Rebuilder」 の詳しい使い方はこちら)
+フリーの高性能DVD/BDリッパー「DVDFab HD Decrypter」

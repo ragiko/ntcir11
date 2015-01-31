@@ -1,0 +1,102 @@
+部分文字列の検索のアルゴリズム
+文字列の中から指定された文字列を見つけるアルゴリズムを考える。
+情報科学の
+文字列のマッチングは、
+マッチングに失敗するとsの次の位置でpの最初からやり直すもの)であった。
+失敗するところまでで分かっていることを利用すると、速くマッチングを見つけることができる。
+いろいろな方法が提案されているが、ここでは有限オートマトンに基づくアルゴリズムとKnuth-Morris-Prattアルゴリズムを紹介する。
+String matching automata(SMA)
+この方法では見つけたい文字列に応じて有限オートマトンを作る。
+有限オートマトンについては情報での説明を参照のこと。
+プログラムは Automaton.javaを参照せよ。
+例えば、"waniwaniwato"を見つける場合は、次の有限オートマトンを用意する。
+遷移が書いてないものは、"w"以外なら状態0に遷移、"w"なら状態1に遷移する。
+この有限オートマトンで、"waniwaniwa"まで一致していて、次が"n"の場合を考えてみよう。
+入力は"...waniwaniwan"なので、"waniwaniwat"とは一致しない。
+入力は".......waniwan"なので、"waniwan"まで一致したと考えることはできる。
+入力は"...........wan"なので、"wan"だけ一致したと考えることもできる。
+"wan"だけ一致したと考えるのは、"waniwan"まで一致したと考えた後で失敗してからできるので、
+できるだけ長く一致した、状態7に遷移することにする。
+有限オートマトンができていれば、文字列とのマッチングは次のように計算できる。
+match(t) ... tはマッチの対象の文字列
+q  0 ... 状態0は初期状態
+for i  1 to |t| do
+begin
+q  δ(q, ti) ... δは遷移関数
+if q = m then 一致検出を報告 ... 状態mは受理状態
+end
+"anananan"から"anan"を探す場合は、"anan...."、"..anan.."、"....anan"の三箇所で一致が検出される。
+(一致するものがあるかどうかだけを調べたい場合は、最初の一致検出でreturnを返せば良い。)
+"uraniwaniwaniwaniwatoriairu"から"waniwaniwato"を探す例をやってみよう。
+入力の"uraniwaniwani"まで見終わった時点で、状態Qとなり、
+これから"waniwatoriairu"を見ることを、
+"uraniwaniwani[Q]waniwatoriairu"で表す。
+"[0]uraniwaniwaniwaniwatoriairu"
+"u[0]raniwaniwaniwaniwatoriairu"
+"ur[0]aniwaniwaniwaniwatoriairu"
+"ura[0]niwaniwaniwaniwatoriairu"
+"uran[0]iwaniwaniwaniwatoriairu"
+"urani[0]waniwaniwaniwatoriairu"
+"uraniw[1]aniwaniwaniwatoriairu"
+"uraniwa[2]niwaniwaniwatoriairu"
+"uraniwan[3]iwaniwaniwatoriairu"
+"uraniwani[4]waniwaniwatoriairu"
+"uraniwaniw[5]aniwaniwatoriairu"
+"uraniwaniwa[6]niwaniwatoriairu"
+"uraniwaniwan[7]iwaniwatoriairu"
+"uraniwaniwani[8]waniwatoriairu"
+"uraniwaniwaniw[9]aniwatoriairu"
+"uraniwaniwaniwa[10]niwatoriairu"
+"uraniwaniwaniwan[7]iwatoriairu" 途中まで戻った
+"uraniwaniwaniwani[8]watoriairu"
+"uraniwaniwaniwaniw[9]atoriairu"
+"uraniwaniwaniwaniwa[10]toriairu"
+"uraniwaniwaniwaniwat[11]oriairu"
+"uraniwaniwaniwaniwato[12]riairu"  一致検出
+"uraniwaniwaniwaniwator[0]iairu"
+"uraniwaniwaniwaniwatori[0]airu"
+"uraniwaniwaniwaniwatoria[0]iru"
+"uraniwaniwaniwaniwatoriai[0]ru"
+"uraniwaniwaniwaniwatoriair[0]u"
+"uraniwaniwaniwaniwatoriairu[0]"
+有限オートマトンの遷移関数δは次のように生成する。
+pが「青赤黄青赤緑」、
+qが5、次の文字が「黄」の場合の例を示す。
+p=「青赤黄青赤緑」
+q=5
+c=「黄」
+k=q+1=6
+pの長さqの接頭語+c=「青赤黄青赤黄」...(2)
+pの長さkの接頭語=「青赤黄青赤緑」...(2)の末尾と一致しない
+k=5
+qの長さkの接頭語=「青赤黄青赤」...(2)の末尾と一致しない
+k=4
+qの長さkの接頭語=「青赤黄青」...(2)の末尾と一致しない
+k=3
+qの長さkの接頭語=「青赤黄」...(2)の末尾と一致。ここから再スタート
+別の説明
+サンプルプログラムsma.javaを試してみよう。
+(Javaの配列の添字が0からなので、上記のアルゴリズムとは1つずらしているので、注意)
+ここでは、探したい文字列から有限オートマトンを生成したが、
+matchのアルゴリズムはそのようにして生成された有限オートマトンだけでなく、
+任意の有限オートマトンに対して適用できる。
+逆に、有限オートマトンが認識できる文字列
+(その文字列を入力すると終了状態となる)
+の集合を指定する事を考えることができるが、
+それには正規表現というものが考えられている。
+Rubyのように正規表現のマッチングが言語に組み込まれているものもある。
+Javaではjava.util.regexに正規表現のマッチングをするためのクラスが用意されている。
+Knuth-Morris-Prattアルゴリズム(KMP)
+有限オートマトンのアルゴリズムは入力文字に従って遷移するだけなので、マッチング自体は高速であるが、
+遷移関数δを作るのに時間がかかるのと、δが大きくなるのが欠点である。
+そこで、完全な遷移関数を作るのではなく、マッチの時に少し調べることにする。
+ここでは、n文字の次で失敗した時に、π(n)文字の次を見る(そこでまた失敗するかもしれない)ようにすることを考える。
+例を示す。
+q=10文字目まで一致したが、11文字目で不一致の場合、
+q=6文字目まで一致した状態にして7文字目が一致するかを調べる。
+この例では一致したが、もし一致しなければ、同様のことを繰り返す。
+一般的に言うと以下のようになる。
+入力文字列とq文字目まで一致していてq+1文字目が不一致の時、
+q文字目までの一致をあきらめて、(次に長い)π(q)文字目までの一致にまで、一致部分を減らす。
+π(q)+1文字目が一致すればそれで続ける。一致しない場合は更にπ(π(q))文字目まで一致部分を減らしてみる。
+programming methodology

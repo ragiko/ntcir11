@@ -1,0 +1,43 @@
+Twitter / `(,@valvallow): #Emacs に「リージョンを指定した文字で囲む」と ...
+#Emacs に「リージョンを指定した文字で囲む」とか「次の単語（というかS式）を指定した文字で囲む」みたいなコマンドありませんか？
+で、insert-pair
+⚛ Useful: insert-pair
+とか lisp-electric.el
+lisp-electric — Gist
+などを教えて頂きました。
+ですが、素朴なものであれば簡単に書けそうだったので書いてみました。ただのコード辺なわけですが、せっかくなのでパッケージ（？）にしてみました。
+downloadearmuff.el — Gist
+auto-install.el があれば auto-install-from-url とか auto-install-from-gist でインストールできます。
+何ができるのか現在のカーソル位置の次にある S 式を「耳当て記法」にする。
+例） hoge -> *hoge* とか hoge -> +hoge+ とか
+foo -> "foo" とか foo -> 'foo' とか foo -> {foo} なども「耳当て記法」扱いすることにしました
+「耳当て」は、emacs 既存の insert-pair-alist か、自分で指定した alist から選択される
+実行するたびに alist の中から順番に適用される
+それと「現在のカーソル位置の次にある S 式を耳当て記法にして次の S 式に進む」みたいなのも用意しました。
+耳当て（笑）いやいや、lisp 界隈では大域変数なんかに *global-var* や、定数に +const-var+ というような名前の付け方をする慣習があるのです。で、これを「耳当て記法」と呼ぶそうです。
+なので、名前も earmuff.el にしました。
+設定例(require 'earmuff)
+(define-key global-map [f11] (emf:cycle-earmuff-gen '((?" ?")(?* ?*)(?+ ?+))))
+(define-key global-map (kbd "M-<f11>") (emf:earmuff-and-move-next-gen '(?" ?")))
+上記設定だと、例えば hoge という S 式があってその直前にカーソルがある状態で F11 を連打すると以下のように切り替わります。
+hoge    ;;
+"hoge"  ;; 1 回
+*hoge*  ;; 2 回
++hoge+  ;; 3 回
+hoge    ;; 4 回
+Emacs には insert-pair-alist という alist が組み込み（？）であるようなのですが、それをそのまま使っても良いかもしれません。以下の設定で insert-pair-alist を基に耳当てします。
+(require 'earmuff)
+(add-to-list 'insert-pair-alist '(?" ?"))
+(add-to-list 'insert-pair-alist '(?* ?*))
+(add-to-list 'insert-pair-alist '(?+ ?+))
+(define-key global-map [f11] (emf:cycle-earmuff-gen))
+(define-key global-map (kbd "M-<f11>") (emf:earmuff-and-move-next-gen '(?" ?")))
+M-F11 に割当てているのは、連続で耳当てできるようにするものです。例えば上記の設定だと下記のようになります。
+foo bar baz       ;;
+"foo" bar baz       ;; 1 回
+"foo" "bar" baz     ;; 2 回
+"foo" "bar" "baz"   ;; 3 回
+コレはキーボードマクロで定義してもよさそうだったんですが、取りあえず用意しました。
+この例では F11 と M-F11 に割当てていますが、好みのキーに割り当ててください。
+コードは以下の通りです。
+vallog: Emacs: 「次の単語（というかS式）を指定した文字で囲む」 earmuff.el

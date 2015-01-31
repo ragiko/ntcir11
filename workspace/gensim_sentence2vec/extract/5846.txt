@@ -1,0 +1,15 @@
+
+ここで設定可能な Max Sessions Per User の設定は通常、BIG-IP APMのLogon Pageでユーザが入力したユーザ名(username)が識別される形となるため、このままではクライアント証明書認証を行ったユーザは特にLogon Pageでユーザ名を入力してログオンしていないため、ユーザあたりの制限が正しく動作しません。
+この問題を解決するためには、クライアント証明書の情報をクライアント証明書が全ユーザに同一のものが配布されている場合は区別しようがありませんが、ユーザを区別する情報をクライアント証明書のSubject情報などから取得してユーザ名であるとAPMに認識させることで、ユーザあたりのセッション数制限を正しく動作させることができるようになります。
+その場合、APMにユーザ名として識別させるために、session.で始まるAPMのセッション変数をVariable Assignで定義することで実現できます。具体的には、下記のセッション変数を
+session.logon.last.username	: Reportの部分に表示されるユーザ名session.logon.last.logonname	: Max sessions per userの設定で識別されるユーザ名
+をクライアント証明書のSubjectやシリアル番号などの情報から取得して設定する必要があります。例えば、クライアント証明書のSubject情報が
+emailAddress=kitty@pslab.local,CN=Hello Kitty,OU=IT,O=HELLO KITTY COMPANY,ST=TOKYO,C=JP
+となっているとセッション変数session.ssl.cert.subjectにクライアント証明書のSubject情報が入ります。このSubject情報のうち、2つめの要素の Hello Kitty をユーザ名として識別したい場合、
+[On-Demand Cert Auth]あるいは[Client Cert Auth]などの後ろに[Variable Assign]というアイテムを追加して
+session.logon.last.usernameexpr { [lindex [split [lindex [split [mcget {session.ssl.cert.subject}] ,] 1] =] 1] }
+session.logon.last.logonnameexpr { [lindex [split [lindex [split [mcget {session.ssl.cert.subject}] ,] 1] =] 1] }
+の2つのセッション変数を定義します。この青字の部分は、Subject情報のうち , (カンマ)区切りして2つ目の要素を取り出し(CN=Hello Kitty)ます。次にオレンジ色の部分はCN=Hello Kittyから = (等号)区切りして2つ目の要素を取り出し(Hello Kitty)ます。
+emailAddress=kitty@pslab.local,CN=Hello Kitty,OU=IT,O=HELLO KITTY COMPANY,ST=TOKYO,C=JP
+設定例
+F5 Tech Depot | エンジニアコラム Vol.2 | F5 Networks Japan K.K.

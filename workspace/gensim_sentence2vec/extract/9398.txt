@@ -1,0 +1,65 @@
+目次
+1対1関連とは
+参照先の外部キーを追加する
+モデルにhas_oneとbelongs_toを追加する
+使えるようになるメソッド
+1. 1対1関連とは説明のために次のER図を実装してみます。
+注文一つには多くとも請求書1つがあるビジネスの場合、「注文」から見ると「請求書」は"1"です。
+請求書1通にも注文が必ず1つあるビジネスの場合、「請求書」から見ると「注文」は"1"です。
+このような関係を「1対1関係」といいます。
+※注文と請求書のどちらにhas_oneを書き、どちらにbelongs_toを書けばいいのか?
+明確な答えはありませんが、意味的に「注文は請求書に属する(belongs_to)」よりも「請求書は注文に属する(belongs_to)」の方がしっくりくるので、Invoiceクラスにbelongs_toを今回は記載します。
+2. 参照先の外部キーを追加するまず、belogns_to側のテーブル(今回はinvoicesテーブル)にxxx_idという名で外部キーを追加します。
+xxxの箇所は参照先のモデル名にする必要があります。
+今回の場合は、Orderモデルを参照するため、order_idにする必要があります。
+Orderモデルとordersテーブルの作成します。
+rails g model Order order_date:date
+rake db:migrateInvoiceモデルとinvoicesテーブルの作成します。
+rails g model Invoice order_id:integer
+rake db:migrateもし、既にInvoiceクラスとinvoicesテーブルが存在する場合は、invoicesテーブルにorder_idのみを追加します。
+rails g migration add_order_id_to_invoices order_id:integer
+rake db:migrate
+3. モデルにhas_oneとbelongs_toを追加するではモデルファイルに1対1関連の宣言を追加します。
+「注文」にhas_oneを追加します。
+"Order has_one :invoice"と読めば、「注文(Order)は請求書(Invoice)を1つ持つ」と訳せます。
+また、dependent: :destroyオプションを追加することで、destoryメソッドで注文を削除したら、Railsがその注文に紐づいている請求書も自動で削除してくれます。
+# app/models/order.rb
+class Order < ActiveRecord::Base
+has_one :invoice, dependent: :destroy
+end
+has_oneメソッドには次のようなオプションを指定できます。
+class_nameオプションで関連するモデルのクラス名を指定でき、関連名と参照先のクラス名を異なるものにできできる。
+foreign_keyオプションで参照先を参照する外部キーの名前を指定できる。デフォルトは、参照先のモデル名_id
+dependentオプションで親オブジェクトが削除された時の扱いを指定できる。destroyなどが指定可能。
+asオプションでポリモフィック関連を定義できる。
+など
+「請求書」にbelogns_toを追加します。
+"Invoice belongs_to :order"と読めば、「請求書(Invoice)は注文(Order)に属する」と訳せます。
+# app/models/invoice.rb
+class Invoice < ActiveRecord::Base
+belongs_to :order
+end
+belogns_toメソッドには次のようなオプションを指定できます。
+class_nameオプションで関連するモデルのクラス名を指定でき、関連名と参照先のクラス名を異なるものにできできる。
+foreign_keyオプションで参照先を参照する外部キーの名前を指定できる。デフォルトは、参照先のモデル名_id
+dependentオプションで親オブジェクトが削除された時の扱いを指定できる。destroyとdeleteが指定可能。
+polymorphicオプションでポリモフィック関連を定義できる。
+など
+4. 使えるようになるメソッドこれらを追加することで自動的に次のようなメソッドが使えるようになります。
+# 作成
+order = Order.create( order_date: Time.now ) # orderを作成し、DBに保存
+invoice = Invoice.create # invoiceを作成し、DBに保存
+order.invoice # => nil
+order.invoice.build # => エラー
+invoice.order # => nil
+invoice.order.build # => エラー
+# リレーション
+order.invoice = invoice # orderとinvoiceを関連づける
+order.invoice # => invoiceを返す
+invoice.order # => orderを返す
+# 削除
+Invoice.count # => 1
+order.destory # => dependent: :destroyが指定されているので、invoiceも削除される
+Invoice.count # => 0
+以上です。
+Rails4で1対1のリレーションをモデルに実装する - Rails Webook

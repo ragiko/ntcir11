@@ -1,0 +1,55 @@
+現在word2vecのdistance.cを学習していますが、コサイン類似度計算部がよくわかりません。
+word2vecのdistance.c
+現在pythonを用いて次のようなコードを書いています。
+自分で書いたpythonコード
+(このコードを実行する際は、word2vecで270次元のベクトルを作成する必要があります。※オプションで -binary 0 指定の必要あり)
+中でも、コサイン類似度を求める部分は次のようになっています。
+cos={} # コサイン類似度を格納する辞書型リストの初期化
+queryVec = vocab[query]
+# 全単語について探索する
+for word in vocab.keys():
+tlist = vocab[word]
+i = 0
+# 内積の初期化
+inpro = 0
+# 内積の計算
+for i in range(1,271):
+inpro = queryVec[i] *tlist[i]
+# 内積÷長さ
+cos[word] = inpro / (queryVec[0]*tlist[0])
+続いてソート部分です。ソート結果は毎回同じ単語の並びになってしまいます。
+# 上位N位を初期化
+i = 0
+bestd = {}
+for i in range(0,N):
+bestd[i]=[-1,'']
+count = 0
+# この中から上位N位を選出
+for word in vocab.keys():
+#print word,cos[word]
+a =0
+# 自分と同じ単語以外
+if query != word :
+for a in range(0,N):
+if cos[word] > bestd[a][0] :
+b = N-1
+count +=1
+for b in range(b,a,-1):
+temp = bestd[b-1]
+bestd[b] = temp
+bestd[a] = [word,cos[word]]
+break
+a+=1
+結果例(3100さんの訂正後の結果です。input wordにどんな単語を用いても結果はこれになります)
+please input word >愛
+愛
+Word       Cosine distance
+20
+出産      0.353152
+團        0.178738
+仙界      0.262659
+土        0.295177
+園        0.140053
+遂げる        -0.178689
+シルク        0.286873
+python - word2vecのdistanceのソート部分(コサイン類似度)アルゴリズムについて - スタック・オーバーフロー

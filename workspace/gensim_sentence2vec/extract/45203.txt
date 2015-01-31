@@ -1,0 +1,32 @@
+手作業とマクロの二通りがあります。
+手作業で削除するなら
+①該当のラベル(フィールド)を一旦取り除く
+②更新する
+③再度、該当ラベルを元に戻す
+マイクロソフトサポートより
+http://support.microsoft.com/default.aspx?scid=kb;ja;417051
+マクロで削除するなら
+Sub 無効アイテム削除()
+Dim myPT As PivotTable
+Dim mySh As Worksheet
+Dim PtFld As PivotField
+Dim PtItem As PivotItem
+Application.ScreenUpdating = False
+On Error Resume Next
+For Each mySh In Worksheets
+For Each myPT In mySh.PivotTables
+For Each PtFld In myPT.PivotFields
+For Each PtItem In PtFld.PivotItems
+PtItem.Delete
+Next
+Next
+Next
+Next
+ActiveWorkbook.RefreshAll
+On Error GoTo 0
+Application.ScreenUpdating = True
+End Sub
+こちらより引用させて頂きました。アイテム数が多いと動きが遅くなるので、
+上記はScreenUpdatingプロパティを追加しています。
+http://pvttbl.blog23.fc2.com/blog-entry-22.html
+エクセルのピボットについて質問です。元のデータを削除したにもかかわ... - Yahoo!知恵袋

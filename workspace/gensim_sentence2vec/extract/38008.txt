@@ -1,0 +1,74 @@
+先日ドットインストールに MongoDB の基礎レッスンを追加したこともあって、最近よく MongoDB をさわるようになりました。
+PHP から MongoDB を扱うには、PECL の Mongo というライブラリを使います。
+<?php
+$mongo = new MongoClient();
+$cursor = $mongo->test->foo->find( array( 'is_new' => 1 ) );
+foreach ($cursor as $doc) {
+print_r($doc);
+}
+これは is_new の値が 1 のデータを取得する例。PHPなので find()の取得条件を構築するには配列を使います。
+同じ処理を MongoDB 自身の書き方で書くと、
+$db.foo.find( { is_new: 1 } );
+このようになります。find() の引数はオブジェクトです。このように本来はオブジェクトで記述する場合であっても、PHP Mongoでは配列を使うことになります。
+部分一致検索をやってみた
+ここでは DailyFeed の検索機能で実装した、
+「feedsコレクションの title または url に、指定されたキーワードがすべて含まれているデータを取得する。」
+という処理を例に、PHP Mongo での書き方を見てみます。
+まず MySQL で部分一致検索をすると、
+SELECT * FROM feeds WHERE
+(title LIKE '%Google%' AND title LIKE '%blog%')
+OR (url LIKE '%Google%' AND url LIKE '%blog%');
+こんな感じのSQLになります。これはキーワードに「Google」と「blog」を指定した場合で、LIKEを使ったいわゆる文字列の部分一致検索です。
+これを MongoDB の書き方に直すと、こうなります。
+db.feeds.find({
+$or: [
+{
+$and: [
+{ title: /Google/i },
+{ title: /blog/i }
+]
+},
+{
+$and: [
+{ link: /Google/i },
+{ link: /blog/i }
+]
+}
+]
+});
+部分一致検索には正規表現を使います。MySQLで大文字小文字を区別していなかったので、正規表現にも「i」フラグをつけています。
+さて、これをPHPのMongoライブラリでの書き方に直すと、次のようになります。(ここではデータベース名を「test」としています。)
+<?php
+$mongo = new MongoClient();
+$mongo->test->feeds->find(array(
+'$or' => array(
+array(
+'$and' => array(
+array( 'title' => new MongoRegex('/Google/i') ),
+array( 'title' => new MongoRegex('/blog/i') ),
+)
+),
+array(
+'$and' => array(
+array( 'url' => new MongoRegex('/Google/i') ),
+array( 'url' => new MongoRegex('/blog/i') ),
+)
+),
+),
+));
+array多すぎw というのは置いといて、PHP Mongoで正規表現を使おうと思ったら、このように MongoRegex クラスを使う必要があります。
+なお、この例はキーワードを「Google」と「blog」で固定した例なので、実際の実装ではこのキーワード指定の部分、すなわち $and の値である配列の要素が、キーワードの数だけ追加されます。
+/**
+* $keywords にキーワードが配列で格納されているとして
+*/
+foreach ($keywords as $keyword) {
+$andConds[] = array(
+'title' => new MongoRegex('/' . preg_quote($keyword, '/') . '/i'),
+);
+}
+変数を利用して正規表現を組み立てることになるので、preg_quoteを使うことにも注意。
+若干めんどくさい感はありますが、MongoDBはSQLで記述するよりも論理的にクエリを構築できるので、実際コードの見通しはよくなったと感じます。
+とはいえ複雑なので、PHPでMongoDBを扱う際には、まず MongoDB のコンソールで正しいクエリを構築してから、PHP Mongo の書き方に書き直すという手順を踏むと、スムーズに正解に辿り着けるかなと思います。
+» MongoDBの基礎 - ドットインストール
+(追記: 2012-11-29) new Mongo(); は非推奨となっていたようですので、 new MongoClient(); に修正しました。
+PHPとMongoDBで部分一致検索をやってみた - F.Ko-Jiの「一秒後は未来」

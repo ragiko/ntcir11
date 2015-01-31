@@ -1,0 +1,13 @@
+
+MASS 
+パッケージには多変量正規乱数生成関数 mvrnorm() が,mvtnorm パッケージには多変量正規乱数生成関数 
+rmvt() か用意されている.mvtnorm パッケージには他にも 多変量正規分布に関する関数 
+dmvnorm(),pmvnorm(),rmvnorm() が用意されている.
+確率分布 
+binom についての書式は以下の通りである.引数 lower.tail には論理値を指定し,TRUE 
+ならば確率は P[X ≦ x] で,FALSE ならば P[X > x] が返される.ちなみに,引数には log, log.p というものもあり,TRUE を指定すると結果は対数を取ったものが返される.
+dbinom(x, size, prob)                     # x : ベクトル, prob : 成功の確率
+pbinom(q, size, prob, lower.tail = TRUE)  # q : quantile のベクトル
+qbinom(p, size, prob, lower.tail = TRUE)  # p : 確率ベクトル
+rbinom(n, size, prob)                     # n : 観測数,  size : 試行数
+R-Source

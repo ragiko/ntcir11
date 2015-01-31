@@ -1,0 +1,3 @@
+入力テキストを解析して単語連鎖候補列を生成し、その少なくとも一部である文頭から文末までの選択単語連鎖列から、長音による変形表現と推定される平仮名・長音単語列を抽出する。An input text is analyzed to generate a word chain candidate string, and hiragana/prolonged sound word strings estimated as a modified expression by prolonged sound are extracted from selected word chain strings from the beginning to the end that is at least a part of the word chain candidate string. - 特許庁
+埋め込もうとするデータをバイナリコード化したデータ列に従って、標準化文章の文頭から順に0なら基本単語、1なら基本単語以外に書き換える暗号化処理を行なう(ステップS130)。According to a data row obtained from the data to be embedded through binary coding, coding processing for rewriting the standard document into a basic word for 0 and a word other than the basic word for 1 from the beginning is performed (step S130). - 特許庁
+文頭の語の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

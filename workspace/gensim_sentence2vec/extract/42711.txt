@@ -1,0 +1,14 @@
+2年間に亘る研究成果の概要は次の通りである.
+1.音素認識 音素認識は, 単語や文節音の大分類の結果として選択された候補の正当性を検討するための構造解析に重要な役割を果す. そこで, 音素認識の精度を上げる研究に重点を置いた. その結果, 特に母音, 鼻音, 破裂性子音の認識率を向上させることができた. 母音については, 母音間相対関係を利用した母音認識手法を開発し, 従来より高い認識率を達成した.
+2.単語音声認識 単語音声を認識する強力な手法を開発した. 本手法は2つの部分からなる. 第1の部分は, 我々が文字認識で開発した連想整合法と呼んでいるパターン整合法を音声認識に適用したもので, 単語音声を高精度で大分類することを可能にしたものである. 第2の部分は, 音素認識を基にした単語音声の構造解析を行うもので, 大分類の結果として得られた候補単語の検証に効果的である.
+3.話者適応 同一話者が発生した日本語5母音の特徴空間における相対的な位置の間には, 話者によらないと見なし得る2項関係が存在することを見出し, この関係を基にして上述の1.で述べた母音認識手法を開発した. 話者の個人性はより多く母音にに反映されるので, この母音認識手法を用いることにより, 話に依存しない母音認識, つまり話者適応が可能となった.
+4.認識実験 上述の単語音声認識手法を男性10名が発声した212単語に適用し, 従来にない高精度の認識を達成した. 即ち, 1位認識率は98.2%であり, 2位までの累積認識率は99.6%である. この結果は単語音声の大分類として30位までの累積認識率99.86%が得られたのに対し, 母音認識とDP法を併用した構造解析によって達成されたものであって, 計算量の多いDP法の代りに子音を含めた音素認識のみによって構造解析を行うことが今後の課題である.
+The results obtained in the research project are summarized as follows.
+1. Recognition of phonemes
+Our research stressed on improving the recognition rate of phonemes from the viwe-point that they play an important role in the structural analysis,i.e., verificatgion of words or closes as chandidates. As a result some significant improvements have been obtained especially in recognition of vowels, vowels, nasals and plosives. As for vowels we have developed a new recognition technique based on a binary relational model of vowels.
+2. Word recognition We have daveloped a powerful technique for word recognition which consists of two parts. The first part is concerned with such a pattern matching method called as an associative pattern matching developed in our research on character recognition and attains a high accuracy in rough classification of words. The second part is concerned with a structural analyusis, that is, varification of the words based on phonem recognition.
+3. Adaptation to speaker
+We have found the binary relations between Japanese vowels represented in their feature space that can be looked as almost independent on speakers and developed the vowel recognition technique mentioned above in 1.. An adaptation to speakers could be attained by using the vowel recognition technique in the process of verification of words given as candidates.
+4. Recognition Experiments
+The word recognition technique was applied to 212 words produced by 10 mals speakers, and attained higher recognition rates that had everf obtained, that is, the percentage accuracy up to the 1st condidate was 98.2% and that up to the 2nd one 99.6%. However, these results was obtained by using the structural analysis basedc on the vowel recognition stated in 1. and the method of D.P. since our technique was not yet able to use phoneme recognition in the structural analysis. This is a feature problem.
+KAKEN - 音素認識と話者適応に基づく不特定話者文節音声認識システムの研究開発(61880004)

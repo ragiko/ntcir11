@@ -1,0 +1,1458 @@
+
+エクセル技道場 > エクセル関数の読み方と語源
+エクセル技道場 HOME
+エクセルの技
+関数引数リスト
+In English
+InGermany
+財務関数
+数学/三角関数
+統計関数
+検索/行列関数
+データベース関数
+日付/時刻関数
+文字列操作関数
+論理関数
+情報関数
+DDE/外部関数
+エンジニアリング関数
+財務関数 FINANCIAL FUNCTIONS
+関数名
+読み方
+語源
+説明
+ACCRINT
+アクルード・インタレスト
+ACCRued INTerest
+定期的に利息が支払われる証券の未収利息額を返します。
+ACCRINTM
+アクルード・インタレスト・アット・マテュリティ
+ACCRued INTerest (at Maturity)
+満期日に利息が支払われる証券の未収利息額を返します。
+AMORDEGRC
+アモルティスモン・デグレシフ・コンタビリテ
+AMORtissement DEGRessif Comptabilite
+各会計期における減価償却費を返します。この関数は、フランスの会計システムのために用意されています。資産を会計期の途中で購入した場合、日割り計算による減価償却費が計上されます。
+AMORLINC
+アモルティスモン・リネール・コンタビリテ
+AMORtissement LINeaire Comptabilite
+各会計期における減価償却費を返します。この関数は、フランスの会計システムのために用意されています。資産を会計期の途中で購入した場合、日割り計算による減価償却費が計上されます。
+COUPDAYBS
+クーポンデイズ・ビギニング・トゥ・セトルメント
+COUPon DAYs Biginning to Settlement
+利札期の第 1 日目から受渡日までの日数を返します。
+COUPDAYS
+クーポンデイズ・コンテイニング・セトルメント
+COUPon DAYs containing Settlement
+受渡日を含む利札期の日数を返します。
+COUPDAYSNC
+クーポンデイズ・セトルメント・トゥ・ネクスト・クーポン
+COUPon DAYs Settlement to Next Coupon
+受渡日から次の利息支払日までの日数を返します。
+COUPNCD
+クーポンデイズ・トゥ・ネクスト・クーポン・デート
+COUPon, Next Coupon Date
+受渡日の直後の利息支払日を数値で返します。
+COUPNUM
+ナンバー・オブ・クーポン
+NUMber of COUPons
+受渡日と満期日の間に利息が支払われる回数を返します。端数は四捨五入されます。
+COUPPCD
+プリービアス・クーポン・デート
+COUPon, Previous Coupon Date
+受領日の直前の利息支払日を返します。
+CUMIPMT
+キュミュラティブ・イントレスト・ペイメント
+CUMulative Interest Payment
+指定された期間に、貸付金に対して支払われる利息の累計を返します。
+CUMPRINC
+キュミュラティブ・プリンシプル
+CUMulative PRINCipal
+指定された期間に、貸付金に対して支払われる元金の累計を返します。
+DB
+ディプリーシエイション・フィックスト・ディクライニング・バランス・メソッド
+depreciation, fixed-Declining Balance method
+定率法を使用して、特定の期における資産の減価償却費を返します。
+DDB
+ディプリーシエイション・ダブル・ディクライニング・バランス・メッソッド
+depreciation, Double-Declining Balance method
+倍率法を使用して、特定の期における資産の減価償却費を返します。
+DISC
+ディスカウント
+DISCount rate
+証券に対する割引率を返します。
+DOLLARDE
+ダラー・デシマル
+DOLLAR DEcimal
+分数で表されたドル価格を、小数表示に変換します。
+DOLLARFR
+ダラー・フラクション
+DOLLAR FRaction
+小数で表されたドル価格を、分数表示に変換します。
+DURATION
+デュレーション
+DURATION
+定期的に利子が支払われる証券の年間のマコーレー係数を返します。
+EFFECT
+イフェクティブ・アニュアル・イールド
+EFFECTive annual yield
+指定された名目年利率と 1 年当たりの複利計算回数を元に、実効年利率を返します。
+FV
+フューチャー・バリュー
+Future Value
+投資の将来価値を返します。
+FVSCHEDULE
+フューチャー・バリュー・スケジュール
+Future Value SCHEDULE
+投資期間内の一連の金利を複利計算することにより、初期投資の元金の将来価値を返します。
+INTRATE
+インタレスト・レート
+INterest RATE
+全額投資された証券の利率を返します。
+IPMT
+インタレスト・ペイメント
+Interest PayMenT
+投資期間内の指定された期に支払われる金利を返します。
+IRR
+アイ・アール・アール
+Internal Rate of Return
+一連の定期的なキャッシュ フローに対する内部利益率を返します。
+ISPMT
+イズ・ペイメント
+IS PayMenT
+投資期間内の指定された期に支払われる金利を返します。この関数は、Lotus
+1-2-3 関数との互換性を保つために用意されています。
+MDURATION
+モディファイド・デュレーション
+Modified DURATION
+額面価格を $100 と仮定して、証券に対する修正マコーレー・デュレーションを返します。
+MIRR
+モディファイド・アイ・アール・アール
+Modified Internal Rate of Return
+一連の定期的なキャッシュ フローに基づいて、修正内部利益率を返します。
+NOMINAL
+ノミナル・イールド
+NOMINAL yield
+名目年利率を返します。
+NPER
+ナンバー・オブ・ピリオド
+Number of PERiods
+目的の投資に必要な支払回数を返します。
+NPV
+ネット・プレズント・バリュー
+Net Present Value
+一連の定期的なキャッシュ フローと割引率に基づいて、投資の正味現在価値を返します。
+ODDFPRICE
+オッド・ファースト・プライス
+ODD First PRICE
+1 期目の日数が半端な証券に対して、額面 $100
+当たりの価格を返します。
+ODDFYIELD
+オッド・ファースト・イールド
+ODD First YIELD
+1 期目の日数が半端な証券の利回りを返します。
+ODDLPRICE
+オッド・ラスト・プライス
+ODD Last PRICE
+1 期目の日数が半端な証券に対して、額面 $100
+当たりの価格を返します。
+ODDLYIELD
+オッド・ラスト・イールド
+ODD Last YIELD
+最終期の日数が半端な証券の利回りを返します。
+PMT
+ペイメント
+PayMenT
+目的の投資に必要な定期支払額を返します。
+PPMT
+プリンシプル・ペイメント
+Pincipal PayMenT
+投資期間内の指定された期に支払われる元金を返します。
+PRICE
+プライス
+PRICE
+定期的に利息が支払われる証券に対して、額面
+$100 当たりの価格を返します。
+PRICEDISC
+プライス・オブ・ディスカウンティッド・セキュリティ
+PRICE of DISCounted security
+割引債の額面 $100 に対する価格を返します。
+PRICEMAT
+プライス・アット・マチュリティ
+PRICE at MATurity
+満期日に利息が支払われる証券に対して、額面
+$100 当たりの価格を返します。
+PV
+プレズント・バリュー
+Present Value
+投資の現在価値を返します。
+RATE
+レート
+RATE
+投資の利率を返します。
+RECEIVED
+リシーブド
+RECEIVED
+全額投資された証券に対して、満期日に支払われる金額を返します。
+SLN
+ストレート・ライン・ディプリーシエイション
+Straight LiNe depreciation
+定額法を使用して、資産の 1 期当たりの減価償却費を返します。
+SYD
+サム・オブ・イヤーズ・ディジット・ディプリーシエイション
+Sum of Year's Digit depreciation
+定額逓減法を使用して、特定の期における資産の減価償却費を返します。
+TBILLEQ
+ティー・ビル・ボンド・エクイバレント・イールド
+Treasury BILL's bond EQuvalent yield
+米国財務省短期証券 (TB) の債券に相当する利回りを返します。
+TBILLPRICE
+ティー・ビル・プライス
+Treasury BILL's PRICE
+米国財務省短期証券 (TB) の額面 $100 当たりの価格を返します。
+TBILLYIELD
+ティー・ビル・イールド
+Treasury BILL's YIELD
+米国財務省短期証券 (TB) の利回りを返します。
+VDB
+バリアブル・デクライニング・バランス
+Variable Declining Balance
+倍率法を使用して、期の途中で購入した資産の減価償却費を返します。
+XIRR
+エクストラ・アイ・アール・アール
+Xtra Internal Rate of Rreturn
+定期的でないキャッシュ フローに対する内部利益率を返します。
+XNPV
+エクストラ・ネット・プレズント・バリュー
+Xtra Net Present Value
+定期的でないキャッシュ フローに対する正味現在価値を返します。
+YIELD
+イールド
+YIELD
+利息が定期的に支払われる証券の利回りを返します。
+YIELDDISC
+ディスカウント・イールド
+DIScount YIELD
+割引債の年利回りを返します。
+YIELDMAT
+イールド・アット・マチュリティ
+YIELD at MATurity
+満期日に利息が支払われる証券の利回りを返します。
+数学/三角関数 MATH & TRIGONOMETRY FUNCTIONS
+関数名
+読み方
+語源
+説明
+ABS
+アブソルート
+ABSolute
+数値の絶対値を返します。
+ACOS
+アーク・コサイン
+ArcCOSine
+数値のアークコサインを返します。
+ACOSH
+ハイパーボリック・アークコサイン
+ArcCOSine, Hyperbolic
+数値のハイパーボリック アークコサインを返します。
+ASIN
+アーク・サイン
+ArcSINe
+数値のアークサインを返します。
+ASINH
+ハイパーボリック・アーク・サイン
+ArcSINe, Hyperbolic
+数値のハイパーボリック アークサインを返します。
+ATAN
+アーク・タンジェント
+ArcTANgent
+数値のアークタンジェントを返します。
+ATAN2
+アーク・タンジェント・トゥ
+ArcTangent from x- and y- coordinates
+x-y 座標の値からアークタンジェントを返します。
+ATANH
+ハイパーボリック・アーク・タンジェント
+ArcTANgent, Hyperbolic
+数値のハイパーボリック アークタンジェントを返します。
+CEILING
+シーリング
+CEILING
+数値を切り上げて、指定された基準値の倍数のうち、最も近い値にします。
+COMBIN
+コンビネーション
+COMBINation
+順序に関係なく、指定された総数から指定された個数を選ぶ組み合わせを返します。
+COS
+コサイン
+COSine
+数値のコサインを返します。
+COSH
+ハイパーボリック・コサイン
+COSine, Hyperbolic
+数値のハイパーボリック コサインを返します。
+COUNTIF
+カウント・イフ
+COUNT IF
+指定された範囲に含まれるセルのうち、検索条件に一致するセルの個数を返します。
+DEGREES
+ディグリーズ
+DEGREES
+ラジアンを度 (°) に変換します。
+EVEN
+イーブン
+EVEN
+数値を切り上げて、最も近い偶数にします。
+EXP
+イクスポネンシャル
+EXPonential
+e のべき乗を返します。
+FACT
+ファクトリアル
+FACTorial
+数値の階乗を返します。
+FACTDOUBLE
+ファクトリアル・ダブル
+FACTorial, DOUBLE
+数値の二重階乗を返します。
+FLOOR
+フロア
+FLOOR
+数値を切り捨てて、指定された基準値の倍数のうち、数値に最も近い値にします。
+GCD
+ジー・シー・ディー
+Greatest Common Divisor
+指定された整数の最大公約数を返します。
+INT
+インティジャー
+INTeger
+数値を最も近い整数に切り捨てます。
+LCM
+エル・シー・エム
+Lowest Common Multiple
+指定された整数の最小公倍数を返します。
+LN
+ログ・ナチュラル
+Logarithm, Natural
+数値の自然対数を返します。
+LOG
+ログ
+LOGarithm
+指定された底に対する数値の対数を返します。
+LOG10
+ベース・テン・ログ
+base-10 Logarithm
+数値の常用対数を返します。
+MDETERM
+マトリックス・ディターミナント
+Matrix DETERMinant
+配列の行列式としての値を返します。
+MINVERSE
+マトリックス・インバース
+Matrix INVERSE
+配列の逆行列を返します。
+MMULT
+マトリックス・マルチプリケーション
+Matrix MULTiplication
+2 つの配列の行列積を返します。
+MOD
+モデュラス
+MODulus
+割り算の余りを返します。
+MROUND
+ラウンド・トゥ・マルチプル
+ROUNDed to the desired Multiple
+指定された値の倍数になるように数値の切り上げまたは切り捨てを行います。
+MULTINOMIAL
+マルチノミナル
+MULTI NOMIAL
+指定された数値の和の階乗と、指定された数値の階乗の積との比を返します。
+ODD
+オッド
+ODD
+数値を切り上げて、最も近い奇数にします。
+PI
+パイ
+π
+円周率πの値を返します。
+POWER
+パワー
+POWER
+数値のべき乗を返します。
+PRODUCT
+プロダクト
+PRODUCT
+引数の積を返します。
+QUOTIENT
+クオウシェント
+QUOTIENT
+除算の商の整数部を返します。
+RADIANS
+ラジアン
+RADIANS
+度をラジアンに変換します。
+RAND
+ランダム
+RANDom number
+0 から 1 の範囲で乱数を返します。
+RANDBETWEEN
+ランダム・ビトウィーン
+RANDom BETWEEN
+指定された範囲で一様に分布する整数の乱数を返します。
+ROMAN
+ローマン
+ROMAN numerals
+アラビア数字をローマ数字を表す文字列に変換します。
+ROUND
+ラウンド
+ROUND
+数値を四捨五入して指定された桁数にします。
+ROUNDDOWN
+ラウンドダウン
+ROUND DOWN
+数値を切り捨てて指定された桁数にします。
+ROUNDUP
+ラウンドアップ
+ROUND UP
+数値を切り上げて指定された桁数にします。
+SERIESSUM
+シリーズ・サム
+SERIES SUM
+べき乗多項式の値を返します。
+SIGN
+サイン
+SIGN of a number
+数値の正負に対応する数値を返します。
+SIN
+サイン
+SINe
+数値のサインを返します。
+SINH
+ハイパーボリック・サイン
+SINe, Hyperbolic
+数値のハイパーボリック サインを返します。
+SQRT
+スクエア・ルート
+SQuare RooT
+数値の平方根を返します。
+SQRTPI
+スクエア・ルート・パイ
+SQuare RooT PI
+π の平方根を返します。
+SUBTOTAL
+サブトータル
+SUBTOTAL
+リストまたはデータベースの集計値を返します。
+SUM
+サム
+SUM
+引数の合計を返します。
+SUMIF
+サム・イフ
+SUM IF
+指定された検索条件に一致するセルの値を合計します。
+SUMPRODUCT
+サム・プロダクト
+SUM PRODUCT
+配列内の対応する要素どうしの積を計算し、それらの値を返します。
+SUMSQ
+サム・スクエア
+SUM SQuare
+引数の 2 乗の合計を返します。
+SUMX2MY2
+サム・オブ・エックス・スクエアエド・マイナス・ワイ・スクエアド
+SUM X2 Minus Y2
+2 つの配列で対応する要素の平方差を合計します。
+SUMX2PY2
+サム・オブ・エックス・スクエアエド・プラス・ワイ・スクエアド
+SUM X2 Plus Y2
+2 つの配列で対応する要素の平方和を合計します。
+SUMXMY2
+サム・オブ・エックス・マイナス・ワイ・スクエアド
+SUM (X Minus Y)2
+2 つの配列で対応する要素の差を 2 乗し、その合計を返します。
+TAN
+タンジェント
+TANgent
+数値のタンジェントを返します。
+TANH
+ハイパーボリック・タンジェント
+TANgent, Hyperbolic
+数値のハイパーボリック タンジェントを返します。
+TRUNC
+トランケイト
+TRUNCate
+数値を切り捨てて、指定された桁数にします。
+統計関数 STATISTICAL FUNCTIONS
+関数名
+読み方
+語源
+説明
+AVEDEV
+アベレージ・ディービエイション
+AVErage DEViation
+データ全体の平均値に対する各データの絶対偏差の平均を返します。
+AVERAGE
+アベレージ
+AVERAGE
+引数の平均値を返します。
+AVERAGEA
+アベレージ・エー
+AVERAGE A
+数値、文字列、および論理値を含む引数の平均値を返します。
+BETADIST
+ベータ・ディストリビューション
+BETA DISTribution
+累積確率密度関数の値を返します。
+BETAINV
+ベータ・インバース
+BETA INVerse
+累積確率密度関数の逆関数の値を返します。
+BINOMDIST
+バイノミナル・ディストリビューション
+BINOMial DISTribution
+個別項の二項分布の確率を返します。
+CHIDIST
+カイ・スクエアド・ディストリビューション
+CHI squared DISTribution
+カイ 2 乗分布の片側確率を返します。
+CHIINV
+カイ・スクエアド・インバース
+CHI squared INVerse
+カイ 2 乗分布の逆関数の値を返します。
+CHITEST
+カイ・スクエアド・テスト
+CHI squared TEST
+カイ 2 乗検定を行います。
+CONFIDENCE
+コンフィデンス
+CONFIDENCE interval
+母集団の平均値に対する信頼区間を返します。
+CORREL
+コリレーション・コエフィシェント
+CORRELation coefficient
+2 つのデータ間の相関係数を返します。
+COUNT
+カウント
+COUNT
+引数リストに含まれる数値の個数を返します。
+COUNTA
+カウント・エー
+COUNT A
+引数リストに含まれる空白でないセルの個数を返します。
+COVAR
+コバリアンス
+COVARiance
+共分散 (2 組の対応するデータ間での標準偏差の積の平均値)
+を返します。
+CRITBINOM
+クライテリア・オブ・バイノミナル
+CRITeria of BINOMial
+累積二項分布の値が基準値以上になるような最小の値を返します。
+DEVSQ
+ディービエーション・スクエア
+SQuare sum of DEViations
+標本の平均値から、データの偏差の平方和を返します。
+EXPONDIST
+エクスポネンシャル・ディストリビューション
+EXPONential DISTribution
+指数分布関数の値を返します。
+FDIST
+エフ・ディストリビューション
+F probability DISTribution
+F 確率分布を返します。
+FINV
+エフ・インバース
+F INVerse
+F 確率分布の逆関数を返します。
+FISHER
+フィッシャー
+FISHER transformation
+フィッシャー変換の値を返します。
+FISHERINV
+フィッシャー・インバース
+FISHER INVerse
+フィッシャー変換の逆関数の値を返します。
+FORECAST
+フォーキャスト
+FORECAST
+回帰直線上の値を返します。
+FREQUENCY
+フリークエンシー
+FREQUENCY
+データの頻度分布を縦方向の配列として返します。
+FTEST
+エフ・テスト
+F TEST
+F 検定の結果を返します。
+GAMMADIST
+ガンマ・ディストリビューション
+GAMMA DISTribution
+ガンマ分布関数の値を返します。
+GAMMAINV
+ガンマ・インバース
+GAMMA INVerse
+ガンマ分布関数の逆関数の値を返します。
+GAMMALN
+ガンマ・ログ・ナチュラル
+GAMMA Natural Logarism
+ガンマ関数 γ(x) の値の自然対数を返します。
+GEOMEAN
+ジオメトリック・ミーン
+GEOmetrical MEAN
+相乗平均を返します。
+GROWTH
+グロース
+GROWTH
+指数曲線上の値を返します。
+HARMEAN
+ハーモニック・ミーン
+HARmonic MEAN
+数値の調和平均を返します。
+HYPGEOMDIST
+ハイパー・ジオミトリック・ディストリビューション
+HYPer GEOMetical DISTribution
+超幾何分布関数の値を返します。
+INTERCEPT
+インターセプト
+INTERCEPT
+回帰直線の切片の値を返します。
+KURT
+カートゥシス
+KURTosis
+指定されたデータの尖度を返します。
+LARGE
+ラージ
+LARGE
+指定されたデータの中で k 番目に大きなデータを返します。
+LINEST
+ライン・エスティメーション
+LINe ESTimation
+直線の係数の値を返します。
+LOGEST
+ログ・エスティメーション
+LOGarithm ESTimation
+指数曲線の係数の値を返します。
+LOGINV
+ログ・インバース
+LOG INVerse
+対数正規累積分布関数の逆関数の値を返します。
+LOGNORMDIST
+ログ・ノーマル・ディストリビューション
+LOGNORMal DISTribution
+対数正規累積分布関数の値を返します。
+MAX
+マックス
+MAXimum
+引数リストの中の最大値を返します。
+MAXA
+マックス・エー
+MAXimum A
+数値、文字列、および論理値を含む引数リストの中の最大値を返します。
+MEDIAN
+メディアン
+MEDIAN
+指定された数値のメジアンを返します。
+MIN
+ミニマム
+MINimum
+引数リストの中の最小値を返します。
+MINA
+ミニマム・エー
+MINimum A
+数値、文字列、および論理値を含む引数リストの中の最小値を返します。
+MODE
+モード
+MODE
+データの中で最も頻繁に出現する値 (最頻値)
+を返します。
+NEGBINOMDIST
+ネガティブ・バイノミナル・ディストリビューション
+NEGative BINOMial DISTribution
+負の二項分布を返します。
+NORMDIST
+ノーマル・ディストリビューション
+NORMal cumulative DISTribution
+正規分布関数の値を返します。
+NORMINV
+ノーマル・インバース
+NORMal INVerse
+正規分布関数の逆関数の値を返します。
+NORMSDIST
+ノーマル・スタンダード・ディービエーション
+Standard NORMal cumulative DISTribution
+標準正規累積分布関数の値を返します。
+NORMSINV
+ノーマル・スタンダード・インバース
+Standard NORMal INVerse
+標準正規累積分布関数の逆関数の値を返します。
+PEARSON
+ピアソン
+PEARSON
+ピアソンの積率相関係数の値を返します。
+PERCENTILE
+パーセンタイル
+PERCENTILE
+データの中で、百分位で k 番目に位置する値を返します。
+PERCENTRANK
+パーセント・ランク
+PERCENTage RANK
+データの中で、百分率を使った値の順位を返します。
+PERMUT
+パーミュテーション
+PERMUTations
+与えられた標本の個数から指定した個数を選択する場合の順列を返します。
+POISSON
+プワソン
+POISSON distribution
+ポアソン確率分布の値を返します。
+PROB
+プロバビリティ
+PROBability
+指定された範囲に含まれる値が上限と下限との間に収まる確率を返します。
+QUARTILE
+クォータイル
+QUARTILE
+データから四分位数を抽出します。
+RANK
+ランク
+RANK
+数値のリストの中で、指定した数値の序列を返します。
+RSQ
+スクエア・オブ・コリレーション
+SQuare of coRrelation coefficient
+ピアソンの積率相関係数を 2 乗した値を返します。
+SKEW
+スキュー
+SKEWness
+分布の歪度を返します。
+SLOPE
+スロープ
+SLOPE
+回帰直線の傾きを返します。
+SMALL
+スモール
+SMALL
+データの中で k 番目に小さな値を返します。
+STANDARDIZE
+スタンダダイズ
+STANDARDIZE
+標準化変量を返します。
+STDEV
+スタンダード・ディービエーション
+STandard DEViation
+母集団の標本を使って標準偏差を返します。
+STDEVA
+スタンダード・ディービエーション・エー
+STDEV A
+数値、文字列、および論理値を含む母集団の標本を使って標準偏差を返します。
+STDEVP
+スタンダード・ディービエーション・ピー
+STandard DEViation ,Population
+母集団全体を対象に標準偏差を返します。
+STDEVPA
+スタンダード・ディービエーション・ピー・エー
+STDDEV P A
+数値、文字列、および論理値を含む母集団全体を対象に標準偏差を返します。
+STEYX
+スタンダード・エラー・ワイ・フォア・エックス
+STandard Error of the predicted Y-value for
+each X in the regression
+回帰直線の個別の x の値に対する y の予測値の標準誤差を返します。
+TDIST
+ティー・ディストリビューション
+T DISTribution
+スチューデントの t 分布の値を返します。
+TINV
+ティー・インバース
+T INVerse
+スチューデントの t 分布の逆関数の値を返します。
+TREND
+トレンド
+TREND
+直線上の値を返します。
+TRIMMEAN
+トリム・ミーン
+TRIM MEAN
+データの中間項平均を返します。
+TTEST
+ティー・テスト
+T TEST
+スチューデントの t 分布に従う確率を返します。
+VAR
+バリアンス
+VARiance
+母集団の標本を使って分散を返します。
+VARA
+バリアンス・エー
+VARiance A
+数値、文字列、および論理値を含む母集団の標本を使って分散を返します。
+VARP
+バリアンス・ピー
+VARiance, Population
+母集団全体を対象に分散を返します。
+VARPA
+バリアンス・ピー・エー
+VARiance Population A
+数値、文字列、および論理値を含む母集団全体を対象に分散を返します。
+WEIBULL
+ワイブル
+WEIBULL distribution
+ワイブル分布の値を返します。
+ZTEST
+ズィー・テスト
+Z TEST
+z 検定の両側 P 値を返します。
+検索/行列関数 LOOKUP & REFERENCE FUNCTIONS
+関数名
+読み方
+語源
+説明
+ADDRESS
+アドレス
+ADDRESS
+指定されたセルに対する参照を表す文字列を作成します。
+AREAS
+エリアズ
+AREAS
+指定された範囲に含まれる領域の個数を返します。
+CHOOSE
+チューズ
+CHOOSE
+値のリストから指定した値を取り出します。
+COLUMN
+コラム
+COLUMN
+指定された範囲の列番号を返します。
+COLUMNS
+コラムズ
+COLUMNS
+指定された配列の列数を返します。
+HLOOKUP
+エイチ・ルックアップ
+Horizontal LOOKUP
+配列の先頭行を検索し、該当した列の指定されたセルの値を返します。
+HYPERLINK
+ハイパーリンク
+HYPERLINK
+ネットワークサーバー、イントラネット、またはインターネット上に格納されているドキュメントを開くために、ショートカットまたはジャンプを作成します。
+INDEX
+インデックス
+INDEX
+検索表を使って、セル範囲または配列に含まれている値を選択します。
+INDIRECT
+インダイレクト
+INDIRECT
+文字列で指定されるセル参照を返します。
+LOOKUP
+ルックアップ
+LOOK UP
+ベクトルまたは配列に含まれる特定の値を検索します。
+MATCH
+マッチ
+MATCH
+セル参照または配列に含まれる特定の値を検索します。
+OFFSET
+オフセット
+OFFSET
+指定されたセルに対するオフセット参照を返します。
+ROW
+ロウ
+ROW
+指定された範囲の行番号を返します。
+ROWS
+ロウズ
+ROWS
+指定された配列の行数を返します。
+TRANSPOSE
+トランスポーズ
+TRANSPOSE
+指定された配列の行列変換を行います。
+VLOOKUP
+ブイ・ルックアップ
+Vertical LOOK UP
+配列の先頭列を検索し、該当した行の指定されたセルの値を返します。
+データベース関数 DATABASE & LIST MANAGEMENT FUNCTIONS
+関数名
+読み方
+語源
+説明
+DAVERAGE
+ディー・アベレッジ
+Database AVERAGE
+データベースの指定されたフィールド列を検索し、条件を満たすレコードの平均値を返します。
+DCOUNT
+ディー・カウント
+Database COUNT
+データベースの数値が入力されているセルの個数を返します。
+DCOUNTA
+ディー・カウント・エー
+Database COUNT A
+データベースの空白でないセルの個数を返します。
+DGET
+ディー・ゲット
+Database GET
+データベースから 1 つの値を抽出します。
+DMAX
+ディー・マックス
+Database MAXimum
+データベースの指定されたフィールド列を検索し、条件を満たすレコードの最大値を返します。
+DMIN
+ディー・ミニマム
+Database MINimum
+データベースの指定されたフィールド列を検索し、条件を満たすレコードの最小値を返します。
+DPRODUCT
+ディー・プロダクト
+Database PRODUCT
+データベースの指定されたフィールド列を検索し、条件を満たすレコードの積を返します。
+DSTDEV
+ディー・スタンダード・ディービエーション
+Database Standard DEViation
+データベースの指定されたフィールド列を検索し、条件を満たすレコードを標本と見なして、母集団の標準偏差を返します。
+DSTDEVP
+ディー・スタンダード・ディービエーション・ピー
+Database Standard DEViation, Population
+データベースの指定されたフィールド列を検索し、条件を満たすレコードを母集団全体と見なして、母集団の標準偏差を返します。
+DSUM
+ディー・サム
+Database SUM
+データベースの指定されたフィールド列を検索し、条件を満たすレコードの合計を返します。
+DVAR
+ディー・バリアンス
+Database VARiance
+データベースの指定されたフィールド列を検索し、条件を満たすレコードを標本と見なして、母集団の分散を返します。
+DVARP
+ディー・バリアンス・ピー
+Database VARiance, Population
+データベースの指定されたフィールド列を検索し、条件を満たすレコードを母集団全体と見なして、母集団の分散を返します。
+GETPIVOTDATA
+ゲット・ピボット・テーブル
+GET PIVOT DATA
+ピボットテーブルに格納されているデータを返します。
+日付/時刻関数 DATE & TIME FUNCTIONS
+関数名
+読み方
+語源
+説明
+DATE
+デート
+DATE
+指定した日付に対応するシリアル値を返します。
+DATEDIF
+デートディフ
+DATE DIFference
+指定された期間内の日数、月数、または年数を返します。
+DATEVALUE
+デート・バリュー
+DATE VALUE
+日付を表す文字列をシリアル値に変換します。
+DAY
+デイ
+DAY
+シリアル値を日に変更します。
+DAYS360
+デイズ・スリー・シックスティ
+DAYS based on a 360 day year
+1 年を 360 日 (30 日×12) と仮定して、2 つの日付の間の日数を返します。
+EDATE
+エクスピレイション・デイト
+Expiration DATE
+指定された月数だけ前または後の日付に対応するシリアル値を返します。
+EOMONTH
+エンド・オブ・マンス
+End Of MONTH
+開始日から起算して、指定された月数だけ前または後の月の最終日に対応するシリアル値を返します。
+HOUR
+アワー
+HOUR
+シリアル値を時に変換します。
+MINUTE
+ミニット
+MINUTE
+シリアル値を分に変換します。
+MONTH
+マンス
+MONTH
+シリアル値を月に変換します。
+NETWORKDAYS
+ネットワークデイズ
+NET WORKDAYS
+2 つの日付の間にある稼動日数を返します。
+NOW
+ナウ
+NOW
+現在の日付と時刻に対応するシリアル値を返します。
+SECOND
+セカンド
+SECOND
+シリアル値を秒に変換します。
+TIME
+タイム
+TIME
+指定された時刻に対応するシリアル値を返します。
+TIMEVALUE
+タイムバリュー
+TIME VALUE
+時刻を表す文字列をシリアル値に変換します。
+TODAY
+トゥデイ
+TODAY
+現在の日付に対応するシリアル値を返します。
+WEEKDAY
+ウィークデイ
+WEEKDAY
+シリアル値を曜日に変換します。
+WEEKNUM
+ウィーク・ナンバー
+WEEK NUMber
+シリアル値に対応する日がその年の何週目にあたるかを、数値で返します。
+WORKDAY
+ワークデイ
+WORKDAY
+指定された稼動日数だけ前または後の日付に対応するシリアル値を返します。
+YEAR
+イヤー
+YEAR
+シリアル値を年に変換します。
+YEARFRAC
+イヤー・フラクション
+YEAR FRACtion
+指定された 2 つの日付の間の日数を、年を単位とする数値で表します。
+文字列操作関数 TEXT FUNCTIONS
+関数名
+読み方
+語源
+説明
+ASC
+アスキー
+ASCii
+文字列内の全角の英数カナ文字を、半角文字に変換します。American
+Standard Code For Information Interchange
+CHAR
+キャラクター
+CHARacter
+数値を ASCII または JIS コード番号と見なし、それに対応する文字を返します。
+CLEAN
+クリーン
+CLEAN
+文字列から印刷できない文字を削除します。
+CODE
+コード
+CODE
+文字列の先頭文字に対応する ASCII または JIS
+コードを返します。
+CONCATENATE
+コンキャティネイト
+CONCATENATE
+複数の文字列を結合して 1 つの文字列にまとめます。
+DOLLAR
+ダラー
+DOLLAR
+数値を四捨五入し、ドル書式を設定した文字列に変換します。
+EXACT
+イグザクト
+EXACT
+2 つの文字列が等しいかどうかをテストします。
+FIND
+ファインド
+FIND
+指定された文字列を他の文字列の中で検索します。大文字と小文字は区別されます。
+FINDB
+ファインド・ビー
+FIND Byte
+指定された文字列を他の文字列の中で検索します。大文字と小文字は区別されます。(バイト単位)
+FIXED
+フィックスト
+FIXED
+数値を四捨五入し、書式設定した文字列に変換します。
+JIS
+ジス
+JIS
+文字列内の半角の英数カナ文字を、全角文字に変換します。Japanese
+Industrial Standard
+LEFT
+レフト
+LEFT
+文字列の先頭 (左端) から指定された数の文字を返します。
+LEFTB
+レフト・ビー
+LEFT Byte
+文字列の先頭 (左端) から指定された数の文字を返します。(バイト単位)
+LEN
+レン
+LENgth
+文字列に含まれる文字数を返します。
+LENB
+レン・ビー
+LENgth Byte
+文字列に含まれる文字数を返します。(バイト単位)
+LOWER
+ロウワー
+LOWER
+文字列に含まれる英字をすべて小文字に変換します。
+MID
+ミッド
+MIDdle
+文字列の任意の位置から指定された数の文字を返します。
+MIDB
+ミッド・ビー
+MIDdle Byte
+文字列の任意の位置から指定された数の文字を返します。(バイト単位)
+NUMBERSTRING
+ナンバーストリング
+NUMBER STRING
+漢数字で表示。書式は1〜3。
+PROPER
+プロパー
+PROPER
+文字列に含まれる英単語の頭文字だけを大文字に変換します。
+REPLACE
+リプレイス
+REPLACE
+文字列中の指定された数の文字を他の文字に置き換えます。
+REPLACEB
+リプレイス・ビー
+REPLACE Byte
+文字列中の指定された数の文字を他の文字に置き換えます。(バイト単位)
+REPT
+リピート
+REPeaT
+文字列を指定された回数だけ繰り返して表示します。
+RIGHT
+ライト
+RIGHT
+文字列の末尾 (右端) から指定された数の文字を返します。
+RIGHTB
+ライト・ビー
+RIGHT Byte
+文字列の末尾 (右端) から指定された数の文字を返します。(バイト単位)
+SEARCH
+サーチ
+SEARCH
+指定された文字列を他の文字列の中で検索します。大文字と小文字は区別されません。
+SEARCHB
+サーチ・ビー
+SEARCH Byte
+指定された文字列を他の文字列の中で検索します。大文字と小文字は区別されません。(バイト単位)
+SUBSTITUTE
+サブスティテュート
+SUBSTITUTE
+文字列中の指定された文字を他の文字に置き換えます。
+T
+テキスト
+Text
+引数を文字列に変換します。
+TEXT
+テキスト
+TEXT
+数値を書式設定した文字列に変換します。
+TRIM
+トリム
+TRIM
+文字列から余分なスペースを削除します。
+UPPER
+アッパー
+UPPER
+文字列に含まれる英字をすべて大文字に変換します。
+VALUE
+バリュー
+VALUE
+文字列を数値に変換します。
+YEN
+エン
+YEN
+数値を四捨五入し、円書式を設定した文字列に変換します。
+論理関数 LOGICAL FUNCTIONS
+関数名
+読み方
+語源
+説明
+AND
+アンド
+AND
+すべての引数が TRUE のとき TRUE を返します。
+FALSE
+フォールス
+FALSE
+常に論理値 FALSE を返します。
+IF
+イフ
+IF
+対象となる論理式の計算結果に対応する式を返します。
+NOT
+ノット
+NOT
+対象となる論理式の逆を返します。
+OR
+オア
+OR
+いずれかの引数が TRUE のとき TRUE を返します。
+TRUE
+トゥルー
+TRUE
+常に論理値 TRUE を返します。
+情報関数 INFORMATION FUNCTIONS
+関数名
+読み方
+語源
+説明
+CELL
+セル
+CELL
+対象範囲 の左上隅にあるセルの書式、位置、内容についての情報を返します。
+COUNTBLANK
+カウントブランク
+COUNT BLANK cells
+指定された範囲に含まれる空白セルの個数を返します。
+ERROR.TYPE
+エラー・タイプ
+ERROR TYPE
+エラー値の種類に対応する数値を返します。
+INFO
+インフォ
+INFOrmation
+現在の操作環境に関する情報を返します。
+ISBLANK
+イズ・ブランク
+IS BLANK
+対象となる値が空白のとき TRUE を返します。
+ISERR
+イズ・エラー
+IS ERRor except #n/a
+対象となる値が #N/A 以外のエラー値のとき
+TRUE を返します。
+ISERROR
+イズ・エラー
+IS ERROR
+対象となる値がエラー値のとき TRUE を返します。
+ISEVEN
+イズ・イーブン
+IS EVEN
+対象となる値が偶数のとき TRUE を返します。
+ISLOGICAL
+イズ・ロジカル
+IS LOGICAL
+対象となる値が論理値のとき TRUE を返します。
+ISNA
+イズ・エヌ・エー
+IS NA
+対象となる値がエラー値 #N/A のとき TRUE を返します。
+ISNONTEXT
+イズ・ノンテキスト
+IS NONTEXT
+対象となる値が文字列でないとき TRUE を返します。
+ISNUMBER
+イズ・ナンバー
+IS NUMBER
+対象となる値が数値のとき TRUE を返します。
+ISODD
+イズ・オッド
+IS ODD
+対象となる値が奇数のとき TRUE を返します。
+ISREF
+イズ・リファレンス
+IS REFerence
+対象となる値がセル範囲のとき TRUE を返します。
+ISTEXT
+イズ・テキスト
+IS TEXT
+対象となる値が文字列のとき TRUE を返します。
+N
+ナンバー
+Number
+対象となる値を数値に変換します。
+NA
+エヌ・エー
+Not Available
+常にエラー値 #N/A を返します。
+PHONETIC
+フォネティック
+PHONETIC
+ふりがなの文字列を取り出します。
+TYPE
+タイプ
+TYPE
+対象となる値のデータ型に対応する数値を返します。
+DDE/外部関数 DDE & EXTERNAL FUNCTIONS
+関数名
+読み方
+語源
+説明
+CALL
+コール
+CALL
+DLL (Dynamic Link Library) またはコード リソースに含まれるプロシージャを呼び出します。
+REGISTER.ID
+レジスタ・アイ・ディー
+REGISTER ID
+先に登録 (レジスタにセット) されている DLL
+(Dynamic Link Library) またはコード リソースのうち、指定したもののレジスタ
+ID を返します。
+SQL.REQUEST
+エス・キュー・エル・リクエスト
+SQL REQUEST
+外部のデータ ソースと接続し、ワークシートからクエリーを実行します。
+エンジニアリング関数 ENGINEERING FUNCTIONS
+関数名
+読み方
+語源
+説明
+BESSELI
+ベッセル・アイ
+modified BESSEL function In(x)
+修正ベッセル関数 In(x) を返します。
+BESSELJ
+ベッセル・ジェイ
+BESSEL function Jn(x)
+ベッセル関数 Jn(x) を返します。
+BESSELK
+ベッセル・ケイ
+modified BESSEL function Kn(x)
+修正ベッセル関数 Kn(x) を返します。
+BESSELY
+ベッセル・ワイ
+BESSEL function Yn(x)
+ベッセル関数 Yn(x) を返します。
+BIN2DEC
+バイナリ・トゥ・デシマル
+BINary number to DECimal
+2 進数を 10 進数に変換します。
+BIN2HEX
+バイナリ・トゥ・ヘクサデシマル
+BINary number to HEXadecimal
+2 進数を 16 進数に変換します。
+BIN2OCT
+バイナリ・トゥ・オクタル
+Binary number to OCTal
+2 進数を 8 進数に変換します。
+COMPLEX
+コンプレックス
+COMPLEX number
+実数係数および虚数係数を "x+yi"
+または "x+yj" の形式の複素数に変換します。
+CONVERT
+コンバート
+CONVERT
+数値の単位を変換します。
+DEC2BIN
+デシマル・トゥ・バイナリ
+DECimal number to BINary
+10 進数を 2 進数に変換します。
+DEC2HEX
+デシマル・トゥ・ヘクサデシマル
+DECimal number to HEXadecimal
+10 進数を 16 進数に変換します。
+DEC2OCT
+デシマル・トゥ・オクラル
+DECimal number to OCTal
+10 進数を 8 進数に変換します。
+DELTA
+デルタ
+DELTA
+2 つの値が等しいかどうかをテストします。
+ERF
+エラー・ファンクション
+ERror Function
+誤差関数の積分値を返します。
+ERFC
+コンプリメンタリー・エラー・ファンクション
+Complimentary ERror Function
+相補誤差関数の積分値を返します。
+GESTEP
+グレイター・ザン・オア・イーコール・トゥ・ステップ
+Greater than or Equal to STEP
+数値がしきい値より大きいかどうかをテストします。
+HEX2BIN
+ヘクサデシマル・トゥ・バイナリ
+HEXadecimal number to BINary
+16 進数を 2 進数に変換します。
+HEX2DEC
+ヘクサデシマル・トゥ・デシマル
+HEXadecimal number to DECimal
+16 進数を 10 進数に変換します。
+HEX2OCT
+ヘクサデシマル・トゥ・オクタル
+HEXadecimal number to OCTal
+16 進数を 8 進数に変換します。
+IMABS
+イマジナリー・アブソルート
+IMaginary ABSolute
+複素数の絶対値を返します。
+IMAGINARY
+イマジナリー
+IMAGINARY coefficeint
+複素数の虚数係数を返します。
+IMARGUMENT
+イマジナリー・アーギュメント
+IMaginary ARGUMENT
+引数θ (複素数を極形式で表現した場合の偏角)
+を返します。戻り値の単位はラジアンです。
+IMCONJUGATE
+イマジナリー・コンジュゲイト
+IMaginary CONJUGATE
+複素数の複素共役を返します。
+IMCOS
+イマジナリー・コサイン
+IMaginary COSine
+複素数のコサインを返します。
+IMDIV
+イマジナリー・ディバイデッド・クオウシェント
+IMaginary DIVided quotient
+2 つの複素数の商を返します。
+IMEXP
+イマジナリー・エクスポネンシャル
+IMaginary EXPonential
+複素数のべき乗を返します。
+IMLN
+イマジナリー・ログ・ナチュラル
+IMaginary Logarithm Natural
+複素数の自然対数を返します。
+IMLOG10
+イマジナリー・ベース・テン・ログ
+IMaginary base-10 LOGarithm
+複素数の 10 を底とする対数 (常用対数) を返します。
+IMLOG2
+イマジナリー・ベース・トゥ・ログ
+IMaginary base-2 LOGarithm
+複素数の 2 を底とする対数を返します。
+IMPOWER
+イマジナリー・パワー
+IMaginary POWER
+複素数の整数乗を返します。
+IMPRODUCT
+イマジナリー・プロダクト
+IMaginary PRODUCT
+2 〜 29 個の複素数の積を返します。
+IMREAL
+イマジナリー・リアル
+IMaginary REAL coefficient
+複素数の実数係数を返します。
+IMSIN
+イマジナリー・サイン
+IMaginary SINe
+複素数のサインを返します。
+IMSQRT
+イマジナリー・スクエア・ルート
+IMaginary Square RooT
+複素数の平方根を返します。
+IMSUB
+イマジナリー・サブトラクト
+IMaginary SUBtract
+2 つの複素数の差を返します。
+IMSUM
+イマジナリー・サム
+IMaginary SUM
+2 〜 29 個の複素数の和を返します。
+OCT2BIN
+オクタル・トゥ・バイナリ
+OCTal number to BINary
+8 進数を 2 進数に変換します。
+OCT2DEC
+オクタル・トゥ・デシマル
+OCTal number to DECimal
+8 進数を 10 進数に変換します。
+OCT2HEX
+オクタル・トゥ・ヘクサデシマル
+OCTal number to HEXadecimal
+8 進数を 16 進数に変換します。
+エクセル(Excel)技道場−エクセル関数の読み方と語源

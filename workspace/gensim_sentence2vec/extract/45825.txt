@@ -1,0 +1,7 @@
+
+Transform pictures into sounds!
+AudioPaint allows you to create a whole new palette of sounds, from fascinating ambient soundscapes to edgy sci-fi effects, by analyzing pictures and translating the color and position of each pixel into frequency, amplitude and panning information.
+A picture can be thought of as a massive additive synthesizer, with each line corresponding to a tuned oscillator and each column being a step in time. The red, green and blue components of a pixel – but also its hue, saturation and brightness – can be used to control the level of the corresponding oscillator for both stereo channels.  The waveform used by the oscillator can come from any sample file.
+Any picture can be used to generate new sound material, from photos taken by the Hubble telescope to paintings by Picasso, or even Google maps! AudioPaint comes with generative graphics algorithms and image processing functions to instantly create interesting sounding pictures.
+Put down that sound library CD and get ready to explore a whole new universe of sound!
+AudioPaint | tsugi

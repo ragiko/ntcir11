@@ -1,0 +1,77 @@
+
+2）解析結果を記録するレコーダーの設定
+Node(節点）について、解析結果を記録するためのファイル名、Node番号を設定します
+ここでは、Recorder Node コマンドを使用して、
+Node 1から6までの　3つの自由度の値を、1次固有モードから2次固有モードまで出力します。
+# record eigenvectors
+#----------------------
+# kに初期値として1をセットし、recorder...部分のコマンドを　1 づつk ≦ 2になるまで kを増加させて実行します。
+for { set k 1 } { $k <= $numModes } { incr k } {   
+recorder Node -file [format "modes/mode%i.txt" $k] -nodeRange 1 6 -dof 1 2 3  "eigen $k"
+}
+シンボル　lambda に　解析したい固有値の数（numModes) 入れます
+# perform eigen analysis
+#-----------------------------
+set lambda [eigen  $numModes];
+固有振動数ω 固有周期T  固有周波数 f
+を下記式を使って求め、　それぞれの1次、2次の値を、omega[2], T[2], f[2]　の行列の中に格納します。
+# calculate frequencies and periods of the structure
+#---------------------------------------------------
+set omega {}
+set f {}
+set T {}
+set pi 3.141593
+foreach lam $lambda {
+lappend omega [expr sqrt($lam)]
+lappend f [expr sqrt($lam)/(2*$pi)]
+lappend T [expr (2*$pi)/sqrt($lam)]
+}
+次に、
+最初に、modeディレクトリの中にPeriods.txt　というファイルを作成し
+書き込みモード（"w"）で、ファイルをOpenします。
+（$periodのシンボルの中に、ファイル名が格納されています）
+書き込むデータ領域は、　Periods[ ]です。
+この領域に、先ほど　固有周期 T[ ] の中に格納した、1次、2次の固有周期を代入するとともに、ディスプレイ上で表示します。
+（OpenSeesを起動したときに、プロンプトに表示されます　ここ参照）
+最後にファイルをCloseします。
+puts "periods are $T"
+# write the output file cosisting of periods
+#--------------------------------------------
+set period "modes/Periods.txt"
+set Periods [open $period "w"]
+foreach t $T {
+puts $Periods " $t"
+}
+close $Periods
+3) 振動モード形のグラフ表示
+1次振動モード形を表示します。
+振動モード形は、別Windowでグラフとして表示されます。
+最初に、Windowsの大きさと位置とタイトルを設定します
+recorder display [windowのタイトル] [Windowの左上のX位置]  [Windowの左上のY位置]　[Windowの幅] [Windowの高さ] -wipe
+# create display  for mode shapes
+#---------------------------------
+#                 $windowTitle $xLoc $yLoc $xPixels $yPixels
+recorder display "Mode Shape 1"  10    10     500      500     -wipe  
+# record eigenvectors の所で求めているRecorder Nodeの値からグラフを作成します
+# projection reference point (prp); defines the center of projection (viewer eye)
+prp $h $h 1;                             
+vup  0  1 0;                               # view-up vector (vup) 
+vpn  0  0 1;                               # view-plane normal (vpn)     
+viewWindow -200 200 -200 200;   # coordinates of the window relative to prp  
+# the 1st arg. is the tag for display mode (ex. -1 is for the first mode shape)
+# the 2nd arg. is magnification factor for nodes, the 3rd arg. is magnif. factor of deformed shape
+display -1 5 20;   
+2次振動モード形を表示します。                      
+recorder display "Mode Shape 2" 10 510 500 500 -wipe
+prp $h $h 1;
+vup  0  1 0;
+vpn  0  0 1;
+viewWindow -200 200 -200 200
+display -2 5 20
+4）OpenSeesで用意されているツールの設定
+有限要素法で使用する連立方程式の解法を設定します。
+ここで使用しているコマンドについての
+参照ページは　ここ　、　ここ　と　ここ　
+# Convergence test　で、Energy Increment Testを行っています
+OpenSeesでの解説は、ここです。
+OpenSees 日本語: OpenSees Basic Examples　(2階建てフレームでの固有値解析） 解説(固有値解析)

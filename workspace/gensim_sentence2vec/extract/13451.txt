@@ -1,0 +1,337 @@
+
+推論型システム記述言語MENDEL
+本位田真一, 内平直志, 大須賀昭彦, 粕谷利明
+情報処理学会論文誌, 
+Vol.27, No.2 (1986), 
+pp.219-227
+代数的仕様記述と図式仕様記述の相補的役割について
+古川忠始, 本位田真一, 大須賀昭彦, 津田淳一郎
+情報処理学会論文誌, 
+Vol.31, No.2 (1989), 
+pp.182-193
+E単一化子の完全集合を求める推論規則
+大須賀昭彦, 坂井公
+日本ソフトウェア科学会コンピュータソフトウェア, Vol.8, No.3 (1991), pp.33-54
+代数的仕様と時制論理によるリアルタイムSAとオブジェクト指向設計の融合手法
+本位田真一, 大須賀昭彦, 内平直志
+情報処理学会論文誌, 
+Vol.33, No.2 (1992), 
+pp.173-182
+Δ-extension of Algebraic Specification
+Yoshida,K., Ohsuga,A., Nagata,M., and Honiden,S.
+J. Inf. Process., Vol.15, No.2 (1992), pp.177-186
+等式論理の帰納的定理を証明する手続き
+大須賀昭彦, 坂井公, 本位田真一
+電子情報通信学会論文誌,
+Vol.J76-D-I, No.3 (1993), 
+pp.130-138
+Metis-ASにおける代数的仕様の検証手続き
+大須賀昭彦, 坂井公, 本位田真一
+情報処理学会論文誌, 
+Vol.34, No.11 (1993), 
+pp.2242-2250
+代数仕様によるプラント機器保護論理の記述と検証
+浦岡徹, 大須賀昭彦, 林俊文
+情報処理学会論文誌, 
+Vol.36, No.2 (1995), 
+pp.435-442
+代数的仕様を用いたソフトウェア開発支援環境:Metis-AS
+大須賀昭彦, 坂井公, 本位田真一
+情報処理学会論文誌, 
+Vol.36, No.5 (1995), 
+pp.1192-1202
+代数仕様技術によるオブジェクト指向分析設計の検証支援
+山本純一, 大須賀昭彦, 本位田真一
+情報処理学会論文誌, 
+Vol.36, No.5 (1995), 
+pp.1070-1080
+COOAD: CASE Tool for Object-oriented Analysis and Design
+Yamamoto,J., Ohsuga,A., and Honiden,S.
+J. Software Engineering and Knowledge Engineering, World Scientific, Vol.5, No.3 (1995),
+pp.367-389
+協調アーキテクチャに基づくソフトウェア・モジュールの仕様記述モデル
+来間啓伸, 大須賀昭彦, 本位田真一
+情報処理学会論文誌, 
+Vol.37, No.6 (1996), 
+pp.1171-1186
+MENDELS ZONE: A parallel program development system based on formal specifications, Information and Software Technology
+Honiden,S., Ohsuga,A. and Uchihira,N.
+Elsevier, Vol.38, No.3 (1996), pp.181-189
+オブジェクト指向におけるリフレクションの代数的意味論
+田原康之, 粂野文洋, 大須賀昭彦, 本位田真一
+情報処理学会論文誌, 
+Vol.38, No.4 (1997), 
+pp.826-834
+PLANGENT: An Approach to Making Mobile Agents Intelligent
+Ohsuga,A., Nagai,Y., Irie,Y., Hattori,M., and Honiden,S.
+IEEE Internet Computing, Vol.1, No.4 (1997.7), pp.50-57
+制約パターンを用いたオブジェクト指向ソフトウェア開発
+永井保夫, 大須賀昭彦, 本位田真一
+日本ソフトウェア科学会コンピュータソフトウェア, Vol.15, No.1 (1998), pp.2-23
+スケジューリングエージェント間の調整交渉に基づく分散協調型スケジューリングシステムの開発
+川村隆浩, 加瀬直樹, 荒木大, 大須賀昭彦
+電子情報通信学会論文誌,
+Vol.J81-D-I, No.5 (1998), 
+pp.505-513
+Application of Algebraic Specification to Verify the Design of Safety Logic in Nuclear Power Plants
+Fukumoto,A., Hayashi,T., Ohsuga,A., Honiden,S., and Mori,N.
+Nuclear Technology, American Nuclear Society, Vol.124, No.3 (1998), pp.255-264
+Flage: A Programming Language for Adaptive Software
+Kumeno,F., Ohsuga,A., and Honiden,S.
+IEICE Trans. Inf. & Syst., 
+Vol.E81-D, No.12 (1998), 
+pp.1394-1403
+Bee-gent:移動型仲介エージェントによる既存システムの柔軟な活用を目的としたマルチエージェントフレームワーク
+川村隆浩, 長谷川哲夫, 大須賀昭彦, 本位田真一
+電子情報通信学会論文誌,
+Vol.J82-D-I, No.9 (1999), 
+pp.1165-1180
+Agent-Based Drivers' Information Assistance System
+Hattori,M., Kase,N., Ohsuga,A., and Honiden,S.
+Special Issue New Challenges in Intelligent Systems (Nishida,T. ed.), New Generation Computing,
+Vol.17, No.4, Ohmsya (1999), pp.359-367
+ビヘイビアパターンに基づくモバイルエージェントシステム開発手法
+田原康之, 大須賀昭彦, 本位田真一
+情報処理学会論文誌, 
+Vol.40, No.12 (1999), 
+pp.4319-4332
+Autonomous Adaptation by Mobile Agent and Thesaurus
+Kumeno,F., Ohsuga,A., and Honiden,S.
+IEICE Trans. Inf. & Syst., 
+Vol.E83-D, No.4 (2000), 
+pp.679-690
+マルチエージェントフレームワークBee-gentを用いた電力停止計画向け分散スケジューリングシステムの開発
+川村隆浩, 長谷川哲夫, 関俊文, 大須賀昭彦, 本位田真一
+電気学会論文誌C, 
+Vol.120, No.12 (2000), pp.2003-2011
+開放型分散環境におけるプランニングモバイルエージェントアーキテクチャの提案
+服部正典, 大須賀昭彦, 本位田真一
+電子情報通信学会論文誌,
+Vol.J84-D-I, No.8 (2001), 
+pp.1169-1180
+Designing Multi-Agent Systems Based on Pairwise Agent Interactions
+Kawamura,T., Joseph,S., Ohsuga,A., and Honiden,S.
+IEICE Trans. Inf. & Syst., 
+Vol.E84-D, No.8 (2001), 
+pp.968-980
+組み込み機器向け知的移動エージェントμPlangentを用いた電力系統巡視システム
+長健太, 入江豊, 大須賀昭彦, 関口勝彦, 本位田真一
+電子情報通信学会論文誌,
+Vol.J85-D-I, No.5 (2002), 
+pp.465-475
+IPEditor開発ツールとMobile UNITY言語の適用によるモバイルエージェントセキュリティの実現
+田原康之, 大須賀昭彦, 本位田真一
+情報処理学会論文誌, 
+Vol.43, No.6 (2002), 
+pp.1582-1597
+Evaluation of a Multi Agent Framework for Open Distributed Systems
+Yoshioka,N., Kawamura,T., Ohsuga,A., and Honiden,S.
+IEICE Trans. Fundamentals, 
+Vol.E85-A, No.11 (2002), 
+pp.2306-2406
+パターンを利用したセキュアかつ効率的なモバイルエージェントアプリケーション開発
+田原康之,吉岡信和,大須賀昭彦,本位田真一
+情報処理学会論文誌, 
+Vol.44, No.6 (2003), 
+pp.1483-1497
+パーベイシブ・コンピューティングのためのマルチエージェントフレームワーク: Mobeet Framework
+吉岡信和,大須賀昭彦,本位田真一
+電気学会論文誌C, 
+Vol.123, No.8 (2003), pp.1473-1485
+モバイルエージェントアプリケーションのための仕様記述言語 Pigeon
+田原康之, 大須賀昭彦, 本位田真一
+電子情報通信学会論文誌,
+Vol.J86-D-I, No.8 (2003), 
+pp.532-542
+ユビキタス環境におけるContext-Awareなパーソナルエージェントの構築とその実証実験
+服部正典, 長健太, 大須賀昭彦, 一色正男, 本位田真一
+電子情報通信学会論文誌,
+Vol.J86-D-I, No.8 (2003), 
+pp.543-552
+ユビキタスパーソナライズエージェントによる買物支援サービスの実証実験
+服部正典, 大須賀昭彦, 関俊文, 一色正男, 本位田真一
+電気学会論文誌C, 
+Vol.123, No.11 (2003), pp.2010-2019
+エージェントフレームワークを用いた車載端末向け情報提供システムの構築と評価
+服部正典, 長健太,大須賀昭彦, 本位田真一,深澤良彰
+情報処理学会論文誌, 
+Vol.44, No.12 (2003), 
+pp.3024-3037
+パターンを用いたセキュアなモバイルエージェントシステム設計法
+吉岡信和,田原康之,大須賀昭彦,本位田真一
+情報処理学会論文誌,
+Vol.45, No.3 (2004), 
+pp.842-857
+動的環境で動作するエージェントのための新HTNプラニングフレームワーク
+林久志,長健太,大須賀昭彦
+人工知能学会論文誌, 
+Vol.19, No.4 (2004), 
+pp.265-278
+ユビキタス環境とWebサービスを仲介するミドルエージェントの開発
+寺崎達也,中井戸健至,川村隆浩,大須賀昭彦,前川守
+人工知能学会論文誌, 
+Vol.19, No.4 (2004), 
+pp.343-350
+分散システム開発におけるモデル検査への視覚的支援手法
+田原康之,吉岡信和,大須賀昭彦,本位田真一
+情報処理学会論文誌,
+Vol.46, No.2 (2005),
+pp.459-469
+Web Services Lookup: A Matchmaker Experiment
+Kawamura,T., Hasegawa,T., Ohsuga,A., Paolucci,M., and Sycara,K.
+IEEE IT Professional, Vol.7, No.2 (2005), pp.36-41
+ユビキタスアプリケーション向け移動エージェントの相互運用
+長谷川哲夫,長健太,大須賀昭彦,粂野文洋,中島震,本位田真一
+電気学会論文誌C, 
+Vol.125, No.8 (2005), pp.1296-1304
+エージェントフレームワークを用いたコンテクストアウェアなテレマティクスサービスの構築
+長健太,岡本雄三,山崎智弘,岡本昌之,服部正典,大須賀昭彦
+電子情報通信学会論文誌,
+Vol.J88-D-I, No.9 (2005), 
+pp.1448-1458
+ユビキタス環境において動的なコンテクストに応じて知識情報をフィルタリングする推論エージェントの開発
+竹之内隆夫,岡本直之,川村隆浩,大須賀昭彦,前川守
+電子情報通信学会論文誌,
+Vol.J88-D-I, No.9 (2005), 
+pp.1428-1437
+放送番組に対してパブリックオピニオンメタデータを生成する視聴支援エージェントの開発
+—ネットコミュニティからの雰囲気成分の抽出とユーザ間での流通による洗練化— 
+岡本直之,竹之内隆夫,川村隆浩,大須賀昭彦,前川守
+電子情報通信学会論文誌,
+Vol.J88-D-I, No.9 (2005), 
+pp.1477-1486
+セマンティックWebサービスマッチメーカーの公開実験に基づく評価
+川村 隆浩, 長谷川 哲夫, 大須賀 昭彦, M. Paolucci, K. Sycara
+人工知能学会論文誌, 
+Vol.20, No.6 (2005), 
+pp. 426-436
+知的移動エージェントによるマルチパーパスワイヤレスセンサネットワークアプリケーション
+長 健太,大須賀 昭彦, 本位田 真一
+情報処理学会論文誌,
+Vol. 47, No. 12 (2006),
+pp.3165-3178
+知的移動エージェントによる低消費電力なワイヤレスセンサネットワークアプリケーションの構築
+長健太,大須賀昭彦, 本位田真一
+電子情報通信学会論文誌,
+Vol.J90-D, No.9 (2007),
+pp.2365-2377
+ゴール指向要求分析を用いたself-adaptiveシステムの構築
+中川博之,大須賀昭彦,本位田真一
+情報処理学会論文誌, Vol.50, No.10 (2009), pp.2500-2513
+プロセス間競合を考慮した自己適応システムの形式仕様構築
+中川博之,大須賀昭彦,本位田真一
+情報処理学会論文誌, Vol.51, No.9 (2010), pp.1751-1764
+大規模組織におけるソフトウェアプロセス改善活動の適用評価 〜10年間の実践に基づく考察〜
+小笠原秀人, 藤巻昇, 艸薙匠, 田原康之, 大須賀昭彦
+情報処理学会論文誌, Vol.51, No.9 (2010), pp.1805-1815
+ビヘイビア記述に基づく自己適応システム実装フレームワークの提案
+中川博之,大須賀昭彦,本位田真一
+人工知能学会論文誌,Vol.26, No.1 (2011), pp.1-12
+自律システム実現に向けたアーキテクチャの構築
+西村一彦, 中川博之, 田原康之, 大須賀昭彦
+人工知能学会論文誌,Vol.26, No.1 (2011), pp.107-115
+オントロジー構築サービスONTOMOの開発 −固有名詞抽出によるインスタンス・プロパティ自動推薦エージェントの評価−
+川村隆浩,沈偉,中川博之,田原康之,大須賀昭彦
+人工知能学会論文誌,Vol.26, No.1 (2011), pp.116-126
+条件付確率場と自己教師あり学習を用いた行動属性の自動抽出と評価
+グェンミンティ, 川村隆浩, 中川博之, 田原康之, 大須賀昭彦
+人工知能学会論文誌,Vol.26, No.1 (2011), pp.166-178
+評判分析システムのための教師あり学習を用いた意見抽出
+田中俊行,グェンミンティ,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J94-D, No.11 (2011), pp.1751-1761
+センチメント分析とトピック抽出によるマイクロブログからの評判傾向抽出
+橋本和幸,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J94-D, No.11 (2011), pp.1762-1772
+閲覧中のニュース記事に対するブログ記事から主張を抽出して提示するシステムの提案
+佐藤大輔,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J94-D, No.11 (2011), pp.1773-1782
+インタラクション・シーケンスに着目した商品検索目的抽出エージェントの開発
+川村隆浩,ワコラ,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J94-D, No.11 (2011), pp.1783-1790
+携帯端末上での拡張現実を用いた植物推薦エージェントGreen-Thumb Phoneの開発
+三代謙仁,川村隆浩,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J94-D, No.11 (2011), pp.1791-1799
+コンテンツ投稿型SNSにおける未知性と意外性を考慮した推薦エージェントの提案
+住元宗一朗,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J94-D, No.11 (2011), pp.1800-1811
+ユーザ背景情報およびコミューニティ状況を考慮した匿名度制御によるプライバシ保護エージェントの提案
+浜本一知,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J94-D, No.11 (2011), pp.1812-1824
+Green-Thumb Phone: Development of AR-based Plant Recommendation Service on Smart Phone
+Kawamura,T., Mishiro,N., and Ohsuga,A.
+Journal of Science and Technology, Vol.49, No.4A (2011), pp.39-49
+Self-Supervised Capturing of Users' Activities from Weblogs
+Nguyen,T.M., Kawamura,T., Tahara,Y., Ohsuga,A.
+International Journal of Intelligent Information and Database Systems (IJIIDS), Vol.6, No.1 (2012), pp.61-76
+Privacy Protection by Anonymizing Based on Status of Provider and Community
+Hamamoto,K., Tahara,Y., and Ohsuga,A.
+GSTF Journal on Computing, Vol.2, No.1 (2012), pp.169-176
+ゴール指向要求記述の整形に基づいたソフトウェアシステム進化手法
+中川博之,大須賀昭彦,本位田真一
+情報処理学会論文誌, Vol.53, No.10 (2012), pp.2328-2344
+クラウド上での事業者間データ連携のための分散型パーソナル情報保護エージェント
+竹之内隆夫,川村隆浩,大須賀昭彦
+情報処理学会論文誌,Vol.53, No.11 (2012), pp.2432-2444
+服飾オントロジーを用いたECサイトにおけるユーザデザイン嗜好の推定と評価
+全泰賢,川村隆浩,中川博之,田原康之,大須賀昭彦
+情報処理学会論文誌, Vol.53, No.11 (2012), pp.2485-2493
+フォークソノミーとソーシャルアノテーションを用いた動画共有サービス利用支援の試み
+石野克徳,折原良平,中川博之,田原康之,大須賀昭彦
+情報処理学会論文誌, Vol.53, No.11 (2012), pp.2494-2506
+タグクラスタ多様化による未知性を考慮した推薦手法の提案
+藤原誠,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J96-D, No.3 (2013), pp.531-542
+ユーザ存在の特定を困難にした分散匿名化の提案 〜2診療機関のレセプトデータを用いた有効性の評価〜
+竹之内隆夫,川村隆浩,大須賀昭彦
+電子情報通信学会論文誌,Vol.J96-D, No.3 (2013), pp.596-610
+Proposal of Distributed Scheduling Heuristics using Mediation Agent
+Kawamura,T. and Ohsuga,A.
+Journal of Energy and Power Engineering, David Publishing Company, Vo.7, No.2 (2013), pp.381-392
+Flower Voice: Virtual Assistant for Open Data
+Kawamura,T. and Ohsuga,A.
+International Journal of Web & Semantic Technology, Vol.4, No.2 (2013), pp.37-47
+Extraction and Estimation of Human Activity from Twitter for Information Sharing in Disaster
+Nguyen,T.M., Kawamura,T., Tahara,Y., and Ohsuga,A.
+Special Issue on Computational Intelligence and Data Mining, Journal of Convergence Information Technology, Vol.8,
+No.11 (2013), pp.707-715
+Context-based Barrier Notification Service Toward Outdoor Support for the Elderly 
+Umezu,K., Kawamura,T., and Ohsuga,A.
+International Journal of Computer Science & Information Technology, Vol.5, No.3 (2013), pp.23-34
+Efficient Execution Path Exploration for Detecting Races in Concurrent Programs
+Setiadi,T.E., Ohsuga,A., and Maekawa,M.
+IAENG International Journal of Computer Science, Vol.40, No.3 (2013), pp.143-163
+メディア情報の Linked Data 化と活用事例の提案
+川村隆浩,越川兼地,清雄一,中川博之,田原康之,大須賀昭彦
+電子情報通信学会論文誌,Vol.J96-D, No.12 (2013), pp.2987-2999
+Twitter からの呟かれなかった行動の推測手法の提案 〜災害時の帰宅行動に関する事例検討〜
+グエンミンテイ,川村隆浩,大須賀昭彦
+電子情報通信学会論文誌,Vol.J96-D, No.12 (2013), pp.2970-2978
+ユビキタスコンピューティングにおけるl-エントロピーを満たす匿名データ収集
+清雄一,大須賀昭彦
+電子情報通信学会論文誌, Vol.J97-D, No.4 (2014),pp.793-806
+Music Recommender Adapting Implicit Context Using renso Relation among Linked Data
+Wang,M., Kawamura,T., Sei,Y., Nakagawa,H., Tahara,Y., and Ohsuga,A.
+Journal of Information Processing (JIP), Vol.22, No.2 (2014), pp.279-288
+清雄一,大須賀昭彦
+Randomized Responseを用いた柔軟な匿名データ収集
+電子情報通信学会論文誌, Vol.J97-D, No.5 (2014),pp.953-963
+誤差を考慮した位置匿名化手法の提案
+清雄一,大須賀昭彦
+電子情報通信学会論文誌, Vol.J97-D, No.5 (2014),pp.964-974
+ソフトウェア再利用に向けた共通ゴール判別手法の提案
+中村祐貴,本田耕三,中川博之,田原康之,大須賀昭彦
+日本ソフトウェア科学会コンピュータソフトウェア,Vol.31,No.2 (2014),pp.67-83
+Efficient Test Case Generation for Detecting Race Conditions
+Setiadi,T.E., Ohsuga,A., and Maekawa,M.
+IAENG International Journal of Computer Science, Vol.41, No.2 (2014), pp112-130
+Human Pose Guide Ontologyを用いた静止画像内人物のポーズ分類
+田代和浩,川村隆浩,清雄一,中川博之,田原康之,大須賀昭彦
+日本ソフトウェア科学会コンピュータソフトウェア (掲載決定)
+希少性と一般性に基づいた意外性のある食材の抽出
+池尻恭介,清雄一,中川博之,田原康之,大須賀昭彦
+日本ソフトウェア科学会コンピュータソフトウェア (掲載決定)
+Development of Question-Answering System over Agricultural Open Data
+Kawamura,T. and Ohsuga,A.
+Journal of Science and Technology (to appear)
+ISSN:0866-708X
+論文誌

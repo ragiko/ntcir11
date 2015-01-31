@@ -1,0 +1,129 @@
+
+FBとTwのソーシャルインタラクションを有効化する設定
+前述の通り、なぜだかFacebookとTwitterに関してはデフォのタグだけではちゃんと計測(イイネして後で外した数とかそういうの)が出来ないという仕様のため、ちょっと面倒ですが以下のタグをHTMLファイル上に設置していきます。
+headにChannelURLファイルを作成
+以下を<head>内に挿入しておきます(Facebook用)
+<script src="//connect.facebook.net/en_US/all.js"></script>
+Facebook関連アクション計測用タグを<body>内に設置
+※AppIDとかは適宜入れ替えて使ってください。
+<div id="fb-root"></div>
+<script type="text/javascript">
+window.fbAsyncInit = function() {
+//Initialize the Facebook JavaScript SDK
+FB.init({
+appId : '000000000000000', //App ID from the app dashboard
+channelUrl : 'http://yourdomain.com/channel.html', //Channel file for x-domain communication
+status : true, //Check Facebook Login status
+xfbml : true //Look for social plugins on the page
+});
+//Logged In Users
+FB.getLoginStatus(function(response) {
+if (response.status !== "unknown") { 
+ga('set', 'dimension1', 'Logged In');
+}
+});
+//Facebook Likes 
+FB.Event.subscribe('edge.create', function(href, widget) {
+var currentPage = jQuery(document).attr('title');
+ga('send', {
+'hitType': 'social',
+'socialNetwork': 'Facebook',
+'socialAction': 'Like',
+'socialTarget': href,
+'page': currentPage
+});
+});
+//Facebook Unlikes
+FB.Event.subscribe('edge.remove', function(href, widget) {
+var currentPage = jQuery(document).attr('title');
+ga('send', {
+'hitType': 'social',
+'socialNetwork': 'Facebook',
+'socialAction': 'Unlike',
+'socialTarget': href,
+'page': currentPage
+});
+});
+//Facebook Send/Share
+FB.Event.subscribe('message.send', function(href, widget) {
+var currentPage = jQuery(document).attr('title');
+ga('send', {
+'hitType': 'social',
+'socialNetwork': 'Facebook',
+'socialAction': 'Send',
+'socialTarget': href,
+'page': currentPage
+});
+});
+//Facebook Comments
+FB.Event.subscribe('comment.create', function(href, widget) {
+var currentPage = jQuery(document).attr('title');
+ga('send', {
+'hitType': 'social',
+'socialNetwork': 'Facebook',
+'socialAction': 'Comment',
+'socialTarget': href,
+'page': currentPage
+});
+});
+};
+//Load the SDK asynchronously
+(function(d, s, id) {
+var js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id;
+js.src = "//connect.facebook.net/en_GB/all.js";
+fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+続けてTwitter計測用のJSを同じく<body>内に設置
+<script>
+window.twttr = function(d,s,id){
+var js,fjs=d.getElementsByTagName(s)[0];
+if(!d.getElementById(id)){
+js=d.createElement(s);
+js.id=id;js.src="//platform.twitter.com/widgets.js";
+fjs.parentNode.insertBefore(js,fjs);
+}
+return window.twttr || (t = { _e: [], ready: function(f){ t._e.push(f) } });
+}(document,"script","twitter-wjs");						
+twttr.ready(function(twttr){
+twttr.events.bind('tweet', track_tweet);
+twttr.events.bind('follow', track_follow);
+});
+//Tweets
+function track_tweet( event ) {
+if ( event ) {
+var href = jQuery(location).attr('href');
+var pageTitle = jQuery(document).attr('title');
+ga('send', {
+'hitType': 'social',
+'socialNetwork': 'Twitter',
+'socialAction': 'Tweet',
+'socialTarget': href,
+'page': pageTitle
+});
+}
+}
+//Follows
+function track_follow( event ) {
+if ( event ) {
+var href = jQuery(location).attr('href');
+var pageTitle = jQuery(document).attr('title');
+ga('send', {
+'hitType': 'social',
+'socialNetwork': 'Twitter',
+'socialAction': 'Follow',
+'socialTarget': href,
+'page': pageTitle
+});
+}
+}
+</script>
+以上の設定を行っておけば、ソーシャル系のディメンションや指標がフルで利用可能になります。
+ユーザー系ディメンション&指標
+おそらく普通に使っていれば最も使用頻度が高くなるのがこのユーザー系解析データ。
+Universal Analytics移行後、よりセッションからユーザーに則した数字がとれるようになっている事がここからも分かりますね。
+ユーザー – ディメンション
+Flash    のバージョン
+【完全版】Google Analytics のディメンション&指標チートシート 2014  |  ビットエーブログ - 株式会社BITA

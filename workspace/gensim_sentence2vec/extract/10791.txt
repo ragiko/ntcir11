@@ -1,0 +1,31 @@
+2012年01月11日リリース時点の情報です。
+"Program Files (x86)\rFactor2\KnownIssues.txt"を適当に訳したものです。
+正確な情報であることを期待してはいけない。
+全般 General
+HistoricsでAIは安全にスローダウンしたり、ピットイン出来ません。 While driving Historics, AI can not safely slow down and enter their pit stall
+ネットワーク Networking
+設定されたポートが既に使用中で確保出来ない場合でもサーバはそれを通知しません。 Server does not warn user if IP:port is already in use
+マルチプレイのロビーでPingが表示されません。 No Server ping in MP Lobby
+マルチプレイでの接触判定に問題があります。 Some odd collision behavior is happening in multiplayer.
+グラフィックス Graphics
+マルチディスプレイは正しく動作しないか、または非常に制限されたものになります。 Multiview is not working anymore / and very limited
+リプレイ Replay
+煙・タイヤマークなどの特殊効果、コーン・干し草の束などの物理オブジェクトの再現に問題があります。 There are some issues with special effects (smoke, skids, etc.) and loose objects (cones, haybales, etc.)
+"Private Practice"設定は他車を見えなくするなど不適切な効果を引き起こします? The 'Private Practice' option incorrectly affects replay, making other cars invisible or visible when they shouldn't be.
+タイヤモデル Tire Model
+路面とタイヤの接触モデル?は最終的な完成されたものではない。空気圧が正しい影響を与えていません。 Contact patch load distribution model is not final, which means tire pressure does not have the full effect that it should.
+ハイドロプレーニング現象はまだ実装されていません。現在は路面が濡れていて、かつ路上の水が静止していない状況でのみ正しいモデル化がされています。 Aquaplaning is not implemented, so wet weather driving is only properly modelled when the track is damp but with no standing water.
+摩耗と劣化はいくつかの状況において不完全なものになっています。 Wear (meaning both abrasion and degradation) is incomplete in several aspects.
+There are other relatively minor loose ends.
+雨天時(路面が濡れている時?)縁石と白線は全くグリップしません。 Curbs, white lines have almost no grip in rain
+衝突・接触 Collision
+コーン・干し草のたばなどの物理オブジェクトは不適切に「休眠状態」に入って空中で静止したり、固定オブジェクト化する場合があります。 Loose objects (cones, haybales, etc.) "fall asleep" inappropriately, sometimes up in the air, and essentially turn into solid objects.
+極端な衝突は時々、非常に不快な演算処理の処理落ちを引き起こします。これは主にオブジェクト同士が双方の内部に潜り込むことで引き起こされ、残念なことに不完全な予測アルゴリズムによりマルチプレイでしばしば発生します。 Sometimes intense collisions cause the simulation to fall out of realtime, which is very unpleasant. This is usually caused when objects manage to get partly inside each other, which unfortunately happens more often in multiplayer due to imperfect prediction.
+天候・路面 Weather/RealRoad
+グルーブの積み重ね(ラバーグリップのこと?)や、濡れた路面の乾燥は不自然で大げさに再現されます。 Groove build-up and track wetness/drying happen at an artificial, accelerated rate.
+風速と湿度は何の影響ももたらしません。 Wind and humidity do nothing.
+コントローラー Controllers
+いくつかの古いFFBドライバはrFactor2の高頻度な更新レートに対応出来ず処理落ちを引き起こします(ゲーム全体がスローになり、CPUタイムグラフ上の紫のバーが100%まで伸びることで気づくことが出来る)。これには2つの対処法があります。 Some older force feedback drivers cannot handle rFactor2's high-fidelity update rate and in fact make the simulation fall out-of-realtime (you'll notice if things get jerky and slow and the purple bar on the CPU Time graph goes to 100%).  There are two possible fixes: 1) get updated drivers from your hardware manufacturer (recommended), or 2) open up controller.ini and set "Skip Updates" to a non-zero value.  Note that the presets for new Thrustmaster wheels include the second fix in case users haven't updated their drivers.  Again, we recommend updating the drivers and setting "Skip Updates" back to 0.
+ドライバを更新します。(推奨)
+マイドキュメント\rFactor2\UserData\player\Controller.iniを開いて「Skip Updates」の値をゼロ以外にします。Thrustmaster用のプリセットには元々この設定がされています。ドライバを更新したら値をゼロに戻すことをお勧めします。
+Palm3r memo / rFactor2 既知の問題 日本語適当訳

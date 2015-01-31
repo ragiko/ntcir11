@@ -1,0 +1,567 @@
+package {
+import caurina.transitions.Tweener;
+import flash.display.Sprite;
+import flash.events.MouseEvent;
+import flash.events.TimerEvent;
+import flash.filters.GlowFilter;
+import flash.geom.Point;
+import flash.utils.Timer;
+[SWF(width=465, height=465, backgroundColor=0x000000, frameRate=60)]
+/**
+* 7セグメントディスプレイを用いたデジタル時計
+* 
+*/
+public class SevenSegmentClock extends Sprite {
+private static const YEAR:uint = 0;
+private static const MONTH:uint = 1;
+private static const DATE:uint = 2;
+private static const HOURS:uint = 3;
+private static const MINUITES:uint = 4;
+private static const SECONDS:uint = 5;
+private var _display:Vector.<SevenSegmentDisplay>;
+private var _timer:Timer;
+/**
+* コンストラクタ
+*/
+public function SevenSegmentClock() {
+var dateSegmentFactory:ISegmentFactory = new SegmentFactory(0xffffff, 17, 40, SegmentFactory.TYPE_B);
+var timeSegmentFactory:ISegmentFactory = new SegmentFactory(0xffffff, 20, 55, SegmentFactory.TYPE_B);
+// 年月日時分秒を表示する7セグメントディスプレイを作成
+_display = new Vector.<SevenSegmentDisplay>();
+_display[YEAR] = new SevenSegmentDisplay(dateSegmentFactory, 0, 4, 2);
+_display[MONTH] = new SevenSegmentDisplay(dateSegmentFactory, 0, 2, 2);
+_display[DATE] = new SevenSegmentDisplay(dateSegmentFactory, 0, 2, 2);
+_display[HOURS] = new SevenSegmentDisplay(timeSegmentFactory, 0, 2, 5);
+_display[MINUITES] = new SevenSegmentDisplay(timeSegmentFactory, 0, 2, 5);
+_display[SECONDS] = new SevenSegmentDisplay(timeSegmentFactory, 0, 2, 5);
+// 位置の調整
+_display[YEAR].x = 0;
+_display[YEAR].y = 110;
+_display[MONTH].x = _display[YEAR].x + _display[YEAR].width + 5;
+_display[MONTH].y = _display[YEAR].y;
+_display[DATE].x = _display[MONTH].x + _display[MONTH].width + 5;
+_display[DATE].y = _display[YEAR].y;
+_display[HOURS].x = 0;
+_display[HOURS].y = _display[MONTH].y + _display[MONTH].height + 5;
+_display[MINUITES].x = _display[HOURS].x + _display[HOURS].width + 5;
+_display[MINUITES].y = _display[HOURS].y;
+_display[SECONDS].x = _display[MINUITES].x + _display[MINUITES].width + 5;
+_display[SECONDS].y = _display[HOURS].y;
+// 背景の作成
+var background:Sprite = new Sprite();
+background.graphics.beginFill(0x000000);
+background.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
+background.graphics.endFill();
+addChild(background);
+buttonMode = true;
+// 時計の配置
+for (var i:uint=YEAR; i<=SECONDS; i++) {
+addChild(_display[i]);
+}
+// タイマーの設定
+_timer = new Timer(1000);
+_timer.start();
+_timer.addEventListener(TimerEvent.TIMER, tick);
+tick(); // for initialize
+this.addEventListener(MouseEvent.CLICK, shuffle);
+}
+/**
+* 時計の表示を更新します。
+* 
+* @param evt タイマーイベント
+*/
+private function tick(evt:TimerEvent=null):void {
+var d:Date = new Date();
+_display[YEAR].number = d.fullYear;
+_display[MONTH].number = d.month + 1;
+_display[DATE].number = d.date
+_display[HOURS].number = d.hours;
+_display[MINUITES].number = d.minutes;
+_display[SECONDS].number = d.seconds;
+}
+/**
+* セグメントをシャッフルします。
+* 
+* @param evt マウスイベント
+*/
+private function shuffle(evt:MouseEvent):void {
+for each (var ssd:SevenSegmentDisplay in _display) {
+for each (var ssn:SevenSegmentNumber in ssd.numberList) {
+for each (var segment:Segment in ssn.segments) {
+var point:Point = segment.localToGlobal(new Point(segment.x, segment.y));
+Tweener.addTween(segment, {x: Math.random() * this.stage.stageWidth - point.x,
+y: Math.random() * this.stage.stageHeight - point.y,
+rotation: Math.random() * 360,
+time: 1});
+}
+}
+}
+this.removeEventListener(MouseEvent.CLICK, shuffle);
+this.addEventListener(MouseEvent.CLICK, relocate);
+}
+/**
+* セグメントの位置を元に戻します。
+* 
+* @param evt マウスイベント
+*/
+private function relocate(evt:MouseEvent):void {
+for each (var ssd:SevenSegmentDisplay in _display) {
+for each (var ssn:SevenSegmentNumber in ssd.numberList) {
+ssn.locateSegments(.5);
+}
+}
+this.removeEventListener(MouseEvent.CLICK, relocate);
+this.addEventListener(MouseEvent.CLICK, shuffle);
+}
+}
+}
+import caurina.transitions.Tweener;
+import flash.display.Sprite;
+import flash.filters.BitmapFilter;
+import flash.filters.GlowFilter;
+import flash.geom.Point;
+/**
+* 7セグメントディスプレイを用いて任意の正の整数を表示するクラス
+* 
+*/
+class SevenSegmentDisplay extends Sprite {
+private var _number:uint;   // 表示する整数値
+private var _digits:uint;   // 表示する桁 (_number = 9, _digits = 3 の場合 "009" を表示)
+private var _segmentFactory:ISegmentFactory; // セグメントファクトリ
+private var _marginOfDigit:Number; // 7セグメントディスプレイ同士の間隔
+private var _marginOfSegment:Number; // セグメント同士の間隔
+private var _SevenSegmentNumbers:Vector.<SevenSegmentNumber>; // 7セグメントディスプレイのリスト
+/**
+* コンストラクタ
+* 
+*/
+public function SevenSegmentDisplay(segmentFactory:ISegmentFactory,
+number:uint=0,
+digits:uint=1,
+marginOfDigit:Number=1,
+marginOfSegment:Number=1) {
+_segmentFactory = segmentFactory;
+_digits = digits;
+_marginOfDigit = marginOfDigit;
+_marginOfSegment = marginOfSegment;
+_SevenSegmentNumbers = new Vector.<SevenSegmentNumber>();
+this.number = number;
+}
+public function set number(n:uint):void {
+_number = n;
+update();
+}
+public function get number():uint {
+return _number;
+}
+/**
+* 表示の更新を行います。
+* 
+*/
+protected function update():void {
+if (Math.max(MathUtil.digits(_number), _digits) < _SevenSegmentNumbers.length) {
+while (Math.max(MathUtil.digits(_number), _digits) != _SevenSegmentNumbers.length) {
+this.removeChild(_SevenSegmentNumbers.pop());
+}
+fitToLeft();
+} else if (MathUtil.digits(_number) > _SevenSegmentNumbers.length) {
+while (Math.max(MathUtil.digits(_number), _digits) != _SevenSegmentNumbers.length) {
+var ssd:SevenSegmentNumber = new SevenSegmentNumber(_segmentFactory, 0, _marginOfSegment);
+this.addChild(ssd);
+_SevenSegmentNumbers.push(ssd);
+}
+fitToLeft();
+}
+for (var i:uint=0; i<_SevenSegmentNumbers.length; i++) {
+_SevenSegmentNumbers[i].number = MathUtil.numberAt(_number, i+1);
+}
+}
+/**
+* 左寄せします。
+* 
+* @private
+*/
+private function fitToLeft():void {
+for (var i:uint=0; i<_SevenSegmentNumbers.length; i++) {
+_SevenSegmentNumbers[i].x = 
+(_SevenSegmentNumbers.length - i - 1) * (_SevenSegmentNumbers[i].width + _marginOfDigit);
+}
+}
+/**
+* 表示している SevenSegmentNumber のリストを取得します。
+*/
+public function get numberList():Vector.<SevenSegmentNumber> {
+return _SevenSegmentNumbers;
+}
+}
+//-----------------------------------------------------------------------------
+/**
+* 7セグメントディスプレイで一桁の数字を表示するクラス
+* 
+*/
+class SevenSegmentNumber extends Sprite {
+public var sevenType:Boolean = false; // 7 の形状。 true の場合は左上のセグメントが点灯。
+private var _margin:Number; // セグメント同士の間隔
+private var _number:uint; // 0-9
+private var _segments:Vector.<Segment>; // 7つのセグメント
+/**
+* コンストラクタ
+* 
+* @param segmentFactory セグメントファクトリ
+* @param number 表示する数字。0〜9の整数値を指定します。それ以外の数値を指定した場合はEが表示されます。
+* @param margin セグメント同士の間隔
+*/
+public function SevenSegmentNumber(segmentFactory:ISegmentFactory, number:uint=0, margin:Number=.5) {
+// セグメントの作成と配置
+_segments = new Vector.<Segment>();
+for (var i:uint=0; i<7; i++) {
+_segments.push(segmentFactory.createSegment());
+}
+_number = 8; // すべてのセグメントが表示されているので 8 にしておく
+for each (var segment:Segment in _segments) {
+addChild(segment);
+}
+_margin = margin;
+locateSegments();
+this.number = number;
+}
+/**
+* セグメントを配置します。
+* 
+* @param time 配置までに要する時間。0より大きくするとアニメーションします。
+*/
+public function locateSegments(time:Number=0):void {
+var d:Number = Math.sqrt(2) * _margin;
+var length:Number = _segments[0].length;
+var thickness:uint = _segments[0].thickness;
+// 上
+Tweener.addTween(_segments[0], {rotation: 0, x: d + thickness / 2, y: thickness / 2, time: time});
+// 右上
+Tweener.addTween(_segments[1], {rotation: 90, x: length + 2 * d + thickness / 2, y: d + thickness / 2, time: time});
+// 右下
+Tweener.addTween(_segments[2], {rotation: 90, x: length + 2 * d + thickness / 2, y: length + 3 * d + thickness / 2, time: time});
+// 下
+Tweener.addTween(_segments[3], {rotation: 0, x: d + thickness / 2, y: 2 * length + 4 * d + thickness / 2, time: time});
+// 左下
+Tweener.addTween(_segments[4], {rotation: 90, x:  thickness / 2, y: length + 3 * d + thickness / 2, time: time});
+// 左上
+Tweener.addTween(_segments[5], {rotation: 90, x:  thickness / 2, y: d + thickness / 2, time: time});
+// 中央
+Tweener.addTween(_segments[6], {rotation: 0, x: d + thickness / 2, y: length + 2 * d + thickness / 2, time: time});
+}
+/**
+* 値を設定します。
+* 
+* @param n 0〜9の整数値
+*/
+public function set number(n:uint):void {
+if (_number == n) {
+return;
+}
+_number = n;
+updateSegments();
+}
+/**
+* 表示している値を取得します。
+* 
+* @return 表示している整数値
+*/
+public function get number():uint {
+return _number;
+}
+/**
+* 現在の値に応じてセグメントの表示を更新します。
+*/
+protected function updateSegments():void {
+switch (_number) {
+case 0:
+_segments[0].on();
+_segments[1].on();
+_segments[2].on();
+_segments[3].on();
+_segments[4].on();
+_segments[5].on();
+_segments[6].off();
+break;
+case 1:
+_segments[0].off();
+_segments[1].on();
+_segments[2].on();
+_segments[3].off();
+_segments[4].off();
+_segments[5].off();
+_segments[6].off();
+break;
+case 2:
+_segments[0].on();
+_segments[1].on();
+_segments[2].off();
+_segments[3].on();
+_segments[4].on();
+_segments[5].off();
+_segments[6].on();
+break;
+case 3:
+_segments[0].on();
+_segments[1].on();
+_segments[2].on();
+_segments[3].on();
+_segments[4].off();
+_segments[5].off();
+_segments[6].on();
+break;
+case 4:
+_segments[0].off();
+_segments[1].on();
+_segments[2].on();
+_segments[3].off();
+_segments[4].off();
+_segments[5].on();
+_segments[6].on();
+break;
+case 5:
+_segments[0].on();
+_segments[1].off();
+_segments[2].on();
+_segments[3].on();
+_segments[4].off();
+_segments[5].on();
+_segments[6].on();
+break;
+case 6:
+_segments[0].on();
+_segments[1].off();
+_segments[2].on();
+_segments[3].on();
+_segments[4].on();
+_segments[5].on();
+_segments[6].on();
+break;
+case 7:
+_segments[0].on();
+_segments[1].on();
+_segments[2].on();
+_segments[3].off();
+_segments[4].off();
+sevenType ? _segments[5].on() : _segments[5].off();
+_segments[6].off();
+break;
+case 8:
+_segments[0].on();
+_segments[1].on();
+_segments[2].on();
+_segments[3].on();
+_segments[4].on();
+_segments[5].on();
+_segments[6].on();
+break;
+case 9:
+_segments[0].on();
+_segments[1].on();
+_segments[2].on();
+_segments[3].on();
+_segments[4].off();
+_segments[5].on();
+_segments[6].on();
+break;
+default: // E
+_segments[0].on();
+_segments[1].off();
+_segments[2].off();
+_segments[3].on();
+_segments[4].on();
+_segments[5].on();
+_segments[6].on();
+break;
+}
+}
+/**
+* 表示している Segment のリストを返します。
+* 
+*/
+public function get segments():Vector.<Segment> {
+return _segments;
+}
+}
+//-----------------------------------------------------------------------------
+/**
+* セグメント
+*/
+class Segment extends Sprite {
+private var _color:uint;
+private var _thickness:uint;
+private var _length:uint;
+/**
+* コンストラクタ
+* 
+* @param color 色
+* @param thickness 太さ
+* @param length 長さ(先端から先端まで)
+*/
+public function Segment(color:uint=0xffffff, thickness:uint=5, length:uint=50) {
+_color = color;
+_thickness = thickness;
+_length = length;	
+draw();
+}
+/**
+* 色を設定します。
+* 
+* @param c 色
+*/
+public function set color(c:uint):void {
+_color = c;
+draw();
+}
+/**
+* 太さを設定します。
+* 
+* @param t 太さ
+*/
+public function set thickness(t:uint):void {
+_thickness = t;
+draw();
+}
+/**
+* 長さを設定します。
+* 
+* @param l 長さ
+*/
+public function set length(l:uint):void {
+_length = l;
+draw();
+}
+/**
+* 色を取得します。
+*/
+public function get color():uint {
+return _color;
+}
+/**
+* 太さを取得します。
+*/
+public function get thickness():uint {
+return _thickness;
+}
+/**
+* 長さを取得します。
+*/
+public function get length():uint {
+return _length;
+}
+/**
+* 点灯します。
+*/
+public function on():void {
+visible = true;
+}
+/**
+* 消灯します。
+*/
+public function off():void {
+visible = false;
+}
+/**
+* 設定値に基づいてセグメントを描画します。
+*/
+protected function draw():void {
+var p:Number = _thickness / 2 * Math.cos(Math.PI / 4);
+with (graphics) {
+clear();
+lineStyle();
+beginFill(_color);
+moveTo(0, 0);
+lineTo(p, - p);
+lineTo(_length - p, - p);
+lineTo(_length, 0);
+lineTo(_length - p, p);
+lineTo(p, p);
+lineTo(0, 0);
+endFill();
+}
+}
+}
+//-----------------------------------------------------------------------------
+/**
+* セグメントその2
+*/
+class Segment2 extends Segment {
+private var _glowFilter:BitmapFilter;
+public function Segment2(color:uint=0xffffff, thickness:uint=5, length:uint=50) {
+super(color, thickness, length);
+_glowFilter = new GlowFilter();
+}
+override public function on():void {
+this.filters = [_glowFilter];
+alpha = 1;
+}
+override public function off():void {
+filters = null;
+alpha = .2;
+}
+}
+//-----------------------------------------------------------------------------
+/**
+* Segmentを生成するファクトリーのインターフェースです。
+*/
+interface ISegmentFactory {
+/**
+* Segmentインスタンスを生成します。
+*/
+function createSegment():Segment;
+}
+//-----------------------------------------------------------------------------
+/**
+* Segmentを生成するファクトリークラスです。
+*/
+class SegmentFactory implements ISegmentFactory {
+public static const TYPE_A:String = "Segment";
+public static const TYPE_B:String = "Segment2";
+private var _color:uint;
+private var _thickness:uint;
+private var _length:uint;
+private var _type:String;
+private var _filters:Array;
+public function SegmentFactory(color:uint, thickness:uint, length:uint, type:String=TYPE_A) {
+_color = color;
+_thickness = thickness;
+_length = length;
+_type = type;
+}
+public function createSegment():Segment {
+switch (_type) {
+case TYPE_A:
+return new Segment(_color, _thickness, _length);
+case TYPE_B:
+return new Segment2(_color, _thickness, _length);
+default:
+throw new ArgumentError("unknown type: " + _type);
+}
+}
+}
+//-----------------------------------------------------------------------------
+class MathUtil {
+/**
+* 整数値の桁数を取得します。
+* 
+* @param n 整数値
+* @param radix 基数
+*/
+static public function digits(n:Number, radix:uint=10):Number {
+return n.toString(radix).length;
+}
+/**
+* 整数値の指定した桁の数を取得します。
+* 
+* @param n 整数値
+* @param digit 数を取得する桁
+* @param radix 基数
+*/
+static public function numberAt(n:Number, digit:Number, radix:Number=10):Number {
+while (--digit) {
+n = Math.floor(n / radix);
+}
+return n % radix
+}
+}
+Seven-Segment Clock - wonderfl build flash online

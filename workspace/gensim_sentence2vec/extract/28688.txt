@@ -1,0 +1,118 @@
+以前、こんな記事を書いたんですよ。サイドバーから過去記事すべてを参照したい!「もっと読む記事リスト」の提案 - 空想の伝説
+サイドバーから過去記事すべてを参照したい！「もっと読む記事リスト」の提案 - 空想の伝説
+上記の記事では、ブログというものに触れてきた中で膨れ上がった不満について語ってるんですが、とりあえず読んでみてください。あとで読むという人のために要約すると「記事一覧ページから過去記事たどるの面倒くさいから、サイドバーの記事一覧モジュールから全部たどりたい。できればスクロールもページ遷移もなしで過去記事をたどれるモジュールが欲しい」という内容です。色々と具体的な提案はしたんですが、まあレンタルブログでは難しそうだなーなんて結論に落ち着いてます。でもですよ。今すぐ実現できそうになくても、それに代わる何かがほしいなーとも思ったんですよね。つまり、そんな自分の要望に応えて作ったのが今回のjQueryプラグインというわけです。プラグインについて
+photo by ZERGE_VIOLATOR説明するよりも実際に動作を確認してもらったほうが早いと思います。以下のリンクを辿って記事上部に設置してあるプラグインがどんな感じなのか確かめてください。
+トップページ
+アーカイブページ
+カテゴリーページ
+だいたい分かったとは思いますが一応説明しておきます。トップページ・アーカイブページ・カテゴリーページでは、そのページ内に表示されている記事の日付とタイトルをリスト化します。記事ページでは、記事下部に表示されているページナビ(前後の記事へのリンク)を記事上部にコピーします。たったこれだけのことなんですが読む側にとっては、そこそこ便利になること間違いなしです。考えられるメリットはこんな感じです。
+いちいちスクロールしなくていい
+おそらくこれが最大の利点です。今までは過去記事をたどるために下までスクロールしまくらなくてはいけませんでしたが、このプラグインを使えば記事リンクが頭に表示されます。
+レスポンシブデザインに最適
+レスポンシブルーやFresh Greenなどのユーザーにもオススメします。設定によってはページ内の全記事タイトルがファーストビューで確認できるわけですから、スマートフォンでもスクロールの手間が省けます。
+ページ送りが楽
+今まではブログの一番下にあったページナビが一番上に来ています。記事タイトルを確認したら、すぐに過去のページをたどっていけます。圧倒的快適さです。
+他の記事も読んでもらいやすくなる(要検証)
+記事一覧ページではページ内の記事リンクが一気に目に入りますし、記事ページでは前後の記事リンクが一気に目に入るわけですからクリックされないはずがありません(要検証)。ともかく色んな記事に目を通して欲しいって人におすすめです。
+設置方法について
+photo by flod設置といってもJavaScriptとCSSのソースコードをコピペするだけなので、すぐ済みます。しつこいようですが今回もFirefoxのスクラッチパッド機能が大いに役立ちました。自分以外のブログでも簡単に表示テストができるのでありがたかったです。JavaScriptプラグイン本体である以下のソースを管理画面の「デザイン>カスタマイズ>フッター」の所にコピペしてください。一行目に記述されているjQuery(バージョン1.10.2)はプラグインを動かすための必須要素です。
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+$(function () {
+var body = $('body');
+/*
+トップページ・アーカイブページ・カテゴリーページの場合
+投稿年月日とタイトルの記事リストを記事上部に挿入
+*/
+if (body.hasClass('page-index') || body.hasClass('page-archive')) {
+var entryTitle = $('.entry-title a');
+var entryTitleLen = entryTitle.length;
+var pagerNext = $('.pager-next');
+var entryList = '';
+entryList += '<nav class="entry_list">';
+//「次のページ」がある場合
+if (pagerNext[0]) {
+entryList += '<span>このページの記事:'+entryTitleLen+'件｜' + pagerNext.html() + '</span>';
+}
+//「次のページ」がない場合
+else {
+entryList += '<span>このページの記事:'+entryTitleLen+'件</span>';
+}
+entryList += '<ul>';
+//「アーカイブページ」で「次のページ」がある場合
+if (body.hasClass('page-archive') && pagerNext[0]) {
+entryList += '<li>' + pagerNext.html() + '</li>';
+}
+entryList += '</ul>';
+entryList += '</nav>';
+$('#main').prepend(entryList);
+//日付
+var dateAr = [];
+$('.date time').each(function () {
+dateAr.push($(this).text());
+});
+//タイトル
+var titleAr = [];
+entryTitle.each(function (i) {
+var titleText = $(this).text();
+var titleLink = $(this).attr('href');
+var title = '<a href="' + titleLink + '" title="' + titleText + '">' + titleText + '</a>';
+titleAr.push(title);
+});
+//日付とタイトルをリストに入れる
+for (i=entryTitleLen-1; i>=0; i--) {
+var list = '<li>' + dateAr[i] +':'+ titleAr[i] + '</li>';
+$('.entry_list ul').prepend(list);
+}
+}
+/*
+記事ページの場合
+次の記事と前の記事へのリンクを記事上部へ挿入
+*/
+else if (body.hasClass('page-entry')) {
+var pager = '<div class="permalink pager">' + $('.pager').html() + '</div>';
+$('#main').prepend(pager);
+}
+});
+</script>
+こんな長ったらしいソースを貼り付けるのは嫌だという人は、以下の縮小版をコピペしてください。見た目は違っても動作は同じです。
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>$(function(){var e=$("body");if(e.hasClass("page-index")||e.hasClass("page-archive")){var t=$(".entry-title a");var n=t.length;var r=$(".pager-next");var s="";s+='<nav class="entry_list">';if(r[0]){s+="<span>このページの記事:"+n+"件｜"+r.html()+"</span>"}else{s+="<span>このページの記事:"+n+"件</span>"}s+="<ul>";if(e.hasClass("page-archive")&&r[0]){s+="<li>"+r.html()+"</li>"}s+="</ul>";s+="</nav>";$("#main").prepend(s);var o=[];$(".date time").each(function(){o.push($(this).text())});var u=[];t.each(function(e){var t=$(this).text();var n=$(this).attr("href");var r='<a href="'+n+'" title="'+t+'">'+t+"</a>";u.push(r)});for(i=n-1;i>=0;i--){var a="<li>"+o[i]+":"+u[i]+"</li>";$(".entry_list ul").prepend(a)}}else if(e.hasClass("page-entry")){var f='<div class="permalink pager">'+$(".pager").html()+"</div>";$("#main").prepend(f)}});</script>
+Minify Javascript Online / Online JavaScript Packer
+CSS次はプラグインの見た目を整えるためのCSSです。なるべく汎用的なデザインになるよう書きました。管理画面の「デザイン>カスタマイズ>デザインCSS」の所にコピペしてください。「デザインCSS」の所に何か書き込まれている場合は一番下に貼り付けといてください。一番最後の設定は場合によっては煩わしく感じると思うのでお好みでどうぞ。
+.pager,
+.entry_list {
+margin-bottom: 20px;
+text-align: left;
+}
+.entry_list span {
+display: block;
+margin-bottom: 10px;
+}
+.entry_list ul {
+padding: 0;
+border-top: 1px dotted #bbb;
+}
+.entry_list li {
+border-bottom: 1px dotted #bbb;
+margin: 0;
+padding: 4px 0;
+line-height: 1.5;
+list-style: none;
+list-style-position: inside;
+}
+/*
+ここからテキストを一行に収めたい人向けの設定
+記事タイトルが一定の幅を超えると「…」で省略されます
+*/
+.entry_list li {
+overflow: hidden;
+white-space: nowrap;
+-webkit-text-overflow: ellipsis; /* Safari */
+-o-text-overflow: ellipsis; /* Opera */
+text-overflow: ellipsis;
+}
+最後に自分はJavaScript初心者なのでソースコードにおかしなところがあったらコメントで指摘してください。ついでに加えた方がいい機能とかもあれば言ってください。なるべく実現に向けて頑張ります。というか自分なんかよりスキルのある方がたくさんいると思うので、そういう方にもっと便利にしていただけるとありがたいです。最後に関係ない話なんですが、はてなブログProにしたら急にアクセス増えてビックリしました。気のせいじゃないことを願います。
+カバヤ ブドウ糖チャージタブレッツ 80g×6袋
+ちょっと前まで頭を使うときは狂ったように角砂糖を食べてたんですが、ブドウ糖を少しずつ補給するようにしたらジャンキー具合も収まりました。
+コピペで簡単!はてなブログの記事を見やすくするプラグインを作りました - 空想の伝説

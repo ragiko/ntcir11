@@ -1,0 +1,43 @@
+初等中等教育における授業音声の音声認識の研究を行う.これまでの講義の
+音声認識は主に大学などの高等教育における学習支援を対象として行われて
+おり,初等中等教育を対象としたものはほとんど行われていなかった.初等
+中等教育でも初期段階,すなわち小学校授業の学習・教育支援は社会的意義
+が大きく重要である.小学校授業での発話は,児童向けの発話である
+ため,言いまわしおよび使用される語彙において大学の講義などの成人向け
+の発話と大きく異なる.このため本研究では,小学校授業の音声認識用の言
+語モデルの検討を行った.13件の授業音声の分析を行ったところ,よびかけ
+に関する発話が27.7\%と多く存在することを確認した.大人向けのテ
+キストコーパス(日本語話し言葉コーパスおよび新聞記事1年分)で単語
+3-gram言語モデルを学習しても,カバーできない単語3-gramがテストデータ
+のおよそ半数,3000種類存在することがわかり,補正パープレキシティも
+340程度と大きいことがわかった.小学生向けの
+WEBサイトから(約1.2M単語)を用いて言語モデルを学習したところ,
+大人向けテキストでカバーできなかった3-gramの3000種類のうち,1000種類
+をカバーできることがわかった.さらに,CSJと併用して言語モデルを学習す
+ることで,大人向け新聞記事1年分で学習した言語モデルとほぼ同程度のテス
+トセットパープレキシティを得ることができた.
+子ども向けWEBサイトから小学校授業の言語モデルを学習する重要性を確認した. 
+Automatic speech recognition (ASR) of lectures on elementary and
+secondary education is addressed.  Most of conventional studies of
+lecture speech recognition target on lectures in universities
+or oral presentations in technical conferences, in which
+lecturers make their speech for adult audiences.  On the
+contrary, in elementary school or junior high-school, lecture
+audience is immature people.  Lecturers (teachers) often make
+utterances in a different way from talks to adult audiences.  
+Specifically, teachers try to select easy words and phrases, some
+of which are only for kids.
+For ASR of elementary school lectures, a language model which
+covers such linguistic phenomena is required.  In this paper,
+suitable vocabulary and language model for elementary school
+lectures are discussed.
+Word 3-gram language model trained with texts for adults (Corpus
+of spontaneous Japanese and one-year newspaper articles) cannot
+cover a half of 3-grams (about 3000 kinds) appeared in 13 lectures
+in school.  We got higher adjusted testset perplexity about 343.
+Word 3-gram language model trained with small texts for kids
+(1.2M words from kids-oriented web sites), we can cover one-third
+of 3-grams, which are not modeled in the language model for adult.
+We confirmed that it is significant to collect text corpora for 
+ASR of elementary school lectures.
+研究会 - 初等中等教育における授業音声認識のための言語モデルの検討

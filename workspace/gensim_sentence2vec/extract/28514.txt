@@ -1,0 +1,399 @@
+目次の種類にはtoc(主目次)、lof(図目次)、lot(表目次)がある。
+目次を作る命令
+\tableofcontents
+例:
+vi c.tex
+\documentclass[12pt,b5j]{jbook}
+\begin{document}
+% 目次を作る命令
+\pagenumbering{roman}
+\tableofcontents
+% 本文
+\newpage
+\pagenumbering{arabic}
+\part{ひらかな}
+\chapter{あ}
+\section[ア]{あ}      
+\subsection{ああ}
+\chapter{い}
+\chapter{う}
+\end{document}
+コンパイル:
+platex c
+platex c
+xdvi c
+目次はc.tocに書かれる。
+vi c.toc
+\contentsline {chapter}{\numberline {第1章}あ}{3}
+\contentsline {section}{\numberline {1.1}あ}{3}
+\contentsline {chapter}{\numberline {第2章}い}{5}
+\contentsline {chapter}{\numberline {第3章}う}{7}
+目次の表示範囲を変更するには?
+目次と本文タイトルを別にするには?
+目次のページ数表示を変更するには?
+目次のドットを変更するには
+目次に文字列を追加するには
+目次のスタイルを変更するには
+目次の表示範囲を変更するには?
+ヒエラルヒーを設定
+\setcounter{tocdepth}{n}
+nは深さを示す数値(デフォルトでは3に設定されている.
+例:
+\setcounter{tocdepth}{8}
+\renewcommand{\contentsname}{\large \centerline{目 次}}
+\newcommand{\mypart}[1]{
+\refstepcounter{part} 
+\addcontentsline{toc}{part}{
+\protect\numberline{\thepart}#1
+} 
+\par\vspace{1zh}{\Large\bfseries
+\centerline{\arabic{part}.#1}
+}
+}
+目次と本文タイトルを別にするには?
+オプション指定内の文が目次での文になる。
+\section[ア]{あ}
+目次のページ数表示を変更するには?
+\panumberingをもちいる。
+例:
+% 目次を作る命令
+\panumbering{roman}
+\tableofcontents}
+\panumbering{arabic}
+\part{ひらかな}
+目次のドットを変更するには
+\makeatlette
+\renewcommand{\@dotsep}{10}
+\makeatother
+\tableofcontents
+注意:@命令の導入、脱出をおこなう\makeatlette、
+\makeatotherの間に挟み込む。これらの指定の後に
+\tableofcontents
+を実行させる。
+ドットの単位はmuで、1mu=1/18emである。単位を書くとエラーになる。
+目次に文字列を追加するには
+\addcontentsline{}{}{}
+=目次の種類(toc, lof, lot)
+=出力形式(section, subsection, figure, table など)
+=文字列
+を任意のセクションにはめこむ。
+目次のスタイルを変更するには
+cd /opt/teTeX/share/texmf/ptex/platex/base
+vi jbook.cls
+情報:
+\newcommand{\prepartname}{第}
+\newcommand{\postpartname}{部} 
+\newcommand{\prechaptername}{第}
+\newcommand{\postchaptername}{章}
+\newcommand{\contentsname}{目 次}
+\newcommand{\listfigurename}{図 目 次}
+\newcommand{\listtablename}{表 目 次}
+\newcommand{\bibname}{関連図書}
+\newcommand{\indexname}{索 引}
+\newcommand{\figurename}{図}
+\newcommand{\tablename}{表}
+\newcommand{\appendixname}{付 録}
+\newcommand{\tableofcontents}{%  
+\if@twocolumn\@restonecoltrue\onecolumn
+\else\@restonecolfalse\fi
+\chapter*{\contentsname
+\@mkboth{\contentsname}{\contentsname}%
+}\@starttoc{toc}%
+\if@restonecol\twocolumn\fi
+}
+目次名を\smallで中央へ
+\renewcommand{\contentsname}{\small \centerline{目 次}}
+目次の文字表示は\chapter*となっているから章と同じく
+太字で大きく改行する。
+同様に直接jbook.clsに索引表示を書き込むと
+検索表示が変更できる.
+\newcommand{\indexname}{\small \centerline{索 引}}
+しかし,目次の文字表示は\chapter*となっているから章と同じく
+太字で大きく改行する。
+テクノロジー学会sty作成
+su
+cd /usr/share/texmf/ptex/platex/base
+cp jbook.cls macpu.cls
+cp jbook.sty macpu.sty
+vi macpu.sty
+\@obsoletefile{jbook.cls}{macpu.sty}
+とする。
+部,章,節
+ヒエラルヒー:
+\part -1, \chapter 0, \section 1, \subsection 2, 
+\subsubsection 3, \paragraph 4, \subparagraph 5
+jbookでは\partから、jarticleでは\sectionから文章を区切る。
+\chapter{表題}
+章、節の番号が表示され、その下に表題が左端に書かれる。
+\chapter*{表題}
+とすると番号表示は無くなり、空白スペースになる。
+索引
+索引作成は全自動ではなく,file.idxからfile.ind作成段階で,
+一部手入力しなくてはならない.
+注意:始めにa.idxを作成して索引のページを抽出している.
+索引印刷情報はa.indの作成したページを参考にしている.
+2回コンパイルした後,
+mendex a.idx
+を実行し,
+再度コンパイルすると正しいページ番号の索引が作成される.
+参考:
+36. 索引の作成
+索引例:
+索引に関する予備知識
+索引付きtex原稿:
+\documentclass{jarticle}
+\usepackage{makeidx}
+\makeindex
+\begin{document}
+吾輩\index{わがはい@吾輩}は猫である。名前はまだ無い。
+どこで生れたかとんと見当がつかぬ。何でも薄暗
+いじめじめした所でニャーニャー泣いていた事だけは記憶している。
+吾輩はここで始めて人間というものを見た。しかもあとで聞くと
+それは書生\index{しょせい@書生}という人間中で一番
+獰悪\index{どうあく@獰悪}な種族\index{しゅぞく@種族}であったそうだ。
+\printindex
+\end{document}
+jp a
+jp a
+mendex a.idx
+jp a
+と3回コンパイルすると索引が最終ペ−ジに表示される.
+索引の文字が大き過ぎると,
+\renewcommand{\indexname}{\normalsize さくいん\bigskip}
+を付ける.\renewcommand{}は原稿のdocument内でもOK.
+texファイルのプリアンブルに
+\usepackage{makeidx}
+\makeindex
+を記入する。
+%3段索引 2010年  1月  3日 日曜日 22:41:27 JST
+\makeatletter
+\renewenvironment{theindex}{
+\columnseprule\z@ \columnsep 35\p@
+\begin{multicols}{3}[\section*{\indexname}
+\addcontentsline{toc}{section}{\indexname}]
+\thispagestyle{jpl@in}\parindent\z@
+\parskip\z@ \@plus .3\p@\relax
+\let\item\@idxitem}
+{\if@restonecol\onecolumn\else\end{multicols}\clearpage\fi}
+\makeatother
+索引文字には
+かなソートをするために,
+クラス名\index{くらすめい@クラス名}
+と記入する.
+for文など英字日本字まじりはできない.
+しかし \index{for phrase@for文}
+と記述すると通過する.
+アンダーバーは,
+shift\_jis'\index{shift\_jis}と記述する.
+「!」エクスクラメーション記号を索引に入れるには,
+\protect{!}と記述する.
+\index{Yahoo@Yahoo\protect{!}}
+「@」atマークを索引に入れるには"@とする
+\index{xyoshiki@xyoshiki"@macintosh.com}
+階層構造の索引は!で区切る.
+\index{がぞうファイル@画像ファイル!bmpファイル}
+\index{がぞうファイル@画像ファイル!epsファイル}
+索引の表示命令を記入して文章を終了させる.
+\printindex %索引の表示命令
+\end{document}
+コンパイルすると ***.idxが作成される。
+注意:***.idxの第2パラメータはページの数字だけに修正すること!
+file.idx
+\indexentry{岩瀬良範}{1}
+\indexentry{マネキン}{2}
+に対して
+makeindex file.idx
+または
+mendex file.idx
+を実行すると、
+\begin{theindex}
+{\bf あ}
+\item エントロピー, 1, 16
+\indexspace
+{\bf か}
+\item ギブズ−ヘルムホルツ, 59
+\end{theindex}
+が作成されるが,上記のように適当に修正する.
+再度コンパイルすると索引が出来る.
+索引スタイル
+デフォルトでは索引のタイトル文字が大きすぎ,また2段組みで
+見た目もよいとはいえない.
+mendexはmakeindexを日本語用に改造した命令.
+man makeindexで使用法が調べられる.
+mendex オプション
+-c  スペース,タブを半角スペース1文字に短縮
+-g  日本語を"あかさたな"で区切る.
+-s  スタイルリスト*.istを指定
+-E  漢字コードをEUC
+-J  漢字コードをJIS
+-S  漢字コードをSJIS
+mendex -r -c -g -p any foo.idx
+mendex -r -c -g -s line.ist -p any foo.idx
+mendex -r -c -g -s line.ist
+mendex -s line.ist a.idx
+索引のフォーマットの変更:
+*.istファイルを作成する.
+このファイルを読み込むパスは$INDEXSTYLESという環境変数に書き込む.
+実際はtexファイルと同じディレクトリでよい.
+例:line.ist
+delim_0 "\\hfill\\dotfill\\dotfill\\dotfill\\dotfill\\hfill "
+delim_1 "\\quad\\hfill"
+例:sample.ist
+delim_0 "\\leaders\\hbox{$\\cdot$}\\hfill "
+delim_1 "\\leaders\\hbox{$\\cdot$}\\hfill "
+delim_2 "\\leaders\\hbox{$\\cdot$}\\hfill "
+命令:
+mendex -s sample a
+索引の書式を変更する
+\renewcommand{\indexname}{さくいん\bigskip}
+これがよい.
+vi line.ist
+delim_0 "\\hfill\\dotfill\\dotfill\\dotfill\\dotfill\\hfill "
+delim_1 "\\quad\\hfill"
+命令:
+mendex -s line.ist a.idx
+デフォルトistファイルの所在:
+/usr/local/share/texmf/makeindex/gind.ist
+変更:
+preamble
+"\n \\begin{theindex} \n \\setlength{\\topmargin}{-10mm}\n"
+postamble
+"\n\n \\end{theindex}\n"
+item_x1 "\\hfill\\nopagebreak \n \\subitem "
+item_x2 "\\hfill\\nopagebreak \n \\subsubitem "
+delim_0 "\\,\\dotfill\\, "
+delim_1 "\\,\\dotfill\\, "
+delim_2 "\\,\\dotfill\\, "
+heading_flag 0
+引項目は頭文字(ア、イ、ウ)ごとに分類され、分類間には \indexspace 命令が挿入されます。\indexspace は改行幅を広く取る命令ですが、これを煩わしいと思ったら、\printindex の前で\renewcommand{\indexspace}{\relax} と変更してしまいましょう。なお、分類文字を表示するには heading_frag を 1 にします。詳しくは man makeindex を参照。
+テクノロジー学会のclsは
+/opt/teTeX/share/texmf/ptex/platex/base/jbook.cls
+を使用している.jsbookを指定すると索引スタイルに中線が表示,
+フォントも良くなるが,グルが異なりページに入りきらないこともある.
+索引環境:オリジナル
+\newenvironment{theindex}
+{\if@twocolumn\@restonecolfalse\else\@restonecoltrue\fi
+\columnseprule\z@ \columnsep 35\p@
+\twocolumn[\@makeschapterhead{\indexname}]%
+\@mkboth{\indexname}{\indexname}%
+\thispagestyle{jpl@in}\parindent\z@
+\parskip\z@ \@plus .3\p@\relax
+\let\item\@idxitem}
+{\if@restonecol\onecolumn\else\clearpage\fi}
+変更テスト
+索引の文字が小さくなる.
+%   \twocolumn[\@makeschapterhead{\indexname}]% 
+\twocolumn[\section*{\indexname}]%          
+プリアンブルに以下を追加すると索引は3段組みになる
+\makeatletter
+\renewenvironment{theindex}{
+\columnseprule\z@ \columnsep 35\p@
+\begin{multicols}{3}[\section*{\indexname}
+\addcontentsline{toc}{section}{\indexname}]
+\thispagestyle{jpl@in}\parindent\z@
+\parskip\z@ \@plus .3\p@\relax
+\let\item\@idxitem}
+{\if@restonecol\onecolumn\else\end{multicols}\clearpage\fi}
+\makeatother
+索引,第,部などの文字は\newcommandでclsに定義されている.
+/opt/teTeX/share/texmf/packages/jsclasses/jsarticle.cls
+が存在する.
+sarticle.cls ファイル中の theindex 環境の定義(1400行ちょっとあたり)
+\newenvironment{theindex}{%
+...
+に続く、
+\plainifnotempty
+というコマンドをコメントアウトすると
+(このコマンドがヘッダ・フッタをデフォルトに設定するらしい)
+ヘッダ・フッタが索引ページで強制的に変更されることはなくなる。
+章の設定は:
+\def\@makeschapterhead#1{\hbox{}%
+\vskip2\Cvs
+{\parindent\z@
+\raggedright
+\reset@font\huge\bfseries
+\leavevmode
+\setlength\@tempdima{\linewidth}%
+\vtop{\hsize\@tempdima#1}}\vskip3\Cvs}
+となっている.
+解説:
+\z@	0pt
+\hbox{}	改行
+\vskip	垂直モードにする.
+\Cvs	行送りの基準値, 2\Cvsは行送りを2に指定する.
+\parindent\z@  インデントを0にする.
+\raggedright   右端に移動する\parindent\z@  インデントを0にする.
+\raggedright   右端に移動する.向かって左端
+\resett@font   フォント指定をリセットする.
+\huge\bfseries \hugeで太字指定
+\leavevmode    垂直モードを終了
+\setlength     グルーを設定する.
+参考:
+四方山節考
+部書式変更
+部のスタイル変更.
+\begin{document}の下で\renewcommandを作成する.
+アラビア数字に変更.
+例:
+\begin{document}
+\renewcommand{\prepartname}{【第}
+\renewcommand{\postpartname}{部】}
+\renewcommand{\thepart}{\arabic{part}} 
+\part{ひらかな}
+全て変更 \partを再定義:
+\def\@part[#1]#2{
+{\parindent\z@
+\interlinepenalty\@M\reset@font
+\ifnum \c@secnumdepth >\m@ne
+{\prepartname\thepart\postpartname}\nobreak
+\fi
+{#2}\par}
+\nobreak\vskip3ex\@afterheading}
+=身だし全体のレイアウト
+=身だし番号の属性
+=身だし番号と項目の間
+=身だし項目の属性
+通常は,
+=\raggedright
+=\Large\bfseries
+=\par
+=\huge\bfseries
+となっている.
+通常\part再定義:
+\makeatletter
+\def\@part[#1]#2{
+{\parindent\z@\raggedright
+\interlinepenalty\@M\reset@font
+\ifnum \c@secnumdepth >\m@ne
+{\Large\bfseries\prepartname\thepart\postpartname}\par\nobreak
+\fi
+{\huge\bfseries#2}\par}
+\nobreak\vskip3ex\@afterheading}
+\makeatother
+全て変更 \mypartを作る:
+例:第x部は左端,右端に部のタイトル,3ptのアンダーライン
+\begin{document}
+\newcommand{\mypart}[1]{
+\refstepcounter{part}
+\addcontentsline{toc}{part}{
+\protect\numberline{\thepart}#1
+}
+\par\vspace{1zh}{
+\large\bfseries
+\noindent{}第\arabic{part}部.
+\hfill\Large#1
+}\\[-1zh]
+\rule{\textwidth}{3pt}\par\vspace{1zh}
+}
+\mypart{カタカナ} 
+アアアアアアア
+中央に大フォントで記述するには:
+\centerline{\Large 第\arabic{part}部\ #1}
+2007年 1月13日 (土) 13:30:37 JST
+問題点:目次のヘッドではローマ数字になる.
+a.tocを見ると,すでにローマ数字になっている.
+\renewcommand{\thepart}{\arabic{part}}
+を\tableofcontentsのあとに付ける.
+問題点:ページ番号の左右にハイホンがつく.
+数字表示
+Kansai.Anesth.Or.Jp Yoshifumi Tanaka

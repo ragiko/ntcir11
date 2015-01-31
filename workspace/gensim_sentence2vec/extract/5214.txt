@@ -1,0 +1,9 @@
+
+Aircraft manuevers during an airpower deomonstration. / Official U.S. Navy Imagery
+Javascriputを簡単に書けるようにしてくれるライブラリのjQueryですが、使い方をちょっと変えるだけで、パフォーマンスに大きく差がでます。ハイスペックPCではわからないかもしれませんが、低スペックPCやモバイルではWebページの表示速度が遅くすぐに閉じられてるかもしれません。
+Webページがたった1秒高速化するだけでECサイトなんか、売上が10%向上した事例もあります。そこで、jQuery高速化のポイントや方法をここにまとめておきます。
+1. jQueryの最新バージョンを使う
+図1 jQueryのバージョンによる速度
+http://jsperf.com/speed-comparison-of-jquery-versions
+jQueryは常にバージョンアップし続けています。画像1は、jQuery「1.6」「1.7」「1.8」「1.9」「2.0 beta」バージョンの速度を比較を行ったものです。数値が高いものほど速度が高いことを示しています。betaを除いて、「1.9」がもっとも速いことから、最新のバージョンはより軽量で高速に処理してくれていることが伺えます。
+jQuery高速化!処理速度を10倍上げるテクニック20選

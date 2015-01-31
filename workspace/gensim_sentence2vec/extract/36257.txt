@@ -1,0 +1,34 @@
+
+D 複雑な空間問合せの例
+この付録では、第II部「リファレンス情報」のリファレンスの章に示した例より複雑な問合せの例について説明します。SDO_WITHIN_DISTANCE、SDO_NNなど、Spatialアプリケーションで頻繁に使用される演算子を中心に説明します。
+この付録の内容は、Spatialユーザーのサポートおよびトレーニングを行うオラクル社の担当者からの情報に基づいています。Oracle Spatialトレーニング・コースでは、ここで示す例の多くに加えて、さらに他の例および説明を提供しています。
+この付録に示す例を使用する前に、第I部「概念および使用方法」および第II部「リファレンス情報」に示した関連する演算子またはファンクションの使用方法およびリファレンス情報を理解してください。
+この付録の内容は次のとおりです。
+D.1項「例で使用する表」
+D.2項「SDO_WITHIN_DISTANCEの例」
+D.3項「SDO_NNの例」
+D.4項「SDO_AGGR_UNIONの例」
+D.1 例で使用する表
+この付録の例では、GEOD_CITIES、GEOD_COUNTIESおよびGEOD_INTERSTATESという表を使用します。これらの表は次のとおり定義されています。
+CREATE TABLE GEOD_CITIES(
+LOCATION     SDO_GEOMETRY,
+CITY         VARCHAR2(42),
+STATE_ABRV   VARCHAR2(2),
+POP90        NUMBER,
+RANK90       NUMBER);
+CREATE TABLE GEOD_COUNTIES(
+COUNTY_NAME   VARCHAR2(40),
+STATE_ABRV    VARCHAR2(2),
+GEOM          SDO_GEOMETRY);
+CREATE TABLE GEOD_INTERSTATES(
+HIGHWAY   VARCHAR2(35),
+GEOM      SDO_GEOMETRY);
+D.2 SDO_WITHIN_DISTANCEの例
+SDO_WITHIN_DISTANCE演算子は、指定されたオブジェクトから指定された距離内に存在する一連の空間オブジェクトを識別します。距離には、近似値または正確な値を指定できます。querytype=FILTERを指定すると、1次フィルタ処理のみが実行されるため、距離は近似値になります。指定しない場合は、1次と2次の両方のフィルタ処理が実行されるため、距離は正確な値になります。
+例D-1では、州間高速道路I170から15マイル以内に存在するすべての都市を検索します。
+例D-1では、指定した高速道路(i.highway = 'I170')から15マイル以内('distance=15 unit=mile')に存在するすべての都市を検索します。デフォルトでは、結果は正確な値となります(querytypeパラメータを使用せず、問合せを1次フィルタ処理に制限しなかったため)。この例のWHERE句の内容は次のとおりです。
+i.highwayはINTERSTATES表のHIGHWAY列で、I170はHIGHWAY列の値です。
+c.locationでは、検索列(geometry1)を指定します。これは、GEOD_CITIES表のLOCATION列です。
+i.geomでは、問合せウィンドウ(aGeom)を指定します。これは、GEOD_INTERSTATES表の、HIGHWAY列に値I170が含まれている行のGEOM列にある空間ジオメトリです。
+例D-2では、Tampa市から15マイル以内に存在するすべての州間高速道路を検索します。
+複雑な空間問合せの例

@@ -1,0 +1,293 @@
+名前
+Select-String
+概要
+文字列とファイルのテキストを検索します。
+構文
+Select-String [-Path]  [-Pattern]  [-AllMatches] [-Case
+Sensitive] [-Context ] [-Encoding ] [-Exclude ] 
+[-Include ] [-List] [-NotMatch] [-Quiet] [-SimpleMatch] []
+Select-String -InputObject  [-Pattern]  [-AllMatches] [
+-CaseSensitive] [-Context ] [-Encoding ] [-Exclude ] [-Include ] [-List] [-NotMatch] [-Quiet] [-SimpleMatch] []
+説明
+Select-String コマンドレットは、入力文字列およびファイル内でテキストとテキスト パターンを検索します。このコマンドレットは、UNIX の
+Grep および Windows の Findstr と同じように使用できます。
+Select-String は、テキストの行を基準にします。既定では、Select-String は各行で最初の一致を検索します。また一致ごとに、一致
+が含まれる行のファイル名、行番号、およびすべてのテキストを表示します。
+ただし、1 行あたり複数の一致を検出するか、一致の前後にあるテキストを表示するか、または一致が見つかったかどうかを示すブール値 (True または F
+alse) のみを表示するように、このコマンドレットに指示することができます。
+Select-String は正規表現による一致を使用しますが、入力文字列内で指定のテキストを検索する単純一致を実行することもできます。
+Select-String では、テキストのすべての一致を表示したり、各入力ファイルで最初の一致が検出されたところで停止したりできます。このコマンドレ
+ットは、指定したパターンに一致しないすべてのテキストも表示できます。
+Unicode テキストのファイルを検索する場合など、Select-String が特定の文字エンコードを想定するように指定することもできます。
+パラメーター
+-AllMatches []
+テキストの各行で複数の一致を検索します。このパラメーターがない場合、Select-String は、テキストの各行で最初の一致のみを検索します
+。
+Select-String がテキストの 1 つの行で複数の一致を検出した場合、その行に対して 1 つの MatchInfo オブジェクトを生
+成するだけですが、オブジェクトの Matches プロパティにはすべての一致が含まれます。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-CaseSensitive []
+一致を調べる際に大文字と小文字が区別されます。既定では、大文字と小文字は区別されません。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-Context 
+一致を含む行の前後にある行について、指定した行数分をキャプチャします。これにより、一致をコンテキストと共に表示できます。
+1 つの数字をこのパラメーターの値として入力した場合、その数字は、一致の前後にある行についてキャプチャする行数を表します。2 つの数字をこのパ
+ラメーターの値として入力した場合、1 番目の数字は一致の前にある行数を、2 番目の数字は一致の後にある行数を表します。
+既定では、一致を含む行は、画面の最初の列に終了角かっこ (ASCII 62) で表示されます。マークされていない行はコンテキストです。
+このパラメーターを指定しても、Select-String で生成されるオブジェクトの数は変更されません。Select-String では、一致
+ごとに 1 つの MatchInfo (Microsoft.PowerShell.Commands.MatchInfo) オブジェクトが生成さ
+れます。コンテキストは、オブジェクトの Context プロパティに文字列の配列として保存されます。
+パイプを使用して Select-String コマンドの出力を他の Select-String コマンドに渡す場合、受け取り側のコマンドでは、
+コンテキストの行にあるテキストではなく、一致を含む行にあるテキスト (MatchInfo オブジェクトの Line プロパティの値) のみが検
+索されます。その結果、受け取り側の Select-String コマンドでは、Context パラメーターが無効になります。
+コンテキストに一致が含まれている場合、各一致の MatchInfo オブジェクトにはコンテキストのすべての行が含まれます。ただし、画面には重複
+する行が一度だけ表示されます。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-Encoding 
+Select-String がファイルを検索する際に使用する文字エンコードを指定します。既定値は UTF8 です。
+指定可能な値は、"UTF7"、"UTF8"、"UTF32"、"ASCII"、"Unicode"、"BigEndianUnicode"、"Def
+ault"、および "OEM" です。Default を指定した場合、システムの現在の ANSI コード ページのエンコードが使用されます。O
+EM を指定した場合、オペレーティング システムの現在の OEM コード ページ識別子が使用されます。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-Exclude 
+指定された項目を除外します。このパラメーターの値は、Path パラメーターを修飾します。"*.txt" などのパス要素またはパターンを入力しま
+す。ワイルドカードを使用できます。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-Include 
+指定された項目のみを含めます。このパラメーターの値は、Path パラメーターを修飾します。"*.txt" などのパス要素またはパターンを入力し
+ます。ワイルドカードを使用できます。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-InputObject 
+検索するテキストを指定します。テキストが格納されている変数を入力するか、テキストを取得するコマンドまたは式を記述します。
+必須                         true
+位置                         named
+既定値                       
+パイプライン入力を許可する   true (ByValue)
+ワイルドカード文字を許可する false
+-List []
+各入力ファイルの最初の一致のみを返します。既定では、Select-String は、検出した一致のそれぞれに対して MatchInfo オブジ
+ェクトを返します。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-NotMatch []
+指定したパターンに一致しないテキストを検索します。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-Path 
+検索するファイルのパスを指定します。ワイルドカードを使用できます。既定の場所はローカル ディレクトリです。
+"log1.txt"、"*.doc"、"*.*" など、ディレクトリ内のファイルを指定します。ディレクトリのみを指定すると、コマンドは実行され
+ません。
+必須                         true
+位置                         2
+既定値                       
+パイプライン入力を許可する   true (ByPropertyName)
+ワイルドカード文字を許可する false
+-Pattern 
+検索するテキストを指定します。文字列または正規表現を入力します。文字列を入力する場合、SimpleMatch パラメーターを使用します。
+正規表現の詳細については、「about_Regular_Expressions」を参照してください。
+必須                         true
+位置                         1
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-Quiet []
+MatchInfo オブジェクトの代わりに、ブール値 (True または False) を返します。このブール値は、指定したパターンを検出した
+場合は "True"、それ以外の場合は "False" になります。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+-SimpleMatch []
+正規表現による一致ではなく、単純一致を使用します。単純一致では、Select-String は入力文字列内で Pattern パラメーターのテ
+キストを検索します。このコマンドレットは、Pattern パラメーターの値を正規表現ステートメントとして解釈しません。
+必須                         false
+位置                         named
+既定値                       
+パイプライン入力を許可する   false
+ワイルドカード文字を許可する false
+このコマンドレットは、次の共通パラメーターをサポートします: Verbose、
+Debug、ErrorAction、ErrorVariable、WarningAction、WarningVariable、
+OutBuffer、および OutVariable。詳細については、
+「get-help about_commonparameters」と入力してヘルプを参照してください。
+入力
+System.Management.Automation.PSObject
+パイプを使用して、ToString メソッドを含むあらゆるオブジェクトを Select-String に渡すことができます。
+出力
+Microsoft.PowerShell.Commands.MatchInfo または System.Boolean
+既定では、出力は一連の MatchInfo オブジェクトです (検出した一致ごとに 1 つずつ)。Quiet パラメーターを指定した場合、出力
+はパターンが見つかったどうかを示すブール値になります。
+メモ
+Select-String は、UNIX の Grep コマンドおよび Windows の FindStr コマンドに似ています。
+Select-String を使用するには、検索するテキストを Pattern パラメーターの値として入力します。
+検索するテキストを指定するには、以下の手順に従います。
+-- 引用符で囲まれた文字列にテキストを入力し、パイプを使用してテキストを Select-String に渡します。
+-- 変数にテキスト文字列を格納し、この変数を InputObject パラメーターの値として指定します。
+-- テキストをファイルに格納する場合、Path パラメーターを使用してファイルのパスを指定します。
+既定では、Select-String は Pattern パラメーターの値を正規表現として解釈します (詳細については、「about_Regu
+lar_Expressions」を参照してください)。ただし、SimpleMatch パラメーターを使用すると、正規表現による一致をオーバーラ
+イドできます。SimpleMatch パラメーターでは、入力文字列内で Pattern パラメーター値のインスタンスが検出されます。
+既定では、Select-String の出力は、一致に関する詳細情報を含む MatchInfo オブジェクトです。MatchInfo オブジェ
+クトには Filename や Line などのプロパティがあるので、このオブジェクトの情報はファイル内のテキストを検索する場合に便利です。入
+力がファイル以外の場合、これらのパラメーターの値は InputStream です。
+MatchInfo オブジェクトの情報が必要ない場合は、Quiet パラメーターを使用します。これにより、MatchInfo オブジェクトの代
+わりに、一致を検出したかどうかを示すブール値 (True または False) が返されます。
+語句を照合する際に、Select-String はシステムに設定されている現在のカルチャを使用します。現在のカルチャを検索するには、Get-C
+ulture コマンドレットを使用します。
+MatchInfo オブジェクトのプロパティを見つけるには、次のように入力します。
+select-string -path test.txt -pattern "test" | get-member | format-list
+-property *
+-------------------------- 例 1 --------------------------
+C:\PS>"Hello","HELLO" | select-string -pattern "HELLO" -casesensitive
+説明
+-----------
+このコマンドは、パイプを使用して Select-String コマンドに渡されたテキストを、大文字と小文字を区別して照合します。
+その結果、"Hello" は一致しないので、Select-String は "HELLO" のみを検出します。
+引用符で囲まれた文字列はそれぞれ 1 行として扱われるので、CaseSensitive パラメーターがない場合、Select-String はこの両方
+の文字列を一致として認識します。
+-------------------------- 例 2 --------------------------
+C:\PS>select-string -path *.xml -pattern "the the"
+説明
+-----------
+このコマンドは、現在のディレクトリ内のファイル名拡張子が .xml のファイルをすべて検索し、これらのファイル中の "the the" という文字列を
+含む行を表示します。
+-------------------------- 例 3 --------------------------
+C:\PS>select-string -path $pshome\en-US\*.txt -pattern "@"
+説明
+-----------
+このコマンドは、Windows PowerShell の概念説明のヘルプ ファイル (about_*.txt) 内で、アットマーク (@) の使用に関
+する情報を検索します。
+このコマンドでは、パスを示すために $pshome 自動変数の値を使用します。この変数には、Windows PowerShell のインストール ディ
+レクトリのパスが格納されます。この例では、Windows PowerShell 用の英語 (米国) のヘルプ ファイルが含まれている en-US サブ
+ディレクトリを検索します。
+-------------------------- 例 4 --------------------------
+C:\PS>function search-help
+{
+$pshelp = "$pshome\es\about_*.txt", "$pshome\en-US\*dll-help.xml"
+select-string -path $pshelp -pattern $args[0]
+}
+説明
+-----------
+この単純な関数は、Select-String コマンドレットを使用して、Windows PowerShell ヘルプ ファイル内の特定の文字列を検索し
+ます。この例では、en-US サブディレクトリ内で英語 (米国) のファイルを検索します。
+関数を使用して psdrive などの文字列を検索するには、「search-help psdrive」と入力します。
+任意の Windows PowerShell コンソールでこの関数を使用するには、お使いのシステムで Windows PowerShell ヘルプ フ
+ァイルをポイントするパスを変更し、関数を Windows PowerShell プロファイルに貼り付けます。
+-------------------------- 例 5 --------------------------
+C:\PS>$events = get-eventlog -logname application -newest 100
+C:\PS> $events | select-string -inputobject {$_.message} -pattern "failed"
+説明
+-----------
+この例では、イベント ビューアーの Application ログの最新のイベント 100 件から文字列 "failed" を検索します。
+最初のコマンドは、Get-EventLog コマンドレットを使用して、Application イベント ログから最新のイベント 100 件を取得します
+。次に、そのイベントを $events 変数に格納します。
+2 番目のコマンドは、パイプライン演算子 (|) を使用して、$events 変数に格納されているオブジェクトを Select-String に送信し
+ます。このコマンドは InputObject パラメーターを使用して、$events 変数からの入力を表します。InputObject パラメーターの
+値は、パイプラインを移動する各オブジェクトの Message プロパティです。現在のオブジェクトは $_ symbol で表されます。
+各イベントがパイプラインに到達すると、Select-String は Message プロパティの値で "failed" 文字列を検索し、一致が含まれ
+ているすべての行を表示します。
+-------------------------- 例 6 --------------------------
+C:\PS>get-childitem c:\windows\system32\* -include *.txt -recurse |
+select-string -pattern "Microsoft" -casesensitive
+説明
+-----------
+このコマンドは、C:\Windows\System32 のサブディレクトリにあるファイル名拡張子が .txt のすべてのファイルについて "Micro
+soft" という文字列を検索します。CaseSensitive パラメーターは、Select-String で一致が検出されるには、"Microso
+ft" の "M" が大文字で、残りの文字が小文字である必要があることを示します。
+-------------------------- 例 7 --------------------------
+C:\PS>select-string -path process.txt -pattern idle, svchost -notmatch
+説明
+-----------
+このコマンドは、Process.txt ファイルで、単語 "idle" または "svchost" を含まないテキスト行を検索します。
+-------------------------- 例 8 --------------------------
+C:\PS>$f = select-string -path audit.log -pattern "logon failed" -context 2
+, 3
+C:\PS> $f.count
+C:\PS> ($f)[0].context | format-list
+説明
+-----------
+最初のコマンドは、Audit.Log ファイル内で "logon failed" という語句を検索します。Context パラメーターを使用して、一致
+の前の 2 行分と一致の後の 3 行分をキャプチャします。
+2 番目のコマンドは、オブジェクト配列の Count プロパティを使用して、検出された一致の数を表示します (この場合は 2)。
+3 番目のコマンドは、最初の MatchInfo オブジェクトの Context プロパティに格納された行を表示します。このコマンドは、配列表記を使用
+して最初の一致 (0 ベース配列の一致 0 番) を示し、Format-List コマンドレットを使用して Context プロパティの値を一覧表示し
+ます。
+出力は、検出された一致ごとに 1 つずつ、2 つの MatchInfo オブジェクトで構成されます。コンテキストの行は、MatchInfo オブジェク
+トの Context プロパティに格納されます。
+-------------------------- 例 9 --------------------------
+C:\PS>$a = get-childitem $pshome\en-us\about*.help.txt | select-string -pat
+tern transcript
+C:\PS> $b = get-childitem $pshome\en-us\about*.help.txt | select-string -pa
+ttern transcript -allmatches
+C:\PS> $a
+C:\Windows\system32\WindowsPowerShell\v1.0\en-us\about_Pssnapins.help.txt:3
+9:       Start-Transcript and Stop-Transcript.
+C:\PS> $b
+C:\Windows\system32\WindowsPowerShell\v1.0\en-us\about_Pssnapins.help.txt:3
+9:       Start-Transcript and Stop-Transcript.
+C:\PS>> $a.matches
+Groups   : {Transcript}
+Success  : True
+Captures : {Transcript}
+Index    : 13
+Length   : 10
+Value    : Transcript
+C:\PS> $b.matches
+Groups   : {Transcript}
+Success  : True
+Captures : {Transcript}
+Index    : 13
+Length   : 10
+Value    : Transcript
+Groups   : {Transcript}
+Success  : True
+Captures : {Transcript}
+Index    : 33
+Length   : 10
+Value    : Transcript
+説明
+-----------
+この例では、Select-String の AllMatches パラメーターの結果について示します。AllMatches パラメーターは、各行の最初
+の一致のみを検索するのではなく、行にあるすべてのパターンの一致を検索します。
+この例の最初のコマンドは、Windows PowerShell の概念説明のヘルプ ファイル ("about" ヘルプ) 内で、単語 "transcr
+ipt" のインスタンスを検索します。2 番目のコマンドは、AllMatches パラメーターを使用する点を除いて、最初のコマンドと同じです。
+最初のコマンドの出力は $a 変数に保存されます。2 番目のコマンドの出力は $b 変数に保存されます。
+変数の値を表示する場合、既定では出力例のように表示されます。
+ただし、5 番目と 6 番目のコマンドは、各オブジェクトの Matches プロパティの値を表示します。最初のコマンドの Matches プロパティに
+は、一致が 1 つだけ含まれています (つまり、1 つの System.Text.RegularExpressions.Match オブジェクト)。一
+方、2 番目のコマンドの Matches プロパティには、行内の両方の一致に対応するオブジェクトが含まれています。
+関連するリンク
+Online version: http://go.microsoft.com/fwlink/?LinkID=113388
+about_Comparison_Operators 
+about_Regular_Expressions
+

@@ -1,0 +1,16 @@
+
+結果から見てイメージボタンの記述には、(3)のような記述は避けた方が良いでしょう。 
+立川さん、貴重なご意見ありがとうございます。石川さんご協力ありがとうございます。 
+(1)の方法に問題がありました。 
+アンカーが無い(href="#")ので、実行するとページ先頭に移動してしまいます。
+対策として、自分自身にアンカーを置き、そこにリンクするよう改善しました。(アンカーの置き場所は工夫すること) 
+このことから、(2)の方法が一番安全でしょう。(参考:類似の方法として、(4)を追加しました。)
+(1) 
+:&#60a href = "#here" name="here" onClick = "StartRotation()"&#62&#60img src="rotation.gif"&#62&#60/a&#62
+(2) 
+:&#60a href="javascript:StartRotation()"&#62&#60img src="rotation.gif"&#62&#60/a&#62
+(3) 
+:&#60img src="rotation.gif" onClick="StartRotation()"&#62
+(4) 
+:&#60a href="javascript: void 0" onClick = "StartRotation()"&#62&#60img src="rotation.gif"&#62&#60/a&#62
+Cult3Dオブジェクトの認識実験

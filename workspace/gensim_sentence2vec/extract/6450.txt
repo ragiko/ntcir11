@@ -1,0 +1,28 @@
+ホームネットワークシステム(HNS)を利用して,複数の家電を協調動作させる家電連携サービスの研究が進んでいる.単体では正常に動作する連携サービスを複数実行したとき,それらのサービスの持つ要求が干渉・衝突を起こし,ユーザの意図しない振る舞いが生じることがある.これをサービス競合と呼ぶ.先行研究にて,我々はサービス競合に「機器競合」と「環境競合」の2種類が存在することを述べ,サービス競合の検出解消手法を提案した.しかし,先行研究における環境競合の定式化は不十分であり,競合を誤検出してしまうケースや,検出できないケースが存在した.本稿では,機器操作による環境への影響を詳細に定義する環境インパクトモデルを提案し,影響の性質を考慮した環境競合の検出法を示す.また,ケーススタディとして,提案モデルを用いた競合の検出例を示す.
+[9-269] 
+池上 弘祐, 稲田 卓也, まつ本 真佑, 中村 匡秀, ``ホームネットワークシステムにおける環境インパクトの性質を考慮した環境競合の再定式化,''  電子情報通信学会技術研究報告, vol.111, no.255, pp.67-72, October 2011.
+@inproceedings{9_269,
+author = {池上 弘祐 and 稲田 卓也 and まつ本 真佑 and 中村 匡秀},
+author_e = {Ikegami Kousuke, Inada Takuya, Matsumoto Shinsuke, Nakamura
+Masahide},
+editor = {},
+editor_e = {},
+title = {ホームネットワークシステムにおける環境インパクトの性質を考慮した環
+境競合の再定式化},
+title_e = {Redefining Environment Feature Interactions in Home Network
+System Based on Nature of Environmental Impacts},
+booktitle = {電子情報通信学会技術研究報告},
+booktitle_e = {},
+volume = {111},
+number = {255},
+pages = {67-72},
+organization = {},
+publisher = {},
+publisher_e = {},
+address = {},
+month = {October},
+year = {2011},
+note = {},
+annote = {}
+}
+PMAN - Paper management system

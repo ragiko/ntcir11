@@ -1,0 +1,141 @@
+混合分布モデルは、クラスタリングの問題を確率モデルで解く方法。データが発生する確率が複数の確率の線形和で書かれる分布を混合分布と呼ばれる。データの発生メカニズムが確率モデルでうまくモデル化できるとき、強力な手法。
+※アルゴリズム・方程式の詳細は「第3回 データマイニング+WEB 勉強会@東京」でお話しします。また時間を見つけ、本エントリにも追記しようと思います。
+R言語プログラミング
+Rでは混合分布モデルによるクラスタリングを行う関数がmclustパッケージ内に用意されている。
+Mclust(x,G,modelNames= c("EII", "VII", "EEI", "VEI"))
+[引数]
+x : データセットを表す行列
+G : クラスタ数Kを指定
+modelName : 分散共分散行列のモデル指定 ("EII", "VII", "EEI", "VEI", など)
+ソース
+install.packages("mclust")
+library(mclust) #混合分布を扱うパッケージ mclust (Model-Based Clustering)の読み込み
+x <- iris[,1:4] #解析データ:iris 1-4列のデータ
+mc <- Mclust(x,G=3,modelNames="EII") #混合分布モデルクラスタリングの実行。クラスタ数は3に指定。
+result <- mc$classification #クラスタリング結果の抽出
+result #クラスタリング結果の表示
+answer <- iris[,5]     #クラスタリング正解:品種(iris 5列目)
+ctbl <- table(answer, result) #正解と結果のクロス表を作成
+ctbl #クロス表の表示
+calcEntropy(ctbl) #エントロピー(Entropy)の算出
+calcPurity(ctbl)  #純度 (Purity)の算出 
+関数 calcEntropy(ctbl) (エントロピー(Entropy)の算出)、calcPurity(ctbl) (純度 (Purity)の算出)の関数定義はhttp://d.hatena.ne.jp/hamadakoichi/20100324/p1:こちら]にソースを載せてあります。
+実行結果
+> install.packages("mclust")
+library(mclust) #混合分布を扱うパッケージ mclust (Model-Based Clustering)の読み込み
+x <- iris[,1:4] #解析データ:iris 1-4列のデータ
+> > > > mc <- Mclust(x,G=3,modelNames="EII") #混合分布モデルクラスタリングの実行。クラスタ数は3に指定。
+> > result <- mc$classification #クラスタリング結果の抽出
+result #クラスタリング結果の表示
+>   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+[38] 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+[75] 2 2 2 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 2 3 3 3 3 2 3 3 3 3
+[112] 3 3 2 2 3 3 3 3 2 3 2 3 2 3 3 2 2 3 3 3 3 3 2 3 3 3 3 2 3 3 3 2 3 3 3 2 3
+[149] 3 2
+> 
+answer <- iris[,5]     #クラスタリング正解:品種(iris 5列目)
+> > 
+ctbl <- table(answer, result) #正解と結果のクロス表を作成
+> > ctbl #クロス表の表示
+result
+answer        1  2  3
+setosa     50  0  0
+versicolor  0 48  2
+virginica   0 14 36
+> > calcEntropy(ctbl) #エントロピー(Entropy)の算出
+[1] 0.2308662
+> calcPurity(ctbl)  #純度 (Purity)の算出 
+[1] 0.8933333
+> 
+> 
+> #得られたパラメータの確認
+> pa <- mc$parameters 
+> pa$pro  #混合分布の各分布の線形係数
+[1] 0.3333984 0.4145337 0.2520679
+> pa$mean #平均ベクトル
+[,1]     [,2]     [,3]
+Sepal.Length 5.0060180 5.904618 6.850026
+Sepal.Width  3.4278187 2.748371 3.075408
+Petal.Length 1.4623007 4.402018 5.735305
+Petal.Width  0.2461665 1.432578 2.076464
+> pa$variance$sigma #分散共分散行列
+, , 1
+Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1330945   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1330945    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1330945   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1330945
+, , 2
+Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1330945   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1330945    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1330945   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1330945
+, , 3
+Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1330945   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1330945    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1330945   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1330945
+分散共分散行列のモデル比較
+ソース
+#分散共分散行列のモデル比較
+#関数:クラスターの評価(Entropy, Purity)
+evalhclust <- function(result, answer){
+ct <- table(answer, result) #クロス表の作成
+cat("Entropy: ", calcEntropy(ct), "\n") #エントロピー
+cat("Purity : ", calcPurity(ct), "\n")  #純度
+}
+x <- iris[,1:4] #解析データ:iris 1-4列のデータ
+mc.eii <- Mclust(x,G=3,modelNames="EII") #混合分布モデルクラスタリングの実行。EIIモデル。
+mc.vii <- Mclust(x,G=3,modelNames="VII") #混合分布モデルクラスタリングの実行。VIIモデル。
+mc.vei <- Mclust(x,G=3,modelNames="VEI") #混合分布モデルクラスタリングの実行。VEIモデル。
+mc.vvv <- Mclust(x,G=3,modelNames="VVV") #混合分布モデルクラスタリングの実行。VVIモデル。
+#評価
+ans <- iris[,5] #
+evalhclust(mc.eii$classification,ans) #EIIモデル。
+evalhclust(mc.vii$classification,ans) #VIIモデル。
+evalhclust(mc.vei$classification,ans) #VEIモデル。
+evalhclust(mc.vvv$classification,ans) #VVVモデル。
+実行結果
+> #分散共分散行列のモデル比較
+> 
+> #関数:クラスターの評価(Entropy, Purity)
+> evalhclust <- function(result, answer){
++ 	ct <- table(answer, result) #クロス表の作成
++ 	cat("Entropy: ", calcEntropy(ct), "\n") #エントロピー
++ 	cat("Purity : ", calcPurity(ct), "\n")  #純度
++ }
+> 
+> x <- iris[,1:4] #解析データ:iris 1-4列のデータ
+> mc.eii <- Mclust(x,G=3,modelNames="EII") #混合分布モデルクラスタリングの実行。EIIモデル。
+> mc.vii <- Mclust(x,G=3,modelNames="VII") #混合分布モデルクラスタリングの実行。VIIモデル。
+> mc.vei <- Mclust(x,G=3,modelNames="VEI") #混合分布モデルクラスタリングの実行。VEIモデル。
+> mc.vvv <- Mclust(x,G=3,modelNames="VVV") #混合分布モデルクラスタリングの実行。VVIモデル。
+> > #評価
+ans <- iris[,5] #
+> > evalhclust(mc.eii$classification,ans) #EIIモデル。
+Entropy:  0.2308662 
+Purity :  0.8933333 
+> evalhclust(mc.vii$classification,ans) #VIIモデル。
+Entropy:  0.2308662 
+Purity :  0.8933333 
+> evalhclust(mc.vei$classification,ans) #VEIモデル。
+Entropy:  0.1355387 
+Purity :  0.96 
+> evalhclust(mc.vvv$classification,ans) #VVVモデル。
+Entropy:  0.09863442 
+Purity :  0.9666667 
+EII、VII、VEIのモデルの中では、VEIモデルが最も良い。全てのパラメータを推定するVVVモデルは、さらによい結果が得られることが分かります。
+※Entropyは小さく、Purityは大きい、ほうが良いクラスタリング。詳細は次エントリを参照: 「はじめてでもわかる R言語によるクラスター分析」
+関連リンク:データマイニング+WEB勉強会@東京 (Tokyo.Webmining)
+Google グループ
+第3回 データマイニング+WEB 勉強会@東京 (Tokyo.Webmining#3)  : ATND
+R勉強会: 第2回データマイニング+WEB 勉強会@東京 (Tokyo.Webmining#2) を開催しました - 「はじめてでもわかる R言語によるクラスター分析」- - hamadakoichi blog
+R言語プログラミング: クラスター分析 - 階層的クラスタリング - hamadakoichi blog
+第2回 データマイニング+WEB 勉強会@東京 (Tokyo.Webmining#2) を開催します - hamadakoichi blog
+R勉強会 講師をしてきた: 「はじめてでもわかる 統計解析・データマイニング R言語入門」 - hamadakoichi blog
+[データマイニング+WEB勉強会][R勉強会] はじめてでもわかる 統計解析・データマイニング R言語入門
+[データマイニング+WEB勉強会][R勉強会] はじめてでもわかる R言語によるクラスター分析 - 似ているものをグループ化する-
+参考文献
+R言語プログラミング: クラスター分析 - 混合分布モデル - hamadakoichi blog

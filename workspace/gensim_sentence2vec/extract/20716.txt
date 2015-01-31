@@ -1,0 +1,15 @@
+
+KyTea 0.2.1では -deftag /UNK とすると未知語の読み部分にUNKが入る(ex. 東国原/UNK 知事/チジ)
+なお、公開中のKyTea(ver0.2.1)用モデルには単漢字辞書を用いた未知語の読み推定モデルが含まれるため、
+-deftag オプションは不要
+% kytea -model CSJ+BCCWJ+UNI.bin -nope  temp1.word 
+% perl MergeArabicNum.pl  temp2.word 
+% perl Arabic2HanNum.pl  taiwa.word 
+% kytea -in full -nows -model CSJ+BCCWJ+UNI.bin  taiwa.wordpron 
+3. 適応分野特有のクラスをクラス記号に置き換える
+カテゴリ、店名、場所などをクラスにする
+数字と都道府県+地域名は一通り書き並べておいてとりあえずNUMBER, LOCATIONを割り当てる
+現状NUMBER, LOCATION, NAME, TYPE, STATIONの5クラスを設定、ほかの単語はそれぞれの単語そのものを1クラスとする
+Julius言語モデル作成用に文頭文末記号の<s>と</s>を付加しておき、デリミタを"/"から"+"にしておく
+例 taiwa.train
+音声対話用言語モデル作成

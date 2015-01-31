@@ -1,0 +1,117 @@
+
+ヘッダーをスキップ
+Oracle Database ユーティリティ10g リリース2(10.2)B19211-01
+目次
+索引
+15 DBVERIFY: オフライン・データベース検査ユーティリティ
+DBVERIFYは外部コマンドライン・ユーティリティで、物理データ構造に対する整合性チェックを実行します。オフラインまたはオンライン・データベースおよびバックアップ・ファイル上で使用できます。DBVERIFYを使用するのは、バックアップ・データベース(またはデータ・ファイル)をリストアする前にそれが有効であることを確認する場合です。また、データ破損の問題が発生した場合に診断機能としても使用します。
+DBVERIFYはオフライン・データベースに対して実行できるため、整合性チェックが非常に高速に行えます。
+DBVERIFYによるチェックは、キャッシュ管理(データ・ブロック)ブロックのみに制限されています。DBVERIFYは、データ・ファイルでのみ使用します。制御ファイルまたはREDOログに対しては機能しません。
+DBVERIFYには、2つのコマンドライン・インタフェースがあります。最初のインタフェースでは、確認の対象として単一データ・ファイルのディスク・ブロックを指定します。次のインタフェースでは、確認の対象としてセグメントを指定します。いずれのインタフェースでも、最初にdbvコマンドを記述します。次の項では、これらのインタフェースの記述について説明します。
+DBVERIFYを使用した単一データ・ファイルのディスク・ブロックの検査
+DBVERIFYを使用したセグメントの検査
+DBVERIFYを使用した単一データ・ファイルのディスク・ブロックの検査
+このモードでは、DBVERIFYによって、単一データ・ファイルの1つ以上のディスク・ブロックがスキャンされ、ページのチェックが実行されます。
+注意:
+検査するファイルが、自動ストレージ管理(ASM)ファイルである場合、USERIDを指定する必要があります。DBVERIFYでASMファイルにアクセスするには、Oracleインスタンスに接続する必要があるためです。 
+構文
+単一データ・ファイルのディスク・ブロックを検査するときに使用するDBVERIFYの構文は次のとおりです。
+画像の説明
+パラメータ
+パラメータの詳細は次のとおりです。
+パラメータ 
+説明 
+USERID 
+ユーザー名およびパスワードを指定します。このパラメータは、検査するファイルがASMファイルである場合にのみ必要です。 
+FILE 
+検査するデータベース・ファイル名。 
+START 
+検査する最初のブロック・アドレス。ブロック・アドレスは、Oracleブロックで指定します(オペレーティング・システム・ブロックではありません)。STARTを指定しないと、ファイル内の最初のブロックがDBVERIFYによってデフォルト設定されます。 
+END 
+検査する最後のブロック。ENDを指定しないと、ファイル内の最後のブロックがDBVERIFYによってデフォルト設定されます。 
+BLOCKSIZE 
+BLOCKSIZEは、検査するファイルのブロック・サイズが2KBでない場合にのみ指定します。ファイルのブロック・サイズが2KBでない場合、BLOCKSIZEを指定しないとDBV-00103のエラーが発生します。 
+LOGFILE 
+ログ情報を書き込むファイルを指定します。デフォルトでは、端末画面への出力となります。 
+FEEDBACK 
+進捗画面が端末に表示され、DBVERIFYの実行中に検証されたページ数nが1つのピリオド(.)で示されます。n = 0と設定すると、進捗画面は表示されません。 
+HELP 
+オンライン・ヘルプを表示します。 
+PARFILE 
+使用するパラメータ・ファイル名を指定します。フラット・ファイルのDBVERIFYパラメータには、複数の値を格納できます。これによって、パラメータ・ファイルをカスタマイズして、異なるタイプのデータ・ファイルの処理、およびデータ・ファイルに固有の整合性チェックの実行ができます。 
+コマンドライン・インタフェース
+次に、DBVERIFYをこのモードで起動するコマンドライン・インタフェースの使用例を示します。
+% dbv FILE=t_db1.dbf FEEDBACK=100
+DBVERIFYのサンプル出力
+次に、ファイルt_db1.dbf の検査の例を示します。フィードバック・パラメータに100が指定されているため、100ページの処理が行われるたびにピリオドが1つ表示されます。出力結果の一部も示します。
+% dbv FILE=t_db1.dbf FEEDBACK=100
+.
+.
+.
+DBVERIFY - Verification starting : FILE = t_db1.dbf 
+................................................................................
+DBVERIFY - Verification complete 
+Total Pages Examined         : 9216 
+Total Pages Processed (Data) : 2044 
+Total Pages Failing   (Data) : 0 
+Total Pages Processed (Index): 733 
+Total Pages Failing   (Index): 0 
+Total Pages Empty            : 5686 
+Total Pages Marked Corrupt   : 0 
+Total Pages Influx           : 0 
+注意:
+Pages =ブロック。
+Total Pages Examined =ファイルのブロック数。
+Total Pages Processed = 検査されたブロック数(書式化されたブロック)。
+Total Pages Failing (Data) = データ・ブロック・チェック・ルーチンで違反したブロック数。
+Total Pages Failing (Index) = 索引ブロック・チェック・ルーチンで違反したブロック数。
+Total Pages Marked Corrupt = キャッシュ・ヘッダーが無効で、DBVERIFYがブロック型を識別できないブロック数。
+Total Pages Influx = 読取りおよび書込みが同時に行われるブロック数。DBVERIFYの実行時にデータベースがオープンされている場合は、一貫性を維持したイメージの取得のためにDBVERIFYによってブロックが複数回読み込まれます。ただし、データベースがオープンされているため、読取りおよび書込みが同時に行われるブロックがあります(INFLUX)。DBVERIFYでは、絶え間なく変化するページの一貫性のあるイメージは取得できません。
+DBVERIFYを使用したセグメントの検査
+このモードでは、DBVERIFYを使用して表セグメントまたは索引セグメントの検査を指定できます。確認中のセグメントに行連鎖ポインタがあることを確認します。
+このモードでは、検査するセグメント(データ・セグメントまたは索引セグメント)を指定する必要があります。また、セグメントについての情報をデータベースから取得するため、SYSDBA権限でデータベースにログインする必要があります。
+このモードでは、セグメントはロックされます。1つの索引セグメントを指定する場合、親表はロックされます。IOTなど、一部の索引には親表はありません。
+構文
+セグメントを検査するときのDBVERIFYの構文は次のとおりです。
+画像の説明
+パラメータ
+パラメータの詳細は次のとおりです。
+パラメータ 
+説明 
+USERID 
+ユーザー名およびパスワードを指定します。 
+SEGMENT_ID 
+検査するセグメントを指定します。このパラメータは、表領域ID番号(tsn)、セグメント・ヘッダー・ファイル番号(segfile)およびセグメント・ヘッダー・ブロック番号(segblock)で構成されます。この情報は、SYS_USER_SEGSから得られます。関係がある列は、TABLESPACE_ID、HEADER_FILEおよびHEADER_BLOCKです。SYS_USER_SEGSを問い合せるには、SYSDBA権限が必要です。 
+LOGFILE 
+ログ情報を書き込むファイルを指定します。デフォルトでは、端末画面への出力となります。 
+FEEDBACK 
+進捗画面が端末に表示され、DBVERIFYの実行中に検証されたページ数nが1つのピリオド(.)で示されます。n = 0と設定すると、進捗画面は表示されません。 
+HELP 
+オンライン・ヘルプを表示します。 
+PARFILE 
+使用するパラメータ・ファイル名を指定します。フラット・ファイルのDBVERIFYパラメータには、複数の値を格納できます。これによって、パラメータ・ファイルをカスタマイズして、異なるタイプのデータ・ファイルの処理、およびデータ・ファイルに固有の整合性チェックの実行ができます。 
+コマンドライン・インタフェース
+次に、DBVERIFYをこのモードで起動するコマンドライン・インタフェースの使用例を示します。
+dbv USERID=username/password SEGMENT_ID=tsn.segfile.segblock
+たとえば、次のように入力するとします(ユーザーhrにSYSDBA権限があるとします)。
+dbv USERID=hr/hr SEGMENT_ID=1.2.67
+出力は、次のようになります。
+DBVERIFY - Verification starting : SEGMENT_ID = 1.2.67
+DBVERIFY - Verification complete
+Total Pages Examined         : 8
+Total Pages Processed (Data) : 0
+Total Pages Failing   (Data) : 0
+Total Pages Processed (Index): 1
+Total Pages Failing   (Index): 0
+Total Pages Processed (Other): 2
+Total Pages Processed (Seg)  : 1
+Total Pages Failing   (Seg)  : 0
+Total Pages Empty            : 4
+Total Pages Marked Corrupt   : 0
+Total Pages Influx           : 0
+Highest block SCN            : 7358 (0.7358)
+Copyright &copy; 2005 Oracle Corporation. 
+All Rights Reserved.
+目次
+索引
+DBVERIFY: オフライン・データベース検査ユーティリティ

@@ -1,0 +1,1052 @@
+
+[ Halbow 資料館トップページ ] [ サイトトップページ ]
+第2章  メッセージ処理 : ユーザー入力とメニュー
+前章でつくった Generic02.dpr では、作成されるウィンドウはユーザーからの入力への応答として位置を変えたりサイズを変更したり閉じたりできたが、これらの機能のほとんどは DefWindowProc( ) APIの働きによるものだった。 この章の最初のプログラムは、 ユーザーのマウスクリックに応答するプログラムである。このプログラムを通して、メッセージに応答するプログラミングスタイルについて簡単に考察する。 さらに、簡単なメニューを装備して、この本全体で作成するプログラムの雛形になるプログラムを作成する。
+2−0  この章の内容
+第2章  メッセージ処理 : ユーザー入力とメニュー
+2−1  マウスクリックに応答する
+2−2  メッセージクラッキング
+2−3  メニューを装備する
+2−4  ウィンドウのサイズ・位置・タイトル・背景色
+2−5  Skeleton01 プログラム
+2−6  呼び出し規約と IntToStr( )
+2−7 まとめ
+|   前の章へ
+| 総目次へ
+| 次の章へ  ｜
+2−1  マウスクリックに応答する
+Generic02.dpr プログラムを少し変更して、ユーザーのマウスクリックに応答してクライアント領域の色を変えるプログラムを作る。 作り方は、以下のとおり。
+エクスプローラを使って、新しいフォルダを 0201GenericColor という名前でつくる。
+作ったフォルダに、エクスプローラを使って 0102Generic02 フォルダの Generic02.dpr と UtilFunc.pas をコピーする。
+コピーした Generic02.dpr をダブルクリックして Delphi を立ち上げる。
+コードエディタに Generic02.dpr のコードがあることを確認してから、[ファイル]メニューから[プロジェクトに名前を付けて保存]を選んで、GenericColor.dpr という名前で保存する。
+コードエディタを編集して、以下のリストになるようにする。
+f.9を押して、コンパイル・実行する。
+program GenericColor;
+uses
+windows,
+messages,
+UtilFunc in 'UtilFunc.pas';
+//------------------------------------------------------------
+//             Global Types, Constants and Variables
+//------------------------------------------------------------
+var
+Clr: COLORREF;
+//------------------------------------------------------------
+//             Event Handlers
+//------------------------------------------------------------
+procedure OnCreate(hWindow:HWND);
+begin
+Clr := RGB(255,255,255);
+end;
+procedure OnLButtonUp(hWindow:HWND; WParam:WPARAM; LParam:LPARAM);
+var
+r: TRect;
+x,y: integer;
+begin
+GetClientRect(hWindow,r);
+x := LOWORD(LParam);
+y := HIWORD(LParam);
+if x 
+GenericColor.zip(9.855kB)
+GenericColor.dpr を実行すると、右上図のようにタイトルバーに GENERICCOLOR と表示された白いクライアント領域を持つウィンドウが開く。 クライアント領域でマウスの左ボタンをクリックすると、クリックする場所によってクライアント領域の色が純色の赤、青、緑(黄緑)、白に変化するのが分かるだろう。右下図はクライアント領域の左下部分をクリックしたときのものである。注意深くクリックすれば、 マウスのボタンを押した時ではなく、はなしたときに色が変わるのが分かるだろう。 クライアント領域の色は、ウィンドウを最小化して復帰しても、他のウィンドウの下から出てきても保持されているのが分かるだろう。 これらのことから、このプログラムは、ユーザーがマウスの左ボタンをはなすタイミングをとらえることができる事、そのときのマウスの位置が分かる事、背景を更新するメッセージが届いたときにはいつでも指定の色でクライアント領域を塗りつぶすことができる事が分かる。
+コードを調べてみよう。グローバル変数として、
+var
+Clr: COLORREF;
+が宣言されている。 Delphi のRADベースの色の指定は、TColor 型(graphics.pasで定義されている)であるが、 APIレベルの色の指定は、TColor 型とほとんど等価な COLORREF 型である。 これは windows.pas に、
+type
+DWORD = Integer;
+COLORREF = DWORD;
+と定義された、 32ビットの整数値である。 下位24ビットが、8ビットごとに区切られ、低位の方から、赤、緑、青の明度を表す。 例えば、 $000000FF, $0000FF00, $00FF0000 はそれぞれ純色の赤、青、緑を表している。 このように、数値として直接に色を指定してもよいが、通常、RGB( ) 関数を用いて指定する。
+function RGB(r, g, b: Byte): COLORREF;
+RGB(255,255,255) は白色、RGB(255,255,0) は黄色である。 このプログラムでは、 COLORREF 型の変数 Clr はクライアント領域の色を保持する。
+Generic02.dpr では、ウィンドウ関数で WM_DESTROY メッセージだけを処理したが、GenericColor.dpr ではさらに WM_CREATE と WM_LBUTTONUP と WM_ERASEBKGND も処理する。 WM_CREATE は、このウィンドウが作られるとき、つまり、CreateWindowEx( ) APIが実行されたときに送られてくる。 RADベースのプログラムで procedure TForm1.FormCreate(Sender: TObject) で 初期処理をするのと同じように、 このメッセージが送られてくるときに、アプリケーションの初期処理を行うのが普通である。 ここでは、OnCreate( ) 手続きを呼び出して Clr 変数を白色に初期化している。 このプログラムが実行されたときの最初の色が、白色になっているのはこのコードのためだ。 
+ユーザーがクライアント領域で、マウスの左ボタン押し、そしてはなす時、OSはそのウィンドウのウィンドウ関数に WN_LBUTTONUP メッセージを送る。 Delphi に付属する Win32.hlp によれば、
+WM_LBUTTONUP 
+fwKeys = wParam;        // キーフラグ 
+xPos = LOWORD(lParam);  // カーソルの水平位置 
+yPos = HIWORD(lParam);  // カーソルの垂直位置 
+となっているので、 wParam の値を調べれば、このとき他のマウスボタンやキーボードのシフトキーやコントロールキーが押されていたかどうか分かる。 windows.pas には、
+const
+{ Key State Masks for Mouse Messages }
+MK_LBUTTON = 1;    // 左ボタンが押されている
+MK_RBUTTON = 2;    // 右ボタンが押されている
+MK_SHIFT = 4;      // シフトキーが押されている
+MK_CONTROL = 8;    // コントロールキーが押されている
+MK_MBUTTON = $10;  // 中央ボタンが押されている
+と定義されている。この定義から分かるように、これらはビットフラグとして定義されているので wParam と and をとってゼロでないときこのキーが押されていることが分かる。 例えば、コントロールキーについては、
+if ( wParam and MK_CONTROL ) 
+と書けばよい。 一方、lParam にはマウスの座標が入っているので、LOWORD( ) と HIWORD( ) 関数を使って値を取り出す。 windows.pas には、
+type
+LOWORD = Word;
+function HiWord(l: DWORD): Word;
+と定義されているので、 LOWORD( ) は実際には関数ではなく、 単に Word 型への型キャストである。 GenericColor.dpr では、WM_LBUTTONUP メッセージをトラップして OnLButtonUp( ) 手続きを呼び出している。 
+procedure OnLButtonUp(hWindow:HWND; WParam:WPARAM; LParam:LPARAM);
+var
+r: TRect;
+x,y: integer;
+begin
+GetClientRect(hWindow,r);
+x := LOWORD(LParam);
+y := HIWORD(LParam);
+if x 
+この手続きでは、 まず最初に GetClientRect( ) APIを呼び出して、クライアント領域の大きさを TRect 型の変数に格納する。
+type
+TRect = record
+case Integer of
+0: (Left, Top, Right, Bottom: Integer);
+1: (TopLeft, BottomRight: TPoint);
+end;
+function GetClientRect(hWnd: HWND; 
+var lpRect: TRect): BOOL; stdcall;
+GetClientRect( ) APIは、hWnd で指定されるウィンドウのクライアント領域の大きさを lpRect 変数に渡してくれる。 次の8行のコードは、 マウスの座標を取り出して、 クライアント領域を田の字形に四分割したとき、左上の部分のときは Clr に赤を、左下のときは緑を、右上のときは青を、右下のときは白を指定する。 最後の文、 InvalidateRect( ) APIは、その名前の通り、ウィンドウを更新して再描画するためにウィンドウ関数に WM_PAINT メッセージを送る。
+function InvalidateRect(hWnd: HWND; 
+lpRect: PRect; 
+bErase: BOOL): BOOL; stdcall;
+この関数の第一パラメータは、 更新するウィンドウのハンドルを、第二パラメータは更新する矩形を TRect 型変数のアドレスで(例えば、@r のように)指定する。 第二パラメータに nil を指定すると、クライアント領域全体が更新領域に指定される。 第三パラメータを true にすると WM_PAINT メッセージの処理で BeginPaint( ) が呼び出されたとき、WM_ERASEBKGND が送られ背景も自動的に更新される。
+WM_LBUTTONUP メッセージの処理手続きの最後で、 InvalidateRect( ) によって WM_PAINT メッセージがウィンドウ関数に送られる。 ウィンドウ関数では、 これを処理せず DefWindowProc( ) に渡している。 DefWindowProc( ) では BeginPaint( ) APIを呼び出し、このとき  WM_ERASEBKGND が送り出され背景が更新される。
+WM_ERASEBKGND 
+hdc = (HDC) wParam; // デバイスコンテキストハンドル
+このメッセージの WParam には、描画関数が必要とするデバイスコンテキストハンドルが設定されている。 ウィンドウ関数では、WM_ERASEBKGND メッセージの処理を OnEraseBkgnd( ) ハンドラに任せている。 このメッセージを処理したときは、ゼロ以外の値を返すことが必要であるとヘルプに書かれている。
+procedure OnEraseBkgnd(hWindow:HWND; WParam:WPARAM);
+var
+hBr: hBrush;
+r: TRect;
+begin
+hBr := CreateSolidBrush(Clr);
+GetClientRect(hWindow,r);
+FillRect(WParam,r,hBr);
+DeleteObject(hBr);
+end;
+ここで実行していることは、まず Clr の指定する色にもとづいて純色のブラシを作成する。 つぎに、クライアント領域の大きさを r に格納する。 FillRect( ) APIを使って、作成したブラシと矩形領域 r を指定して塗りつぶす。 最後に作成したブラシを除去する。 ここで使われている APIは、GDI(グラフィカル・デバイス・インタフェース)関数と呼ばれるもので、次章で詳しく説明する。
+以上で、GenericColor.dpr の説明は終わりである。 コードベースのプログラミングに慣れないうちは説明を読んでもいまいちピンとこないものだ。 長い説明を一通り読んだらコードのリストをじっくり吟味していただきたい。 すべての説明はコードの中にあるのだから。
+この章の目次へ戻る
+2−2  メッセージクラッキング
+前節の GenericColor.dpr では、WM_CREATE、WM_LBUTTONUP、WM_ERASEBKGND、および WM_DESTROY の四つのメッセージを処理した。 そこでは、ウィンドウ関数の中に直接処理するコードを書き込むのではなく、RAD環境のときと同じように各メッセージの処理ハンドラを呼び出すようにしていた。上記四つのメッセージ処理ハンドラのヘッダ部分は以下のようになっていた。
+procedure OnCreate(hWindow:HWND);
+procedure OnLButtonUp(hWindow:HWND; WParam:WPARAM; LParam:LPARAM);
+procedure OnEraseBkgnd(hWindow:HWND; WParam:WPARAM);
+procedure OnDestroy(hWindow: HWND);
+ここで気になるのは、メッセージハンドラを定義するときのパラメータの選び方だ。 上記の定義の仕方は、それぞれの処理に必要なパラメータを「適当に」選んでいるだけで、統一性が無い。 各メッセージに付随する WParam と LParam の意味がメッセージ毎に異なるために、必要とする場合とそうでない場合があるからだ。 メッセージ処理ハンドラに渡すパラメータの解釈に統一性をもたらす方法がメッセージクラッキングの方法である。例えば、WM_LBUTTONUP メッセージに相当するメッセージに対するRAD環境での Form1 におけるイベントハンドラは
+procedure TForm1.FormMouseUp(Sender: TObject; 
+Button: TMouseButton;
+Shift: TShiftState; 
+X, Y: Integer);
+である。このパラメータ並びを見ると分かるように、メッセージとともに送られてくる情報は、プログラマにとって便利なように予め解釈がされていて、ナマの WParam や LParam をプログラマが解釈する必要がない。これと同じ事をウィンドウ関数で行うことができる。 WM_LBUTTONUP メッセージを再び Win32.hlp から見てみよう。
+WM_LBUTTONUP 
+fwKeys = wParam;        // キーフラグ 
+xPos = LOWORD(lParam);  // カーソルの水平位置 
+yPos = HIWORD(lParam);  // カーソルの垂直位置 
+このように、Sender パラメータ以外では、RAD環境と同じように WParam と LParam が持っている情報を完全に解釈して処理ハンドラに渡すことは原理的にはできる。 しかし、RAD環境では完全なメッセージクラッキングは意味のあることではあるが、コードベースでは無駄な情報を引き出すためにたくさんのコードを書かなければならず、また処理ハンドラごとにパラメータ並びが異なることになり、統一性が失われる。本節では、この中間のメッセージクラッキングの例を示そう。 WParam と LParam が持っている情報にアクセスするには、メッセージの型キャストを利用するのだ。 Message.pas には、Win32 の各メッセージに対するレコード型が定義されている。 例えば、WM_LBUTTONUP に対応するレコード型は、
+TWMLButtonUp     = TWMMouse;
+TWMMouse = record
+Msg: Cardinal;
+Keys: Longint;
+case Integer of
+0: (
+XPos: Smallint;
+YPos: Smallint);
+1: (
+Pos: TSmallPoint;
+Result: Longint);
+end;
+である。また、最も一般的なメッセージのレコード型は、
+TMessage = record
+Msg: Cardinal;
+case Integer of
+0: (
+WParam: Longint;
+LParam: Longint;
+Result: Longint);
+1: (
+WParamLo: Word;
+WParamHi: Word;
+LParamLo: Word;
+LParamHi: Word;
+ResultLo: Word;
+ResultHi: Word);
+end;
+である。 TMessage 型の各フィールドは、単にウィンドウ関数に渡されるパラメータを代入するだけで組み立てられる。 これを、例えば TWMLButtonUp 型にキャストするだけで、マウスの位置を XPos と YPos として、あるいは TSmallPoint 型の Pos としてアクセスできる。 これも一種のメッセージクラッキングである。 この方法を使って GenericColor.dpr を書き直してみよう。
+エクスプローラを使って、新しいフォルダを 0202MessageCracking という名前でつくる。
+作ったフォルダに、エクスプローラを使って 0201GenericColor から Generic02.dpr と UtilFunc.pas をコピーする。
+コピーした Generic02.dpr をダブルクリックして Delphi を立ち上げる。
+コードエディタに Generic02.dpr のコードがあることを確認してから、[ファイル]メニューから[プロジェクトに名前を付けて保存]を選んで、MessageCracking.dpr という名前で保存する。
+コードエディタを編集して、以下のリストになるようにする。
+コンパイルして実行する。
+MessageCracking.dpr の全リストを以下に示す。
+program MessageCracking;
+uses
+windows,
+messages,
+UtilFunc in 'UtilFunc.pas';
+//------------------------------------------------------------
+//             Global Types, Constants and Variables
+//------------------------------------------------------------
+var
+Clr: COLORREF;
+//------------------------------------------------------------
+//             Event Handlers
+//------------------------------------------------------------
+procedure OnCreate(var Msg: TWMCreate);
+begin
+Clr := RGB(255,255,255);
+end;
+procedure OnLButtonUp(var Msg: TWMLButtonUp);
+var
+hWindow: HWND;
+r: TRect;
+x,y: integer;
+begin
+hWindow := Msg.Msg;
+GetClientRect(hWindow,r);
+x := Msg.XPos;
+y := Msg.YPos;
+if x 
+MessageCracking.zip(9.882kB)
+実行すると、GenericColor と全く同じ動作をする。 ここで注目してほしいのは、ウィンドウ関数でまず最初に TMessage 型のレコード AMsg を組み立てていることだ。 ただし、Msg フィールドには ウィンドウハンドルを代入している。 そして、例えば WM_LBUTTONUP メッセージの場合は
+WM_LBUTTONUP: OnLButtonUp(TWMLButtonUp(AMsg));
+として、TWMLButtonUp 型にキャストしてパラメータを渡している。 処理ハンドラでは、
+procedure OnLButtonUp(var Msg: TWMLButtonUp);
+var
+hWindow: HWND;
+r: TRect;
+x,y: integer;
+begin
+hWindow := Msg.Msg;
+GetClientRect(hWindow,r);
+x := Msg.XPos;
+y := Msg.YPos;
+if x 
+として、TWMLButtonUp 型のパラメータ Msg を変数渡しで受け取っている。 このようにすると、Delphi3 以降で使えるようになった入力支援機能を有効につかって、Msg. とピリオドを入力すると、TWMLButtonUp 型のレコードの各フィールドをアクセスできる。 上の例では、マウスの位置を XPos、YPos でアクセスしているのが分かるだろう。 参考のために、他の三つのメッセージについてもそのレコード型を以下に示す。
+TWMCreate = record
+Msg: Cardinal;
+Unused: Integer;
+CreateStruct: PCreateStruct;
+Result: Longint;
+end;
+TWMEraseBkgnd = record
+Msg: Cardinal;
+DC: HDC;
+Unused: Longint;
+Result: Longint;
+end;
+TWMDestroy = TWMNoParams;
+TWMNoParams = record
+Msg: Cardinal;
+Unused: array[0..3] of Word;
+Result: Longint;
+end;
+WM_CREATE と WM_DESTROY ではあまり有効ではないが、WM_ERASEBKGND ではデバイスコンテキストハンドルを DC でアクセスできる。
+この方法では、 ゼロ以外の結果を返すときには Result フィールドに値を設定すればウィンドウ関数で受け取れる。WM_ERASEBKGND のときはこの方法で1を返している。
+メッセージの処理はウィンドウズプログラミングの最も重要な部分であるから、メッセージクラッキングをどの程度行うかは重要な問題である。 本節では、 完全ではないにしろ簡単なコードで行う一例を示した。 本稿で示すコードの大部分はメッセージクラッキングを行っていない。 ヘルプを見ながら WParam と LParam を必要になったときだけ解釈するというスタイルである。 これには、ナマのメッセージにふれることができる反面、コードが読みにくいし、間違いやすいというハンデもある。 やはり、メッセージクラッキングをどの程度完璧にするかは個々のプログラミングスタイルの問題であろう。
+この章の目次へ戻る
+2−3  メニューを装備する
+ユーザ入力の最も重要なインタフェースはメニューであろう。 Win32 に適合するアプリケーションを開発する場合、メニューはプログラムで使用するダイアログやアイコン、ビットマップなどと同じように、リソースファイルに記述するのが標準の作法である。 テキスト形式のリソースファイルは、リソースコンパイラによってバイナリに変換された後、プログラムがコンパイルされるときにリンクされ、実行可能ファイル( *.exe )に取り込まれる。 Delphi のRADプログラムでも、デフォルトではプロジェクトファイルと同じ名前の、アイコンが一つだけ含まれたリソースファイル ( *.res )がリンクされている。 プロジェクトソースの
+{$R *.RES}
+の構文が、コンパイラにこのリソースをリンクすることを命じている。 この節では、 Generic02.dpr に簡単なメニューを装備しよう。 Delphiのコードベースの開発環境ではリソースの扱いが少々難しいので、ここではコードによってメニューを作ることにする。 リソースの扱い方については、後の章でまとめて説明する。
+コードによってメニューを作ることは思いのほか簡単である。 メニューを作るためのAPI関数には幾つかの種類があるが、ここではメニュー作成の一般的な面には言及せずに、この節以降のプログラム開発の基になるプログラムを作るときに必要になる部分だけにふれる。 GenericMenu.dpr の作り方は以下の通りである。
+クスプローラを使って、新しいフォルダを 0203GenericMenu という名前でつくる。
+作ったフォルダに、エクスプローラを使って 0202MessageCracking から Generic02.dpr と UtilFunc.pas をコピーする。
+コピーした Generic02.dpr をダブルクリックして Delphi を立ち上げる。
+コードエディタに Generic02.dpr のコードがあることを確認してから、[ファイル]メニューから[プロジェクトに名前を付けて保存]を選んで、GenericMenu.dpr という名前で保存する。
+コードエディタを編集して、以下のリストになるようにする。
+コンパイルして実行する。
+以下に、 GenericMenu.dpr の全リストを示す。
+program GenericMenu;
+uses
+windows,
+messages,
+UtilFunc in 'UtilFunc.pas';
+//------------------------------------------------------------
+//             Global Types, Constants and Variables
+//------------------------------------------------------------
+const
+IDM_EXIT = 200;
+IDM_TEST = 201;
+IDM_ABOUT = 202;
+//------------------------------------------------------------
+//             Event Handlers
+//------------------------------------------------------------
+procedure OnCreate(var Msg: TMessage);
+var
+hWindow: HWND;
+hM, hMp: HMENU;
+begin
+hWindow := Msg.Msg;
+hM := CreateMenu;
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_EXIT, 'E&xit');
+AppendMenu(hM,MF_POPUP,hMp,'&File');
+AppendMenu(hM, MF_STRING, IDM_TEST, '&Test!');
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_ABOUT, '&About..');
+AppendMenu(hM,MF_POPUP,hMp,'&Help');
+SetMenu(hWindow,hM);
+end;
+procedure OnTest(hWindow: HWND);
+begin
+MessageBeep($FFFFFFFF);
+end;
+procedure OnCommand(var Msg: TMessage);
+var
+hWindow: HWND;
+s: string;
+begin
+hWindow := Msg.Msg;
+if Msg.WParamHi=0 then // Menu=0,Accel=1,NotifyCode=Control
+case Msg.WParamLo of
+IDM_EXIT: DestroyWindow(hWindow);
+IDM_TEST: OnTest(hWindow);
+IDM_ABOUT:begin
+s := 'OBJECT PASCAL API PROGRAM '+#13#13+
+'          By  Delphian Inc.,'+#13#13+
+'         Created by Delphi32    '+#13#13;
+MessageBox(hWindow,PChar(s),'About ...',MB_OK);
+end;
+end;
+end;
+procedure OnDestroy(var Msg: TMessage);
+begin
+PostQuitMessage(0);
+end;
+//------------------------------------------------------------
+//             Main Window Procedure
+//------------------------------------------------------------
+function MainWndProc(hWindow: HWND; Msg: UINT; WParam: WPARAM;
+LParam: LPARAM): LRESULT; stdcall;
+var
+AMsg: TMessage;
+begin
+Result := 0;
+AMsg.Msg := hWindow;
+AMsg.WParam := WParam;
+AMsg.LParam := LParam;
+AMsg.Result := 0;
+case Msg of
+//-------------  WM_CREATE  -----------------------------------
+WM_CREATE: OnCreate(AMsg);
+//-------------  WM_COMMAND  ----------------------------------
+WM_COMMAND: OnCommand(AMsg);
+//-------------  WM_DESTROY  ----------------------------------
+WM_DESTROY: OnDestroy(AMsg);
+//-------- そのほかのメッセージの処理 ------
+else begin
+result := DefWindowProc( hWindow, Msg, wParam, lParam );
+end;
+end; // case
+end;
+//------------------------------------------------------------
+//             Main Procedure
+//------------------------------------------------------------
+begin
+MakeMainWindow(@MainWndProc);
+Halt(MessageLoopNormal);
+end.
+GenericMenu.zip(9.952kB)
+GenericMenu が作るウィンドウのメニューバーには3つの項目がある。(右図)このうち、File と Help 項目をクリックするとドロップダウンメニューが開くが、 真ん中の Test! 項目はドロップダウンメニューを開かずに直ちに実行され、システムブザーが鳴る。 このメニューは、WM_CREATE メッセージを処理する OnCreate( ) ハンドラによって作られる。
+procedure OnCreate(var Msg: TMessage);
+var
+hWindow: HWND;
+hM, hMp: HMENU;
+begin
+hWindow := Msg.Msg;
+hM := CreateMenu;
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_EXIT, 'E&xit');
+AppendMenu(hM,MF_POPUP,hMp,'&File');
+AppendMenu(hM, MF_STRING, IDM_TEST, '&Test!');
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_ABOUT, '&About..');
+AppendMenu(hM,MF_POPUP,hMp,'&Help');
+SetMenu(hWindow,hM);
+end;
+このコードと作られたメニューの構造を見比べれば、コードの意味は直ちに理解できるだろう。 CreateMenu API は、パラメータを取らない関数であり、空のメニューを作成してメニューハンドルを返す。 hM を作られるメニュー全体のハンドルとする。 続く三行のコードは、メニューバーに表示される File 項目と、その下のドロップダウン項目の Exit メニューを作成する。 まず 空のメニューを作成してハンドルを hMp に格納する。 つぎにドロップダウン項目を AppendMenu( ) API を使って hMp に追加する。 ドロップダウン項目を作成したら、この hMp ハンドルをメニュー全体のハンドル hM に追加して、hMp のトップレベル項目である File 項目を設定する。 以上が、この三行のコードの意味である。 明らかに、Exit 項目を作成するときと、File 項目を作成するときとでは、AppendMenu( ) が異なる機能を果たしているのが分かるだろう。 AppendMenu( ) は、
+function AppendMenu(hMenu: HMENU;         
+uFlags, 
+uIDNewItem: UINT;
+lpNewItem: PChar): BOOL; stdcall;
+と宣言されている。 hMenu には、追加する対象となるメニューのハンドルを指定する。 Exit 項目のときは hMp 、File 項目のときは hM を指定する。 二番目の uFlag パラメータには、追加される項目の性格と表示形式を指定する。 ここに指定できるのは、 windows.pas に定義されている、
+const
+MF_SEPARATOR = $800;  // セパレータ(横棒)をつくる
+MF_ENABLED = 0;       // 項目が有効(デフォルト)
+MF_GRAYED = 1;        // 項目を淡彩表示
+MF_DISABLED = 2;      // 項目が無効
+MF_UNCHECKED = 0;     // チェックマークを付けない(デフォルト)
+MF_CHECKED = 8;       // チェックマークを付ける
+MF_STRING = 0;        // 項目を文字列で表示(デフォルト)
+MF_BITMAP = 4;        // 項目をビットマップで表示
+MF_OWNERDRAW = $100;  // 項目をオーナードローで表示
+MF_POPUP = $10;       // ポップアップメニューである
+MF_MENUBARBREAK = $20;// メニューバーをを改行して下側に表示する
+MF_MENUBREAK = $40;   // 項目を改行して右側に表示する
+MF_UNHILITE = 0;      // ハイライトしない(デフォルト)
+MF_HILITE = $80;      // ハイライトする
+などである。 メニューには、ビットマップを使って表示したり、ラジオボタンやチェックボックスに似た機能も持たせることができるが、文字列で表示される「普通」のメニューを作るときには、 MF_STRING と MF_POPPUP 、MF_SEPARATOR の三つの定義で十分である。 Exit 項目を追加するときには、 MF_STRING を指定する。 また、クリックされるとドロップダウン項目が開くような項目では、MF_POPUP を指定する。File 項目がこれに相当する。 MF_SEPARATOR は、メニュー項目を分類するときなどで複数のドロップダウンメニューの項目を視覚的に区切るための横線を表示するために指定する。 
+第三パラメータの uIDNewItem には、MF_STRING を第二パラメータに指定した場合は、 メニューIDという符号なし32ビットの任意の整数値を指定する。この数値は、 メニュー項目がマウスやキーボードで選択されたときにどのメニュー項目が選択されたか識別するためにウィンドウ関数に WM_COMMAND メッセージとともに送られる。このメッセージのハンドラでは、通常 case 文を使って識別するので case 文のセレクタとして使える 16ビットの整数を指定すべきである。 Exit 項目では、 グローバルな定数 IDM_EXIT = 200; を指定している。 第二パラメータに MF_POPUP を指定したときは、第三パラメータの uIDNewItem には、この項目が選択されたときに表示するメニューのハンドルを指定する。 File 項目の場合は、直前に作った Exit 項目を含むメニューハンドル hMp を指定する。 
+最後のパラメータは、項目に表示される文字列を指定する。その際、直前に & をつけた英数字は下線を引いて表示され、キーボードのキーからアクセスできる。 例えば、Exit 項目を選択するときは、 [ Alt ] [ f ] [ x ] の順でキーを押す。 キー入力でメニューを選択するユーザはけっこう沢山いるもので、 必ずアクセスキーを定義すること。 日本語のメニューのときは、'終 了(&x)' という風にカッコつきの英字一文字で指定するのが習わしである。 
+OnCreate( ) ハンドラの真ん中のコードは、 hM を指定して直接 Test! 項目を追加する。  選択して直ちに実行されるトップレベルメニュー項目は、そのことをユーザーがあらかじめ知ることができるように、 ! を表示文字列の最後に付けることが慣習になっている。 Help - About... 項目の追加は、File - Exit 項目の追加の仕方と同じである。 選択するとダイアログボックスを表示するメニュー項目の場合は、表示文字列の最後は..を付けることになっている。 以上のコードでつくったメニューのハンドルを、 SetMenu( ) APIを使ってウィンドウに装備する。
+function SetMenu(hWnd: HWND; 
+hMenu: HMENU): BOOL; stdcall;
+hWnd でこのメニューを関連づけるウィンドウのハンドルを指定し、 hMenu でメニューハンドルを指定する。 このようにして、コードによってプログラムのどこからでもメニューを動的に変更することができる。 OnCreate( ) ハンドラでは、メニューハンドルがローカル変数になっているのでこのハンドラを抜けるとメニューハンドルにアクセスできない。 しかし、ウィンドウに装備されているメニューのハンドルは、 GetMenu( ) APIでいつでも取得できる。 このハンドルを使って、項目を追加したり( AppendMenu( ) )削除したり( RemoveMenu( )、DeleteMenu( ))挿入したり( InsertMenu( ) )できる。  また、現在のメニューハンドルを取得してから、新しく作ったメニューを SetMenu( ) で設置し、 以前のメニューを必要に応じて削除して( DestroyMenu( ) )メニューを作り替える事もできる。  ここではこの話題に深入りしないが、 これらのAPI関数の定義を以下に示しておく。 
+function GetMenu(hWnd: HWND): HMENU; stdcall;
+function RemoveMenu(hMenu: HMENU; 
+uPosition, 
+uFlags: UINT): BOOL; stdcall;
+function DeleteMenu(hMenu: HMENU; 
+uPosition, 
+uFlags: UINT): BOOL; stdcall;
+function InsertMenu(hMenu: HMENU; 
+uPosition, 
+uFlags, 
+uIDNewItem: UINT;
+lpNewItem: PChar): BOOL; stdcall;
+function DestroyMenu(hMenu: HMENU): BOOL; stdcall;
+一般に、 CreateXXX( ) APIによってOSから割り当てられたリソースは、使い終わったらコードで削除してメモリを開放する必要がある。 メニューハンドルの場合は DestroyMenu( )で開放するが、 現在ウィンドウに装備されているメニューを解放してはいけない。 このようなメニューは、そのウィンドウが閉じられるときOSによって自動的に解放されるので、 GenericMenu でも OnDestroy( ) では解放していない。 
+メニュー項目が選択されると、OSはそのウィンドウのウィンドウ関数に WM_COMMAND メッセージを送る。Delphi に付属の Win32.hlp では、
+WM_COMMAND 
+wNotifyCode = HIWORD(wParam); // notification code  
+wID = LOWORD(wParam);         // item, control, or accelerator identifier 
+hwndCtl = (HWND) lParam;      // handle of control 
+となっている。 WM_COMMAND メッセージは、メニューだけでなくボタンなどのコントロールやアクセレレータキーからもウィンドウ関数に送られる。 wNotifyCode は、メニュー項目からの場合はゼロ、コントロールからの場合はそのコントロールに起こった出来事を示す数値( notification code という)、アクセレレータからのときは1が設定されている。 wID は、このメッセージを送出したコントロールやメニュー、アクセレレータの識別番号(ID という)である。 メニューの場合は、項目を追加したとき AppendMenu( ) の第三パラメータで指定したメニューIDである。 この定義を見ても、 メニューIDの値は AppendMenu( ) が定義するパラメータの型(UINT)にこだわらずに16ビットの整数にすべきことが分かるだろう。hwndCtl はコントロールの場合は、 そのウィンドウハンドルが設定されている。 メニューとアクセレレータのときはともにゼロにセットされている。 このメッセージを処理する OnCommand( ) ハンドラを示す。
+procedure OnCommand(var Msg: TMessage);
+var
+hWindow: HWND;
+s: string;
+begin
+hWindow := Msg.Msg;
+if Msg.WParamHi=0 then // Menu=0,Accel=1,NotifyCode=Control
+case Msg.WParamLo of
+IDM_EXIT: DestroyWindow(hWindow);
+IDM_TEST: OnTest(hWindow);
+IDM_ABOUT:begin
+s := 'OBJECT PASCAL API PROGRAM '+#13#13+
+'          By  Delphian Inc.,'+#13#13+
+'         Created by Delphi32    '+#13#13;
+MessageBox(hWindow,PChar(s),'About ...',MB_OK);
+end;
+end;
+end;
+各メニュー項目の処理は、 wID に相当する Msg.WParamLo を case 文のセレクタとし、case 定数には項目に対応するメニューIDを指定する。 Exit 項目の処理では、 DestroyWindow( ) APIを用いてこのアプリケーションを閉じる。
+function DestroyWindow(hWnd: HWND): BOOL; stdcall;
+コードでウィンドウを閉じるときには、この関数を使う。 この関数は、hWnd で指定されたウィンドウの子ウィンドウや所有するモードレスダイアログも自動的に解放する。 さらに、ウィンドウ関数に WM_DESTROY メッセージも送る。 
+Test! 項目を選択すると OnTest( ) ハンドラが呼び出され、システムブザーが鳴る。 
+function MessageBeep(uType: UINT): BOOL; stdcall;
+このAPIの唯一のパラメータ uType には以下の定数を指定できる。
+$FFFFFFFF;            
+MB_ICONASTERISK = $00000040;
+MB_ICONEXCLAMATION = $00000030; 
+MB_ICONHAND = $00000010; 
+MB_ICONQUESTION = $00000020; 
+MB_OK = $00000000; 
+数値 $FFFFFFFF がシステムブザーであることを除けば、各定数にはコントロールパネルのサウンドのプロパティーで設定される *.wav ファイルなどの音が出力される。 About..項目では、MessageBox( ) APIを使って定義済みのダイアログを表示する。 この関数は、Delphi の MessageDlg( ) 関数とほとんど同じ働きをする。 
+function MessageBox(hWnd: HWND; 
+lpText, lpCaption: PChar; 
+uType: UINT): Integer; stdcall;
+hWndには、親ウィンドウを指定する。 ゼロにすることもできる。 lpText には表示する文字列を、lpCaption にはタイトルとして表示される文字列を PChar型で指定する。 uType には、表示するアイコンとボタンの種類を以下の定義済み定数の or をとって指定する。
+const
+MB_OK = $00000000; 
+MB_OKCANCEL = $00000001; 
+MB_ABORTRETRYIGNORE = $00000002; 
+MB_YESNOCANCEL = $00000003; 
+MB_YESNO = $00000004; 
+MB_RETRYCANCEL = $00000005; 
+MB_ICONHAND = $00000010; 
+MB_ICONQUESTION = $00000020; 
+MB_ICONEXCLAMATION = $00000030; 
+MB_ICONASTERISK = $00000040; 
+MB_APPLMODAL = $00000000; 
+MB_SYSTEMMODAL = $00001000; 
+MB_TASKMODAL = $00002000; 
+MB_SETFOREGROUND = $00010000; 
+この関数の戻り値は、押されたボタンにより
+const
+IDOK = 1;          	ID_OK = IDOK;
+IDCANCEL = 2;      	ID_CANCEL = IDCANCEL;
+IDABORT = 3;       	ID_ABORT = IDABORT;
+IDRETRY = 4;       	ID_RETRY = IDRETRY;
+IDIGNORE = 5;      	ID_IGNORE = IDIGNORE;
+IDYES = 6;         	ID_YES = IDYES;
+IDNO = 7;          	ID_NO = IDNO;
+が返される。
+この章の目次へ戻る
+2−4  ウィンドウのサイズ・位置・タイトル・背景色
+前節まででウィンドウにメニューが設置され、かなりアプリケーションらしくなってきた。
+本節では、メインウィンドウの位置やサイズ、タイトル、背景色をコードで変更する事を考えよう。
+エクスプローラを使って、新しいフォルダを 0204SizePosTitle という名前でつくる。
+作ったフォルダに、エクスプローラを使って 0203GenericMenu から GenericMenu.dpr と UtilFunc.pas をコピーする。
+コピーした GenericMenu.dpr をダブルクリックして Delphi を立ち上げる。
+コードエディタに GenericMenu.dpr のコードがあることを確認してから、[ファイル]メニューから[プロジェクトに名前を付けて保存]を選んで、SizePosTitle.dpr という名前で保存する。
+コードエディタにフォーカスがあるようにしてから、[ Ctrl ] + [ f.12 ] を押して表示されるダイアログから UtilFunc.pas を選んで OK ボタンを押し、コードエディタにユニットファイルを表示させる。
+コードエディタを編集して、以下のリストになるようにする。
+コンパイルして実行する。
+ウィンドウのサイズや位置を設定するAPIには数種類あるが、ここでは個別に設定できる最も汎用性の高い SetWindowPos( ) 関数を使う事にする。
+function SetWindowPos(hWnd: HWND; 
+hWndInsertAfter: HWND;
+X, Y, cx, cy: Integer; 
+uFlags: UINT): BOOL; stdcall;
+このAPI関数は、ウィンドウの大きさや位置、Zオーダーの変更をするために使われる。 ディスプレイをXY平面に見立てると画面上でウィンドウ同士が互いに重なり合う順序がZオーダーである。ここでは簡単に「画面にウィンドウが表示される順序である」と理解してほしい。 Zオーダーが高いほどウィンドウは画面で上(手前)に表示される。 第一パラメータは操作の対象となるウィンドウのハンドルを指定する。第二パラメータ hWndInsertAfter には、Zオーダーを変更する場合に、すぐ上になるウィンドウのハンドルを指定するか、 以下の定義済み定数を指定する。
+const
+HWND_TOP = 0;       // 一番上に表示
+HWND_BOTTOM = 1;    // 一番下に表示
+HWND_TOPMOST = -1;  // つねに一番上に表示
+HWND_NOTOPMOST = -2;// 一番上から二番目に変更
+uFlag パラメータが SWP_NOZORDER を含むときはこのパラメータは無視される。 X,Y パラメータは、ウィンドウの左上隅の位置をスクリーンの左上隅から右方向・下方向への新しい座標(ピクセル単位)として指定する。 uFlag パラメータが SWP_NOMOVE を含むときはこれらのパラメータは無視される。 cx、cy パラメータはウィンドウの新しい幅と高さを指定する。 uFlag パラメータが SWP_NOSIZE を含むときはこれらのパラメータは無視される。uFlag パラメータには、以下の定数を or 演算子で結合して指定する。
+const
+{ SetWindowPos Flags }
+SWP_NOSIZE = 1;           // サイズを変更しない
+SWP_NOMOVE = 2;           // 位置を変更しない
+SWP_NOZORDER = 4;         // Zオーダーを変更しない
+SWP_NOREDRAW = 8;         // 変更に伴う再描画をしない
+SWP_NOACTIVATE = $10;     // ウィンドウをアクティブにしない
+SWP_FRAMECHANGED = $20;   // WM_NCCALCSIZE を送る  
+SWP_SHOWWINDOW = $40;     // ウィンドウを表示する
+SWP_HIDEWINDOW = $80;     // ウィンドウを隠す
+SWP_NOCOPYBITS = $100;    // クライアント領域のデータを保存しない
+SWP_NOOWNERZORDER = $200;  
+SWP_NOSENDCHANGING = $400;  
+SWP_DRAWFRAME = SWP_FRAMECHANGED;
+SWP_NOREPOSITION = SWP_NOOWNERZORDER;
+SWP_DEFERERASE = $2000; 
+SWP_ASYNCWINDOWPOS = $4000;
+例えば、SWP_NOMOVE or SWP_NOZORDER を指定するとウィンドウの大きさだけを変更できるし、SWP_NOSIZE or SWP_NOZORDER を指定すると位置だけを変更できる。 この関数は、ウィンドウの位置・サイズ・Zオーダー・表示・非表示を同時に変更することができるが、個別の設定をするにはパラメータが多すぎて不便だ。そこで、以下の三つの関数を UtilFunc.pas 定義しておこう。 宣言部には、
+function ChangeWindowPos(hWindow: HWND; x,y: integer):Boolean;
+function ChangeWindowSize(hWindow: HWND; cx,cy: integer):Boolean;
+function ChangeWindowZOrder(hWindow: HWND; hWndInsertAfter: HWND):Boolean;
+とし、実装部を以下のようにする。
+function ChangeWindowPos(hWindow: HWND; x,y: integer):Boolean;
+begin
+result := SetWindowPos(hWindow,0,x,y,0,0,SWP_NOSIZE or SWP_NOZORDER);
+end;
+function ChangeWindowSize(hWindow: HWND; cx,cy: integer):Boolean;
+begin
+result := SetWindowPos(hWindow,0,0,0,cx,cy,SWP_NOMOVE or SWP_NOZORDER);
+end;
+function ChangeWindowZOrder(hWindow: HWND; hWndInsertAfter: HWND):Boolean;
+begin
+result := SetWindowPos(hWindow,hWndInsertAfter,0,0,0,0,SWP_NOSIZE or SWP_NOMOVE);
+end;
+また、ウィンドウを画面の中央に表示する関数と、すでに2−1節で示した方法で背景を描画する関数をつくろう。宣言部は、
+function CenterWindow(hWindow: HWND): Boolean;
+function EraseBkGnd(hWindow: HWND;Clr:COLORREF;DC: HDC):LRESULT;
+として、実装部を以下のようにする。
+function CenterWindow(hWindow: HWND): Boolean;
+var
+r:TRect;
+CSX,CSY,w,h: integer;
+begin
+CSX := GetSystemMetrics(SM_CXSCREEN);
+CSY := GetSystemMetrics(SM_CYSCREEN);
+GetWindowRect(hWindow,r);
+w := r.Right-r.Left;
+h := r.Bottom-r.Top;
+result := ChangeWindowPos(hWindow,(CSX-w) div 2, (CSY-h) div 2);
+end;
+function EraseBkGnd(hWindow: HWND;Clr:COLORREF;DC: HDC):LRESULT;
+var
+hBr: hBrush;
+r: TRect;
+begin
+hBr := CreateSolidBrush(Clr);
+GetClientRect(hWindow,r);
+FillRect(DC,r,hBr);
+DeleteObject(hBr);
+result := 1;
+end;
+CenterWindow( ) では、最初に GetSystemMetrics( )APIを使って、現在のディスプレイの大きさを取得している。
+function GetSystemMetrics(nIndex: Integer): Integer; stdcall;
+この関数は nIndex に様々な定義済み定数を設定すると、システム情報を返してくれる。 定義済み定数には SM_XX の形の70種類以上の定数を設定できる。 以下にその初めの幾つかを示す。
+const
+{ GetSystemMetrics() codes }
+SM_CXSCREEN = 0;
+SM_CYSCREEN = 1;
+SM_CXVSCROLL = 2;
+SM_CYHSCROLL = 3;
+SM_CYCAPTION = 4;
+SM_CXBORDER = 5;
+SM_CYBORDER = 6;
+ここでは、SM_CXSCREEN と SM_CYSCREEN を指定して画面のサイズをピクセル単位で取得している。 次に CenterWindow( ) では、GetWindowRect( ) APIを呼び出してこのウィンドウのサイズを取得している。
+function GetWindowRect(hWnd: HWND; 
+var lpRect: TRect): BOOL; stdcall;
+この関数は、hWnd で示されるウィンドウのサイズを lpRect に設定してくれる。 画面のサイズとウィンドウのサイズが分かったので、中央に表示する位置を計算して、ChangeWindowPos( ) を使って位置を変更している。
+これらの関数を使ってみよう。 SizePosTitle.dpr の全リストを以下に示す。
+program SizePosTitle;
+uses
+windows,
+messages,
+UtilFunc in 'UtilFunc.pas';
+//------------------------------------------------------------
+//             Global Types, Constants and Variables
+//------------------------------------------------------------
+const
+IDM_EXIT = 200;
+IDM_TEST = 201;
+IDM_ABOUT = 202;
+var
+Clr: COLORREF;
+//------------------------------------------------------------
+//             Event Handlers
+//------------------------------------------------------------
+procedure OnCreate(var Msg: TMessage);
+var
+hWindow: HWND;
+hM, hMp: HMENU;
+begin
+hWindow := Msg.Msg;
+Clr := RGB(255,255,255);
+hM := CreateMenu;
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_EXIT, 'E&xit');
+AppendMenu(hM,MF_POPUP,hMp,'&File');
+AppendMenu(hM, MF_STRING, IDM_TEST, '&Test!');
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_ABOUT, '&About..');
+AppendMenu(hM,MF_POPUP,hMp,'&Help');
+SetMenu(hWindow,hM);
+end;
+procedure OnTest(hWindow: HWND);
+begin
+SetWindowText(hWindow,'ウィンドウのタイトル');
+ChangeWindowSize(hWindow,200,150);
+CenterWindow(hWindow);
+Clr := $C0C0A0;
+InvalidateRect(hWindow,nil,true);
+end;
+procedure OnCommand(var Msg: TMessage);
+var
+hWindow: HWND;
+s: string;
+begin
+hWindow := Msg.Msg;
+if Msg.WParamHi=0 then // Menu=0,Accel=1,NotifyCode=Control
+case Msg.WParamLo of
+IDM_EXIT: DestroyWindow(hWindow);
+IDM_TEST: OnTest(hWindow);
+IDM_ABOUT:begin
+s := 'OBJECT PASCAL API PROGRAM '+#13#13+
+'          By  Delphian Inc.,'+#13#13+
+'         Created by Delphi32    '+#13#13;
+MessageBox(hWindow,PChar(s),'About ...',MB_OK);
+end;
+end;
+end;
+procedure OnEraseBkgnd(var Msg: TMessage);
+begin
+Msg.Result := EraseBkGnd(Msg.Msg,Clr,Msg.WParam);
+end;
+procedure OnDestroy(var Msg: TMessage);
+begin
+PostQuitMessage(0);
+end;
+//------------------------------------------------------------
+//             Main Window Procedure
+//------------------------------------------------------------
+function MainWndProc(hWindow: HWND; Msg: UINT; WParam: WPARAM;
+LParam: LPARAM): LRESULT; stdcall;
+var
+AMsg: TMessage;
+begin
+Result := 0;
+AMsg.Msg := hWindow;
+AMsg.WParam := WParam;
+AMsg.LParam := LParam;
+AMsg.Result := 0;
+case Msg of
+//-------------  WM_CREATE  -----------------------------------
+WM_CREATE: OnCreate(AMsg);
+//-------------  WM_COMMAND  ----------------------------------
+WM_COMMAND: OnCommand(AMsg);
+//-------------  WM_ERASEBKGND  -------------------------------
+WM_ERASEBKGND: begin
+OnEraseBkgnd(AMsg);
+result := AMsg.Result;
+end;
+//-------------  WM_DESTROY  ----------------------------------
+WM_DESTROY: OnDestroy(AMsg);
+//-------- そのほかのメッセージの処理 ------
+else begin
+result := DefWindowProc( hWindow, Msg, wParam, lParam );
+end;
+end; // case
+end;
+//------------------------------------------------------------
+//             Main Procedure
+//------------------------------------------------------------
+begin
+MakeMainWindow(@MainWndProc);
+Halt(MessageLoopNormal);
+end.
+SizePosTitle.zip(10.366kB)
+コンパイルして実行し、Test! メニューを選ぶと右図のようにウィンドウのサイズと背景色とタイトルが変更されて、画面の中央に表示される。 
+タイトルは SetWindowText( ) APIで変更する。
+function SetWindowText(hWnd: HWND; 
+lpString: PChar): BOOL; stdcall;
+タイトルを変更するウィンドウを hWnd で指定し、タイトルを PChar 型の lpString に設定する。 ここでは文字列リテラルを指定している。 
+この章の目次へ戻る
+2−5  Skeleton01 プログラム
+この節では、 GenericMenu プログラムを改造して機能的にはまったく同じであるが、 以後のプログラムの土台となる Skeleton(骨格)プログラムを作る。 このプログラムは、 Skeleton01.dpr というプロジェクトファイルとそれから uses される UtilFunc.pas というユニットファイルからできている。 作り方は以下の通りである。
+エクスプローラを使って、新しいフォルダを 0205Skeleton01 という名前でつくる。
+作ったフォルダに、エクスプローラを使って 0204SizePosTitle から GenericMenu.dpr と UtilFunc.pas をコピーする。
+コピーした GenericMenu.dpr をダブルクリックして Delphi を立ち上げる。
+コードエディタに GenericMenu.dpr のコードがあることを確認してから、[ファイル]メニューから[プロジェクトに名前を付けて保存]を選んで、Skeleton01.dpr という名前で保存する。
+コードエディタにフォーカスがあるようにしてから、[ Ctrl ] + [ f.12 ] を押して表示されるダイアログから UtilFunc.pas を選んで OK ボタンを押し、コードエディタにユニットファイルを表示させる。
+コードエディタを編集して、以下のリストになるようにする。
+コンパイルして実行する。
+最初に UtilFunc.pas に幾つかの定数と関数を定義する。 uses 節の直ぐ下に以下のように定数と関数定義を追加する。
+//
+//--------------- Global Types, Constants and Variables ----------
+//
+const
+IDM_EXIT = 200;
+IDM_TEST = 201;
+IDM_ABOUT = 202;
+type
+TTestProc = procedure(hWnd:HWND);
+次に関数を二つ定義する。 宣言部は、
+procedure MakeInitMenu(hWindow: HWND);
+procedure InitMenuCommand(var Msg: TMessage;OnTest:TTestProc);
+とし、実装部は以下のようにする。
+procedure MakeInitMenu(hWindow: HWND);
+var
+hM, hMp: HMENU;
+begin
+hM := CreateMenu;
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_EXIT, 'E&xit');
+AppendMenu(hM,MF_POPUP,hMp,'&File');
+AppendMenu(hM, MF_STRING, IDM_TEST, '&Test!');
+hMp := CreateMenu;
+AppendMenu(hMp,MF_STRING,IDM_ABOUT, '&About..');
+AppendMenu(hM,MF_POPUP,hMp,'&Help');
+SetMenu(hWindow,hM);
+end;
+procedure InitMenuCommand(var Msg: TMessage;OnTest:TTestProc);
+var
+hWindow: HWND;
+s: string;
+begin
+hWindow := Msg.Msg;
+if Msg.WParamHi=0 then // Menu=0,Accel=1,NotifyCode=Control
+case Msg.WParamLo of
+IDM_EXIT: DestroyWindow(hWindow);
+IDM_TEST: OnTest(hWindow);
+IDM_ABOUT:begin
+s := 'OBJECT PASCAL API PROGRAM '+#13#13+
+'          By  Delphian Inc.,'+#13#13+
+'         Created by Delphi 3    '+#13#13;
+MessageBox(hWindow,PChar(s),'About ...',MB_OK);
+end;
+end;
+end;
+これで準備が整ったので、これらをつかってプロジェクトファイルをつくる。 以下に、 Skeleton01.dpr の全リストを示す。
+program Skeleton01;
+uses
+windows,
+messages,
+UtilFunc in 'UtilFunc.pas';
+//------------------------------------------------------------
+//             Global Types, Constants and Variables
+//------------------------------------------------------------
+var
+Clr: COLORREF;
+//------------------------------------------------------------
+//             Event Handlers
+//------------------------------------------------------------
+procedure OnCreate(var Msg: TMessage);
+var
+hWindow: HWND;
+begin
+hWindow := Msg.Msg;
+Clr := RGB(255,255,255);
+MakeInitMenu(hWindow);
+ChangeWindowSize(hWindow,400,300);
+CenterWindow(hWindow);
+end;
+procedure OnTest(hWindow: HWND);
+begin
+MessageBeep($FFFFFFFF);
+end;
+procedure OnCommand(var Msg: TMessage);
+begin
+InitMenuCommand(Msg,OnTest);
+end;
+procedure OnPaint(var Msg: TMessage);
+var
+hWindow: HWND;
+ps: TPaintStruct;
+begin
+hWindow := Msg.Msg;
+BeginPaint(hWindow,ps);
+EndPaint(hWindow,ps);
+end;
+procedure OnEraseBkgnd(var Msg: TMessage);
+begin
+Msg.Result := EraseBkGnd(Msg.Msg,Clr,Msg.WParam);
+end;
+procedure OnDestroy(var Msg: TMessage);
+begin
+PostQuitMessage(0);
+end;
+//------------------------------------------------------------
+//             Main Window Procedure
+//------------------------------------------------------------
+function MainWndProc(hWindow: HWND; Msg: UINT; WParam: WPARAM;
+LParam: LPARAM): LRESULT; stdcall;
+var
+AMsg: TMessage;
+begin
+Result := 0;
+AMsg.Msg := hWindow;
+AMsg.WParam := WParam;
+AMsg.LParam := LParam;
+AMsg.Result := 0;
+case Msg of
+//-------------  WM_CREATE  -----------------------------------
+WM_CREATE: OnCreate(AMsg);
+//-------------  WM_PAINT  ------------------------------------
+WM_PAINT: OnPaint(AMsg);
+//-------------  WM_COMMAND  ----------------------------------
+WM_COMMAND: OnCommand(AMsg);
+//-------------  WM_ERASEBKGND  -------------------------------
+WM_ERASEBKGND: begin
+OnEraseBkgnd(AMsg);
+result := AMsg.Result;
+end;
+//-------------  WM_DESTROY  ----------------------------------
+WM_DESTROY: OnDestroy(AMsg);
+//-------- そのほかのメッセージの処理 ------
+else begin
+result := DefWindowProc( hWindow, Msg, wParam, lParam );
+end;
+end; // case
+end;
+//------------------------------------------------------------
+//             Main Procedure
+//------------------------------------------------------------
+begin
+MakeMainWindow(@MainWndProc);
+Halt(MessageLoopNormal);
+end.
+Skeleton01.zip(10.376kB)
+実行するとウィンドウのサイズと中央に表示される事以外は GenericMenu.dpr と全く同じ動作をする。 将来のプログラムのプロトタイプとなるために、WM_PAINT と WM_ERASEBKGND の処理ハンドラを追加している。 また、メニューをつくったりメニューコマンドの処理は UtilFunc.pas の関数で処理している。
+この章の目次へ戻る
+2−6  呼び出し規約と IntToStr( )
+プログラムコードから手続きや関数を呼び出す場合、手続きや関数へパラメータを渡さなければならない。 このとき、このパラメータの渡し方を指定するのが呼び出し規約である。Delphiの Object Pascalのデフォルトの呼び出し規約は、 register規約である。 パラメータは、左から右に向かう順序でCPUのレジスタを使って渡され、手続きや関数から出るときの後始末(クリーンアップ処理)は関数側で行うことが期待されている。 これに対して、 Win32 のAPIでは、stdcall規約で呼び出す必要がある。 stdcallでは、パラメータは、右から左への順序でスタック(CPUが管理するメモリ領域で、レジスタの内容の一時記憶のためなどにアセンブラレベルで使われる。)を通して渡され、クリーンアップは関数側で行われる。 windows.pas の interface部 にある、APIのヘッダに相当する部分のほとんどは、 stdcall規約で宣言されている。
+windows.pas で宣言されている数多くのAPI関数で、唯一、パスカルコードで実際に使用できないのは、wsprintf( )という API関数である。 この関数は、Object Pascalの Format( ) 関数に相当しており、数値や文字列を書式化する重要な関数である。 似たような関数に wvsprintf( )APIがあるが、これは仕様どおりに動作する。 wsprinf( )を Object Pascal のインタフェースとして適切に実装できないのは、 ひとつには、可変数のパラメータをとることに対するC言語とのインタフェースの違いを吸収するのが難しいことと、もう一つには呼び出し規約の問題があると思われる。 Delphiに付いてくる Win32.hlp からこの関数のCによる宣言を以下に示す。
+int wsprintf(
+LPTSTR  lpOut,	// address of buffer for output 
+LPCTSTR  lpFmt 	// address of format-control string 
+...			// optional arguments
+);
+一方、windows.pas では、
+function wsprintf(Output: PChar; Format: PChar): Integer; stdcall;
+と、宣言されている。 Pascalの宣言には、Cの宣言の optional arguments に相当する部分が無い。実際、コードの中でこの関数を使って optional arguments を記述すると、「実パラメータが多すぎます」とコンパイラに叱られる。 このパラメータを使わないと関数を使用する意味が無いので、事実上、上記の宣言ではこのAPI関数は使えない事になる。 もう一つの問題である呼び出し規約については、ヘルプを読むとこの関数は、cdecl 規約で呼び出すことが必要であることに気づく。 この規約では、 パラメータは右から左への順序でスタックを通して渡されるのは stdcall と同じだが、クリーンアップは呼び出し側で行われる事が違う。 Object Pascal ではこの規約もサポートしているが、上記の宣言は stdcallとなっているので、この点でもインタフェースが適切でないことになる。 以上のことから、optional arguments が一つのとき、interface 部に次のように宣言すればよいことが分かる。
+function wsprintf1(Output,Format: PChar;pr1: integer): Integer; cdecl;
+そして、implementation 部には、
+function wsprintf1; external 'user32.dll' name 'wsprintfA';
+として、実装すればよい。同様に、 optional arguments が 2つ、3つ...の場合も簡単に実装できる。これらのAPI関数を試すために右図のようなアプリケーションをRADで作ろう。 Delphiで、[新規作成]からアプリケーションを選ぶ。 Form1に ボタンを一個とリストボックスを一つ配置する。 新しく 0206RADTestWsprintf というフォルダをつくって、プロジェクトファイルを TestWsprintf.dpr として、ユニットファイルを Main.pas として保存する。 以下に、プログラムリストを示す。
+unit Main;
+interface
+uses
+Windows, Messages, SysUtils, Classes, Graphics, Controls, 
+Forms, Dialogs,StdCtrls;
+type
+TForm1 = class(TForm)
+ListBox1: TListBox;
+Button1: TButton;
+procedure Button1Click(Sender: TObject);
+private
+{ Private 宣言 }
+public
+{ Public 宣言 }
+end;
+function wsprintf1(Output,Format: PChar;pr1: integer):
+Integer; cdecl;
+function wsprintf2(Output,Format: PChar;pr1,pr2: integer):
+Integer; cdecl;
+function wsprintf3(Output,Format: PChar;pr1,pr2,pr3: integer): 
+Integer; cdecl;
+var
+Form1: TForm1;
+implementation
+{$R *.DFM}
+function wsprintf1; external 'user32.dll' name 'wsprintfA';
+function wsprintf2; external 'user32.dll' name 'wsprintfA';
+function wsprintf3; external 'user32.dll' name 'wsprintfA';
+procedure TForm1.Button1Click(Sender: TObject);
+var
+pBuf: PChar;
+s: string;
+i,j: integer;
+begin
+GetMem(pBuf,70);
+Randomize;
+i := Random(1000000)-500000;
+j := wsprintf1(pBuf,'数値 = %d',i);
+SetString(s,pBuf,j);
+ListBox1.Items.Add(IntToStr(i)+' is converted to '+s);
+s := ' は16進数表示では ';
+j := wsprintf3(pBuf,'%d %s $%X',i,integer(PChar(s)),i);
+SetString(s,pBuf,j);
+ListBox1.Items.Add(s);
+ListBox1.Items.Add(' ');
+FreeMem(pBuf);
+end;
+end.
+TestWsprintf.zip(108.685kB)
+ここでは、wsprintf1 と wsprinf3 をテストしている。 文字列をパラメータとするときの型キャストの仕方にも、注目してほしい。 wsprintf( ) APIは、実際に変換された文字数を返す。 書式化を指定する形式文字列の詳細については、上記の Win32.hlp を見てほしい。
+Object Pascalの IntToStr( )関数と IntToHex( )関数は、SysUtils.pas にある。 ここでは、このユニットを使わずに上記の wsprintf1( ) APIを使って、全く同じ仕様を持つ AIntToStr( )関数と AIntToHex( )関数をつくってみる。これらの関数を UtilFunc.pas に追加してテストするプログラムを以下のようにしてつくる。
+エクスプローラを使って、新しいフォルダを 0207MouseMove という名前でつくる。
+作ったフォルダに、エクスプローラを使って 0205Skeleton01 から Skeleton01.dpr と UtilFunc.pas をコピーする。
+コピーした Skeleton01.dpr をダブルクリックして Delphi を立ち上げる。
+コードエディタに Skeleton01.dpr のコードがあることを確認してから、[ファイル]メニューから[プロジェクトに名前を付けて保存]を選んで、MouseMove.dpr という名前で保存する。
+コードエディタにフォーカスがあるようにしてから、[ Ctrl ] + [ f.12 ] を押して表示されるダイアログから UtilFunc.pas を選んで OK ボタンを押し、コードエディタにユニットファイルを表示させる。
+コードエディタを編集して、以下のリストになるようにする。
+コンパイルして実行する。
+最初に UtilFunc.pas の Interface 部の InitMenuCommand( ) 関数の宣言の下に、
+//
+//--------------- utility functions -------------------------------
+//
+function wsprintf1(Output,Format: PChar;pr1: integer): Integer; cdecl;
+function wsprintf2(Output,Format: PChar;pr1,pr2: integer): Integer; cdecl;
+function wsprintf3(Output,Format: PChar;pr1,pr2,pr3: integer): Integer; cdecl;
+function wsprintf4(Output,Format: PChar;pr1,pr2,pr3,pr4: integer): Integer; cdecl;
+function AIntToStr(value: integer):string;
+function AIntToHex(value: Integer; digits: Integer): string;
+を加える。 そして implementation 部の InitMenuCommand( ) の end 文の後に
+//
+//--------------- utility functions -------------------------------
+//
+function wsprintf1; external 'user32.dll' name 'wsprintfA';
+function wsprintf2; external 'user32.dll' name 'wsprintfA';
+function wsprintf3; external 'user32.dll' name 'wsprintfA';
+function wsprintf4; external 'user32.dll' name 'wsprintfA';
+function AIntToStr(value: integer):string;
+var
+i: integer;
+pBuf: PChar;
+begin
+GetMem(pBuf,20);
+i := wsprintf1(pBuf,'%d',value);
+SetString(result,pBuf,i);
+FreeMem(pBuf);
+end;
+function AIntToHex(value: Integer; digits: Integer): string;
+var
+i: integer;
+s: string;
+pBuf: PChar;
+begin
+GetMem(pBuf,20);
+i := wsprintf1(pBuf,'%d',digits);
+SetString(s,pBuf,i);
+s := '%.'+s+'X';
+i := wsprintf1(pBuf,PChar(s),value);
+SetString(result,pBuf,i);
+FreeMem(pBuf);
+end;
+を加える。 AIntToHex( )関数では、digits パラメータを書式文字列に取り込むためにも wsprintf1( )を使っている事に注目してほしい。 たとえば、digits が 4 だとすれば、書式文字列は '%.4X'になるようにしてから、二度目の wsprintf1( ) を呼び出している。 
+以下に MouseMove.dpr の 全リストを示す。
+program MouseMove;
+uses
+windows,
+messages,
+UtilFunc in 'UtilFunc.pas';
+//------------------------------------------------------------
+//             Global Types, Constants and Variables
+//------------------------------------------------------------
+var
+Flag: Boolean;
+//------------------------------------------------------------
+//             Event Handlers
+//------------------------------------------------------------
+procedure OnCreate(var Msg: TMessage);
+var
+hWindow: HWND;
+begin
+hWindow := Msg.Msg;
+MakeInitMenu(hWindow);
+ChangeWindowSize(hWindow,400,300);
+CenterWindow(hWindow);
+Flag := true;
+end;
+procedure OnMouseMove(var Msg: TMessage);
+var
+hWindow: HWND;
+s: string;
+DC: HDC;
+begin
+hWindow := Msg.Msg;
+if Flag then
+s := 'X : '+AIntToStr(Msg.LParamLo) +
+'  Y : '+ AIntToStr(Msg.LParamHi)
+else
+s := 'X : $'+AIntToHex(Msg.LParamLo,1) +
+'  Y : $'+ AIntToHex(Msg.LParamHi,1);
+DC := GetDC(hWindow);
+TextOut( DC, 20, 20,'                      ',22);
+TextOut( DC, 20, 20, PChar(s), Length(s) );
+ReleaseDC(hWindow,DC);
+end;
+procedure OnTest(hWindow: HWND);
+begin
+Flag := not Flag;
+end;
+procedure OnCommand(var Msg: TMessage);
+begin
+InitMenuCommand(Msg,OnTest);
+end;
+procedure OnDestroy(var Msg: TMessage);
+begin
+PostQuitMessage(0);
+end;
+//------------------------------------------------------------
+//             Main Window Procedure
+//------------------------------------------------------------
+function MainWndProc(hWindow: HWND; Msg: UINT; WParam: WPARAM;
+LParam: LPARAM): LRESULT; stdcall;
+var
+AMsg: TMessage;
+begin
+Result := 0;
+AMsg.Msg := hWindow;
+AMsg.WParam := WParam;
+AMsg.LParam := LParam;
+AMsg.Result := 0;
+case Msg of
+//-------------  WM_CREATE  -----------------------------------
+WM_CREATE: OnCreate(AMsg);
+//-------------  WM_MOUSEMOVE ---------------------------------
+WM_MOUSEMOVE: OnMouseMove(AMsg);
+//-------------  WM_COMMAND  ----------------------------------
+WM_COMMAND: OnCommand(AMsg);
+//-------------  WM_DESTROY  ----------------------------------
+WM_DESTROY: OnDestroy(AMsg);
+//-------- そのほかのメッセージの処理 ------
+else begin
+result := DefWindowProc( hWindow, Msg, wParam, lParam );
+end;
+end; // case
+end;
+//------------------------------------------------------------
+//             Main Procedure
+//------------------------------------------------------------
+begin
+MakeMainWindow(@MainWndProc);
+Halt(MessageLoopNormal);
+end.
+MouseMove.zip(10.669kB)
+実行すると図のようになる。 WM_MOUSEMOVE メッセージは、 クライアント領域をマウスが移動すると送られてくる。 
+Delphi付属の Win32.hlp によれば
+WM_MOUSEMOVE 
+fwKeys = wParam;        // key flags 
+xPos = LOWORD(lParam);  // horizontal position of cursor 
+yPos = HIWORD(lParam);  // vertical position of cursor 
+であり、これは前に示した WM_LBUTTONUP と同じである。 OnMouseMove( ) ハンドラでは、Flag の真偽により、UtilFunc.pas に実装した AIntToStr( ) か AIntToHex( ) を使って座標を文字列に変換し、TextOut( ) APIにより出力している。 Test! メニューをクリックすると表示形式を10進数と16進数の間で切り替えられる。 空白を出力する最初の TextOut( ) がどうして必要なのかは、この一行をコメントアウトして実行してみれば分かるだろう。WM_MOUSEMOVE は驚くほど頻繁に送られてくること、さらにクライアント領域のデフォルトのY座標は上から下に向かって増加することをみることができる。
+この章の目次へ戻る
+2−7  まとめ
+本章では、簡単なメッセージを処理するプログラミングスタイルの例を示した。 各メッセージに付随する情報を WParam と LParam から引き出すメッセージクラッキングの手法について説明し、Delphi の Message.pas に定義されているメッセージのレコード型を利用したメッセージクラッキングの簡略法について例示した。 また、コードでメニューを装備し、アプリケーションの雛形となる骨格プログラムを作成した。 wsprintf( ) APIを利用して、IntToStr( ) と IntToHex( ) 関数に対応する関数を作成し、テストした。
+ここまでのプログラムファイル
+Skeleton01.dpr (3 kB)
+UtilFunc.pas (7 kB)
+この章の目次へ戻る
+第2章  メッセージ処理 : ユーザー入力とメニュー - Halbow

@@ -1,0 +1,343 @@
+
+Original: Advocating Against Android Fragments
+by @Piwai
+Translated by @ninjinkun
+Reviewed by @hotchemi
+最近私はDroidcon Parisでテックトーク(フランス語)を行い、SquareがAndroidのFragmentを利用して直面した問題と、Fragmentを避ける方法について説明した。
+2011年に我々は以下の理由でFragmentを使う決断をした。
+この時点で我々はタブレットをサポートしていなかった。しかしいつかは対応することがわかっていた。FragmentトはレスポンシブなUIを作るのを助けてくれる。
+Fragmentはビューコントローラーだ。ビジネスロジックを単位ごとに分離してテスト可能にしてくれる。
+FragmentのAPIはバックスタックのマネジメントを提供してくれる(すなわち一つのActivityの中でActivityスタックの挙動を再現してくれる)
+GoogleがFragmentを推奨していた。我々もスタンダードに従ったコードにしたかった。
+この2011年以来、我々はSquareにとってより良い選択肢を発見した。
+両親がFragmentについて教えてくれなかったこと
+The lolcycle
+AndroidではContextは神オブジェクトだ。そしてActivityはライフサイクルを持っているContextだ。ライフサイクルを持つ神?アイロニックだ。Fragmentは神ではない。しかし非常に複雑なライフサイクルを持っている。
+Steve Pomeryは完全なライフサイクルのダイアグラムを作った。このライフサイクルはわかりにくいだろう。
+Created by Steve Pomeroy, modified to remove the activity lifecycle, shared under the CC BY-SA 4.0 license.
+このライフサイクルは、それぞれのコールバックで何をするべきかを分かりづらくする。同期的に呼ばれるのか、一度にまとめてか?どんな順番で?
+デバッグの難しさ
+アプリの中でバグが起こったとき、何が起こったかを正確に理解するために、デバッガを使ってコードをステップバイステップで実行するだろう。これはたいていうまく行く…FragmentManagerImplに当たるまでは。地雷だ!
+このコードは追いづらくデバッグしづらい。これはバグをきちんと直すのを難しくする。
+switch (f.mState) {
+case Fragment.INITIALIZING:
+if (f.mSavedFragmentState != null) {
+f.mSavedViewState = f.mSavedFragmentState.getSparseParcelableArray(
+FragmentManagerImpl.VIEW_STATE_TAG);
+f.mTarget = getFragment(f.mSavedFragmentState,
+FragmentManagerImpl.TARGET_STATE_TAG);
+if (f.mTarget != null) {
+f.mTargetRequestCode = f.mSavedFragmentState.getInt(
+FragmentManagerImpl.TARGET_REQUEST_CODE_STATE_TAG, 0);
+}
+f.mUserVisibleHint = f.mSavedFragmentState.getBoolean(
+FragmentManagerImpl.USER_VISIBLE_HINT_TAG, true);
+if (!f.mUserVisibleHint) {
+f.mDeferStart = true;
+if (newState > Fragment.STOPPED) {
+newState = Fragment.STOPPED;
+}
+}
+}
+// ...
+}
+回転の際にFragmentがunattachされたのを見たことがあるなら、私の言っていることがわかるだろう。(そして私にFragmentのネストの話を始めさせないでくれ)
+Coding Horrorにあるように、私も今このマンガにリンクされた法則を要求しよう。
+コードの品質を正しく計測する唯一の方法: このクソは何だ? / 分
+数年に渡る綿密な分析の後、私はWTFs/min = 2^fragment countという結論を得た。
+ビューコントローラー?まあちょっと待て
+ビューの作成、バインド、構成などにより、Fragmentはビューに関連したたくさんのコードを含んでいる。これは事実上ビジネスロジックがビューのコードから切り離されていないことを意味している。この事がFragmentに逆らってユニットテストを書くのを難しくしている。
+Fragment トランザクション
+Fragmentトランザクションは複数のFragmentの操作を1つの集合として扱えるようにしてくれる。残念ながらトランザクションのコミットは非同期で、メインスレッドのハンドラキューの最後に詰まれる。これは複数のクリックを受け付ける時や、設定の変更中にアプリを未知の状態にしてしまう。
+class BackStackRecord extends FragmentTransaction {
+int commitInternal(boolean allowStateLoss) {
+if (mCommitted)
+throw new IllegalStateException("commit already called");
+mCommitted = true;
+if (mAddToBackStack) {
+mIndex = mManager.allocBackStackIndex(this);
+} else {
+mIndex = -1;
+}
+mManager.enqueueAction(this, allowStateLoss);
+return mIndex;
+}
+}
+Fragmentを生成する魔法
+Fragmentのインスタンスは、あなたかFragment Managerによって作られる。このコードはとてもわかりやすい。
+DialogFragment dialogFragment = new DialogFragment() {
+@Override public Dialog onCreateDialog(Bundle savedInstanceState) { ... }
+};
+dialogFragment.show(fragmentManager, tag);
+しかしながら、ActivityのInstance Stateが復元されるとき、Fragment Managerはリクレクションを使ってFragmentクラスのインスタンスを再生成しようとする。このDialogFragmentは匿名クラスなので、外側クラスの参照を見えないコンストラクタの引数として持つ。(訳注: 非staticな匿名クラスは外側クラスへの参照を持つ[1][2]。リフレクションで再生成するとこの外側クラスが無くなっているのでクラッシュする)
+android.support.v4.app.Fragment$InstantiationException:
+Unable to instantiate fragment com.squareup.MyActivity$1:
+make sure class name exists, is public, and has an empty
+constructor that is public
+Fragmentから学んだこと
+その欠点にも関わらず、Fragmentはとても有益な授業を教えてくれた。それは今我々がアプリを書く際に再適用できるものだ。
+単一のActivityインターフェイス: 画面毎に1つのActivityを使う必要はない。我々はアプリをウィジェットごとに分け、好きなように組み合わせることができる。これはアニメーションとライフサイクルを簡単にする。我々はウィジェットをビューのコードとコントローラーのコードに分割することができる。
+バックスタックはActivity特有の概念ではない。バックスタックは一つのActivityの中にも実装できる。
+新しいAPIは必要ない。必要なものは全て初めからあった。Activity、ビュー、そしてLayout Infraterだ。
+レスポンシブUI: Fragment vs カスタムビュー
+Fragmentの基本的な例を見てみよう。これはリストと詳細画面のUIを持っている。
+HeadlinesFragmentはとても素直に書かれたリストだ。
+public class HeadlinesFragment extends ListFragment {
+OnHeadlineSelectedListener mCallback;
+public interface OnHeadlineSelectedListener {
+public void onArticleSelected(int position);
+}
+@Override
+public void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setListAdapter(
+new ArrayAdapter<String>(getActivity(),
+R.layout.fragment_list,
+Ipsum.Headlines));
+}
+@Override
+public void onAttach(Activity activity) {
+super.onAttach(activity);
+mCallback = (OnHeadlineSelectedListener) activity;
+}
+@Override
+public void onListItemClick(ListView l, View v, int position, long id) {
+mCallback.onArticleSelected(position);
+getListView().setItemChecked(position, true);
+}
+}
+これは興味深い。ListFragmentActivityは 詳細画面が同じスクリーンにあるかどうかをハンドリングしている。
+public class ListFragmentActivity extends Activity
+implements HeadlinesFragment.OnHeadlineSelectedListener {
+@Override
+public void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.news_articles);
+if (findViewById(R.id.fragment_container) != null) {
+if (savedInstanceState != null) {
+return;
+}
+HeadlinesFragment firstFragment = new HeadlinesFragment();
+firstFragment.setArguments(getIntent().getExtras());
+getFragmentManager()
+.beginTransaction()
+.add(R.id.fragment_container, firstFragment)
+.commit();
+}
+}
+public void onArticleSelected(int position) {
+ArticleFragment articleFrag =
+(ArticleFragment) getFragmentManager()
+.findFragmentById(R.id.article_fragment);
+if (articleFrag != null) {
+articleFrag.updateArticleView(position);
+} else {
+ArticleFragment newFragment = new ArticleFragment();
+Bundle args = new Bundle();
+args.putInt(ArticleFragment.ARG_POSITION, position);
+newFragment.setArguments(args);
+getFragmentManager()
+.beginTransaction()
+.replace(R.id.fragment_container, newFragment)
+.addToBackStack(null)
+.commit();
+}
+}
+}
+カスタムビュー
+ビューだけを使って同じものを実装してみよう
+まず、Containerという概念を導入する。これは要素を表示して、バック操作をハンドリングするものだ。
+Activityは一つのContainerと複数のただのDelegateだけが存在することを前提とする。
+public class MainActivity extends Activity {
+private Container container;
+@Override protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.main_activity);
+container = (Container) findViewById(R.id.container);
+}
+public Container getContainer() {
+return container;
+}
+@Override public void onBackPressed() {
+boolean handled = container.onBackPressed();
+if (!handled) {
+finish();
+}
+}
+}
+リストはかなり短くなる。
+public class ItemListView extends ListView {
+public ItemListView(Context context, AttributeSet attrs) {
+super(context, attrs);
+}
+@Override protected void onFinishInflate() {
+super.onFinishInflate();
+final MyListAdapter adapter = new MyListAdapter();
+setAdapter(adapter);
+setOnItemClickListener(new OnItemClickListener() {
+@Override public void onItemClick(AdapterView<?> parent, View view,
+int position, long id) {
+String item = adapter.getItem(position);
+MainActivity activity = (MainActivity) getContext();
+Container container = activity.getContainer();
+container.showItem(item);
+}
+});
+}
+}
+この実装の肝は、リソース修飾子に基づいて、異なるXMLレイアウトをロードすることだ。
+res/layout/main_activity.xml
+<com.squareup.view.SinglePaneContainer
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:id="@+id/container"
+>
+<com.squareup.view.ItemListView
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+/>
+</com.squareup.view.SinglePaneContainer>
+res/layout-land/main_activity.xml
+<com.squareup.view.DualPaneContainer
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="horizontal"
+android:id="@+id/container"
+>
+<com.squareup.view.ItemListView
+android:layout_width="0dp"
+android:layout_height="match_parent"
+android:layout_weight="0.2"
+/>
+<include layout="@layout/detail"
+android:layout_width="0dp"
+android:layout_height="match_parent"
+android:layout_weight="0.8"
+/>
+</com.squareup.view.DualPaneContainer>
+ここに、これらのContainerのとてもシンプルな実装がある。
+public class DualPaneContainer extends LinearLayout implements Container {
+private MyDetailView detailView;
+public DualPaneContainer(Context context, AttributeSet attrs) {
+super(context, attrs);
+}
+@Override protected void onFinishInflate() {
+super.onFinishInflate();
+detailView = (MyDetailView) getChildAt(1);
+}
+public boolean onBackPressed() {
+return false;
+}
+@Override public void showItem(String item) {
+detailView.setItem(item);
+}
+}
+public class SinglePaneContainer extends FrameLayout implements Container {
+private ItemListView listView;
+public SinglePaneContainer(Context context, AttributeSet attrs) {
+super(context, attrs);
+}
+@Override protected void onFinishInflate() {
+super.onFinishInflate();
+listView = (ItemListView) getChildAt(0);
+}
+public boolean onBackPressed() {
+if (!listViewAttached()) {
+removeViewAt(0);
+addView(listView);
+return true;
+}
+return false;
+}
+@Override public void showItem(String item) {
+if (listViewAttached()) {
+removeViewAt(0);
+View.inflate(getContext(), R.layout.detail, this);
+}
+MyDetailView detailView = (MyDetailView) getChildAt(0);
+detailView.setItem(item);
+}
+private boolean listViewAttached() {
+return listView.getParent() != null;
+}
+}
+これらのContainerを抽象化して、この方法でアプリを作るのを想像するのは難しくない。Fragmentが不要になるだけでなく、コードがより理解しやすくなるのだ。
+ビューとプレゼンター
+カスタムビューは良い感じに動く。しかし我々はビジネスロジックとコントローラーの分離にも熱意を注ぐべきだ。これをプレゼンターと呼ぶ。これはコードを読みやすく、テストし易くする。前の例にあったMyDetailViewは以下の様になる。
+public class MyDetailView extends LinearLayout {
+TextView textView;
+DetailPresenter presenter;
+public MyDetailView(Context context, AttributeSet attrs) {
+super(context, attrs);
+presenter = new DetailPresenter();
+}
+@Override protected void onFinishInflate() {
+super.onFinishInflate();
+presenter.setView(this);
+textView = (TextView) findViewById(R.id.text);
+findViewById(R.id.button).setOnClickListener(new OnClickListener() {
+@Override public void onClick(View v) {
+presenter.buttonClicked();
+}
+});
+}
+public void setItem(String item) {
+textView.setText(item);
+}
+}
+Square Registerのコードから、割引の設定を編集する画面を見てみよう。
+プレゼンターはビューを上位から操作する。
+class EditDiscountPresenter {
+// ...
+public void saveDiscount() {
+EditDiscountView view = getView();
+String name = view.getName();
+if (isBlank(name)) {
+view.showNameRequiredWarning();
+return;
+}
+if (isNewDiscount()) {
+createNewDiscountAsync(name, view.getAmount(), view.isPercentage());
+} else {
+updateNewDiscountAsync(discountId, name, view.getAmount(),
+view.isPercentage());
+}
+close();
+}
+}
+プレゼンターのテストを書くのは楽勝だ。
+@Test public void cannot_save_discount_with_empty_name() {
+startEditingLoadedPercentageDiscount();
+when(view.getName()).thenReturn("");
+presenter.saveDiscount();
+verify(view).showNameRequiredWarning();
+assertThat(isSavingInBackground()).isFalse();
+}
+バックスタックの管理
+バックスタックを管理するのに非同期なトランザクションは必要ない。我々はFlowという小さなライブラリをリリースした。Ray Ryanが既にFlowについて素晴らしいブログ記事を書いてくれている。
+私はFragmentスパゲッティコードの深みの中にいる。どうすれば脱出できる?
+Fragmentを抜け殻にしてしまおう。Fragmentのビューのコードを取り出して、カスタムビュークラスを作るのだ。そしてビジネスロジックをカスタムビューとのやりとりを知っているプレゼンターに押し込もう。するとFraments空っぽに近くなる。カスタムビューをinflateして、自身をプレゼンターと繋ぐ。
+public class DetailFragment extends Fragment {
+@Override public View onCreateView(LayoutInflater inflater,
+ViewGroup container, Bundle savedInstanceState) {
+return inflater.inflate(R.layout.my_detail_view, container, false);
+}
+}
+ここまで来れば、Fragmentを削除できる。
+Fragmentから逃れることは容易ではない。しかし我々はやり切った。 Dimitris KoutsogiorgasとRay Ryanの素晴らしい働きに感謝する。
+DaggerとMortarについては?
+DaggerとMortarはFragmentsと直行している。Fragmentsと一緒でも、一緒でなくても使う事ができる。
+Daggerはアプリをモジュール化して、コンポーネントを分離したグラフにするのを助けてくれる。その結果、依存を抜き出して、1つのことに集中したオブジェクトを書くことが、簡単にできる。
+MotarはDaggerの上で動き、2つの大きな利点を持つ。
+Injectされたコンポーネントにシンプルなライフサイクルコールバックを提供する。これにより、回転した時に破棄されなかったり、プロセスが死んでも状態が保存されて生き残る、シングルトンプレゼンターを書くことができる。
+Daggerのサブグラフを管理し、アクティビティのライフサイクルと紐付けることができる。これにより効率的にスコープの概念を実装できる。ビューが表示され、プレゼンターと依存がサブグラフとして作られる。ビューが消えると、簡単にスコープを破棄してガベージコレクターを動かす事ができる。
+終わりに
+我々はFragmentを徹底的に使い、最終的に考えを変えた。
+我々にとって解明が困難だったクラッシュのうち、最も多かったのがFragmentのライフサイクルに関連したものだった
+我々が必要としていたのは、レスポンシブなUIを構築するためのビューとバックスタック、スクリーン間のトランジションだけだった
+訳注
+原文中のFragmentsは複数表記ですが、日本語の本などで説明される場合は単数表記が多かったので、わかりやすさのため全て単数表記にしました。
+タイトル(Advocating Against Android FragmentsAndroid Fragmentへの反対声明)については結構悩みました。もっと良いタイトルがあればお待ちしています。
+【翻訳】Android Fragmentへの反対声明 - ninjinkun's diary

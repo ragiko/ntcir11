@@ -1,0 +1,18 @@
+
+近年になり、膜タンパク質を構成する構造モチーフとして再挿入型ループが立体構造レベルで明らかになってきた。再挿入型ループは、膜貫通へリックスを繋ぐループであるが、水溶性領域に露出せず、膜内部に相当する位置まで埋没する状態で構造形成し、周りの膜貫通領域ド 
+メインと相互作用している。イオンチャネルやトランスポーターなどの膜タンパク質において、イオンの透過プロセスに重要なPore部分などを形成していることが多く、機能的にも注目されるモチーフである。 
+しかし、特 徴的な配列パターンを持つ場合を除いては、再挿入型ループを配列から予測することは困難で、比較的予測精度が高いとされる膜貫通領域予測プログラム等でも膜貫通領域と誤って予測されることが多い。 
+よって、本研究では、アミノ酸配列から物理化学的な考えに基づいて再挿入型ループを予測するシステムを開発し、既知の膜貫通領域予測プログラムと併用して、ゲノム配列等から再挿入型ループを持つ未知のイオンチャネルやトランスポーターの発見に応用することを目的としている。 
+予測の方針として、(1)再挿入型ループを形成しやすいアミノ酸残基長からいくつかの候補部位を列挙し、それらについて(2)疎水性指標に基 
+づく平均疎水性値、フーリエ解析による両親媒性指標を用いた判別分析により再挿入型ループを予測する方法提案した。 前者については、立体構造既知の膜タンパク質を用いて、原子レベルで埋没度を評価する再挿入型ループプロフィール(図1)作成し、再挿入型ループを定量的に判別した後、アミノ酸残基長との関係を解析した。その結果、15〜37残基間で再挿入型ループが形成しやすいことが明らかになった。 
+後者についても、構造既知のデータを対象とした場合、疎水性指標を用いた判別分析から、再挿入型ループとそれ以外の露出型ループ、膜貫通領域へリックスを約80%の信頼性で判別できる境界線を推定することができた。現在、解析結果から得られた再挿入型ループに適切な残基長、 
+判別分析パラメータに基づくアミノ酸配列からの再挿入型ループ予測システムCLAMP(図2)を構築中で、予測精度の評価、ゲノム解析への応用に取り組んでいる。
+Mitaku, S., Hirokawa, T. & Tsuji, T. (2002) Amphiphilicity index of polar amino acids as an aid in the characterization of amino acid preference at membrane-water interfaces. 
+Bioinformatics 18(4), 608-616.
+Hirokawa, T., Uechi, J., Sasamoto, H., Suwa, M. & Mitaku, S. (2000) A triangle lattice model that predicts transmembrane helix configuration using a polar jigsaw puzzle. 
+Protein Eng. 13(11), 771-778.
+Mitaku, S., Ono, M., Hirokawa, T., Boon-Chieng, S. & Sonoyama, M. (1999) Proportion of membrane proteins in proteomes of 15 single-cell organisms analyzed by the SOSUI prediction system. Biophys. Chem. 82(2-3), 165-171. 
+Mitaku, S. & Hirokawa, T. (1999) Physicochemical factors for discriminating between soluble and membrane proteins: hydrophobicity of helical segments and protein length. Protein Eng. 12(11), 953-957. 
+Hirokawa, T., Boon-Chieng, S. & Mitaku, S. (1998) SOSUI: classification and secondary structure prediction system for membrane proteins. Bioinformatics 14(4), 378-379. 
+Suwa, M., Hirokawa, T. & Mitaku, S. (1995) A continuum theory for the prediction of lateral and rotational positioning of alpha-helices in membrane proteins: bacteriorhodopsin. Proteins 22(4), 363-377. 
+CBRC Research Interests -HIROKAWA, Takatsugu-

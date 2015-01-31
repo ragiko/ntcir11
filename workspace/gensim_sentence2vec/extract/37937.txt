@@ -1,0 +1,251 @@
+
+Common Lisp 入門 
+[ PrevPage | xyzzy Lisp | NextPage ]
+簡易エキスパートシステムの作成 (2)
+パターンマッチングからエキスパートシステムへ
+それでは、Prolog の動作を参考に簡易エキスパートシステムを作成しましょう。Prolog では、述語(引数, ..., 引数). で事実を定義しましたが、これをそのまま Lisp で実現するのは面倒です。そこで、リストを使って次のように表します。
+(述語 引数 ... 引数)
+このほうがパターンマッチングをそのまま適用できるので都合がよいのです。述語はパターン変数以外のシンボルで表します。引数は、シンボル、パターン変数、数値、リスト、とします。それから、今後はパターン変数をたんに「変数」と書くことにします。
+次に規則ですが、Prolog では head :- goal1, goal2, ... goalN. と表しましたが、これも単純なリストで表すことにします。
+(head goal1 goal2 ... goalN)
+リストの先頭が頭部となり、残りが体部となります。ただし、このままでは事実と規則の区別がつかなくなるので、事実と規則を次のように表すことにします。
+事実:((述語 引数 ... 引数))
+規則:((述語 引数 ... 引数) (述語 引数 ... 引数) ... )
+このように、(head) のみの規則を事実とすることにします。
+事実と規則は簡単に取り出せるように、頭部の述語の属性リストに格納することにします。属性名は RULE とします。
+変数の管理方法
+記号のパターンマッチング(2) では、ユニフィケーションを行うプログラムを 2 つ作りました。簡易エキスパートシステムを作成する場合、どちらのユニフィケーションを使ってもよいのですが、今回はスペシャル変数を使った管理方法を採用します。
+拙作の X68000 用 Lisp インタプリタ VTOL で実行した場合、スペシャル変数を使った方が速かったのですが、ほかの Lisp 処理系で試したことはありません。xyzzy Lisp で実行した場合、どのような結果になるのかちょっと興味があります。あとで、束縛リストを使った方法もプログラムしてみようと思っています。
+次に、変数について詳しく検討してみます。ここで注意してもらいたいのが変数の有効範囲です。Prolog の場合、変数は同じ節内でのみ有効です。つまり、局所変数として扱われるのです。このため、Prolog では再帰呼び出しも可能です。たとえば、前回の質問 ?-飛ぶ(Y). の変数を X に変えてみます。
+?-飛ぶ(X).
+head とマッチングする節を探索する
+飛ぶ(X) :- 飛行機(X).      変数 X はこの節内でのみ有効  
+図 1 : Prolog の変数は有効範囲が節の中だけ
+規則 飛ぶ(X) :- 飛行機(X). の変数 X は同じ変数です。ところが、この変数と質問 ?-飛ぶ(X). の X は、名前は同じですが別の変数として扱われるのです。したがって、前回と同じように答えを求めることができます。
+このように、Prolog で行われるパターンマッチングは、同じ名前であっても別の変数として扱うため、厳密な意味でのユニフィケーションを必要としません。関数 unify では、同一変数のチェックを insidep で行いましたが、この処理は不要になります。
+ところが、いいことだけではありません。今度は変数の管理方法が問題になるのです。スペシャル変数を使った変数の管理方法は、同じシンボルを異なる変数として扱うのには適していません。ですが、心配は無用です。とても簡単な方法で回避することができます。それは、節によって異なるシンボルを使用し、変数名が重ならないようにすることです。節を属性リストに登録するとき、変数を新しいシンボルに置換することにしましょう。
+Common Lisp には、パッケージ (package) に登録しないシンボルを生成する関数 gensym があります。
+gensym &optional x
+Common Lisp の場合、シンボルはパッケージで管理されます。パッケージの説明は拙作のページ パッケージの基本的な使い方 をお読みください。gensym は新しいシンボルを生成しますが、そのシンボルはパッケージに登録されません。このようなシンボルを「unintern されたシンボル」とか「uninterned なシンボル」といいます。シンボル名は新しく生成され、'G' とそのあとに 10 進数の数字が続きます。簡単な使用例を示しましょう。
+(setq a (gensym)) => #:G1
+(eq 'G1 a) => nil
+#: は unintern されたシンボルであることを示します。シンボル G1 はパッケージに登録されますが、#:G1 はパッケージに登録されていないので、2 つのシンボルは異なります。したがって、eq で比較しても nil となります。
+このように unintern されたシンボルは、それ以前の S 式で使われているシンボルとは異なります。したがって、節内の変数をこのシンボルで置き換えれば、ほかの節で使う変数と衝突することはなくなります。
+また、オプションパラメータ x に文字列を与えるとシンボル名を変更することができます。
+(gensym "?") => #:?2
+このように、変数の条件を満たすシンボルを生成することができます。Common Lisp には gensym のほかにも unintern されたシンボルを生成する関数があります。
+copy-symbol symbol &optional copy-props
+make-symbol string
+copy-symbol は引数 symbol と同じ名前の unintern されたシンボルを生成します。オプションパラメータ copy-props が真ならば、新しいシンボルの初期値と関数定義は symbol と同じになり、属性リストもコピーされます。
+make-symbol は unintern されたシンボルを生成します。シンボルの名前は引数の string で指定します。値と関数定義は未定義のままで、属性リストは空の状態です。簡単な使用例を示しましょう。
+(setq a (copy-symbol 'bar)) => #:bar
+(setq b (copy-symbol 'bar)) => #:bar
+(eq a 'bar) => nil
+(eq b 'bar) => nil
+(eq a b)    => nil
+(setq a (make-symbol "foo")) => #:foo
+(setq b (make-symbol "foo")) => #:foo
+(eq a 'foo) => nil
+(eq b 'foo) => nil
+(eq a b)    => nil
+このように、copy-symbol や make-symbol でも unintern されたシンボルを生成することができます。
+ところが、節の変数を変えるだけではまだ不十分なのです。再帰呼び出しが行われると同じ節を呼び出すことになり、そこで変数の衝突が発生するからです。これを回避するため、ユニフィケーションを行うところで、節の変数を置き換えることにします。
+この方法だと、再帰呼び出しが行われるたびに新しい変数に置き変わるのでうまく動作します。欠点として、ユニフィケーションを行うたびに変数を置換するので、実行速度が遅くなることです。ここは実行速度よりも、簡単に作れる方法を選ぶことにしましょう。
+変数の置き換えは リストの操作(その2) で説明した関数 sublis を使うと簡単です。まず、節内で使われている変数を集めます。この関数を collect-variable としましょう。
+(collect-variable '((foo ?x ?y) (bar1 ?x) (bar2 ?y))) => (?x ?y)
+次に、この変数と gensym で生成するシンボルの連想リストを作ります。これは mapcar を使えば簡単です。
+(mapcar #'(lambda (x) (cons x (gensym "?"))) '(?x ?y))
+=> ((?x . #:?1) (?y . #:?2))
+あとは、この連想リストと節を sublis に渡せばいいのです。
+(sublis '((?x . #:?1) (?y . #:?2)) '((foo ?x ?y) (bar1 ?x) (bar2 ?y)))
+=> ((foo #:?1 #:?2) (bar1 #:?1) (bar2 #:?2))
+実際のプログラムは節を定義するところで作ります。
+バックトラックの管理
+次は簡易エキスパートシステムの動作について考えてみます。box モデルという Prolog の動作を表す方法を使うとわかりやすいと思います。次の図を見てください。
+Call  Exit  
+実行中の節  
+Fail  Redo
+Call : 起動,   Exit : 失敗
+Redo : 再試行, Fail : 失敗
+図 2 : box モデル
+box モデルは実行中の節をボックスとし、その状態を Call, Redo, Exit, Fail で表します。節が初めて実行されることを Call といいます。このときにボックスが作られます。成功した場合を Exit といい、再試行した場合を Redo といいます。失敗した場合を Fail といい、このときボックスが破壊されます。このボックスに必要な情報を保存しておくことでバックトラックが可能になります。
+それでは、このボックスに対応する構造体を作りましょう。名前は実行環境を格納することから Env としました。
+List 1 : 実行環境の定義
+(defstruct Env
+goal            ; ゴール節
+rule-list       ; 述語に定義されている節
+exec-rule       ; 実行中の節
+exec-env        ; 生成した環境(スタックになる)  
+binding)        ; 束縛した変数
+goal は実行する節が入ります。これとマッチングする節を rule-list から探します。rule-list は Env の実体を生成するときに、述語の属性リストから節を取り出してセットします。exec-rule は現在実行中の節をセットします。rule-list でマッチングした節は、そこから取り出して exec-ruleにセットします。これで、バックトラックした場合でも、同じ節が再び使われることはありません。
+exec-env は、規則の体部を実行するために生成した環境 Env の実体をリストに格納します。したがって、環境 Env は「木構造」になるわけです。つまり、エキスパートシステムが動作することにより Env の木構造が生成され、再試行のときには作られた木構造をたどることで動作するわけです。exec-env はスタックとして動作させるので、環境は実行した順番とは逆に格納されていきます。したがって、再試行のときには exec-env の第 1 要素が、その節で最後に実行された環境となります。
+binding には束縛した変数を格納します。これは再試行のとき、変数束縛をクリアするために使います。
+実際にどのような動作になるか、次の事実と規則を使って具体的に説明します。
+事実 1 : ((foo a)), ((foo b))
+事実 2 : ((bar a)), ((bar b))
+規則 : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+まず、質問として (foo1 ?a ?b) が与えられると、それを解くために Env0 が生成されます。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : ( ((foo1 ?x ?y) (foo ?x) (bar ?y)) )
+exec-rule : nil
+exec-env  : nil
+binding   : nil
+goal には質問 (foo1 ?a ?b) がセットされ、foo1 の属性リストから属性 RULE に格納されている節がセットされます。次に、goal と頭部がマッチングする節を rule-list の中から探します。この場合、節はひとつしかないですが、それがマッチングします。Env0 は次のようになります。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : nil
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+マッチングした節は exec-rule にセットされ、rule-list から削除されます。そして、束縛した変数 ?a と ?b を binding にセットします。ここで、変数 ?a と ?x, ?b と ?y のリンケージがセットされます。
+次に、規則の体部を実行します。まず、(foo ?x) を実行するため新しい環境 Env1 を作り exec-env にセットします。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : (Env1)
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+Env1
+goal      : (foo ?x)                      : (foo ?x)
+rule-list : ( ((foo a)) ((foo b)) )       : ( ((foo b) )
+exec-rule : nil                       =>  : ((foo a))
+exec-env  : nil                           : nil
+binding   : nil                           : (?x)     ; ?x = a
+Env1 は (foo ?x) が goal なので、述語 foo から節を取り出して rule-list にセットします。あとは、この中から goal とマッチングする節を探します。その結果、((foo a)) が exec-rule にセットされて、?x は a に束縛されます。この場合、体部がないので (foo ?x) はマッチング成功となります。
+Env1 が成功したので Env0 に戻り、次の (bar ?y) を実行します。ここでも環境 Env2 を作り exec-env に追加します。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : (Env2 Env1)
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+Env2
+goal      : (bar ?y)                   : (bar ?y)
+rule-list : ( ((bar a)) ((bar b)) )    : ( ((bar b)) )
+exec-rule : nil                     => : ((bar a))
+exec-env  : nil                        : nil
+binding   : nil                        : (?y)        ; ?y = a
+Env2 の動作は Env1 と同じです。その結果、(bar ?y) のマッチングは成功し、?y は a に束縛されます。そのあと Env0 に戻りますが、このあとに実行する体部はありませんので、この規則はマッチング成功となります。したがって、?a = a, ?b = a という結果が得られます。これを box で表すと次のようになります。
+Env0
+Call  Exit  
+(foo1 ?x ?y) (foo ?x) (bar ?y)
+Call                           Exit
+Env1                          Env2
+Exit  Call 
+(foo a)                 (bar a) 
+図 3 : (foo1 ?x ?y)の実行(1)
+プログラムの実行が進むにつれ、ボックスが生成されていくことがわかると思います。
+次に、再試行する様子を見てみましょう。まず exec-env をたどり、最後に実行した環境に移動します。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : (Env2 Env1)
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+Env0 の exec-env から Env2 へ移動します。exec-env はスタックと同じ動作なので、先頭にある環境が最後に実行した環境となります。
+Env2
+goal      : (bar ?y)
+rule-list : ( ((bar b)) )       : nil
+exec-rule : ((bar a))        => : ((bar b))
+exec-env  : nil                 : nil
+binding   : (?y)                : (?y)      ; ?y = b
+Env2 の exec-env は nil なので、これ以上たどるべき環境はありません。そこで、変数束縛をクリアして、goal とマッチングする節を rule-list から探します。すると、((bar b)) とマッチングが成功し、?y は b に束縛されます。
+Env2 がマッチング成功したので Env0 に戻り、この結果 Env0 もマッチング成功となります。その結果、?a = a, ?b = b と表示されます。これを box モデルで表すと、次のようになります。
+Env0
+Exit  
+(foo1 ?x ?y) (foo ?x) (bar ?y)
+Redo
+Exit  
+Env1                      Env2  Redo
+(foo a)                (bar b) 
+別解探索  
+図 4 : (foo1 ?x ?y)の実行(2)
+この場合は Env2 で別解を見つけることができました。それでは、もう一度再試行します。この場合も先ほどと同様に Env0 から再試行します。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : (Env2 Env1)
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+Env2
+goal      : (bar ?y)
+rule-list : nil
+exec-rule : ((bar b))   => 失敗!
+exec-env  : nil
+binding   : (?y)
+Env2 の exec-env は nil なので、これ以上たどるべき環境はありません。そこで、変数束縛をクリアして、goal とマッチングする節を rule-list から探します。ところが、rule-list  は空リスト nil なので探索する節はありません。Env2 は失敗します。そこで Env0 に戻ります。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : (Env1)
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+Env0 では exex-env から失敗した Env2 を削除し、残っている環境 Env1 に移動します。これを box モデルで表すと、次のようになります。
+Env0
+Exit
+(foo1 ?x ?y) (foo ?x) (bar ?y)
+Redo
+Env1                        Env2   Redo
+(foo a)                  (bar ?y) 
+Redo  Fail 
+別解無し => box は消滅  
+図 5 : (foo1 ?x ?y)の実行(3・1)
+失敗した box は消滅してバックトラックするわけです。では、続きの様子を見てみます。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : (Env1)
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+Env1
+goal      : (foo ?x)         : (foo ?x)
+rule-list : ( ((foo b)) )    : nil
+exec-rule : ((foo a))     => : ((foo b))
+exec-env  : nil              : nil
+binding   : (?x)             : (?x)        ; ?x = b
+Env1 の exec-env は nil なので、これ以上たどるべき環境はありません。そこで、変数束縛をクリアして、goal とマッチングする節を rule-list から探します。すると、((foo b)) とマッチングが成功し、?x は b に束縛されます。
+Env1 がマッチング成功したので Env0 に戻り、次の体部 (bar ?y) を実行します。この場合、環境 Env2 を新しく作ることに注意してください。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))
+exec-env  : (Env2 Env1)
+binding   : (?a ?b)          ; ?a = ?x, ?b = ?y
+Env2
+goal      : (bar ?y)                   : (bar ?y)
+rule-list : ( ((bar a)) ((bar b)) )    : ( ((bar b)) )
+exec-rule : nil                     => : ((bar a))
+exec-env  : nil                        : nil
+binding   : nil                        : (?y)       ; ?y = a
+Env2 は新しく作られる環境なので、rule-list には述語 foo の属性リストから節がセットされます。以前実行した環境とは違うことに注意してください。環境は違いますが、動作は同じです。box モデルを見てください。
+Env0
+Exit  
+(foo1 ?x ?y) (foo ?x) (bar ?y)
+Env1                          Env2  Exit
+Exit   Call 
+(foo b)                  (bar a) 
+別解探索                新しい box が作られる  
+図 6 : (foo1 ?x ?y)の実行(3・2)
+Env1 が成功し、新しい box である Env2 が生成されます。そこで、(bar ?y) のマッチングが行われ、その結果 ?y が a に束縛されるので、?a = b, ?b = a になります。ここで再試行すると、Env2 で別解が求められ、?a = b, ?b = b になります。この場合は、Env2 の再試行だけですので簡単ですね。次が最後の再試行になります。
+Env2 の rule-list は空なので再試行は失敗します。そこで、Env0 の exec-env から Env2 を削除し、Env1 へバックトラックします。しかし、Env1 の rule-list も空なので、ここでも再試行に失敗します。その結果、Env0 では Env1 を exec-env から削除します。すると、exec-env は空リスト nil になるので、これ以上バックトラックする環境がなくなります。
+Env0
+goal      : (foo1 ?a ?b)
+rule-list : nil
+exec-rule : ((foo1 ?x ?y) (foo ?x) (bar ?y))  => 失敗
+exec-env  : nil
+binding   : (?a ?b)
+そこで、変数束縛をクリアして、goal とマッチングする規則を rule-list から探すのですが、rule-list は空リスト nil ですね。その結果、Env0 はマッチング失敗となるのです。これを box モデルで表すと、次のようになります。
+Env0
+(foo1 ?x ?y) (foo ?x) (bar ?y)
+Fail  Redo
+Fail                          
+Env1                        Env2  Redo
+(foo ?x)                  (bar ?y) 
+Redo  Fail 
+別解無し => box は消滅        別解無し => box は消滅  
+図 7 : (foo1 ?x ?y)の実行(4)
+再試行しましたが、Env2 では別解が見つからず  Fail となりました。次に Env1 が再試行されましたが、これも別解が見つからず Fail となりました。最後に Env0 に戻りますが、これ以上再試行する節がないので Fail となるのです。
+Copyright (C) 2000-2003 Makoto HiroiAll rights reserved.
+[ PrevPage | xyzzy Lisp | NextPage ]
+M.Hiroi's Home Page / xyzzy Lisp Programming

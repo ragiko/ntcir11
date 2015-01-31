@@ -1,0 +1,814 @@
+
+<assign name="flavor" expr="'chocolate'"/>
+<assign name="document.mycost" expr="document.mycost+14"/>
+name属性
+実装:対応済
+用途:変数名
+省略時:指定必須
+備考:document.xxxおよびapplication.xxxが記述可能.
+expr属性
+実装:対応済
+用途:変数に代入する値
+省略時:指定必須
+備考:ECMAScript式.文字列は'a'のように記述すること.
+7.2  <audio> : 録音されたオーディオをプロンプト内で再生する
+audio要素は,録音されたオーディオをプロンプト内で再生する.
+実装:対応済
+制約:SNDサブモジュールを使用している.現在はhttpによるファイル取得は使用できない.代替テキストには非対応である.
+起源:VoiceXML (Output)
+<prompt>
+当店にようこそ。<audio src="music.wav"/>
+</prompt>
+src属性
+実装:対応済
+用途:オーディオのURI.相対パス指定が許される.
+省略時:指定必須
+備考:
+7.3  <block> : 対話形式ではない処理を実行する
+block要素は,対話形式ではない処理を実行する.
+実装:対応済
+制約:
+起源:VoiceXML (Forms)
+プロンプトや計算に用いられる一連の手続き文であり、入力のためには用いられない。
+blockは(通常は暗黙の)フォーム項目変数を持っており,その値はblockが実行される直前にtrueにセットされる.
+name属性
+実装:対応済
+用途:フォーム項目変数の名前
+省略時:なし
+備考:省略可能
+expr属性
+実装:未対応
+用途:初期値
+省略時:undefined
+備考:
+cond属性
+実装:未対応
+用途:実行条件
+省略時:true
+備考:条件がtrueである場合のみ実行する
+7.4  <break> : 出力に無音区間を挿入する
+break要素は,出力に無音区間を挿入する.
+実装:対応済
+制約:
+起源:SSML (Output)
+time属性
+実装:対応済
+用途:無音継続時間
+省略時:500ms
+備考:1s, 500msなどの表記が許される.単位省略時はmsと解釈される
+size属性
+実装:対応済
+用途:相対的な無音継続時間
+省略時:
+備考:none, small, medium, large
+7.5  <catch> : イベントを捕捉する
+catch要素は,イベントを捕捉する.
+実装:対応済
+制約:event属性にはhelp, noinput, nomatchのいずれか1つを記述できる。
+起源:VoiceXML (Events)
+event属性
+実装:対応済
+用途:捕捉されるイベントを指定する
+省略時:
+備考:NMTOKENS
+count属性
+実装:未対応
+用途:
+省略時:
+備考:
+cond属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.6  <choice> : メニュー項目を定義する
+choice要素は,メニュー項目を定義する.
+実装:対応済
+制約:
+起源:VoiceXML (Menus)
+next属性
+実装:対応済
+用途:次の対話またはドキュメントのURI
+省略時:指定必須
+備考:ドキュメント内のダイアログ(#xxx),ファイル(ローカルおよびHTTP)に対応.
+7.7  <clear> : フィールド項目変数をリセットする
+clear要素は,フィールド項目変数をリセットする.
+実装:対応済
+制約:現在の実装ではnamelistは指定必須
+起源:VoiceXML (Executable statements)
+<clear namelist="city state zip"/>
+namelist属性
+実装:対応済
+用途:リセットされるフォーム項目の名前
+省略時:現在のフォームにおける全てのフォーム項目がクリアされる。
+備考:複数のフォーム変数名を空白区切りで記述.
+7.8  <disconnect> : セッションを切断する
+disconnect要素は,セッションを切断する.
+実装:対応済
+制約:exitと同じ処理を行いる.
+起源:VoiceXML (Telephony)
+7.9  <else> : 条件付き実行におけるelseを定義する
+else要素は,条件付き実行におけるelseを定義する.
+実装:対応済
+制約:if condで条件とした変数をifブロックの中で更新したときに,elseが誤動作する場合がある(詳細はgalatea -pで確認可).
+起源:VoiceXML (Flow control)
+要素if内で使用される.詳細は,if要素を参照すること.
+7.10  <elseif> : 条件付き実行におけるelseifを定義する
+elseif要素は,条件付き実行におけるelseifを定義する.
+実装:対応済
+制約:
+起源:VoiceXML (Flow control)
+要素if内で使用される.詳細は,if要素を参照すること.
+cond属性
+実装:対応済
+用途:elseifの条件(ECMAScript式)
+省略時:指定必須
+備考:XMLの属性値には&&, <, >を直接記述することができない.これらを使用したい場合は&&, <, >のように記述すること.
+7.11  <emphasis> : 音声合成において強調したい箇所を指定する
+emphasis要素は,音声合成において強調したい箇所を指定する.
+実装:対応済
+制約:
+起源:SSML (Output)
+Galatea DMではEMPHとして実装している。
+level属性
+実装:対応済
+用途:
+省略時:
+備考:
+7.12  <enumerate> : メニューの選択項目を列挙する
+enumerate要素は,メニューの選択項目を列挙する.
+実装:未対応
+制約:
+起源:VoiceXML (Menus)
+7.13  <error> : エラー・イベントを捕捉する
+error要素は,エラー・イベントを捕捉する.
+実装:未対応
+制約:
+起源:VoiceXML (Events)
+7.14  <exit> : セッションを終了する
+exit要素は,セッションを終了する.
+実装:対応済
+制約:Galatea DMを終了する
+起源:VoiceXML (Miscellaneous)
+7.15  <field> : 音声認識またはDTMF文法によって値を得るフィールド項目を宣言する
+field要素は,音声認識またはDTMF文法によって値を得るフィールド項目を宣言する.
+実装:対応済
+制約:
+起源:VoiceXML (Forms)
+name属性
+実装:対応済
+用途:フォーム項目としての名前
+省略時:必須項目
+備考:ECMAScriptオブジェクトとして適切な名前であること
+expr属性
+実装:未対応
+用途:
+省略時:
+備考:
+cond属性
+実装:未対応
+用途:
+省略時:
+備考:
+type属性
+実装:未対応
+用途:
+省略時:
+備考:
+slot属性
+実装:未対応
+用途:
+省略時:
+備考:
+modal属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.16  <filled> : 入力フィールドのデータが入力された際に実行される処理を定義する
+filled要素は,入力フィールドのデータが入力された際に実行される処理を定義する.
+実装:対応済
+制約:
+起源:VoiceXML (Filled)
+formおよびfieldの直下で使用できる
+mode属性
+実装:未対応
+用途:
+省略時:
+備考:
+namelist属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.17  <form> : 音声出力およびデータの収集を行う対話を定義する
+form要素は,音声出力およびデータの収集を行う対話を定義する.
+実装:対応済
+制約:
+起源:VoiceXML (Forms)
+form要素に格納される要素
+field
+block
+initial
+filled
+grammar
+var
+id属性
+実装:対応済
+用途:フォームの名前
+省略時:なし
+備考:名前をつけることで外部から参照可能になる.例:<form id="weather"> <goto next="#weather">
+scope属性
+実装:未対応
+用途:フォーム文法のスコープ(dialog, document)
+省略時:dialog
+備考:値がdialogであれば、formの文法はそのフォーム内でのみアクティブである。値がdocumentであれば、formは同じドキュメント内の全ての対話の間でアクティブである。値がdocumentで、そのドキュメントがアプリケーションルートドキュメントなら、formの文法はこのアプリケーションの全てのドキュメント内の全ての対話の間でアクティブである。dialogをscopeの属性値として持つformの文法はそのフォームだけでアクティブである。
+7.18  <goto> : 他のダイアログに移動する
+goto要素は,他のダイアログに移動する.
+実装:対応済
+制約:
+起源:VoiceXML (Miscellaneous)
+next属性
+実装:対応済
+用途:
+省略時:
+備考:
+expr属性
+実装:未対応
+用途:
+省略時:
+備考:
+nextitem属性
+実装:未対応
+用途:
+省略時:
+備考:
+expritem属性
+実装:未対応
+用途:
+省略時:
+備考:
+fetch**属性
+実装:未対応
+用途:
+省略時:
+備考:
+max**属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.19  <help> : ヘルプ・イベントを捕捉する
+help要素は,ヘルプ・イベントを捕捉する.
+実装:対応済
+制約:
+起源:VoiceXML (Events)
+help要素の使用環境
+menu
+field
+cont属性
+実装:未対応
+用途:
+省略時:
+備考:
+count属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.20  <if> : 条件分岐を行う
+if要素は,条件分岐を行う.
+実装:対応済
+制約:
+起源:VoiceXML (Flow control)
+else要素, elseif要素を併用できる.
+<if cond="total > 1000">
+<prompt> お金が足りません。 </prompt>
+</if>
+<if cond="amount < 29.95">
+<assign name="x" expr="amount"/>
+<else/>
+<assign name="x" expr="29.95"/>
+</if>
+<if cond="flavor == 'バニラ'">
+<assign name="flavor_code" expr="'v'"/>
+<elseif cond="flavor == 'チョコレート'"/>
+<assign name="flavor_code" expr="'h'"/>
+<elseif cond="flavor == 'ストロベリー'"/>
+<assign name="flavor_code" expr="'b'"/>
+<else/>
+<assign name="flavor_code" expr="'?'"/>
+</if>
+cond属性
+実装:対応済
+用途:ifの条件(ECMAScript式)
+省略時:指定必須
+備考:XMLの属性値には&&, <, >を直接記述することができない.これらを使用したい場合は&&, <, >のように記述すること.
+7.21  <initial> : フォームの初期化ロジックを宣言する
+initial要素は,フォームの初期化ロジックを宣言する.
+実装:対応済
+制約:現在はblockと同等に扱われる.
+起源:VoiceXML (Forms)
+混合主導型form内の最初のインタラクションを制御する。initial要素中のプロンプトは,フォームレベル文法に合致するユーザの発話を促すように記述されるべきである。initial要素の実行中に、少なくとも1つのフィールド項目変数が認識結果で満たされたとき、initialのフォーム項目変数はtrueになり、したがってFIAの選択肢から消去される.
+7.22  <link> : 他のダイアログやドキュメントへの移動,またはイベントの発生を行う
+link要素は,他のダイアログやドキュメントへの移動,またはイベントの発生を行う.
+実装:未対応
+制約:
+起源:VoiceXML (Miscellaneous)
+7.23  <log> : ログ出力を行う
+log要素は,ログ出力を行う.
+実装:対応済
+制約:
+起源:VoiceXML (Executable statements)
+log要素は実行可能内容であり、prompt要素中には記述できない.value要素を併用することで、変数の値や演算結果をログ出力に含めることができる。出力は音声合成などと同期して行なわれる。
+log要素に格納される要素
+value
+label属性
+実装:対応済
+用途:
+省略時:
+備考:
+expr属性
+実装:対応済
+用途:
+省略時:
+備考:
+7.24  <mark> : 音声合成のブックマークを指定する
+mark要素は,音声合成のブックマークを指定する.
+実装:対応済
+制約:
+起源:SSML (Output)
+現在の仕様では無視されることになっている。
+7.25  <menu> : メニュー形式の対話を行う
+menu要素は,メニュー形式の対話を行う.
+実装:対応済
+制約:
+起源:VoiceXML (Menus)
+id属性
+実装:対応済
+用途:menuの識別子
+省略時:なし
+備考:gotoおよびsubmitによって他の対話から参照される
+scope属性
+実装:未対応
+用途:menuの文法の有効範囲
+省略時:dialog
+備考:dialogの場合,ユーザがmenuに遷移したときだけmenuの文法が有効になる.documentの場合,文法はドキュメント全体で有効である.menuがアプリケーションルートドキュメント内にある場合,アプリケーション全体で文法が有効である.
+dtmf属性
+実装:未対応
+用途:暗黙DTMF付与の指定
+省略時:
+備考:trueの場合,明示的なDTMF要素を持たないchoiceに"1","2"などの暗黙DTMF要素が付与される。
+accept属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.26  <meta> : メタ・データを指定する
+meta要素は,メタ・データを指定する.
+実装:未対応
+制約:
+起源:VoiceXML (Root)
+7.27  <metadata> : RDF(Dublin Core)メタ・データを記述する
+metadata要素は,RDF(Dublin Core)メタ・データを記述する.
+実装:未対応
+制約:
+起源:VoiceXML
+Dublin Core Metadata Initiative, http://purl.org/DC/
+7.28  <noinput> : noinputイベントを捕捉する
+noinput要素は,noinputイベントを捕捉する.
+実装:対応済
+制約:
+起源:VoiceXML (Events)
+7.29  <nomatch> : nomatchイベントを捕捉する
+nomatch要素は,nomatchイベントを捕捉する.
+実装:対応済
+制約:
+起源:VoiceXML (Events)
+7.30  <object> : プラットフォーム固有の機能を提供するモジュールにアクセスする
+object要素は,プラットフォーム固有の機能を提供するモジュールにアクセスする.
+実装:未対応
+制約:
+起源:VoiceXML (Object)
+7.31  <option> : 要素field内でオプションを指定する
+option要素は,要素field内でオプションを指定する.
+実装:未対応
+制約:
+起源:VoiceXML (Forms)
+7.32  <p> : パラグラフを指定する
+p要素は,パラグラフを指定する.
+実装:対応済
+制約:
+起源:SSML (Output)
+paragraphの省略形。Galatea DMはパラグラフが終わるごとに小休止する。
+7.33  <paragraph> : パラグラフを指定する
+paragraph要素は,パラグラフを指定する.
+実装:対応済
+制約:
+起源:SSML (Output)
+省略形はp。Galatea DMはパラグラフが終わるごとに小休止する。
+7.34  <param> : パラメータを指定する
+param要素は,パラメータを指定する.
+実装:未対応
+制約:
+起源:VoiceXML (Resources)
+詳細は,subdialog, object要素を参照すること.
+7.35  <phoneme> : 音声合成において読みを指定する
+phoneme要素は,音声合成において読みを指定する.
+実装:対応済
+制約:
+起源:SSML (Output)
+ph属性
+実装:対応済
+用途:
+省略時:
+備考:PRON SYMと同等
+7.36  <prompt> : プロンプトを定義する
+prompt要素は,プロンプトを定義する.
+実装:対応済
+制約:
+起源:VoiceXML (Output)
+propertyによるデフォルト値の設定は未実装
+count属性
+実装:対応済
+用途:
+省略時:
+備考:
+cond属性
+実装:対応済
+用途:
+省略時:
+備考:
+bargein属性
+実装:対応済
+用途:
+省略時:
+備考:
+timeout属性
+実装:対応済
+用途:
+省略時:VXMLDoc.PromptTimeoutオプション
+備考:
+7.37  <property> : プラットフォームの設定を変更する
+property要素は,プラットフォームの設定を変更する.
+実装:未対応
+制約:
+起源:VoiceXML (Resources)
+7.38  <prosody> : 音声出力の韻律を変更する
+prosody要素は,音声出力の韻律を変更する.
+実装:対応済
+制約:
+起源:SSML (Output)
+PITCH, VOLUMEで実現
+pitch属性
+実装:対応済
+用途:
+省略時:
+備考:
+range属性
+実装:対応済
+用途:
+省略時:
+備考:
+volume属性
+実装:対応済
+用途:
+省略時:
+備考:
+rate属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.39  <record> : ユーザにより録音された音声を値に持つ入力項目を定義する
+record要素は,ユーザにより録音された音声を値に持つ入力項目を定義する.
+実装:未対応
+制約:
+起源:VoiceXML (Forms)
+7.40  <reprompt> : イベントが発生した後でプロンプトを実行することを指定する
+reprompt要素は,イベントが発生した後でプロンプトを実行することを指定する.
+実装:対応済
+制約:
+起源:VoiceXML (Executable statements)
+7.41  <return> : サブダイアログから復帰する
+return要素は,サブダイアログから復帰する.
+実装:未対応
+制約:
+起源:VoiceXML (Flow control)
+7.42  <s> : 文の範囲を示す
+s要素は,文の範囲を示す.
+実装:対応済
+制約:
+起源:SSML (Output)
+sentenceの省略形.Galatea DMは文ごとに分割して音声合成エンジンに命令を送る。分割することによって、発話前の処理時間を短縮できる。
+7.43  <say-as> : 文字列の読み方に関する指示を行う
+say-as要素は,文字列の読み方に関する指示を行う.
+実装:未対応
+制約:
+起源:SSML (Output)
+interpret-as属性
+実装:対応済
+用途:"number", "date", "digits"に対応している。
+省略時:
+備考:"number" | "date" | "digits" | "ordinal" | "cardinal" | "letters" | "words" | "vxml:date" | "vxml:boolean" | "vxml:currency" | "vxml:time" | "vxml:digits" | "vxml:number" | "vxml:phone"
+7.44  <script> : ECMAScriptを音声ブラウザ側で実行する
+script要素は,ECMAScriptを音声ブラウザ側で実行する.
+実装:対応済
+制約:
+起源:VoiceXML (Miscellaneous)
+src属性
+実装:未対応
+用途:
+省略時:
+備考:
+charset属性
+実装:未対応
+用途:
+省略時:
+備考:
+fetch**属性
+実装:未対応
+用途:
+省略時:
+備考:
+max**属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.45  <sentence> : 文の範囲を示す
+sentence要素は,文の範囲を示す.
+実装:対応済
+制約:
+起源:SSML (Output)
+省略形はsである.Galatea DMは文ごとに分割して音声合成エンジンに命令を送る.分割することによって、発話前の処理時間を短縮できる.
+7.46  <subdialog> : サブダイアログとして他の対話を呼び出す
+subdialog要素は,サブダイアログとして他の対話を呼び出す.
+実装:未対応
+制約:
+起源:VoiceXML (Forms)
+関数呼び出しのように,処理中のドキュメント内の他の対話や他のVoiceXMLドキュメントを呼び出し,その結果をECMAScriptのオブジェクトとして受け取る.
+7.47  <submit> : ドキュメント・サーバに値を渡す
+submit要素は,ドキュメント・サーバに値を渡す.
+実装:対応済
+制約:
+起源:VoiceXML (Miscellaneous)
+Galatea Dialog Studio 2.2.0 (080215)よりCookieに対応。
+next属性
+実装:対応済
+用途:
+省略時:必須項目
+備考:
+namelist属性
+実装:対応済
+用途:
+省略時:
+備考:複数のフォーム変数名を空白区切りで記述する
+method属性
+実装:対応済
+用途:POSTまたはGETを指定する。大文字でも小文字でもよい。
+省略時:GET
+備考:Galatea Dialog Manager 2.1.1.2 (070809)にて対応。
+7.48  <throw> : イベントを発生させる
+throw要素は,イベントを発生させる.
+実装:未対応
+制約:
+起源:VoiceXML (Events)
+event属性
+実装:未対応
+用途:
+省略時:
+備考:NMTOKEN
+eventexpr属性
+実装:未対応
+用途:
+省略時:
+備考:Script
+message属性
+実装:未対応
+用途:
+省略時:
+備考:CDATA
+messageexpr属性
+実装:未対応
+用途:
+省略時:
+備考:Script
+7.49  <transfer> : 電話を転送する
+transfer要素は,電話を転送する.
+実装:未対応
+制約:
+起源:VoiceXML (Telephony)
+7.50  <value> : 変数の値を挿入する
+value要素は,変数の値を挿入する.
+実装:対応済
+制約:shadow変数には非対応
+起源:VoiceXML (Output)
+value要素の使用環境
+prompt
+log
+native
+expr属性
+実装:対応済
+用途:
+省略時:
+備考:
+7.51  <var> : 変数を宣言する
+var要素は,変数を宣言する.
+実装:対応済
+制約:
+起源:VoiceXML (Executable statements)
+var要素の使用環境
+vxml
+form
+name属性
+実装:対応済
+用途:
+省略時:
+備考:
+expr属性
+実装:対応済
+用途:
+省略時:undefined
+備考:
+7.52  <voice> : 合成音声を変更する
+voice要素は,合成音声を変更する.
+実装:対応済
+制約:
+起源:SSML (Output)
+VOICEにより実現
+name属性
+実装:対応済
+用途:
+省略時:
+備考:VOICE OPTIONALとして実現
+gender属性
+実装:対応済
+用途:
+省略時:
+備考:male01, female01に対応
+valiant属性
+実装:未対応
+用途:
+省略時:
+備考:
+7.53  <vxml> : VoiceXMLドキュメントのトップ・レベルを指定する
+vxml要素は,VoiceXMLドキュメントのトップ・レベルを指定する.
+実装:対応済
+制約:Galatea DMはVoiceXML 2.0に準拠しているが、versionおよびxmlns要素は無視される.アプリケーション・ルート・ドキュメントに含まれる要素のうちvar以外の要素は無視される.
+起源:VoiceXML (Root)
+version属性
+実装:対応済
+用途:
+省略時:必須項目
+備考:
+application属性
+実装:対応済
+用途:アプリケーション・ルート・ドキュメントのURIを指定する
+省略時:
+備考:相対パス指定が可能。
+xmlns属性
+実装:未対応
+用途:
+省略時:必須項目
+備考:http://www.w3.org/2001/vxml
+xml:base属性
+実装:未対応
+用途:
+省略時:
+備考:
+xml:lang属性
+実装:未対応
+用途:
+省略時:ja
+備考:
+7.54  <alias> : 音声認識文法の別名を指定する
+alias要素は,音声認識文法の別名を指定する.
+実装:未対応
+制約:
+起源:SRGS (???)
+7.55  <example> : 音声認識文法の発話例を指定する
+example要素は,音声認識文法の発話例を指定する.
+実装:未対応
+制約:
+起源:SRGS (User Input)
+7.56  <grammar> : 音声認識文法を指定する
+grammar要素は,音声認識文法を指定する.
+実装:対応済
+制約:
+起源:SRGS (User Input)
+grammar要素の使用環境
+vxml
+form
+field
+choice
+type属性
+実装:対応済
+用途:文法の型式を指定する
+省略時:application/srgs+xml
+備考:Galatea DMでは、application/julianとその省略形julianが使用できる。
+src属性
+実装:対応済
+用途:文法のURIを指定する
+省略時:
+備考:julianの場合は拡張子を除いた文法ファイル名である
+7.57  <item> : 音声認識文法において繰り返しなどを定義する
+item要素は,音声認識文法において繰り返しなどを定義する.
+実装:未対応
+制約:
+起源:SRGS (User Input)
+one-of要素と併用して選択を表現できる。詳細は,one-of要素を参照すること.
+7.58  <lexicon> : 音声認識文法の語彙を定義する
+lexicon要素は,音声認識文法の語彙を定義する.
+実装:未対応
+制約:
+起源:SRGS (User Input)
+7.59  <one-of> : 音声認識文法において選択を定義する
+one-of要素は,音声認識文法において選択を定義する.
+実装:未対応
+制約:
+起源:SRGS (User Input)
+item要素と併用される。詳細は,item要素を参照すること.
+7.60  <rule> : 音声認識文法のルールを定義する
+rule要素は,音声認識文法のルールを定義する.
+実装:対応済
+制約:
+起源:SRGS (User Input)
+id属性
+実装:対応済
+用途:
+省略時:
+備考:
+7.61  <ruleref> : 音声認識文法の外部ルール参照を指定する
+ruleref要素は,音声認識文法の外部ルール参照を指定する.
+実装:対応済
+制約:ローカル参照のみ可能.URIの先頭の#は必要ない。
+起源:SRGS (User Input)
+uri属性
+実装:対応済
+用途:
+省略時:
+備考:
+7.62  <tag> : 音声認識文法の意味タグを指定する
+tag要素は,音声認識文法の意味タグを指定する.
+実装:未対応
+制約:
+起源:SRGS
+token要素のslot/value属性で代用.
+7.63  <token> : 音声認識文法のトークンを指定する
+token要素は,音声認識文法のトークンを指定する.
+実装:対応済
+制約:
+起源:SRGS (User Input)
+文法指定の例:
+<grammar version="1.0" root="#takeout_rule">
+<rule id="takeout_rule">
+<one-of>
+<item> <token sym="まいくてすと"> マイクテスト </token> </item>
+<item> <token sym="はい" slot="takeout" value="y"> はい </token> </item>
+<item> <token sym="ていくあうと" slot="takeout" value="y"> テイクアウト </token> \
+</item>
+<item> <token sym="ていくあうとです" slot="takeout" value="y"> テイクアウトです </token> \
+</item>
+<item> <token sym="もちかえり" slot="takeout" value="y"> 持ち帰り </token> </item>
+<item> <token sym="もちかえりです" slot="takeout" value="y"> 持ち帰りです </token> \
+</item>
+<item> <token sym="いいえ" slot="takeout" value="n"> いいえ </token> </item>
+<item> <token sym="てんない" slot="takeout" value="n"> 店内 </token> </item>
+<item> <token sym="てんないです" slot="takeout" value="n"> 店内です </token> </item>
+</one-of>
+</rule>
+</grammar>
+変換結果例:[temp/takeout_rule.dict]
+0       [silB:] silB
+1       [silE:] silE
+2       [マイクテスト]  m a i k u t e s u t o
+3       [はい@takeout=y]        h a i
+4       [テイクアウト@takeout=y]        t e: k u a u t o
+5       [テイクアウトです@takeout=y]    t e: k u a u t o d e s u
+6       [持ち帰り@takeout=y]    m o ch i k a e r i
+7       [持ち帰りです@takeout=y]        m o ch i k a e r i d e s u
+8       [いいえ@takeout=n]      i: e
+9       [店内@takeout=n]        t e N n a i
+10      [店内です@takeout=n]    t e N n a i d e s u
+phoneme属性
+実装:対応済
+用途:音素表記
+省略時:
+備考:;区切りで記述する
+sym属性
+実装:対応済
+用途:音声認識読み記号
+省略時:
+備考:
+slot属性
+実装:対応済
+用途:スロット名
+省略時:
+備考:Galatea DM 2.0で導入.値を代入したいfieldまたはvarの名前を指定する.
+value属性
+実装:対応済
+用途:指定したスロットに代入するべき値(文字列)を指定する.
+省略時:
+備考:Galatea DM 2.0で導入.
+Galatea Dialog Studio

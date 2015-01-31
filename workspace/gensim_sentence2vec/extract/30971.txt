@@ -1,0 +1,12 @@
+
+Sublime Text をインストールして、いざ日本語を入力すると、変換候補がキュレット(カーソル)のところではなく、よそのところに表示されてしまいます。日本語の変換候補を正しく表示するための方法を説明します。
+日本語を入力すると……
+Sublime Text で日本語を入力すると、変換候補がよそのところに表示されてしまいます。
+Ctrl + Shift + P を押して、Command Pallet を開く(Command Pallet をインストールしていない場合は、恋に落ちる「Sublime Text」のインストール・日本語化を参考にしてインストールしてください)
+「install」と検索して、「Pacage Control: Install Package」を選択する
+インストール可能なパッケージのリストが表示されるので、「ime」と検索して、「IMESupport」を選択する
+IMESupport のインストールが完了すると、日本語の変換候補を正しく表示させることができます。
+参考サイト
+Windows版「Sublime text 2」で日本語をインライン入力する方法 | 株式会社WEB企画スタッフブログ
+Sublime textで日本語変換をインライン入力する方法 - being qua being
+Sublime Text で日本語の変換候補を正しく表示する方法 - 情報系大学生のWebメモ

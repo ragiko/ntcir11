@@ -1,0 +1,340 @@
+
+次へ: 目次
+&nbsp   目次 
+確率的言語モデルによる自由発話認識に関する研究  
+博士(工学)
+村上仁一 
+豊橋技術科学大学
+論文要旨
+確率的言語モデルによる自由発話認識に関する研究 
+日本文音声入力においては、音声の持つ物理的特性に着目した音声認識装置の
+限界を克服するため、日本語の文法や意味を用いた自然言語処理を併用するこ
+との必要性が指摘されている。この場合の言語処理の方法として、多くの言語
+モデルがあるが、大きく分類してルールベースの言語モデルと確率ベースの言
+語モデルがある。
+言語の確率ベースの研究を行なう場合、基本的には大量のテキストデー
+タ量が必要である。英語ではデータベースの重要性が認識されていて古くから
+Brown corpusやAP corpusなどがあるが、しかし日本語ではコンピュータに読
+み込める形式で利用できる大量のデータベースが最近まで存在していなかった。
+そのため、確率的な言語モデルの研究は最近まであまり報告されていなった。
+しかし、この状況も新聞記事がCD-ROMで提供されるようになり、国際電気通信
+基礎技術研究所(ATR)が各種対話データを販売するなど、状況
+が変化し始めている。
+そこで、本論文では、日本語において-gramモデルの有効性をシミュレーショ
+ンや実際の音声認識実験などで定量的に示した。また自由発話認識に向けて、自
+由発話の言語的特徴や音響的な特徴を研究した。そして実際に自由発話認識に
+むけた文音声認識のアルゴリズムを提案し、認識実験の結果について述べている。
+各章の内容は以下の通りである。
+第1章では、本論文の目的、動機について述べた。
+第2章では、音声認識システムを実現するために必要
+な要素技術について述べた。音声認識の基本としてHMMが挙げられる。そして、そのパ
+ラメータを学習データに対して尤度を最大にする Baum-Wlech アルゴリズムがある。また、連続
+音声認識の基本アルゴリズムとして,tree-trellisサーチやViterbiサーチ(one-pass
+DP)がある。ただし、実用的な認識アルゴリズムでは、計算量やメモリー量の減少が
+必須である。これらの要素技術について報告した。
+第3章では言語をマルコフモデルで表現するときのデー
+タ量と収束性について研究した。調査項目としては、主にエンロトピーとカバー率
+である。そして、全テキストデータの98%はマルコフモデルで近似できる
+が、残り2%が収束しないことを示した。
+第4章では、日本語におけるかなや漢字、品詞の bigramおよ
+びtrigramの有効性を、新聞記事や医療用X線CTの所見作成、ATRの国際会
+議の予約のタスクにおいて、連続分布HMMと単語trigramを使用して文認識
+について検討し、その有効性を示した。
+第5章では、自由発話認識のアル
+ゴリズムとその実験結果について述べた。自由発話では間投詞や言い淀みや
+言い誤り、言い直しなどが頻繁に出現する。これらの間投詞や言い直しは文
+の全ての場所に出現する可能性がある。そこでこれらの単語をスキップする
+ことで、自由発話の認識が可能になる。実際に、これを実現し、実験結果に
+よりその有効性を示した。
+第6章では、自由発話の特徴について言語的な面と音響
+的な面から研究した。この結果、対話文の50% は「あのー」、「えーと」な
+どの間投詞を含むこと。また、言い直しは約10%に出現することが示された。また、
+4人の話者について朗読発話と自由発話の音響的な違いについて述べた。そし
+て、自由発話は、朗読発話よりも発声が曖昧になるものの。各発話環境で音響モデルを学習すれば、
+あまり大きな音素認識率の差は無いことが示された。
+第7章では、音声情報に含まれている韻律情報の
+情報量について述べた。韻律情報は,継続時間などの多くの要素
+から構成されているが、本章では、この中から特にアクセント句境界の位置お
+よびアクセント核の位置の持つ情報量に焦点を当てて情報量を測定した。実験
+の結果、アクセント句境界の位置がアクセント情報が持つ情報量は 5.16bitで
+あることが示された。
+第8章では、異なる  個の信
+号源より生成された信号系列が、どの信号源から生成されたのかを分割・識別
+する問題について述べた。そして、応用例として複数話者発話の識別をあげ、
+Ergodic HMMを用いた問題の解決方法を提示した。この実験の結果、複数話者
+発話の識別においては341ms程度の長時間窓分析したLPCケプストラムを用いる
+ことにより、より良好な識別性能が得られること、および尤度の高いモデルを
+選択することにより平均識別率は向上することが得られた。
+第9章では、Ergodic HMMを利用した確率付ネットワー
+ク文法の自動学習について述べた。Ergodic HMMと確率つきネットワーク文法
+が類似した構造を持ち、同種のパラメータで表現される。また、大量のテキス
+トデータを利用してHMMのパラメータをBaum-Welch アルゴリズムで学習できる。
+実際の会話から作成した単語列をErgodic HMMに学習させて、確率つきネット
+ワーク文法を自動的に抽出することを試みた。その結果、Ergodic HMMの構造
+は学習データの特徴をとらえた文法的特徴を示しており、単語を文中での機
+能によって分類して出力していることがわかった。さらに、得られたErgodic
+HMMを言語モデルとして連続音声認識に用いた。この認識実験の結果、単語
+bigramよりも高い性能が得られ、提案したアルゴリズムの有効性が示された。
+第 10 章では、本論文の成果をまとめ、今後の研究課題
+について述べた。
+ABSTRACT
+Study of Spontaneous Speech Recognition based on Stochastic Language Modeling
+There are two types of natural language modeling.  One covers the class of
+deterministic models like network grammar or context free grammar, that
+exploit some known specific properties of the language. The other includes
+the class of statistical models like bigram or trigram in which one tries to
+characterize the statistical properties of the corpus. These statistical
+models include stochastic context free grammar and Markov process, a sort of
+non-deterministic finite state automaton.
+A lot of text data is needed to study statistical language models.  In
+English, the Brown corpus and AP corpus are well known.  However, such
+sources for Japanese have only just been created.  As one example, newspapers
+are now available on CD-ROM.
+In this paper, we describe stochastic language modeling with emphasis on the
+bigram model and trigram model. We also describe the efficiency of these
+models for continuous speech recognition. Moreover, a spontaneous speech
+recognition system based on stochastic language models is described.
+Chapter 1 describes the background, motivation, and
+special features of this study.
+In Chapter 2, we outline some common speech
+recognition models and algorithms like one-pass Viterbi decoding, HMM, and
+the Baum-Welch algorithm.
+In Chapter 3, we study -gram modeling for language
+processing, especially in terms of entropy and cover rates.
+In Chapter 4, we study the effectiveness of bigrams and
+trigrams of Kana, Kanji, and part-of-speech.
+And we carried out an
+experiment for newspapers and X-ray CT scanning reports, ATR
+international conference tasks, respectively.
+In Chapter 5, we describe a
+spontaneous speech recognition algorithm based on word trigram
+models. Focusing on spontaneous speech recognition, we propose a skip phone
+procedure to handle the many filled pauses and false starts observed in
+spontaneous speech.  Even though the proposed method employs a simple
+procedure, we obtain a 47.7% sentence recognition rate for spontaneous
+speech. Including semantically correct sentences, the sentence recognition
+rate is about 75%.
+In Chapter 6, we present a preliminary study of
+spontaneous speech recognition, describing both the acoustic and linguistic
+characteristics of spontaneous speech. A preliminary study was done to
+compare spontaneous and read speech.  In hand-labeled spontaneous speech, the
+labeling uncertainty increased by about 50%.  A phoneme recognition
+experiment yielded a two fold increase in the error rate.  Filled pauses
+appeared in 40% of 11,000 sentences of spontaneous speech utterances and
+false starts were found in 10% of the sentences.
+In Chapter 7, we investigate the amount of information contained by accents in speech signals. It is very difficult to measure the amount of information in accents because these concepts are not clearly defined. Therefore, Kana-Kanji translations are used. First, the number of Kanji candidates that are translated using syllable information is counted.  Second, the number of Kanji candidates that are translated using syllable and accent information is counted. Their ratio indicates that the amount of information in accents is 5.16 bits. Although this quantity is small compared to Japanese syllables, it is important for speech recognition.
+In Chapter 8, we consider signals
+that originate from a number of sources.  As an application of a multiple
+signal source identification problem, an experiment is performed on unknown
+speaker identification.  The results indicate that the model is sensitive to
+the initial values of the Ergodic HMM and that employing the long-distance
+LPC cepstrum is effective for signal preprocessing.
+In Chapter 9, we investigate statistical network grammar
+using Ergodic Hidden Markov Model(HMM). HMM is very rich in mathematical
+structure so that language models are determined more precisely than that
+with stochastic network grammar or Markov processes. In this chapter, we
+develop a statistical network grammar automatically from about 4000 words
+using Ergodic HMM.  The resultant model indicates that some grammatical
+features exist even though the process was automatic.
+Finally, in Chapter 10, we summarize our work
+and describe open or further problems.
+目次
+序論
+研究の背景
+本研究の目的
+論文の構成
+連続音声認識システムに使用するアルゴリズム
+HMM(Hidden Markov Model,隠れマルコフモデル)
+HMMの基本問題
+HMMの基本アルゴリズム
+Forward-Backward アルゴリズム
+Forward probability 
+Backward probability
+Baum-Welch アルゴリズム
+Viterbi アルゴリズム
+スケーリング
+連続分布型HMM
+HMMのエントロピー
+連続音声認識のアルゴリズム 
+tree-trellisサーチ 
+Viterbi サーチ ( one-pass DP ) 
+tree-trellisサーチとViterbiサーチの比較 
+アルゴリズムの改良
+ビームサーチ 
+ビームの絞り方
+近接したフレームにおける言語モデルの類似性の利用
+単語trigramの値の検索方法
+対数の加算の計算方法
+音素HMM 
+遅延言語処理 
+Viterbi サーチにおけるN-bestサーチ 
+Viterbiサーチの経路計算
+単語のtrigramを使用したときのViterbiサーチ 
+まとめ 
+日本語の-gramによるモデル化
+新聞記事
+新聞記事における音節のマルコフ連鎖確率の収束率
+新聞記事における漢字仮名文字のマルコフ連鎖確
+率の収束率
+新聞記事における品詞のマルコフ連鎖確率の収束
+率
+X線CT所見作成のデータ
+X線CT所見作成における音節のマルコフ連鎖確率の収束率
+X線CT所見作成における漢字仮名のマルコフ連鎖確率の収束率
+X線CT所見作成における単語のマルコフ連鎖確率の収束率
+ATRの国際会議のデータベース
+ATRの国際会議における単語trigramの値の収束率
+まとめ
+-gram を用いた音声認識 
+trigramの有効性について
+実験システムの構成
+日本文音声認識の処理手順
+文節処理の方法
+文節候補生成アルゴリズム
+音節選出型文節処理のアルゴリズム
+直接選出型文節処理のアルゴリズム
+両アルゴリズムの違いについて
+実験条件
+実験結果
+考察 
+まとめ
+単語のHMMとbigramを利用した文節音声認識
+認識単位を単語とした文節音声認識
+文節音声認識実験
+実験結果
+考察
+まとめ
+tree-trellisサーチと単語のtrigramモデルを用いた文音声認識
+単語のtrigramモデルを用いた文音声認識実験
+認識アルゴリズム
+実験条件
+実験結果
+ポーズの処理
+ポーズのスキップ(言語モデルにおける処理)
+ポーズのHMMの学習(音響モデルにおける処理)
+ポーズ処理をしたときの実験の結果
+各種パラメータの検討
+ビーム幅
+音響尤度と言語の連鎖確率の結合値
+text-open data における認識率
+単語のtrigramの値を平滑化した場合の認識率
+考察
+まとめ
+まとめ
+自由発話の音声認識 
+間投詞や言い直しの対策 
+garbageモデル(音響モデルによる対策)
+音素スキップ (言語モデルによる対策)
+自由発話の文認識実験条件
+自由発話の音声データ
+単語のtrigramの平滑化 
+自由発話の文認識実験結果
+考察
+まとめ
+自由発話音声における音響的・言語的な特徴 
+自由発話の言語的な特徴 
+研究に用いたデータベース
+自由発話の文例 
+自由発話の文の長さ 
+自由発話における間投詞および言い直しの出現頻度 
+自由発話における間投詞の種類と出現確率 
+自由発話における言い直しの種類と出現頻度 
+話者ごとの自由発話の言語的な特徴
+話者ごとの間投詞や言い直しの出現頻度 
+間投詞の種類と出現頻度 
+話者ごとの自由発話の音響的な特徴 
+ラベリング作業からみた自由発話 
+融合ラベルの付与率から見た自由発話  
+発話速度からみた自由発話 
+認識精度(phone accuracy)から見た自由発話
+まとめ 
+音声におけるアクセント情報の持つ情報量の考察 
+アクセント情報の持つ情報量の基本的な測定方法
+情報量の定義
+アクセント情報の持つ情報量の基本的な測定方法の考え方
+基本的な測定方法のフローチャート
+漢字ー音素・アクセント変換を利用したアクセント情報の持つ情報量
+の測定方法
+基本的な方法の問題点
+漢字ー音素・アクセント変換を利用した測定方法
+漢字ー音素・アクセント変換を利用した測定方法のフローチャート
+実験結果
+実験条件
+実験結果
+アクセント情報の情報量の値の信頼性
+生成確率によるアクセント句境界の位置の持つ情報量の値
+他の論文におけるアクセント核の位置の持つ情報量の値
+アクセント情報の情報量の値の信頼性について
+考察
+漢字の読みの知識の情報量とアクセント情報の情報
+量の比較
+文法規則の情報とアクセント情報の情報量の比較
+アクセント情報と文法の関係
+音声認識におけるアクセント情報の持つ情報量
+まとめ
+Ergodic HMMを用いた未知・複数信号源クラスタリング問題の検討 
+未知・複数信号源クラスタリング問題
+問題の定式化
+Ergodic HMM を用いた解法
+Ergodic HMM
+HMMのパラメータ推定
+最適状態遷移系列の推定について
+複数話者発話の識別実験
+音声資料
+音響パラメータ
+HMMの初期パラメータ
+識別率の評価方法
+Ergodic HMM による複数話者発話の識別の実験結果
+基本手法の実験結果
+話者特徴量と長時間窓分析
+コードブックサイズ
+対数尤度に対する識別率の変化
+初期モデルの選択
+考察
+まとめ
+Ergodic HMMを用いた確率付きネットワーク文法の自動獲得
+品詞列を入力とした文節内文法の獲得
+文節データについて
+文節の定義
+文法の複雑さ
+対話データ
+モデル化実験
+Ergodic HMMの解析結果
+モデルからの文法抽出
+まとめ
+単語を入力単位とした日本文文法の自動獲得
+HMMによる言語のモデル化
+言語データ
+Ergodic HMMを用いた確率つきネットワーク文法の自動獲得の実験
+実験結果
+Ergodic HMMの解析
+文の平均尤度およびモデルのエントロピー
+連続音声認識への適用
+実験条件
+実験結果
+初期パラメータの違いによるモデルの変化
+考察
+まとめ
+メモリ量および計算量を削減したBaum-Welchアルゴリズムの提案と言語モデルへの適用
+メモリ量および計算量を削減したBaum-Welchアルゴリズム
+Ergodic HMMを用いた確率つきネットワーク文法の獲得
+実験条件
+状態数と値を持つシンボル出力の数
+エントロピー
+連続音声認識実験
+実験条件
+実験結果
+考察
+まとめ
+まとめ
+結論
+文献目録
+品詞の出現頻度
+8状態Ergodic HMMの特徴
+16状態Ergodic HMMの特徴
+この文書について...
+次へ: 目次
+&nbsp   目次 
+Jin'ichi Murakami
+平成13年1月5日
+確率的言語モデルによる自由発話認識に関する研究

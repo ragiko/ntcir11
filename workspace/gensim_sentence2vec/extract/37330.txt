@@ -1,0 +1,200 @@
+
+SAK 図書館 
+|
+VB |
+SQL |
+Perl |
+PHP |
+ASP |
+JSP |
+C |
+PC |
+HP |
+FAQ |
+フリーソフト |
+CGI-Perl 基礎編 (その五) 文字列関数 substr、index、split、localtime、crypt
+文字列演算子
+.           文字列の結合
+【例】
+$a = 'abc';
+$b = 'def';
+$c = $a . $b;
+** $c には、'abcdef' がセットされます。
+文字列関数
+lc          小文字に変換
+uc          大文字に変換
+substr      n 番目から n バイトの文字列を切り出し
+length      何バイトあるか数える
+index       指定文字列が何番目から存在するか調べる
+rindex      指定文字列が最後から何番目に存在するか調べる
+sprintf     書式指定変換をする
+chomp       最後の CR/LF 除去
+s           文字変換
+tr          文字変換
+split       セパレータによる文字列分割
+join        配列文字列結合
+reverse     配列反転
+localtime   ローカル時間
+crypt       文字列暗号化
+lc (小文字に変換)
+【例】
+$a = lc('ABC');
+** $a には、'abc' がセットされます。
+uc (大文字に変換)
+【例】
+$a = uc('abc');
+** $a には、'ABC' がセットされます。
+substr (文字列切り出し)
+【例】
+$a = substr('abcdef', 1, 3);
+** $a には、'bcd' がセットされます。
+** 位置は先頭が 0、文字数はバイト単位です。
+length (文字列バイト長)
+【例】
+$i = length('abcdef');
+** $i には、6 がセットされます。
+** 長さはバイト単位です。
+index (文字列検索)
+【例】
+$i = index('abcdef', 'bcd'[, 0]);
+|_ 検索開始位置は省略すると 0
+** $i には、1 がセットされます。
+** 検索結果位置は先頭が 0 です。
+rindex (文字列後方検索)
+【例】
+$i = rindex('abcdab', 'ab');
+** $i には、4 がセットされます。
+** 検索結果位置は先頭が 0 です。
+sprintf (文字列書式フォーマット)
+【例】
+$a = sprintf('a = %06d  b = %04d', 10, 20);
+** $a には、'a = 000010  b = 0020' がセットされます。
+** 書式記号は C 言語と同じみたいです。
+chomp (最後の CR/LF 除去)
+【例】
+$a = chomp("abc\n");
+** $a には、'abc' がセットされます。
+s (文字変換)
+【例】
+$a =~ s/ //g;     #// 半角空白を削除
+$a =~ s/\,/\n/g;  #// カンマを改行に変換
+$a =~ s/a/b/g;    #// a を b に変換
+$a =~ s/\n//g;    #// 改行コードの削除
+$a =~ s/\n/ /g;   #// 改行コードを半角空白に変換
+tr (文字変換)
+【例】
+$a =~ tr/a/b/;    #// a を b に変換
+$a =~ tr/a/b/c;   #// a 以外を b に変換
+$a =~ tr/ab/b/d;  #// a を削除
+$a =~ tr/a//s;    #// a の連続を 1 文字に変換
+split (セパレータによる文字列分割、文字分割)
+【例】
+@a = split(/\,/, "abc\,defg\,hi");
+** @a[0] = 'abc'、@a[1] = 'defg'、@a[2] = 'hi' とセットされます。
+join (配列文字列結合)
+【例】
+@a[0] = 'abc';
+@a[1] = 'defg';
+@a[2] = 'hi';
+$b = join('', @a);
+** $b には、'abcdefghi' がセットされます。
+reverse (配列反転)
+【例】
+@a[0] = 'abc';
+@a[1] = 'defg';
+@a[2] = 'hi';
+@b = reverse(@a);
+** @b[0] = 'hi'、@b[1] = 'defg'、@b[2] = 'abc' とセットされます。
+$s = 'abcdef';
+@w = split(//, $s);
+@w = reverse(@w);
+$s = join('', @w);
+** $s の文字列を反転します。
+localtime (ローカル時間)
+【例】
+($ss, $mn, $hh, $dd, $mm, $yy) = localtime(time);
+$yy += 1900;
+$mm++;
+$dttm = sprintf("%04d.%02d.%02d %02d:%02d:%02d", $yy, $mm, $dd, $hh, $mn, $ss);
+** $dttm には、'2001.01.25 19:00:00' がセットされます。
+(システム日付、システム時間、現在日付取得、現在時刻取得)
+crypt (文字列暗号化)
+【例】
+$s = crypt("abc012", "sk");
+|           |         |_ 英数字 2 文字の暗号化キー
+|           |_ 通常文字列
+|_ 暗号化文字列
+** 暗号化を復元する関数はない。
+従って、パスワードの比較などは、入力パスワードを同暗号化キーで暗号
+化し、暗号化状態で比較する。
+CGI-Perl 基礎編資料
+2000.12.23 CGI-Perl 基礎編 (その一) 注釈、変数、配列、連想配列、演算子、特殊文字
+2000.12.25 CGI-Perl 基礎編 (その二) 制御構造(判定、ループ) if、for、foreach、while
+2001.01.20 CGI-Perl 基礎編 (その三) 標準ファイル I/O open、unlink、opendir、readdir
+2001.01.23 CGI-Perl 基礎編 (その四) 基本事項、ユーザ関数 sub、function、return、my
+2001.01.25 CGI-Perl 基礎編 (その五) 文字列関数 substr、index、split、localtime、crypt
+2001.01.25 CGI-Perl 基礎編 (その六) 数値関数、その他 srand、rand、int、sleep、$ENV
+2001.01.25 CGI-Perl 基礎編 (その七) クッキー Cookie $ENV{'HTTP_COOKIE'}
+2001.09.10 CGI-Perl 基礎編 (その八) 正規表現、マッチパターン、置換演算子、変換演算子
+2002.05.01 CGI-Perl 基礎編 (その九) 電子メール送信 sendmail (jcode.pl 要)
+CGI-Perl 基礎実地編資料
+2001.02.04 CGI-Perl 基礎実地編 - 目次
+2001.02.04 CGI-Perl 基礎実地編 - 用語解説
+2001.02.04 CGI-Perl 基礎実地編 - 実習1 (HTML 出力)
+2001.02.04 CGI-Perl 基礎実地編 - 実習2 (変数埋め込み)
+2001.02.04 CGI-Perl 基礎実地編 - 実習3 (ヒアドキュメント)
+2001.02.04 CGI-Perl 基礎実地編 - 実習4 (制御構造 - if 判定)
+2001.02.04 CGI-Perl 基礎実地編 - 実習5 (制御構造 - for ループ)
+2001.02.04 CGI-Perl 基礎実地編 - 実習6 (制御構造 - while ループ)
+2001.02.04 CGI-Perl 基礎実地編 - 実習7 (リクエスト)
+2001.02.04 CGI-Perl 基礎実地編 - 実習8 (フォームリクエスト)
+2001.02.10 CGI-Perl 基礎実地編 - 実習9 (文字関数、数値関数)
+2001.02.10 CGI-Perl 基礎実地編 - 実習10 (ユーザ関数)
+2001.02.10 CGI-Perl 基礎実地編 - 実習11 (ハロー Perl 作成)
+2001.02.12 CGI-Perl 基礎実地編 - 実習12 (標準ファイル入出力)
+2001.02.12 CGI-Perl 基礎実地編 - 実習13 (フォルダオープン)
+2001.02.12 CGI-Perl 基礎実地編 - 実習14 (画像レスポンス、画像出力、画像表示)
+2001.02.12 CGI-Perl 基礎実地編 - 実習15 (クッキー)
+2001.02.18 CGI-Perl 基礎実地編 - 実習16 (アクセスカウンタ作成)
+CGI-Perl 応用実地編資料
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成1 (投稿フォーム表示)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成2 (投稿パラメタ引き取り)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成3 (投稿内容ファイル書き込み)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成4 (投稿内容チェック整形)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成5 (投稿内容テーブル表示)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成6 (投稿ハンドルクッキー記憶)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成7 (セキュリティ情報取得)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成8 (ファイル排他制御)
+2001.06.26 CGI-Perl 応用実地編 - 簡易伝言板作成9 (スクロール、その他)
+PHP 基礎編資料
+2002.06.01 PHP 基礎編1 - 開発環境、注釈、変数、配列、連想配列、演算子、特殊文字
+2002.06.01 PHP 基礎編2 - 制御構造(判定、ループ) if、switch、for、while、foreach、do
+2002.06.01 PHP 基礎編3 - 標準ファイル I/O fopen、unlink、flock、file、opendir、readdir
+2002.06.01 PHP 基礎編4 - 基本事項、ユーザ関数、function、return、global、static
+2002.06.01 PHP 基礎編5 - 文字列関数 substr、strlen、strpos、split、list、time、crypt
+2002.06.01 PHP 基礎編6 - 数値関数、その他 rand、floor、ceil、round、$REMOTE_ADDR
+2002.06.03 PHP 基礎編7 - フォームリクエスト、クエリーリクエスト、クッキー setcookie
+2002.06.03 PHP 基礎編8 - 配列操作、sort、asort、ksort、array_push、array_shift
+2002.06.03 PHP 基礎編9 - 正規表現、マッチ、置き換え、ereg、eregi、eregi_replace
+2002.06.03 PHP 基礎編10 - ファイルアップロード、インクルードファイル、require
+2002.06.03 PHP 基礎編11 - 電子メール送信 mail、i18n_convert、mb_send_mail
+2002.08.12 PHP 基礎編12 - アクセスカウンタ作成、file_exists、sprintf、filesize、header
+PHP + MySQL 編資料
+2002.06.01 PHP + MySQL 編1 - 項目型、テーブル作成、項目削除、件数制限問い合わせ
+2002.06.03 PHP + MySQL 編2 - RDBMS 接続、ログイン、mysql_connect、mysql_select_db
+2002.06.03 PHP + MySQL 編3 - レコード更新、追加、修正、削除、mysql_affected_rows
+2002.06.03 PHP + MySQL 編4 - 問い合わせレコード参照 mysql_query,mysql_fetch_array
+|
+VB |
+SQL |
+Perl |
+PHP |
+ASP |
+JSP |
+C |
+PC |
+HP |
+FAQ |
+フリーソフト |
+Copyright (C) 1999-2015 Y.SAK
+CGI-Perl 基礎編 (その五) 文字列関数 substr、index、split、localtime、crypt - SAK Streets

@@ -1,0 +1,6 @@
+
+Generate context-dependent phone name from base phone name and its right context phone name. 
+The center phone name of the right context name will be appended to the base phone name. If the phone name already has right context, it will be renamed to the new one.
+Example 1: "a" | "r" -> "a+r"Example 2: "a" | "e-k+i" -> "a+k"Example 3: "k-a" | "e" -> "k-a+e"Example 4: "k-a+e" | "b" -> "k-a+b"Example 5: "k-a+e" | "r-u+k" -> "k-a+u"
+引数:
+Julius: libsent/src/hmminfo/cdhmm.c

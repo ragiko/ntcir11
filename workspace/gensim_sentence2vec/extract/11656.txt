@@ -1,0 +1,126 @@
+日本語を読むための語彙データベース Ver. 1.1 New!
+Vocabulary Database for Reading Japanese
+(VDRJ) Ver. 1.1 
+松下達彦 Tatsuhiko
+Matsushita
+最終更新日: 2011年12月18日Last updated: 18
+Dec 2011
+*TM語彙リストをお持ちの方へ: お手数ですが、語彙データベースの最新版に更新していただけましたら幸いです。データの修正,追加がたくさんあります。
+If you
+have the TM Word List, please
+renew it with VDRJ as many corrections and additions are made. 
+以下の5種類の中から、用途に合うものをダウンロードしてください。 
+Please
+download the database which meets
+with your needs. 
+1)  日本語を読むためのデータベース(研究用)
+Vocabulary Database for Reading Japanese
+(for Research) Ver. 1.1
+Ver. 1,0から、下位コーパスの頻度分布の歪度、尖度、下位コーパスごとの頻度順位とその平均などのデータを追加しました。そのほかにデータの修正はしていません。
+Skewness, kurtosis of the sub-frequency distribution, sub-frequency
+rankings and its mean are added to Ver. 1.0, no other data correction is made. 
+異なり語数141950語を3種類のデータベースに分けて表示。(データベースファイルの拡張子は.xlsxです。Excel 2007以降で開いてください。
+以前のバージョンの場合はコンバーターが必要かもしれません。)
+The database
+which contains 141,950 types is provided as three separate database files. The
+extension of the databases is .xlsx. 
+Please open the
+files by Excel 2007 or a later version. The converter may be necessary with an
+older version. 
+「日本語を読むための語彙データベース(研究用)」Ver 1.1 (141950語)約82MB  は三つのデータベースからできています。
+VDRJ is made up of three databases: Top 60894, Assumed Known Words and
+Narrowly Ranging Words. 
+以下から一つずつダウンロードしてください。
+Please download the databases one by one from links below. 
+重要度順語彙データベース (Top 60894) 重要度順位 00001-60894 (42MB)  VDRJ (Top60894) (42MB)
+想定既知語彙データベース フィラー、記号その他、固有名詞 (16MB)  VDRJ (Assumed Known Words: Proper
+Nouns, Fillers, Signs etc.) (16MB)
+使用範囲狭小語彙データベース (24MB) VDRJ
+(Narrowly Ranging Words) (24MB)
+統計数値など(Statistics
+etc.) 
+日本語教育学会2010年春季大会予稿集発表原稿 =TM語彙リスト(データベースの前身)の簡単な紹介です。
+2)   
+日本語を読むためのデータベース(教師用)
+(14MB)
+Vocabulary Database for Reading
+Japanese (for Teachers) Ver. 1.0
+研究用データベースの重要度順語彙データベースの情報を簡略化したものです。通常の教育用にはこれで十分だと思われます。60894語所収。
+The database is the simplified version of VDRJ for Research
+(Top60894). It would be enough for general educational purposes.
+It contains the top 60894 words. 
+以下の三つは学習者用に簡略化し、説明などをわかりやすくしたものです。
+教師用をさらに簡単にしたものですが,語の配列は,読むためだけでなく,日常生活も考慮されています。
+約20000語。一般用と留学生用があります。やさしい日本語で説明をつけました。
+初級用の Basic 2500 もあります(簡単な英語の説明つき)。
+The databases below are simplified versions of VDRJ with easier
+explanation.
+These are more simplified versions than the database for teachers; 
+however, the words are ordered not only for reading but also for daily
+life use. It contains approx. 20,000 words. 
+There are three types of databases: For General Learners, For International
+Students, and Basic 2500. 
+The first two includes explanations in simple Japanese.  
+Basic 2500, the database for beginners, has a simple English
+explanation.
+3)   
+日本語を勉強する人のための語彙データベース(一般用)
+The Vocabulary
+Database for Learners of Japanese Ver. 1.0 (for General Learners)
+4)   
+日本語を勉強する人のための語彙データベース(留学生用)
+The Vocabulary
+Database for Learners of Japanese Ver. 1.0 (for International Students)
+5)   
+日本語を勉強する人のための語彙データベース:
+Basic 2500
+The Vocabulary
+Database for Learners of Japanese: Basic 2500, Ver. 1.0
+日本語を読むための語彙データベースの特徴
+Features of VDRJ:
+*書籍約2800万語とインターネットフォーラム(「Yahoo知恵袋」)約500万語からなる最新の語彙頻度のリスト。
+--これまで雑誌や新聞に基づくリストはありましたが、書籍の大規模資料に基づくリストはありませんでした。
+--書籍に基づくリストは語種分布の一般性や語の安定度の点で新聞や雑誌に基づくリストより優れています。
+--書籍のみに基づく欠点をインターネットフォーラムの語彙で補っています。
+The
+newest word frequency list made from the book corpus (approx. 28 million
+tokens) and internet forum corpus (5 million tokens). 
+--There have been some
+lists made from magazine or newspaper corpora but no list from a large book
+corpus. 
+--The list made from
+book corpora is better than the lists made from magazine or newspaper corpora
+in terms of the generality of the word-origin distribution and the stability of
+the word. 
+--The short coming from the book corpus
+is compensated by the internet forum vocabulary. 
+*10のサブジャンルの頻度から分散度を計算し、総使用頻度を掛け合わせた重要度係数により語彙をランキング。
+--分散度を加味することにより、使用範囲の偏っている語を高頻度語彙の範囲から取り除いています。
+Dispersion
+is calculated from the sub frequencies in 10 sub corpora. 
+Words
+are ranked by the usage coefficient which is the product of frequency and
+dispersion. 
+--By taking the
+dispersion into account, unevenly distributed words are excluded from the high
+frequency band. 
+*語の配列を考え直し,下位コーパスの頻度に重みづけをすることにより,一般用と留学生用の新たな語彙ランク指標を開発。
+書きことば語彙ランクとあわせて,3種類のランキングが可能。
+--Reordering words by applying different
+weighing to sub frequencies, 
+the new vocabulary
+ranking indices for general learners and international students are developed. 
+Adding word ranking
+for written Japanese together, three types of ranking are possible. 
+*学術テキストの特徴語の指標,レベルを追加し,4大領域の特徴語が抽出可能。
+--Domain-specific
+words in the four science domains can be extracted 
+as the indices and
+levels for the domain-specificity of academic texts are added to the database. 
+*文芸創作テキストの特徴語の候補を抽出。
+--Possible literary
+words are extracted. 
+「松下言語学習ラボ」 へ
+松下達彦「語彙学習・語彙教育のページ」 (日本語学術共通語彙リスト Japanese
+Academic Word List (JAWL)) へ
+

@@ -1,0 +1,733 @@
+
+著書
+Masakiyo Fujimoto, 
+``Integration of statistical model-based voice activity detection and noise suppression for noise robust speech recognition,'' 
+in ``Advances in Robust Speech Recognition Technology,'' Bentham Publishing Services, chapter 1, pp. 1-12, March 2011.
+Masakiyo Fujimoto, Kazuya Takeda, and Satoshi Nakamura, 
+``An evaluation database for in-car speech recognition and its common evaluation framework,'' 
+in ``Computer Processing of Asian Spoken Languages,'' 
+Consideration Books, c/o The Americas Group, chapter 4.4.2, pp. 139-142, March 2010.
+[Page top]
+学術論文
+Tomohiro Nakatani, Shoko Araki, Takuya Yoshioka, Marc Delcroix, and Masakiyo Fujimoto, 
+``Dominance based integration of spatial and spectral features for speech enhancement,'' 
+IEEE Transactions on Audio, Speech and Language Processing, Aug. 2013.
+Marc Delcroix, Keisuke Kinoshita, Tomohiro Nakatani, Shoko Araki, Atsunori Ogawa, Takaaki Hori, Shinji Watanabe, Masakiyo Fujimoto, Takuya Yoshioka, Takanobu Oba, Yotaro Kubo, Mehrez Souden, Seong-Jun Hahm, and Atsushi Nakamura, 
+``Speech recognition in living rooms: Integrated speech enhancement and recognition system based on spatial, spectral and temporal modeling of sounds,'' 
+Computer Speech and Language, vol. 27, pp. 851-873, May 2013.
+Seong-Jun Hahm, Shinji Watanabe, Atsunori Ogawa, Masakiyo Fujimoto, Takaaki Hori, and Atsushi Nakamura, 
+``Proir-shared feature and model space speaker adaptation by consistently employing MAP estimation,'' 
+Speech communication, vol. 55, No. 3, pp. 415-431, Mar. 2013.
+Masakiyo Fujimoto, Shinji Watanabe, and Tomohiro Nakatani, 
+``Frame-wise model re-estimation method based on Gaussian pruning with weight normalization for noise robust voice activity detection,'' 
+Speech communication, vol. 54, no. 2, pp. 229-244, Feb. 2012.
+Takaaki Hori, Shoko Araki, Takuya Yoshioka, Masakiyo Fujimoto, Shinji Watanabe, Takanobu Oba, Atsunori Ogawa, Kazuhiro Otsuka, Dan Mikami, Keisuke Kinoshita, Tomohiro Nakatani, Atsushi Nakamura, and Junji Yamato, 
+``Low-latency real-time meeting recognition and understanding using distant microphones and omni-directional camera,'' 
+IEEE Transactions on Audio, Speech and Language Processing, vol. 20, no. 2, pp. 499-513, Feb. 2012.
+Kentaro Ishizuka, Tomohiro Nakatani, Masakiyo Fujimoto, and Noboru Miyazaki, 
+``Noise robust voice activity detection based on periodic to aperiodic component ratio,'' 
+Speech Communication, vol. 52, no. 1, pp. 41-60, Jan. 2010.
+Hiroko Kato, Kentaro Ishizuka, Masakiyo Fujimoto, 
+``A voice activity detection based on an adjustable linear prediction and GARCH models,'' 
+Speech Communication, vol. 50, no. 6, pp. 476-486, June 2008.
+Masakiyo Fujimoto and Kentaro Ishizuka, 
+``Noise robust voice activity detection based on switching Kalman filter,'' 
+IEICE Transactions on Information and Systems, vol. E91-D, no. 3, pp. 467-477, March 2008.
+加藤 比呂子, 石塚健太郎, 藤本 雅清, 
+``AR-GARCHモデルに基づいた音声区間検出手法の提案,'' 
+電子情報通信学会論文誌, vol. J90-D, no. 12, pp. 3210-3220, Dec. 2007.
+Masakiyo Fujimoto, Kazuya Takeda, and Satoshi Nakamura, 
+``CENSREC-3: An evaluation framework for Japanese speech recognition in real driving-car environments,'' 
+IEICE Transactions on Information and Systems, vol. E89-D, no. 11, pp. 2783-2793, Nov. 2006.
+Masakiyo Fujimoto and Satoshi Nakamura, 
+``A non-stationary noise suppression method based on particle filtering and Polyak averaging,'' 
+IEICE Transactions on Information and Systems, vol. E89-D, no. 3, pp. 922-930, March 2006.
+藤本 雅清, 有木 康雄, 堂下 修司, 
+``マルチモーダルインタラクションによる映像中の人物検索,'' 
+日本音響学会論文誌, vol. 62, no. 3, pp. 182-192, March 2006.
+藤本 雅清, 有木 康雄, 松本 宏, 
+``音声情報と画像情報の統合による商品紹介映像のセグメンテーション,'' 
+電子情報通信学会論文誌, vol. J89-D-II, no. 2, pp. 292-304, Feb. 2006.
+藤本 雅清, 有木 康雄, 
+``GMMとEMアルゴリズムを用いた加法性雑音及び乗法性歪みの抑圧,'' 
+電子情報通信学会論文誌, vol. J88-D-II, no. 7, pp. 1093-1102, July 2005.
+Satoshi Nakamura, Kazuya Takeda, Kazumasa Yamamoto, Takeshi Yamada, Shingo Kuroiwa, Norihide Kitaoka, 
+Takanobu Nishiura, Akira Sasou, Mitsunori Mizumachi, Chiyomi Miyajima, Masakiyo Fujimoto, and Toshiki Endo, 
+``AURORA-2J,  An evaluation framework for Japanese noisy speech recognition,'' 
+IEICE Transactions on Information and Systems, vol. E88-D, no. 3, pp. 535-544, March 2005.
+藤本 雅清, 有木 康雄, 
+``時間領域SVDに基づく音声強調法とGMMに基づく音声信号推定法の併用による雑音下音声認識,'' 
+電子情報通信学会論文誌, vol. J88-D-II, no. 2, pp. 250-265, Feb. 2005.
+有木 康雄, 緒方 淳, 藤本 雅清, 塚田 清志, 
+``音響・言語モデルの適応処理によるスポーツ実況中継の音声認識,'' 
+電子情報通信学会論文誌, vol. J87-D-II, no. 6, pp. 1208-1215, June 2004.
+藤本 雅清, 有木 康雄, 
+``カルマンフィルタに基づく音声信号推定法を用いた雑音環境下での音声認識,'' 
+電子情報通信学会論文誌, vol. 85-D-II, no. 1, pp. 1-11, Jan. 2002.
+[Page top]
+レター
+Masakiyo Fujimoto, Yasuo Ariki, and Shuji Doshita, 
+``Hands-free speech recognition in real environments using microphone array and 2-levels MLLR adaptation as a front-end system for conversational TV,'' 
+Acoustical Science and Technology, vol. 24, no. 6, pp. 379-381, Nov. 2003.
+[Page top]
+国際会議
+Masakiyo Fujimoto, Yotaro Kubo, and Tomohiro Nakatani, 
+``Unsupervised non-parametric Bayesian modeling of non-stationary noise for model-based noise suppression,'' 
+in Proceedings of ICASSP '14, May 2014 (accepted).
+Masakiyo Fujimoto and Tomohiro Nakatani, 
+``Model-based noise suppression using unsupervised estimation of hidden Markov model for non-stationary noise,'' 
+in Proceedings of Interspeech '13, pp. 2982-2986, Aug. 2013.
+Seong-Jun Hahm, Atsunori Ogawa, Marc .Delcroix, Masakiyo Fujimoto, Takaaki Hori, and Atsushi Nakamura, 
+``Feature space variational Bayesian linear regression and its combination with model space VBLR,'' 
+in Proceedings of ICASSP '13, pp. 7898-7902, May 2013.
+Seong-Jun Hahm, Atsunori Ogawa, Masakiyo Fujimoto, Takaaki Hori, and Atsushi Nakamura, 
+``Speaker adaptation using variational Bayesian linear regression in normalized feature space,'' 
+in Proceedings of Interspeech '12, Aug 2012.
+Masakiyo Fujimoto and Tomohiro Nakatani, 
+``A reliable data selection for model-based noise suppression using unsupervised joint speaker adaptation and noise model estimation,'' 
+in Proceedings of ICSPCC '12, pp. 4713-4716, Aug 2012. (invited talk)
+Seong-Jun Hahm, Shinji Watanabe, Masakiyo Fujimoto, Atsunori Ogawa, Takaaki Hori, and Atsushi Nakamura, 
+``Normalization and adaptation by consistently employing MAP estimation,'' 
+in Proceedings of IWSML '12, March 2012.
+Masakiyo Fujimoto, Shinji Watanabe, and Tomohiro Nakatani, 
+``Noise suppression with unsupervised joint speaker adaptation and noise mixture model estimation,'' 
+in Proceedings of ICASSP '12, pp. 4713-4716, March 2012.
+Miquel Espi, Masakiyo Fujimoto, Daisuke Saito, Nobutaka Ono, Shigeki Sagayama, 
+``A tandem connectionist model using combination of multi-scale spectro-temporal features for acoustic event detection,'' 
+in Proceedings of ICASSP '12, pp. 4293-4296, March 2012.
+Tomohiro Nakatani, Takuya Yoshioka, Shoko Araki, Marc Delcroix, Masakiyo Fujimoto, 
+``Logmax observation model with mfcc-based spectral prior for reduction of highly nonstationary ambient noise,'' 
+in Proceedings of ICASSP '12, pp. 4029-4032, March 2012.
+Marc Delcroix, Keisuke Kinoshita, Tomohiro Nakatani, Shoko Araki, Atsunori Ogawa, Takaaki Hori, Shinji Watanabe, Masakiyo Fujimoto, Takuya Yoshioka, Takanobu Oba, Yotaro Kubo, Mehrez Souden, Seong-Jun Hahm, and Atsushi Nakamura, 
+``Speech recognition in the presence of highly non-stationary noise based on spatial, spectral and temporal speech/noise modeling combined with dynamic variance adaptation,'' 
+in Proceedings of The PASCAL CHiME challenge, pp. 12-17, Sept. 2011.
+Masakiyo Fujimoto, Shinji Watanabe, and Tomohiro Nakatani, 
+``A robust estimation method of noise mixture model for noise suppression,'' 
+in Proceedings of Interspeech '11, pp. 697-700, Aug. 2011. 
+Tomohiro Nakatani, Shoko Araki, Marc Delcroix, Takuya Yoshioka, Masakiyo Fujimoto, 
+``Rapidly time-varying ambient noise reduction for robust ASR integrating spectral and locational characteristics of speech and noise,'' 
+in Proceedings of Interspeech '11, pp. 1785-1789, Aug. 2011. 
+Shoko Araki, Takaaki Hori, Takuya Yoshioka, Masakiyo Fujimoto, Shinji Watanabe, Takanobu Oba, Atsunori Ogawa, Kazuhiro Otsuka, Dan Mikami, Keisuke Kinoshita, Tomohiro Nakatani, Atsushi Nakamura, Junji Yamato, 
+``Low-latency meeting recognition and understanding using distant microphones,'' 
+in Proceedings of HSCMA '11, May 2011.
+Masakiyo Fujimoto, Shinji Watanabe, and Tomohiro Nakatani, 
+``Non-stationary noise estimation method based on bias-residual component decomposition for robust speech recognition,'' 
+in Proceedings of ICASSP '11, pp. 4816-4819, May 2011.
+Tomohiro Nakatani, Shoko Araki, Takuya Yoshioka, and Masakiyo Fujimoto, 
+``Joint unsupervised learning of hidden Markov models and source loaction models for multichannel source separation,'' 
+in Proceedings of ICASSP '11, pp. 237-240, May 2011.
+Takaaki Hori, Shoko Araki, Takuya Yoshioka, Masakiyo Fujimoto, Shinji Watanabe, Takanobu Oba, Atsunori Ogawa, Kazuhiro Otsuka, Dan Mikami, Keisuke Kinoshita, Tomohiro Nakatani, Atsushi Nakamura, Junji Yamato, 
+``Real-time meeting recognition and understanding using distant microphones and omni-directional camera,'' 
+in Proceedings of SLT '10, pp. 412-417, Dec. 2010.
+Masakiyo Fujimoto, Shinji Watanabe, Tomohiro Nakatani, 
+``Voice activity detection using frame-wise model re-estimation method based on Gaussian pruning with weight normalization,'' 
+in Proceedings of Interspeech '10, pp. 3102-3105, Sept. 2010.
+Tomohiro Nakatani, Shoko Araki, Takuya Yoshioka, Masakiyo Fujimoto, 
+``Multichannel source separation based on source location cue with log-spectral shaping by hidden Markov source model,'' 
+in Proceedings of Interspeech '10, pp. 2766-2769, Sept. 2010.
+Satoshi Tamura, Chiyomi Miyajima, Norihide Kitaoka, Takeshi Yamada, Satoru Tsuge, Tetsuya Takiguchi, Kazumasa Yamamoto, Takanobu Nishiura, Masato Nakayama, Yuki Denda, Masakiyo Fujimoto, Shigeki Matsuda, Tetsuji Ogawa, Shingo Kuroiwa, Kazuya Takeda, Satoshi Nakamura, 
+``CENSREC-1-AV: An audio-visual corpus for noisy bimodal speech recognition,'' 
+in Proceedings of AVSP '10, Sept. 2010.
+Kentaro Ishizuka, Shoko Araki, Kazuhiro Otsuka, Tomohiro Nakatani, and Masakiyo Fujimoto, 
+``A speaker diarization method based on the probabilistic fusion of audio-visual location information,'' 
+in Proceedings of ICMI-MLMI '09, pp. 55-62, Nov. 2009.
+Masakiyo Fujimoto, Kentaro Ishizuka, and Tomohiro Nakatani, 
+``A study of mutual front-end processing method based on statistical model for noise robust speech recognition,'' 
+in Proceedings of Interspeech '09, pp. 1235-1238, Sept. 2009. 
+Kazuhiro Otsuka, Shoko Araki, Kentaro Ishizuka, Masakiyo Fujimoto, Martin Heinrich, and Junji Yamato, 
+``A real-time multimodal system for analyzing group meetings by combining face pose tracking and speaker diarization,'' 
+in Proceedings of ICMI '08, pp. 257-264, Oct. 2008. 
+Masakiyo Fujimoto, Kentaro Ishizuka, and Tomohiro Nakatani, 
+``Study of integration of statistical model-based voice activity detection and noise suppression,'' 
+in Proceedings of Interspeech '08, pp. 2008-2011, Sept. 2008. 
+Masato Nakayama, Takanobu Nishiura, Yuki Denda, Norihide Kitaoka, Kazumasa Yamamoto, Takeshi Yamada, Satoru Tsuge, Chiyomi Miyajima, Masakiyo Fujimoto, Tetsuya Takiguchi, Satoshi Tamura,  Tetsuji Ogawa, Shigeki Matsuda, Shingo Kuroiwa, Kazuya Takeda and Satoshi Nakamura, 
+``CENSREC-4: Development of evaluation framework for distant-talking speech recognition under reverberant environments,'' 
+in Proceedings of Interspeech '08, pp 968-971, Sept. 2008. 
+Tobias Hager, Shoko Araki, Kentaro Ishizuka, Masakiyo Fujimoto, Tomohiro Nakatani, and Shoji Makino, 
+``Handling speaker position changes in a meeting diarization system by combining DOA clustering and speaker identification,'' 
+in Proceedings of IWAENC '08, Sept. 2008. 
+Takanobu Nishiura, Masato Nakayama, Yuki Denda, Norihide Kitaoka, Kazumasa Yamamoto, Takeshi Yamada, Satoru Tsuge, Chiyomi Miyajima, Masakiyo Fujimoto, Tetsuya Takiguchi, Satoshi Tamura, Shingo Kuroiwa, Kazuya Takeda and Satoshi Nakamura, 
+``Evaluation framework for distant-talking speech recognition under reverberant environments - Newest part of the CENSREC series -,'' 
+in Proceedings of LREC '08, May 2008.
+Shoko Araki, Masakiyo Fujimoto, Kentaro Ishizuka, Hiroshi Sawada, and Shoji Makino, 
+``A DOA based speaker diarization system for real meetings,'' 
+in Proceedings of HSCMA '08, pp. 29-32, May 2008.
+Masakiyo Fujimoto, Kentaro Ishizuka, and Tomohiro Nakatani, 
+``A voice activity detection based on the adaptive integration of multiple speech features and a signal decision scheme,'' 
+in Proceedings of ICASSP '08, pp. 4441-4444, Apr. 2008.
+Shoko Araki, Masakiyo Fujimoto, Kentaro Ishizuka, Hiroshi Sawada, and Shoji Makino, 
+``Speaker indexing and speech enhancement in real meetinrgs / conversations,'' 
+in Proceedings of ICASSP '08, pp. 93-96, Apr. 2008.
+Norihide Kitaoka, Takeshi Yamada, Satoru Tsuge, Chiyomi Miyajima, Takanobu Nishiura, Masato Nakayama, Yuki Denda, Masakiyo Fujimoto, Kazumasa Yamamoto, Tetuya Takiguchi, Satoshi Tamura, Shingo Kuroiwa, Kazuya Takeda, Satoshi Nakamura, 
+``Development of VAD evaluation framework CENSREC-1-C and investigation of relationship between VAD and speech recognition performance,'' 
+in Proceedings of ASRU '07, pp. 607-612, Dec. 2007.
+Masakiyo Fujimoto and Kentaro Ishizuka, 
+``Noise robust voice activity detection based on switching Kalman filtering,'' 
+in Proceedings of Eurospeech '07, pp. 2933-2936, Aug. 2007.
+Kentaro Ishizuka, Tomohiro Nakatani, Masakiyo Fujimoto, and Noboru Miyazaki, 
+``Noise robust front-end with voice activity detection based on periodic to aperiodic component ratio,'' 
+in Proceedings of Eurospeech '07, pp. 230-233, Aug. 2007.
+Masakiyo Fujimoto, Kentaro Ishizuka, and Hiroko Kato, 
+``Noise robust voice activity detection based on statistical model and parallel non-linear Kalman filtering,'' 
+in Proceedings of ICASSP '07, vol. IV, pp. 797-800, Apr 2007.
+Juan E. Rubio, Kentaro Ishizuka, Hiroshi Sawada, Shoko Araki, Tomohiro Nakatani, and Masakiyo Fujimoto, 
+``Two-microphone voice activity detection based on the homogeneity of the direction of arrival estimates,'' 
+in Proceedings of ICASSP '07, vol. IV, pp. 385-388, Apr 2007.
+Satoshi Nakamura, Masakiyo Fujimoto, and Kazuya Takeda, 
+``CENSREC2: Corpus and evaluation environments for in car continuous digit speech recognition,'' 
+in Proceedings of ICSLP '06, pp. 2330-2333, Sept. 2006.
+Masakiyo Fujimoto and Satoshi Nakamura, 
+``Sequential non-stationary noise tracking using particle filtering with switching dynamical system,'' 
+in Proceedings of ICASSP '06, vol. I, pp. 769-772, May 2006.
+Masakiyo Fujimoto, Kazuya Takeda, and Satoshi Nakamura, 
+``CENSREC-3: An evaluation database for in-car speech recognition and its common evaluation framework,'' 
+in Proceedings of Oriental COCOSDA '05, pp. 44-49, Dec. 2005.
+Masakiyo Fujimoto and Satoshi Nakamura, 
+``Particle filtering and Polyak averaging-based non-stationary noise tracking for ASR in noise,'' 
+in Proceedings of ASRU '05, pp. 337-342, Nov. 2005.
+Wolfgang Herbordt, Toshiharu Horiuchi, Masakiyo Fujimoto, Takatoshi Jitsuhito, and Satoshi Nakamura, 
+``Hands-free speech recognition and communication on PDAs using microphone array technology,'' 
+in Proceedings of ASRU '05, pp. 302-307, Nov. 2005.
+Masakiyo Fujimoto and Satoshi Nakamura, 
+``Robust speech recognition in both non-stationary additive noise and reverberant environments based on particle filtering,'' 
+in Proceedings of NSIP '05, pp. 314-319, May 2005.
+Masakiyo Fujimoto, Satoshi Nakamura, Kazuya Takeda, Shingo Kuroiwa, Takeshi Yamada, Norihide Kitaoka, 
+Kazumasa Yamamoto, Mitsunori Mizumachi, Takanobu Nishiura, Akira Sasou, Chiyomi Miyajima, and Toshiki Endo, 
+``CENSREC-3: An evaluation framework for Japanese speech recognition in real driving car environments,'' 
+in Proceedings of RWCinME '05, pp. 53-60, Apr. 2005.
+Masakiyo Fujimoto and Satoshi Nakamura, 
+``Particle filter based non-stationary noise tracking for robust speech recognition,'' 
+in Proceedings of ICASSP '05, vol. I, pp. 257-260, March 2005.
+Satoshi Nakamura, Kazumasa Yamamoto, Kazuya Takeda, Shingo Kuroiwa, Norihide Kitaoka, Takeshi Yamada, 
+Mitsunori Mizumachi, Takanobu Nishiura, Masakiyo Fujimoto, Akira Sasou, and Toshiki Endo, 
+``AURORA2-J: Japanese speech data collection for performance evaluation of speech recognition in noise,'' 
+in Proceedings of ICSLT '04, Nov. 2004.
+Masakiyo Fujimoto and Yasuo Ariki, 
+``Robust speech recognition in additive and channel noise environments using GMM and EM algorithm,'' 
+in Proceedings of ICASSP '04, vol. I, pp. 941-944, May 2004.
+Satoshi Nakamura, Kazumasa Yamamoto, Kazuya Takeda, Shingo Kuroiwa, Norihide Kitaoka, Takeshi Yamada, 
+Mitsunori Mizumachi, Takanobu Nishiura, Masakiyo Fujimoto, Akira Sasou, and Toshiki Endo, 
+``Data collection and evaluation of AURORA2-J Japanese corpus,'' 
+in Proceedings of ASRU '03, pp. 619-623, Dec. 2003.
+Masakiyo Fujimoto, Yasuo Ariki, and Hiroshi Matsumoto, 
+``Full automatic segmentation of goods catalog video into individual goods section by integrating speech and image information,'' 
+in Proceedings of CBMI '03, pp. 35-40, Sept. 2003.
+Masakiyo Fujimoto and Yasuo Ariki, 
+``Combination of temporal domain SVD based speech enhancement and GMM based speech estimation for ASR in noise - Evaluation on the AURORA2 task -,'' 
+in Proceedings of Eurospeech '03, pp. 1781-1784, Sept. 2003.
+Yasuo Ariki, Takeru Shigemori, Tsuyoshi Kaneko, Jun Ogata, and Masakiyo Fujimoto, 
+``Live speech recognition in sports games by adaptation of acoustic model and language model,'' 
+in Proceedings of Eurospeech '03, pp. 1453-1456, Sept. 2003.
+Takeshi Yamada, Jiro Okada, Kazuya Takeda, Norihide Kitaoka, Masakiyo Fujimoto, Shingo Kuroiwa, 
+Kazumasa Yamamoto, Takanobu Nishiura, Mitsunori Mizumachi, and Satoshi Nakamura, 
+``Integration of noise reduction algorithms for AURORA2 task,'' 
+in Proceedings of Eurospeech '03, pp. 1769-1772, Sept. 2003.
+Yasuo Ariki, Masakiyo Fujimoto, Natsuo Yamamoto, and Masahito Kumano, 
+``Human information retrieval based on face recognition in video image through multi-modal interaction using speech and hand pointing action,'' 
+in Proceedings of HCI International '03, vol. II, pp. 586-590, June 2003.
+Masakiyo Fujimoto and Yasuo Ariki, 
+``Noise robust hands-free speech recognition using microphone array and Kalman filter as front-end system of conversational TV,'' 
+in Proceedings of MMSP '02, Dec. 2002.
+Masakiyo Fujimoto and Yasuo Ariki, 
+``Evaluation of noisy speech recognition based on noise reduction and acoustic model adaptation on the AURORA2 tasks,'' 
+in Proceedings of ICSLP '02, vol. I, pp. 465-468, Sept. 2002.
+Masakiyo Fujimoto and Yasuo Ariki, 
+``Speech recognition under musical environments using Kalman filter and iterative MLLR adaptation,'' 
+in Proceedings of Eurospeech '01, vol. III, pp. 1879-1882, Sept. 2001.
+Masakiyo Fujimoto and Yasuo Ariki, 
+``Continuous speech recognition under non-stationary musical environments based on speech state transition model,'' 
+in Proceedings of ICASSP '01, vol. I, pp. 297-300, May 2001.
+Masakiyo Fujimoto, Jun Ogata, and Yasuo Ariki, 
+``Large vocabulary continuous speech recognition under real environments using adaptive sub-band spectral subtraction,'' 
+in Proceedings of ICSLP '00, vol. I, pp. 305-308, Oct. 2000.
+Masakiyo Fujimoto and Yasuo Ariki, 
+``Noisy speech recognition using noise reduction method based on Kalman filter,'' 
+in Proceedings of ICASSP '00, vol. III, pp. 1723-1726, June 2000.
+[Page top]
+国内査読付研究会
+藤本 雅清, 有木 康雄, 
+``マイクロフォンアレイとカルマンフィルタによる実環境下でのハンズフリー音声認識 - 対話型テレビのフロントエンドシステムの構築 -,'' 
+第4回DSPS教育者会議, pp. 55-58, Aug. 2002.
+藤本 雅清, 三島 崇志, 有木 康雄, 松本 宏, 
+``テロップ文字認識を用いた商品紹介映像の区間分割,'' 
+画像の認識・理解シンポジウム, MIRU2002, vol. I, pp. 323-330, July 2002.
+藤本 雅清, 有木 康雄, 
+``カルマンフィルタによる雑音除去法を用いた雑音に頑健な音声認識の検討,'' 
+第3回DSPS教育者会議, pp. 29-38, Aug. 2001.
+[Page top]
+国内研究会
+石川 勇樹, 西田 昌史, 藤本 雅清, 山本 誠一, 
+``音声の周期・非周期成分分解に基づく話者認識の検討,'' 
+電子情報通信学会, 音声研究会, SP2012-102, pp. 25-30, Jan. 2013.
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``話者適応と雑音混合モデル推定の同時適用による雑音抑圧,'' 
+電子情報通信学会, 音声研究会, SP2011-91, pp. 113-118, Dec. 2011.
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``雑音モデルの頑健なオンライン推定法に基づく雑音抑圧の検討,'' 
+電子情報通信学会, 音声研究会, SP2011-2, pp. 7-12, May 2011.
+荒木 章子, 藤本 雅清, 吉岡 拓也, 堀 貴明, 中谷 智広, 
+``複数人会話シーン分析におけるマイクロホンアレイ音声処理,'' 電子情報通信学会, 音声研究会, SP2011-15, pp. 83-88, May 2011. (招待講演)
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``雑音のバイアス−残差成分の分解と各成分の最適化に基づく雑音抑圧の検討,'' 
+電子情報通信学会, 音声研究会, SP2010-91, pp. 43-48, Dec. 2010.
+田村 哲嗣, 宮島 千代美, 北岡 教英, 武田 一哉, 山田 武志, 滝口 哲也, 柘植 覚, 山本 一公, 西浦 敬信, 中山 雅人, 傳田 遊亀, 藤本 雅清, 松田 繁樹, 小川 哲司, 黒岩 眞吾, 中村 哲, 
+``雑音下マルチモーダル音声認識評価基盤CENSREC-1-AVの構築,'' 
+情報処理学会研究報告, SLP-82-7, July 2010.
+藤本 雅清, 
+``音声区間検出の基礎と最近の研究動向,'' 
+電子情報通信学会, 音声研究会, SP2010-23, pp. 7-12, June 2010.(招待講演)
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``Dirichlet事前分布を用いた音声区間検出の検討,'' 
+情報処理学会研究報告, SLP-79-12, Dec. 2009.
+北岡 教英, 大淵 康成, 滝口 哲也, 中村 哲, 藤本 雅清, 
+``音声認識の頑健性,'' 
+情報処理学会研究報告, SLP-75-5, p. 25, Feb. 2009.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``音声区間検出と雑音抑圧の統合法を用いた雑音下音声認識,'' 
+電子情報通信学会, 音声研究会, SP2008-81, pp. 13-18, Dec. 2008.
+石塚 健太郎, 荒木 章子, 大塚 和弘, 藤本 雅清, 中谷智広, 
+``音響情報と映像情報の統合による多人数会話における話者決定技術,'' 
+情報処理学会研究報告, 電子情報通信学会, 音声研究会, SP2008-83, pp. 25-30, Dec. 2008.
+大塚 和弘, 荒木 章子, 石塚 健太郎, 藤本 雅清, 大和 淳司, 
+``多人数会話シーン分析に向けた実時間マルチモーダルシステムの構築 - マルチモーダル全方位センサを用いた顔方向追跡と話者ダイアリゼーションの統合 -,'' 
+電子情報通信学会技術研究報告, MVE2008-68, pp.55-62, Nov. 2008.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``確率モデルに基づく音声区間検出と雑音抑圧の統合法の評価と考察,'' 
+電子情報通信学会, 音声研究会, SP2008-45, pp. 13-18, July 2008.
+荒木 章子, 藤本 雅清, 石塚 健太郎, 中谷 智広, 澤田 宏, 牧野 昭二, 
+``音声区間推定と時間周波数領域方向推定の統合による会議音声話者識別,'' 
+電子情報通信学会, 応用音響研究会, EA2008-40, pp. 19-24, July 2008.
+北岡 教英, 山田 武志, 滝口 哲也, 柘植 覚, 山本 一公, 宮島 千代美, 西浦 敬信, 中山 雅人, 傳田 遊亀, 藤本 雅清, 田村 哲嗣, 小川 哲司, 黒岩 眞吾, 武田 一哉, 中村 哲, 
+``雑音下音声認識評価ワーキンググループ活動報告,'' 
+電子情報通信学会, 音声研究会, SP2007-96, pp. 1-6, Dec. 2007.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``複数の音声区間検出法の適応的統合の検討と考察,'' 
+電子情報通信学会, 音声研究会, SP2007-97, pp. 7-12, Dec. 2007.
+石塚 健太郎, 荒木 章子, 藤本 雅清, 瀬戸口 久雄, 高梨 克也, 河原 達也, 
+``ポスター会話に対する発話区間検出と話者識別の検討,'' 
+電子情報通信学会, 音声研究会, SP2007-133, pp. 217-222, Dec. 2007.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``音声の周期性・非周期性成分比とSwitching Kalman filterに基づく雑音下音声区間検出,'' 
+情報処理学会研究報告, SLP-67-13, pp. 69-74, July 2007.
+北岡 教英, 山田 武志, 滝口 哲也, 柘植 覚, 山本 一公, 宮島 千代美, 西浦 敬信, 中山 雅人, 傳田 遊亀, 藤本 雅清, 田村 哲嗣, 黒岩 眞吾, 武田 一哉, 中村 哲, 
+``雑音下音声認識評価ワーキンググループ活動報告 - 認識に影響する要因の個別評価環境 -,'' 
+電子情報通信学会, 音声研究会, SP2006-85, pp. 1-6, Dec. 2006.
+藤本 雅清, 石塚 健太郎, 加藤 比呂子, 
+``音声と雑音両方の状態遷移過程を有する雑音下音声区間検出,'' 
+電子情報通信学会, 音声研究会, SP2006-87, pp. 13-18, Dec. 2006.
+中村 篤, 大庭 隆伸, 渡部 晋治, 石塚 健太郎, 藤本 雅清, 堀 貴明, エリック マクダーモット, 南 泰浩, 
+``音声認識システムSOLONの日本語話し言葉コーパスによる評価 (2006年版),'' 
+電子情報通信学会, 音声研究会, SP2006-127, pp. 73-78, Dec. 2006.
+北岡 教英, 山田 武志, 柘植 覚, 宮島 千代美, 西浦 敬信, 中山 雅人, 藤本 雅清, 山本 一公, 滝口 哲也, 黒岩 眞吾, 武田 一哉, 中村 哲, 
+``CENSREC-1-C: 雑音下音声区間検出評価基盤の構築,'' 
+情報処理学会研究報告, SLP-63-1, pp. 1-6, Oct. 2006. 
+藤本 雅清, 武田 一哉, 中村 哲, 
+``CENSREC-2: 実走行車内における連続数字音声データベースと評価環境の構築,'' 
+情報処理学会研究報告, SLP-60-3, pp. 13-18, Feb. 2006.
+藤本 雅清, 中村 哲, 
+``Switching dynamical systemとパーティクルフィルタを用いた非定常雑音の逐次推定,'' 
+電子情報通信学会, 音声研究会, SP2005-91, pp. 7-12, Dec. 2005.
+藤本 雅清, 武田 一哉, 中村 哲, 
+``自動車内における連続数字音声コーパスCENSREC-2の設計と評価,'' 
+電子情報通信学会, 音声研究会, SP2005-114, pp. 55-56, Dec. 2005.
+中村 哲, 武田 一哉, 黒岩 眞吾, 北岡 教英, 山田 武志, 山本 一公, 西浦 敬信, 佐宗 晃, 水町 光徳, 宮島 千代美, 藤本 雅清, 遠藤 俊樹, 滝口 哲也, 
+``SLP雑音下音声認識評価WG活動報告:評価用データと評価手法について,'' 
+情報処理学会研究報告, SLP-59-24, pp. 139-144, Dec. 2005.
+藤本 雅清, 中村 哲, 
+``パーティクルフィルタとPolyak Averagingを用いた非定常雑音の抑圧,'' 
+情報処理学会研究報告, SLP-56-10, pp. 55-60, July 2005.
+藤本 雅清, 中村 哲, 武田 一哉, 黒岩 眞吾, 山田 武志, 北岡 教英, 
+山本 一公, 水町 光徳, 西浦 敬信, 佐宗 晃, 宮島 千代美, 遠藤 俊樹, 
+``実走行車内単語音声データベースCENSREC-3と共通評価環境の構築,'' 
+情報処理学会研究報告, SLP-55-8, pp. 41-46, Feb. 2005.
+中村 哲, 武田 一哉, 黒岩 眞吾, 北岡 教英, 山田 武志, 山本 一公, 
+西浦 敬信, 水町 光徳, 佐宗 晃, 宮島 千代美, 藤本 雅清, 遠藤 俊樹, 
+``実環境下音声認識の評価の標準化とその動向,'' 
+電子情報通信学会, 音声研究会, SP2004-104, pp. 49-55, Dec. 2004.
+藤本 雅清, 中村 哲, 武田 一哉, 黒岩 眞吾, 山田 武志, 北岡 教英, 
+山本 一公, 水町 光徳, 西浦 敬信, 佐宗 晃, 宮島 千代美, 遠藤 俊樹, 
+``CENSREC-3: 実走行車内単語音声データベースと評価環境の構築,'' 
+電子情報通信学会, 音声研究会, SP2004-120, pp. 145-150, Dec. 2004.
+山田 武志, 武田 一哉, 北岡 教英, 藤本 雅清, 黒岩 眞吾, 山本 一公, 
+西浦 敬信, 佐宗 晃, 水町 光徳, 遠藤 俊樹, 中村 哲, 
+``AURORA-2Jを用いたETSI STQ Aurora WI008 Advanced DSR Frontendの評価,'' 
+電子情報通信学会, 音声研究会, SP2003-130, pp. 103-108, Dec. 2003.
+藤本 雅清, 有木 康雄, 
+``GMMとEMアルゴリズムを用いた加法性雑音及び乗法性歪みの抑圧,'' 
+電子情報通信学会, 音声研究会, SP2003-117, pp. 25-30, Dec. 2003.
+熊野 雅仁, 神崎 伸夫, 藤本 雅清, 有木 康雄, 塚田 清志, 濱口 伸, 清瀬 基, 
+``野球中継のハイライトシーン実時間配信を目的としたPCシーンの自動検出,'' 
+電子情報通信学会, パターン認識・メディア理解研究会, PRMU2003-18, pp. 27-34, July 2003.
+藤本 雅清, 有木 康雄, 
+``GMMに基づく音声信号推定法の改良と実走行車内音声による評価,'' 
+情報処理学会研究報告, SLP-47-16, pp. 83-88, July 2003.
+山田 武志, 岡田 治郎, 武田 一哉, 北岡 教英, 藤本 雅清, 黒岩 眞吾, 山本 一公, 西浦 敬信, 水町 光徳, 中村 哲, 
+``雑音下音声認識のための複数の前処理手法の統合とそのAURORA-2Jによる評価,'' 
+情報処理学会研究報告, SLP-47-18, pp. 95-100, July 2003.
+山本 一公, 中村 哲, 武田 一哉, 黒岩 眞吾, 北岡 教英, 山田 武志, 水町 光徳, 西浦 敬信, 藤本 雅清, 
+``AURORA-2J/AURORA-3Jデータベースとその評価ベースライン,'' 
+情報処理学会研究報告, SLP-47-19, pp. 101-106, July 2003.
+中村 哲, 武田 一哉, 黒岩 眞吾, 山田 武志, 北岡 教英, 山本 一公, 西浦 敬信, 藤本 雅清, 水町 光徳, 
+``SLP雑音下音声認識評価のためのWG:評価データ収集について,'' 
+情報処理学会研究報告, SLP-45-9, pp. 51-56, Feb. 2003.
+藤本 雅清, 有木 康雄, 
+``時間領域SVDとGMMに基づく音声信号推定法の統合による雑音下音声認識,'' 
+情報処理学会研究報告, SLP-45-2, pp. 7-12, Feb. 2003.
+重森 猛, 金子 剛志, 緒方 淳, 藤本 雅清, 有木 康雄, 塚田 清志, 濱口 伸, 清瀬 基, 
+``音響・言語適応処理を用いたスポーツ実況中継音声の認識 - ハイライトシーン検出への応用 -,'' 
+電子情報通信学会, 音声研究会, SP2003-166, pp. 33-41, Jan. 2003.
+藤本 雅清, 有木 康雄, 
+``GMMに基づく音声信号推定法を用いた雑音下音声認識,'' 
+電子情報通信学会, 音声研究会, SP2002-125, pp. 25-30, Dec. 2002.
+中村 哲, 西浦 敬信, 武田 一哉, 黒岩 眞吾, 山田 武志, 北岡 教英, 山本 一公, 藤本 雅清, 水町 光徳, 
+``ETSI AURORAプロジェクトの動向と雑音下音声認識評価ワーキンググループの活動報告,'' 
+人工知能学会, 第16回AIチャレンジ研究会, pp. 57-62, Nov. 2002.
+中村 哲, 武田 一哉, 黒岩 眞吾, 山田 武志, 北岡 教英, 山本 一公, 西浦 敬信, 藤本 雅清, 水町 光徳, 
+``SLP雑音下音声認識評価ワーキンググループ活動報告,'' 
+情報処理学会研究報告, SLP-42-11, pp. 65-70, July 2002.
+藤本 雅清, 有木 康雄, 
+``雑音除去とモデル適応を併用した雑音下音声認識 - AURORA2タスクでの評価 -''
+情報処理学会研究報告, SLP-42-12, pp. 71-76, July 2002.
+藤本 雅清, 山本 夏夫, 有木 康雄, 熊野 雅仁, 
+``マルチモーダルインタラクションによるニュース映像中の人物認識と検索,'' 
+人工知能学会, 言語・音声理解と対話処理研究会, SIG-SLUD-A201-02, pp. 07-14, June 2002.
+藤本 雅清, 有木 康雄, 
+``マイクロフォンアレイとカルマンフィルタを用いたノイズロバストなハンズフリー音声認識の検討,'' 
+電子情報通信学会, 応用音響研究会, EA2002-09, pp. 13-18, Apr. 2002.
+藤本 雅清, 有木 康雄, 
+``雑音除去音声に対する特徴量抽出法とMLLR適応による雑音に頑健な音声認識,'' 
+電子情報通信学会, 音声研究会, SP2001-93, pp. 57-62, Dec. 2001.
+藤本 雅清, 三島 崇志, 有木 康雄, 松本 宏, 
+``テロップ文字認識に基づく商品紹介ビデオの区間分割,'' 
+画像電子学会第190回研究会, 01-05-02, pp. 9-14, Nov. 2001.
+藤本 雅清, 鷹尾 誠一, 有木 康雄, 松本 宏, 
+``キーワードスポッティングによる商品紹介映像の商品区間への分割方法の検討,'' 
+情報処理学会研究報告, SLP-37-9, pp. 49-54, July 2001.
+藤本 雅清, 有木 康雄, 
+``カルマンフィルタと繰り返しMLLR適応を用いた非定常雑音下での音声認識,'' 
+電子情報通信学会, 音声研究会, SP2001-26, pp. 7-14, June 2001.
+井上 徹, 西田 昌史, 藤本 雅清, 有木 康雄, 
+``部分空間と混合分布モデルを用いた声質変換,'' 
+電子情報通信学会, 音声研究会, SP2001-09, pp. 01-06, May 2001.
+藤本 雅清, 有木 康雄, 
+``音声の時間変化モデルに基づく音声信号推定法を用いた非定常雑音下での音声認識,'' 
+電子情報通信学会, 音声研究会, SP2000-78, pp. 19-24, Dec. 2000.
+藤本 雅清, 有木 康雄, 
+``カルマンフィルタによる雑音除去法を用いた雑音環境下での音声認識,'' 
+電子情報通信学会, 音声研究会, SP99-105, pp. 73-78, Dec. 1999.
+有木 康雄, 西村 勘斗, 藤本 雅清, 
+``話者部分空間の入れ替えによる声質変換,'' 
+電子情報通信学会, 音声研究会, SP97-12, pp. 17-24, June 1997.
+[Page top]
+国内大会
+藤本 雅清, 久保 陽太郎, 中谷 智広, 
+``確率モデルに基づく雑音抑圧法における雑音モデルのノンパラメトリックベイズ推定,'' 
+日本音響学会, 平成25年度秋季研究発表会, 1-8-4, Sept. 2013.
+Miquel Espi, Masakiyo Fujimoto, Yotaro Kubo, and Tomohiro Nakatani, 
+``Acoustic modelling of non-speech acoustic events based on deep belief networks,'' 
+in Proceedings of ASJ Autumn Meeting, 1-8-9, Sept. 2013.
+藤本 雅清, 中谷 智広, 
+``確率モデルに基づく雑音抑圧法における雑音 HMM パラメータの教師無し推定,'' 
+日本音響学会, 平成25年度春季研究発表会, 1-9-1, March 2013.
+藤本 雅清, 中谷 智広, 
+``話者適応と雑音混合モデル推定の同時適用を用いた雑音抑圧法への高信頼データ選択の導入,'' 
+日本音響学会, 平成24年度秋季研究発表会, 1-1-6, Sept. 2012.
+堀 貴明, 小川 厚徳, 藤本 雅清, 大庭 隆伸, 久保 陽太郎, ハム ソンジュン, 荒木 章子, ソウデン メレズ, デルクロア マーク, 吉岡 拓也, 木下 慶介, 中谷 智広, 中村 篤, 
+``会話分析タスクにおける複数人自由会話音声認識の改善,'' 
+日本音響学会, 平成24年度秋季研究発表会, 1-1-19, Sept. 2012.
+岩田 康明, 中谷 智広, 藤本 雅清, 吉岡 拓也, 齋藤 洋典, 
+``対数スペクトル事前分布を用いた音声の MAP スペクトル推定と雑音抑圧による評価,'' 
+日本音響学会, 平成24年度秋季研究発表会, 1-P-30, Sept. 2012.
+Seong-Jun Hahm, Atsunori Ogawa, Masakiyo Fujimoto, Takaaki Hori, and Atsushi Nakamura, 
+``Feature Space Variational Bayesian Linear Regression,'' 
+in Proceedings of ASJ Autumn Meeting, 3-P-11, Sept. 2012.
+Miquel Espi, Masakiyo Fujimoto, Daisuke Saito, Nobutaka Ono, Shigeki Sagayama, 
+``Acoustic event detection using tandem connectionist model based integration of multi-scale spectral features,'' 
+in Proceedings of ASJ Spring Meeting, 1-P-11, March 2012.
+中谷 智広, 吉岡 拓也, 荒木 章子, デルクロア マーク, 藤本 雅清, 
+``音声と雑音のメル周波数ケプストラム係数GMM に基づくモノラル/マルチチャンネル雑音抑圧,'' 
+日本音響学会, 平成23年度春季研究発表会, 1-Q-14, March 2012.
+咸 聖俊, 渡部 晋治, 藤本 雅清, 小川 厚徳, 堀 貴明, 中村 篤, 
+``事前分布共有に基づく特徴空間と音響モデルの同時適応,'' 
+日本音響学会, 平成23年度春季研究発表会, 2-7-5, March 2012.
+堀 貴明, 荒木 章子, 小川 厚徳, ソウデン メレズ, デルクロア マーク, 吉岡 拓也, 大庭 隆伸, 藤本 雅清, 木下 慶介, 久保 陽太郎, 咸 聖俊, 渡部 晋治, 中谷 智広, 中村 篤, 
+``会話分析タスクにおける複数人自由会話の遠隔発話音声認識の評価,'' 
+日本音響学会, 平成23年度春季研究発表会, 3-P-5, March 2012.
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``雑音混合分布モデルの教師無し推定法に基づく雑音抑圧,'' 
+日本音響学会, 平成22年度秋季研究発表会, 1-10-5, Sept. 2011.
+中谷 智広, 荒木 章子, デルクロア マーク, 吉岡 拓也, 藤本 雅清, 
+``非定常雑音に頑健な統合的音声認識アプローチ - 音源方向GMMと対数スペクトルGMMに基づく統計モデルベース音声強調 -,'' 
+日本音響学会, 平成22年度春季研究発表会, 1-10-7, Sept. 2011.
+デルクロア マーク, 木下 慶介, 中谷 智広, 荒木 章子, 小川 厚徳, 堀 貴明, 渡部 晋治, 藤本 雅清, 吉岡 拓也, 大庭 隆伸, 久保 陽太郎, ソウデン メレズ, ハム ソンジュン, 中村 篤, 
+``非定常雑音に頑健な統合的音声認識アプローチ - 静的・動的モデル適応とシステムコンビネーションに基づく音声強調・認識の統合 -,'' 
+日本音響学会, 平成22年度春季研究発表会, 1-10-9, Sept. 2011.
+中谷 智広, 荒木 章子, 吉岡 拓也, 藤本 雅清, 
+``音源スペクトルHMM と音源方向モデルの教師無し同時学習に基づく多チャンネル音源分離,'' 
+日本音響学会, 平成22年度春季研究発表会, 1-Q-21, Sept. 2010.
+堀 貴明, 荒木 章子, 吉岡 拓也, 大庭 隆伸, 藤本 雅清, 渡部 晋治, 小川 厚徳, 大塚 和弘, 三上 弾, 木下 慶介, 中谷 智弘, 中村 篤, 大和 淳司, 
+``いつ誰が何を話したかを即座に認識するオンライン会話分析システム - (1) コンセプトとデザイン -,'' 
+日本音響学会, 平成22年度春季研究発表会, 2-9-6, Sept. 2010.
+藤本 雅清, 荒木 章子, 吉岡 拓也, 木下 慶介, 中谷 智広, 中村 篤, 
+``いつ誰が何を話したかを即座に認識するオンライン会話分析システム - (2) 複数話者遠隔発話音声認識のための音声強調技術 -,'' 
+日本音響学会, 平成22年度春季研究発表会, 2-9-7, Sept. 2010.
+大庭 隆伸, 渡部 晋治, 藤本 雅清, 小川 厚徳, 堀 貴明, 中村 篤, 
+``いつ誰が何を話したかを即座に認識するオンライン会話分析システム - (3) 音声認識・イベント検出・トピック抽出 -,'' 
+日本音響学会, 平成22年度春季研究発表会, 2-9-8, Sept. 2010.
+中谷 智広, 荒木 章子, 吉岡 拓也, 藤本 雅清, 
+``DOA クラスタリングと音声の対数スペクトルHMM に基づく音源分離,'' 
+日本音響学会, 平成22年度春季研究発表会, 2-10-7, Sept. 2010.
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``Dirichlet事前分布を用いた音声区間検出法の評価と考察,'' 
+日本音響学会, 平成22年度春季研究発表会, 1-6-5, pp. 13-17, March 2010.
+田村 哲嗣, 宮島 千代美, 北岡 教英, 武田 一哉, 山田 武志, 滝口 哲也, 柘植 覚, 山本 一公, 西浦 敬信, 中山 雅人, 傳田 遊亀, 藤本 雅清, 松田 繁樹, 小川 哲司, 黒岩 眞吾, 中村 哲, 
+``CENSREC-1-AV: マルチモーダル音声認識コーパスの構築,'' 
+日本音響学会, 平成22年度春季研究発表会, 1-Q-28, pp. 219-220, March 2010.
+藤本 雅清, 中谷 智広, 
+``確率モデルに基づく音声区間検出法における確率分布選択と確率重み付けの検討,'' 
+日本音響学会, 平成21年度秋季研究発表会, 1-1-14, pp. 43-46, Sept. 2009.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``確率モデルに基づく音声区間検出法における音声ゲイン補正の検討,'' 
+日本音響学会, 平成21年度春季研究発表会, 1-5-2, pp. 3-6, March 2009.
+小笠原 基, 石塚 健太郎, 荒木 章子, 藤本 雅清, 中谷 智広, 大塚 和弘, 
+``SN 比最大化ビームフォーマを用いたオンライン会議音声強調,'' 
+日本音響学会, 平成21年度春季研究発表会, 2-9-17, pp. 695-698, March 2009.
+石塚 健太郎, 荒木 章子, 大塚 和弘, 中谷 智広, 藤本 雅清, 
+``音響情報と映像情報から得られる位置情報の統合による話者ダイアライゼーション,'' 
+日本音響学会, 平成21年度春季研究発表会, 3-5-6, pp. 111-114, March 2009.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``確率モデルに基づく統合的フロントエンド処理の検討,'' 
+日本音響学会, 平成20年度秋季研究発表会, 1-1-5, pp. 11-15, Sept. 2008.
+荒木 章子, 藤本 雅清, 石塚 健太郎, 澤田 宏, 牧野 昭二, 
+``音声区間検出と方向情報を用いた会議音声話者識別システムとその評価,'' 
+日本音響学会, 平成20年度春季研究発表会, 1-10-1, pp. 1-4, March 2008.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``確率モデルに基づく音声区間検出と雑音抑圧の統合の検討,'' 
+日本音響学会, 平成20年度春季研究発表会, 1-10-9, pp. 27-30, March 2008.
+西浦 敬信, 中山 雅人, 傳田 遊亀, 北岡 教英, 山本 一公, 山田 武志, 藤本 雅清, 柘植 覚, 宮島 千代美, 滝口 哲也, 田村 哲嗣, 小川 哲司, 松田 繁樹, 黒岩 眞吾, 武田 一哉, 中村 哲, 
+``残響下音声認識評価基盤(CENSREC-4)の構築,'' 
+日本音響学会, 平成20年度春季研究発表会, 1-Q-10, pp. 175-178, March 2008.
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``複数の音声特徴量及び信号識別処理の適応的統合に基づく音声区間検出,'' 
+日本音響学会, 平成19年度秋季研究発表会, 3-3-11, pp. 163-166, Sept. 2007.
+石塚 健太郎, Juan E. Rubio, 澤田 宏, 荒木 章子, 中谷 智広, 藤本 雅清, 
+``信号到来方向の推定値の偏りを用いた耐雑音音声区間検出法,'' 
+日本音響学会, 平成19年度秋季研究発表会, 3-3-10, pp. 161-162, Sept. 2007.
+大庭 隆伸, 渡部 晋治, 石塚 健太郎, 藤本 雅清, 堀 貴明, Erik McDermott, 南 泰浩, 中村 篤, 
+``音声認識システムSOLONにおける日本語講演音声への教師なし適応に関する評価,'' 
+日本音響学会, 平成19年度春季研究発表会, 1-9-11, pp. 21-22, March 2007.
+藤本 雅清, 石塚 健太郎, 加藤 比呂子, 
+``確率モデルに基づく音声区間検出法のCENSREC-1-Cによる評価,'' 
+日本音響学会, 平成19年度春季研究発表会, 3-9-12, pp. 87-88, March 2007.
+澤田 宏, 荒木 章子, 大塚 和弘, 藤本 雅清, 石塚 健太郎, 
+``多人数多マイクでの発話区間検出 - ピンマイクでの事例 -,'' 
+日本音響学会, 平成19年度春季研究発表会, 3-Q-15, pp. 679-680, March 2007.
+藤本 雅清, 石塚 健太郎, 加藤 比呂子, 
+``音声/非音声状態遷移モデルに基づく音声区間検出,'' 
+日本音響学会, 平成18年度春秋研究発表会, 1-2-17, pp. 33-34, Sept. 2006.
+北岡 教英, 西浦 敬信, 中山 雅人, 藤本 雅清, 山田 武志, 滝口 哲也, 
+山本 一公, 宮島 千代美, 柘植 覚, 黒岩 眞吾, 武田 一哉, 中村 哲, 
+``雑音下音声区間検出手法評価基盤の構築,'' 
+日本音響学会, 平成18年度春秋研究発表会, 1-P-27, pp. 103-104, Sept. 2006.
+藤本 雅清, 中村 哲, 
+``Switching dynamical systemとパーティクルフィルタによる非定常雑音下での音声認識,'' 
+日本音響学会, 平成18年度春季研究発表会, 2-1-15, pp. 99-100, March 2006.
+藤本 雅清, 武田 一哉, 中村 哲, 
+``CENSREC-2: 自動車内にて収録された連続数字音声コーパスと共通評価ベースライン,'' 
+日本音響学会, 平成18年度春季研究発表会, 1-P-33, pp. 209-210, March 2006.
+實廣 貴敏, 松田 繁樹, 藤本 雅清, Wolfgang Herbordt, 堀内 俊治, 中村 哲, 
+``ATR における日本語音声認識の評価 - 日本語音響モデル -,'' 
+日本音響学会, 平成18年度春季研究発表会, 1-P-21, pp. 185-186, March 2006.
+藤本 雅清, 
+``音声認識における雑音抑圧技術,'' 
+平成17年電気関係学会関西支部連合大会, S11-2, Nov. 2005.
+藤本 雅清, 中村 哲, 
+``パーティクルフィルタとPolyak averagingに基づく非定常雑音の逐次推定法を用いた雑音下音声認識,'' 
+日本音響学会, 平成17年度秋季研究発表会, 3-7-22, pp. 145-146, Sept. 2005.
+Satoshi Nakamura, Wolfgang Herbordt, Toshiharu Horiuchi, Masakiyo Fujimoto, and Takatoshi Jitsuhito, 
+``Hands-free speech recognition and communication on PDAs using microphone array technology,'' 
+in Proceedings of ASJ Fall Meeting, 3-7-20, pp. 141-142, Sept. 2005.
+藤本 雅清, 中村 哲, 
+``パーティクルフィルタに基づく雑音抑圧法を用いた非定常雑音および残響環境下での音声認識,'' 
+日本音響学会, 平成17年度春季研究発表会, 2-Q-8, pp. 113-114, March 2005.
+藤本 雅清, 中村 哲, 武田 一哉, 黒岩 眞吾, 山田 武志, 北岡 教英, 
+山本 一公, 水町 光徳, 西浦 敬信, 佐宗 晃, 宮島 千代美, 遠藤 俊樹, 
+``実走行車内音声認識の評価データベースCENSREC-3とその共通評価ベースライン,'' 
+日本音響学会, 平成17年度春季研究発表会, 2-Q-23, pp. 143-144, March 2005.
+藤本 雅清, 中村 哲, 
+``パーティクルフィルタを用いた非定常雑音下での音声認識,'' 
+日本音響学会, 平成16年度秋季研究発表会, 1-1-4, pp. 7-8, Sept. 2004.
+藤本 雅清, 有木 康雄, 
+``GMMとEMアルゴリズムを用いた雑音抑圧法のAURORA2-Jによる評価,'' 
+日本音響学会, 平成16年度春季研究発表会, 2-11-8, pp. 115-116, March 2004.
+藤本 雅清, 有木 康雄, 
+``GMMとEMアルゴリズムを用いた加法性雑音及び乗法性歪みに頑健な音声認識 - 実走行車内音声(AURORA3)データベースによる評価 -,'' 
+日本音響学会, 平成15年度秋季研究発表会, 1-6-9, pp. 17-18, Sept. 2003.
+山本 一公, 中村 哲, 武田 一哉, 黒岩 眞吾, 北岡 教英, 山田 武志, 水町 光徳, 西浦 敬信, 藤本 雅清, 佐宗 晃, 遠藤 俊樹, 
+``雑音下音声認識共通評価データベースAURORA-2J とその評価ベースライン,'' 
+日本音響学会, 平成15年度秋季研究発表会, 3-Q-11, pp. 147-148, Sept. 2003.
+山田 武志, 岡田 治郎, 武田 一哉, 北岡 教英, 藤本 雅清, 黒岩 眞吾, 山本 一公, 西浦 敬信, 佐宗 晃, 水町 光徳, 遠藤 俊樹, 中村 哲, 
+``複数の雑音抑圧手法の統合によるロバスト音声認識とそのAURORA-2Jによる評価,'' 
+日本音響学会, 平成15年度秋季研究発表会, 3-Q-12, pp. 149-150, Sept. 2003.
+熊野 雅仁, 神崎 伸夫, 藤本 雅清, 有木 康雄, 塚田 清志, 濱口 伸, 清瀬 基, 
+``野球中継におけるハイライトシーン・リアルタイム配信システムのためのPCショット判定領域自動設定法 ,'' 
+第2回情報科学技術フォーラム, FIT '03, I-049, pp. 107-108, Sept. 2003.
+藤本 雅清, 有木 康雄, 
+``改良型GMM Based Wiener Filterを用いた実走行車内音声の認識,'' 
+第2回情報科学技術フォーラム, FIT '03, F-008, pp. 219-220, Sept. 2003.
+佐古 淳, 熊野 雅仁, 藤本 雅清, 有木 康雄, 
+``指先追跡による人物ポインティングを用いた実時間情報検索 - マルチモーダル対話型TVに向けて -,'' 
+第2回情報科学技術フォーラム, FIT '03, K-039, pp. 507-508, Sept. 2003.
+藤本 雅清, 有木 康雄, 
+``雑音に頑健な音声認識のための時間領域SVDとGMMに基づく音声信号推定法の統合,'' 
+日本音響学会, 平成15年度春季研究発表会, 1-4-23, pp. 51-52, March 2003.
+金子 剛志, 重森 猛, 緒方 淳, 藤本 雅清, 有木 康雄, 塚田 清志, 濱口 伸, 清瀬 基, 
+``音声情報処理を用いたスポーツ実況中継におけるハイライトシーン検出,'' 
+日本音響学会, 平成15年度春季研究発表会, 3-Q-19, pp. 189-190, March 2003.
+藤本 雅清, 有木 康雄, 
+``GMMにより推定された雑音スペクトルを用いた雑音除去法の検討,'' 
+日本音響学会, 平成14年度秋季研究発表会, 1-9-13, pp. 25-26, Sept. 2002.
+藤本 雅清, 有木 康雄, 堂下修司, 
+``マイクロフォンアレイと2段階MLLR適応による実環境下ハンズフリー音声認識 - 対話型テレビのフロントエンドシステムの構築 -,'' 
+日本音響学会, 平成14年度秋季研究発表会, 2-9-4, pp. 69-70, Sept. 2002.
+井上 徹, 藤本 雅清, 山本 夏夫, 有木 康雄, 熊野 雅仁, 堂下 修司, 
+``ニュース映像に対する発話内容と人物の問い合わせシステム,'' 
+第1回情報科学技術フォーラム, FIT'02, K-60, pp. 487-488, Sept. 2002.
+藤本 雅清, 有木 康雄, 松本 宏, 
+``音声認識と文字認識の統合に基づく商品紹介ビデオの区間分割と索引付け,'' 
+日本音響学会, 平成14年度春季研究発表会, 3-5-1, pp. 143-144, March 2002.
+藤本 雅清, 有木 康雄, 
+``モデル適応と雑音除去の併用による非定常雑音下での音声認識,'' 
+日本音響学会, 平成13年度秋季研究発表会, 1-1-18, pp. 35-36, Oct. 2001.
+藤本 雅清, 三島 崇志, 有木 康雄, 松本 宏, 
+``音声情報と画像情報の統合による商品紹介映像の商品区間への分割方法,'' 
+電子情報通信学会ソサイエティ大会, D-14-14, p.244, Sept. 2001.
+藤本 雅清, 有木 康雄, 
+``非定常雑音下での連続音声認識を目的とした音声信号の時間推移の推定に基づく雑音除去法の検討,'' 
+日本音響学会, 平成13年度春季研究発表会, 2-3-10, pp. 73-74, March 2001.
+藤本 雅清, 緒方 淳, 有木 康雄, 
+``雑音の時間変動を考慮にいれた雑音除去法の検討,'' 
+日本音響学会, 平成12年度秋季研究発表会, 2-Q-17, pp. 123-124, Sept. 2000.
+山下 隆之, 西田 昌史, 藤本 雅清, 有木 康雄, 
+``実環境下での話者認識におけるPMC法の効果について,'' 
+日本音響学会, 平成12年度秋季研究発表会, 2-Q-15, pp. 119-120, Sept. 2000.
+藤本 雅清, 有木 康雄, 
+``雑音環境下での音声認識を目的とした高速カルマンフィルタによる雑音除去法の提案,'' 
+日本音響学会, 平成12年度春季研究発表会, 1-8-3, pp. 5-6, March 2000.
+藤本 雅清, 有木 康雄, 
+``カルマンフィルターを用いた雑音環境下における音声認識の検討 - 雑音適応と雑音除去 -,'' 
+日本音響学会, 平成11年度秋季研究発表会, 1-1-16, pp. 31-32, Sept. 1999.
+藤本 雅清, 有木 康雄, 
+``話者空間の変換による声質変換,'' 
+日本音響学会, 平成9年度春季研究発表会, 3-7-4, pp. 265-266, March 1997.
+[Page top]
+解説記事
+Hirokazu Masataki, Taichi Asami, Shoko Yamahata, and Masakiyo Fujimoto, 
+``Speech recognition technology that can adapt to changes in service and environment,'' 
+NTT Technical Review, vol. 11 no. 7, July 2013.
+政瀧 浩和, 浅見 太一, 山畠 祥子, 藤本 雅清, 
+``サービスや利用環境の変化に柔軟に対応する音声認識技術,'' 
+NTT技術ジャーナル, vol. 25, no. 3, pp. 16-20, March 2013.
+藤本 雅清, 
+``音声区間検出の基礎と世界的な研究動向, 今後の展開,'' 
+電子情報通信学会誌, vol. 95, no. 8, pp. 754-758, Aug. 2012.
+Takahiro Fukumori, Takanobu Nishiura, Masato Nakayama, Yuki Denda, Norihide Kitaoka, Takeshi Yamada, Kazumasa Yamamoto, Satoru Tsuge, Masakiyo Fujimoto, Tetsuya Takiguchi, Chiyomi Miyajima, Satoshi Tamura, Tetsuji Ogawa, Shigeki Matsuda, Shingo Kuroiwa, Kazuya Takeda, and Satoshi Nakamura, 
+``CENSREC-4: An evaluation framework for distant-talking speech recognition under reverberant environments,'' 
+Acoustical Science and Technology, vol. 32, no. 5, pp. 201-210, Sept. 2011.
+Norihide Kitaoka, Takeshi Yamada, Satoru Tsuge, Chiyomi Miyajima, Kazumasa Yamamoto, Takanobu Nishiura, Yuki Denda, Masakiyo Fujimoto, Tetsuya Takiguchi, Satoshi Tamura, Shigeki Matsuda, Tetsuji Ogawa, Shingo Kuroiwa, Kazuya Takeda, and Satoshi Nakamura, 
+``CENSREC-1-C: An evaluation framework for voice activity detection under noisy environments,'' 
+Acoustical Science and Technology, vol. 30, no. 5, pp. 363-371, Sept. 2009.
+石塚 健太郎, 藤本 雅清, 中谷 智広, 
+``音声区間検出技術の最近の研究動向,'' 
+日本音響学会論文誌, vol. 65, no. 10, pp. 537-543, Oct. 2009.
+[Page top]
+特許
+特開201429407, 
+藤本 雅清, 中谷 智広, 
+``雑音抑圧装置、方法、及びプログラム''
+特開2013−178343, 
+ハム ソンジュン, 小川 厚徳, 藤本 雅清, 堀 貴明, 中村 篤, 
+``事前分布計算装置,音声認識装置,事前分布計算方法,音声認識方法,プログラム''
+特開2013-167698, 
+中谷 智広, 吉岡 拓也, 荒木 章子, デルクロア マーク, 藤本 雅清, 
+``音源ごとに信号のスペクトル形状特徴量を推定する装置,方法,目的信号のスペクトル特徴量を推定する装置,方法,プログラム''
+特開2013-114151, 
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``雑音抑圧装置,方法及びプログラム''
+特開2013-044908, 
+中谷 智広, 荒木 章子, 吉岡 拓也, 藤本 雅清, デルクロア マーク, 
+``背景音抑圧装置,背景音抑圧方法,およびプログラム''
+特開2013-044909, 
+中谷 智広, 荒木 章子, 吉岡 拓也, 藤本 雅清, デルクロア マーク, 
+``背景音抑圧装置,背景音抑圧方法,およびプログラム''
+特開2013-007975, 
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``雑音抑圧装置,及びプログラム''
+特許5438704, 
+中谷 智広, 荒木 章子, 吉岡 拓也, 藤本 雅清, 
+``音源パラメータ推定装置と音源分離装置とそれらの方法とプログラム''
+特許5457999, 
+藤本 雅清, 渡部 晋治, 中谷 智広, 
+``雑音抑圧装置とその方法とプログラム''
+国際公開番号WO2011/010604, 
+藤本 雅清, 中谷 智広, 
+``音声信号区間推定装置と音声信号区間推定方法及びそのプログラムと記憶媒体''
+特許5411936, 
+藤本 雅清, 中谷 智広, 
+``音声信号区間推定装置と音声信号区間推定方法及びそのプログラムと記録媒体''
+特許5385876, 
+堀 貴明, 荒木 章子, 藤本 雅清, 渡部 晋治, 中谷 智広, 中村 篤, 
+``音声区間検出方法,音声認識方法,音声区間検出装置,音声認識装置,そのプログラム及び記録媒体''
+特許5351856, 
+中谷 智広, 荒木 章子, 吉岡 拓也, 藤本 雅清, 
+``音源パラメータ推定装置と音源分離装置とそれらの方法と,プログラムと記憶媒体''
+特許4934158, 
+大塚 和弘, 三上 弾, 大和 淳司, 石塚 健太郎, 藤本 雅清, 荒木 章子, 
+``映像音声処理装置,映像音声処理方法,映像音声処理プログラム''
+特許5044581, 
+荒木 章子, 石塚 健太郎, 藤本 雅清, 中谷 智広, 
+``複数信号強調装置とその方法と,プログラム''
+特許5215826, 
+石塚 健太郎, 荒木 章子, 大塚 和弘, 藤本 雅清, 中谷 智広, 
+``複数信号区間推定装置とその方法とプログラム''
+特許4964204, 
+荒木 章子, 石塚 健太郎, 藤本 雅清, 中谷 智広, 牧野 昭二, 
+``複数信号区間推定装置,複数信号区間推定方法,そのプログラムおよび記録媒体''
+特許4875656, 
+荒木 章子, 石塚 健太郎, 藤本 雅清, 牧野 昭二, 
+``複数信号区間推定装置とその方法と,プログラムとその記録媒体''
+特許4856662, 
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``雑音除去装置,その方法,そのプログラムおよび記録媒体''
+特許4690179, 
+藤本 雅清, 石塚 健太郎, 中谷 智広, 
+``音声信号区間推定装置,方法,プログラムおよびこれを記録した記録媒体''
+特許481191, 
+石塚 健太郎, 澤田 宏, 荒木 章子, 中谷 智広, 藤本 雅清, 
+``目的信号区間推定装置,目的信号区間推定方法,目的信号区間推定プログラム及び記録媒体''
+特許4746533, 
+澤田 宏, 荒木 章子, 藤本 雅清, 石塚 健太郎, 
+``多音源有音区間判定装置,方法,プログラム,及びその記録媒体''
+特許4673828, 
+藤本 雅清, 石塚 健太郎, 加藤 比呂子, 
+``音声信号区間推定装置,その方法,そのプログラム及び記録媒体''
+特許4755555
+藤本 雅清, 石塚 健太郎, 加藤 比呂子, 
+``音声信号区間推定方法, 及びその装置とそのプログラムとその記憶媒体''
+特開2007-093630,
+ウォルフガング ヘルボート, 藤本 雅清, 堀内 俊治, 中村 哲, 
+``音声強調装置''
+特開2007-72143,
+藤本 雅清, 中村 哲, 
+``音声認識装置, およびプログラム''
+特許4617497, 
+藤本 雅清, 中村 哲, 
+``雑音抑圧装置, コンピュータプログラム, 及び音声認識システム''
+特許4586577, 
+藤本 雅清, 中村 哲, 
+``外乱成分抑圧装置, コンピュータプログラム, 及び音声認識システム''
+特許4512848, 
+藤本 雅清, 中村 哲, 
+``雑音抑圧装置及び音声認識システム''
+[Page top]
+Masakiyo Fujimoto :: Publications

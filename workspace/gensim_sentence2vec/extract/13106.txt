@@ -1,0 +1,122 @@
+');          
+WinPrint.document.write(prtContent.innerHTML);      
+WinPrint.document.write(''); 
+WinPrint.document.close(); 
+WinPrint.focus(); 
+}
+function calculateFreightCharges(){
+//alert(' in calculateFreightCharges'+document.getElementById('userZip1'));
+var enteredZip = document.forms['CartForm'].userZip1.value; //document.getElementById('userZip1').value;
+//alert("enteredZip :"+enteredZip);
+//alert('enteredZip :: '+enteredZip);
+document.forms['CartForm'].userZip.value =enteredZip;
+//alert("after setting hidden field :"+document.forms['CartForm'].userZip.value);
+if(validateZip(enteredZip)) {
+document.forms['CartForm'].userZip1.className += " form_CartZip";
+setWebTrends('DCS.dcsqry','Shopping Cart','Charges','Calculate','99999');
+document.forms['CartForm'].submit();
+$("#zipcodeerror").hide();
+}else{
+$("#zipcodeerror").show();
+$("#userZip1").addClass("cartDetailsBorder"); 
+//$("#calculateDivButton").addClass("cartDetailsBorder");
+//$("td.totallastzip").addClass("error");
+//$("td.productcal").addClass("error");					
+}
+}
+function validateZip(enteredZip){
+//return validateUSZIP(enteredZip);
+var field = enteredZip;
+var valid = "0123456789-";
+var hyphencount = 0;
+if (field.length!=5 && field.length!=10) {
+$("#zipcodeerror").show();
+$("#userZip1").addClass("cartDetailsBorder");
+//$("td.totallastzip").addClass("error");
+//$("td.productcal").addClass("error");					
+return false;
+}
+if(field.length==5 && (field.indexOf("-") != -1))
+{
+alert('入力された郵便番号が無効です。');
+return false;
+}
+for (var i=0; i  1) || ((field.length==10) && ""+field.charAt(5)!="-")) {
+alert("The hyphen character should be used with a properly formatted 5 digit+four zip code, like '12345-6789'.   Please try again.");
+return false;
+}
+}
+if(field.length==5 || field.length==10){
+if(field.length==5){
+if(field.replace(/[^0]/g, '').length==5){
+alert('入力された郵便番号が無効です。');
+return false;
+}
+}else if(field.length==10){
+if(field.replace(/[^0]/g, '').length==9 || field.replace(/[^0]/g, '').length==10){
+alert('入力された郵便番号が無効です。');
+return false;
+}
+}
+}
+return true;
+}
+function downloadFile(url){
+var pageName = determinePageName(webTrendsPageName);
+setWebTrends('DCS.dcsqry',pageName,'Upload Items','Download Order Template','99999');
+window.open(url,'Download');  
+}
+function checkFileFormat(formName,returnAction)
+{
+//For Webtrends CODE20_WT120
+var fromPage = document.getElementById("fromPageID").value;
+//End of  Webtrends CODE20_WT120
+var id_value = document.getElementById('BrowserHiddenCart').value;
+if(id_value != '')
+{   
+var valid_extension = /(.csv)$/i;   
+if(!(valid_extension.test(id_value)))
+{ 
+//document.getElementById('domUploadSKU_error').innerHTML = "Upload was not successful. Please check your file  format, and then try again. You may download a file with the correct format from the provided link";
+var errorMsg = 'アップロードが失敗しました。 ファイル形式を確認して、もう一度やり直してください。 次のリンクから正しい形式のファイルをダウンロードできます。';
+document.getElementById("domUploadSKU_error").innerHTML = errorMsg;
+$("#FileField_cart").addClass("uploadError");
+$("dl.quick_add3").addClass("error");
+}
+else
+{	  
+document.forms[formName].Operation.value = 'UploadAdd';
+if(returnAction != '') {
+document.forms[formName].action =  returnAction;
+}
+document.forms[formName].encoding = "multipart/form-data";
+document.forms[formName].cmd.value = "BRUploadSKUWidget";
+var pageName = determinePageName(webTrendsPageName);
+setWebTrends('DCS.dcsqry',pageName,'Upload Items','Upload','99999');
+document.forms[formName].submit();
+}
+} else {
+//document.getElementById('domUploadSKU_error').innerHTML = "Please select a file and then upload it";
+var errorMsg1 = 'ファイルを選択し、[アップロード] をクリックしてください。';
+$("#domUploadSKU_error").text(errorMsg1);
+$("#domUploadSKU_error").addClass("uploadwarning");
+$("#FileField_cart").addClass("uploadError");
+$("dl.quick_add3").addClass("error");
+}
+}
+function changeZip(){
+document.forms['CartForm'].userZip.value ="";
+$("#anchorDiv").addClass("ShippingDispNone");
+$("input#userZip1").addClass("ShippingDispInline"); 
+$("#calculateDivButton").addClass("ShippingDispInline");		
+}
+function validateEmail(email) {
+var emailRegex = new RegExp(/^([\w\.\-\!$\^\*\_\+\#\?\%\&\`\~\/\|\{\}\''\=]+)@([\w\.\-\!\#$\^\&\?\*\~\`\_\%\/\+\{\}\|\''\=]+)((\.([\w\-\!\#$\^\&\?\*\~\`\_\%\/\+\{\}\|\''\=]){2,4})+)$/i);
+var valid = emailRegex.test(email);
+if (!valid) {
+return false;
+} else{
+return true;
+}
+}
+ChemiDoc XRS システム |  | バイオ・ラッド

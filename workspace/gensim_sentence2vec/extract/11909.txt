@@ -1,0 +1,41 @@
+などというURLでアクセスしてきた時に削除するけどページ遷移は起こさないというのがやりたいこと。URLの統一を図りソーシャルツール(設置するボタンではなくブラウザの拡張とかブックマークレットとか)の誤爆を最小限に抑えようというのが目的。新たにスクリプト読ませるとコストが高そうだし、まぁトラッキング情報がAnalyticsにわたらなくなったりするので、Analyticsのコードに混ぜるのが良さそう。
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-xxxxxxx-x']);
+_gaq.push(['_trackPageview']);
+_gaq.push(['_trackPageview']);
+_gaq.push(function() {
+var h = history, l = location, u;
+if (!h.replaceState) return;
+u = l.pathname + l.search.replace(/[?&]utm_[^&]+/g, '').replace(/^&/, '?') + l.hash;
+h.replaceState(null, '', u);
+});
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+訪問者が
+http://example.com/foo?utm_source=feedly
+などというURLでアクセスしてきた時に削除するけどページ遷移は起こさないというのがやりたいこと。URLの統一を図りソーシャルツール(設置するボタンではなくブラウザの拡張とかブックマークレットとか)の誤爆を最小限に抑えようというのが目的。新たにスクリプト読ませるとコストが高そうだし、まぁトラッキング情報がAnalyticsにわたらなくなったりするので、Analyticsのコードに混ぜるのが良さそう。
+```js:remove-utm_foo.js
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-xxxxxxx-x']);
+_gaq.push(['_trackPageview']);
+_gaq.push(['_trackPageview']);
+_gaq.push(function() {
+var h = history, l = location, u;
+if (!h.replaceState) return;
+u = l.pathname + l.search.replace(/[?&]utm_[^&]+/g, '').replace(/^&/, '?') + l.hash;
+h.replaceState(null, '', u);
+});
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+```
+こうだっけ。まだ試してない。canonicalあるならそれ引いた方が良さそう。
+--------
+http://hail2u.net/pub/test/449.html
+テスト書いた。うまく行ってそう。canonical引くのは良くない気がしてきたので保留。
+JavaScript - 訪問者ののutm_xxxパラメーターを除去する - Qiita

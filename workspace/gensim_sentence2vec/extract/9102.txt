@@ -1,0 +1,45 @@
+角丸の枠編  
+角が丸い枠を画像を使用しないでCSSだけで作成します。2つのサンプルを用意しましたが、2つともCSSは少し違いますが同じ方法で角丸を実現しています。
+これは、結構複雑なCSSなのでプラグインにしたほうが使いやすそうですね。気が向いたらプラグインでも作成します。
+注意
+枠内には利用できないおまじないも一部あります。また、たまに一部が欠けたりする場合もありますので、自己責任でお使いください。
+サンプル1  
+角丸の枠は使いたい人がけっこう多いのではと思っています。
+どうですか?
+角丸の枠内にはおまじないが利用できます。
+QHMの特徴
+HTMLの知識は不要
+HTMLをまったく知らなくてもホームページが作成できます。ブログ感覚で作成できます。
+QHMはサーバにインストール
+ホームページビルダーなどと違い、QHMはサーバにインストールします。インターネットに接続できればどのパソコンからでも更新できます。WindowsやMacから利用できます。
+こんな感じで利用できます。
+コード
+#beforescript{{
+<style type="text/css">
+/* Snazzy Borders - http://www.cssplay.co.uk/boxes/snazzy.html */
+#xsnazzy { background:transparent; margin:1em; padding:0; }
+#xsnazzy .h, #xsnazzy p { margin:0; padding:10px 15px; line-height:2em; }
+#xsnazzy .h { font-size:1.5em; color:#60c8d8; padding-bottom:0; font-weight:bold; }
+#xsnazzy .xtop, #xsnazzy .xbottom {display:block; background:transparent; font-size:1px; }
+#xsnazzy b { display:block; overflow:hidden; }
+#xsnazzy .xb1, #xsnazzy .xb2, #xsnazzy .xb3 {height:1px; }
+#xsnazzy .xb2, #xsnazzy .xb3, #xsnazzy .xb4 {background:#f2f9fd; border-left:1px solid #c8ebf9; border-right:1px solid #c8ebf9; }
+#xsnazzy .xb1 { margin:0 5px; background:#c8ebf9; }
+#xsnazzy .xb2 { margin:0 3px; border-width:0 2px; }
+#xsnazzy .xb3 { margin:0 2px; }
+#xsnazzy .xb4 { height:2px; margin:0 1px; }
+#xsnazzy .xboxcontent { display:block; background:#f2f9fd; border:0 solid #c8ebf9; border-width:0 1px; }
+</style>
+}}
+#html2(<div id="xsnazzy"><b class="xtop"><b class="xb1"></b><b class="xb2"></b><b class="xb3"></b><b class="xb4"></b></b><div class="xboxcontent">)
+&size(24){''角丸の枠''};は使いたい人がけっこう多いのではと思っています。
+どうですか?
+&color(,yellow){''角丸の枠内にはおまじないが利用できます。''};
+QHMの特徴
+-HTMLの知識は不要
+HTMLをまったく知らなくてもホームページが作成できます。ブログ感覚で作成できます。
+-QHMはサーバにインストール
+ホームページビルダーなどと違い、QHMはサーバにインストールします。インターネットに接続できればどのパソコンからでも更新できます。WindowsやMacから利用できます。
+こんな感じで利用できます。
+#html2(</div><b class="xbottom"><b class="xb4"></b><b class="xb3"></b><b class="xb2"></b><b class="xb1"></b></b></div>)
+角丸の枠編 - 一歩先を行く QHMユーザのためのTips

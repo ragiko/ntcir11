@@ -1,0 +1,106 @@
+
+字幕テキストの生成方法
+どうやってテキストを生成しているのか調べたところ、このrubyスクリプトを使っていました。
+asciiwwdc-scraper.rb
+WWDCのビデオには字幕付きのものがあります。字幕付きのビデオには、「Web Video Text Track (WebVTT:キャプション対応ビデオを作る際に使用する、キャプションを記述したテキストファイル)」が付属していて、そのファイルから字幕テキストを抽出していました。
+大まかな流れは次のとおりです。
+https://developer.apple.com/videos/wwdc/2014/ のHTMLを取得
+HTMLからmovファイルのパスを探す
+2.のパスを基に、subtitles/eng/prog_index.m3u8をダウンロードする
+prog_index.m3u8のテキストデータから、ファイル名.webvttの文字列を探す(例:fileSequence0.webvtt)
+webvttファイルをダウンロードする
+webvttのテキストデータを読み込んで、バッファに追加する
+5.から6.を繰り返す
+スクリプトを実行すると、セッション毎のvttファイルが作成されます。
+MU3ファイル
+http://ja.wikipedia.org/wiki/M3U
+http://devstreaming.apple.com/videos/wwdc/2014/403xxksrj0qs8c0/403/subtitles/eng/prog_index.m3u8
+1つの.webvttファイルに、60秒分の字幕情報が記述されている。
+$ curl http://devstreaming.apple.com/videos/wwdc/2014/403xxksrj0qs8c0/403/subtitles/eng/prog_index.m3u8
+#EXTM3U
+#EXT-X-TARGETDURATION:60
+#EXT-X-VERSION:3
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:60.00000,
+fileSequence0.webvtt
+#EXTINF:60.00000,
+以下、省略
+$ curl http://devstreaming.apple.com/videos/wwdc/2014/403xxksrj0qs8c0/403/subtitles/eng/fileSequence1.webvtt
+WEBVTT
+X-TIMESTAMP-MAP=MPEGTS:181083,LOCAL:00:00:00.000
+00:00:59.246 --> 00:01:02.206 A:middle
+and how you can use them
+to make your code safer.
+00:01:02.826 --> 00:01:05.245 A:middle
+We're going to talk to you
+about memory management in Swift
+00:01:05.245 --> 00:01:06.856 A:middle
+and how it's largely automatic.
+00:01:07.966 --> 00:01:09.916 A:middle
+We're also going to talk
+about initialization
+00:01:10.486 --> 00:01:13.386 A:middle
+and how you can take advantage
+of the power of closures
+00:01:13.686 --> 00:01:15.226 A:middle
+and pattern matching
+in your code.
+以下、省略
+## 字幕テキストの生成方法
+どうやってテキストを生成しているのか調べたところ、このrubyスクリプトを使っていました。
+[asciiwwdc-scraper.rb](https://gist.github.com/mattt/1b407afc546d914c1c6b)
+WWDCのビデオには字幕付きのものがあります。字幕付きのビデオには、「Web Video Text Track (WebVTT:キャプション対応ビデオを作る際に使用する、キャプションを記述したテキストファイル)」が付属していて、そのファイルから字幕テキストを抽出していました。
+大まかな流れは次のとおりです。
+1. https://developer.apple.com/videos/wwdc/2014/ のHTMLを取得
+2. HTMLからmovファイルのパスを探す
+3. 2.のパスを基に、subtitles/eng/prog_index.m3u8をダウンロードする
+4. prog_index.m3u8のテキストデータから、ファイル名.webvttの文字列を探す(例:fileSequence0.webvtt)
+5. webvttファイルをダウンロードする
+6. webvttのテキストデータを読み込んで、バッファに追加する
+7. 5.から6.を繰り返す
+スクリプトを実行すると、セッション毎のvttファイルが作成されます。
+## MU3ファイル
+http://ja.wikipedia.org/wiki/M3U
+`http://devstreaming.apple.com/videos/wwdc/2014/403xxksrj0qs8c0/403/subtitles/eng/prog_index.m3u8`
+1つの.webvttファイルに、60秒分の字幕情報が記述されている。
+```
+$ curl http://devstreaming.apple.com/videos/wwdc/2014/403xxksrj0qs8c0/403/subtitles/eng/prog_index.m3u8
+#EXTM3U
+#EXT-X-TARGETDURATION:60
+#EXT-X-VERSION:3
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:60.00000,
+fileSequence0.webvtt
+#EXTINF:60.00000,
+以下、省略
+```
+## Web Video Text Track (WebVTT) ファイル
+キャプション対応ビデオを作る際に使用する、キャプションを記述したテキストファイル
+http://msdn.microsoft.com/ja-jp/library/jj152136(v=vs.85).aspx
+http://d.hatena.ne.jp/sparkgene/20111216/1323988362
+```
+$ curl http://devstreaming.apple.com/videos/wwdc/2014/403xxksrj0qs8c0/403/subtitles/eng/fileSequence1.webvtt
+WEBVTT
+X-TIMESTAMP-MAP=MPEGTS:181083,LOCAL:00:00:00.000
+00:00:59.246 --> 00:01:02.206 A:middle
+and how you can use them
+to make your code safer.
+00:01:02.826 --> 00:01:05.245 A:middle
+We're going to talk to you
+about memory management in Swift
+00:01:05.245 --> 00:01:06.856 A:middle
+and how it's largely automatic.
+00:01:07.966 --> 00:01:09.916 A:middle
+We're also going to talk
+about initialization
+00:01:10.486 --> 00:01:13.386 A:middle
+and how you can take advantage
+of the power of closures
+00:01:13.686 --> 00:01:15.226 A:middle
+and pattern matching
+in your code.
+以下、省略
+```
+WebVTT - http://asciiwwdc.com のコンテンツ(字幕)の作り方 - Qiita

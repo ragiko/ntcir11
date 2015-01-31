@@ -1,0 +1,779 @@
+
+TOP  関東地区 量子計算研究会のこれまでの記録
+関東地区 量子計算研究会のこれまでの記録
+第44回
+日時: 2008 年 7 月 26 日(土) 10:30 より
+場所: 電気通信大学 総合研究棟 8階 807号室
+題目: 絡み合い状態を利用した量子秘匿計算プロトコル
+発表者: 三原 孝志 氏(東洋大学 情報工学科)
+概要: 
+まず、前回(6月28日)発表できなかった、
+量子認証プロトコルについて述べる。
+その後、
+前回の発表における量子プロトコルを拡張する際にも利用可能と考えられる
+絡み合い状態を利用した量子秘匿計算(加算と乗算)
+プロトコルについて述べる。
+参考文献
+T. Mihara, 
+Quantum protocols for untrusted computations,  
+Journal of Discrete Algorithms, Vol.5, pp.65-72, 2007.
+第43回
+日時: 2008 年 6 月 28 日(土) 16:00 より
+場所: 電気通信大学 総合研究棟 8階 807号室
+題目: 絡み合い状態を利用した量子プロトコルに関する一考察
+発表者: 三原 孝志 氏(東洋大学 情報工学科)
+概要: 
+この発表では,量子的な絡み合い状態(エンタングル
+メント)を利用した情報セキュリティに関する量子プロトコル
+について述べる。まず、簡単に量子情報で用いられる記法、絡
+み合い状態とは何か概観する。次に、複数の絡み合い状態をマ
+ージするなどの基礎的な操作について述べる。そして、絡み合
+い状態を利用した、認証、暗号、秘密分散等の可能性について
+考察する。
+参考文献
+T. Mihara,
+Quantum Identification Schemes With Entanglements,
+Physical Review. A, Vol.65, pp.052326-1--052326-4, 
+2002.
+T. Mihara,
+Splitting Information Securely with Entanglement,
+Information and Computation, Vol.187, pp.110--122, 
+2003.
+T. Mihara,
+Basic Operations among Entangled States and Their 
+Applications to Quantum Protocols,
+International Journal of Quantum Information, 
+Vol.4,pp.307--323, 2006.
+第42回
+日時: 2003 年 5 月 31 日(土) 13:00 より
+場所: 電気通信大学 総合研究棟 8階 807号室
+題目: NMR 量子コンピュータを用いた量子探索アルゴリズムについて
+発表者: 大久保 誠也 氏(電気通信大学 大学院)
+概要: 
+本発表では, NMR (核磁気共鳴)量子計算のような Bulk 量子計算
+のモデルとして, Bulk 量子 Turing 機械(BQTM と略記)を採用し,
+Grover の量子検索アルゴリズムが, BQTM(NMR 量子コンピュータ)
+上で本質的により高速に実行可能であることを示す. 本発表には、
+前回の量子計算研究会(第41回量子計算研究会「NMR量子コンピュ
+ータを用いた秘密鍵暗号の解読アルゴリズム」)の発表内容を、
+より一般化した結果が含まれている。
+第41回
+日時: 2002 年 12 月 7 日(土) 13:00 より
+場所: 電気通信大学 総合研究棟 8階 807号室
+題目: NMR量子コンピュータを用いた秘密鍵暗号の解読アルゴリズム
+発表者: 大久保 誠也 氏(電気通信大学 大学院)
+概要: 
+秘密鍵探索問題とは、平文 m と暗号文 c が与えられる既知平文
+攻撃の下で、c=E(k,m) をみたす秘密鍵 k を探索する問題である。
+発表者らは、この問題に対する NMR 量子コンピュータを用いた
+新しいアルゴリズムを設計した。本発表では、そのアルゴリズム
+を紹介し、また、計算機実験に基づき、本アルゴリズムの効率が、
+Grover のアルゴリズムの効率を凌ぐ可能性について考察する。
+第40回
+日時: 2002 年 7 月 13 日(土) 13:00 より
+場所: 電気通信大学 西 8 号館 7 階 718 号室
+題目: 強く相互作用する量子ビットと誤り訂正
+発表者: 中ノ勇人氏(NTT物性科学基礎研究所)
+概要: 
+互いに強く相互作用する複数のqubit にひとつのqubit ぶんの
+情報を載せたとき、環境との望まない(弱い) 相互作用によってその情
+報にどんなデコヒーレンスが引き起こされるかを理論的に考察する。
+冗長qubitを加えることで量子情報をデコヒーレンスから守る、という
+が量子誤り検出符号、量子誤り訂正符号の考え方であるが、それにな
+らって2 qubit に情報を分配しても、それだけでは、弱く連続的な環
+境との相互作用から生じるデコヒーレンスを避けることはできない。
+2 つのqubit の間に(qubit のLarmor 回転の角振動数と同程度のエネ
+ルギーの)適切な相互作用を加えると、2 qubitの4 個の固有状態のう
+ちの2 つが環境との相互作用に対して頑丈になり、その状態に情報を
+載せる(その2つの状態を1qubitの論理基底にとる)ことで情報をデ
+コヒーレンスから守ることができる。
+第39回
+日時: 2002 年 6 月 22 日(土) 13:00 より
+場所: 電気通信大学 西 8 号館 7 階 718 号室
+題目: 量子論理回路の深さ最小化
+発表者: 名久井行秀氏(電気通信大学大学院 電子情報学専攻)
+概要: 
+論理回路による計算のモデル化は, すべての計算論の基礎であり, 
+量子計算においても重要な位置を占めている. すなわち, 量子回路上で
+論理関数を計算する方法や, 量子回路の最小化, 簡単化について研究す
+ることは大変重要である. 本発表では, 量子論理回路の深さ最小化問題
+を明確に定式化し, この問題があるNP完全問題のインスタンスに効率的
+に帰着可能であることを示す. 
+第38回
+日時: 2002 年 3 月 8 日(土) 13:00 より
+場所: 電気通信大学 西 8 号館 7 階 718 号室
+題目: 数式処理のアルゴリズムに対する量子計算
+発表者: 武田 邦敬 氏(愛媛大学 理工学研究科 情報工学専攻)
+概要: 
+記号計算を行う数式処理のアルゴリズムの問題点は、数値計算に比べて
+メモリを大量に消費し計算のコストが大きくなることである。その高速
+化のために様々な研究がなされてきたが、数式処理のアルゴリズムに対
+する量子計算の可能性を考えることは非常に興味深い問題である。そこ
+で、本発表では以下の代数的アルゴリズムに対し、Groverによる量子探
+索アルゴリズムを応用することを考える。
+GCDHEUアルゴリズム
+整数係数多項式に対する発見的な多項式GCDアルゴリズムであり、特に変
+数の数と次数が低いときに高速である。その動作は確率的であるが解の
+判定ができるという特色を持つ。この点に注目し、量子コンピュータ上
+で並列計算することを考える。
+Buchbergerのアルゴリズム
+連立代数方程式の解くための手法として注目を集める、グレブナ基底を
+計算するためのアルゴリズムである。このアルゴリズムの問題の一つは、
+その進行とともに計算すべき多項式の対が増加することである。この問
+題を解決するために量子計算の導入を試みる。
+第37回
+日時: 2001 年 12 月 15 日(土) 13:00 より
+場所: 電気通信大学 西 8 号館 7 階 718 号室
+題目: On quantum (non-)interactive proofs
+発表者: 田中圭介氏(東京工業大学大学院 情報理工学研究科)
+概要: 
+We will give an overview of the problems and results
+in quantum (non-)interactive proofs. We will see that one can think of
+quantum analogues of classical complexity classes, NP, MA, AM, IP, and
+MIP. We will also discuss the possibility that the problems which are
+not known in NP, are in a quantum analogue of NP.
+第36回
+日時: 2001年10月20日(土) 13:00 より
+場所: 電気通信大学 西 8 号館 7 階 718 号室
+題目: 量子回帰ネットワークについて
+発表者: 西野哲朗(電気通信大学 情報通信工学科)
+概要: 近年、量子ニューラルネットワークに関する研究が、盛んに行わ
+れるようになってきた。しかし、その数学的基礎理論については、ほと
+んど整備がなされていないのが現状である。そこで本発表では、現在、
+認知科学分野で幅広く利用されているニューラルネットワークである、
+単純回帰ネットワーク(simple recurrent network, Elman net)の量子
+論的アナロジーの定義について検討する。
+第35回
+日時: 2001 年 6 月 23 日 (土) 13:00 より
+場所: 電気通信大学 西 8 号館 7 階 718 号室
+題目: collision 問題に対する効率的量子アルゴリズムの設計について
+発表者: 大久保 誠也 氏(電気通信大学大学院 電気通信学研究科)
+概要: 
+collision とは, f(x)=f(y) を満たす X×Y の組 (x,y) のことであり,
+collision 問題とは, そのような組 (x,y) を探し出す問題である. 
+collision を発見することは, 暗号の分野で重要である.
+いくつかの暗号方式では, ハッシュ関数が用いられているが, そこでは 
+x  が与えられたときに h(x) を計算することは容易だが, 
+h(x) が与えられたときに x を求めることは難しく,
+h(x)=h(y) を満たす x とは異なる y を発見するのは難しい
+ことが仮定されている.
+実際, ハッシュ関数はパスワードの暗号化などに使われている. 
+collision 問題の解法は, 量子計算機上では Grover の量子探索アル
+ゴリズムを用いることにより, 
+古典計算機上よりも高速に行うことができる. 
+本発表では, 以下の論文 [1], [2]  のサーベイと, 
+いくつかの新しい結果について述べる. 
+参考文献
+G.Brassard, P.Hoyer and A.Tapp : 
+``Quantum Algorithm for the Collision Problem'',
+quant-ph/9705002 (1997). 
+Harry Buhrman, Cristoph Durr, Peter Hoyer, Frederic Magniez, Miklos Santha, Ronald de Wolf:
+``Quantum Algorithms for Finding Claws, Collisions and Triangles'',
+quant-ph/0007016 (2000).
+第34回
+日時: 2001 年 5 月 12 日(土)13:00 より
+場所: 電気通信大学 西 8 号館 7階 718号室
+題目: Quantum multi-prover interactive proof systems: QMIP = NEXP
+発表者: 小林 弘忠 氏 (東京大学大学院理学系研究科情報科学専攻,科学技術振興事業団今井量子計算機構プロジェクト)
+Abstract: We introduce a quantum analogue of multi-prover interactive
+proof systems by naturally extending the model of single-prover quantum 
+interactive proof systems defined by Watrous. It is proved that the 
+class of languages that have quantum multi-prover interactive proof 
+systems is equal to NEXP. It implies that the quantum analogue has 
+no gain to the classical counterpart in the setting of multi-prover
+interactive proof systems. Another interesting result shown in this 
+paper is that, in case the prover does not have his private qubits,
+the class of languages that have single-prover quantum interactive 
+proof systems is also equal to NEXP. To our knowledge, our results 
+give the first exact characterization of classical time complexity 
+class in quantum computational words.
+References:
+H. Kobayashi and K. Matsumoto.
+On the power of quantum multi-prover interactive proof systems.
+cs.CC/0102013, 2001.
+A. Kitaev and J. Watrous.
+Parallelization, amplification, and exponential time simulation of quantum interactive proof systems.
+In Proceedings of the 32nd Annual ACM Symposium on Theory of Computing, pages 608--617, 2000.
+J. Watrous. 
+PSPACE has constant-round quantum interactive proof systems.
+In Proceedings of the 40th Annual Symposium on Foundations of Computer Science, pages 112--119, 1999.
+第33回
+日時:2001 年 3 月 3 日(土) 13:00 より
+場所:電気通信大学 西 8 号館 7 階 718 号室
+題目:Non-adiabatic Conditional Geometric Phase Shift With NMR
+発表:Dr. Wang Xiang-Bin
+(Quantum Computation and Information Project, JST)
+概要:
+Fault-tolerate quantum logic gate is the central issue in realizing
+the basic constitutes of quantum information processor. A quantum
+logic gate for two quantum bits can be realized by the conditional
+phase shift. Conditional geometric phase shift gate, which is fault
+tolerate to certain errors due to its geometric property, is made by
+NMR technique recently under adiabatic condition.  By the adiabatic
+requirement, the result will be inexact unless the Hamiltonian
+changes extremely slowly in the process. However, in quantum
+computation, everything has to be completed within the decoherence
+time. High running speed of every gate in quantum computation is
+demanded because the  power of quantum computer can be exponentially
+proportional to the maximum  number of  logic gate operation that
+can be taken sequentially within the decoherence time. Adiabatic
+condition makes any fast conditional Berry phase(cyclic adiabatic
+geometric phase) shift gate impossible. Here we show that by using
+a new designed sequence of simple operations with an additional
+vertical magnetic field, the conditional geometric phase shift can
+be done non-adiabatically. Therefore geometric quantum computation
+can be done  in the same speed level of usual quantum computation.
+第32回
+日時:2000 年 12 月 9 日(土) 13:00 より
+場所:電気通信大学 西 8 号館 7 階 718 号室
+題目:「量子通信計算量」
+発表:三原 孝志 氏 (九州東海大学応用情報学部)
+概要:
+量子通信計算量(Quantum Communication Complexity)について概説する。
+まず、従来の通信計算量とはどのような計算量の尺度かを説明し、通信計算量を
+評価するためのいくつかの手法を紹介する。次に、量子通信で新たに提案された
+エンタングルメントを用いた計算量の効率化の手法を紹介する。通信計算量
+を減少させるために、従来から、パブリックコインと呼ばれるパーティ間で
+共通に読める情報(ただし、表か裏かの1ビット情報)を元に送信するデータを
+決定する手法が考えられてきている。量子の場合、このパブリックコインの
+一つとしてエンタングルメントが利用されており、どのように利用されるかを
+説明する。最後に、今までのマルチパーティで量子通信計算量が評価されている
+関数に共通に用いられるエンタングルメントの形を述べる。
+第31回
+日時:2000 年 10 月 28 日(土) 13:00 から
+場所:電気通信大学 西 8 号館 7 階 718 号室
+題目:「量子公開鍵暗号」
+発表者:田中 圭介 氏(NTT 情報流通プラットフォーム研究所)
+概要: 「量子公開鍵暗号」という新しい暗号のパラダイムを提案する.
+この量子公開鍵暗号では, パーティーはすべて多項式時間量子 Turing 機械とし,
+通信路は古典チャネルのみとする.
+このパラダイムに加え,
+量子公開鍵暗号通信の具体的な実現方式についても提案する.
+この方式の安全性は knapsack 問題の複雑さに依存しており,
+Shor の離散対数問題に対するアルゴリズムが
+量子計算機で実現されればこの方式も効率的に実行できる.
+参考文献:
+T. Okamoto, K. Tanaka, S. Uchiyama.
+Quantum Public-Key Cryptosystems.
+Advances in Cryptology---CRYPTO2000,
+pages~147--165, Santa Barbara, August 2000.
+Chor, B., and Rivest, R. L.
+A knapsack-type public key cryptosystem based on arithmetic
+in finite fields.
+IEEE Trans. on Information Theory 34, (1988), 901--909.
+Merkle, R.~C., and Hellman, M. E.
+Hiding information and signatures in trapdoor knapsacks.
+IEEE Trans. on Information Theory 24 (1978), 525--530.
+第30回
+日時:2000 年 9 月 30 日(土)
+場所:東京工業大学 本館 1-36 号室 (セミナー室)
+発表:藤井 一幸氏 (横浜市立大学  理学部  数理科学教室)
+題目:幾何学的量子コンピューターについて
+概要:
+それは突然にやって来た。1994年のある晴天の日にへきれきが鳴り響いた。
+P.Shor が整数の因数分解を多項式時間で実行する量子アルゴリズムをひっ提げて
+やって来たのである。このことはインターネット社会の基幹である RSA 暗号
+(公開鍵暗号)が破られることを意味する。これが driving force となり
+多くの研究者(まじめな人や野心家、山師等)がこの分野に参入してきた。
+では量子コンピューターとは何か? 量子力学の基本原理は
+重ね合わせの原理
+テンソル積の原理
+に要約出来る。2. は通常 1. 程重要視されていないが、量子コンピューターの
+立場からは重要である。
+量子コンピューターの定義(David Deutsch)
+量子コンピューターとは、上述の 1. と 2. を(量子)並列性として用いる
+量子チューリングマシーンのことである。
+ところで我々は最近のゲージ理論の猛烈な発展も知っている(量子重力、M 理論、
+F 理論等)。 ではこのゲージ理論を量子コンピューターに組み込めないか?
+我々の意図は次の通り。
+新しい考え方(幾何学的アプローチ) 
+Quantum Computer 
++ 
+Gauge Theory 
+(Geometry)
+Gauge Theoretical Quantum Computer 
+or 
+Geometric Quantum Computer
+この講演で幾何学的量子コンピューターの中でも、我々(Zanardi, Rasetti,
+Fujii, Pachos and Chountasis)が全力で取り組んでいる
+Holonomic Quantum Computer
+を概説する。
+参考文献	
+P.Zanardi and M.Rasetti : Holonomic Quantum Computation,
+Phys. Lett. A264 : 94-99, 1999, quant-ph 9904011.
+J.Pachos, P.Zanardi and M.Rasetti : 
+Non-Abelian Berry Connections for Quantum Computation,
+to appear in Phys. Rev. A, quant-ph 9907103. 
+K.Fujii : 
+Note on Coherent States and Adiabatic Connections, Curvatures,
+Jour. Math. Phys. 41(2000), 4406-4412, quant-ph 9910069.
+K.Fujii : 
+Mathematical Foundations of Holonomic Quantum Computer, 
+Talk given at the Int. Conf. ``The 32nd Symposium on Mathematical
+Physics'', quant-ph 0004102. 
+K.Fujii : More on Optical Holonomic Quantum Computer, 
+quant-ph 0005129. 
+J.Pachos and S.Chountasis : 
+Optical Holonomic Quantum Computer, 
+quant-ph 9912093. 
+第29回
+日時:2000 年 7 月 29 日(土)13時から
+場所:電気通信大学 西8号館 7F 718 号室
+発表者:西野 哲朗(電気通信大学 情報通信工学科)
+題目:「量子回路計算量理論概説」
+概要:量子回路計算量理論についてのチュートリアル的な解説を行いま
+す。まず、通常の回路計算量理論について概観した後、それとの対比において、
+量子回路計算量理論の特徴等について述べます。さらに、量子回路による量子 
+Turing 機械の模倣について触れ、その結果から導かれる(通常の)計算量理
+論に対する帰結について説明します。さらに、量子回路の深さに関する未解決
+問題などについても解説します。
+第28回
+日時:2000 年 6 月 24 日(土)13:00 - 16:30
+場所:東京工業大学 本館 1-36 号室
+発表:内山智香子 氏(山梨大学工学部)
+題目:"Quantum decoherence of a spin system strongly coupled to a quantum environment"
+概要:量子コンピューティングの実現に際して、
+デコヒーレンスは大きな障害となる。
+本講演では、デコヒーレンスを論ずる際必要となる素過程について報告する。
+具体的には、無限個のボソンで構成される量子論的な熱浴と
+横方向(x、y方向)で強く相互作用する
+スピン系のデコヒーレンスについて論ずる。
+このモデルは、位相緩和とエネルギー緩和の
+両者が存在する場合にあたっており、これを解くことにより、
+時間発展に温度効果、量子効果、及び熱浴との相互作用の効果が
+どのような影響を及ぼすのかについて検討することを目的とする。
+また、確率過程を用いた取り扱いとの関係についても触れる予定である。
+第27回
+日時:2000 年 3 月 22 日(土) 13:00 - 15:00
+場所:電気通信大学 西 8 号館 7 階 718 号室
+発表:林 正人 氏 (理化学研究所 脳科学総合研究センター脳数理研究チーム)
+題目:一般化物理量としてのサブ正規作用素と
+su(1,1) 代数に関連した合成系型正規拡大
+概要:一般に量子力学では物理量は自己共役作用素で
+記述されると考えられている.
+スペクトル分解が可能な作用素は正規作用素と呼ばれ,
+広い意味で物理 量を捉えるのであれば正規作用素まで物理量と
+して考えることも可能である.
+本講演では正規作用素よりもさらに広いクラスである
+サブ正規作用素のクラスにまで広げて物理量
+(一般化物理量)を捉える試みを行う.
+さらに,サブ正規作用素で記述される一般化物理量の観測を
+実現するための枠組みを提案する. 
+そして,サブ正規作用素の具体例としてはボゾンの生成演算子があり,
+その他 su(1,1) 代数と関連したサブ正規作用素も扱う.
+スクイズド光と su(1,1) 代数との関連にも触れる予定である.
+第26回
+日時:2000 年 2 月 26 日(土) 13:00 - 
+場所:電気通信大学 西 8 号館 7 階 718 号室
+発表:川畑史郎氏(通産省 工技院 電総研 電子基礎部 物性理論グループ)
+題目: 「バーストエラーに対する量子エラー訂正」
+概要:近年量子エラー訂正に関する研究が盛んに行われるようになってきた。
+これまで提案されている量子エラー訂正の方法は、
+ランダムエラーを前提として構築されている。
+しかし、実際の系においてはバーストエラー
+(特定のqubitに集中して生じるエラー)
+が生じる可能性がある。
+そこで今回、(古典符号理論の分野で用いられている)
+交錯法をもとにした量子バーストエラー訂正法を考案したので、
+その方法について報告を行う。
+内容:
+ランダムエラー訂正量子符号について
+古典バーストエラーと量子バーストエラー
+交錯法を用いた量子バーストエラー訂正
+ゲートの構成法
+参考文献:S. Kawabata
+"Quantum Interleaver: Quantum Error Correction for Burst Error"
+第25回
+日時:2000 年 1 月 14 日(金) 13:30 〜
+場所:東京工業大学南 1 号館 102 号室
+講師:松本 隆太郎(発表者), 植松 友彦(東工大 電気電子工学科)
+題名:"Construction of Nonbinary Quantum Codes"
+概要:Calderbank らによる additive code または stabilizer code 
+と呼ばれる qubitに対する量子誤り訂正符号の構成法, 
+およびKnill, Rainsによる基本になる量子システムが
+2次元以上の場合への一般化を紹介する. 
+次に松本・植松によるGF(p^2m)上の古典的誤り訂正符号を用いて、
+基本になる量子システムの次元が p^m の場合の
+量子誤り訂正符号を構成する手法を紹介する.
+文献: 今回の発表は以下の文献の一部の紹介です。
+A.R. Calderbank, E.M. Rains, P.W. Shor, and N.J.A. Sloane,
+``Quantum error correction and orthogonal geometry,''
+Phys. Rev. Lett., vol.78, no.3, pp.405--408,
+Jan. 1997. LANL eprint quant-ph/9605005.
+A.R. Calderbank, E.M. Rains, P.W. Shor, and N.J.A. Sloane,
+``Quantum error correction via codes over GF(4),''
+IEEE Trans. Inform. Theory, vol.44, no.4, pp.1369--1387, July 1998.
+LANL eprint quant-ph/9608006.
+D. Gottesman,
+``Class of quantum error-correcting codes saturating the quantum
+Hamming bound,'' Phys. Rev. A, vol.54, no.3, pp.1862--1868, Sept. 1996.
+LANL eprint quant-ph/9604038.
+E. Knill,
+``Non-binary unitary error bases and quantum codes,''
+LANL eprint quant-ph/9608048, Aug. 1996.
+E. Knill, ``Group representations, error bases and quantum codes,''
+LANL eprint quant-ph/9608049, Aug. 1996.
+R. Matsumoto and T. Uyematsu,
+``Constructing quantum error-correcting codes for $p^m$-state systems from classical error-correcting codes,''
+LANL eprint quant-ph/9911011, Dec. 1999.
+E.M. Rains,
+``Nonbinary quantum codes,'' IEEE Trans. Inform. Theory,
+vol.45, no.6, pp.1827--1832, Sept. 1999.
+LANL eprint quant-ph/9703048.
+第24回
+日時:1999 年 11 月 27 日(土) 14:00
+場所:電気通信大学 西 8 号館 7 階 718 号室 
+(西8号館は下記「学内配置図」の左下です)
+内容:
+題目: 「量子計算量理論における最近の話題」
+発表者: 西野 哲朗(電気通信大学 情報通信工学科)
+概要: 量子計算量の尺度としては、circuit complexity,query complexity,communication complexity の3種類が良く知られており、最近、これらの計算量尺度に基づく計算量理論が活発に研究されている。本発表では、(1) これらの概念の定義、(2) これら3つの計算量尺度の関係と、(3) 主要な証明手法についてサーベイする。
+第23回
+日時:1999 年 10 月 30 日(土)13時から
+場所:電気通信大学 西 8 号館 7 階 718 号室 
+講師:大沢 進 氏(電気通信大学大学院情報システム学研究科 韓,長岡研究室)
+内容:
+「符号化にエンタングルメントを利用した量子通信路容量の数値解析」
+概要;近年,量子通信路符号化定理が証明された.量子通信路符号化
+定理は,符号化に際して量子状態のエンタングルメントを利用しない
+量子通信路容量を与えたものである.符号化に際して量子状態のエン
+タングルメントを利用することによって,通信路容量がより大きくで
+きる可能性を検討するため,量子Arimoto-Blahutアルゴリズムを用い
+て数値解析を実行した.今回はその結果と,そこから導かれる理論的
+予想について報告する.
+第22回
+日時:1999 年 7 月 10 日(土) 13:00 - 17:00
+場所:電気通信大学 西 8 号館 7 階 718 号室 
+(西8号館は下記「学内配置図」の左下です)
+内容:
+徳永 裕己 氏(東京大学大学院理学研究科情報科学専攻)
+「量子コンピュータの汎用的シミュレータと因数分解の実験」
+あらまし:
+現在、実用的な量子コンピュータは存在しないため実際に量子
+アルゴリズムを様々な形で検証してみることが出来ない。そこで一般的に
+量子コンピュータを模倣するシミュレータを作成した。量子計算において
+基本的なユニタリ変換である Controlled-NOT やアルゴリズムで用いるフ
+ーリエ変換などをかけるときの計算量が小さくなるように工夫をした。そ
+してこれを用いて、Shor の因数分解を一般の整数に対して因数分解できる
+よう実装した。重ね合わせに必要な部分のみの振幅を保存するため5000を
+越える整数の因数分解のシミュレートが可能となった。以上について理論
+面と実験面からの考察をする。
+(2) 小川朋宏氏(電気通信大学大学院情報システム学研究科)
+「量子情報理論における強逆定理について」
+あらまし: 
+量子通信路符号化における強逆定理
+近年 Holevo と Schumacher-Westmoreland らにより独立に,量子通信路符
+号定理が完成された.量子通信路符号化定理は順定理と逆定理の二つに分
+けられる.量子通信路の通信容量より小さい符号化レートであれば,通信
+路の使用回数とともに,漸近的に誤り確率が0に近付く符号化と復号化の組
+が存在する(順定理).また,通信容量を越えた符号化レートで通信を行う
+と,どのような符号化,復号化を行っても,漸近的に誤り確率が0に近付か
+ない(逆定理).本研究においては,量子通信路における平均誤り確率の下
+限を導き,この下限に基づいて,量子通信路符号化定理の強逆定理を証明
+した.強逆定理の意味することは,通信容量を越えた符号化レートで通信
+を行うと,どのような符号化,復号化を行っても,漸近的に誤り確率が指
+数的に1に近付く,ということである.これは古典情報理論における,
+Arimoto の拡張になっている.
+関連文献
+Strong Converse to the Quantum Channel Coding Theorem
+quant-ph/9808063
+量子仮説検定における強逆定理
+Hiai-Petz らは,二つの量子状態の測定後の確率分布間の Kullback
+Divergenceが,量子相対エントロピーを漸近的に達成するような量子測定
+を構成した.彼らは,この測定と古典的仮説検定を組み合わせることで,
+第1種誤り確率が定数ε以下で,第2種誤り確率の指数レート( 第2種誤り
+確率の -1/nlog )が量子相対エントロピーにいくらでも近い量子仮説検定
+を構成した.本研究においては,第1種誤り確率と第2種誤り確率との間に
+成立するある基本的な不等式を示し,この不等式と Hiai-Petz の結果と
+を合わせることで,量子 Stein の lemma を完成させた.また,第2種誤
+り確率の指数レートが量子相対エントロピーを越えた任意の仮説検定では,
+第1種誤り確率を定数ε以下におさえることはできず,指数的に1に近付く
+ことを示した.
+関連文献
+Strong Converse and Stein's Lemma in the Quantum Hypothesis Testing
+quant-ph/9906090
+第21回
+日時:1998 年 6 月 27 日(土)13時から
+場所:東京工業大学本館 1-36 号室(物理学科輪講室)
+講師:Alberto Carlini 
+内容:
+"Quantum Computer and Randomized Algorithm", 
+by A. Carlini and A. Hosoya (TkIT)
+量子計算で素数判定を量子並列的に行うアルゴリズムを説明します。
+応用としては、素数にまつわる数論上の問題として、 
+ゴールドバッハ予想(任意の偶数は2個の偶数の和で表される)
+に関連したハーディー・リトルウッド予想のテストなどがあります。
+第20回
+日時:1999年5月29日(土) 13:00 - 17:00
+場所:電気通信大学 西8号館 7階 718号室
+内容
+[文献紹介] 吾妻 広夫 氏(キヤノン中央研究所)
+P. W. Shor, "Fault-tolerant quantum computation", 
+37th Symposium on Foundations of Computing, 
+IEEE Computer Society Press, 1996, pp. 56-65,
+quant-ph/9605011. ... 量子計算等の操作を実行している間も、
+ゲートの誤動作や qubit 
+のデコヒーレンスから生じるエラーを訂正する方法について
+議論しています。
+西野 哲朗 (電気通信大学 情報通信工学科)
+「最短ベクトル探索問題に対する量子アルゴリズムの設計について」
+第19回
+日時:1999 年 4 月 24 日(土)13:00 - 17:00
+場所:電気通信大学 西8号館 7階 718号室
+講師:吾妻 広夫 氏(キヤノン中央研究所)
+内容: 文献紹介
+P. W. Shor,"Scheme for reducing decoherence in quantum computer memory", Phys. Rev. A 52, 2493 (1995).
+…9個のqubitを使って1-qubitの情報を符号化し、
+1-qubitのデコヒーレンスを復元する量子エラー訂正コードについて
+A. Ekert and C. Macchiavello,"Quantum Error Correction for Communication", Phys. Rev. Lett. 77, 2585 (1996), 
+quant-ph/9602022
+…一般に、qubitが環境からどのようなデコヒーレンスを受けるか、
+特に、複数のqubitの間の相関のあるエラーについて
+A. R. Calderbank and P. W. Shor, "Good quantum error-correcting codes exist", Phys. Rev. A 54, 1098 (1996), 
+quant-ph/9512032
+…ハミング符号のような古典的なエラー訂正コードから、
+量子エラー訂正コードを作る方法について
+第18回
+日時:1999 年 1 月 30 日(土)
+場所:東京工業大学 本館 1 階 36 号室 (1-36) 13:00 より
+講師:呉 南健先生(電通大)
+タイトル:結合量子ドットによる量子コンピューティング
+概要:
+ここで量子コンピュータとは量子力学的効果を利用して情報処理を成し遂げるものを意味します。
+量子コンピュータを実現するために、
+いくつかのアプローチが試みられています。
+例えば、量子効果デバイスや量子干渉デバイスやコヒーレント量子コンピュータなどのアプローチがあります。
+本報告は2種類の量子効果デバイスについてのこれまでの研究結果を紹介し、
+これらの結果をヒントにコヒーレント量子コンピュータの基本論理ゲートを提案します。具体的に次の内容を報告します。
+鏡像効果を利用した量子セルオートマトンデバイス
+量子スピン構造ボルツマンマシン形ニューロンデバイス
+結合量子ドットによる量子計算コントロールドノットゲート
+第17回
+日時:1998 年 12 月 12 日(土) 13:00 - 17:00
+場所:電気通信大学 西 8 号館 7 階 718 号室
+内容:
+"Building partially entangled states defined with even collision functions"
+吾妻 広夫 氏(キヤノン中央研究所)
+以下、吾妻さんからのコメントです。
+'Building partially entangled states
+defined with even collision functions'
+(quant-ph/9810093)
+(quant-ph/9810093),
+mirror server
+(quant-ph/9810093))
+この文献では、
+衝突が全て偶である関数で定義される
+もつれ合った状態の構成方法が議論されています。
+このような状態の中には、
+任意の二つのqubitの置換、および、
+全てのqubitの|0>と|1>の同時反転に対して不変という、
+高度な対称性を持った、部分的にもつれ合った状態が含まれています。
+最適化された、高度な対称性を持つ、
+部分的にもつれ合った状態は、一般に、
+ラムゼー分光法における量子標準測定限界の
+克服に有効と考えられています(S.F Huelga et. al.)。
+この文献では、
+特定の基底ベクトルの係数の位相を選択的に回転させる操作と、
+グローバーの平均からの折り返し操作を使うことによって、
+この高度な対称性を持つもつれ合った状態が、
+poly(n) x 2^{n/2}オーダーの量子ゲートからなる
+ネットワークで構成可能であることが示されています。
+ただし、nはqubit数です。
+量子アルゴリズムの観点から見て、
+この方法は、いくつかの面白い性質を持っています。
+なお、今回の話題は、次の文献、
+'On the Improvement of Frequency Stardards with Quantum
+Entanglement'
+S.F Huelga, C. Macchiavello, T. Pellizzari,
+A.K. Ekert, M. B. Plenio, J.I. Cirac
+(Phys.Rev.Lett. 79 (1997) 3865)
+(quant-ph/9707014),
+mirror server(
+quant-ph/9707014)
+と関係があります。
+第16回
+日時:1998 年 11 月 28 日(土)13:00 - 17:00
+場所:電気通信大学 西 8 号館 7 階 718 号室
+内容:
+「非線形量子アルゴリズムの QTM によるシミュレーションについて」
+金田直樹(電通大大学院)
+「NMR 量子計算のモデル化について(続報)」
+西野哲朗(電通大)
+第15回
+日時:1998 年 10 月 24 日 (土) 13:00 より
+場所:東京工業大学本館 1-36 号室
+内容:"Quantum Algorithms Revisited",
+R. Cleve, A. Ekert M. Macchiavello and M. Mosca  について
+吾妻広夫氏(キヤノン中央研究所)
+この論文は以下の場所から入手できます。 
+quant-ph/9708016
+日本国内のミラーサーバはこちら
+quant-ph/9708016
+以下、吾妻さんのコメントです。
+この文献の前半は、これまでに提出されている、
+多くの量子計算アルゴリズムが、
+multi-particle interferenceの考え方を使えば、
+見通し良く理解できるということを説明した内容になっています。
+文献の後半は、Kitaevの方法と呼ばれている、
+ユニタリー変換の固有値を、量子計算機で求める方法の、
+簡潔な解説になっています。
+Kitaevの方法で因数分解を行う問題を考えると、
+Shorのアルゴリズムと、全く同じ量子ゲートのネットワークが得られます。
+Kitaevの方法に沿ってShorのアルゴリズムを見直すと、
+二段フーリエ変換の考え方が前面に出て来ず、
+これまでなされてきた説明とは異なった解釈が得られます。
+第14回
+日時:1998 年 9 月 12 日(土) 13:00 - 17:00
+場所:電気通信大学西 8 号館 7F 718 号室
+講師:細谷 暁夫 氏 (東工大物理)
+内容:"An Alternative Algorithm for the Database Search Problem on a Quantum Computer" by A. Carlini and A. Hosoya 
+この論文は
+quant-ph/9808028 に置かれています。
+日本国内のミラーサーバはこちら
+quant-ph/9808028(京大基研)
+第13回
+日時:1998年7月11日(土) 13:00 - 15:00
+場所:東京工業大学本館 H1-36 号室
+講師:久保 晴信氏(KEK)
+内容:B.E. Kane, "A Silicon-based nuclear spin quantum computer",Nature 393/14  May, 133 (1998)の紹介
+7/23からの理研における
+量子計算機の研究会
+でKaneさんの講演がありました。
+7/14 に厚木の 
+NTT 基礎研究所における「量子光学とメソスコピック物理国際シンポジウム」
+で Issac Chuang 氏が NMR 計算について話されました。
+第12回
+日時:1998年6月13日(土) 13:00 - 17:00
+場所:電気通信大学 西8号館 7階 718号室
+内容
+[文献紹介] "Nonlinear quantum mechanics implies polynomial-time solution for NP-complete and #P problems" (quant-ph/9801041) 
+金田直樹(電気通信大学 電気通信学研究科)
+「NMR 量子計算の定式化について(続報)」
+西野哲朗(電気通信大学 電子情報学科)
+第11回
+日時:1998年5月23日(土) 13:00 - 17:00
+場所:電気通信大学 西8号館 7階 718号室
+内容
+シューマッハの量子データ圧縮法について(文献紹介)
+吾妻広夫氏(キヤノン中央研究所)
+'A new proof of the quantum noiseless coding thorem',R. Jozsa and B. Schumacher, Journal of Modern Optics,1994, vol.41, No.12, 2342-2349
+'Quantum Coding', B. Schumacher, Phys, Rev. A51, 2738 (1995)
+'Schumacher's quantum data compression as a quantum computation', R. Cleve and D. P. DiVincenzo, Phys, Rev. A54, 2636 (1996)
+1),2)は、古典情報理論で基本的と考えられている、
+Shanonのnoiseless coding thoremを量子化したものの証明です。
+これは、sourceが、必ずしも直交し合わないpure stateを複数、
+あらかじめ与えられた確率で発生する場合、
+1信号あたりに使用するqubitをなるべく少なくして、
+しかも元の状態を、できるだけ忠実にコード化するには、
+どうしたらよいかという問題に関するものです。
+具体的には、ブロック化してコーディングを行います。
+これは、量子情報として、データを圧縮していることになります。
+3)は、このSchumacherのデータ圧縮を、量子コンピューターで
+行うには、どのようなプログラムにしたら良いかを、議論した文献です。
+量子コンピューターを使う際、計算過程を可逆にするにはどうしたら
+よいかなどが、細かく書かれています。
+以上、吾妻さんからのご案内によります。
+第10回
+日時:1998年4月3日(金) 11:00 - 16:00
+場所:東京工業大学 西3A号館 215号室(物理学科輪講室)
+内容
+11:00 - 13:00 「NMR 量子計算の計算論的定式化」
+西野 哲朗氏(電通大電子情報)
+13:00 - 14:00  昼食
+14:00 - 16:00 「NMR 量子計算のインプリメンテーション」
+北川 勝浩氏(阪大基礎工)
+第9回
+日時:1998年1月23日 13:00 - 17:00
+場所:理化学研究所 
+脳科学総合研究センター東棟 一階セミナールーム[104-105]
+内容
+「微小ジョセフソン接合回路におけるコヒーレントな2準位系」
+中村泰信氏(NEC基礎研)
+第8回
+日時:1997年11月22日 13:00 - 17:00
+場所:電気通信大学 西8号館 7階 718号室
+内容
+「量子暗号の基礎」(2時間程度)
+山崎 浩一 先生(玉川大)
+"Quantum computation and Shor's factoring algorithm", 
+Auther Ekert and Richard Jozsa, 
+Reviews of Modern Physics, Vol. 68, No. 3 (1996)の購読
+レポータ:金田 直樹(電通大)
+第7回
+日時:9月27日 土曜日 13:00 - 17:00
+場所:東京工業大学 大岡山キャンパス 本館 1-36号室(物理学科輪講室)
+内容
+Chau & Lo, Primality Test Via Quantum Factorization(quant-ph/9508005)
+西野哲朗氏(電通大)
+"Bulk Quantum Computation by NMR"
+北川勝浩氏(阪大基礎工)
+参考文献:Neil A. Gershenfeld and Isaac l. Chuang,
+"Bulk Spin-Resonance Quantum Computation",Science, Vo. 275, 17 Jan. 1997, pp.350-356
+第7回(関西地区との合同開催)
+日時:1997年7月19日(土)11時より
+場所:名古屋大学情報文化学部(〒464 名古屋市千種区不老町)
+内容:量子コンピュータ研究の最近の進展についてのチュートリアル的な
+講演会である.
+トピックとして,量子計算機実現方法に関する話題,
+量子誤り訂正方式についての量子コンピュータ寄りのアプローチと
+量子情報理論的アプローチの対比,また量子計算量理論に関するチュートリアル等を予定している.
+連絡先:〒464名古屋市千種区不老町 
+名古屋大学情報文化学部  小澤正直
+電話 052-789-4728, FAX   052-721-2686
+e-mail  
+e43252a@nucc.cc.nagoya-u.ac.jp
+その他現在関東,関西に分かれて活動を行っている量子計算研究会の合同研究会である.
+第5回
+日時: 1997年5月17日(土) 13:00 〜 17:00
+場所: 理化学研究所レーザ研究棟 大河内記念ホール
+内容:
+"Groverのアルゴリズムについて"
+注:("A fast quantum mechanical algorithm for database search",
+Proceedings, 28th Annual ACM Symposium on the Theory of Computing (STOC),
+May 1996, pages 212-219;
+or "http://xxx.lanl.gov/abs/quant-ph/9605043")
+細谷  暁夫(東工大)
+"Quantum computation and Shor's factoring algorithm", 
+Auther Ekert and Richard Jozsa, 
+Reviews of Modern Physics, Vol. 68, No. 3 (1996) の購読 
+(セクション VIII)
+レポータ:柴尾  昌克(東工大大学院理工学研究科物理学専攻修士課程1年)
+第4回
+日時: 1997年4月19日(土) 13:00 〜 17:00 
+場所: 電気通信大学 西8号館 718号室
+内容: 
+「Quantum MemoryとQuantum Wireの構成」
+金田 直樹(電通大大学院電気通信学研究科電子情報学専攻博士前期課程1年)
+"Quantum computation and Shor's factoring algorithm", 
+Auther Ekert and Richard Jozsa, 
+Reviews of Modern Physics, Vol. 68, No. 3 (1996) の購読 
+(セクション V 〜 VII)レポータ:西野 哲朗(電通大)
+第3回
+日時: 1997年3月7日(金) 13:00 〜 17:00
+場所: 東京工業大学 大岡山キャンパス 本館 1-36号室 (物理学科輪講室)
+内容: 
+「量子計算の実現にむけて:その現状」(2時間程度) 
+竹内繁樹(科学技術振興事業団さきがけ研究21,三菱電機先端総研)
+「量子計算と量子漸近推定」(90分程度)
+林 正人(京都大学大学院理学研究科数学専攻博士後期課程)
+第2回
+日時: 1997年1月17日(金) 13:00 〜 17:00
+場所: 理化学研究所本館(セミナールーム)
+内容: 
+PhysComp96 の報告
+梅野 健(理研)
+"Quantum computation and Shor's factoring algorithm", 
+Auther Ekert and Richard Jozsa, 
+Reviews of Modern Physics, Vol. 68, No. 3 (1996) の購読
+(セクション IV)レポータ:西野 哲朗(電通大)
+第1回
+日時: 1996年11月15日(金) 13:00 〜 17:00
+場所: 電気通信大学 西9号館 3階 AVホール
+内容: 
+細谷先生(東工大)のレクチャー + ディスカッション
+"Quantum computation and Shor's factoring algorithm", 
+Auther Ekert and Richard Jozsa, 
+Reviews of Modern Physics, Vol. 68, No. 3 (1996) の購読 
+(セクション I〜III)レポータ:西野 哲朗(電通大)
+量子計算研究会関東地区のホームページに戻る
+QC Society Kanto Meetings

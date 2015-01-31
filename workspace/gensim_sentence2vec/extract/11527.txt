@@ -1,0 +1,47 @@
+日本人大学生の書いた
+英作文の誤り検出をします
+KJ コーパス(KJ=甲南大学・教育測定研究所)
+|  日本語学習者の170エッセイ(課題作文)
+|  文法誤り情報と品詞・句情報を人手付与
+[NP He/PRP ] [VP works/VBZ ] [PP to/TO ] [NP the/DT flowershop/NN-NN ] ./.
+He works <prp crr="at">to</prp> <at crr="a">the</at> flowershop.
+※
+prp: 前置詞 preposition error
+at: 冠詞 article error
+crr: 訂正 correction
+2
+入力は学習者の英作文で、
+出力は正誤のラベルです
+学習(訓練)データ
+=正解ラベルが
+ システムに分かる
+テスト(評価)データ
+=正解ラベルが
+ システムに分からない
+|  テストデータに対し
+システムがどの程度正しく正解ラベルをつけられたか
+によってシステムの性能を評価する
+|  比較対象=ベースラインと呼ばれる
+3
+単語 品詞 ラベル
+He PRP O
+works VBZ O
+toat TO ERR
+thea DT ERR
+flowershop NN O
+. . O
+誤り検出を系列ラベリング
+として解きます
+|  B-ERR: 誤り箇所の始まり
+|  I-ERR: 誤り個所の続き
+|  O: 訂正しなくてもよい箇所
+※このようなラベル付けはBIOタグと呼ばれる
+He works toat thea flowershop.
+He O
+works O
+toat B-ERR
+thea I-ERR
+flowershop O
+. O
+4
+NAIST-2012-NLP Summer Bootcamp - SSSSLIDE

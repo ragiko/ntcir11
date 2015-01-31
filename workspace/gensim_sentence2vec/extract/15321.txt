@@ -1,0 +1,148 @@
+
+道路面情報に基づくステレオ動画像を用いた車両の前方環境認識
+関晃仁, 奥富正敏
+情報処理学会論文誌:コンピュータビジョンとイメージメディア, Vol.1, No.1, pp.1-19, June, 2008
+ステレオ動画像を用いた車両の前方環境認識
+関晃仁, 奥富正敏
+情報処理学会研究報告(コンピュータビジョンとイメージメディア 2007-CVIM-159),
+Vol.2007, No.42, pp.1-16, May, 2007
+障害物検出
+Robust Obstacle Detection in General Road Environment Based on Road Extraction and Pose Estimation
+Akihito Seki and Masatoshi Okutomi
+Electronics and Communications in Japan, Part II, Vol.90, No.12, pp.12-22, December, 2007
+IEEE Intelligent Vehicle Symposium, pp437-444, June, 2006
+道路面の抽出・姿勢推定をもとにした一般道路環境下におけるロバストな障害物検出
+関晃仁, 奥富正敏
+電子情報通信学会論文誌 D, Vol.J89-D, No.8, pp.1859-1868, August, 2006
+第12回画像センシングシンポジウム(SSII2006)予稿集, pp.370-373, June, 2006
+平面の検出・姿勢推定を利用した一般道路環境下におけるロバストな障害物検出
+関晃仁, 奥富正敏
+電子情報通信学会研究報告(ITS2005),Vol.105,No.259,pp.13-19,September,2005
+位置と運動の同時推定
+非同期ステレオ動画像を用いた同時最適化による位置とモーションの推定
+関晃仁, 奥富正敏
+情報処理学会論文誌:コンピュータビジョンとイメージメディア, Vol.49, No.SIG6 (CVIM20), pp.22-34, March, 2008
+Simultaneous Optimization of Structure and Motion in Dynamic Scenes Using Unsynchronized Stereo Cameras
+Akihito Seki and Masatoshi Okutomi
+Proceedings of IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR2007),
+pp.1-8, June, 2007
+非同期ステレオ動画像を用いた動的シーンの位置とモーションの同時推定
+関晃仁, 奥富正敏
+情報処理学会研究報告(コンピュータビジョンとイメージメディア 2007-CVIM-157),
+Vol.2007, No.1, pp.177-184, January, 2007
+ステレオ動画像を用いた動的シーンのモーションと奥行きの同時推定
+関晃仁, 奥富正敏
+画像の認識・理解シンポジウム(MIRU2006)論文集, pp.352-357, July, 2006
+直線状構造物検出
+ステレオ画像を用いた道路シーン中の直線の抽出
+田中健一, 奥富正敏
+電子情報通信学会論文誌 D, Vol.J89-D, No.8, pp.1892-1896, August, 2006
+ステレオ画像を用いた道路シーン中の直線の抽出と識別
+田中健一, 奥富正敏
+情報処理学会研究報告2004-CVIM-149, Vol.2005, No.38, pp.83-87, May, 2005
+姿勢推定
+Fast Plane Parameter Estimation From Stereo Images
+Sigeki Sugimoto and Masatoshi Okutomi
+Proceedings of the IAPR Conference on Machine Vision Applications (MVA2007), pp.567-570, May, 2007.
+ステレオ画像を用いた高速な平面パラメータ推定法
+杉本茂樹,奥富正敏
+情報処理学会論文誌:コンピュータビジョンとイメージメディア, Vol.48, No.SIG1(CVIM17), pp.24-34, February, 2007.
+ステレオ画像を利用した平面姿勢推定手法と多眼カメラへの拡張
+杉本茂樹,奥富正敏
+情報処理学会研究報告(コンピュータビジョンとイメージメディア 2005-CVIM-151),
+Vol.2005,No.112, pp.131-138, November,2005
+運動推定
+Egomotion Estimation Using Planar and Non-planar Constraints
+Takahiro Azuma, Masatoshi Okutomi and Shigeki Sugimoto
+Proceedings of 2010 IEEE Intelligent Vehicles Symposium (IV 2010), June, 2010 (to be appeared)
+車載ステレオカメラによる自車両の運動推定
+関晃仁, 奥富正敏
+画像ラボ, 日本工業出版, Vol.17, No.10, pp.37-41, October, 2006
+Ego-Motion Estimation by Matching Dewarped Road Regions Using Stereo Images
+Akihito Seki and Masatoshi Okutomi
+Proceedings of the IEEE International Conference on Robotics and Automation, pp.901-907, May, 2006
+ステレオ動画像を利用した道路領域の抽出と追跡による自車両の運動推定
+関晃仁,奥富正敏
+情報処理学会論文誌コンピュータビジョンとイメージメディア(CVIM),Vol.47,No.SIG 5(CVIM13),pp.90-99, March, 2006
+abstract
+本論文では,車載ステレオカメラを使った自車両の運動推定手法を提案する.
+カメラを利用して自車両の運動推定を行なうには,
+画像中で静止領域を特定する必要がある.
+そのため,ステレオ画像を用いて,まず道路平面領域を抽出し,
+かつカメラに対する道路平面の姿勢を推定する.
+次いで,入力画像を道路平面を真上から見た画像に変換した上で,
+異なる時刻に得られる変換後の画像間で,抽出された道路平面領域パターンの
+マッチングを行ない自車両の運動を推定する. 
+マッチングには並進と回転の3つのパラメータが含まれるが,
+まず車両の運動モデルを導入することで簡便かつ安定に運動推定を行ない,
+さらにその推定結果を勾配法を用いて繰り返し更新することで,
+より高精度に運動パラメータを求める方法を提案する.
+最後に,
+合成画像と車載カメラによる実画像を用いた実験を通じ,本手法の有効性を示す.
+ステレオ動画像を利用した道路面パターン抽出による自車両の運動推定
+関晃仁, 奥富正敏
+情報処理学会研究報告2004-CVIM-146, Vol.2004, No.113, pp.89-96, November, 2004
+危険領域検出
+Robust Estimation of Planar Regions for Visual Navigation Using Sequential Stereo Images
+Masatoshi Okutomi, Katsuyuki Nakano, Junichi Maruyama, and Tomoaki Hara
+International Conference on Robotics and Automation, 2002
+abstract
+In this paper, we propose a robust method to estimate planar regions
+using sequential stereo images for visual navigation of an autonomous vehicle.
+The proposed method estimates 2-D projective transformations dynamically,
+which represent planes in space,
+for both stereo images and sequential images.
+This can be done robustly by utilizing sequential information,
+i.e. previous estimation of both the projective transformations
+and the planar region.
+In addition, a method for preventing misdetection due to textureless areas
+is proposed.
+The experimental results,
+using sequential stereo images taken from a moving vehicle,
+have shown that the proposed method can work robustly
+even in the conditions of undulation of the road
+and rolling and pitching of the vehicle.
+ステレオ動画像を用いた視覚誘導のための平面領域の連続推定
+奥富正敏,中野勝之,丸山純一,原智章
+情報処理学会論文誌,vol.43, no.4, 2002
+情報処理学会コンピュータビジョンとイメージメディア研究会 2000-CVIM-123,2000
+abstract
+本論文では,自律移動車の視覚誘導等への利用を目指し,
+ステレオ動画像を用いて,
+空間中の平坦部に対応した領域を,画像から抽出する手法を提案する.
+本手法では,
+ステレオ画像間の射影変換行列を,その都度推定し利用することで,
+路面の傾斜や車両の傾き等に対しても対応可能である.
+また,2台のカメラから同時刻に得られる画像間の射影変換に加え,
+撮影時刻の異なる画像間における射影変換も求め,
+加えて,前時刻における射影変換と
+平面領域の推定結果を積極的に利用することで,
+処理の安定化を図っている.
+また,テクスチャのない領域に対して誤判定を防ぐための処理も行う.
+走行中の車両から実際に撮影したステレオ動画像を用いた実験結果を示し,
+本手法の有効性を示す.
+Parallel Image Processing for Visual Navigation
+Katsuyuki Nakano and Masatoshi Okutomi
+Sixth International Conference on Control, Automation, Robotics, and Computer Vision, 2000
+マルチスレッドを利用したビジュアルナビゲーション研究開発環境
+中野勝之,奥富正敏
+第5回ロボティクスシンポジア,2000
+ステレオ画像からの射影変換行列の抽出による道路領域検出
+奥富正敏,野口卓,中野勝之
+日本ロボット学会誌, vol.18, no.8, pp1105-1111, 2000
+Three-Color Fiducial for Pose Estimation
+Loic Malassis and Masatoshi Okutomi
+Asian Conference on Computer Vision, 2000
+Extraction of Road Region Using Stereo Images
+Masatoshi Okutomi and Suguru Noguchi
+International Conference on Pattern Recognition, pp853-856, 1998
+ステレオ画像を用いた道路領域の抽出
+野口卓,奥富正敏
+第4回画像センシングシンポジウム, pp73-78,1998
+ステレオ画像からの道路平面に対する射影変換行列の導出
+野口卓,奥富正敏
+情報処理学会コンピュータビジョンとイメージメディア研究会,97-CVIM-108, pp23-30,1997
+ステレオ画像による道路領域の抽出
+野口卓,奥富正敏
+電子情報通信学会 情報・システムソサイエティ大会, D-12-84, pp276, 1997
+Okutomi lab

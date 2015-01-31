@@ -1,0 +1,433 @@
+外部メディアファイルを読み込む
+openFrameworkに、音声や、画像、動画ファイルを読み込んでプログラムの中で使用することが可能です。様々なメディアを読み込んで活用する方法について解説していきます。
+サウンドファイルの再生 (ofSoundPlayer)
+まず始めにサウンドを扱ってみましょう。既存のサウンドファイルのデータを読み込んで再生します。openFrameworksでは、サウンドファイルを読みこんで再生するためのofSoundPlayerというクラスが用意されています。ofSoundPlyaerは、Waveファイル(.wav)、Aiffファイル(.aif)、MP3ファイル(.mp3)、RAWファイル(.raw)など様々なファイル形式のサウンドファイルを読み込んで再生することが可能です。
+まずはじめに、サウンドファイルを再生する簡単なサンプルを作成してみましょう。
+testApp.h
+#ifndef _TEST_APP
+#define _TEST_APP
+#include "ofMain.h"
+class testApp : public ofBaseApp {
+public:
+void setup();
+void update();
+void draw();
+void keyPressed  (int key);
+void keyReleased(int key);
+void mouseMoved(int x, int y );
+void mouseDragged(int x, int y, int button);
+void mousePressed(int x, int y, int button);
+void mouseReleased(int x, int y, int button);
+void windowResized(int w, int h);
+ofSoundPlayer mySound; //ofSoundクラスをインスタンス化
+};
+#endif
+testApp.cpp
+#include "testApp.h"
+void testApp::setup(){
+mySound.loadSound("glitch_loop.wav"); //サウンドファイルの読込み
+mySound.setLoop(true); //ループ再生をONに
+mySound.play(); //サウンド再生開始
+}
+/* 後略 */
+ofSoundPlayerはクラスなので、使用するためにはまずインスンタンス化する必要があります。このサンプルでは、インスタンス化はtestApp.hの中で行っています。次に、ofSoundPlayerのインスタンスのメソッドを利用して、サウンドファイルの読み込みをします。再生するサウンドファイルは、アプリケーションの実行ファイルと同じ場所にある「data」フォルダの中に配置します。
+openFrameworksのプロジェクト内では、サウンドファイルの配置場所は
+《プロジェクトフォルダ》/bin/data/ になります。
+ofSoundPlayerを利用すると、サウンドファイルの読み込み、再生の他にも様々な指定が可能です。先程のサンプルでは、再生の際にループするように設定していました。
+《ofSoundPlayerのインスタンス》.loadSound(《サウンドファイル名》);
+サウンドファイルの読み込み
+《ofSoundPlayerのインスタンス》.play()
+サウンドの再生開始
+《ofSoundPlayerのインスタンス》.stop()
+サウンドの再生終了
+《ofSoundPlayerのインスタンス》.setVolume()
+サウンドの音量を設定
+《ofSoundPlayerのインスタンス》.setPan()
+サウンドの定位(左右の音量のバランス)を設定
+《ofSoundPlayerのインスタンス》
+サウンドの再生のスピードを設定、再生スピードを上げるとピッチも上がる
+《ofSoundPlayerのインスタンス》.setLoop()
+ループ再生をするかどうか設定
+《ofSoundPlayerのインスタンス》.setMultiPlay()
+同じサウンドを一度に重ねて再生するかどうか設定
+もう少し、サウンドファイルを操作できるように改良してみましょう。画面上でマウスボタンを押すと再生開始、マウスボタンを離すと再生終了するにしてみます。また、マウスのy軸上の位置で再生スピードを変更、マウスのx軸上の位置で、左右の音量バランスを変更できるようにもしてみましょう。
+testApp.h
+#ifndef _TEST_APP
+#define _TEST_APP
+#include "ofMain.h"
+class testApp : public ofBaseApp {
+public:
+void setup();
+void update();
+void draw();
+void keyPressed  (int key);
+void keyReleased(int key);
+void mouseMoved(int x, int y );
+void mouseDragged(int x, int y, int button);
+void mousePressed(int x, int y, int button);
+void mouseReleased(int x, int y, int button);
+void windowResized(int w, int h);
+ofSoundPlayer mySound; //ofSoundクラスをインスタンス化
+};
+#endif
+testApp.cpp
+#include "testApp.h"
+void testApp::setup(){
+ofBackground(0, 0, 0);
+mySound.loadSound("drum_loop.aif"); //サウンドファイルの読込み
+mySound.setLoop(true); //ループ再生をONに
+}
+/* 中略 */
+void testApp::mouseDragged(int x, int y, int button){
+//パンの設定
+mySound.setPan(x / (float)ofGetWidth() * 2 - 1.0f);
+//再生スピード変更
+mySound.setSpeed( 0.5f + ((float)(ofGetHeight() - y) / (float)ofGetHeight())*1.0f);
+}
+void testApp::mousePressed(int x, int y, int button){
+//パンの設定
+mySound.setPan(x / (float)ofGetWidth() * 2 - 1.0f);
+//再生スピード設定
+mySound.setSpeed( 0.5f + ((float)(ofGetHeight() - y) / (float)ofGetHeight())*1.0f);
+//サウンド再生開始
+mySound.play();
+}
+void testApp::mouseReleased(int x, int y, int button){
+mySound.stop(); //サウンド再生終了
+}
+/* 後略 */
+さらに工夫を加えてみます。現在再生しているサウンドの音量を取得して、その音量にあわせて円の半径を変化させてみましょう。音を再生する様子を視覚的に捉えることができるようになります。
+testApp.h
+#ifndef _TEST_APP
+#define _TEST_APP
+#include "ofMain.h"
+class testApp : public ofBaseApp {
+public:
+void setup();
+void update();
+void draw();
+void keyPressed  (int key);
+void keyReleased(int key);
+void mouseMoved(int x, int y );
+void mouseDragged(int x, int y, int button);
+void mousePressed(int x, int y, int button);
+void mouseReleased(int x, int y, int button);
+void windowResized(int w, int h);
+ofSoundPlayer mySound; //ofSoundクラスをインスタンス化
+float radius; //円の半径
+};
+#endif
+testApp.cpp
+#include "testApp.h"
+void testApp::setup(){
+ofBackground(0, 0, 0);
+ofSetVerticalSync(true);
+ofSetCircleResolution(64);
+ofEnableAlphaBlending();
+radius = 0; //円の半径
+mySound.loadSound("drum_loop.aif"); //サウンドファイルの読込み
+mySound.setLoop(true); //ループ再生をONに
+}
+void testApp::update(){
+float * val = ofSoundGetSpectrum(1); //再生中のサウンドの音量を取得
+radius = val[0] * 800.0; //円の半径に適用
+}
+void testApp::draw(){
+ofSetColor(0, 63, 255, 180);
+ofCircle(mouseX, mouseY, radius);
+}
+/* 中略 */
+void testApp::mouseDragged(int x, int y, int button){
+//パンの設定
+mySound.setPan(x / (float)ofGetWidth() * 2 - 1.0f);
+//再生スピード変更
+mySound.setSpeed( 0.5f + ((float)(ofGetHeight() - y) / (float)ofGetHeight())*1.0f);
+}
+void testApp::mousePressed(int x, int y, int button){
+//パンの設定
+mySound.setPan(x / (float)ofGetWidth() * 2 - 1.0f);
+//再生スピード設定
+mySound.setSpeed( 0.5f + ((float)(ofGetHeight() - y) / (float)ofGetHeight())*1.0f);
+//サウンド再生開始
+mySound.play();
+}
+void testApp::mouseReleased(int x, int y, int button){
+mySound.stop(); //サウンド再生終了
+}
+/* 後略 */
+画像ファイルを扱う (ofImage)
+音に続いて、画像データを扱ってみましょう。静止したデジタル画像データは、コンピュータ画面上に図形を描画する際と同様に、X軸方向とY軸方向にグリッド状に整列したピクセルの集合体です。それぞれのピクセルの色の濃度を数値として記録しています。現在のほとんどのコンピュータは、32bitのカラーを表示できる性能があります。32bitカラーの場合、RGBA(Red、Green、Blue、Alpha)それぞれの色の値で8bitずつ、つまり256段階で色の階調を記録しています。
+画像データをハードディスクなどの記憶装置などに保存する際には、ピクセルの数値データをそのまま保存するとファイルの容量が巨大になってしまうため、計算処理によりデータを圧縮して容量を削減して保存する場合がほとんどです。情報の圧縮の方法、保存の形式などによって、様々な画像ファイルの形式が存在します。そのため、画像ファイルを読み書きするためには、こうした画像フォーマットの規格に沿って、データを取り扱う必要があります。
+openFrameworksでは、画像ファイルの読み込みと書き出しに「freeImage」という既存のライブラリをopenFrameworksから利用できるようにした、ofImageクラスを利用します。ofImageクラスの機能を介して、PNG、BMP、Jpeg、TIFFなどの主要な形式の画像をデータとして読み込んだり、生成した画像データをファイルとして書き出すことが可能となります。
+では、実際にofImageを利用して画像ファイルを読み込んで画像データとして利用したり、画面をキャプチャーしたデータを画像ファイルとして保存してみましょう。
+新規プロジェクト「ShowImage」を作成します。
+testApp.h
+#ifndef _TEST_APP
+#define _TEST_APP
+#include "ofMain.h"
+class testApp : public ofBaseApp {
+public:
+void setup();
+void update();
+void draw();
+void keyPressed  (int key);
+void keyReleased(int key);
+void mouseMoved(int x, int y );
+void mouseDragged(int x, int y, int button);
+void mousePressed(int x, int y, int button);
+void mouseReleased(int x, int y, int button);
+void windowResized(int w, int h);
+ofImage myImage; //画像ファイルより読みこまれたイメージデータ
+ofImage grabbedImage; //画面をキャプチャーしたイメージデータ
+};
+#endif
+testApp.cpp
+#include "testApp.h"
+void testApp::setup(){
+//画面の基本設定
+ofBackground(0,0,0);
+ofEnableSmoothing();
+//画面の混色の設定を加算合成にする
+glEnable(GL_BLEND);
+glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//画像データの読込み
+myImage.loadImage("MonaLisa.jpg");
+}
+void testApp::update(){
+}
+void testApp::draw(){
+//色の設定
+ofSetColor(255, 255, 255);
+//読み込んだ画像データを画面に描画
+myImage.draw(20,20);
+//画像データのビットマップ情報を配列に格納
+unsigned char * pixels = myImage.getPixels();
+//画像の幅と高さを所得
+int w = myImage.width;
+int h = myImage.height;
+//画像を8ピクセル間隔でスキャン
+for (int i = 0; i < w; i+=8){
+for (int j = 0; j < h; j+=8){
+//ピクセルのRGBの値を取得
+int valueR = pixels[j*3 * w + i*3];
+int valueG = pixels[j*3 * w + i*3+1];
+int valueB = pixels[j*3 * w + i*3+2];
+//取得したRGB値をもとに、円を描画
+//取得したピクセルの明るさを、円の半径に対応させている
+ofSetColor(255, 0, 0, 63);
+ofCircle(440+i, 20+j, 10*valueR/255.0);
+ofSetColor(0, 255, 0, 63);
+ofCircle(440+i, 20+j, 10*valueG/255.0);
+ofSetColor(0, 0, 255, 63);
+ofCircle(440+i, 20+j, 10*valueB/255.0);
+}
+}
+}
+void testApp::keyPressed(int key){
+//「x」キーを押すと、画面をキャプチャーする
+if(key == 'x'){
+//位置とサイズを指定して、画面をキャプチャー
+grabbedImage.grabScreen(430,10,420,642);
+//キャプチャーした画像データを「grabbedImage.png」で保存
+grabbedImage.saveImage("grabbedImage.png");
+}
+}
+/* 後略 */
+まず、testApp.hで、ofImageのインスタンスを2つ生成しています。myImageは、既存の画像ファイルを読み込んで、データとして利用するためのものです。また、grabbedImageはopenFrameworksで生成した画面の領域を指定して、その枠内の画像データをキャプチャーして画像データとして保存するため使用します。
+testApp.cppでは、ofImageを利用した画像ファイルの読み込み、画像ファイルの解析、画像ファイルの書き出しという一連の処理を行っています。
+ofImageのインスタンスに対して、「loadImage(“ファイル名”)」というメソッドを実行して、指定した場所にある画像ファイルを画像データとして読み込んでいます。ここで読みこむ画像ファイルは、音声データと同様に、openFrameworksのプロジェクトフォルダ内にある「bin」「data」フォルダ内に配置します。読込むファイルの画像形式は、そのファイルの拡張子から類推して自動的に判別しています。
+PNG – .png
+JPEG – .jpg .jpeg
+TIFF – .tiff .tif
+TGA – .tga .tpic
+GIF – .gif
+ofImageにloadImageを使用して読みこんだ画像ファイルのデータは、ピクセル単位でその値を取り出して解析することが可能です。ofImageのインスタンスに「getPixel()」というメソッドを実行すると、その画像データのピクセル毎の色の階調の情報を配列として取り出すことができます。画像ファイルのカラーモードが透明度の情報を持ったRGBAカラーモデルの場合には、画像の1ピクセルに対して4つの値(RGBA)、透明度の情報のないRGBカラーモデルの画像の場合にはピクセルあたり3つの値(RGB)の値が、順番に並んで配列に格納されています。
+このサンプルでは、RGBカラーモードの画像を読み込んで、RGBそれぞれの色の濃度の情報を8ピクセル間隔でスキャンして、それぞれ別々の配列に格納しています。解析したピクセル情報をもとに、それぞれの色ごとに濃度に応じた半透明の円を描画して、読み込んだ画像を点描のような効果で再現しています。
+こうして生成した画像を今度は画像ファイルとして書き出してみましょう。openFrameworksで生成した画面を、画像ファイルとして書き出すには、実行している画面の中から画像ファイルとして書き出す領域を指定します。ofImageのインスタンスに対して、「grabScreen(左端のX座標, 上端のY座標, 幅, 高さ)」というメソッドを実行することで、領域の指定枠内をキャプチャーして、メソッドを実行したofImageのインスタンスにその画像データを格納します。
+画像データをファイルとして保存するには、ofImageのインスタンスに、「savaImage(“ファイル名”)」というメソッドを実行します。そうすると、指定したファイル名で、画像ファイルを読み込んだ場合と同様に、openFrameworksのプロジェクトフォルダ内にある「bin」「data」フォルダ内に画像ファイルを書き出します。画像ファイルのフォーマットは、指定した拡張しから類推して自動的に決定されます。このサンプルでは、点描風に画像を再現した部分のみ抽出して、PNG形式で保存しています。
+動画の再生 (ofVideoPlayer)
+次に、動画ファイルを読み込んで再生してみましょう。openFrameworksでは、QuickTimeのライブラリを利用して動画の読み込み、再生を行っています。OpenFrameworksからQuickTimeを利用するためには、ofVidePlayerクラスを使用します。ofMoviePlayerクラスを介して、QuickTime形式のファイルを読み込み、画面上で再生したり解析することが可能です。openFramwroksで扱う動画は、パラパラマンガのように、変化する画像データを指定した間隔で次々に表示していると考えると良いでしょう。
+testApp.h
+#ifndef _TEST_APP
+#define _TEST_APP
+#include "ofMain.h"
+class testApp : public ofBaseApp{
+public:
+void setup();
+void update();
+void draw();
+void keyPressed  (int key);
+void keyReleased(int key);
+void mouseMoved(int x, int y );
+void mouseDragged(int x, int y, int button);
+void mousePressed(int x, int y, int button);
+void mouseReleased(int x, int y, int button);
+void windowResized(int w, int h);
+ofVideoPlayer fingersMovie;
+};
+#endif
+testApp.cpp
+#include "testApp.h"
+#include "stdio.h"
+void testApp::setup(){
+//画面の基本設定
+ofBackground(0,0,0);
+ofEnableSmoothing();
+//画面の混色の設定を加算合成にする
+glEnable(GL_BLEND);
+glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//ムービーデータを読込む
+fingersMovie.loadMovie("fingers.mov");
+//ムービーの再生開始
+fingersMovie.play();
+}
+void testApp::update(){
+//ムービー再生を待機状態に
+fingersMovie.idleMovie();
+}
+void testApp::draw(){
+//色の設定
+ofSetColor(0xFFFFFF);
+//ムービーデータを画面に表示
+fingersMovie.draw(20,20);
+//ムービーのビットマップデータを解析し、配列に格納
+unsigned char * pixels = fingersMovie.getPixels();
+//画像を8ピクセルごとにスキャン
+for (int i = 0; i < fingersMovie.width; i+=8){
+for (int j = 0; j < fingersMovie.height; j+=8){
+//RGBそれぞれのピクセルの明度を取得
+unsigned char r = pixels[(j * 320 + i)*3];
+unsigned char g = pixels[(j * 320 + i)*3+1];
+unsigned char b = pixels[(j * 320 + i)*3+2];
+//取得したRGB値をもとに、円を描画
+//取得したピクセルの明るさを、円の半径に対応させている
+ofSetColor(255, 0, 0, 100);
+ofCircle(360 + i,20+j,10.0*(float)r/255.0);
+ofSetColor(0, 255, 0, 100);
+ofCircle(360 + i,20+j,10.0*(float)g/255.0);
+ofSetColor(0, 0, 255, 100);
+ofCircle(360 + i,20+j,10.0*(float)b/255.0);
+}
+}
+}
+void testApp::keyPressed  (int key){
+switch(key){
+case '0':
+//「0」キーを押すと、ムービーを最初のフレームに巻き戻し
+fingersMovie.firstFrame();
+break;
+}
+}
+void testApp::keyReleased(int key){
+}
+void testApp::mouseMoved(int x, int y ){
+}
+void testApp::mouseDragged(int x, int y, int button){
+//マウスをドラッグすると、ムービーのタイムラインを操作できる
+fingersMovie.setPosition((float)x / (float)ofGetWidth());
+}
+void testApp::mousePressed(int x, int y, int button){
+//マウスのプレスで、ムービーを一時停止
+fingersMovie.setPaused(true);
+}
+void testApp::mouseReleased(int x, int y, int button){
+//マウスのプレスで、ムービーの再生を再開
+fingersMovie.setPaused(false);
+}
+void testApp::windowResized(int w, int h){
+}
+testApp.hでは動画を再生するためのofVideoPlayerクラスのインスタンスfingersMovieを生成しています。
+testApp.cppで、実際に動画ファイルを読み込んで再生します。ムービーファイルを読み込むには、ofMoviePlayerクラスのインスタンスに対して「loadMovie(“ムービーファイル名”)」というメソッドを実行します。ムービーファイルのデータは画像やフォントと同様に、「bin」「data」フォルダに格納します。
+読み込んだムービーを再生するには、いくつかの手続きが必要です。まず、読み込んだムービーを再生状態にします。ムービーの再生には「play()」メソッドを使用します。この命令によって読み込んだムービーの再生を開始します。再生状態になったムービーに対して、testAppのupdate()メソッド内では「idleMovie()」メソッドを使用して待機状態にしておく必要があります。画面上に再生しているムービーを表示するために、draw()関数の中でofVideoPlayerのインスタンスに対して「draw(表示位置のX座標, 表示位置のY座標)」というメソッドを使用します。この命令によって、ムービファイルの内容を画面に表示されます。
+動画データが画像やフォントと大きく異なる点は、時間軸をもったデータだというところでしょう。ofVideoPlayerクラスには、ムービーの時間軸を操作するためのメソッドがいくつか用意されています。
+ofVideoPalyerのインスタンス.play()
+動画の再生
+ofVideoPalyerのインスタンス.stop()
+動画の停止
+ofVideoPalyerのインスタンス.idleModvie()
+動画を待機状態にする
+ofVideoPalyerのインスタンス.firstFrame()
+動画の最初のページに戻る
+ofVideoPalyerのインスタンス.setPosition()
+動画の指定した時間へ移動
+このサンプルでは、キーボードから「0」キーを押すと、最初のフレームに戻り、マウスをドラッグするマウスポインタのX軸上の位置に応じてムービーの再生位置を変化させることで、動画をタイムラインで捜査できるようにしています。
+ofVideoPlayerで取得したムービーデータは、画像ファイルと同様に、ピクセル単位で解析することが可能です。そのためには、ofVideoPlayerのインスタンスに対して「getPixels()」というメソッドを実行することで、RGBに分解された状態で、それぞれのピクセルの濃度を取得することができます。サンプルではその値を利用して、映像を点描風にピクセレイトしています。
+動画のキャプチャー (ofVideoGrabber)
+次にコンピュータに接続したカメラから動画をリアルタイムに読み込んで利用してみましょう。動画をカメラから読み込むには、ofVideoGrabberクラスを利用します。コンピュータにUSBやFireWire(IEEE 1394)で接続したライブカメラや、コンピュータに内蔵されたカメラを利用することが可能です。
+testApp.h
+#ifndef _TEST_APP
+#define _TEST_APP
+#include "ofMain.h"
+class testApp : public ofBaseApp{
+public:
+void setup();
+void update();
+void draw();
+void keyPressed(int key);
+void keyReleased(int key);
+void mouseMoved(int x, int y );
+void mouseDragged(int x, int y, int button);
+void mousePressed(int x, int y, int button);
+void mouseReleased(int x, int y, int button);
+void windowResized(int w, int h);
+ofVideoGrabber vidGrabber; //ofVideoGrabberのインスタンス
+int camWidth; //カメラから取り込む画像の幅
+int camHeight; //カメラから取り込む画像の高さ
+};
+#endif
+testApp.cpp
+#include "testApp.h"
+void testApp::setup(){
+//画面の基本設定
+ofBackground(0,0,0);
+ofEnableSmoothing();
+//画面の混色の設定を加算合成にする
+glEnable(GL_BLEND);
+glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//キャプチャするムービーのサイズを指定
+camWidth = 480;
+camHeight = 320;
+vidGrabber.setVerbose(true);
+vidGrabber.initGrabber(camWidth,camHeight);
+}
+void testApp::update(){
+//ムービーをカメラからキャプチャする
+vidGrabber.grabFrame();
+}
+void testApp::draw(){
+ofSetColor(0xffffff);
+vidGrabber.draw(20,20);
+//ムービーのビットマップデータを解析し、配列に格納
+unsigned char * pixels = vidGrabber.getPixels();
+//画像を10ピクセルごとにスキャン
+for (int i = 0; i < camWidth; i+=10){
+for (int j = 0; j < camHeight; j+=10){
+//RGBそれぞれのピクセルの明度を取得
+unsigned char r = pixels[(j * camWidth + i)*3];
+unsigned char g = pixels[(j * camWidth + i)*3+1];
+unsigned char b = pixels[(j * camWidth + i)*3+2];
+//取得したRGB値をもとに、円を描画
+//取得したピクセルの明るさを、円の半径に対応させている
+ofSetColor(255, 0, 0, 100);
+ofCircle(camWidth+40 + i,20+j,20.0*(float)r/255.0);
+ofSetColor(0, 255, 0, 100);
+ofCircle(camWidth+40 + i,20+j,20.0*(float)g/255.0);
+ofSetColor(0, 0, 255, 100);
+ofCircle(camWidth+40 + i,20+j,20.0*(float)b/255.0);
+}
+}
+}
+void testApp::keyPressed  (int key){
+//「s」キーを押すと、ビデオ取り込みの設定画面を表示
+if (key == 's' || key == 'S'){
+vidGrabber.videoSettings();
+}
+}
+/* 後略 */
+testApp.hで、ofVideoGrabberクラスのインスタンス、vidGrabberを生成しています。また同時にカメラから画像をとりこむ際の幅と高さを記憶するために、camWidthとcamHeightという変数を用意しています。
+testApp.cppでは、まずカメラから取り込む画像の幅と高さを指定しています。その上でカメラ取り込みの初期化を行います。初期化をするには、ofVideoGrabberのインスタンスに「initGrabber(幅、高さ)」というメソッドを実行します。
+実際にデータを取り込むには、ofVideoGrabberクラスのインスタンスにgrabFrame()メソッドを実行します。このメソッドを実行するたびに、新規にカメラから1フレーム画像を読み込まれ、インスタンス内にデータとして格納されます。読み込みの際には、動画としてカメラから画像を取得するために、grabFrame()メソッドをtestAppのupdate()内で繰り返し実行するようにしています。読み込まれた画像を画面に表示するにはofVideoGrabberのインスタンスに「draw(表示位置のX座標, 表示位置のY座標)」メソッドを実行します。
+カメラから読み込まれが画像データは、ofImageと同じ方法でピクセル単位で解析することが可能です。ofVideoGrabberのインスタンスに「getPixels()」メソッドを実行して、配列に画像のピクセルごとのデータを読み込みます。これを利用することで、カメラからの映像をリアルタイムに解析し加工することが可能となります。サンプルでは、カメラからの映像を利用して、点描風に画像処理しています。
+サンプルファイルのダウンロード
+10月18日分サンプルファイル(ma2_101018.zip, 1.9MB)
+openFrameworks – メディアファイルを読み込む – 音声、画像、動画 | yoppa org

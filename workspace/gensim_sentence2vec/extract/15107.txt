@@ -1,0 +1,16 @@
+Windowsでレジストリを変更するとSchannelを利用するもの(OutlookやWindows Live メールとか?)は、下記のサイトの方法でSSL3.0を無効にできると思われます。
+[回避策まとめ] セキュリティ アドバイザリ 3009008「SSL 3.0 の脆弱性により、情報漏えいが起こる」を公開 その2 - 日本のセキュリティチーム - Site Home - TechNet Blogshttp://blogs.technet.com/b/jpsecurity/archive/2014/10/30/3009008-ssl3-rev.aspx 
+ただ、Windows8以降ではトラブルが起こる可能性もあるため、その時は以下の方法を参照。OutlookではTLSの設定がありそうですね。
+Windows 8 環境の Outlook で TLS 1.2 によるメール送信が失敗する - Outlook Support Team Blog JAPAN - Site Home - TechNet Blogshttp://blogs.technet.com/b/outlooksupportjp/archive/2014/08/26/windows-8-outlook-tls-1-2.aspx 
+ThunderbirdはFirefoxと同じように設定を変更できるようです。
+ボロ雑巾な(元)SEの焼き肉食べたい! : SSL 3.0を無効にする方法(Firefox、Thunderbird、IE11)http://boroyakiniku.ldblog.jp/archives/40834450.html 
+Sylpheedでは設定方法が見つからなかったですが、サーバーがSSL3.0を無効にするとエラーが起こることがあるようです。
+【メールサーバ】脆弱性対応(POODLE)メンテナンス日程のお知らせ - ヘテムルレンタルサーバーhttp://heteml.jp/info/detail/id/1142 
+GmailではTLS1.0を利用しているようです。 
+以上、ThunderbirdとSylpheedを利用している自分用のまとめ。
+ここに追記しておくかな11月のUpdateによりSchannelの不具合対策
+MS14-066の不具合対策日本語訳 - Privatterhttp://privatter.net/p/506527 
+修正してきたようですね。
+Windows Server 2008 R2とWindows Server 2012で、しかも少数のユーザーにのみ発生とのことなので、7,8ユーザーは不具合は無かったようです。
+マイクロソフトがSchannelに関するアップデートを再リリース - CNET Japanhttp://japan.cnet.com/news/service/35056756/ 
+メールソフトのPoodle対策のメモ(Windows): 独房の中

@@ -1,0 +1,19 @@
+分子置換法のこれから
+構造
+今月の Acta Crystallographica D は、今年1月の CCP4 study weekend 2013 のまとめ号である。Applications of molecular replacement to G protein-coupled receptors には、発表内容に加え、T4L と poly-alanine helix だけから MR してみたという解析が追加されている。αヘリックス型膜蛋白質で、抗体 + 理想的αヘリックスや、配列は似てないけど似てそうな膜蛋白質のαヘリックスを切り出したものをモデルに強引に MR して解くというのは、時々耳にする手法である。要するに、(人力でのモデリングも含めた)精密化の収束範囲内の初期解が見つかればなんでもいいのだから。GPCR について言えば、分解能がある程度あれば成功するようである。ただ、non class A GPCR である Smoothened (PDBID: 4JKV)でも検証してほしかった。PDB から構造因子を取ってきて私が片手間に MR で挑戦したときはうまく行かなかったのだが、Phaser を熟知してる人がやれば解けるのかが気になるところである。From lows to highs: using low-resolution models to phase X-ray data は、ウィルスの構造解析の実例。EMマップから分子置換12面体の532対称性(=60個のNCS)を利用した平均化と位相改善で解いている。さらにサブユニットの構造について、7Åの全体像マップを切り出したものをMRして、2.5Åまで位相改善している。原著論文 "The use of low-resolution phasing followed by phase extension from 7.6 to 2.5 Å resolution with noncrystallographic symmetry to solve the structure of a bacteriophage capsid protein" も読まないと。Structure determination of an 11-subunit exosome in complex with RNA by molecular replacement は、多数のサブユニットからなる exosome の分子置換による構造決定。配列類似度だけでは最適なモデルは決まらないということが分かる。Molecular replacement: tricks and treats は総論である。このレビューを含め、最近の分子置換法の研究の要点をまとめると、次のような感じか。
+モデルをどこから取ってくるか
+NMR 構造
+電子顕微鏡構造 (電顕ではスケールが正確に出ない場合があるのが問題)
+計算資源を投入してひたすら数を試す
+モデルの信頼性の高い部分とそうでない部分の区別
+NMR や予想構造ではクラスタ内のRMSD を使う
+信頼性が低い部分は truncation ではなくて、アンサンブルとして使う手も?
+モデルを変形させてアンサンブル化する
+基準振動解析など
+アルゴリズム面
+パーツごとに探索する場合の探索順序。枝刈り
+並列化(やっている人は少なそうだが、個人的には有用だと思う)
+配列の集合が与えられた時に、新規ドメインをどう定義するのかとか、いろいろ不勉強である。既に定義されたドメインのどれに属するのかは、HMMとかでマッチしてるんだろうけど。新しい「共通ドメイン」を探すのって、どうしているのだろう?
+ツイートする
+Permalink | コメント(0) | トラックバック(0) | 04:33  
+分子置換法のこれから - biochem_fan's note

@@ -1,0 +1,35 @@
+
+Webアイコンを使いたいなと思ってたんですが、大体がダウンロードしてサーバーにアップしないといけないものがほとんどで困ってました。
+はてなブログなので出来ないんですよね。勉強がてらCSSで作るかと思ってた矢先にCDNで簡単に使える「Font Awesome」というものがありましたので飛びついた訳です。
+Font Awesomeの使い方
+3分で使えます。簡単・便利しかも無料!!アイコンフォントはFont Awesome以外にも色々ありますが有料のも含まれてたりしますので使う前に確認しましょう。
+まずサイト「Font Awesome, the iconic font and CSS toolkit」の「Get Started」ページにあるlinkタグをコピーします。
+※バージョンが変わってる場合もあるので必ずサイトから新しいコードをコピーして下さい。
+これをHTMLのheadタグ内に記述します。
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Font Awesomeの使い方</title>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+</html>
+続いて「Icons」ページから使用するアイコンを選びます。今回はTwitterのアイコンにしてみました。
+このページにあるHTMLコードをコピーしてアイコンを使用したい位置に貼り付けます。
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Font Awesomeの使い方</title>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+<i class="fa fa-twitter-square"></i>
+</body>
+</html>
+するとこのように表示されます! ※大きくしてます。 
+Webアイコンフォントのメリットとしては、やはり画像ではなくてあくまでフォントなのでCSSで装飾できる点ですね。こんな感じで文字を大きくしたり色を変えたりも出来ます。 
+その他の使い方は「Font Awesome Examples」のページにあるので見てみて下さい。英語ですがそんな難しいものじゃなくて、大きくしたり、リストにしたり、回したり、重ねたりの指定方法が書いてあります。class を追加するだけですので試した方が早いですね。
+はてなブログでFont Awesomeを使いたい場合は「設定->詳細設定->headに要素を追加」に上述の link タグを追加してやればOKです。ただし、このやり方はHTMLを記述出来る箇所限定になりますので注意して下さい。HTMLを編集できない箇所はJSで差し込むしかないですがそれはまた別途。
+以上、結構有名みたいなので知ってる人も多いと思いますが、本当に簡単に使えますので難しそうと敬遠してた人などは試してみて下さい。デザインに強くなくてもこういうのが使えるってのは便利ですね!
+Webアイコンフォント「Font Awesome」の使い方 - TASK NOTES

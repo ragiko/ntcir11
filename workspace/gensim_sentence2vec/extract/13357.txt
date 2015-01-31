@@ -1,0 +1,22 @@
+
+Bulkデータ書き込み(DELETE)処理
+オペレーション名
+Bulkデータ書き込み(DELETE)
+機能概要
+入力データを元に、Bulk APIを使用したDELETE処理を行います。
+ジョブ作成、バッチ作成、バッチ結果の取得、ジョブのクローズまで一括で行います。
+DELETE処理では、データ削除時のキー項目にSalesforceのIDを指定します。
+実行される処理の詳細については、「プロセスフロー」を参照してください。
+本オペレーションが使用するAPI仕様については、グローバルリソースで選択したバージョンのAPIドキュメントを以下のリンク先ページより参照してください。
+「developerforce」-(http://wiki.developerforce.com/page/Earlier_Reference_Documentation)
+Bulk API Developer's Guide
+データモデル
+本コンポーネントのデータモデルはテーブルモデル型です。
+プロパティ
+基本設定
+項目名
+必須/省略可
+変数の使用
+説明
+備考
+[Salesforce Bulk]Bulkデータ書き込み(DELETE)

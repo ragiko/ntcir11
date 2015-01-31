@@ -1,0 +1,5 @@
+List("a2","b1","c4", "d3").sortWith((s1,s2) => s1(1) < s2(1))
+List("a2","b1","c4", "d3").sortWith(_.charAt(1) < _.charAt(1))
+List("a2","b1","c4", "d3").sortWith(_.apply(1) < _.apply(1))
+List("a2","b1","c4", "d3").sortWith(_(1) < _(1))
+Scalaコレクションメソッドメモ(Hishidama's Scala collection method Memo)

@@ -1,0 +1,39 @@
+コーパスとは
+もともとの意味は「テキストの集合体」。歴史的に、辞書の編纂には何らかのかたちで「コーパス」は使われていました(用例カードなど)。本書では、大量に収集した英文テキスト・データをコンピュータを用いて解析する、いわゆるコンピュータ・コーパスを利用しています。高校の先生方が使っている学習英英辞典は、現在ではほとんどのものがこのコンピュータ・コーパスを用いて編纂されたものになっています。編集最初期の段階から、全面的にコーパスを用いて編纂された学習英和辞典としては、『ウィズダム英和辞典』が初めてのものになります。
+三省堂学習コーパスとは
+日本人の英語学習に特化したオリジナルなコンピュータコーパスです。
+学習者が、英語学習で出会う可能性が高い語・表現には大きくわけて2つが考えられます。1つは、教科書や入試問題など英語学習でよく出てくるもの。もう1つは、ネイティブとコミュニケーションをしたり、旅行や留学先で出会ったり、英語の新聞・書籍・映画にふれるなど、実際に英語が使用されている場面で接するものです。
+三省堂学習コーパスはその両方をカバーするために、新聞、雑誌、カタログ、インタビューなどから、日常生活を意識した平易な文体で書かれたものを中心に、幅広くデータを収集しており、数千万語の規模になっています。 日本の高校生・大学生が、受験、学習、生活の各場面において、目にする可能性の高いテキストを集めた、日本人学習者用に特化したコーパス—それが三省堂学習コーパスです。
+コーパスを実際に用いると…
+以下はある現役の高校の英語の先生によるコーパス使用例です:
+《授業の中で His opinion is different (  ) mine. の答として from を正解としたものの、 than でもいいという記述がどこかにあったような気がすると思いながら職員室に戻ってきました。そして机上のノート型パソコンを立ち上げて、コンコーダンサー(編集部註:コーパス閲覧ソフト)のアイコンをクリックします。私は独自に集めた米語書き言葉300万語と米語話し言葉300万語をこのパソコンに入れていますのでそれで検索してみます。すると different from は書き言葉で91、話し言葉では54、一方 different than は書き言葉で21、話し言葉では68の例が見つかりました。もはや米語の話し言葉では different from より different than の方が上回っているのです。このように、疑問に思ったことがまるで有能なネイティブ・スピーカーがそばにいるかのように(むしろ彼らよりある面では客観的に)解決できるわけです。》
+コーパスを使ってどのように辞書を編纂するか
+コーパスでは、検索対象語を中心に、直前・直後などの位置にどういった単語がくるかということが、一目瞭然にわかります。キーワードを中心に、左右の文脈を読み取り、執筆者は執筆語の用法、コロケーション、主語や目的語にどういった語がくるのかといったことなどを、容易に把握することができます。例として protect という動詞を見てみます。
+Keyword: "protect"
+be in agreement about contraception. In order to protect themselves from AIDS a
+powerful neural networks in their brains, better protecting them from Alzheimer 
+both breasts and her womb removed. She did it to protect herself from cancer _ 
+your article on the potential benefits of sex for protecting us from colds and f
+of the public police as with citizens' desire to protect themselves from crime.
+rcuitry that acts as a circuit breaker or fuse to protect them from damage due t 
+off many leaves at a time. The giraffe is able to protect itself from danger in 
+x. This was supposed to make him invulnerable and protect him from deadly wounds 
+eeds to be fed essential vitamins and minerals to protect it from disease - alth 
+ority guides them along the path of salvation, to protect them from enemies and 
+of testing a wide variety of products designed to protect children from hazards 
+us that is engineered to produce HIV proteins can protect chimpanzees from HIV i 
+ve that exercise enhances their immune system and protects them from infection, 
+of the money that the music group would make, but protected him from losses pres 
+res above the earth which encircles the earth and protects it from the harmful e 
+for another three to five days. Is it possible to protect myself from the flu? Y 
+to the test of a true watchdog. He'd never had to protect me against a dangerous 
+apartment doors. They also told residents how to protect themselves against cri 
+we all need to be thinking about vaccinations to protect ourselves against dise 
+es of breast milk for babies are unparalleled, it protects them against infectio 
+by responding at a range of frequencies, the body protects itself against the da 
+their services to him he kept their hives clean, protected them against the dis 
+function, apart from controlling the color, is to protect us against the harmful
+protect を検索した結果、他動詞の用法では目的語の直後に前置詞 against および from が続く例が全用例の約1割と、多いことがわかり、両者では from の方が用例が多いこともわかりました。
+そこでさらに今度は、 from / against とが続く例のみを検索し、検索語の右側の2番目の語でアルファベット順に並べかえたのが上の例です(データはわかりやすいよう一部加工して使用しています)。 ご覧の通り、 from / againstの直後には cancer、 desease といった病気・症状を表す語や、 hazards、 loss など被害・損失・脅威を表す語が多く来ていることが確認できます。
+このことを辞書の記述としてとりこんだ場合、たとえば従来ならば単に「…を保護する、守る」という語義で片づけられていたものを次のようにより選択制限を具体的に記述することができます。
+ウィズダム英和辞典編纂にあたって〜2. コーパス活用による成果

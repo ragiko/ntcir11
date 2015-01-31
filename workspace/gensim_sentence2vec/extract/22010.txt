@@ -1,0 +1,17 @@
+Migration Manager は、複数の Exchange 仮想サーバーを実行する複数ノードクラスタをサポートしています。 Migration Manager はそのようなシステムを検出し、Exchange サービスとともに自動フェイルオーバーするようにエージェントサービスを設定します。
+デフォルトでは、QMMExNode$ および QMMEx$<Exchange サーバー名>$ 共有は同じパスを持ちます。 さもなければ、以下の手順に従い、Install Agents Wizard からアクティブノード上にエージェントをインストールしてください。
+1. 
+Migration Manager コンソールの [Target Exchange Organizations] ノードにある、Exchange クラスタサーバーに移動します。
+2. 
+Exchange クラスタサーバーを右クリックして、表示されるメニューから [Properties] を選択します。
+3. 
+[OK] をクリックします。
+4. 
+クラスタアドミニストレータ (Cluster Administrator) を実行します。
+5. 
+QMMEx$<Exchange サーバー名>$ リソースをオンラインにします。
+単一クラスタノード上で複数の Exchange 仮想サーバーが動作している場合、エージェントをインストールして、一度に 1 つの Exchange 仮想サーバー上でのみ実行するようにすることができます。 このような Exchange サーバーは、Migration Manager による移行に 1 つずつ順番にのみ参加することができます。
+また、3 つ以上のノードが存在するクラスタ上では、Exchange 仮想サーバーに関するいくつかの制限事項も存在しています。 詳細は、http://support.microsoft.com/default.aspx?scid=kb;en-us;329208 にある Microsoft サポート技術情報の記事 329208「XADM: Exchange Virtual Server Limitations on Exchange 2000 Clusters and Exchange 2003 Clusters That Have More than Two Nodes」を参照してください。
+Migration Manager は、Exchange 2007 クラスタ連続レプリケーション (CCR) を完全にサポートしています。 Migration Manager はそのようなシステムを検出し、Exchange サービスとともに自動フェイルオーバーするようにエージェントサービスを設定します。
+残りの 2 種類の Exchange 2007 連続レプリケーションタイプである、スタンバイ連続レプリケーション (SCR) およびローカル連続レプリケーション (LCR) タイプもサポートされていますが、フェイルオーバー時には移行に関与するすべてのメールボックス、予定表、およびパブリックフォルダの完全再同期を実行する必要があります。
+Exchange クラスタ - Migration Manager for Exchange 8.10 Tips and Tricks (Japanese)

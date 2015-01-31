@@ -1,0 +1,10 @@
+
+HTK は隠れマルコフモデルによる音声認識のツールキット。
+ケンブリッジ大学の技術をもとに製品化された有償のソフトウェアだったが、開発元が Microsoft に買収され、その後無料で公開された。
+現在は厳密な意味でのオープンソースプログラムではなく、配布元でユーザ登録すれば入手・利用できる。
+http://htk.eng.cam.ac.uk/
+特徴量計算の部分を自前で用意することで画像認識などにも応用できる。
+ATK : Application Toolkit for HTK が提供されている。
+HTK のパッチとして音声合成ツールキットHTSが公開されている。
+コマンド hvite
+HTK : The Hidden Markov Model Toolkit    [ja.nishimotz.com]

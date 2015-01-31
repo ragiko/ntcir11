@@ -1,0 +1,4 @@
+日本語辞書,日英対訳辞書を要することなく、単語の意味属性を自動で推定する。To automatically estimate a semantic attribute of words without requiring Japanese dictionaries and Japanese-English dictionaries. - 特許庁
+訳語候補獲得手段2は、日英辞書41から対訳辞書データ6の見出し語(日本語)の英訳を獲得し、獲得した英訳の訳語候補(中国語)を英中辞書51から獲得する。A translation candidate obtaining means 2 obtains an English translation of a keyword (Japanese) in bilingual dictionary data 6 from a Japanese-English dictionary 41 and obtains translation candidates (Chinese) for the obtained English translation from an English-Chinese dictionary 51. - 特許庁
+記憶部240は、対訳例文・対訳テンプレートデータベースと、英語辞書データと、日本語辞書データと、英語シソーラスデータと、日本語シソーラスデータ245と、各テンプレートとを含む。The memory part 240 includes a bilingual example and bilingual template database, English dictionary data, Japanese dictionary data, English thesaurus data, Japanese thesaurus data 245, and templates thereof. - 特許庁
+日英対訳辞書の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

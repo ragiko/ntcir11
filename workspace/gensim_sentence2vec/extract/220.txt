@@ -1,0 +1,12 @@
+
+前回まではApple TVがMac OS XをベースとしたOSで動作していること、GUIは『Front Row』を用いていることなどを述べてきた。
+さてMac OS Xでは、プレインストールされているマルチメディア再生環境『QuickTime』にプラグインを追加することで、WMVやDivX、flv(フラッシュビデオ)といった様々な動画を再生することができる。
+一方、AppleTVがサポートしているのは、MPEG-4やH.264といったiTunesがサポートするフォーマットだけ。AppleTVではWMVなどを再生できないのだろうか? 今回はこの点を追求した。
+再生に関わる2つの問題
+DivXをAppleTVで再生するためには、2つの問題が立ちはだかる。1つは、先ほども述べたように、AppleTVがDivXなどのコーデックを内蔵しておらず、そもそも再生するソフトウェアがないという点。
+そしてもう1つは、Apple TVとムービーを同期するときに使う『iTunes』が、これらのムービーを受け付けないため、そもそもムービーをApple TVに転送できないという点だ。
+前者については、AppleTVもMac OS Xも同じQuickTimeを動画再生エンジンに使っているため、QuickTimeのプラグインを組み込むことで解決できる。おススメのプラグインは、DivXやflvなど多種のコーデックを1つのコンポーネントにまとめたオープンソースの『Perian』だ(http://perian.org/)。
+後者は少々面倒だが、こちらもプラグインをApple TVに組み込むことで解決できる。海外のハッカー、ericIII氏が手掛ける『ATVFiles.frappliance』というプラグインをAppleTVのFront Rowに組み込もう(http://wiki.awkwardtv.org/wiki/ATVFiles)。
+通常、Apple TVで再生するためのコンテンツは、Mediaパーティション内に保存されるが、ATVFiles.frapplianceを組み込んだあとは、ホームムービーフォルダーにコピーしたファイルを一覧して、再生できるようになる。
+ムービー自体の転送には、Apple TVからHDDを抜き出してコピーしてもいいし、以前の記事で組み込んだsshdを利用し、SFTPを使ってネットワーク経由でコピーする方法もある。いずれにせよiTunesを用いず、直接ファイルをコピーすることになるためやや面倒だ。
+ASCII.jp:DivXは再生できる?｜Apple TV OS 詳細解析

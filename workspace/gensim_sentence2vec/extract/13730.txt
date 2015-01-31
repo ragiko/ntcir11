@@ -1,0 +1,51 @@
+デコーダの例(1)_VHDL記述
+本当は「信号」の扱いや「階層構造」を学習しないといけないのですが、習うより慣れろということで、HDLの例として、3ビット・デコーダを考えます。
+3ビットなので、入力状態により 23=8 通り選択できる回路で、具体的には標準ロジックIC 74138 のようなものを HDL で表現しようということです。
+標準ロジックIC 74138 は http://www.wdic.org/w/SCI/74138 で表すようなものですが、ここではもう少し簡単な function とします。
+具体的には、次のようなものです。(A,B,Cは入力。F0〜F7は出力)
+これを VHDL で記述した例を次に示します。
+-----------------------------------------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+entity DECODER is
+port(DATA : in std_logic_vector(2 downto 0); 入力信号
+F : out std_logic_vector(7 downto 0)); 出力信号
+end DECODER;
+architecture RTL of DECODER is
+begin
+process (DATA) begin
+case DATA is                  DATA信号の条件付け
+when "000" => F <= "00000001";
+when "001" => F <= "00000010";
+when "010" => F <= "00000100";
+when "011" => F <= "00001000";
+when "100" => F <= "00010000";
+when "101" => F <= "00100000";
+when "110" => F <= "01000000";
+when "111" => F <= "10000000";
+when others => F <= "XXXXXXXX"; 条件以外の場合
+end case;
+end process;
+end RTL;
+-----------------------------------------------------
+少し解説しましょう。
+まず、階層構造を考えると、DECODER の入出力ポートを entity 文で定義して、architecture 文でその働きを記述します。
+RTL というのは「レジスタ位置やクロックなどを明確に定義したレベル」ということで" Register Transfer Level "ということです。
+分かり難いのですが、 トランジスタ_レベル  ゲート(論理)_レベル  RTL という説明をすると感覚的に頷けると思います。
+出力信号 F のすべてのビットを0と初期化して、次に出力が1になるインデックスを指示することで記述が簡略化されます。
+-----------------------------------------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+entity DECODER is
+port(DATA : in std_logic_vector(2 downto 0);
+F : out std_logic_vector(7 downto 0));
+end DECODER;
+architecture RTL of DECODER is
+begin
+process (DATA) begin
+F <= (others => '0');       すべてのビットを0に
+F(CONV_INTEGER(DATA)) <= '1';  ベクタをインデックスに変換
+end process;
+end RTL;
+-----------------------------------------------------
+デコーダの例(1)_VHDL記述 T_NAKAの阿房ブログ/ウェブリブログ

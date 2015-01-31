@@ -1,0 +1,88 @@
+JavaScriptをちょっと工夫すればできますよ。
+参考URLのページに解説があるので、詳細はそちらをご覧ください。
+少し簡略化したサンプルを書きますので、コピー&ペーストして動作を確認してみて下さい。
+# frame.html (サブメニューは location.replace を使って入れ替える)
+<HTML><HEAD><TITLE>フレーム連動サンプル</TITLE>
+<SCRIPT language="javascript"><!--
+var loadedUrl;
+function loadSubMenu(url) {
+if (loadedUrl != url) {
+sub_menu.location.replace(url);
+loadedUrl = url;
+}
+}
+//--></SCRIPT>
+</HEAD>
+<FRAMESET rows="200,*">
+<FRAME src="menu.html" name="index">
+<FRAMESET cols="200,*">
+<FRAME src="submenu_A.html" name="sub_menu">
+<FRAME src="honbun_A.html" name="honbun">
+</FRAMESET>
+</FRAMESET>
+</HTML>
+# menu.html (リンクするのは本文だけ)
+<HTML>
+<HEAD><BASE target="honbun"></HEAD>
+<BODY>
+<A href="honbun_A.html">Page A</A><BR>
+<A href="honbun_B.html">Page B</A><BR>
+</BODY>
+</HTML>
+# honbun_A.html(onLoadでサブメニューAをロード)
+<HTML><HEAD>
+<SCRIPT language="javascript"><!--
+function loadSubMenu(url) {
+if (parent.sub_menu) parent.loadSubMenu(url);
+}
+//--></SCRIPT>
+</HEAD>
+<BODY onLoad="loadSubMenu('submenu_A.html')">
+本文A-1
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<A name="2">本文A-2</A>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<A name="3">本文A-3</A>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+</BODY>
+</HTML>
+# submenu_A.html
+<HTML><HEAD><BASE target="honbun"></HEAD>
+<BODY>
+サブメニューA<BR>
+<A href="honbun_A.html">A-1</A><BR>
+<A href="honbun_A.html#2">A-2</A><BR>
+<A href="honbun_A.html#3">A-3</A><BR>
+</BODY>
+</HTML>
+# honbun_B.html(onLoadでサブメニューBをロード)
+<HTML><HEAD>
+<SCRIPT language="javascript"><!--
+function loadSubMenu(url) {
+if (parent.sub_menu) parent.loadSubMenu(url);
+}
+//--></SCRIPT>
+</HEAD>
+<BODY onLoad="loadSubMenu('submenu_B.html')">
+本文B-1
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<A name="2">本文B-2</A>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<A name="3">本文B-3</A>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+</BODY>
+</HTML>
+# submenu_B.html
+<HTML><HEAD><BASE target="honbun"></HEAD>
+<BODY>
+サブメニューB<BR>
+<A href="honbun_B.html">B-1</A><BR>
+<A href="honbun_B.html#2">B-2</A><BR>
+<A href="honbun_B.html#3">B-3</A><BR>
+</BODY>
+</HTML>
+参考URL:http://www.din.or.jp/~hagi3/JavaScript/JSTips/FrameCon.htm
+投稿日時 - 2002-10-08 15:54:37
+ありがとうございました。焦っていたので、結局、1段階として上下だけのフレームをつくり、下のフレームには、別に左右のフレームのみのHTMLをメインメニューとサブメニューの項目分作ってしまいました。JavaScriptも使わないことになってしまいました。間違いなくサブメニューと本文が同時に戻ります。少し落ち着いたらこのやり方で更新してみようと思います。お礼が大変遅くなって申し訳ありませんでした。
+投稿日時 - 2002-10-28 20:16:12
+1度に複数フレームの表示が戻らない - BIGLOBEなんでも相談室

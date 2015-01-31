@@ -1,0 +1,4 @@
+音声入力部は音声を入力し、音韻認識部は入力された音声の音韻を認識して訂正発話を示す第1の音韻列を生成し、マッチング部は第1の音韻列と元発話を示す第2の音韻列とをマッチングを行い、音韻訂正部はマッチングを行った結果に基づき第2の音韻列の音韻を訂正する。A speech input unit receives input speech, a phoneme recognition unit recognizes phonemes of the input speech and generates a first phoneme sequence representing corrected speech, a matching unit matches the first phoneme sequence with a second phoneme sequence representing original speech, and a phoneme correcting unit corrects phonemes of the second phoneme sequence based on the matching result. - 特許庁
+ある言語の形態素の、すべての異形態を音韻的に認識する研究the study of the phonological realization of the allomorphs of the morphemes of a language
+- 日本語WordNet
+音韻認識の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

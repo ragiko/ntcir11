@@ -1,0 +1,167 @@
+
+列の相関および関数を使用した統計を最適化する拡張統計の使用
+目的
+このチュートリアルでは、拡張統計を使用して、列の相関および関数を使用した統計を最適化する方法について説明します。 
+所要時間
+約30分 
+トピック
+このチュートリアルでは、以下のトピックについて説明します。
+概要
+前提条件
+単一列統計の決定
+偏りのある列のヒストグラムの収集
+列を相関させる拡張統計の作成
+列に使用された関数の拡張統計の作成
+クリーンアップ
+まとめ
+スクリーンショットの表示
+このアイコンの上にカーソルを置くと、すべてのスクリーンショットがロードし、表示されます。(警告:すべてのスクリーンショットが同時にロードされるため、ご使用のインターネット接続によってはレスポンス・タイムが遅くなる場合があります。)
+注:各手順に関連したスクリーンショットのみを表示する場合は、それぞれの手順にあるアイコンの上にカーソルを置いてください。 スクリーンショットをクリックすると、非表示になります。
+概要
+実際のデータでは、表の2列以上の間に相関が見られることがよくあります。 たとえば、職位と給与には相関があり(企業の副社長は守衛よりもかなり高い給与を得ていると考えられ)、自動車メーカーと価格にも相関があります(BMW車はホンダ車よりもかなり価格が高いと想定されます)。 これまでのオプティマイザでは、表の列間にこのような関係があることを認識できませんでした。 単一列の複数の条件で表にクエリーを実行したとき、オプティマイザは列に関連があるかどうかを認識できないため、条件の正しい選択性を計算することはできませんでした。  また、オプティマイザで関数が使用された列の正しい選択性を計算することも非常に困難でした。 たとえば、UPPER(surname)=.SMITHの場合です。 Oracle Database 11gでは、拡張統計(複数列統計)が導入されました。拡張統計を使用すると、列のグループ全体および関数に基づいた統計の収集が可能となり、オプティマイザで条件の選択性を正確に計算できます。 その結果、オプティマイザは正しい選択性(カーディナリティ)を認識します。 このチュートリアルでは、拡張統計が必要な理由と拡張統計の作成方法について説明します。
+トピック・リストに戻る
+前提条件
+このチュートリアルを始める前に、次の手順を完了している必要があります。
+1.
+Oracle Database 11gがインストールされていること。 
+2.
+SHユーザーのロックが解除されていること。 端末ウィンドウを開いて、次のコマンドを実行します。
+sqlplus sys/<syspassword> as sysdba
+alter user sh identified by sh account unlock;
+exit
+3.
+multicolstats.zipファイルをダウンロードし、作業ディレクトリに解凍すること。
+4.
+CUSTOMERS_OBE表を作成し、データをロードすること。 端末ウィンドウから、次のコマンドを実行します。
+cd <sql_files_directory>
+imp sh/sh file= customers_obe.dmp log=imp.log full=y
+トピック・リストに戻る
+単一列統計の決定
+相関列の典型的な例は、CUSTOMERS_OBE表のcountry_idとcust_state_provinceです。 cust_state_provinceの値が'CA'のとき、country_idの値は'US'です。 この2列にはデータの偏りがあり、表の行の大半が'CA'と'US'の値となります。 列間とデータの偏りに相関があるため、クエリーで一緒に使用された場合、オプティマイザで列の選択性やカーディナリティを計算することが困難になります。拡張統計がこの場合に役立ちます。 まず、country_idが'US'でcust_state_provinceが'CA'であるCUSTOMERS_OBE表の実際のカーディナリティまたは行数を確認します。 以下の手順を実行します。
+1.
+最初に、country_idが'US'でcust_state_provinceが'CA'であるCUSTOMERS_OBE表の実際のカーディナリティまたは行数を確認します。 端末ウィンドウを開いて、次のコマンドを実行します。 
+CD<sql_files_directory>
+sqlplus sh/sh
+set echo on
+@check_cardinality
+check_cardinality.sqlコードは次のとおりです。
+select count(*)from customers_obewhere country_id = 'US' and cust_state_province = 'CA';
+2.
+実際の行数が分かったので、表の統計を収集できます。 端末ウィンドウから、次のSQLスクリプトを実行します。 
+@gather_stats
+gather_stats.sqlコードは次のとおりです。
+exec dbms_stats.gather_table_stats(null,'customers_obe', -      method_opt => 'for all columns size 1');
+3.
+作成された列統計を確認します。 端末ウィンドウから、次のSQLスクリプトを実行します。 
+@review_stats
+review_stats.sqlコードは次のとおりです。
+select column_name, num_distinct, histogramfrom user_tab_col_statistics where table_name = 'CUSTOMERS_OBE';
+明確な値の数が、country_id列およびcust_state_province列の両方に示されていることが分かります。 これらの値の両方が正確と思われます。
+4.
+この統計を前提として、オプティマイザの推定するクエリーの返す行数を確認します。 端末ウィンドウから、次のSQLスクリプトを実行します。 
+@explain_plan
+explain_plan.sqlコードは次のとおりです。
+explain plan forselect *from customers_obewhere country_id = 'US' and cust_state_province = 'CA';
+select plan_table_outputfrom table(dbms_xplan.display('plan_table',null,'BASIC ROWS'));
+基本的な統計では、オプティマイザは1行のみが返されると推定します。 この行数は正しくないため、正しい行数を決定できるより良い統計をオプティマイザに提供する必要があります。 
+トピック・リストに戻る
+偏りのある列のヒストグラムの収集 
+Oracle Database 11gより前のバージョンでは、オプティマイザで複数列の正しい結合選択性を認知することはできませんでした。 オプティマイザが判断できるのは、列の両方にデータの偏りがあるということだけでした。 Oracle Database 11gでは、オプティマイザでデータの偏りを認知できるようになり、より正しい選択性が計算できます。 Oracle Database 11gでは、偏りのある列のヒストグラムを収集できます。 列のヒストグラムを取得した後で、オプティマイザの推定した行数を再確認できます。 以下の手順を実行します。
+1.
+偏りのある列のヒストグラムを収集します。 端末ウィンドウから、次のSQLスクリプトを実行します。 
+@gather_histogram
+gather_histogram.sqlコードは次のとおりです。
+exec dbms_stats.gather_table_stats(null,'customers_obe', -      method_opt => 'for all columns size skewonly');
+select column_name, num_distinct, histogramfrom user_tab_col_statistics where table_name = 'CUSTOMERS_OBE';
+2.
+EXPLAIN PLANを作成してオプティマイザの推定値を表示する準備ができました。 端末ウィンドウから、次のSQLスクリプトを実行します。 
+@explain_plan
+explain_plan.sqlコードは次のとおりです。
+explain plan forselect *from customers_obewhere country_id = 'US' and cust_state_province = 'CA';
+select plan_table_outputfrom table(dbms_xplan.display('plan_table',null,'BASIC ROWS'));
+各列のヒストグラムが作成されるため、推定は若干改善されています。 ただし、オプティマイザはまだ2列間の相関を認識していません。 
+トピック・リストに戻る
+列を相関させる拡張統計の作成 
+Oracle Database 11gでは、列に拡張統計を作成することによって、オプティマイザで相関を認識できます。 拡張統計とは、CUSTOMERS_OBE表で次に統計を収集したときに、country_idとcust_state_provinceからなる結合グループの統計が追加で収集されることです。 以下の手順を実行します。
+1.
+拡張統計グループを作成します。 端末ウィンドウから、次のSQLスクリプトを実行します。 
+@create_extended_stats
+create_extended_stats.sqlコードは次のとおりです。
+select  dbms_stats.create_extended_stats(null,'customers_obe',         '(country_id, cust_state_province)')from dual;
+create_extended_stats.sqlの出力は、作成される仮想列のシステム生成名です。
+2.
+偏りのある列のヒストグラムを収集する際に実行したスクリプトを実行します。 端末ウィンドウから、次のSQLスクリプトを実行します。
+@gather_histogram
+gather_histogram.sqlコードは次のとおりです。
+exec dbms_stats.gather_table_stats(null,'customers_obe', -      method_opt => 'for all columns size skewonly');
+select column_name, num_distinct, histogramfrom user_tab_col_statistics where table_name = 'CUSTOMERS_OBE';
+create_extended_statsプロシージャによって返されるシステム生成名の表に、新しい列が表示されます。 
+3.
+EXPLAIN PLANを再実行します。 端末ウィンドウから、次のスクリプトを実行します。 
+@explain_plan
+explain_plan.sqlコードは次のとおりです。
+explain plan forselect *from customers_obewhere country_id = 'US' and cust_state_province = 'CA';
+select plan_table_outputfrom table(dbms_xplan.display('plan_table',null,'BASIC ROWS'));
+オプティマイザでクエリーの正しい行数を取得する準備ができました。
+トピック・リストに戻る
+列に使用された関数の拡張統計の作成 
+列に関数や式が使用されている場合にも、オプティマイザで正しいカーディナリティを見つけることは困難です。 たとえばLOWER関数の場合、ある文字列に対し、すべてを小文字にした文字列を返します。 以下の手順を実行します。
+1.
+country_idが'US'である行の総数を選択する関数を使用したクエリーを実行します。 クエリーに渡される値は小文字なので、LOWER関数がcountry_id列に設定されます。 端末ウィンドウから、次のスクリプトを実行します。 
+@get_count_lower
+get_count_lower.sqlコードは次のとおりです。
+select count(*)from customers_obewhere lower(country_id) = 'us';
+実際の行数が返されます。
+2.
+EXPLAIN PLANを再実行して、オプティマイザによって推定されるクエリーの返す行数を表示する準備ができました。 端末ウィンドウから、次のスクリプトを実行します。 
+@explain_plan_lowercase
+explain_plan_lowercase.sqlコードは次のとおりです。
+explain plan forselect *from customers_obewhere lower(country_id) = 'us';
+select plan_table_outputfrom table(dbms_xplan.display('plan_table',null,'BASIC ROWS'));
+オプティマイザの取得する行数は、まだ正しくありません。 
+3.
+LOWER(country_id)式に拡張統計を作成すると、オプティマイザで正しい行数を取得できるようになります。 標準gather_table_statsプロシージャのmethod_opt引数で、収集する拡張機能や拡張統計を指定できます。 gather_table_statsプロシージャは、拡張統計が存在しない場合、自動的に拡張統計を作成します。 端末ウィンドウから、次のスクリプトを実行します。 
+@gather_stats_lower_col
+gather_stats_lower_col.sqlコードは次のとおりです。
+exec dbms_stats.gather_table_stats(null,'customers_obe', -      method_opt =>  -      'for all columns size skewonly for columns (lower(country_id))');
+4.
+拡張統計が作成され、統計が収集されました。CUSTOMERS_OBE表の統計を確認することができます。 システム生成名の付いた新しい列が表示されています。 端末ウィンドウから、次のスクリプトを実行します。 
+@review_col_stats
+review_col_stats.sqlコードは次のとおりです。
+select column_name, num_distinct, histogramfrom user_tab_col_statistics where table_name = 'CUSTOMERS_OBE';
+5.
+EXPLAIN PLANを再実行して、オプティマイザの推定値を確認します。 端末ウィンドウから、次のスクリプトを実行します。 
+@explain_plan_lowercase
+explain_plan_lowercase.sqlコードは次のとおりです。
+explain plan forselect *from customers_obewhere lower(country_id) = 'us';
+select plan_table_outputfrom table(dbms_xplan.display('plan_table',null,'BASIC ROWS'));
+6.
+システム生成名から、仮想列定義を再生成することもできます。 端末ウィンドウから、次のコマンドを実行します。 
+select dbms_metadata.get_ddl('TABLE','CUSTOMERS_OBE') from dual;
+トピック・リストに戻る
+クリーンアップ 
+次の手順を実行して、環境をクリーンアップできます。
+1.
+SQL*Plusセッションから、次のコマンドを実行します。 
+DROP TABLE CUSTOMERS_OBE;
+トピック・リストに戻る
+まとめ
+このチュートリアルで学習した内容は、次のとおりです。
+単一列統計の決定
+偏りのある列のヒストグラムの収集 
+列を相関させる拡張統計の作成 
+列に使用された関数の拡張統計の作成 
+トピック・リストに戻る 
+このアイコンの上にカーソルを置くと、すべてのスクリーンショットが非表示になります。
+Copyright (c) Oracle Corporation 2007 
+All Rights Reserved
+Oracle Corporation発行の「Using Extended Statistics to Optimize Multi-Column Relationships and Function-Based Statistics」の翻訳版です。
+この文書はあくまで参考資料であり、掲載されている情報は予告なしに変更されることがあります。
+万一、誤植などにお気づきの場合は、オラクル社までお知らせください。
+オラクル社は本書の内容に関していかなる保証もしません。
+また、本書の内容に関連したいかなる損害についても責任を負いかねます。
+Oracleはオラクル社の登録商標です。
+その他の会社名および製品名は、
+あくまでその製品および会社を識別する目的にのみ使用されており、
+それぞれの所有者の商標または登録商標です。
+列の相関および関数を使用した統計を最適化する拡張統計の使用

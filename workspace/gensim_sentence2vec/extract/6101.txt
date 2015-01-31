@@ -1,0 +1,572 @@
+
+目次
+QoS:パーセントベース ポリシング
+機能情報の確認
+目次
+QoS:パーセントベース ポリシングの前提条件
+QoS:パーセントベース ポリシングの制約事項
+QoS:パーセントベース ポリシングに関する情報
+QoS:パーセントベース ポリシングの利点
+QoS:パーセントベース ポリシングのクラスおよびポリシー マップの定義
+トラフィック規制のメカニズムと帯域幅のパーセンテージ
+ミリ秒オプションのバースト サイズ
+QoS:パーセントベース ポリシングの設定方法
+Percentage-Based Policing 用のクラスおよびポリシー マップの設定
+Percentage-Based Policing 用のインターフェイスへのポリシー マップのアタッチ
+Percentage-Based Policing の設定確認
+Percentage-Based Policing のトラブルシューティングのヒント
+QoS:パーセントベース ポリシングの設定例
+帯域幅パーセンテージに基づくトラフィック ポリシングの指定:例
+Percentage-Based Policing の設定確認:例
+その他の関連資料
+関連資料
+規格
+MIB
+RFC
+シスコのテクニカル サポート
+コマンド リファレンス
+QoS:パーセントベース ポリシングの機能情報
+QoS:パーセントベース ポリシング
+QoS:パーセントベース ポリシング機能を使用すると、インターフェイスで使用可能な帯域幅の
+パーセンテージ
+に基づいて、トラフィック ポリシングおよびトラフィック シェーピングを設定できます。この機能を使用すると、Committed Burst(bc; 認定バースト)サイズおよび Excess Burst(be; 超過バースト)サイズ(トラフィック ポリシングの設定に使用)をミリ秒(ms)単位で指定することもできます。この方法でトラフィック ポリシングを設定すると、帯域幅の量の異なる複数のインターフェイスに、同じポリシー マップを使用できます。
+機能情報の確認
+ご使用のソフトウェア リリースでは、このモジュールで説明されるすべての機能がサポートされているとは限りません。最新の機能情報と注意事項については、ご使用のプラットフォームとソフトウェア リリースに対応したリリース ノートを参照してください。この章に記載されている機能の詳細、および各機能がサポートされているリリースのリストについては、「QoS:パーセントベース ポリシングの機能情報」 を参照してください。
+プラットフォームのサポートと Cisco IOS および Catalyst OS ソフトウェア イメージのサポートに関する情報を検索するには、Cisco Feature Navigator を使用します。Cisco Feature Navigator には、
+http://www.cisco.com/go/cfn
+からアクセスします。Cisco.com のアカウントは必要ありません。
+目次
+•	「QoS:パーセントベース ポリシングの前提条件」
+•	「QoS:パーセントベース ポリシングの制約事項」
+•	「QoS:パーセントベース ポリシングに関する情報」
+•	「QoS:パーセントベース ポリシングの設定方法」
+•	「QoS:パーセントベース ポリシングの設定例」
+•	「その他の関連資料」
+•	「コマンド リファレンス」
+•	「QoS:パーセントベース ポリシングの機能情報」
+QoS:パーセントベース ポリシングの前提条件
+•	Cisco 7500 シリーズ ルータの入力トラフィック ポリシングでは、トラフィック ポリシングが設定されるインターフェイスで、Distributed Cisco Express Forwarding(dCEF; 分散型シスコ エクスプレス フォワーディング)がイネーブルにされていることを確認します。
+•	Cisco 7500 シリーズ ルータの出力トラフィック ポリシングでは、着信トラフィックが dCEF スイッチドであることを確認します。dCEF スイッチングがイネーブルにされていないと、スイッチング パスでトラフィック ポリシングを使用できません。
+QoS:パーセントベース ポリシングの制約事項
+「子」(ネストされた)ポリシー マップで使用する場合、
+shape
+(percent)コマンドは、Cisco 7500、Cisco 7200、またはこれより下位のシリーズ ルータではサポートされません。したがって、
+shape
+(percent)コマンドは、これらのルータ上でネストされたポリシー マップに使用するようには設定できません。
+QoS:パーセントベース ポリシングに関する情報
+QoS:パーセントベース ポリシング機能を設定するには、次の概念を理解しておく必要があります。
+•	「QoS:パーセントベース ポリシングの利点」
+•	「QoS:パーセントベース ポリシングのクラスおよびポリシー マップの定義」
+•	「トラフィック規制のメカニズムと帯域幅のパーセンテージ」
+•	「ミリ秒オプションのバースト サイズ」
+QoS:パーセントベース ポリシングの利点
+柔軟性の向上と使いやすさ
+この機能を使用すると、インターフェイスで使用可能な帯域幅の
+パーセンテージ
+に基づいて、トラフィック ポリシングおよびトラフィック シェーピングを設定し、バースト サイズをミリ秒単位で指定できます。この方法でトラフィック ポリシングおよびトラフィック シェーピングを設定すると、帯域幅の量の異なる複数のインターフェイスに、同じポリシー マップを使用できます。このため、各インターフェイスで帯域幅を再計算したり、各タイプのインターフェイスに異なるポリシー マップを設定したりする必要はありません。
+QoS:パーセントベース ポリシングのクラスおよびポリシー マップの定義
+QoS:パーセントベース ポリシング機能を設定するには、トラフィック クラスを定義し、ポリシー マップを設定してから、そのポリシー マップを適切なインターフェイスにアタッチする必要があります。これら 3 つの作業は、Modular Quality of Service(QoS)Command-Line Interface(CLI; コマンド ライン インターフェイス)(MQC; モジュラ QoS コマンド ライン インターフェイス)を使用して実行できます。
+MQC とは、コマンド ライン インターフェイスで、トラフィック クラスの定義、トラフィック ポリシーの作成および設定(ポリシー マップ)、およびトラフィック ポリシーのインターフェイスへのアタッチが行えます。
+MQC では、
+class-map
+コマンドは、トラフィック クラスの定義に使用されます(トラフィック クラスは、その後、トラフィック ポリシーに関連付けされます)。トラフィック クラスの目的は、トラフィックを分類することです。
+MQC は、次の 3 つのプロセスで構成されます。
+•	
+class-map
+コマンドを使用したトラフィック クラスの定義 
+•	トラフィック クラスを 1 つまたは複数の QoS 機能と関連付けてトラフィック ポリシーを作成(
+policy-map
+コマンドを使用)
+•	
+service-policy
+コマンドを使用した、トラフィック ポリシーのインターフェイスへのアタッチ 
+トラフィック クラスには、次の 3 つの主な要素が含まれます。名前、一連の match コマンド、およびトラフィック クラスに複数の 
+match
+コマンドが存在する場合は、それらの 
+match
+コマンド(つまり、match-all または match-any)の評価方法に関する指示。トラフィック クラスは、
+class-map
+コマンド ラインで名前付けされます。たとえば、CLI でトラフィック クラスの設定中に 
+class-map cisco
+コマンドを入力すると、トラフィック クラスは「cisco」という名前になります。
+match
+コマンドは、パケット分類のためのさまざまな基準を指定するために使用します。パケットは、
+match
+コマンドで指定された基準に合っているかどうかを判断するために、チェックされます。指定された基準に合っていれば、パケットはクラスのメンバーと見なされ、トラフィック ポリシーで設定された QoS 仕様に従って転送されます。一致基準を満たさないパケットは、デフォルトのトラフィック クラスのメンバーとして分類されます。
+トラフィック規制のメカニズムと帯域幅のパーセンテージ
+Cisco IOS Quality of Service(QoS)では、トラフィック ポリシングとトラフィック シェーピングという 2 種類のトラフィック規制メカニズムが提供されています。トラフィック ポリサーは、通常、特定のレートに違反するトラフィックをドロップします。トラフィック シェーパーは、通常、パケットを保持するバッファを使用して過剰なトラフィックを遅延し、キューに対するデータ レートが予想より高い場合に、フローをシェーピングします。
+トラフィック シェーピングとトラフィック ポリシングは連携して機能し、クラス マップで設定できます。クラス マップは、データ パケットを特定のカテゴリ(「クラス」)に編成します。ポリシー マップ(しばしば「サービス ポリシー」とも呼ばれる)で使用すると、ユーザ定義の QoS 処理を受信できます。
+この機能より以前には、トラフィック ポリシングとトラフィック シェーピングは、インターフェイスで使用可能なユーザ指定の帯域幅の量に基づいて設定されていました。ポリシー マップは、その後で特定の量の帯域幅に基づいて設定されていました。このため、各インターフェイスに別々のポリシー マップが必要とされていました。
+この機能を使用すると、インターフェイスで使用可能な帯域幅の
+パーセンテージ
+に基づいて、トラフィック ポリシングおよびトラフィック シェーピングを設定できます。この方法でトラフィック ポリシングおよびトラフィック シェーピングを設定すると、顧客は帯域幅の量の異なる複数のインターフェイスに、同じポリシー マップを使用できます。
+帯域幅の パーセンテージに基づいて、トラフィック ポリシングおよびトラフィック シェーピングを設定するには、
+police
+(percent)および 
+shape
+(percent)コマンドを使用します。これらのコマンドの詳細については、『
+Cisco IOS Quality of Service Solutions Command Reference
+』を参照してください。
+ミリ秒オプションのバースト サイズ
+バースト パラメータ(bc および be)の目的は、Weighted Random Early Detection(WRED; 重み付けランダム早期検出)と同じように、パケットを徐々にドロップして、テール ドロップを防ぐことです。十分に高いバースト値を設定すると、適切なスループットを確実に実現できます。
+この機能では、トラフィック ポリシングを設定する場合に、Committed Burst(bc; 認定バースト)サイズ、および Extended Burst(be; 拡張バースト)をクラス帯域幅のミリ秒(ms)で指定するオプションが使用できます。時間(ミリ秒単位)の数字は、QoS:パーセントベース ポリシング機能で使用するバイト数の計算に使用します。
+これらのバースト サイズのミリ秒単位の指定には、
+police
+(percent)および 
+shape
+(percent)コマンドの 
+bc
+および 
+be
+キーワード(および関連付けられた引数)を使用します。
+これらのコマンドの詳細については、『
+Cisco IOS Quality of Service Solutions Command Reference
+』を参照してください。
+QoS:パーセントベース ポリシングの設定方法
+QoS:パーセントベース ポリシング機能の設定作業については、次の項を参照してください。一覧内の各作業は、必須と任意に分けています。
+•	「Percentage-Based Policing 用のクラスおよびポリシー マップの設定」(必須)
+•	「Percentage-Based Policing 用のインターフェイスへのポリシー マップのアタッチ」(必須)
+•	「Percentage-Based Policing の設定確認」(任意)
+Percentage-Based Policing 用のクラスおよびポリシー マップの設定
+クラス マップは、トラフィックを特定のカテゴリまたはクラスに編成する場合に使用します。トラフィックのこれらのカテゴリまたはクラスは、トラフィック ポリシーまたはポリシー マップに関連付けされます。また、ポリシー マップは、クラス マップと組み合わせて、特定の QoS 機能のトラフィックへの適用に使用します。この場合、Percentage-Based Policing の QoS 機能が適用されます。
+クラス マップを設定し、クラス マップを特定のポリシー マップに関連付けるには、次の手順を実行します。
+手順の概要
+1.	
+enable
+2.	
+configure 
+terminal
+3.	
+policy-map
+policy-name
+4.	
+class 
+{
+class-name 
+|
+class-default
+}
+5.	
+police
+cir
+percent 
+percentage 
+[
+burst-in-ms
+] [
+bc
+conform-burst-in-msec 
+ms
+] [
+be
+peak-burst-in-msec 
+ms
+] [
+pir
+percent 
+percent
+]
+6.	
+exit
+手順の詳細
+コマンドまたはアクション
+目的
+ステップ 1
+enable
+Router> enable
+特権 EXEC モードをイネーブルにします。
+•	プロンプトが表示されたら、パスワードを入力します。
+ステップ 2
+configure
+terminal
+Router# configure terminal
+グローバル コンフィギュレーション モードを開始します。
+ステップ 3
+policy-map
+policy-name
+Router(config)# policy-map
+policy1
+作成するポリシー マップの名前を指定します。ポリシー マップ コンフィギュレーション モードを開始します。
+•	ポリシー マップ名を入力します。
+ステップ 4
+class 
+{
+class-name 
+|
+class-default
+}
+Router(config-pmap)# class class1
+ポリシーを設定または変更できるようにクラスを指定します。ポリシー マップ クラス コンフィギュレーション モードを開始します。
+•	クラス名を入力するか、デフォルト クラス(class-default)を指定します。
+ステップ 5
+police
+cir
+percent 
+percentage 
+[
+burst-in-ms
+] [
+bc
+conform-burst-in-msec 
+ms
+] [
+be
+peak-burst-in-msec 
+ms
+] [ 
+pir
+percent 
+percent
+] 
+Router(config-pmap-c)# police cir percent 20 bc 300 ms be 400 ms pir percent 40 
+指定された帯域幅のパーセンテージとオプションのバースト サイズに基づいて、トラフィック ポリシングを設定します。ポリシー マップ クラス ポリス コンフィギュレーション モードを開始します。
+•	帯域幅のパーセンテージとオプションのバースト サイズを入力します。
+ステップ 6
+exit
+Router(config-pmap-c-police)# exit 
+ポリシー マップ クラス ポリス コンフィギュレーション モードを終了します。
+Percentage-Based Policing 用のインターフェイスへのポリシー マップのアタッチ
+ポリシー マップを作成した後の次の手順は、ポリシー マップをインターフェイスに適用することです。ポリシー マップは、入力方向または出力方向のインターフェイスに適用できます。
+(注)	ネットワークのニーズにより、ポリシー マップをサブインターフェイス、ATM PVC、フレームリレー DLCI、または他のタイプのインターフェイスにアタッチする必要がある場合もあります。
+ポリシー マップをインターフェイスにアタッチするには、次の手順を実行します。
+手順の概要
+1.	
+enable
+2.	
+configure
+terminal
+3.	
+interface
+type number
+4.	
+pvc
+[
+name
+] 
+vpi
+/
+vci
+[
+ilmi
+| 
+qsaal
+| 
+smds
+] 
+5.	
+service-policy
+{
+input
+| 
+output
+}
+policy-map-name
+6.	
+exit
+手順の詳細
+コマンドまたはアクション
+目的
+ステップ 1
+enable
+Router> enable
+特権 EXEC モードをイネーブルにします。
+•	プロンプトが表示されたら、パスワードを入力します。
+ステップ 2
+configure 
+terminal
+Router# configure terminal
+グローバル コンフィギュレーション モードを開始します。
+ステップ 3
+interface
+type number
+Router(config)#
+interface serial4/0 
+インターフェイス(サブインターフェイス)タイプを設定し、インターフェイス コンフィギュレーション モードを開始します。
+•	インターフェイスのタイプ番号を入力します。
+ステップ 4
+pvc
+[
+name
+] 
+vpi
+/
+vci
+[
+ilmi
+| 
+qsaal
+| 
+smds
+]
+Router(config-if)# pvc cisco 0/16 ilmi
+(任意)ATM PVC に名前を作成するか割り当て、ATM PVC でカプセル化タイプを指定します。ATM PVC コンフィギュレーション モードを開始します。
+(注)	この手順は、ポリシー マップを ATM PVC に適用する場合にのみ必要です。ATM PVC にポリシー マップをアタッチしない場合は、この手順をスキップして、ステップ 5 に進みます。
+ステップ 5
+service-policy
+{
+input 
+| 
+output
+}
+policy-map-name
+Router(config-if)#
+service-policy input policy1
+インターフェイスの入力
+または出
+力方向にアタッチするポリシー マップの名前を指定します。
+コマンドを使用してポリシー マップをインターフェイスに適用する場合、ネットワーク構成に適したルータおよびインターフェイスの方向を選択してください。
+•	ポリシー マップ名を入力します。
+ステップ 6
+exit
+Router(config-if)# exit
+(任意)インターフェイス コンフィギュレーション モードを終了します。
+Percentage-Based Policing の設定確認
+設定を確認するには、次の手順を実行します。
+手順の概要
+1.	
+enable
+2.	
+show class-map 
+[
+class-map-name
+]
+または
+show policy-map interface 
+interface-name
+3.	
+exit
+手順の詳細
+コマンドまたはアクション
+目的
+ステップ 1
+enable
+Router> enable
+特権 EXEC モードをイネーブルにします。
+•	プロンプトが表示されたら、パスワードを入力します。
+ステップ 2
+show class-map
+[
+class-map-name
+]
+Router# show class-map class1
+一致基準を含めて、クラス マップに関するすべての情報が表示されます。
+•	クラス マップ名を入力します。
+または
+show policy-map interface 
+interface-name
+Router# 
+show policy-map interface serial4/0
+指定したインターフェイスまたはサブインターフェイス上か、インターフェイス上の特定の PVC に対し、すべてのサービス ポリシーに対して設定されているすべてのクラスのパケット統計情報を表示します。
+•	インターフェイス名を入力します。
+ステップ 3
+exit
+Router# exit
+(任意)特権 EXEC モードを終了します。
+Percentage-Based Policing のトラブルシューティングのヒント
+「Percentage-Based Policing の設定確認」のコマンドを使用すると、意図したとおりに設定が行われ、機能が正常に働いていることを確認できます。上記の 
+show
+コマンドの使用後に、設定が正しくない、または機能が予想どおりに働いていないと判明した場合は、次の操作を実行します。
+意図したとおりに設定が行われていない場合は、次の手順を完了します。
+1.	
+show running-config
+コマンドを使用して、コマンドの出力を分析します。
+2.	ポリシー マップが 
+show running-config
+コマンドの出力に表示されない場合は、
+logging console
+コマンドをイネーブルにします。
+3.	ポリシー マップをインターフェイスに再度アタッチします。
+パケットが正確に一致していない場合は(たとえば、パケット カウンタが正しく増加していないなど)、次の手順を完了します。
+1.	
+show policy-map
+コマンドを実行して、コマンドの出力を分析します。
+2.	
+show running-config
+コマンドを実行して、コマンドの出力を分析します。
+3.	
+show policy-map interface
+コマンドを実行して、コマンドの出力を分析します。次の内容を確認します。
+a.	ポリシー マップにキューイングが適用され、パケットが正しいクラスに一致しているにもかかわらず、予期しない結果が生じる場合は、キューのパケット数と一致したパケット数を比較します。
+b.	インターフェイスが混雑していて、一致するパケット数が少ない場合、送信(tx)リングの調整を確認し、tx リングでキューイングが実行されているかどうかを評価します。このためには、
+show controllers
+コマンドを使用し、コマンドの出力で、tx 回数の値を確認します。
+QoS:パーセントベース ポリシングの設定例
+ここでは、次の設定例について説明します。
+•	「帯域幅パーセンテージに基づくトラフィック ポリシングの指定:例」
+•	「Percentage-Based Policing の設定確認」
+帯域幅パーセンテージに基づくトラフィック ポリシングの指定:例
+次に、Committed Information Rate(CIR; 認定情報レート)および Peak Information Rate(PIR; 最大情報レート)を使用して、帯域幅のパーセンテージに基づいてトラフィック ポリシングを設定する例を示します。この例では、CIR に 20 %、PIR に 40 %が指定されています。オプションの bc 値と be 値(それぞれ、300 ms、400 ms)も指定されています。
+Router> enableRouter# configure terminalRouter(config)# policy-map policy1Router(config-pmap)# class class1Router(config-pmap-c)# police cir percent 20 bc 300 ms be 400 ms pir percent 40 Router(config-pmap-c-police)# exit  
+ポリシー マップとクラス マップの設定後、ポリシー マップは次の例に示すように、インターフェイスにアタッチされます。
+Router> enableRouter# configure terminalRouter(config-if)# interface serial4/0 Router(config-if)# service-policy input policy1Router(config-if)# exit
+Percentage-Based Policing の設定確認:例
+ここでは、
+show policy-map interface
+コマンド、および 
+show policy-map
+コマンドのサンプル出力を示します。これらのコマンドの出力は、ネットワーク上の機能設定の確認およびモニタに使用できます。
+次は、
+show policy-map
+コマンドのサンプル出力です。このサンプル出力には、「policy1」というポリシー マップの内容が表示されています。policy 1 では、20 %の CIR に基づくトラフィック ポリシングが設定され、bc および be はミリ秒単位で指定されています。トラフィック ポリシング設定の一部として、オプションの一致(conform)、超過(exceed)、および違反(violate)アクションが指定されています。
+Router# show policy-map policy1   Policy Map policy1    Class class1     police cir percent 20 bc 300 ms pir percent 40 be 400 ms       conform-action transmit        exceed-action drop        violate-action drop  
+次は、
+show policy-map interface
+コマンドのサンプル出力です。このサンプルには、トラフィック ポリシングがイネーブルにされている、シリアル 2/0 インターフェイスの統計情報が表示されています。Committed Burst(bc; 認定バースト)、および Excess Burst(be; 超過バースト)がミリ秒(ms)で指定されます。
+Router# show policy-map interface serial2/0  Serial2/0    Service-policy output: policy1 (1050)     Class-map: class1 (match-all) (1051/1)      0 packets, 0 bytes      5 minute offered rate 0 bps, drop rate 0 bps      Match: ip precedence 0  (1052)      police:          cir 20 % bc 300 ms          cir 409500 bps, bc 15360 bytes          pir 40 % be 400 ms          pir 819000 bps, be 40960 bytes        conformed 0 packets, 0 bytes; actions:          transmit         exceeded 0 packets, 0 bytes; actions:          drop         violated 0 packets, 0 bytes; actions:          drop         conformed 0 bps, exceed 0 bps, violate 0 bps     Class-map: class-default (match-any) (1054/0)      0 packets, 0 bytes      5 minute offered rate 0 bps, drop rate 0 bps      Match: any  (1055)        0 packets, 0 bytes        5 minute rate 0 bps 
+この例では、CIR および PIR は、bps で表示され、Committed Burst(bc; 認定バースト)、および Excess Burst(be; 超過バースト)の両方が、ビットで表示されます。
+CIR、PIR、bc、および be は、以下に説明する式に基づいて計算されます。
+CIR 計算用の式
+CIR を計算する場合は、次の式を使用します。
+•	指定された CIR パーセンテージ(
+show policy-map
+コマンドの出力に示すとおり)X インターフェイスの帯域幅(BW)(
+show interfaces
+コマンドの出力に示すとおり)= 合計ビット/秒単位
+シリアル インターフェイス 2/0 上で、帯域幅(BW)は 2048 kbps になります。インターフェイスの帯域幅を確認するには、
+show interfaces
+コマンドを使用します。次に例を示します。
+Router# show interfaces serial2/0 Serial2/0 is administratively down, line protocol is down   Hardware is M4T  MTU 1500 bytes, BW 2048 Kbit, DLY 20000 usec, rely 255/255, load 1/255  
+次の値が CI の計算に使用されます。
+20 % X 2048 kbps = 409600 bps
+PIR 計算用の式
+PIR を計算する場合は、次の式を使用します。
+•	指定された PIR パーセンテージ(
+show policy-map
+コマンドの出力に示すとおり)* インターフェイスの帯域幅(BW)(
+show interfaces
+コマンドの出力に示すとおり)= 合計ビット/秒単位
+シリアル インターフェイス 2/0 上で、帯域幅(BW)は 2048 kbps になります。インターフェイスの帯域幅を確認するには、
+show interfaces
+コマンドを使用します。次に例を示します。
+Router# show interfaces serial2/0 Serial2/0 is administratively down, line protocol is down   Hardware is M4T  MTU 1500 bytes, BW 2048 Kbit, DLY 20000 usec, rely 255/255, load 1/255  
+次の値が PIR の計算に使用されます。
+40 % * 2048 kbps = 819200 bps
+(注)	この合計と show policy-map interface コマンドの出力に示される合計との不一致の原因は、丸め計算、または特定のインターフェイス設定に関連する相違である可能性があります。
+Committed Burst(bc; 認定バースト)計算用の式
+bc を計算する場合は、次の式を使用します。
+•	ミリ秒単位の bc(
+show policy-map
+コマンドに示すとおり)X ビット/秒単位の CIR = 合計バイト数
+次の値が bc の計算に使用されます。
+300 ms X 409600 bps = 15360 バイト
+Excess Burst(be; 超過バースト)計算用の式
+bc および be を計算する場合は、次の式を使用します。
+•	ミリ秒単位の be(
+show policy-map
+コマンドに示すとおり)X ビット/秒単位の PIR = 合計バイト数
+次の値が be の計算に使用されます。
+400 ms X 819200 bps = 40960 バイト
+その他の関連資料
+次の項では、QoS:パーセントベース ポリシング機能に関する関連資料を示します。
+関連資料
+内容
+参照先
+QoS コマンド:コマンド構文、コマンド モード、コマンド履歴、デフォルト、使用上のガイドライン、および例
+『Cisco IOS Quality of Service Solutions Command Reference』
+Modular QoS Command-Line Interface(CLI; コマンド ライン インターフェイス)(MQC; モジュラ QoS コマンド ライン インターフェイス)。ポリシー マップのアタッチに関する情報を含む
+『
+Applying QoS Features Using the MQC
+』モジュール
+トラフィック シェーピングおよびトラフィック ポリシング
+『
+Policing and Shaping Overview
+』モジュール
+dCEF
+『
+Cisco Express Forwarding Features Roadmap
+』モジュール
+dCEF に関連するコマンド
+『Cisco IOS Switching Command Reference』
+規格
+規格
+タイトル
+この機能によってサポートされる新しい規格または変更された規格はありません。またこの機能による既存規格のサポートに変更はありません。
+--
+MIB
+MIB
+MIB リンク
+この機能によってサポートされる新しい MIB または変更された MIB はありません。またこの機能による既存 MIB のサポートに変更はありません。
+選択したプラットフォーム、Cisco IOS リリース、および機能セットの MIB の場所を検索しダウンロードするには、次の URL にある Cisco MIB Locator を使用します。
+http://www.cisco.com/go/mibs
+RFC
+RFC
+タイトル
+RFC 2697
+『A Single Rate Three Color Marker』
+RFC 2698
+『A Two Rate Three Color Marker』
+シスコのテクニカル サポート
+説明
+リンク
+右の URL にアクセスして、シスコのテクニカル サポートを最大限に活用してください。
+以下を含むさまざまな作業にこの Web サイトが役立ちます。
+・テクニカル サポートを受ける
+・ソフトウェアをダウンロードする
+・セキュリティの脆弱性を報告する、またはシスコ製品のセキュリティ問題に対する支援を受ける
+・ツールおよびリソースへアクセスする
+- Product Alert の受信登録
+- Field Notice の受信登録
+- Bug Toolkit を使用した既知の問題の検索
+・Networking Professionals(NetPro)コミュニティで、技術関連のディスカッションに参加する
+・トレーニング リソースへアクセスする
+・TAC Case Collection ツールを使用して、ハードウェアや設定、パフォーマンスに関する一般的な問題をインタラクティブに特定および解決する
+この Web サイト上のツールにアクセスする際は、Cisco.com のログイン ID およびパスワードが必要です。
+http://www.cisco.com/en/US/support/index.html 
+コマンド リファレンス
+次のコマンドは、このモジュールで説明した機能で導入または修正されたものです。これらのコマンドの詳細については、
+http://www.cisco.com/en/US/docs/ios/qos/command/reference/qos_book.html
+にある『
+Cisco IOS Quality of Service Solutions Command Reference
+』を参照してください。すべての Cisco IOS コマンドの詳細については、
+http://tools.cisco.com/Support/CLILookup
+にある Command Lookup Tool を使用するか、Cisco IOS マスター コマンド リストを参照してください。
+•	
+police (percent)
+•	
+shape (percent)
+•	
+show policy-map
+•	
+show policy-map interface
+QoS:パーセントベース ポリシングの機能情報
+表 1
+に、この機能のリリース履歴を示します。
+ご使用の Cisco IOS ソフトウェア リリースによっては、コマンドの中に一部使用できないものがあります。特定のコマンドに関するリリース情報については、コマンド リファレンス マニュアルを参照してください。
+プラットフォーム サポートとソフトウェア イメージ サポートに関する情報を入手するには、Cisco Feature Navigator を使用します。Cisco Feature Navigator を使用すると、Cisco IOS および Catalyst OS ソフトウェア イメージがサポートする特定のソフトウェア リリース、機能セット、またはプラットフォームを確認できます。Cisco Feature Navigator には、
+http://www.cisco.com/go/cfn
+からアクセスします。Cisco.com のアカウントは必要ありません。
+(注)	表 1 には、一連の Cisco IOS ソフトウェア リリースのうち、特定の機能が初めて導入された Cisco IOS ソフトウェア リリースだけが記載されています。特に明記していないかぎり、その Cisco IOS ソフトウェア リリース トレインの以降のリリースでもその機能はサポートされます。
+表 1	QoS:パーセントベース ポリシングの機能情報
+機能名
+リリース
+機能情報
+QoS: Percentage-Based Policing
+12.2(13)T
+12.0(28)S
+12.2(28)SB
+15.0(1)S
+QoS:パーセントベース ポリシング機能を使用すると、インターフェイスで使用可能な帯域幅の
+パーセンテージ
+に基づいて、トラフィック ポリシングおよびトラフィック シェーピングを設定できます。この機能を使用すると、Committed Burst(bc; 認定バースト)サイズおよび Excess Burst(be; 超過バースト)サイズ(トラフィック ポリシングの設定に使用)をミリ秒(ms)単位で指定することもできます。この方法でトラフィック ポリシングを設定すると、帯域幅の量の異なる複数のインターフェイスに、同じポリシー マップを使用できます。
+この機能は、Release 12.2(13)T で初めて導入されました。
+Release 12.0(28)S で、Committed Burst(bc; 認定バースト)サイズおよび Excess(ピーク)Burst(be; 超過バースト)サイズをミリ秒単位で指定するオプションが追加されました。
+Release 12.2(28)SB では、この機能が Cisco IOS Release 12.2(28)SB に統合されました。
+Release 15.0(1)S で、この機能が Cisco IOS Release 15.0(1)S に統合されました。
+この機能により、次のコマンドが導入または変更されました。
+police (percent)
+、
+shape (percent)
+、
+show policy-map
+、
+show policy-map interface
+。
+Cisco and the Cisco Logo are trademarks of Cisco Systems, Inc. and/or its affiliates in the U.S. and other countries. A listing of Cisco's trademarks can be found at 
+www.cisco.com/go/trademarks
+. Third party trademarks mentioned are the property of their respective owners. The use of the word partner does not imply a partnership relationship between Cisco and any other company. (1005R)
+このマニュアルで使用している IP アドレスは、実際のアドレスを示すものではありません。マニュアル内の例、コマンド出力、および図は、説明のみを目的として使用されています。説明の中に実際のアドレスが使用されていたとしても、それは意図的なものではなく、偶然の一致によるものです。
+© 2006-2010 Cisco Systems, Inc. 
+All rights reserved.
+Copyright © 2006-2011, シスコシステムズ合同会社.
+All rights reserved.
+Quality of Service ソリューション ガイド、 Cisco IOS Release 15.1S - QoS:パーセントベース ポリシング - Cisco Systems

@@ -1,0 +1,20 @@
+部分空間法による文字認識
+ここでは,カメラで撮影された数字の認識を例として紹介します.
+認識手法には部分空間法を使用します.
+部分空間法では,学習段階において主成分分析(PCA)を用いるため,行列演算が必須となります.
+本サンプルではMISTを用いた認識手法の実現例を示します.
+部分空間法の概要
+部分空間法は,学習データの集合から,それらの特徴を低次元で表現する部分空間(固有ベクトル)を作成し,それと認識対象の画像との類似度を評価することによって,認識する手法です.
+サンプル間に存在する変動を吸収する効果があるため,高精度の認識が可能となります.
+準備
+画像のサイズ正規化にinterpolate.hを,
+行列演算にmatrix.h,numeric.hを使用します.
+numeric.hは外部ライブラリを使用しますので,インクルードの際にはLAPACKの準備と
+環境設定の項を参照してください.
+#include <iostream>
+#include <mist.h>
+#include <mist/numeric.h>
+#include <mist/matrix.h>
+#include <mist/io/bmp.h>
+#include <mist/interpolate.h>
+Tutorial/Practice3 – MIST Project

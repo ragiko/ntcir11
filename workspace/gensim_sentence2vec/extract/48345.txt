@@ -1,0 +1,11 @@
+本一覧は動作検証を行ったフィーチャーフォン(スマートフォン以外の端末)の一覧です。
+動作検証済みのスマートフォンについては、以下のページをご確認ください。
+≫  動作確認済スマートフォン一覧
+HP IceWall SSO (フォワーダ)との疎通確認において、問題なく疎通を確認できた機種は表のとおりです。
+本検証はHTTPSでのHP IceWall SSO (フォワーダ)との疎通のみの検証であり、各種アプリの動作は保障いたしません。
+本検証は以下の製品の動作確認は含まれません。
+・HP IceWall SSO Agent Option
+・HP IceWall MCRP
+・HP IceWall Federation
+・HP IceWall Federation Agent
+日本HP - HP IceWall SSO 動作確認済フィーチャーフォン一覧 (スマートフォン以外の端末)

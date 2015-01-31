@@ -1,0 +1,9 @@
+本研究の目的は日本語学習者の作文コーパスを構築し、研究者、教師、学習者の間で共有資源として活用することである。
+先ず、日本語学習者の作文をCHILDESのCHATフォーマットに従って入力した。CHATフォーマットは子供の母語習得研究に開発されたものなので、我々の研究目的に合わせて必要な修正を加え、使用した。データベース化にあたっては各作文を一ファイルとし、文をすべて入力した後、一文ごとに誤用ティアと分析ティアを設けた。誤用ティアでは、その文の誤用を訂正し、分析ティアにおいてそれがなぜ誤用であるか、どういうタイプの誤用であるかを自然言語で記述した。自然言語による記述ではあるが、後の検索を容易にするため、分析用キーワードリストを作成し、それを極力利用して、記述することにした。各ファイルには初めにヘッダー情報として、学習者の母語、学習歴、性別、年齢、作文の作成年、作成場所、手書きかワープロ入力か、作成理由(試験、課題等)、データ入力者、データ訂正の状況を記載した。
+入力を進める一方、データがフォーマットに従って入力されているかどうかチェックするcheckerプログラム、データベースを利用するための検索ツールも開発した。
+入力マニュアル、分析用キーワードリスト、公開許可のとれた作文データ、作文データを使った研究論文等は次のURLで公開している。http://cookie.lang.nagoya-u.ac.jp/pub/
+今後も日本語学習者作文データの整備、拡充を続けていきたいと考えている。
+The purpose of this research Is to create a database of Japanese composition written by learners of Japanese. We assume that this kind of database will be useful to researchers In such fields as linguistics, second-language education, and second-language acquisition. The database was created based on the modified CHAT format of CHILDES.As the CHAT format was developed to study children's acquisition of their first language, we had to modify it to suit the purpose of our study. We have developed a detailed input manual and a list of keywords which should be used in describing the cause of errrors. Each sentence in a composition is followed by an error correction tier and error analysis tier. Error analysis Is described In natural language using keywords mentioned above. A format check program and search tool for our database have also been developed.
+Some files of compositions thus completed are available at the following location :
+http : //cookie.lang.nagoya-u.acjp/pub/
+KAKEN - 日本語学習者の作文コーパス:電子化による共有資源化(08558020)

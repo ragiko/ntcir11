@@ -1,0 +1,282 @@
+概要:
+あるフォルダの中身を、予め決めておいたキーワードに基づき、
+一括で収集し、コンソール(Batからテキストに)に出力するプログラム。
+目的:
+業務で必要になったから。
+細かい話をすると、特定キーワード1と一致し、且つ、特定キーワード2とは一致しないファイルを監視する必要が出てきたので。
+これだけなら適当に作れたが、上記から更に特定ファイルは監視除外にする必要も出てきたので、Javaでごりごり作成しました。
+使用方法はバッチから引数4つ渡して起動させる感じです。
+起動結果を元に、別のPGでメール送信等もしています(監視アラートとして)
+ぐぐれば、もっと良い方法が出てきそうだけど、今回はこれで充分だったので。
+ただの備忘録。
+環境
+Windows7 Pro or WindowsServer2008
+Java1.6 (Java1,5では動きません.)
+ソース:
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+/**
+* 特定キーワードのファイル名称のデータを引っ掛けるPG.
+*
+*/
+public class CheckFile {
+/**
+* @param args0 データ確認先フォルダ
+* @param args1 チェックキーワード1
+* @param args2 チェックキーワード2
+* @param args3 除外対象リスト
+* @retuen 0 -> 対象有り終了, 1 -> 対象無し終了
+*/
+public static void main(String[] args) {
+System.err.println("START");
+// 引数の数をチェックする.
+// ここでは4つを指定.
+if (args.length != 4) {
+System.err.println("引数の不一致");
+// 異常終了
+System.exit(9);
+}
+// 引数を各変数に投入する.
+String path = args[0];          // チェック先フォルダのパス.
+String d_keyword1 = args[1];    // 検索キーワード1.
+String d_keyword2 = args[2];    // 検索キーワード2.
+String excludeList = args[3];   // 除外リスト. 検知不要な物はこっちに記載しておく.
+// 取り込み対象ファイルをここで宣言
+File dir = new File(path);
+// 検索結果を一時ストックするListを生成
+List<String> list = new ArrayList<String>();
+// 時刻フォーマット変換
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
+// 下は時刻のみ表示. お好みで.
+//SimpleDateFormat sdf_mi = new SimpleDateFormat("HH:mm:ss");
+// ファイル一覧を取得し、そこから更にファイル名称と最終更新日時を取得する.
+File[] files = dir.listFiles();
+for (int i = 0; i < files.length; i++) {
+// ファイル一覧の情報を取得する.
+File file = files[i];
+String dd = String.valueOf(file.lastModified());
+// ファイル名称や日時を変換する(デフォだと見づらいので)
+String fileName = file.getName().toString();
+String fileDate = sdf.format(new Long(dd));
+// 以下、条件に一致する場合はConsoleに出力する.
+// キーワード1と前方一致する & キーワード2が後方とは一致しない場合は対象とする.
+// ここの処理は、正規表現を使えばよかったと後から気づく.
+if (fileName.startsWith(d_keyword1) && !fileName.endsWith(d_keyword2) ) {
+System.err.println(fileName + " " + fileDate);
+// リストにファイル名を格納する.
+list.add(fileName + " " + fileDate);
+}
+}
+// 結果0なら終了.
+if (list.size() == 0) {
+System.err.println("Zero Result");
+System.err.println("END");
+System.exit(1);
+}
+// 検索結果の除外処理.
+// 「ファイル一覧を取得し～」で取得したファイル名の中で、通知対象のファイルのみに選別する.
+// 選別するのはreadFileメソッドの仕事. mianメソッドでは呼ぶだけ.
+// 通知対象外ファイルについては、別途リスト(除外値を直に書いたテキストファイル. 複数行記載も勿論できます)を用意しておく.
+// ちなみに、検索処理と除外処理を1回でやらないのはループ文の中にループ文があるのが嫌いだから.
+String result = "";
+for (int i = 0; i < list.size(); ++i ) {
+result = result + readFile(excludeList, list.get(i) + "\n");
+}
+// コンソールに出力(TXTに吐きたいのでerrではなくout)
+System.out.print(result);
+// 処理終了コンソールの出力.
+System.err.println("END");
+// resultがあれば通知対象とみなし、0を返却する.
+// 空であれば、擬似正常にする為に1を返却する.
+// ここで結果0になるのは、検知対象ファイルはあったけど全部除外されましたという場合.
+if (result != "") {
+System.exit(0);
+}
+System.exit(1);
+}
+/**
+* 除外リスト比較判定処理.
+* @param fn - 除外リスト(フルパス)
+* @param dd - 比較対象文字列(ファイル名)
+* @return 空文字 or dd
+*/
+private static String readFile(String fn, String dd) {
+// 結果を保持する変数.
+String result = null;
+try {
+// 除外リストの読込.
+File file = new File(fn);
+BufferedReader br = new BufferedReader(new FileReader(file));
+String line;
+// ファイルを読込、変数に格納する.
+// あとで部分一致で使用する.
+while ((line = br.readLine()) != null) {
+result = result + line;
+}
+// 一致したら、ddを返却する.
+// 今回のプログラムの使用用途の都合でindexOfを使用している.
+// ループ文の中にループ文を用意すれば、equalを使用してチェックする事もできます.
+if (result.indexOf(dd.substring(0, 7)) == -1) {
+result = dd;
+} else {
+result = "";
+}
+} catch(FileNotFoundException e) {
+System.out.println(e);
+} catch(IOException e) {
+System.out.println(e);
+}
+return result;
+}
+}
+**概要:**
+あるフォルダの中身を、予め決めておいたキーワードに基づき、
+一括で収集し、コンソール(Batからテキストに)に出力するプログラム。
+**目的:**
+業務で必要になったから。
+細かい話をすると、特定キーワード1と一致し、且つ、特定キーワード2とは一致しないファイルを監視する必要が出てきたので。
+これだけなら適当に作れたが、上記から更に特定ファイルは監視除外にする必要も出てきたので、Javaでごりごり作成しました。
+使用方法はバッチから引数4つ渡して起動させる感じです。
+起動結果を元に、別のPGでメール送信等もしています(監視アラートとして)
+ぐぐれば、もっと良い方法が出てきそうだけど、今回はこれで充分だったので。
+ただの備忘録。
+**環境**
+Windows7 Pro or WindowsServer2008
+Java1.6 (Java1,5では動きません.)
+**ソース:**
+```java
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+/**
+* 特定キーワードのファイル名称のデータを引っ掛けるPG.
+*
+*/
+public class CheckFile {
+/**
+* @param args0 データ確認先フォルダ
+* @param args1 チェックキーワード1
+* @param args2 チェックキーワード2
+* @param args3 除外対象リスト
+* @retuen 0 -> 対象有り終了, 1 -> 対象無し終了
+*/
+public static void main(String[] args) {
+System.err.println("START");
+// 引数の数をチェックする.
+// ここでは4つを指定.
+if (args.length != 4) {
+System.err.println("引数の不一致");
+// 異常終了
+System.exit(9);
+}
+// 引数を各変数に投入する.
+String path = args[0]; 			// チェック先フォルダのパス.
+String d_keyword1 = args[1];	// 検索キーワード1.
+String d_keyword2 = args[2];	// 検索キーワード2.
+String excludeList = args[3];	// 除外リスト. 検知不要な物はこっちに記載しておく.
+// 取り込み対象ファイルをここで宣言
+File dir = new File(path);
+// 検索結果を一時ストックするListを生成
+List<String> list = new ArrayList<String>();
+// 時刻フォーマット変換
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
+// 下は時刻のみ表示. お好みで.
+//SimpleDateFormat sdf_mi = new SimpleDateFormat("HH:mm:ss");
+// ファイル一覧を取得し、そこから更にファイル名称と最終更新日時を取得する.
+File[] files = dir.listFiles();
+for (int i = 0; i < files.length; i++) {
+// ファイル一覧の情報を取得する.
+File file = files[i];
+String dd = String.valueOf(file.lastModified());
+// ファイル名称や日時を変換する(デフォだと見づらいので)
+String fileName = file.getName().toString();
+String fileDate = sdf.format(new Long(dd));
+// 以下、条件に一致する場合はConsoleに出力する.
+// キーワード1と前方一致する & キーワード2が後方とは一致しない場合は対象とする.
+// ここの処理は、正規表現を使えばよかったと後から気づく.
+if (fileName.startsWith(d_keyword1) && !fileName.endsWith(d_keyword2) ) {
+System.err.println(fileName + " " + fileDate);
+// リストにファイル名を格納する.
+list.add(fileName + " " + fileDate);
+}
+}
+// 結果0なら終了.
+if (list.size() == 0) {
+System.err.println("Zero Result");
+System.err.println("END");
+System.exit(1);
+}
+// 検索結果の除外処理.
+// 「ファイル一覧を取得し～」で取得したファイル名の中で、通知対象のファイルのみに選別する.
+// 選別するのはreadFileメソッドの仕事. mianメソッドでは呼ぶだけ.
+// 通知対象外ファイルについては、別途リスト(除外値を直に書いたテキストファイル. 複数行記載も勿論できます)を用意しておく.
+// ちなみに、検索処理と除外処理を1回でやらないのはループ文の中にループ文があるのが嫌いだから.
+String result = "";
+for (int i = 0; i < list.size(); ++i ) {
+result = result + readFile(excludeList, list.get(i) + "\n");
+}
+// コンソールに出力(TXTに吐きたいのでerrではなくout)
+System.out.print(result);
+// 処理終了コンソールの出力.
+System.err.println("END");
+// resultがあれば通知対象とみなし、0を返却する.
+// 空であれば、擬似正常にする為に1を返却する.
+// ここで結果0になるのは、検知対象ファイルはあったけど全部除外されましたという場合.
+if (result != "") {
+System.exit(0);
+}
+System.exit(1);
+}
+/**
+* 除外リスト比較判定処理.
+* @param fn - 除外リスト(フルパス)
+* @param dd - 比較対象文字列(ファイル名)
+* @return 空文字 or dd
+*/
+private static String readFile(String fn, String dd) {
+// 結果を保持する変数.
+String result = null;
+try {
+// 除外リストの読込.
+File file = new File(fn);
+BufferedReader br = new BufferedReader(new FileReader(file));
+String line;
+// ファイルを読込、変数に格納する.
+// あとで部分一致で使用する.
+while ((line = br.readLine()) != null) {
+result = result + line;
+}
+// 一致したら、ddを返却する.
+// 今回のプログラムの使用用途の都合でindexOfを使用している.
+// ループ文の中にループ文を用意すれば、equalを使用してチェックする事もできます.
+if (result.indexOf(dd.substring(0, 7)) == -1) {
+result = dd;
+} else {
+result = "";
+}
+} catch(FileNotFoundException e) {
+System.out.println(e);
+} catch(IOException e) {
+System.out.println(e);
+}
+return result;
+}
+}
+```
+**備考**
+・後から見直すと色々甘い箇所があったので、それは次回の課題。
+・チェック処理系はワタシ個人しかまず使わず、一度設定したら、ほぼ設定変更はないので、甘くなっています。
+[備忘録:Java]特定キーワードでフォルダ内のファイル名称を収集して、更にリストを使って除外するPG - Qiita

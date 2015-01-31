@@ -1,0 +1,22 @@
+入力  
+INPUT
+: Map<int, ObjectRef>型.音源 ID とパワースペクトル Vector<float>型または, 複素スペクトル Vector<complex<float> >型のデータのペア. ただし,パワースペクトルを選択した場合,複素スペクトルを選択した場合と 比較して出力エネルギーが2倍になる. 
+出力  
+OUTPUT
+: Map<int, ObjectRef>型.音源 ID とフィルタバンクの出力エネルギーから構成される ベクトルの Vector<float>型のデータのペア.出力ベクトルの次元数は,FBANK_COUNT の2倍である. 0 から FBANK_COUNT-1 までに,フィルタバンクの出力エネルギーが入り,FBANK_COUNT から 2 *FBANK_COUNT-1 までには,0 が入る.0 が入れられる部分は,動的特徴量用のプレースホルダーである.動的特徴量が不要な場合は FeatureRemoverを用いて削除する必要がある. 
+パラメータ  
+LENGTH
+: int型.分析フレーム長である.入力スペクトルの周波数ビン数に等しい.値域は正の整数である. 
+SAMPLING_RATE
+: int型.サンプリング周波数である.値域は正の整数である. 
+CUT_OFF
+: int型.離散フーリエ変換時のアンチエーリアシングフィルタのカットオフ周波数.SAMPLING_RATE の1/2以下である. 
+MIN_FREQUENCY
+: int型.フィルタバンクの下限周波数.値域は正の整数でかつ CUT_OFF 以下. 
+MAX_FREQUENCY
+: int型.フィルタバンクの上限周波数.値域は正の整数でかつ CUT_OFF 以下. 
+FBANK_COUNT
+: int型.フィルタバンク数である.値域は正の整数である. 
+6.4.3.5 ノードの詳細
+メルフィルタバンク処理を行ない,各チャネルのエネルギーを出力する. 各バンクの中心周波数は,メルスケール $^{(1)}$ 上で等間隔に配置する. チャネル毎の中心周波数は,最小周波数ビン $\hbox{SAMPLING\_ RATE}/\hbox{LENGTH}$ から $\hbox{SAMPLING\_ RATE} \hbox{CUT\_ OFF} / \hbox{LENGTH}$ までを FBANK_COUNT 分割し決定する. リニアスケールとメルスケールの変換式は, 
+HARK Document  Version 1.9.9. (Revision: 5967) : MelFilterBank

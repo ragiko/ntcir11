@@ -1,0 +1,85 @@
+
+相関ルール
+頻出するアイテム間の何らかの組み合わせの規則をアソシエーションルールと呼ぶ。アソシエーションルールは連関ルール、関連ルール、相関ルールなどと呼ばれます。
+「商品Aを買うと商品Bも買う」のようなルールを見つけ出すことを目標としています。
+今回の例は、掃除機の購買動機に繋がる不満要素の組み合わせです。
+これを特定し、その中でも特に強い不満点を解明して、商品開発に貢献させることを目標とします。
+アンケートの設問
+設問の形式
+チェックボックス系の複数回答形式の設問
+回答データ
+水平展開形式のデータ
+サンプル毎に複数の設問への回答が存在し、1サンプル1レコードの形式であること。
+集計データ
+予め用意できるのであれば、SQLなどで集計データを作成しておくとグラフが描きやすくなります。
+(※そこまで準備しなくとも、Rで図を出すことは可能です。)
+※しかし、この表では集計されてしまっているのでアソシエーション分析まではできない。
+R言語用のスクリプトの生成
+R言語を使用しますが、環境として RStudioなどを事前に準備しておくこと。
+R言語用のスクリプトをJava等で生成する
+スクリプトを作成できるのであれば、どの手法を使っても構いませんが、ここではJavaで作成してみます。
+・【IN】情報源としてSQL等でダンプしたCSVファイルを準備しておきます。(※1)
+・【OUT】生成するファイル名はここで任意に決めます。
+※こうした情報はプロパティファイルなどに外だししておくのが基本ですが、ここでは本題ではないので割愛します。
+private void C6_Analysis(String[] args) {
+// TODO 自動生成されたメソッド・スタブ
+String FN_CUBE3_QID626_QID634_csv = "C:\\eclipse\\workspace\\HogeConvert\\csv\\CUBE3_QID626_QID634.csv";
+String RS_QID626_QID634_R = "C:\\eclipse\\workspace\\HogeConvert\\csv\\RS_QID626_QID634.R";
+String keyword = "000_未選択";
+QID_625 qid_625 = new QID_625();
+try {
+BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(FN_CUBE3_QID626_QID634_csv),"MS932"));
+BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(RS_QID626_QID634_R),"MS932"));
+String rec;
+String recCnv;
+int cnt = 0;
+ArrayList<String[]> lines_list = new ArrayList<String[]>();
+while((rec = br.readLine()) != null) {
+if(cnt == 0){
+// header部はそのままコピーする。
+}else{
+String[] cnv_rec = qid_625.convert(rec);
+lines_list.add(cnv_rec);
+}
+cnt++;
+}
+br.close();
+//
+String rListString = qid_625.getRListString(lines_list);
+//1行で出力したものをRで実行するとなぜかマルチバイト文字エラーになる。
+//System.out.println(rListString);
+//
+//
+bw.write("library(arules)" + "\r\n",0,"library(arules)".length()+1);
+String[] strArray = rListString.split("c\\(",-1);
+for(int i = 0 ; i < strArray.length ; i++){
+if(i == 0){
+System.out.println(strArray[i]);
+bw.write(strArray[i] + "\r\n",0,strArray[i].length()+1);
+}else{
+String tmp = "c(" + strArray[i];
+System.out.println("c(" + strArray[i]);
+bw.write(tmp + "\r\n",0,tmp.length()+1);
+}
+}
+String tmp2 = "head(" + qid_625.r_listname + ")";
+bw.write(tmp2 + "\r\n",0,tmp2.length()+1);
+String tmp3 = qid_625.r_listname + ".tran<-as(" + qid_625.r_listname + ",\"transactions\")";
+bw.write(tmp3 + "\r\n",0,tmp3.length()+1);
+String tmp4 = "class(" + qid_625.r_listname + ".tran)";
+bw.write(tmp4 + "\r\n",0,tmp4.length()+1);
+String tmp5 = "itemFrequencyPlot(" + qid_625.r_listname + ".tran" + ",type = \"absolute\")";
+bw.write(tmp5 + "\r\n",0,tmp5.length()+1);
+bw.close();
+} catch (UnsupportedEncodingException e) {
+// TODO 自動生成された catch ブロック
+e.printStackTrace();
+} catch (FileNotFoundException e) {
+// TODO 自動生成された catch ブロック
+e.printStackTrace();
+} catch (IOException e) {
+// TODO 自動生成された catch ブロック
+e.printStackTrace();
+}
+}
+Rによるアソシエーション分析 - Qiita

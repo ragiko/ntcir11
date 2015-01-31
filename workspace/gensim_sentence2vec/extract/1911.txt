@@ -1,0 +1,4 @@
+関連性スコアは、文法性を保つ支持する先行談話構成要素を決定するために、談話の構造表現を通して浸透される。Relevance scores are caused to penetrate through structural representations of discourse, in order to determine supported preceding discourse components maintaining grammaticality. - 特許庁
+ステップS5で求められた認識候補の並びと、言語辞書および文法と照合して、認識スコアを加味した上、妥当な解を選択する(S6)。The list of the recognition candidates calculated in the step S5 is collated with a language dictionary and grammar, and the proper solution is selected considering the recognition scores(S6). - 特許庁
+話されたフレーズの登録文法のスコアは、登録文法(36)を用いて話されたフレーズの特徴をSI認識モデル(34)と比較することによって、決定される。An enrollment grammar score of the spoken phrase may be determined by comparing features of the spoken phrase to the SI recognition models (34) using the enrollment grammar (36). - 特許庁
+コア文法の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

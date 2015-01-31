@@ -1,0 +1,75 @@
+
+'Imports System.Drawing
+'Imports System.Drawing.Drawing2D
+'がソースファイルの一番上に書かれているものとする
+'描画先とするImageオブジェクトを作成する
+Dim canvas As New Bitmap(PictureBox1.Width, PictureBox1.Height)
+'ImageオブジェクトのGraphicsオブジェクトを作成する
+Dim g As Graphics = Graphics.FromImage(canvas)
+'Penオブジェクトの作成(幅5の黒色)
+Dim blackPen As New Pen(Color.Black, 5)
+'ダッシュ
+blackPen.DashStyle = DashStyle.Dash
+'線を描画
+g.DrawLine(blackPen, 10, 10, 200, 10)
+'ダッシュとドット
+blackPen.DashStyle = DashStyle.DashDot
+'線を描画
+g.DrawLine(blackPen, 10, 30, 200, 30)
+'ダッシュと2つのドット
+blackPen.DashStyle = DashStyle.DashDotDot
+'線を描画
+g.DrawLine(blackPen, 10, 50, 200, 50)
+'ドット
+blackPen.DashStyle = DashStyle.Dot
+'線を描画
+g.DrawLine(blackPen, 10, 70, 200, 70)
+'実線
+blackPen.DashStyle = DashStyle.Solid
+'線を描画
+g.DrawLine(blackPen, 10, 90, 200, 90)
+'リソースを解放する
+blackPen.Dispose()
+g.Dispose()
+'PictureBox1に表示する
+PictureBox1.Image = canvas
+//using System.Drawing;
+//using System.Drawing.Drawing2D;
+//がソースファイルの一番上に書かれているものとする
+//描画先とするImageオブジェクトを作成する
+Bitmap canvas = new Bitmap(PictureBox1.Width, PictureBox1.Height);
+//ImageオブジェクトのGraphicsオブジェクトを作成する
+Graphics g = Graphics.FromImage(canvas);
+//Penオブジェクトの作成(幅5の黒色)
+Pen blackPen   = new Pen(Color.Black, 5);
+//ダッシュ
+blackPen.DashStyle = DashStyle.Dash;
+//線を描画
+g.DrawLine(blackPen, 10, 10, 200, 10);
+//ダッシュとドット
+blackPen.DashStyle = DashStyle.DashDot;
+//線を描画
+g.DrawLine(blackPen, 10, 30, 200, 30);
+//ダッシュと2つのドット
+blackPen.DashStyle = DashStyle.DashDotDot;
+//線を描画
+g.DrawLine(blackPen, 10, 50, 200, 50);
+//ドット
+blackPen.DashStyle = DashStyle.Dot;
+//線を描画
+g.DrawLine(blackPen, 10, 70, 200, 70);
+//実線
+blackPen.DashStyle = DashStyle.Solid;
+//線を描画
+g.DrawLine(blackPen, 10, 90, 200, 90);
+//リソースを解放する
+blackPen.Dispose();
+g.Dispose();
+//PictureBox1に表示する
+PictureBox1.Image = canvas;
+破線の終点の形を変更する
+破線の終点の形はPen.DashCapプロパティで変更できます。Pen.DashCapプロパティに指定できる値(DashCap列挙体の値)とそれを指定した時に描画される線の形状を表にまとめると、以下のようになります。
+DashCap列挙体のメンバ名
+説明(MSDNより)
+画像
+破線を描く: .NET Tips: C#, VB.NET

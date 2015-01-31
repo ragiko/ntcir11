@@ -1,0 +1,21 @@
+
+実行ファイル名の最後の単語として、以下を使用する。
+handler:操作器(センサデータへのインタフェースを提供する)
+extractor:抽出器
+detector:検出器
+classifier:分類器、識別器
+planner:計画器
+controller:制御器
+commander:指令器
+messenger:送受信器
+manager:管理器
+coordinator:調整器
+など
+例:
+path_planner
+ライブラリの場合、接頭辞 lib のすぐ後にアンダースコア_を入れないこと。
+例:
+libmy_great_thing 良い例
+lib_my_great_thing ダメな例
+参考リンク
+C++コーディング規約 [Robotics with Linux]

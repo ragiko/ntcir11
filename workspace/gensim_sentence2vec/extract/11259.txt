@@ -1,0 +1,92 @@
+データ操作言語(DML)文について
+データ操作言語(DML)文は、既存の表のデータにアクセスし、操作します。
+SQL*Plus環境では、SQL>プロンプトに続いてDML文を入力できます。
+SQL Developer環境では、SQLワークシートにDML文を入力できます。または、SQL Developerのナビゲーション・フレームとツールを使用して、データにアクセスして操作することもできます。
+SQL DeveloperでDML文の効果を確認するには、「リフレッシュ」アイコンをクリックする必要のある場合があります。
+refresh_icon.gifの説明 
+DML文を含むトランザクションをコミットするまでは、その効果は永続的ではありません。トランザクションは、Oracle Databaseが1つの単位として扱うSQL文の順序です(1つのDML文のこともあります)。トランザクションをコミットするまでは、ロールバックする(元に戻す)ことができます。トランザクションの詳細は、「トランザクション制御文について」を参照してください。
+トピック:
+INSERT文について
+UPDATE文について
+DELETE文について
+INSERT文について
+INSERT文は、既存の表に行を挿入します。
+推奨されている最も単純なINSERT文の構文は、次のとおりです。
+INSERT INTO table_name (list_of_columns)
+VALUES (list_of_values);
+list_of_columnsの各列に対して、list_of_valuesの対応する位置に有効な値が必要です。そのため、表に列を挿入する前に、表にどのような列があり、どのような値が有効かを知っておく必要があります。SQL Developerを使用してこうした情報を取得するには、「チュートリアル: EMPLOYEES表のプロパティとデータの表示」を参照してください。SQL*Plusを使用してこうした情報を取得するには、DESCRIBE文を使用します。次に例を示します。
+DESCRIBE EMPLOYEES;
+結果:
+Name                                      Null?    Type
+----------------------------------------- -------- ------------
+EMPLOYEE_ID                               NOT NULL NUMBER(6)
+FIRST_NAME                                         VARCHAR2(20)
+LAST_NAME                                 NOT NULL VARCHAR2(25)
+EMAIL                                     NOT NULL VARCHAR2(25)
+PHONE_NUMBER                                       VARCHAR2(20)
+HIRE_DATE                                 NOT NULL DATE
+JOB_ID                                    NOT NULL VARCHAR2(10)
+SALARY                                             NUMBER(8,2)
+COMMISSION_PCT                                     NUMBER(2,2)
+MANAGER_ID                                         NUMBER(6)
+DEPARTMENT_ID                                      NUMBER(4)
+例5-1のINSERT文では、すべての列の値がわかっている従業員として、表EMPLOYEESに行を挿入します。
+例5-1 すべての情報が使用できる場合でのINSERT文の使用
+INSERT INTO EMPLOYEES (
+EMPLOYEE_ID,
+FIRST_NAME,
+LAST_NAME,
+EMAIL,
+PHONE_NUMBER,
+HIRE_DATE,
+JOB_ID,
+SALARY,
+COMMISSION_PCT,
+MANAGER_ID,
+DEPARTMENT_ID
+)
+VALUES (
+10,              -- EMPLOYEE_ID
+'George',        -- FIRST_NAME
+'Gordon',        -- LAST_NAME
+'GGORDON',       -- EMAIL
+'650.506.2222',  -- PHONE_NUMBER
+'01-JAN-07',     -- HIRE_DATE
+'SA_REP',        -- JOB_ID
+9000,            -- SALARY
+.1,              -- COMMISSION_PCT
+148,             -- MANAGER_ID
+80               -- DEPARTMENT_ID
+);
+結果:
+1 row created.
+表に行を挿入するのにすべての列の値がわかっている必要はありませんが、NOT NULLの列の値はすべてわかっている必要があります。NULLの可能性がある列の値がわからない場合は、その列をlist_of_columnsから省略することができます。この列の値はデフォルトでNULLとなります。
+例5-2のINSERT文では、SALARYを除くすべての列の値がわかっている従業員として、表EMPLOYEESに行を挿入します。ここでは、SALARYをNULL値にすることができます。給与がわかった際に、UPDATE文で更新できます(例5-4を参照)。
+例5-2 情報をすべては使用できない場合でのINSERT文の使用
+INSERT INTO EMPLOYEES (
+EMPLOYEE_ID,
+FIRST_NAME,
+LAST_NAME,
+EMAIL,
+PHONE_NUMBER,
+HIRE_DATE,
+JOB_ID,          -- Omit SALARY; its value defaults to NULL.
+COMMISSION_PCT,
+MANAGER_ID,
+DEPARTMENT_ID
+)
+VALUES (
+20,              -- EMPLOYEE_ID
+'John',          -- FIRST_NAME
+'Keats',         -- LAST_NAME
+'JKEATS',        -- EMAIL
+'650.506.3333',  -- PHONE_NUMBER
+'01-JAN-07',     -- HIRE_DATE
+'SA_REP',        -- JOB_ID
+.1,              -- COMMISSION_PCT
+148,             -- MANAGER_ID
+80               -- DEPARTMENT_ID
+);
+結果:
+1 row created.
+DML文とトランザクションについて

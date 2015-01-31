@@ -1,0 +1,43 @@
+AllFusion Model Manager r7 コンバージョンガイド
+下記のドキュメントは、以前のバージョンであるAllFusion Model Manager(以下、Model Managerと称す) 4.1.4をModel Manager r7へコンバージョンを行う前に考慮すべき点を整理したものであります。
+コンバージョンを行う前に、製品に付属のReadmeおよびModel Manager Administrator Guideの第3章を御覧下さい。
+コンバージョンに要する時間はマシンの環境(メモリ、ディスクスペース、CPU速度など)によるところが非常に大きいため、可能な限りテスト環境で試した後に実際の環境でコンバージョンを行うことをお薦めいたします。
+コンバージョン方法
+以下の方法により、既存のModelMartによるAllFusion ERwin Data Modeler(以下、ERwinと称す)およびAllFusion Process Modeler(以下、BPwinと称す)についてマイグレーションを行うことが可能であります。
+1)	マニュアルコンバージョン
+Model Manager 4.1.4のモデルを新しいModel Manager r7へ移送します。その際には、一度に一つのモデルのみが対象となります。新規のモデルをModel Manager r7へ作成することになります。
+2) 自動コンバージョン
+Model Manager 4.1.4のモデルと同一ロケーションに対し、Model Manager r7のインストールを行い、データベースの初期化を行います。
+アップデートを選択することで、Model Manager 4.1.4内に存在するERwinおよびBPwinのモデルを自動的にModel Manager r7用のモデルにコンバージョンいたします。
+マニュアルコンバージョン
+マニュアルコンバージョンは、手作業によるコンバージョンとなります。これは古いModel Manager 4.1.4から新規のModel Manager r7へモデルを移送することを意味します。既存のクライアントツールにて保存(.er1//bp1形式)したモデルについて、バージョンr7のクライアントツールにてオープンした後に保存(.erwin/.bp1形式)します。その後Model Manager r7へそのモデルを保存いたします。
+マニュアルコンバージョンでは必要なモデルを選択できるなどのメリットがある反面、バージョン管理などの情報が失われる面がございます。
+自動コンバージョン
+自動コンバージョンは、一度にModel Manager 4.1.4 のモデルをModel Manager r7へアップグレードためのオプションとなります。Model Manager r7のインストールを行い、データベースの初期化を行った上でアップグレードを選択しますと、既存のモデルが全てバージョンr7のクライアントツールにてオープンが可能となります。
+自動コンバージョンではバージョン履歴を全て残したままモデルのアップグレードが可能になりますが、
+Model Manager 4.1.4以前のバージョンで作成されたモデルについては対象となりません。
+以下のチェックリストは、既存のModel Managerデータベースのスムーズなコンバージョンおよび問題を排除するために用意されたものであります。
+Model Manager r7 Preコンバージョンガイド
+Preコンバージョンチェックリスト
+4.1.4以前のModel Managerバージョンを Model Manager r7にマイグレートするために、まずModel Manager 4.1.4をアップグレードする必要があります。既存のバージョンを確認するために、クエリーツールで「select * from Mmapplication where abbreviation = MM」と入力します。ビルド番号が、3907もしくはそれ以上であることを確認します。
+効率よくコンバージョンを行うためには、Model Manager 4.1.4 SP1を使用してください。
+Model Manager 4.1.4のデータベースをModel Manager r7にコンバートする前に、Model Manager 4.1.4のデータベースについてバックアップを取得してください。
+全てのユーザに対し、モデルをチェックインさせてください。
+コンバートを行うべき全てのERwinおよびBPwinモデルがModel Manager 4.1.4データベース内に保存されていることを確認してください。
+ERwinおよびBPwin間でデータをシンクロナイズする必要があれば、シンクロナイズ済みのERwinおよびBPwinモデルが存在することを確認してください。
+Model Manager 4.1.4データベース内の不要なモデルは削除してください。
+Model Manager 4.1.4データベース内の不要なライブラリオブジェクトは削除してください。
+一時的なコンバージョン用のオブジェクトのために、Model Manageデータベースのサイズを2倍程度に拡張してください。
+Model manager 4.1.4データベース内に技術的なサポートを必要とするモデルがないことを確認してください。
+Model ManagerのReadmeを御覧下さい。
+Model Manager Administrator Guideを参照しますと、第3章にModelMartのアップデートおよび
+コンバートが記載されております。Model Managerのプログラムグループに、アドミニストレータガイドへのショートカットがございます。アドミニストレータガイド(MdlMgr_Admin.pdf)はDOCディレクトリもしくはインストール用のCDにございます。
+r7のライセンスにつきましては、TLC(Total License Care)にお問い合わせください。
+データベースのログファイルを切りつめてください。これはModel Managerのダイアログにて
+Truncate Logのチェックボックスを選択することで可能となります。
+OracleのDBMSの場合、ModelMartのデータファイルについてフルになった際には自動的に拡張する設定(AUTOEXTEND)にしてください。
+オフピーク時にコンバージョンを行いください。
+パフォーマンス的な理由により、少なくとも512MB(1GBを推奨)のメモリーを搭載したマシンにてコンバージョンを行いください。
+dbo(Microsoft SQL ServerもしくはSybase)、DBA権限を持つスキーマ所有者(Oracle)もしくはDBA(Informix)にてModelMartを含むデータベースにログオンしてください。
+以上
+AllFusion Model Manager 製品サポート:関連ドキュメント

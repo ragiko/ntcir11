@@ -1,0 +1,30 @@
+概要
+HBase では、さまざまな方法でデータをテーブルにロードすることができます。最も簡単な方法は、MapReduce ジョブから TableOutputFormat クラスを使うか、または通常のクライアント API を使う方法ですが、これらの方法は必ずしも最も効率的な方法ではありません。
+ここでは、HBase のバルクロード機能について説明します。バルクロード機能は、MapReduce ジョブを使って、HBase の内部データ形式でテーブルデータを出力してから、実行中のクラスタにデータファイルを直接ロードします。バルクロードを使うと、HBase API を使う場合よりも、CPU とネットワークの負荷を低く抑えることができます。
+MapReduce ジョブによるデータの準備
+バルクロードの最初のステップでは、HFileOutputFormat を使って MapReduce ジョブから HBase データファイルを生成します。この出力形式は、HBase の内部格納形式でデータを書き出すので、書き出されたデータはあとで非常に効率的にクラスタにロードすることができます。
+このしくみが効率的に機能するためには、出力 HFile のそれぞれが単一のリージョンに収まるよう、HFileOutputFormat の設定を行わなければなりません。そのために、ジョブでは Hadoop の TotalOrderPartitioner クラスを使って map 出力を分割し、結果がキ−空間の不連続範囲へと切り分けられて、テーブル内のリージョンのキー範囲に対応するようにします。
+HFileOutputFormat に含まれている簡易メソッド configureIncrementalLoad() は、テーブルの現在のリージョンの境界に基づいて自動的に TotalOrderPartitioner をセットアップします。
+データロードの完了
+HFileOutputFormat を使ってデータを準備したら、コマンドラインツールを使ってデータをクラスタにロードします。このコマンドラインツールは、準備されたすべてのデータファイルに対して繰り返し処理を行い、それぞれのデータファイルが属するべきリージョンを決定します。次に、コマンドラインツールは適切なリージョンサーバーに接触し、リージョンサーバーではこれをうけて HFile を取り入れ、ストレージディレクトリに移して、クライアントがデータを利用できるようにします。
+バルクロードの準備中、または準備からロード完了までの間にリージョンの境界が変更された場合、バルクロードコマンドラインユーティリティは、新しい境界に対応するよう、自動的にデータファイルを分割します。ただし、このプロセスは効率の面で必ずしも最適なものではないので、バルクロードの準備からクラスタへのインポートまでの時間の経過を最小限に抑えるよう注意する必要があります。特に、バルクロード以外の手段によって同時にデータをロードしているクライアントがほかにも存在する場合には注意が必要です。
+importtsv ツールを使ったバルクロードの準備
+HBase には importtsv という名前のコマンドラインツールが付属しています。このツールは、hadoop jar /path/to/hbase-VERSION.jar importtsv を実行すると利用できます。引数なしに実行すると、簡単な使用法が表示されます。
+Usage: importtsv -Dimporttsv.columns=a,b,c <tablename> <inputdir>
+Imports the given input directory of TSV data into the specified table.
+The column names of the TSV data must be specified using the -Dimporttsv.columns
+option. This option takes the form of comma-separated column names, where each
+column name is either a simple column family, or a columnfamily:qualifier. The special
+column name HBASE_ROW_KEY is used to designate that this column should be used
+as the row key for each imported record. You must specify exactly one column
+to be the row key.
+In order to prepare data for a bulk data load, pass the option:
+-Dimporttsv.bulk.output=/path/for/output
+Other options that may be specified with -D include:
+-Dimporttsv.skip.bad.lines=false - fail if encountering an invalid line
+completebulkload ツールを使った準備データのインポート
+importtsv ツールを使ってインポートデータを準備したら、completebulkload ツールを使って、実行中のクラスタにデータをインポートします。
+completebulkload ツールは、importtsv が結果を書き出した場所と同じ出力パス、およびテーブル名を引数に取ります。次に例を示します。
+$ hadoop jar hbase-VERSION.jar completebulkload /user/todd/myoutput mytable
+このツールは高速で実行され、その後はクラスタ内で新しいデータが可視状態になります。
+

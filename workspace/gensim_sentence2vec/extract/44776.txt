@@ -1,0 +1,111 @@
+この記事は公開されてから1年以上経過しています。情報が古い可能性がありますので、ご注意ください。
+IVR (自動音声応答システム) とは
+IVR (自動音声応答システム) とは、何でしょう?e-wordsによると、次のように書いてあります。
+企業の電話窓口で、音声による自動応答を行うコンピュータシステム。
+発信者のダイヤル操作に合わせて、あらかじめ録音してある音声を発信者側に自動的に再生する。
+最近ではコンピュータ技術の進歩により、音声認識機能を備え、相手の発話に応じて再生内容を決める高度な製品も登場している。
+クレーム処理などの高度な応対が必要のない業務で利用することができ、情報提供や資料請求、懸賞や応募の受付などに使われている。
+人間(オペレータ)を雇うよりも低コストで24時間受付が実現できる。
+また、受付内容は即座にデータベースに記録されるため、データ処理の迅速化、入力コストの削減が可能である。
+宅急便の再配達の依頼をするときに、自動音声にしたがって4桁で月と日を指定したりするあれですね。
+TwilioのAPIを使えば、さまざまなIVRを簡単に構築することができます。
+今回は簡単なIVRを、いままでのサンプルを参考につくってみます。
+環境構築方法
+実行環境およびTwilioアカウントについては、第1回記事と第2回記事を見て設定&確認しておいてください。
+今回も第4回のサンプルをベースに作成するので、Heroku環境とそのサンプルを用意しましょう。
+選択したメニューによって再生する音声の内容を変更してみる
+1.Voice Request URLを指定
+まずは、Twilioで取得した番号に電話をかけると、メニューガイダンスが流れるようにしましょう。
+番号管理ページへいき、使用する電話番号をクリックします。
+音声通話情報設定ページで、Voice Request URLを指定しましょう。
+Voice Request URLは、電話を受信した際に処理するTwiMLを取得するためのURLを指定します。
+ここの値を、下記のように指定します。
+http://<デプロイしたサーバのドメイン>/menu
+2.アプリケーションを修正
+次に、app.jsにルート情報を追加します。
+メニューガイダンスを行う/menuと、選択したメニューに応じた音声を再生する/selectMenuを追加します。
+・
+・
+app.get('/menu', routes.menu);
+app.get('/selectMenu', routes.selectMenu);
+・
+・
+そして、index.jsでmenu処理を記述しましょう。
+menu関数では、gather関数を使用しています。gather関数(Gatherタグ)を使用すると、
+発信者がキーパッドでダイヤルした数字キーを収集することができます。
+・
+・
+exports.menu = function (req, res) {
+var resp = new twilio.TwimlResponse();
+var opt = {
+voice: 'woman',
+language: 'ja-jp'
+}
+resp.say('こちらは、IVRテストアプリケーションです。', opt)
+.gather({
+action: 'http://<デプロイしたサーバのドメイン>/selectMenu',
+method: 'GET',
+finishOnKey: '#',
+timeout:20
+}, function () {
+this.say('クラスメソッドのサービスについて知りたい方は一番',opt)
+.say('クラスメソッドの会社概要について知りたい方は二番を押してください。', opt)
+.say('入力が完了したら、シャープを押してください。', opt);
+});
+res.writeHead(200, {'Content-Type': 'text/xml'});
+console.log(resp);
+res.end(resp.toString());
+};
+gather関数のacitionは、キー入力が終了した際にリクエストするURLです。
+finishOnKeyにはキー入力の終了となるキーを指定します。
+第2引数の関数では、再生する音声を指定しています。
+上記関数では、次のようなTwiMLが生成されて返されます。
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+<Gather action="http://<デプロイしたサーバのドメイン>/selectMenu" method="GET" finishOnKey=# timeout=20>
+<Say>クラスメソッドのサービスについて知りたい方は一番</Say>  
+<Say>クラスメソッドの会社概要について知りたい方は二番を押してください。</Say>  
+<Say>入力が完了したら、シャープを押してください。</Say>  
+</Gather>
+</Response>
+さらに、index.jsにselectMenu関数も追加しましょう。
+キーパッドから入力された数値は、Digitsという名前のパラメータに格納されます。
+Digitsの値に応じて再生する音声(生成するTwiML)を変えています。
+・
+・
+exports.selectMenu = function (req, res) {
+var pushNumber = req.query.Digits;
+console.log("pushNumber=" + pushNumber);
+var resp = new twilio.TwimlResponse();
+var opt = {
+voice: 'woman',
+language: 'ja-jp'
+}
+if(pushNumber === "1") {
+resp.say('いちばんがおされました。クラスメソッドのサービスについて説明します。', opt);
+} else if(pushNumber === "2") {
+resp.say('にばんがおされました。クラスメソッドの会社概要について説明します。', opt);
+} else {
+resp.say('不正な値がおされました。終了します。', opt);
+}
+res.writeHead(200, {'Content-Type': 'text/xml'});
+console.log(resp);
+res.end(resp.toString());
+};
+3.Herokuにデプロイして確認
+最後に、Herokuへログイン後、デプロイしましょう。
+% heroku login //IDパスワード入力
+% git add .
+% git commit -m "IVR機能追加"
+% git push heroku master
+前回と同じく、デプロイと起動が完了したら、Voice Request URLを指定した電話番号にかけてみましょう。
+メニューガイダンスが流れ、キー入力を促されます。1#とか2#とかを押すと、それに応じてメッセージが流れます。
+まとめ
+いかがでしょうか。
+シンプルですが、IVR機能が実装できました。
+なお、この仕組を利用すると、内線のサポートも追加できるみたいです。
+参考サイトなど
+公式: http://kddi-web.twilio.jp/
+Github: http://twilio.github.io/twilio-node/
+IVR基礎知識: https://jp.twilio.com/docs/howto/ivrs-the-basics
+[Twilio] IVR (自動音声応答システム) を作ってみよう#6 ｜ Developers.IO

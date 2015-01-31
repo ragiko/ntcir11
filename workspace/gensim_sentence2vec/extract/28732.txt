@@ -1,0 +1,41 @@
+Java 可変長引数と優先度
+こんにちは。c#初心者兼、java始めました です。
+可変長引数の場合のオーバーロードの優先度について困っています(質問と言うより半分愚痴です)。
+javaにも可変長引数ってありますよね。(ジェネリックの弱さにイライラしていたけれど)「javaも捨てたものじゃない」と感心しながら使っていると、いきなりコンパイルエラー。
+sampleMethod(10, 20); と書いている部分でエラーが発生していました。
+自分のメソッド定義を確認しみると、
+void sampleMethod(int...);
+void sampleMethod(Object...);
+の2種類のオーバーロードがあり、ambiguousなため判別不能らしいです。
+確かに、AutoBoxingされれば、int...だけでなく、Object...にもマッチしますが、どう考えてもBoxingしない方が優先度が高いはずです。というか、高く設定されるべきです。
+個人的に基準にしているc#ではこのようなことは起きませんでした。
+(あ、やっぱり捨てたものかもしれない 心変わり早す(ry )
+試しにc#でInteger型のクラスを作り、(実際はタブーですが)暗黙のキャストを双方向でオーバーロードして実験してみました。
+public class Integer // ここからc#
+{
+private int _value;
+//----------------------------
+public Integer(int value) { _value = value; }
+//----------------------------
+// Integer  int の暗黙の型変換
+public static implicit operator int(Integer value)
+{ return value._value; }
+// int  Integer の暗黙の型変換
+public static implicit operator Integer(int value)
+{ return new Integer(value); }
+//----------------------------
+// javaの sampleMethod(int... values)に相当
+public static void SampleMethod(params int[] values) { }
+// javaの sampleMethod(Object... values)に相当
+public static void SampleMethod(params Object[] values) { }
+}
+そして、Integer.SampleMethod(10, 20); と書いてみると……問題……なし。
+ちゃんと、SampleMethod(param int[] values)が選ばれていました。
+つまり、(個人的には)java(コンパイラ)の方が不可解な動きをしているのです。
+sampleMethod(int, int)とsampleMethod(Object, Object)があるときは問題ないので、可変長引数のときだけambiguousになるようです。
+「それなら」と思い、sampleMethod(int, int...)とsampleMethod(Object, Object...)を作ってみましたが、やはりエラーが出ます。
+何か良い解決策はあるでしょうか?
+可変長じゃない引数のオーバーロードを大量に作ることと、片方の可変長をやめること以外でアドバイスをお願いします。
+もしくは、「個人的には～だから、パクリのc#よりjavaの方が動きが正しいぞ!」という方がいらっしゃいましたら、ご意見ください。
+通報する
+Java 可変長引数と優先度 - Java - 教えて!goo

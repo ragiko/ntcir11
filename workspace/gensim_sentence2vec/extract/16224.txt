@@ -1,0 +1,169 @@
+
+if文を組み合わせることで複雑な条件式であっても記述することができますが、対象となる1つの値を様々な値と比較して一致しているかどうか調べたい場合はif文では不向きな場合があります。例えば次の例を見てください。
+var num = 2;
+if (num == 1){
+alert("数値は 1");
+}else if (num == 2){
+alert("数値は 2");
+}else if (num == 3){
+alert("数値は 3");
+}else if (num == 4){
+alert("数値は 4");
+}else if (num == 5){
+alert("数値は 5");
+}
+毎回変数「num」に格納される値を他の値と比較しています。これはこれで間違いではないのですが、このように対象の値を様々な値と一致するかどうか調べる場合にはswitch文を使うと便利です。switch文の書式は次のようになっています。
+switch (式){
+case 値1:
+実行する文;
+break;
+case 値2:
+実行する文;
+break;
+case 値3:
+実行する文;
+break;
+}
+switch文では式を評価した結果と他の値が一致するかどうかを調べます。調べる対象の値は「case 値:」の形式でブロック内に記述していきます。「case 値:」はラベルの一種となっており式を評価した結果と一致する値が記述されたラベルが見つかると、処理はそのラベルの次の文へ移ります。そしてブロックの最後まで記述された文を順に実行していきます。
+通常は各case毎に最後にbreak文を記述します。break文は繰り返し処理でも使用されましたがbreak文が実行されるとbreak文が含まれる最も内側の文の次へ処理が移ります。よってswitch文の中でbreak文が実行されるとswitch文の次へ処理が移ることになります。(break文を書かなかった場合の挙動は後で確認します)。
+ではこのページの冒頭でif文を使って記述したサンプルをswitch文を使って記述してみます。
+var num = 2;
+switch (num){
+case 1:
+alert("数値は 1");
+break;
+case 2:
+alert("数値は 2");
+break;
+case 3:
+alert("数値は 3");
+break;
+case 4:
+alert("数値は 4");
+break;
+case 5:
+alert("数値は 5");
+break;
+}
+スクリプトの行数自体はむしろ増えていますが、switch文を使うことで式を評価した結果と一致する値があるかどうか調べているということが明確になります。
+なおcaseの後に記述する値は実際には式を記述することができます。数値や文字列だけではなく評価が行える式を記述することが可能です。
+式を評価した結果がいずれの値にも一致しなかった場合に実行したい文がある場合はdefaultラベルを使用できます。書式は次の通りです。
+switch (式){
+case 値1:
+実行する文;
+break;
+case 値2:
+実行する文;
+break;
+default:
+実行する文;
+break;
+}
+「default」は予約語であり通常のラベルではラベル名として記述することができません。このdefaultラベルがswitch文のブロック内に記述されていると、他のcaseラベルに書かれたいずれの値にも一致しなかった場合にdefaultラベルの次へ処理が移ります。
+例えば次のように使用します。
+var country = 'アメリカ';
+switch (country){
+case '日本':
+alert("日本です");
+break;
+case 'Japan':
+alert("日本です");
+break;
+case 'JP':
+alert("日本です");
+break;
+default:
+alert("日本以外の国です");
+break;
+}
+変数「country」に格納されている値を各ラベルと比較しますが、「日本」「Japan」「JP」のいずれにも一致しなかった場合にdefaultラベルの次へ処理が移ります。
+switch文の中で記述されている「case 値:」のラベルはどこから文が実行されるのかの目安でしかありません。その為、ある値に一致した時に実行する文が複数あったとしてもブロックを使って記述する必要はありません。ラベルが付けられた文が順にブロックの最後に向かって実行が行われていきます。
+もしbreak文が記述されていなかった場合を考えています。
+var num = 2;
+switch (num){
+case 1:
+alert("数値は 1");
+case 2:
+alert("数値は 2");
+case 3:
+alert("数値は 3");
+case 4:
+alert("数値は 4");
+case 5:
+alert("数値は 5");
+}
+例として「alert("数値は 3");」という文について考えてみます。この文は評価する式の値が「3」だった時にだけ実行される文ではなく、式の値が「3」だった場合はここから実行を開始するというラベルが付けられた文です。
+上記の場合、変数「num」に格納されている値は「2」となっていますので、「case 2:」のラベルが付けられた文である「alert("数値は 2");」から実行が開始されますが、そこで終わりではなくそれより下に記述されている「alert("数値は 3");」「alert("数値は 4");」「alert("数値は 5");」を順に実行します。
+意図的にこういったスクリプトを記述することも可能です。ただ通常は式を評価した値に応じて実行する文を分ける形式での利用が多いと思いますので、break文を使用してどこからどこまでの文を実行するのかを制御する必要があります。
+では簡単なサンプルで試してみます。
+sample4_1.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>JavaScript テスト</title>
+</head>
+<body>
+<script type="text/javascript" src="./js/script4_1.js">
+</script>
+</body>
+</html>
+script4_1.js
+var answer = [1, 3, 2, 7, 3, 1]
+document.write("<p>");
+document.write("アンケートの結果です<br />");
+for(var i = 0; i < answer.length; i++){
+document.write("回答[" + (i + 1) + "] ");
+switch(answer[i]){
+case 1:
+document.write("満足です<br />");
+break;
+case 2:
+document.write("どちらでもない<br />");
+break;
+case 3:
+document.write("不満足です<br />");
+break;
+default:
+document.write("有効な値ではありません<br />");
+break;
+}
+}
+document.write("</p>");
+上記を実際にブラウザ見てみると次のように表示されます。
+サンプルでは配列を使っています。配列についてはまた別のページで解説します。
+次にbreak文が無かった場合のサンプルを試してみます。
+sample4_2.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>JavaScript テスト</title>
+</head>
+<body>
+<script type="text/javascript" src="./js/script4_2.js">
+</script>
+</body>
+</html>
+script4_2.js
+var answer = [1, 3, 2, 3, 1]
+document.write("<p>");
+document.write("アンケートの結果です<br />");
+for(var i = 0; i < answer.length; i++){
+document.write("回答[" + (i + 1) + "] ");
+switch(answer[i]){
+case 1:
+document.write("満足です");
+case 2:
+document.write("どちらでもない");
+case 3:
+document.write("不満足です");
+}
+document.write("<br />");
+}
+document.write("</p>");
+上記を実際にブラウザ見てみると次のように表示されます。
+break文が無いと実行が開始された文からswitch文の最後まで順に文が実行されていることが確認できます。
+switch文 - 条件分岐 - JavaScript入門

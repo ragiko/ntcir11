@@ -1,0 +1,62 @@
+PostgreSQLPrevChapter 51. フロントエンド/バックエンド プロトコルNextプロトコルこの章で、メッセージフローについて述べます。接続状態に依存した4種類の
+フローがあります:認証、問い合わせ、関数呼び出し、終了です。認証フロントエンドは開始パケットを送出します。postmasterはこれと
+pg_hba.conf(5)フアイルの内容を使って、フロントエンドが使うべき
+認証方法を決定します。その後postmasterは、次のメッセージのうち
+のいずれかを応答します、
+ErrorResponse        このときpostmasterは、速やかに接続を閉じます。AuthenticationOk        このときpostmasterは、バックエンドとの交信を終了します。
+もうこれ以上の通信は行ないません。AuthenticationKerberosV4        このときフロントエンドはpostmastertoケルベロスV4認証対話
+(説明は割愛します)に入らなければなりません。成功すると、
+postmasterはAuthenticationOkと応答し、失敗すれば、
+ErrorResponseと応答します。AuthenticationKerberosV5        このときフロントエンドはpostmasterとケルベロスV5認証対話
+(説明は割愛します)に入らなければならなりません。成功すると、
+postmasterはAuthenticationOkと応答し、失敗すれば、
+ErrorResponseと応答します。AuthenticationUnencryptedPassword        このときフロントエンドはUnencryptedPasswordPacketを送出
+しなければなりません。これが正しいパスワードであれば、
+postmasterはAuthenticationOkと応答し、そうでなければ、
+ErrorResponseと応答します。AuthenticationEncryptedPassword        このときフロントエンドはEncryptedPasswordPacketを送出
+しなければなりません。これが正しいパスワードであれば、
+postmasterはAuthenticationOkと応答し、そうでなければ、
+ErrorResponseと応答します。もし、フロントエンドがpostmasterにより要求される認証手法をサポートしない
+のであれば、直ちに接続は切断されます。問い合わせフロントエンドはバックエンドへ問い合わせ文を送出します。応答は、
+問い合わせの内容に応じてバックエンドから送出されます。可能な
+応答は次の通りです、CompletedResponse        問い合わせは正常に完了しました。CopyInResponse        バックエンドはフロントエンドからリレーションへデータを
+コピーする準備ができています。このとき、フロントエンドはCopyDataRows
+文を送出する筈です。つぎにバックエンドはCOPYタグと共に
+CompletedResponse文を送出するでしょう。CopyOutResponse        バックエンドはリレーションからフロントエンドへデータを
+コピーする準備ができています。そのあと、CopyDataRow文を送出し
+COPYタグと共にCompletedResponseを送出します。CursorResponse        問い合わせは、 insert(l), delete(l), update(l), fetch(l)
+もしくはselect(l)コマンドのいづれかでした:
+もし、トランザクションが中断したら、
+バックエンドは*ABORT STATE*タグと共に、 
+CompletedResponse文を送出します。そうでなければ
+以下を応答します。        insert(l)コマンドの場合は、バックエンドは"INSERT
+oid rows"
+タグと共にCompletedResponse文を送信します。ここで、
+rowsは、挿入された行数で、
+oidはrows
+が1ならば、挿入した行のオブジェクトIDで、
+そうでなければ0です。        delete(l)コマンドの場合は、バックエンドは"UPDATE
+rows"タグと共にCompletedResponseを
+送信します。ここで、rowsは削除した
+行数です。        update(l)コマンドの場合は、バックエンドは"UPDATE
+rows"タグと共にCompletedResponseを
+送信します。ここで、rowsは、削除した
+行数です。        fetch(l)もしくはselect(l)コマンドの場合は、バックエンドは
+RowDescriptionを送出します。つづいて、AsciiRowもしくは(バイナリ
+カーソルが指定されていれば)BinaryRowがフロントエンドへ
+それぞれの行が
+最終的に、バックエンドは"SELECT"タグと共にCompletedResponseを
+送信します。EmptyQueryResponse        問い合わせは空です。ErrorResponse       エラーが発生しました。NoticeResponse        警告が、表の問い合わせにおいて発行されました。
+Notice は他の応答に対する付加的なものです。ですから、バックエ
+ンドは Notice の直後に他の応答メッセージを送信します。NotificationResponse        notify(l)コマンドが過去にlisten(l)コマンドが表に対して実行された
+のに対して実行されました。Notificationは、他の応答への追加で、
+バックエンドが直後に他の応答を送信しようとしています。フロントエンドは他のメッセージが期待されるときは、ErrorResponseと
+NoticeResponseの受信準備をしなければなりません。関数呼び出しThe frontend sends a FunctionCall message to the backend.  The response sent by
+フロントエンドはFunctionCallをバックエンドに送出します。関数呼び出しの結果
+に従って、バックエンドから応答されます、送出される応答は次の通りです。ErrorResponse        エラーが発生しました。FunctionResultResponse        関数呼び出しが実行され、結果が返されました。FunctionVoidResponse        関数呼び出しが実行され、結果は返りませんでした。NoticeResponse       関数呼び出しに関連して警告が出力されます。これは、他の応答への
+追加です。即ち、バックエンドはその後すぐに、別の応答文を送出
+します。フロントエンドは他の型のメッセージを期待しているときはいつでも
+ErrorResponseとNoticeResponseメッセージをうけとる用意をしなければ
+なりません。終了フロントエンドは終了メッセージを送出し、すぐに接続を閉じます。
+メッセージを受信すると、バックエンドはすぐに接続をとじ終了します。PrevHomeNextフロントエンド/バックエンド プロトコルUpメッセージデータ型
+プロトコル

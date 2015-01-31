@@ -1,0 +1,262 @@
+http://qwone.com/~jason/20Newsgroups/Usenet*1から収集した約20000文書、20カテゴリのデータセットです。カテゴリは下の20個。まあ何となくどんなカテゴリなのかわかりますね。おおまかにcomp、rec、sci、talkに分けられるので4カテゴリとして扱うこともあるようです。
+comp.graphics
+comp.os.ms-windows.misc
+comp.sys.ibm.pc.hardware
+comp.sys.mac.hardware
+comp.windows.x
+rec.autos
+rec.motorcycles
+rec.sport.baseball
+rec.sport.hockey
+sci.crypt
+sci.electronics
+sci.med
+sci.space
+talk.politics.misc
+talk.politics.guns
+talk.politics.mideast
+talk.religion.misc
+alt.atheism
+misc.forsale
+soc.religion.christian
+上のサイトに行くと英文記事のオリジナルデータもダウンロードできますが、親切なことにbag-of-wordsの形にしたデータも提供されています。今回はMatlab/Octaveで簡単に読み込める形式になっている20news-bydate-matlab.tgzというデータを使います。解凍すると下の6つのファイルができます。あとvocabulary.txtもいっしょにダウンロードしておきます。
+train.data - 訓練データ集合、1行は「文書ID」「単語ID」「頻度」の3つ組。
+train.label - 訓練データの各文書のラベル(カテゴリID)
+train.map - 訓練データのカテゴリIDとカテゴリ名の対応
+test.data - テストデータ集合、フォーマットはtrain.dataと同じ
+test.label - テストデータの各文書のラベル(カテゴリID)
+test.map - テストデータのカテゴリIDとカテゴリ名の対応(train.mapと同じ)
+vocabulary.txt - 単語IDと単語の対応
+テキスト分類の性能を評価するためには訓練データとテストデータにわけるのが一般的です。訓練データで分類器を学習して、テストデータのラベルを分類器で予測して精度を評価します。訓練データで学習して訓練データのカテゴリを予測するのはNGです(ものすごく精度が高くなる)。まず、簡単な統計をとってみます。train.labelとtest.labelを使って、訓練データ集合とテストデータ集合に各カテゴリの記事がいくつあるか調べてみました。結果は(画像をクリックしてオリジナルサイズを表示で拡大できます)なるほど。各カテゴリは約1000の記事からなっていて訓練とテストで6:4くらいでわけているようです。訓練データとテストデータは綺麗に同じ形をしています。ナイーブベイズは訓練データとテストデータが同じ分布から生成されたという仮定があるようですが、実際の応用ではこんなに綺麗に同じ比率で含まれることはまれだと思います(あとでブログ記事分類を取り上げます)。ちなみに上のグラフを書くPythonプログラムです。グラフ描画のライブラリmatplotlibを使うので別途インストールしてください*2。
+#coding:utf-8
+from pylab import *
+from collections import defaultdict
+# statistics.py
+# 訓練データとテストデータの各カテゴリの文書数をヒストグラムで描画
+# カテゴリー名をロード
+category = []
+fp = open("train.map")
+for line in fp:
+line = line.rstrip()
+category.append(line.split()[0])
+fp.close()
+# 訓練データの文書数をカテゴリーごとにカウント
+train_count = defaultdict(int)
+fp = open("train.label")
+for line in fp:
+cat_idx = int(line)
+cat_idx = cat_idx - 1  # カテゴリIDは1から始まるので1引いておく
+train_count[cat_idx] += 1
+fp.close()
+# テストデータの文書数をカテゴリーごとにカウント
+test_count = defaultdict(int)
+fp = open("test.label")
+for line in fp:
+cat_idx = int(line)
+cat_idx = cat_idx - 1
+test_count[cat_idx] += 1
+fp.close()
+# ヒストグラムで表示
+pos = arange(len(category)) + 0.5
+fig = figure(1)
+# サブグラフ1
+subplot(2, 1, 1)
+bar(pos, train_count.values(), align="center")
+ylim((0, 650))
+ylabel("# data")
+title("training data")
+grid(True)
+xticks(pos)
+# サブグラフ2
+subplot(2, 1, 2)
+bar(pos, test_count.values(), align="center")
+ylim((0, 650))
+ylabel("# data")
+title("test data")
+grid(True)
+xticks(pos, category)
+fig.autofmt_xdate()
+show()
+データの整形
+配布されているMatlab形式のtrain.dataとtest.dataは少し使いにくいので以下のような形式に変換します。
+[category] [word:count] [word:count] ...  <- doc1
+[category] [word:count] [word:count] ...  <- doc2
+...
+[category] [word:count] [word:count] ...  <- docN各行が1つの文書のbag-of-words表現を表しています。各列はスペースで区切られていて1列目にはカテゴリID、2列目以降は単語:出現頻度の組がずらずら並びます。このファイル形式は、多くの機械学習ライブラリで採用されています。たとえば、SVMのライブラリlibsvmや岡野原さんのオンライン機械学習ライブラリollなど。ベクトル空間モデルの場合は、単語:tf-idf値のようになります。本当はカテゴリや単語はそのまま書かず、カテゴリIDや単語IDに変換して数値化しますが、Pythonだと数値だろうとテキストだろうとどっちも大差なく扱えるのでわかりやすいように単語やカテゴリ名をIDに変換せずにそのまま使いました。下のような感じのデータを作成します。
+alt.atheism archive:4 name:2 atheism:10 ...
+comp.graphics name:1 last:1 modified:1 addresses:2 of:14 ...
+talk.religion.misc of:4 and:4 other:1 are:2 the:14 in:5 ...
+たとえば、1番目の文書は、alt.atheismというカテゴリでarchiveという単語が4回、nameが2回、atheismが10回出現することを意味しています。変換プログラムです。解凍した20 Newsgroupsの7つのファイルと同じフォルダで実行します。実行すると
+news20 - 訓練データ集合
+news20.t - テストデータ集合
+という2つのファイルができます。
+#coding:utf-8
+import sys
+from collections import defaultdict
+# trans_data.py
+# news20のデータセットをナイーブベイズで扱えるデータ形式に変換する
+# http://people.csail.mit.edu/jrennie/20Newsgroups/
+# 出力データフォーマット
+# 1列目にカテゴリ、2列目以降は単語と出現頻度の組を列挙
+# [category] [word:count] [word:count] ...  <- doc1
+# [category] [word:count] [word:count] ...  <- doc2
+def trans_data(labelfile, datafile, outfile):
+# カテゴリをロード
+category = []
+fp = open("train.map")  # test.mapでも同じ
+for line in fp:
+line = line.rstrip()
+category.append(line.split()[0])
+fp.close()
+# ボキャブラリをロード
+vocabulary = []
+fp = open("vocabulary.txt")
+for line in fp:
+line = line.rstrip()
+vocabulary.append(line)
+fp.close()
+# ラベルをロード
+train_label = []
+fp = open(labelfile)
+for line in fp:
+line = line.rstrip()
+# 配布ファイルのカテゴリIDは1から始まるので1をひく
+idx = int(line) - 1
+cat = category[idx]
+train_label.append(cat)
+fp.close()
+# 総文書数
+num = len(train_label)
+# 変換
+train_data = []
+for i in range(num):
+train_data.append([])
+fp = open(datafile)
+for line in fp:
+line = line.strip()
+temp = line.split()
+docidx, wordidx, count = int(temp[0]), int(temp[1]), int(temp[2])
+# 配布データの文書IDと単語IDは1から始まるので1を引いたインデックスを使う
+word = vocabulary[wordidx-1]
+train_data[docidx-1].append("%s:%d" % (word, count))
+fp.close()
+# ファイルに出力
+fp = open(outfile, "w")
+for i in range(num):
+fp.write("%s %s\n" % (train_label[i], " ".join(train_data[i])))
+fp.close()
+if __name__ == "__main__":
+# 訓練データを変換
+trans_data("train.label", "train.data", "news20")
+# テストデータを変換
+trans_data("test.label", "test.data", "news20.t")
+ナイーブベイズの精度評価
+上の形式のファイルを読み込めるように前回作ったナイーブベイズを少しだけ変更します。変更箇所だけ再掲します。前回までは下のように同じ単語が複数あっても直に書いてましたが、今回からは単語:出現頻度というようにまとめている点が違うところです。ナイーブベイズのプログラム内で単語をカウントするときに「:」で分解して頻度分だけ足し込みます。
+Chinese Chinese Beijing
+Chinese:2 Beijing:1class NaiveBayes:
+"""Multinomial Naive Bayes"""
+def train(self, data):
+"""ナイーブベイズ分類器の訓練"""
+# 文書集合からカテゴリを抽出して辞書を初期化
+...
+# 文書集合からカテゴリと単語をカウント
+for d in data:
+cat, doc = d[0], d[1:]
+self.catcount[cat] += 1
+# 変更箇所1
+for wc in doc:
+word, count = wc.split(":")
+count = int(count)
+self.vocabularies.add(word)
+self.wordcount[cat][word] += count
+# 単語の条件付き確率の分母の値をあらかじめ一括計算しておく(高速化のため)
+...
+def score(self, doc, cat):
+"""文書が与えられたときのカテゴリの事後確率の対数 log(P(cat|doc)) を求める"""
+total = sum(self.catcount.values())  # 総文書数
+score = math.log(float(self.catcount[cat]) / total)  # log P(cat)
+# 変更箇所2
+for wc in doc:
+word, count = wc.split(":")
+count = int(count)
+# logをとるとかけ算は足し算になる
+for i in range(count):
+score += math.log(self.wordProb(word, cat))  # log P(word|cat)
+return score
+def sample1():
+# Introduction to Information Retrieval 13.2の例題
+# データ表現を変更
+# 単語:出現回数
+# 変更箇所3
+data = [["yes", "Chinese:2", "Beijing:1"],
+["yes", "Chinese:2", "Shanghai:1"],
+["yes", "Chinese:1", "Macao:1"],
+["no", "Tokyo:1", "Japan:1", "Chinese:1"]]
+では、訓練データnews20でナイーブベイズを訓練して、テストデータnews20.tで分類性能を評価してみます。分類性能にはaccuracyという指標を使います。これは、テストデータ集合全体に対してカテゴリを正しく予測できたデータの割合を表します。テストデータにはあらかじめ正解のラベルが付いているので、ナイーブベイズ分類器の予測カテゴリと一致するか調べればOK。以下、評価プログラムです。今回は英語文書なので不要ですが、あとで日本語文書にも使えるようにcodecsでファイルを開いてます。
+#coding:utf-8
+import codecs
+from naivebayes import NaiveBayes
+# eval.py
+# ナイーブベイズの性能評価
+def evaluate(trainfile, testfile):
+# 訓練データをロード
+trainData = []
+fp = codecs.open(trainfile, "r", "utf-8")
+for line in fp:
+line = line.rstrip()
+temp = line.split()
+trainData.append(temp)
+fp.close()
+# ナイーブベイズを訓練
+nb = NaiveBayes()
+nb.train(trainData)
+print nb
+# テストデータを評価
+hit = 0
+numTest = 0
+fp = codecs.open(testfile, "r", "utf-8")
+for line in fp:
+line = line.rstrip()
+temp = line.split()
+correct = temp[0]    # 正解カテゴリ
+words = temp[1:]     # 文書:単語の集合
+predict = nb.classify(words)  # ナイーブベイズでカテゴリを予測
+if correct == predict:
+hit += 1  # 予測と正解が一致したらヒット!
+numTest += 1
+print "accuracy:", float(hit) / float(numTest)
+fp.close()
+if __name__ == "__main__":
+evaluate("news20", "news20.t")
+実行結果は、
+documents: 11269, vocabularies: 53975, categories: 20
+accuracy: 0.785209860093となりました。全テストデータのうち約78%のデータは正しく分類できてます。おー、かなりの高精度。この結果は、20 Newsgroupsで評価した論文
+McCallum et al. A Comparison of Event Models for Naive Bayes Text Classification (PDF), Figure.3
+の結果ともほぼ一致します。
+ストップワードの利用
+変換したnews20とnews20.tのデータをよく見るとわかりますが、of, the, in, toのような意味のない単語が大量に含まれています。普通、これらの単語はストップワードを用いてあらかじめ除去します。英語のストップワードはいろいろなところで配布されていますが、Pythonの自然言語処理ライブラリNLTKのStopwords Corpusを使います。解凍して出てきたenglishが英語のストップワードリストで127単語が登録されています。これをstopwords.txtと名前を変えて保存します。ストップワードを使うにはデータ変換プログラム(trans_data.py)を下のように修正します。
+# ボキャブラリをロード
+...
+# ストップワードをロード
+stopwords = []
+fp = open("stopwords.txt")
+for line in fp:
+line = line.rstrip()
+stopwords.append(line)
+fp.close()
+# ラベルをロード
+...
+fp = open(datafile)
+for line in fp:
+line = line.strip()
+temp = line.split()
+docidx, wordidx, count = int(temp[0]), int(temp[1]), int(temp[2])
+# 配布データの文書IDと単語IDは1から始まるので1を引いたインデックスを使う
+word = vocabulary[wordidx-1]
+if not word in stopwords:  # ストップワードに登録されていない単語だけ追加
+train_data[docidx-1].append("%s:%d" % (word, count))
+fp.close()
+ストップワードを除去した訓練データ集合news20とテストデータ集合news20.tで精度を再評価してみます。結果は、
+documents: 11269, vocabularies: 53852, categories: 20
+accuracy: 0.802265156562となります。さっきの結果と比べるとボキャブラリ数が53975から53852に減っていてストップワードが除去されているのがわかります。分類精度も78%から80%にわずかに向上しました。実はまだ分類を悪化させる無駄な単語が含まれていて精度を向上させる余地があります。そのような無駄な単語を除去する処理は特徴選択(feature selection)とか次元削減(dimensinality reduction)とか呼ばれていて、これまた多くの方法があります。有名なのは、相互情報量(Mutual Information)やカイ二乗値を用いる手法です。この2つはIIRにも載っているので後で実際に試してみたいと思います。どれくらい上がるんですかね?楽しみです。
+20 Newsgroupsで分類精度を評価 - 人工知能に関する断創録

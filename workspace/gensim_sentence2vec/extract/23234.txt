@@ -1,0 +1,43 @@
+トピックモデルに関する論文のサーベイをしています。LDAやLDAの言語モデルでの応用が中心です。
+Finding scientific topics (2004)
+Thomas L. Griffiths and Mark Steyvers
+Proceedings of the National Academy of Sciences of the United States of America, 101(Supplement 1)
+http://www.pnas.org/content/101/suppl.1/5228.long
+概要
+LDA の事後分布を Collapsed Gibbs Sampling で計算。
+Latent Dirichlet Allocationにおける決定論的オンラインベイズ学習 (2010)
+佐藤一誠 and 中川裕志
+情報処理学会 第193回自然言語処理研究会
+http://ci.nii.ac.jp/naid/110008003238
+概要
+変分ベイズに基づく LDA のオンライン学習を提案。
+既存のサンプリングによる確率的な学習法と比較して、学習が速く、局所解に収束することが保証されている。
+また、提案手法はバッチ学習と同等の性能を示し、バッチ学習においてトピック数が多い場合に反復回数が不十分による性能低下が起こらない。
+Latent Dirichlet Language Model for Speech Recognition (2008)
+Jen-Tzung Chien and Chuang-Hua Chueh
+Spoken Language Technology Workshop
+http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=04777875
+概要
+LDAによる単語履歴を考慮できる言語モデルを提案し、音声認識実験をしている。
+LDAとの大きな違いは、トピック混合パラメータθが単語履歴依存になっている点。
+C: トピック数, V: 語彙サイズ
+h: N-1個の単語履歴を表す(N-1)V次元ベクトル。履歴に現れた単語に1、現れなかった単語に0を割り当てる。
+A: (N-1)V行C列の行列。a_iは(トピックiに関する)Aのi番目の行ベクトル。
+モデルはEMアルゴリズムで学習
+ベースライン(3-gram)やPLSAよりも単語誤り率が改善
+以後、後で読むかも。
+Dynamic Language Model Adaptation using Variational Bayes Inference (2005)
+Yik-Cheung Tam and Tanja Schultz
+InterSpeech
+Dirichlet Class Language Models for Speech Recognition (2010)
+Jen-Tzung Chien and Chuang-Hua Chueh
+IEEE Transactions on Audio, Speech, and Language Processing
+Online Learning for Latent Dirichlet Allocation (2010)
+Matthew D.Hoffman, David M.Blei and Francis Bach
+NIPS
+http://nips.cc/Conferences/2010/Program/event.php?ID=2371
+Hierarchical Topic Models and the Nested Chinese Restraunt Process
+David M. Blei, Thomas L. Griffiths, Michael I. Jordan and Joshua B. Tenenbaum
+トップに戻る
+Last modified: 
+トピックモデルのサーベイ

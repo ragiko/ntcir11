@@ -1,0 +1,3 @@
+nlogL = normlike(params,data)[nlogL,AVAR] = normlike(params,data)[...] = normlike(param,data,censoring)[...] = normlike(param,data,censoring,freq)
+説明nlogL = normlike(params,data) は、負の正規対数尤度関数を返します。params(1) は平均 mu で、params(2) は標準偏差 sigma です。[nlogL,AVAR] = normlike(params,data) はまた、フィッシャーの情報行列 AVAR も返します。params の入力パラメーター値が最尤推定値の場合、AVAR の対角要素は、それらの漸近分散になります。AVAR は、予測された情報ではなく、観測されたフィッシャー情報に基づきます。[...] = normlike(param,data,censoring) は、data と同じサイズの論理ベクトル censoring を受け入れます。これは、右側打ち切りの観測値の場合は 1、正確に観測された観測値の場合は 0 です。[...] = normlike(param,data,censoring,freq) は、data と同じサイズの頻度ベクトル freq を受け入れます。通常、ベクトル freq は、data の対応する要素の整数の頻度を含みますが、任意の非負値を含むこともできます。censoring の場合は [] にその既定値を入れて渡して使用します。normlike は、最尤推定値のユーティリティ関数です。
+負の正規対数尤度 - MATLAB normlike - MathWorks 日本

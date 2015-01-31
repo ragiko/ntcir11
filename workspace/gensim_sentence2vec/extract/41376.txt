@@ -1,0 +1,208 @@
+
+次に説明するアルゴリズムのカテゴリは、シーケンスを元の記憶位置から移動せずに、変更や変換をするために使用されます。
+注 : 以降の節で説明する関数例は、alg3.cpp ファイルにあります。
+ルーチンの中には、replace() のように、元のインプレース変換アルゴリズムのほかに、アルゴリズムのコピーバージョンを含むものもあります。その他のルーチンについては、元のシーケンスを保持する必要がある場合は、変換を適用する前にシーケンスのコピーを作成する必要があります。たとえば次のコードは、vector の反転を別の新規に割り当てられた vector にコピーする方法を説明しています。
+vector<int> newVec(aVec.size());
+copy (aVec.begin(), aVec.end(), newVec.begin()); // まずコピーする
+reverse (newVec.begin(), newVec.end());     // 次に反転させる
+transform() や partial_sum() など、シーケンス生成演算として定義されるアルゴリズムの多くは、入出力の仕様と同じ反復子を使用するだけで、値を同じ位置で変更することもできます (13.7.1 節 と 13.7.2 節 を参照)。
+13.4.1 シーケンス内の要素を反転する
+アルゴリズム reverse() は、最後の要素が新規の最初の要素に、また、最初の要素が新規の最後の要素になるようにシーケンス内の要素を反転します。引数は、双方向反復子と想定されており、値は返されません。
+void reverse (BidirectionalIterator first,
+BidirectionalIterator last);
+プログラム例で、このアルゴリズムの 2 つの使用方法を説明します。例 1 では、文字値の配列が反転されます。例 2 に示すようにアルゴリズム reverse() は、list 値にも使用することができます。この例では、2 〜 11 の値が昇順で list が初期化されます (初期化は、3.3.2.3 節で説明した関数オブジェクト iotaGen を使用して実行されます)。 次に list が反転され、その結果 list に 11 〜 2 までの値が降順に保持されます。ただし、list データ構造は、独自の reverse() メンバー関数も備えています。
+void reverse_example ()
+// reverse アルゴリズムの使用方法を説明する
+// 完全ソースコードについては alg3.cpp を参照
+{
+// 例 1、文字列の反転
+char * text = "Rats live on no evil star";
+reverse (text, text + strlen(text));
+cout << text << endl;
+// 例 2、リストの反転
+list<int> iList;
+generate_n (inserter(iList, iList.begin()), 10, iotaGen(2));
+reverse (iList.begin(), iList.end());
+}
+13.4.2 特定要素を固定値で置き換える
+アルゴリズム replace() および replace_if() を使用して、特定の要素の発生を新しい値と置き換えることができます。どちらのアルゴリズムも、実行される置換の回数にかかわらず、新しい値は同一です。アルゴリズム replace() を使用すると、特定のテスト値のすべての発生が新しい値に置き換えられます。replace_if() の場合は、述語関数に一致するすべての要素が新しい値に置き換えられます。引数 iterator は、順方向反復子である必要があります。
+アルゴリズム replace_copy() および replace_copy_if() は、replace() および replace_if() と類似していますが、元のシーケンスは変更せずに、変更された値を新しいシーケンスに配置します。値は異なる型になる場合もあります。
+void replace (ForwardIterator first, ForwardIterator last, 
+const T&, const T&);
+void replace_if (ForwardIterator first, ForwardIterator last, 
+Predicate, const T&);
+OutputIterator replace_copy (InputIterator, InputIterator, 
+OutputIterator, const T&, const T&);
+OutputIterator replace_copy (InputIterator, InputIterator, 
+OutputIterator, Predicate, const T&);
+プログラム例では、ベクトルには最初に、値 0 1 2 3 4 5 4 3 2 1 0 が割り当てられています。replace() の呼び出しによって、値 3 が値 7 に置き換えられ、その結果ベクトルは 0 1 2 7 4 5 4 7 2 1 0 になります。replace_if() の呼び出しによって、すべての偶数が値 9 に置き換えられ、その結果ベクトルは 9 1 9 7 9 5 9 7 9 1 9 になります。
+void replace_example ()
+// replace アルゴリズムの使用方法を説明する
+// 完全なソースコードについては alg3.cpp を参照
+{
+// ベクトル 0 1 2 3 4 5 4 3 2 1 0 を作成する
+vector<int> numbers(11);
+for (int i = 0; i < 11; i++)
+numbers[i] = i < 5 ? i : 10 - i;
+// 3 を 7 で置き換える
+replace (numbers.begin(), numbers.end(), 3, 7);
+// 偶数を 9 で置き換える
+replace_if (numbers.begin(), numbers.end(), isEven, 9);
+// replace の copy バージョンを説明する
+int aList[] = {2, 1, 4, 3, 2, 5};
+int bList[6], cList[6], j;
+replace_copy (aList, aList+6, &bList[0], 2, 7);
+replace_copy_if (bList, bList+6, &cList[0],
+bind2nd(greater<int>(), 3), 8);
+}
+プログラム例は、replace_copy アルゴリズムの使用方法についても説明しています。まず、値 2 1 4 3 2 5 を含む配列が作成されます。値 2 を 7 で置き換えてこの配列を変更し、配列 7 1 4 3 7 5 を作成します。次に、3 以上のすべての値を 8 に置き換え、配列値を 8 1 8 3 8 8 とします。後の置換の場合、第 2 の引数を定数値 3 に設定し、単項関数 x > 3 を作成することによって、2 項大なり関数を変更するため、bind2nd() アダプタが使用されます。
+13.4.3 中間点を軸に要素を回転する
+シーケンスの回転とは、シーケンスを 2 つのセクションに分割し、各セクション内の要素の順序は保持したまま、セクションの順序を入れ替える操作です。たとえば、値 1 から 10 までのシーケンスがあるとします。
+1 2 3 4 5 6 7 8 9 10
+要素 7 を中心に回転を行う場合、値 7 から 10 までが前方に移動され、要素 1 から 6 までが後方に移動されます。その結果シーケンスは以下のようになります。
+7 8 9 10 1 2 3 4 5 6 
+アルゴリズム rotate() を呼び出すと、順方向反復子によって開始点、中間点、終了位置がすべて表示されます。
+void rotate (ForwardIterator first, ForwardIterator middle, 
+ForwardIterator last);
+開始点の後の、中間点は含まない要素のセットである前方部分が、中間点と終了位置の間の要素セットである後方部分と入れ替えます。上記の例に示すように、この 2 つのセグメントは同じ長さである必要はありません。
+void rotate_example() 
+// rotate アルゴリズムの使用方法を説明する
+// 完全なソースコードについては alg3.cpp を参照
+{
+// リスト 1 2 3 ... 10 を作成する
+list<int> iList;
+generate_n(inserter(iList, iList.begin()), 10, iotaGen(1));
+// 7 の位置を検索する
+list<int>::iterator & middle = 
+find(iList.begin(), iList.end(), 7);
+// その位置を軸に回転する
+rotate (iList.begin(), middle, iList.end());
+// 同じ位置を軸に再度回転する
+list<int> cList;
+rotate_copy (iList.begin(), middle, iList.end(),
+inserter(cList, cList.begin()));
+}
+プログラム例では、まず 1 から 10 の順に整数のリストが作成されます。 次に、find() アルゴリズム (13.3.1 節を参照) を使用して、要素 7 の位置を検索します。この位置が回転の中間点として使用されます。
+rotate() の 2 番目の書式は、値を同じ位置で回転するのではなく、要素を新しいシーケンスにコピーします。プログラム例にも示していますが、今度は 3 を含む中間点位置を軸に再度回転が行われます。結果として得られるリストは、3 4 5 6 7 8 9 10 1 2 となります。iList に保持されている値は変更されません。
+13.4.4 シーケンスを 2 つのグループに区分する
+区分化とは、述語に一致するすべての要素をシーケンスの一端に、述語に一致しないすべての要素を反対の端に移動する操作です。要素の区分は、quicksort などの特定のソートアルゴリズムにおける基本ステップです。
+BidirectionalIterator partition 
+(BidirectionalIterator, BidirectionalIterator, Predicate);
+BidirectionalIterator stable_partition 
+(BidirectionalIterator, BidirectionalIterator, Predicate);
+標準 C++ ライブラリでは、2 つの書式からなる区分化がサポートされています。最初の書式は、アルゴリズム partition() により提供され、要素を 2 つのグループに分割することだけを行います。結果の値は、2 つのグループ間の最終中間点を定義する反復子で、これは最初のグループの終了反復子です。
+プログラム例では、最初の vector には値 1 から 10 までが順番に含まれます。区分化により、偶数要素が前方に、奇数要素が後方に移動されます。その結果、vector には値 10 2 8 4 6 5 7 3 9 1 が保持され、中間点反復子は要素 5 を示します。
+void partition_example ()
+// partition アルゴリズムの使用方法を説明する
+// 完全なソースコードについては alg3.cpp を参照
+{
+// まずベクトル 1 2 3 ... 10 を作成する
+vector<int> numbers(10);
+generate(numbers.begin(), numbers.end(), iotaGen(1));
+// 偶数値の順位を低く、奇数値の順位を高くする
+vector<int>::iterator result = 
+partition(numbers.begin(), numbers.end(), isEven);
+cout << "middle location " << result - numbers.begin() << endl;
+// 安定区分化を実行する
+generate (numbers.begin(), numbers.end(), iotaGen(1));
+stable_partition (numbers.begin(), numbers.end(), isEven);
+}
+結果の vector における区分内の要素の相対順位は、元の vector における値とは異なることがあります。たとえば、値 4 は、元は要素 8 の前に置かれていますが、結果は要素 8 の後に置かれます。第 2 の区分化バージョンである stable_partition() は、結果の値の順序付けを受け持ちます。例に示す入力では、安定区分化の結果、シーケンスは 2 4 6 8 10 1 3 5 7 9 となります。stable_partition() アルゴリズムは、partition() アルゴリズムに比べやや低速で、より多くのメモリーを使用するため、要素の順序が重要でない場合は、partition() を使用することを推奨します。
+どのシーケンスでも stable_ partition() の値は 1 つだけですが、partition() アルゴリズムは値をいくつでも返すことができます。たとえば、以下の値はすべて、例題の適正な区分化です。
+2 4 6 8 10 1 3 5 7 9
+10 8 6 4 2 5 7 9 3 1
+2 6 4 8 10 3 5 7 9 1
+6 4 2 10 8 5 3 7 9 1
+13.4.5 シーケンスに順列を生成する
+順列は、値の再配列です。整数、文字、ワードなどの値が相互に比較可能な場合は、シーケンスのすべての順列を体系的に作成することができます。たとえば、2 つの値からは 2 つの順列、3 つの値からは 6 つの順列、4 つの値からは 24 の順列を作成することができます。
+順列生成アルゴリズムの定義は次のとおりです。
+bool next_permutation (BidirectionalIterator first, 
+BidirectionalIterator last, [ Compare ] );
+bool prev_permutation (BidirectionalIterator first, 
+BidirectionalIterator last, [ Compare ] );
+プログラム例の第 2 の例は、整数の代わりに文字配列を示すポインタを使用して同じ概念を説明しています。この例では、デフォルトの演算子はポインタアドレスを比較するだけなので、別の比較関数が使用されています。
+bool nameCompare (char * a, char * b) { return strcmp(a, b) <= 0; }
+void permutation_example ()
+// next_permutation アルゴリズムの使用方法を説明する
+// 完全なソースコードについては alg3.cpp を参照
+{
+// 例 1、値 1 2 3 を置換する
+int start [] = { 1, 2, 3};
+do
+copy (start, start + 3, 
+ostream_iterator<int,char> (cout, " ")), cout << endl;
+while (next_permutation(start, start + 3));
+// 例 2、ワードを置換する
+char * words = {"Alpha", "Beta", "Gamma"};
+do
+copy (words, words + 3, 
+ostream_iterator<char *,char> (cout, " ")), cout << endl;
+while (next_permutation(words, words + 3, nameCompare));
+// 例 3、文字を逆方向に置換する
+char * word = "bela";
+do
+cout << word << ' ';
+while (prev_permutation (word, &word[4]));
+cout << endl;
+}
+プログラム例の例 3 は、値を逆の順序で生成する、逆順列アルゴリズムの使用方法を説明しています。またこの例は、シーケンスの初めからではなく中間位置から始まっています。ワード bela の残りの順列は、beal、bale、bael、aleb、albe、aelb、aebl、able、abel です。
+最小順列が値を最小から最大へリストし、最大順列が値を最大から最小へリストするように、順列を並べることもできます。たとえば、整数 1 2 3 の順列の場合、これらの値の 6 つの順列は次のように並べられます。
+123
+132
+213
+231
+312
+321
+最初の順列では、値はすべて昇順ですが、最後の順列では、値はすべて降順となっていることに注意してください。
+13.4.6 隣接する 2 つのシーケンスを 1 つにマージする
+マージは、2つの順序付きシーケンスを使用して、それを単一の順序付きシーケンスに組み合わせ、必要に応じて各コレクションの要素をインタリーブして新規リストを生成します。inplace_merge() アルゴリズムは、シーケンスがそれぞれ順序付けられた 2 つの隣接セクションに分割されていると想定します。マージにより、2 つのセクションは 1 つに組み合わされ、必要に応じて要素が移動されます。代替 merge() アルゴリズム (6.2.3.1 節と 14.6 節を参照) を使用しても、2 つの個別シーケンスを 1 つにマージすることができます。
+inplace_merge() の引数は、双方向反復子である必要があります。
+void inplace_merge (BidirectionalIterator first, 
+BidirectionalIterator middle,
+BidirectionalIterator last [, BinaryFunction ] );
+プログラム例は、vector および list での inplace_merge() アルゴリズムの使用方法を説明しています。シーケンス 0 2 4 6 8 1 3 5 7 9 が vector に配置されます。find() 呼び出し (13.3.1 節を参照) により、奇数シーケンスの始まりが検索されます。inplace_merge() が 2 回呼び出され、2 つのシーケンスが 1 つにマージされます。
+void inplace_merge_example ()
+// inplace_merge アルゴリズムの使用方法を説明する
+// 完全なソースコードについては alg3.cpp を参照
+{
+// まずシーケンス 0 2 4 6 8 1 3 5 7 9 を生成する
+vector<int> numbers(10);
+for (int i = 0; i < 10; i++)
+numbers[i] = i < 5 ? 2 * i : 2 * (i - 5) + 1;
+// 次に中間位置を検索する
+vector<int>::iterator midvec = 
+find(numbers.begin(), numbers.end(), 1);
+// それをリストにコピーする
+list<int> numList;
+copy (numbers.begin(), numbers.end(),
+inserter (numList, numList.begin()));
+list<int>::iterator midList = 
+find(numList.begin(), numList.end, 1);
+// リストを 1 つにマージする
+inplace_merge (numbers.begin(), midvec, numbers.end());
+inplace_merge (numList.begin(), midList, numList.end());
+}
+13.4.7 シーケンス内の要素をランダムに再配列する
+アルゴリズム random_shuffle() は、シーケンス内の要素をランダムに再配列します。正確には、n 回の入れ替えが実行されます。この n は、シーケンス内の要素の数を表します。当然のことながら、結果は予測不能です。引数はランダムアクセス反復子である必要があるため、このアルゴリズムは vector、deque、通常のポインタにだけ使用することができます。list、set、map に使用することはできません。
+void random_shuffle (RandomAccessIterator first, 
+RandomAccessIterator last [, Generator ] );
+アルゴリズムの代替バージョンでは、任意の第 3 の引数が使用されます。この値は、乱数発生関数である必要があります。このジェネレータは引数として正の値 m を使用し、0 と m-1 の間の値を返します。generate() アルゴリズムと同様に、この乱数発生関数は、関数呼び出し演算子に対応するどんな型のオブジェクトでも構いません。
+void random_shuffle_example ()
+// random_shuffle アルゴリズムの使用方法を説明する
+// 完全なソースコードについては alg3.cpp を参照
+{
+// まず 1 2 3 ... 10 を含むベクトルを作成する
+vector<int> numbers;
+generate(numbers.begin(), numbers.end(), iotaGen(1));
+// 次に要素をランダムにシャフルする
+random_shuffle (numbers.begin(), numbers.end());
+// 明示的な乱数発生関数を使用して繰り返す
+struct RandomInteger {
+{
+operator() (int m) { return rand() % m; }
+} random;
+random_shuffle (numbers.begin(), numbers.end(), random);
+}
+Copyright (c) 1998, Rogue Wave Software, Inc.このマニュアルに関する誤りのご指摘やご質問は、電子メールにてお送りください。
+OEM リリース, 1998 年 6 月
+13.4 インプレース変換

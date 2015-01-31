@@ -1,0 +1,114 @@
+メニュー選択の処理を実装
+IronPython
+メニュー選択したときの処理を書くにはどうすればいいか。
+メニューの作成はデザイン画面で行う。メニューアイテムごとに選択されたとき(Click)のイベントを登録する。
+例えば、コードを以下のように書く。
+import System.Drawing
+import System.Windows.Forms
+from System.Drawing import *
+from System.Windows.Forms import *
+class MainForm(Form):
+def __init__(self):
+self.InitializeComponent()
+def InitializeComponent(self):
+self._label1 = System.Windows.Forms.Label()
+self._menuStrip1 = System.Windows.Forms.MenuStrip()
+self._fileToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+self._list1ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+self._list2ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+self._editToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+self._edit1ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+self._edit2ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+self._menuStrip1.SuspendLayout()
+self.SuspendLayout()
+#
+# label1
+#
+self._label1.Font = System.Drawing.Font("MS UI Gothic", 12, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 128)
+self._label1.Location = System.Drawing.Point(37, 138)
+self._label1.Name = "label1"
+self._label1.Size = System.Drawing.Size(133, 23)
+self._label1.TabIndex = 1
+self._label1.Text = """None is selected.
+"""
+#
+# menuStrip1
+#
+self._menuStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
+[self._fileToolStripMenuItem,
+self._editToolStripMenuItem]))
+self._menuStrip1.Location = System.Drawing.Point(0, 0)
+self._menuStrip1.Name = "menuStrip1"
+self._menuStrip1.Size = System.Drawing.Size(284, 26)
+self._menuStrip1.TabIndex = 2
+self._menuStrip1.Text = "menuStrip1"
+#
+# fileToolStripMenuItem
+#
+self._fileToolStripMenuItem.DropDownItems.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
+[self._list1ToolStripMenuItem,
+self._list2ToolStripMenuItem]))
+self._fileToolStripMenuItem.Name = "fileToolStripMenuItem"
+self._fileToolStripMenuItem.Size = System.Drawing.Size(40, 22)
+self._fileToolStripMenuItem.Text = "File"
+#
+# list1ToolStripMenuItem
+#
+self._list1ToolStripMenuItem.Name = "list1ToolStripMenuItem"
+self._list1ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+self._list1ToolStripMenuItem.Text = "List 1"
+self._list1ToolStripMenuItem.Click += self.List1ToolStripMenuItemClick
+#
+# list2ToolStripMenuItem
+#
+self._list2ToolStripMenuItem.Name = "list2ToolStripMenuItem"
+self._list2ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+self._list2ToolStripMenuItem.Text = "List 2"
+self._list2ToolStripMenuItem.Click += self.List2ToolStripMenuItemClick
+#
+# editToolStripMenuItem
+#
+self._editToolStripMenuItem.DropDownItems.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
+[self._edit1ToolStripMenuItem,
+self._edit2ToolStripMenuItem]))
+self._editToolStripMenuItem.Name = "editToolStripMenuItem"
+self._editToolStripMenuItem.Size = System.Drawing.Size(42, 22)
+self._editToolStripMenuItem.Text = "Edit"
+#
+# edit1ToolStripMenuItem
+#
+self._edit1ToolStripMenuItem.Name = "edit1ToolStripMenuItem"
+self._edit1ToolStripMenuItem.Size = System.Drawing.Size(110, 22)
+self._edit1ToolStripMenuItem.Text = "Edit-1"
+self._edit1ToolStripMenuItem.Click += self.Edit1Click
+#
+# edit2ToolStripMenuItem
+#
+self._edit2ToolStripMenuItem.Name = "edit2ToolStripMenuItem"
+self._edit2ToolStripMenuItem.Size = System.Drawing.Size(110, 22)
+self._edit2ToolStripMenuItem.Text = "Edit-2"
+self._edit2ToolStripMenuItem.Click += self.Edit2Click
+#
+# MainForm
+#
+self.ClientSize = System.Drawing.Size(284, 188)
+self.Controls.Add(self._label1)
+self.Controls.Add(self._menuStrip1)
+self.MainMenuStrip = self._menuStrip1
+self.Name = "MainForm"
+self.Text = "test"
+self._menuStrip1.ResumeLayout(False)
+self._menuStrip1.PerformLayout()
+self.ResumeLayout(False)
+self.PerformLayout()
+def List1ToolStripMenuItemClick(self, sender, e):
+self._label1.Text = "List 1 selected"
+def List2ToolStripMenuItemClick(self, sender, e):
+self._label1.Text = "List 2 selected"
+def Edit1Click(self, sender, e):
+self._label1.Text = "Edit 1 selected"
+def Edit2Click(self, sender, e):
+self._label1.Text = "Edit 2 selected"
+実行結果は以下の通り。
+Permalink | コメント(0) | トラックバック(0) | 06:38  
+メニュー選択の処理を実装 - 理想のユーザ・インターフェイスを求めて

@@ -1,0 +1,33 @@
+
+Array
+(
+[105] => stdClass Object
+(
+[term_id] => 105
+[name] => AmiVoice MobileToolkit for iOS/for Android・Windows SDK
+[slug] => amivoice-mobiletoolkit-for-iosfor-android-windows-sdk
+[term_group] => 0
+[term_taxonomy_id] => 121
+[taxonomy] => casestudy-category
+[description] => 
+[parent] => 48
+[count] => 2
+[object_id] => 455
+[filter] => raw
+)
+[48] => stdClass Object
+(
+[term_id] => 48
+[name] => 製造・物流・流通
+[slug] => cs_distribution
+[term_group] => 0
+[term_taxonomy_id] => 52
+[taxonomy] => casestudy-category
+[description] => 03_00
+[parent] => 0
+[count] => 4
+[object_id] => 455
+[filter] => raw
+)
+)
+カースチール株式会社｜導入事例｜音声認識の株式会社アドバンスト・メディア

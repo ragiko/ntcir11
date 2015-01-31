@@ -1,0 +1,281 @@
+こんにちは。IDCフロンティア 技術本部 新基盤開発部 梶川です。部署名が変わりました。やってることは変わりません。:-)
+今回はAPIのサンプルとして提供されている、オートスケールのサンプルプログラム(ssh_scale.py)が使いやすい形になりましたので、ご紹介いたします。(IDCフロンティア セルフクラウドでは、APIによるクラウドの操作をサポートしています。詳細はドキュメントサイトに記載がありますので、こちらをご確認ください。)
+こちらで紹介しているサンプルプログラムは作成者の趣味が反映されて(冗談です。本当はgeventで並列処理となっています。)いて、geventなどが使われており、ちょっと難しい内容となっています。(2013/05時点。変わるかもしれません。)
+今回ご紹介する物は、こちらのサンプルプログラムに少し手を入れて、gevent廃止、設定ファイルの統一化、ループ廃止(cron起動)と変更したものになります。また、rpmパッケージにしており、インストールも簡単となっています。
+今回説明するオートスケールの構成は下記の形の構成となります。
+監視用VMにオートスケールのプログラムを設置し、監視されるVMのLoad Averageを監視し、閾値を超えた場合オートスケールさせます。
+※ このプログラムの注意点
+監視対象のVMは1台のみとなります。よって、ロードバランサーのバランシング アルゴリズムをroundrobinとしてください。
+スケールイン時の削除対象VMは選べません。監視対象 VM 以外のどれかが削除されます。
+下準備1 – オートスケール用テンプレートの準備
+オートスケールで増やすVMのテンプレートを作成します。
+テンプレート作成の詳細については、ご利用ガイドのスナップショット・テンプレートを参照してください。なお、ゾーンを超えたオートスケールはできませんので、オートスケールさせたいゾーンでテンプレートの作成を行なってください。
+※ CentOS6.xをテンプレート化する際は、テンプレート化実行前にOS側で一手間必要です。次のFAQをご参照ください。「Q.CentOS6系で作成されたマイテンプレートから仮想マシンを作成する際の注意点は?」
+作成したテンプレートのIDが必要になりますので、テンプレートの詳細からIDを確認しておいてください。
+※ このプログラムではコンテンツのインストールなどは考慮されませんので、予めテンプレートにコンテンツを入れておいてください。(または、 VM 起動時にコンテンツを自動的に取得し配置する等の対策を考えてください。)
+下準備2 – ロードバランサーの準備
+オートスケールで増減したVMを登録するロードバランサーを準備しておく必要があります。
+ロードバランサー設定の詳細については、ご利用ガイドのネットワーク,ロードバランサーを参照してください。
+また、1台目の VM を監視対象として予めロードバランサー配下に登録しておく必要がありますので、今回はテンプレートを作成した際の元の VM を1台目として登録します。
+テンプレートを作成したゾーンと同じゾーンで作成する必要があります。
+バランシング アルゴリズムをroundrobinとしてください。
+ファイアウォールの設定を忘れないようにご注意ください。
+ロードバランサー配下に登録した、1台目の監視対象VMの仮想マシン名(i-xxxx-xxxxx-VM)が必要になりますので、確認しておいてください。
+監視用VMの準備
+今回用意しましたssh_scale.pyのrpmはCentOS 6.x (64bit)でのみインストール可能です。
+クラウド上で「[LATEST] CentOS 6.4 64-bit」(2013/05時点で最新のCentOS6.x、最新のCentOS6.xで作成してください。)のテンプレートからVMを作成し、ssh_scale.pyのrpmを下記手順でインストールしてください。(技術的にはロードバランサー配下に設置した1台目のVM上で動かすこともできますが、分けておいた方が良いでしょう。)
+# yum -y localinstall http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+# yum -y localinstall http://repo.cloud.idc.jp/Linux/CentOS/6/idc/x86_64/idcf-release-8-0.0.idcf.el6.noarch.rpm
+# yum -y install idcf.compute.auto_scale
+ssh_scale.pyはidcf.compute.auto_scaleのrpmに入っています。また、 idcf.compute.auto_scaleをインストールすることで、コマンドラインでAPIを操作するためのツールであるidcf-compute-api(idcf.computeのrpm)もインストールされます。(ssh_scale.pyはidcf-compute-apiの機能へ依存しています。)
+以降の手順はこの作成した監視用VM上で進めてください。
+APIを利用するためのコマンド(idcf-compute-api)の設定
+ssh_scale.pyの設定を行うには、ServiceOffering(VM Type)のID、TemplateのID(上記で作成時に確認済み)、ZoneのID、Load BalancerのIDが必要になります。また、APIを利用するためのコマンド(以下idcf-compute-api)の設定が必要になります。
+まず初めに、APIを利用するためのコマンドの設定を行い、API経由で各IDを確認していきます。
+APIを利用するためのidcf-compute-apiの設定は、APIドキュメント, Getting Startedに記載されています。こちらに詳しく書かれていますが、idcf.compute.auto_scaleをインストールした段階でツール(idcf.computeのrpm)自体はインストールされていますので「API設定確認」から始めてください。
+なお、ssh_scale.pyとidcf-compute-apiの設定は同一のファイルとなっており、idcf.compute.auto_scaleのrpmをインストールすることで設定のひな形がインストールされていますので、こちらをホームディレクトリに「.idcfrc」のファイル名でコピーし、[account]セクションを設定することで利用ですきます。(ここでは[account]セクション以外設定しなくて問題ありません。)以降の説明では、ひな形をコピーした前提で記載させて頂きます。
+# cd ~/
+# cp /usr/share/doc/idcf.compute.auto_scale-*/sample.idcfrc .idcfrc
+# chmod 600 .idcfrc
+# vi .idcfrc
+---------------------------------------------------------------
+[account]
+host=https://< API End Point >
+api_key=< API Key >
+secret_key=< Secret Key >
+---------------------------------------------------------------
+指定するhost,api_key,secret_keyはポータルにログインし、右上のアカウント名のマイプロファイルで確認できます。(hostにはAPIエンドポイントを指定します。)
+次からAPI経由でssh_scale.pyの設定に必要な各IDをidcf-compute-apiを使って確認していきます。
+ZoneのID確認
+下記コマンドを実行し、Zone IDを確認します。
+# idcf-compute-api listZones -t id,name
++----+-------------+
+| id |     name    |
++----+-------------+
+| 1  | jp-east-t1v | <= 東京Zone
+| 2  | jp-east-f2v | <= 白河Zone
++----+-------------+
+下準備1,2で作成したZoneのIDが必要になります。(テンプレート、Load Balancerをjp-east-t1vで作成した場合は1、jp-east-f2vで作成した場合は2を選択することになります。)
+ServiceOffering(VM Type)のID確認
+下記コマンドを実行し、ServiceOffering IDを確認します。
+# idcf-compute-api listServiceOfferings -t id,displaytext
++----+----------------------+
+| id |     displaytext      |
++----+----------------------+
+| 14 | DL32 ( 8CPU / 32GB ) |
+| 15 | XL16 ( 8CPU / 16GB ) |
+| 16 | L32 ( 4CPU / 32GB )  |
+| 17 | L16 ( 4CPU / 16GB )  |
+| 18 | L8 ( 4CPU / 8GB )    |
+| 20 | M8 ( 2CPU / 8GB )    |
+| 21 | M4 ( 2CPU / 4GB )    |
+| 22 | S4 ( 1CPU / 4GB )    |
+| 24 | XS ( 1CPU / 512MB )  |
+| 26 | XL12 ( 8CPU / 12GB ) |
+| 30 | S2 ( 1CPU / 2GB )    |
+| 31 | L4 ( 4CPU / 4GB )    |
+| 52 | XL32 ( 8CPU / 32GB ) |
++----+----------------------+
+増減させるVMに指定するServiceOfering(VM Type)のIDが必要になります。
+LoadBalancerのID確認
+下記コマンドを実行し、Load Balancer IDを確認してます。
+# idcf-compute-api listLoadBalancerRules -t id,name,publicip
++-------+--------+-----------------+
+|   id  |  name  |     publicip    |
++-------+--------+-----------------+
+| xxxxx | LB1    | 210.xxx.xxx.1   | <= 今回作成したLoad Balancer
+| yyyyy | FS_LB1 | 210.xxx.xxx.2   |
++-------+--------+-----------------+
+下準備2で作成したLoad BalancerのIDが必要になります。
+監視用VMから監視対象VMへのSSH接続設定
+監視用VM(ssh_scale.pyを動かすVM)から、監視対象VM(LB配下に登録した1台目のVM)へ、SSHの公開鍵認証で接続できる必要があります。
+今回はSSH Key Pairを新規に作成し、新規作成した鍵で接続できるように設定します。
+下記を実行しSSH Key Pairを新規に作成します。
+※ 監視用VMで実行
+# ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa):  <= 作成する鍵のPath。今回はこのままでOK.
+Created directory '/root/.ssh'.
+Enter passphrase (empty for no passphrase):  <= 秘密鍵に設定するPassphrase
+Enter same passphrase again:                 <= 秘密鍵に設定するPassphraseの確認
+Your identification has been saved in /root/.ssh/id_rsa.  <=作成された秘密鍵
+Your public key has been saved in /root/.ssh/id_rsa.pub.  <=作成された公開鍵
+The key fingerprint is:
+c0:36:0f:ff:07:35:a6:60:19:18:f1:57:5c:5a:a3:f3 root@i-xxxx-xxxxx-VM
+The key's randomart image is:
++--[ RSA 2048]----+
+|      o+.  ...+  |
+|     ... o ..+ . |
+|      * = . B    |
+|     . B o + +   |
+|        S o   E  |
+|         . .     |
+|          . .    |
+|           .     |
+|                 |
++-----------------+
+作成したSSHの公開鍵を「監視されるVM」へ登録します。登録にあたって「監視されるVM」のsshdの設定を変更し、一時的にパスワード認証を許可します。
+Cloud側のポータルより「監視されるVM」の仮想コンソールへ接続し、sshd_confを修正します。
+下記箇所を変更し、sshdを再起動してください。
+※ 監視用VMで実行
+# vi /etc/ssh/sshd_conf
+---------------------------------------------------------------
+To disable tunneled clear text passwords, change to no here!
+#PasswordAuthentication yes
+#PermitEmptyPasswords no
+#PasswordAuthentication no     <=コメントアウトします。
+---------------------------------------------------------------
+# service sshd restart
+Stopping sshd:                      [ OK ]
+Starting sshd:                      [ OK ]
+先程作成したSSHの公開鍵を「監視されるVM」へ登録します。
+※ 監視用VMで実行
+# cat /root/.ssh/id_rsa.pub | ssh root@i-xxxx-xxxxx-VM "cat - >> ~/.ssh/authorized_keys"
+Enter passphrase for key '/root/.ssh/id_rsa':    <=まだ公開鍵登録前なので単にリターンで無視します。
+root@i-xxxx-xxxxx-vm's password:     <=「監視されるVM」のパスワードを入力します。
+※ i-xxxx-xxxxx-VMは「監視されるVM」の「仮想マシン名」を指定します。
+実際に秘密鍵+Passphraseでログインできるか確認します。
+※ 監視用VMで実行
+# ssh root@i-xxxx-xxxxx-VM
+Enter passphrase for key '/root/.ssh/id_rsa':    <=Passphraseを入力。
+Last login: Fri May 17 15:25:17 2013 from i-xxxx-xxxxx-vm.cs586cloud.internal
+________  ______   ______                 __  _
+/  _/ __ \/ ____/  / ____/________  ____  / /_(_)__  _____
+/ // / / / /      / /_  / ___/ __ \/ __ \/ __/ / _ \/ ___/
+_/ // /_/ / /___   / __/ / /  / /_/ / / / / /_/ /  __/ /
+/___/_____/\____/  /_/   /_/   \____/_/ /_/\__/_/\___/_/
+[root@i-xxxx-xxxxx-VM ~]#
+※ i-xxxx-xxxxx-VMは「監視されるVM」の「仮想マシン名」を指定します。
+ログインできたら「監視用VM」のsshd設定を元に戻し、パスワード認証を不許可にします。
+※ 監視用VMで実行
+# vi /etc/ssh/sshd_conf
+---------------------------------------------------------------
+To disable tunneled clear text passwords, change to no here!
+#PasswordAuthentication yes
+#PermitEmptyPasswords no
+PasswordAuthentication no   <=コメントアウトを外して元に戻します。
+---------------------------------------------------------------
+# service sshd restart
+Stopping sshd:                      [ OK ]
+Starting sshd:                      [ OK ]
+ssh_scale.pyの設定
+ssh_scale.pyの設定には、API経由で確認した各ID(Zone ID、ServiceOffering ID、Load Balancer ID)とテンプレート作成時に確認したTemplate ID、監視対象VMの仮想マシン名(i-xxxx-xxxxx-VM)、SSHの秘密鍵が必要です。
+ssh_scale.pyの設定ファイルは、idcf-compute-apiの設定と同一のファイルとなり、ホームディレクトリの「.idcfrc」が設定ファイルとなります。idcf-compute-apiでは[account]セクションを設定しましたが、ssh_scale.pyでは加えて[monitoring],[launch_config],[scalling],[scalling_policy_out],[scalling_policy_in]を設定していきます。
+以下を参考に、.idcfrcを設定してください。([account]は設定済みのはずです。)
+# vi .idcfrc
+---------------------------------------------------------------
+[account]
+host=https://< API End Point >
+api_key=< API Key >
+secret_key=< Secret Key >
+[monitoring]
+host=< 監視対象VMの仮想マシン名(i-xxxx-xxxxx-VM) >
+user=< 監視対象VMへSSH接続するためのユーザ名 >
+private_key_path=< 監視対象VMへSSH接続する際の秘密鍵のPath >
+pass_phrase=< private_key_pathで指定した秘密鍵のパスフレーズ >
+[launch_config]
+serviceofferingid=< API経由で確認したServiceOffering ID >
+templateid=< テンプレートを作成した際に確認したTemplate ID >
+zoneid=< API経由で確認したZone ID >
+[scalling]
+min_size=< オートスケール時の最小VM台数 >
+max_size=< オートスケール時の最大VM台数 >
+load_balancer=< API経由で確認したLoad Balancer ID >
+[scalling_policy_out]
+threshold=< スケールアウトを開始するLoad Average >
+[scalling_policy_in]
+threshold=< スケールインを開始するLoad Average >
+---------------------------------------------------------------
+以下は、すべてを指定した場合のサンプルです。
+監視対象VMの「i-xxxx-xxxxx-VM」で Load Average が「3」を超えた場合、「Template ID=3039」のテンプレートから「Zone ID=1」,「ServiceOfferring=24」でVMを作成し、出来上がったVMを「Load Balancer ID=64330」へ追加します。また、 Load Average が「1」より小さくなった場合は「Load Balancer ID=64330」配下のVMを削除します。VM増減は「2-5」台の範囲で行われます。
+[account]
+host=https://xxx.example.jp/xxxxx/xxxx/xxx
+api_key=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+secret_key=yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+[monitoring]
+host=i-xxxx-xxxxx-VM
+user=root
+private_key_path=/root/.ssh/id_rsa
+pass_phrase=xxxxxxxx
+[launch_config]
+serviceofferingid=24
+templateid=3525
+zoneid=2
+[scalling]
+min_size=2
+max_size=5
+load_balancer=xxxxx
+[scalling_policy_out]
+threshold=3
+[scalling_policy_in]
+threshold=1
+ssh_scale.pyのテスト実行とcronの設定
+まずは、ssh_scale.pyを手動で実行してみてください。エラーなく実行出来れば成功です。エラーが発生する場合は「.idcfrc」を見直し、設定を確認してください。
+もし、 Load Balancer 配下に min_size よりも少ない台数しか登録がない場合は、この手動実行で VM の追加が行われます。(1回実行で1台追加されます。)
+以下は手動実行した際のイメージとなります。
+Load Balancer 配下の VM 台数が min_size より少なかったため、1台VMの追加が行われています。
+# ssh_scale.py
+2013-05-10 17:27:52,000 transport[1379] [INFO]: Connected (version 2.0, client OpenSSH_5.3)
+2013-05-10 17:27:52,121 transport[1379] [INFO]: Authentication (publickey) successful!
+2013-05-10 17:27:52,127 transport[1379] [INFO]: Secsh channel 1 opened.
+2013-05-10 17:27:52 *** scale out check ***
+2013-05-10 17:27:52 la_threshold_out : 3
+2013-05-10 17:27:52 now_la : 0
+2013-05-10 17:27:52 now_vm_count : 1
+2013-05-10 17:27:52 vm count : now 1, max 5     <= 現在のVM数がmin_sizeより小さいので、
+2013-05-10 17:27:52 scale out : +1              <= VM追加の処理が実行されます。
+2013-05-10 17:27:53 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:28:10 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:28:20 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:28:30 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:28:40 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:28:50 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:29:00 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:29:10 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:29:20 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:29:30 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:29:40 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:29:51 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:30:10 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:30:20 query job : jobid: 450318, jobstatus: 0
+2013-05-10 17:30:30 query job : jobid: 450318, jobstatus: 1
+2013-05-10 17:30:30 now vm count : 2
+2013-05-10 17:30:30,516 transport[1379] [INFO]: Secsh channel 2 opened.
+2013-05-10 17:30:30 *** scale in check ***
+2013-05-10 17:30:30 la_threshold_in : 1
+2013-05-10 17:30:30 now_la : 0
+2013-05-10 17:30:30 now_vm_count : 2
+問題なければcronへ登録し、定期実行されるようにします。
+下記の例では、1分毎にssh_scale.pyが実行され「監視VM」から「監視されるVM」の負荷がチェックされます。
+# crontab -e
+---------------------------------------------------------------
+* * * * * /usr/bin/ssh_scale.py >> /var/log/ssh_scale.log 2>&1
+---------------------------------------------------------------
+オートスケールのテスト
+それでは「監視されるVM」に負荷をかけて実際にVMが増減するかを見てみましょう。
+「監視されるVM上」でstressコマンドによる負荷をかけてみます。下記を「監視されるVM」上で実行し、stressコマンドをインストール、実行してみます。
+※ 「監視されるVM」で実行
+# yum -y localinstall http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+# yum install stress
+# stress -c 4   <= [scalling_policy_out]のthresholdより大きい値を指定してください。
+stress: info: [20209] dispatching hogs: 4 cpu, 0 io, 0 vm, 0 hdd
+しばらくすると、スケールアウトが実行されるはずです。「監視用VM」上でssh_scale.pyのログを確認し、実際にスケールされるか確認してみましょう。
+※ 「監視用VM」で実行
+# tail -f /var/log/ssh_scale.log
+2013-05-08 19:11:01,607 transport[1379] [INFO]: Authentication (publickey) successful!
+2013-05-08 19:11:01,638 transport[1379] [INFO]: Secsh channel 1 opened.
+2013-05-08 19:11:01 *** scale out check ***
+2013-05-08 19:11:01 la_threshold_out : 2
+2013-05-08 19:11:01 now_la           : 0
+2013-05-08 19:11:01 now_vm_count     : 2
+2013-05-08 19:11:01 *** scale in check ***
+2013-05-08 19:11:01 la_threshold_in  : 1
+2013-05-08 19:11:01 now_la           : 0
+2013-05-08 19:11:01 now_vm_count     : 2
+しばらく見ていると、VMが追加される様子が確認できるはずです。実際にCloudのポータルにログインし、VMが増えているか確認してみてください。
+増えるのが確認できたらstressコマンドを[CTRL]+で停止し、VMが減る(スケールイン)ことを確認してみてください。
+最後に
+いかがでしょうか?各IDの確認が少し面倒(実はidcf-compute-apiを使ってAPIを使いこなせるようになることも狙っています。)ですが、サンプルプログラムの位置づけとは言え、ちょっとしたオートスケールとしては十分ではないでしょうか。
+※ もっと色々なことをやりたくなり、プログラムを書き換える場合は、必ずssh_sclae.pyをコピーし、コピーした方を書き換えてください。大元のファイルはrpmで管理されているため、rpmのアップデートで上書きされる可能性があるためです。
+今回から、ブログへコメントをかけるようになりました!コメントの掲載は承認制ではありますが、ご意見等ございましたら、コメントいただければと思います。
+APIを利用した簡単オートスケール | IDC Frontier Engineers' Blog

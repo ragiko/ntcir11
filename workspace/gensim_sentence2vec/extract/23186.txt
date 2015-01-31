@@ -1,0 +1,35 @@
+
+プログラミングするにあたって配列はとても便利なものですが、PHPには配列をさらに便利にする関数が色々と定義されています。これらの関数を上手く利用することで、配列をより効率的に扱うことができます。
+<?php
+$array = array(
+'foo' => array(1, 2),
+'bar' => array(3, 4),
+);
+echo count($array), PHP_EOL; // 出力:2
+echo count($array, COUNT_RECURSIVE), PHP_EOL; // 出力:6
+?>
+配列の要素が持つ値の出現回数をカウントする array_count_values()
+array_count_values()は、引数で渡された配列の要素が持つ値の出現回数をカウントし、結果を連想配列で返します。返される連想配列では、元の配列の値がキーとなります。そのため、string型, int型以外の要素では、E_WARNINGが発生します。
+<?php
+$array = array(1, 'a', 1, 'b', 1, 'a');
+$result = array_count_values($array);
+print_r($result);
+/* 出力:
+Array
+(
+[1] => 3
+[a] => 2
+[b] => 1
+)
+*/
+?>
+配列の要素に特定の値が存在するかを調べる in_array()
+in_array()は、第2引数の配列の要素に第1引数の値が存在するかを調べます。戻り値はBoolean型で、存在する場合はtrue、存在しない場合はfalseとなります。第3引数は省略可能ですが、trueを指定した場合、配列の要素を調べる際に厳密な比較(===)が行われます。
+<?php
+$array = array('a', 'b', 'c');
+$result = in_array('b', $array, true);
+var_dump($result); // 出力:bool(true)
+?>
+配列の要素に特定の値が存在すれば、要素のキーを返す array_search()
+array_search()は、in_array()と同じように第2引数の配列の要素に第1引数の値が存在するかを調べます。in_array()が結果をBool値で返すのに対して、array_search()は最初に見つかった要素のキーを返します。値が見つからなかった場合は、falseが返されます。第3引数に関してはin_arrayと同様です。
+配列がもっと便利になる!PHPの配列関連関数 | kudox.jp

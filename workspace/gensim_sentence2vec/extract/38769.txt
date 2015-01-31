@@ -1,0 +1,59 @@
+今回は Oracle Database に対して提供されるパッチの理解を深めるために役立つ文書を紹介します。 
+Oracle Database のパッチ全般についての文書 
+まず、Oracle のソフトウェア製品のパッチの理解を深めるために、サポート契約をお持ちの方にぜひ一読いただきたい文書を紹介します。 
+Database、Fusion Middleware、EM Grid ControlおよびCollaboration Suiteに関する不具合修正のポリシー 
+この文書は Database, FMW, EM Grid Control, and OCS Software Error Correction Support Policy に添付されている 「Database, FMW, Em Grid Control, and OCS Software Error Correction Support Policy」の内容を和訳したものです。Database、Fusion Middleware、EM Grid Controlおよび Collaboration Suite 製品について提供しているパッチの種類とその提供ポリシーについて説明しています。 
+また、以下の文書に各パッチの情報をわかりやすくまとめています。初心者のための Oracle Database パッチ 
+以下に、Oracle Database に対して提供されるパッチのうち、主要のパッチについてまとめられている文書について紹介します。 
+パッチ・セット についての文書 
+パッチ・セット(Patch Set Release) は製品リリースの Premier Support 期間内において、一定期間内ごとにそのリリースに対して作成された不具合修正を集積し、充分に統合的にテストした累積パッチです。パッチ・セットは、最も安全で信頼のおける不具合修正適用の方法であり、既存の不具合を抑止する上で基礎となるものです。 
+Database のパッチ・セットがリリースされる Support の期間についての文書 
+パッチ・セットはライフタイム・サポートにて定められる Premire Support の期間の製品リリースに対して提供されます。
+各 Oracle Database のリリースの Premire Support と Extended Supportが提供される期間については以下の文書に掲載しています。 
+Oracle Database (RDBMS) Releases Support Status Summary 
+Database のパッチ・セットのリリース・スケジュールについての文書 
+各リリースにおいて、直近でリリースされたパッチ・セットと次にリリースが予定されているパッチ・セットのリリース・スケジュールを以下の文書に掲載しています。 
+Release Schedule of Current Database Releases 
+Database のパッチ・セットのパッチ番号や readme をまとめた文書 
+各リリースごとにのパッチ・セットのパッチ番号や README 、注意点などの情報をまとめた文書があります。アップグレードやパッチ・セットの適用を検討する場合に参照してください。 
+Oracle 11g Release 2 (11.2) Support Status and Alerts 
+Oracle 11g Release 1 (11.1) Support Status and Alerts 
+Oracle 10g Release 2 (10.2) Support Status and Alerts 
+Oracle 10g Release 1 (10.1) Support Status and Alerts 
+Oracle9i Release 2 (9.2) Support Status and Alerts 
+以下の文書の Release の欄の各リンク先よりたどることでも上記の文書を参照できます。 
+Oracle Database (RDBMS) Releases Support Status Summary 
+11.2.0.2 の パッチ・セットからの変更点 
+11.2.0.2 のパッチ・セットは、従来のパッチ・セットと適用方法が異なります。
+11.2.0.2 のパッチ・セットの適用を検討している場合は以下の文書を参照してください。 
+PSR 11.2.0.2 からの重要な変更点について 
+これは以下の文書をを和訳したものです。 
+Important Changes to Oracle Database Patch Sets Starting With 11.2.0.2 
+Critical Patch Update についての文書 
+Critical Patch Update (CPU) は、四半期毎に提供される、セキュリティ修正を中心とした重要な修正の集積体です。より詳細な情報はここを参照してください 
+以下の文書には過去にリリースされた CPU の文書の一覧がまとめられています。 
+Reference List of Critical Patch Update Availability Documents For Oracle Database and Fusion Middleware Product 
+Patch Set Update についての文書 
+Patch Set Update (PSU) は CPU の修正を含み、かつ適用が推奨される重要な修正を含んだ集積パッチです。CPU と同様に四半期毎に提供されます。 
+PSU についての理解を深めるためには以下の文書を参照してください。 
+Database Patch Set Updates(PSU)について 
+これは 
+Patch Set Updates for Oracle Products 
+を和訳した文書です。 
+リリース済みの PSU の情報については以下の文書を参照してください。 
+Oracle Recommended Patch -- Oracle Database 
+これは以下の文書を和訳した文書です。 
+Oracle Recommended Patches -- Oracle Database 
+Windows パッチ・バンドルについての文書 
+Windows プラットフォームではパッチは複数の修正をまとめたパッチ・バンドルとして提供します。詳細は以下の文書を参照してください 
+Windows Bundle Patch について
+以下の文書よりWindowsプラットフォームのパッチ・バンドルの一覧とダウンロード先の情報を確認することができます。
+Oracle Database Server and Networking Patches for Microsoft Platforms 
+推奨されるパッチ適用プラン 
+トラブルの予防するために理想的なパッチ適用プランは最新のパッチ・セットを適用し、その上で最新の PSU を適用することです。
+パッチ・セットや PSU の適用にはその作業に伴う計画停止や、適用作業に伴う労働力が必要になるため、システムによっては、常に最新のパッチ・セットやPSU を適用することが難しいケースがあります。
+また、今は問題なく動いているし、パッチを適用することでなんらかの予期しない影響を受けるのが怖いという理由で、パッチを積極的に適用したくないと考える管理者の方もいるかもしれません。
+ただし、実はオラクル カスタマーサポートセンターに問合せがくる障害報告の多くが最新の パッチ・セットや PSU を適用していれば、問題の発生を防げたという報告です。 
+通常、データベースが格納するデータは常に変わります。また、ユーザー数や、システム固有のアプリケーションのロジック、年次処理や月次処理などのバッチ処理の制御等、データベースの周りにはあらゆる状況変化を起こす要因が存在します。今まで問題が発生しなかったからといって、今後も問題が発生しないとは限りません。繁忙期などそのシステムが本当に重要になる時に負荷が増加して、問題が顕在化するというようなケースもあり、この時にあわててパッチを適用したくとも、メンテナンス時間を設けられないというような状況に陥ることもあります。 
+システムの運用設計を行う際に、最新のパッチを定期的に適用する計画を組み込むことにより、常に安心してシステムを稼働させるサイクルを形成することができます。
+Oracle が提供するパッチについて理解するために役立つ文書の紹介 (Oracle Support Japan)

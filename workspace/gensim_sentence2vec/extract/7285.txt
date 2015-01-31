@@ -1,0 +1,27 @@
+ASP.NET は、小規模な個人用 Web サイトから大規模なエンタープライズ クラスの Web アプリケーションまで、動的な Web アプリケーションを構築するための、強力な無償のフレームワークです。ASP.NET は、幅広い種類のプロジェクトや開発スタイルに対応できます。ASP.NET は .NET Framework の一部であり、ASP.NET アプリケーションのコードを作成する際、開発者は .NET Framework 全体にアクセスすることになります。この記事では、ASP.NET アプリケーション開発に関する参考資料を入手できる場所についてまとめています。 
+プログラミング フレームワークとしての ASP.NET の詳細については、www.asp.net (英語) サイトをご覧ください。このサイトにはホワイト ペーパー、フォーラム、その他のサポート資料が用意されています。
+ASP.NET の概要 (英語): http://www.asp.net/get-started/
+ASP.NET の学習 (英語): http://www.asp.net/learn/
+ASP.NET ホワイト ペーパー (英語): http://www.asp.net/learn/whitepapers/
+ASP.NET フォーラム (英語): http://forums.asp.net/
+MSDN の ASP.NET ドキュメント: http://msdn.microsoft.com/ja-jp/library/ms644563.aspx
+特に ASP.NET に焦点を合わせた活発なブログ コミュニティもあります。
+Phil Haack のブログ (英語): http://www.haacked.com/
+Scott Guthrie のブログ (英語): http://weblogs.asp.net/scottgu/
+Scott Hanselman のブログ (英語): http://www.hanselman.com/blog/
+Joe Stagner のブログ (英語): http://blogs.msdn.com/joestagner/
+Stephen Walther のブログ (英語): http://stephenwalther.com/blog/default.aspx
+ASP.NET Web Forms 
+ページとコントロールのフレームワークであり、開発者は、使いやすく再利用可能な共通コントロールおよびユーザー定義コントロールにカプセル化された UI 機能を使用して、Web アプリケーションを構築できます。www.asp.net Web サイト (英語) で、ビデオ、チュートリアル、記事をご覧いただけます。
+ASP.NET 動的データ
+データの骨組みとなるフレームワークであり、ASP.NET Web Forms を使用して機能的なデータ駆動型アプリケーションを迅速に開発できます。Linq to SQL または Entity Framework データ モデルをベースにしています。ASP.NET 動的データは、既存の ASP.NET データ コントロールのユーザビリティおよび RAD 開発に大きな変化がもたらします。詳細については、ASP.NET 動的データのサイト (http://www.asp.net/dynamicdata、英語) を参照してください。 
+ASP.NET AJAX
+一般的なブラウザーすべてで動作する、効率的な対話型 Web アプリケーションを迅速に作成するためのフレームワークです。ASP.NET AJAX では、以下の機能が提供されます。
+高速で簡潔な JavaScript ライブラリである jQuery のサポート。jQuery を使うと、HTML ドキュメントのスキャン、イベント処理、アニメーション、AJAX 通信を簡単に行えるようになり、迅速な Web 開発を実現できます。
+最新のブラウザーすべてをサポートする強力な AJAX コントロールによる既存ページの機能強化。
+複雑で大量の JavaScript コードを使用せずに、ブラウザーからリモート サービスおよびデータにアクセス。
+Visual Studio 2008 に組み込みの ASP.NET AJAX サポート、強化された JavaScript サポート、新しい Web ページ デザイナー インターフェイスによって、効率性と使いやすさを強化。
+詳細については、ASP.NET MVC のサイト (http://www.asp.net/mvc、英語) を参照してください。
+IIS での ASP.NET アプリケーションの実行
+ASP.NET は、管理、構成、要求処理において IIS と緊密に統合されています。IIS 7 管理コンソールを使用して、.NET 承認規則や ASP.NET プロバイダーなどの ASP.NET 設定を管理できます。IIS 7 の新しい分散 XML ベースの構成システムには、IIS、ASP.NET や、FTP 7 などのコンポーネントの設定が格納されます。IIS 7 の新しい構成システムの概要については、IIS 7 の構成システムについての記事を参照してください。「IIS 7 の構成のリファレンス (英語)」には、この構成システムの各要素の管理方法が項目別に説明されています。IIS の新しい統合パイプラインによって、コア ASP.NET ランタイムと IIS 要求処理パイプラインが統合されています。詳細については、「IIS 7 統合パイプラインの利点の活用方法」を参照してください。IIS 向けの ASP.NET アプリケーションの最適化に関するその他の記事については、この一覧を参照してください。
+ASP.NET の技術資料

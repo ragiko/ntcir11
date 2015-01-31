@@ -1,0 +1,3 @@
+我々は音声認識における認識誤り箇所を検出しこれを訂正するという手法の検討を進めている.本論文では, 検出された誤り箇所の訂正方法として, 旅行会話基本表現コーパスによる用例を用いた訂正方法について提案する.本誤り訂正では, 1)類似用例の検索, 2)用例中の代替候補単語の抽出, 3)音響的類似度等によるリスコアリング, という方法を採る.評価実験の結果, 認識誤り箇所の20%以上を訂正できることが確認された.本論文ではこの手法と幾つかの分析結果を報告する.
+We aim at improving the performance of our speech recognition system by detecting and correcting mis-recognitions. In this paper, we propose a new error correction method based on large basic travel expression corpus. This method has three steps: 1)Searching similar examples, 2)Extracting hypothesis words from examples, 3)Rescoring hypothesis words by using phonetic distance. Our experiments show that more than 20% of mis-recognitionsare corrected. In this paper, we also report some analyses of error correction results.
+

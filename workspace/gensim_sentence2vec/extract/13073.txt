@@ -1,0 +1,3 @@
+本研究では, 圧縮映像から比較的少ない計算量で得られるDCT係数のDC成分をキー情報として利用することによる映像照合及びその検索手法を提案する. 提案方式では, 入力された圧縮映像からDC成分の抽出を行い, これを利用しデータベース中に登録されたシーンとの照合を行うことにより, 同一と思われるシーンを素早く分類整理することが可能となる. また, DC係数の色差成分(Cb, Cr)を利用することにより, 候補画像の提示による類似映像検索が高速に実現できることを実験により確認し, DCT-DC成分が検索のパラメータとして有効に利用できることを示した.
+Video materials are often stored and derivered in compressed form because of its data size. In this paper we propose video scene detection and retrieval method that uses DC coefficients that can be obtained easily from compressed video as key information. The simulation results show that this system enables to detect the scenes resistered in the dictionary, and to retrieve the same and similar shots to a given shot. The validity of using the DC coefficients as key information was confirmed.
+

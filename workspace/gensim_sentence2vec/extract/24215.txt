@@ -1,0 +1,155 @@
+2013年4月14日
+カテゴリ: ツール
+Sublime Text 2とEmmetで制作効率アップ!@福岡マークアップ勉強会
+Tweet半年くらい前からSublime Text 2を使い始め、使い心地がよくてすっかりメインエディタになってしまいました。
+というわけでSublime Text 2やプラグインのEmmetを使ってコーディングのスピードアップを図ろう!というテーマでまとめてみます。
+ちなみにこの内容は福岡マークアップ勉強会でライブコーディングを交えてお話しさせて頂きました。
+Sublime Text 2って何がいいの?
+僕は以下のようなポイントが気にっています。
+起動が軽い。
+前までDreamweaverやNetbeansでコーディングをしてたのですが立ち上がりの速さがだいぶ変わりました。
+プロジェクトの管理が簡単
+サイドバーにフォルダをドラッグ&ドロップするだけ。
+拡張性が高い
+プラグインのインストール、アンインストールも簡単です。
+まずはインストール!
+こちらのサイトからSublime Text 2をダウンロードしてインストールします。
+エディタが使えるようになったら使い勝手を良くするためにプラグインの追加や削除を管理するPackage Controlを有効にします。といってもやり方は簡単、エディタ上部のメニューバーからView > Show Consoleを選択します。
+出てきた入力フォームに下記のコードをコピーして実行するだけです。
+import urllib2,os; pf='Package Control.sublime-package'; ipp=sublime.installed_packages_path(); os.makedirs(ipp) if not os.path.exists(ipp) else None; urllib2.install_opener(urllib2.build_opener(urllib2.ProxyHandler())); open(os.path.join(ipp,pf),'wb').write(urllib2.urlopen('http://sublime.wbond.net/'+pf.replace(' ','%20')).read()); print('Please restart Sublime Text to finish installation')
+その後、再起動するとCtrl+Shilf+P(Command+Shilf+P)でコマンドパレットが開くようになっています。適当に「Package」とか入力すると「Install Package」とか「Remove Package」とか出るのでInstall Packageで好きなプラグインをインストールしましょう。
+プラグインを入れて使い勝手を良くしよう!
+いくつか僕が便利だと思うプラグインを下記に挙げておきます。
+Bracket Highlighter
+HTMLタグなどのペアをハイライトしてくれる。
+Side Bar Enhancements
+初期状態では貧弱なサイドバーでの右クリックメニューを強力にする。
+AutoFileName
+画像などのパスを補完してくれる。WidthとHeightも入力してくれて超便利。
+ConvertToUTF8
+Shift_JSやEUC-JPなどUTF-8以外のファイルを開いたり保存できるようにする。
+Local History
+Git使わなくてもローカルに編集履歴が残る。コマンドパレットから閲覧可能。
+他にも便利なプラグインは色々あってきりがないので参考になるリンクを挙げておきます。
+「第0回 Sublime Text 2 勉強会」で紹介されたプラグインまとめ – The Powerful Code
+今さらだけどSublime Text 2の基本とカスタマイズ ｜ Developers.IO
+Sublime Text 2 便利な機能
+では便利な機能を紹介していきます。
+プロジェクト管理が楽
+下の画像のようにフォルダをドラッグ&ドロップするだけで、サイドバーに使用するフォルダが表示されるようになります。
+ミニマップ機能
+画面右側にソースコードのミニチュア版が表示されているので、大まかな移動をする際に便利
+複数選択が便利!
+キーワードを選択してCtrl + D(Command + D)をぽんぽん押していくと同じ文字列が選択されて同時編集ができます。
+選択をスキップしたい場合はその場でCtrl + K(Command + K)をすればOKです。
+また、同じ文字列ではなくてもCtrl(Ctrl)を押しながらドラッグを繰り返すことで複数選択可能です。
+ファイル間の移動
+Ctrl + P(Command + P)で開いたフォームにファイル名や行数を入力することでファイル間の移動がスムーズになり便利です。移動先の指定にはちょっとコツがあります。
+@ IDや関数を指定して移動
+: 行番号を指定して移動
+# 文字列を検索
+よく使うショートカット
+その他、ショートカットを使いこなすことでかなり制作効率がアップするはずです!以下に僕がよく使うショートカットをまとめました。
+Ctrl + C (Command + C)でコピー、Ctrl + X (Command + X)でカット
+コピーや切り取りの定番ショートカットですが、なにも選択されてない状態で実行すればカーソルがある行全体をコピー、切り取りできます。
+Ctrl + [ (Command + [)または Ctrl + ] (Command + ])
+インデントの追加、削除 複数行でも可能です。
+Ctrl + / (Command + /)
+コメントアウト。もう一回やれば解除。
+Ctrl + F (Command + F)
+検索フォームが開く
+Shift + 右クリックドラッグ (Option + 左クリックドラッグ)
+矩形選択
+Ctrl+Shift+K (Macも同様)
+カーソルがある行を削除
+Ctrl + Shift + D (Command + Shift + D)
+その行をもう一行コピー
+Ctrl + T (Macも同様)
+選択した文字の交換
+Shift+ Alt + 2 (Command+ Alt + 2)
+画面分割。分割法は1,2,3,4,5,8,9で選べる。(Macは1~5)
+Ctrl + L (Command + L)
+行選択
+Ctrl + Shift + L
+複数行を一括編集
+Ctrl + enter (Command + enter)
+下に改行を入れる
+Ctrl + Shift + enter (Command + Shift + enter)
+上に改行を入れる
+Ctrl + Shift + or (Ctrl + Command + or)
+行を移動
+Ctrl + space
+入力保管呼び出し
+Ctrl+BackSpace (Command+Delete)
+カーソル位置から文字列先頭までを削除
+Ctrl+Delete (fn+Command+Delete)
+カーソル位置から文字列最後までを削除
+ここまでまとめてきた機能やショートカットを使うことでだいぶコーディングはスピードアップするかと思います。
+Sublime Text 2を使う際に、以下の記事がとっても参考になります!
+恋に落ちるエディタ「Sublime Text」 完全入門ガイド! | 株式会社LIG
+Mastering Sublime Text 2 こもりまさあきさんのスライド
+さて、ここまでがSublime Text 2のお話し。Emmetを使えばコーディングはもっともっと速くなる!
+Emmetとは
+EmmetはZen-Codingの次期バージョンとして開発され、2013年2月に正式リリースとなりました。
+Zen-Codingについては下の動画を見てもらえればざっくりわかると思いますが、簡単にいうとコーディングのタイピングを劇的に減らしてくれる便利な機能です。
+例えばサイトを作る際に毎回下記のようなコードを書くと思います。
+Zen-Codingでは「html:5」と書いてその後ろでCtrl + E(Sublime Text 2使用の場合)で展開すればOKです。すごく楽ちん!
+EmmetはそのZen-Codingをさらに便利にしたものです。基本的な書き方はZen-Codingと一緒なのでこれまでZen-Codingを使ってきた方なら導入の学習コストはほとんどありません。
+Emmetここが便利!
+まずはプラグインのインストール
+まずはCtrl+Shilf+P(Command+Shilf+P)でコマンドパレットが開きます。適当に「Package」とか入力すると「Install Package」とか「Remove Package」とか出るのでInstall Packageを選びましょう。
+新たに現れたフォームにEmmetと入力してプラグインをインストールしましょう。プラグインをインストールしたらSublime Text 2を再起動すれば使えるようになっているはずです。
+展開はCtrl + Eで!
+ここはZen-Codingと変わらないのですが、Sublime Text 2でEmmetを使用した場合、コードの展開はCtrl + Eで行います。
+「上の階層へ戻る」記述ができるようになった。
+たとえばこれまで
+<section>
+<h1><a><img alt="" /></a></h1>
+<p>テキストテキスト</p>
+</section>
+というコードは下記のように記述して展開していました。
+section>(h1>a>img)+p{テキストテキスト}
+h1とpは同じ階層なのですが、一気に展開したい場合はh1以下の要素を()でくくらなければいけなかったのですがEmmetで書くと下記のような記述ができます。
+section>h1>a>img^^p{テキストテキスト}
+Emmetでは^で階層を上がることができるようになりました。
+ダミーテキストの挿入が簡単にできる。
+Emmetではloremと入力して展開するだけで簡単にダミーテキストが挿入できます。
+たとえば
+p>lorem
+と記述して展開(Ctrl + E)すると下記のように展開されます。
+ダミーテキストは最低8単語から調節できます。
+p>lorem20
+と記述して展開すれば20単語分だけダミーテキストが作成できます。
+CSSの記述が楽になった。
+EmmetではCSSはこんな書き方ができます。
+/* 展開前 */  m10
+/* 展開後 */  margin:10px;
+/* 展開前 */  m0-5-0-10
+/* 展開後 */  margin: 0 5px 0 10px;
+/* 展開前 */  w100p
+/* 展開後 */  width:100%;
+こういった感じでEmmetを使うとHTMLやCSSを書く際の記述がかなり楽になります。さらにSublime Text 2のショートカットとあわせてコーディングを進めることで制作スピードはうんとアップするはずです。
+Emmetの導入や記法について、詳しくは下記の記事がとても勉強になります!
+Zen-Codingの次期バージョン、Emmet について｜Web Design KOJIKA17
+CSSの記述を高速化する、Emmet (Zen-Coding)｜Web Design KOJIKA17
+知らない人は遅れてる?新Zen-Coding Emmet | DECONCEPTER
+CSSの記述は適当でもけっこう通用する
+あと、CSSの記述はけっこう適当でもよくて、float:left;と書きたい場合はfl:lでもfllでも展開できたりします。
+このように多少ファジーな書き方ができるEmmetですがSublime Text 2のプラグインHayaku!を使うとCSSはよりファジー(適当)な書き方ができます。
+Hayaku!
+インストールの方法はもう大丈夫ですね、Ctrl + Shift + P(Command+Shilf+P)でPackage Controlを立ち上げてInstall Packageからインストールできます。
+興味ある方は下記のURLが参考になります。
+Hayakuの使い方
+Sublime Text2『hayaku』+『Emmet』で変わるセカイ | toybox-design.net
+ここまでSublime Text 2とEmmetで制作効率アップというテーマで説明してきましたが、この内容にさらにSassやCompassといったCSSフレームワークを組み合わせることでもう一段と制作効率はアップします。
+残されたパワーアップがあと2回かどうかは知りませんが、コーディングはまだまだ速くなるはずです!
+そこには。。夢のような世界が。。。
+もう離れらない体になってしまった… ( sass+comapss+Sublime Text 2+hayaku!)
+&mdash; 我流 (@Garyuten) March 28, 2013
+sassについては福岡マークアップ勉強会を開催している@kanappleさんが詳しいので参考にしてみてください。
+sass｜study｜kanapple.net
+便利な技術はどんどん取り入れて残業や制作時間を短縮しましょう!そして空いた時間を自分の勉強やクライアントの問題解決に回せばどんどん仕事の好循環が生まれるんじゃないかと思います。
+以上、ありがとうございました。
+あ、最後に、
+コーディングのお仕事募集中です!
+Sublime Text 2とEmmetで制作効率アップ!@福岡マークアップ勉強会 | キリンブログ

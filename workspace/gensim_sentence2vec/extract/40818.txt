@@ -1,0 +1,192 @@
+
+命令ハンドラの定義
+Command Handler Definition
+構文
+(日本語表現形式)
+[ directParameter を ]〜
+[ parameter commandParticle ] ...〜
+[ commandParamLabel : parameter〜
+[, commandParamLabel : parameter で ] 〜
+commandName ( とは | には | は ) [ 以下を行なう ]
+[ グローバル変数 : variableName [, variableName ] ... ]
+[ ローカル変数 : variableName [, variableName ] ... ]
+[ statement ] ...
+以上
+(英語表現形式)
+( on | to ) commandName [ [ of | in ] directParameter ]ツ
+[ commandParamLabel parameter ] ...ツ
+[ given commandParamLabel : parameter ] ... ]ツ
+[, commandParabLabel : parameter ] ... ]
+[ global variableName [, variableName ] ]
+[ local variableName [, variableName ] ]
+[ statement ] ...
+end [ subroutineName ]
+--------------------
+(日本語表現形式)
+[ parameter commandParticle ] ...〜
+[ commandParamLabel : parameter 〜
+[ commandParamLabel : parameter ] ... で ]〜
+[ directParameter ( が | の ) ]〜
+commandName ( とは | には | は ) [ 以下を行なう ]
+[ グローバル変数 : variableName [, variableName ] ... ]
+[ ローカル変数 : variableName [, variableName ] ... ]
+[ statement ] ...
+以上
+(英語表現形式)
+( on | to ) commandName [ [ of | in ] directParameter ]ツ
+[ commandParamLabel parameter ] ...ツ
+[ given commandParamLabel : parameter ] ... ]ツ
+[, commandParabLabel : parameter ] ... ]
+[ global variableName [, variableName ] ]
+[ local variableName [, variableName ] ]
+[ statement ] ...
+end [ subroutineName ]
+註 1)
+ある命令に特有のcommandParamLabelおよびcommandParticleのリストは、命令の項または各アプリケーションの説明書に記載されています。
+註 2)
+「行なう」と「行う」は同時に使用できます。
+返す ( Return )
+構文
+(日本語表現形式)
+valueを返す
+返る --- 値を返さずに戻ります。
+(英語表現形式)
+return value
+return --- 値を返さずに戻ります。
+例
+2を返す
+or
+return 2
+エラーにそなえて (Try)
+構文
+(日本語表現形式)
+エラーにそなえて [ 以下を行なう ]
+[ statement ] ...
+かりに [ [ エラーコード:errorNumber ] [, 原因:offendingObject ] 〜
+[, 途中結果:resultList ] [ ,予想結果:expectedType ] で ] 〜
+エラー [ errorMessage ] が ( 起こったら | あったら ) 〜
+[ 以下を行なう ]
+[ グローバル変数 : variableName [, variableName ] ... ]
+[ ローカル変数 : variableName [, variableName ] ... ]
+[ statement ] ...
+以上
+----------
+(英語表現形式)
+try
+[ statement ] ...
+on error [ errorMessage ] [ number errorNumber ]ツ
+[ from offendingObject ]ツ
+[ partial result resultList ]ツ
+[ to expectedType ]
+[ global variableName [, variableName ] ]
+[ local variableName [, variableName ] ]
+[ statement ] ...
+end [ subroutineName ]
+例
+エラーにそなえて
+fileNameを値にする
+かりにエラーコード:errNumでエラーerrTextがあったら
+エラーが起こりました。このまま処理を続けますか?を〜
+ボタン:｛停止,続ける｝,デフォルトボタン:2で表示する
+もし値の押されたボタン=停止ならば
+エラーコード:-128でエラーを起こす --- なにもせずに終了
+そうでなければ
+スクリプトを続行します。を表示する
+以上
+以上
+or
+try
+set fileName to result
+on error errText number errNum
+display dialog "エラーが起こりました。このまま処理を続けますか?"ツ
+buttons {"停止","続ける"} default button 2
+if button returned of result is "停止" then
+error number -128 --- quit silently
+else
+display dialog "スクリプトを続行します。"
+end if
+end try
+註 1)
+「行なう」と「行う」は同時に使用できます。
+「起こったら」と「起ったら」は同時に使用できます。
+註 2)
+「エラーにそなえて」は入れ子構造にできません。
+エラー (Error)
+構文
+(日本語表現形式)
+[ [ エラーコード:errorNumber ] [, 原因:offendingObject ] 〜
+[, 途中結果:resultList ] 〜
+[, 予想結果:expectedType ] 〜
+エラー [ errorMessage ] [ を起こす ]
+(英語表現形式)
+error [ errorMessage ] [ number errorNumber ]ツ
+[ from offendingObject ] [ partial result resultList ]ツ
+[ to expectedType ]
+例
+エラーコード:750でエラーを起こす
+or
+error number 750
+アイドル状態 (Idle)
+構文
+(日本語表現形式)
+アイドル状態 ( とは | には | は )
+[ statement ] ...
+[ idlingTimeを返す ]
+以上
+(英語表現形式)
+on idle
+[ statement ] ...
+[ return idlingTime ]
+end idle
+註 1)
+「アイドル状態」は、スクリプトが「実行後自動的に終了しない」をチェックした状態で保存されていなければ実行されません。また、スクリプトを開始した場合、まず「run」が実行された直後、一度目の「アイドル状態」が実行されます。
+idlingTimeは、いったん「アイドル状態」を実行してから次に「アイドル状態」を実行するまでの待ち時間を秒で表します。idlingTimeはスクリプト実行中に変更することができます。デフォルトの周期は30秒に設定されています。
+idleハンドラでは明示的に数値が返されなくても、idleハンドラで最後に実行された命令の返値をアイドル周期とします。数値でない場合は無視されます。周期の変更を行わないようにするには、ハンドラの最後の命令で0を返すようにして下さい。
+註 2)
+この構文が正確であるかどうかは未確認です。
+例
+アイドル状態とは
+ビープ1
+5を返す
+以上
+or
+on idle
+beep 1
+return 5
+end idle
+*5秒に一度、警告音をならします。
+終了する (quit)
+構文
+(日本語表現形式)
+終了する ( とは | には | は )
+[ statement ] ...
+[ 終了するを続ける ]
+以上
+(英語表現形式)
+on quit
+[ statement ] ...
+[ continue quit ]
+end quit
+註 1)
+「終了する」には、スクリプトが終了命令を受け取ったときにどういう振る舞いをするかを記述します。「終了する」ハンドラが存在する場合、「終了するを続ける」の記述がなければスクリプトは終了しませんので気をつけて下さい。
+尚、エラーなどによって終了できない場合は、緊急の終了方法があります。command + shift + "Q" キーを押すか、shiftキーを押しながらファイルメニューの「終了」を選択して下さい。この方法ではスクリプト属性の変更が正常に保存されてから終了します。システムレベルの強制終了では属性が保存されませんので、強制終了は行わないで下さい。
+註 2)
+この構文が正確であるかどうかは未確認です。
+例
+終了するとは
+本当に終了しますか?を表示する
+もし値の押されたボタン=OKならば
+終了するを続ける
+以上
+以上
+or
+on quit
+display dialog "本当に終了しますか?"
+if button returned of result is "OK" then
+continue quit
+end if
+end quit
+ハンドラのページに戻る
+AppleScriptのページに戻る
+このホームページに関するお問い合わせは、karino@drycarbon.comまで。
+AppleScript -- Handlers

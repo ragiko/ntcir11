@@ -1,0 +1,116 @@
+27pt
+これででました
+List lst = new ArrayList();
+lst.add("select * from test1;");
+lst.add("select * from test1 t1,test2;");
+lst.add("select * from test1 t1 ,test2 t2 where testId=1;");
+lst.add("select * from test1 ,test2 ORDER BY testId;");
+lst.add("select * from test1 as t1, test2 as t2;");
+for (int j = 0; j < lst.size(); j++) {
+String sVal = (String) lst.get(j);
+int iStart = sVal.toLowerCase().indexOf("from");
+String sTemp = sVal.substring(iStart+5);
+int iTemp = sTemp.indexOf(",");
+String sTemp1 = "";
+if (iTemp == -1) {
+sTemp1 = sTemp.substring(0);
+} else {
+sTemp1 = sTemp.substring(0, iTemp);
+}
+int iTemp1 = sTemp1.indexOf(" ");
+if ( iTemp1 == -1 || sTemp1.replaceAll(" ", "").length() == sTemp.substring(0, iTemp1).length()) {
+System.out.println(sVal);	
+}
+}
+27pt
+一度には無理そうなので、FROM句要素の抜出と、要素内の調査の二段階にしています。
+(動作確認用出力の部分は、それぞれの部分が何をやっているかという確認が済んだら削除してください。)
+import java.lang.*;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+class TableAlias {
+public static void main(String[] args) throws IOException {
+ArrayList List = new ArrayList(); // サンプルデータ準備
+List.add("select * from test1;");
+List.add("select * from test1 t1,test2;");
+List.add("select * from test1 t1 ,test2 t2 where testId=1;");
+List.add("select * from test1 ,test2 ,test3 ORDER BY testId;");
+List.add("select * from test1 as t1, test2 as t2;");
+String p1Str = "from\\s(.*?)(\\s+where|\\s+order|\\s*;)"; // FROM句要素抜出用パターン
+Pattern p1 = Pattern.compile(p1Str, Pattern.CASE_INSENSITIVE);
+String p2Str = "^\\s*[^\\s]+\\s+[^\\s]+"; // Alias存在確認用パターン
+Pattern p2 = Pattern.compile(p2Str, Pattern.CASE_INSENSITIVE);
+int ListCount = List.size(); // リスト件数
+for (int j = 0; j < ListCount; j++) { // FROM句要素の抜き出し
+System.out.println("\nSQL => " + List.get(j)); // 動作確認用出力(SQL全体)
+Matcher m1 = p1.matcher((String)List.get(j));
+if (m1.find()) {
+System.out.println("FROM => " + (String)m1.group(1)); // 動作確認用出力(FROM句要素全体)
+String[] E = m1.group(1).split(","); // FROM句要素分解
+int ECount = E.length; // FROM句要素数取得
+for (int k = 0; k < ECount; k++) { // FROM句要素抜出
+Matcher m2 = p2.matcher(E[k]);
+if (m2.find()) {
+System.out.println("Match!   " + List.get(j)); // AliasがあればSQLを出力してループ脱出
+break;
+}
+}
+}
+}
+}
+}
+分かりやすいコード書いて頂き、有難うございます。すごく勉強になりました。
+もう一つうかがいしてよろしいでしょうか、、
+例えば from句の 後ろに GROUP BY 、HABING BY 、INNER JOIN、
+LEFT JOIN 、RIGHT JOIN 、ON 、UNION などがあるときもテーブル別名が無いもが検出
+できますが?すみません こんな質問で、まだSQL文に対して詳しく知らない物で、、、
+よろしくお願いいたします。
+26pt
+「FROM句要素抜出用パターン」の部分に適宜追加してやることで対応しますが、
+SQL構文はRDBMS毎に構文が異なるため、それぞれに合わせて、
+「FROMの次に来るであろう予約語」を列挙しておく必要があります。
+havingはgroup byの次に来るものなので「FROMの次」には当てはまりません。
+String p1Str = "from\\s(.*?)(\\s+where|\\s+order|\\s*;)"; // FROM句要素抜出用パターン
+// MySQL向け
+String p1Str = "(from|join)\\s(.*?)"
++ "(\\s+inner|\\s+cross|\\s+natural|\\s+straight_join|\\s+left|\\s+right|\\s+on|\\s+using|\\s+where|\\s+group"
++ "|\\s+union|\\s+order|\\s+limit|\\s+procedure|\\s+for|\\s*;)";
+// PostgreSQL向け
+String p1Str = "(from|join)\\s(.*?)"
++ "(\\s+inner|\\s+cross|\\s+left|\\s+right|\\s+full|\\s+on|\\s+using|\\s+where|\\s+group"
++ "|\\s+window|\\s+union|\\s+intersect|\\s+except|\\s+order|\\s+limit|\\s+offset|\\s+fetch|\\s+for|\\s*;)";
+他にもORACLE、SQLServerなど、それぞれ異なりますが、
+RDBMS毎に違いがあるという点をしめしたかっただけなので、以上2点だけにします。
+※以上2点、簡易的動作テストしか行っておらず、考えうる全ての組み合わせに対応できるかどうか未確認。
+その他にも
+・FROM句が何度出てきても良いように繰り返し検索するように変更。
+・末尾が ; で終わってないと検索してくれない場合があるので修正。
+・別名があるものを抜き出したいのか(質問文の「出力したいのは2,3番目の行」、
+「テーブル別名を指定してある行を検索する事ができません」)、
+無いものを抜き出したいのか(質問文の「テーブル別名を指定してない行を検出したい」や、
+コメント文の「テーブル別名が無いも(の)」)判らなくなってきたので、
+どちらでも対応できるように変更。AliasCountとNoAliasCountの値で適宜対応してください。
+if (m1.find()) {
+中略
+}
+int AliasCount = 0; // Alias有の数
+int NoAliasCount = 0; // Alias無の数
+while (m1.find()) {
+System.out.println("FROM => " + (String)m1.group(1)); // 動作確認用出力(FROM句要素全体)
+String[] E = m1.group(1).split(","); // FROM句要素分解
+int ECount = E.length; // FROM句要素数取得
+for (int k = 0; k < ECount; k++) { // FROM句要素抜出
+Matcher m2 = p2.matcher(E[k]);
+if (m2.find()) {
+System.out.println("Element => " + E[k] + "有"); // 動作確認用出力
+AliasCount++;
+} else {
+System.out.println("Element => " + E[k] + "無"); // 動作確認用出力
+NoAliasCount++;
+}
+}
+}
+System.out.println("有" + AliasCount + ":無" + NoAliasCount + ":" + List.get(j));
+javaプログラムでテキストを一行ずつ読み込んでSQL文がある行を… - 人力検索はてな

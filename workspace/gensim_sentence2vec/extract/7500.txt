@@ -1,0 +1,65 @@
+ Mozcの辞書から言語モデルを復元する
+Google日本語入力のオープンソース版であるMozcは製品版には及ばないものの148万エントリ, 65MBの辞書がテキストで含まれていることはもっと知られても良いと思う.
+mozc -   Mozc - Japanese Input Method for Chromium OS, Android, Windows, Mac and Linux - Google Project Hosting 
+/ -  mozc -   Mozc - Japanese Input Method for Chromium OS, Android, Windows, Mac and Linux - Google Project Hosting 
+しかしながら,Mozcの辞書に含まれているコストはクラスバイグラムモデルでいうP(w|c)P(y|w)に対応するため,そのままでは元のコーパスで頻度の高い単語がどれなのかわかりづらい.なぜなら,条件部の品詞に稀な値が入っていると条件付き確率が大きくなりやすいという問題があるからだ.これに対し,連接コスト表(connection.txt)の左文脈がBOS/EOSであるエントリのコストを加えることで,品詞の頻度によるバイアスを取り除いて言語モデル(同時確率)を復元することができると考えられる.
+restore.py
+#!/usr/bin/env python
+#encoding: utf-8
+from optparse import OptionParser
+from math import log
+if __name__ == '__main__':
+#parse options
+parser = OptionParser()
+parser.add_option("-d", dest="dictionary", default="data/dictionary.txt")
+parser.add_option("-c", dest="connection", default="data/connection.txt")
+(options, args) = parser.parse_args()
+#load dictionary
+dictionary = []
+for line in open(options.dictionary):
+(pron, lid, rid, cost, surf) = line.strip().split("\t", 4)
+lid, rid, cost = int(lid), int(rid), int(cost)
+dictionary += [(pron, lid, rid, cost, surf)]
+#load connection
+file = open(options.connection)
+lsize, rsize = file.readline().strip().split(" ", 1)
+lsize, rsize = int(lsize), int(rsize)
+connection = [None] * rsize
+for line in file:
+(lid, rid, cost) = line.strip().split(" ", 2)
+lid, rid, cost = int(lid), int(rid), int(cost)
+if lid != 0:
+break
+connection[rid] = cost
+file.close()
+for pron, lid, rid, cost, surf in dictionary:
+total = cost + connection[lid]
+print "\t".join((pron, str(lid), str(rid), str(total), surf))
+実行結果
+この方法で同時確率(に対応するコスト)の値でソートした辞書の上位10件を示す.
+$ head sort.txt
+の      421     421     1609    の
+、      2625    2625    1781    、
+。      2622    2622    1832    。
+に      346     346     1896    に
+を      351     351     1917    を
+は      264     264     1956    は
+て      323     323     1960    て
+が      343     343     2054    が
+た      161     161     2096    た
+で      344     344     2259    で
+通常の単語頻度と同じく,助詞や句読点が多く含まれている.上から10,000件前後を見てみると,ちゃんと複合語も含まれていることが確認できる.
+$ head -10000 sort.txt |tail
+のぞむ  943     943     5745    望む
+ふれあい        887     887     5745    ふれあい
+へい    1945    1945    5745    兵
+ほうしゅつ      1857    1857    5745    放出
+よたばなし      1862    1944    5745    与太話
+あしもと        1862    1862    5746    足元
+ありなん        855     1586    5746    ありなん
+いりょうじこ    1862    1869    5746    医療事故
+おき    1862    1862    5746    お気
+かいそびれ      887     1310    5746    買いそびれ
+ツイートする
+Permalink | 21:48
+Mozcの辞書から言語モデルを復元する - Yoh Okunoの日記

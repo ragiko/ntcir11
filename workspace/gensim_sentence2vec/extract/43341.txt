@@ -1,0 +1,52 @@
+モナドってなんなんだろう
+私はHaskellが全体の0.1%くらい使えますが、モナドがいままでいまいちわからず、毎回あやふやにしてました。今回はそんな、モナドについていろいろ考えてみました。私自身、未だにモナドがわかってないので、間違いがありましたらお知らせください。
+モナド則ってなんなんだろう
+return x >>= f   ==  f x
+m >>= return     ==  m
+(m >>= f) >>= g  ==  m >>= (\x -> f x >>= g)
+私のようなC/C++/D言語などを使っているプログラマがモナド則を最初からみてもよくわからないので、次のように考えてみます。コードはD言語で書いていますが、もちろんすべて遅延評価されると思ってください。
+class Monad(T){
+///....
+@property T value(){...}
+}
+// return
+Monad!X Return(X)(X x){
+return Monad!X(x);
+}
+// m >>= f
+auto ShiftEq(M, F)(M m, F f){
+return f(m.value);
+}
+このように考えればモナド則は当然のことを言っているに過ぎないことがわかります。なぜなら、 1つ目:Return(x) はxを持ったMonad!Xオブジェクトなわけですから
+Monad!(X).ShiftEq(f)
+//
+f(Monad!(X).value)
+//
+f(x)
+2つ目:m を Monad!X(x) だと考えれば、
+Monad!X(x).ShiftEq(((X a) => Return(a)))
+//簡単化することによって
+((X a) => Return(a))(Monad!X(x).value)
+//もう一回簡単化
+Return(Monad!X(x).value)
+//さらにもう一回
+Return(x)
+//ダメ元でもう一回
+Monad!X(x)
+3つ目:左辺を変形します。
+(m >>= f) >>= g
+//
+m.ShiftEq(f).ShiftEq(g)
+//mをMonad!X(x)だと考えて
+f(x).ShiftEq(g)
+右辺からも進めてみます。
+m >>= (\x -> f x >>= g)
+//
+m.ShiftEq((X x) => f(x).ShitfEq(g))
+//mをMonad!X(x)だと考えて
+f(x).ShiftEq(g)
+両辺の変形が等しくなったので、両辺は等しいのです。なんだモナド則って怖くない
+遅延評価(+モナド) == Expression Templateではないのだろうか
+先程まではD言語のコードを書いといて「遅延評価だから」とか言ってましたが、以下からは遅延評価されません。普通のC++/Dだと思ってください。おどろくべきことにExpression Templateはモナド則をすべて満たします!(当然ですけど)では、先ほどのMonadクラスがExpression Templateであると考えます。Expression Templateは、「式を記憶している式」で、つまりC++/Dでの遅延評価の基盤となりえます。Expression Templateは、そいつが解決される(覚えた式が実行される)こと以外はすべてをpureな領域で実行可能です。モナドはpureな世界とimpure(副作用のある)な世界との結合だと考えれば、Expression Templateもそれと同じです。たとえばHaskellのgetLineはIO Stringを返しますが、D言語で考えればIOExpression!(string)を返していると考えればいいのです。(ただし、IOExpression!(string)はExpression!(string)を継承しています。)IOExpression!(string)がもし、stringに対するすべての演算を定義していて、その演算結果がすべてExpression!(...)を返すなら、IOExpression!(string)は遅延評価をうまく表現できているといえるでしょう。モナドの特徴に、評価順序がありますが、Expression Templateでもうまく書けます。ただ、めんどくさいことにD言語にはif文とかそういうのがあります。こいつらのことをExpression Templateは理解しませんから、理解してくれるif式が必要です。(条件演算子?:はダメです。こいつもExpression Templateは理解できません。もし?:演算子のオーバーロードがあるなら可能ですが。)さて、話がよくわからない方向に進んできたのでまとめます。・モナド則は実はかなり簡単で、私達(C++er/D言語er)からしてみても当然のこと。・Expression Templateはモナド則を満たしてしまう。・遅延評価もモナドも、実はExpression Templateでうまく表現できる。というかそのもの。・C/C++/Dとかでする場合は、if文とか文が辛いので、if式とfor式(または再帰)作ってがんばろう。では。
+Permalink | コメント(0) | トラックバック(0) | 22:06
+モナドってなんなんだろう - 覚書とかとか

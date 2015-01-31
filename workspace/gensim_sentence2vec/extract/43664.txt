@@ -1,0 +1,31 @@
+HTMLで画像を表示する場合、今まではimgタグに「width」、「height」を指定してました。
+画像サイズが決まっているものに関しては問題ないのですが、
+サイズが決まっていない画像を表示する場合は「width」・「height」を
+指定していると画像が元のサイズから拡大や縮小してしまい、
+きれいに表示されないことがあります。
+CSSの「max-width」、「max-height」を使用すると画像の幅・高さの
+最大値を指定することができるので拡大・縮小せずに画像を
+きれいに表示することができます。
+下記に「max-width」、「max-height」の使用方法をメモします。
+max-width
+幅の最大値を指定します。
+max-width: 100px;
+max-height
+高さの最大値を指定します。
+max-height: 100px;
+使用方法
+【CSS】
+div#hoge img {
+max-width: 300px;
+max-height: 300px;
+}
+【HTML】
+<div id="hoge">
+<img src="/img/hoge.jpg" />
+</div>
+上記の方法を使用すると「max-width」、「max-height」で指定したサイズより小さい場合は
+指定されません。
+最大値に設定したサイズを超えた場合、指定したサイズに縮小され表示されます。
+また、「min-width」、「min-height」を使用すれば、幅・高さの最小値を指定することができます。
+ツイート
+CSS:CSSで画像の幅・高さの最大値を指定する | raining

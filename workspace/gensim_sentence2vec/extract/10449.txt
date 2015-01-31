@@ -1,0 +1,164 @@
+ 
+Chapter1-6
+VBAの組み込み関数(文字列関数)
+ここでは、VBAで使われる代表的な「文字列」演算に関する組み込み関数を紹介します。イミディエイトウィンドウを使っていろいろ動作確認してみましょう。
+Len関数、LenB関数
+文字列の長さを求めます。
+?Len("あいうえお")
+5 
+?Len("MS-Access")
+9 
+?Len("AccessVBAの基礎")
+12 
+?LenB("あいうえお")
+10 
+?LenB("MS-Access")
+18 
+?LenB("AccessVBAの基礎")
+24 
+Len関数は半角も全角も1文字としてカウントします。一方、LenB関数は半角のバイト数でカウントします。しかしAccessの場合は、文字列はUnicodeとして扱われます。Unicodeでは半角も全角もすべて1文字=2バイトとしてカウントされるため、結果的にLen関数の2倍の値が返されます。
+Left$関数、Mid$関数、Right$関数
+それぞれ、文字列の左端から、指定位置から、右端から、指定文字数分を取り出します。 
+?Left$("ABCDEFGHIJKLMN", 4)
+ABCD
+?Mid$("ABCDEFGHIJKLMN", 3, 4)
+CDEF
+?Mid$("ABCDEFGHIJKLMN", 3)
+CDEFGHIJKLMN
+?Right$("ABCDEFGHIJKLMN", 3)
+LMN
+Mid$関数は、2番目の引数の位置から3番目の引数分の文字を取り出します。もし3番目の引数を省略したときは、2番目の引数の位置から後ろすべての文字が返されます(3つめの例)。
+文字列関係の関数には、「Left」関数のように"$"が付かない同名の関数もあります。機能は同じですが、返り値を明らかに文字列として操作する場合には、"$"を付けた方が多少高速に処理されます。
+InStr関数
+文字列内を検索して指定した文字の位置を取得します。
+?InStr("http://www.tsware.jp/", ":")
+5 
+?InStr("http://www.tsware.jp/", ".jp")
+18 
+?InStr("http://www.tsware.jp/", "com")
+0
+?Mid$("http://www.tsware.jp/", InStr("http://www.tsware.jp/",
+"//") + 2)
+www.tsware.jp/
+2番目の引数に検索する文字を指定します。
+指定文字として複数の文字(文字列)を指定した場合には、その先頭の文字の位置を返します。
+指定した文字が見つからない場合はゼロが返されます。これを利用することで、指定した文字が含まれているかいないかを判別することもできます。
+Instr関数で得られた位置とMid$関数を組み合わせて使うことによって、文字列の検索と取り出しといっしょに行なうこともできます。4つめの例では、URLから「//」より後ろの文字のみ取り出します。
+InStrRev関数
+文字列内を後ろから検索して指定した文字の位置を取得します。
+?InStrRev("ABCDEFGFEDCBA", "D")
+10
+?InStrRev("ABCDEFGFEDCBA", "B")
+12
+?InStr("ABCDEFGFEDCBA", "B")
+2
+この関数では、2番目に指定した文字を後ろから探していきますが、返される値は先頭からの文字位置になります。
+指定した文字が1つしかない場合、InStr関数とInStrRev関数は同じ値を返します。これを利用して、文字列内に指定文字が1つだけ存在しているかどうかを判別することができます。
+Replace関数
+文字列の一部を置換します。
+?Replace("AABBCCAABBCC", "BB", "##")
+AA##CCAA##CC
+?Replace("AABBCCAABBCC", "BB", "##", , 1)
+AA##CCAABBCC
+?Replace("AABBCCAABBCC", "AABBCCAABBCC", "####")
+####
+?Replace("AABBCCAABBCC", "BB", "bbbbb")
+AAbbbbbCCAAbbbbbCC
+この関数では、1番目の引数に元の文字列を、2番目に検索する文字列を、3番目に置換する文字列を指定します。
+1番目の例では、すべてのBBを##に置換します
+2番目の例では、最初のBBだけを##に置換します。5つ目の引数を指定した場合は、先頭から文字列が検索され、その回数だけ置換が行なわれます。
+3番目は、検索文字列より置換文字列の方が短い例です。
+4番目は、検索文字列より置換文字列の方が長い例です。
+UCase$関数、LCase$関数
+大文字/小文字を変換します。
+?UCase$("AbcDEfgHiJ")
+ABCDEFGHIJ
+?LCase$("AbcDEfgHiJ")
+abcdefghij
+LTrim$関数、RTrim$関数、Trim$関数
+それぞれ、文字列の左端、右端、両端のスペースを取り除きます 。
+?"*" & LTrim$(" 前後にスペース ") & "*"
+*前後にスペース *
+?"*" & RTrim$(" 前後にスペース ") & "*"
+* 前後にスペース*
+?"*" & Trim$(" 前後にスペース ") & "*"
+*前後にスペース*
+これらの関数では、文字列の途中にあるスペースは取り除かれません。
+Val関数
+文字列を数値に変換します。
+?Val("123") * 2
+246
+?Val("9 . 2 5") * 2
+18.5
+?Val("100inch")
+100
+?Val("長さ100inch")
+0
+2番目の例では、スペースは除かれた状態で数値化されます。
+3番目の例では、数字の後の文字は除外されて数値化されます。
+4番目の例では、数字の前に文字があるとゼロが返されます。
+String$関数
+同じ文字が連続した文字列を作ります。
+?String$(3, "A")
+AAA
+?String$(10, " ") & "*"
+*
+?String$(10, "ABC")
+AAAAAAAAAA
+1番目の引数に連続させる数を、また2番目にその文字を指定します。2番目の引数に複数の文字を指定しても、使われるのは先頭の1文字だけです。
+Format$関数
+文字列を書式化します。
+?Format$("ABCD", "@@@@@@@@") & "*"
+ABCD*
+?Format$("ABCD", "@@") & "*"
+ABCD*
+?Format$("ABCD", "!@@@@@@@@") & "*"
+ABCD *
+?Format$("ABCD", "&&&&&&&&")
+& "*"
+ABCD*
+文字列が「@」の数に満たない場合は、先頭にスペースが挿入され、その分の長さの文字列が返されます(1番目の例)。
+文字列が「@」の数より多い場合は、文字列がそのまま返されます(2番目の例)。
+3番目の例では、書式の先頭に「!」を付けることで、左詰めにされます。
+4番目の例では、書式に「&」を指定することで、「&」の位置に文字を配置します。その数に満たない分は左詰めされます。
+StrComp関数
+文字列を大文字/小文字を区別して比較します。
+?StrComp("ABCD", "abcd", vbBinaryCompare)
+-1
+?StrComp("abcd", "ABCD", vbBinaryCompare)
+1
+?StrComp("ABCD", "ABCD", vbBinaryCompare)
+0
+この関数では、返り値によって比較結果を3つに判別することができます。
+0  2つの文字列は等しい
+1  1番目の引数の文字列の方が、文字コードが大きい
+-1  2番目の引数の文字列の方が、文字コードが大きい
+大文字/小文字を区別する場合には、必ず3番目の引数に「vbBinaryCompare」という文字を指定します。
+大文字/小文字を区別しなくてよい場合は、この関数に代わって、一般的な比較演算子(後述)が使えます。
+StrConv関数
+文字列をさまざまな形式に変換します。
+?StrConv("アイウエオ", vbWide)
+アイウエオ
+?StrConv("全角カタカナ", vbNarrow)
+全角カタカナ
+?StrConv("カタカナ", vbHiragana)
+かたかな
+?StrConv("ひらがな", vbKatakana)
+ヒラガナ
+?StrConv("abcdefg", vbProperCase)
+Abcdefg
+?StrConv("abcDEfGh", vbUpperCase)
+ABCDEFGH
+?StrConv("abcDEfGh", vbLowerCase)
+abcdefgh
+1番目の引数に変換前の文字列を指定します。また2番目の引数に変換方法を指定します。変換方法には、あらかじめVBAが持っている下記組み込み定数を指定します。
+vbWide  半角カタカナを全角カタカナに変換
+vbNarrow  全角カタカナを半角カタカナに変換
+vbHiragana  カタカナをひらがなに変換
+vbKatakana  ひらがなをカタカナに変換
+vbProperCase  先頭の文字だけ大文字に変換
+vbUpperCase  大文字に変換
+vbLowerCase  小文字に変換
+| Index | Prev | Next |
+Copyright &copy; T'sWare All rights reserved
+■T'sWare AccessVBA徹底入門 Chapter1-6 〜VBAの組み込み関数(文字列関数)〜

@@ -1,0 +1,3 @@
+語音の明瞭度を上げる目的で子音のレベルを操作する信号処理手法は, 一般的に子音強調(Consonant Enhancement)と呼ばれている.子音強調に関する先行研究では, 複数の手がかりを並列的に利用して子音の検出を行っているため, その処理は非常に複雑であり, 実時間での処理は難しいと考えられる.そこで, 本研究では, 実時間での処理を視野に入れた従来よりも比較的処理の単純な子音検出アルゴリズムを提案する.
+Consonant enhancement processing has been developed in order to improve the discrimination between stop consonants. Such a system is often too complicated to run in real time since it uses various cues for consonant detection. We propose a far simpler system to detect and enhance consonants nearly in real time utilizing only time-domain process.
+

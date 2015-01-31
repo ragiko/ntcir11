@@ -1,0 +1,39 @@
+Ubuntu の MySQL の datadir は /var/lib/mysql です。これを別のディレクトリに変更して動かそうとするとエラーになります。
+# mkdir /hoge
+# mysql_install_db --datadir=/hoge
+Installing MySQL system tables...
+140614  8:57:23 [Warning] Can't create test file /hoge/hostname.lower-test
+140614  8:57:23 [Warning] Can't create test file /hoge/hostname.lower-test
+Installation of system tables failed!  Examine the logs in
+/hoge for more information.
+...
+これは AppArmor の設定で、mysqld に対して /hoge へのアクセスが許可されていないためです。
+# vi /etc/apparmor.d/local/usr.sbin.mysqld
+# Site-specific additions and overrides for usr.sbin.mysqld.
+# For more details, please see /etc/apparmor.d/local/README.
+/hoge/ r,
+/hoge/** rwk,
+# service apparmor reload
+* Reloading AppArmor profiles
+Skipping profile in /etc/apparmor.d/disable: usr.bin.firefox
+Skipping profile in /etc/apparmor.d/disable: usr.sbin.rsyslogd
+これで /hoge にデータベースを作ることができるようになりました。
+# mysql_install_db --datadir=/hoge
+Installing MySQL system tables...
+OK
+Filling help tables...
+OK
+...
+以下駄文
+テスト用に tmpfs 上にデータベースを作りたかったのにエラーになった。
+/tmp とか /var/tmp とかだとエラーにならないので、ディレクトリが異なるためじゃなくて、tmpfs のせいだと思い込んだ(実は AppArmor で /tmp, /var/tmp が許可されていた)。
+tmpfs の制限を調べても見つからない。
+当然 SELinux は真っ先に疑ったけど入ってなかった。
+Ubuntu の deb じゃなくて MySQL の公式バイナリを使用したらできた(これは /usr/sbin/mysqld じゃなくて /usr/local/mysql/bin/mysqld だったため)。
+システムコールトレースとってみたけど違いがわからない。
+deb ファイルのパッチ読んでみたけど怪しいところはなかった。
+Twitter でつぶやいてたら教えてもらえた。
+@tmtms /etc/apparmor.d/usr.sbin.mysqldのせいでは&mdash; hATrayflood (@hATrayflood) 2014, 6月 13
+AppArmor なんてものがあるのは知らなかった。SELinux がないと思って油断してた。
+解決
+Ubuntu の MySQL を標準以外のディレクトリで動かす - @tmtms のメモ

@@ -1,0 +1,592 @@
+このページは昔話...ではない。が、筆者にしてみれば「こんなんジョーシキ!」と思っていたテクニックを使ってみせたら、意外なことにビックリされたので、「こりゃ解説する価値があるか!?」となってしまったことがあるのである。
+そのテクニックは「バイナリ・サーチ」である。実は筆者がホント初心者だった遥か昔(大学生だった頃)、コレを教えて貰ってカンドーしちゃったことがあるのである。それ以降、「筆者の技」として結構愛用しているのだが、意外にコレ、使いでがあるんである。しかし...だ。最近のプログラマって言うと、ライブラリだ、クラスだ、フレームワークだ、という話には強くっても、この手の「アルゴリズムの技」には弱い...ってのが傾向である。で、しかも「バイナリ・サーチ」っていうと、基本技には違いないが、その前提となる「ソートされたデータに対してする」というタイプの問題が減っているということからか、レトロ・アルゴリズム化しているような気がする....しかし、コレは意外に使える用途があるんである。だからチョイと紹介してみよう。
+目次
+概説
+ライブラリルーチン bsearch(3)
+外部ファイルバイナリサーチ
+テキスト指向データの外部バイナリサーチ
+先頭データの検索
+レトロ・アルゴリズム(昔話)
+概説
+まあ、バイナリ・サーチってのは、「探査の技」である。例えば配列か何かから、求めるべきデータを見つけ出す、というタイプのものだから、昔話でも「線形サーチ(名前は大げさだが、要するに配列を順に見ていって、見つけるだけ)」の後に、「もしデータが順にソートされているんだったら、コレが使える!」という風に説明がされていたものだ。これの中心的なアルゴリズムはこんなものである。
+#include <stdio.h>
+/* 検索すべきデータの構造体定義 */
+struct Data {
+int key;
+char *value;
+};
+/* 検索すべきデータ
+キーによってソートされていることが条件! */
+struct Data data[] = {
+/* ただし空きがあって良い */
+{ 10, "No.10" },
+{ 11, "No.11" },
+{ 12, "No.12" },
+{ 13, "No.13" },
+{ 14, "No.14" },
+{ 15, "No.15" },
+{ 16, "No.16" },
+{ 17, "No.17" },
+{ 18, "No.18" },
+{ 19, "No.19" },
+{ 20, "No.20" },
+{ 21, "No.21" },
+{ 22, "No.22" },
+{ 23, "No.23" },
+{ 24, "No.24" },
+{ 25, "No.25" },
+{ 26, "No.26" },
+{ 27, "No.27" },
+{ 28, "No.28" },
+{ 29, "No.29" },
+/* 30番台は空きにしよう */
+{ 40, "No.40" },
+{ 41, "No.41" },
+{ 42, "No.42" },
+{ 43, "No.43" },
+{ 44, "No.44" },
+{ 45, "No.45" },
+{ 46, "No.46" },
+{ 47, "No.47" },
+{ 48, "No.48" },
+{ 49, "No.49" },
+};
+int main( int argc, char **argv ) {
+/* 最初は top は先頭-1, bottom は末尾+1 から始める */
+int top = -1;  
+int bottom = sizeof(data) / sizeof(struct Data) + 1;
+int mid = (top + bottom) / 2; /* 真中を取る */
+int find;
+if( argc > 1 ) {
+find = atoi(argv[1]);
+} else {
+fprintf( stderr, "bsearch <key>\n" );
+return 1;
+}
+/* 終了条件が重要! */
+while( bottom - top > 1 ) {
+if( data[mid].key == find ) {
+/* 見つかった! */
+printf( "found key=%d value=%s\n", find, data[mid].value );
+return 0;
+} else if( data[mid].key > find ) {
+/* 解は前半に */
+bottom = mid;
+} else {
+/* 解は後半に */
+top = mid;
+}
+/* 範囲を狭める */
+mid = (top + bottom) / 2;
+}
+/* 結局見つからなかった */
+printf( "key=%d is absent!\n", find );
+return 1;
+}
+...という格好のアルゴリズムだ。キモは「求める解のある範囲を半分に狭めていくこと」にある。top, bottom がどういう風に変化するか、を追っていくとこんなところだ。「()」内の数値は配列のインデックスである。
+% bsearch 28
+top=**(-1) mid=25(15) bottom=**(31)
+top=25(15) mid=43(23) bottom=**(31)
+top=25(15) mid=29(19) bottom=43(23)
+top=25(15) mid=27(17) bottom=29(19)
+top=27(17) mid=28(18) bottom=29(19)
+found key=28 value=No.28
+28 を見つける場合は、5ステップかかって見つけた。
+% bsearch 17
+top=**(-1) mid=25(15) bottom=**(31)
+top=**(-1) mid=17(7) bottom=25(15)
+found key=17 value=No.17
+17なら2ステップで済む。要するに「はさみうち」である。検索の範囲を順に半分、半分と狭めていくわけだから、最大必要なステップの数は、配列の数に対して、
+log2配列数  =(この場合) log230 = 4.90689059560852
+となって、5ステップあれば見つかることになる。計算量理論で言う「O(log n)」という目出度いアルゴリズムのわけである。だからたとえデータ量が倍になっても、たかが1ステップ増えるだけに過ぎない。バブルソートに対するクィックソートの立場に、このバイナリサーチは線形探査に対して立つわけだ。このステップ数は「見つからない」ケースも同様で、次のような感じになる。
+% bsearch 31
+top=**(-1) mid=25(15) bottom=**(31)
+top=25(15) mid=43(23) bottom=**(31)
+top=25(15) mid=29(19) bottom=43(23)
+top=29(19) mid=41(21) bottom=43(23)
+top=29(19) mid=40(20) bottom=41(21)
+key=31 is absent!
+勿論、配列の先頭より前、末尾より後のケースも正しく判定する。
+% bsearch  1
+top=**(-1) mid=25(15) bottom=**(31)
+top=**(-1) mid=17(7) bottom=25(15)
+top=**(-1) mid=13(3) bottom=17(7)
+top=**(-1) mid=11(1) bottom=13(3)
+top=**(-1) mid=10(0) bottom=11(1)
+key=1 is absent!
+% bsearch 50
+top=**(-1) mid=25(15) bottom=**(31)
+top=25(15) mid=43(23) bottom=**(31)
+top=43(23) mid=47(27) bottom=**(31)
+top=47(27) mid=49(29) bottom=**(31)
+top=49(29) mid=0(30) bottom=**(31)
+key=50 is absent!
+これがうまく判定されるのは、
+/* 最初は top は先頭-1, bottom は末尾+1 から始める */
+int top = -1;  
+int bottom = sizeof(data) / sizeof(struct Data) + 1;
+となっている、というのがコツなのである。
+ライブラリルーチン bsearch(3)
+まあ、このアルゴリズム自体、Cの標準ライブラリにも bsearch(3) の名前で入っていて、これを使えばさっきのソースはこんな感じだ。
+#include <stdio.h>
+#include <stdlib.h> /* bsearch は stdlib にある */
+struct Data {
+int key;
+char *value;
+};
+struct Data data[] = {
+/* データ内容は略 */
+};
+/* 比較ルーチン */
+int comp( const void *target, const void *array ) {
+/* 第1引数は bsearch の第1引数がそのまま渡り、
+第2引数には検索対象配列の個々の要素が渡る */
+struct Data *t = (struct Data *)target;
+struct Data *a = (struct Data *)array;
+if( t->key > a->key ) {
+return 1;
+} else if( t->key key ) {
+return -1;
+} else {
+return 0;
+}
+}
+int main( int argc, char **argv ) {
+int size = sizeof(data) / sizeof(struct Data);
+int find;
+struct Data target;
+struct Data *ret;
+if( argc > 1 ) {
+find = atoi(argv[1]);
+} else {
+return 1;
+}
+/* 検索対象のセット */
+target.key = find;
+/* ライブラリの呼び出し。 */
+ret = bsearch( &target, data, size, sizeof(struct Data), comp );
+/*             検索,    対象, 個数,   サイズ,            比較ルーチン */
+if( ret == NULL ) {
+printf( "key=%d is absent!\n", find );
+return 1;
+} else {
+printf( "found key=%d value=%s\n", find, ret->value );
+return 0;
+}
+}
+の要領である。しかし、このライブラリ、使ったことのない人の方が絶対多いだろう。同様なノリのライブラリである qsort(3) は使ったことがあってもね。まあ、この理由を考えてみれば...
+大きな「配列」というデータ構造を検索する機会が少ない。だってえ、マトモなプログラムだとリストで大きな構造を持たせるだろ。そっちの方が柔軟じゃん。
+ましてや「ソートされた配列」にお目にかかる機会はもっとない。いちいち検索のためにソートするなんて、時間の無駄だ。
+きっちり管理すべきデータなら、今時データベースを使うだろ。
+そうでなくても、ハッシュテーブルを使えば「効率的な探査」ができるじゃん。
+といったあたりが理由だろうな。ごもっとも。
+....だったら、このページって書く意味がホントない。そうではなくて、筆者がバイナリサーチを愛用するポイントはこっちだ。
+巨大なために、メモリにデータを展開したくないようなファイル上のデータを効率的に探査する!
+ということなのである。要するにソートでも「外部ソート」と言われるやり方があるように、バイナリサーチで「外部サーチ」をさせるためなのである。それこそ数十、数百メガバイト級のファイル上のデータを効率的に探査するための強烈な武器が、バイナリサーチなのである! だから、たかが配列しか扱えない、さっき紹介した stdlib の bsearch(3) なんぞお呼びじゃないわけだ。
+たとえば、こんなモノに対してバイナリサーチは使える。
+巨大な静的データ。これならあらかじめ一度ソートしておけばイイだけだ。検索のためだけにDBを導入...というのは「重すぎる!」と感じるケースもあるんじゃない? イマドキの我々だと「DBというものの恩恵」にずっぽりと浸っていて、「とにかくDBに入れときゃ追加も検索もしやすいし...」となるところだが、やっぱDBだって本質的にはファイルにデータを保存しているわけだ。決して「NeverNeverLand」にデータを魔法で保存しているわけではないんである....言い替えると「DBの性能の限界に挑むような巨大データ」ともなると、やはり検索は使い物にならないくらいに遅いに決まってる。だったらバイナリサーチを使いたまえ。
+本質的にソートされている巨大なデータ。...あれ?そんなものあるんだろうか..というと、重要なものがあるんである。それは「ログファイル」である。ログファイルは発生日時順にソートされている!(普通は「ソートされてる」とは言わんが...)ログファイルから「月×日のデータだけを集計する」というのをしたくなることがあるよね。けど数百メガのログファイルだったらどうやってその日のデータを見つけるんだろう??
+そう考えてみれば、レトロなバイナリサーチも「まだまだ使える!」んである。しかも、これは他の代替手段がない...わけで、下手にデータベースに入れて「DBの限界に挑む!」なんて無謀なことをせずに済む。仕掛けが単純な方が効率的に決まってるよな。
+外部ファイルバイナリサーチ
+とはいえ、キッチリこのバイナリサーチを使おうと思うと、いくつか応用技を使えないといけない。まあ、まず簡単にファイル上の固定サイズデータの検索を示そう。これは単に lseek(2) を使ってランダムアクセスするわけだ。
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/unistd.h>
+#include <stdlib.h>
+/* 1レコードは固定サイズ(8byte) */
+struct Data {
+long key;
+char value[4];
+};
+/* 「何個目」でデータを参照する */
+int get_data( FILE *fp, off_t at, struct Data *buf ) {
+off_t pos = at * sizeof(struct Data);
+if( fseek( fp, pos, SEEK_SET ) == 0 ) {
+if( fread( buf, sizeof(struct Data), 1, fp ) == 1 ) {
+return 0;
+} else {
+return -1;
+}
+} else {
+return -1;
+}
+}
+/* 全体個数を取得する */
+off_t get_size( FILE *fp ) {
+struct stat buf;
+if( fstat( fileno(fp), &buf ) == 0 ) {
+return buf.st_size;
+} else {
+fprintf( stderr, "failed to get stat infomation\n" );
+exit(1);
+}
+}
+int main( int argc, char **argv ) {
+off_t top, bottom, mid;
+long find;
+FILE *fp;
+if( argc  \n" );
+exit(1);
+}
+if( (fp = fopen( argv[1], "r" )) == NULL ) {
+fprintf( stderr, "cannot open %s\n", argv[1] );
+exit(1);
+}
+find = atol(argv[2]);
+top = (off_t)-1L;
+bottom = get_size(fp) / (off_t)sizeof(struct Data) + (off_t)1L;
+mid = (top + bottom) / (off_t)2L;
+while( bottom - top > (off_t)1L ) {
+struct Data data;
+if( get_data( fp, mid, &data ) == -1 ) {
+fprintf( stderr, "read error!!!" );
+exit(1);
+}
+if( data.key == find ) {
+printf( "found key=%ld value=%d\n", find, data.value[0] );
+fclose( fp );
+return 0;
+} else if( data.key > find ) {
+bottom = mid;
+} else {
+top = mid;
+}
+mid = (top + bottom) / (off_t)2L;
+}
+printf( "key=%ld is absent!\n", find );
+fclose( fp );
+return 1;
+}
+まあ、これは「参照の仕方」が変わるというだけのことだ。一気に参照できないので、「何個目」をオフセット位置に直して、そこへ seek してファイルを読む、という手順になるわけだ。念のために off_t というオフセット位置型で書いてあるが、慣れてなかったらこんなの long で充分だ。一応これをテストしたのが、131M byte のファイル(データ16,387,064件)だが、それでも検索は一瞬だ。「ファイルからいちいちデータを検索してたら遅いから...」という議論を良くするけど、データがメチャ大きくてもこの手を使えば、ほぼ検索コストをデータ件数に依存するというよりも固定コストとして考えることが出来てしまうのである!
+テキスト指向データの外部バイナリサーチ
+...しかし、このモデルだと、行指向の可変長データだとうまく行かないような....たとえば、「スパムで送られて来る From: アドレスのリスト」とか、「郵便番号住所対応表」とかがあって、これを検索する場合には1レコードの長さが決まらないので、上のやり方ではうまくいかない。が....ホントに静的なデータの場合だと、「行の始まりの位置をインデックス・データとして別に抽出し、検索をする時にはあらかじめ作っておいたインデックス・データを読んで、これをベースに seek する」というアプローチが考えられる。まあ、そうやってもイイのだが、「データを変更した時にはインデックス・データの更新もお忘れなく!」というのは一般に垢抜けない。ここは「一発」でうまく行く変形がないか?ということになる。
+要するに行指向の可変長データの場合、「真中」を seek しても、それが「行の途中」を示してしまうので、データ取得がうまく行かない、ということの結果であるに過ぎない。だったら、
+とにかく seek したら、その位置は「行の途中」であると考えて、1行読み捨てる
+で、バイナリサーチ自体は何の問題もない。この路線で実装すると....
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/unistd.h>
+#include <stdlib.h>
+#include <string.h>
+int get_data( FILE *fp, off_t pos, char *buf ) {
+char *p;
+if( fseek( fp, pos, SEEK_SET ) == 0 ) {
+/* ここは行の途中と前提し、 */
+do {
+fgets( buf, 1024, fp );
+p = &buf[strlen(buf) - 1];
+/* 末尾改行まで読み込み... */
+} while( *p != '\n' );
+/* さらに対象行を読み込んで返す */
+fgets( buf, 1024, fp );
+if( buf[strlen(buf) - 1] == '\n' ) {
+buf[strlen(buf) - 1] = '\0';
+}
+return 0;
+} else {
+return -1;
+}
+}
+off_t get_size( FILE *fp ) {
+struct stat buf;
+if( fstat( fileno(fp), &buf ) == 0 ) {
+return buf.st_size;
+} else {
+fprintf( stderr, "failed to get stat infomation\n" );
+exit(1);
+}
+}
+int main( int argc, char **argv ) {
+off_t top, bottom, mid;
+char *find;
+FILE *fp;
+if( argc  \n" );
+exit(1);
+}
+if( (fp = fopen( argv[1], "r" )) == NULL ) {
+fprintf( stderr, "cannot open %s\n", argv[1] );
+exit(1);
+}
+find = argv[2];
+/* 初期位置は何も考えず先頭/末尾 */    
+top = (off_t)-1L;
+bottom = get_size(fp) + (off_t)1L;
+mid = (top + bottom) / (off_t)2L;
+while( bottom - top > (off_t)1L ) {
+char data[1025];
+if( get_data( fp, mid, data ) == -1 ) {
+fprintf( stderr, "read error!!!" );
+exit(1);
+}
+int comp = strcmp( data, find );
+if( comp == 0 ) {
+printf( "found key=%s found=%s\n", find, data );
+fclose( fp );
+return 0;
+} else if( comp > 0 ) {
+bottom = mid;
+} else {
+top = mid;
+}
+mid = (top + bottom) / (off_t)2L;
+}
+printf( "key=%s is absent!\n", find );
+fclose( fp );
+return 1;
+}
+となるわけだ。とはいえ、これは厳密には正しく動かない....だってぇ、そりゃ先頭行が一致するわけないじゃん!(get_data() が先頭行を返すことはない...)だから、先頭データの取得のみ特別扱いして、
+int get_data( FILE *fp, off_t pos, char *buf ) {
+char *p;
+if( fseek( fp, pos, SEEK_SET ) == 0 ) {
+do {
+fgets( buf, 1024, fp );
+p = &buf[strlen(buf) - 1];
+if( pos == 0L ) {
+*p = '\0';
+return 0;
+}
+} while( *p != '\n' );
+fgets( buf, 1024, fp );
+if( buf[strlen(buf) - 1] == '\n' ) {
+buf[strlen(buf) - 1] = '\0';
+}
+return 0;
+} else {
+return -1;
+}
+}
+としてやるか、データの先頭に無効なデータを1行入れておくことで、「行途中かもしれないので空読みする!」が悪影響を及ぼさないようにできる。これで「不定長データだからぁ」と言っても、バイナリサーチを平気で使えるようになったわけだ。
+先頭データの検索
+さて、次はぐっと具体的な話だ。たとえばログファイルに対して、
+月×日のデータを検索したい!
+というケースだと、「月×日」のデータが複数行あるのは当然のことだ。だから、今までのロジックだと、
+月×日の途中のデータがサーチにひっかかって、それ以降しか取得出来ない....
+なんて馬鹿な目を見る。まあ、その「前日」のデータでサーチして、見つかったところから、線形サーチして先頭を見つける...などとしてもイイのだが、これはダサい。これについてはロジックで「先頭を見つける!」というのが出来てしまう。これをやってみよう。
+まあ、具体的なログファイルのフォーマットとして、Apache ログファイル風の日時を想定しておこうか。こんなものだ。
+127.0.0.4 - - [10/May/2006:11:53:31 +0900] "GET /~sug/soft/super/signal.htm HTTP/1.1" 200 -
+127.0.0.4 - - [28/May/2006:09:22:04 +0900] "GET /%7Esug/index.shtml HTTP/1.1" 200 5406
+127.0.0.4 - - [28/May/2006:09:22:06 +0900] "GET /%7Esug/css/style.css HTTP/1.1"200 1775
+だから、この日時を数値として取得するサブルーチンがまず準備だ。
+#include <time.h>
+#include <memory.h>
+time_t getDate2( char *p ) {
+int day, mon, year;
+struct tm tm;
+day = 0;
+for( ; *p && *p != '/'; p++ ) {
+day = day * 10 + *p - '0';
+}
+if( *p != '/' ) {
+return -1;
+}
+++p;
+if( strncmp( p, "Jan", 3 ) == 0 ) {
+mon = 0;
+} else if( strncmp( p, "Feb", 3 ) == 0 ) {
+mon = 1;
+} else if( strncmp( p, "Mar", 3 ) == 0 ) {
+mon = 2;
+} else if( strncmp( p, "Apr", 3 ) == 0 ) {
+mon = 3;
+} else if( strncmp( p, "May", 3 ) == 0 ) {
+mon = 4;
+} else if( strncmp( p, "Jun", 3 ) == 0 ) {
+mon = 5;
+} else if( strncmp( p, "Jul", 3 ) == 0 ) {
+mon = 6;
+} else if( strncmp( p, "Aug", 3 ) == 0 ) {
+mon = 7;
+} else if( strncmp( p, "Sep", 3 ) == 0 ) {
+mon = 8;
+} else if( strncmp( p, "Oct", 3 ) == 0 ) {
+mon = 9;
+} else if( strncmp( p, "Nov", 3 ) == 0 ) {
+mon = 10;
+} else if( strncmp( p, "Dec", 3 ) == 0 ) {
+mon = 11;
+} else {
+return -1;
+}
+p += 3;
+if( *p != '/' ) {
+return -1;
+}
+year = 0;
+for( ++p; *p && *p != ':'; p++ ) {
+year = year * 10 + *p - '0';
+}
+memset( &tm, 0, sizeof(struct tm) );
+tm.tm_year = year - 1900;
+tm.tm_mon = mon;
+tm.tm_mday = day;
+return mktime( &tm );
+}
+time_t getDate( char *s ) {
+char *p;
+for( p = s; *p && *p != '['; p++ );
+if( *p == '\0' ) {
+return -1;
+}
+return getDate2( ++p );
+}
+getDate(), getDate2() と2本立てになっているのは、単にファイルから読むケース(getDate())、引数を解釈する(getDate2())のインターフェイスであるに過ぎない。まあ、ここらへんこの「スーパーテクニック講座」はCで書く、というのが前提だから、こういうややこしい解析コードを書いてるけど、あなたが実装したい言語だと、もっと易しいやり方があるんでは...などとも思う。とにかくこれで time_t(実際には long)でログファイルと引数の日付を数値化できるわけである。
+じゃあ、問題のコードは今までのバイナリサーチのロジックを少し修正したものだ。
+/* 検索対象の日付を数値化してグローバル変数にセット */
+time_t keydate;
+/* 比較ルーチン */
+int compare( char *data ) {
+time_t d2 = getDate(data);
+if( d2 == -1 ) {
+/* C なのでこうしたが、例外を投げるのが良かろう。
+これは形式違反の他に、まだない日付を検索した(末尾を越える)場合、
+行が「壊れて」エラーするケースがありうる。だから、ここでは適当に大きな
+数を返すことにしよう。そのまま検索が進行し、ループが終了する。 */
+return 999;
+}
+if( keydate > d2 ) {
+return -1;
+} else if( keydate  \n" );
+exit(1);
+}
+if( (fp = fopen( argv[1], "r" )) == NULL ) {
+fprintf( stderr, "cannot open %s\n", argv[1] );
+exit(1);
+}
+/* 引数はあらかじめ数値化しておく */
+find = argv[2];
+keydate = getDate2( find );
+/* 初期値は変化なし */
+top = (off_t)-1L;
+bottom = get_size(fp) + (off_t)1L;
+mid = (top + bottom) / (off_t)2L;
+while( bottom - top > (off_t)1L ) {
+if( get_data( fp, mid, data ) == -1 ) {
+fprintf( stderr, "read error!!!" );
+exit(1);
+}
+/* 比較結果は今度は2つの状態だけで比較
+==0 の場合でもさらにサーチが進行し、while() 条件が不成立するまで
+続ける。 */
+int comp = compare( data );
+if( comp >= 0 ) {
+bottom = mid;
+} else {
+top = mid;
+}
+mid = (top + bottom) / (off_t)2L;
+}
+/* ここは必ず whle() 条件から抜けてくる。bottom = top + 1 である。
+この時の bottom が求める先頭である。 */
+if( get_data( fp, bottom, data ) == -1 ) {
+fprintf( stderr, "read error!!!" );
+exit(1);
+}
+/* とはいえ、求める日付がログファイルに存在してないかもしれない...
+チェックする。 */
+if( compare( data ) == 0 ) {
+printf( "key=%s found: data=%s\n", find, data );
+} else {
+printf( "key=%s cannot find\n", find );
+}
+fclose( fp );
+return 1;
+}
+まあ、ちょっとした応用編に過ぎない。要するに、top と bottom について、次の制約条件でループを回したわけである。
+top は常に、top bottom は常に bottom >= サーチ対象日付
+そうすれば、top + 1 == bottom になってループが抜ける位置が、「求める日付の先頭」ということになる。勿論、その日付がない場合は、「サーチ対象日付を越える最初のデータ」になるだけだ。だから、それをチェックすればいい。
+末尾を越える検索対象のケースでは、その途中で日付データが「壊れる」ので、そこでサーチを収束させてループを抜けさせている。まあ、これは単なる便法なので、Java とか C++ で書くんなら、例外を投げるべきだな。
+....という具合に、このバイナリサーチというテクニックは、プログラマ的には次のような特徴がある、ということになる。
+探査のコストを、データ数が増えるにつれて線形に増えるのではなくて、実質上「定額」に抑えることができる、という強烈なメリットがある。
+その適用分野は「巨大データファイルの探査」(勿論ソート済み)であり、これはしばしば現実的なプログラミングの場面で登場する。
+この「巨大データファイルの探査」は比較的ライブラリ化しにくい...あまり標準ライブラリではお目にかかったことがないな。だから、外部バイナリサーチはプログラマが自分で書き下ろすのが一番早い。
+...だったら、これってレトロ、とは言えないな!
+ということだ(結論)。ぜひぜひ御愛用召されよ。
+レトロ・アルゴリズム(昔話)
+余計な話だが、他の「レトロ・アルゴリズム」にどんなものがあるか...という昔話だ(苦笑)。その昔
+プログラミングという言葉 ≒ 「COBOL」という単語
+だった頃、というのは、プログラムで「ソートされたデータについてする」という処理が結構あったわけだ。それは要するに COBOL が言語仕様として、「シーケンシャルファイル」という一種のデータベース機能を備えていたことにある。言い替えると、シーケンシャルに1レコードづつ読み出して、何かする...という処理が、COBOL の基本中の基本だったことにある。
+で、そういう「シーケンシャルファイル」は当然何かのキーでソートされており、そのキーを目安にしてやるアルゴリズムがいろいろとあったわけだ。たとえばこんなものがある。
+1対1マッチング
+マスタファイルとトランザクションファイルを順に見ていって、トランザクションレコードのキーに対応するマスタレコードを見つけて、両者を一緒にして出力する。「1対1」だから、これはマスタのキーに対応するトランザクションレコードはないか1つだけだ。
+1対nマッチング
+1対1と同様だが、マスタレコードと対応するトランザクションレコードが複数あるかもしれないケース。「1対1」と「1対n」ではアルゴリズムの動作が大きく違う(コードは似てるが...)ので、初心者をイジめる大きなネタになる(ちょっと考えて御覧?)。
+コントロールブレーク
+同じキーのレコードが連続してあるデータファイルで、「同じキー」の範囲で集計を行う。これは「余計なループを一つ回す」というのがコツだ。
+まあ、ここらへんのアルゴリズムが「必須!」というかたちになっていたのは、要するに「シーケンシャルファイル」というデータが COBOL(というか古いコンピュータ全体)で非常に自然なデータ形式だった、ということである。昔のCOBOLプログラマっていうと、データを必要とするキーで整列させて(この仕様がCOBOLにあるので、簡単だ)、こういう処理をし倒して業務プログラムを書いていったわけである....
+がまあ、こういう「シーケンシャルファイルに対して何かする」という処理自体、今ではほとんど御縁がなくなってきている。そりゃデータベースで検索すれば、特にここらへんを意識しなくても、業務プログラムが書けちゃうわけだな。そういうこともあって、今挙げたようなアルゴリズムが必要となるケースって結構稀になりつつある(ソートする方がコスト高だもの...)のだが、知ってるとタマには便利かもしれないな。
+とはいえ、バイナリサーチだけは別だ。こっちはいまだに大きなメリットがある、というのは今示した通りだ。実際筆者は次のような用途で使った憶えがある。
+ログファイルの検索。要するにホームページのアクセスログを集計して、アクセス監視をするため。
+郵便番号から住所を検索する。まあ、これはデータベースを使ってもイイんだが、データベースを使わないケースだと、バイナリサーチでやるのが順当だ。
+日本で管理されている全IPアドレスについて、その「タイプ」を調査したデータベースから、「個々のIPアドレスのタイプが何か?」を検索する。これだとデータが巨大すぎてデータベースでのメンテが難しい。
+スパムメールの From: アドレスを記憶しておく。これもデータが馬鹿馬鹿しいくらいに大きくなる可能性がある。
+まあ、そう考えてみると、「バイナリサーチ」はまだまだ引退させるには惜しいアルゴリズムであるわけだ....
+さて、お楽しみ。レトロついでに COBOL のコードを書いて見せるので、笑ってやってくれたまえ。
+IDENTIFICATION	DIVISION.
+PROGRAM-ID.	SEARCH-SAMPLE.
+* 以上はプログラムの名前とか定義する部分。
+* 
+* 使うファイル(ってかこの場合データべースだと考えてOK)の指定
+* だから要するに IN-FILE が「シーケンシャルファイル」になるわけだ。
+ENVIRONMENT	DIVISION.
+INPUT-OUTPUT	SECTION.
+FILE-CONTROL.
+SELECT IN-FILE	ASSIGN "dbfile.dat".
+* 
+*  使うファイルのフォーマットの指定。要するに構造体みたいに定義する。
+DATA		DIVISION.
+FILE 		SECTION.
+FD	IN-FILE.
+01	IN-REC.
+05  THEKEY PIC 9(04).
+05  THEVALUE PIC X(60).
+* 
+*  変数定義
+WORKING-STORAGE SECTION.
+* 洒落た制御構造がないので、フラグでループ終了を判定する
+01	E-FLAG PIC X(01) VALUE LOW-VALUE.
+* 検索させるキー
+01	THESEARCH PIC 9(04) VALUE 3.
+* 
+*  ようやくプログラム本体
+PROCEDURE	DIVISION.
+SYORI.
+OPEN INPUT  IN-FILE
+* ループの開始(ループは PERFORM しかない)
+PERFORM UNTIL E-FLAG = HIGH-VALUE
+READ IN-FILE 
+AT END
+*               EOFになったら、フラグに異常値をセットしてそれで知らせる!
+MOVE HIGH-VALUE TO E-FLAG
+NOT AT END
+*               検索キーとの一致を調べる
+IF THEKEY = THESEARCH
+THEN
+*                 画面に表示させる
+DISPLAY THEVALUE
+END-IF
+END-READ 
+END-PERFORM
+CLOSE IN-FILE
+STOP RUN.
+で大体次のようなコードが実現できたことになる。
+#include <stdio.h>
+void main() {
+FILE *in_file = fopen( "dbfile.dat", "r" );
+struct in_rec {
+char thekey[4];
+char thevalue[60];
+} in_rec;
+char search[4] = "0003";
+while( fread( &in_rec, 64, 1, in_file) == 1 ) {
+if( strncmp( search, in_rec.thekey, 4 ) == 0 ) {
+fwrite( &in_rec.thevalue, 60, 1, stdout );
+printf( "\n" );
+}
+}
+fclose( in_file );
+}
+ちなみにデータはベタで書かれたものなわけだ....まあ、以上のソースを提供したのはネタのつもりである。決してマジメに受け取らないでほしい(笑)。
+とはいえ今でも tiny-cobol とか open-cobol とか、UNIX で使える COBOL 処理系ってあったりする...あたりが恐ろしいな。更に恐い話をすると、「元COBOLER」の再利用のために、「COBOL で書くCGI」(!)ってのがあるんだそうだ...(ちなみにそのページは「Open Source COBOL WEB Site」と題する「コボラードットコム」という希少価値なページである。「なぜ体育会系なのか?」というページがメチャ笑える)多分こんなホームページは COBOLER は見ないと思うけど、見たら怒る、かなぁ?(気が小さい)
+Super Technique 講座〜ザ・レトロ・アルゴリズム「バイナリサーチ」徹底解説!

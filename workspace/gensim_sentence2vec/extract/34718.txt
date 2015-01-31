@@ -1,0 +1,81 @@
+
+vector();
+vector(vector<Value>% right);
+vector(vector<Value>^ right);
+explicit vector(size_type count);
+vector(size_type count, value_type val);
+template<typename InIt>
+vector(InIt first, InIt last);
+vector(System::Collections::Generic::IEnumerable<Value>^ right);
+次のコンストラクターを見てください。
+vector();
+要素を持たない被制御シーケンスを初期化します。
+空の最初の被制御シーケンスを指定する場合に使用します。  
+次のコンストラクターを見てください。
+vector(vector<Value>% right);
+被制御シーケンスが [right.vector::begin (STL/CLR)(), right.vector::end (STL/CLR)()) というシーケンスで初期化されます。
+ベクター オブジェクト rightによって制御されるシーケンスのコピーである最初の被制御シーケンスを指定する場合に使用します。  
+次のコンストラクターを見てください。
+vector(vector<Value>^ right);
+被制御シーケンスが [right->vector::begin (STL/CLR)(), right->vector::end (STL/CLR)()) というシーケンスで初期化されます。
+ハンドルが rightであるベクトル オブジェクトによって制御されるシーケンスのコピーである最初の被制御シーケンスを指定する場合に使用します。  
+次のコンストラクターを見てください。
+explicit vector(size_type count);
+値 value_type()で count 要素との被制御シーケンスを個別に初期化します。
+既定値を持つ要素でコンテナーを塗りつぶすためにすべてを使用します。  
+次のコンストラクターを見てください。
+vector(size_type count, value_type val);
+値 valで count 要素との被制御シーケンスを個別に初期化します。
+同じ値を持つ要素でコンテナーを塗りつぶすためにすべてを使用します。  
+次のコンストラクターを見てください。
+template<typename InIt>
+vector(InIt first, InIt last);
+シーケンス [first,last)の被制御シーケンスを初期化します。
+別のシーケンスの被制御シーケンスのコピーを作成するために使用します。  
+次のコンストラクターを見てください。
+vector(System::Collections::Generic::IEnumerable<Value>^ right);
+列挙子が right指定したシーケンスの被制御シーケンスを初期化します。
+列挙子によって指定された別のシーケンスの被制御シーケンスのコピーを作成するために使用します。  
+// cliext_vector_construct.cpp 
+// compile with: /clr 
+#include <cliext/vector> 
+int main() 
+{ 
+// construct an empty container 
+cliext::vector<wchar_t> c1; 
+System::Console::WriteLine("size() = {0}", c1.size()); 
+// construct with a repetition of default values 
+cliext::vector<wchar_t> c2(3); 
+for each (wchar_t elem in c2) 
+System::Console::Write(" {0}", (int)elem); 
+System::Console::WriteLine(); 
+// construct with a repetition of values 
+cliext::vector<wchar_t> c3(6, L'x'); 
+for each (wchar_t elem in c3) 
+System::Console::Write(" {0}", elem); 
+System::Console::WriteLine(); 
+// construct with an iterator range 
+cliext::vector<wchar_t>::iterator it = c3.end(); 
+cliext::vector<wchar_t> c4(c3.begin(), --it); 
+for each (wchar_t elem in c4) 
+System::Console::Write(" {0}", elem); 
+System::Console::WriteLine(); 
+// construct with an enumeration 
+cliext::vector<wchar_t> c5(   // NOTE: cast is not needed 
+(System::Collections::Generic::IEnumerable<wchar_t>^)%c3); 
+for each (wchar_t elem in c5) 
+System::Console::Write(" {0}", elem); 
+System::Console::WriteLine(); 
+// construct by copying another container 
+cliext::vector<wchar_t> c7(c3); 
+for each (wchar_t elem in c7) 
+System::Console::Write(" {0}", elem); 
+System::Console::WriteLine(); 
+// construct by copying a container handle 
+cliext::vector<wchar_t> c8(%c3); 
+for each (wchar_t elem in c8) 
+System::Console::Write(" {0}", elem); 
+System::Console::WriteLine(); 
+return (0); 
+} 
+vector::vector (STL/CLR)

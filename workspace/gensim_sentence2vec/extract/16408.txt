@@ -1,0 +1,133 @@
+
+組込み可能な時系列予測ライブラリ
+NAG数値計算ライブラリでは時系列解析を行うための
+各種アルゴリズム(サブルーチン)が提供されています。
+NAG数値計算ライブラリはC/C++, Java, VB, VBA(Excel), MATLAB&reg;(Toolboxとして)など様々な環境からご利用いただけます。またWindows, Linux, MAC OS-X, Solarisなど様々なOS、コンパイラをサポートします。 NAGライブラリについての詳細はこちらをご参照下さい。
+NAGが提供する時系列解析機能
+単変量時系列解析
+指数平滑法
+単純、ブラウン、ホルト線形、ホルトウィンタース(乗法及び加法)。
+時系列データ変換
+観察値の分散が一定でない場合などに必要なデータ変換を行います。
+時系列データの差分
+線形トレンドや固定季節パターンを取り去ります。
+自己相関関数
+ACF(autocorrelation function)
+偏自己相関
+PACF(Partialautocorrelation function) 
+ARIMAモデル
+ARIMAモデルの推定と予測が可能です。
+ARMAモデル
+ARMAモデルの推定と予測が可能です。
+単変量スペクトル分析
+遅延窓によるスペクトルスムージング
+直接的なスペクトルスムージング
+時系列間の線形遅延関係
+伝達関数モデル
+相互相関
+ARIMAモデルによる前処理
+多入力モデル
+多入力モデルの推定と予測が可能です
+伝達関数モデルフィルタリング
+多変量時系列解析
+多変量時系列の変換及び差分
+多変量時系列のモデル推定
+VARMAモデル
+VARMAモデルによる推定と予測が可能です
+カルマンフィルター
+カルマンフィルターのモデル推定および予測が可能です
+GARCHモデル
+ARCHモデルとその一般化
+GARCHモデルの推定
+時系列解析関数一覧
+nag_tsa_diff
+一変量時系列, 季節及び非季節階差
+nag_tsa_auto_corr
+一変量時系列, 標本自己相関関数
+nag_tsa_auto_corr_part
+一変量時系列, 自己相関から偏自己相関
+nag_tsa_resid_corr
+一変量時系列, 残差の診断, g13aec または g13afcに従う
+nag_tsa_mean_range
+範囲または標準偏差平均プロットに対して必要となる量の計算
+nag_tsa_arma_filter
+多変量時系列, 自己回帰和分移動平均モデルによるフィルタ(プレ・ホワイトニング)
+nag_tsa_transf_filter
+多変量時系列, 伝達関数モデルによるフィルタ
+nag_tsa_cross_corr
+多変量時系列, 相互相関
+nag_tsa_transf_prelim_fit
+多変量時系列, 伝達関数モデルの予備推定
+nag_tsa_multi_inp_model_estim
+多変量時系列, 多入力モデルの推定
+nag_tsa_multi_inp_update
+多変量時系列, 多入力モデルから予測に対する状態集合の更新
+nag_tsa_multi_inp_model_forecast
+多変量時系列, 完全に特定化した多入力モデルからの状態集合と予測
+nag_tsa_options_init
+オプション設定の初期化
+nag_tsa_transf_orders
+伝達関数モデルのパラメータ構造体の割り当て
+nag_tsa_trans_free
+伝達関数モデルのパラメータ構造体の開放
+nag_tsa_spectrum_univar_cov
+一変量時系列, 方形, バートレット, テューキー, パルゼンのラグ・ウィンドウを用いた平滑化標本スペクトル
+nag_tsa_spectrum_univar
+一変量時系列, 台形周波数(ダニエル)ウィンドウにより平滑化したスペクトルを用いた平滑化標本スペクトル
+nag_tsa_spectrum_bivar_cov
+多変量時系列, 方形, バートレット, テューキー, パルゼンのラグ・ウィンドウを用いた平滑化標本相互スペクトル
+nag_tsa_spectrum_bivar
+多変量時系列, 台形周波数(ダニエル)ウィンドウにより平滑化したスペクトルを用いた平滑化標本相互スペクトル
+nag_tsa_cross_spectrum_bivar
+多変量時系列, 相互振幅スペクトル, 二乗コヒーレンシー, 限定, 1変量と2変量(相互)スペクトル
+nag_tsa_gain_phase_bivar
+多変量時系列, ゲイン, 位相, 限定, 1変量と2変量(相互)スペクトル
+nag_tsa_varma_estimate
+多変量時系列, VARMAモデルによる予測
+nag_tsa_varma_forecast
+多変量時系列, 予測とその標準誤差
+nag_tsa_varma_update
+多変量時系列, 予測とその標準誤差の更新
+nag_tsa_varma_diagnostic
+多変量時系列, 残差の診断, G13DCFに従う
+nag_tsa_noise_spectrum_bivar
+多変量時系列, 雑音スペクトル, 限定, 衝撃応答関数とその標準誤差
+nag_tsa_multi_auto_corr_part
+多変量時系列, 多重二乗偏相関
+nag_tsa_multi_diff
+多変量時系列, 階差及び/または変換(g13dccの前に使う)
+nag_tsa_multi_cross_corr
+多変量時系列, 標本相互相関または相互共分散行列
+nag_tsa_multi_part_lag_corr
+多変量時系列, 標本偏ラグ相関行列, カイ二乗統計量と有意水準
+nag_tsa_multi_part_regsn
+多変量時系列, 偏自己回帰行列
+nag_tsa_arma_roots
+ベクトル自己回帰(または移動平均)演算子の根の計算
+nag_kalman_sqrt_filt_cov_var
+測定と時間更新の組み合わせ, カルマン・フィルタの1回の繰り返し, 時間変化, 平方根共分散フィルタ
+nag_kalman_sqrt_filt_cov_invar
+測定と時間更新の組み合わせ, カルマン・フィルタの1回の繰り返し, 時間不変, 平方根共分散フィルタ
+nag_kalman_sqrt_filt_info_var
+測定と時間更新の組み合わせ, カルマン・フィルタの1回の繰り返し, 時間変化, 平方根フィルタ
+nag_kalman_sqrt_filt_info_invar
+測定と時間更新の組み合わせ, カルマン・フィルタの1回の繰り返し, 時間不変, 平方根フィルタ
+nag_trans_hessenberg_observer
+(A,C)をHessengerg形式にユニタリ変換
+nag_trans_hessenberg_controller
+(A,C)をHessengerg形式にユニタリ変換
+nag_estimate_agarchI
+一変量時系列, 対称GARCHプロセス又は (εt-1 +   γ)2形式で非対称なGARCHプロセスパラメータ推定
+nag_forecast_agarchI
+一変量時系列, 対称GARCHプロセス又は (εt-1 +   γ)2形式で非対称なGARCHプロセス予測関数
+nag_estimate_agarchII
+一変量時系列, (|εt-1| + γ εt-1)2   形式で非対称なGARCHプロセスパラメータ推定
+nag_forecast_agarchII
+一変量時系列, (|εt-1| + γ εt-1)2   形式で非対称なGARCHプロセス予測関数
+nag_estimate_garchGJR
+一変量時系列, 非対称なGJR GARCHプロセスパラメータ推定
+nag_forecast_garchGJR
+一変量時系列, 非対称なGJR GARCHプロセス予測関数
+nag_tsa_free
+g13オプション設定で使用するメモリの開放
+時系列解析(予測)・ARIMA、指数平滑化の計算 - NAGライブラリで解く

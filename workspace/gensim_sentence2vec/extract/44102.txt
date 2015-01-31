@@ -1,0 +1,69 @@
+このシリーズ記事、教師なし学習をあらかたやったので*1もういいかなと思ってたんですが、ひょんなことから取り上げ忘れてたものがあったなぁと思い出したのでサクッとやってみようと思います。
+忘れていたのはAdaBoost。普段はほとんど使わないブースティング系手法なんですが、CV系の人たちだとOpenCVにも実装されているHaar-like face detectorのアルゴリズムとして知っているという人も多いかと思います。実は僕も一時期PythonバインディングでOpenCVをいじってたことがあり、その時にHaar-like特徴のカスケード識別関数を使ったデフォルトの顔認識で色々遊んでいたので、AdaBoostの名前も知っていたのでした。
+第3回 オブジェクト検出してみよう
+調べてみたら、やっぱりこういう記事があるのだと知りました。ぶっちゃけこのリンク先の記事読んでいただければ説明は要らないと思うんですが(笑)、それでは決定境界描いてみるみたいな話はできないということで、ちょっと暇潰しも兼ねてやってみようと思います。
+まずRでどんなものか見てみる
+これまでと同様にGitHubに置いてある以前のサンプルデータを使いましょう。すっかりお馴染み、コンバージョン(CV)に効くアクション(a1-a7)を探り出そうというテーマで用意されたデータです。dという名前でインポートしておきます。
+> install.packages("ada")
+> library(ada)
+> d.ada<-ada(cv~.,d,iter = 20)
+> summary(d.ada)
+Call:
+ada(cv ~ ., data = d, iter = 20)
+Loss: exponential Method: discrete   Iteration: 20 
+Training Results
+Accuracy: 0.94 Kappa: 0.879
+> d.ada.pred<-predict(d.ada,newdata=d[,-8],type='vector')
+> table(d$cv,d.ada.pred)
+d.ada.pred
+No  Yes
+No  1402   98
+Yes   83 1417
+> (98+83)/3000
+[1] 0.06033333
+# 正答率94%ですね
+ということで、性能的にはまずまずと言ったところでしょうか。94%であればSVMとかランダムフォレストとどっこいぐらいなので、結構有望だと個人的には思います。
+AdaBoostとは何ぞや
+ランダムフォレストの記事の際にアンサンブル学習の1形態としてバギング(bagging)の話題をしたと思うんですが、AdaBoostは別の形態であるブースティング(boosting)の代表例です。『Rによるデータサイエンス』著者の金明哲先生のサイト(下記)によれば、
+Rと集団学習
+ブースティング(boosting)は、与えた教師付きデータを用いて学習を行い、その学習結果を踏まえて逐次に重みの調整を繰り返すことで複数の学習結果を求め、その結果を統合・組み合わせ、精度を向上させる。
+とあります。これはWikipediaの説明にもある通りで、要はただのアンサンブル学習というだけでなく、弱学習器の逐次学習結果をフィードバックさせてよりパフォーマンスを向上させるということなんですね。引き続き金明哲先生のサイトからAdaBoostのアルゴリズム概要を引用すると、
+重みの初期値を生成する。
+学習を行い重みの更新を繰り返す(t=1,2,・・・,T)。
+重みを用いて弱学習器の式を構築する。
+誤り率を計算する。
+結果の信頼度を計算する。
+重みを更新する。
+重み付き多数決で結果を出力する。
+というものになっています。基本的にはこれを弱学習器を選びながら行うというのがAdaBoostという手法であると思って良さそうです。ちなみに{ada}パッケージでは決定木を弱学習器として選択していて、基本的には{rpart}を依存パッケージとして動くようになっています。
+なお、AdaBoostにはDiscrete AdaBoost, Real AdaBoost, Gentle AdaBoostなどのタイプ別があり、{ada}パッケージではデフォルトで"discrete"が用いられるようになっているようです。
+決定境界を描いてみる
+では、これまでのやり方に倣ってシンプルXORパターンと複雑XORパターンとで決定境界の描画をやってみましょう。以前同様にxors, xorcという名前でインポートしておいて、以下のようにR上でやります。ただし。。。ada関数に謎挙動があるので、これまでとやや違う小細工が必要なのでそこだけご注意を。
+> xors <- read.table("xor_simple.txt", header=TRUE, quote="\"")
+> xorc <- read.table("xor_complex.txt", header=TRUE, quote="\"")
+# データで読み込む
+> xors$label<-as.factor(xors$label-1)
+> xorc$label<-as.factor(xorc$label-1)
+# 一応念のため学習ラベルをfactor型に直す
+> px<-seq(-4,4,0.03)
+> py<-seq(-4,4,0.03)
+> pgrid<-expand.grid(px,py)
+# 決定境界描画用のグリッドを作る
+> names(pgrid)<-c("x","y.1")
+# ここがポイント!
+# 何故か{ada}パッケージは内部的にこのように説明変数名を書き換えてしまうらしいので、
+# その名前に合わせておく。さもないとエラーになることが分かってます
+> xors.ada<-ada(label~.,xors,iter=20)
+> xors.ada.prd<-predict(xors.ada,newdata=pgrid,type='vector')
+> plot(xors[,-3],col=c(rep('red',50),rep('blue',50)),pch=19,cex=3,xlim=c(-4,4),ylim=c(-4,4))
+> par(new=T)
+> contour(px,py,array(xors.ada.prd,dim=c(length(px),length(py))),xlim=c(-4,4),ylim=c(-4,4),col="purple",lwd=3,drawlabels=F)
+> xorc.ada<-ada(label~.,xorc,iter=20)
+> xorc.ada.prd<-predict(xorc.ada,newdata=pgrid,type='vector')
+> plot(xorc[,-3],col=c(rep('red',50),rep('blue',50)),pch=19,cex=3,xlim=c(-4,4),ylim=c(-4,4))
+> par(new=T)
+> contour(px,py,array(xorc.ada.prd,dim=c(length(px),length(py))),xlim=c(-4,4),ylim=c(-4,4),col="purple",lwd=3,drawlabels=F)
+シンプルパターンと、複雑パターンの決定境界。これを見るに、普段は決定木としての振る舞いが顕著なんですが、複雑な学習データになると決定木そのものよりもやや汎化が強めに働くということが窺えます(参照:パッケージユーザーのための機械学習(1)：決定木 - 銀座で働くData Scientistのブログ)。
+なお、以上の例ではtype = "discrete"(デフォルト)としていますが、これを"real", "gentle"に変えると複雑パターンの方でちょっと決定境界が変わるようなので参考までに載せておきます。
+"real"の場合と、"gentle"の場合。ほんの僅かな差異ですが、"discrete"に比べて"real"はよりシンプルな決定境界を描くようになっている一方で、"gentle"は真の決定境界(四象限の境界線)に近い決定境界を描いているように見えます。もしかしたらこの辺に3つのAdaBoostの差異が反映されている?のかもしれませんね。
+パッケージユーザーのための機械学習(11):番外編 - AdaBoost - 銀座で働くData Scientistのブログ

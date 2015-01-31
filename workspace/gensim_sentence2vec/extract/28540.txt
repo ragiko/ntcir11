@@ -1,0 +1,2 @@
+ ユーザーの手書き文字は人によって大きな違いがあるため、手書き認識エンジンは、手書き文字をユーザーが意図したものとは別のテキストに変換することがあります。InkAnalyzer がストローク コレクションに分析を実行すると、InkAnalyzer は手書き文字が表す可能性が最も高い単語セットを検索します。さらに、InkAnalyzer は AnalysisAlternateCollection に格納される認識の一致候補セットも検索します。ユーザーが認識の候補を活用するためには、ユーザーが正しい AnalysisAlternate を選択できるユーザー インターフェイスを作成する必要があります。  AnalysisAlternate オブジェクトは、通常 InkAnalyzer.GetAlternates メソッドを使用して取得されます。コレクション内の最初の AnalysisAlternate オブジェクトは、InkAnalyzer が最も可能性が高い候補と見なしたオブジェクトです。
+AnalysisAlternate クラス (Microsoft.Ink)

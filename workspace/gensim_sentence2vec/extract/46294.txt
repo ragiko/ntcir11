@@ -1,0 +1,31 @@
+
+B Server ManagerからSQL*Plusへの移行
+この付録では、Server Managerのラインモード・スクリプトをSQL*Plusで動作させるための変更処理について説明します。Server Managerは、Oracle9i リリース1(9.0.1) 以上ではサポートされていません。Server Managerラインモードを使用してSQLスクリプトを実行している場合は、SQL*Plusと互換性を持たせるために、これらのスクリプトを変更し、SQL*Plusを使用して実行する必要があります。
+この付録では、次の項目について説明します。
+起動の違い
+コマンド
+構文の違い
+起動の違い
+Server ManagerとSQL*Plusを起動する方法は異なります。SQLスクリプトを変更し、SQL*Plusを正しく起動する必要があります。次の項では起動の違いを説明し、SQL*Plusを起動するためのオプションについて説明します。
+Server Managerの起動
+Server Managerを起動するには、システム・プロンプトでServer Managerのプログラム名を入力します。このプログラム名はオペレーティング・システム固有です。Server Manager起動後、次の例のようにCONNECTコマンドを使用して接続します。
+CONNECT hr/hr
+SQL*Plusの起動
+次の項では、SQL*Plusを起動する様々な方法について説明します。
+NOLOGオプションを使用したSQL*Plusの起動
+SQL*PlusをServer Managerと同様に動作させるには、SQL*Plus起動時に次のようにNOLOGオプションを使用します。
+sqlplus /nolog
+SQL*Plusが起動し、CONNECTコマンドを使用してユーザーとして接続できます。
+接続情報を使用したSQL*Plusの起動
+SQL*Plusを起動する他の方法として、プログラム起動時に接続情報を入力する方法があります。たとえば、SQL*Plusを起動し、パスワードhrを持つユーザーhrとして接続するには、次のとおり入力します。
+sqlplus hr/hr
+SQL*Plusが起動し、ユーザーhrとして接続します。
+オプションまたは接続情報なしのSQL*Plusの起動
+オプションまたは接続情報なしでSQL*Plusを起動するには、次のように入力します。
+sqlplus
+ユーザー名およびパスワードを入力するプロンプトが表示されます。有効なユーザー名およびパスワードを入力すると、SQL*Plusが起動し、プロンプトで指定したユーザーとして接続します。ただし、SQLスクリプトで、ユーザー名およびパスワードの入力を省略することもできます。
+コマンド
+Server ManagerとSQL*Plusは、両方のプログラムで同じ処理を行う特定のコマンドを共有しています。ただし、Server Managerでの処理とSQL*Plusでの処理が異なるコマンドもあります。Server ManagerからSQL*Plusへの移行を正常に行うには、このような違いおよび類似点を理解する必要があります。次の項では、SQL*Plusによって正しく解釈されるコマンドを使用するためのSQLスクリプトの変更について説明します。
+SQL*Plusリリース8.1で導入されたコマンド
+表B-1に、SQL*Plusリリース8.1以上で使用可能なServer Managerコマンドを示します。SQL*Plusで実行しているSQLスクリプトで、これらのコマンドを使用できます。
+Server ManagerからSQL*Plusへの移行

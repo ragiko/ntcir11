@@ -1,0 +1,225 @@
+
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要:  入れ子 | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+org.seasar.extension.jdbc.gen.model
+クラス DdlModel
+java.lang.Object
+org.seasar.extension.jdbc.gen.model.GeneratedModel
+org.seasar.extension.jdbc.gen.model.DdlModel
+直系の既知のサブクラス:  TableModel
+public abstract class DdlModelextends GeneratedModel
+DDLのモデルです。
+作成者:
+taedium
+フィールドの概要
+protected  java.lang.String
+canonicalTableName
+テーブル標準名
+protected  char
+delimiter
+SQLステートメントの区切り文字
+protected  GenDialect
+dialect
+方言
+protected  java.lang.String
+name
+名前
+protected  SqlIdentifierCaseType
+sqlIdentifierCaseType
+SQLの識別子の大文字小文字を変換するかどうかを示す列挙型
+protected  SqlKeywordCaseType
+sqlKeywordCaseType
+SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型
+protected  boolean
+useComment
+コメントを使用する場合true
+クラス org.seasar.extension.jdbc.gen.model.GeneratedModel から継承されたフィールド
+generatedInfoList
+コンストラクタの概要
+DdlModel()
+メソッドの概要
+java.lang.String
+getCanonicalTableName()
+標準のテーブル名を返します。
+char
+getDelimiter()
+SQLステートメントの区切り文字を返します。
+GenDialect
+getDialect()
+方言を返します。
+java.lang.String
+getName()
+名前を返します。
+SqlIdentifierCaseType
+getSqlIdentifierCaseType()
+SQLの識別子の大文字小文字を変換するかどうかを示す列挙型を返します。
+SqlKeywordCaseType
+getSqlKeywordCaseType()
+SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型を返します。
+java.lang.String
+identifier(java.lang.String identifier)
+識別子の大文字小文字を変換します。
+boolean
+isCommentInCreateTableSupported()
+CREATE TABLEでコメントを出力する場合true
+boolean
+isCommentOnSupported()
+COMMENT ONを出力する場合trueを返します。
+boolean
+isUseComment()
+コメントを使用する場合trueを返します。
+java.lang.String
+keyword(java.lang.String keyword)
+キーワードの大文字小文字を変換します。
+void
+setCanonicalTableName(java.lang.String tableCanonicalName)
+標準のテーブル名を設定します。
+void
+setDelimiter(char delimiter)
+SQLステートメントの区切り文字
+void
+setDialect(GenDialect dialect)
+方言を設定します。
+void
+setName(java.lang.String name)
+名前を設定します。
+void
+setSqlIdentifierCaseType(SqlIdentifierCaseType sqlIdentifierCaseType)
+SQLの識別子の大文字小文字を変換するかどうかを示す列挙型を設定します
+void
+setSqlKeywordCaseType(SqlKeywordCaseType sqlKeywordCaseType)
+SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型を設定します。
+void
+setUseComment(boolean useComment)
+コメントを使用する場合trueを設定します。
+クラス org.seasar.extension.jdbc.gen.model.GeneratedModel から継承されたメソッド
+addGeneratedInfo, getGeneratedInfoList
+クラス java.lang.Object から継承されたメソッド
+clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait
+フィールドの詳細
+canonicalTableName
+protected java.lang.String canonicalTableName
+テーブル標準名
+name
+protected java.lang.String name
+名前
+dialect
+protected GenDialect dialect
+方言
+delimiter
+protected char delimiter
+SQLステートメントの区切り文字
+sqlKeywordCaseType
+protected SqlKeywordCaseType sqlKeywordCaseType
+SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型
+sqlIdentifierCaseType
+protected SqlIdentifierCaseType sqlIdentifierCaseType
+SQLの識別子の大文字小文字を変換するかどうかを示す列挙型
+useComment
+protected boolean useComment
+コメントを使用する場合true
+コンストラクタの詳細
+public DdlModel()
+メソッドの詳細
+getCanonicalTableName
+public java.lang.String getCanonicalTableName()
+標準のテーブル名を返します。
+戻り値:テーブル標準名
+setCanonicalTableName
+public void setCanonicalTableName(java.lang.String tableCanonicalName)
+標準のテーブル名を設定します。
+パラメータ:tableCanonicalName - テーブル標準名
+getName
+public java.lang.String getName()
+名前を返します。
+戻り値:名前
+setName
+public void setName(java.lang.String name)
+名前を設定します。
+パラメータ:name - 名前
+getDialect
+public GenDialect getDialect()
+方言を返します。
+戻り値:方言
+setDialect
+public void setDialect(GenDialect dialect)
+方言を設定します。
+パラメータ:dialect - 方言
+getDelimiter
+public char getDelimiter()
+SQLステートメントの区切り文字を返します。
+戻り値:SQLステートメントの区切り文字
+setDelimiter
+public void setDelimiter(char delimiter)
+SQLステートメントの区切り文字
+パラメータ:delimiter - SQLステートメントの区切り文字を設定します。
+getSqlKeywordCaseType
+public SqlKeywordCaseType getSqlKeywordCaseType()
+SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型を返します。
+戻り値:SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型
+setSqlKeywordCaseType
+public void setSqlKeywordCaseType(SqlKeywordCaseType sqlKeywordCaseType)
+SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型を設定します。
+パラメータ:sqlKeywordCaseType - SQLのキーワードの大文字小文字を変換するかどうかを示す列挙型
+getSqlIdentifierCaseType
+public SqlIdentifierCaseType getSqlIdentifierCaseType()
+SQLの識別子の大文字小文字を変換するかどうかを示す列挙型を返します。
+戻り値:SQLの識別子の大文字小文字を変換するかどうかを示す列挙型
+setSqlIdentifierCaseType
+public void setSqlIdentifierCaseType(SqlIdentifierCaseType sqlIdentifierCaseType)
+SQLの識別子の大文字小文字を変換するかどうかを示す列挙型を設定します
+パラメータ:sqlIdentifierCaseType - SQLの識別子の大文字小文字を変換するかどうかを示す列挙型
+isUseComment
+public boolean isUseComment()
+コメントを使用する場合trueを返します。
+戻り値:コメントを使用する場合true
+setUseComment
+public void setUseComment(boolean useComment)
+コメントを使用する場合trueを設定します。
+パラメータ:useComment - コメントを使用する場合true
+keyword
+public java.lang.String keyword(java.lang.String keyword)
+キーワードの大文字小文字を変換します。
+パラメータ:keyword - キーワード
+戻り値:変換された文字列
+identifier
+public java.lang.String identifier(java.lang.String identifier)
+識別子の大文字小文字を変換します。
+パラメータ:identifier - 識別子
+戻り値:変換された文字列
+isCommentInCreateTableSupported
+public boolean isCommentInCreateTableSupported()
+CREATE TABLEでコメントを出力する場合true
+戻り値:CREATE TABLEでコメントを出力する場合true
+isCommentOnSupported
+public boolean isCommentOnSupported()
+COMMENT ONを出力する場合trueを返します。
+戻り値:COMMENT ONを出力する場合true
+概要 
+パッケージ 
+クラス 
+使用 
+階層ツリー 
+非推奨 API 
+索引 
+ヘルプ 
+前のクラス 
+次のクラス
+フレームあり   
+フレームなし   
+概要:  入れ子 | フィールド | コンストラクタ | メソッド
+詳細:  フィールド | コンストラクタ | メソッド
+Copyright © 2004-2014 The Seasar Foundation. All Rights Reserved.
+DdlModel (S2JDBC-Gen 2.4.48 API)

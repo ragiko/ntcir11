@@ -1,0 +1,818 @@
+バイナリレンジコーダ [3], スプレー符号
+[ PrevPage | Python | NextPage ]
+はじめに
+データ圧縮のお話です。最初に、バイナリレンジコーダの続きとして、「混合法」という方法を用いたバイナリレンジコーダの改良について説明します。次に、適応型符号化の一種である スプレー符号 について説明します。
+混合法によるバイナリレンジコーダの改良
+混合法を簡単に説明すると、複数のモデルを混ぜ合わせて得られる出現確率を使って記号を符号化する方法です。混合法では「文脈木重み付け法 (Context-Tree Weighting : CTW) 」が有名ですが、ちょっと難しいアルゴリズムです。そこで、今回は 2 つのモデルの出現頻度表(記号数)を加算するという簡単な方法を使うことにします。
+基本的な考え方はとても簡単です。高次の有限文脈モデルと低次の有限文脈モデルを用意し、2 つのモデルから出現頻度表を選択します。そして、2 つの出現頻度表の記号数を加算して新しい出現頻度表を作成し、その出現確率を使って適応型レンジコーダで符号化します。
+具体的には、バイナリレンジコーダのコンテキストごとに高次モデルと低次モデルを用意し、その 2 つの出現頻度表の記号数を加算します。とても簡単な方法ですが、バイナリレンジコーダのバイナリモデル、αモデル、γモデルなどに適用すると、圧縮率が向上する場合があります。ただし、バイナリレンジコーダよりもメモリを消費し、実行時間も遅くなる欠点があります。
+なお、バイナリレンジコーダのコンテキストに混合法を適用する方法は、Yuta Mori さんの Web サイト white page で公開されているプログラムを参考にさせていただきました。素晴らしいプログラムを公開されている Yuta Mori さんに深く感謝いたします。
+プログラムの作成
+それではプログラムを作りましょう。今回は高次モデルの次数を order-2 とし、低次モデルの次数を order-0 とします。最初にコンテキストを定義します。
+リスト : コンテキストの定義 (混合法)
+B_INC0 = 10
+B_INC2 = 2
+B_LIMIT = 0x200
+# コンテキスト
+class Context:
+def __init__(self):
+self.prev = 0
+self.c0 = [1] * 5    # 0: order-0, 1 - 4: order-2
+self.c1 = [1] * 5
+# 記号 0 の出現頻度を求める
+def get_c0(self):
+return self.c0[0] + self.c0[self.prev + 1]
+# 記号 1 の出現頻度を求める
+def get_c1(self):
+return self.c1[0] + self.c1[self.prev + 1]
+クラス Context のインスタンス変数 prev に直前のビット列を記憶します。記号は {0, 1} の 2 種類しかないので、order-2 の状態は "00", "01", "10", "11" の 4 通りになります。インスタンス変数 c0 には記号 0 をカウントする配列、c1 には記号 1 をカウントする配列を用意します。添字 0 が order-0 で、添字 1 - 4 が order-2 に対応します。
+なお、今までのように記号 {0, 1} のコンテキストを定義して、order-0 用と order-2 用のオブジェクトを生成する方法もあります。この場合、多数のオブジェクトが生成されるので、有限文脈モデル (order-2) で用いると、Python ではメモリを大量に消費することになります。今回はメモリの消費量を抑えるため配列を使いました。
+記号 0 の出現頻度はメソッド get_c0 で求めます。order-0 の個数 c0[0] と order-2 の個数 c0[prev + 1] を加算して返します。order-2 を求めるときは prev に 1 を加算することをお忘れなく。同様に、記号 1 の出現頻度はメソッド get_c1 で求めます。このように、order-0 と order-2 の出現頻度を単純に加算するだけです。これで order-0 と order-2 のモデルを混合し、バイナリレンジコーダで符号化と復号を行うことができます。
+次はコンテキストを更新するメソッド update を作ります。
+リスト : コンテキストの更新 (混合法)
+def update(self, bit):
+x = self.prev + 1
+if bit > 0:
+self.c1[0] += B_INC0
+self.c1[x] += B_INC2
+else:
+self.c0[0] += B_INC0
+self.c0[x] += B_INC2
+if self.c0[0] + self.c1[0] >= B_LIMIT:
+self.c0[0] = (self.c0[0] >> 1) | 1
+self.c1[0] = (self.c1[0] >> 1) | 1
+if self.c0[x] + self.c1[x] >= B_LIMIT:
+self.c0[x] = (self.c0[x] >> 1) | 1
+self.c1[x] = (self.c1[x] >> 1) | 1
+self.prev = ((self.prev << 1) | bit) & 0x03
+メソッド update で出現頻度を更新するとき、記号数の増分値を変えると圧縮率が向上する場合があります。今回は order-0 と order-2 の増分値を B_INC0 (10) と B_INC2 (2) に設定しました。この方が少しですが圧縮率は良くなります。最後に prev を更新します。記号は {0, 1} しかないので、左へ 1 ビットシフトしてから OR で bit をセットし、0x03 と AND をとれば OK です。
+符号化処理と復号処理は、記号の出現頻度を求めるときにメソッド get_c0, get_c1 を呼び出すだけです。プログラムは簡単なので説明は割愛いたします。詳細は プログラムリスト1 をお読みください。
+評価結果1
+それでは、実際に Canterbury Corpus で配布されているテストデータ The Canterbury Corpus を「バイナリモデル」で圧縮してみましょう。結果は次にようになりました。
+表 : バイナリモデル (混合法) の結果
+(B_LIMIT=0x200, 増分値=+4)
+ファイル名      サイズ    混合法  符号化  復号
+-----------------------------------------------
+alice29.txt    152,089    83,860  15.34  14.62
+asyoulik.txt   125,179    71,851  12.68  12.03
+cp.html         24,603    15,649   2.51   2.38
+fields.c        11,150     6,426   1.16   1.08
+grammar.lsp      3,721     2,113   0.40   0.36
+kennedy.xls  1,029,744   356,084 102.80  99.09
+lcet10.txt     426,754   233,333  42.89  40.94
+plrabn12.txt   481,861   267,318  48.61  46.22
+ptt5           513,216    63,440  50.17  48.86
+sum             38,240    20,199   3.87   3.70
+xargs.1          4,227     2,571   0.44   0.42
+-----------------------------------------------
+合計         2,810,784 1,122,844 280.87 269.70
+# 符号化と復号の単位 : 秒
+実行環境 : Windows XP, celeron 1.40 GHz, Python 2.4.2
+バイナリモデルに混合法を適用することで、どのファイルでも圧縮率は向上しています。特に、kennedy.xls の圧縮率は大幅に向上しました。今回のような簡単な方法でも、混合法は大きな効果を発揮するようです。ただし、実行時間はとても遅くなりました。2 つのモデルの出現頻度を加算しているので、バイナリレンジコーダよりも時間がかかるのは仕方がないでしょう。
+ところで、バイナリモデルと混合法の組み合わせは、有限文脈モデルでも大きな効果を発揮します。order-1 と order-2 の実行結果を示します。
+表 : 有限文脈モデル (混合法) の結果
+ファイル名      サイズ   order-0  order-1  order-2
+---------------------------------------------------
+alice29.txt    152,089    83,860   64,860   52,185
+asyoulik.txt   125,179    71,851   53,820   44,753
+cp.html         24,603    15,649   11,436    9,356
+fields.c        11,150     6,426    4,582    3,769
+grammar.lsp      3,721     2,113    1,627    1,503
+kennedy.xls  1,029,744   356,084  220,791  140,542
+lcet10.txt     426,754   233,333  183,167  145,878
+plrabn12.txt   481,861   267,318  203,410  170,445
+ptt5           513,216    63,440   52,453   56,485
+sum             38,240    20,199   16,997   16,208
+xargs.1          4,227     2,571    2,124    2,061
+---------------------------------------------------
+合計         2,810,784 1,122,844  815,267  643,185
+order-1, order-2 ともに、ほとんどのファイルで圧縮率が向上しています。特に、kennedy.xls の圧縮率は大幅に向上しました。kennedy.xls と混合法の相性はとても良いようです。ptt5 の場合、order-2 よりも order-1 の方が高い圧縮率になりました。それでも、ここまで圧縮率が向上するのですから、混合法の効果はとても高いと思います。
+評価結果2
+今度は LZRC 符号に混合法を適用してみましょう。結果は次のようになりました。
+表 : LZRC 符号 (混合法) の結果 (スライド窓 8 k) [1]
+ファイル名      サイズ    LZRC   符号化  復号  LHA(lh5)
+-------------------------------------------------------
+alice29.txt    152,089   58,752  10.84   8.84   59,117
+asyoulik.txt   125,179   52,065   9.47   7.81   52,341
+cp.html         24,603    8,276   1.50   1.22    8,384
+fields.c        11,150    3,061   0.56   0.44    3,170
+grammar.lsp      3,721    1,211   0.22   0.18    1,271
+kennedy.xls  1,029,744   72,714  51.21  40.91  198,342
+lcet10.txt     426,754  158,064  29.40  23.82  159,558
+plrabn12.txt   481,861  209,778  38.59  31.88  210,045
+ptt5           513,216   49,168  17.82   8.72   52,305
+sum             38,240   13,170   2.47   1.93   13,993
+xargs.1          4,227    1,718   0.30   0.25    1,778
+-------------------------------------------------------
+合計         2,810,784  627,957 162.38 126.00  760,304
+# 符号化と復号の単位 : 秒
+実行環境 : Windows XP, celeron 1.40 GHz, Python 2.4.2
+表 : LZRC 符号 (order-0) の結果 [2]
+LHA
+ファイル名      サイズ    8 k      32 k     64 k   lh5(8k)  lh6(32k)
+---------------------------------------------------------------------
+alice29.txt    152,089   58,732   54,043   52,427   59,117   54,266
+asyoulik.txt   125,179   52,065   48,811   47,813   52,341   48,915
+cp.html         24,603    8,276    7,884    7,884    8,384    8,046
+fields.c        11,150    3,061    3,061    3,061    3,170    3,172
+grammar.lsp      3,721    1,211    1,211    1,211    1,271    1,272
+kennedy.xls  1,029,744   72,714   64,876   62,040  198,342  205,745
+lcet10.txt     426,754  158,064  144,265  138,690  159,558  144,419
+plrabn12.txt   481,861  209,778  195,612  189,666  210,045  194,957
+ptt5           513,216   49,168   50.202   50,728   52,305   53,196
+sum             38,240   13,170   12,077   12,083   13,993   12,951
+xargs.1          4,227    1,718    1,718    1,718    1,778    1,778
+--------------------------------------------------------------------
+合計         2,810,784  627,957  583,760  567,321  760,304  728,717
+テキストファイルの圧縮率は少しですが向上しています。スライド窓が 8 k バイトの場合、テキストファイルの圧縮率は LHA とほぼ同じになりました。さらに、kennedy.xls の圧縮率はとても高くなりました。スライド窓を大きくした場合、ほとんどのファイルで圧縮率は少しですが向上しています。混合法の効果は十分に出ていると思います。そのかわり、実行時間は遅くなります。
+次は有限文脈モデル (order-1) を適用した結果を示します。
+表 : LZRC 符号 (order-1) の結果 (スライド窓 8 k) [1]
+ファイル名      サイズ    LZRC1  符号化  復号  LHA(lh5)
+-------------------------------------------------------
+alice29.txt    152,089   54,893  13.75  10.36   59,117
+asyoulik.txt   125,179   47,883  12.36   9.32   52,341
+cp.html         24,603    8,085   2.36   1.82    8,384
+fields.c        11,150    3,108   1.11   0.96    3,170
+grammar.lsp      3,721    1,250   0.73   0.67    1,271
+kennedy.xls  1,029,744   70,683  52.92  38.90  198,342
+lcet10.txt     426,754  146,381  36.39  26.88  159,558
+plrabn12.txt   481,861  192,112  49.17  36.90  210,045
+ptt5           513,216   46,857  20.24   9.86   52,305
+sum             38,240   13,044   3.34   2.55   13,993
+xargs.1          4,227    1,748   0.84   0.76    1,778
+-------------------------------------------------------
+合計         2,810,784  586,044 193.21 138.98  760,304
+# 符号化と復号の単位 : 秒
+実行環境 : Windows XP, celeron 1.40 GHz, Python 2.4.2
+表 : LZRC 符号 (order-1) の結果 [2]
+LHA
+ファイル名      サイズ    8 k      32 k     64 k   lh5(8k)  lh6(32k)
+---------------------------------------------------------------------
+alice29.txt    152,089   54,893   51,765   50,583   59,117   54,266
+asyoulik.txt   125,179   47,883   46,082   45,416   52,341   48,915
+cp.html         24,603    8,085    7,741    7,741    8,384    8,046
+fields.c        11,150    3,108    3,113    3,113    3,170    3,172
+grammar.lsp      3,721    1,250    1,250    1,250    1,271    1,272
+kennedy.xls  1,029,744   70,683   58,565   54,793  198,342  205,745
+lcet10.txt     426,754  146,381  136,606  132,470  159,558  144,419
+plrabn12.txt   481,861  192,112  183,602  179,609  210,045  194,957
+ptt5           513,216   46,857   47.642   47,860   52,305   53,196
+sum             38,240   13,044   12,071   12,074   13,993   12,951
+xargs.1          4,227    1,748    1,748    1,748    1,778    1,778
+--------------------------------------------------------------------
+合計         2,810,784  586,044  550,185  536,657  760,304  728,717
+混合法を適用することで kennedy.xls の圧縮率は大幅に向上しました。大きなテキストファイルも圧縮率は少し向上しますが、逆に圧縮率が悪くなるファイルもあります。混合法の効果は order-0 よりも少ないようです。それだけ order-1 の効果が大きいということでしょう。当然ですが、実行時間は遅くなります。
+なお、実行時間の結果は M.Hiroi のコーディング、実行したマシン、プログラミング言語などの環境に大きく依存しています。また、これらの環境だけではなく、データの種類によっても実行時間はかなり左右されます。興味のある方は、いろいろなデータをご自分の環境で試してみてください。
+プログラムリスト1
+# coding: shift_jis
+#
+# rangecoder2m.py : バイナリレンジコーダ (混合法)
+#
+#                  Copyright (C) 2007 Makoto Hiroi
+#
+from rangecoder import *
+B_INC0 = 10
+B_INC2 = 2
+B_LIMIT = 0x200
+# コンテキスト
+class Context:
+def __init__(self):
+self.prev = 0
+self.c0 = [1] * 5    # 0: order-1, 1 - 4: order-2
+self.c1 = [1] * 5
+# 更新
+def update(self, bit):
+x = self.prev + 1
+if bit > 0:
+self.c1[0] += B_INC0
+self.c1[x] += B_INC2
+else:
+self.c0[0] += B_INC0
+self.c0[x] += B_INC2
+if self.c0[0] + self.c1[0] >= B_LIMIT:
+self.c0[0] = (self.c0[0] >> 1) | 1
+self.c1[0] = (self.c1[0] >> 1) | 1
+if self.c0[x] + self.c1[x] >= B_LIMIT:
+self.c0[x] = (self.c0[x] >> 1) | 1
+self.c1[x] = (self.c1[x] >> 1) | 1
+self.prev = ((self.prev << 1) | bit) & 0x03
+# 記号 0 の出現頻度を求める
+def get_c0(self):
+return self.c0[0] + self.c0[self.prev + 1]
+# 記号 1 の出現頻度を求める
+def get_c1(self):
+return self.c1[0] + self.c1[self.prev + 1]
+# 符号化
+def encode(self, rc, bit):
+c0 = self.get_c0()
+c1 = self.get_c1()
+temp = rc.range / (c0 + c1)
+if bit > 0:
+rc.low += temp * c0
+rc.range = temp * c1
+else:
+rc.range = temp * c0
+rc.encode_normalize()
+self.update(bit)
+# 復号
+def decode(self, rc):
+c0 = self.get_c0()
+c1 = self.get_c1()
+temp = rc.range / (c0 + c1)
+if rc.low / temp < c0:
+bit = 0
+rc.range = temp * c0
+else:
+bit = 1
+rc.low -= temp * c0
+rc.range = temp * c1
+rc.decode_normalize()
+self.update(bit)
+return bit
+##### バイナリモデル (binary model) #####
+# 出現頻度表
+class Freq2:
+def __init__(self, size):
+self.size = size
+self.context = [Context() for _ in xrange(size - 1)]
+# 符号化
+def encode(self, rc, code):
+def encode_sub(node):
+if node > 0:
+p = (node - 1) / 2
+encode_sub(p)
+# 奇数は左の子 (1), 偶数は右の子 (0)
+bit = node & 1
+self.context[p].encode(rc, bit)
+#
+encode_sub(code + self.size - 1)
+# 復号
+def decode(self, rc):
+node = 0
+node_size = self.size - 1
+while node < node_size:
+bit = self.context[node].decode(rc)
+if bit > 0:
+# 1 は左の子
+node = 2 * node + 1
+else:
+# 0 は右の子
+node = 2 * node + 2
+return node - node_size
+##### αモデル #####
+class AlphaFreq:
+def __init__(self, size):
+self.size = size - 1
+self.context = [Context() for _ in xrange(size - 1)]
+# 符号化
+def encode(self, rc, c):
+for x in xrange(self.size):
+if x < c:
+bit = 0
+else:
+bit = 1
+self.context[x].encode(rc, bit)
+if bit: break
+# 復号
+def decode(self, rc):
+c = 0
+while c < self.size:
+bit = self.context[c].decode(rc)
+if bit: break
+c += 1
+return c
+##### γモデル #####
+class BitsFreq:
+def __init__(self, size):
+self.size = size
+self.context = [Context() for _ in xrange(size)]
+# 符号化
+def encode(self, rc, c):
+for x in xrange(self.size):
+bit = (c >> x) & 1
+self.context[x].encode(rc, bit)
+# 復号
+def decode(self, rc):
+c = 0
+for x in xrange(self.size):
+bit = self.context[x].decode(rc)
+if bit: c |= bit << x
+return c
+class GammaFreq:
+def __init__(self, size):
+n2 = size >> 1
+n1 = 0
+while n2 > 0:
+n1 += 1
+n2 >>= 1
+self.size = n1
+self.context1 = AlphaFreq(n1 + 1)
+self.context2 = [None] * (n1 + 1)
+for x in xrange(1, n1 + 1):
+self.context2[x] = BitsFreq(x)
+# 符号化
+def encode(self, rc, n):
+n1 = 0
+n2 = (n + 1) >> 1
+while n2 > 0:
+n1 += 1
+n2 >>= 1
+self.context1.encode(rc, n1)
+if n1 > 0:
+self.context2[n1].encode(rc, n + 1)
+# 復号
+def decode(self, rc):
+n1 = self.context1.decode(rc)
+if n1 > 0:
+n2 = self.context2[n1].decode(rc)
+n1 = (1 << n1) + n2 - 1
+return n1
+スプレー符号
+今回は スプレー木 を応用した符号化法である「スプレー符号 (Splay Tree Coding) 」を紹介します。スプレー符号は「適応型符号化」の一種で、符号木に対してスプレー操作を適用することにより、頻繁に現れる記号に短い符号語を割り当てることができます。
+なお、このドキュメントは拙作のページ Memorandum 2005 年 9 月 のスプレイ符号をまとめたもので、プログラムは Python で書き直しています。内容は重複しますが、ご了承くださいませ。
+符号木のスプレー操作
+スプレー木は二分木の一種で、節の子に順序をつける「順序木」です。このため、スプレー操作は「左の子 < 右の子」という関係を保つように行われます。ところが、符号木は節にデータを格納する必要がありません。このため、符号木のスプレー操作は拙作のページ スプレー木 で説明した方法とは異なります。
+具体的には、出現した記号の符号語長が半分になるようにスプレー操作を行います。次の図を見てください。
+0                      0                0
+/  ＼                  /  ＼            /  ＼    
+1      E              1      E        /      ＼    
+/  ＼                  /  ＼            1          2
+2      D              2      D        /  ＼      /  ＼    
+/  ＼                  /  ＼            E      D  3      A  
+3      C              3      A                    /  ＼        
+/  ＼                  /  ＼                        C      B
+A      B              C      B              
+(1)                  (2)                (3)
+A : 0 0 0 0                                      A : 1 1
+B : 0 0 0 1                                      B : 1 0 1
+C : 0 0 1                                        C : 1 0 0
+D : 0 1                                          D : 0 1
+E : 1                                            E : 0 0
+図:スプレー符号 (1)
+上図の場合、A, B, C, D, E が葉で、0, 1, 2, 3 が節を表します。左の子をたどるときは符号 0 を、右の子をたどるときは符号 1 を割り当てます。(1) の場合、記号 A の符号語は 0 0 0 0 となります。
+ここで A にスプレー操作を適用します。符号木にスプレー操作を適用する場合、記号を表す「葉」はスプレー操作を行ったあとでも「葉」でなければいけません。このため、スプレー符号のスプレー操作は、次に示す規則で葉や節を交換していくことで実現します。
+移動する節を N, N の親節を P, P の親節を G とする。
+N が G の右部分木ならば、N と G の左の子を交換する。
+逆に、N が G の左部分木ならば、N と G の右の子を交換する。
+次は G を移動する(節 G を移動する節 N に置き換えて 1 に戻る)。
+1 - 4 の操作を N または P がルートに達するまで繰り返す。
+上図 (1) の場合、節 2 の右の子 C と A を交換して (2) の状態になります。そして、次は A を移動するのではなく、節 2 を移動します。この場合は節 0 の右の子 E と節 2 を交換して (3) の状態になります。次は節 0 を移動しますが、節 0 はルートなのでスプレー操作を終了します。記号 A の符号語は 1 1 になり、長さは半分になりました。
+再度、A にスプレー操作を適用します。次の図を見てください。
+0                   0
+/  ＼               /  ＼
+/      ＼           A      2
+1          2               /  ＼ 
+/  ＼      /  ＼           /      ＼ 
+E      D  3      A       3          1 
+/  ＼           /  ＼      /  ＼ 
+C      B       C      B  E      D  
+(3)                   (4)
+A : 1 1                  A : 0
+B : 1 0 1                B : 1 0 1
+C : 1 0 0                C : 1 0 0
+D : 0 1                  D : 1 1 1
+E : 0 0                  E : 1 1 0
+図:スプレー符号 (2)
+上図 (3) の状態で、節 A にスプレー操作を適用します。節 0 の左部分木と節 A を交換するので、上図 (4) の状態になります。次は節 0 を移動しますが、節 0 はルートなのでスプレー操作を終了します。記号 A の符号語は 0 になり、長さは半分になりました。(4) の状態で、再度 A にスプレー操作を適用しても、A の親節 0 がルートなのでスプレー操作は行われません。
+このように、スプレー符号は符号木にスプレー操作を適用することで、頻繁に現れる記号に短い符号語を割り当てることができます。そうはいっても、スプレー符号は符号木を変形するだけなので、これだけで高い圧縮率を達成できるというわけではありません。そこで、実際にプログラムを作って、スプレー符号の性能を確かめてみましょう。
+プログラムの作成
+最初にスプレー符号を表すクラスを定義します。次のリストを見てください。
+リスト : スプレー符号の定義
+class SplayCode:
+def __init__(self, size):
+self.size = size
+self.parent = [None] * (2 * size - 1)
+self.left = [None] * (size - 1)
+self.right = [None] * (size - 1)
+for x in xrange(size - 1):
+self.parent[x] = (x - 1) / 2
+self.left[x] = 2 * x + 1
+self.right[x] = 2 * x + 2
+for x in xrange(size - 1, 2 * size - 1):
+self.parent[x] = (x - 1) / 2
+クラス名は SplayCode としました。符号木の節は配列で表します。size が記号の種類、配列 parent が親節の番号、配列 left が左の子の番号、配列 right が右の子の番号を表します。記号の種類が size の場合、葉の個数が size になるので、節の個数は size - 1 個になります。parent の大きさは 2 * size - 1 になりますが、left と right は節の部分だけが必要なので大きさは size - 1 になります。
+符号木はバランスの取れた状態に初期化します。節の番号を N とすると、次に示す式で初期化すると、木はバランスの取れた状態になります。
+節 N :
+左の子 : 2 * N + 1
+右の子 : 2 * N + 2
+親     : (N - 1) / 2
+たとえば、記号の種類が 256 の場合、0 - 254 が節で、255 - 510 が葉になります。節の番号を x とすると、x が 0 - 254 の範囲では、parent[x] を (x - 1) / 2 に、left を (2 * x + 1) に、right を (2 * x + 2) に初期化します。255 - 510 の範囲では、parent を (x - 1) / 2 に初期化します。これで記号 0 - 255 の符号語長は 8 に初期化されます。
+スプレー操作
+次はスプレー操作を行う関数 splay を作ります。
+リスト : Splay 操作で符号長を半分にする
+def splay(self, code):
+n = self.size - 1 + code
+while n > 0:
+p = self.parent[n]
+if p == 0: break
+g = self.parent[p]
+if self.left[g] == p:
+gc = self.right[g]
+self.right[g] = n
+else:
+gc = self.left[g]
+self.left[g] = n
+self.parent[n] = g
+if self.left[p] == n:
+self.left[p] = gc
+else:
+self.right[p] = gc
+self.parent[gc] = p
+n = g
+先に説明したスプレー操作をそのままプログラムしています。変数 n が移動する節、p が n の親節、g が p の親節、gc が g の子を表します。記号 code の節番号は self.size - 1 + code になります。
+最初に n の親節 p を求めて、それがルートであるかチェックします。そうであればスプレー操作を終了します。次に、p の親節 g を求めて、n が左右どちらの部分木にあるかチェックします。p が g の左の子であれば、n と g の右の子を交換します。gc に g の右の子をセットし、right[g] に n をセットします。逆に、p が右の子であれば、n と g の左の子を交換します。そして、parent[n] を g に書き換えます。
+次に、p の子を gc に書き換えます。p の左の子が n であれば、left[p] を gc に書き換えます。そうでなければ、rigth[p] を gc に書き換えます。そして、parent[gc] を p に書き換えます。最後に、移動する節 n を g に書き換えます。もし、n がルートであればスプレー操作を終了します。そうでなければ、節 n を移動します。
+符号化
+次は記号を符号化するメソッド encode を作ります。
+リスト : 記号の符号化
+def encode(self, fout, code):
+def encode_sub(n, p):
+if p > 0: encode_sub(p, self.parent[p])
+if self.right[p] == n:
+fout.putbit(1)
+else:
+fout.putbit(0)
+#
+n = self.size - 1 + code
+encode_sub(n, self.parent[n])
+self.splay(code)
+引数 fout は出力ファイル (BitIO のオブジェクト) で、code は符号化する記号です。符号化は記号の葉からルートに向かって木をたどって符号語を生成します。実際の処理は内部関数 encode_sub で行います。引数 n が節で、p はその親節です。p が 0 よりも大きい場合は encode_sub を再帰呼び出ししてルート方向へ木をたどります。それから、左の枝には 0 を、右の枝には 1 の符号語を割り当てて、BitIO のメソッド putbit で符号語を出力します。最後に、関数 splay でスプレー操作を行います。
+復号
+次は記号を復号するメソッド decode を作ります。
+リスト : 記号の復号
+def decode(self, fin):
+n = 0
+n_size = self.size - 1
+while n < n_size:
+if fin.getbit() == 1:
+n = self.right[n]
+else:
+n = self.left[n]
+code = n - n_size
+self.splay(code)
+return code
+復号は入力ファイル fin から 1 ビットずつ読み込み、ルートから葉まで符号木をたどるだけです。n_size は記号 0 の番号を表します。n < n_size であれば、n はまだ節なので符号木をたどります。n >= n_size であれば n は葉に到達したので、while ループを終了して記号 code を求めます。そして、関数 splay でスプレー操作を行ってから code を返します。
+ファイルの符号化と復号
+最後に符号化と復号を行う関数 encode と decode を作ります。
+リスト : スプレー符号による符号化と復号
+# 符号化
+def encode(fin, fout):
+sc = SplayCode(256)
+for x in read_file(fin):
+sc.encode(fout, x)
+# 復号
+def decode(fin, fout, size):
+sc = SplayCode(256)
+for _ in xrange(size):
+putc(fout, sc.decode(fin))
+スプレー符号は適応型符号化なので、どちらの処理も簡単です。SplayCode のオブジェクトを生成して変数 sc にセットします。符号化処理は read_file でファイルから読み込んだ記号を sc.encode で符号化します。復号処理は sc.decode で記号を復号するだけです。
+あとのプログラムは簡単なので説明は割愛いたします。詳細は下記プログラムリストをお読みください。
+プログラムリスト2
+プログラムリスト3
+評価結果
+それでは、実際に Canterbury Corpus で配布されているテストデータ The Canterbury Corpus を圧縮してみましょう。結果は次にようになりました。
+表 : スプレー符号の結果
+ファイル名      サイズ     Splay   符号化  復号
+------------------------------------------------
+alice29.txt    152,089    104,868   2.15   2.94
+asyoulik.txt   125,179     90,030   1.80   2.44
+cp.html         24,603     19,016   0.36   0.48
+fields.c        11,150      7,879   0.16   0.22
+grammar.lsp      3,721      2,509   0.06   0.07
+kennedy.xls  1,029,744    500,991  13.36  18.55
+lcet10.txt     426,754    289,919   6.70   8.29
+plrabn12.txt   481,861    335,971   6.78   9.31
+ptt5           513,216    109,739   5.40   8.36
+sum             38,240     23,560   0.57   0.75
+xargs.1          4,227      3,043   0.06   0.09
+------------------------------------------------
+合計         2,810,784  1,487,525  37.40  51.50
+# 符号化と復号の単位 : 秒
+実行環境 : Windows XP, celeron 1.40 GHz, Python 2.4.2
+結果を見ればおわかりのように、スプレー符号の圧縮率はそれほど高くはありません。ハフマン符号やレンジコーダよりも悪くなります。ハフマン符号やレンジコーダは記号の出現確率を利用しているので、スプレー符号よりも圧縮率が高くなるのは当然のことです。ですが、符号木にスプレー操作を適用するだけのスプレー符号で、ここまでファイルを圧縮できるとは大変驚きました。スプレー符号は面白い方法だと思います。
+スプレー符号の処理時間ですが、静的なレンジコーダとほぼ同じ速度で、適応型レンジコーダよりも速くなりました。適応型符号化の中ではけっこう速いアルゴリズムだと思います。
+なお、実行時間の結果は M.Hiroi のコーディング、実行したマシン、プログラミング言語などの環境に大きく依存しています。また、これらの環境だけではなく、データの種類によっても実行時間はかなり左右されます。興味のある方は、いろいろなデータをご自分の環境で試してみてください。
+有限文脈モデル
+次はスプレー符号に「有限文脈モデル」を適用してみましょう。有限文脈モデルは、拙作のページ 有限文脈モデル で詳しく説明しています。よろしければ参考にしてください。
+スプレー符号は適応型符号化の一種なので、有限文脈モデルの実装は簡単です。次のリストを見てください。
+リスト : 有限文脈モデル (order-1)
+# 符号化
+def encode(fin, fout):
+sc = [SplayCode(256) for _ in xrange(256)]
+c0 = 0
+for x in read_file(fin):
+sc[c0].encode(fout, x)
+c0 = x
+# 復号
+def decode(fin, fout, size):
+sc = [SplayCode(256) for _ in xrange(256)]
+c0 = 0
+for _ in xrange(size):
+x = sc[c0].decode(fin)
+putc(fout, x)
+c0 = x
+order-1 の場合、256 個の符号木を用意します。符号木は配列 sc に格納します。そして、直前の記号 c0 に対応する符号木を sc[c0] から取り出します。あとは、この符号木を使って符号化・復号を行って、直前の記号 c0 の値を更新します。
+order-2 のプログラムも簡単に作成できます。直前の 2 記号を変数 c0 と c00 に記憶しておいて、c0 と c00 の値によって符号木を選択します。ただし、order-2 は order-1 とは違って、メモリを大量に消費することに注意してください。詳細は下記プログラムリストをお読みください。
+プログラムリスト4 (order-1)
+プログラムリスト5 (order-2)
+評価結果
+それでは、実際に Canterbury Corpus で配布されているテストデータ The Canterbury Corpus を圧縮してみましょう。結果は次にようになりました。
+表 : スプレー符号の結果
+ファイル名      サイズ    order-0   order-1   order-2
+------------------------------------------------------
+alice29.txt    152,089    104,868    76,552    60,499
+asyoulik.txt   125,179     90,030    62,095    51,638
+cp.html         24,603     19,016    13,312    10,732
+fields.c        11,150      7,879     4,941     4,314
+grammar.lsp      3,721      2,509     1,713     1,698
+kennedy.xls  1,029,744    500,991   384,575   199,899
+lcet10.txt     426,754    289,919   215,078   167,295
+plrabn12.txt   481,861    335,971   243,581   200,811
+ptt5           513,216    109,739   101,377   104,618
+sum             38,240     23,560    17,761    17,898
+xargs.1          4,227      3,043     2,326     2,284
+------------------------------------------------------
+合計         2,810,784  1,487,525 1,123,311   821,686
+order-0 と order-1 を比べると圧縮率は大幅に向上してます。order-1 の圧縮率はハフマン符号や適応型レンジコーダ (order-0) よりも高くなります。order-2 の場合、ほとんどのファイルで圧縮率は向上しますが、order-1 よりも悪くなるファイルもあります。全体的に見ると、有限文脈モデルはスプレー符号でも大きな効果を発揮するようです。
+参考文献 (スプレー符号)
+[42-1] 井谷宣子, 吉田茂, 『圧縮ソフト SLC/ELC のアルゴリズム』, C MAGAZINE 2004 年 10 月号, ソフトバンクパブリッシング
+プログラムリスト2
+# coding: shift_jis
+#
+# splaycode.py : スプレー符号 (splay tree coding)
+#
+#                Copyright (C) 2007 Makoto Hiroi
+#
+from bitio import *
+class SplayCode:
+def __init__(self, size):
+self.size = size
+self.parent = [None] * (2 * size - 1)
+self.left = [None] * (size - 1)
+self.right = [None] * (size - 1)
+for x in xrange(size - 1):
+self.parent[x] = (x - 1) / 2
+self.left[x] = 2 * x + 1
+self.right[x] = 2 * x + 2
+for x in xrange(size - 1, 2 * size - 1):
+self.parent[x] = (x - 1) / 2
+# Splay 操作で符号長を半分にする
+def splay(self, code):
+n = self.size - 1 + code
+while n > 0:
+p = self.parent[n]
+if p == 0: break
+g = self.parent[p]
+if self.left[g] == p:
+gc = self.right[g]
+self.right[g] = n
+else:
+gc = self.left[g]
+self.left[g] = n
+self.parent[n] = g
+if self.left[p] == n:
+self.left[p] = gc
+else:
+self.right[p] = gc
+self.parent[gc] = p
+n = g
+# 符号化
+def encode(self, fout, code):
+def encode_sub(n, p):
+if p > 0: encode_sub(p, self.parent[p])
+if self.right[p] == n:
+fout.putbit(1)
+else:
+fout.putbit(0)
+#
+n = self.size - 1 + code
+encode_sub(n, self.parent[n])
+self.splay(code)
+# 復号
+def decode(self, fin):
+n = 0
+n_size = self.size - 1
+while n < n_size:
+if fin.getbit() == 1:
+n = self.right[n]
+else:
+n = self.left[n]
+code = n - n_size
+self.splay(code)
+return code
+プログラムリスト3
+# coding: shift_jis
+#
+# sc0.py : スプレー符号 (order-0)
+#
+#          Copyright (C) 2007 Makoto Hiroi
+#
+import time, sys, getopt, os.path
+from splaycode import *
+# ファイルの読み込み
+def read_file(fin):
+while True:
+c = getc(fin)
+if c is None: break
+yield c
+# 符号化
+def encode(fin, fout):
+sc = SplayCode(256)
+for x in read_file(fin):
+sc.encode(fout, x)
+# 復号
+def decode(fin, fout, size):
+sc = SplayCode(256)
+for _ in xrange(size):
+putc(fout, sc.decode(fin))
+# スプレー符号による符号化
+def encode_file(name1, name2):
+size = os.path.getsize(name1)
+infile = open(name1, "rb")
+outfile = BitIO(name2, WOPEN)
+outfile.putbits(32, size)
+if size > 0: encode(infile, outfile)
+infile.close()
+outfile.close()
+# スプレー符号による復号
+def decode_file(name1, name2):
+infile = BitIO(name1, ROPEN)
+outfile = open(name2, "wb")
+size = infile.getbits(32)
+if size > 0: decode(infile, outfile, size)
+infile.close()
+outfile.close()
+#
+def main():
+eflag = False
+dflag = False
+opts, args = getopt.getopt(sys.argv[1:], 'ed')
+for x, y in opts:
+if x == '-e' or x == '-E':
+eflag = True
+elif x == '-d' or x == '-D':
+dflag = True
+if eflag and dflag:
+print 'option error'
+elif eflag:
+encode_file(args[0], args[1])
+elif dflag:
+decode_file(args[0], args[1])
+else:
+print 'option error'
+#
+s = time.clock()
+main()
+e = time.clock()
+print "%.3f" % (e - s)
+プログラムリスト4
+# coding: shift_jis
+#
+# sc1.py : スプレー符号 (order-1)
+#
+#          Copyright (C) 2007 Makoto Hiroi
+#
+import time, sys, getopt, os.path
+from splaycode import *
+# ファイルの読み込み
+def read_file(fin):
+while True:
+c = getc(fin)
+if c is None: break
+yield c
+# 符号化
+def encode(fin, fout):
+sc = [SplayCode(256) for _ in xrange(256)]
+c0 = 0
+for x in read_file(fin):
+sc[c0].encode(fout, x)
+c0 = x
+# 復号
+def decode(fin, fout, size):
+sc = [SplayCode(256) for _ in xrange(256)]
+c0 = 0
+for _ in xrange(size):
+x = sc[c0].decode(fin)
+putc(fout, x)
+c0 = x
+# スプレー符号による符号化
+def encode_file(name1, name2):
+size = os.path.getsize(name1)
+infile = open(name1, "rb")
+outfile = BitIO(name2, WOPEN)
+outfile.putbits(32, size)
+if size > 0: encode(infile, outfile)
+infile.close()
+outfile.close()
+# スプレー符号による復号
+def decode_file(name1, name2):
+infile = BitIO(name1, ROPEN)
+outfile = open(name2, "wb")
+size = infile.getbits(32)
+if size > 0: decode(infile, outfile, size)
+infile.close()
+outfile.close()
+#
+def main():
+eflag = False
+dflag = False
+opts, args = getopt.getopt(sys.argv[1:], 'ed')
+for x, y in opts:
+if x == '-e' or x == '-E':
+eflag = True
+elif x == '-d' or x == '-D':
+dflag = True
+if eflag and dflag:
+print 'option error'
+elif eflag:
+encode_file(args[0], args[1])
+elif dflag:
+decode_file(args[0], args[1])
+else:
+print 'option error'
+#
+s = time.clock()
+main()
+e = time.clock()
+print "%.3f" % (e - s)
+プログラムリスト5
+# coding: shift_jis
+#
+# sc2.py : スプレー符号 (order-2)
+#
+#          Copyright (C) 2007 Makoto Hiroi
+#
+import time, sys, getopt, os.path
+from splaycode import *
+# ファイルの読み込み
+def read_file(fin):
+while True:
+c = getc(fin)
+if c is None: break
+yield c
+# 符号化
+def encode(fin, fout):
+sc = [[None] * 256 for _ in xrange(256)]
+c0 = 0
+c00 = 0
+for x in read_file(fin):
+if sc[c00][c0] is None:
+sc[c00][c0] = SplayCode(256)
+sc[c00][c0].encode(fout, x)
+c00 = c0
+c0 = x
+# 復号
+def decode(fin, fout, size):
+sc = [[None] * 256 for _ in xrange(256)]
+c0 = 0
+c00 = 0
+for _ in xrange(size):
+if sc[c00][c0] is None:
+sc[c00][c0] = SplayCode(256)
+x = sc[c00][c0].decode(fin)
+putc(fout, x)
+c00 = c0
+c0 = x
+# スプレー符号による符号化
+def encode_file(name1, name2):
+size = os.path.getsize(name1)
+infile = open(name1, "rb")
+outfile = BitIO(name2, WOPEN)
+outfile.putbits(32, size)
+if size > 0: encode(infile, outfile)
+infile.close()
+outfile.close()
+# スプレー符号による復号
+def decode_file(name1, name2):
+infile = BitIO(name1, ROPEN)
+outfile = open(name2, "wb")
+size = infile.getbits(32)
+if size > 0: decode(infile, outfile, size)
+infile.close()
+outfile.close()
+#
+def main():
+eflag = False
+dflag = False
+opts, args = getopt.getopt(sys.argv[1:], 'ed')
+for x, y in opts:
+if x == '-e' or x == '-E':
+eflag = True
+elif x == '-d' or x == '-D':
+dflag = True
+if eflag and dflag:
+print 'option error'
+elif eflag:
+encode_file(args[0], args[1])
+elif dflag:
+decode_file(args[0], args[1])
+else:
+print 'option error'
+#
+s = time.clock()
+main()
+e = time.clock()
+print "%.3f" % (e - s)
+Copyright (C) 2007 Makoto HiroiAll rights reserved.
+[ PrevPage | Python | NextPage ]
+Algorithms with Python / バイナリレンジコーダ, スプレー符号

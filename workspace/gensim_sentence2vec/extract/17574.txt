@@ -1,0 +1,123 @@
+2014/9/20にベルサール渋谷ガーデンでおこなわれた Pepper Tech Festival 2014 の技術セッションで紹介された作例を紹介します。
+なお、 バンパーセンサーのイベント検出についてはバーチャルロボットでは動作確認手段はなく、Pepper実機が必要になります。 アルデバラン・アトリエ秋葉原などでPepper実機を使って実験などおこなってみていただければと思います。 (予約URL:http://pepper.doorkeeper.jp/events)
+概要
+技術セッションでは、Pepperの持つALMemoryという機能の使用例として、 バンパーセンサーが接触を検知したら、「いたい」としゃべる サンプルを作ってお見せしました。このチュートリアルでは、その内容についてまとめています。
+Pepper Tech Festival 2014動画
+以下のリンクで、該当箇所から再生できます。
+関連チュートリアル
+また、以下のチュートリアルでもメモリイベントの考え方や、メモリウォッチャーの使い方を説明しています。あわせて参照してください。
+Pepperチュートリアル (6):タッチセンサー、人の認識#メモリイベント
+つくってみる
+実際にアプリケーションを作って試してみる動画は http://www.youtube.com/watch?v=SzVZPIFaweE&t=27m5s を参考にしてください。
+新規にプロジェクトを開いた状態で、以下のように操作していきます。
+まず、メモリイベントを追加します。[+]ボタン をクリックします
+すると、メモリイベントの選択ダイアログが開きます。今回はBumper関係のイベントを選択したいので、フィルターとして Bumper を入力 [A] し、そこであらわれた候補にある BackBumperPressed, LeftBumperPressed, RightBumperPressed をチェック [B] し、OKボタンをクリックします
+すると、フローダイアグラム左端に、新たな入力があらわれます。
+これらにマウスオーバーすると、それぞれ LeftBumperPressed, RightBumperPressed, BackBumperPressed に対応していることが確認できます。
+これらの入力を使うことで、Pepperのバンパー (センサーの位置は Pepperチュートリアル (8):移動#各種駆動系、センサー仕様 を参照) の変化により反応するフローを作ることができます。今回は、バンパーセンサーの接触に反応してPepperをしゃべらせてみます。
+しゃべるためのボックスを配置します。 standardボックスライブラリから Audio > Voice > Say ボックスをドラッグ&ドロップ します
+ボックスを以下のようにつなぎます
+Sayボックスをダブルクリックし、Localized Textボックスの言語を [Japanese] に、内容を いたい! などと変更 します
+これで、Pepperの持つ3つのバンパーのセンサー値の変化にしたがい、Pepperがしゃべるようになります。
+確認してみよう
+動作確認をおこなうには Pepperチュートリアル (1):SDKインストールとアプリケーションの作成/実行#Pepperでの実行 を参考にPepperに接続し、[ロボットにアップロードして再生]をおこなってみてください。バンパーを押してみるとPepperがしゃべることが確認できると思います。
+何度か試していると、バンパーが一回押されると「いたい」「いたい」と2回しゃべることがわかると思います。これはなぜなのでしょうか。確認してみましょう。
+改めて3つのBumperPressed入力を確認してみると、入力と接続がグレーで表現されていることがわかります。
+これは、Pepperチュートリアル (2):ボックスの考え方#色による種類 の通り、Dynamicイベントであることがわかります。つまり、このイベントは何らかの値をともなう可能性がある入力であることを示しています。ここでは具体的にどのような値が渡されるのでしょうか。
+ドキュメントの確認
+まずはドキュメントから確認してみましょう。
+ドキュメントを開くには [ヘルプ]メニューの [参照API] をクリックします
+ブラウザが開きますので、Quick searchフィールドに今回は LeftBumperPressed と入力します
+(参考)ドキュメントを参照する際のブラウザについて
+Mac, Windowsともに、Chromeではドキュメントの検索機能が正常にはたらかないという問題があります。
+当面はドキュメント参照時はSafari, Firefoxなどを利用されることをおすすめします。
+検索結果があらわれますので、 [ALTouch API] をクリックします
+LeftBumperPressedの説明を探します。ここで、LeftBumperPressedイベントハンドラの呼び出しの際、 引数valとして、float型の値が渡されることがわかります
+このようにして、ドキュメントからイベントに渡される値を確認することができます。次に、実機でどのような値が渡されるのか、ログ機能を使って確認してみましょう。
+ログを使った動作の確認
+先に作ったアプリケーションに対して、Logボックスを加えることで、ログ出力をおこない、実際に渡されている値を確認することができます。
+まず、ログ出力のためのボックスを配置します。standardボックスライブラリから System > Log ボックスをドラッグ&ドロップします
+3つのBumperPressed入力とLogのmessage入力を接続します。これで、各BumperPressedから渡される値がログビューアに出力されるようになります
+Logボックスのパラメータ設定ダイアログを開き、Message prefix変数に Bumper Pressed を入力し、[OK]ボタンを押します。これで、ログのメッセージには Bumper Pressedというメッセージと、BumperPressedイベントから送られた値が表示されることになります。
+これでログ出力の準備は完了です。 Pepperチュートリアル (2):ボックスの考え方#エラーの表示とログビューア を参考にログビューアパネルを表示してから、再生してみてください。
+Pepperのバンパーを押すと、以下のようなメッセージが表示されるはずです。
+[INFO ] behavior.box :onInput_message:27 _Behavior__lastUploadedChoregrapheBehaviorbehavior_11793650488__root__Log_2: Bumper Pressed: 1.0
+[INFO ] behavior.box :onInput_message:27 _Behavior__lastUploadedChoregrapheBehaviorbehavior_11793650488__root__Log_2: Bumper Pressed: 0.0
+バンパーが押されるたびに、押されたことを示す1.0という値と、離されたことを示す0.0という値が表示されていることがわかります。
+このように、BumperPressedイベントは、押されたこと、離されたこと、それぞれに反応するので、先の作例では「いたい!」を2回しゃべったということがわかります。
+値に応じた挙動の変化
+今回はBumperPressedイベントに対してSayボックスを直接接続したために、値にかかわらず「いたい」としゃべるという挙動になりましたが、Flow Control > Ifボックスを利用することで、 センサーから1.0が入力された時のみSayボックスへと出力するといったことが可能です。
+ここでは作成方法までは示しませんが、ぜひ、チャレンジしてみてください。
+このようにして、メモリイベントの値の変化と、出力が生じるタイミングを確認しながらフローを構成していく必要があります。
+2014/9/20にベルサール渋谷ガーデンでおこなわれた [Pepper Tech Festival 2014](http://www.softbank.jp/robot/special/techfes/) の技術セッションで紹介された作例を紹介します。
+なお、 **バンパーセンサーのイベント検出についてはバーチャルロボットでは動作確認手段はなく、Pepper実機が必要になります**。 アルデバラン・アトリエ秋葉原などでPepper実機を使って実験などおこなってみていただければと思います。 (予約URL:http://pepper.doorkeeper.jp/events)
+#概要
+技術セッションでは、Pepperの持つALMemoryという機能の使用例として、 **バンパーセンサーが接触を検知したら、「いたい」としゃべる** サンプルを作ってお見せしました。このチュートリアルでは、その内容についてまとめています。
+###Pepper Tech Festival 2014動画
+以下のリンクで、該当箇所から再生できます。
+[![Pepper技術セッション基礎編(日本語音声バージョン)](http://img.youtube.com/vi/SzVZPIFaweE/0.jpg)](http://www.youtube.com/watch?v=SzVZPIFaweE&t=25m0s)
+###関連チュートリアル
+また、以下のチュートリアルでもメモリイベントの考え方や、メモリウォッチャーの使い方を説明しています。あわせて参照してください。
+* [Pepperチュートリアル (6):タッチセンサー、人の認識#メモリイベント](http://qiita.com/Atelier-Akihabara/items/0a5826fb018a4d0e4268#2-2)
+#つくってみる
+実際にアプリケーションを作って試してみる動画は http://www.youtube.com/watch?v=SzVZPIFaweE&t=27m5s を参考にしてください。
+新規にプロジェクトを開いた状態で、以下のように操作していきます。
+1. まず、メモリイベントを追加します。**[+]ボタン** をクリックします
+![add-event.png](https://qiita-image-store.s3.amazonaws.com/0/54394/59e80cb1-4995-acd1-45e8-7507d1df6327.png)
+2. すると、メモリイベントの選択ダイアログが開きます。今回はBumper関係のイベントを選択したいので、フィルターとして **Bumper を入力 [A]** し、そこであらわれた候補にある **BackBumperPressed, LeftBumperPressed, RightBumperPressed をチェック [B]** し、OKボタンをクリックします
+![select-event.png](https://qiita-image-store.s3.amazonaws.com/0/54394/4468e053-7e06-8cd2-e8d0-2942ae26ab30.png)
+すると、フローダイアグラム左端に、新たな入力があらわれます。
+![added-event.png](https://qiita-image-store.s3.amazonaws.com/0/54394/e004c290-eec3-812b-fe95-56746473d669.png)
+これらにマウスオーバーすると、それぞれ LeftBumperPressed, RightBumperPressed, BackBumperPressed に対応していることが確認できます。
+![bumper-desc.png](https://qiita-image-store.s3.amazonaws.com/0/54394/0e3d82c7-fbb7-6d0d-89b6-2fe8a294c36d.png)
+これらの入力を使うことで、Pepperのバンパー (センサーの位置は [Pepperチュートリアル (8):移動#各種駆動系、センサー仕様](http://qiita.com/Atelier-Akihabara/items/b21397b4814eaf6fa303#1-2) を参照) の変化により反応するフローを作ることができます。今回は、バンパーセンサーの接触に反応してPepperをしゃべらせてみます。
+3. しゃべるためのボックスを配置します。 standardボックスライブラリから **Audio > Voice > Say ボックスをドラッグ&ドロップ** します
+![add-say.png](https://qiita-image-store.s3.amazonaws.com/0/54394/6725075e-8a14-4505-0d19-cd350d6410a4.png)
+4. ボックスを以下のようにつなぎます
+![connect-say.png](https://qiita-image-store.s3.amazonaws.com/0/54394/2460d007-29da-4e4c-efa9-42a57c76a6c2.png)
+5. **Sayボックスをダブルクリック**し、Localized Textボックスの**言語を [Japanese] に、内容を いたい! などと変更** します
+![change-content.png](https://qiita-image-store.s3.amazonaws.com/0/54394/f5e7ca56-9933-96b8-891c-6626381b8cbd.png)
+これで、Pepperの持つ3つのバンパーのセンサー値の変化にしたがい、Pepperがしゃべるようになります。
+#確認してみよう
+動作確認をおこなうには [Pepperチュートリアル (1):SDKインストールとアプリケーションの作成/実行#Pepperでの実行](http://qiita.com/Atelier-Akihabara/items/c5f57358a7b333eef397#2-7) を参考にPepperに接続し、[ロボットにアップロードして再生]をおこなってみてください。バンパーを押してみるとPepperがしゃべることが確認できると思います。
+何度か試していると、バンパーが一回押されると「いたい」「いたい」と2回しゃべることがわかると思います。これはなぜなのでしょうか。確認してみましょう。
+改めて3つのBumperPressed入力を確認してみると、入力と接続がグレーで表現されていることがわかります。
+![connections.png](https://qiita-image-store.s3.amazonaws.com/0/54394/ed4d1d5d-b085-7b36-196f-229c1ca82896.png)
+これは、[Pepperチュートリアル (2):ボックスの考え方#色による種類](http://qiita.com/Atelier-Akihabara/items/7a898f5e4d878b1ad889#3-2) の通り、Dynamicイベントであることがわかります。つまり、このイベントは何らかの値をともなう可能性がある入力であることを示しています。ここでは具体的にどのような値が渡されるのでしょうか。
+##ドキュメントの確認
+まずはドキュメントから確認してみましょう。
+1. ドキュメントを開くには **[ヘルプ]メニューの [参照API] をクリック**します
+![menu-api.png](https://qiita-image-store.s3.amazonaws.com/0/54394/0b0a6472-aaef-be0d-2a64-443a6014eb4c.png)
+2. ブラウザが開きますので、Quick searchフィールドに今回は **LeftBumperPressed と入力**します
+![search-document.png](https://qiita-image-store.s3.amazonaws.com/0/54394/201dd90d-b981-2ab2-e846-7645a2fa9052.png)
+> ####![info.png](https://qiita-image-store.s3.amazonaws.com/0/54394/ed7863bd-4c2e-7710-58db-0e38a4f26959.png) (参考)ドキュメントを参照する際のブラウザについて
+> Mac, Windowsともに、Chromeではドキュメントの検索機能が正常にはたらかないという問題があります。
+> 当面はドキュメント参照時はSafari, Firefoxなどを利用されることをおすすめします。
+3. 検索結果があらわれますので、 **[ALTouch API] をクリック**します
+![search-result-1.png](https://qiita-image-store.s3.amazonaws.com/0/54394/4034a3f2-2012-a57d-d41b-8e2446295e42.png)
+4. LeftBumperPressedの説明を探します。ここで、LeftBumperPressedイベントハンドラの呼び出しの際、 **引数valとして、float型の値が渡される**ことがわかります
+![search-result-2.png](https://qiita-image-store.s3.amazonaws.com/0/54394/047230f5-3bae-517a-f71b-7eb266707536.png)
+このようにして、ドキュメントからイベントに渡される値を確認することができます。次に、実機でどのような値が渡されるのか、ログ機能を使って確認してみましょう。
+##ログを使った動作の確認
+先に作ったアプリケーションに対して、Logボックスを加えることで、ログ出力をおこない、実際に渡されている値を確認することができます。
+1. まず、ログ出力のためのボックスを配置します。standardボックスライブラリから **System > Log ボックスをドラッグ&ドロップ**します
+![add-log.png](https://qiita-image-store.s3.amazonaws.com/0/54394/4857c8d8-088d-0d70-42c1-63cd94d0342a.png)
+2. **3つのBumperPressed入力とLogのmessage入力を接続**します。これで、各BumperPressedから渡される値がログビューアに出力されるようになります
+![connect-log.png](https://qiita-image-store.s3.amazonaws.com/0/54394/a7792e2f-6c38-14c1-fb83-c2de45d03f31.png)
+3. Logボックスのパラメータ設定ダイアログを開き、Message prefix変数に **Bumper Pressed を入力**し、[OK]ボタンを押します。これで、ログのメッセージには Bumper Pressedというメッセージと、BumperPressedイベントから送られた値が表示されることになります。
+![log-parameter.png](https://qiita-image-store.s3.amazonaws.com/0/54394/78854233-1b63-60d1-65dc-b1bb81183081.png)
+これでログ出力の準備は完了です。 [Pepperチュートリアル (2):ボックスの考え方#エラーの表示とログビューア](http://qiita.com/Atelier-Akihabara/items/7a898f5e4d878b1ad889#4-10) を参考にログビューアパネルを表示してから、再生してみてください。
+Pepperのバンパーを押すと、以下のようなメッセージが表示されるはずです。
+![log-viewer.png](https://qiita-image-store.s3.amazonaws.com/0/54394/447188a1-b50c-736d-2bce-3bb68289aa4c.png)
+```
+[INFO ] behavior.box :onInput_message:27 _Behavior__lastUploadedChoregrapheBehaviorbehavior_11793650488__root__Log_2: Bumper Pressed: 1.0
+[INFO ] behavior.box :onInput_message:27 _Behavior__lastUploadedChoregrapheBehaviorbehavior_11793650488__root__Log_2: Bumper Pressed: 0.0
+```
+バンパーが押されるたびに、押されたことを示す1.0という値と、離されたことを示す0.0という値が表示されていることがわかります。
+このように、BumperPressedイベントは、押されたこと、離されたこと、それぞれに反応するので、先の作例では「いたい!」を2回しゃべったということがわかります。
+##値に応じた挙動の変化
+今回はBumperPressedイベントに対してSayボックスを直接接続したために、値にかかわらず「いたい」としゃべるという挙動になりましたが、Flow Control > Ifボックスを利用することで、 **センサーから1.0が入力された時のみSayボックスへと出力する**といったことが可能です。
+ここでは作成方法までは示しませんが、ぜひ、チャレンジしてみてください。
+![if-example.png](https://qiita-image-store.s3.amazonaws.com/0/54394/bacbbef4-bf6d-a0b8-5f4e-2e14a9e0af81.png)
+このようにして、メモリイベントの値の変化と、出力が生じるタイミングを確認しながらフローを構成していく必要があります。
+バンパーセンサーのイベント検出 (Pepper TechFes技術セッション) - Qiita
