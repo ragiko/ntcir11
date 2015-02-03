@@ -122,15 +122,13 @@ if __name__ == '__main__':
     conf.RESULT_PATH
 
     pmi_model = PmiModel()
-    # ht.pp(pmi_model.get(u"鼻声", u"音声")) # test:
 
-    # クエリを取得してきて一文書に対してsum pmiベクトルを計算
     # クエリを読み込み
     query = ht.file_read(QUERY_PATH).split("\n")
     query.pop()
     query_tc = ht.TextCollection(query)
     query_tfidf_features = ht.TfIdf(query_tc).tf_idf()
-    query_tfidf_pmi = merge_tfidf_pmi_features(query_tfidf_features, pmi_model, use_merge=False)
+    query_tfidf_pmi = merge_tfidf_pmi_features(query_tfidf_features, pmi_model, use_merge=True)
 
     # ドキュメントを読み込み
     doc_tc = ht.TextCollection(DOC_PATH)
@@ -143,7 +141,7 @@ if __name__ == '__main__':
         ht.pickle_save(doc_tfidf_features, DOC_TF_IDF_PATH)
     else:
         doc_tfidf_features = ht.pickle_load(DOC_TF_IDF_PATH)
-    doc_tfidf_pmi = merge_tfidf_pmi_features(doc_tfidf_features, pmi_model, use_merge=False)
+    doc_tfidf_pmi = merge_tfidf_pmi_features(doc_tfidf_features, pmi_model, use_merge=True)
 
     # 類似度計算
     res = []
