@@ -22,4 +22,15 @@ def output_result(res, result_path):
         f.write(s)
         f.close()
 
+def similarity_output_result(results, result_path):
+    """
+    Similarityクラスのインスタンスを結果として吐き出す
+    """
+    res = []
+    for query_result in results:
+        # TODO: text2.textのところ修正必要
+        t = [(text2.text, sim) for text1, text2, sim in query_result]
+        res.append(t)
+    output_result(res, result_path)
+
 

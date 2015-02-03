@@ -90,11 +90,10 @@ def merge_vector(tfidf_vec, sumpmi_vec):
         if sum_v < 0.0:
             res[word] = 0.0
         else:
-            ht.pp(word)
             res[word] = tfidf_vec[word]
     return res
 
-def merge_tfidf_pmi_features(tfidf_features, pmi_model):
+def merge_tfidf_pmi_features(tfidf_features, pmi_model, use_merge=True):
     """
     sumpmiで補正したtfidfのベクトルを作成
     @param: tfidf_features 自分のモジュールのtfidfの値
@@ -105,7 +104,10 @@ def merge_tfidf_pmi_features(tfidf_features, pmi_model):
     for tfidf in tfidf_features:
         tfidf_vec = tfidf.vec
         sumpmi_vec = pmi_model.sum_pmi_vector(tfidf.text.words())
-        merge_vec = merge_vector(tfidf_vec, sumpmi_vec)
+        if use_merge:
+            merge_vec = merge_vector(tfidf_vec, sumpmi_vec)
+        else: 
+            merge_vec = tfidf_vec
         tfidf_pmi.append((tfidf.text, merge_vec)) 
     return tfidf_pmi
 
@@ -117,18 +119,40 @@ if __name__ == '__main__':
     conf = config.Config("pmi")
     QUERY_PATH = conf.SPOKEN_QUERY_PATH
     DOC_PATH = conf.SPOKEN_DOC_PATH
+    conf.RESULT_PATH
 
     pmi_model = PmiModel()
     # ht.pp(pmi_model.get(u"鼻声", u"音声")) # test:
 
     # クエリを取得してきて一文書に対してsum pmiベクトルを計算
     # クエリを読み込み
-    QUERY_PATH = conf.WRITE_QUERY_PATH
     query = ht.file_read(QUERY_PATH).split("\n")
     query.pop()
     query_tc = ht.TextCollection(query)
     query_tfidf_features = ht.TfIdf(query_tc).tf_idf()
-    query_tfidf_pmi = merge_tfidf_pmi_features(query_tfidf_features, pmi_model)
+    query_tfidf_pmi = merge_tfidf_pmi_features(query_tfidf_features, pmi_model, use_merge=False)
+
+    # ドキュメントを読み込み
+    doc_tc = ht.TextCollection(DOC_PATH)
+
+    # cache
+    DOC_TF_IDF_PATH = conf.TMP_PATH + "/doc_tfidf"
+    doc_tfidf_features = None
+    if (os.path.exists(DOC_TF_IDF_PATH) == False):
+        doc_tfidf_features = ht.TfIdf(doc_tc).tf_idf()
+        ht.pickle_save(doc_tfidf_features, DOC_TF_IDF_PATH)
+    else:
+        doc_tfidf_features = ht.pickle_load(DOC_TF_IDF_PATH)
+    doc_tfidf_pmi = merge_tfidf_pmi_features(doc_tfidf_features, pmi_model, use_merge=False)
+
+    # 類似度計算
+    res = []
+    doc_sim = ht.Similarity(doc_tfidf_pmi)
+    for q_feature in query_tfidf_pmi:
+        res.append(doc_sim.most_similarity_by_feature(q_feature))
+
+    # 結果の出力
+    helper.similarity_output_result(res, conf.RESULT_PATH)
 
     """
     test case
