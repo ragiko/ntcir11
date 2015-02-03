@@ -77,6 +77,38 @@ class PmiModel:
         else:
             return 0.0
 
+def merge_vector(tfidf_vec, sumpmi_vec):
+    """
+    tfidfとsumpmiの結合
+    sumpmiの値が0以下の時、tfidfの値を0に更新
+    """
+    res = {}
+    if len(tfidf_vec.keys()) != len(sumpmi_vec.keys()): 
+        raise NameError('dict size is not match')
+
+    for word, sum_v in sumpmi_vec.items(): 
+        if sum_v < 0.0:
+            res[word] = 0.0
+        else:
+            ht.pp(word)
+            res[word] = tfidf_vec[word]
+    return res
+
+def merge_tfidf_pmi_features(tfidf_features, pmi_model):
+    """
+    sumpmiで補正したtfidfのベクトルを作成
+    @param: tfidf_features 自分のモジュールのtfidfの値
+    @param: pmi_model 自分のpmiクラスのインスタンス
+    """
+    # query tfidf (sumpmi補正)
+    tfidf_pmi = []
+    for tfidf in tfidf_features:
+        tfidf_vec = tfidf.vec
+        sumpmi_vec = pmi_model.sum_pmi_vector(tfidf.text.words())
+        merge_vec = merge_vector(tfidf_vec, sumpmi_vec)
+        tfidf_pmi.append((tfidf.text, merge_vec)) 
+    return tfidf_pmi
+
 if __name__ == '__main__':
     """
     main program
@@ -95,16 +127,8 @@ if __name__ == '__main__':
     query = ht.file_read(QUERY_PATH).split("\n")
     query.pop()
     query_tc = ht.TextCollection(query)
-    ht.pp(pmi_model.sum_pmi_vector(query_tc[0].words()))
-
-    # pmi ベクトル
-    # 入力 term, text 結果 sum pmiの値
-
-
-
-    # DOC_PATH = conf.WRITE_DOC_PATH
-
-
+    query_tfidf_features = ht.TfIdf(query_tc).tf_idf()
+    query_tfidf_pmi = merge_tfidf_pmi_features(query_tfidf_features, pmi_model)
 
     """
     test case
