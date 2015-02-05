@@ -46,7 +46,8 @@ class LabeledLineSentence(object):
         sentences = []
 
         print "start word parse"
-        lines = self.textcollection.words_list([u"名詞", u"動詞"]) # すべての形態素
+        lines = self.textcollection.words_list([u"名詞", u"動詞", u"形容詞", u"副詞"]) # すべての形態素
+        # lines = self.textcollection.words_list([u"名詞"]) # すべての形態素
 
         print "start add labeldsentence"
         for uid, line in enumerate(lines):
@@ -71,10 +72,11 @@ class Corpus(object):
         query.pop()
         self.query_tc = ht.TextCollection(query)
         self.doc_tc = ht.TextCollection(self.conf.WRITE_DOC_PATH)
+
         # TODO: wrapも取れるように設計しよう...
-        self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
-        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:100]])
-        self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
+        # self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
+        # self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:100]])
+        # self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
 
     def make_corpus(self):
         self.query_tc.add_text_collection(self.doc_tc)
@@ -83,8 +85,8 @@ class Corpus(object):
 
     def make_sent2vec_sentences(self):
         return LabeledLineSentence(self.doc_tc, "DOC") \
-               + LabeledLineSentence(self.query_tc, "QUERY") \
-               + LabeledLineSentence(self.expand_tc, "EXPAND")
+               + LabeledLineSentence(self.query_tc, "QUERY") 
+               # + LabeledLineSentence(self.expand_tc, "EXPAND")
 
     def doclabel2text(self, doclabel):
         """
@@ -120,9 +122,11 @@ class MySentVec(object):
     def model(self):
         if self.model_cache is not None:
             return self.model_cache
+        return self.train()
 
+    def train(self, _size=400, _min_count=9, _window=8, _sample=0.0, _dm=1):
         # モデル作成
-        model = Doc2Vec(self.sentences, size=400, window=5, min_count=5, workers=4)
+        model = Doc2Vec(self.sentences, size=_size, window=_window, min_count=_min_count, workers=4, sample=_sample, dm=_dm)
         # model = Doc2Vec(alpha=0.025, min_alpha=0.025, workers=4)  # use fixed learning rate
         # model.build_vocab(self.sentences)
         #  
@@ -132,10 +136,6 @@ class MySentVec(object):
         #     model.min_alpha = model.alpha  # fix the learning rate, no decay
 
         self.model_cache = model
-        return self.model_cache
-
-    def update(self):
-        self.model_cache = Doc2Vec(self.sentences, size=400, window=5, min_count=5, workers=4)
         return self.model_cache 
 
     def most_similar_in_doc(self, search_label, topn=1000):
@@ -152,29 +152,34 @@ if __name__ == '__main__':
 
     conf = config.Config("gensim_sentence2vec")
     MIDDLE_PATH = conf.PROJECT_PATH + "/middle"
+    LOAD_MODE = True 
 
     # extra data 100
     SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
     # extra data 10000
     # SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
+    # extra data all
+    # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_all" 
 
     # ////////////////////
     # if model load
     # ////////////////////
 
-    # model = mysentvec_load(SAVE_NAME_PATH)
-    # model.update()
+    if (LOAD_MODE):
+        model = mysentvec_load(SAVE_NAME_PATH)
+        model.train()
 
     # ////////////////////
     # if make model
     # ////////////////////
 
-    print "make corpus"
-    corpus = Corpus()
-
-    print "make model"
-    model = MySentVec(corpus)
-    model.save(SAVE_NAME_PATH)
+    if (LOAD_MODE == False):
+        print "make corpus"
+        corpus = Corpus()
+    
+        print "make model"
+        model = MySentVec(corpus)
+        model.save(SAVE_NAME_PATH)
 
     # ////////////////////
     # calc result
@@ -185,9 +190,5 @@ if __name__ == '__main__':
         query_label = "SENT_QUERY_%s" % str(i)
         res.append(model.most_similar_in_doc(query_label))
 
-    # for text, sim in res[0][0:10]:
-    #     ht.pp(text.path)
-    #     ht.pp(sim)
-    # 
     # fileのアウトプット
     helper.output_result(res, conf.RESULT_PATH)
