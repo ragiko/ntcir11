@@ -74,8 +74,8 @@ class Corpus(object):
         self.doc_tc = ht.TextCollection(self.conf.WRITE_DOC_PATH)
 
         # TODO: wrapも取れるように設計しよう...
-        # self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
-        # self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:100]])
+        self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
+        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:10000]])
         # self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
 
     def make_corpus(self):
@@ -85,8 +85,8 @@ class Corpus(object):
 
     def make_sent2vec_sentences(self):
         return LabeledLineSentence(self.doc_tc, "DOC") \
-               + LabeledLineSentence(self.query_tc, "QUERY") 
-               # + LabeledLineSentence(self.expand_tc, "EXPAND")
+               + LabeledLineSentence(self.query_tc, "QUERY") \
+               + LabeledLineSentence(self.expand_tc, "EXPAND")
 
     def doclabel2text(self, doclabel):
         """
@@ -125,8 +125,24 @@ class MySentVec(object):
         return self.train()
 
     def train(self, _size=400, _min_count=9, _window=8, _sample=0.0, _dm=1):
+        epoch = 2
+
         # モデル作成
-        model = Doc2Vec(self.sentences, size=_size, window=_window, min_count=_min_count, workers=4, sample=_sample, dm=_dm)
+        model = Doc2Vec(size=_size, window=_window, min_count=_min_count, workers=4, sample=_sample, dm=_dm)
+        model.build_vocab(self.sentences)
+
+        # wordvectorのみ学習
+        model.train_words = True
+        model.train_lbls = False
+        for i in range(epoch):
+            model.train(self.sentences)
+
+        # word2vecの重みを止める
+        model.train_words = False
+        model.train_lbls = True
+        for i in range(epoch):
+            model.train(self.sentences)
+
         # model = Doc2Vec(alpha=0.025, min_alpha=0.025, workers=4)  # use fixed learning rate
         # model.build_vocab(self.sentences)
         #  
@@ -135,6 +151,7 @@ class MySentVec(object):
         #     model.alpha -= 0.002  # decrease the learning rate
         #     model.min_alpha = model.alpha  # fix the learning rate, no decay
 
+        # trainはモデルの値を更新
         self.model_cache = model
         return self.model_cache 
 
@@ -155,9 +172,9 @@ if __name__ == '__main__':
     LOAD_MODE = True 
 
     # extra data 100
-    SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
+    # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
     # extra data 10000
-    # SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
+    SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
     # extra data all
     # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_all" 
 
