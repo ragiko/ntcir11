@@ -40,7 +40,11 @@ class LabeledLineSentence(object):
             return self.sentences_cache
 
         sentences = []
+
+        print "start word parse"
         lines = self.textcollection.words_list([u"名詞", u"動詞"]) # すべての形態素
+
+        print "start add labeldsentence"
         for uid, line in enumerate(lines):
             sentences.append(LabeledSentence(words=line, labels=['SENT_%s_%s' % (self.label, str(uid))]))
 
@@ -57,6 +61,7 @@ class LabeledLineSentence(object):
 class Corpus(object):
     def __init__(self):
         self.conf = config.Config("gensim_sentence2vec")
+        self.corpus_path = self.conf.PROJECT_PATH+"/middle/corpus.txt"
 
         query = ht.file_read(self.conf.WRITE_QUERY_PATH).split("\n")
         query.pop()
@@ -64,10 +69,8 @@ class Corpus(object):
         self.doc_tc = ht.TextCollection(self.conf.WRITE_DOC_PATH)
         # TODO: wrapも取れるように設計しよう...
         self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
-        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:1000]])
+        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:10]])
         self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
-
-        self.corpus_path = self.conf.PROJECT_PATH+"/middle/corpus.txt"
 
     def make_corpus(self):
         self.query_tc.add_text_collection(self.doc_tc)
@@ -87,6 +90,21 @@ class Corpus(object):
             return self.doc_tc[int(m.group(1))]
         else: 
             return None
+
+def mysentvec_load(fname):
+    """
+    mysentvecのローダー
+    """
+    corpus = ht.pickle_load(fname + ".corpus")
+    m = MySentVec(corpus)
+
+    sentences = ht.pickle_load(fname + ".sentences")
+    model_cache = Doc2Vec.load(fname + ".model")
+
+    m.sentences = sentences 
+    m.model_cache = model_cache 
+
+    return m
 
 class MySentVec(object):
     def __init__(self, corpus):
@@ -116,20 +134,31 @@ class MySentVec(object):
         similaries = [(self.corpus.doclabel2text(label), sim) for label, sim in similaries if re.search("DOC", label)]
         return similaries[0:topn]
 
+    def save(self, fname):
+        ht.pickle_save(self.corpus, fname + ".corpus")
+        ht.pickle_save(self.sentences, fname + ".sentences")
+        self.model().save(fname + ".model")
+
 if __name__ == '__main__':
 
     conf = config.Config("gensim_sentence2vec")
+    MIDDLE_PATH = conf.PROJECT_PATH + "/middle"
 
-    corpus = Corpus()
+    # if model load
+    # model = mysentvec_load(MIDDLE_PATH + "/save")
+
     print "make corpus"
+    corpus = Corpus()
 
     # labelと文章の対応はあっているはず 
     # print corpus.doclabel2text("SENT_DOC_1").text()
     # print corpus.doclabel2text("SENT_DOC_1").path
     # print corpus.make_sent2vec_sentences().output_sentences()
 
-    model = MySentVec(corpus)
     print "make model"
+    model = MySentVec(corpus)
+    model.save(MIDDLE_PATH + "/save")
+
 
     # ht.pp(model.model().most_similar(u"音声", topn=50))
     # exit()
