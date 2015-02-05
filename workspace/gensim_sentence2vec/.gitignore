@@ -1,5 +1,7 @@
 extract_wrap/
 
-middle/save.corpus
-middle/save.model
-middle/save.sentences
+middle/*.npy
+
+middle/*.corpus
+middle/*.model
+middle/*.sentences

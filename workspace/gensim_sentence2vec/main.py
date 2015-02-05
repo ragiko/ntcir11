@@ -15,6 +15,10 @@ import config
 # 日本語を標準出力できるように
 sys.stdout = codecs.getwriter("utf_8")(sys.stdout)
 
+"""
+エラーを治そう
+"""
+
 class LabeledLineSentence(object):
     """
     doc2vecのモデル用のモデル
@@ -69,7 +73,7 @@ class Corpus(object):
         self.doc_tc = ht.TextCollection(self.conf.WRITE_DOC_PATH)
         # TODO: wrapも取れるように設計しよう...
         self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
-        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:10]])
+        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:100]])
         self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
 
     def make_corpus(self):
@@ -84,6 +88,7 @@ class Corpus(object):
 
     def doclabel2text(self, doclabel):
         """
+        TODO: ちゃんとtextオブジェクトが取得しているかどうかを調べる
         """
         m = re.search('DOC_(.*)$', doclabel)
         if m:
@@ -129,9 +134,13 @@ class MySentVec(object):
         self.model_cache = model
         return self.model_cache
 
+    def update(self):
+        self.model_cache = Doc2Vec(self.sentences, size=400, window=5, min_count=5, workers=4)
+        return self.model_cache 
+
     def most_similar_in_doc(self, search_label, topn=1000):
         similaries = self.model().most_similar(search_label, topn=len(self.model().syn0))
-        similaries = [(self.corpus.doclabel2text(label), sim) for label, sim in similaries if re.search("DOC", label)]
+        similaries = [(self.corpus.doclabel2text(label), sim) for label, sim in similaries if self.corpus.doclabel2text(label) is not None]
         return similaries[0:topn]
 
     def save(self, fname):
@@ -144,34 +153,41 @@ if __name__ == '__main__':
     conf = config.Config("gensim_sentence2vec")
     MIDDLE_PATH = conf.PROJECT_PATH + "/middle"
 
+    # extra data 100
+    SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
+    # extra data 10000
+    # SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
+
+    # ////////////////////
     # if model load
-    # model = mysentvec_load(MIDDLE_PATH + "/save")
+    # ////////////////////
+
+    # model = mysentvec_load(SAVE_NAME_PATH)
+    # model.update()
+
+    # ////////////////////
+    # if make model
+    # ////////////////////
 
     print "make corpus"
     corpus = Corpus()
 
-    # labelと文章の対応はあっているはず 
-    # print corpus.doclabel2text("SENT_DOC_1").text()
-    # print corpus.doclabel2text("SENT_DOC_1").path
-    # print corpus.make_sent2vec_sentences().output_sentences()
-
     print "make model"
     model = MySentVec(corpus)
-    model.save(MIDDLE_PATH + "/save")
+    model.save(SAVE_NAME_PATH)
 
-
-    # ht.pp(model.model().most_similar(u"音声", topn=50))
-    # exit()
+    # ////////////////////
+    # calc result
+    # ////////////////////
 
     res = []
     for i in range(37):
         query_label = "SENT_QUERY_%s" % str(i)
-        print query_label
         res.append(model.most_similar_in_doc(query_label))
 
-#     for text, sim in res[0][0:10]:
-#         ht.pp(text.path)
-#         ht.pp(sim)
-# 
+    # for text, sim in res[0][0:10]:
+    #     ht.pp(text.path)
+    #     ht.pp(sim)
+    # 
     # fileのアウトプット
     helper.output_result(res, conf.RESULT_PATH)
