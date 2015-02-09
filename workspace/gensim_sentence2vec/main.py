@@ -75,7 +75,8 @@ class Corpus(object):
 
         # TODO: wrapも取れるように設計しよう...
         self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
-        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:10000]])
+        # self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:10000]])
+        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()])
         # self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
 
     def make_corpus(self):
@@ -169,14 +170,14 @@ if __name__ == '__main__':
 
     conf = config.Config("gensim_sentence2vec")
     MIDDLE_PATH = conf.PROJECT_PATH + "/middle"
-    LOAD_MODE = True 
+    LOAD_MODE = False 
 
     # extra data 100
     # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
     # extra data 10000
-    SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
+    # SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
     # extra data all
-    # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_all" 
+    SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_all" 
 
     # ////////////////////
     # if model load
