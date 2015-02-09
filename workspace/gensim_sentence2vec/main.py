@@ -139,12 +139,8 @@ class MySentVec(object):
 
     def train(self, _size=400, _min_count=9, _window=8, _sample=0.0, _dm=1):
         """
-        LabeledLineSentenceに
-            trainデータ
-            testデータ
-        を保有させる
-
-        trainデータとtestデータを分けたい
+        1. train : wordの重みを計算
+        2. test : wordの重みを止めて, ラベルの重みを計算
         """
         epoch = 1
 
@@ -168,14 +164,6 @@ class MySentVec(object):
         for i in range(epoch):
             model.train(self.test_sentences)
             print "train data size (%s)" % str(len(self.test_sentences))
-
-        # model = Doc2Vec(alpha=0.025, min_alpha=0.025, workers=4)  # use fixed learning rate
-        # model.build_vocab(self.sentences)
-        #  
-        # for epoch in range(1):
-        #     model.train(self.sentences)
-        #     model.alpha -= 0.002  # decrease the learning rate
-        #     model.min_alpha = model.alpha  # fix the learning rate, no decay
 
         # trainはモデルの値を更新
         self.model_cache = model
