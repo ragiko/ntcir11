@@ -15,13 +15,11 @@ import config
 # 日本語を標準出力できるように
 sys.stdout = codecs.getwriter("utf_8")(sys.stdout)
 
-"""
-エラーを治そう
-"""
-
 class LabeledLineSentence(object):
     """
     doc2vecのモデル用のモデル
+
+    textcollection と label は他のオブジェクトに依存しない
     """
     def __init__(self, textcollection, label):
         self.textcollection = textcollection 
@@ -29,13 +27,17 @@ class LabeledLineSentence(object):
         self.sentences_cache = None
 
     def __add__(self, labeled_line_sentence):
-       self.sentences_cache = self.sentences() + labeled_line_sentence.sentences()
-       return self
+       sents = LabeledLineSentence(None, None)
+       sents.sentences_cache = self.sentences() + labeled_line_sentence.sentences()
+       return sents
 
     def __iter__(self):
         for sent in self.sentences():
             yield sent
- 
+
+    def __len__(self):
+        return len(self.sentences())
+
     def sentences(self):
         """
         sentence2vecのモデルに渡す用のsent
@@ -75,19 +77,27 @@ class Corpus(object):
 
         # TODO: wrapも取れるように設計しよう...
         self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
-        # self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:10000]])
-        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()])
+        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:100]])
+        # self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()])
         # self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
+
+        self.doc_sents = LabeledLineSentence(self.doc_tc, "DOC")
+        self.query_sents = LabeledLineSentence(self.query_tc, "QUERY")
+        self.expand_sents = LabeledLineSentence(self.expand_tc, "EXPAND")
 
     def make_corpus(self):
         self.query_tc.add_text_collection(self.doc_tc)
         merge_tc = self.query_tc
         merge_tc.dump_corpus(self.corpus_path)
 
+    def make_train_sentences(self):
+        return self.expand_sents 
+
+    def make_test_sentences(self):
+        return self.doc_sents + self.query_sents
+
     def make_sent2vec_sentences(self):
-        return LabeledLineSentence(self.doc_tc, "DOC") \
-               + LabeledLineSentence(self.query_tc, "QUERY") \
-               + LabeledLineSentence(self.expand_tc, "EXPAND")
+        return self.doc_sents + self.query_sents + self.expand_sents
 
     def doclabel2text(self, doclabel):
         """
@@ -118,6 +128,8 @@ class MySentVec(object):
     def __init__(self, corpus):
         self.corpus = corpus
         self.sentences = self.corpus.make_sent2vec_sentences() 
+        self.test_sentences = self.corpus.make_test_sentences() 
+        self.train_sentences = self.corpus.make_train_sentences() 
         self.model_cache = None
 
     def model(self):
@@ -126,23 +138,36 @@ class MySentVec(object):
         return self.train()
 
     def train(self, _size=400, _min_count=9, _window=8, _sample=0.0, _dm=1):
-        epoch = 2
+        """
+        LabeledLineSentenceに
+            trainデータ
+            testデータ
+        を保有させる
+
+        trainデータとtestデータを分けたい
+        """
+        epoch = 1
 
         # モデル作成
         model = Doc2Vec(size=_size, window=_window, min_count=_min_count, workers=4, sample=_sample, dm=_dm)
         model.build_vocab(self.sentences)
 
+        # that's too bad
+        print "all data size (%s)" % str(len(self.sentences))
+
         # wordvectorのみ学習
         model.train_words = True
         model.train_lbls = False
         for i in range(epoch):
-            model.train(self.sentences)
+            model.train(self.train_sentences)
+            print "train data size (%s)" % str(len(self.train_sentences))
 
         # word2vecの重みを止める
         model.train_words = False
         model.train_lbls = True
         for i in range(epoch):
-            model.train(self.sentences)
+            model.train(self.test_sentences)
+            print "train data size (%s)" % str(len(self.test_sentences))
 
         # model = Doc2Vec(alpha=0.025, min_alpha=0.025, workers=4)  # use fixed learning rate
         # model.build_vocab(self.sentences)
@@ -173,11 +198,11 @@ if __name__ == '__main__':
     LOAD_MODE = False 
 
     # extra data 100
-    # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
+    SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
     # extra data 10000
     # SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
     # extra data all
-    SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_all" 
+    # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_all" 
 
     # ////////////////////
     # if model load
