@@ -77,8 +77,8 @@ class Corpus(object):
 
         # TODO: wrapも取れるように設計しよう...
         self.expand_tc = ht.TextCollection(self.conf.PROJECT_PATH+"/extract")
-        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:100]])
-        # self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()])
+        # self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()[0:1000]])
+        self.expand_tc = ht.TextCollection([text.text() for text in self.expand_tc.list()])
         # self.all_tc = self.query_tc + self.doc_tc + self.expand_tc  
 
         self.doc_sents = LabeledLineSentence(self.doc_tc, "DOC")
@@ -117,9 +117,13 @@ def mysentvec_load(fname):
     m = MySentVec(corpus)
 
     sentences = ht.pickle_load(fname + ".sentences")
+    test_sentences = ht.pickle_load(fname + ".test.sentences")
+    train_sentences = ht.pickle_load(fname + ".train.sentences")
     model_cache = Doc2Vec.load(fname + ".model")
 
     m.sentences = sentences 
+    m.test_sentences = test_sentences 
+    m.train_sentences = train_sentences 
     m.model_cache = model_cache 
 
     return m
@@ -142,7 +146,7 @@ class MySentVec(object):
         1. train : wordの重みを計算
         2. test : wordの重みを止めて, ラベルの重みを計算
         """
-        epoch = 1
+        epoch = 5
 
         # モデル作成
         model = Doc2Vec(size=_size, window=_window, min_count=_min_count, workers=4, sample=_sample, dm=_dm)
@@ -152,18 +156,18 @@ class MySentVec(object):
         print "all data size (%s)" % str(len(self.sentences))
 
         # wordvectorのみ学習
+        print "train data size (%s)" % str(len(self.train_sentences))
         model.train_words = True
         model.train_lbls = False
         for i in range(epoch):
             model.train(self.train_sentences)
-            print "train data size (%s)" % str(len(self.train_sentences))
 
         # word2vecの重みを止める
+        print "test data size (%s)" % str(len(self.test_sentences))
         model.train_words = False
         model.train_lbls = True
         for i in range(epoch):
             model.train(self.test_sentences)
-            print "train data size (%s)" % str(len(self.test_sentences))
 
         # trainはモデルの値を更新
         self.model_cache = model
@@ -177,18 +181,22 @@ class MySentVec(object):
     def save(self, fname):
         ht.pickle_save(self.corpus, fname + ".corpus")
         ht.pickle_save(self.sentences, fname + ".sentences")
+        ht.pickle_save(self.test_sentences, fname + ".test.sentences")
+        ht.pickle_save(self.train_sentences, fname + ".train.sentences")
         self.model().save(fname + ".model")
 
 if __name__ == '__main__':
 
     conf = config.Config("gensim_sentence2vec")
     MIDDLE_PATH = conf.PROJECT_PATH + "/middle"
-    LOAD_MODE = False 
+    LOAD_MODE = True 
 
     # extra data 100
-    SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
+    # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_100" 
+    # extra data 1000
+    # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_1000" 
     # extra data 10000
-    # SAVE_NAME_PATH = MIDDLE_PATH + "/save" 
+    SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_10000" 
     # extra data all
     # SAVE_NAME_PATH = MIDDLE_PATH + "/save_extra_data_all" 
 
@@ -197,7 +205,10 @@ if __name__ == '__main__':
     # ////////////////////
 
     if (LOAD_MODE):
+        print "load model"
         model = mysentvec_load(SAVE_NAME_PATH)
+
+        print "train model"
         model.train()
 
     # ////////////////////

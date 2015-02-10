@@ -94,6 +94,7 @@ def getResultFormat(result_file_arr)
 
     for i in 0..result_file_arr.length-1
         file_path = result_file_arr[i]
+        p file_path
 
         file = File::open(file_path)\
                     .read\

@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 def output_result(res, result_path):
     """
     クエリとドキュメントの類似度の結果を保存
