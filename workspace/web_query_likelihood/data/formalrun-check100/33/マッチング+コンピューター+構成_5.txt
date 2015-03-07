@@ -1,0 +1,15 @@
+
+2 OracleAS Adapter for IMS/DBの構成
+この章では、Oracle Studioを使用してOracle Connectを構成する方法について説明します。
+Oracle ConnectのモデリングはすべてOracle Studioを使用して実行します。Oracle Studioを使用するには、最初に、IMS/DBデータが常駐しているIBM z/OSプラットフォームにアクセスできるようにOracle Studioを構成します。
+この章の構成は、次のとおりです。
+Oracle StudioでのIBM z/OSプラットフォームの設定
+Oracle Connectへのアクセスの保護
+OracleAS Adapter for IMS/DBの相互作用のモデリング
+Oracle StudioでのIBM z/OSプラットフォームの設定
+Oracle Studioを使用してIBM z/OSプラットフォームを構成する手順は、次のとおりです。
+「スタート」メニューから、「プログラム」「Oracle」「Studio」を選択します。Oracle Studioが開き、「Design」パースペクティブが表示されます。
+Configuration Explorerで「Machines」を右クリックし、「Add Machine」を選択します。「Add Machine」画面が表示されます(図2-1を参照)。
+接続先のコンピュータの名前を入力するか、または「Browse」をクリックして、表示されているコンピュータ・リストから、デフォルト・ポート(2551)を使用するコンピュータを選択します。
+Oracle Connectのインストール時に管理者として指定されたユーザーのユーザー名とパスワードを指定します。
+OracleAS Adapter for IMS/DBの構成

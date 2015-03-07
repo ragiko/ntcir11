@@ -1,0 +1,29 @@
+6.2.1. IN NATURAL LANGUAGE MODEにおける検索スコアの算出方法¶
+IN NATURAL LANGUAGE MODEでの検索スコアはクエリと文書の類似度になります。スコアは以下の手順に従って算出されます。:
+クエリをトークンに分割する
+マッチしないトークンを除去する
+トークン毎の重みを計算する
+重みが大きい上位N個のトークンを取り出す
+上位N個のトークンについて、トークンが出現する文書に重みを足し、すべての重みを足したものがクエリと文書の類似度となる
+SET NAMES UTF8;
+CREATE TABLE diaries (
+id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+content TEXT,
+FULLTEXT INDEX(content)
+) ENGINE mroonga DEFAULT CHARSET UTF8;
+INSERT INTO diaries (content) VALUES("It'll be fine tomorrow as well.");
+INSERT INTO diaries (content) VALUES("It'll rain tomorrow.");
+INSERT INTO diaries (content) VALUES("It's fine today. It'll be fine tomorrow as well.");
+INSERT INTO diaries (content) VALUES("It's fine today. But it'll rain tomorrow.");
+mysql> SELECT *, MATCH (content) AGAINST ("fine today") AS score
+->        FROM diaries
+->        WHERE MATCH (content) AGAINST ("fine today")
+->        ORDER BY MATCH (content) AGAINST ("fine today") DESC;
++----+--------------------------------------------------+--------+
+| id | content                                          | score  |
++----+--------------------------------------------------+--------+
+|  3 | It's fine today. It'll be fine tomorrow as well. | 131073 |
+|  4 | It's fine today. But it'll rain tomorrow.        | 131073 |
++----+--------------------------------------------------+--------+
+2 rows in set (0.01 sec)
+6.2. Mroongaにおける検索スコア &mdash; Mroonga v4.06 documentation

@@ -1,0 +1,108 @@
+はじめにMATLAB® は、Delaunay 三角形分割を使用する空間探索の実行のために必要な関数を提供します。MATLAB がサポートする Delaunay ベースの探索は、以下になります。最近傍探索 (しばしば最近点探索または近接探索と呼ばれます)。点の位置探索 (しばしば三角形内の point-in-triangle 探索、またはシンプレックス内の点探索と呼ばれ、ここではシンプレックスは三角形、四面体またはより高い次元に相当するものです)。 ユークリッド空間の点集合 X およびクエリ点 q を作成する場合、最近傍探索は、X 内の他の点に比べて q により近い X 内の点 p を探索します。X の Delaunay 三角形分割を作成する場合、点の位置探索はクエリ点 q を含む三角形または四面体を探索します。MATLAB がこれら N 次元の探索スキーマをサポートする場合、正確な空間探索は通常 6 次元では抑制されます。10 次元までの大きな問題に対する近似代替方法を考えなければなりません。
+最近傍探索問題の次元によって、MATLAB の最近傍の計算には、2 つの Delaunay ベースのアプローチがあります。2 次元探索および 3 次元探索では、delaunayTriangulation クラスにより提供される nearestNeighbor を使用します。4 次元以上では関数 delaunayn を使って、探索を実行するための三角形分割および相補関数 dsearchn を作成します。これらの N 次元関数は 2 次元および 3 次元をサポートしていますが、delaunayTriangulation により提供される探索メソッドほど効率的ではありません。この例は、delaunayTriangulation を使用して 2 次元の最近傍探索を行う方法を示しています。始めに 15 点の乱数セットを作成します。X = [3.5 8.2; 6.8 8.3; 1.3 6.5; 3.5 6.3; 5.8 6.2; 8.3 6.5;...
+1 4; 2.7 4.3; 5 4.5; 7 3.5; 8.7 4.2; 1.5 2.1; 4.1 1.1; ...
+7 1.5; 8.5 2.75];
+点をプロットし、ID ラベルを表示する注釈を追加します。plot(X(:,1),X(:,2),'ob')
+hold on
+vxlabels = arrayfun(@(n) {sprintf('X%d', n)}, (1:15)');
+Hpl = text(X(:,1)+0.2, X(:,2)+0.2, vxlabels, 'FontWeight', ...
+'bold', 'HorizontalAlignment','center', 'BackgroundColor', ...
+'none');
+hold off
+点から Delaunay 三角形分割を作成します。dt = delaunayTriangulation(X);
+いくつかのクエリ点を作成し、nearestNeighbor メソッドを使用して X の各クエリ点に対する最近傍のインデックスを求めます。numq = 10;
+rng(0,'twister');
+q = 2+rand(numq,2)*6;
+xi = nearestNeighbor(dt, q);
+クエリ点をプロットに追加し、クエリ点を最近傍に結合するライン セグメントを追加します。xnn = X(xi,:);
+hold on
+plot(q(:,1),q(:,2),'or');
+plot([xnn(:,1) q(:,1)]',[xnn(:,2) q(:,2)]','-r');
+vxlabels = arrayfun(@(n) {sprintf('q%d', n)}, (1:numq)');
+Hpl = text(q(:,1)+0.2, q(:,2)+0.2, vxlabels, 'FontWeight', ...
+'bold', 'HorizontalAlignment','center', ...
+'BackgroundColor','none');
+hold off
+3 次元で最近傍を探索するには、delaunayTriangulation に基づく 2 次元における探索を直接拡張します。4 次元以上では、次の例の中で示すように関数 delaunayn と関数 dsearchn を使用します。4 次元に無作為な点のサンプルを作成し、delaunayn を使って点を三角形分割します。X = 20*rand(50,4) -10;
+tri = delaunayn(X);
+いくつかのクエリ点を作成し、関数 dsearchn を使って X の各クエリ点に対応する最近傍のインデックスを求めます。q = rand(5,4);
+xi = dsearchn(X,tri, q)
+nearestNeighbor メソッドおよび関数 dsearchn により、クエリ点と最近傍間のユークリッド距離をオプションの引数として返すことができます。4 次元の例では、距離 (dnn) は以下のように計算することができます。[xi dnn] = dsearchn(X,tri, q)
+点の位置点の位置探索は、クエリ点を囲むシンプレックス (三角形、四面体など) を探索する三角形分割探索アルゴリズムです。最近傍探索の場合のように、問題の次元によって、MATLAB における点の位置探索を実行するアプローチは 2 通りあります。2 次元および 3 次元では、delaunayTriangulation クラスにより提供される pointLocation メソッドを使用し、クラス ベースのアプローチを使います。4 次元以上では関数 delaunayn を使って、点の位置探索を実行するための三角形分割および相補関数 tsearchn を作成します。これらの N 次元関数は、2 次元と 3 次元をサポートしてはいますが、delaunayTriangulation により提供される探索メソッドほど効率的ではありません。この例は、delaunayTriangulation クラスを使用して、2 次元の点の位置探索を実行する方法を示しています。2 次元の点の集合で始めます。X = [3.5 8.2; 6.8 8.3; 1.3 6.5; 3.5 6.3; 5.8 6.2; ...
+8.3 6.5; 1 4; 2.7 4.3; 5 4.5; 7 3.5; 8.7 4.2; ...
+1.5 2.1; 4.1 1.1; 7 1.5; 8.5 2.75];
+三角形分割を作成し、三角形の内点で三角形 ID ラベルを表示してそれをプロットします。 dt = delaunayTriangulation(X);
+triplot(dt);
+hold on
+ic = incenter(dt);
+numtri = size(dt,1);
+trilabels = arrayfun(@(x) {sprintf('T%d', x)}, (1:numtri)');
+Htl = text(ic(:,1), ic(:,2), trilabels, 'FontWeight', ...
+'bold', 'HorizontalAlignment', 'center', 'Color', ...
+'blue');
+hold off
+次にいくつかのクエリ点を作成し、プロットに追加します。その後、pointLocation メソッドを使用して、対応する囲む三角形のインデックスを求めます。q = [5.9344    6.2363;
+2.2143    2.1910;
+7.0948    3.6615;
+7.6040    2.2770;
+6.0724    2.5828;
+6.5464    6.9407;
+6.4588    6.1690;
+4.3534    3.9026;
+5.9329    7.7013;
+3.0271    2.2067];
+hold on;
+plot(q(:,1),q(:,2),'*r');
+vxlabels = arrayfun(@(n) {sprintf('q%d', n)}, (1:10)');
+Hpl = text(q(:,1)+0.2, q(:,2)+0.2, vxlabels, 'FontWeight', ...
+'bold', 'HorizontalAlignment','center', ...
+'BackgroundColor', 'none');
+hold off
+ti = pointLocation(dt,q);
+3 次元で点の位置を探索するには、delaunayTriangulation による 2 次元の点の位置探索を直接拡張します。4 次元以上では、次の例の中で示すように関数 delaunayn と関数 tsearchn を使用します。4 次元に無作為な点のサンプルを作成し、delaunayn を使って点を三角形分割します。X = 20*rand(50,4) -10;
+tri = delaunayn(X);
+いくつかのクエリ点を作成し、そして関数 tsearchn を使って対応し囲まれているシンプレックスのインデックスを求めます。q = rand(5,4);
+ti = tsearchn(X,tri, q)
+pointLocation メソッドと関数 tsearchn により、対応する重心座標をオプションの引数として返すことができます。4 次元の例では、重心座標は以下のように計算することができます。[ti bc] = tsearchn(X,tri, q)重心座標は、線形内挿を実行する時に便利です。これらの座標によって、囲まれているシンプレックスの各頂点の値を計るために使用できる重みが提供されます。詳細は 「散布データの内挿」 を参照してください。
+非 Delaunay 三角形分割の探索探索関数 tsearchn と dsearchn のみを使用して、MATLAB に作成された Delaunay 三角形分割に完全に連結された凸を探索することができます。delaunayn を使って Delaunay 三角形分割を作成し、続いて座標の位置を変更する場合、Delaunay 境界は無効となる可能性があります。したがって、収束しないことがあるので、探索関数を使用するべきではありません。重大なパフォーマンスのペナルティをもたらすので、探索機能は Delaunay 三角形分割の有効性をチェックしません。有限要素解析に使用される三角形分割のように、インポートした三角形分割は凸問題になっていない場合があります。穴ができることもあるし、または Delaunay 境界を示していないこともあります。このため、このような三角形分割では探索関数 tsearchn と dsearchn を信頼して使用することはできません。クラス delaunayTriangulation はこの点においてより確実です。というのは、この探索メソッドは、delaunayTriangulation の探索にのみ使用できるからです。ただし、制限付きエッジをもつ delaunayTriangulation は局所的に Delaunay ではないので、nearestNeighbor 探索を実行することはできません。制限付き delaunayTriangulation で最近傍探索を実行するには、次のいずれかを実行します。制限の削除同じ点集合を使って、制約なしの新しい delaunayTriangulation を作成し、制約なしの三角形分割を使って探索を実行します。 同様に、行列形式で表現される三角形分割で最近傍探索を実行するには、頂点の座標から delaunayTriangulation を作成し、これを使って探索を実行します。MATLAB は、行列形式で、かつ探索関数条件を満たさない 2 次元 (三角形) または 3 次元 (四面体) の三角形分割における点の位置探索を実行するための専用の関数を提供しません。ただし、比較的小さな三角形分割に対しては、総当りの探索は実行可能です。2 次元三角形分割では、制約付きの delaunayTriangulation を使用して、三角形分割の位相幾何を再作成できます。 各三角形 (または四角形) に対するクエリ点をチェックし、点を含む三角形を 1 つを選択することで総当り探索を実行することができます。たとえば、行列形式の次のような三角形分割があり、点を囲んだ三角形を求める総当りの点の位置探索を実行すると仮定します。X = [3.5 8.2; 6.8 8.3; 1.3 6.5; 3.5 6.3; 5.8 6.2; 8.3 6.5; ...
+1 4; 2.7 4.3; 5 4.5; 7 3.5; 8.7 4.2; 1.5 2.1; 4.1 1.1; ...
+7 1.5; 8.5 2.75];
+tri = delaunay(X);
+% Remove first triangle to make the triangulation nonconvex
+tri(1,:) = []; 
+まず、この三角形分割を表現する triangulation を作成します。tr = triangulation(tri,X);triangulation クラスには多くの便利なクエリ メソッドがありますが、pointLocation メソッドや nearestNeighbor メソッドはありません。triangulation は、穴や Delaunay ではない三角形分割をもつ凸問題になっていない三角形分割を表現できますが、探索アルゴリズムではこれらは除外されます。triangulation クラスには、クエリ点が指定の三角形内 (または四面体) にあるかどうかをチェックするために使用できる便利なメソッドがあります。このメソッドは cartesianToBarycentric です。直交座標で表示される点と三角形分割で指定された三角形が与えられると、このメソッドは三角形に関して点の重心座標を返します。3 つのすべての重心座標が正の場合、点は三角形内にあります。その他の場合は、点は三角形の外にあります。三角形分割をプロットして、このメソッドを調べます。triplot(tr)
+axis equal
+hold on
+ic = incenter(tr);
+numtri = size(tr,1);
+trilabels = arrayfun(@(x) {sprintf('T%d', x)}, (1:numtri)');
+Htl = text(ic(:,1), ic(:,2), trilabels, 'FontWeight', ...
+'bold', 'HorizontalAlignment', 'center', 'Color', ...
+'blue');
+hold off
+(6,3) を囲んでいる三角形の探索。numtri = size(tr,1);
+B = cartesianToBarycentric(tr, (1:numtri)', repmat([6 3], numtri,1));
+posB = (B >= 0);
+enclosingTri = find(posB(:,1) & posB(:,2) & posB(:,3))
+これで、制約付き delaunayTriangulation を使用して、探索を実行できます。総当り探索で作成した triangulation から始めて、三角形分割のすべてのエッジを求め、制約を適用します。Cedges = edges(tr);ここで、制約付きの delaunayTriangulation を作成し、別の Figure でプロットして、2 つの三角形分割を比較します。dt = delaunayTriangulation(X, Cedges)
+figure
+triplot(dt)
+axis equal
+hold on
+ic = incenter(dt);
+numtri = size(dt,1);
+trilabels = arrayfun(@(x) {sprintf('T%d', x)}, (1:numtri)');
+Htl = text(ic(:,1), ic(:,2), trilabels, 'FontWeight', ...
+'bold', 'HorizontalAlignment', 'center', 'Color', ...
+'blue');
+hold off
+三角形の番号付けは各三角形で異なるので、インデックスの配列を作成して、delaunayTriangulation からの三角形の ID を triangulation にマップしなければなりません。このマッピングを行うには、triangulation の内点を計算し、それを囲む三角形を delaunayTriangulation 内で探索します。dtTotrIndex = nan(size(dt,1),1);
+ic = incenter(tr);
+dtid = pointLocation(dt,ic);
+dtTotrIndex(dtid) = 1:size(tr,1);
+その後、delaunayTriangulation を使って、点の位置探索を実行します。次に地図を使って、対応する三角形を triangulation 内で探索します。trid = pointLocation(dt, 6,3);
+if isfinite(trid)
+trid = dtTotrIndex(trid);
+end
+trid
+空間探索 - MATLAB & Simulink - MathWorks 日本

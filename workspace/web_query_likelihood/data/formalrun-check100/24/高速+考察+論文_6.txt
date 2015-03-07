@@ -1,0 +1,3 @@
+本稿では高速移動体無線通信のための,パスサーチに用いるマッチドフィルタ,単純移動平均回路および閾値生成回路を提案する.提案するマッチドフィルタは並列に構成したCorrelatorによって累和演算を処理するため,各Correlatorの加算器は1段で処理が行なえる.そのため回路遅延が短く,高速に動作させることが可能である.
+We propose a matched filter, a simple moving average circuit and a threshold generator for high-speed wireless communication. Since the proposed matched filter calculates summation by using correlators that are composed in parallel, each correlator can process with only one adder. Therefore, the circuit delay is short, and it can be operated at high speed.
+

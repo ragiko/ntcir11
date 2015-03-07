@@ -1,0 +1,3 @@
+
+In this paper, we propose a stereo measurement system to observe continuously an object which moves and deforms quickly and irregularly, and to reconstruct its high-resolution 3D shape. The system is a stereo vision system using two gaze controllers by rotational mirrors. Each gaze controller tracking a quickly moving object, the system captures stereo images, and temporally continuous 3D shapes of the object are reconstructed from the stereo images. We discuss settings of the system considering characteristics of a gaze controller by rotational mirrors. The experimental results show that the system can capture stereo images tracking a quickly and irregularly moving object, and can reconstruct temporally continuous high-resolution 3D shapes of the object.
+

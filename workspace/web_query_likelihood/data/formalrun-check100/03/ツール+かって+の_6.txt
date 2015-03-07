@@ -1,0 +1,92 @@
+Babylon Toolbar削除アンインストール方法&Babylon Search無効化方法 【評判最悪】
+ツイート
+Babylon(バビロン、http://www.babylon.com/)は中東イスラエルの翻訳ソフト開発会社です。
+Babylon Toolbar(バビロンツールバー)は、Internet Explorer、Mozilla Firefox、Google Chrome向けのブラウザツールバーで、Googleの検索データを使ったBabylon Search(バビロンサーチ/バビロン検索、http://search.babylon.com/ http://isearch.babylon.com/)なるものが提供されます。
+. 
+ゲームソフト、アンチウイルスソフト、オフィスソフト... Yahoo!ショッピング 売れ筋人気ランキング!
+このBabylon Toolbarは、ブラウザの検索エンジンや起動時に開くホームページがBabylon Searchになり、『いつの間にやら知らないうちに勝手にインストールされたっ! (;＿;)』ってことで、口コミ評判が超激しく悪いことで有名です。
+ほとんど1番のパターンでWindowsパソコンにインストールされたはずですが、2番の困ったタイプも稀にあるらしく・・・?
+海外製フリーソフトなどのインストーラに引っ付いていて、同時インストールを手動で拒否すればいいのに、書いてある文章をしっかり読まずにテキト〜にボタンをホイホイと押してしまったことが原因で導入される
+海外製フリーソフトなどのインストーラに引っ付いていて、同時インストールを手動で拒否したとしても、なぜか勝手に導入される
+無料の言葉に釣られて翻訳ソフトBabylonをインストールしたついでに導入される
+ソフトニックダウンローダーや海外製フリーソフトにBabylonの同時インストールオプションが!
+ブラウザの設定をいじって寄生し、アンインストール削除の作業がいろいろと面倒なのが追い打ちをかけてますな。
+ウイルスやスパイウェアではないので必ずしもこういうソフトは警告なぞしてくれず、アドウェア/迷惑ソフトといった感じの分類になります。
+Babylonによってブラウザ画面の左下や真下に邪魔なバナー広告がポップアップ表示される場合も...
+MyBabylonTB.exe (Babylonツールバーのインストーラファイル)
+http://camas.comodo.com/cgi-bin/submit?file=6192ffdbc0dd59e98c21d7b58e74ff66395aba8ad4c2fb934fbf66870ea80008
+https://www.virustotal.com/file/6192ffdbc0dd59e98c21d7b58e74ff66395aba8ad4c2fb934fbf66870ea80008/analysis/
+Babylon Toolbar と Babylon Searchの無効化 (削除前の下準備)
+まず最初に、各ブラウザの設定をいじって削除前の下準備をします。
+Chrome (任意)
+ブラウザの[拡張機能]で「Babylon Chrome OCR」というような見ず知らずの拡張があったら、ゴミ箱マークで削除
+> http://support.google.com/chrome/bin/answer.py?hl=ja&answer=187443
+ブラウザの設定にある「起動時」項目の[特定の 1 つのページまたは複数のページを開く]の隣りの「ページ設定」で、「Babylon Search」というような見ず知らずの項目があったら削除
+> http://support.google.com/chrome/bin/answer.py?hl=ja&answer=95421
+ブラウザの設定にある「デザイン」項目の[ホームボタンを表示する]で、「Babylon Search」というような見ず知らずの項目があったら削除
+ブラウザの設定にある「検索」項目の[検索エンジンの管理...]ボタンを押し、「Search the web (Babylon) http://search.babylon.com/ 〜」というような見ず知らずの項目があったら削除 (必ず別の検索エンジンを[デフォルトに設定]に切り替えてから)
+> http://support.google.com/chrome/bin/answer.py?hl=ja&answer=95653
+Firefox (任意)
+ウィンドウ右上の検索ボックスのアイコン[検索バーの管理...]で、「Search the web (Babylon)」というような見ず知らずの項目があったら削除
+> http://support.mozilla.org/ja/kb/Search%20bar
+[ツール]メニュー[オプション]を選択し、[一般]タブ[起動]項目で「ホームページ」の入力ボックスが変更されていたら修正
+> http://support.mozilla.org/ja/kb/How%20to%20set%20the%20home%20page
+ブラウザの「アドオンマネージャ」を開いて、左メニューの「拡張機能」をクリックし「Babylon *.*.*」というような項目があったら削除
+《〜Firefoxブラウザ再起動〜》
+FirefoxのURL入力欄に「about:config」と入力し「動作保証対象外になります!」で[最新の注意を払って使用する]ボタンを押して、ブラウザ上部の検索ボックスに下のキーワードをコピペして作業。
+「browser.newtab.url」 ⇒ 値が「about:newtab」ではない見ず知らずのURLだったら項目を選択して右クリックメニューで[リセット]
+「keyword.URL」 ⇒ 値が「http://search.babylon.com/ 〜」だったら項目を選択して右クリックメニューで[リセット]
+「browser.startup.homepage_override.buildID」 ⇒ 項目を選択して右クリックメニューで[リセット]
+「extensions.BabylonToolbar」 ⇒ データ群が見つかったら各項目を選択して右クリックメニューで[リセット]
+Windowsのエクスプローラで「C:\Program Files\Mozilla Firefox\searchplugins\」フォルダを開いて、「babylon.xml」というファイルが存在したらゴミ箱へポイッ (64ビット環境だと「C:\Program Files(x86)\ 〜」)
+Internet Explorer
+ブラウザの「アドオンの管理」を開いて、中央左付近に存在する「表示:」のリストから「すべてのアドオン」を選択し、右側のアドオン一覧で発行元が「Babylon Ltd.」とか「Babylon BHO」となってる項目(たとえば「Babylon Toolbar」「babylonToolbar.com」「Babylon IE plugin」「CescrtHlpr Object」「Babylon Toolbar helper」といったもの)をすべて無効化
+> IE8  http://windows.microsoft.com/ja-jp/windows-vista/Internet-Explorer
+> IE9  http://windows.microsoft.com/ja-JP/windows7/How-to-manage-add-ons-in-Internet-Explorer-9
+同じく「アドオンの管理」で、左メニューの「検索プロバイダー」を選択し、「Search the web (Babylon)」というような項目があったら削除 (必ず別の検索エンジンを[既定に設定]に切り替えてから)
+> http://windows.microsoft.com/ja-jp/windows7/Change-or-choose-a-search-provider-in-Internet-Explorer
+インターネットオプションで、[全般]タブの「ホームページ」の入力ボックスが変更されていたら修正
+> http://windows.microsoft.com/ja-jp/windows7/Change-your-Internet-Explorer-home-page
+Babylon Toolbarのアンインストール (パソコンから削除)
+次に、ツールバー御大(Internet Explorer用のもの)を削除します。必ずブラウザを起動してない状態で行なってください。
+Windowsのコントロールパネルにある「プログラムの追加と削除」(Windows XP)、「プログラムと機能」(Windows Vista/7)で「Babylon toolbar」「Babylon toolbar on IE」というような項目をクリック
+あるいは、インストールフォルダ「C:\Program Files\BabylonToolbar\BabylonToolbar\*.*.*.*\」の中にある「uninstall.exe」ファイルを実行
+『Browsers restart is required to complete the uninstall process! Click Ok to uninstall and restart the open browsers now』で[OK][はい]ボタンを押します。
+『Click Yes to keep current home page and default search settings, Click No to restore original settings』で必ず[いいえ]ボタンを押します。 (※この確認ダイアログは表示されないパターンあり)
+そして、レジストリのゴミをいちおう消します。レジストリにはシステムの根幹となる重要なデータが含まれてるので超慎重に作業してください。
+Chrome (任意)
+Windowsのレジストリエディタを起動して下の場所へ移動
+> HKEY_LOCAL_MACHINE\Software\Google\chrome\Extensions\dhkplhfnhceodhffomolpfigojocbpcb\
+もしこのキーの存在が確認できたら、その上位の「chrome」キーを選択して右クリックメニューで[削除]
+Internet Explorer
+Windowsのレジストリエディタを起動して下の場所へ移動
+> HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Search\
+右側の一覧で、項目名が「SearchAssistant」、かつデータが「http://search.babylon.com/ 〜」になってたら、「SearchAssistant」項目を選択して右クリックメニューから[削除]
+「Search」キーがそもそも存在しないなら問題なし!
+それでも解決しない場合・・・
+これでもう完了してるはずですが(上のように理路整然ではなく思いつくままメチャクチャに作業したとか)、Internet Explorerで新しいタブを開いた時などにBabylon Searchがまだ開いてしまう場合はレジストリを修正すると解決するやもしれません。
+[その1]
+Windowsのレジストリエディタを起動して下の場所へ移動
+> HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\AboutUrls\
+右側の一覧で、項目名が「Tabs」、かつデータが「http://search.babylon.com/ 〜」となってたら、「Tabs」項目をダブルクリックして、初期値の選択して「res://ieframe.dll/tabswelcome.htm」に変更する
+「Tabs」項目がそもそも存在しないなら、何もしなくてOK!
+[その2]
+Windowsのレジストリエディタを起動して下の場所へ移動
+> HKEY_LOCAL_MACHINE\Software\Classes\ClsId\{291BCCC1-6890-484a-89D3-318C928DAC1B}\
+> HKEY_LOCAL_MACHINE\Software\Classes\ClsId\{2EECD738-5844-4a99-B4B6-146BF802613B}\
+> HKEY_LOCAL_MACHINE\Software\Classes\ClsId\{97F2FF5B-260C-4ccf-834A-2DDA4E29E39E}\
+> HKEY_LOCAL_MACHINE\Software\Classes\ClsId\{98889811-442D-49dd-99D7-DC866BE87DBC}\
+> HKEY_LOCAL_MACHINE\Software\Classes\ClsId\{B8276A94-891D-453C-9FF3-715C042A2575}\
+> HKEY_LOCAL_MACHINE\Software\Classes\ClsId\{E46C8196-B634-44a1-AF6E-957C64278AB1}\
+> HKEY_LOCAL_MACHINE\Software\Classes\ClsId\{FFB9ADCB-8C79-4C29-81D3-74D46A93D370}\
+もしこのキー群の存在が確認できたら、似通ったキー名がたくさんあるので間違わないよう十分注意しながら、それぞれのキーを選択して右クリックメニューで[削除]
+検索キーワード トラフィック統計情報
+[Babylon Toolbar とは] [Babylon Chrome トップページ 戻らない] [Chrome ホームページを変更できない] [Babyron 検索エンジン 勝手] [Babylon Chrome Win7 64bit] [Chrome Babylon Search 削除] [Firefox Babylon 新しいタブ 削除 Registry] [IE起動 Babylon Toolbar 使用準備 表示] [Babylon 有効にする 有効にしない] [Babylon スパイウェア] [Babylon 検索エンジン] [Babylon ホームページ] [Babylon プラグイン] [Babylon Toolbar アンインストール] [Babylon Toolbar 削除] [Babylon Toolbar on IE] [バビロン アンインストール] [バビロン 削除] [バビロンサーチ] [Babylon アンインストール] [Babylon アンインストール IE9] [Babylon アンインストール Firefox] [Babylon Search アンインストール] [Babylon Search とは] [Babylon トロイ] [タブ Babylon] [Firefox 新しいタブ Babylon] [Babylon 削除 Firefox] [Babylon レジストリ] [Babylon 完全削除] [Babylon Search Firefox] [Babylon Toolbar 削除] [Babylon ツールバー] [Babylon ltd] [Babylon Search 消す Firefox タブ] [Babylon 消えない] [Babylon Chrome] [Babylon serch] [Babylon Search 消す Firefox] [Babylon IE] [Search the web Babylon] [Google Chrome Babylon] [Babylon Search 消す IE9] [Babylon toolber] [Babylon 消し方] [Babylon アンインストール IE] [Babylon アンインストール Chrome] [Babylon Translator] [Babylon アンインストールできない] [Babylon ツールバー 削除] [Babylon 削除 方法] [Babylon 削除 レジストリ] [Babylon Seach] [Babylon Search Chrome] [Babylon 消す] [Babylon 消去] [Babylon Search 消す] [Babylonとは] [Babylon 削除] [新しいタブ Babylon] [Babylon アドオン] [Firefox Babylon] [Babylon 削除 Firefox ホーム アドオン] [Babylon Firefox トップページ アドオン] [Babylon Ltd. アドオン] [Babylon IE 原因] [Babylon ツールバー 設定 ホームページ] [Babylon Search Firefox タブ] [ブラウザ名 ホームページ変更 Babylon] [Babylon Search 消す Chrome] [Babylon トップページ] [Babylon 消したい] [Babylon ウイルス] [Babylon 勝手に] [Babylon 検索] [Babylon ダウンロード] [Babylon Search 新しいタブ] [Babylon アンインストール Vista] [Babylon Search 消す Google] [Babylonのアンインストール] [Babylon Search 消したい] [Babylon アドオン 削除 方法] [Babylon Search] [Babylon インストール] [Babylon アドウェア] [Babylon Toolbar] [バビロンサーチとは] [バビロンサーチ 削除] [Babylon.com] [Wizebar 消し方] [Wizebar アンインストール] [Wisebar 消し方] [Wisebar アンインストール] [Wisebar 削除] [Wizebarとは] [Wizebar 消す] [Wizebar 消したい] [Wizebar アンインストール] [Wizebar 削除] [Wizebar Firefox] [Wizebar ポップアップ] [Wizebar 広告] [Wizebar 消し方] [Wizebar 邪魔] [More For You 広告] [More For You 削除] [More For You 消す] [楽天 More For You] [Browser setting change ポップアップ] [More For You 広告 削除] [YouTube More For You] [More For You 消し方] [More For You 消したい] [More For You 邪魔] [More For You 表示] [Firefox More For You] [More For You 左下] [PCパフォーマー ポップアップ] [PCパフォーマー 広告] [PCパフォーマー ポップアップ 削除] ・・・
+ウイルスに感染したい! おすすめしないウイルス対策がコレだ!
+セキュリティソフトを導入して最新のウイルス定義ファイルに更新する
+⇒ Windowsにはウイルス検出機能がないので、導入してしまうとウイルス感染に気づいてしまう恐れが!
+ウイルス感染経路のJava、Adobe Reader、Flash Playerが導入されてたら最新バージョンに更新する
+⇒ ウイルス感染地獄への近道は古いバージョンのまま放置して更新作業をゼッタイやらないこと!
+Windows Update の自動更新を有効化する
+⇒ わずらわしい自動更新を無効にしてWindowsの更新をすっぽかしてウイルス感染!
+Babylon Searchが勝手にホームページに!? Babylon Toolbar削除アンインストール方法

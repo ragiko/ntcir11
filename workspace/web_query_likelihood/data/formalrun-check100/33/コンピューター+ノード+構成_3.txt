@@ -1,0 +1,24 @@
+目的
+このチュートリアルでは、Oracle WebLogic Server 12cのJavaベースのノード・マネージャを構成し、使用する方法を説明します。
+所要時間
+約1時間
+概要
+本番環境のWebLogic Serverインスタンスは、多くの場合、複数のドメイン、マシン、場所に分散されています。 ノード・マネージャは、管理サーバーと管理対象サーバーをリモートで起動、停止、および再起動できるWebLogic Serverユーティリティです。 必須ではありませんが、WebLogic Server環境で高可用性要件をもつアプリケーションをホストする場合はノード・マネージャの使用をお勧めします。 
+ノード・マネージャ・プロセスは特定のWebLogicドメインではなく、1台のマシンと関連付けられています。 ノード・マネージャ・プロセスと同じマシン上にあるものであれば、どのWebLogic Serverドメインにあるサーバー・インスタンスでも、同じノード・マネージャ・プロセスを使用して制御できます。 
+このチュートリアルではJavaベースのノード・マネージャを構成および起動し、これを使用してOracle WebLogic Server 12c(12.1.1)の管理対象サーバーを制御します。 
+ソフトウェア要件
+ソフトウェア要件は、以下のとおりです。
+Oracle WebLogic Server 12c(12.1.1)
+前提条件
+このチュートリアルを始める前に、Oracle by Example チュートリアルのOracle WebLogic Server 12c: Installing WebLogic Server and Creating a Domain、Oracle WebLogic Server 12c: Configuring Managed Servers、Oracle WebLogic Server 12c: Creating and Configuring Machinesを完了している必要があります。 
+現在のマシン構成の調査
+前提条件のチュートリアルで作成されたマシンの構成を確認するには、以下の手順を実行します。
+.
+ドメインの管理サーバーがまだ実行されていない場合は、これを起動します。 ターミナル・ウィンドウでドメイン・ディレクトリに移動し、次のコマンドを実行します。 
+$ ./startWebLogic.sh
+ユーザー名とパスワードを入力するよう指示されたら、ドメイン管理者の資格証明を入力します。
+管理サーバーが実行中になったら、WebLogic Serverの管理コンソールにアクセスします。 Webブラウザを開いて、次のURLを入力します。 http://ホスト名:ポート/console
+このチュートリアルでは、http://host01.example.com:8001/consoleが使用されました。
+注:該当ホストのホスト名を使用してください。 また、管理サーバー向けに異なるポート番号を使用している場合はそのポートを使用します。 
+Welcome画面で、管理サーバーの起動時に入力したユーザー名とパスワードを使用してログインします。
+Oracle WebLogic Server 12c: ノード・マネージャの構成と使用

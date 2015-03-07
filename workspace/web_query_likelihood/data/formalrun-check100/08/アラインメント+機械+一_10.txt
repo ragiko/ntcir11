@@ -1,0 +1,18 @@
+工作機械による加工誤差の要因としては切削力による構造の弾性変形、熱変形、摺動面の非線形特性、構造のアライメント誤差などが考えられる。この内、弾性変形、熱変形は工作機械の設計段階で基本的に決定されてしまう。一方、工作機械の経年変化は習導面の非線形特性とアライメント誤差にあると言える。本研究ではこの内、アライメント誤差の推定方法について着目し研究を行い以下の結論を得た。
+1)アライメント誤差推定方法の理論的検討
+1.アライメント誤差を考慮した工作機械(立フライス盤)の形状創成関数の導出を行った。
+2.アライメント誤差の加工形状への影響マップの作成を行った。
+3.アライメント誤差と加工誤差の線形関係の検証を行った。
+4.アライメント誤差を考慮した加工形状の陰関数表現を行った。
+5.加工物形状の離散測定データから加工物形状の陰関数表現を行った。
+6.アライメント誤差パラメータによる加工物形状陰関数表現と形状測定データによる加工物形状陰関数表現との比較によるアライメント誤差導出方法の確立を行った。
+7.計算機実験検証法と加工形状誤差評価とアライメント誤差評価システムの予備実験を行った。
+2)アライメント誤差推定法の計算機実験による検討
+1.計算機シュミレーションシステムの構築と計算機実験による提案手法の評価を行い、
+提案手法の実現可能性を検討した。
+1)アライメント誤差推定評価システムの開発
+1.基準正立方体の工作機械上での工作機械の運動機構を利用した形上測定法を提案した。
+2.形状測定結果による提案手法の評価を行い、提案手法の有効性を確認した。
+3.実用化における改良点の確認を行った。
+In this research a formulation by which perpendicularty of motion of vertical milling machine is evaluated, is shown. By using it, an estimation method for perpendicularity of motion between X-, Y- and Z- axis based on the master block measuring is proposed. The proposed method has following characteristics : (1) the perpendicularity of motion X-, Y- and Z- axis is estimated without interference of setting posture of cutting tool, since the geometric error components is derived from driving planes which is calculated by measured points on master block, (2) perpendicularity of motion is estimated without interference of setting errors of master block, since the geometric error components are derived by inner products of normal vectors of driving planes which are indepencdent of coordinate system of machine tools, and (3) since the model of machine tools with geometric errors is constructed of the driving motion and the perpendicularity of motion only, it is more simple to estimate the perpendicularity of motion X-, Y- and Z- axis.
+KAKEN - 工作機械のアライメント誤差評価システムの開発(07555353)

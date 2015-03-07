@@ -1,0 +1,745 @@
+PUBLICATIONS
+目次
+発表論文リスト 著書 | 英文論文 | 和文論文 | 国際会議論文 | 国内会議 / 口頭発表 
+解説記事その他 学会誌 | 商用誌 
+主な所外貢献 
+発表論文リスト
+Gangchen Hua, Osamu Hasegawa, "A Robust Visual-Feature-Extraction Method for Simultaneous Localization and Mapping in Public Outdoor Environment", Journal of Advanced Computational Intelligence and Intelligent Informatics (JACIII)
+木村大毅,Kankuekul Pichai,長谷川修,"属性知識の高速オンライン学習と転移による未知クラス推定", 知能と情報
+中村圭宏,長谷川修,"ロバスト高速オンライン多変量ノンパラメトリック密度推定法", 電子情報通信学会 和文論文誌D,Vol. J97-D, No.8, pp.1284-1296, (2014) Zhang, Hongwei; Xiao, Xiong; Hasegawa, Osamu, "A Load-Balancing Self-Organizing
+Incremental Neural Network", IEEE Transactions on Neural Networks and Learning Systems. 
+Xiao Xiong, Zhang Hongwei and Osamu Hasegawa, "Density Estimation
+Method based on Self-orgnizing Incremental Neural Network and Error Estimation",
+20th International Conference on Neural Information Processing (ICONIP2013)
+Yoshihiro Nakamura and Osamu Hasegawa, "Robust Fast Online Multivariate
+Non-parametric Density Estimator", 20th International Conference on Neural Information Processing (ICONIP2013)
+A.Kawewong, P.Rapeeporn, O.Hasegawa, "Incremental Learning Framework
+for Indoor Scene Recognition", The Twenty-Seventh AAAI Conference on Artificial Intelligence (AAAI-13) 
+Aram Kawewong, Noppharit Tongprasit, Osamu Hasegawa, "A Speeded-up
+Online Incremental Vision-based Loop-closure Detection for Long-term SLAM",
+Advanced Robotics 
+D. Kimura, R. Nishimura, A.Oguro and O.Hasegawa, "Ultra-fast Multimodal
+and Online Transfer learning on Humanoid Robots", IEEE Conference
+on Human-Robot Interaction (HRI 2013). 
+中村圭宏・高橋大志・長谷川 修: ノイズ環境下における高速オンライン多変量ノンパラメトリック密度推定法, 電子情報通信学会 PRMU 研究会,
+(2013) 
+高橋大志・中村圭宏・長谷川 修: 自己増殖型ニューラルネットワークを用いた高次元ノンパラメトリック確率密度推定 電子情報通信学会 PRMU
+研究会, (2013) 
+木村大毅, 西村竜太朗, 小黒陽弘, 長谷川修: ネットから学習し未知物体を推定する超高速マルチモーダル・オンライン転移学習 ? ヒューマノイド・ロボットによる有効性の実証?
+第18回ロボティクス・シンポジア (2013), 採択 
+利根義宣, 長谷川修:観測されたシンボルの関係性を利用したタスク非依存オンライン転移学習 第18回ロボティクス・シンポジア (2013),
+採択 
+中村圭宏, 高橋大志, 長谷川 修: 耐ノイズ性を有する高速多変量オンラインノンパラメトリック密度推定法, 第15回情報論的学習理論ワークショップ
+(IBIS2012) 
+長谷川修:Bayes 統計学への SOINN の導入に関する一考察, 第15回情報論的学習理論ワークショップ (IBIS2012) 
+Furao Shen、Qiubao Ouyang, Wataru Kasai, Osamu Hasegawa, A General Associative Memory Based on Self-organizing Incremental Neural
+Network,Neurocomputing, accepted 
+S.Tangruamsub, A. Kawewong, M.Tsuboyama, O.Hasegawa,Self-Organizing Incremental Associative Memory- based Robot Navigation,IEICE Trans. on Information and Systems, (2012) 
+Rapeeporn Pimup, Aram Kawewong, Osamu Hasegawa,FAST ONLINE INCREMENTAL
+APPROACH OF UNSEEN PLACE CLASSIFICATION USING DISJOINT-TEXT ATTRIBUTE PREDICTION,IEEE International Conference on Image Processing (ICIP 2012) , accepted 
+Pichai Kankuekul , Aram Kawewong, Sirinart Tangruamsub, Osamu Hasegawa,
+Online Incremental Attribute-based Zero-shot Learning, CVPR 2012, accepted
+吉田慎二, 長谷川修, Q-reuse: 強化学習における行動価値関数を再利用した転移学習手法,第17回 ロボティクスシンポジア , (2012) accepted 
+山木戸伸行,長谷川修, 組み込みシステムのGPGPU適用のためのアーキテクチャ提案,第155回SLDM・第24回EMB合同研究発表会(ETNET2012)  
+長谷川修、基調講演:SOINNによる超高速オンライン転移学習とその展開, ViEW (ビジョン技術の実利用ワークショップ) ,(2011) 
+長谷川修, SOINNによる発達的人工脳とロボティクス, 日本ロボット学会学術講演会 、(2011) 
+花コウ辰、長谷川修、An Incremental SLAM Method Using Range Finder in Highly Dynamic
+Environment, 日本ロボット学会学術講演会 、(2011) 
+Aram Kawewong, Yuji Koike, Osamu Hasegawa and Fumio Sato, Fast and Incremental
+Neural Associative Memory Based Approach for Adaptive Open-loop Structural
+Control in High-rise Buildings, Proc. ICONIP2011 (2011), accepted 
+Sirinart Tangruamsub, Keisuke Takada, Osamu Hasegawa, A Fast Online Incremental Learning for Object Detection and Pose Classification
+using Voting Technique and Combined Appearance Modeling, Signal Processing: Image Communication, (2011), accepted 
+Hiroshi Morioka, Yi Sangkyu, Osamu Hasegawa : "Vision-based Mobile
+Robot's SLAM and Navigation in Crowded Environments", IEEE/RSJ International
+Conference on Intelligent Robots and Systems, (IROS 2011), accepted 
+Aram Kawewong, Tongprasit Noppharit and Osamu Hasegawa, PIRF-Nav 2.0: Fast and Online Incremental Appearance-Based Loop-Closure
+Detection in an Indoor Environment, Robotics and Autonomous Systems, (2011) 
+山崎和博、森純一、斎藤悠司、長谷川修、対応点及び境界候補の推定に基づくSuperpixelの時間方向安定化, 画像電子学会論文誌、(2011),
+採録決定 
+Sirinart Tangruamsub, Aram Kawewong, and Osamu Hasegawa, Fast Online Incremental
+Attribute-based Object Classification Using Stochastic Gradient Descent
+and Self-Organizing Incremental Neural Network, IPCV'11: July 18-21, 2011,
+USA 
+Aram Kawewong, Sirinart Tangruamsub, Pichai Kankuekool and Osamu Hasegawa,
+"Fast Online Incremental Transfer Learning for Unseen Object Classification
+Using Self-Organizing Incremental Neural Networks", The 2011 International
+Joint Conference on Neural Networks (IJCNN) 
+長谷川修、Aram Kawewong, 木村大毅、"発達的人工脳による実世界知能情報処理", 第25回人工知能学会全国大会、(2011),
+発表予定 
+木村大毅、 Kankuekul Pichai, Aram Kawewong, 長谷川修、"超高速オンライン転移学習", 画像センシングシンポジウム、(2011),
+[Poster ], [Slide ] 
+高田圭佑、山崎和博、笠井航、長谷川修, "Voting処理とアピアランス想起による実環境下の3次元物体認識",画像電子学会論文誌、掲載決定,
+(2011) 
+Shigeki Nagaya, Zhang Chenli, and Osamu Hasegawa, "A Proposal of Stock
+Price Predictor using Associated Memory", Journal of Advanced Computational
+Intelligence and Intelligent Informatics (2011) 
+森岡博史、長谷川修、人混みでも環境地図を学習して稼働する自律移動ロボットを開発, 画像ラボ、2011、[PDF ] 
+山崎和博,巻渕有哉,申富饒,長谷川修、自己増殖型ニューラルネットワークSOINN とその実践、日本神経回路学会誌、2010、掲載予定、[PDF ] 
+長谷川修:「エージェントベースの社会システム科学宣言:地球社会のリベラルアーツめざして」 (第6章)、出口弘、木嶋恭一(編著)勁草書房 、(2009) 
+S.Nobe, S.Hayamizu, O.Hasegawa and H.Takahashi: "On lisetener's Fixation
+and Comprehension of Hand Gestures", Gestures. - Meaning and Use,
+Fernando Pessoa University Press, pp.359-363, (2003) 
+野辺, 速水, 長谷川, 高橋:「ジェスチャー・行為・意味」 (第6章), 共立出版, (2002) 
+M.Kaneko and O.Hasegawa : Processing of Face Images, Signal Processing
+and Communications Series, Marcel Dekker 2004 (章担当) 
+長谷川:認知科学辞典,(項目執筆), 共立出版, 2002 
+長谷川:マルチメディア標準テキスト, (分担執筆)(財)画像情報教育振興協会, pp.218-221, 1997 
+Shen Furao, Hui Yu, Keisuke Sakurai and Osamu Hasegawa, "An incremental
+online semi-supervised active learning algorithm based on a self-organizing
+incremental neural network", Neural Computing & Applications 
+Furao Shen, Youki Kamiya, and Osamu Hasegawa, "An Online Incremental
+Semi-supervised Learning Method", Journal of Advanced Computational
+Intelligence and Intelligent Informatics, (2010) 
+Aram Kawewong, Sirinart Tangruamsub and Osamu Hasegawa, "Position-invariant
+Robust Features for Long-term Recognition of Dynamic Outdoor Scenes,"
+IEICE Transactions on Information and Systems, Vol.E93-D, No.9, pp.2587-2601,
+(2010) (PDF ) 
+A.Kawewong, N.Tongprasit, S.Tangruamsub, O.Hasegawa,: "Online Incremental
+Appearance-based SLAM in Highly Dynamic Environments", International
+Journal of Robotics Research (IJRR), 2010 
+Aram Kawewong, Yutaro Honda, Manabu Tsuboyama, and Osamu Hasegawa : "Reasoning
+on the Self-Organizing Incremental Associative Memory for Online Robot
+Path Planning,"IEICE Trans. Inf. & Sys.,VolE93-D, No.3, pp.569-582,
+(2009) 
+Furao Shen, Akihito Sudo, Osamu Hasegawa:" An Online Incremental Learning
+Pattern-based Reasoning System", Neural Networks, Vol.23, No.1, pp.135-143,
+(2010) 
+Sudo Akihito; Sato Akihiro; Hasegawa Osamu, "Associative Memory for
+Online Learning in Noisy Environments Using Self-organizing Incremental
+Neural Network", IEEE Transactions on Neural Networks, Vol.20, No.6,
+pp.964-972, (2009) 
+Furao Shen and Osamu Hasegawa, :"A Fast Nearest Neighbor Classifier
+Based on Self-organizing Incremental Neural Network", Neural Networks,
+Vol.21, No.10, pp.1537-1547, (2008) 
+Takahiro Toyoda, and Osamu Hasegawa, A random field model for integration
+of local information and global information, IEEE Trans. Pattern Analysis
+and Machine Intelligence (PAMI), Vol.30, No.8, pp.1483-1489, (2008) 
+Furao Shen, Tomotaka Ogura and Osamu Hasegawa, "An enhanced self-organizing
+incremental neural network for online unsupervised learning", Neural
+Networks, Vol.20, No.8, pp.893-903, (2007) 
+Xiaoyuan He, Tomotaka Ogura, Akihiro Satou and Osamu Hasegawa, "Developmental
+Word Acquisition And Grammar Learning by Humanoid Robots through A Self-Organizing
+Incremental Neural Network", IEEE Trans. SMC-Part B, Vol.37, No.5,
+pp.1357-1372, (2007) 
+Aram Kawewong and Osamu Hasegawa: "Classifying 3D Real-World Texture
+Images by Combining Maximum Response 8, 4th Order of Auto Correlation and
+Colortons", Journal of Advanced Computational Intelligence and Intelligent
+Informatics 
+Takahiro Toyoda and Osamu Hasegawa : "Extension of higher order local
+autocorrelation features", Pattern Recognition, Vol.40, No.5, pp.1466-1473
+(2007) 
+Xiaoyuan He, Ryo Kojima and Osamu Hasegawa : "Developmental Word Grounding
+through A Growing Neural Network with A Humanoid Robot", IEEE Transactions
+on Systems, Man and Cybernetics, Part B. Vol.37, No.2, pp.451-462, (2007)
+Youki Kamiya, Furao Shen, Osamu Hasegawa :"An Incremental Neural Network
+for Online Supervised Learning and Topology Learning", Journal of
+Advanced Computational Intelligence and Intelligent Informatics, Vol.11,
+No.1, pp.87-95 (2007) 
+Shogo Okada and Osamu Hasegawa : "Recognirtion and Generation of Time-series
+Patterns Based on Division and Integration", Journal of Advanced Computational
+Intelligence and Intelligent Informatics, Vol.10, No.3, pp. 395-408 (2006)
+Shinji Hayashi and Osamu Hasegawa : "Robust Face Detection for Low-resolution
+Images", Journal of Advanced Computational Intelligence and Intelligent
+Informatics, Vol.10, No.1, pp.93-101 (2006) 
+Shen Furao and Osamu Hasegawa, "An Adaptive Incremental LBG for Vector
+Quantization", Neural Networks , Volume 19, Issue 5, pp. 694-704, (2006) 
+Shen Furao and Osamu Hasegawa, "An Incremental Network for On-line
+Unsupervised Classification and Topology Learning", Neural Networks , Vol.19, No.1, pp.90-106 (2005) 
+Shen Furao and Osamu Hasegawa, "Fractal Image Coding with Simulated
+Annealing Search", Journal of Advanced Computational Intelligence
+and Intelligent Informatics, Vol.9, No.1, pp. 80-88, (2005) 
+Osamu Hasegawa and Takeo Kanade : "Type Classification, Color Estimation, and Specific Target Detection of
+Moving Targets on Public Streets ", Machine Vision & Applications,  Springer, Vol.16, No.2, pp.116-121, (2005) 
+Osamu Hasegawa: "A growing neural network for online unsupervised
+learning", Journal of Advanced Computational Intelligence and Intelligent
+Informatics, Vol.8, No.2, pp.121-129, (2004) 
+K.Aoki, O.Hasegawa, H.Nagahashi :"Behavior Learning and Animation
+Synthesis of Falling Flat Objects", Journal of Advanced Computational
+Intelligence and Intelligent Informatics,vol.8, no.2, pp.100-107, 2004
+Shen Furao, Osamu Hasegawa : "A fast no search fractal image coding method ", Signal Processing: Image Communication , vol.19, pp.393-404, (2004) 
+O.Hasegawa, T.Kurita : A Kernel Logit Approach for Face and Non-Face Classification, Journal
+of Japanese Academy of Facial Studies, vol.3, no.1, pp. 119-126, (2003)
+N.Enomoto, T.Kanade, H.Fujiyoshi and O.Hasegawa: "A method for monitoring activities of multiple objects by using stochastic
+model", IEICE Trans. on Information and Systems, Vol.84-D No.12, pp.1705-1712,(2001)
+R. Collins, A. Lipton, T.Kanade, H. Fujiyoshi, D. Duggins, Y. Tsin, D.
+Tolliver, N. Enomoto, and O.Hasegawa: "A System for Video Surveillance
+and Monitoring" tech. report CMU-RI-TR-00-12, Robotics Institute,
+Carnegi Mellon University, May, 2000 
+O.Hasegawa, K.Sakaue and S.Hayamizu : "Interactive Learning and Management of Visual Information via Human-like
+Software Robot ", New Generation Computing, Vol. 18 No. 2, 2000 
+Shuich Nobe, Satoru Hayamizu, Osamu Hasegawa, and Hideaki Takahashi : "Hand Gestures of an Anthropomorphic Agent: Listeners' Eye Fixation and
+Comprehension", Bulletin of the Japanese Cognitive Science Society, Vol.7 No.1
+(Mar. 2000) 
+B.Raytchev, O.Hasegawa and N.Otsu : "User-independent online gesture recognition by relative motion extraction ", Pattern Recognition Letters, 21 (1), pp.69-82, 2000 
+B.Raytchev, O.Hasegawa and N.Otsu : "User-Independent Gesture Recognition by Relative-Motion Extraction and
+Discriminant Analysis ", New Generation Computing, Vol. 18 No. 2, 2000 
+K. Itou, T. Akiba, O. Hasegawa, S. Hayamizu, K. Tanaka. A Japanese Spontaneous
+Speech Corpus Collected using Automatic Inference Wizard of Oz system.
+J. Acoust. Soc. Jpn, Vol. E20, No.3, pp. 207-214, 1999, May. 
+M.Kaneko and O.Hasegawa: " Processing of face images and its applications", IEICE Trans. on Information and Systems, Vol.E82-D, No.3, pp.589-600,
+March, 1999 
+O.Hasegawa, S.Morishima and M.Kaneko: "Processing of Facial Information
+by Computer", ELECTRONICS and COMMUNICATIOS in Japan, Part 3, Vol.81,
+No.10, pp.36-57, Scripta Technica, Inc.,(John Wiley & Sons, Inc.),
+1998 
+O.Hasegawa, C.W.Lee, W.Wongwarawipat and M.Ishizuka: "Realtime Synthesis
+of Human-like Agent Which Responds to Finger Signs" Journal of the
+Machine Vision and Applications, Springer-Verlag, 8, pp.122-130, 1995 
+O.Hasegawa, C.W.Lee, W.Wongwarawipat and M.Ishizuka: "A Real-time
+Visual Interactive System Between Finger Signs and Synthesized Human Facial
+Images Employing a Transputer Based Parallel Computer" T.Kunii Ed.,
+Visual Computing, Springer-Verlag, pp.77-94, 1995 
+O.Hasegawa, K.Yokosawa and M.Ishizuka: "Realtime Parallel and Cooperative
+Recognition of Human Face for a Naturalistic Visual Human Interface"
+Systems and Computers in Japan, Vol.25, No.11, SCRIPTA TECHNICA, INC.,
+pp.11-23, 1994 
+T.Fukuda, O.Hasegawa: "3-D Image Recognition System for Distorted
+and Cracked Objects" JSME International Journal, Series 3, 35, 2,
+pp.193-200, 1992 
+C.W.Lee, O.Hasegawa, W.Wongwarawipat and M.Ishizuka: "Realistic Image
+Synthesis of a Deformable Living Thing Based on Motion Understanding"
+Journal of Visual Communication and Image Representation , Vol.2, 4, pp,345-354, 1991 
+T.Fukuda, O.Hasegawa: "Creature Recognition and Identification by
+Image Processing Based on Expert System" JSME International Journal,
+Series 3, 33, 2, pp.269-277, 1990 
+巻渕有哉,申富饒,長谷川修:"実世界における一般問題解決システムの提案とそのヒューマノイドロボットへの実装",電子情報通信学会論文誌D,Vol.J93-D,
+No.6, pp960-977, (2010) [PDF ] 
+本田雄太郎,Aram Kawewong, 坪山学,長谷川修:"半教師ありニューラルネットワークによる場所細胞の獲得とロボットの自律移動制御",信学論D,Vol.J93-D,
+No.4, pp469-485, (2010) 
+斉藤,長谷川:"力学的自己増殖型ニューラルネットワークによる包摂アーキテクチャ上の内部状態空間構成",知能と情報,Vol.22,
+No.2, pp.116-128, (2010) 
+笠井航,長谷川修:"カーネルマシンへの高速ベクトル量子化の導入",神経回路学会論文誌,Vol.16, No.3, pp.149-157,
+(2009) 
+笠井、戸部、申、長谷川:"オンラインプロトタイプ生成による大規模データに対する高速SVM構築法", 電子情報通信学会論文誌
+D, Vol.J92-D, No.6, pp.784-792, (2009) 
+森、西田、長谷川:"時間方向に安定したSuperpixel の算出手法",電子情報通信学会論文誌 D-II, Vol.J91-D,
+No.11, pp.2696-2708, (2008) 
+須藤明人・佐藤彰洋・長谷川 修, 自己増殖型ニューラルネットを用いたノイズのある環境下での追加学習が可能な連想記憶モデル, 日本神経回路学会誌、Vol.15,
+No.2, pp.98-109, (2008) 
+須藤明人・坪山 学・張 シンリ・佐藤彰洋・長谷川 修,自己増殖型ニューラルネットワークを用いたパターン情報ベースの推論機,電子情報通信学会論文誌,Vol.J91-D,
+No.6, pp.1634-1647, (2008) 
+佐藤彰洋,賀 小淵,小倉和貴、長谷川修, 人間との相互作用に基づくヒューマノイドロボット上の語順と挙動のオンライン学習,電子情報通信学会論文誌,Vol.J91-D,
+No.8, pp.2045-2060, (2008) 
+斉藤史哲,長谷川修,行動則の獲得状況を考慮した自己組織化マップによる状態空間構成法,知能と情報,Vol.20, No.3, pp.369-378,
+(2008) 
+岡田将吾,長谷川修,自己増殖型ニューラルネットワークを用いた時系列パターンの学習・認識,電子情報通信学会論文誌,Vol.J91-D, No.4,
+pp.1042-1057, (2008) 
+須藤明人・坪山 学・張 シンリ・佐藤彰洋・長谷川 修, "パターン情報ベースの命題論理式のための推論機の提案", 情報科学技術レターズ
+須藤明人・佐藤彰洋・長谷川 修, "ノイズのある環境下でオンライン学習が可能な自己増殖型ニューラルネットワークを用いた連想記憶モデル", 情報科学技術レターズ
+神谷祐樹,申富饒,長谷川修, "自己増殖型ニューラルネットワークを用いたプロトタイプ生成による高速最近傍識別器の構成手法",
+電子情報通信学会論文誌,Vol.J90-D, No.11, pp.3000-3013, (2007) 
+桜井啓介,神谷祐樹,長谷川修, "競合型ニューラルネットを用いたオンライン準教師付き能動学習手法", 電子情報通信学会論文誌,
+Vol.J90-D, No.11, pp.3091-3102, (2007) 
+岡田将吾・賀 小淵・小島 量・長谷川 修: "自己増殖型ニューラルネットワークを用いたヒューマノイドロボットの発達的言語獲得",
+人工知能学会論文誌,Vol.22, No.5, pp.493-507 (2007) 
+岡田将吾・伊藤芳子・長谷川 修:"包摂アーキテクチャ上のパラメータ探索を用いた群ロボットによる適応的行動生成", 人工知能学会論文誌,Vol.22,
+No.3, pp.276-290 (2007) 
+豊田崇弘,田上啓介,長谷川修:"局所情報と大域情報を統合する条件付確率場による画像ラベリング", 電子情報通信学会論文誌,Vol.J90-D
+No.6 pp.1542-1554 (2007) 
+小倉和貴,申富饒,長谷川修:"オンライン教師なし分類のための追加学習手法", 電子情報通信学会論文誌,Vol.J90-D
+No.6 pp.1610-1622 (2007) 
+豊田 崇弘,長谷川 修, "高次局所自己相関特徴の拡張とその顔認識への適用", 日本顔学会誌 ,Vol.5, No.1, pp.33-39 (2005) 
+林伸治,長谷川修 : "低解像度画像からの顔検出", 画像電子学会誌, (2005) (PDF ) 
+豊田 崇弘,長谷川 修, "高次局所自己相関特徴の拡張", 画像電子学会誌 ,Vol.34, No.4, pp.390-397 (2005)(PDF ) 
+長谷川修,金出武雄:一般道路映像中の移動物体の識別・色の推定と特定対象の検出 ,情報処理学会論文誌,Vol.44, No.7, pp.1795-1807, 2003 (PDF ) 
+長谷川修,栗田多喜夫 : 高次元特徴ベクトルの次元圧縮と重みつきK−最近傍法によるパターン認識 ,情報処理学会論文誌 コンピュータビジョンとイメージメディア,Vol.44, No.SIG9 (CVIM7), pp.75-85, 2003
+(PDF ) 
+長谷川, 坂上, 速水:実世界視覚情報を対話的に学習・管理する人間型ソフトウエアロボット, 電子情報通信学会論文誌D-II, vol.J82-D-II, no.10, pp.1666-1674, Oct. 1999 
+長谷川:生体の視覚に学ぶコンピュータビジョン, 情報処理, J.ofIPSJ, vol.39, no.2, pp.133-138, 1998 
+赤穂,速水,長谷川,吉村,麻生: EM法を用いた複数情報源からの概念獲得, 電子情報通信 学会論文誌(A), vol.J80-A, no.9, pp.1546 - 1553, Sept., 1997 
+長谷川, 森島, 金子: 「顔」の情報処理(招待論文), 電子情報通信学会論文誌(A),vol.J80-A, no.8, pp.1231-1249, Aug. 1997 
+新田, 長谷川, 他: 論争支援マルチモーダル実験システム:Mr.Bengo, 電子情報通信学会論文誌, vol.J80-D-II, no.8, pp.2081-2087, 1997 
+栗田多喜夫,長谷川修:顔画像からの個人識別,映像情報メディア学会誌, Vol.51, No.8,pp.1132-1135, (1997) 
+長谷川, 藤木, 石塚:指サイン認識による自然感を有する仮想金魚像との実時間インタラクション, 画像電子学会誌, Vol.23, 2, pp.86-95,
+1994 
+長谷川, 横沢, 石塚:自然感の高いビジュアルヒューマンインタフェースの実現のための人物動画像の実時間並列協調的認識, 電子情報通信学会論文誌,
+D-2, Vol.J77-D-2, No.1, pp.108-118, 1994 
+長谷川, 李, Wongwarawipat, 石塚:手形状の認識に基づき実時間で反応する人物表情の実時間合成, 計測自動制御学会論文誌, Vol.28,
+No.11, pp.1327-1336, 1992 
+福田, 長谷川:マイクロマニプレータの制御 (第2報, 画像セグメント法による生物の認識と同定), 日本機械学会論文誌, C, 55-512,
+pp.959-967, 1989 
+福田, 長谷川, 他3名:画像処理エキスパートシステムによるマイクロキャリア上動物細胞の視覚認識, 日本機械学会論文誌, C, 56-523,
+pp.700-705, 1990 
+福田, 長谷川:曲げ・ねじり・亀裂・欠損のある歪直方体の視覚認識及び把握プランニング用エキスパートシステムの研究(第1報, 亀裂・欠損のある歪直方体の視覚認識法),
+日本機械学会論文誌, C, 56-529, pp.2393-2401, 1990 
+福田, 長谷川:曲げ・ねじり・亀裂・欠損のある歪直方体の視覚認識及び把握プランニング用エキスパートシステムの研究(第2報, 作業面・把握点決定及び把握経路の算定方法),
+日本機械学会論文誌, C, 57-536, pp.244-252, 1990 
+福田, 長谷川:マイクロマニプレータの制御(第5報, 任意方向を向き多セグメントに欠損を有する生物画像の推論・認識法), 日本機械学会論文誌,
+C, 57-536, pp.205-212, 1990 
+Tangruamsub Sirinart, Keisuke Takada, Wataru Kasai, Osamu Hasegawa,"3D
+Object Recognition using a Voting Algorithm in a Real-World Environment",IEEE Workshop on Applications of Computer Vision (WACV) 2011  
+Tongprasit Noppharit, Kawewong Aram, Osamu Hasegawa, "PIRF-Nav 2:Speeded-up
+Online and Incremental Appearance-based SLAM in Highly Dynamic Environment",IEEE Workshop on Applications of Computer Vision (WACV) 2011  
+Furao Shen, Osamu Hasegawa, Hui Yu, "A Multidirectional Associative
+Memory Based on Self-organizing Incremental Neural Network", Proc. ICONIP 2010  
+Furao Shen and Osamu Hasegawa, "Self-organizing incremental neura
+network and its application", 1st SOINN Workshop , Proc. International Conference on Artificial Neural Network (ICANN 2010)  
+Kazuhiro Yamasaki, Naoya Makibuchi, Furao Shen, and Osamu Hasegawa, "How
+to Use the SOINN Software:Users Guide (Version 1.0)", 1st SOINN Workshop , Proc. International Conference on Artificial Neural Network (ICANN 2010)  
+Naoya Makibuchi, Furao Shen, and Osamu Hasegawa, "Online Knowledge
+Acquisition and General Problem Solving in a Real World by Humanoid Robots",
+1st SOINN Workshop , Proc. International Conference on Artificial Neural Network (ICANN 2010)  
+Sirinart Tangruamsub, Manabu Tsuboyama, Aram Kawewong and Osamu Hasegawa,
+"Unguided Robot Navigation Using Continuous Action Space", 1st SOINN Workshop , Proc. International Conference on Artificial Neural Network (ICANN 2010)  
+Aram Kawewong, Osamu Hasegawa, "Fast and Incremental Attribute Transferring
+and Classifying System for Detecting Unseen Object Classes", 1st SOINN Workshop , Proc. International Conference on Artificial Neural Network (ICANN 2010)  
+Shogo Okada, Toyoaki Nishida, Osamu Hasegawa, "Machine Learning Approaches
+for Time-series Data Based on Self-Organizing Incremental Neural Network",
+1st SOINN Workshop , Proc. International Conference on Artificial Neural Network (ICANN 2010)  
+Furao Shen, Wataru Kasai and Osamu Hasegawa : "An Associative Memory
+System for Incremental Learning and Temporal Sequence", 2010 International Joint Conference on Neural Networks (IJCNN 2010)  as oral presentation 
+Ye Xu, Furao Shen, Jinxi Zhao and Osamu Hasegawa. An Enhanced Incremental
+Prototype Classifier using Subspace Representation Scheme. In the 2nd Workshop
+of From Local Patterns to Global Models (In conjunction with ECML 2009).
+Bled, Slovenia, Pages 139--156. 
+Ye Xu, Furao Shen, Jinxi Zhao and Osamu Hasegawa. To Obtain Orthogonal
+Feature Extraction Using Training Data Selection. In the 18th ACM Conference
+on Information and Knowledge Management (CIKM 2009). Hong Kong, China,
+Pages 1819--1822. 
+A. Kawewong, S. Tangruamsub, and O. Hasegawa :"Wide-baseline Visible
+Features for Highly Dynamic Scene Recognition," Proc. Int'l Conf. Computer Analysis of Images and Patterns (CAIP) , 2009. 
+Tongprasit Noppharit, Kawewong Aram, Hasegawa Osamu :"Data Partitioning
+Technique for Online and Incremental Visual SLAM," 16th International Conference on Neural Information Processing (ICONIP
+'09)  
+W.Kasai, Y.Tobe, O.Hasegawa :"A Fast BMU Search for Support Vector
+Machine", 19th International Conference on Artificial Neural Networks (ICANN 2009)  
+S.Nagaya, Z.Chenli, O.Hasegawa :"An Associated-memory-based Stock
+Price Predictor", 19th International Conference on Artificial Neural Networks (ICANN 2009)  
+F.Saitoh, M.Tsuboyama, F.Shen, O.Hasegawa :"Developmental cognitive
+map Learning and behavior acquisition by A Mobile Robot through A Self-Organizing
+Incremental Neural Network", IEEE International Conference on Mechatronics and Automation (ICMA 2009)  
+Ye Xu, Furao Shen, Osamu Hasegawa and Jinxi Zhao :"An Online Incremental
+Learning Vector Quantization Algorithm", IJCNN 2009  
+Sirinart Tangruamsub, Manabu Tsuboyama, Aram Kawewong and Osamu Hasegawa
+:"Mobile Robot Vision-Based Navigation Using Self-Organizing and Incremental
+Neural Networks", IJCNN 2009  
+Ye Xu, Furao Shen, Osamu Hasegawa, Jinxi Xhao : "An Online Incremental
+Learning Vector Quantization", Pacific-Asia Conference on Knowledge Discovery and Data Mining (PAKDD-09)  
+A. Kawewong, Y. Honda, M. Tsuboyama, O. Hasegawa, "Common-Patterns
+Based Mapping for Robot Navigation", IEEE International Conference on Robotics and Biomimetics  
+A. Kawewong, Y. Honda, M. Tsuboyama, O. Hasegawa, "A Common-Neural-Pattern
+Based Reasoning for Mobile Robot Cognitive Mapping", INNS-NNN Symposia (New directions in Neural Networks) 2008  
+Shogo Okada, Osamu Hasegawa :"Title Motion Recognition Based on Dynamic-Time
+Warping Method with Self-Organizing Incremental Neural Network", The 19th International Conference on Pattern Recognition (ICPR08)  
+Shogo Okada and Osamu Hasegawa, On-line Learning of Sequence Data Based
+on Self-organizing Incremental Neural Network, The 2008 International Joint Conference on Neural Networks (IJCNN 2008)  
+Akihito Sudo and Osamu Hasegawa, Neural Pattern-based Reasoning System
+for Propositional Logic, International Conference on Neural Information Processing (ICONIP 2007)  
+Shogo Okada and Osamu Hasegawa, "Classification of Temporal data based
+on Self-Organizing Incremental Neural Network", International Conference on Artificaial Neural Networks (ICANN 2007)  
+Youki Kamiya, Toshiaki Ishii, Furao Shen and Osamu Hasegawa: "An Online
+Semi-Supervised Clustering Algorithm Based on a Self-organizing Incremental
+Neural Network," The 2007 International Joint Conference on Neural
+Networks (IJCNN 2007 ), Orlando, FL, USA, August 2007 
+Furao Shen, Keisuke Sakurai, Youki Kamiya and Osamu Hasegawa: "An
+Online Semi-supervised Active Learning Algorithm with Self-organizing Incremental
+Neural Network," The 2007 International Joint Conference on Neural
+Network (IJCNN 2007 ), Orlando, FL, USA, August 2007 
+Furao Shen and Osamu Hasegawa: "A Nearest-Neighbor Method with Self-organizing
+Incremental Neural Network", The 2007 International Joint Conference
+on Neural Networks (IJCNN 2007 ), Orlando, FL, USA, August 2007 
+Akihito Sudo, Akihiro Sato and Osamu Hasegawa: "Associative Memory
+for Online Incremental Learning ina Noisy Environment", The 2007 International
+Joint Conference on Neural Networks (IJCNN 2007 ), Orlando, FL, USA, August 2007 
+Youki Kamiya, Toshiaki Ishii and Osamu Hasegawa : "Life-long Semi-supervised
+Learning: Continuation of Both Learning and Recognition", IEEE Symposium
+on Computational Intelligence in Image and Signal Processing, CIISP (2007)
+accpeted 
+Shogo Okada, Osamu Hasegawa : "Unsupervised Learning, Recognition,
+and Generation of Time-series Patterns Based on Self-Organizing Segmentation",
+The 15th IEEE International Symposium on Robot and Human Interactive Communication
+(RO-MAN 06)  
+Takahiro Toyoda, Keisuke Tagami and Osamu Hasegawa : "Integration
+of Top-down and Bottom-up Information for Image Labeling", IEEE Conference on Computer Vision and Pattern Recognition (CVPR06)  
+Shinji Hayashi and Osamu Hasegawa : "A detection technique for degraded
+face images", IEEE Conference on Computer Vision and Pattern Recognition (CVPR06)  
+Shinji Hayashi and Osamu Hasegawa : "Detecting Faces from Low Resolution
+Images", Proc. Asian Conference on Computer Vision (ACCV2006 ) (2006) 
+Takahiro Toyoda and Osamu Hasegawa : "Texture Classification Using
+Extended Higher Order Local Autocorrelation Features", The 4th international
+workshop on texture analysis and synthesis (Texture2005 ), pp.131-136 (2005) 
+Aram Kawewong and Osamu Hasegawa : "Combining Rotationally Variant
+and Invariant Features Based on Between-Class Error for 3D Texture Classification",
+The 4th international workshop on texture analysis and synthesis (Texture2005 ), pp.107-112, (2005) 
+Shinji Hayashi and Osamu Hasegawa : "Face Detection in Low-resolution
+Images", International Symposium on Visual Computing, (ISVC2005 ) 
+Shen Furao, Youki Kamiya, Osamu Hasegawa : "An Incremental Neural
+Network for Online Supervised Learning and Topology Representation",
+International Conference on Neural Information Processing, (ICONIP2005 ) 
+Shen Furao, Osamu Hasegawa : "An Incremental k-means Clustering Algorithm
+with Adaptive Distance Measure", International Conference on Neural
+Information Processing, (ICONIP2005 ) 
+Shinji Hayashi and Osamu Hasegawa : "Detecting Faces in Low-resolution
+Images", IAPR Conference on Machine Vision Applications (MVA05), Tsukuba pp.498-501 (2005) 
+Shen Furao and Osamu Hasegawa : "An On-line Learning Mechanism for
+Unsupervised Classification and Topology Representation", IEEE International Conference on Computer Vision and Pattern Recognition
+(CVPR05) , San Diego, pp.651-656, (2005) 
+Aram Kawewong and Osamu Hasegawa, "3D Texture Classification by Using
+Pre-testing Stage and Reliability Table", IEEE Proc. International Conference on Image Processing (ICIP05), (2005) 
+Takahiro Toyoda and Osamu Hasegawa :"Proposal of Extended HLAC and
+Its Application to Texture Analysis", 11th Korea-Japan Joint Workshop
+on Frontiers of Computer Vision, Gwangyu, Korea, pp.7-12, (2005) 
+Osamu Hasegawa and Shen Furao : "A Self-structurizing Neural Network
+for Online Incremental Learning", CD-ROM SICE Annual Conference in
+Sapporo, FAII-5-2, August 4-6, (2004) 
+Takahiro Toyoda and Osamu Hasegawa : "Systematic Feature Extraction
+Using Mask Patterns for High Precision Image Analysis", Joint 2nd
+International Conference on Soft Computing and Intelligent Systems and
+5th International Symposium on Advanced Intelligent Systems (SCIS &
+ISIS), CD-ROM THE-4-3, (2004) 
+Youki Kamiya, Shen Furao and Osamu Hasegawa : "Non-stop Learning :
+A New Scheme for Continuous Learning and Recognition", Joint 2nd International
+Conference on Soft Computing and Intelligent Systems and 5th International
+Symposium on Advanced Intelligent Systems (SCIS & ISIS), CD-ROM TUP-3-4,
+(2004) 
+Shogo Okada and Osamu Hasegawa : "Recognition and Generation of Time-series
+Patterns Based on Division and Integration", Joint 2nd International
+Conference on Soft Computing and Intelligent Systems and 5th International
+Symposium on Advanced Intelligent Systems (SCIS & ISIS), CD-ROM TUP-3-5,
+(2004) 
+Shen Furao and Osamu Hasegawa : "An incremental neural network for
+non-stationary unsupervised learning", International Conference on
+Neural Information Processing, (ICONIP2004) 
+Shen Furao and Osamu Hasegawa : "An effective fractal image coding
+method without search", IEEE International Conference on Image Processing  (ICIP2004), 2004 
+Shen Furao, Osamu Hasegawa : "A Self-organized Growing Network for
+On-line Unsupervised Learning", IEEE International Joint Conference on Neural Networks  (IJCNN2004), CD-ROM ISBN 0-7803-8360-5, Vol.1, pp.11-16 (2004) (PDF ) 
+Keishi Tsujimoto, Hidemi Yasui, and Osamu Hasegawa, "Outdoor Object
+Recognition based on the Sensed Data from the Sky", SPIE Defence and
+Security Symposium 2004 
+Yousun Kang, Osamu Hasegawa, Hiroshi Nagahashi, "Scale Invariant Texture
+Model for Texture Classification and Scene Analysis", Proc. Tenth
+Korea-Japan Joint Workshop on Frontiers of Computer Vision, pp.299-303,
+(2004) 
+Hironobu Fujiyoshi, Osamu Hasegawa, Nobuyoshi Enomoto and Takeo Kanade,
+"A Web-based Summarization System for Monitoring Activities of Multiple
+Objects", Proc. of the first Int. Sym. on Computer and Communication
+Engineering, pp.37-43, Daegu, Korea (Dec 2003). 
+Shen Furao and Osamu Hasegawa : "A Fast And Less Loss Fractal Image
+Coding Method Using Simulated Annealing", Special Session on Soft
+Computing in Image Processing, 7th Joint Conference on Information Sciences , pp.198-201 (2003) 
+Kohta Aoki, Ken'ichi Morooka, Osamu Hasegawa, Hiroshi Nagahashi : Animation
+Synthesis by Observation and Learning, Proc. The 5th IEEE International Symposium on Computational Intelligence in Robotics
+and Automation, pp.1258-1263, (CIRA03) 
+Yousun Kang, Osamu Hasegawa and Hiroshi Nagahashi : Texture Structure Classification
+and Depth Estimation using Multi-Scale Local Autocorrelation Features,
+Proc. IEEE Workshop on Learning in Computer Vision and Pattern Recognition , (In conjunction with IEEE  CVPR-2003 ), 2003 
+Yousun Kang and Osamu Hasegawa and Hiroshi Nagahashi : Texture Structure
+Classification using Multi Scale Features Based on Local Autocorrelation,
+The 9th Korea-Japan joint workshop on Frontiers of Computer Vision , pp.253-258, (2003) 
+Osamu Hasegawa and Takio Kurita : A Kernel Logit Approach for Face and
+Non-Face Classification, Proc. IEEE Workshop on Applications of Computer Vision, (WACV02), 2002 
+Osamu Hasegawa and Takio Kurita : Face and Non-Face Classification by
+Multinomial Logit Model and Kernel Feature Compound Vector, 9th International Conference on Neural Information Processing  (ICONIP02), 2002, (accepted as oral presentation) 
+Osamu Hasegawa and Takeo Kanade: A Vision Based Monitoring System for
+Street Video Image, The 28th Annual Conference of the IEEE Industrial Electronics Society  (IECON02), 2002, (accepted as oral presentaion) 
+Osamu Hasegawa and Takeo Kanade : A Vision System that Recognizes Object
+on General Streets, The eighth IAPR Workshop on Machine Vision Applications (MVA02), 2002, (accepted as oral presentation) 
+Osamu Hasegawa and Takio Kurita : A Multi-class Pattern Recognition Method
+by Combined Use of Multinormal Logit Model and K-Nearest Neighbor Rule,
+The eighth IAPR Workshop on Machine Vision Applications (MVA02), 2002 (accepted as oral presentation) 
+N.Enomoto, T.Kanade, H.Fujiyoshi and O.Hasegawa: "A method for monitoring
+activities of multiple objects by using stochastic model", IAPR Workshop
+on Proc.Machine Vison Applications, Tokyo, (2000) 
+Ming Xu, O.Hasegawa, K.Sakaue: Tracking Head Pose in Unconstrained Environment",
+Proceedings of The International Conference On Artificial Intelligence,
+IC-AI'2001, CSREA Press, pp.581-586, Las Vegas, Nevada, USA, June 25-28,
+2001. 
+M.Xu, B.Raytchev, K.Sakaue, O.Hasegawa, A.Koizumi, M.Takeuchi and H.Sagawa
+: " A Vision-based Method for Recognizing Non-Manual Information in
+Japanese Sign Language", Proc. Third International Conference on Multimodal
+Interfaces (ICMI 2000), pp.572-581, (2000) 
+B.Raytchev, O.Hasegawa and N.Otsu : "Gesture recognition by geometrical
+statistical feature extraction and discriminant analysis", Proc. IAPR
+WS on Machine Vision and Applications, pp.135-140, 1998 
+B.Raytchev, O.Hasegawa and N.Otsu : "Unse-Independent Online Gesture
+Recognition by Relative-Motion Extraction, Discriminant Analysis and Dynamic
+Buffer Structures", Proc.4th Asian Conference on Computer Vision,
+pp.xxx-xxx, 1999 
+S.Nobe, S.Hayamizu, O.Hasegawa et al: "Are listners/users paying attention
+to the hand gesture of anthropomorphic agents?", Proc.Bielefeld Gesture
+Workshop 97, pp.13-20, 1997 
+T.Shiida, O.Hasegawa et al: "A consideration on an event memory",
+Proc. Int'l Conf. on Cognitive Science, pp.307-308, 1997 
+O.Hasegawa et al.: "Agent Oriented Multimodal Image Learning System",
+IJCAI-WS, Intelligent Multimodal Systems, pp.29-34, 1997 
+O.Hasegawa et al.: "A CG Tool for Constructing Anthropomorphic Interface
+Agents", IJCAI-WS Animated Interface Agents, pp.23-26, 1997 
+O.Hasegawa et al.: "An Anthropomorphic Multimodal Agent which Learns
+Image Information Through Interactions", IJCAI-97, Abstracts, p.45,
+1997 
+K.Nitta, O.Hasegawa et.al: "An experimental multimodal disputation
+system", IJCAI-WS, Intelligent Multimodal Systems, pp.23-28, 1997
+H.Asoh, S.Akaho, O.Hasegawa et. al: "Intermodal Learning of Multimodal
+Interaction Systems", Proc. of the Int'l WS on Human Interface Technology,
+pp.55-62, 1997 
+S.Hayamizu, K.Sakaue, O.Hasegawa et al.: "Multimodal interaction system
+at the Electrotechnical Laboratory", RWC Synposium '97,pp.16-22,1997
+O.Hasegawa et al.: "A Human Identification Method Using Wrinkles of
+Hands", Proc.Japan-Korea WS on CV,pp.99-103,1996 
+S.Hayamizu, O.Hasegawa et al.: "RWC Multimodal Database for Interactions
+by Integration of Spoken Language and Visual Information", Proc.ICSLP96,vol.4
+of 4, pp.2171-2174,1996 
+S.Akaho, S.Hayamizu, O.Hasegawa et.al.: "Recent Development for Multimodal
+Interaction by Visual Agent with Spoken Language", Proc. First Internationa
+Conf. on Multimodal Interaction, pp.135-139, 1996 
+K.Itou, O.Hasegawa et.al: "An Active Multimodal Interaction System",
+Proc.ESCA WS on Spoken Dialogue System,pp.169-172,1995,5 
+O.Hasegawa et al.: "An Interactive Human-like Agent with Functions
+of Seeing, Hearing and Speaking", Proc.VSMM'95, pp.112-117,1995 
+O.Hasegawa et al.: "Active Agent Oriented Multimodal Interface System",
+Proc.IJCAI-95,pp.82-87,1995 
+O.Hasegawa et al.: "Multimodal Interface with Personified Active Agent",
+RWC Information Integration WS, pp.101-106,1995 
+K.Itou, O.Hasegawa et.al: "Collecting and Analyzing Nonverbal Elements
+for Maintenance of Human Machine Dialogue", Proc.'94 RWC Joint Symposium,pp.11-12,1994
+O.Hasegawa and K.Yamamoto: "Image Interface System", Proc.Frontier
+of Computer Vision '94,pp.77-82,1994 
+K.Itou, O.Hasegawa et.al: "Collecting and Analyzing Nonverbal Elements
+for Maintenance of Dialog Using a Wizard of OZ Simulation", Proc.ICSLP'94,pp.907-910,1994
+O.Hasegawa et al.: "Data collecting and analysis of human factors
+for development of multi modal human interface", Proc.CVVC'94,pp.10-15,
+1994 
+O.Hasegawa et al.: "3D surface reconstruction bu multi scale visual
+attention model", Proc.CVVC'94, pp.68-74,1994 
+O.Hasegawa, K.Yokosawa, M.Ishizuka: "Realtime Face Image Recognition
+in Unconstrained Environment for Interactive Visual Interface", Proc.12th
+ICPR,pp.384-387,1994 
+O.Hasegawa, K.Yokosawa, M.Ishizuka: "Realtime Face Image Recognition
+in Unconstrained Environment for Interactive Visual Interface", Proc.
+ACCV'93,pp.763-766,1993 
+O.Hasegawa, C.W.Lee, W.Wongwarawipat, M.Ishizuka: Realtime synthesis of
+human-like agent in responses to user's moving image Proc. 11th ICPR, Vol.4,
+pp.39-42, 11th International Conference on Pattern Recognition, 1992 
+O.Hasegawa, W.Wongwarawipat, C.W.Lee, M.Ishizuka: "Real-time Moving
+Human Face Synthesis Using a Parallel Computer Network", Proc. IEEE,
+pp.1380-1385 Industrial Engineer's Conference'91, 1991 (Best Paper Award)
+T.Fukuda, O.Hasegawa: "Expert System Driven Image Processing for Recognition
+and Identification of Micro Organisms" Proc.IEEE pp.33-38 Machine
+Intelligence and Vision, 1989 
+T.Fukuda, O.Hasegawa: "Reasoning Method for Visual Identification
+and Recognition of Living Organisms in Micro Manipu-lator Control"
+Proc. 20th International Symposium on Industrial Robots, pp.735-742, 1990
+T.Fukuda, O.Hasegawa: "3-D Image Processing and Grasping Planning
+Expert System for Distorted Objects" Proc.IEEE pp.726-731 IEEE Industrial
+Engineer's Conference, 1989 (Best Paper Award) 
+T.Fukuda, O.Hasegawa: "New Recognition and Identification Method for
+Micro Organinms by Expert System Driven Image Processing" Proc. KACC
+pp.1005-1010 Korean Automatic Control Conference, 1989 
+T.Fukuda, O.Hasegawa: "Creature Recognition and Identification by
+Image Processing Based on Expert System" Proc.IEEE pp.837-842 IEEE
+International Conference on System, Man and Cybernetics, 1989 
+T.Fukuda, O.Hasegawa H.Asama T.Nagamune I.Endo: "A Monitoring System
+for Animal Cell Recognition UK Japan Biotechnology Seminar -Animal Cell
+Technology-", 1989 
+T.Fukuda, O.Hasegawa H.Asama T.Nagamune I.Endo: "Vision System for
+Animal Cell Recognition in a Bio Engineering Process" Proc. IEEE pp.552-557
+IEEE Industrial Engineer's Conference, 1990 
+W.Wongwarawipat, C.W.Lee, O.Hasegawa, H.Dohi, M.Ishizuka: "Visual
+Software Agent Built on Transputer Network with Visual Interface"
+Proc. Transputing'91, IOS Press, pp.815-827, Transputing'91, 1991 
+M.Ishizuka, O.Hasegawa, W.Wongwarawipat, C.W.Lee and H.Dohi: "Visual
+Software Agent (VSA) Built on Transputer Network with Visual Interface
+(TN-VIT)" Proc. Computer World'91, pp.36-46, Computer World'91 1991
+M.Fujiki, O.Hasegawa, W.Wongwarawipat, M.Ishizuka: "A Prototype of
+Goldfish Software Robot with Realtime Response Function by a Parallel Computer"
+Proc. IEEE IEEE Workshop on Robot and human Communication 1992 
+O.Hasegawa, C.W.Lee, W.Wongwarawipat and M.Ishizuka: "A Real-time
+Visual Interactive System Between Finger Signs and Synthesized Human Facial
+Images Employing a Transputer based Parallel Computer", Computer Graphics
+International '92, (1992) 
+C.W.Lee, O.Hasegawa, H.Dohi, M.Ishizuka: "Motion Understanding of
+a Nonrigid Object Using Deformable 3-D Model and Constraints" Proc.ICEIC'91
+Int'l Conference on Electronics, Information and Communications, 1991 
+森岡博史、李想揆、TongprasitNoppharit、長谷川修、人の多い混雑な環境下でのSLAMによる移動ロボットのナビゲーション、第28回日本ロボット学会学術講演会、(2010)
+[PDF ,PPT ,動画 ] 
+巻渕有哉、申富饒、長谷川修、ヒューマノイドによる発達的一般問題解決と常識の獲得、第28回日本ロボット学会学術講演会、(2010) [PDF ,PPT , 動画1 , 動画2 , 動画3 ] 
+Noppharit Tongprasit, Aram Kawewong, Osamu Hasegawa, "Online Incremental
+Vision-based SLAM in Dynamic Cluttered Environment", 情報処理学会 第172回 CVIM研究会,
+2010 
+Noppharit Tongprasit, Aram Kawewong and Osamu Hasegawa, "A Fast Online
+Incremental Loop-Closure Detection for Appearance-based SLAM in Dynamic
+Crowded Environment", 画像の認識・理解シンポジウム(MIRU2010), 採録決定、オーラル発表 
+岡田将吾,長谷川 修:"自己増殖型ニューラルネットワークを用いた時系列データの学習・認識",画像の認識・理解シンポジウム(MIRU 2007) ,オーラル発表 
+神谷祐樹, 申富 饒, 長谷川 修:"自己増殖型ニューラルネットワークを用いた高速最近傍識別器の構成手法",画像の認識・理解シンポジウム(MIRU 2007) ,オーラル発表 
+岡田将吾,阿部冬馬,吉野弘規,長谷川修: "自己増殖型ニューラルネットワークとDTWを用いた頑健な時系列パターンの認識 ", 人工知能学会全国大会 (2007) 
+神谷祐樹,石井利明,長谷川修: "自己増殖型ニューラルネットワークに基づく持続的半教師あり学習手法 ", 人工知能学会全国大会 (2007) 
+須藤明人,佐藤彰洋,長谷川修: "知識を追加的に獲得可能なパターンベースの推論システム ",人工知能学会全国大会 (2007) 
+神谷 祐樹,石井 利明,長谷川 修: "自己増殖型ニューラルネットワークに基づくプロトタイプのオンライン選択手法,"電子情報通信学会総合大会,D-12-74,
+2007 
+神谷 祐樹,石井 利明,長谷川 修: "自己増殖型ニューラルネットワークに基づく持続的学習・認識手法,"電子情報通信学会総合大会,D-12-75,
+2007 
+神谷 祐樹,石井 利明,長谷川 修: "自己増殖型ニューラルネットワークに基づく追加的半教師あり学習手法," ニューロコンピューティング研究会,玉川大学,2007
+櫻井啓介,長谷川修:"オンライン競合学習手法を用いたラベル付きデータの能動的選択", ニューロコンピューティング研究会,玉川大学,2007
+櫻井啓介,長谷川修:"競合型ニューラルネットを用いたオンライン準教師付き能動学習手法", CVIM研究会, 鹿児島, 2007
+小倉和貴,申富饒,長谷川修:"競合型ニューラルネットワークによるオンライン追加学習と高密度オーバーラップの分離", CVIM研究会,
+鹿児島, 2007 
+小倉和貴,申富饒,長谷川修:"E-SOINN: Enhanced Self-Organizing Incremental Neural
+Network", ニューロコンピューティング研究会,玉川大学,2007 
+神谷 祐樹,石井 利明,長谷川 修: "持続的半教師あり学習・認識手法の提案,"第69回情報処理学会全国大会,6C-6,
+2007 
+神谷 祐樹,石井 利明,長谷川 修: "自己増殖型ニューラルネットワークを用いたオンラインプロトタイプ抽出手法,"第69回情報処理学会全国大会,6C-2,
+2007 
+小倉和貴,賀小淵,佐藤彰洋,長谷川修:"人間との相互作用に基づくヒューマノイドロボット上の文法と挙動のオンライン学習",
+電子情報通信学会PRMU研究会, 信学技報 Vol.106, No.300, PRMU2006-100, pp.51-56, (2006) 
+豊田崇弘,田上啓介,長谷川修:"イジング模型を用いた局所情報と大域情報の統合による画像ラベリング",画像の認識・理解シンポジウム MIRU2006 (オーラル発表),(2006) 
+小島量,長谷川修:"ヒューマノイドロボット上の自己増殖型ニューラルネットワークを用いた視聴覚情報からの能動的・追加的概念獲得",
+信学技報 PRMU2005-57, pp.35-40, (2005-9) (デモビデオ:SOINNを用いた追加学習 ,知識欲を用いた能動学習(音あり) ,学習結果(音あり) ) 
+Shen Furao, Youki Kamiya, Osamu Hasegawa : "An Incremental Neural
+Network for Online Supervised Learning and Topology Learning", 画像の認識・理解シンポジウム,
+IS2-81, (MIRU2005 ) 
+小島量,長谷川修: "自己増殖型ニューラルネットを用いたヒューマノイドロボット上の発達的シンボルグラウンディング , 人工知能学会全国大会,1B3-03, (2005) 
+伊藤芳子,長谷川修: "包摂アーキテクチャ上のパラメータ学習を用いた群ロボットの適応的行動生成 ", 人工知能学会全国大会,3E1-03, (2005) 
+Shogo Okada and Osamu Hasegawa :"Unsupervised Learning of Dynamic
+Patterns for Recognition and Generation", 計測自動制御学会 システムインテグレーション部門講演会,
+(2004) 
+神谷裕樹,申富饒,長谷川修:"追加的・連続的学習による自律的概念獲得",計測自動制御学会,第9回 相互作用と賢さ 合同研究会,(2004)
+豊田 崇弘,長谷川 修: "テクスチャ識別のためのマスクパターンによる特徴抽出法", 電子情報通信学会 PRMU研究会,PRMU2004-63,
+pp.77-84 / 情報処理学会 CVIM研究会, 2004-CVIM-145, pp.77-84, (2004) (PDF  / Slide ) 
+Shen Furao and Osamu Hasegawa : "A self-controlled incremental method
+for vector quantization", 電子情報通信学会 PRMU研究会,PRMU2004-65, pp.93-100
+/ 情報処理学会 CVIM研究会, 2004-CVIM-145, 93-100 (2004) (PDF ) 
+神谷祐樹,申富饒,長谷川修:"実世界パターン情報の非停止型学習・認識手法の提案", 第18回人工知能学会全国大会, CD-ROM
+2H1-03, (2004) 
+山田大輔,長谷川修: "視聴覚情報に基づく概念構造の対話的獲得", 第18回人工知能学会全国大会 CD-ROM 2B2-03,
+(2004) 
+伊藤芳子,長谷川修: "包摂アーキテクチャ上の協調学習を用いた群ロボットによる作業効率の改善", 第18回人工知能学会全国大会
+CD-ROM 3G2-05, (2004) 
+豊田崇弘,長谷川修: "局所自己相関マスクの拡張とその応用に関する一考察", 第10回画像センシングシンポジウム(SSII04),
+pp.307-310, (2004) 
+Shen Furao,Osamu Hasegawa : "A Growing Network for On-line Unsupervised
+Learning", 電子情報通信学会総合大会,D-12-77, 2004 
+岡田将吾,長谷川修:動的パターンの学習・生成メカニズムの検討とその基礎実験,電子情報通信学会総合大会,D-12-79, 2004 
+神谷祐樹,申富饒,長谷川修:実世界パターン情報の非停止型学習・認識手法の提案,電子情報通信学会総合大会,D-12-80, 2004 
+豊田崇弘,長谷川修:回転不変特徴LBPの改良とその物体計数課題への適用,電子情報通信学会総合大会,D-12-81, 2004 
+青木工太・諸岡健一・長谷川修・長橋宏:自然現象の計測と学習に基づく映像生成,第9回画像センシングシンポジウム,pp.259-264, (2003) 
+姜有宣・長谷川修・長橋宏:Texture Classification and Depth Estimation using Multi-Scale
+Local Autocorrelation Features,第9回画像センシングシンポジウム,pp.443-448, (2003) 
+Shen Furao and Osamu Hasegawa : High Quality and Fast Fractal Image Coding
+by Simulated Annealing Search,第9回画像センシングシンポジウム,pp.25-30, (2003) 
+松本耕一郎・諸岡健一・長谷川修・長橋宏: 対話による動きパターンからの概念獲得, 電子情報通信学会総合大会,D-12-15, 2003 
+青木工太・諸岡健一・長谷川修・長橋宏:実写映像に基づくアニメーションの生成,信学技報IE2002-264, pp.31-36, 2003
+長谷川:"マルチモーダル対話における視覚の役割と応用",情報処理学会コンピュータビジョンとイメージメディア研究会&ヒューマンインタフェース研究会共催研究会(オーガナイズドセッション),HI-95
+& CVIM-129-23, pp.165-170, Sept, 2001 
+長谷川:"インタフェース研究と脳科学",インタラクションのための計測・認識:ビジョンの特長を生かせるか?,情報処理学会コンピュータビジョンとイメージメディア研究会&ヒューマンインタフェース研究会共催研究会,CVIM129-25
+& HI95-25所収,pp.179-182, Sept, 2001 
+志井田 孝,長谷川 修,坂上 勝彦,李 江洪:"計算モデルATMANで人間の意識体験を模擬するための考察",日本認知科学会第14大会,
+日本認知科学会第14大会講演予稿集,pp.200-201(1997.6) 
+長谷川 修,栗田多喜夫,坂上 勝彦:"学習によるシーン理解の提案とその基礎実験",第3回画像センシングシンポジウム,第3回画像センシングシンポジウム講演論文集,pp.129-132(1997.6)
+間瀬 健二,長谷川 修:"ディベート:「仮想ネットワーク社会に自律擬人化エージェントは必要か?」の主旨と論点",ヒューマンインタフェース研究会,情報処理学会研究報告,97-HI-73-7,
+pp.37-41(1997.7) 
+長谷川 修,栗田多喜夫,坂上 勝彦,大津 展之:"高次相関特徴によるテクスチャ解析の試み",第55回情報処理学会全国大会,第55回情報処理学会全国大会講演論文集(2分冊),pp.2(2-258)-(2-259)(1997.9)
+速水 悟,長谷川 修,赤穂昭太郎1),坂上 勝彦,吉村 隆,長屋 茂喜,遠藤 隆,中沢 正幸,坂本 憲治,外川 文雄,山本 和彦: "身振りと発話のマルチモーダルデータベース",電子情報通信学会パターン認識とメディア理解研究会(1997.9)
+吉村隆,速水悟,伊藤克亘,長谷川修,田中和世: "ノンバーバル情報を導入した音声・画像統合対話システムでの初期データ収集",
+日本音響学会平成9年度秋季研究発表会(1997.9) 
+速水悟,長谷川修,赤穂昭太郎,坂上勝彦,吉村隆,長屋 茂喜,遠藤隆,中沢正幸,坂本憲治,外川文雄,山本和彦: 身振りと発話の RWC マルチモーダルデータベース,人工知能学会第二種研究会第5回情報統合研究会,
+人工知能学会研究会資料,SIG-CII-9710, pp.20-27(1997.10) 
+長谷川 修,坂上 勝彦: "CG擬人化キャラクタ生成ツール", 第3回知能情報メディアシンポジウム,第3回知能情報メディアシンポジウム講演予稿集,
+pp.211-218(1997.12) 
+速水悟,長谷川 修,赤穂昭太郎,坂上勝彦,吉村隆,長屋茂喜,遠藤隆,中沢正幸,坂本憲治,外川文雄,山本和彦: "RWCマルチモーダルデータベース",
+第3回知能情報メディアシンポジウム,第3回知能情報メディアシンポジウム講演予稿集,pp.245-252(1997.12) 
+長谷川修,速水悟,坂上勝彦: "実空間中の人物や物体を認識して対話するマルチモーダル擬人化エージェント", 第56回 情報処理学会全国大会,情報処理学会全国大会講演論文集(4分冊),pp.4-26,27(1998.3)
+曽根崇,長谷川修,坂上勝彦: "部分画像からの物体の認識と切り出し手法の提案", 第56回 情報処理学会全国大会,情報処理学会全国大会講演論文集(2分冊),
+pp.2-137,138(1998.3) 
+ライチェフ ビセル,長谷川修,大津展之: "Gesture Recognition by Geometrical Statistical
+Feature Extraction and Discriminant Analysis.", 第56回情報処理学会全国大会,情報処理学会全国大会講演論文集(2分冊),pp.2-145,146
+(1998.3) 
+長谷川 修,坂上 勝彦,速水 悟: "学習による実空間中の人物や物体の認識・判別とそのマルチモーダル擬人化エージェントへの応用",画像センシングシンポジウム(1998.6)
+長谷川修,坂上勝彦,速水悟: "人間型マルチモーダルエージェントによる実世界情報の学習と管理",電子情報通信学会 パターン認識・メディア理解研究会(1999.9)
+曽根崇,長谷川修,坂上勝彦: "部分画像からの物体の認識と切り出し手法の提案",電気学会 情報処理・産業システム情報化 合同研究会(1998.11)
+長谷川修: "顔のインタフェース技術", 電子情報通信学会 ヒューマンコミュニケーション技術セミナー ,(1999.3)
+長谷川修,坂上勝彦,速水悟: "実世界知能のための人間型ソフトウエアロボットの試作",第4回知能情報メディアシンポジウム論文集,pp69--76(1998.12)
+長谷川 修:"実世界知能を創る",第4回知能情報メディアシンポジウム 論文集(1998.12) 
+伊藤,長谷川, 速水,田中,秋葉:音声対話システム構築のためのデータ収集, 日本音響学会, 春季研究発表会, 1994 
+長谷川, 山本:電総研におけるヒューマンインタフェース研究の最近の話題, 科技庁行動解析プロジェクト, 1994 
+伊藤, 長谷川, 他:音声対話システム構築のための実対話データ収集実験, 情報処理学会音声言語情報処理研究会, 1994 
+伊藤, 長谷川, 他:疑似音声対話システムを用いた対話データ収録実験, 第10回ヒューマンインタフェースシンポジウム, 1994 
+長谷川, 伊藤, 秋葉, 速水, 田中, 山本:声対話システム利用時のユーザの振る舞いの解析 第10回ヒューマンインタフェースシンポジウム,
+1994 
+伊藤, 長谷川, 速水, 田中, 山本:エージェント型マルチモーダルインタフェースの試作 第10回ヒューマンインタフェースシンポジウム, 1994
+伊藤, 長谷川, 栗田, 速水, 田中, 山本, 大津:音声,視覚,画像を持つインタラクションシステム:情報処理学会音声言語情報処理研究会,
+1995 
+伊藤, 長谷川, 栗田, 速水, 田中, 山本, 大津:音声,視覚,画像を統合した対話システムの試作:日本音響学会, 春季研究発表会, 1995
+金, 山本, 長谷川:最尤法による手のしわ画像を用いた個人識別:電子情報通信学会, PRU研究会, 1995 
+長谷川, 伊藤, 栗田, 速水, 田中, 山本, 大津:人の表情を有し音声対話,視覚機能を備えたマルチモーダルインタフェース:電子情報通信学会 総合大会,
+1995 
+長谷川, 伊藤, 栗田, 速水, 田中, 山本, 大津:顔画像センシングを用いたエージェント型アクティブインタフェースの研究:第1回画像センシングシンポジウム,
+1995 
+中西, 長谷川, 山本, 今井, 石崎:空間指示語と想起される認知領域の基礎的研究:日本認知科学会, 1995 
+長谷川, 伊藤, 栗田, 速水, 坂上, 田中, 山本, 大津:視覚,聴覚,発話機能を揺するエージェント型マルチモーダルインタフェースの試作:電子情報通信学会PRU研究会,
+1995 
+長谷川, 伊藤, 麻生, 赤穂, 秋葉, 栗田, 速水, 坂上, 田中, 大津:コンピュータとの対話におけるユーザの振る舞いの解析, 電子情報通信学会PRU研究会,
+1995 
+長谷川, 中西, 今井, 石崎, 山本:空間指示語とその認知領域に関する基礎的研究 電子情報通信学会PRU研究会, 1995 
+長谷川, 坂上:マルチモーダル対話システムのための人間型CGエージェントの構築:電子情報通信学会, 総合大会, 1996 
+新田, 長谷川, 他8名:論争支援のマルチモーダル実験システム, つくばソフトウエアシンポジウム, 1996 
+長谷川, 坂上, 伊藤, 栗田, 速水, 田中, 大津: 視覚情報を対話的に学習するマルチモーダル擬人化エージェント: 情報処理学会 CVIM研究会,
+1996 
+志井田, 長谷川, 坂上, 李:人間型情報処理のモデル化のための一考察, 日本認知科学会, 1996 
+速水, 赤穂, 長谷川, 吉村, 麻生:音声と画像のインターモーダル学習, 知能情報メディアシンポジウム, 1996 
+長谷川, 坂上, 伊藤, 栗田, 速水, 田中, 大津: 擬人化エージェントによる対話型視覚情報学習システム, 第2回画像センシングシンポジウム,
+1996 
+速水, 伊藤, 長谷川: 音声と画像情報による対話システムのためのデータベース設計, 人工知能学会 全国大会, 1996 
+新田, 長谷川, 他8名: 論争支援マルチモーダル実験システムMr.Bengo, 情報処理学会HI研究会, 1996,10 
+赤穂, 長谷川, 吉村, 麻生, 速水: EM法を用いた複数情報源からの概念獲得, 電子情報通信学会PRMU研究会, 1996,11 
+長谷川: 擬人化エージェント作成用CG Tool について, 知能情報メディア研究会, 1997,1 
+伊藤, 長谷川, 速水: 対話しながら学習するマルチモーダル対話システムを目指して: 情報処理学会音声言語情報処理研究会, 1997,2 
+麻生, 赤穂, 長谷川, 吉村, 速水: Intermodal Learning of Multimodal Interaction Systems,
+WS of Human Interface Tech., 1997,3 
+長谷川, 栗田, 坂上: 高次局所自己相関特徴とKL展開による3次元ビューベース画像認識, 電子情報通信学会 総合大会, 1997,3 
+吉村, 長谷川, 他3名:ノンバーバル情報を導入した音声,画像統合対話システムの設計: 日本音響学会 春季研究発表会, 1997,3 
+志井田, 長谷川, 坂上, 李: 人間型情報処理モデルATMANで心の情報処理をするための一考察, 日本認知科学会, 1997, 発表予定 
+福田,長谷川:画像処理エキスパートシステムを用いた不定形対象物の視覚認識の研究,(第一報:歪み,欠損等を有する直方体対象物の視覚認識法),第7回日本ロボット学会学術講演会,(1989)
+福田,浅間,長棟,遠藤,長谷川:生物の認識と同定に関する研究,(第四報:マイクロキャリア上の動物細胞の視覚認識・計測エキスパートシステム),計測自動制御学会学術講演会,(1989)
+福田,浅間,長棟,遠藤,長谷川:生物の認識と同定に関する研究,(第三報:マイクロキャリア上の動物細胞の視覚認識法),日本機械学会ロボティクス・メカトロニクス講演会,(1989)
+福田,長谷川:生物の認識と同定に関する研究,(第二報:エキスパートシステムを用いた微生物の視覚認識の研究),日本ロボット学会学術講演会,(1988)
+福田,長谷川:生物の認識と同定に関する研究,(第一報:画像処理を用いた生物の認識・同定方法),計測自動制御学会学術講演会,SICE'88, (1988)
+長谷川:擬人化エージェントによるマルチモーダルインタフェース, 電子情報通信学会, 総合大会 講演予稿集, pp.524-525, 1997
+栗田多喜夫,長谷川修, ``顔画像からの個人識別,'' 映像情報メディア学会誌, Vol.51, No.8, pp.1132-1135, 1997.
+長谷川:知的エージェントのヒューマンインタフェース, 電子情報通信学会, 関西支部専門講習会予稿集, pp.29-36, 1996 
+長谷川:マルチモーダル対話, 人工知能学会誌, vol.11, no.5, p.812, 1996 
+長谷川:人と表情の振る舞いを視る, 電気学会全国大会 講演論文集, pp.S12-21-21, 1996 
+長谷川:人物型仮想エージェントの動向と展望, 第11回 CG Osaka 講演予稿集, pp.11-18, 1995 
+斉藤, 木下, 志沢, 長谷川, 松尾, 山下: 第12回ICPR報告, 電子情報通信学会PRU研究会, Dec. 1994 
+長谷川, 山本: 視覚系の情報処理とコンピュータビジョンの最近の動向, 生体生理工学シンポジウム講演論文集, pp.27-32, 1993 
+福田,長谷川:バイオ分野における視覚認識技術,精密工学会学会誌, pp.17-20, (1990) 
+林伸治,長谷川修:"低解像度画像からの顔検出", 画像ラボ,(2006) 掲載予定 
+長谷川修:シーン理解のためのパターン認識,O plus E (特集:パターン認識の最近の動向), Vol.25, No.10, pp.1130-1136,
+2003 
+長谷川: エージェント型マルチモーダルインタフェースの試作, 映像情報, Sept. 1995 
+長谷川: マシンビジョンのための最近のアルゴリズム,O plus E, Dec. 1994 
+長谷川 修:自己増殖型ニューラルネット(SOINN)とその応用 ,第57回次世代センサセミナーシリーズ 
+長谷川修:鉄腕アトムの赤ちゃんを創る,大田区民大学・東工大提携講座 ,(2006) 
+情報処理学会 CVIM-HI研究会共催オーガナイズドセッション&パネル:人の計測と認識(2001年9月:京都)  
+韓国 全南大学校,招待講演,2001年2月 
+電子情報通信学会, パターン認識とメディア理解(PRMU)研究会,招待講演,2000年11月 
+電子情報通信学会, ヒューマンコミュニケーショングループ特別企画セミナー ヒューマンコミュニケーション(HC)のための顔大研究, 1999 
+話題提供:人間型ソフトウエアロボットによる対話的インターモーダル学習, Synsophy Project 情報通信ブレイクスルー基礎研究21, 1999 
+講習会:学習による画像認識の基礎と応用中部科学技術センター, 1998 
+パネル:知的エージェントを創る知能情報メディアシンポジウム, 1998 
+電子情報通信学会, 総合大会オーガナイズドセッション, パネラ, 1997 
+マルチエージェント研究会(MARK)パネル:「認知科学とマルチエージェント」(1997) 
+パネルディベート: CSCWはエージェントで救えるか<, 第11回ヒューマンインタフェースシンポジウム, 1996,10 
+電子情報通信学会, 顔画像処理に関する研究会, 1996,10 
+ATR MIC Intelligent Agents Workshop, 1996, 3 
+キヤノン情報メディア研究所, 1995,11 
+日本工業技術振興協会, 1995,5 
+韓国科学技術院システム工学研究所(SERI), 1995,3 
+慶應義塾大学キャンパスセミナー, 1995,1 
+著書
+英文論文
+ページトップへ
+和文論文
+ページトップへ
+国際会議論文
+ページトップへ
+国内会議 / 口頭発表
+ページトップへ
+解説記事
+学会誌
+商用誌
+ページトップへ
+所外講演 / 話題提供 / パネル / 講習会他
+ページトップへ
+

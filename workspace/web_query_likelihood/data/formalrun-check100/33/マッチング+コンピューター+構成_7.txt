@@ -1,0 +1,92 @@
+
+計算機科学者ライナー・ハルテンシュタインは、再構成可能コンピューティングを「アンチマシン」と呼称している。ハルテンシュタインによれば、これは従来のフォン・ノイマン・マシンからの根本的パラダイムシフトを表したものだという[7]。ソフトウェアからコンフィグウェア(FPGAの回路構成)への移行により、処理速度が劇的に向上すると同時に、消費電力も劇的に減らすことができる。しかし、FPGAの実装密度はムーアの法則で示されるものよりずっと低く、クロック周波数も最新のマイクロプロセッサに比べると大幅に低い。そのためハルテンシュタインはこれを「再構成可能コンピューティングのパラドックス」と呼んでいる。これは、パラダイムシフトであるがゆえのパラドックスであり、従来のパラダイムが持つフォン・ノイマン・ボトルネックが一因となっている。
+ニック・トレデニック(英語版)は、コンピューティングのパラダイムを分類することで(表1参照)、再構成可能コンピューティングの基本モデルの1つであるデータストリームベースのアンチマシンを従来からのパラダイムと対比させた[8]。
+再構成可能コンピュータの基礎モデルであるデータストリームベースのアンチマシンは、命令ストリームベースのフォン・ノイマン・マシンのパラダイムの対極にある。例えば、最も単純な(動的再構成ではない)再構成可能システムは、動作に際して命令をフェッチすることがない。通常動作以前に行う再構成は、ある意味で「スーパー命令フェッチ」ともいうべきものである。データストリームベースであるため、アンチマシンはプログラムカウンタを持たず、代わりにデータカウンタを持つ。「データストリーム」という用語はシストリックアレイ(英語版)から採用されたもので、シストリックアレイではセル間のデータの流れを意味する。
+しかし元々のシストリックアレイ(1980年代初期)は主に数学者が研究し、アンチマシンの半分だけ、すなわちデータの経路しか定義しなかった。データの順序を制御するという点は定義せず、シストリックアレイにどうデータを供給するか、シストリックアレイの出力をどう使うかは考慮されていない。アンチマシンのデータ順序制御面は(おそらくオンチップの)分散メモリでモデル化される。これを Auto-Sequencing Memory (ASM) と呼ぶ[9]。ASMブロックにはデータカウンタを含むシーケンサが備わっている。一例としてDMAを一般化した Generic Address Generator (GAG)[10]がある。
+計算のストリーミングモデルの例[編集]
+問題: 長さ256のchar型配列 A[] と B[] があり、配列 C[] を C[i]=B[B[B[B[B[B[B[B[A[i]]]]]]]]] となるよう計算する。この問題は仮想的なものだが、実世界の問題にも似たような例はある。
+ソフトウェアで解く場合、C言語では次のようなコードになる。
+for(int i=0;i<256;i++)
+{
+char a=A[i];
+for(int j=0;j<8;j++)
+a=B[a];
+C[i]=a;
+}
+このプログラムの実行には 256*10*CPI サイクルかかる。ここでCPIとは、1命令あたりのサイクル数である。
+これを例えばFPGAなどハードウェアで実装した場合を示す。その場合、配列 'A' の各要素がマイクロプロセッサによって「ストリーム」化され、サイクル毎にFPGA上の回路に送り込まれる。配列 'B' はROM、例えばFPGAのBRAMに実装されるものとする。'B' とラベル付けされたROMに入っていく線はアドレス線であり、出てくる線はそのアドレスに格納されていた値を出力するものである。青い四角形は一時的な値を格納するレジスタである。見ての通り、これはパイプライン構造であり、8サイクルで C[i] の値を出力する。入力がストリーム化されていれば、出力もストリームとなる。
+このハードウェア実装では、256+8 サイクルかかる。したがって、ソフトウェア実装に対して 10*CPI のぶんだけ高速化できると期待される。ただし、FPGAはクロック周波数が低いので、性能向上の度合いはそれよりも小さくなる。
+用語[編集]
+Reconfigurable Device(再構成可能なデバイス)
+FPGA、あるいは実行中に機能を変更できる何らかのデバイス。再構成可能なデバイスは粒度の細かいアーキテクチャかもしれないし、中程度の粒度のアーキテクチャかもしれない。プロセッシング要素の機能とそれらをつなぐ相互接続を全て再構成可能なら、そのハードウェアは再構成可能なデバイス(あるいはアーキテクチャ)と言うことができる。
+Bitstream(ビットストリーム)
+FPGAを構成するファイル(拡張子は .bit)。実行準備ができたら Bitstream が FPGA にロードされる。配置と経路のフェーズの最終結果として生成される。
+Common Memory(共通メモリ)
+一種の共有メモリ。複数のFPGAを搭載したボード上のメモリを指し、FPGA間の直接通信やFPGA以外との通信に使われる。
+Compile/Compilation(コンパイル)
+この用語はマイクロプロセッサ上で動作するコードに関して使うべきである。それにはプロセッサ上で動作するFPGAのシミュレーションやエミュレーションも含まれる。一方、この用語を再構成可能なデバイスの合成のプロセスと配置と経路の生成にも使っている例もある[1]。
+Cocompilation(共コンパイル)
+ソフトウェアのコードとコンフィグウェアのコードを生成するコンパイルを意味する。自動的なソフトウェア/コンフィグウェアの分割も含む[2]。
+Configware(コンフィグウェア)
+構成のためのソースプログラム。構造的にコンフィグウェア[3]には対応するソフトウェアが存在する(プロシージャレベルでコールしあうような形)。
+Configuration(構成)
+現にFPGA上にロードされている Bitstream を指す。もっと大まかに言えば、基板上の部品やチップを意味することもあるし、再構成可能マシン全体の構成を意味することもあるが、現在の文脈では関係ない。
+Cycle accurate simulation(サイクル精度のシミュレーション)
+FPGAのクロックレベルの動作を正確にシミュレーションするものであり、クロックパルスの上がり/下がりのタイミングに従ってデータの変化を記録する。
+Emulation/Simulation(エミュレーション/シミュレーション)
+シミュレーションあるいはモデリング。FPGAハードウェアのふるまいを通常のプロセッサを使って真似るプロセスである。
+High Performance Computing (HPC)(高性能計算)
+高性能組み込みコンピューティングあるいは並列コンピューティング。並列コンピューティングはマイクロプロセッサ群によるものか Reconfigurable HPC によるもの。Reconfigurable HPC とは FPGA群か rDPA 群を使ったもので、計算時間がかかり、並列化して実装できるアルゴリズムが特徴である。
+Hybrid(混成)
+この文脈では Hybrid とは、ノイマン型コンピューティング(命令をメモリから読み込んで実行)と再構成可能コンピューティング(実行時に命令をフェッチしない)の共生である[4]。
+On-chip memory(オンチップ・メモリ)
+Block RAMやキャッシュ。この用語はひとつのチップ内に存在するメモリを指す(BlkRAM か SRAM)。キャッシュという用語は通常のマイクロプロセッサについてのみ使用すべきである。
+Aggregate On-chip memory(オンチップ・メモリの合計)
+マルチFPGAシステムでのオンチップ・メモリの合計を指す。
+Local Memory(ローカルメモリ)
+DRAM, SRAM, QDR, DDR SRAM, ZBT RAM。この用語は FPGA や rDPA に直接接続される外部メモリに使用すべきものである。チップ内にある場合はオンチップ・メモリと呼ばれる。
+Reconfigurable Computing(再構成可能コンピューティング)
+FPGA、rDPA、マイクロプロセッサを混成させてデータを処理するコンピューティングパラダイム。プログラム実行中やプログラム実行前に Bitstream を変更できる。
+Reconfiguration(再構成)
+構成、プログラミング、再プログラミング(Configwareを参照)
+System Memory/Host Memory(システムメモリ/ホストメモリ)
+マイクロプロセッサのマザーボード上のメモリ。
+Reconfigurable Computer(再構成可能コンピュータ)
+マイクロプロセッサとそのメモリ、およびFPGAや rDPA とそのメモリから構成されるコンピュータ。
+Synthesis(合成)
+HDL (Hardware Description Language), HLL (High Level Language), GUI (Graphical User Interfaces)を使って記述されたロジックの netlist を作るプロセス。
+Place and Route(配置と経路)
+netlist をFPGAや rDPA の物理的構造に変換すること。これによって Bitstream が生成される。
+粒度[編集]
+再構成可能ロジックの粒度は最小機能ユニットのサイズで定義され、マッピングツールで扱う単位となる。粒度が細かいとアルゴリズムをハードウェアに実装する際の柔軟性が増す。しかし、細粒度では消費電力が増加し、経路変更に時間がかかるため、再構成による遅延が大きくなる。細粒度アーキテクチャはビット単位の操作が可能だが、大雑把な粒度ではより一般的なアプリケーション向きに最適化されている。粒度が大きいアーキテクチャの問題点は計算対象が小さいと使われない回路要素が出てくる点である。例えば、1ビットの加算を4ビット幅の機能ユニットで構成すると3ビット分無駄にすることになる。この問題は粒度の粗いものと粒度の細かいものを混合した構成にすることで解決できる。
+粗い粒度のアーキテクチャでは、ワード幅のデータパスを必要とするアルゴリズムを実装することを想定している。このため、細かい粒度の機能ユニットで同等機能を実現した場合に比べて消費電力も性能も有利である。中には一般的な特定のアルゴリズムを実装済みで、それに限定された修正を加えるための機能ユニットが付属したタイプのデバイスも存在する。
+再構成の頻度[編集]
+再構成は実行中あるいは実行と実行の間に行われ、それを deployment time(配備時間)と呼ぶ。deployment timeの間に bitstream を使ってデバイスを再構成する。細粒度のシステムは前述した通り経路接続が多くなるために再構成に時間がかかり、消費電力も増える。また、再構成の頻度が少なければ、消費電力的にも遅延時間の面からも有利となる。部分的に再構成を行いつつ、同時に再構成していない部分で計算を続けるということもあり、その場合は消費電力もあまり増えないし遅延も最小に抑えられる。bitstream を圧縮することも原理的には可能であるが、データを伸長する際の計算にかかる時間と電力を考慮すると効果はそれほど大きくは無い。
+ホストとの接続[編集]
+再構成可能デバイスはホストとなるプロセッサに接続してアクセラレータとして使われる。どのような構成が最適かを考えるには、データ転送の種類、遅延時間、電力、性能向上の度合いを考慮する必要がある。最も直感的なデザインとしては、コプロセッサを接続するようなバスで再構成可能デバイスを接続する方法がある。しかし、中にはホストプロセッサのレジスタに再構成可能デバイスが直接アクセスできるような密な接続をした例もある。ホストプロセッサは再構成可能デバイスの機能を呼び出したり、再構成を行ったり、外部とのインターフェイスを受け持つ。
+ルーティング/相互接続[編集]
+再構成可能デバイスの柔軟性は、主にその相互接続のルーティングによるものである。FPGAのベンダーであるザイリンクスやアルテラの相互接続のスタイルは、アイランド(島)型のレイアウトであり、二次元の配列状に機能ユニットが並んでいる。不適切なルーティングをすると、柔軟性が損なわれ、資源が無駄となり、性能が制限される。相互接続を余分に行ってしまうと、必要以上にトランジスタを使ってしまい、シリコン上の領域を消費し、経路が伸びて電力消費が多くなる。
+ツールフロー[編集]
+一般に再構成可能コンピューティングのツールはふたつに分類される。再構成可能デバイスのEDAツールとCPUのコンパイルツールである。フロントエンドのコンパイラはこれらを統合したツールであり、構造化されたハードウェア表現形式を生成してハードウェア設計フローへの入力とする。ハードウェア設計フローは、テクノロジーマッピング、配置アルゴリズム、経路設定アルゴリズムの三段階に分けられる。
+データフロー型プロセッサには再構成可能コンピューティングを使って実装されたものもある。
+参考文献[編集]
+S. Hauck and A. DeHon, Reconfigurable Computing: The Theory and Practice of FPGA-Based Computing, Morgan Kaufmann, 2008.
+J. Henkel, S. Parameswaran (editors): Designing Embedded Processors. A Low Power Perspective; Springer Verlag, March 2007
+J. Teich (editor) et al.: Reconfigurable Computing Systems. Special Topic Issue of Journal it — Information Technology, Oldenbourg Verlag, Munich. Vol. 49(2007) Issue 3
+T.J. Todman, G.A. Constantinides, S.J.E. Wilton, O. Mencer, W. Luk and P.Y.K. Cheung, "Reconfigurable Computing: Architectures and Design Methods", IEE Proceedings: Computer & Digital Techniques, Vol. 152, No. 2, March 2005, pp. 193–208.
+A. Zomaya (editor): Handbook of Nature-Inspired and Innovative Computing: Integrating Classical Models with Emerging Technologies; Springer Verlag, 2006
+J. M. Arnold and D. A. Buell, "VHDL programming on Splash 2," in More FPGAs, Will Moore and Wayne Luk, editors, Abingdon EE & CS Books, Oxford, England, 1994, pp. 182–191. (Proceedings,International Workshop on Field-Programmable Logic, Oxford, 1993.)
+J. M. Arnold, D. A. Buell, D. Hoang, D. V. Pryor, N. Shirazi, M. R. Thistle, "Splash 2 and its applications, "Proceedings, International Conference on Computer Design, Cambridge, 1993, pp. 482–486.
+D. A. Buell and Kenneth L. Pocek, "Custom computing machines: An introduction," The Journal of Supercomputing, v. 9, 1995, pp. 219–230.
+脚注[編集]
+^ Estrin, G. 2002. Reconfigurable computer origins: the UCLA fixed-plus-variable (F+V) structure computer. IEEE Ann. Hist. Comput. 24, 4 (Oct. 2002), 3–9. DOI= http://dx.doi.org/10.1109/MAHC.2002.1114865
+^ Estrin, G., "Organization of Computer Systems—The Fixed Plus Variable Structure Computer," Proc. Western Joint Computer Conf., Western Joint Computer Conference, New York, 1960, pp. 33–40.
+^ C. Bobda: Introduction to Reconfigurable Computing: Architectures; Springer, 2007
+^ Hauser, John R. and Wawrzynek, John, "Garp: A MIPS Processor with a Reconfigurable Coprocessor," Proceedings of the IEEE Symposium on Field-Programmable Custom Computing Machines (FCCM '97, April 16–18, 1997), pp. 24–33.
+^ Campi, F.; Toma, M.; Lodi, A.; Cappelli, A.; Canegallo, R.; Guerrieri, R., "A VLIW processor with reconfigurable instruction set for embedded applications," Solid-State Circuits Conference, 2003. Digest of Technical Papers. ISSCC. 2003 IEEE International , vol., no., pp.250-491 vol.1, 2003
+^ Algotronix History
+^ Hartenstein, R. 2001. A decade of reconfigurable computing: a visionary retrospective. In Proceedings of the Conference on Design, Automation and Test in Europe (DATE 2001) (Munich, Germany). W. Nebel and A. Jerraya, Eds. Design, Automation, and Test in Europe. IEEE Press, Piscataway, NJ, 642–649.
+^ N. Tredennick: The Case for Reconfigurable Computing; Microprocessor Report, Vol. 10 No. 10, 5 August 1996, pp 25–27.
+^ A High Performance Machine Paradigm Based on Auto-Sequencing Data Memory
+^ Generic Address Generator
+再構成可能コンピューティング - Wikipedia

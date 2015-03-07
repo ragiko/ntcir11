@@ -1,0 +1,15 @@
+mecabの辞書に新しい単語を登録する方法のメモ。
+mecabのインストール
+mecabをインストールすると、mecabコマンドが使えるようになります。
+wgetするファイルは2013年4月時点で最新です。
+yum install -y gcc-c++
+cd /usr/local/src
+wget https://mecab.googlecode.com/files/mecab-0.996.tar.gz
+tar zxfv mecab-0.996.tar.gz
+cd mecab-0.996/
+./configure
+make
+make check
+make install
+mecab -v
+mecabの辞書に新しい単語を登録する方法 - Hive Color

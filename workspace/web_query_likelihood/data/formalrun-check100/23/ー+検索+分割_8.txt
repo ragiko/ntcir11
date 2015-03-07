@@ -1,0 +1,77 @@
+検索結果ページのページ分割 
+キーワードもしくはタグでブログ内を検索した結果ページを分割して出力できます。また、分割されたページをあつかうテンプレートタグを利用して、ページナビゲーションのなどの作成も行えます。
+1ページあたりに表示する件数を設定する
+検索結果ページで、1ページあたりに出力する最大件数の設定は、環境設定ファイル (mt-config.cgi) で環境変数 SearchMaxResults を使用して行います。
+次の例は、1ページに出力する検索結果の件数を10件に設定します。
+SearchMaxResults 10
+1ページ内に出力するの検索結果を10と設定したとき、75件の検索結果なら10件表示するページは7ページ、5件表示するページは1ページの合計8ページに分割されます。
+ページナビゲーションの作成
+分割された各検索結果ページへのナビゲーションの作成は、ページャーに関するテンプレートタグを利用して行います。例えば、表示中の検索結果ページの次ページと前ページのナビゲーションを作成する場合は次のようにします。
+<ul>
+<MTIfMoreResults>
+<li><a rel="prev" href="<$MTNextLink$>">次のページへ</a></li>
+<MTElse>
+<li>次ページへ</li>
+</MTIfMoreResults>
+<MTIfPreviousResults>
+<li><a rel="next" href="<$MTPreviousLink$>">前のページ</a></li>
+<MTElse>
+<li>前のページへ</li>
+</MTIfPreviousResults>
+</ul>
+例のテンプレートでは、MTIfMoreResults,  といった現在のページに次ページ、前ページがあるかどうかを判別するコンディショナルタグを利用しているので、ページの無いときはリンクの無いテキストのみを表示するようにしています。
+インストール時に用意されている Movable Type のデフォルトテンプレートでは、分割されるページ分繰り返し処理を行う MTPagerBlock を利用して、ページ番号を表示するナビゲーションが実装されています。
+<div class="content-nav">
+<MTIfPreviousResults><a href="<MTPreviousLink>" rel="prev" onclick="return swapContent(-1);">< Previous</a>&nbsp;&nbsp;</MTIfPreviousResults><MTPagerBlock><MTIfCurrentPage><MTVar name="__value__"><MTElse><a href="<MTPagerLink>"><MTVar name="__value__"></a></MTIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTPagerBlock><MTIfMoreResults>&nbsp;&nbsp;<a href="<MTNextLink>" rel="next" onclick="return swapContent();">Next ></a></MTIfMoreResults>
+</div>
+次のサンプルは、さきほどの次ページ・前ページのナビゲーションの例と組み合わせて編集したものです。
+<div class="content-nav">
+<span class="prev">
+<MTIfPreviousResults>
+<a rel="prev" href="<$MTPreviousLink$>" onclick="return swapContent(-1)">< 前ページ</a>
+<MTElse>
+< 前ページ
+</MTIfPreviousResults>
+</span>
+<MTPagerBlock>
+<MTIfCurrentPage>
+<span class="this-page"><MTVar name="__value__"></span>
+<MTElse>
+<a href="<$MTPagerLink$>"><MTVar name="__value__"></a>
+</MTIfCurrentPage>
+</MTPagerBlock>
+<span class="next">
+<MTIfMoreResults>
+<a rel="next" href="<$MTNextLink$>" onclick="return swapContent()">次ページ ></a>
+<MTElse>
+次ページ >
+</MTIfMoreResults>
+</span>
+</div>
+表示するページの数だけ o を繰り返すナビゲーションも作れます。
+<div class="content-nav">
+<span class="prev">
+<MTIfPreviousResults>
+<a rel="prev" href="<$MTPreviousLink$>" onclick="return swapContent(-1)">< 前ページ</a>
+<MTElse>
+< 前ページ
+</MTIfPreviousResults>
+</span>
+<span class="pager">M
+<MTPagerBlock>
+<MTIfCurrentPage>
+<span class="this-page">o</span>
+<MTElse>
+<a href="<$MTPagerLink$>">o</a>
+</MTIfCurrentPage>
+</MTPagerBlock>
+vable Type</span>
+<span class="next">
+<MTIfMoreResults>
+<a rel="next" href="<$MTNextLink$>" onclick="return swapContent()">次ページ ></a>
+<MTElse>
+次ページ >
+</MTIfMoreResults>
+</span>
+</div>
+Movable Type 4 ドキュメント

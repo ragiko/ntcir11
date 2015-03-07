@@ -1,0 +1,57 @@
+						index.htmlにフレームを作り、フレームにセレクトタグでmain.htmに選択したhtmlページを表示させたいのですが、【】のところをどうしたらいいでしょうか?
+---------index.html----------------------------------------------------------
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<title>index</title>
+</head>
+<frameset rows="*,50" framespacing="0" frameborder="no" border="0">
+<frame src="top.htm" name="main">
+<frame src="select.htm" name="menu">
+</frameset>
+<noframes></noframes>
+</html>
+---------select.htm----------------------------------------------------------
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>select</title>
+<script type="text/javascript">
+<!--
+function gotoURL(){
+var sIndex=document.formSelect.choice.selectedIndex;
+【document.main.src】 = document.formSelect.choice[sIndex].value;
+}
+// -->
+</script>
+</head>
+<body bgcolor="#22FFBB" text="#000000">
+<div align="right">
+<form name="formSelect">
+リストより選択してください。
+<select name="choice" onChange="gotoURL()">
+<option value="top.htm">トップ</option>
+<option value="a.htm">A</option>
+<option value="b.htm">B</option>
+<option value="c.htm">C</option>
+</select>
+</form>
+</div>
+</body>
+</html>
+---------top.htm----------------------------------------------------------
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<title>top</title>
+</head>
+<body bgcolor="white"> 
+<div align="center">
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img src="images.gif" width="350" height="80"></p>
+</div>
+</body>
+</html>
+index.htmlにフレームを作り、フレームにセレクトタグでmain.htmに選択... - Yahoo!知恵袋

@@ -1,0 +1,3 @@
+会議音声コーパスの構築について述べる。ここでは、4、5名が参加する会議の音声データ収録を行い、これをコーパス化した。これまで会議音声のコーパス化についての資料例はほとんどないため、模擬会議の設定、収録方法、データファイル化について重点的に述べる。音声データは各話者毎に1チャネル、全体音声に1チャネル、また同時に会議画像データも収録された。これらのデータは、音声の書き起しデータなどと共にファイル化される。本コーパスは7件の会議データを含み新情報処理開発機構から研究開発用に公開される予定である。
+We have constructed a meeting speech corpus, which contains seven simulated meetings where 4 or 5 persons(i.e., speakers)join discussions about several topics. Each speaker's speech, whole speech and image data are recorded and filing with transcriptions of speech data. In this paper, setting of the meetings and several specifications in the recording and filing are described. The corpus will be soon released from RWCP for research use.
+

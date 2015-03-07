@@ -1,0 +1,3 @@
+読上げ音声の認識は数万語彙でもかなりの認識精度を達成しているのに対して、自然な話し言葉の音声については、タスクドメインを限定した場合でないと十分な性能が得られていないのが現状である。本稿では、話し言葉音声認識の困難さについて分析を行った上で、音響モデル・発音モデル・言語モデルなどのアプローチについて概観する。
+While large vocabulary continuous speech recognition systems achieve high accuracy in read speech as in dictation systems, recognition performance on the spontaneous and conversational speech is still poor unless the task domain is limited. In this review, the problems and approaches in acoustic, pronunciation and language models are addressed.
+

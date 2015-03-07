@@ -1,0 +1,3 @@
+二項分布の信頼限界
+デフォルトでは、FREQプロシジャは、二項比率に関する漸近信頼限界および正確な(Clopper-Pearson)信頼限界を提供します。binomial-optionsで信頼限界要求を指定しない場合、FREQプロシジャは、標準Wald漸近信頼限界を計算します。また、二項比率に関するAgresti-Coull信頼限界やWilson(スコア)信頼限界も要求できます。これらの二項比率の信頼限界の詳細やその性能の比較については、Brown, Cai, and DasGupta (2001)、Agresti and Coull (1998)、Newcombe (1998)を参照してください。
+FREQプロシジャ: 二項比率 :: Base SAS(R) 9.3プロシジャガイド: 統計プロシジャ

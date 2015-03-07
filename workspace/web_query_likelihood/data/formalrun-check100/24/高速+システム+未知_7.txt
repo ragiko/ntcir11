@@ -1,0 +1,57 @@
+はじめに
+LightScanner&reg;によるDNA融解解析はHi-Res Melting&trade;と呼ばれ、ハイスループットな変異検出とジェノタイピングを可能にしました。
+Hi-Res Melting&trade;は、二本鎖DNA結合性蛍光色素とPCR産物を含む反応液の蛍光強度の変化を温度に対して精密に測定する技術で、そのデータ密度が性能に大きく影響します。LightScanner&reg;はDNA融解の過程をCCDカメラで捉え、DNA融解プロファイルのわずかな違いを明確に表示します。
+サンプル間の融解曲線を比較して、増幅DNAの塩基配列について調べます。また、データ解釈の正確性はソフトウェア・アルゴリズムに左右されます。
+LightScanner&reg;にはHi-Res Melting&trade;専用のソフトウェアが搭載されており、融解曲線を正確に解析します。
+LCGreen&reg; Plus蛍光色素
+LightScanner&reg;システムでは塩基配列の変異を判別するために、色素標識プローブではなく、新しいタイプの二本鎖DNA結合色素LCGreen&reg; Plusを使います。
+LightScanner&reg;システムは、新しいタイプの二本鎖DNA結合性蛍光色素LCGreen&reg; Plusを使用し、標識プローブを使わず配列変異を同定します。LCGreen&reg; PlusはDNAの配列変異を検出するHi-Res Melting&trade;曲線分析専用色素として開発されました。LCGreen&reg; PlusはPCR産物で形成されるヘテロデュプレックスの検出に優れています。
+変異の検出
+増幅DNAの配列変異スクリーニングは、変異スキャニングとも呼ばれ、遺伝学的研究や臨床応用において重要な手法です。LightScanner&reg;は、二本鎖DNA結合蛍光色素を用いて高分解融解曲線を測定することにより、通常のPCRプレート内で変異スクリーニングできる点が特徴です。
+変異スキャニングでは、増幅DNAフラグメントの配列変異の存在を検出するために、DNAフラグメントのハイブリッドが完全にマッチしたホモデュプレックスであるか、ミスマッチのあるヘテロデュプレックスであるかを識別します。
+従来のスキャニングシステムは単一な測定系ではなく、ヘテロデュプレックスを検出するために分離ステップが必要でした。LightScanner&reg;ではPCR産物の変異は、その融解曲線の形状が対照サンプルと比較して異なることから検出されます。
+LightScanner&reg;とLCGreen&reg; Plusのを用いた系で、2つのエクソンのSNPを同定した例を以下に示します。
+二重測定で得た野生型および変異型の曲線は、共にそれぞれよく一致して重なっており、優れた再現性が示されています。
+PCR反応チューブ内でジェノタイピングを行うには高価な蛍光標識オリゴヌクレオチドプローブが必要とされてきました。
+今では、3末端をブロックした一本の非標識オリゴヌクレオチドプローブと飽和蛍光色素LCGreen&reg; Plusを使い、個々の遺伝子型に特有なプローブの融解曲線を測定して、ジェノタイピングを行うことができます。
+非標識プローブによるジェノタイピングは、PCRチューブ内で行うエンドポイントアッセイです。プローブはPCR反応液中に含まれていますが、増幅反応に消費されることはありません。PCR後にプローブとターゲットのハイブリッドの融解を測定してジェノタイピングします。
+この手法を成功させるには、プライマーの一方を過剰に使用してターゲットとなるDNA鎖がより多く増幅する必要があります。
+ジェノタイピング解析の例(下図)
+プローブ‐ターゲットのハイブリッドにミスマッチのあるアレル(この例ではC)ではTm値の低い融解曲線(青で示す)が得られ、ハイブリッドがマッチするアレル(この例ではG)はTm値の高い融解曲線(黒で示す)が得られます。
+ヘテロ接合型のサンプルでは、ホモ接合型サンプルを組み合わせたような低いピークを2つ持つ曲線(赤で示す)が得られます。
+結論
+スキャニングとジェノタイピングのための高分解能融解分析(Hi-Res Melting&trade;)は、LightScanner&reg; システムを用いることにより可能となりました。
+LightScanner&reg;システムでは、PCR後の試薬の添加も、コストや時間のかかる分離操作も必要としません。PCR産物をシークエンシングなどPCR後の解析にそのまま用いることができます。LC Green PlusはPCR増幅反応液にあらかじめ加えておきます。
+Hi-Res Melting&trade;プロファイル解析はdHPLCやTGCEのような単一測定系ではない手法より優れた感度と特異度を持ち、ヘテロ接合体の一塩基置換を2～5分で明らかにします。LightScanner&reg;システムでは未知のヘテロ接合型の変異を同定するスキャニングに加え、特定の変異を識別するジェノタイピングが可能です。
+また、これらのスキャニングとジェノタイピングを一回の簡単な融解分析で実施できます。LightScanner&reg;システムを用いると、ハイスループットな変異スキャニングとジェノタイピングにおいて最高の成果が得られます。
+参考文献
+・Wittwer, C.T., Reed, G.H., Gundry, C.N., Vandersteen, J.G., and Pryor, R.J. 
+High-resolution genotyping by amplicon melting analysis using LCGreen.
+(LCGreen&reg;を用いたアンプリコン融解分析による高分解能ジェノタイピング) 
+Clin Chem. 2003 Jun; 49 (6 Pt 1): 853-60.
+・Liew, M., Pryor, R., Palais, R., Meadows, C., Erali, M., Lyon, E., and Wittwer, C.
+Genotyping of singlenucleotide polymorphisms by high-resolution melting of small amplicons.
+(スモールアンプリコンの高分解融解解析によるSNP ジェノタイピング) 
+Clin Chem. 2004 Jul; 50(7):1156-64.
+・Zhou, L., Myers, A.N., Vandersteen, J.G., Wang, L., and Wittwer, C.T.
+Closed-tube genotyping with unlabeled oligonucleotide probes and a saturating DNA dye.
+(非標識オリゴヌクレオチドプローブと飽和型DNA蛍光色素を用いたチューブ内ジェノタイピング)
+Clin Chem. 2004 Aug; 50(8):1328-35. Epub 2004 May 27.
+・Reed, G.H. and Wittwer, C.T.
+Sensitivity and specificity of single-nucleotide polymorphism scanning by
+high-resolution melting analysis. 
+(High-resolution 融解分析によるSNPスキャニングの感度と特異度)
+Clin Chem. 2004 Oct; 50(10):1748-54.Epub 2004 Aug 12
+テクノロジー比較
+・Chou, L.S., Lyon, E. and Wittwer, C.T.
+A comparison of high-resolution melting analysis to denaturing high performance
+liquid chromatography for mutation scanning cystic fibrosis transmembrane
+conductance regulator gene as a model.
+(嚢胞性線維症膜コンダクタンス制御因子遺伝子をモデルとしたHRM解析と変性HPLCにおける変異スキャンニングの比較)
+Am J Clin Pathol, 2005 Sep; 124(3): 330-8.
+・Herrmann, M.G., Durtschi, J.D., Bromley, L.K., Wittwer, C.T., and Voelkerding K.V. 
+Amplicon DNA Melting Analysis for Mutation Scanning and Genotyping:
+Cross-Platform Comparison of Instruments and Dyes.
+(アンプリコン DNA 変異スキャンニングとジェノタイピングのための融解分析:機器と蛍光色素の相互比較)
+Clin Chem. 2006 50:494-503.
+変異検出とジェノタイピングの超高速システム − J.K.I

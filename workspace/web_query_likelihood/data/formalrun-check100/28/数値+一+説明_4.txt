@@ -1,0 +1,97 @@
+完全数(かんぜんすう,英: perfect number)とは、その数自身を除く約数の和が、その数自身と等しい自然数のことである。例えば 6 (= 1 + 2 + 3)、28 (= 1 + 2 + 4 + 7 + 14) や496が完全数である。『聖書』の研究者は、最初の完全数が 6 なのは「神が6日間で世界を創造した」こと(天地創造)、次の完全数が 28 なのは「月の公転周期が28日である」ことと関連があると考えていたとされる[1]。2013年2月現在、発見されている完全数はメルセンヌ素数と同じく48個である。紀元前より考察されている対象であるにもかかわらず、「偶数の完全数が無数に存在するか?」、「奇数の完全数は存在するか?」、「末尾が6か8以外の完全数は存在するか?」、という問題は未解決である。
+完全数の定義より、完全数の正の約数の総和は元の数の2倍に等しい。すなわち、n が完全数であるとは、約数関数 σ に対して σ(n) = 2n を満たすことであると表現できる。
+概要[編集]
+完全数はメルセンヌ素数と関係が深く、Mn (= 2n − 1) が素数ならば 2n−1Mn が完全数であることが、ユークリッドによって証明されている[2]。このことから、紀元前には、21(22 − 1) = 6, 22(23 − 1) = 28, 24(25 − 1) = 496, 26(27 − 1) = 8128 が完全数であることが知られていた。また、メルセンヌ素数 2n − 1 に対応する完全数 2n − 1(2n − 1) は 2n − 1 番目の三角数でもある。
+その後、オイラーが登場するまでは、212(213 − 1) = 33550336, 216(217 − 1) = 8589869056, 218(219 − 1) = 137438691328 が完全数であることが発見されただけであった。オイラーは、全ての偶数の完全数が、メルセンヌ素数に対応するものであることを示した。これによって、偶数の完全数を探すことは、メルセンヌ素数を探すことと同等であることが分かった。また、オイラーは 231 − 1 が素数であることを確かめ、その結果 230(231 − 1) が完全数であることを示した。
+リュカは19年かけて39桁の自然数 2127 − 1 が素数であることを確かめ、その結果、77桁の完全数を発見した。2127 − 1 は、手計算で発見された素数のうち、最大のものである。現代においては、メガ素数の発見にはコンピュータが用いられる。特に、メルセンヌ素数の発見においては、分散コンピューティングによるプロジェクト GIMPS が有名であり、35個目以降の完全数の発見は全て GIMPS によるものである。
+完全数は、小さい順に
+6
+28
+496
+8128
+33550336
+8589869056
+…(オンライン整数列大辞典の数列 A000396)
+である。知られている完全数の一覧についてはメルセンヌ数を参照のこと。
+偶数の完全数[編集]
+Mn = 2n − 1 が素数のとき、2n−1Mn の正の約数は 1, 2, 4, …, 2n−2, 2n−1, Mn, 2Mn, 4Mn, …, 2n−2Mn, 2n−1Mn である。これらのうち 2n−1Mn 自身を除く総和は
+となる。したがって 2n−1Mn は完全数である。このタイプが無数に存在するか否か、すなわち Mn = 2n − 1 が素数となる n が無数に存在するか否かは未解決である。
+また逆に偶数の完全数が 2n−1Mn の形に限られることもオイラーによって以下のように証明されている。
+Nを偶数の完全数とする。Nが2でn回割れるとすると、(ただしnは自然数、Kは奇数) とおける。2 とKは互いに素であるので、Nの正の約数の総和σ(N)は以下のようになる。
+Nが完全数ならば なので
+でなければならない。
+は奇数のため2で割れず、式が成立するためには、はで割れなければならない。とする。代入すれば
+もし  なら、、、はの約数のため、
+となって矛盾が発生してしまうため、でならなければならない。このため、Nが完全数であるためには、
+かつ
+よりは、と以外に約数がない素数でなければならない。
+逆にが素数であれば、
+は、より完全数。
+ゆえに偶数の完全数 N は、 N = 2n(2n+1 − 1)(ただし2n+1 − 1 は素数)の形に限られる。
+奇数の完全数[編集]
+奇数の完全数が存在するか否かは未解決であるが、約数関数がmultiplicativeであることから、二平方数の和である事が古くから知られていた。もし奇数の完全数 N が存在すれば、N は以下の各条件を満たさなければならないことが知られている。
+計算機を用いないで得られた条件[編集]
+N の素因数分解は qαp12e1 ... pk2ek の形である。ここで q, p1 < p2 < … < pk は相異なる素数で q ≡ α ≡ 1 (mod 4) を満たす[3]。
+N < 24k+1 である[4]。
+である[5]。また、2 ≤ i ≤ 6 のとき pi < 22i−1(k − i + 1) である[6]。
+e1 ≡ e2 ≡ … ≡ ek ≡ 1 (mod 3) ではない[7]。
+e1 = e2 = … = ek = β とすると、k ≤ 4β2 + 2β + 2 である[8]。
+N ≡ 1 (mod 12) もしくは  (mod 2・32e1(32e1+1 − 1)) である[9][10][11][12]。
+計算機を用いて得られた条件[編集]
+N > 10300 である[13]。
+N は少なくとも9個の相異なる素因数を持つ[14]。
+これは2006年に発表されたものであるが、「7個」の場合は1972年までにカール・ポメランスによって示され、「8個」の場合は1980年頃に Chein[15] と Hagis[16] によってほぼ同時に示されており、その後多くの数学者の努力[17]にもかかわらず、26年もの間「9個」の場合は示されなかった。
+N が 3 で割り切れない場合は、少なくとも12個の素因数を持つ[14]。3 でも 5 でも割り切れない場合は15個以上の、3 でも 5 でも 7 でも割り切れない場合は27個以上の相異なる素因数を持つ[18]。
+N は重複も数えて少なくとも75個の素因数を持つ[19]。
+N は 108 より大きい素因数を持つ[20]。
+これは2006年に発表されたものであるが、より古い下界としては2003年の 107[21]や、1998年の 106[22]などがある。
+N の2番目に大きな素因数は 104 より大きい[23]。
+N の3番目に大きな素因数は 100 より大きい[24]。
+上記で e1 = e2 = … = ek = β とすると、β は 1, 2, 3, 5, 6, 8, 11, 12, 14, 17, 18, 24, 62 ではない[25][26]。
+関連する数[編集]
+約数の和を考えることで特徴付けられる数の種類には他にも次のようなものがある。完全数と併せて、これらの名称には古代ギリシャの数秘学の影響が見られる。
+不足数 (deficient number)
+その数を除いた約数の和がその数より小さいとき、この数を不足数という。
+過剰数 (abundant number)
+その数を除いた約数の和がその数より大きなとき、過剰数という。
+友愛数 (amicable number)
+その数を除いた約数の和が互いに等しいような2つの数のペアを友愛数という。
+社交数 (sociable number)
+友愛数と同様の関係が、2つよりも多くの数の組で成立しているとき、その組を社交数という。
+準完全数 (quasiperfect number)
+準完全数とは、約数の和が 2n + 1 に等しい数 n である。これは過剰数である。そのような数はいまだに見つかっていないが、存在するならばそれは奇数の平方数で 1035 より大きく、少なくとも7つの約数を持つということが示されている。
+概完全数 (almost perfect number)
+概完全数とは約数の和が 2n - 1 に等しい数 n である。これは不足数である。2k (1, 2, 4, 8, 16, …) の形をした自然数はこの条件を満たしているが、この形で表される自然数以外でこの条件を満たすものが存在するのかどうかは知られていない。
+倍積完全数 (multiply perfect number)
+約数の和が元の数の倍数に等しい数を倍積完全数という。特に、それがk倍に等しいものをk倍完全数という。完全数とは2倍完全数のことである。
+その他[編集]
+小川洋子の小説『博士の愛した数式』(2003年)では登場人物の「博士」が阪神タイガースの江夏豊投手のファンであったことの理由として江夏の背番号が28であったことを挙げ、その際に完全数の説明がなされている。
+脚注[編集]
+— エウクレイデス、『ユークリッド原論』第9巻、命題36
+すなわち
+が素数ならばは完全数である。
+^ オイラーが証明した。参考文献の Dickson, Chapter 1, 98.
+^ P. P. Nielsen, "An upper bound for odd perfect numbers", Integers, 3 (2003), A14, 9 pp. (electronic).
+^ O. Grün, "Über ungerade vollkommene Zahlen", Math. Z. 55 (1952), 353-354.
+^ M. Kishore, "On odd perfect, quasiperfect, and odd almost perfect numbers", Math. Comp. 36 (1981), 583-586.
+^ W. L. McDaniel, "The non-existence of odd perfect numbers of a certain form", Arch. Math. (Basel) 21 (1970), 52-53.
+^ T. Yamada, "Odd perfect numbers of a special form", Colloq. Math. 103 (2005), 303-307.
+^ J. Touchard, "On prime numbers and perfect numbers", Scripta Math. 19 (1953), 53-59.
+^ M. Satyanarayana, "Odd perfect numbers", Math. Student 27 (1959), 17-18.
+^ J. A. Holdener, "A theorem of Touchard on the form of odd perfect numbers". Amer. Math. Monthly, 109 (2002), 661-663.
+^ T. Roberts, "On the Form of an Odd Perfect Number", Australian Mathematical Gazette, 35:4 (2008), 244
+^ R. P. Brent, Graeme L. Cohen, H. J. J. te Riele, "Improved techniques for lower bounds for odd perfect numbers", Math. Comp. 57 (1991), 857-868
+^ a b P. P. Nielsen, "Odd perfect numbers have at least nine different prime factors", Math. Comp. 76 (2007), 2109-2126. preprint
+^ J. E. Z. Chein, "An odd perfect number has at least 8 prime factors", Doctoral Thesis, Pennsylvania State University, 1979.
+^ P. Hagis Jr., "Outline of a proof that every odd perfect number has at least eight prime factors", Math. Comp. 35 (1980) 1027-1032.
+^ G. L. Cohen, R. M. Sorli, "On the number of distinct prime factors of an odd perfect number", J. Discrete Algorithms 1 (2003), 21-35.
+^ K. K. Norton, "Remarks on the number of factors of an odd perfect number", Acta Arith., 6 (1960/1961), 365-374.
+^ K. G. Hare, "New techniques for bounds on the total number of prime factors of an odd perfect number", Math. Comp. 76. (2007), 2241-2248. preprint
+^ T. Goto and Y. Ohno, "Odd perfect numbers have a prime factor exceeding 108", Math. Comp. 77 (2008), 1859-1868. "奇数の完全数の最大素因子について" - preprint を入手可能。
+^ P. M. Jenkins, "Odd perfect numbers have a prime factor exceeding 107", Math. Comp. 72 (2003), 1549-1554.
+^ P. Hagis, Jr. and G. L. Cohen, "Every odd perfect number has a prime factor which exceeds 106", Math. Comp. 67 (1998), 1323-1330.
+^ D. E. Iannucci, "The second largest prime divisor of an odd perfect number exceeds ten thousand", Math. Comp. 68 (1999), 1749-1760.
+^ D. E. Iannucci, "The third largest prime divisor of an odd perfect number exceeds one hundred", Math. Comp. 69 (2000), 867-879.
+^ W. L. McDaniel and P. Hagis Jr., "Some results concerning the non-existence of odd perfect numbers of the form paM2β", Fibonacci Quart. 13 (1975), 25-28.
+^ G. L. Cohen, R. J. Williams, "Extensions of some results concerning odd perfect numbers", Fibonacci Quart. 23 (1985), 70-76.
+完全数 - Wikipedia

@@ -1,0 +1,221 @@
+概要/特徴
+Javaで実装された形態素解析器。 Common Lisp版
+辞書フォーマット及び解析結果は、ほぼMeCab互換。
+単機能。
+Javaの形態素解析器としては比較的高速。
+スレッドセーフ。
+リリースノート
+version 0.4.3: 2011年06月17日
+形態素解析部の微細なパフォーマンスチューニング
+インストール/使い方
+1) jarファイルの取得/作成
+jarファイルは以下のいずれかの方法で取得/作成する。
+ダウンロード画面よりigo-0.4.3.jarをダウンロードする。
+aのjarファイルが何らかの理由で使用できない場合は、同画面よりソースコード一式(igo-0.4.3-src.tar.gz)を取得し、以下の手順に従ってjarファイルを作成する。
+※ ソースコードのビルドには、Apache Antが必要。
+$ tar zxvf igo-0.4.3-src.tar.gz  # ソース解凍
+$ cd igo-0.4.3-src               # ディレクトリ移動
+$ ant                            # ビルド & jarファイル作成 
+2) 解析用辞書作成
+Igoプロジェクト自体は形態素解析用の辞書(テキスト辞書)は提供せず、MeCabプロジェクトが配布している(もしくはそれと互換性のある)辞書を使用することを想定している。
+以下ではMeCabのサイトより、現時点(2010/04/04)で最新のIPA辞書をダウンロードした場合の手順を記す。
+# IPA辞書解凍
+$ tar mecab-ipadic-2.7.0-20070801.tar.gz  
+# 解析用バイナリ辞書の作成
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.BuildDic ipadic mecab-ipadic-2.7.0-20070801 EUC-JP
+※ なおIgoのテキスト辞書の解釈の仕方は、若干だがMeCabのそれとは異なるところがある。詳しくはこちらを参照のこと。
+3) 形態素解析
+# 形態素解析
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo ipadic 
+すもももももももものうち [Enter]  
+すもも	名詞,一般,*,*,*,*,すもも,スモモ,スモモ
+も	助詞,係助詞,*,*,*,*,も,モ,モ
+もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+も	助詞,係助詞,*,*,*,*,も,モ,モ
+もも	名詞,一般,*,*,*,*,もも,モモ,モモ
+の	助詞,連体化,*,*,*,*,の,ノ,ノ
+うち	名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ
+EOS
+# 分かち書き
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo -wakati ipadic 
+すもももももももものうち [Enter]
+すもも も もも も もも の うち
+コマンド
+使用可能なコマンドの説明。
+BuildDicコマンド
+バイナリ辞書を作成するためのコマンド
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.BuildDic
+Usage: java net.reduls.igo.bin.BuildDic <output directory> <input directory> <encoding> [delimiter]
+#########
+# 【引数】
+# output directory: バイナリ辞書出力ディレクトリ
+# input directory: テキスト辞書が配置されているディレクトリ
+# encoding: テキスト辞書の文字エンコーディング
+# delimiter: 単語辞書(*.csv)の各項目の区切り文字(文字列). 省略された場合は","が使用される
+Igoコマンド
+標準入力から読み込んだテキストに対して形態素解析を行うコマンド
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo
+Usage: java net.reduls.igo.bin.Igo [-wakati] <dictionary directory>
+#########
+# 【引数】
+# -wakati: この引数が指定された場合は、出力フォーマットが分かち書き形式となる
+# dictionary directory: バイナリ辞書が配置されているディレクトリ
+Java API
+Javaから形態素解析を行うために必要なクラスは以下の二つ。
+Taggerクラス
+package net.reduls.igo;
+/**
+* 形態素解析クラス
+*  - このクラスのインスタンスは不可変でありスレッドセーフ
+*/
+public final class Tagger {
+/**
+* 解析用辞書を読み込んで、形態素解析器インスタンスを作成する
+* 
+* @param dataDir バイナリ辞書があるディレクトリ
+* @throws FileNotFoundException 間違ったディレクトリが指定された場合に送出される
+* @throws IOException その他の入出力エラーが発生した場合に送出される
+*/
+public Tagger(String dataDir) throws FileNotFoundException,IOException;
+/**
+* 形態素解析を行う
+*
+* @param text 解析対象テキスト
+* @param result 解析結果の形態素が格納されるリスト. 末尾に追加される 
+* @return 引数のresultオブジェクトが返される
+*/
+public ListMorpheme> parse(CharSequence text, ListMorpheme> result);
+/**
+* 形態素解析を行う
+*
+* @param text 解析対象テキスト
+* @return 解析結果の形態素が格納されているリスト
+*/
+public ListMorpheme> parse(CharSequence text);
+/**
+* 分かち書きを行う
+*
+* @param text 分かち書き対象テキスト
+* @param result 分かち書きされた文字列が格納されるリスト. 末尾に追加される 
+* @return 引数のresultオブジェクトが返される
+*/
+public List<String> wakati(CharSequence text, List<String> result);
+/**
+* 分かち書きを行う
+*
+* @param text 分かち書き対象テキスト
+* @return 分かち書きされた文字列が格納されているリスト 
+*/
+public List<String> wakati(CharSequence text);
+}
+Morphemeクラス
+package net.reduls.igo;
+/**
+* 形態素クラス
+*  - このクラスのインスタンスは不可変でありスレッドセーフ
+*/
+public final class Morpheme {
+public final String surface;  // 形態素の表層形
+public final String feature;  // 形態素の素性文字列
+public final int    start;    // 入力テキスト内での形態素の出現開始位置 ※1
+}
+/**
+* ※1 ' '(0x20)などの空白文字は、解析結果形態素列から除外されるため、
+*    各形態素と入力テキストの対応を正確に取得するためには、このフィールドを用いる必要がある。
+*    (surface.lengthを積算していくだけではズレが生じる可能性がある)
+*/
+サンプルコード
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import net.reduls.igo.Tagger;
+import net.reduls.igo.Morpheme;
+/**
+* 標準入力からテキストを読み込んで、形態素解析結果を標準出力に出力する
+*  - コンパイル: javac -cp igo-0.4.3.jar Sample.java
+*  - 実行: java -cp igo-0.4.3.jar:. Sample <バイナリ辞書ディレクトリ>
+*/
+public class Sample {
+public static void main(String[] args) throws IOException {
+if(args.length != 1)
+System.exit(1);
+final String dicDir = args[0];
+final Tagger tagger = new Tagger(dicDir);
+final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+for(String line=br.readLine(); line!=null; line=br.readLine())
+for(Morpheme m : tagger.parse(line))
+System.out.println(m.surface+"\t"+m.feature);
+}
+}
+MeCabとの相違点
+解析結果
+Igoの形態素解析結果は、基本的にMeCabのそれに合わせるようになっている。
+ただし、ソースコード的には全くの別物なので、両者の結果が等しくなる保証はない。
+特に、未知語の扱いに関しては、MeCabのドキュメントだけでは詳細が不明な箇所があったため、結果に差異が生じている可能性がある。
+以下は、IgoとMeCabで解析結果が異なる既知の例。
+#####
+# 一定以上連続した記号(未知語)を入力として渡した場合、両者で結果が異なる
+#
+# 解析に使用した辞書は、mecab-ipadic-2.7.0-20070801
+###
+# MeCab - 0.97
+# 一定数以上、未知語(SYMBOL)が連接すると途中から一文字ごとに区切られるようになる
+$ mecab
+------------------------------ [Enter]
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-	名詞,サ変接続,*,*,*,*,*
+-------------------------	名詞,サ変接続,*,*,*,*,*
+EOS
+###
+# Igo - 0.4.3
+# 連接する未知語(SYMBOL)は一つの形態素となる
+$ java -cp igo-0.4.3.jar net.reduls.igo.bin.Igo /var/igo/dic/ipa/
+------------------------------ [Enter]
+------------------------------	名詞,サ変接続,*,*,*,*,*
+EOS
+また、未知語に関連して文字カテゴリ定義(char.def)の解釈の仕方も若干異なる箇所があるので、参考までに載せておく。
+※ 以下は、mecab-ipadic-2.7.0-20070801/char.defより文字カテゴリ定義部の一部を抜粋したもの。
+###################################################################################
+# 
+#  CHARACTER CATEGORY DEFINITION
+#
+#  CATEGORY_NAME INVOKE GROUP LENGTH
+#
+#   - CATEGORY_NAME: Name of category. you have to define DEFAULT class.
+#   - INVOKE: 1/0:   always invoke unknown word processing, evan when the word can be found in the lexicon
+#   - GROUP:  1/0:   make a new word by grouping the same chracter category
+#   - LENGTH: n:     1 to n length new words are added
+#
+DEFAULT	       0 1 0  # DEFAULT is a mandatory category!
+SPACE	       0 1 0  
+KANJI	       0 0 2
+## Igoでの解釈 ##
+# INVOKE: 単語辞書内に該当する単語がある場合でも未知語処理を行うかどうか (MeCabと同じ)
+# GROUP:  連続する同じカテゴリ(互換カテゴリ含む)の文字を一つの未知語としてまとめるかどうか 
+# LENGTH: 1からn文字までのすべてのパターンの連続する同じカテゴリ(互換カテゴリ含む※1)の文字を未知語として扱う
+※1 MeCabがLENGTHの場合も互換カテゴリを考慮しているかどうかは不明(未調査)
+【例】
+[入力テキスト] 
+・"単語辞書を参照する"
+[条件]
+・INVOKEは1
+・入力テキストの先頭にポイント中
+[GROUP=1,LENGTH=2 の場合]
+・未知語: 単, 単語, 単語辞書
+[GROUP=0,LENGTH=2 の場合]
+・未知語: 単, 単語
+[GROUP=1,LENGTH=0 の場合]
+・未知語: 単語辞書 ※2
+[GROUP=0,LENGTH=0 の場合]
+・未知語: ※2
+※2 この場合の挙動がMeCabとは異なっている?
+MeCabではLENGTHが0の場合でも、必ず一文字分は未知語として扱うようになっている可能性がある。
+(上の例の場合では、'単'は文字カテゴリ定義に関わらず必ず未知語としてヒットすることになる)
+機能
+Igoは基本的な形態素解析機能しか提供しない。
+使用する辞書ファイル
+Igoはバイナリ辞書構築のために以下の四種類のファイルのみを用いる。
+Igo - a morphological analyzer

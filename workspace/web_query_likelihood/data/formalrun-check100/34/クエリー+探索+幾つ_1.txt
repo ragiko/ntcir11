@@ -1,0 +1,57 @@
+
+lookup_dt()
+目的
+dhcptab コンテナ内のレコードに対するクエリー検索を行います。
+形式
+int lookup_dt(void *handp, boolean_t partial, uint_t query,
+int count, const dt_rec_t *targetp, dt_rec_list_t **resultp, uint_t *records);
+説明
+query と targetp の組み合わせで指定されたクエリーにマッチするインスタンスを dhcptab コンテナから検索します。partial 引数が B_TRUE の場合は、呼び出し元にとって部分的なクエリー結果も適用可能であることを意味します。したがって、partial が B_TRUE の場合は、マッチするレコードが 1 つでもあれば、クエリーは有効と見なされます。partial が B_FALSE の場合は、クエリーがコンテナ全体に適用された場合だけ DSVC_SUCCESS が返されます。
+クエリー引数は、長さがそれぞれ 16 ビットの 2 つのフィールドからなります。下位 16 ビットでは、targetp のどのフィールド {key, type} をクエリーの対象とするかを選択します。上位
+16 ビットでは、下位 16 ビットで選択された特定のフィールド値がマッチするものを検索するのか (ビットセット)、マッチしないものを検索するのか
+(ビットクリア) を指定します。両方の 16 ビットフィールドとも、ビット 2 から 15 は現在のところ使用されておらず、0 に設定されていなければなりません。クエリーを構築するために有用なマクロを例 3&ndash;1 に示します。
+count フィールドは、マッチするレコードを最大でいくつ返すかを指定します。count 値に -1 を指定すると、マッチするレコードがいくつあっても、すべて返すことを要求します。count 値に 0 を指定すると、lookup_dt はデータ無しでただちに返されます。
+resultp は、返されるレコードのリストを指すよう設定されます。resultp に NULL が指定される場合、呼び出し元は単にクエリーにマッチするレコードがいくつあるかに関心があるということになります。これらのレコードは動的に割り当てられるため、呼び出し元でこれを解放する必要があることに注意してください。lookup_dt() は、records 引数内にマッチするレコードの数を返します。records の値 0 は、クエリーにマッチするレコードは全く無いことを示します。
+次の例には、DHCP ネットワークおよび dhcptab のコンテナに対するクエリー検索の構築や操作に有用なマクロが含まれています。
+例 3&ndash;1  クエリー検索に有用なマクロ/*
+* Query macros - used for initializing query fields (lookup_d?)
+*/
+/* dhcp network container */
+#define DN_QCID 0x0001
+#define DN_QCIP 0x0002
+#define DN_QSIP 0x0004
+#define DN_QLEASE 0x0008
+#define DN_QMACRO 0x0010
+#define DN_QFDYNAMIC 0x0020
+#define DN_QFAUTOMATIC 0x0040
+#define DN_QFMANUAL 0x0080
+#define DN_QFUNUSABLE 0x0100
+#define DN_QFBOOTP_ONLY 0x0200
+#define DN_QALL (DN_QCID | DN_QCIP | DN_QSIP | DN_QLEASE | \
+DN_QMACRO | DN_QFDYNAMIC DN_QFAUTOMATIC |\
+DN_QFMANUAL | DN_QFUNUSABLE | \
+DN_QFBOOTP_ONLY)
+/* dhcptab */
+#define DT_DHCPTAB "dhcptab"  /* default name of container */
+#define DT_QKEY 0x01
+#define DT_QTYPE 0x02
+#define DT_QALL (DT_QKEY | DT_QTYPE)
+/* general query macros */
+#define DSVC_QINIT(q) ((q) = 0)
+#define DSVC_QEQ(q, v) ((q) = ((q) | (v) | ((v) << 16)))
+#define DSVC_QNEQ(q, v) ((q) = ((~(v << 16)) & (q)) | (v)))
+#define DSVC_QISEQ(q, v) (((q) & (v)) && ((q) & ((v) << 16)))
+#define DSVC_QISNEQ(q, v) (((q) & (v)) && (!((q) & ((v) << 16))))
+/* Examples */
+uint_t query;
+/* search for dhcptab record with key value, but not flags value */
+DSVC_QINIT(query);
+DSVC_QEQ(query, DT_QKEY);
+DSVC_QNEQ(query, DT_QTYPE);
+/* search for dhcp network record that matches cid, client ip, server ip.
+*/
+DSVC_QINIT(query);
+DSVC_QEQ(query, (DN_QCID | DN_QCIP | DN_QSIP));
+戻り値
+DSVC_SUCCESS, DSVC_ACCESS, DSVC_BUSY, DSVC_INTERNAL. 
+

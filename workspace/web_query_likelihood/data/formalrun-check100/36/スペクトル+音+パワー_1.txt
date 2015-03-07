@@ -1,0 +1,92 @@
+フーリエ変換をコンピュータで取り扱う時は、
+離散フーリエ変換からFFTに話が進むのだが、
+用語を本やネットで調べれば調べるほど、
+混乱したので、
+用語のまとめ
+プログラムによる計算
+今回vDSPを使用した結果
+についてまとめようと思う。
+詳しい事は、がんばってネットなどで調べて頂きたいのですが、
+自分の理解としては、以下の様になった。
+フーリエスペクトル——-
+離散フーリエ変換を行うと結果は、
+実部と虚部に分かれる。
+この2部を用いた表現。
+X(k) = Real(k) + jImg(k)
+1.パワースペクトル
+振幅スペクトルとも言う(と思う)。
+実部を横軸、虚部を縦軸とした時、
+パワースペクトル=√Real(k)*Real(k) + jImg(k)*jImg(k)
+と計算する。
+※ピタゴラスの定理
+検証
+プログラムで以下の条件でsin波を生成し、
+FFTを行い、パワースペクトルを計算。
+そしてパワースペクトルからdB値を計算してみた。
+基本周波数:2Hzの音を1秒間
+サンプリング周波数:16Hz
+//基本周波数
+double freq = 2.0;
+//サンプリング周波数
+double sampleRate = 16.0;
+//各サンプルポイントの角度を決める変数
+double phase = 0.0;
+//各サンプルポイント間の角度(ラジアン)間隔
+double unit = freq * 2 * M_PI / sampleRate;
+//音をながす秒数
+float sec = 1.0;
+//総サンプルポイント数
+int sampleLen;
+sampleLen = (int)sec * sampleRate;
+//
+//FFTを行うのでreal, imagの配列を用意
+//2Hzの音を作成
+//
+float real[sampleLen], imag[sampleLen];
+for (int i = 0; i < sampleLen; i++) {
+real[i] = sin(phase);
+phase += unit;
+// 虚部は0
+imag[i] = 0.0;
+}
+//FFT
+//MyFFTクラスではハニング窓を使用し、vDSP_fft_zripでFFTをしています
+MyFFT* myfft = [[MyFFT alloc] initWithCapacity:sampleLen];
+[myfft process:real];
+//
+//パワースペクトル
+// powerSpectrum配列にパワースペクトル値が格納される
+float powerSpectrum[sampleLen/2];
+vDSP_vdist(myfft.realp, 1, myfft.imagp, 1, powerSpectrum, 1, sampleLen/2);
+//パワースペクトルはサンプル数で割る
+for (int i = 0; i < sampleLen/2; i++) {
+powerSpectrum[i] = powerSpectrum[i] / (sampleLen/2);
+}
+//
+// dB計算
+//
+float zeroReference[sampleLen/2];
+float decibelChannelL[sampleLen/2];
+// 1.0 = 0dBとする
+for (int i = 0;i<sampleLen/2;i++)
+{
+zeroReference[i] = 1.0;
+}
+// vDSPでのdB計算
+vDSP_vdbcon (
+powerSpectrum, //入力
+1,
+zeroReference, //ゼロリファレンス
+decibelChannelL,//結果を格納する配列
+1,
+sampleLen / 2, //サンプル数
+1 //0:入力をパワーとして計算。1:amplitudeとして計算。今回はamplitude(振幅)
+);
+//結果を表示
+for (int i = 0; i < sampleLen/2; i++) {
+float s = powerSpectrum[i];
+float db = 20*log10(s);
+printf("%dHz %f %f %fn", i, s, db, decibelChannelL[i]);
+}
+これで、20log10(power)とvDSPでの計算結果が同じになった。
+音についてまとめてみる(3) | Creative Coding Labo

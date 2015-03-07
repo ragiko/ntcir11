@@ -1,0 +1,35 @@
+
+String.Split
+メソッドを使用して、文字列を解析するコード例を紹介します。
+Split
+では、区切り記号として使用する文字を示す、char の配列を入力に使用します。  この例では、空白、コンマ、ピリオド、コロン、およびタブが使用されています。  このような区切り記号を含む配列が Split に渡され、文の各単語は、結果の文字列配列を使用して、個別に表示されます。  
+class TestStringSplit
+{
+static void Main()
+{
+char[] delimiterChars = { ' ', ',', '.', ':', '\t' };
+string text = "one\ttwo three:four,five six seven";
+System.Console.WriteLine("Original text: '{0}'", text);
+string[] words = text.Split(delimiterChars);
+System.Console.WriteLine("{0} words in text:", words.Length);
+foreach (string s in words)
+{
+System.Console.WriteLine(s);
+}
+// Keep the console window open in debug mode.
+System.Console.WriteLine("Press any key to exit.");
+System.Console.ReadKey();
+}
+}
+/* Output:
+Original text: 'one     two three:four,five six seven'
+7 words in text:
+one
+two
+three
+four
+five
+six
+seven
+*/
+方法 : 文字列を分割する (C# プログラミング ガイド)

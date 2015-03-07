@@ -1,0 +1,156 @@
+
+再現方法
+1.管理画面>受注管理 にて、複数の商品を購入している受注に遷移する。
+2.購入商品を削除します。
+3.「複数のお届け先を指定する」ボタンをクリックします。
+4.システムエラーが発生します。
+Fatal error(E_USER_ERROR): DB処理でエラーが発生しました。
+SQL: [SELECT T1.product_id,
+T1.stock,
+T1.stock_unlimited,
+T1.sale_limit,
+T1.price01,
+T1.price02,
+T1.point_rate,
+T1.product_code,
+T1.product_class_id,
+T1.del_flg,
+T1.product_type_id,
+T1.down_filename,
+T1.down_realfilename,
+T3.name AS classcategory_name1,
+T3.rank AS rank1,
+T4.name AS class_name1,
+T4.class_id AS class_id1,
+T1.classcategory_id1,
+T1.classcategory_id2,
+dtb_classcategory2.name AS classcategory_name2,
+dtb_classcategory2.rank AS rank2,
+dtb_class2.name AS class_name2,
+dtb_class2.class_id AS class_id2 FROM dtb_products_class T1
+LEFT JOIN dtb_classcategory T3
+ON T1.classcategory_id1 = T3.classcategory_id
+LEFT JOIN dtb_class T4
+ON T3.class_id = T4.class_id
+LEFT JOIN dtb_classcategory dtb_classcategory2
+ON T1.classcategory_id2 = dtb_classcategory2.classcategory_id
+LEFT JOIN dtb_class dtb_class2
+ON dtb_classcategory2.class_id = dtb_class2.class_id
+WHERE product_class_id = $1 AND T1.del_flg = 0 
+ORDER BY T3.rank DESC, dtb_classcategory2.rank DESC ]
+PlaceHolder: [array (
+)]
+MDB2 Error: not found
+[Error message: Unable to bind to missing placeholder: 0]
+コミュニティにて下記投稿を頂きました。
+v2.13.0 チケット#2403 商品削除後のシステムエラーについて
+http://xoops.ec-cube.net/modules/newbb/viewtopic.php?topic_id=13431&forum=9
+チケット#2403がv2.13.0で積み残しになっていたので、調べてみました。
+http://svn.ec-cube.net/open_trac/ticket/2403
+システムエラーとなる条件
+受注情報編集画面 --> 商品を削除
+「複数のお届け先へ」
+ここまでは、チケットの通りですが、
+もう一つ条件があります。
+表示された商品の最後部の商品を削除した場合、システムエラーになります。
+(その他の商品を削除しても、システムエラーになりません。)
+==========
+追記:
+上記の条件は、誤りでした。
+正しい条件は、複数配送で、配送先の商品を削除したことで、受注情報全体からもその商品が不要になり、削除される場合です。
+==========
+この状況から、
+商品の配列から、削除した商品を外して、前詰めにした結果、配列の最後部に残骸が残っているのではないでしょうか。
+残骸のproduct_class_id が '' のため、SQLエラーになった。
+data/class/pages/admin/order/LC_Page_Admin_Order_Edit.php
+public function checkDeleteProducts(&$objFormParam, $arrProductClassIds, $delete_product_class_id, $arrDeleteKeys)
+{
+foreach ($arrProductClassIds as $relation_index => $product_class_id) {
+//product_class_idの重複はないので、1つ削除したら完了
+if ($product_class_id == $delete_product_class_id) {
+foreach ($arrDeleteKeys as $delete_key) {
+$arrProducts = $objFormParam->getValue($delete_key);
+foreach ($arrProducts as $index => $product_info) {
+if ($index != $relation_index) {
+$arrUpdateParams[$delete_key][] = $product_info;
+}
+}
+$objFormParam->setParam($arrUpdateParams);
+}
+break;
+}
+}
+}
+の $objFormParam->setParam($arrUpdateParams); を、コメントにすると、少なくともシステムエラーにはなりませんでした。
+原因が、判明しました。
+追記:
+でも、まだすっきりしないような。
+確かに削除前の商品数がきているけど、どこから持ってきているのだろう。
+classファイル:
+削除となる商品を外して、新しい購入商品の一覧を作成していました。
+その際、対象となるフィールド名は、
+product_id, product_class_id, product_type_id, point_rate, product_code, product_name, classcategory_name1, classcategory_name2, quantity, price, tax_rate, tax_rule
+になります。
+ここから、本題です。
+classファイル:
+data/class/pages/admin/order/LC_Page_Admin_Order_Edit.php
+SQLエラーの発生源(getDetailAndProductsClass)を呼び出す側
+// 商品の種類数
+$max = count($arrValues['quantity']);
+$subtotal = 0;
+$totalpoint = 0;
+$totaltax = 0;
+for ($i = 0; $i < $max; $i++) {
+.
+.
+// 在庫数のチェック
+$arrProduct = $objProduct->getDetailAndProductsClass($arrValues['product_class_id'][$i]);
+.
+.
+}
+count($arrValues['quantity'])をもとにループさせているため、削除前の商品数になっている。
+tplファイル:
+data/Smarty/templates/admin/order/edit.tpl
+購入商品の一覧を表示する際、
+<table class="list order-edit-products">
+<tr>
+<th class="id">商品コード</th>
+<th class="name">商品名/規格1/規格2</th>
+<th class="price">単価</th>
+<th class="qty">数量</th>
+<th class="price">税込み価格</th>
+<th class="price">小計</th>
+</tr>
+<!--{section name=cnt loop=$arrForm.quantity.value}-->
+<!--{assign var=product_index value="`$smarty.section.cnt.index`"}-->
+.
+.
+<td class="right"><!--{$price|sfCalcIncTax:$tax_rate:$tax_rule|sfMultiply:$quantity|number_format}-->円</td>
+</tr>
+<!--{/section}-->
+$arrForm.quantity.value(数量欄)をもとにループさせているため、削除前の商品数になっている。
+(影響はないですが、参考までに、disp.tplも$arrForm.quantity.value(数量欄)をもとにループ)
+修正案です。
+これで、いいのだと思いますが。
+data/class/pages/admin/order/LC_Page_Admin_Order_Edit.php
+case 'multiple':
+$objFormParam->setParam($_POST);
+$objFormParam->convParam();
+// added
+//複数配送時に各商品の総量を設定
+$this->setProductsQuantity($objFormParam);
+// added
+$this->arrErr = $this->lfCheckError($objFormParam);
+break;
+追伸:
+システムエラーにはなりませんが、修正が以下の部分にも必要です。
+case 'append_shipping':
+$objFormParam->setParam($_POST);
+$objFormParam->convParam();
+// added
+//複数配送時に各商品の総量を設定
+$this->setProductsQuantity($objFormParam);
+// added
+$this->addShipping($objFormParam);
+break;
+

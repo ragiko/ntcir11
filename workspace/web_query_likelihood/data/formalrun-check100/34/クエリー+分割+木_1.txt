@@ -1,0 +1,65 @@
+完全制覇・ツリー上でのクエリ処理技法			 00:36 |    			平方分割やセグメント木など,列でのクエリの問題に対して使われる強力な手法はよく知られるようになってきました.
+ここでは,列より少し難しい,ツリーでのクエリの問題で使える汎用的なテクニックを紹介します.			
+Doubling や Euler-Tour Technique など有名なものから,かなりマイナーなもの,そして動的木まで触れています.
+全部知ってた人はなかなか居ないのでは.
+簡単には説明しきれないものは,詳しい説明へのリンクを貼っています.			
+(この記事は Competitive Programming Advent Calendar の 6 日目の記事として書かれました.)			
+Doubling
+プログラミングコンテストチャレンジブックの LCA の節で紹介しているテクニックです.
+頂点 v に対して,1 個上の親までの情報,2 個上の先祖までの情報,4 個,8 個,… 2^k 個上の先祖までの情報を前計算します.
+その頂点までの情報みたいなのを覚えとけば,LCA だけじゃなくて色々できます.			
+Euler-Tour Technique 1D版
+やはりプログラミングコンテストチャレンジブックの LCA の節で紹介しているテクニックです.
+DFS での訪問順で頂点あるいは辺を並べて,列として処理をします.
+部分木が親の区間に含まれるような,性質の良い列になるので,セグメント木等で頑張ります.			
+Sqrt Decompositon (平方分割)
+列の平方分割を知っている・よくやっている人は多いかと思いますが,実は木も平方分割(みたいなの)ができます.
+要は,各ブロックのサイズが√n 程度になりつつ,葉から根までのブロック数が√n 程度になれば良いわけです.
+根から BFS をして最初のブロックをとり,別れた森のそれぞれの根から BFS をして…を繰り返せば OK.			
+Separator Decomposition (Centroid Decomposition)
+木の上で分割統治法を行う際によく使われる分解ですが,クエリ処理にも使える場合があります.
+任意の木において,必ず Separator となる頂点が存在します.
+Separator とは,その頂点を取ったときに残る全ての部分木のサイズが n/2 以下になるような頂点です.
+Separator を取って木を分解するということを再帰的にやると O(log n) 段に木が分かれるわけですね.
+http://courses.csail.mit.edu/6.897/spring05/lec/lec16.pdf (図はこの文献の Figure 2 より引用)
+Heavy-Light Decomposition (Centroid Path Decomposition)
+各辺を Heavy Edge と Light Edge に分け,Heavy Edge からなるパス (Heavy Path) で木を潰すテクニックです.
+潰した木は,高さが必ず O(log n) になります.
+あとは各 Heavy Path を列用のデータ構造で管理し,クエリ処理時は各ノードに対応する Heavy Path を処理しつつ潰した木を上がって行きます.
+http://wcipeg.com/wiki/index.php/Heavy-light_decomposition
+追記: 詳しい解説
+木を根付き木とします.ノード v の部分木のサイズを size(v) とします.ノード u と,その子ノード v について,size(v) ≧ size(u) / 2 の時,枝 (u, v) を Heavy Edge とします.そうでない辺を Light Edge とします.Heavy Edge の連なりを Heavy Path とします.
+こうして,Heavy Path を 1 つのノードにして潰した木 (残る辺は Light Edge に対応) は,必ず高さが O(log n) になります.何故なら,元の木において,Light Edge を 1 つ遡ると,部分木のサイズが 2 倍以上になります.よって,各頂点から根までのパスには,Light Edge は高々 log_2 n 回しか含み得ません.
+ちなみに,殆ど同じ処理に Centroid Path Decomposition というのもあります.これは,ノード v の子のうち最も部分木サイズの大きい物 u への辺を Heavy Edge にするような感じです.性質等も一切同じ.定数倍が違うかも知れないけど知る限りそうでもなかった.
+Euler-Tour Technique 2D 版
+Euler-Tour Technique の 1D 版では,頂点間のパスに対応する列が,訪れない部分木を含んでしまいます.
+それが困ってしまうシチュエーションも少なくありませんが,実は列をやめて平面上の点にすると解決します.
+DFS での,親から入ってきた時のステップ数を x 座標,親に出ていく時のステップ数を y 座標にしてプロットします.
+すると,ある頂点とその先祖の頂点に対応する長方形には,ちょうどそのパスに出てくる頂点のみが入ります.
+クエリを処理するには,領域木などの 2 次元に対応するデータ構造が必要になります.			
+Persistent Data Structures (永続データ構造)
+UTPC'11 で僕がコンテスト界隈に導入したに近いと思っているアイディアです.他であまり見たことが無いですが,また使える場面もあるかもしれない.
+ノードに持たせるのが 1 つの値では不十分で,データ構造を持たせたいような際,
+親ノードとの差が小さいことを上手く利用して効率的に全ノードにデータ構造を持たせることができます.
+http://www.utpc.jp/2011/slides/l_th.pdf
+Euler-Tour Tree (Dynamic Tree)
+木の変更と連結性判定が処理できる動的木です.
+動的木をヤバいデータ構造の代名詞にする人もいますが,こっちは特に,アイディアは全く難しくない.
+Euler-Tour の列を平衡二分探索木で管理するだけ.
+列を併合したり分断したりで木の繋げたり切ったりを実現できます.
+http://courses.csail.mit.edu/6.851/spring10/scribe/lec17.pdf (図はこの文献の Figure 1 より引用)
+上の文献は,概要は分かるが情報の持ち方がちょっと間違っている
+Link-Cut Tree (Dynamic Tree)
+動的木といえば Link-Cut Tree を指すことも多く,木の変更を含むかなりの種類のクエリを O(log n) で処理することができ超強力です.
+でもアイディアは別にそこまで難しくなく,Heavy-Light Decomposition と似た感じで,
+Preferred Edge から成る Preferred Path の頂点の列を平衡二分探索木で管理して,それらをノードとする木として元の木を表します.
+http://courses.csail.mit.edu/6.897/spring05/lec/lec05.pdf (図はこの文献の Figure 1 より引用)
+追記@12/03/23
+JOI 春合宿で行った講義を補足するためもあって,Heavy-Light Decomposition の説明を詳しくしました.
+あと,一部に誤解を招く表現があったので訂正しました.
+Donyell2012/11/14 19:05Hallleuajh! I needed this-you're my savior.
+epnyyjypco2012/11/16 10:39MwniHV , [url=http://ffbrbpdlarxp.com/]ffbrbpdlarxp[/url], [link=http://saipznmlhuok.com/]saipznmlhuok[/link], http://wyilaokykedw.com/
+spwogqylu2012/11/17 11:20DdrogU  <a href="http://psybqxvvmmiu.com/">psybqxvvmmiu</a>
+awoxudadtzz2012/11/17 20:573xTYLK , [url=http://qikvirnyqyvb.com/]qikvirnyqyvb[/url], [link=http://bzppvdwgxwwg.com/]bzppvdwgxwwg[/link], http://jmaxwaappwsp.com/
+ogiekako2012/12/23 13:39Eule-Tour treeに関して,上の文献は,概要は分かるが情報の持ち方がちょっと間違っているとありますが,このように持とうとすると,根の交換が,O(log n)でできなくなってしまう,ということでしょうか.根の交換もO(log n)でできるようにするには,どうしたら良いかわかりますか?枝が平行二分探索木の要素に対するポインタを持つ感じかと思ったのですが,そうすると親への枝をなくす cut() ができなくなる気がして,よくわからないなと思いました.
+完全制覇・ツリー上でのクエリ処理技法 - (iwi) ｛ 反省します - TopCoder部
