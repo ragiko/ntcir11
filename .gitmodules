@@ -1,0 +1,3 @@
+[submodule "lib/hymlab"]
+	path = lib/hymlab
+	url = https://github.com/ragiko/hymlab.git
