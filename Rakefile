@@ -37,6 +37,7 @@ end
 task :all => [:clean, :main, :format, :map]
 # 計算結果をキャッシュしたソースを消さない
 task :all_soft => [:clean_result, :clean_format, :main, :format, :map]
+task :format_map => [:format, :map] 
 task :clean => [:clean_result, :clean_format, :clean_tmp]
 
 task :init do

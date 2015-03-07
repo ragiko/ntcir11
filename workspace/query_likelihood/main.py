@@ -24,11 +24,11 @@ if __name__ == '__main__':
     # データの設定
     conf = config.Config("query_likelihood")
 
-    QUERY_PATH = conf.WRITE_QUERY_PATH
-    DOC_PATH = conf.WRITE_DOC_PATH
+    QUERY_PATH = conf.SPOKEN_QUERY_PATH
+    DOC_PATH = conf.SPOKEN_DOC_PATH
 
     # csjに要変更
-    DOC_CORPUS_PATH = conf.WRITE_DOC_PATH 
+    DOC_CORPUS_PATH = conf.SPOKEN_DOC_PATH
 
     # クエリを読み込み
     query = ht.file_read(QUERY_PATH).split("\n")
