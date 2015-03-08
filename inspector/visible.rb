@@ -72,7 +72,12 @@ correct_list.each do |h|
   end
 end
 
+# jarを走らせた結果
+map_result = File.read("map_result.txt")
+
 # make html
+# render1: result_list
+# render2: map_result
 html = File.read('tmp.html')
 erb = ERB.new(html)
 bind_html = erb.result(binding)
