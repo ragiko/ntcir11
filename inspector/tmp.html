@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+  <style>
+    .bg {
+      background: indianred;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script>
+    // (function(jQuery) {
+    //   jQuery.fn.table_transpose = function (){
+    //     tid = "#"+jQuery(this).attr("id");
+    //     jQuery(tid+" tr").addClass("temptr");
+    //     jQuery(tid+" thead,"+tid+" tbody").children().unwrap();
+    //     jQuery(tid+" tr:first td,"+tid+" tr:first th").each(function(){
+    //       tds = jQuery(this).index()+1;
+    //       jQuery(tid).append("<tr />");
+    //       jQuery(tid+" tr.temptr").each(function(){
+    //         jQuery(tid+" tr:eq("+jQuery(this).index()+") > :nth-child("+tds+")").clone(true).appendTo(tid+" tr:last");
+    //       });
+    //     });
+    //     jQuery(tid+" tr.temptr").remove();
+    //     return this;
+    //   }
+    // })(jQuery);
+    // $(function(){
+    //   $("#mytable").table_transpose();
+    // });
+  </script>
+</head>
+<body>
+<table id="mytable" class="table table-bordered">
+  <tbody>
+  <tr>
+    <th> </th>
+    <% (1..1000).each do |i| %>
+      <th><%= "rank#{i}" %></th>
+    <% end %>
+  </tr>
+  <% result_list.each_with_index do |docs, i| %>
+  <tr>
+    <td><%= "query#{i+1}" %></td>
+    <% docs.values[0].each do |doc| %>
+      <td class="<%= doc.correct? ? 'bg' : '' %>"><%= doc.name %></td>
+    <% end %>
+  </tr>
+  <% end %>
+  </tbody>
+</table>
+</body>
+</html>
