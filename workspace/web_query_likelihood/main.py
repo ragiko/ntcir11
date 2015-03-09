@@ -41,6 +41,12 @@ if __name__ == '__main__':
     DOC_PATH = conf.WRITE_DOC_PATH
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
     WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-check100"
+    
+    # ドキュメントを読み込み
+    doc_tc = ht.TextCollection(DOC_PATH)
+
+    # tf
+    doc_tf = ht.TfIdf(doc_tc).tf()
 
     # クエリを読み込み
     query = ht.file_read(QUERY_PATH).split("\n")
@@ -56,14 +62,6 @@ if __name__ == '__main__':
         web_tc = ht.TextCollection([web_str])
         # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
         web_tf_list.append(ht.TfIdf(web_tc).tf()[0])
-    ht.pp(web_tf_list)
-    exit()
-
-
-    # ドキュメントを読み込み
-    doc_tc = ht.TextCollection(DOC_PATH)
-    # tf
-    doc_tf = ht.TfIdf(doc_tc).tf()
 
     #  コーパスのtf
     # doc_tc = ht.TextCollection(DOC_CORPUS_PATH)
@@ -72,10 +70,11 @@ if __name__ == '__main__':
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
 
     # params
+    # 平均文書長 121.046669042
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-50 # 極小値
-    u = 4000 # ドキュメントコレクション用パラメータ
-    v = 50 # web文書用パラメータ
+    u = 350 # ドキュメントコレクション用パラメータ
+    v = 0 # web文書用パラメータ
 
     result = []
     # query loop
