@@ -31,6 +31,38 @@ def web_str_normalize(str):
     s = re.sub(r' {2,}', '', s)
     return s
 
+def web_tf_cache_load(web_path, output_path):
+    """
+    web文書のtfを取得する
+    キャッシュロード
+    :param doc_path:
+    :param output_path:
+    :return:
+    """
+    # web文書の読み込み
+    if (os.path.exists(output_path) == False):
+        web_tf_list = []
+        for web_dir in ht.dir_list(web_path):
+            web_str = ht.dir_read_join(web_dir, join_str=u"。")
+            web_str = web_str_normalize(web_str)
+            web_tc = ht.TextCollection([web_str])
+            # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
+            web_tf_list.append(ht.TfIdf(web_tc).tf()[0])
+        ht.pickle_save(web_tf_list, output_path)
+    else :
+        web_tf_list = ht.pickle_load(output_path)
+    return web_tf_list
+
+def in_stopword(char):
+    """
+    ストップワードが含まれているかどうか
+    :param char:
+    :return:
+    """
+    a = [u"の", u"ん", u"こと", u"よう", u"もの", u"さ", u"どれ", u"とこ", u"なん", u"それ", u"ふう", u"ほう", u"とき", u"そこ"]
+    f = char in a
+    return(f)
+
 if __name__ == '__main__':
     """
     main program
@@ -40,43 +72,35 @@ if __name__ == '__main__':
     QUERY_PATH = conf.WRITE_QUERY_PATH
     DOC_PATH = conf.WRITE_DOC_PATH
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
-    WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-check100"
+    WEB_PATH = conf.PROJECT_PATH + "/data/formal-run-revised"
     
-    # ドキュメントを読み込み
-    doc_tc = ht.TextCollection(DOC_PATH)
-    doc_tf = ht.TfIdf(doc_tc).tf()
+    # キャッシュ用パス
+    DOC_TEXT_PATH = conf.TMP_PATH + "/doc_text"
+    DOC_TF_PATH = conf.TMP_PATH + "/doc_tf"
+    QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
+    WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
 
-    # クエリを読み込み
-    query = ht.file_read(QUERY_PATH).split("\n")
-    query.pop()
-    q_tc = ht.TextCollection(query)
+    # 検索文書を読み込み
+    doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH);
+    doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH)
     
-    
-    q_tf_list = ht.TfIdf(q_tc).tf(normalize=False)
-    
-    # ht.pp(q_tf_list)
-
-    # web文書の読み込み
-    web_tf_list = []
-    for web_dir in ht.dir_list(WEB_PATH):
-        web_str = ht.dir_read_join(web_dir, join_str=u"。")
-        web_str = web_str_normalize(web_str)
-        web_tc = ht.TextCollection([web_str])
-        # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
-        web_tf_list.append(ht.TfIdf(web_tc).tf()[0])
-
-    #  コーパスのtf
-    # doc_tc = ht.TextCollection(DOC_CORPUS_PATH)
+    # コーパスのtfを読み込み
     texts_str = doc_tc.merge_texts()
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
 
+    # クエリを読み込み
+    q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH, normalize=False)
+
+    # webのtfの文書を読み込み
+    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+
     # params
     # 平均文書長 121.046669042
     tf_corpus = corpus_doc_tf.vec
-    not_word_val = 1e-50 # 極小値
-    u = 160 # ドキュメントコレクション用パラメータ
-    v = 50 # web文書用パラメータ
+    not_word_val = 1e-250 # 極小値
+    u = 920 # ドキュメントコレクション用パラメータ
+    v = 10 # web文書用パラメータ
 
     result = []
     # query loop
@@ -105,7 +129,7 @@ if __name__ == '__main__':
                 # smooth for web doc
                 web = v * frac * tf_web.get(word, not_word_val)
 
-                likelifood += query_tf[word] * log(doc + corpus + web)
+                likelifood += log(doc + corpus + web)
 
             query_result.append((doc_text, likelifood))
             
