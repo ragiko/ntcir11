@@ -44,15 +44,17 @@ if __name__ == '__main__':
     
     # ドキュメントを読み込み
     doc_tc = ht.TextCollection(DOC_PATH)
-
-    # tf
     doc_tf = ht.TfIdf(doc_tc).tf()
 
     # クエリを読み込み
     query = ht.file_read(QUERY_PATH).split("\n")
     query.pop()
     q_tc = ht.TextCollection(query)
+    
+    
     q_tf_list = ht.TfIdf(q_tc).tf(normalize=False)
+    
+    # ht.pp(q_tf_list)
 
     # web文書の読み込み
     web_tf_list = []
@@ -73,8 +75,8 @@ if __name__ == '__main__':
     # 平均文書長 121.046669042
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-50 # 極小値
-    u = 350 # ドキュメントコレクション用パラメータ
-    v = 0 # web文書用パラメータ
+    u = 160 # ドキュメントコレクション用パラメータ
+    v = 50 # web文書用パラメータ
 
     result = []
     # query loop
