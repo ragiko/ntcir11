@@ -11,10 +11,14 @@ class Config:
         # spoken data
         self.SPOKEN_QUERY_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/formalrun_query/formalrun_query.txt"
         self.SPOKEN_DOC_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/slide_asr_noblank"
+        # lecture data
+        self.SPOKEN_DOC_LECTURE_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/lecture"
 
         # write data
         self.WRITE_QUERY_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/formalrun_query/formalrun_query_text.txt"
         self.WRITE_DOC_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/slide"
+        # write data
+        self.WRITE_DOC_LECTURE_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/lecture_write"
  
         # /tmp and /result
         self.TMP_PATH = self.PROJECT_PATH + "/tmp" 
