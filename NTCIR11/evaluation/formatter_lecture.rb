@@ -88,7 +88,7 @@ end
 def getResultFormat(result_file_arr)
     format_start = "\t\t<QUERY id=\"SpokenQueryDoc-SQSCR-formal-%04d\">\n"
     format_end = "\t\t</QUERY>\n"
-    candidate_format = "\t\t\t<CANDIDATE rank=\"%s\" lecture=\"%s\" slide=\"%s\" />\n"
+    candidate_format = "\t\t\t<CANDIDATE rank=\"%s\" lecture=\"%s\"/>\n"
 
     format_str = "<RESULT>\n"
 
@@ -102,14 +102,14 @@ def getResultFormat(result_file_arr)
 
 
         format_str += sprintf(format_start, i+1)
-        for rank in 0..999
-            file_name = file[rank].match(/(\d+\-\d+_\d+)/)[1]
+        for rank in 0..97
+            file_name = file[rank].match(/\/(\d+\-\d+.* )/)[1]
             # matchdata型から文字列に
-            lecture = file_name.match(/^\d+\-\d+/).to_s
+            lecture = file_name.match(/\d+\-\d+/).to_s
             # slide = file_name.match(/\d+$/).to_s.to_i.to_s
-            slide = ((file_name.match(/\d+$/).to_s.to_i) + 1).to_s
+            # slide = ((file_name.match(/\d+$/).to_s.to_i) + 1).to_s
             
-            candidate_str = sprintf(candidate_format, (rank+1).to_s, lecture, slide)
+            candidate_str = sprintf(candidate_format, (rank+1).to_s, lecture) # , slide)
             format_str += candidate_str
         end
         format_str += format_end

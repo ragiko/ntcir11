@@ -2,6 +2,7 @@ require 'nokogiri'
 require 'pp'
 require 'erb'
 
+
 class Doc
   attr_accessor :name, :is_correct
   
@@ -34,6 +35,10 @@ def parse_xml(doc)
   result_docs_list
 end
 
+# need/の絶対パス
+INSPECTOR_PATH = File.expand_path("..", __FILE__)
+NEED_PATH = File.expand_path("../need", __FILE__)
+
 # クエリのIDに対応したランキングされた文書を取得
 # use: docs(result_list, "SpokenQueryDoc-SQSCR-formal-0001")
 # return: docs
@@ -47,11 +52,11 @@ def docs(result_list, query_id)
 end
 
 # result
-doc = Nokogiri::XML(File.open("result.xml"))
+doc = Nokogiri::XML(File.open("#{NEED_PATH}/result.txt"))
 result_list = parse_xml(doc)
 
 # correct
-doc = Nokogiri::XML(File.open("correct.xml"))
+doc = Nokogiri::XML(File.open("#{INSPECTOR_PATH}/correct.xml"))
 correct_list = parse_xml(doc)
 
 # 結果の中に正解が含まれた時
@@ -73,13 +78,13 @@ correct_list.each do |h|
 end
 
 # jarを走らせた結果
-map_result = File.read("map_result.txt")
+map_result = File.read("#{NEED_PATH}/map_result.txt")
 
 # make html
 # render1: result_list
 # render2: map_result
-html = File.read('tmp.html')
+html = File.read("#{INSPECTOR_PATH}/tmp.html")
 erb = ERB.new(html)
 bind_html = erb.result(binding)
-File.write('output/a.html', bind_html)
+File.write("#{INSPECTOR_PATH}/output/a.html", bind_html)
 

@@ -25,8 +25,7 @@ def parse_xml(doc)
     docs = []
     query.xpath('./CANDIDATE').each do |candidate|
       lecture = candidate.attribute('lecture').text
-      slide = candidate.attribute('slide').text
-      doc = Doc.new(lecture+"-"+slide)
+      doc = Doc.new(lecture)
       docs << doc
     end
     result_docs_list << {id => docs}
@@ -56,7 +55,7 @@ doc = Nokogiri::XML(File.open("#{NEED_PATH}/result.txt"))
 result_list = parse_xml(doc)
 
 # correct
-doc = Nokogiri::XML(File.open("#{INSPECTOR_PATH}/correct.xml"))
+doc = Nokogiri::XML(File.open("#{INSPECTOR_PATH}/correct_lecture.xml"))
 correct_list = parse_xml(doc)
 
 # 結果の中に正解が含まれた時
@@ -78,7 +77,7 @@ correct_list.each do |h|
 end
 
 # jarを走らせた結果
-map_result = File.read("#{NEED_PATH}/map_result.txt")
+map_result = "" # File.read("#{NEED_PATH}/map_result.txt")
 
 # make html
 # render1: result_list
