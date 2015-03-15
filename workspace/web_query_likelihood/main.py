@@ -70,10 +70,13 @@ if __name__ == '__main__':
     # データの設定
     conf = config.Config("web_query_likelihood")
     QUERY_PATH = conf.WRITE_QUERY_PATH
-    DOC_PATH = conf.WRITE_DOC_PATH
+    # QUERY_PATH = conf.SPOKEN_QUERY_PATH
+    # DOC_PATH = conf.WRITE_DOC_PATH
+    # DOC_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
+    DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
-    WEB_PATH = conf.PROJECT_PATH + "/data/formal-run-revised"
-    
+    WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-text100"
+
     # キャッシュ用パス
     DOC_TEXT_PATH = conf.TMP_PATH + "/doc_text"
     DOC_TF_PATH = conf.TMP_PATH + "/doc_tf"
