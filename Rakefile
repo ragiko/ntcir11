@@ -4,6 +4,7 @@ WORKSPACE_PATH = './workspace'
 WORKSPACE_RESULT_PATH = './workspace/result'
 WORKSPACE_TMP_PATH = './workspace/tmp'
 FORMAT_RESULT_PATH = './NTCIR11/evaluation/result.txt'
+MAP_RESULT_PATH = './NTCIR11/evaluation/map_result.txt'
 MAP_JAR_PATH = './NTCIR11/evaluation/evalsqscr.jar'
 
 def systemu_msg sh
@@ -83,8 +84,23 @@ task :map do
   end
   Dir.chdir("./NTCIR11/evaluation/") do
     map = "java -jar ./evalsqscr.jar ./result.txt"
-    puts systemu_msg(map)[:msg]
-    puts systemu_msg(map)[:out]
+    m = systemu_msg(map)
+    File.write("./map_result.txt", m[:out])
+    puts m[:msg]
+    puts m[:out]
+  end
+end
+
+task :vis do
+  # map値の可視化ツール
+  if (FileTest.exist?(FORMAT_RESULT_PATH) and FileTest.exist?(MAP_RESULT_PATH))
+    inspector_path = "./inspector"
+    FileUtils.cp(FORMAT_RESULT_PATH, "#{inspector_path}/need")
+    FileUtils.cp(MAP_RESULT_PATH, "#{inspector_path}/need")
+    exe = "ruby #{inspector_path}/visible.rb"
+    puts systemu_msg(exe)[:msg]
+  else
+    puts "[error] file is not exist"
   end
 end
 
