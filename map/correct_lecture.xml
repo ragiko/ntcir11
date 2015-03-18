@@ -1,0 +1,193 @@
+<ROOT version="20141003">
+    <RUN><SUBTASK>SQ-SCR</SUBTASK><UNIT>SLIDE-GROUP</UNIT></RUN>
+    <RESULT>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0001">
+            <CANDIDATE lecture="10-13" level="P" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0002">
+            <CANDIDATE lecture="07-21" level="R" />
+            <CANDIDATE lecture="08-19" level="R" />
+            <CANDIDATE lecture="09-08" level="R" />
+            <CANDIDATE lecture="10-10" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0003">
+            <CANDIDATE lecture="09-21" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0004">
+            <CANDIDATE lecture="07-02" level="P" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0005">
+            <CANDIDATE lecture="07-23" level="R" />
+            <CANDIDATE lecture="08-21" level="P" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0006">
+            <CANDIDATE lecture="07-01" level="R" />
+            <CANDIDATE lecture="07-03" level="R" />
+            <CANDIDATE lecture="07-12" level="R" />
+            <CANDIDATE lecture="08-16" level="R" />
+            <CANDIDATE lecture="09-14" level="R" />
+            <CANDIDATE lecture="10-10" level="R" />
+            <CANDIDATE lecture="10-16" level="R" />
+            <CANDIDATE lecture="11-01" level="R" />
+            <CANDIDATE lecture="11-02" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0007">
+            <CANDIDATE lecture="08-18" level="R" />
+            <CANDIDATE lecture="09-11" level="R" />
+            <CANDIDATE lecture="10-21" level="R" />
+            <CANDIDATE lecture="10-22" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0008">
+            <CANDIDATE lecture="07-22" level="P" />
+            <CANDIDATE lecture="08-12" level="P" />
+            <CANDIDATE lecture="09-01" level="P" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0009">
+            <CANDIDATE lecture="07-22" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0010">
+            <CANDIDATE lecture="07-02" level="R" />
+            <CANDIDATE lecture="08-21" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0011">
+            <CANDIDATE lecture="07-12" level="R" />
+            <CANDIDATE lecture="08-01" level="R" />
+            <CANDIDATE lecture="11-03" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0012">
+            <CANDIDATE lecture="07-13" level="P" />
+            <CANDIDATE lecture="09-06" level="R" />
+            <CANDIDATE lecture="13-11" level="P" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0013">
+            <CANDIDATE lecture="07-07" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0014">
+            <CANDIDATE lecture="07-07" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0015">
+            <CANDIDATE lecture="09-02" level="R" />
+            <CANDIDATE lecture="11-11" level="R" />
+            <CANDIDATE lecture="11-12" level="R" />
+            <CANDIDATE lecture="12-10" level="R" />
+            <CANDIDATE lecture="12-12" level="R" />
+            <CANDIDATE lecture="13-04" level="R" />
+            <CANDIDATE lecture="13-05" level="R" />
+            <CANDIDATE lecture="13-10" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0016">
+            <CANDIDATE lecture="11-03" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0017">
+            <CANDIDATE lecture="07-03" level="R" />
+            <CANDIDATE lecture="08-22" level="R" />
+            <CANDIDATE lecture="09-18" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0018">
+            <CANDIDATE lecture="07-17" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0020">
+            <CANDIDATE lecture="07-18" level="P" />
+            <CANDIDATE lecture="09-10" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0021">
+            <CANDIDATE lecture="10-13" level="P" />
+            <CANDIDATE lecture="12-10" level="R" />
+            <CANDIDATE lecture="12-11" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0022">
+            <CANDIDATE lecture="12-15" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0023">
+            <CANDIDATE lecture="09-05" level="R" />
+            <CANDIDATE lecture="12-05" level="R" />
+            <CANDIDATE lecture="13-01" level="P" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0024">
+            <CANDIDATE lecture="09-02" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0025">
+            <CANDIDATE lecture="09-19" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0026">
+            <CANDIDATE lecture="08-04" level="R" />
+            <CANDIDATE lecture="08-10" level="R" />
+            <CANDIDATE lecture="10-16" level="R" />
+            <CANDIDATE lecture="11-13" level="R" />
+            <CANDIDATE lecture="13-08" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0028">
+            <CANDIDATE lecture="08-12" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0029">
+            <CANDIDATE lecture="09-02" level="R" />
+            <CANDIDATE lecture="10-12" level="R" />
+            <CANDIDATE lecture="11-11" level="R" />
+            <CANDIDATE lecture="11-12" level="R" />
+            <CANDIDATE lecture="12-07" level="R" />
+            <CANDIDATE lecture="12-08" level="R" />
+            <CANDIDATE lecture="12-10" level="R" />
+            <CANDIDATE lecture="12-12" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0030">
+            <CANDIDATE lecture="13-09"  level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0031">
+            <CANDIDATE lecture="07-01"  level="R" />
+            <CANDIDATE lecture="07-03"  level="R" />
+            <CANDIDATE lecture="07-07"  level="R" />
+            <CANDIDATE lecture="07-08"  level="R" />
+            <CANDIDATE lecture="07-19"  level="R" />
+            <CANDIDATE lecture="07-23"  level="P" />
+            <CANDIDATE lecture="08-02"  level="R" />
+            <CANDIDATE lecture="08-05"  level="R" />
+            <CANDIDATE lecture="08-10"  level="R" />
+            <CANDIDATE lecture="08-16"  level="P" />
+            <CANDIDATE lecture="08-18"  level="R" />
+            <CANDIDATE lecture="08-22" level="R" />
+            <CANDIDATE lecture="08-23"  level="R" />
+            <CANDIDATE lecture="09-02"  level="R" />
+            <CANDIDATE lecture="09-05"  level="R" />
+            <CANDIDATE lecture="09-11" level="P" />
+            <CANDIDATE lecture="09-16"  level="P" />
+            <CANDIDATE lecture="09-18" level="R" />
+            <CANDIDATE lecture="10-16" level="R" />
+            <CANDIDATE lecture="10-20" level="R" />
+            <CANDIDATE lecture="10-21"  level="R" />
+            <CANDIDATE lecture="11-11"  level="R" />
+            <CANDIDATE lecture="12-05"  level="R" />
+            <CANDIDATE lecture="12-07"  level="R" />
+            <CANDIDATE lecture="12-08"  level="R" />
+            <CANDIDATE lecture="12-09"  level="R" />
+            <CANDIDATE lecture="12-15"  level="R" />
+            <CANDIDATE lecture="13-01"  level="R" />
+            <CANDIDATE lecture="13-08" level="R" />
+            <CANDIDATE lecture="13-11"  level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0032">
+            <CANDIDATE lecture="07-22"  level="P" />
+            <CANDIDATE lecture="07-23" level="R" />
+            <CANDIDATE lecture="08-16"  level="R" />
+            <CANDIDATE lecture="09-19"  level="R" />
+            <CANDIDATE lecture="10-16"  level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0033">
+            <CANDIDATE lecture="12-11"  level="R" />
+            <CANDIDATE lecture="13-02" level="P" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0034">
+            <CANDIDATE lecture="09-05" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0035">
+            <CANDIDATE lecture="08-19" level="R" />
+            <CANDIDATE lecture="09-08" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0036">
+            <CANDIDATE lecture="08-18" level="R" />
+        </QUERY>
+        <QUERY id="SpokenQueryDoc-SQSCR-formal-0037">
+            <CANDIDATE lecture="07-22" level="R" />
+            <CANDIDATE lecture="09-20" level="R" />
+        </QUERY>
+    </RESULT>
+</ROOT>

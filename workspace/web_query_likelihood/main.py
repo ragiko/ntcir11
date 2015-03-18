@@ -63,6 +63,26 @@ def in_stopword(char):
     f = char in a
     return(f)
 
+def bm25(q_word, doc_tf, idf, doc_length, avg_length, k=2.0, b=0.75):
+    '''
+    :param q_word: クエリのワード
+    :param doc_tf: 対象ドキュメントの非正規化のtf (dict)
+    :param idf:
+    :param doc_length: 文書長
+    :param avg_length: 平均文書長
+    :param k: 
+    :param b: 
+    :return:
+    '''
+    tf_unknown = 0.0
+    idf_unknown = 0.0
+    score = idf.get(q_word, idf_unknown) * ( doc_tf.get(q_word, tf_unknown) * (k+1) ) / (doc_tf.get(q_word, tf_unknown) + k * ( (1-b) + b * ( doc_length / avg_length) ) )
+    return score
+
+def dd(s):
+    ht.pp(s)
+    exit()
+    
 if __name__ == '__main__':
     """
     main program
@@ -71,21 +91,25 @@ if __name__ == '__main__':
     conf = config.Config("web_query_likelihood")
     QUERY_PATH = conf.WRITE_QUERY_PATH
     # QUERY_PATH = conf.SPOKEN_QUERY_PATH
-    # DOC_PATH = conf.WRITE_DOC_PATH
+    DOC_PATH = conf.WRITE_DOC_PATH
     # DOC_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
-    DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
+    # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
     WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-text100"
 
     # キャッシュ用パス
     DOC_TEXT_PATH = conf.TMP_PATH + "/doc_text"
     DOC_TF_PATH = conf.TMP_PATH + "/doc_tf"
+    DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
     WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH);
-    doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH)
+    
+    # TODO: you use bm25, so normaize flag is False
+    doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH, normalize=False)
+    doc_idf = helper.doc_idf_cache_load(DOC_PATH, DOC_IDF_PATH)
     
     # コーパスのtfを読み込み
     texts_str = doc_tc.merge_texts()
@@ -97,13 +121,14 @@ if __name__ == '__main__':
 
     # webのtfの文書を読み込み
     web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
-
+    
     # params
-    # 平均文書長 121.046669042
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
     u = 920 # ドキュメントコレクション用パラメータ
     v = 10 # web文書用パラメータ
+    # 平均文書長
+    avg_length = 121.046669042
 
     result = []
     # query loop
@@ -125,8 +150,12 @@ if __name__ == '__main__':
 
             # query word loop
             for word in query_text.words():
+            # for word in list(set(query_text.words())):
                 # smooth for query
-                doc = d * frac * tf_doc.get(word, not_word_val)
+                # TODO: choose smooth or insert bm25
+                # doc = d * frac * tf_doc.get(word, not_word_val)
+                doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
+
                 # smooth for doc
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
                 # smooth for web doc
