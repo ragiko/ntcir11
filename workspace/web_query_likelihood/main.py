@@ -13,6 +13,9 @@ import unittest
 from math import log
 import re
 
+from collections import Counter
+from collections import defaultdict
+
 def web_str_normalize(str):
     '''
     webのコンテンツの不必要な文字を削除
@@ -82,7 +85,51 @@ def bm25(q_word, doc_tf, idf, doc_length, avg_length, k=2.0, b=0.75):
 def dd(s):
     ht.pp(s)
     exit()
+
+def merge_dict(d1, d2, func=lambda x, y: y):
+    '''
+    辞書を足し算する
+    http://tell-k.hatenablog.com/entry/2012/01/25/231445
+
+    :param d1:
+    :param d2:
+    :return:
+    '''
     
+    d1 = d1.copy()
+    d2 = d2.copy()
+    for k, v in d2.iteritems():
+        d1[k] = func(d1[k], v) if k in d1 else v
+    d2.update(d1)
+    return d2
+    
+def bm25_in_doc(doc_vsm_list, idf, avg_length, k=2.0, b=0.75):
+    '''
+    正規化のために文書全体に対してBM25を計算
+    http://tell-k.hatenablog.com/entry/2012/01/25/231445
+
+    :param doc_vsm_list: 文書のVSM型のリスト(非正規化TF)
+    :param idf: 
+    :param avg_length: 
+    :param k: 
+    :param b: 
+    :return: dist {'a' => 1, 'b' => 2 ... }
+    '''
+    h = {}
+
+    for doc_vsm in doc_vsm_list:
+        tf = doc_vsm.vec
+        text = doc_vsm.text
+        doc_length = len(text.words())
+        
+        # bm25の文書ベクトルを作成
+        bm25_dict = {}
+        for word in text.words():
+            bm25_dict[word] = bm25(word, tf, idf, doc_length, avg_length, k, b)
+        
+        h = merge_dict(h, bm25_dict, lambda x, y: x + y)
+    return h
+
 if __name__ == '__main__':
     """
     main program
@@ -92,6 +139,7 @@ if __name__ == '__main__':
     QUERY_PATH = conf.WRITE_QUERY_PATH
     # QUERY_PATH = conf.SPOKEN_QUERY_PATH
     DOC_PATH = conf.WRITE_DOC_PATH
+    # TODO: 講演の会話
     # DOC_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
     # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
@@ -106,9 +154,8 @@ if __name__ == '__main__':
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH);
-    
-    # TODO: you use bm25, so normaize flag is False
-    doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH, normalize=False)
+    # TODO: BM25を利用するときは, 非正規化(False)にする
+    doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH, False)
     doc_idf = helper.doc_idf_cache_load(DOC_PATH, DOC_IDF_PATH)
     
     # コーパスのtfを読み込み
@@ -117,7 +164,7 @@ if __name__ == '__main__':
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
 
     # クエリを読み込み
-    q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH, normalize=False)
+    q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
     web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
@@ -125,10 +172,13 @@ if __name__ == '__main__':
     # params
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
-    u = 920 # ドキュメントコレクション用パラメータ
-    v = 10 # web文書用パラメータ
+    u = 920 # ドキュメントコレクション用パラメータ 920
+    v = 10 #10 # web文書用パラメータ
     # 平均文書長
     avg_length = 121.046669042
+
+    # TODO: bm25の正規化する時
+    # bm25_in_doc = bm25_in_doc(doc_tf, doc_idf, avg_length)
 
     result = []
     # query loop
@@ -152,9 +202,11 @@ if __name__ == '__main__':
             for word in query_text.words():
             # for word in list(set(query_text.words())):
                 # smooth for query
-                # TODO: choose smooth or insert bm25
                 # doc = d * frac * tf_doc.get(word, not_word_val)
+                # TODO: bm25を利用する時
                 doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
+                # TODO: bm25の正規化する時
+                # doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length) / bm25_in_doc.get(word, 1.0)
 
                 # smooth for doc
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
