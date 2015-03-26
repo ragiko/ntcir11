@@ -11,6 +11,7 @@ import config
 
 import unittest
 from math import log
+from math import fabs
 import re
 
 from collections import Counter
@@ -80,6 +81,7 @@ def bm25_not_idf(q_word, doc_tf, doc_length, avg_length, k=2.0, b=0.75):
     :return:
     '''
     tf_unknown = 0.0
+    # score = doc_tf.get(q_word, tf_unknown)
     score = ( doc_tf.get(q_word, tf_unknown) * (k+1) ) / (doc_tf.get(q_word, tf_unknown) + k * ( (1-b) + b * ( doc_length / avg_length) ) )
     return score
 
@@ -96,7 +98,6 @@ def bm25(q_word, doc_tf, idf, doc_length, avg_length, k=2.0, b=0.75):
     '''
     tf_unknown = 0.0
     idf_unknown = 0.0
-    print ( doc_length / avg_length)
     score = idf.get(q_word, idf_unknown) * ( doc_tf.get(q_word, tf_unknown) * (k+1) ) / (doc_tf.get(q_word, tf_unknown) + k * ( (1-b) + b * ( doc_length / avg_length) ) )
     return score
 
@@ -148,7 +149,7 @@ def bm25_in_doc(doc_vsm_list, idf, avg_length, k=2.0, b=0.75):
         h = merge_dict(h, bm25_dict, lambda x, y: x + y)
     return h
 
-def bm25_in_a_doc(query_words, doc_vsm, avg_length, k=2.0, b=0.75):
+def bm25_in_a_doc(doc_vsm, avg_length, k=2.0, b=0.75):
     '''
     文書に対してbm25をすべて足す
     idfは利用しない
@@ -165,9 +166,31 @@ def bm25_in_a_doc(query_words, doc_vsm, avg_length, k=2.0, b=0.75):
 
     # 文書のbm25の全体値を計算
     sum = 0.0
-    for word in query_words:
+    for word in list(set(text.words())): # query_words:
         sum += bm25_not_idf(word, tf, doc_length, avg_length, k, b)
     return sum
+
+def bm25_in_a_doc_using_idf(doc_vsm, idf, avg_length, k=2.0, b=0.75):
+    '''
+    文書に対してbm25をすべて足す
+    idfは利用しない
+
+    :param doc_vsm:
+    :param avg_length:
+    :param k:
+    :param b:
+    :return: float
+    '''
+    tf = doc_vsm.vec
+    text = doc_vsm.text
+    doc_length = len(text.words())
+
+    # 文書のbm25の全体値を計算
+    sum = 0.0
+    for word in list(set(text.words())): # query_words:
+        sum += bm25(word, tf, idf, doc_length, avg_length, k, b)
+    return sum
+
 
 def fraction(d, u, v, defalt=True):
     '''
@@ -204,16 +227,18 @@ if __name__ == '__main__':
     # TODO: データをキャッシュしているので、不要なときは消す
     DOC_TEXT_PATH = conf.TMP_PATH + "/doc_text"
     DOC_TF_PATH = conf.TMP_PATH + "/doc_tf"
+    DOC_TF_FREQ_PATH = conf.TMP_PATH + "/doc_tf_freq"
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
     WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
 
     # 検索文書を読み込み
-    doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH);
+    doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
     
+    doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH)
     # TODO: BM25を利用するときは, 非正規化(False)にする
-    doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH, False)
-    
+    doc_tf_freq = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_FREQ_PATH, False)
+
     doc_idf = helper.doc_idf_cache_load(DOC_PATH, DOC_IDF_PATH)
     
     # コーパスのtfを読み込み
@@ -230,17 +255,20 @@ if __name__ == '__main__':
     # params
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
+    
     # TODO: bm25を正規化して検索対象の重みを線形結合する場合, uを1以下
-    u = 0.5 # ドキュメントコレクション用パラメータ 920
-    v = 0 #10 # web文書用パラメータ
+    a = 0.3 # bm25の重み
+    u = 0.7 # ドキュメントコレクションの重み 920
+    v = 0.0 #10 # web文書用パラメータ
+    
     # 平均文書長 (hara: 47くらいか?) 121.046669042
-    avg_length = 47.0
+    avg_length = 47.0 # 121.04 # 47.0
     
     # TODO: 線形結合
     # alpha = 0.05
-    
+
     # TODO: bm25の正規化する時
-    bm25_in_doc = bm25_in_doc(doc_tf, doc_idf, avg_length)
+    # bm25_in_doc = bm25_in_doc(doc_tf, doc_idf, avg_length)
 
     result = []
     # query loop
@@ -253,17 +281,20 @@ if __name__ == '__main__':
         tf_web = web_tf_list[i].vec
 
         # doc loop
-        for doc_tf_vsm in doc_tf:
+        for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
             doc_text = doc_tf_vsm.text
             tf_doc = doc_tf_vsm.vec
+            tf_freq_doc = doc_tf_freq_vsm.vec
             d = len(doc_text.words())
             # TODO: bm25を正規化して検索対象の重みを線形結合する場合, 4引数目をfalse
             frac = fraction(d, u, v, False)
             likelifood = 0.0
             
+            bm25_sum = 0.0
+            
             # TODO: bm25の正規化(文書全体)する時
-            bm25_all_value = bm25_in_a_doc(query_text.words(), doc_tf_vsm, avg_length)
-            print "document"
+            # bm25_all_value = bm25_in_a_doc(doc_tf_freq_vsm, avg_length)
+            bm25_all_value = bm25_in_a_doc_using_idf(doc_tf_freq_vsm, doc_idf, avg_length)
 
             # query word loop
             for word in query_text.words():
@@ -277,30 +308,46 @@ if __name__ == '__main__':
                 # doc = d * frac * tf_doc.get(word, not_word_val)
                 # TODO: bm25を利用する時
                 # doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
-                doc = (1-u) * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
+                # doc = (1-u) * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
                 # TODO: bm25の正規化する時
                 # doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length) / bm25_in_doc.get(word, 1.0)
                 # TODO: bm25を正規化する時, 検索対象の重みを線形結合する場合
                 # doc = (1-u) * frac * bm25(word, tf_doc, doc_idf, d, avg_length) / bm25_in_doc.get(word, 1.0)
                 # TODO: bm25の正規化(文書全体)する時
-                # if (bm25_all_value != 0.0):
-                #     doc = (1-u) * frac * bm25_not_idf(word, tf_doc, d, avg_length) / bm25_all_value
-                #     # doc = d * frac * bm25_not_idf(word, tf_doc, d, avg_length) / bm25_all_value
-                # else:
-                #     doc = 0.0
-                
+                if (bm25_all_value != 0.0):
+                    # bm25_doc = a * frac * bm25_not_idf(word, tf_freq_doc, d, avg_length) / bm25_all_value
+                    bm25_doc = a * frac * bm25(word, tf_freq_doc, doc_idf, d, avg_length) / bm25_all_value
+                else:
+                    bm25_doc = 0.0
+
+                # TODO: 追加
+                query_likelifood_doc = (1-u-a) * frac * tf_doc.get(word, not_word_val)
+
+                # doc = a * frac * bm25(word, tf_freq_doc, doc_idf, d, avg_length)
+                # bm25_sum += bm25(word, tf_freq_doc, doc_idf, d, avg_length)
+
                 # smooth for doc
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
                 # smooth for web doc
                 web = v * frac * tf_web.get(word, not_word_val)
             
-                likelifood += log(doc + corpus + web)
+                # print "\n"
+                # print "corpus: " + word.encode('utf8') + " : " + str(corpus)
+                # print "web: " + word.encode('utf8') + " : " + str(web)
+
+                likelifood += log(query_likelifood_doc + bm25_doc + corpus + web)
 
                 # TODO: 線形結合
                 # likelifood += alpha*bm25(word, tf_doc, doc_idf, d, avg_length) + (1-alpha)*log(doc + corpus + web)
+                
+                # print "bm25\n"
+                # ht.pp(sorted(t1_hs.items(), key=lambda x:x[1]))
+                # print "query 尤度\n"
+                # ht.pp(sorted(t2_hs.items(), key=lambda x:x[1]))
 
             query_result.append((doc_text, likelifood))
-            
+            # query_result.append((doc_text, bm25_sum))
+
         result.append(query_result)
 
     # 結果を出力
