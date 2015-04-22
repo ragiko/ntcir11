@@ -50,7 +50,7 @@ def doc_text_cache_load(doc_path, output_path):
         doc_tc = ht.pickle_load(output_path)
     return doc_tc
 
-def doc_tf_cache_load(doc_path, output_path):
+def doc_tf_cache_load(doc_path, output_path, normarize=True):
     """
     検索文書のtf取得する
     キャッシュロード
@@ -61,11 +61,29 @@ def doc_tf_cache_load(doc_path, output_path):
     # ドキュメントを読み込み
     if (os.path.exists(output_path) == False):
         doc_tc = ht.TextCollection(doc_path)
-        doc_tf = ht.TfIdf(doc_tc).tf()
+        doc_tf = ht.TfIdf(doc_tc).tf(normarize)
         ht.pickle_save(doc_tf, output_path)
     else:
         doc_tf = ht.pickle_load(output_path)
     return doc_tf
+
+def doc_idf_cache_load(doc_path, output_path):
+    """
+    検索文書のtf取得する
+    キャッシュロード
+    :param doc_path:
+    :param output_path:
+    :return:
+    """
+    # ドキュメントを読み込み
+    if (os.path.exists(output_path) == False):
+        doc_tc = ht.TextCollection(doc_path)
+        doc_idf = ht.TfIdf(doc_tc).idf()
+        ht.pickle_save(doc_idf, output_path)
+    else:
+        doc_idf = ht.pickle_load(output_path)
+    return doc_idf
+
 
 def query_tf_cache_load(query_path, output_path, normalize=True):
     """
