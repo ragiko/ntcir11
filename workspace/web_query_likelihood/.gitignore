@@ -1,0 +1,9 @@
+# data
+data/formal-run-revised/
+data/formalrun-text100
+
+# source treeの隠れファイル
+.hg
+
+# backupfile
+backup
