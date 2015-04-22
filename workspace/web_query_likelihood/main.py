@@ -255,20 +255,9 @@ if __name__ == '__main__':
     # params
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
-    
-    # TODO: bm25を正規化して検索対象の重みを線形結合する場合, uを1以下
-    a = 0.3 # bm25の重み
-    u = 0.7 # ドキュメントコレクションの重み 920
-    v = 0.0 #10 # web文書用パラメータ
-    
+
     # 平均文書長 (hara: 47くらいか?) 121.046669042
     avg_length = 47.0 # 121.04 # 47.0
-    
-    # TODO: 線形結合
-    # alpha = 0.05
-
-    # TODO: bm25の正規化する時
-    # bm25_in_doc = bm25_in_doc(doc_tf, doc_idf, avg_length)
 
     result = []
     # query loop
@@ -287,66 +276,20 @@ if __name__ == '__main__':
             tf_freq_doc = doc_tf_freq_vsm.vec
             d = len(doc_text.words())
             # TODO: bm25を正規化して検索対象の重みを線形結合する場合, 4引数目をfalse
-            frac = fraction(d, u, v, False)
             likelifood = 0.0
             
             bm25_sum = 0.0
             
             # TODO: bm25の正規化(文書全体)する時
-            # bm25_all_value = bm25_in_a_doc(doc_tf_freq_vsm, avg_length)
             bm25_all_value = bm25_in_a_doc_using_idf(doc_tf_freq_vsm, doc_idf, avg_length)
 
             # query word loop
             for word in query_text.words():
-            # for word in list(set(query_text.words())):
-            
                 if (in_stopword(word)):
                     continue
+                bm25_sum += bm25(word, tf_freq_doc, doc_idf, d, avg_length)
 
-                # smooth for query
-                # TODO: クエリ尤度のみを利用する時
-                # doc = d * frac * tf_doc.get(word, not_word_val)
-                # TODO: bm25を利用する時
-                # doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
-                # doc = (1-u) * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
-                # TODO: bm25の正規化する時
-                # doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length) / bm25_in_doc.get(word, 1.0)
-                # TODO: bm25を正規化する時, 検索対象の重みを線形結合する場合
-                # doc = (1-u) * frac * bm25(word, tf_doc, doc_idf, d, avg_length) / bm25_in_doc.get(word, 1.0)
-                # TODO: bm25の正規化(文書全体)する時
-                if (bm25_all_value != 0.0):
-                    # bm25_doc = a * frac * bm25_not_idf(word, tf_freq_doc, d, avg_length) / bm25_all_value
-                    bm25_doc = a * frac * bm25(word, tf_freq_doc, doc_idf, d, avg_length) / bm25_all_value
-                else:
-                    bm25_doc = 0.0
-
-                # TODO: 追加
-                query_likelifood_doc = (1-u-a) * frac * tf_doc.get(word, not_word_val)
-
-                # doc = a * frac * bm25(word, tf_freq_doc, doc_idf, d, avg_length)
-                # bm25_sum += bm25(word, tf_freq_doc, doc_idf, d, avg_length)
-
-                # smooth for doc
-                corpus = u * frac * tf_corpus.get(word, not_word_val)
-                # smooth for web doc
-                web = v * frac * tf_web.get(word, not_word_val)
-            
-                # print "\n"
-                # print "corpus: " + word.encode('utf8') + " : " + str(corpus)
-                # print "web: " + word.encode('utf8') + " : " + str(web)
-
-                likelifood += log(query_likelifood_doc + bm25_doc + corpus + web)
-
-                # TODO: 線形結合
-                # likelifood += alpha*bm25(word, tf_doc, doc_idf, d, avg_length) + (1-alpha)*log(doc + corpus + web)
-                
-                # print "bm25\n"
-                # ht.pp(sorted(t1_hs.items(), key=lambda x:x[1]))
-                # print "query 尤度\n"
-                # ht.pp(sorted(t2_hs.items(), key=lambda x:x[1]))
-
-            query_result.append((doc_text, likelifood))
-            # query_result.append((doc_text, bm25_sum))
+            query_result.append((doc_text, bm25_sum))
 
         result.append(query_result)
 
