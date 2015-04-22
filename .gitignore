@@ -11,13 +11,13 @@ tmp/
 inspector/need/
 
 # ランキングの結果の中間ファイル
-./NTCIR11/evaluation/result.txt
+NTCIR11/evaluation/result.txt
 
 # mapの結果の中間ファイル
-./NTCIR11/evaluation/map_result.txt
+NTCIR11/evaluation/map_result.txt
 
 # 可視化ツールの結果の中間ファイル
-./inspector/need/result.txt
+inspector/need/result.txt
 
 # web_query_likelihood
-./workspace/web_query_likelihood/backup/
+workspace/web_query_likelihood/backup/
