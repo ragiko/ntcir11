@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os, sys
+from os.path import basename
 import hymlab.text as ht
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../helper')
@@ -56,6 +57,30 @@ def web_tf_cache_load(web_path, output_path):
     else :
         web_tf_list = ht.pickle_load(output_path)
     return web_tf_list
+
+
+def web_slide_tf_cache_load(web_path, output_path):
+    """
+    web文書のtfを取得する
+    キャッシュロード
+    :param doc_path:
+    :param output_path:
+    :return:
+    """
+    # web文書の読み込み
+    if (os.path.exists(output_path) == False):
+        web_tf_dict = {}
+        for web_dir in ht.dir_list(web_path):
+            web_str = ht.dir_read_join(web_dir, join_str=u"。")
+            web_str = web_str_normalize(web_str)
+            web_tc = ht.TextCollection([web_str])
+            # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
+            web_tf_dict[slide_path_format(web_dir)] = ht.TfIdf(web_tc).tf()[0]
+        ht.pickle_save(web_tf_dict, output_path)
+    else :
+        web_tf_dict = ht.pickle_load(output_path)
+    return web_tf_dict
+
 
 def in_stopword(char):
     """
@@ -206,6 +231,23 @@ def fraction(d, u, v, defalt=True):
     else:
         return 1.0 / float((1-u) + u + v)
 
+def slide_path_format(path):
+    '''
+    スライドの絶対パスからディレクトリ名だけ取得
+    :param path: 
+    :return: str
+    '''
+    path = basename(path)
+    m = re.search('^(\d+-\d+_\d+).*$', path)
+    if m:
+        return m.group(1)
+    else:
+        return ""
+
+def sim_bitween_web_and_docs(web_vsm, doc_vsm_list):
+    pass
+
+
 if __name__ == '__main__':
     """
     main program
@@ -221,7 +263,8 @@ if __name__ == '__main__':
     # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
     
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
-    WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-text100"
+    WEB_PATH = conf.PROJECT_PATH + "/data/slide-check/data"
+    # WEB_PATH = "/Volumes/HD-PEU3/slide-check100"
 
     # キャッシュ用パス
     # TODO: データをキャッシュしているので、不要なときは消す
@@ -230,7 +273,7 @@ if __name__ == '__main__':
     DOC_TF_FREQ_PATH = conf.TMP_PATH + "/doc_tf_freq"
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
-    WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
+    WEB_TF_PATH = conf.TMP_PATH + "/web_tf_tmp"
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
@@ -250,8 +293,8 @@ if __name__ == '__main__':
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
-    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
-    
+    web_tf_list = web_slide_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+
     # params
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
@@ -261,7 +304,7 @@ if __name__ == '__main__':
     
     # 平均文書長 (hara: 47くらいか?) 121.046669042
     avg_length = 47.0
-
+    
     result = []
     # query loop
     for i, q_tf_vsm in enumerate(q_tf_list):
@@ -269,28 +312,35 @@ if __name__ == '__main__':
         query_tf = q_tf_vsm.vec
         query_result = []
 
-        # queryに関係するwebのtfを計算
-        tf_web = web_tf_list[i].vec
+        print "query %s", i
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
+            
+
+            
+            
             doc_text = doc_tf_vsm.text
+            doc_path = slide_path_format(doc_tf_vsm.text.path)
+
             tf_doc = doc_tf_vsm.vec
             tf_freq_doc = doc_tf_freq_vsm.vec
+            
             d = len(doc_text.words())
             frac = fraction(d, u, v)
             likelifood = 0.0
             
-            bm25_sum = 0.0
-            
-            # TODO: bm25の正規化(文書全体)する時
-            # bm25_all_value = bm25_in_a_doc(doc_tf_freq_vsm, avg_length)
-            bm25_all_value = bm25_in_a_doc_using_idf(doc_tf_freq_vsm, doc_idf, avg_length)
+            tf_web = {}
+            try:
+                # スライドに関係するwebのtfを計算
+                tf_web = web_tf_list[doc_path].vec
+            except:
+                ht.pp(doc_path)
+                pass
 
             # query word loop
             for word in query_text.words():
-            # for word in list(set(query_text.words())):
-            
+
                 if (in_stopword(word)):
                     continue
 
