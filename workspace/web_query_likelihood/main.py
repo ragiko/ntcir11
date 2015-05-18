@@ -91,7 +91,9 @@ def web_slide_tf_load(web_output_path):
     :param web_output_path: スライドの解析データが保存されいる先
     :return:
     '''
-    return ht.pickle_load(web_output_path)
+    
+    vsm = ht.pickle_load(web_output_path)
+    return vsm
 
 def web_all_slide_tf_load(web_dir):
     '''
@@ -115,6 +117,24 @@ def in_stopword(char):
     a = [u"の", u"ん", u"こと", u"よう", u"もの", u"さ", u"どれ", u"とこ", u"なん", u"それ", u"ふう", u"ほう", u"とき", u"そこ"]
     f = char in a
     return(f)
+
+def in_stopword_using_re(char):
+    '''
+    ストップワードを正規表現で設定
+    
+    :param path:
+    :return: str
+    '''
+
+    # 半角全角記号のみ
+    a = re.search('[!-/:-@[-`{-~、-◯]', char)
+    # 数字が1文字または2文字
+    b = re.search('\d{1,2}', char)
+    if a or b:
+        return True
+    else:
+        return False
+
 
 def bm25_not_idf(q_word, doc_tf, doc_length, avg_length, k=2.0, b=0.75):
     '''
@@ -278,7 +298,6 @@ def sim_bitween_web_and_docs(web_vsm, doc_vsm_list):
         sum += sim_doc.similarity
     return (sum/len(doc_vsm_list))
 
-
 if __name__ == '__main__':
     """
     main program
@@ -306,16 +325,13 @@ if __name__ == '__main__':
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
     WEB_TF_PATH = conf.TMP_PATH + "/web_slide"
 
-    # 検索文書を読み込み
+    # 検索文書, TF-IDFを読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
-    
     doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH)
-    # TODO: BM25を利用するときは, 非正規化(False)にする
     doc_tf_freq = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_FREQ_PATH, False)
-
     doc_idf = helper.doc_idf_cache_load(DOC_PATH, DOC_IDF_PATH)
     
-    # コーパスのtfを読み込み
+    # コーパスのTFを読み込み
     texts_str = doc_tc.merge_texts()
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
@@ -326,7 +342,7 @@ if __name__ == '__main__':
     # webのtfの文書を読み込み
     web_slide_tf_dump(WEB_PATH, WEB_TF_PATH)
     web_all_slide_tf = web_all_slide_tf_load(WEB_TF_PATH)
-    
+
     print "########################################\n"
     print "# web slide loaded %s\n"
     print "########################################\n"
@@ -334,15 +350,15 @@ if __name__ == '__main__':
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
     u = 920 # ドキュメントコレクションの重み 920
-    v = 0.0 # web文書用パラメータ
+    v = 1.0 # web文書用パラメータ (10)
 
     result = []
     # query loop
     for i, q_tf_vsm in enumerate(q_tf_list):
 
-        print "########################################\n"
-        print "# query %s\n", i
-        print "########################################\n"
+        print "########################################"
+        print "# query ", i
+        print "########################################"
         
         query_text = q_tf_vsm.text
         query_tf = q_tf_vsm.vec
@@ -353,7 +369,6 @@ if __name__ == '__main__':
 
             doc_text = doc_tf_vsm.text
             # slide文書のロード先
-            #A doc_path = WEB_TF_PATH + "/" + slide_path_format(doc_tf_vsm.text.path)
             doc_path = slide_path_format(doc_tf_vsm.text.path)
 
             tf_doc = doc_tf_vsm.vec
@@ -365,23 +380,20 @@ if __name__ == '__main__':
             
             try:
                 # スライドに関係するwebのtfを計算
-                # TODO: ちゃんとロードできているか確認
-                #A tf_web = web_slide_tf_load(doc_path).vec
-                #A tf_web_vsm = web_slide_tf_load(doc_path)
                 tf_web = web_all_slide_tf[doc_path].vec
-                # tf_web_vsm = web_slide_tf_load(doc_path)
-                ht.pp(doc_path)
+                # tf_web_vsm = web_all_slide_tf[doc_path]
             except:
                 print "### ERROR ###"
+                tf_web = {}
                 ht.pp(doc_path)
 
-            # 類似度計算 (use later)
+            # 類似度計算 (too heavy)
             # ht.pp(sim_bitween_web_and_docs(tf_web_vsm, doc_tf))
 
             # query word loop
             for word in query_text.words():
 
-                if (in_stopword(word)):
+                if (in_stopword(word) or in_stopword_using_re(word)):
                     continue
 
                 # smooth for query
@@ -390,6 +402,8 @@ if __name__ == '__main__':
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
                 # smooth for web doc
                 web = v * frac * tf_web.get(word, not_word_val)
+                
+                print u"##" + word.encode('utf-8') + u": " + str(tf_corpus.get(word, not_word_val))
             
                 likelifood += log(doc + corpus + web)
 
@@ -397,9 +411,14 @@ if __name__ == '__main__':
         result.append(query_result)
 
     helper.output_result(result, conf.RESULT_PATH)
-    print "########################################\n"
+    print "########################################"
     print "# 出力完了 " + conf.RESULT_PATH
-    print "########################################\n"
+    print "########################################"
+    
+    
+    # res = web_all_slide_tf['07-01_000'].vec
+    # for k, v in sorted(res.items(), key=lambda x:x[1]):
+    # print k, v
 
     """
     test case
