@@ -245,7 +245,15 @@ def slide_path_format(path):
         return ""
 
 def sim_bitween_web_and_docs(web_vsm, doc_vsm_list):
-    pass
+    sim = ht.Similarity(doc_vsm_list)
+    sim_all_doc = sim.most_similarity_by_feature(web_vsm)
+    
+    sum = 0.0
+    for sim_doc in sim_all_doc:
+        if sim_doc.similarity is None:
+            continue
+        sum += sim_doc.similarity
+    return (sum/len(doc_vsm_list))
 
 
 if __name__ == '__main__':
@@ -316,10 +324,7 @@ if __name__ == '__main__':
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
-            
 
-            
-            
             doc_text = doc_tf_vsm.text
             doc_path = slide_path_format(doc_tf_vsm.text.path)
 
@@ -334,9 +339,13 @@ if __name__ == '__main__':
             try:
                 # スライドに関係するwebのtfを計算
                 tf_web = web_tf_list[doc_path].vec
+                tf_web_vsm = web_tf_list[doc_path]
             except:
                 ht.pp(doc_path)
                 pass
+
+            # 類似度計算
+            ht.pp(sim_bitween_web_and_docs(tf_web_vsm, doc_tf))
 
             # query word loop
             for word in query_text.words():
