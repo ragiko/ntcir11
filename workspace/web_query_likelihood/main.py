@@ -54,12 +54,11 @@ def web_tf_cache_load(web_path, output_path):
             # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
             web_tf_list.append(ht.TfIdf(web_tc).tf()[0])
         ht.pickle_save(web_tf_list, output_path)
-    else :
+    else:
         web_tf_list = ht.pickle_load(output_path)
     return web_tf_list
 
-
-def web_slide_tf_cache_load(web_path, output_path):
+def web_slide_tf_dump(web_path, output_path):
     """
     web文書のtfを取得する
     キャッシュロード
@@ -67,20 +66,45 @@ def web_slide_tf_cache_load(web_path, output_path):
     :param output_path:
     :return:
     """
-    # web文書の読み込み
-    if (os.path.exists(output_path) == False):
-        web_tf_dict = {}
+    # dump
+    i = 0
+    paths = os.listdir(output_path)
+    if (len(paths) == 0):
         for web_dir in ht.dir_list(web_path):
             web_str = ht.dir_read_join(web_dir, join_str=u"。")
             web_str = web_str_normalize(web_str)
             web_tc = ht.TextCollection([web_str])
-            # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
-            web_tf_dict[slide_path_format(web_dir)] = ht.TfIdf(web_tc).tf()[0]
-        ht.pickle_save(web_tf_dict, output_path)
-    else :
-        web_tf_dict = ht.pickle_load(output_path)
-    return web_tf_dict
 
+            path = output_path + "/" + slide_path_format(web_dir)
+            # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
+            slide_tf = ht.TfIdf(web_tc).tf()[0]
+            ht.pickle_save(slide_tf, path)
+            
+            i += 1
+            ht.pp(i)
+    return
+
+def web_slide_tf_load(web_output_path):
+    '''
+    slideのデータを1スライド単位で取得
+
+    :param web_output_path: スライドの解析データが保存されいる先
+    :return:
+    '''
+    return ht.pickle_load(web_output_path)
+
+def web_all_slide_tf_load(web_dir):
+    '''
+    slideのデータを全てのスライド単位で取得
+
+    :param web_output_path: スライドの解析データが保存されいるディレクトリ
+    :return:
+    '''
+    
+    h = {}
+    for web_path in os.listdir(web_dir):
+        h[slide_path_format(web_path)] = ht.pickle_load(web_dir+"/"+web_path)
+    return h
 
 def in_stopword(char):
     """
@@ -216,7 +240,6 @@ def bm25_in_a_doc_using_idf(doc_vsm, idf, avg_length, k=2.0, b=0.75):
         sum += bm25(word, tf, idf, doc_length, avg_length, k, b)
     return sum
 
-
 def fraction(d, u, v, defalt=True):
     '''
     文書の重みを利用するかどうかを決定
@@ -271,7 +294,7 @@ if __name__ == '__main__':
     # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
     
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
-    WEB_PATH = conf.PROJECT_PATH + "/data/slide-check/data"
+    WEB_PATH = conf.PROJECT_PATH + "/data/slide-check30"
     # WEB_PATH = "/Volumes/HD-PEU3/slide-check100"
 
     # キャッシュ用パス
@@ -281,7 +304,7 @@ if __name__ == '__main__':
     DOC_TF_FREQ_PATH = conf.TMP_PATH + "/doc_tf_freq"
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
-    WEB_TF_PATH = conf.TMP_PATH + "/web_tf_tmp"
+    WEB_TF_PATH = conf.TMP_PATH + "/web_slide"
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
@@ -301,51 +324,59 @@ if __name__ == '__main__':
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
-    web_tf_list = web_slide_tf_cache_load(WEB_PATH, WEB_TF_PATH)
-
-    # params
+    web_slide_tf_dump(WEB_PATH, WEB_TF_PATH)
+    web_all_slide_tf = web_all_slide_tf_load(WEB_TF_PATH)
+    
+    print "########################################\n"
+    print "# web slide loaded %s\n"
+    print "########################################\n"
+    
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
-    
     u = 920 # ドキュメントコレクションの重み 920
-    v = 0.0 #10 # web文書用パラメータ
-    
-    # 平均文書長 (hara: 47くらいか?) 121.046669042
-    avg_length = 47.0
-    
+    v = 0.0 # web文書用パラメータ
+
     result = []
     # query loop
     for i, q_tf_vsm in enumerate(q_tf_list):
+
+        print "########################################\n"
+        print "# query %s\n", i
+        print "########################################\n"
+        
         query_text = q_tf_vsm.text
         query_tf = q_tf_vsm.vec
         query_result = []
-
-        print "query %s", i
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
 
             doc_text = doc_tf_vsm.text
+            # slide文書のロード先
+            #A doc_path = WEB_TF_PATH + "/" + slide_path_format(doc_tf_vsm.text.path)
             doc_path = slide_path_format(doc_tf_vsm.text.path)
 
             tf_doc = doc_tf_vsm.vec
             tf_freq_doc = doc_tf_freq_vsm.vec
             
             d = len(doc_text.words())
-            frac = fraction(d, u, v)
+            frac = 1.0 / float(d + u + v)
             likelifood = 0.0
             
-            tf_web = {}
             try:
                 # スライドに関係するwebのtfを計算
-                tf_web = web_tf_list[doc_path].vec
-                tf_web_vsm = web_tf_list[doc_path]
-            except:
+                # TODO: ちゃんとロードできているか確認
+                #A tf_web = web_slide_tf_load(doc_path).vec
+                #A tf_web_vsm = web_slide_tf_load(doc_path)
+                tf_web = web_all_slide_tf[doc_path].vec
+                # tf_web_vsm = web_slide_tf_load(doc_path)
                 ht.pp(doc_path)
-                pass
+            except:
+                print "### ERROR ###"
+                ht.pp(doc_path)
 
-            # 類似度計算
-            ht.pp(sim_bitween_web_and_docs(tf_web_vsm, doc_tf))
+            # 類似度計算 (use later)
+            # ht.pp(sim_bitween_web_and_docs(tf_web_vsm, doc_tf))
 
             # query word loop
             for word in query_text.words():
@@ -365,10 +396,11 @@ if __name__ == '__main__':
             query_result.append((doc_text, likelifood))
         result.append(query_result)
 
-    # 結果を出力
-    print conf.RESULT_PATH
     helper.output_result(result, conf.RESULT_PATH)
-    
+    print "########################################\n"
+    print "# 出力完了 " + conf.RESULT_PATH
+    print "########################################\n"
+
     """
     test case
     """
