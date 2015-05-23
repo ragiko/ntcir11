@@ -288,6 +288,13 @@ def slide_path_format(path):
         return ""
 
 def sim_bitween_web_and_docs(web_vsm, doc_vsm_list):
+    '''
+    web文書と検索文書全体の類似度
+    
+    :param web_vsm: 
+    :param doc_vsm_list: 
+    :return:
+    '''
     sim = ht.Similarity(doc_vsm_list)
     sim_all_doc = sim.most_similarity_by_feature(web_vsm)
     
@@ -296,7 +303,7 @@ def sim_bitween_web_and_docs(web_vsm, doc_vsm_list):
         if sim_doc.similarity is None:
             continue
         sum += sim_doc.similarity
-    return (sum/len(doc_vsm_list))
+    return (sum/len(sim_all_doc))
 
 if __name__ == '__main__':
     """
@@ -313,8 +320,13 @@ if __name__ == '__main__':
     # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
     
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
-    WEB_PATH = conf.PROJECT_PATH + "/data/slide-check30"
+    WEB_PATH = conf.PROJECT_PATH + "/data/slide-text100-extract"
     # WEB_PATH = "/Volumes/HD-PEU3/slide-check100"
+
+    # res = ht.pickle_load('/home/taguchi/ntcir11/workspace/web_query_likelihood/tmp/web_slide/07-01_004').vec
+    # for k, v in sorted(res.items(), key=lambda x:x[1]):
+    #     print k, v
+    # exit()
 
     # キャッシュ用パス
     # TODO: データをキャッシュしているので、不要なときは消す
@@ -324,6 +336,7 @@ if __name__ == '__main__':
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
     WEB_TF_PATH = conf.TMP_PATH + "/web_slide"
+    DOC_WEB_SIM_PATH = conf.TMP_PATH + "/doc_web_sim"
 
     # 検索文書, TF-IDFを読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
@@ -336,12 +349,40 @@ if __name__ == '__main__':
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
 
+
     # クエリを読み込み
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
     web_slide_tf_dump(WEB_PATH, WEB_TF_PATH)
     web_all_slide_tf = web_all_slide_tf_load(WEB_TF_PATH)
+
+
+
+    output_path = DOC_WEB_SIM_PATH
+
+    if (os.path.exists(output_path) == False):
+        # web文書と検索文書全体の類似度の計算
+        h = {}
+        
+        for i, doc_tf_vsm  in enumerate(doc_tf):
+            doc_path = slide_path_format(doc_tf_vsm.text.path)
+            try:
+                tf_web_vsm = web_all_slide_tf[doc_path]
+            except:
+                continue
+            h[doc_path] = sim_bitween_web_and_docs(tf_web_vsm, doc_tf)
+            
+
+            ht.pp(i)
+            ht.pp(doc_path)
+            ht.pp(h[doc_path])
+
+        ht.pickle_save(h, output_path)
+    else:
+        h = ht.pickle_load(output_path)
+    
+    exit()
 
     print "########################################\n"
     print "# web slide loaded %s\n"
@@ -350,7 +391,7 @@ if __name__ == '__main__':
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
     u = 920 # ドキュメントコレクションの重み 920
-    v = 1.0 # web文書用パラメータ (10)
+    v = 0.1 # web文書用パラメータ (10)
 
     result = []
     # query loop
@@ -381,6 +422,7 @@ if __name__ == '__main__':
             try:
                 # スライドに関係するwebのtfを計算
                 tf_web = web_all_slide_tf[doc_path].vec
+                ht.pp(doc_path)
                 # tf_web_vsm = web_all_slide_tf[doc_path]
             except:
                 print "### ERROR ###"
@@ -402,10 +444,9 @@ if __name__ == '__main__':
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
                 # smooth for web doc
                 web = v * frac * tf_web.get(word, not_word_val)
-                
-                print u"##" + word.encode('utf-8') + u": " + str(tf_corpus.get(word, not_word_val))
-            
+
                 likelifood += log(doc + corpus + web)
+                
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
