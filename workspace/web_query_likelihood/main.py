@@ -17,6 +17,12 @@ import re
 from collections import Counter
 from collections import defaultdict
 
+from os.path import basename
+
+import csv
+
+import os, errno
+
 def web_str_normalize(str):
     '''
     webのコンテンツの不必要な文字を削除
@@ -206,10 +212,35 @@ def fraction(d, u, v, defalt=True):
     else:
         return 1.0 / float((1-u) + u + v)
 
+
+def slide_path_format(path):
+    '''
+    スライドの絶対パスからディレクトリ名だけ取得
+    :param path:
+    :return: str
+    '''
+    path = basename(path)
+    m = re.search('^(\d+-\d+_\d+).*$', path)
+    if m:
+        return m.group(1)
+    else:
+        return ""
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+
+
 if __name__ == '__main__':
     """
     main program
     """
+
+
     # データの設定
     conf = config.Config("web_query_likelihood")
     QUERY_PATH = conf.WRITE_QUERY_PATH
@@ -257,10 +288,12 @@ if __name__ == '__main__':
     not_word_val = 1e-250 # 極小値
     
     u = 920 # ドキュメントコレクションの重み 920
-    v = 0.0 #10 # web文書用パラメータ
+    v = 5.0 #10 # web文書用パラメータ
     
     # 平均文書長 (hara: 47くらいか?) 121.046669042
     avg_length = 47.0
+    
+
 
     result = []
     # query loop
@@ -268,9 +301,15 @@ if __name__ == '__main__':
         query_text = q_tf_vsm.text
         query_tf = q_tf_vsm.vec
         query_result = []
-
+        
         # queryに関係するwebのtfを計算
         tf_web = web_tf_list[i].vec
+
+        # make directory
+        mkdir_p("csv/query-" + str(i+1))
+
+        # header flag
+        header_writed = False
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
@@ -280,17 +319,25 @@ if __name__ == '__main__':
             d = len(doc_text.words())
             frac = fraction(d, u, v)
             likelifood = 0.0
+
+            slide_path = slide_path_format(doc_tf_vsm.text.path)
+            fa = open("csv/query-" + str(i+1) + "/doc" + ".csv", 'a')
+            fb = open("csv/query-" + str(i+1) + "/corpus" + ".csv", 'a')
+            fc = open("csv/query-" + str(i+1) + "/web" + ".csv", 'a')
+
+            writera = csv.writer(fa, lineterminator='\n')
+            writerb = csv.writer(fb, lineterminator='\n')
+            writerc = csv.writer(fc, lineterminator='\n')
+
+            a = []
+            b = []
+            c = []
             
-            bm25_sum = 0.0
-            
-            # TODO: bm25の正規化(文書全体)する時
-            # bm25_all_value = bm25_in_a_doc(doc_tf_freq_vsm, avg_length)
-            bm25_all_value = bm25_in_a_doc_using_idf(doc_tf_freq_vsm, doc_idf, avg_length)
+            query_words_sorted = sorted(query_text.words())
 
             # query word loop
-            for word in query_text.words():
-            # for word in list(set(query_text.words())):
-            
+            for word in query_words_sorted:
+
                 if (in_stopword(word)):
                     continue
 
@@ -302,6 +349,22 @@ if __name__ == '__main__':
                 web = v * frac * tf_web.get(word, not_word_val)
             
                 likelifood += log(doc + corpus + web)
+
+                if (header_writed == False):
+                    ws = [w.encode("utf8") for w in query_words_sorted]
+                    writera.writerow(["slide number"] + ws)
+                    writerb.writerow(["slide number"] + ws)
+                    writerc.writerow(["slide number"] + ws)
+                    header_writed = True
+
+                a.append(tf_doc.get(word, not_word_val))
+                b.append(tf_corpus.get(word, not_word_val))
+                c.append(tf_web.get(word, not_word_val))
+
+            # TODO: header 書き込み
+            writera.writerow([slide_path_format(doc_tf_vsm.text.path)] + a)
+            writerb.writerow([slide_path_format(doc_tf_vsm.text.path)] + b)
+            writerc.writerow([slide_path_format(doc_tf_vsm.text.path)] + c)
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
