@@ -36,7 +36,7 @@ if __name__ == '__main__':
     
     # TODO: 講演の情報を利用したい時
     # DOC_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
-    # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
+    LECTURE_PATH = conf.WRITE_DOC_LECTURE_PATH
 
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
 
@@ -47,13 +47,18 @@ if __name__ == '__main__':
     DOC_TF_FREQ_PATH = conf.TMP_PATH + "/doc_tf_freq"
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
+    LECTURE_PATH = conf.TMP_PATH + "/lecture"
+    LECTURE_TF_PATH = conf.TMP_PATH + "/lecture_tf"
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
     doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH)
     doc_tf_freq = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_FREQ_PATH, False)
     doc_idf = helper.doc_idf_cache_load(DOC_PATH, DOC_IDF_PATH)
+    lecture_tf = helper.doc_tf_cache_load(LECTURE_PATH, LECTURE_TF_PATH)
     
+    dd(lecture_tf)
+
     # コーパスのtfを読み込み
     texts_str = doc_tc.merge_texts()
     corpus_doc_tc = ht.TextCollection([texts_str])
