@@ -104,16 +104,16 @@ if __name__ == '__main__':
             lecture_id = m.group(1)
             select_lecture_tf = select_tf_by_lecture_id(lecture_tf, lecture_id)
             
-            # s = ドキュメント  => 講演
-            # d = 部分ドキュメント => スライド
+            # s = スライド
+            # d = 講演
             
-            # p(s|d)
+            # p(s=スライド|d=講演)
             s_d_likelifood = 0.0
             for word in doc_text.words():
                doc = select_lecture_tf.vec.get(word, not_word_val)
                s_d_likelifood += log(doc)
 
-            # p(q|s)
+            # p(q=クエリ|s=スライド)
             q_s_likelifood = 0.0
             for word in query_text.words():
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
                 doc = tf_doc.get(word, not_word_val)
                 q_s_likelifood += log(doc)
 
-            # p(q|d)
+            # p(q=クエリ|d=講演)
             q_d_likelifood = 0.0
             for word in query_text.words():
 
