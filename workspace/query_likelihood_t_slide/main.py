@@ -75,10 +75,8 @@ if __name__ == '__main__':
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
     
-    u = 920 # ドキュメントコレクションの重み 920
-
-    # 平均文書長
-    avg_length = 47.0
+    # ドキュメントコレクションの重み
+    a = 0.5
 
     result = []
     # query loop
@@ -108,10 +106,8 @@ if __name__ == '__main__':
             # d = 講演
             
             # p(s=スライド|d=講演)
+            # 事前に分かっている (=1)
             s_d_likelifood = 0.0
-            for word in doc_text.words():
-               doc = select_lecture_tf.vec.get(word, not_word_val)
-               s_d_likelifood += log(doc)
 
             # p(q=クエリ|s=スライド)
             q_s_likelifood = 0.0
@@ -120,9 +116,9 @@ if __name__ == '__main__':
                 if (in_stopword(word)):
                     continue
                     
-                # smooth for query
-                doc = tf_doc.get(word, not_word_val)
-                q_s_likelifood += log(doc)
+                doc = (1-a) * tf_doc.get(word, not_word_val)
+                corpus = a * tf_corpus.get(word, not_word_val)
+                q_s_likelifood += log(doc + corpus)
 
             # p(q=クエリ|d=講演)
             q_d_likelifood = 0.0
@@ -131,10 +127,11 @@ if __name__ == '__main__':
                 if (in_stopword(word)):
                     continue
 
-                doc = select_lecture_tf.vec.get(word, not_word_val)
-                q_d_likelifood += log(doc)
+                doc = (1-a) * select_lecture_tf.vec.get(word, not_word_val)
+                corpus = a * tf_corpus.get(word, not_word_val)
+                q_d_likelifood += log(doc + corpus)
             
-            likelifood = s_d_likelifood + q_s_likelifood + q_d_likelifood
+            likelifood = q_s_likelifood + q_d_likelifood
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
