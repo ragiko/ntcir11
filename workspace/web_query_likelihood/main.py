@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os, sys
+from os.path import basename
 import hymlab.text as ht
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../helper')
@@ -53,9 +54,59 @@ def web_tf_cache_load(web_path, output_path):
             # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
             web_tf_list.append(ht.TfIdf(web_tc).tf()[0])
         ht.pickle_save(web_tf_list, output_path)
-    else :
+    else:
         web_tf_list = ht.pickle_load(output_path)
     return web_tf_list
+
+def web_slide_tf_dump(web_path, output_path):
+    """
+    web文書のtfを取得する
+    キャッシュロード
+    :param doc_path:
+    :param output_path:
+    :return:
+    """
+    # dump
+    i = 0
+    paths = os.listdir(output_path)
+    if (len(paths) == 0):
+        for web_dir in ht.dir_list(web_path):
+            web_str = ht.dir_read_join(web_dir, join_str=u"。")
+            web_str = web_str_normalize(web_str)
+            web_tc = ht.TextCollection([web_str])
+
+            path = output_path + "/" + slide_path_format(web_dir)
+            # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
+            slide_tf = ht.TfIdf(web_tc).tf()[0]
+            ht.pickle_save(slide_tf, path)
+            
+            i += 1
+            ht.pp(i)
+    return
+
+def web_slide_tf_load(web_output_path):
+    '''
+    slideのデータを1スライド単位で取得
+
+    :param web_output_path: スライドの解析データが保存されいる先
+    :return:
+    '''
+    
+    vsm = ht.pickle_load(web_output_path)
+    return vsm
+
+def web_all_slide_tf_load(web_dir):
+    '''
+    slideのデータを全てのスライド単位で取得
+
+    :param web_output_path: スライドの解析データが保存されいるディレクトリ
+    :return:
+    '''
+    
+    h = {}
+    for web_path in os.listdir(web_dir):
+        h[slide_path_format(web_path)] = ht.pickle_load(web_dir+"/"+web_path)
+    return h
 
 def in_stopword(char):
     """
@@ -66,6 +117,24 @@ def in_stopword(char):
     a = [u"の", u"ん", u"こと", u"よう", u"もの", u"さ", u"どれ", u"とこ", u"なん", u"それ", u"ふう", u"ほう", u"とき", u"そこ"]
     f = char in a
     return(f)
+
+def in_stopword_using_re(char):
+    '''
+    ストップワードを正規表現で設定
+    
+    :param path:
+    :return: str
+    '''
+
+    # 半角全角記号のみ
+    a = re.search('[!-/:-@[-`{-~、-◯]', char)
+    # 数字が1文字または2文字
+    b = re.search('\d{1,2}', char)
+    if a or b:
+        return True
+    else:
+        return False
+
 
 def bm25_not_idf(q_word, doc_tf, doc_length, avg_length, k=2.0, b=0.75):
     '''
@@ -191,7 +260,6 @@ def bm25_in_a_doc_using_idf(doc_vsm, idf, avg_length, k=2.0, b=0.75):
         sum += bm25(word, tf, idf, doc_length, avg_length, k, b)
     return sum
 
-
 def fraction(d, u, v, defalt=True):
     '''
     文書の重みを利用するかどうかを決定
@@ -205,6 +273,37 @@ def fraction(d, u, v, defalt=True):
         return 1.0 / float(d + u + v)
     else:
         return 1.0 / float((1-u) + u + v)
+
+def slide_path_format(path):
+    '''
+    スライドの絶対パスからディレクトリ名だけ取得
+    :param path: 
+    :return: str
+    '''
+    path = basename(path)
+    m = re.search('^(\d+-\d+_\d+).*$', path)
+    if m:
+        return m.group(1)
+    else:
+        return ""
+
+def sim_bitween_web_and_docs(web_vsm, doc_vsm_list):
+    '''
+    web文書と検索文書全体の類似度
+    
+    :param web_vsm: 
+    :param doc_vsm_list: 
+    :return:
+    '''
+    sim = ht.Similarity(doc_vsm_list)
+    sim_all_doc = sim.most_similarity_by_feature(web_vsm)
+    
+    sum = 0.0
+    for sim_doc in sim_all_doc:
+        if sim_doc.similarity is None:
+            continue
+        sum += sim_doc.similarity
+    return (sum/len(sim_all_doc))
 
 if __name__ == '__main__':
     """
@@ -221,7 +320,13 @@ if __name__ == '__main__':
     # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
     
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
-    WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-text100"
+    WEB_PATH = conf.PROJECT_PATH + "/data/slide-text100-extract"
+    # WEB_PATH = "/Volumes/HD-PEU3/slide-check100"
+
+    # res = ht.pickle_load('/home/taguchi/ntcir11/workspace/web_query_likelihood/tmp/web_slide/07-01_004').vec
+    # for k, v in sorted(res.items(), key=lambda x:x[1]):
+    #     print k, v
+    # exit()
 
     # キャッシュ用パス
     # TODO: データをキャッシュしているので、不要なときは消す
@@ -230,130 +335,132 @@ if __name__ == '__main__':
     DOC_TF_FREQ_PATH = conf.TMP_PATH + "/doc_tf_freq"
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
-    WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
+    WEB_TF_PATH = conf.TMP_PATH + "/web_slide"
+    DOC_WEB_SIM_PATH = conf.TMP_PATH + "/doc_web_sim"
 
-    # 検索文書を読み込み
+    # 検索文書, TF-IDFを読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
-    
     doc_tf = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_PATH)
-    # TODO: BM25を利用するときは, 非正規化(False)にする
     doc_tf_freq = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_FREQ_PATH, False)
-
     doc_idf = helper.doc_idf_cache_load(DOC_PATH, DOC_IDF_PATH)
     
-    # コーパスのtfを読み込み
+    # コーパスのTFを読み込み
     texts_str = doc_tc.merge_texts()
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
+
 
     # クエリを読み込み
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
-    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+    web_slide_tf_dump(WEB_PATH, WEB_TF_PATH)
+    web_all_slide_tf = web_all_slide_tf_load(WEB_TF_PATH)
+
+
+
+    output_path = DOC_WEB_SIM_PATH
+
+    if (os.path.exists(output_path) == False):
+        # web文書と検索文書全体の類似度の計算
+        h = {}
+        
+        for i, doc_tf_vsm  in enumerate(doc_tf):
+            doc_path = slide_path_format(doc_tf_vsm.text.path)
+            try:
+                tf_web_vsm = web_all_slide_tf[doc_path]
+            except:
+                continue
+            h[doc_path] = sim_bitween_web_and_docs(tf_web_vsm, doc_tf)
+            
+
+            ht.pp(i)
+            ht.pp(doc_path)
+            ht.pp(h[doc_path])
+
+        ht.pickle_save(h, output_path)
+    else:
+        h = ht.pickle_load(output_path)
     
-    # params
+    exit()
+
+    print "########################################\n"
+    print "# web slide loaded %s\n"
+    print "########################################\n"
+    
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
-    
-    # TODO: bm25を正規化して検索対象の重みを線形結合する場合, uを1以下
-    a = 0.3 # bm25の重み
-    u = 0.7 # ドキュメントコレクションの重み 920
-    v = 0.0 #10 # web文書用パラメータ
-    
-    # 平均文書長 (hara: 47くらいか?) 121.046669042
-    avg_length = 47.0 # 121.04 # 47.0
-    
-    # TODO: 線形結合
-    # alpha = 0.05
-
-    # TODO: bm25の正規化する時
-    # bm25_in_doc = bm25_in_doc(doc_tf, doc_idf, avg_length)
+    u = 920 # ドキュメントコレクションの重み 920
+    v = 0.1 # web文書用パラメータ (10)
 
     result = []
     # query loop
     for i, q_tf_vsm in enumerate(q_tf_list):
+
+        print "########################################"
+        print "# query ", i
+        print "########################################"
+        
         query_text = q_tf_vsm.text
         query_tf = q_tf_vsm.vec
         query_result = []
 
-        # queryに関係するwebのtfを計算
-        tf_web = web_tf_list[i].vec
-
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
+
             doc_text = doc_tf_vsm.text
+            # slide文書のロード先
+            doc_path = slide_path_format(doc_tf_vsm.text.path)
+
             tf_doc = doc_tf_vsm.vec
             tf_freq_doc = doc_tf_freq_vsm.vec
+            
             d = len(doc_text.words())
-            # TODO: bm25を正規化して検索対象の重みを線形結合する場合, 4引数目をfalse
-            frac = fraction(d, u, v, False)
+            frac = 1.0 / float(d + u + v)
             likelifood = 0.0
             
-            bm25_sum = 0.0
-            
-            # TODO: bm25の正規化(文書全体)する時
-            # bm25_all_value = bm25_in_a_doc(doc_tf_freq_vsm, avg_length)
-            bm25_all_value = bm25_in_a_doc_using_idf(doc_tf_freq_vsm, doc_idf, avg_length)
+            try:
+                # スライドに関係するwebのtfを計算
+                tf_web = web_all_slide_tf[doc_path].vec
+                ht.pp(doc_path)
+                # tf_web_vsm = web_all_slide_tf[doc_path]
+            except:
+                print "### ERROR ###"
+                tf_web = {}
+                ht.pp(doc_path)
+
+            # 類似度計算 (too heavy)
+            # ht.pp(sim_bitween_web_and_docs(tf_web_vsm, doc_tf))
 
             # query word loop
             for word in query_text.words():
-            # for word in list(set(query_text.words())):
-            
-                if (in_stopword(word)):
+
+                if (in_stopword(word) or in_stopword_using_re(word)):
                     continue
 
                 # smooth for query
-                # TODO: クエリ尤度のみを利用する時
-                # doc = d * frac * tf_doc.get(word, not_word_val)
-                # TODO: bm25を利用する時
-                # doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
-                # doc = (1-u) * frac * bm25(word, tf_doc, doc_idf, d, avg_length)
-                # TODO: bm25の正規化する時
-                # doc = d * frac * bm25(word, tf_doc, doc_idf, d, avg_length) / bm25_in_doc.get(word, 1.0)
-                # TODO: bm25を正規化する時, 検索対象の重みを線形結合する場合
-                # doc = (1-u) * frac * bm25(word, tf_doc, doc_idf, d, avg_length) / bm25_in_doc.get(word, 1.0)
-                # TODO: bm25の正規化(文書全体)する時
-                if (bm25_all_value != 0.0):
-                    # bm25_doc = a * frac * bm25_not_idf(word, tf_freq_doc, d, avg_length) / bm25_all_value
-                    bm25_doc = a * frac * bm25(word, tf_freq_doc, doc_idf, d, avg_length) / bm25_all_value
-                else:
-                    bm25_doc = 0.0
-
-                # TODO: 追加
-                query_likelifood_doc = (1-u-a) * frac * tf_doc.get(word, not_word_val)
-
-                # doc = a * frac * bm25(word, tf_freq_doc, doc_idf, d, avg_length)
-                # bm25_sum += bm25(word, tf_freq_doc, doc_idf, d, avg_length)
-
+                doc = d * frac * tf_doc.get(word, not_word_val)
                 # smooth for doc
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
                 # smooth for web doc
                 web = v * frac * tf_web.get(word, not_word_val)
-            
-                # print "\n"
-                # print "corpus: " + word.encode('utf8') + " : " + str(corpus)
-                # print "web: " + word.encode('utf8') + " : " + str(web)
 
-                likelifood += log(query_likelifood_doc + bm25_doc + corpus + web)
-
-                # TODO: 線形結合
-                # likelifood += alpha*bm25(word, tf_doc, doc_idf, d, avg_length) + (1-alpha)*log(doc + corpus + web)
+                likelifood += log(doc + corpus + web)
                 
-                # print "bm25\n"
-                # ht.pp(sorted(t1_hs.items(), key=lambda x:x[1]))
-                # print "query 尤度\n"
-                # ht.pp(sorted(t2_hs.items(), key=lambda x:x[1]))
 
             query_result.append((doc_text, likelifood))
-            # query_result.append((doc_text, bm25_sum))
-
         result.append(query_result)
 
-    # 結果を出力
-    print conf.RESULT_PATH
     helper.output_result(result, conf.RESULT_PATH)
+    print "########################################"
+    print "# 出力完了 " + conf.RESULT_PATH
+    print "########################################"
     
+    
+    # res = web_all_slide_tf['07-01_000'].vec
+    # for k, v in sorted(res.items(), key=lambda x:x[1]):
+    # print k, v
+
     """
     test case
     """
