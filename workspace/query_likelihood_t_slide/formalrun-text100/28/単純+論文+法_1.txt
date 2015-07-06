@@ -1,0 +1,3 @@
+書換え帰納法は,与えられた等式が帰納的定理であるかどうかを推論規則を用いた導出により判定する原理であり,項書換え系上で提案され様々な拡張がなされてきた.本論文では、書換え帰納法を単純型付き項書換え系上へ拡張することにより,高階関数を含む等式に対しての書換え帰納法による帰納的定理の自動証明法を実現する.また,書換え帰納法の推論規則が満たすべき性質を定式化し,この定式化に基づいて各推論規則を適切に設計する.
+Rewriting induction is a principle of proving inductive theorems by means of derivations obtained by applying inference rules. The principle was first proposed on term rewriting systems, and was extended variously. In this paper, we extend the rewriting induction to simply-typed term rewriting systems, implementing an automated inductive theorem proving for higher-order equations. In order to design inference rules suitably, we also formulize properties which inference rules should satisfy.
+

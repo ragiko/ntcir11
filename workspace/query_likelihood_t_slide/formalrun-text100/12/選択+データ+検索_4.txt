@@ -1,0 +1,22 @@
+
+前回までにテーブルに一定のデータを追加しましたので、今回はそのデータを検索するクエリ文を以下の場合に分けて練習してみます。
+SELECT文の基本形 – WHERE句
+比較文字列内にワイルドカードを指定 – LIKEキーワード、「%」、「_」記号
+比較範囲の指定 – BETWEENキーワード
+複数のOR結合をIN句でまとめる
+NOTキーワードで条件の反転
+NULLフィールドの検索 – IS NULL、IS NOT NULL
+まず、扱うテーブル内のレコードの一覧を下記に示します。
+mysql> SELECT * FROM book_list;
++---------+--------+--------+-------+-----------------------+
+| book_id | title  | author | price | comments              |
++---------+--------+--------+-------+-----------------------+
+|       1 | book_A | auth_A |  1500 | good, bad, excellence |
+|       2 | book_B | auth_B |  2900 | not bad, good         |
+|       3 | book_C | auth_C |  1800 | interesting, amazing  |
+|       4 | book_D | auth_D |   700 | sad, depress          |
+|       5 | book_E | auth_E |  1200 | good, funny           |
+|       6 | book_F | auth_C |  3500 | bored, difficult      |
+|       7 | book_G | auth_A |   400 | very good!, excellent |
++---------+--------+--------+-------+-----------------------+
+MySQL: データ検索クエリの基本 – SELECT文、WHERE句、LIKE、IN、BETWEENキーワード

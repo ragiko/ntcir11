@@ -1,0 +1,50 @@
+2枚の画像から抽出した特徴点を対応付ける。特徴点の抽出方法はOpenCVを使った特徴点抽出を参照。
+対応付けを行うためにはcv::DescriptorMatcherクラスを用いる。
+最初にcv::DescriptorMatcher::createでオブジェクトを生成する。この時、マッチングの方法を指定することが出来る。下記のコードではBruteForceを指定して全探索によって対応点を見つけている。
+使い方は、DescriptorMatcher::matchを呼び出し、2枚の画像から抽出した特徴量と対応付け結果を格納するためのDMatch配列を引数として渡すだけ。
+ただし、一方向のみの探索では、対応付け対象の特徴点が複数の特徴点と対応づく可能性がある。誤対応を減らすためには、Discriminabilityのチェックや下記のコードのおまけにあるようなクロスチェックを行う必要がある。
+#include <vector>
+#include <opencv2/opencv.hpp>
+#include <opencv2/nonfree.hpp>
+int main(int argc, char** argv)
+{
+cv::initModule_nonfree(); //モジュールの初期化
+cv::Ptr<cv::FeatureDetector> detector = cv::FeatureDetector::create( "ORB" ); //検出器
+cv::Ptr<cv::DescriptorExtractor> descriptorExtractor = cv::DescriptorExtractor::create( "FREAK" ); //特徴量
+cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce"); //対応点探索方法の設定
+cv::Mat img1 = cv::imread("image1.jpg"); //入力画像1
+cv::Mat img2 = cv::imread("image2.jpg"); //入力画像2
+std::vector<cv::KeyPoint> keypoints1, keypoints2;
+cv::Mat descriptor1, descriptor2;
+detector->detect(img1, keypoints1);
+descriptorExtractor->compute(img1, keypoints1, descriptor1);
+detector->detect(img2, keypoints2);
+descriptorExtractor->compute(img2, keypoints2, descriptor2);
+std::vector<cv::DMatch> dmatch;
+matcher->match(descriptor1,descriptor2, dmatch); //マッチング
+cv::Mat output; //マッチング結果描画用
+cv::drawMatches(img1, keypoints1, img2, keypoints2, dmatch, output);
+cv::namedWindow("Result1");
+cv::imshow("Result1", output);
+//おまけ（クロスチェック）
+dmatch.clear();
+std::vector<cv::DMatch> dmatch12, dmatch21;
+matcher->match(descriptor1, descriptor2, dmatch12); //img1 -> img2
+matcher->match(descriptor2, descriptor1, dmatch21); //img2 -> img1
+for (size_t i = 0; i < dmatch12.size(); ++i)
+{
+//img1 -> img2 と img2 -> img1の結果が一致しているか検証
+cv::DMatch m12 = dmatch12[i];
+cv::DMatch m21 = dmatch21[m12.trainIdx];
+if (m21.trainIdx == m12.queryIdx)
+dmatch.push_back( m12 );
+}
+cv::Mat output2; //マッチング結果描画用
+cv::drawMatches(img1, keypoints1, img2, keypoints2, dmatch, output2);
+cv::namedWindow("Result2");
+cv::imshow("Result2", output2);
+cv::waitKey();
+return 0;
+}
+結果（一方向のマッチング）
+日記、メモ、その他: 特徴点の対応付け

@@ -1,0 +1,15 @@
+
+この関数は,Cannyアルゴリズムを用いて入力画像
+image
+中のエッジを検出し,出力画像
+edges
+上に記録します.
+threshold1
+と
+threshold2
+の内,小さい方の値はエッジ同士の接続に利用され,大きい方の値は強いエッジの初期検出に利用されます.
+cv::CornerEigenValsAndVecs¶
+CornerEigenValsAndVecs(image, eigenvv, blockSize, aperture_size=3) &rarr; None¶
+コーナー検出のための,画像の固有値と固有ベクトルを求めます.
+パラメタ:
+特徴検出 &mdash; opencv v2.1 documentation

@@ -1,0 +1,85 @@
+
+‘? ‘で始まる行は、行内のどこに差異が存在するかに注意を向けようとします。その行は、入力されたシーケンスのどちらにも存在しません。シーケンスがタブ文字を含むとき、これらの行は判別しづらいものになることがあります。
+class difflib.HtmlDiff¶
+このクラスは、二つのテキストを左右に並べて比較表示し、行間あるいは行内の変更点を強調表示するような HTML テーブル (またはテーブルの入った完全な
+HTML ファイル) を生成するために使います。テーブルは完全差分モード、コンテキスト差分モードのいずれでも生成できます。
+このクラスのコンストラクタは以下のようになっています:
+__init__([tabsize][, wrapcolumn][, linejunk][, charjunk])¶
+HtmlDiff のインスタンスを初期化します。
+tabsize はオプションのキーワード引数で、タブストップ幅を指定します。デフォルトは 8 です。
+wrapcolumn はオプションのキーワード引数で、テキストを折り返すカラム幅を指定します。デフォルトは None で折り返しを行いません。
+linejunk および charjunk はオプションのキーワード引数で、 ndiff() (HtmlDiff
+はこの関数を使って左右のテキストの差分を HTML で生成します) に渡されます。それぞれの引数のデフォルト値および説明は ndiff()
+のドキュメントを参照してください。
+以下のメソッドが public になっています:
+make_file(fromlines, tolines [, fromdesc][, todesc][, context][, numlines])¶
+fromlines と tolines (いずれも文字列のリスト) を比較し、行間または行内の変更点が強調表示された行差分の入った表を持つ完全な
+HTML  ファイルを文字列で返します。
+fromdesc および todesc はオプションのキーワード引数で、差分表示テーブルにおけるそれぞれ差分元、差分先ファイルのカラムのヘッダになる文字列を指定します (いずれもデフォルト値は空文字列です)。
+context および numlines はともにオプションのキーワード引数です。
+context を True にするとコンテキスト差分を表示し、デフォルトの False にすると完全なファイル差分を表示します。
+numlines のデフォルト値は 5 で、
+context が True の場合、
+numlines は強調部分の前後にあるコンテキスト行の数を制御します。
+context が False の場合、
+numlines は “next” と書かれたハイパーリンクをたどった時に到達する場所が次の変更部分より何行前にあるかを制御します
+(値をゼロにした場合、”next” ハイパーリンクを辿ると変更部分の強調表示がブラウザの最上部に表示されるようになります)。
+make_table(fromlines, tolines [, fromdesc][, todesc][, context][, numlines])¶
+fromlines と tolines (いずれも文字列のリスト) を比較し、行間または行内の変更点が強調表示された行差分の入った完全な HTML
+テーブルを文字列で返します。
+このメソッドの引数は、 make_file() メソッドの引数と同じです。
+Tools/scripts/diff.py はこのクラスへのコマンドラインフロントエンドで、使い方を学ぶ上で格好の例題が入っています。
+バージョン 2.4 で追加.
+difflib.context_diff(a, b[, fromfile][, tofile][, fromfiledate][, tofiledate][, n][, lineterm])¶
+a と b (文字列のリスト) を比較し、差分
+(差分形式の行を生成するジェネレータ(generator)) を、
+context diff のフォーマット(以下「コンテクスト形式」)で返します。
+コンテクスト形式は、変更があった行に前後数行を加えてある、コンパクトな表現方法です。変更箇所は、変更前/変更後に分けて表します。コンテクスト (変更箇所前後の行)
+の行数は n で指定し、デフォルト値は 3 です。
+デフォルトでは、diff の制御行 (*** や --- を含む行) の最後には、改行文字が付加されます。この場合、入出力とも、行末に改行文字を持つので、
+file.readlines() で得た入力から生成した差分を、
+file.writelines() に渡す場合に便利です。
+行末に改行文字を持たない入力に対しては、出力でも改行文字を付加しないように
+lineterm 引数に "" を渡してください。
+コンテクスト形式は、通常、ヘッダにファイル名と変更時刻を持っています。この情報は、文字列
+fromfile, tofile, fromfiledate, tofiledate で指定できます。変更時刻の書式は、通常、ISO 8601 フォーマットで表されます。指定しなかった場合のデフォルト値は、空文字列です。
+>>> s1 = ['bacon\n', 'eggs\n', 'ham\n', 'guido\n']
+>>> s2 = ['python\n', 'eggy\n', 'hamster\n', 'guido\n']
+>>> for line in context_diff(s1, s2, fromfile='before.py', tofile='after.py'):
+...     sys.stdout.write(line)  # doctest: +NORMALIZE_WHITESPACE
+*** before.py
+--- after.py
+***************
+*** 1,4 ****
+! bacon
+! eggs
+! ham
+guido
+--- 1,4 ----
+! python
+! eggy
+! hamster
+guido
+より詳細な例は、 difflib のコマンドラインインタフェース を参照してください。
+バージョン 2.3 で追加.
+difflib.get_close_matches(word, possibilities[, n][, cutoff])¶
+「十分」なマッチの上位のリストを返します。
+word はマッチさせたいシーケンス (大概は文字列) です。
+possibilities は word にマッチさせるシーケンスのリスト (大概は文字列のリスト) です。
+オプションの引数 n (デフォルトでは 3)はメソッドの返すマッチの最大数です。
+n は 0 より大きくなければなりません。
+オプションの引数 cutoff  (デフォルトでは 0.6)は、区間 [0, 1] に入る小数の値です。
+word との一致率がそれ未満の possibilities の要素は無視されます。
+possibilities の要素でマッチした上位(多くても n 個)は、類似度のスコアに応じて(一番似たものを先頭に)ソートされたリストとして返されます。
+difflib.ndiff(a, b[, linejunk[, charjunk]])¶
+a と b (文字列のリスト) を比較し、差分
+(差分形式の行を生成するジェネレータ(generator)) を、
+Differ のスタイルで返します。
+オプションのキーワードパラメータ linejunk と charjunk は、フィルタ関数を渡します (使わないときは None)。
+linejunk: 文字列型の引数ひとつを受け取る関数で、文字列が junk ならば真を、違うときには偽を返します。
+Python 2.3 以降、デフォルトでは(None)になります。それまでは、モジュールレべルの関数 IS_LINE_JUNK() であり、それは高々ひとつのシャープ記号('#')を除いて可視のキャラクタを含まない行をフィルタリングするものです。
+Python 2.3 から、下位にある SequenceMatcher クラスが、雑音となるくらい頻繁に登場する行であるか否かを、動的に分析します。これは、バージョン 2.3 以前のデフォルト値よりたいていうまく動作します。
+charjunk: 文字(長さ1の文字列)を受け取る関数です。デフォルトでは、モジュールレべルの関数 IS_CHARACTER_JUNK() であり、これは空白文字類 (空白またはタブ、注:改行文字をこれに含めるのは悪いアイデア!)
+をフィルタリングします。
+Tools/scripts/ndiff.py は、この関数のコマンドラインのフロントエンド(インターフェイス)です。
+7.4. difflib — 差分の計算を助ける &mdash; Python 2.7ja1 documentation

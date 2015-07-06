@@ -1,0 +1,2 @@
+検索装置3は、音声書き起こし装置2で検出された文字出現区間に対応する音声書き起こし結果中の単語間の類似度を求め、この類似度を利用して音声書き起こし結果から文字認識装置1で認識された文字列と類似するパッセージを検索する。The retrieving device 3 finds similarity between words in a speech writing result corresponding to the character appearance section detected by the writing device 2 and retrieves the passage similar to the character string recognized by the character recognizing device 1 from the speech writing result by using the similarity. - 特許庁
+音声中の検索語検出の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

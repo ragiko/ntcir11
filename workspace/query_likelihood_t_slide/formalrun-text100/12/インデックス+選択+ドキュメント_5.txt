@@ -1,0 +1,29 @@
+<add>
+<doc>
+<field name="フィールド名">テキスト</field>
+[<field name="...">...</field>]
+</doc>
+[<doc> ... </doc>[<doc> ... </doc>]]
+</add>
+doc要素にインデックス化するドキュメントを指定します。ドキュメントにどのようなフィールドが含まれるかはスキーマ(schema.xml)で定義します。スキーマについては今後説明します。
+add要素内に複数のdoc要素を指定できるので、一回のリクエストで複数のドキュメントを登録することができます。
+field要素のname属性に登録するフィールドの名前を指定し、field要素の値に登録するテキストを指定します。
+Solrに付属しているサンプル books.json(example/exampledocs/books.json) は
+XML形式では用意されていないようなので、これをXMLフォーマットに直して登録してみたいと思います。
+books.jsonの最初のエントリをXMLフォーマットで表すと以下のようになります。
+<add>
+<doc>
+<field name="id">978-0641723445</field>
+<field name="cat">book</field>
+<field name="cat">hardcover</field>
+<field name="name">The Lightning Thief</field>
+<field name="author">Rick Riordan</field>
+<field name="series_t">Percy Jackson and the Olympians</field>
+<field name="sequence_i">1</field>
+<field name="genre_s">fantasy</field>
+<field name="inStock">true</field>
+<field name="price">12.50</field>
+<field name="pages_i">384</field>
+</doc>
+</add>
+Apache Solr で全文検索(2) – インデックスの追加/削除 &mdash; SOUM/misc

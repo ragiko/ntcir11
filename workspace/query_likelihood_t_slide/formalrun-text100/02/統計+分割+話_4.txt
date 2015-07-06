@@ -1,0 +1,19 @@
+交差検証(交差確認)[1](英: Cross-validation)とは、統計学において標本データを分割し、その一部をまず解析して、残る部分でその解析のテストを行い、解析自身の妥当性の検証・確認に当てる手法を指す[2] [3] [4]。データの解析(および導出された推定・統計的予測)がどれだけ本当に母集団に対処できるかを良い近似で検証・確認するための手法である。
+最初に解析するデータを「訓練事例集合(training set)」などと呼び、他のデータを「テスト事例集合(testing set、テストデータ)」などと呼ぶ。
+交差検証は Seymour Geisser が生み出した。特にそれ以上標本を集めるのが困難(危険だったり、コストがかかったり)な場合は、データから導いた推定は、交差検証などで慎重に裏付けを確認するべきである。
+交差検証の主な種類[編集]
+ホールドアウト検証[編集]
+初期標本群から事例を無作為に選択してテスト事例を形成し、残る事例を訓練事例とする。テスト事例に使われるのは初期の標本群の3分の1以下の場合が多い[5]。ただし一般にホールドアウト検証は交差検証には分類されない。なぜなら、データを交差させることがないためである。
+K-分割交差検証[編集]
+英名では"K-fold cross-validation"。K-分割交差検証では、標本群をK個に分割する。そして、そのうちの1つをテスト事例とし、残る K − 1 個を訓練事例とするのが一般的である。交差検証は、K 個に分割された標本群それぞれをテスト事例として k 回検証を行う。そうやって得られた k 回の結果を平均して1つの推定を得る。
+leave-one-out 交差検証[編集]
+leave-one-out cross-validation (LOOCV,一個抜き交差検証) は、標本群から1つの事例だけを抜き出してテスト事例とし、残りを訓練事例とする。これを全事例が一回ずつテスト事例となるよう検証を繰り返す。これはK-分割交差検証の K を標本数にした場合と同じである。ただし、LOOCV にはカーネル回帰[要出典]やティホノフ正則化などと関連がある。
+誤差見積り[編集]
+パラメータ推定誤差は計算で求めることができる。平均平方誤差(MSE)は分散、平均平方二乗誤差(RMSE)は標準偏差に用いられる。
+脚注[編集]
+^ 交差検定と呼ばれる場合もあるが,統計学では検定はtestの訳語として用いられ,validationの訳語には検証か確認が用いられる
+^ Kohavi, Ron (1995年). "A study of cross-validation and bootstrap for accuracy estimation and model selection". Proceedings of the Fourteenth International Joint Conference on Artificial Intelligence 2 (12): 1137–1143.  Check date values in: |date= (help)(Morgan Kaufmann, San Mateo)
+^ Chang, J., Luo, Y., and Su, K. 1992. GPSM: a Generalized Probabilistic Semantic Model for ambiguity resolution. In Proceedings of the 30th Annual Meeting on Association For Computational Linguistics (Newark, Delaware, June 28 - July 02, 1992). Annual Meeting of the ACL. Association for Computational Linguistics, Morristown, NJ, 177-184
+^ Devijver, P. A., and J. Kittler, Pattern Recognition: A Statistical Approach, Prentice-Hall, London, 1982
+^ Tutorial 12. Decision Trees Interactive Tutorial and Resources. 2006年6月21日閲覧。
+交差検証 - Wikipedia

@@ -1,0 +1,20 @@
+データを取得する¶
+まず説明を始める前に、モデルの役割についてですが、モデルの役割の一つはいろいろなタイプのストレージからデータを取得することです。CakePHPのモデルクラスは、データの検索、ソート、ページング、フィルターなどの機能を提供しています。モデルで一番良く使われる関数は
+Model::find() です。
+find¶
+find(string $type = 'first', array $params = array())
+findはデータ取得のための、非常に多機能でとても良く働いてくれる関数です。$type は 'all', 'first', 'count', 'list', 'neighbors',
+'threaded', または自分で定義したカスタム値を指定できます。$type は大文字と小文字を区別しますので、注意してください。大文字が含まれると(例えば All のように)期待した結果になりません。
+$params はいろいろな種類のfindへのパラメータを渡すために使われます。デフォルトでは以下のキーのパラメータを渡すことができます。これらキーの指定は任意です。
+array(
+'conditions' => array('Model.field' => $thisValue), //検索条件の配列
+'recursive' => 1, //int
+'fields' => array('Model.field1', 'DISTINCT Model.field2'), //フィールド名の配列
+'order' => array('Model.created', 'Model.field3 DESC'), //並び順を文字列または配列で指定
+'group' => array('Model.field'), //GROUP BYのフィールド
+'limit' => n, //int
+'page' => n, //int
+'offset' => n, //int
+'callbacks' => true //falseの他に'before'、'after'を指定できます
+)
+データを取得する &mdash; CakePHP Cookbook 2.x ドキュメント

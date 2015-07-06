@@ -1,0 +1,77 @@
+ウェブサイトならリキッドでやればいいと思うけど、アニメーションがあったりポジションの値をPCのように自由に設定したい場合はやっぱりViewportを固定させたほうが断然やりやすいです。
+でもViewportをピクセル固定できないAndroid端末もあるというので(今のところ自分の手持ち端末だとかなり古いMEDIASでAndroid OS2.3)、JavaScriptでなんとかできないかやってみた。
+emを使った方法もあるけど、
+ANTON072/jquery.optimizeEm
+やっぱりピクセルのほうがいろいろとやりやすい。
+(でも固いのはemだと思う)
+2.3でデバッグしてないけどどうなんだろう。
+(function(){
+var setup = function() {
+var sw   = window.innerWidth || screen.width;
+var zoomRatio = sw / 640;
+$('html').css({
+zoom : zoomRatio
+});
+};
+$(window)
+.on('resize', setup)
+.trigger('resize');
+}).call(this);
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<meta name="viewport" content="width=device-width,user-scalable=no" />
+<style>
+* {
+background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS41LWMwMjEgNzkuMTU0OTExLCAyMDEzLzEwLzI5LTExOjQ3OjE2ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDkwREFDODM5MTc1MTFFM0I1NjNENEM4OEJCMUNCQjIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDkwREFDODQ5MTc1MTFFM0I1NjNENEM4OEJCMUNCQjIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpEOTBEQUM4MTkxNzUxMUUzQjU2M0Q0Qzg4QkIxQ0JCMiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpEOTBEQUM4MjkxNzUxMUUzQjU2M0Q0Qzg4QkIxQ0JCMiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+}
+html {
+height: 100%;
+font-size: 125%;
+}
+body {
+font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', sans-serif;
+padding: 0;
+margin: 0;
+background: #EEE;
+min-height: 100%;
+font-size: 1.4rem;
+width: 640px;
+}
+h1 {
+margin-top: 0;
+}
+.all {
+width: 640px;
+margin: 0 auto;
+}
+.fz12 {
+font-size: 1.2rem;
+}
+</style>
+</head>
+<body>
+<div class="all" id="all">
+<h1>View PortTest</h1>
+<button class="debug">デバッグ</button>
+<div class="contents">
+<p>
+<img src="http://hhhhold.com/640x566" width="640" alt="">
+</p>
+<div class="contents-inner">
+<p>ミックスCDを販売していた宮城県在住の男が著作権法違反で逮捕。この件が「海賊版CDを販売」と報じられたことに、すごいモヤモヤしました。確かにミックスCDは著作権的にグレーで、オフィシャルな形でメジャーレーベルからリリースするような場合を除いて、基本的にはイベントなどで無料配布するようなものであり、販売したらアウトなのかもしれないけど、これを「市販品をマスターにガンダムやONE PIECEの海賊版DVDを販売した男を逮捕」とかと並列に報じるのは絶対に間違ってますよ! ミックスCDは順調に減り続けている音楽人口を増やすためのものであって、音楽の敵じゃないです。いきなり逮捕するんじゃなくて、印税の支払い義務を設けたりで共存できる道を探すべき。</p>
+<div>
+<a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true" data-count="none" data-via="twitterapi">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div>
+<p class="fz12">ミックスCDを販売していた宮城県在住の男が著作権法違反で逮捕。この件が「海賊版CDを販売」と報じられたことに、すごいモヤモヤしました。確かにミックスCDは著作権的にグレーで、オフィシャルな形でメジャーレーベルからリリースするような場合を除いて、基本的にはイベントなどで無料配布するようなものであり、販売したらアウトなのかもしれないけど、これを「市販品をマスターにガンダムやONE PIECEの海賊版DVDを販売した男を逮捕」とかと並列に報じるのは絶対に間違ってますよ! ミックスCDは順調に減り続けている音楽人口を増やすためのものであって、音楽の敵じゃないです。いきなり逮捕するんじゃなくて、印税の支払い義務を設けたりで共存できる道を探すべき。</p>
+</div>
+</div>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
+スマホで擬似的にJavaScriptでViewport固定をする実験 - Qiita

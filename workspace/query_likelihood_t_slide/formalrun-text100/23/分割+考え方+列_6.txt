@@ -1,0 +1,37 @@
+
+文字列を分割する場合・・・
+1.文字数が決まっている場合
+⇒ Left,Mid,Right関数などの使用
+2.特定文字による分割
+⇒ InStr関数の使用
+などの方法が考えられます。ここではそれぞれの使い方を紹介します。
+1.文字数が決まっている場合
+例えば・・・"03-0000-1111"という文字列(電話番号)があって、
+・市外局番を抜き出したいとき⇒Left関数
+・"0000"を抜き出したいとき⇒Mid関数
+・"1111"を抜き出したいとき⇒Right
+のように使います。
+(例)Mid関数・・・Mid(対象文字列、開始位置、終了位置)
+Sub Sample()
+Dim PhoneNum As String
+Dim RetVal As String
+PhoneNum = "03-0000-1111"
+RetVal = Mid(PhoneNum, 4, 4)
+MsgBox RetVal
+End Sub
+2.特定文字による分割
+1.の例では電話番号のうち市外局番は2桁でしたが、東京や大阪以外の都市などのように3桁以上出会った場合、何文字目から何文字目まで、といった分割は上記3つの関数だけでは困難になります。このような場合にはInstr関数を用いて特定文字の位置検索を行います。電話番号には"052-111-9999"というデータもあって、すべての電話番号に対応できなければならない場合、ここでは区切り文字として"-"がありますので、一つ目の"-"から二つ目までの間をMid関数で切り出せばよいことになります。
+Sub Sample2()
+Dim PhoneNum As String
+Dim RetVal As String
+Dim FirstPos As Integer
+Dim NextPos As Integer
+PhoneNum = "052-111-9999"
+'区切り文字の位置を取得
+FirstPos = InStr(1, PhoneNum, "-", vbTextCompare) + 1
+NextPos = InStr(FirstPos, PhoneNum, "-", vbTextCompare)
+RetVal = Mid(PhoneNum, FirstPos, NextPos - FirstPos)
+MsgBox RetVal
+End Sub
+※最初の区切り位置に"+1"していることに注意してください。
+

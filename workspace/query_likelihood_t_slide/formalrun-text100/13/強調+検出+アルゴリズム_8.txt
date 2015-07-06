@@ -1,0 +1,18 @@
+EM/MPMアルゴリズムを用いた肝腫瘍自動検出
+CT画像から、肝腫瘍を自動検出する研究である。
+近年、医用画像診断装置の発展に伴い多量の詳細なCT画像を得られるようになったことから、病変の早期発見が期待される。
+しかし、その反面、それら多量のCT画像全てを診断しなければならない医師の負担増大や、
+病変見落としの可能性が問題として挙がっている。
+そこで、本研究では画像処理を用いて、CT画像内の肝腫瘍を自動検出することを目指した。
+具体的には、CT画像において腫瘍は肝臓よりも暗く写るという特徴があることから、
+画像を暗さ別に自動分類することによって腫瘍候補を検出している。
+本研究では、自動分類の手法として『EM/MPMアルゴリズム』を用いた。
+また、この他にも『確率密度関数を用いた画像のコントラスト改善』や『腫瘍の形状情報を考慮』することにより、
+高い検出精度を挙げている。
+関連研究発表:
+1. 増田優, Amir Hossein Foruzan, 健山智子, 陳延偉:"EMアルゴリズムと3次元ROIを用いた肝臓内腫瘍検出", 電気関係学会関西支部連合大会, G310, 2009. 
+2. 増田 優, Amir Hossein Foruzan, 健山 智子, 陳延偉:EM/MPMアルゴリズムと形状情報を用いた肝臓内腫瘍候補自動検出 IEICE technical report 110(28), 25-30, 2010 
+3. Masuda, Y., Foruzan, A.H., Tateyama, T., Yen Wei Chen:Automatic Liver Tumor Detection Using EM/MPM Algorithm and Shape Information, Proc. Of Software Engineering and Data Mining (SEDM), 2010 
+4. 増田 優, 健山 智子, Wei Xiong, Jiayin Zhou, 若宮 誠, 金崎 周造, 古川 顕, 陳 延偉:確率密度関数とEM/MPMアルゴリズムを用いたCT画像コントラスト強調と肝腫瘍検出, IEICE technical report 110(381), 21-26, 2011 
+5. Yu Masuda, Tomoko Tateyama, Wei Xiong, Jiayin Zhou, Makoto Wakamiya, Syuzo Kanasaki, Akira Furukawa and Yen Wei Chen: CT IMAGE CONTRAST ENHANCEMENT AND LIVER TUMOR DETECTION BY USING PROBABILITY DENSITY FUNCTION AND EM/MPM ALGORITHM, Proc. Of IEEE International Conference on Image Processing, 2011.
+Research_Chenlab

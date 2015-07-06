@@ -1,0 +1,35 @@
+
+クライアントからのリクエストがあった時、ファイル名を指定せずにディレクトリだけ指定される時があります。そのようなファイル名が省略された場合にどのファイルを返すのかを「DirectoryIndex」で指定します。
+DirectoryIndex ファイル名 [ファイル名 [...]]
+ファイル名は1つまたは複数指定することが可能です。
+それでは「httpd.conf」ファイルで「DirectoryIndex」で検索してみてください。210行目付近に次の記述が見つかります。
+#
+# DirectoryIndex: sets the file that Apache will serve if a directory
+# is requested.
+#
+<IfModule dir_module>
+DirectoryIndex index.html
+</IfModule>
+デフォルトでは「index.html」が指定されています。その為、「http://localhost/」とクライアントから要求すると実際には「http://localhost/index.html」が存在するかどうかを調べて存在する場合にそのファイルを返してきます。
+ディレクトリインデックスには複数のファイルを指定することが出来ます。ファイルは空白で区切って続けて記述していきます。複数のファイルを記述した場合には、前から順番に記述されたファイルが存在するこどうかを確認し、見つかった場合にはそのファイルを表示します。
+DirectoryIndex index.html index.htm index.php
+この場合は「index.html」「index.htm」「index.php」を順番に検索して、見つかればそのファイルをクライアントへ返します。
+テスト
+では試しに下記のような簡単なHTMLファイルを作成してドキュメントルートのディレクトリに入れてみます。
+hello.html
+そして「DirectoryIndex」を下記のように書き換えます。
+#
+# DirectoryIndex: sets the file that Apache will serve if a directory
+# is requested.
+#
+<IfModule dir_module>
+DirectoryIndex hello.html index.html
+</IfModule>
+ブラウザを立ち上げて頂き次のURLへアクセスして下さい。
+http://localhost/
+「DirectoryIndex」に「hello.html」が一番最初に書かれているため、ディレクトリだけ指定した場合にはまず「hello.html」が検索され、ファイルが存在すればそのファイルが表示されます。その為、今回は次のように表示されます。
+では「DirectoryIndex」はそのままで「hello.html」をドキュメントルートから削除してみます。そして同じように「http://localhost/」へアクセスして下さい。
+今回の場合は「hello.html」をまず探しまずが見つからないため次の候補である「index.html」を探します。そして「index.html」は存在するためこのファイルを内容をクライアントへ返しています。
+では「DirectoryIndex」はそのままで「index.html」をドキュメントルートから削除してみます。そして同じように「http://localhost/」へアクセスして下さい。
+「DirectoryIndex」に指定したファイルが全て見つからない場合は、そのディレクトリに含まれるファイルの一覧を表示します。ただ、ファイル一覧が表示されるのはセキュリティ上問題もありますので通常はファイル一覧が表示されないように設定されておくことをお勧めします(設定方法は別ページで確認します)。
+ディレクトリインデックス(DirectoryIndex) - コンテンツの設置 - Apache入門

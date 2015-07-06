@@ -1,0 +1,7 @@
+This paper investigates a robot audition system focusing on: 1) spatially-high resolution, and
+2) reduction of computational cost. For 1), we propose transfer function interpolation based on integration
+of two linear interpolation methods in frequency- and time-domain. For 2), we propose optimal hierarchical
+sound source localization to reduce the computational cost of peak searching in sound source localization.
+We applied these techniques to simultaneous speech recognition for a robot and successfully conrmed their
+validity.
+実時間超解像ロボット聴覚システムとその複数同時音声認識への応用 | 論文検索(Publications) | HRI-JP - ホンダ・リサーチ・インスティチュート・ジャパン -

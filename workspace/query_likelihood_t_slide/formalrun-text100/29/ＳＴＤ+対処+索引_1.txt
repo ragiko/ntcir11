@@ -1,0 +1,11 @@
+Oracle Database製品ファミリ
+Oracle Databaseには、様々な開発とデプロイメントのシナリオに適した5つのエディションがあります。また、Oracleには、特定の用途にあわせてOracle Databaseの機能を拡張する、複数のデータベース・オプション、パックおよびその他の製品が用意されています。この項では、Oracle Databaseの各エディションについて説明します。データベース・オプションおよび関連製品については、第2章「オプションおよびパック」で説明します。
+Oracle Database Standard Edition One は、ワークグループ、部門レベルおよびWebアプリケーションに対して、比類なき操作性、能力およびパフォーマンスを提供します。Oracle Standard Edition Oneは、中小規模事業所のシングル・サーバー環境から、分散された支社サーバー環境まで、ビジネスクリティカルなアプリケーションの構築に必要なすべての機能を備えています。
+Oracle Database Standard Edition は、Standard Edition Oneと同様の比類なき操作性、能力およびパフォーマンスを提供し、より容量の大きいマシンのサポートとOracle Real Application Clusters (Oracle RAC)によるサービスのクラスタ化をサポートします。Oracle RACは、Oracle Database 10gよりStandard Editionに含まれ、Oracle9i以前の旧リリースのStandard Editionでは使用できません。
+Oracle Database Enterprise Edition は、大規模なオンライン・トランザクション処理(OLTP)アプリケーション、問合せ集中処理型データ・ウェアハウスおよび要求の厳しいインターネット・アプリケーションなどのミッションクリティカルなアプリケーションに必要な、パフォーマンス、可用性、スケーラビリティおよびセキュリティを提供します。Oracle Database Enterprise EditionにはOracle Databaseのすべてのコンポーネントが含まれており、第2章「オプションおよびパック」で説明する有償オプション製品およびOEM Management Pack製品を購入することでさらに拡張できます。
+Oracle Database Express Edition  (Oracle Database XE)はOracle Databaseの入門レベルのエディションです。迅速なダウンロードが可能であり、インストールおよび管理が簡単で、かつ自由に開発、デプロイおよび配布できます。Oracle Database XEでは、費用のかかる複雑な移行作業を行わずに、別のエディションのOracleに簡単にアップグレードできます。Oracle Database XEは、どのようなCPU数のどのようなサイズのマシンにもインストールすることができ、ホスト・マシン上で最大1GBのメモリーおよび1つのCPUのみを使用して、最大11GBのユーザー・データを格納します。サポートはオンライン・フォーラムで提供されています。
+Oracle Database Personal Edition は、Oracle Database Standard Edition One、Oracle Database Standard EditionおよびOracle Database Enterprise Editionとの完全な互換性が必要な、シングル・ユーザーによる開発とデプロイ環境をサポートします。Personal Editionには、Enterprise Editionに含まれるすべてのコンポーネントの他に、Enterprise Editionで使用できるすべてのオプションが含まれます。ただし、Oracle Real Application Clustersのオプションは含まれておらず、Personal Editionでは使用できません。Personal Editionは、WindowsプラットフォームとLinuxプラットフォームでのみ使用できます。また、Oracle Enterprise Manager Management Pack製品は、Oracle Database Personal Editionには含まれません。
+エディション別の使用可能な機能
+表1-1では、Oracle Database Standard Edition One (SE1)、Standard Edition (SE)およびEnterprise Edition (EE)で使用できる機能を示しています。列内のYの値は、指定リリースでその機能が使用できることを意味し、Nは機能が使用できないことを意味します。この表を参照すれば、エディション間の相違を理解し、Enterprise Edition (シングル・ユーザー環境ではPersonal Edition)が必要かどうかを判断できます。
+Oracle Database XEは、Oracle Database製品ファミリの他の製品から独立した製品であることに注意してください。Oracle Database XEで使用できる機能については、製品とともにインストールされる「Oracle Database Express Editionライセンス情報」を参照してください。
+Oracle Databaseのエディション

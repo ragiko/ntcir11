@@ -1,0 +1,196 @@
+
+はじめに
+系統解析は今や分子生物学の基本ツールの一つになっています。しかし系統解析の具体的な方法については,
+あまりテキストが出回っていないのも現状です。そこでまず最初に学ぶプログラムとして,ClustalX 
+の使い方を中心に系統解析の具体的な方法について解説を試みてみました。
+より丁寧な系統解析には他の様々なプログラムの利用が推奨されますが,とりあえず系統樹を描いてみることはできると思います。
+初心者向けということでなるべく詳細な解説を心がけましたが,系統樹の意味などある程度の基礎知識は前提にしていますので,
+そのあたりに疑問がある方はまた別の資料を探してみて下さい。
+なお,本稿は Windows XP もしくは Vista の使用を前提に書かれています。従って他の OS を使用している場合にはプログラムのインストールなど,
+細かい違いが生じる場合があります。
+プログラムのダウンロード
+系統解析を実際に行うためには、解析用のプログラムを入手する必要があります。
+多くのプログラムは無料で公開されていますが、一部には有料のプログラムもありますので、目的に応じて入手してみてください、
+ここでは ClustalX というプログラムの使い方を紹介しますので、以下のサイトから最新版を入手しましょう。
+ClustalX(アラインメントと近隣結合法による系統樹の作成に使います。2.0 が最新版です):
+Clustal http://www.clustal.org/
+上記のサイトに行くと、ダウンロードの欄から "Precompiled executables for Linux, Mac OS X and Windows of the most recent 
+version along with the source code are available here" とあります。
+この青文字下線部分をクリックしてください。
+するとファイルのリストが表示されます。この中から、最新版の適切なファイルを選んでデスクトップなどに保存してください。
+WindowsXP または Vista を使っている場合、"clustalx-2.0.4-win.msi"(バージョンは更新される可能性があります)
+で正常にダウンロードができました。これは ClustalX の Setup Wizard です。
+さて この Setup Wizard を起動し,指示に従って ClustalX をインストールしてください。
+インストール先を聞かれる他は特に選択肢はありませんので,"Next" をクリックすれば問題ありません。なお,Windows Vista 
+の場合にはプログラムの実行を許可するか訪ねられますが,"許可" してください。これでインストールが完了します。
+インストール先を変更していない場合,プログラムリストに "ClustalX2" というフォルダが生成します。ここに含まれる "ClustalX2" 
+がプログラムの本体です。
+SeaView(ClustalX で作成したアラインメントを編集するプログラムです。2.2 が最新版です。2007年10月に更新されています):
+SeaView 
+http://pbil.univ-lyon1.fr/software/seaview.html
+リンク先にある該当 OS の圧縮ファイルをダウンロードし,適当なフォルダで解凍してください。
+プログラムの本体は seaview.exe で,ヘルプを利用するには同じフォルダに seaview.help が必要です。
+NJplot(ClustalX で作成した系統樹を表示・編集するためのプログラムです。2007 年06月に更新されています):
+NJplot 
+http://pbil.univ-lyon1.fr/software/njplot.html
+リンク先にある該当 OS の圧縮ファイルをダウンロードし,適当なフォルダで解凍してください。
+プログラムの本体は njplot.exe で,ヘルプを利用するには同じフォルダに njplot.help が必要です
+(unrooted.exe は無根系統樹の表示に使えます)。
+データの収集と Fasta ファイルの作成
+解析を実行するプログラムが手に入りましたら、次は解析するデータが必要です。
+解析したい配列は DNA の塩基配列の場合もあれば、タンパク質のアミノ酸配列の場合もあるでしょう。
+また、自分で解読した配列を解析する場合もあれば、各種データベースからダウンロードした配列を比較する場合もあると思います。
+ここではまず、データベースから入手した配列で系統解析を行い、
+最後に自前の配列を加えて系統解析する方法についてご紹介いたします。
+配列情報が登録されているデータベースは幾つか存在します。各種のデータベースにはそれぞれの特徴がありますが、
+今回は NCBI(National Center for Biotechnology Information)
+http://www.ncbi.nlm.nih.gov/ のデータベースから配列情報を取り寄せましょう。
+配列を探索するには様々な方法があります。よく利用するのは遺伝子名からの検索、
+アクセッション番号(accession number)からの検索、
+配列情報から類似した配列を探索する、などのケースがあると思います。遺伝子名は研究者によって表記が変わることも多いので、
+遺伝子名からの検索は見逃しもあるかもしれません。その場合は、遺伝子名で代表的な配列を検索し、
+その配列から類似した配列の探索を行う、など工夫が必要です。
+遺伝子名やアクセッション番号からの探索には NCBI の Entrez というプログラムが利用できます。
+類似した配列の探索には NCBI の BLAST というプログラムが利用できます。
+Entrez を利用するには、NCBI のトップページから検索をかけます。塩基配列であればセレクトボックスから Nucleotide を、
+タンパク質のアミノ酸配列であれば Protein を選択します。そして、
+for 
+とある右のテキスト入力フィールドにキーワードを入力して、 ボタンをクリックすれば、
+検索がスタートします。条件検索のためのオプションが幾つかありますので、以下の用例を参照して下さい
+(詳細は Entrez のヘルプ中にある 
+Writing Advanced Search Statements
+(http://www.ncbi.nlm.nih.gov/books/bv.fcgi?rid=helpentrez.section.EntrezHelp.Writing_Advanced_Sea)を参照)。
+凡例
+アクセッション番号が "M10098" の配列
+("M10098")
+あるいは
+("M10098[ACCN]")
+(後者は検索対象をアクセッション番号に限定していますが、事実上必要ありません)
+アクセッション番号が "AF107923" から "AF107929" までの配列全て
+("AF107923:AF107929[ACCN]")
+rbcL 遺伝子の配列
+("rbcL[GENE]")
+Arabidopsis の rbcL 配列
+("Arabidopsis[ORGN] AND rbcL[GENE]")
+("AND"、"OR"、"NOT" の論理演算子を使う場合には、大文字で入力する必要があります)
+脊椎動物の cox1 配列
+("vertebrates[ORGN] AND cox1[GENE]")
+(生物名の指定("[ORGN]" を使う)には、Entrez の Taxonomy
+(http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=Taxonomy)で使われている表記に従いましょう)
+イネ(Oryza sativa)とシロイヌナズナ(Arabidopsis thaliana)の rbcL 遺伝子
+(("Oryza sativa[ORGN] OR Arabidopsis thaliana[ORGN]) AND rbcL[GENE]")
+BLAST を利用するには、NCBI のトップページからのリンクをたどります。あるいは、直接 
+NCBI BLAST
+(http://www.ncbi.nlm.nih.gov/BLAST/)へ行って下さい。塩基配列の検索であれば、
+nucleotide BLAST へ、アミノ酸配列の検索であれば 
+protein BLAST へ進みます。
+デフォルトでは系統解析の目的に適さないことから,幾つかのオプションを設定する必要があります。
+Choose Search Set:検索するデータベースの範囲を指定します。nucleotide BLAST の初期設定ではヒトのゲノムと転写産物しか検索されません。
+Database:"Human genomic + transcript","Mouse genomic + transcript","Others (nr etc.)" の中から "Others (nr etc.)" を選んでください。
+すると blastn ではセレクトボックスの "Nucleotide collection (nr/nt)" が選択されます。これにより検索対照をデータベース全般(一部 EST データなどは除かれる)
+に広げることができます。
+Organism:上記で "Others (nr/nt)" を選択すると出現します。ボックスに分類群を入力することで,検索対象を限定することが出来ます。
+Program Selection:検索の方法(プログラム)を選択します。
+Optimize for:生物間の系統解析を行うならば,blastn か blastp をお勧めします。やや所要時間が増えますが,より丁寧な検索が実行されます。
+"Somewhat similar sequences (blastn)" または "blastp (protein-protein BLAST)" を選択してください。
+これらの設定は一度行うと記録しておくことができます。右上付近にある "Bookmark" をクリックすると,設定通りのページが開くため,
+この URL をコピーまたはお気に入りなどに登録しておくと便利です。
+さて,設定が終わりましたら "Enter Query Sequence" のテキスト入力フィールドに、目的の配列(その配列と類似した配列を探す)を入れてください。
+FASTA 形式のファイルでもかまいませんし,"参照" からファイルを読み込むこともできます。
+この時、データベースなどの配列情報をコピーすると数字、スペースなどが含まれますが、これはプログラムが無視してくれるので、そのままで問題ありません。
+このようにして、設定と配列の入力が完了したら、ページ下方にある"BLAST" をクリックしてください。するとページが変わり結果が表示されます。
+このようにして検索した配列を見ると,以下の様な情報が得られます(各項目の詳細は,NCBI の 
+GenBank Sample Record 
+http://www.ncbi.nlm.nih.gov/Sitemap/samplerecord.html を参照)。
+LOCUS
+DEFINITION
+ACCESSION
+VERSION
+DBSOURCE(タンパク質の場合のみ)
+KEYWORDS
+SOURCE
+REFERENCE
+FEATURES
+ORIGIN
+LOCUS:座位,配列の長さなど幾つかの情報が含まれます。
+DEFINITION:配列に関する簡潔な説明(見出しのようなもの)です。
+ACCESSION:アクセッション番号。配列の ID で,この配列を特定するための番号。論文などで引用されるのもこの番号です。
+VERSION:配列のバージョン情報。配列情報が修正されるなどすると番号が変わります。
+DBSOURCE:タンパク質のアミノ酸配列の場合,その元となった(塩基配列などの)データベースの ID が示されます。
+ここのリンクから DNA の配列に飛べます。
+KEYWORDS:キーワード。現在ではほとんど活用されません。
+SOURCE:配列の由来。ORGANISM のサブ項目に由来する生物の学名が記されています。
+REFERENCE:配列が出版された論文などの引用。あるいは配列の登録者の情報です。
+FEATURES:配列の特徴など,様々な付帯情報。タンパク質をコードしている範囲やイントロン情報などがあります。
+CDS 中の protein_id には protein データベースの当該配列へのリンクがあります。また CDS 中の translation 
+にコードされているタンパク質のアミノ酸配列があります。
+ORIGIN:配列情報。ここをコピーすることになります。
+こうして得られた情報を ClustalX で読み込める形式で保存します(次項)。
+NCBI などから入手した配列情報は、ClustalX で読み込める形式で保存します。読み取れるファイル形式は 7 通りありますが,
+ここではシンプルな Fasta 形式での保存方法を紹介します。
+まず、メモ帳などのテキストエディタを開きましょう。Fasta ファイルの保存・編集に用います。
+例として、(ちょっと極端な例ですが)哺乳類 3 種(カモノハシ Ornithorhynchus anatinus、
+ネズミ Mus musculus、ヒト Homo sapiens)の 18S rRNA の系統解析を行う場合を考えましょう。
+系統樹に根をつけるためには、調べたい生物群(内群)以外の生物を外群として用います。
+ここではニワトリ Gallus gallus(もちろん哺乳類ではありません)を外群にします。
+まず、ここまでで紹介した検索方法に従って 4 種の 18S rRNA の配列を検索し、
+それぞれの配列のページにたどり着いたものとしましょう。とりあえず用いる配列のアクセッション番号は、
+カモノハシ(AJ311679)、ネズミ
+(X00686)、
+ヒト(M10098)、
+ニワトリ(AF173612)です。
+それぞれのページから配列情報を以下の形式に従ってコピーします。
+>1_Ornithorhynchus_anatinus AJ311679
+1 agcatatgct tgtctcaaag attaagccat gcatgtctaa gtacacacgg ccggcacagt
+61 gaaactgcga atggctcatt aaatcagtta tggttccttt ggtcgctcgc tccctcctac
+121 ttggataact gtggtaattc tagagctaat acatgccgac gagcgctgac ccgggcccct
+(中略)
+1681 aagtccctgc cctttgtaca caccgcccgt cgctactacc gattggatgg tttagtgagg
+1741 tcctcggatc ggccccgccg ggggtcggcc acggcccctg gcggagcgct gagaagacgg
+1801 tcgaacttga ctatctagag gaagtaaaag tcgtaacaag gtttccgtag
+>2_Mus_musculus X00686
+1 tacctggttg atcctgccag tagcatatgc ttgtctcaaa gattaagcca tgcatgtcta
+(中略)
+1861 ggatcatta
+>3_Homo_sapiens M10098
+1 ccgtccgtcc gtcgtcctcc tcgcttgcgg ggcgccgggc ccgtcctcga gcccccnnnn
+(中略)
+1921 taaaagtcgt aacaaggttt ccgtaggtga acctgcggaa ggatcatta
+>4_Gallus_gallus AF173612
+1 attaagccat gcatgtctaa gtacacacgg gcggtacagt gaaactgcga atggctcatt
+(中略)
+1681 acggccctgc cggagcgtcg agaagacggt cgaacttgac tatctagagg aagtaaa
+Fasta 形式では、一行目に「>」で始まる OTU(operational taxonomic unit,操作上の分類単位)の名称と、その他の情報を、
+二行目以降に遺伝子の塩基(またはアミノ酸)配列を記述することになっています。OTU の名称には全て半角英数字とアンダーバー 
+"_" しか使わないようにしましょう。特にハイフン "-" は ClustalX では使えますが、他の多くのプログラムで使えませんので,
+避ける習慣をつけておきましょう。
+プログラムによって表示される OTU の文字数が異なりますので,10 文字以内で OTU を表現するか,
+ここで示したように頭に通し番号をつけておくと後々便利です。また一行目にスペースが存在すると,それ以降は認識されません。
+そのため学名の属名と種小名の間などはアンダーバーでつなぐようにしましょう。逆に表示する必要のない情報
+(ここではアクセッション番号)をスペースより後ろにメモしておくこともできます。
+OTU の名称には,NCBI のデータベースにある SOURCE - ORGANISM に表示されている学名を用いると便利です。
+また配列部分は ORIGIN の項目からのコピーで通常は構いません。数字、スペースなどが含まれますが,これは BLAST の場合と同様に 
+ClastalX によって無視されるため,特に削除する必要はありません。
+注:データによっては配列中にイントロン情報などのコメントが書き込まれている場合があります。
+アルファベットで記述されているコメントは ClustalX に誤って認識されてしまいますので,予め削除しましょう。
+あるいは,NCBI のデータシートの上部にある Display のセレクトボックス(初めは "GenBank" が選択されている)で "FASTA" 
+を選択すると,配列情報だけが表示されます。
+このようにして作成したファイルを保存します(ここでは 18S.fst とします。18S.fst 
+http://www2.tba.t-com.ne.jp/nakada/takashi/phylogeny/data/hj2/18S.fst からダウンロードできます。メモ帳などで開いてみて下さい)。
+配列のアラインメント作成
+さて,データが集まりましたらこれを並べる必要があります。例えば上記の 18S.fst ファイルに含まれる配列は,
+1850 塩基対(カモノハシ),1869 塩基対(ネズミ),1969 塩基対(ヒト),1737 塩基対(ニワトリ)
+とそれぞれ長さが違います。これは解読されている領域そのものが異なっているのかもしれませんし,
+進化の過程で挿入・欠失が蓄積して遺伝子の長さそのものが変わったのかもしれません。
+しかし系統解析を行うためには相同な領域同士を比較する必要があります。そのために配列間で相同な領域を推定し,
+相同な座位が縦に並ぶように挿入/欠失の位置を推定する操作を「アラインメント」(alignment)と言います。
+アラインメントには ClustalX というプログラムを用いると便利ですので,このプログラムの使用法について紹介します。
+ClustalX を開きます。プログラム一覧から ClustalX2 を開きます。次に File  Load Sequences から作成した 
+Fasta 形式のファイルを読み込みます。
+注:ClustalX 2.0 では,ファイル名またはファイルのパス(ファイルを右クリックしてプロパティを開くと,
+"場所" として表示されます)に日本語が含まれていると読み込めません。特に Windows XP では,デスクトップに置いたファイル,
+あるいはデスクトップに置いたフォルダ内部のファイルは読み込めません(Windows Vista の場合は問題ありません)。
+ファイル名,フォルダ名を日本語に直すか,新たにアルファベット表記のフォルダを作成して読み込みたいファイルを移して下さい。
+画面に表示された配列を見ると,配列がそろっていないことが多いかと思います。上述の 18S.fst を読み込んだ場合,
+配列はばらばらになっています(図 1)。
+はじけじゅ

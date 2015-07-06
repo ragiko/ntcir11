@@ -1,0 +1,3 @@
+肝腫瘍検出方法に関しては多くの手法が提案されており,それらは濃度値情報を基本としたものである.しかし,画像のコントラストが良くない場合には検出が困難になるという問題がある.そこで,学習用データから作成した確率密度関数を用いてヒストグラム変換をすることにより画像のコントラストを改善する方法を前処理として行う.その後,EM/MPMアルゴリズムを用いることにより,腫瘍を検出した.
+There are many methods for detecting Liver tumor. And those methods are based on intensity information. However, if the contrast of CT images is low, it is difficult to detect the tumor accurately. In this paper, we propose a contrast enhancement method based on probability density function which can be obtained from training data. After preprocessing of contrast enhancement, we use an EMJMPM algorithm to detect the tumor.
+

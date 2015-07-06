@@ -1,0 +1,194 @@
+この記事は公開されてから1年以上経過しています。情報が古い可能性がありますので、ご注意ください。
+はじめに
+@smokeymonkeyです。ここまで「とにかくElasticSearchをAWS上で動かす」ことを中心に調べてきました。ここで一度ElasticSearch自体の構造について整理したいと思います。
+ElasticSearchの構造
+ElasticSearchは大きく以下のようなデータ構造になっています。
+index ... その名の通り索引です。このindexに検索対称のドキュメントを格納します。Indexは複数もつことが出来ます。
+type ... 格納するドキュメントを種類によって分別することが出来ます。同じfieldリストを持つdocmentの集合体であり、データベースで言えばテーブルに相似します。
+document ... 格納されたドキュメントです。また個々のドキュメントの識別子をidと呼びます。ドキュメントは1つ以上の項目(field)を持ち、データベースで言えばレコードに相似します。
+field ... ドキュメントが持つ項目です。例えばある人物の情報を格納するドキュメントであれば、名前・性別・年齢などです。データベースで言えばカラムに相似します。
+text ... 項目(field)に入れられたデータ自体です。また要素解析(analyze)され分解された単位のデータをtermと呼びます。
+mapping ... マッピング定義では、ドキュメントの個々のフィールドに対する振る舞いを定義することが出来ます。ドキュメントに対する属性は、基本的にElasticSearchが自動的に推測してくれます。例えば「name : "smokeymonkey"」であればname項目はStringと判断されるし、「age : "18"」であればage項目は数値として判断されます。しかし日付を格納する項目では数値では無くDateとして扱いたいというような場合があります。このような場合にmapping設定で項目の属性を明示的に指定することが出来ます。
+データを作成する
+ElasticSearchはスキーマレスのため事前にデータ構造を定義する必要は無いのですが、分かりやすいように明示的にデータ構造を定義してみます。今回は「辞書」を例にしたいと思います。
+index、typeの定義
+まず、索引(index)を「辞書(dic)」とします。
+$ curl -XPUT http://localhost:9200/dic/
+{"ok":true,"acknowledged":true}
+この辞書は「英和辞書(ej)」と「国語辞書(jp)」という二つの種類(type)を持ちます。 英和辞書の場合、語句(word)、意味1(mean1)、意味2(mean2)、例文(sample)、登録日時(add_date)を持ちます。このうち登録日時以外はString、登録日時のみはDateとしてマッピングします。
+$ curl -XPUT http://localhost:9200/dic/ej/_mapping -d '{
+>       "ej": {
+>           "properties": {
+>               "word"    : { "type": "string" },
+>               "mean1"   : { "type": "string" },
+>               "mean2"   : { "type": "string" },
+>               "sample"  : { "type": "string" },
+>               "add_date": { "type":"date", "format":"yyyy/MM/dd"}
+>           }
+>       }
+>   }'
+{"ok":true,"acknowledged":true}
+国語辞書の場合、語句(word)、読み(pronunciation)、意味1(mean1)、意味2(mean2)、登録日時(add_date)を持ちます。 英和辞書と同様に、登録日時以外はString、登録日時のみはDateとしてマッピングします。
+$ curl -XPUT http://localhost:9200/dic/jp/_mapping -d '{
+>        "jp" : {
+>            "properties" : {
+>                "word"          : { "type" : "string" },
+>                "pronunciation" : { "type" : "string" },
+>                "mean1"         : { "type" : "string" },
+>                "mean2"         : { "type" : "string" },
+>                "add_date"      : { "type" : "date", "format":"yyyy/MM/dd"}
+>            }
+>        }
+>    }'
+{"ok":true,"acknowledged":true}
+documentの登録
+次にtype=英和辞書にドキュメントを登録します。"dic"がindex、"ej"がtype、"1"がdocument idです。またfieldは事前にmapping定義したものであり、"add_date"にはデータ登録時の日付を入れています。
+$ curl -XPUT http://localhost:9200/dic/ej/1 -d '
+>     {
+>       "word"      : "run",
+>       "mean1"     : "走る",
+>       "mean2"     : "急いで行く",
+>       "sample"    : "My son ran to me.",
+>       "add_date"  : "'`/bin/date +%Y/%m/%d`'"
+>     }'
+{"ok":true,"_index":"dic","_type":"ej","_id":"1","_version":1}
+同様に2つ目、3つ目のドキュメントを登録します。
+$  curl -XPUT http://localhost:9200/dic/ej/2 -d '
+>     {
+>       "word"      : "eat",
+>       "mean1"     : "食べる",
+>       "mean2"     : "浸食する",
+>       "sample"    : "I eat a curry and rice.",
+>       "add_date"  : "'`/bin/date +%Y/%m/%d`'"
+>     }'
+{"ok":true,"_index":"dic","_type":"ej","_id":"2","_version":1}
+$ curl -XPUT http://localhost:9200/dic/ej/3 -d '
+>     {
+>       "word"      : "drunk",
+>       "mean1"     : "酒に酔った",
+>       "mean2"     : "夢中になった",
+>       "sample"    : "He came to work drunk.",
+>       "add_date"  : "'`/bin/date +%Y/%m/%d`'"
+>     }'
+{"ok":true,"_index":"dic","_type":"ej","_id":"3","_version":1}
+続いてtype=国語辞書にドキュメントを登録します。英和辞書にドキュメントを登録する際にはdocument idを指定しましたが、今回は自動的に割り当てられるようにします(通常プログラムからAPIを叩いてデータを登録する場合にはこちらのケースが多いでしょう)。この場合メソッドはPUTでは無くPOSTを使用します。
+$ curl -XPOST http://localhost:9200/dic/jp/ -d '
+>      {
+>        "word"          : "梅酒",
+>        "pronunciation" : "うめしゅ",
+>        "mean1"         : "青梅を焼酎と氷砂糖またはみりんに漬けて造った果実酒",
+>        "mean2"         : "梅焼酎",
+>        "add_date"      : "'`/bin/date +%Y/%m/%d`'"
+>      }'
+{"ok":true,"_index":"dic","_type":"jp","_id":"7dMvxc7iSZmkFVU2hVoOKw","_version":1}
+$ curl -XPOST http://localhost:9200/dic/jp/ -d '
+>      {
+>        "word"          : "麦酒",
+>        "pronunciation" : "ばくしゅ",
+>        "mean1"         : "麦を原料に醸造した酒",
+>        "mean2"         : "ビール",
+>        "add_date"      : "'`/bin/date +%Y/%m/%d`'"
+>      }'
+{"ok":true,"_index":"dic","_type":"jp","_id":"VV40_xzsRH-zoRYo6bpCOg","_version":1}
+$  curl -XPOST http://localhost:9200/dic/jp/ -d '
+>      {
+>        "word"          : "技術者",
+>        "pronunciation" : "ぎじゅつしゃ",
+>        "mean1"         : "科学上の専門的な技術を有し、それを役立たせることを職業とする人",
+>        "mean2"         : "エンジニア",
+>        "add_date"      : "'`/bin/date +%Y/%m/%d`'"
+>      }'
+{"ok":true,"_index":"dic","_type":"jp","_id":"kmAJ3rftRBSFC4PZI4AJHg","_version":1}
+データを操作する
+documentの取得
+それではドキュメントの取り出しを行います。 document idが分かっている場合は、idを指定してget apiで取得が出来ます。
+$ curl -XGET http://localhost:9200/dic/ej/1
+{"_index":"dic","_type":"ej","_id":"1","_version":1,"exists":true, "_source" :
+{
+"word"      : "run",
+"mean1"     : "走る",
+"mean2"     : "急いで行く",
+"sample"    : "My son ran to me.",
+"add_date"  : "2013/11/01"
+}
+}
+必要なfieldのみを指定して取得することも出来ます。
+$ curl -XGET http://localhost:9200/dic/ej/1?fields=word,sample
+{"_index":"dic","_type":"ej","_id":"1","_version":1,"exists":true,"fields":
+{"word":"run",
+"sample":"My son ran to me."
+}
+}
+documentの更新
+更新はdocument idを指定して再度PUTすることで更新されます。また"_version"がカウントアップされます。
+$ curl -XPUT http://localhost:9200/dic/ej/1 -d '
+>      {
+>        "word"      : "run",
+>        "mean1"     : "走る",
+>        "mean2"     : "急いで行く",
+>        "sample"    : "My wife ran to me.",
+>        "add_date"  : "'`/bin/date +%Y/%m/%d`'"
+>      }'
+{"ok":true,"_index":"dic","_type":"ej","_id":"1","_version":2}
+$ curl -XGET http://localhost:9200/dic/ej/1
+{"_index":"dic","_type":"ej","_id":"1","_version":2,"exists":true, "_source" :
+{
+"word"      : "run",
+"mean1"     : "走る",
+"mean2"     : "急いで行く",
+"sample"    : "My wife ran to me.",
+"add_date"  : "2013/11/01"
+}}
+documentの検索
+search apiを使うことで検索が出来ます。この例では"word"というfieldに"梅酒"を含むドキュメントを検索しています。
+$ curl -XGET http://localhost:9200/dic/jp/_search -d '
+> {
+>     "query" : { "match":{"word":"梅酒"}}
+> }'
+{"took":10,"timed_out":false,"_shards":{"total":5,"successful":5,"failed":0},"hits":{"total":1,"max_score":1.6931472,"hits":[{"_index":"dic","_type":"jp","_id":"7dMvxc7iSZmkFVU2hVoOKw","_score":1.6931472, "_source" :
+{
+"word"          : "梅酒",
+"pronunciation" : "うめしゅ",
+"mean1"         : "青梅を焼酎と氷砂糖またはみりんに漬けて造った果実酒",
+"mean2"         : "梅焼酎",
+"add_date"      : "2013/11/01"
+}}]}}
+match_allにて全てのデータを抽出することも出来ます。例えばtype=国語辞書に対してmatch_allで抽出してみます。
+$ curl -XGET http://localhost:9200/dic/jp/_search -d '
+>  {
+>      "query" : {
+>          "match_all" : {}
+>      }
+>  }'
+{"took":2,"timed_out":false,"_shards":{"total":5,"successful":5,"failed":0},"hits":{"total":3,"max_score":1.0,"hits":[{"_index":"dic","_type":"jp","_id":"7dMvxc7iSZmkFVU2hVoOKw","_score":1.0, "_source" :
+{
+"word"          : "梅酒",
+"pronunciation" : "うめしゅ",
+"mean1"         : "青梅を焼酎と氷砂糖またはみりんに漬けて造った果実酒",
+"mean2"         : "梅焼酎",
+"add_date"      : "2013/11/01"
+}},{"_index":"dic","_type":"jp","_id":"VV40_xzsRH-zoRYo6bpCOg","_score":1.0, "_source" :
+{
+"word"          : "麦酒",
+"pronunciation" : "ばくしゅ",
+"mean1"         : "麦を原料に醸造した酒",
+"mean2"         : "ビール",
+"add_date"      : "2013/11/01"
+}},{"_index":"dic","_type":"jp","_id":"kmAJ3rftRBSFC4PZI4AJHg","_score":1.0, "_source" :
+{
+"word"          : "技術者",
+"pronunciation" : "ぎじゅつしゃ",
+"mean1"         : "科学上の専門的な技術を有し、それを役立たせることを職業とする人",
+"mean2"         : "エンジニア",
+"add_date"      : "2013/11/01"
+}}]}}
+documentの削除
+削除はdocumentのidを指定してDELETEメソッドにて行います。
+$ curl -XDELETE http://localhost:9200/dic/ej/1
+{"ok":true,"found":true,"_index":"dic","_type":"ej","_id":"1","_version":3}
+$ curl -XGET http://localhost:9200/dic/ej/1
+{"_index":"dic","_type":"ej","_id":"1","exists":false}
+まとめ
+ElasticSearchのデータ構造の概念を整理してみました。ElasticSearchは今回ご紹介した以外にも様々なAPIがありますので公式リファレンスをご参照下さい。 
+次はこのデータがClusterの中でどのように同期され保持されるのかについて確認したいと思います。
+データ構造について – AWSで始めるElasticSearch(4) ｜ Developers.IO

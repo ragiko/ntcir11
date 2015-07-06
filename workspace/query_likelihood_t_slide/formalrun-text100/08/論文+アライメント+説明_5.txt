@@ -1,0 +1,124 @@
+
+利用可能バイオツール
+スーパーコンピュータシステムにインストールされているゲノム解析系ツールの概要を本ページに参考に記載します。これらのツールは、スーパーコンピュータシステムにアカウント登録して頂き、ログインして頂くことで利用可能です。 システム利用申請はこちらから
+NGS関連以外のツールの概略説明については、NBDCが提供しているゲノム解析ツール リンク集を一部参考にしています。ゲノムリンク集にはツールの原著論文へのリンクも張られていますので、詳細については論文を参照してください。
+その他参考URL(主にNGS関連)について以下に示します。
+SeqAnswers Howto
+SeqAnswersのSoftware List
+配列解析関連
+NCBI BLAST
+URL:http://www.ncbi.nlm.nih.gov/books/NBK1763/
+NCBI開発のペアワイズアラインメントソフトウェア。
+BLAT
+URL:http://genome.ucsc.edu/FAQ/FAQblat
+論文:BLAT—The BLAST-Like Alignment Tool
+Jim Kent開発の高速なアラインメントソフトウェア。40塩基以上のシーケンスに対して95%以上のsimilarityの配列を高速に発見するように設計されている。
+ClustalW / ClustalW2
+URL:http://www.clustal.org/clustal2/
+マルチプルアラインメントソフトウェア。ちなみに、Clustal系列のソフトウェアにはClustalWのほかにClustalX(GUI)、Clustal Omegaがあり、現在はClustal Omegaが後継ソフトウェア。
+ClustalW-ddbj
+URL:http://www.ddbj.nig.ac.jp/search/help/clustalwhelp-e.html#ddbjoriginal/
+マルチプルアライメントソフトウェアClustalWのDDBJオリジナル版。系統樹作成・BOOTSTRAP の詳細なオプションの指定が可能。なお、DDBJオリジナル版はバージョン1.83をベースに一部改変を加えている為、バージョンは固定。
+FASTA
+URL:http://fasta.bioch.virginia.edu/fasta_www2/fasta_down.shtml
+InterProScan
+URL:http://code.google.com/p/interproscan/(InterProScan5)
+URL:http://www.ebi.ac.uk/Tools/pfa/iprscan/(InterProScan4.X)
+EBI開発のタンパク質のモチーフをデータベースから検索するソフトウェア
+mafft
+URL:http://mafft.cbrc.jp/alignment/software/
+塩基配列およびアミノ酸配列のマルチプルアラインメントを作成するためのソフトウェア。数百の配列であっても高速に精度よくマルチプルアライメントを実行できるため、大量の配列を扱う場合に有利。
+phylip
+URL:http://evolution.genetics.washington.edu/phylip.html
+系統樹探索を行うプログラム(ツール一式)
+RAxML
+URL:http://sco.h-its.org/exelixis/software.html
+最尤法を用いて系統樹探索を行うプログラム。高速性に評価がある模様。
+NGS(Next Generation Sequencing)関連
+de novo アセンブラ
+De novo アセンブラの全体概要としては、SEQ AnswersのHow-to Wikiが参考になります。
+ALLPATHS-LG
+URL:http://www.broadinstitute.org/software/allpaths-lg/blog/
+文献:High-quality draft assemblies of mammalian genomes from massively parallel sequence data
+BroadInstitute開発のALLPATHSのLarge Genome(LG)用。MPI並列に対応しないがマルチスレッド並列には対応するので、大型サーバ上での実行が向く。サーバの選択、マルチスレッド動作など、基本的な使用方法、注意点についてはこちらへ
+SOAPdenovo
+URL:http://soap.genomics.org.cn/soapdenovo.html
+文献:De novo Assembly of human genomes with massively parallel short read sequencing
+BGI(University of Hong Kong)開発のdenovo アセンブラ。Large genome用。パンダゲノムのアセンブリの時に用いられた。現在はソースコードの配布もGPL下で行われている模様。本システム上での基本的な使用方法、注意点についてはこちらへ
+Edena v3
+URL:http://www.genomic.ch/edena.php
+文献:De novo bacterial genome sequencing: Millions of very short reads assembled on a desktop computer
+De bruijin 型では無く、OLCアセンブラ。
+Oases
+URL:http://www.ebi.ac.uk/~zerbino/oases/
+論文:Oases: Robust de novo RNA-seq assembly across the dynamic range of expression levels
+De novo トランスクリプトームアセンブラ。前提環境としてアセンブラのVelvet必要。
+Velvet
+URL:http://www.ebi.ac.uk/~zerbino/velvet/
+EBI開発のde novo アセンブラ。大型サーバ上での利用が多い。本システム上での基本的な利用法についてはこちらへ
+Trinity
+URL:http://trinityrnaseq.sourceforge.net/
+後発のアセンブラ。評判は高いように見えるが、メーリングリスト等の書き込みでは完全に評価は定まっていない(いろいろバグがある?)模様。
+マッピングツール
+ショートリードの為には、BWT(Burrows-Wheeler変換)などのアルゴリズムを利用した高速なマッピングツールが利用される。複数のマッピングツールが存在する。
+bwa
+URL:http://bio-bwa.sourceforge.net/
+文献Fast and accurate short read alignment with Burrows-Wheeler transform
+BWT(Burrows-Wheeler変換)を利用したマッピングツール。
+bowtie
+URL:http://bowtie-bio.sourceforge.net/index.shtml
+BWTベースのマッピングツール。これがalignerとしてはよく使われている模様(他のパイプラインツールからもよく利用される)
+bowtie2
+URL:http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+bowtieの後継。これもalignerとしてはよく使われている模様(他のパイプラインツールからもよく利用される)
+SOAP(v1)
+HP:
+マッピングツール。
+SOAP3
+URL:http://www.cs.hku.hk/2bwt-tools/soap3/
+ショートリード用のマッピングツール。SOAPの後継。GPGPUを利用し高速。
+SOAP3-dp
+URL:http://www.cs.hku.hk/2bwt-tools/soap3-dp/
+ショートリード用のマッピングツール。DPはDynamic Programmingの略。開発者自身の比較記事があり、SOAP3より高速。GPGPUを利用。
+RNA-Seq
+細胞の中のmRNAやmiRNAの配列を解読して、発現量の定量、新規転写配列の発見ができる手法
+以下のcufflinksとTopHatを使ったRNAseqに対するDefferential gene expression analysisのプロトコル論文を参考までに(Nature Protcolの当該論文のURL)
+cufflinks
+URL:http://cufflinks.cbcb.umd.edu/
+文献:http://www.ncbi.nlm.nih.gov/pubmed/20436464
+tophat
+URL:http://tophat.cbcb.umd.edu/
+splice junctionの位置を推定してくれるツール。
+ChIP-Seq
+ChIP-Seqに関する文献http://www.ncbi.nlm.nih.gov/pubmed/19736561
+MACS(Model-based Analysis for ChIP-Seq)
+URL:http://liulab.dfci.harvard.edu/MACS/
+文献:Model-based Analysis of ChIP-Seq (MACS). Genome Biology 2008
+総合ツール・フォーマットコンバータ・ツールライブラリ
+samtools
+URL:http://samtools.sourceforge.net/
+SAM、BAMフォーマットのファイル、マッピング結果を操作するツール。
+BEDtools
+URL:http://code.google.com/p/bedtools/
+BED、GFF/GTF、VCF、SAM/BAMフォーマットを入力に取り各種処理を行うツール群。
+picard
+URL:http://picard.sourceforge.net/
+Javaベースの、SAM/BAMフォーマットファイルを操作する為のツール群。SAMToolsの開発元と同じと思われるところが開発。
+GATK
+URL:http://www.broadinstitute.org/gsa/wiki/index.php/Home_Page
+Broad Institute開発のNGS関連ツールライブラリ。MapReduce(Hadoop実装ではない)の考え方に従った並列分散プログラミングが可能。
+ビューア
+IGV(Integrative Genome Viewer)
+URL:http://www.broadinstitute.org/igv/
+文献:http://bib.oxfordjournals.org/content/early/2012/04/18/bib.bbs017.full?keytype=ref&%2520ijkey=qTgjFwbRBAzRZWC
+Broad Institute開発のゲノムビューア。NGSの用途でも利用。
+その他
+pindel
+URL:https://trac.nbic.nl/pindel/
+文献:http://www.ncbi.nlm.nih.gov/pubmed/19561018
+インサーション・デリーションの検知を行う為のソフトウェア。
+cutadapt
+URL:http://code.google.com/p/cutadapt/
+FASTQ/A file からシーケンスアダプター配列やプライマー配列を除くためのプログラム。
+Resarch Organization of Information and Systems  National Institute of Genetics.  This Home  Page is licensed under a Creative Commons 表示 2.1 日本 License. © 2015
+利用可能バイオツール

@@ -1,0 +1,237 @@
+
+以前から気になっていたのですが、DataTable/DataSet を使うと遅いのでは?と思っていました。
+実際、Visual Studio で自動生成する型付の DataTable を使うと思ったように性能がでないことが多く、結局 SQL でチューニング、ってことになります。
+で、具体的に遅そうなところを実験してみました。
+単純に DataTable の性能を比較したいので、データベースには使わず値の代入だけ実験します。
+列が 100 のテーブルを想定する。
+行数を 10000 件挿入する。
+これを次のパターンで比較します。
+普通に DataTable を使う
+With 構文を使って、高速化する?
+for earc を使ってカウンタを使わない方法
+名前を使わずに index を使う
+generic list を使う
+generic list で構造体/クラスを使う
+先に結論から書くと、1 から 4 までは大してスピードは変わりません。
+期待してたのは for each を使うと早くなれば良かったんですけどね。5 % ぐらいしか早くなりません。
+ですが、DataTable を使うのを止めて、List コレクションを使うと 5 倍ぐらい早くなります。
+avg. Go1 13.88 sec
+avg. Go2 13.09 sec
+avg. Go3 12.98 sec
+avg. Go4 12.93 sec
+avg. Go5 2.12 sec
+avg. Go6 2.08 sec
+どうも、単純に DataTable.Rows へのアクセスが複雑怪奇なんでしょうねぇ。DataSet, DataTable が出来たのは generic ができる前なので、そのあたりの制限で遅くなっているのかもしれません。
+.NET Framework の標準ライブラリ(あるいは自動生成したもの)も generic を考慮していないコードがあるので、そのあたり、パフォーマンス的に無駄になっている可能性があるということのなのかも。
+以下は、VB のサンプルコードです。
+素直に DataTalbe を使う
+''' <summary>
+''' 素直に Item に名前を指定する
+''' </summary>
+''' <returns></returns>
+''' <remarks></remarks>
+Public Function Go1() As Double
+Dim dt As DataTable = MakeDataTable()
+' あえて最初に行を追加しておく
+For i = 0 To 10000 - 1
+Dim row As DataRow = dt.NewRow()
+dt.Rows.Add(row)
+Next
+Dim start As Date = Date.Now
+Dim tm As Date = Date.Now
+' あえて1カラムずつ追加する
+For i = 0 To 10000 - 1
+dt.Rows(i).Item("col000") = tm.ToString() : tm.AddSeconds(1)
+dt.Rows(i).Item("col001") = tm.ToString() : tm.AddSeconds(1)
+dt.Rows(i).Item("col002") = tm.ToString() : tm.AddSeconds(1)
+...
+dt.Rows(i).Item("col097") = tm.ToString() : tm.AddSeconds(1)
+dt.Rows(i).Item("col098") = tm.ToString() : tm.AddSeconds(1)
+dt.Rows(i).Item("col099") = tm.ToString() : tm.AddSeconds(1)
+Next
+Dim tend As Date = Date.Now
+Dim span As Double = (tend - start).TotalSeconds()
+Console.WriteLine("Go1 {0:#.00} sec", span)
+Return span
+End Function
+With 構文を使う
+いわゆるポインタアクセスの代わりに with 構文を使います。
+dt.Rows(i) のところが無くなるので、コード的には安全になるのですが、スピードは 2,3 % 程度早くなる程度です。
+''' <summary>
+''' With 構文を使ってみる
+''' </summary>
+''' <returns></returns>
+''' <remarks></remarks>
+Public Function Go2() As Double
+Dim dt As DataTable = MakeDataTable()
+' あえて最初に行を追加しておく
+For i = 0 To 10000 - 1
+Dim row As DataRow = dt.NewRow()
+dt.Rows.Add(row)
+Next
+Dim start As Date = Date.Now
+Dim tm As Date = Date.Now
+' あえて1カラムずつ追加する
+For i = 0 To 10000 - 1
+With dt.Rows(i)
+.Item("col000") = tm.ToString() : tm.AddSeconds(1)
+.Item("col001") = tm.ToString() : tm.AddSeconds(1)
+.Item("col002") = tm.ToString() : tm.AddSeconds(1)
+...
+.Item("col097") = tm.ToString() : tm.AddSeconds(1)
+.Item("col098") = tm.ToString() : tm.AddSeconds(1)
+.Item("col099") = tm.ToString() : tm.AddSeconds(1)
+End With
+Next
+Dim tend As Date = Date.Now
+Dim span As Double = (tend - start).TotalSeconds()
+Console.WriteLine("Go2 {0:#.00} sec", span)
+Return span
+End Function
+for each を使う
+for each を使うと劇的に早くなる...のが良かったのですが、あまり早くなりません。
+10 % 弱ほど早くなります。
+''' <summary>
+''' for each を使う
+''' </summary>
+''' <returns></returns>
+''' <remarks></remarks>
+Public Function Go3() As Double
+Dim dt As DataTable = MakeDataTable()
+' あえて最初に行を追加しておく
+For i = 0 To 10000 - 1
+Dim row As DataRow = dt.NewRow()
+dt.Rows.Add(row)
+Next
+Dim start As Date = Date.Now
+Dim tm As Date = Date.Now
+' あえて1カラムずつ追加する
+For Each row As DataRow In dt.Rows
+With row
+.Item("col000") = tm.ToString() : tm.AddSeconds(1)
+.Item("col001") = tm.ToString() : tm.AddSeconds(1)
+.Item("col002") = tm.ToString() : tm.AddSeconds(1)
+...
+.Item("col097") = tm.ToString() : tm.AddSeconds(1)
+.Item("col098") = tm.ToString() : tm.AddSeconds(1)
+.Item("col099") = tm.ToString() : tm.AddSeconds(1)
+End With
+Next
+Dim tend As Date = Date.Now
+Dim span As Double = (tend - start).TotalSeconds()
+Console.WriteLine("Go3 {0:#.00} sec", span)
+Return span
+End Function
+名前を使わずに数値を使う
+比較のために列名ではなくて、番号を使ってアクセスさせてみます...が、あまり早くなりません。
+for each と同じで 10 % ぐらいですね。
+''' <summary>
+''' 名前を使わずに index を使う
+''' </summary>
+''' <returns></returns>
+''' <remarks></remarks>
+Public Function Go4() As Double
+Dim dt As DataTable = MakeDataTable()
+' あえて最初に行を追加しておく
+For i = 0 To 10000 - 1
+Dim row As DataRow = dt.NewRow()
+dt.Rows.Add(row)
+Next
+Dim start As Date = Date.Now
+Dim tm As Date = Date.Now
+' あえて1カラムずつ追加する
+For i = 0 To 10000 - 1
+With dt.Rows(i)
+.Item(0) = tm.ToString() : tm.AddSeconds(1)
+.Item(1) = tm.ToString() : tm.AddSeconds(1)
+.Item(2) = tm.ToString() : tm.AddSeconds(1)
+...
+.Item(97) = tm.ToString() : tm.AddSeconds(1)
+.Item(98) = tm.ToString() : tm.AddSeconds(1)
+.Item(99) = tm.ToString() : tm.AddSeconds(1)
+End With
+Next
+Dim tend As Date = Date.Now
+Dim span As Double = (tend - start).TotalSeconds()
+Console.WriteLine("Go4 {0:#.00} sec", span)
+Return span
+End Function
+list を使う
+これ以上は無理かなぁと思って、list に変えてみます。
+最初は、list(of object()) で、object の配列にしてみます。
+すると、すさまじく早くなります。5,6 倍は早くなりますね。
+''' <summary>
+''' generic List を使う
+''' </summary>
+''' <returns></returns>
+''' <remarks></remarks>
+Public Function Go5() As Double
+Dim dt As New List(Of Object())
+Dim start As Date = Date.Now
+Dim tm As Date = Date.Now
+' あえて1カラムずつ追加する
+For i = 0 To 10000 - 1
+Dim item(100) As Object
+item(0) = tm.ToString() : tm.AddSeconds(1)
+item(1) = tm.ToString() : tm.AddSeconds(1)
+item(2) = tm.ToString() : tm.AddSeconds(1)
+...
+item(97) = tm.ToString() : tm.AddSeconds(1)
+item(98) = tm.ToString() : tm.AddSeconds(1)
+item(99) = tm.ToString() : tm.AddSeconds(1)
+dt.Add(item)
+Next
+Dim tend As Date = Date.Now
+Dim span As Double = (tend - start).TotalSeconds()
+Console.WriteLine("Go5 {0:#.00} sec", span)
+Return span
+End Function
+list に構造体を使う
+object の配列では扱いづらいので、型付 DataTable 風にフィールドでアクセスできるように POJO なクラスを作ります。
+アクセスが遅くなると思いきや...全然変わりませんね。
+DataRow のところにクラスを使えるのが generic の良いところです。
+''' <summary>
+''' generic List で構造体を使う
+''' </summary>
+''' <returns></returns>
+''' <remarks></remarks>
+Public Function Go6() As Double
+Dim dt As New List(Of TITEM)
+Dim start As Date = Date.Now
+Dim tm As Date = Date.Now
+' あえて1カラムずつ追加する
+For i = 0 To 10000 - 1
+Dim it As New TITEM
+With it
+.col000 = tm.ToString() : tm.AddSeconds(1)
+.col001 = tm.ToString() : tm.AddSeconds(1)
+.col002 = tm.ToString() : tm.AddSeconds(1)
+...
+.col097 = tm.ToString() : tm.AddSeconds(1)
+.col098 = tm.ToString() : tm.AddSeconds(1)
+.col099 = tm.ToString() : tm.AddSeconds(1)
+End With
+dt.Add(it)
+Next
+Dim tend As Date = Date.Now
+Dim span As Double = (tend - start).TotalSeconds()
+Console.WriteLine("Go6 {0:#.00} sec", span)
+Return span
+End Function
+使うクラス
+Public Class TITEM
+Public col000 As String
+Public col001 As String
+Public col002 As String
+...
+Public col097 As String
+Public col098 As String
+Public col099 As String
+End Class
+という訳で、DataTable.Rows を使うよりも List(Of クラス) を使ったほうが 5 倍早いわけです。
+このあたり、SQL Server へのアクセス(SqlCommand, SqlDataAdapter, Linq)の組み合わせで考えると、
+データベースは SqlCommand でアクセス
+取得したデータのアクセスは generic List を利用
+とする組み合わせ一番早いわけです。
+さて、これをどのように実装するのか?あるいは、既にあるのか?ってことですね。これは後程。
+意外と遅い DataTable 、なので List を使うと 5 倍早くなる | Moonmile Solutions Blog

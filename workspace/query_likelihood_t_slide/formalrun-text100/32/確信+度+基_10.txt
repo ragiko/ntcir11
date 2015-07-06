@@ -1,0 +1,3 @@
+CPU420は、さらに、ルールが結論確信度ルールである場合には、確信度を格納する新たな変数と確信度を集計する関数をルールに導入する結論確信度対応処理を実行する。Further, the CPU 420 executes processing for a conclusion certainty factor that introduces the new variable storing the certainty factor and the function totalizing the certainty factor into the rule when the rule is the conclusion certainty factor rule. - 特許庁
+CPU420はまた、ルールが条件確信度ルールである場合には、条件確信度を確信度が格納された新たな変数に置き換える条件確信度対応処理を実行する。Also, the CPU 420 executes processing for a condition certainty factor that replaces the condition certainty factor with a new variable where the certainty factor is stored when the rule is the condition certainty factor rule. - 特許庁
+「確信度」に関連した英語例文の一覧 - Weblio英語例文検索

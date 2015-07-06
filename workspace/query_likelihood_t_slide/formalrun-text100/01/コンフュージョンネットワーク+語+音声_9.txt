@@ -1,0 +1,22 @@
+検索トピック 86件
+Two-leval relevance judgment for arbitrary-length passages in the documents, including supporting passages.
+「音声データ」および「人手による書き起こしデータ」
+このテストコレクションで使用する文書データは、国立国語研究所が提供している『日本語話し言葉コーパス(The Corpus of Spontaneous Japanese (CSJ))』のサブセットです。 利用者は各自、データを購入する必要があります。
+詳細は、『日本語話し言葉コーパス』のウェブサイトをご覧ください。
+『日本語話し言葉コーパス』は、講演音声、モノローグ音声などの数種類の自発音声データを、人手による書き起こしデータとともに収録しています。このテストコレクションで文書データとして使用するのは、このうち、学会での講演および、与えられた論題に対する模擬講演の、2種類の講演音声で、総計2,702講演、時間にして約600時間です。
+このテストコレクションでは、各タスクの検索対象として、次の2種類の文書を使用します。
+ALL: 総計 2,702 講演 (約600時間)
+CORE: 『日本語話し言葉コーパス』の中で定義された177講演分のサブセット(約 44 時間)
+「参照用自動音声認識データ」
+NTCIR-9 SpokenDoc (SpokenDoc-1)で使用された、文書データの参照用自動音声認識データは、こちらのページ: Reference Automatic Transcriptions for SpokenDoc-1 から入手可能です。
+2種類の自動音声認識データが用意されています。テキスト表現は、ラティスおよびコンフュージョン・ネットワーク表現に加え、二つのバックグラウンドASRシステムに依拠した単語または音節配列のN-bestリストです。  
+Word-based transcriptions obtained by using a word-based ASR
+system. In other words, a word n-gram model is used for the language
+model of the ASR system. With the textual representation, it also
+provides the vocabulary list used in the ASR.
+Syllable-based transcription obtained by using a syllable-based
+ASR system. The syllable n-gram model is used for the language model,
+where the vocabulary is the all Japanese syllables.
+検索語 (for STD task)
+ALLとCORE、二つの検索語リストのセットを配布します。各セットは50件の検索語を含みます。各検索語は、1語あるいはそれ以上の単語からなります。検索語の長さは、4から14モーラの範囲内です。検索語リストのフォーマットは、以下の通りです。
+

@@ -1,0 +1,90 @@
+
+<1>人間と部屋の熱的関係に関するさまざまな値
+<2>固体(壁・人体)と静止空気の間の熱伝達率
+<3>人体と流動空気の間の熱伝達率
+<4>壁表面と外界の間の断熱材熱伝導率
+<5>壁の放射率
+<6>人体の放射率
+<7>人体の表面積
+<8>赤外線透過材料
+<9>ふく射利用空調システムの例
+<1>
+人間と部屋の熱的関係に関するさまざまな値
+熱ふく射物性論(2004前期)。
+期末レポートの参考Webページを以下に記す。
+<2>
+固体(壁・人体)と静止空気の間の熱伝達率
+・熱伝達率 - Wikipedia
+http://ja.wikipedia.org/wiki/%E7%86%B1%E4%BC%9D%E9%81%94%E7%8E%87 
+> 1 kcal/m^2h℃  1.16279 W/m^2℃
+・ http://nippon.zaidan.info/seikabutsu/1996/00271/contents/104.htm 
+>(2)熱伝達率(d)kcal/m2h℃(放熱係数)
+>
+>これは液体又は気体と、固体表面との間の熱の授受の割合である。
+>流体と固体表面との温度差1℃ごとに、毎時固体表面 1m^2を通過する熱量である。
+>
+>数値は、静止空気の場合d≒3、管内を流れる水又は蒸気の場合、d≒40,000にもなる。
+その他、参考。
+・ http://www.zeneral.co.jp/pdf/Miriyou.pdf 
+<3>
+人体と流動空気の間の熱伝達率
+・ http://home.kanto-gakuin.ac.jp/~yamazaki/yamaken/n7n/housha.html 
+> SET*では,人体周りの対流熱伝達率hcは,風速v[m/s]の関数として,
+>  hc=8.3・v0.6
+>を使用している。実験値ではあるが,標準体型の円柱モデル(頭,胴,腕,脚)の計算値
+>と酷似している。
+・PMV
+http://www.daiichi-kagaku.co.jp/situdo/notes/01/tec01.html 
+・SET*
+http://www.daiichi-kagaku.co.jp/situdo/notes/02/tec02.html 
+<4>
+壁表面と外界の間の断熱材熱伝導率
+・(各種断熱材における熱伝導率)
+http://www.mag.co.jp/gw/gw3.php 
+>グラスウール10K 0.050 W/(m・K)
+その他、参考。
+・ http://qcd.co.jp/sd/sdf02.html 
+<5>
+壁の放射率
+・ http://www.arch.t-kougei.ac.jp/ito/pdf/13-2003.pdf 
+>放射:放射率はすべての壁面で0.9
+<6>
+人体の放射率
+・ http://www.techno-qanda.net/dsweb/Get/Document-9912/%E6%94%BE%E5%B0%84%E6%B8%A9%E5%BA%A6%E8%A8%88.pdf 
+>人体の表面は皮膚の色にかかわらず 0.98 程度とされています。
+・光散乱モデルを用いた皮膚と刺青の色評価に関する研究
+http://www-linac.kek.jp/seminar/2004/shimadaOHP1.pdf 
+利用はしなかったが、面白い。
+<7>
+人体の表面積
+・ http://mho.s1.xrea.com/clog/200302.shtml 
+http://www.geocities.co.jp/Technopolis-Mars/7808/ma/surface.html 
+人体の表面積は
+s = 0.007184 × w^{0.425} × h^{0.725}
+で表される。
+s: 人間の表面積(m^2)
+w: 体重(kg)
+h: 身長(cm)
+・複雑形状に対応する放射伝熱解析法の開発と数値サーマルマネキンへの適用
+http://venus.iis.u-tokyo.ac.jp/doc_happyo/database_pdf/2001/0109a01.pdf 
+( http://venus.iis.u-tokyo.ac.jp/doc_happyo/top.htm  )
+>身長 1.67m , 表面積 1.48m^2 である。
+これで確認した。
+<8>
+赤外線透過材料
+・ http://www.campuscreate2.com/new_model/view.php?return_id=00000000005 
+>赤外線透過材料(ZnSe,ZnS,赤外線用ガラスなど)で製作し,
+・ ZnSe (セレン化亜鉛)
+http://www.oken.co.jp/o/jpn_g/znse.html 
+・ http://global.horiba.com/analy/it/subete10.htm 
+>測定波長領域におけるフッ化バリウムの平均透過率は約0.91なので、図のように
+>フッ化バリウムマド越しに放射率0.95の物体を測定する場合は、放射温度計の
+>放射率設定値を
+> ε=0.95×0.91=0.86
+>に設定して測定してください。
+>一般に使用されている石英ガラスでは、2.5μmより長い波長の光は吸収されてしまいます。
+<9>
+ふく射利用空調システムの例
+http://www.hibiya-eng.co.jp/tech/kucho06.html 
+http://www.toda.co.jp/kenchiku/tcdb/14.html 
+講義関連 及び 調べものに役立ったWebページ(ac_0409100) @ 無窮ACADEMIC

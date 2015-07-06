@@ -1,0 +1,63 @@
+
+文書番号: win7_001
+対象OS: 英語版Windows 7 Ultimate
+概要
+このページは、Microsoft 英語版Windows 7 Ultimateで日本語を使う場合の基本設定ついて説明します。
+英語版Windows 7 Ultimateは、Windows
+XPと同じように、言語の設定を行うことで、日本語表示・入力、日本語プログラムのインストール・起動ができるようになります。
+Windows XPとの大きな違いは、以下の4点
+デスクトップ、ヘルプなども日本語に設定できる。
+ほとんどの設定がユーザ別に設定可能。
+設定は、一般ユーザ(Standard user)の権限で設定可能。
+言語設定の内容を他のユーザにコピー可能。
+です。
+Window 7インストール時の注意
+Windows 7をインストールするとき、日本語キーボードを選択しておくことが重要です。
+インストール画面のTime and currency formatをJapanese(Japan)にします。すると、Keyboard or input methodとKeyboard Typeが自動的に図のように変更されます。この状態でNextボタンを押してインストールを実行してください。
+Windows7のインストールが完了したら、以下の設定を行います。
+Language Packのインストール
+英語版Windows 7 Ultimateで、他国語(日本語、中国語、フランス語、韓国語etc...)を使う場合、ユーザ別の言語の設定を行う前に、Windows
+Vista 7 Language Packをインストールすることをお薦めします。
+権限:Standard user/Administratorで設定できます。 ただし、StandardUserで行った場合、Administratorのパスワードが要求されます。
+適用範囲:ユーザ別に設定可
+Windows 7 Ultimate Language Packのインストール方法
+Windows Updateを利用します。
+1. Control Pannel  Clock,Language and RegionカテゴリのChange display language をクリック
+2. Region and LanguageダイアログボックスのKeybords and Languagesタブで、「install/uninstal language...」ボタンをクリック
+3. 表示されるInstall or uninstall display languagesダイアログボックスで「Install display languages」をクリック
+4. 次に表示される画面で、Launch Windows Updateをクリック
+5.Windws Updateの画面が表示されるので、34 optional updates are availableをクリック
+6.「Select the updates you want to install」と書かれたダイアログボックスが表示されるので、Windows 7 Language Packs(34)グループの中で、「Japanese Languages Pack-Windows7 for x64-based Systems(KB972813)106.9MB」にチェックしてOKボタンをクリック
+お使いのWIndows 7 が32Bitの場合、x64の代わりにx86と表示されます。
+7.Womdpws Updateダイアログボックスに戻るので、「1 optional update selected」と表示されているのを確認のうえ、「Install updates」ボタンをクリック
+8.次の画面では、「I accept the license terms」のラジオボタンを選択して、「Finish」ボタンをクリック。
+すると、[Downloading updates...]と表示され、ダウンロードが始まる。次に、「Installing updates...」に変わり、Japanese Language Packがインストールされる。
+9.The updates were successfully installedと表示されるので、「Restart now」ボタンをクリックして、再起動する。
+日本語入力システムのインストール
+権限:Standard user/Administratorで設定できます。
+適用範囲:ユーザ別に設定可
+1.Control Pannel  Clock, Language and Region  Keyboard and Languages  Choose a display languageからデスクトップ・ヘルプに使いたい言語を選びます。
+英語のデスクトップを使う場合、この設定は必要ありません。
+ログオフしなければならない旨のダイアログボックスが表示されるので、「log off now」ボタンをクリックします。ログオンし直すと、「ごみ箱」と日本語で表示されているはず。スタートメニューも日本語で表示されているはずです。
+2.コントロールパネル-->時計、言語、および地域-->キーボードまたは入力方法の変更をクリック
+3.「キーボードおよび他の入力方法」グループの「キーボードの変更」ボタンをクリック。
+4.テキストサービスと入力言語ダイアログボックスの全般タブで「既定の言語」を日本語にする。「インストールされているサービス」で日本語(日本)を選択して「上へ移動」ボタンをクリックする。
+5.同じダイアログボックスの「詳細なキー設定」タブで「日本語(日本)-Microsoft IMEへ」を選択してから、「キー シーケンスの変更」ボタンをクリック。
+6.キーシーケンスの変更ダイアログボックスで、「キー シーケンスを有効にする」にチェックして、OKボタンを押す。
+この場合、日本語にするにはCtrl+Shiftキーを押しながら0を押すことにより、日本語IMEが立ち上がるようになるように思えますが、日本語109キーボードを使っている場合には、左Alt+半角/全角キーで日本語IMEが立ち上がります。
+テキスト サービスと入力言語ダイアログボックスのOKボタンをクリックして、地域と言語ダイアログボックスに戻ります。
+7.形式タブで形式が「英語(米国)」となっているので、ドロップダウンリストから日本語(日本)を選択
+8.場所タブで現在の場所が米国となっているのでドロップダウンリストから、日本を選択。
+9.管理タブでは、「ようこそ画面と新しいユーザーアカウント」グループの「設定のコピー」ボタンをクリック。
+すると「お使いの地域と言語の設定を適用しますか?」と表示されるので「適用」ボタンをクリックします。
+10.「ようこそ画面と新しいユーザーアカウントの設定」ダイアログボックスが表示されるので、現在のコピー先で「ようこそ画面とシステムアカウント」と「新しいユーザーアカウント」にチェックを入れてOKボタンをクリック
+上図ではすでに全て日本語になっていますが、上記操作を行う前は米国になっているものがあります。
+11.「表示言語の変更」ダイアログボックスが表示されますが次の操作を行うため「キャンセル」ボタンをクリック
+12.管理タブでUnicode対応ではないプログラムの言語グループで現在の言語が英語(米国)になっていますので、「システムロケールの変更」ボタンを押して、「地域と言語の設定」ダイアログボックスを表示させ「現在のシステムロケール」を日本語(日本)にしてOKボタンをクリック。
+次の画面が表示されますので、「今すぐ再起動」ボタンをクリックして再起動してください。
+シャットダウン中は「Shutting down...」とまだ英語で表示されますが、再起動するとき「Windowsを起動しています」「お待ちください」「ようこそ」と日本語で表示されるようになります。
+以上で、日本語化作業は完了です。
+IEを起動してインターネットに接続するとmsnの日本語ページが表示されるようになります。検索ボックスに日本語を入力するには、Alt+半角/全角キーを押します。
+日本語化された英語版Windows 7 Ultimate
+ページトップへ
+White Tiger - 英語版Windows 7 Ultimateを日本語化する方法

@@ -1,0 +1,124 @@
+
+こうして僕はエラーにはまった。
+エラーメッセージとその発生状況、対処法と(解決できれば)解決策をまとめていくページ。
+VC++2010環境です。
+クラスの宣言の最後にセミコロンは付けたか?
+1>c:\projects\test.h(11): error C2236: 予期しない 'class' 'test' です。';' が入力されていることを確認してください。
+1>c:\projects\test.h(11): error C2143: 構文エラー : ';' が '{' の前にありません。
+1>c:\projects\test.h(11): error C2447: '{' : 対応する関数ヘッダーがありません (旧形式の仮引数リスト?)
+ヘッダの中で定義しているクラスの宣言の最後にセミコロンをつけ忘れているとなる。とても厄介。
+エラーが起きたヘッダでincludeしているヘッダに書かれたクラスの宣言で起こしがち。
+セミコロンつけたか?
+struct Unko
+{
+void f()  //セミコロンついてない。
+HWND hWnd;
+};
+1>main.cpp(6): error C3646: 'HWND' : 不明なオーバーライド指定子です
+1>main.cpp(6): error C3646: 'hWnd' : 不明なオーバーライド指定子です
+cppファイル作るのめんどくさくてヘッダーファイルの中で定義までしちゃったときのエラー
+1>main.obj : error LNK2005: "unsigned int __cdecl Tools::GetHashedIdent(char const *)" (?GetHashedIdent@Tools@@YAIPBD@Z) は既に Manager.obj で定義されています。
+1>C:\Projects\test.exe : fatal error LNK1169: 1 つ以上の複数回定義されているシンボルが見つかりました。
+ヘッダーファイルの中で定義してるから起こる。宣言と定義をわけて書けばいい。
+STLのイテレータの宣言の仕方に問題あり
+1>test.cpp(43): error C2143: 構文エラー : ';' が '.' の前にありません。
+1>test.cpp(43): error C2143: 構文エラー : ';' が '.' の前にありません。
+1>test.cpp(44): error C2065: 'it' : 定義されていない識別子です。
+イテレータの宣言の仕方に問題あり.
+「std::list<int>::iterator it;」を「std::list<int>.iterator it;」にしているのでは?
+iteratorの前にはコロンコロンだお。
+仮想デストラクタの宣言の仕方を間違ってた。
+class IActor
+{
+public:
+virtual ~IActor() = 0;  //この純粋仮想関数の書き方だと下記のリンクエラーが起こる.
+virtual ~IActor(){;}    //この書き方だとおっけー
+};
+1>enemy.obj : error LNK2001: 外部シンボル ""public: virtual __thiscall IActor::~IActor(void)" (??1IActor@@UAE@XZ)" は未解決です。
+1>C:\test.exe : fatal error LNK1120: 外部参照 1 が未解決です。
+wikiの別ページに仮想デストラクタの項目を作ったからそっちを参照.
+shared_ptrの使い方を間違ってたとき。
+1>C:\boost\boost_1_44\boost/smart_ptr/shared_ptr.hpp(378): error C2440: '<function-style-cast>' : 'boost::shared_ptr<T>' から 'boost::shared_ptr<T>' に変換できません。
+1>          with
+1>          [
+1>              T=CKodomo
+1>          ]
+1>          コンストラクターはソース型を持てません、またはコンストラクターのオーバーロードの解決があいまいです。
+1>          SpriteManager.cpp(78) : コンパイルされたクラスの テンプレート のインスタンス化 'boost::shared_ptr<T> &boost::shared_ptr<T>::operator =<CKodomo>(boost::shared_ptr<CKodomo> &&)' の参照を確認してください
+1>          with
+1>          [
+1>              T=CKodomo *
+1>          ]
+1>C:\Program Files\boost\boost_1_44\boost/smart_ptr/shared_ptr.hpp(378): error C2228: '.swap' の左側はクラス、構造体、共用体でなければなりません
+shared_ptr<CKodomo>にするべきところをboost::shared_ptr<CKodomo * >としたままだった。
+追加の依存ライブラリを複数記述するときは
+改行しろ。
+日本語をソースコード内に入れたら警告出まくる!
+warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+UTF-8でソースファイル保存してない?ANSIかshift-jis形式でソースファイル保存し直してみてね。
+Release版では上手く行くのに、Debug版にすると強制終了するstd::vector
+Debug Assertion Failed!
+Program:
+C:\Debug\test.exe
+File: c:\program files\microsoft visual studio
+10.0\vc\include\vector
+Line: 932
+Expression: vector subscript out of range
+For information on how your program can cause an assertion
+failure, see the Visual C++ documentation on asserts.
+(Press Retry to debug the application)
+std::vector<T>で、変な値いれてアクセスしてないか?
+std::vector<int> m_vector;
+unsigned int     m_active_pos;   //初期化してない
+m_vector[m_active_pos] = 156;    //アクセスしようとすると、assertが出る
+初期化はちゃんとしましょう。
+うわ…警告レベルあげたらいっぱいwarningでた。
+1>c:\source\GameSprite.h(25): warning C4820: 'GameSprite' : '3' バイトのパディングを データ メンバー 'GameSprite::m_isDrawing' の後に追加しました。
+1>c:\source\ActorMotion.hpp(37): warning C4820: 'ActorMotion' : '3' バイトのパディングを データ メンバー 'ActorMotion::m_activeFrame' の後に追加しました。
+1>c:\source\ActorMotion.hpp(41): warning C4820: 'ActorMotion' : '2' バイトのパディングを データ メンバー 'ActorMotion::m_intervalFrame' の後に追加しました。
+1>c:\source\ActorMotionEX.hpp(54): warning C4820: 'ActorMotionEX' : '3' バイトのパディングを データ メンバー 'ActorMotionEX::m_activeFrame' の後に追加しました。
+1>c:\source\ActorMotionEX.hpp(57): warning C4820: 'ActorMotionEX' : '3' バイトのパディングを データ メンバー 'ActorMotionEX::m_hasFinishedMotion' の後に追加しました。
+こういう警告がいっぱいでた。
+参考文献MSDN - align (C++)
+MSDN - コンパイラの警告 (レベル 4) C4820> (Visual Studio 2005)
+MSDN - Compiler Warning (level 4) C4820 (Visual Studio 2010)
+解決方法、あとで書くなり。
+メモリアラインメント関連。たぶんbool型(サイズ1bitかな?)を使ってるせい。
+enumのコロンコロン
+enum Motion
+{
+HOVERING,
+SETOUT,
+FLYING,
+};
+int motion = Motion::HOVERING;
+上のように、「Motion::～」という書き方をすると以下の警告が出る
+warning C4482: 非標準の拡張機能が使用されています: enum 'Motion' が限定名で使用されます
+以下のようにすれば問題ないの。
+namespace Motion
+{
+enum MotionEnum
+{
+HOVERING,
+SETOUT,
+FLYING,
+};
+};
+int motion = Motion::HOVERING;
+この例でいうMotionEnumみたいな列挙型名をスコープで指定せずとも、列挙値は参照できる. MSDN - コンパイラの警告 (レベル 1) C4482
+MSDN - Compiler Warning (level 1) C4482
+ソースコードのどこも間違ってないのにLNK2001がでる
+error LNK2001: 外部シンボル "" uncounco " は未解決です。
+http://d.hatena.ne.jp/poyonon/20110614/1308044823こっちに対処法書いたなり。
+MSDN - リンカ ツール エラー LNK2001
+リンクエラーの9割は
+ヘッダに定義まで書いちゃってること。ヘッダには宣言、cppに定義書いとけばたいがい治る。
+ランタイムエラーの9割は
+メモリ確保していないnull_ptrを渡してること。newすればたいがい治る。叩けば直るテレビと一緒の理論。
+プログラム書いててよくあるミス - 書いたら次は気をつける。
+classの宣言の最後にセミコロンつけわすれる。
+char * 型の文字列はスコープ外れると死ぬ。それに気付かず先頭ポインタを値渡し
+死んでるからわけわからない値がでる
+3時間デバッグする
+言語がマルチバイトに対応してないとかいいだす。ただのスコープ外れでした(笑)
+ぼく用あれこれまとめ - こうして僕はエラーにはまった。

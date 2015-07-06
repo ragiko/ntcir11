@@ -1,0 +1,3 @@
+近似文字列照合問題は, 二つの文字列と閾値が与えられて, 片方の文字列の任意の部分文字列に対してもう一方の文字列との編集距離を計算し, 与えられた閾値以下となるものを見つける問題である.Myersは, ビットパラレル手法により, 近似文字列照合問題を高速に解くアルゴリズムを提案した.しかし, 出力として編集距離ではなくアライメントを求める場合, 単純な方法を適用できず, 高速化が効果的でない場合がある.本論文では, 近似文字列照合問題に対するアライメントを, ビットパラレル手法によって求めるアルゴリズムを提案する.
+Approximate matching problem is, given two strings and a parameter, to find all substring of a string whose edit distance with the other string is at most the parameter. Myers introduced an efficient algorithm for approximate matching problem based on bit-parallelism. However, if we need alignment as the answer of the problem, the straightforward method can't be applied. In this paper, an alignment algorithm based on bit-parallelism for approximate matching problem is presented.
+

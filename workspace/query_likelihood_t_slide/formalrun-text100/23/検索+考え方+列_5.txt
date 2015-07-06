@@ -1,0 +1,49 @@
+本記事ではExcel 2010、Microsoft Visual Basic forApplications 7.1で動作確認しています。
+はじめに:VBAでの正規表現
+文字列を処理するプログラミングにおいて正規表現は強力な道具です。これはVBAにおいても変わりません。
+しかし、VBAでの正規表現はPerlやRuby,Javaといったメジャーなプログラミング言語と異なる点が多く、そういった言語でのプログラミングに習熟している方が戸惑うことも多いと思われます。
+与えられた文字列が正規表現パターンにマッチするかどうかを判断することについては検索すると情報もそこそこヒットしますが、マッチした文字列を取り出す後方参照については日本語情報が少ないのが現状です。さらに、複数の後方参照を取得する方法についてはほとんど情報がありません。VBA経験は少ないですが、多少試行錯誤してしまったので知り得た情報をまとめてみます。
+VBAにおける正規表現の使い方
+こんな感じです。RegExpオブジェクトにパラメータをセットし、testメソッドを呼ぶことでその引数にセットした文字列にパターンがマッチするかどうか判断できます。
+もっとすっきり書きたいところですが、わかりやすいです。
+Function RegExpSample1(ByVal targetString As String)
+Dim regEx As Object  ' 変数を作成します。
+Set regEx = CreateObject("VBScript.RegExp")    ' 正規表現オブジェクトを作成します。
+regEx.Pattern = "[@][a-z]+"     ' パターンを設定します。@からはじまって小文字が続く文字列を探します。
+regEx.IgnoreCase = False         ' 大文字と小文字を区別するように設定します。
+regEx.Global = True             ' 文字列全体を検索
+If regEx.test(targetString) Then ' 検索をテストします。
+RegExpSample1 = "一致する文字列が 1 つ以上見つかりました。"
+Else
+RegExpSample1 = "一致する文字列が見つかりません。"
+End If
+End Function
+Sub testRegExpSample1()
+MsgBox RegExpTest("@hogehoge hogehoge fugaguga @hoge")
+End Sub
+Sub RegExpSample2()
+Dim regEx As Object, Matches  As Object, Match As Object
+'' 脱線だけれど、ここを次のように記述すると、
+'' VBAがいい感じに処理してくれるけれど明示的にObjectになるのはMatchだけなので注意。
+'' Dim regEx , Matches, Match As Object
+Dim targetString As String
+targetString = "@Hogehoge @hugafuga @HOGE @zetzet"
+Set regEx = CreateObject("VBScript.RegExp")
+' こうも設定できます(公式以外のサンプルだと主流?)
+With regEx
+.Pattern = "[@][a-z]+"     ' パターンを設定します。 @ではじまらない子文字列を確認します
+.IgnoreCase = False        ' 大文字と小文字を区別しないように設定します。
+.Global = True             ' 文字列全体を検索
+End With
+Set Matches = regEx.Execute(targetString) ' Executeメソッドで正規表現にマッチした箇所を取得できます
+MsgBox Matches.Item(0).Value ''  @hugafuga ,マッチしたものの一つ目の要素の値を出力。マッチするものがなければエラー
+End Sub
+はい。わかりやすいです。
+では後方参照でマッチしたなかの一部を取得するにはどうしたらいいでしょうか。
+サイトによっては、Perlなどと同じように$で取得できるなど記述してあるものもありますがうまく使えません。
+ここでもExcecuteメソッドをうまく活用する必要があります。
+Executeメソッドの返り値は、Matchオブジェクトのコレクションで、パターンにヒットするものはそれぞれMatchオブジェクトに順番に格納され、その中から後方参照したものが取り出せるのです。
+つまり、ある文章中でパターンに一致したものは、それぞれMatchオブジェクトに格納されるのです。
+参考:RegExpオブジェクト Execute メソッド - MSDN - Microsoft
+実際にコードでみてみます。まず、Matchオブジェクトの値を直接出力してみます。
+VBAの正規表現における後方参照の考え方とサンプルコード - Qiita

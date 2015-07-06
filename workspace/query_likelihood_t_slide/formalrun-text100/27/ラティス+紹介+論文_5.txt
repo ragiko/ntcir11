@@ -1,0 +1,905 @@
+2011年度
+素粒子物理研究部門
+宇宙・原子核物理研究部門 宇宙分野 原子核分野
+量子物性研究部門
+生命科学研究部門 生命機能情報分野 分子進化分野
+地球環境研究部門
+高性能計算システム研究部門
+計算情報学研究部門 データ基盤分野 計算メディア分野
+素粒子物理研究部門
+研究論文
+1. PACS-CS Collaboration: T. Yamazaki, Y. Kuramashi, A. Ukawa, Two-nucleon bound states in quenched lattice QCD, Phys. Rev. D 84 (2011) 054506.
+2. PACS-CS Collaboration: Y.Namekawa, S.Aoki, K.-I.Ishikawa, N.Ishizuka, T.Izubuchi, K.Kanaya, Y.Kuramashi, M.Okawa, Y.Taniguchi, A.Ukawa, N.Ukita, T.Yoshi&eacute;, Charm quark system at the physical point of 2+1 flavor lattice QCD, Phys. Rev. D 84 (2011) 074505.
+3. Y. Nakamura, K.-I. Ishikawa, Y. Kuramashi, T. Sakurai, H. Tadano, Modified block BiCGStab for lattice QCD, Comput. Phys. Commun. 183 (2012) 34.
+4. PACS-CS Collaboration: T. Yamazaki, Y. Kuramashi, A. Ukawa,, Calculation of Helium nuclei in quenched lattice QCD, AIP Conf. Proc. 1374 (2011) 627.
+5. N. Ukita for PACS-CS Collaboration, 1+1+1 flavor QCD+QED simulation at the physical point, Proceedings of Science (Lattice 2011) 144.
+6. Y. Namekawa for PACS-CS Collaboration, Charm quark system on the physical point in 2+1 flavor lattice QCD, Proceedings of Science (Lattice 2011) 132.
+7. PACS-CS Collaboration: A. Aoki et al., Rho meson decay in 2+1 flavor lattice QCD, Phys. Rev. D84(2011) 094505.
+8. N. Ishizuka for PACS-CS Collaboration, Rho meson decay width from 2+1 flavor lattice QCD, Proceeding of Science (LATTICE2011) 125.
+9. Keiko Murano, Noriyoshi Ishii, Sinya Aoki, Tetsuo Hatsuda, “Nucleon-Nucleon Potential and its Non-locality in Lattice QCD “, Prog. Theoretical. Phys. 125 (2011) 1225-1240
+10. T. Doi, S. Aoki, T. Hatsuda, Y. Ikeda, T. Inoue, N. Ishii, K. Murano, H. Nemura and K. Sasaki (HAL QCD Collaboration), Exploring Three-Nucleon Forces in Lattice QCD, arXiv:1106.2276 [hep-lat] (2011), Prog. Theor. Phys., in press.
+11. Sinya Aoki, Noriyoshi Ishii, Takumi Doi, Tetsuo Hatsuda, Yoichi Ikeda, Takashi Inoue, Keiko Murano, Hidekatsu Nemura, Kenji Sasaki (HAL QCD Collaboration), “Extraction of Hadron Interactions above Inelastic Threshold in Lattice QCD'', Proc. Jpn. Acad., Ser. B, Vol. 87 (2011) 509-517.
+12. Sinya Aoki for HAL QCD Collaboration, “Hadron interactions in lattice QCD “, Progress in Particle and Nuclear Physics 66 (2011) 687-726.
+13. Takashi Inoue, Sinya Aoki, Takumi Doi, Tetsuo Hatsuda, Yoichi Ikeda, Noriyoshi Ishii, Keiko Murano, Hidekatsu Nemura, Kanji Sasaki (HAL QCD Collaboration), “Two-Baryon Potentials and H-Dibaryon from 3-flavor Lattice QCD Simulations “ , arXiv:1112.5926 [hep-lat], Nucl. Phys. A, in press.
+14. Kenji Sasaki (for HAL QCD Collaboration), "Strangeness S=-2 baryon-bayon interactions from lattice QCD", Proceedings of Science (Lattice 2011) 173
+15. Kazuyuki Kanaya, Lattice results on the phase structure and equation of state in QCD at finite temperature, AIP Conference Proceedings 1343 (2011) 57-62.
+16. H. Saito, S. Ejiri, S. Aoki, T. Hatsuda, K. Kanaya, Y. Maezawa, H. Ohno, T. Umeda (WHOT-QCD Collaboration), Phase structure of finite temperature QCD in the heavy quark region, Phys. Rev. D 84 (2011) ref.054502, pp.1-9.
+17. H. Ohno, S. Aoki, S. Ejiri, K. Kanaya, Y. Maezawa, H. Saito and T. Umeda (WHOT-QCD Collaboration), Charmonium spectral functions with the variational method in zero and finite temperature lattice QCD, Phys. Rev. D 84 (2011) ref.094504, pp.1-13.
+18. Y. Nakagawa, S. Ejiri, S. Aoki, K. Kanaya, H. Ohno, H. Saito, T. Hatsuda, T. Umeda (WHOT-QCD Collaboration), Histogram method in finite density QCD with phase quenched simulations, PoS(LATTICE 2011) (2012) ref.208, pp.1-7.
+19. H. Saito, S. Aoki, K. Kanaya, H. Ohno, S. Ejiri, Y. Nakagawa, T. Hatsuda, T. Umeda (WHOT-QCD Collaboration), Finite density QCD phase transition in the heavy quark region, PoS(LATTICE 2011) (2012) ref.214, pp.1-7.
+20. S. Ejiri, S. Aoki, T. Hatsuda, K. Kanaya, Y. Nakagawa, H. Ohno, H. Saito, T. Umeda (WHOT-QCD Collaboration), Numerical study of QCD phase diagram at high temperature and density by a histogram method, Cent. Eur. J. Phys. (2012) in press.
+21. Y. Maezawa, T. Umeda, S. Aoki, S. Ejiri, T. Hatsuda, K. Kanaya and H. Ohno (WHOT-QCD Collaboration), Free energy of static quarks and Debye screening mass in 2+1-flavor lattice QCD with Wilson quark action based on fixed-scale approach, arXiv:1112.2756[hep-lat].
+22. T. Umeda, S. Aoki, S. Ejiri, T. Hatsuda, K. Kanaya, Y. Maezawa, H. Ohno (WHOT-QCD Collaboration), Equation of state in 2+1 flavor QCD with improved Wilson quarks by the fixed scale approach, arXiv:1202.4719[hep-lat].
+23. 斎藤華,朴泰祐,金谷和至,塙敏博,佐藤三久, スクリプト言語Xcryptによる格子QCDシミュレーションの最適化, 情報処理学会研究報告,2011-HPC-130(58), pp. 1-6
+24. 斎藤華,朴泰祐,金谷和至,塙敏博,佐藤三久, スクリプト言語 Xcrypt による格子 QCD シミュレーションの自動化, 2012年ハイパフォーマンスコンピューティングと計算科学シンポジウム(HPCS2012)論文集,pp. 7-14
+25. S. Takeda, Y. Kuramashi, A. Ukawa, On the phase of quark determinant in lattice QCD with finite chemical potential, arXiv: 1111.6363 [hep-lat].
+26. Y.~Taniguchi, &ldquo;Renormalization factor of four fermi operators with clover fermion and Iwasaki gauge action &ldquo;, PoS LATTICE2011 (2011) 331.
+その他
+27. Taro Kimura, Shota Komatsu, Tatsuhiro Misumi, Toshifumi Noumi, Shingo Torii, Sinya Aoki, “Revisiting symmetries of lattice fermions via spin-flavor representation “, JHEP 01 (2012) 048.
+28. Sinya Aoki, Hidenori Fukaya, “Interpolation between the epsilon and p regimes'', Phys.Rev.D84 (2011)014501. 
+(A)招待講演
+1. 青木慎也「Nuclear Force from Quarks and Gluons」“Japan Days'' Colloquium, May 2, 2011, University of Wuppertal, Wuppertal, Germany (The 150th anniversary of the Friendship Treaty between Japan and Germany)
+2. 青木慎也 「Lattice QCD with Wilson quarks and chiral perturbation theory–From introduction to recebt topics–」ECT* Workshop “Chiral dynamics with Wilson fermions'', October 24-28, 2011, ECT*, Torento, Italy.
+3. 青木慎也 「Future prospect of hadron physics from lattice QCD」 Workshop on 'Future Prospects of Hadron Physics at J-PARC and Large Scale Computational Physics' Feb. 9 (Thu) – 11 (Sat), 2012, Ibaraki Quantum Beam Research Center, Tokai, Japan
+4. 青木慎也 「Chiral Symmetry and eugenvalue density at Finite temperature」 YIPQS-HPCI international-moledule-type workshop on 'New-type of Fermions on the Lattice' Feb.9-24, 2012, YITP, Kyoto, Japan
+5. 金谷和至「Phase Structure of QCD from the Lattice」International Workshop on Extreme QCD 2011 (XQCD 2011) (San Carlos, Mexico, July 18-20, 2011)
+6. 金谷和至 「CP-PACSプロジェクトについて ?計算科学専用計算機開発における物理屋の役割?」 三好甫先生記念計算科学シンホシウム (工学院大学新宿キャンハス, 東京, Sept. 10, 2011)
+7. 藏増 嘉伸 「PACS-CSにおける素粒子物理学研究」, 第2回「学際計算科学による新たな知の発見・統合・創出」シンポジウム (筑波大学, つくば市, 2011年9月12-13日)
+8. 藏増 嘉伸 「格子QCDによる原子核の構成」, 研究会「大規模計算による原子核研究の展開 &minus;核子多体系を中心に&minus;」 (理研, 和光市, 2012年1月24-25日)
+9. 藏増 嘉伸 「大規模格子QCDシミュレーションで探る10&minus;13cm」, 第4回データ工学と情報マネジメントに関するフォーラム (シーサイドホテル舞子ビラ神戸, 神戸市, 2012年3月3-5日)
+(B)その他の学会発表
+1. 藏増 嘉伸 「基礎科学分野実問題における固有値解析エンジンの高性能利用技術開発」, 並列固有値解析研究会 (伊香保温泉旅館 よろこびの宿 しん喜, 群馬県, 2011年11月3-4日)
+2. N. Ukita「1+1+1 flavor QCD+QED simulation at the physical point」, The XXIX International Symposium on Lattice Field Theory, Lattice 2011 (Squaw Valley, Lake Tahoe, CA, USA, July 11-16, 2011)
+3. Yusuke Namekawa「Charm quark system on the physical point in 2+1 flavor lattice QCD」, The XXIX International Symposium on Lattice Field Theory, Lattice 2011 (Squaw Valley, Lake Tahoe, CA, USA, July 11-16, 2011)
+4. 滑川 裕介「Charm quark system on the physical point in 2+1 flavor lattice QCD」, 新学術領域「素核宇宙融合」&times;「新ハドロン」クロスオーバー研究会 (理化学研究所計算科学研究機構, 神戸市, 2011年6月23-24日)
+5. 滑川 裕介「物理点における2+1フレーバー格子QCDシミュレーションによるチャームクォーク系の研究」, 日本物理学会2011年秋季大会 (弘前大学, 青森県, 2011年9月16-19日)
+6. Yusuke Namekawa「Charm quark physics from lattice QCD」, &ldquo;Hadron Structure and Interactions&rdquo; (RCNP, Osaka, Nov. 25-26, 2011)
+7. 滑川 裕介「Charm quark physics from lattice QCD」, 「素核宇融合にょる計算基礎物理学の進展」 (会歓の郷, 三重県, 2011年12月3-5日)
+8. Yusuke Namekawa「Charm quark physics from lattice QCD」, HPCI Workshop &ldquo;Expanding the Horizon of Theoretical Particle Physicsthrough Computational Methods&rdquo; (KEK, Tsukuba, Dec. 19-21, 2011)
+9. Yusuke Namekawa「Charm quark physics from lattice QCD」, Workshop on &ldquo;Elucidation of New Hadrons with a Variety of Flavors&rdquo; (Osaka University, Osaka, Feb. 20-21, 2012)
+10. Yusuke Namekawa「Charm quark physics from lattice QCD」, KEK Flavor Factory Workshop (KEK, Tsukuba, Mar. 8-10, 2011)
+11. 石塚 成人「Rho meson decay width from 2+1 flavor lattice QCD」, The XXIX International Symposium on Lattice Field Theory, Lattice 2011. (the Village at Squaw Valle, Lake Tahoe, California, USA, July 11-16, 2011)
+12. 石塚 成人 「格子上のハドロン散乱」, 新学術領域「素核宇宙融合」x「新ハドロン」クロスオーバー研究会 ( 理化学研究所 計算科学研究機構, 兵庫県 神戸, 2011年6月24日 – 24日)
+13. 石塚 成人 「Rho meson decay from lattice QCD」,日本物理学会 ( 弘前大学, 弘前市, 2010年9月16 – 19日)
+14. 佐々木 健志 (for HAL QCD Collaboration), 「チャンネル結合を考慮した格子QCDによるハイペロン間相互作用」, 新学術領域「素核宇宙融合」&times;「新ハドロン」クロスオーバー研究会 (理化学研究所 計算科学研究機構), 2011年6月23-24日
+15. Kenji Sasaki (for HAL QCD Collaboration),「Strangeness S=-2 baryon-bayon interactions from lattice QCD」, The XXIX International Symposium on Lattice Field Theory (Squaw Valley, Lake Tahoe, California, USA), July 10-16, 2011
+16. 佐々木 健志 (for HAL QCD Collaboration),「Lattice QCD study of baryon-baryon interaction with strangeness S=-2」, 日本物理学会 2011年秋季大会 (弘前大学), 2011年9月16-19日
+17. 佐々木 健志 (for HAL QCD Collaboration),「Lattice QCD studies of strangeness S=-2 baryon-bayon interactions」, 素核宇融合による計算基礎科学物理学の進展 (三重県志摩市 合歓の郷), 2011年12月3-5日
+18. 佐々木 健志 (for HAL QCD Collaboration),「格子QCDによる一般化核力の研究」, HPCI戦略プログラム分野5「物質と宇宙の起源と構造」全体シンポジウム(秋葉原コンベンションホール), 2012年3月7-8日
+19. 齋藤華,朴泰祐,金谷和至,塙敏博,佐藤三久 「スクリプト言語Xcryptによる格子QCDシミュレーションの最適化」 2011年並列/分散/協調処理に関するサマー・ワークショップ(SWoPP2011) (, July 27-29, 2011)
+20. 齋藤華,朴泰祐,金谷和至,塙敏博,佐藤三久 「スクリプト言語 Xcrypt による格子 QCD シミュレーションの自動化」 2012年ハイパフォーマンスコンピューティングと計算科学シンポジウム(HPCS2012) (, Jan. 24-26, 2012)
+21. Y. Taniguchi, The XXIX International Symposium on Lattice Field Theory, Village at Squaw Valley, Lake Tahoe, California, USA, July 11 to July 16, 2011.
+22. 谷口 裕介、HPCI研究会「計算的手法による素粒子論研究の広がり」 — Expanding the Horizon of Theoretical Particle Physics through Computational Methods, December 19-21, 2011, Kobayashi Hall, KEK
+23. 吉江友照、「計算素粒子物理学データグリッドJLDG」、gfarmセミナー、NTTコミュニケーションズプレゼンテーションルーム(2011/06/20)
+24. 吉江友照、「Status Report: JLDG」、17thILDG workshop, TV conference hosted by INFN, Italy (2011/09/23)
+25. 吉江友照、「HEPnet-J/sc報告」、HEPnet-J ユーザー会、近畿大学(2011/12/17-18)
+26. 吉江友照、「格子QCDデータグリッド JLDG」、HPCI分野5全体シンポジウム、秋葉原コンベンションホール (2012/03/07-08) 
+連携・国際活動・社会貢献、その他
+1. 青木慎也 他, 新学術領域「素核宇宙融合」x「新ハドロン」クロスオーバー研究会 –多様な方法でせまるハドロン物理への挑戦– 主催 2011年6月23、24日、理化学研究所 計算科学研究機構、神戸、参加者約60名
+2. 青木 慎也 他, 新学術領域「素核宇宙融合による計算科学に基づいた重層的物質構造の解明」/HPCI戦略プログラム分野5「物質と宇宙の起源と構造」/京都大学基礎物理学研究所 主催 サマ-スク-ル「クォ-クから超新星爆発まで」–基礎物理の理想への挑戦–, 2011年8月4日-8日、京都大学 基礎物理学研究所、京都、参加者約35名
+3. 青木慎也 他, 新学術領域「素核宇宙融合による計算科学に基づいた重層的物質構造の解明」/HPCI戦略プログラム分野5「物質と宇宙の起源と構造」主催シンポジウム「素核宇融合による計算基礎物理学の進展 -ミクロとマクロのかけ橋の構築-」 2011年12月3日-5日、合歓の郷、志摩、参加者約60名
+4. 科研費新学術領域研究「素核宇宙融合による計算科学に基づいた重層的物質構造の解明」レクチャーシリーズの主催 第三回 2011年6月8-9日(参加者約40名) 東京大学 理学部, 東京 第四回 2012年1月11-12日 京都大学 基礎物理学研究所, 京都(参加者約30名)、第五回 2012年2月27-28日 理化学研究所 仁科加速器研究センター、和光(参加者約20名)
+5. 青木 慎也 他, HPCI戦略プログラム分野5「物質と宇宙の起源と構造」全体シンポジウム, 2012年3月7、8日、秋葉原コンベンションホ-ル、東京、参加者約60名
+6. 金谷 和至 他, 国際シンポジウム「Quarks and Hadrons under Extreme Conditions – Lattice QCD, Holography, Topology, and Physics at RHIC/LHC -」 (慶應義塾大学 来往舎, 2011年11月17-18日) 参加者 38名(内, 海外5ヶ国6名)
+宇宙・原子核物理研究部門
+宇宙分野
+研究論文
+Refereed Papers
+1. Akahori, T., Yoshikawa, K., 2011, Non-Equilibrium Ionization State and Two-Temperature Structure in the Bullet Cluster 1E0657-56, Populations, Publ. Astron. Soc. Japan, in press
+2. Doi, A., Nagira, H., Kawakatu, N., Kino, M., Nagai, H., Asada, K., Radio Galaxies in narrow-line Seyfert 1 galaxies, Astrophysical Journal, submitted
+3. Godet, O., Plazolles, B., Kawaguchi, T., Lasota, J.-P. , Barret, D., Farrell, S. , Braito, V. , Servillat, M. , Webb, N. , Gehrels, N. Investigating slim disk solutions for HLX-1 in ESO 243-49, Astrophysical Journal, in press (arXiv:1204.3461)
+4. Hartquist, T. W., Wagner, A. Y., Falle, S. A. E. G., Pittard, J. M., & Van Loo, S. 2011, Cosmic rays and radiative instabilities, Memorie della Societa Astronomica Italiana, 82, 836-841
+5. Ito, H., Kino, M., Kawakatu, N., Yamada, S., 2011, Evolution of Non-Thermal Emission from Shell Associated with AGN Jets, Astrophysical Journal, 270, 120-131
+6. Kawaguchi, T., Mori, M. 2011, Near-Infrared Reverberation by Dusty Clumpy Tori in Active Galactic Nuclei, Astrophysical Journal, 737, 105-119
+7. Kawakatu, N., Ohsuga, K. 2011, New Method for Exploring Super-Eddington AGNs by Near-infrared Observations, Monthly Notices of the Royal Astronomical Society, 417, 2562-2570
+8. Kino, M. , Kawakatu, N. , Takahara, F., 2012, Calorimetry of AGN jets: Testing Plasma Composition in Cygnus A, Astrophysical Journal, in press
+9. Matsuda, Y., Yamada, T., Hayashino, T., Yamauchi, R., Nakamura, Y., Morimoto, N., Ouchi, M., Ono, Y., Kousai, K., Nakamura, E., Horie, M., Fujii, T., Umemura, M., Mori, M., 2011, The Subaru Ly&alpha; blob survey: a sample of 100-kpc Ly&alpha; blobs at z= 3, Monthly Notices of the Royal Astronomical Society 410, L13-L17
+10. Matsui, H., Saitoh, T. R., Makino, J., Wada, K., Tomisaka, K., Kokubo, E., Daisaka, H., Okamoto, T., and Yoshida, N., 2012, Origin of Multiple Nuclei in Ultraluminous Infrared Galaxies, Astrophysical Journal, 746, 26
+11. Miki, Y., Mori, M., Kawaguchi, T., Saito, Y., Rich, M. 2012, Hunting a Wandering Black Hole in M31 Halo: Hermitage of Black Hole, Astrophysical Journal Letters, submitted
+12. Miki, Y., Takahashi, D., Mori, M., 2012, A Fast Implementation and Performance Analysis of Collisionless N-body Code Based on GPGPU, International Conference on Computational Science, ICCS 2012, in press
+13. Namekata, D., Habe,A., 2011, Evolution of a Nuclear Gas Disk and Gas Supply to the Galactic Center. I. Migration of Massive Gas Clumps, Astrophysical Journal, 731, 57-74
+14. Ogiya, G., and Mori, M., 2011, The Core-Cusp Problem in Cold Dark Matter Halos and Supernova Feedback: Effects of Mass Loss, Astrophysical Journal Letters, 736, L2(5pp)
+15. Okamoto, T., Yoshikawa, K., and Umemura, M., 2012, ARGOT: accelerated radiative transfer on grids using oct-tree, Monthly Notices of the Royal Astronomical Society, 419, 2855-2866
+16. Okamoto, T, 2012, The origin of pseudobulges in cosmological simulations of galaxy formation, Monthly Notices of the Royal Astronomical Society, submitted (arXiv:1203.5372)
+17. Parry, O. H., Eke, V. R., Frenk, C. S., and Okamoto, T., 2012, The baryons in the Milky Way satellites, Monthly Notices of the Royal Astronomical Society, 419, 3304-3318
+18. Prokhorov, D. A., Dubois, Y., Nagataki, S., Akahori, T., Yoshikawa, K., 2011, Unveiling the 3D temperature structure of galaxy clusters by means of the thermal Sunyaev-Zel'dovich effect, Monthly Notices of the Royal Astronomical Society, 415, 2505-2512
+19. Prokhorov, D. A., Colafrancesco, S., Akahori, T., Yoshikawa, K., Nagataki, S., Seon, K.-I., 2011, Can electron distribution functions be derived through the Sunyaev-Zel'dovich effect?, Astronomy & Astrophysics, 529, A39
+20. Prokhorov, D. A., Colafrancesco, S., Akahori, T., Million, E. T., Nagataki, S., Yoshikawa, K., 2011, A high-frequency study of the Sunyaev-Zel'dovich effect morphology in galaxy clusters, Monthly Notices of the Royal Astronomical Society, 416, 302-310
+21. Scannapieco, C., Wadepuhl, M., Parry, O. H., Navarro, J. F., Jenkins, A., Springel, V., Teyssier, R., Carlson, E., Couchman, H. M. P., Crain, R. A., Dalla Vecchia, C., Frenk, C. S., Kobayashi, C., Monaco, P., Murante, G., Okamoto, T., Quinn, T., Schaye, J., Stinson, G. S., Theuns, T., Wadsley, J., White, S. D. M., and Woods, R., 2011, The Aquila comparison Project: The Effects of Feedback and Numerical Methods on Simulations of Galaxy Formation&rdquo;,Monthly Notices of the Royal Astronomical Society, submitted (arXiv:1112.0315)
+22. Scannapieco, C., Wadepuhl, M., Parry, O. H., Navarro, J. F., Jenkins, A., Springel, V., Teyssier, R., Carlson, E., Couchman, H. M. P., Crain, R. A., Dalla Vecchia, C., Frenk, C. S., Kobayashi, C., Monaco, P., Murante, G., Okamoto, T., Quinn, T., Schaye, J., Stinson, G. S., Theuns, T., Wadsley, J., White, S. D. M., and Woods, R., 2011, The Aquila comparison Project: The Effects of Feedback and Numerical Methods on Simulations of Galaxy Formation, Monthly Notices of the Royal Astronomical Society, in press (arXiv:1112.0315)
+23. Shimizu, I., Yoshida, N., and Okamoto, T., 2011, Sub-millimetre galaxies in cosmological hydrodynamic simulations: Source number counts and the spatial clustering, Monthly Notices of the Royal Astronomical Society, submitted
+24. Shimizu, I., Yoshida, N., and Okamoto, T., 2011, Lyman &alpha; emitters in cosmological simulations – I. Lyman &alpha; escape fraction and statistical properties at z= 3.1, Monthly Notices of the Royal Astronomical Society, 418, 2273-2282
+25. Tanikawa, A., Yoshikawa, K., Okamoto, T., Nitadori, K., 2012, N-body simulation for self-gravitating collisional systems with a new SIMD instruction set extension to the x86 architecture, Advanced Vector eXtensions, New Astronomy, 17, 82-92
+26. Tanikawa, A., Hut, P., Makino, J. 2012, Unexpected Formation Modes of the First Hard Binary in Core Collapse, New Astronomy, 17, 272-280
+27. Tanikawa, A., Umemura, M., 2011, Successive Merger of Multiple Massive Black Holes in a Primordial Galaxy, Astrophysical Journal 728, L31-L36
+28. Tsuchiya, M., Mori, M., Nitta, S., 2012, Transonic solutions of isothermal galactic winds in a cold dark matter halo, Monthly Notices of the Royal Astronomical Society, submitted
+29. Yajima, H., Umemura, M., Mori, M., 2012, Sub-millimetre brightness of early star-forming galaxies. Monthly Notices of the Royal Astronomical Society, in press
+30. Yamada, T., Nakamura, Y., Matsuda, Y., Hayashino, T., Yamauchi, R., Morimoto, N., Kousai, K., Umemura, M., 2012, Panoramic Survey of Lyman &alpha; Emitters at z=3.1, The Astrophysical Journal, in press
+31. Yamaoka, K., Allured, R., Kaaret, P. Kennea, J.A., Kawaguchi, T. Ghandi, P., Shaposhnikov, N., Ueda, Y., Nakahira, S., Kotani, T., Negoro, H., Takahashi, I., Yoshida, A., Kawai, N., 2012, RXTE Follow-up Observations of the Black Hole Candidate MAXI J1659-152 Discovered by MAXI and Swift, Publ. Astron. Soc. Japan, 64, 32 [15 pages]
+Non-Refereed Papers
+1. Miki, Y. , Mori, M. , Kawaguchi, T., Rich, M.R., 2012, Interaction between M31 and the Progenitor Dwarf Galaxy of the Andromeda Stellar Stream, Astronomical Society of the Pacific (ASP) Conference Series, in press
+2. Saitoh, T. R., Daisaka, H., Kokubo, E., Makino, J., Okamoto, T., Tomisaka, K., Wada, K., and Yoshida, N., 2011, &ldquo;Shock-induced star cluster formation in colliding galaxies&rdquo;, Computational Star Formation, Proceedings of the International Astronomical Union, IAU Symposium 270, eds. Joao Alves, Bruce G. Elmegreen, Josep M. Girart, Virginia Trimble, 270, 483-486
+3. Ogiya, G., and Mori, M., 2012, The Core-Cusp problem in CDM halos and supernova feedback, Astronomical Society of the Pacific (ASP) Conference Series, in press
+【国際会議発表・海外講演】
+1. Okamoto T., 2011, Cosmological Disk Galaxy Formation, Galaxies in the Dark, (July 31 – August 4, 2011, Cafayate Salta, Argentina) (Invited)
+2. Tanikawa, A., Successive Merger of Multiple Massive Black Holes in a Primordial Galaxy, Single and Double Black Holes in Galaxies, Aug 22-25, 2011, Michigan, USA)
+3. Kawakatu, N., Wada, K., Growth of supermassive BHs and mass supply processes from galaxies, Starburst-AGN Connection underthe Multiwavelength Limelight (Sep.14-16, 2011, Madrid, Spain)
+4. Kawaguchi, T. and Mori, M., Near-Infrared Emission from Dusty Clumpy Tori in AGNs, Through the Infrared Looking Glass (October 3-5 , 2011, Pasaneda, USA)
+5. Kawaguchi, T., Near-Infrared Emission from Dusty Clumpy Tori in AGNs, Seminar talk at UCSB (October 7, 2011, Santa Barbara, USA)
+6. Ogiya, G., and Mori, M., The Core-Cusp problem in CDM halos and supernova feedback, The 3rd Subaru International Conference, The 1st NAOJ Symposium "Galactic Archaeology – Near-Field Cosmology and the Formation of the Milky Way" (Nov 1-4, 2011, Shuzenji, Japan)
+7. Miki, Y., Mori, M., Kawaguchi, T., Rich, R. M., Interaction between M31 and the Progenitor Dwarf Galaxy of the Andromeda Stellar Stream, The 3rd Subaru International Conference, The 1st NAOJ Symposium "Galactic Archaeology – Near-Field Cosmology and the Formation of the Milky Way" (Nov 1-4, 2011, Shuzenji, Japan)
+8. Kawakatu, N., AGN Outflow/Inflow with SKA, Workshop on East-Asian Collaboration for SKA (Nov.30-Dec.2, 2011, Daejeon, Korea) (Invited)
+9. Ito, H., Kino, M., Kawakatu, N., Emission from Shells Associated with Dying Radio Sources, Workshop on East-Asian Collaboration for SKA (Nov.30-Dec.2,2011,Daejeon, Korea)
+10. Tanikawa, A., Unexpected Formation Modes of the First Hard Binary in Core Collapse, MODEST-11 (Dec 12-16, 2011, Leiden, Netherland)
+11. Kawaguchi, T. and Mori, M., Near-Infrared Emission from Dusty Clumpy Tori in AGNs, Growing black holes in COSMOS (February 13-14, 2012, IPMU (Tokyo U), Kashiwa, Japan)
+12. Kawakatu, N., Coevolution Model of SMBHs and Nuclear Starbursts, Colloquium of Astronomy Program at SNU (March 8, 2012, Seoul, Korea)
+13. Miki, Y., Mori, M., and Kawaguchi, T., Suppression of Black Hole Activity due to Galactic Merger, The 5th Korea-Japan Young Astronomers, Meeting (February 22-24, 2012, Seoul, Korea)
+【国内講演】
+<招待講演>
+1. 川口俊宏, 「活動銀河核のダストトーラス」, 談話会 (2011年6月10日, 名古屋大学, 名古屋市)
+2. 岡本崇, 「銀河形成シミュレーション」 , 滞在型研究会「全天体形成」(2011年8月1～31日,北海道大学,札幌市)
+3. 吉川耕司, 「無衝突ボルツマン方程式の直接数値計算による無衝突自己重力系の数値シミュレーション」, 滞在型研究会「全天体形成」(2011年8月1～31日,北海道大学,札幌市)
+4. 石山智明,「大規模N体シミュレーションの未来」,滞在型研究会:全天体形成(2011年8月1～31日,北海道大学,札幌市)
+5. 川口俊宏,「活動銀河核のダストトーラス」,滞在型研究会「全天体形成」コンパクト天体・活動銀河セッション,(2011年8月4日, 北海道大学,札幌市)
+6. 川勝 望, 白川友紀, 本多正尚, 戸田さゆり,「筑波大学「理数学生応援プロジェクト」と大学での科学教育」,日本科学教育学会 (2011年8月23日～25日, 東京工業大学, 横浜)
+7. 川口俊宏,「TMTの高空間分解能で探る活動銀河核のfeeding, feedback, coevolution」,「TMT サイエンス検討報告会:日本独自のサイエンス提案とその実現のために」会議 (2011年9月5日,京都大学,京都市)
+8. 川口俊宏, 「活動銀河核のダストトーラス」, 談話会 (2011年10月18日, 東北大学, 仙台市)
+9. 岡本崇, CDM 宇宙での pseudo-bulge の形成, JASMINEサイエンスワークショップ(2011年11月10日～12日,北海道支笏湖)
+10. 梅村雅之,「AGNサーベイによるサイエンスの展望」,HSC活動銀河核探査によるサイエンス(2011年11月16日～18日,京都大学,京都市)
+11. 川口俊宏,「Luminosity and mass functions through HSC data」,HSC活動銀河核探査によるサイエンス(2011年11月16日～18日,京都大学,京都市)
+12. 石山智明,「準解析的モデルで用いるN体シミュレーションの詳細」,HSC活動銀河核探査によるサイエンス(2011年11月16日～18日,京都大学,京都市)
+13. 川口俊宏, 「活動銀河核のダストトーラス」, 談話会 (2012年1月23日, 広島大学, 東広島市)
+14. 川口俊宏, 「活動銀河核のダストトーラス」, 談話会 (2012年2月9日, 信州大学, 松本市)
+15. 石山智明,「スーパーコンピュータ"京"による,天文シミュレーション」,第10回HSSワークショップ「スーパーコンピュータ "京" でせまる最先端の科学・技術」(2012年2月17日, 北海道大学,札幌市)
+16. 森正夫, 「アンドロメダの涙」, 国立天文台談話会 (2011年12月16日,国立天文台, 三鷹市)
+<一般講演>
+17. 谷川衝,「Unexpected Formation Modes of the First Hard Binary in Core Collapse」,MODEST-10c: Algorithms and Applications of gravitational N-body simulation,(2011年8月1日～9月17日,神戸大学,神戸市)
+18. 梅村雅之,「初代星形成の輻射流体力学」,輻射輸送・輻射流体サマースクール2011(2011年8月18日～20日,北海道大学,札幌市)
+19. 森正夫,「アンドロメダの涙とさざめき」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+20. 吉川耕司,谷川衝,似鳥啓吾,岡本崇,「新しい SIMD 拡張命令セット Advanced Vector eXtensions を用いた高性能無衝突系 N 体計算ライブラリの開発」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+21. 川口俊宏, 森正夫,「活動銀河核の光と影: ダストトーラスの自己掩蔽」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+22. 三木洋平, 森正夫, 川口俊宏, 「銀河衝突の活動銀河中心核への影響:活動抑制が起こる条件の導出」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+23. 扇谷豪,森正夫,「ダークマターハローの周期的バリオン重力場変動への力学応答」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+24. 土屋聖海,森正夫,新田伸也,「球対称定常銀河風の遷音速解:銀河の質量密度分布との関係」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+25. 桐原崇亘,三木洋平,森正夫, 「アンドロメダストリームとダークマターハローの外縁構造の解析」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+26. 濟藤祐理子, 三木洋平, 川口俊宏, 森正夫, 「Detectability of the Wandering Black hole in M31 Halo」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+27. 谷川衝,吉川耕司,岡本崇,似鳥啓吾,「新しい SIMD 拡張命令セット: Advanced Vector eXtensions を用いた衝突系 N 体シミュレーションコードの開発」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+28. 石山智明, 牧野 淳一郎, Simon Portegies Zwart, Cosmogrid Project team,「The Cosmogrid Simulation II: 異機種混合宇宙論的N体シミュレーション」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+29. 長谷川賢二,Benoit Semelin, 「輻射流体計算で探る宇宙再電離」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+30. 行方大輔,「磁場とFUV加熱率がCentral Molecular Zoneの構造と星間ガスの統計的性質に与える影響」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+31. 安部牧人,久保田明夏,梅村雅之,米徳大輔,「Swift GRB光度曲線の性質について:(1) フーリエ&自己相関解析」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+32. 久保田明夏,安倍牧人,梅村雅之,米徳大輔,「Swift GRB 光度曲線の性質について:(2)赤方偏移データを用いた統計解析」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+33. 川勝 望, 紀 基樹, 「LOFAR/SKAで探る活動銀河核ジェットからの熱的シンクロトロン放射」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+34. 紀 基樹, 伊藤 裕貴, 川勝 望, M. Orienti, 「電波ダークなミニAGNシェル:新しいTeVガンマ線源の可能性」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+35. 伊藤 裕貴, 紀 基樹, 川勝 望, 「死んだ電波ローブを取り囲むシェルからの非熱的放射」,日本天文学会秋季年会(2011年9月19日～22日,鹿児島大学,鹿児島市)
+36. 岡本崇, 「円盤銀河のバルジの形成過程」,第24回理論懇シンポジウム「理論天文学・宇宙物理学の革新」(2011年11月5～7日,国立天文台,三鷹市)
+37. 川口俊宏, 「活動銀河核ダストトーラスの近赤外線放射モデル」,第24回理論懇シンポジウム「理論天文学・宇宙物理学の革新」(2011年11月5～7日,国立天文台,三鷹市)
+38. 長谷川賢二,Benoit Semelin,「Self-regulated Reionization by Radiation-Hydrodynamic Simulations」,第24回理論懇シンポジウム「理論天文学・宇宙物理学の革新」(2011年11月5～7日,国立天文台,三鷹市)
+39. 谷川衝,「新しいSIMD拡張命令セット: Advanced Vector eXtensions を用いた衝突系N 体シミュレーションコードの開発」,第24回理論懇シンポジウム「理論天文学・宇宙物理学の革新」(2011年11月5～7日,国立天文台,三鷹市)
+40. 行方大輔,「磁場と星間輻射場がCentral Molecular Zoneにおける星形成率に与える影響」第24回理論懇シンポジウム「理論天文学・宇宙物理学の革新」(2011年11月5～7日,国立天文台,三鷹市)
+41. Wagner Alexander, 「Hydrodynamic simulations of relativistic AGN jet feedback」,第24回理論懇シンポジウム「理論天文学・宇宙物理学の革新」(2011年11月5～7日,国立天文台,三鷹市)
+42. 谷川衝,「巨大ブラックホール多体系でのブラックホール合体成長に伴う銀河中心構造の進化」,JASMINEサイエンスワークショップ(2011年11月10日～12日,北海道支笏湖)
+43. 梅村雅之,「小型JASMINEによるサイエンス(まとめ)」,JASMINEサイエンスワークショップ(2011年11月10日～12日,北海道支笏湖)
+44. 川勝 望,「超巨大ブラックホール進化モデルの現状と今後の課題」,HSC活動銀河核探査によるサイエンス(2011年11月16日～18日,京都大学,京都市)
+45. 峰崎岳夫, 坂田悠,諸隈智貴,小久保,越田進太郎,鮫島寛明,川口俊宏,「活動銀河核変光の紫外線可視放射の多波長相関」,HSC活動銀河核探査によるサイエンス(2011年11月16日～18日,京都大学,京都市)
+46. 川口俊宏, 「活動銀河核ダストトーラスの構造」,第4回クェーサー吸収線研究会(2011年12月11日,信州大学,松本市)
+47. 長谷川賢二,Benoit Semelin,「三次元輻射流体計算で探る再電離期の宇宙」,初代星形成・初代銀河研究会(2011年12月20日～22日,九州大学,福岡市)
+48. Wagner Alexander, 「AGN jet – ISM interactions in high redshift radio galaxies」,初代星形成・初代銀河研究会(2011年12月20日～22日,九州大学,福岡市)
+49. 安部牧人,久保田明夏,梅村雅之,米徳大輔,「Swift GRB光度曲線に基づくGRBのzの決定およびGRB光度曲線の性質について」,初代星形成・初代銀河研究会(2011年12月20日～22日,九州大学,福岡市)
+50. 梅村雅之,「研究会サマリ」,初代星形成・初代銀河研究会(2011年12月20日～22日,九州大学,福岡市)
+51. 石山智明,「ダークマターハローの中のサブハロー分布」,2011年度国立天文台天文シミュレーションプロジェクト・ユーザーズミーティング(2012年1月17日～18日,国立天文台,三鷹市)
+52. 佐藤皓允, 庄司光男, 神谷克政, 梅村雅之, 矢花一浩, 白石賢二,「星間空間におけるアミノ酸キラリティ生成機構の理論的研究」,ALMAワークショップ(宇宙と生命)(2012年1月21日,国立天文台,三鷹市)
+53. 三木洋平,「GPGPUによる無衝突系N体計算の高速化」,Astrophysical GPU Mini-workshop in University of Aizu(2012年2月17日,会津大学,会津市)
+54. 梅村雅之,「銀河スケールからの巨大BH形成理論の構築に向けて」,ワークショップ 「巨大ブラックホールの起源」(2012年2月24日～25日, 筑波大学, つくば市)
+55. 川口俊宏, 三木洋平, 森正夫,「銀河衝突に伴う巨大ブラックホールの進化」, ワークショップ 「巨大ブラックホールの起源」(2012年2月24日～25日, 筑波大学, つくば市)
+56. 川勝望,和田桂一「超巨大BHと銀河の共進化モデル構築へ向けて」,ワークショップ 「巨大ブラックホールの起源」(2012年2月24日～25日, 筑波大学, つくば市)
+57. 尾崎忍夫,宮崎聡,山下卓也,田中陽子,服部尭,岡田則夫,三ツ井健司,福嶋美津広,川口俊宏,松田有一,斎藤智樹「Development of FOCAS IFU」,すばるユーザーズミーティング (2012年2月28～3月1日, 国立天文台, 三鷹市)
+58. 川口俊宏, 森正夫,「ダストトーラスと降着円盤の軸不一致が引き起こす放射特性」,日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市)
+59. 森正夫, 桐原崇亘, 三木洋平, 川口俊宏, 濟藤祐理子, Rich, M.R.,「アンドロメダのリングと涙」, 日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市)
+60. 濟藤祐理子, 諸隈智貴, 峰崎岳夫, 川勝望, 川口俊宏, 長尾透, 松岡健太,今西昌俊, 美濃和陽典, 大井渚, 今瀬佳介,「Cosmological Evolution of SMBH mass-Bulge mass Relation investigated by SDSS QSOs at z~3」,日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市)
+61. 小田寛, 川口俊宏, 「光学的に薄い磁気圧優勢二温度降着円盤モデルの明るいHard-to-Soft遷移への適用」,日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市伏)
+62. 佐藤皓允, 庄司光男, 神谷克政, 梅村雅之, 矢花一浩, 白石賢二,「星間空間における光誘起L型アミノ酸過剰の理論的研究」,日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市)
+63. 桐原崇亘, 森正夫, 「アンドロメダストリームの非対称構造」, 日本天文学会春季年会 (2012年3月19日～22日, 龍谷大学, 京都市)
+64. 岡本崇, 「宇宙論的 pseudobulge 形成」,日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市)
+65. 川勝 望,和田桂一,「銀河からのガス供給過程の多様性と超巨大ブラックホール成長との関係」,日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市)
+66. 土居明広, 柳楽央至, 川勝望,紀基樹, 永井洋, 浅田桂一「狭輝線セイファート1型銀河の電波銀河の発見」, 日本天文学会春季年会(2012年3月19日～22日, 龍谷大学, 京都市) 
+連携・国際活動・社会貢献、その他
+【計算科学研究センター内異分野間連携】
+星間空間円偏光波によるL型アミノ酸過剰の研究において,宇宙・生命・物性・原子核分野連携を行い,2012年日本天文学会春季年会にて成果発表を行った。(地球惑星科学連合大会(2012年5月)においても発表予定。)
+【社会貢献】
+1.日本天文学会公開講演会/全国同時七夕講演会
+「宇宙探求への道」
+2011年7月3日(日) 14:00-17:00(つくば国際会議場エポカル)
+2.日本天文学会 2011年春季年会 記者会見
+2011年6月13日(月) 14-16時(国立天文台) 梅村雅之,谷川衝
+「合体で巨大化するブラックホール
+—高精度シミュレーションが解き明かす巨大ブラックホールの謎—」
+3.第12回 林忠四郎記念講演会
+2012年1月17日(火) 15:30-18:00(筑波大学 大学会館 国際会議室)
+4.SSH生徒研究発表会2011 (神戸国際展示場,神戸市)
+2011年8月10日～12日 川勝望
+SSH指定校の高校生に対して,理数学生応援プロジェクトの広報を行った。
+5.春の進学説明会・模擬授業2012(筑波大学 東京キャンパス文京校舎,文京区)
+2012年3月28日～30日 川勝望
+理数学生応援プロジェクト参加学生による研究発表のポスター展示とプログラムの説明を行った。
+【著書】
+1. 梅村雅之(共著),岩波講座 計算科学 第2巻「計算と宇宙」
+【解説記事】
+1. 岡本崇,主役はどちら? 銀河と共に育つ超巨大ブラックホール, 科学 (岩波書店), 2011, Vol. 81 No. 4, 330-340
+【集中講義】
+1.梅村 雅之:
+輻射輸送・輻射流体サマースクール2011(2011年8月18日～20日,北海道大学,札幌市)
+2.梅村 雅之:千葉大学
+輻射輸送・輻射流体力学(2011年10月31日,千葉大学,千葉市)
+【研究会開催】
+1.初代星形成・初代銀河研究会
+2011年12月20日～22日,九州大学,福岡市
+2.ワークショップ 「巨大ブラックホールの起源」
+2012年2月24日～25日, 筑波大学, つくば市
+3.ミニワークショップ 「Astrophysical GPU Mini-workshop in University of Aizu」
+2012年2月17日 会津大学
+【座長】
+1.川勝望
+日本天文学会"活動銀河核"日本天文学会春季年会, 龍谷大学,2012年3月19日～22日
+原子核分野
+研究論文
+1. Emergence of pygmy dipole resonances: Magic Numbers and neutron skins
+T. Inakura, T. Nakatsukasa, K. Yabana
+Phys. Rev. C84, 021302 (2011).
+2. Magnetic circular dichroism in real-time time-dependent density functional theory
+K.-L. Lee, K. Yabana, G.F. Bertsch
+J. Chem. Phys. 134, 144106 (2011).
+3. Time-dependent density functional theory for strong electromagnetic fields in crystalline solids
+K. Yabana, T. Sugiyama, Y. Shinohara, T. Otobe, G.F. Bertsch
+Phys. Rev. B85, 045134 (2012).
+4. 光イオン化過程の時間依存密度汎関数理論による第一原理計算
+矢花一浩
+Journal of the Vacuum Society of Japan 54, 522 (2011).
+5. Imaginary-time method for radiative capture reaction rate
+K. Yabana, Y. Funaki
+Phys. Rev. C, submitted, arXiv:1202.3309
+6. Three dimensional structure of low-density nuclear matter
+M. Okamoto, T. Maruyama, K. Yabana, T. Tatsumi
+submitted to Phys. Lett. B
+7. Toward a Microscopic Reaction Description Based on Energy-Density-Functional Structure Models,
+G. P. A. Nobre, F. S. Dietrich, J. E. Escher, I. J. Thompson, M. Dupuis, J. Terasaki, and J. Engel,
+Phys. Rev. C 84 (2011) 064609
+8. Testing Skyrme Energy-Density Functionals with the QRPA in Low-Lying Vibrational States of Rare-Earth Nuclei
+J. Terasaki and J. Engel,
+Phys. Rev. C 84 (2011) 014332
+9. Testing Skyrme Energy-Density Functionals with the QRPA in Low-lying Vibrational States of Rare-Earth Nuclei
+J. Terasaki
+submitted to Progress of Theoretical Physics、Supplement.
+10. Overlap of QRPA states based on ground states of different nuclei&rdquo;
+J. Terasaki
+in preparation.
+11. Linear responses in time-dependent Hartree-Fock Bogoliubov Method with Gogny interaction
+Y.Hashimoto,
+submitted to Eur. Phys. Jour. A
+(A)国際会議講演等
+1. Time-dependent approaches for reactions at barrier energy
+K. Yabana
+INT program INT-11-2d, Interface between Structure and Reactions for Rare Isotopes and Nuclear
+Astrophysics, INT, Univ. Washington, USA, Aug. 8- Sept. 2, 2011.
+2. Real-time and real-space density functional calculation for electron dynamics in crystalline solids
+K. Yabana
+Int. Conf. on Computational Science, Nanyang Technological University, Singapore, Jun. 1-3, 2011.
+3. Real-time TDDFT Simulation for Ultrafast Electron Dynamics in Dielectrics
+K. Yabana
+14th International Conference Density Functional Theory in Chemistry, Physics and Biology, Athens,
+Greece, 2011 Aug. 29-Sep. 2
+4. Real-time TDDFT Calculation in Molecules and Solids
+K. Yabana
+ISTCP-VII (International Symposium on Theoretical Chemistry and Physics), Waseda Univ. Sept. 2-8, 2011.
+5. Real-Time TDDFT for Molecules and Solids
+K. Yabana
+Dynamics and Correlations in Exotic Nuclei, YITP Kyoto Univ., Sept. 23, 2011.
+6. Time-Dependent Hartree-Fock Calculation for Multi-Nucleon Transfer Reactions
+K. Yabana
+YIPQS Long-term Workshop Dynamics and Correlations in Exotic Nuclei (DCEN2011) One-day
+Workshop4, Oct. 24, 2011.
+7. Time-dependent density functional theory for femtosecond electron dynamics in dielectrics
+K. Yabana
+The 14th Asian Workshop on First-Principles Electronic Structure Calculations, Univ. Tokyo, Oct.31-Nov. 2,
+2011.
+8. Time-Dependent Density Functional Theory for Intense Laser Pulse Propagation in Solids
+K. Yabana
+3rd Int. CQSE Workshop on Atomic, Molecular and Ultrafast Science and Technology, National Taiwan
+Univ., Jan. 7-8, 2012.
+9. Computational Approach for Dynamics of Many-Fermion Systems &ndash; from Nuclear Physics to Optical
+Science -
+K. Yabana
+Kyoto Univ. GCOE Symposium &ldquo;Links among Hierarchies&rdquo;, Feb. 13-15, 2012.
+10. Tests of Skyrme Energy Density Functionals in Low-Energy Vibrational States of Rare-Earth Nuclei using
+QRPA
+J. Terasaki,
+RIBF, ULIC and CNS Symposium on Frontier of Gamma-ray Spectroscopy, June 30 &ndash; July 2, 2011, RIKEN,
+Wako, Japan
+11. Testing Skyrme Energy-Density Functionals with the QRPA in Low-lying Vibrational States of Rare-Earth
+Nuclei
+J. Terasaki
+YKIS2011 Symposium Frontier Issues in Physics of Exotic Nuclei, Oct. 11-15, 2011, Kyoto Univ., Kyoto,
+Japan
+12. Testing Skyrme energy-density functionals with the QRPA in low-lying vibrational states of rare-earth nuclei
+J. Terasaki
+1st Topical Workshop on Modern Aspects in Nuclear Structure, Advances in Nuclear Structure with arrays
+including new scintillator detectors, Feb. 22-25, 2012, Bormio, Italy
+13. Overlap of QRPA states based on ground states of different nuclei
+J. Terasaki
+International Molecule "Nuclear forces and neutron-rich matter", March 1-31, 2012, Yukawa Institute of
+Theoretical Physics, Kyoto University.
+14. Large-scale calculations of excited states of heavy nuclei
+J. Terasaki
+LBNL and CCS-Tsukuba Joint Workshop 2012, March 19-20, 2012, Center for Computational Sciences,
+University of Tsukuba
+15. Gogny-TDHFB calculation of nonlinear vibrations in 44,52Ti,
+Y. Hashimoto,
+YIPQS Long-term workshop Dynamics and Correlations in Exotic Nuclei (DCEN2011), Yukawa Institute
+for Theoretical Physics, Kyoto, Japan, 20th September – 28th October, 2011.
+16. Anharmonic oscillations in 44,52Ti with Gogny-TDHFB(poster),
+Y. Hashimoto,
+YKIS2011 Symposium Frontier Issues in Physics of Exotic Nuclei (YKIS2011), Yukawa Institute for
+Theoretical Physics, Kyoto, Japan, 11th – 15th October, 2011.
+17. Nonlinear vibration and relaxation in Gogny-TDHFB calculation,
+Y. Hashimoto,
+Nuclear forces and neutron-rich matter, Yukawa Institute for Theoretical Physics, Kyoto, Japan,
+2012.3.1 &mdash; 2012.3.31.
+18. Description of excited states in light nuclei with Skyrme interaction employing multiple Slater determinants
+Yuta Fukuoka, Yasuro Funaki, Kazuhiro Yabana, Takashi Nakatsukasa
+YIPQS Long-term workshop, Dynamics and Correlations in Exotic Nuclei (DCEN2011), Yukawa Institute
+for Theoretical Physics, Kyoto, Japan, 20th September – 28th October, 2011
+19. Time-dependent Hartree-Fock Theory for Multi-nucleon transfer Reactions
+K. Sekizawa and K. Yabana,
+10th CNS International Summer School, 26th Sep. – 1st Oct., 2011.
+20. Time-Dependent Hartree-Fock Theory for Multi-Nucleon Transfer Reactions
+K. Sekizawa and K. Yabana,
+YIPQS Long-term workshop Dynamics and Correlations in Exotic Nuclei (DCEN2011), 20th Sep. – 28th
+Oct., 2011
+21. Three-Dimensional Calculation of Inhomogeneous Structure in Low-Density Nuclear Matter
+M. Okamoto, T. Maruyama, K. Yabana, T. Tatsumi
+XV.th Research workshop Nucleation Theory and Applications, Bogoliubov laboratory of Theoretical
+Physics , Dubna, Russia, Apr. 16-24, 2011.
+22. Three-dimensional calculation of inhomogeneous nuclear matter
+M. Okamoto, T. Maruyama, K. Yabana, T. Tatsumi
+Future Prospects of Hadron Physics at J-PARC and Large Scale Computational Physics, J-PARC, Tokai,
+Ibaraki, Feb. 2-11, 2012.
+23. Three-dimensional calculation of pasta structure in High and Low-density nuclear matter
+M. Okamoto, T. Maruyama, K. Yabana, T. Tatsumi
+The first International School for Strangeness Nuclear Physics, J-PARC and Tohoku Univ.
+(B)国内会議・研究会
+1. 光捕獲熱核反応率の虚時間計算
+矢花一浩
+京都大学基礎物理学研究所研究会「微視的核反応理論による物理」、2011年8月1−3日
+2. 電子ダイナミクスの第一原理計算−光と物質の相互作用のミクロな記述−
+矢花一浩
+新学術領域研究「半導体における動的相関電子系の光科学」「コンピューティクスによる物質デザイン:複
+合相関と非平衡ダイナミクス」若手道場、大阪大学、2011年9月27日
+3. 物質中の光伝播を記述するMaxwell-TDDFTマルチスケール・シミュレータの開発
+矢花一浩
+筑波大学計算科学研究センター学際共同利用H22成果報告・H23中間報告会、2011年9月13日
+4. パルス光の伝播を記述するMaxwell-TDDFTマルチスケール・シミュレータの開発
+矢花一浩
+新学術領域「コンピューティクスによる物質デザイン:複合相関と非平衡ダイナミクス」研究会、東京大学、
+2011年10月7−8日
+5. A New Computational Approach for Radiative Capture Reaction Rate
+矢花一浩
+新学術科研費「素核宇融合による計算基礎科学物理学の進展研究会」、賢島、2011年12月3−5日
+6. 時間依存密度汎関数法によるパルス光伝播の第一原理計算
+矢花一浩
+東京大学物性研究所共同利用スーパーコンピュータ成果報告会「計算科学の課題と展望」
+東大物性研、2012年2月20−21日
+7. 高強度パルス光伝播の第一原理計算
+矢花一浩、杉山健、篠原康、乙部智仁、G.F. Bertsch
+第59回応用物理学関係連合講演会、早稲田大学、2012年3月15−18日
+8. 時間依存密度汎関数理論によるコヒーレントフォノンの記述
+矢花一浩
+日本物理学会第67回年次大会シンポジウム「凝縮系における超高速現象とコヒーレント物質制御への展
+開:光化学反応から光誘起相転移まで」、関西学院大学、2012年3月24−27日
+9. 密度汎関数法を用いた原子核の大規模励起状態計算
+寺崎 順
+計算科学コロキウム、筑波大学計算科学研究センター、2011年5月24日
+10. QRPA calculation for use on passively paralleled computers
+寺崎 順
+第2回「学際計算科学による新たな知の発見・統合・創出」シンポジウム−PACS-CSによる計算科学の発
+展と次世代コンピューティングへの展開−,筑波大学計算科学研究センター、2011年 9月 12、13日
+11. 原子核応答の大規模計算
+寺崎 順
+日本物理学会2011年秋季大会, 弘前、招待講演
+12. 戦略プログラム分野5、ユーザー支援
+寺崎 順
+日本物理学会2011年秋季大会核理論懇談会、弘前 (2011年9月16日—19日)
+13. ユーザー支援報告
+寺崎 順
+戦略プログラム分野5主催の研究会「大規模計算による原子核研究の展開−核子多体系を中心に−」
+理化学研究所、和光、2011年1月25日
+14. Calculation of Transition Strength of Nuclei
+寺崎 順
+研究会「素核宇融合による計算基礎物理学の進展 – ミクロとマクロのかけ橋の構築 -」, 合歓の郷、志摩、
+2011年12月3 – 5日
+15. Overlap of QRPA states based on ground states of different nuclei
+寺崎 順
+原子核理論研究室セミナー、筑波大学数理物質系、2012年1月20日
+16. Nuclear transition matrix elements of neutrino-less double-beta decay for determining the neutrino mass
+寺崎 順
+計算科学研究センター年次報告会、筑波大学計算科学研究センター、2011年2月20日
+17. 原子核の密度汎関数理論の基底状態および二重ベータ崩壊行列要素への応用
+寺崎 順
+平成24年度 筑波大学計算科学研究センター学際共同利用ヒアリング、筑波大学計算科学研究センター、2012年3月2日
+18 ユーザー支援活動報告
+寺崎 順
+HPCI 戦略プログラム分野5「物質と宇宙の起源と構造」全体シンポジウム、秋葉原コンベンションホール、東
+京、2012年3月7,8日
+19 Skyrme力を用いた多スレーター行列式による軽い核の励起構造計算
+福岡 佑太、船木 靖郎、矢花 一浩、中務 孝
+大規模計算による原子核研究の展開 −核子多体系を中心に−、理化学研究所RIBF棟2階大会議室、
+2012月1月24日-25日
+20. Skyrme力を用いた多スレーター行列式による軽い核の励起構造計算
+福岡 佑太、船木 靖郎、矢花 一浩、中務 孝
+RCNP研究会 「クラスターガス状態探索のための研究戦略会議」、大阪大学核物理研究センター、
+2011年9月7日-8日
+21. 多スレーター行列式の重ね合わせによる軽い核における励起状態の記述
+福岡 佑太
+2011年度 原子核三者若手 夏の学校(白浜荘(滋賀県高島市) 8月16日～8月21日)
+22. Description of Nucleon Transfer Reaction by TDHF Method
+関澤一之、矢花一浩
+基研研究会「微視的核反応理論による物理」、2011年8月1日- 3日
+23. TDHF計算による核子移行反応の記述
+関澤一之、矢花一浩
+2011年度原子核三者若手夏の学校,滋賀県高島市白浜荘,2011年8月16日～ 21日
+24. 多核子移行反応断面積のTDHF計算
+関澤一之、矢花一浩
+日本物理学会 第67回年次大会、関西学院大学西宮上ヶ原キャンパス,2012年3月24日～27日
+25. 3アルファ融合反応の新たな計算手法
+赤堀孝彦、矢花一浩、船木靖郎
+研究会「大規模計算による原子核研究の展開−核子多体系を中心に−」、理化学研究所RIBF棟二階大
+会議室、2012年1月24、25
+26.低密度核物質の非一様構造による3次元結晶
+岡本稔、丸山敏毅、矢花一浩、巽敏隆
+2011年度原子核三者若手夏の学校(白浜荘 (高島市、滋賀県)、2011年8月16日～21日)
+27. 低密度核物質の非一様構造への系統的計算
+岡本稔、丸山敏毅、矢花一浩、巽敏隆
+日本物理学会秋季大会(弘前大学 (弘前市、青森県)、2011年9月16日～19日)
+28. 構造を仮定しない計算による低密度核物質の非一様構造
+岡本稔、丸山敏毅、矢花一浩、巽敏隆
+素核宇宙融合による計算基礎物理学の進展研究会、合歓の郷 (三重県)、2011年12月3日～5日
+29. 低密度原子核物質の非一様構造と中性子星のクラスト
+岡本稔、丸山敏毅、矢花一浩、巽敏隆
+日本物理学会第67回年次大会(関西学院大学 (西宮市、兵庫県)、2012年3月24日～27日)
+30. クリロフ部分空間法を用いたTDDFTの線形応答計算
+篠原康、二村保徳、矢花一浩、櫻井鉄也
+日本物理学会67回年次大会 (関西学院大学、2012年3月24日-27日)
+31. 第一原理計算による半金属コヒーレントフォノン生成の記述
+篠原康、矢花一浩、岩田潤一、乙部智仁、G. F. Bertsch
+第59回応用物理学関係連合講演会、(早稲田大学、早稲田中・高等学校 2012年3月15日-3月18日)
+32. 時間依存密度汎関数理論による半金属コヒーレントフォノン生成の記述
+篠原康、矢花一浩、乙部智仁、岩田潤一、G.F. Bertsch
+日本物理学会2011年秋季大会 (富山大学 2011年9月21日～24日)
+33. パルス光伝搬のMaxwell+TDDFTマルチスケールシミュレーション
+杉山健、篠原康、乙部智仁、矢花一浩、G.F. Bertsch
+日本物理学会2011年秋季大会 (富山大学 2011年9月.21日～24日)
+(C)ポスター発表
+1. ARTED: Ab-initio Real-Time Electron Dynamics simulation code
+矢花一浩、篠原康
+第2回次世代ナノ統合シミュレーションソフトウェア説明会、学士会館(東京)、2012年1月26日
+2. 高強度パルス光伝播を記述するMaxwell-TDDFTマルチスケール・シミュレーション
+矢花一浩、杉山健、篠原康、乙部智仁、G.F. Bertsch
+次世代ナノ統合シミュレーションソフトウェアの研究開発公開シンポジウム、ニチイ学館神戸ポートアイラン
+ドセンター、2012年3月5−6日
+3. Description of clustering states in light nucleiwith Skyrme interaction superposing multiple Slater
+determinants (poster)
+Yuta Fukuoka, Yasuro Funaki, Kazuhiro Yabana, Takashi Nakatsukasa
+YKIS2011 Symposium, Frontier Issues in Physics of Exotic Nuclei (YKIS20
+(Yukawa Institute for Theoretical Physics, Kyoto, Japan, 11th – 15th October, 2011)
+4. Time-Dependent Hartree-Fock Theory for Multi-Nucleon Transfer Reaction
+K. Sekizawa and K. Yabana
+International Molecule "Nuclear forces and neutron-rich matter", 1st March – 31th March, 2012
+5. Three-dimensional calculation of inhomogeneous nuclear matter
+岡本稔、丸山敏毅、矢花一浩、巽敏隆
+The 11th International Symposium on Origin of Matter and Evolution of Galaxies
+(理化学研究所 (和光市、埼玉県)、2011年11月14日～17日)
+6. Real-Time TDDFT Simulation for Coherent Phonon Generation
+Yasushi Shinohara, Kazuhiro Yabana, Jun-ichi Iwata, Tomohito Otobe, George F. Bertsch
+XVIth International Workshop on Quantum Systems in Chemistry and Physics, Kanazawa, Japan, 2011 Sep.
+11-17
+7. Coherent Phonon Generation in Real-Time TDDFT」
+Yasushi Shinohara, Kazuhiro Yabana, Jun-ichi Iwata, Tomohito Otobe, George F. Bertsch
+14th International Conference Density Functional Theory in Chemistry, Physics and Biology, Athens,
+Greece, 2011 Aug. 29-Sep. 2
+8. Maxwell+TDDFT Multi-Scale Simulator Describing Propagation of High Intensity Laser Pulse
+T.Sugiyama,Y.Shinohara,T.Otobe,K.Yabana,G.F.Bertsch
+14th International Density Functional Theory Conference (DFT2011)
+Athens,Greece,August39-September 2,2011
+9. Development of First-Principles Maxwell + TDDFT Multi-Scale Simulator for Propagation of
+High-Intensity Laser Pulse
+T.Sugiyama,Y.Shinohara,T.Otobe,K.Yabana,G.F.Bertsch
+The XVIth International Workshop on Quantum Systems in Chemistry and Physics (QSCP-XVI) (Ishikawa
+Prefecture Museum of Art, September 11-17,2011)
+10. Development of First-Principles Maxwell + TDDFT Multi-Scale Simulator for Propagation of High-Intensity
+Laser Pulse
+T.Sugiyama,Y.Shinohara,T.Otobe,K.Yabana,G.F.Bertsch
+The 14th Asian Workshop on First-Principles Electric Structure Calculations (The University of Tokyo,
+October 31-Novenber 2,2011)
+(D) その他
+1. 集中講義: フェルミ多粒子系ダイナミクスの計算科学
+矢花一浩
+京都大学理学研究科、2011年6月8−10日
+2. セミナー:時間依存密度汎関数理論−原子核物理からレーザー科学へ—
+矢花一浩
+京都大学物理第二教室談話会、2011年6月10日
+3. セミナー:First-Principles Description for Quantum Electron Dynamics Induced by Intense and Ultrashort Laser Pulses
+K. Yabana
+Seminar at Advanced Photonics Research Institute, Gwangyu, Korea, Feb. 23, 2012.
+連携・国際活動・社会貢献、その他
+1 センター内の連携活動
+・システム工学研究科櫻井グループと、シフト法を用いた線形方程式解法の時間依存密度汎関数理論への応用に関して共同研究を行っている。(当グループに属する博士後期課程大学院生(D2)の篠原が、デュアルディグリー制度のもとで行っている共同研究。)
+・センター内の宇宙分野・生命分野の教員と共同で、宇宙アミノ酸の起源に関するテーマで研究を行っている大学院生の指導に協力している。
+・量子物性研究部門の研究者(トン准教授、前島助教他)と計算光科学を中心に定期的にセミナーを行っている。
+・センターに新たに導入されたGPU並列計算機HA-PACSの利用に向けて、光と物質の相互作用に関するマルチGPU計算コードの準備を進めている。
+2 国内研究協力
+・理化学研究所(中務准主任研究員)のグループ、新潟大学(松尾教授)のグループと、DFTに関する定期会合を開催し、一部の研究者と共同研究を進めている。
+・分子科学研究所の信定准教授のグループと、戦略プログラム分野2での活動に基づく京コンピュータの利用を含め、電磁波と物質の時間依存密度汎関数理論に基づく第一原理計算に関して共同研究を行っている。
+・関西光科学研究所の理論研究者(乙部研究員)と、光と物質の相互作用に関する研究協力を行っている。
+3 国際研究協力
+・米国ワシントン大学のBertsch教授と、光と物質の相互作用に関する計算科学研究について、長年にわたる共同研究を継続している。
+・韓国のGIST/APRI(高等光技術研究所)と、光科学に関する共同研究を立ち上げつつある。
+4 社会貢献
+・寺崎は、HPCI戦略プログラム分野5のユーザー支援において、プログラム支援を取りまとめる役割を果たすとともに、2件のプログラム支援を行った。また、戦略プログラム分野5主催の原子核分野における大規模計算に関する研究会「大規模計算による原子核研究の展開—核子多体系を中心に—」を主催した(2012年1月24−25日、於理化学研究所)。
+・矢花は、HPCI戦略プログラム分野5の活動で分野間連携を担当しており、戦略プログラム分野2と分野5の連携活動として量子系の大規模計算に関する連続研究会を組織した。
+・本グループでは、実時間・実空間法に基づく時間依存コーン・シャム方程式の数値解法を主要な方法論として用いている。同様な方法は国内外で開発が進んでいるが、本グループで最近進展させた結晶中の電子ダイナミクスを記述する計算法に関してはまだ例が少なく、計算コードの公開に向けた準備を進めている。
+量子物性研究部門
+研究論文
+量子状態制御グループ
+1.  “Mass polarization effect on the resonant energies of p? -He+ ions and the protonium formation in low-energy antiproton&ndash;hydrogen-atom collisions'', X. M. Tong and N. Toshima, Physical Review A 85 (2012) 032709:1-5.
+2.  “Femtosecond and Attosecond Spectroscopy in the XUV regime'',  A. S. Sandhu and X. M. Tong, IEEE Journal of selected topics in quantum electronics 18 (2012) 351-363.
+3.  “Experimental Demonstration of the Breit Interaction which Dominates the Angular Distribution of X-ray Emission in Dielectronic Recombination'', Z. Hu, X. Y. Han, Y. M. Li, D. Kato, X. M. Tong, N. Nakamura, Physical Review Letters 108 (2012) 073002:1-4.
+4.  “Low-energy peak structure in strong-field ionization by mid-infrared laser-pulses: two-dimensional focusing by the atomic potential'', C. Lemell, K. I. Dimitriou, X. M. Tong, S. Nagele, D. V. Kartashov, J. Burgdorfer, and S. Grafe, Physical Review A 85 (2012) 011403(R):1-4.
+5.  “Attosecond streaking in the low-energy region as a probe of rescattering'', X. H. Xu, L. Y. Peng, Z, Zhang, Q. H. Gong, X. M. Tong, E. A. Pronin, and A. F. Starace, Physical Review Letters 107 (2011) 183001:1-5.        
+6.  “Laser information encoded in atomic asymmetrical ionization in few-cycle laser fields'', T. Tabe, N. Ono, X. M. Tong, and N. Toshima, Physical Review A 84 (2011) 023409:1-6.                                      
+7.  “Theory and experiment on laser enabled inner-valence Auger decay of rare gas atoms'', X. M. Tong, P. Ranitovic, C. W. Hogle, M. M. Murnane, H. C. Kapteyn, and N. Toshima, Physical Review A 84 (2011) 013405:1-8.
+8.  “Alignment dependent ionization of hydrogen molecules in intense laser fields'', Y. J. Jin, X. M. Tong, and N. Toshima, Physical Review A83 (2011) 063409:1-5.
+9.  “Controlling the xuv transparency of helium using two-pathway quantum interference'', R. Ranitovic, X.M. Tong, C.W. Hogle, X. Zhou, Y. Liu, N. Toshima, M.M. Murnane, and H.C. Kapteyn, Physical Review Letters 106 (2011) 193008:1-4.
+10. “Dimerization-induced spin-charge coupling in one-dimensional Mott insulators revealed by femtosecond reflection spectroscopy of Rb&ndash;tetracyanoquinodimethane salts'', H. Uemura, N. Maeshima, K. Yonemitsu, and H. Okamoto, Phys. Rev. B 85 (2012) 125112:1-7.
+11. “Parallelization of the R-matrix propagation method for the study of intense-laser-driven semiconductor superlattices'', Nobuya Maeshima and Ken-ichi Hino, Compt. Phys. Commun. 183 (2012) 8-14.
+12. “Photoexcitation-Energy-Dependent Transition Pathways from a Dimer Mott Insulator to a Metal'', Kenji Yonemitsu, Satoshi, Miyashita, and Maeshima Nobuya, J. Phys. Soc. Jpn. 80 (2011) 084710:1-5.
+13. “Interplay between Correlated Electrons and Quantum Phonons in Charge-Ordered and Mott-Insulating Organic Compounds, Kenji Yonemitsu, Nobuya Maeshima, and Yasuhiro Tanaka'', Acta Phys. Pol. A 121 (2012) 372-374.
+14 “Spin-vortices and Spin-vortex-induced Loop Currents in the Pseudogap Phase of Cuprates&rsquo;&rsquo;, R. Hidekata and H. Koizumi, J. Supercond. Nov. Magn. 24 (2011) 2253.
+15. “Spin-vortex Superconductivity&rsquo;&rsquo;, H. Koizumi, J. Supercond. Nov. Magn. 24 (2011) 1997.
+16. “Magnetic Excitation Spectra from Spin-Vortices and Spin-Vortex-Induced Loop Currents inHole-Doped Cuprates&rsquo;&rsquo;, H. Koizumi and R. Hidekata, J. Phys. Soc. Jpn. 80 (2011) SB031
+(A) 国際会議
+1. “Controlling the XUV transparency using two pathway quantum interference",P. Ranitovic, X. M Tong, C. W. Hogle, X. Zhou, N. Toshima, M. M. Murnane, and H C Kapteyn,XXVII International Conference on Photonic, Electronic and Atomic Collisions (Belfast, Northern Ireland, UK, 27July – 2 August 2011)
+2.“Alignment dependent ionization of hydrogen molecules in intense laser field",Y. J. Kin, X. M. Tong, and N. Toshima, XXVII International Conference on Photonic, Electronic and Atomic Collisions (Belfast, Northern Ireland, UK, 27July – 2 August 2011)
+3.“Information encoded in Carry Envelope Phase Dependent Ionization",T. Tabe, N. Ono, X. M. Tong and N. Toshima, The 12th International Conference on Multiphoton Processes & The 3rd International Conference on Attosecond Physics (Hokkaido University, Sapporo, Japan, July 3-8, 2011)
+4.“Probing Floquet State Dynamics of a Strong Field Dressed He Atom Using Attosecond Pulse Trains",N. Shivaram, H. Timmers, X. M. Tong and A. Sandhu, The 12th International Conference on Multiphoton Processes & The 3rd International Conference on Attosecond Physics (Hokkaido University, Sapporo, Japan, July 3-8, 2011)
+5. “Infrared Laser Enabled Sub-shell Auger Decay of Ar Atoms",X. M. Tong, P. Ranitovic, M. M. Murnane, H. C. Kapteyn and N. Toshima, The 12th International Conference on Multiphoton Processes & The 3rd International Conference on Attosecond Physics (Hokkaido University, Sapporo, Japan, July 3-8, 2011)
+6. “Laser enabled Auger decay in argon atoms and dimers", P. Ranitovic, X. M. Tong, C. W. Hogle, N. Toshima, M. M. Murnane, and H.C. Kapten, 42nd Annual Meeting of the APS Division of Atomic, Molecular and Optical Physics(Atlanta, Georgia, USA, June 13&mdash;17, 2011)
+7. “Laser-Induced Fano Resonance in Semiconductor Superlattice", N. Maeshima and  K. Hino,  The 1st Annual World Congress of Nano-S&T (Oct. 23-26, 2011,  Dalian,China)
+8. “Floquet Analysis of Dynamic Fractional Stark Ladders in Laser-Driven Biased Semiconductor Superlattices", Tomohiro Karasawa, K. Hino, and N. Maeshima,The 1st Annual World Congress of Nano-S&T (Oct. 23-26, 2011, Dalian,China)
+9. “Laser-induced Fano Resonance in Semiconductor Quamtum Well", Y. Nemoto, K. Hino, and N. Maeshima, The 1st Annual World Congress of Nano-S&T (Oct. 23-26, 2011,  Dalian,China)
+(B) 国内会議
+1. “水素原子による反陽子捕獲のヤコビ座標系を用いた精密計算", 仝 暁民、 戸嶋 信幸 第67回日本物理学会、(2012年3月24日, 関西学院大学)
+2. “テラヘルツ光駆動半導体超格子における光着衣励起子の光学応答スペクトル", 前島展也、日野健一, 日本物理学会 2011年秋季大会 (2011年9月21日-24日、富山大学)
+3. “擬一次元ハロゲン架橋金属錯体の光誘起ダイナミクスにおける鎖間相互作用の効果", 齋藤陽平,前島展也,日野健一, 日本物理学会 2011年秋季大会 (2011年9月21日-24日、富山大学)
+4. “半導体におけるコヒーレントフォノンの多チャンネル散乱理論による解析", 柄澤朋宏,日野健一,前島展也, 日本物理学会 2011年秋季大会 (2011年9月21日-24日、富山大学)
+5. “テラヘルツ波駆動ワニエ-シュタルク階段における光着衣電子の共鳴構造の解析", 根本裕也,柄澤朋宏,日野健一,前島展也, 日本物理学会 2011年秋季大会 (2011年9月21日-24日、富山大学)
+6. “半導体におけるコヒーレントフォノンの生成メカニズムの理論的解析", 柄澤朋宏,日野健一,前島展也, 日本物理学会, 第67回年次大会, (2012年3月24日-27日、関西学院大学)
+7. “擬一次元ハロゲン架橋金属錯体の光誘起ダイナミクスにおける鎖間相互作用の効果II", 齋藤陽平,前島展也,日野健一, 日本物理学会, 第67回年次大会, (2012年3月24日-27日、関西学院大学)
+8. “スピン渦誘起ループ電流と仮想電場による巨大ネルンスト効果の説明&rsquo;&rsquo;, 小泉裕康、日本物理学会第66回年次大会(2012年3月24日-27日 関西学院大学)
+9. “銅酸化物高温超伝導体のx=1/8における巨視的電流の抑制&rsquo;&rsquo;, 秀方遼、小泉裕康、日本物理学会第66回年次大会(2012年3月24日-27日関西学院大学)
+10. `スピン渦を含む2次元ハバード模型における電気伝導&rsquo;&rsquo;, 秀方遼、小泉裕康、日本物理学会2011年秋季大会 (2011年9月21日-24日、富山大学)
+11. “スピン渦超伝導理論I&rsquo;&rsquo;、小泉裕康、 日本物理学会2011年秋季大会 (2011年9月21日-24日、富山大学)
+計算物性グループ
+研究論文
+1.           K. Shiraishi, K. Yamaguchi, K. Kamiya, A. Otake, and Y. Shigeta, &ldquo;Guiding Principle of Highly Scalable MONOS-Type Memory&rdquo;, ESC Transaction, 41-7, p71-p.78 (2011)
+2.       W. Feng, R. Hettiarachchi, Y. Lee, S. Sato, K. Kakushima, M. Sato, K. Fukuda, M. Niwa, K. Yamabe, K. Shiraishi, H. Iwai, and K. Ohmori, &ldquo;Fundamental origin of excellent low-noise property in 3D Si-MOSFETs -Impact of charge-centroid in the channel due to quantum effect on 1/f noise-&ldquo;, 2011 Technical Digest of 2011 International Electron Devices Meetings, 27.7-1-4, (2011)
+3.        K. Yamaguchi, A. Otake, K. Kamiya, Y. Shigeta, and K. Shiraishi, &ldquo;First Principle Study of the Stability of H Atoms in SiN Layers on MONOS-Type Memories During Program/Erase Operations&rdquo;, Proceeding of 2011 International Conference on Simulation of Semiconductor Processes and Devices, p.215-p.217  (2011).
+4.       K. Yamguchi, A. Otake, K. Kamiya, Y. Shigeta, and K. Shiraishi, "Atomistic Design of Guiding Principles for High Quality Metal&ndash;Oxide&ndash;Nitride&ndash;Oxide&ndash;Semiconductor Memories: First Principles Study of H and O Incorporation Effects for N Vacancies in SiN Charge Trap Layers", Jpn. J. Appl. Phys. 50, Art. No. 04DD05 (2011)
+5.       M. Muraguchi, Y. Sakurai, Y. Takada, Y. Shigeta, M. Ikeda, K. Makihara, S. Miyazaki, S. Nomura, K. Shiraishi, and T. Endoh, "Collective Tunneling Model in Charge-Trap-Type Nonvolatile Memory Cell", Jpn. J. Appl. Phys. 50 Art. No. 04DD04 (2011).
+6.       Y. Takada, Y. T. Yoon, T. Shiokawa, S. Konabe, M. Arikawa, M. Muraguchi, T. Endoh, Y. Hatsugai, and K. Shiraishi, "Multi-Electron Wave Packet Dynamics in Applied Electric Field", Jpn. J. Appl. Phys. 51, Art. No. 02BJ01 (2012)
+7.       K. Kamiya, Y. Ebihara, M. Kasu, and K. Shiraishi, "Efficient Structure for Deep-Ultraviolet Light-Emitting Diodes with High Emission Efficiency: A First-Principles Study of AlN/GaN Superlattice", Jpn. J. Appl. Phys. 51, Art. No. 02BJ11 (2012).
+8.       M. Arikawa, M. Muraguchi, Y. Hatsugai, K. Shiraishi, and T. Endoh, "Role of Synthetic Ferrimagnets in Magnetic Tunnel Junctions from Wave Packet Dynamics",,Jpn. J. Appl. Phys. 51, Art. No. 02BM03 (2012).
+9.       Y. Ebihara, K. Kamiya, K. Shiraishi and A. A. Yamaguchi, "Intrinsic origin of the breakdown of quasi-cubic approximation in nitride semiconductors", physica status solidi (c), 8, 2279-2281, (2011)
+10.     N. Umezawa and K. Shiraishi,, "Theoretical model for artificial structure modulation of HfO2/SiOx/Si interface by deposition of a dopant material", Appl. Phys. Lett. 100, Art. No. 092904 (2012)
+11.     K. Kamiya, M. Y. Yang, S.-G. Park,B. Magyari-K&ouml;pe,Y. Nishi, M. Niwa, and K. Shiraishi,, "ON-OFF switching mechanism of resistive&ndash;random&ndash;access&ndash;memories based on the formation and disruption of oxygen vacancy conducting channels",  Appl. Phys. Lett. 100, Art. No. 073502 (2012)
+12.     K. Kamiya, Y. Ebihara, K. Shiraishi, and M. Kasu, "Structural design of AlN/GaN superlattices for deep-ultraviolet light-emitting diodes with high emission efficiency", Appl. Phys. Lett. 99, Art. No. 151108 (2011)
+1.       長川健太,加藤重徳,海老原康裕,神谷克政,白石賢二、「4H-SiC表面の初期酸化過程の第一原理計算による検討」、2011年秋季第72回応用物理学会学術講演会 2011年8月29?9月2日@山形大学
+2.       海老原康裕、長川健太、加藤茂徳、吉崎智浩、神谷克政、白石賢二、「酸化時に形成される負の固定電荷に関する理論的検討-Intrinsic Origin of Negative Fixed Charge in Wet Oxidation for Silicon Carbide-」SiC 及び関連ワイドギャップ半導体研究会第20回講演会2011年12月8?9日愛知県産業労働センター(ウインクあいち)
+3.       長川健太、加藤重徳、海老原康裕、吉崎智浩, 神谷克政、白石賢二、「4H-SiC表面の初期酸化過程の第一原理計算による考察-First Principles Analysis of Initial Oxidation Process of 4H-SiC Surfaces-」SiC 及び関連ワイドギャップ半導体研究会第20回講演会2011年12月8?9日愛知県産業労働センター(ウインクあいち)
+4.       加藤重徳、海老原康裕、吉崎智浩、長川健太、神谷克政、白石賢二、「4H-SiC表面のNO初期酸化過程の第一原理計算による検討-First-Principles Analysis of NO Initial Oxidation Process of 4H-SiC Surfaces-」SiC 及び関連ワイドギャップ半導体研究会第20回講演会2011年12月8?9日愛知県産業労働センター(ウインクあいち)
+5.       Y. Ebihara, K. Chokawa, S. Kato, K. Kamiya, and K. Shiraishi, &ldquo;Theoretical Approach of Effects of Wet Oxidation to SiC Materials&rdquo;, International Symposium on Surface Science &ndash;Towards Nano-, Bio-, and Green Innovation &ndash; (ISSS-6)  2011年12月11?15日Tokyo, Japan
+6.        K.Chokawa, S. Kato, Y. Ebihara, T. Yoshizaki,  K. Kamiya, and K. Shiraishi, &ldquo;First Principle Analysis of the Initial Oxidation Process of 4H-SiC Surface&rdquo;, International Symposium on Surface Science &ndash;Towards Nano-, Bio-, and Green Innovation &ndash; (ISSS-6)  2012年12月11?15日Tokyo, Japan
+7.       海老原康裕, 長川健太, 加藤重徳, 吉崎智浩, 神谷克政, 白石賢二、「Intrinsic Origin of Negative Fixed Charge in Wet Oxidation for Silicon Carbide」、ゲートスタック研究会 —材料・プロセス・評価の物理—(第17回研究会)、2012年1月20?21日静岡県三島市、東レ総合研修センター
+8.       長川健太, 加藤重徳, 海老原康裕, 吉崎智浩, 神谷克政, 白石賢二、「First Principle Analysis of the Initial Oxidation Process of 4H-SiC Surfaces」、ゲートスタック研究会 —材料・プロセス・評価の物理—(第17回研究会)、2012年1月20?21日静岡県三島市、東レ総合研修センター
+9.       加藤重徳, 海老原康裕, 吉崎智浩, 長川健太, 神谷克政, 白石賢二、「第一原理計算による4H-SiC表面の初期酸化過程の考察」、ゲートスタック研究会 —材料・プロセス・評価の物理—(第17回研究会)、2012年1月20?21日静岡県東レ総合研修センター
+10.    吉崎智浩, 海老原康裕, 長川健太, 加藤重徳, 神谷克政, 白石賢二、「熱酸化における4H-SiCの欠陥の理論的検討」、ゲートスタック研究会 —材料・プロセス・評価の物理—(第17回研究会)、2012年1月20?21日静岡県東レ総合研修センター
+11.    加藤重徳,長川健太,海老原康裕,吉崎智浩,白石賢二,神谷克政、「4H-SiC表面のNO初期酸化過程の第一原理計算による検討」、2012年春期 第59回応用物理学関係連合後援会2012年3月15?18日、早稲田大学早稲田キャンパス早稲田中&bull;高等学校興風館
+12.    長川健太,加藤重徳,海老原康裕,吉崎智浩,白石賢二,神谷克政、「4H-SiC初期酸化におけるDry酸化とWet酸化の相違の理論的考察」、2012年春期 第59回応用物理学関係連合後援会2012年3月15?18日、早稲田大学早稲田キャンパス早稲田中&bull;高等学校興風館
+13.    佐藤皓允, 庄司光男, 神谷克政, 梅村雅之, 矢花一浩, 白石賢二: &ldquo;星間空間におけるアミノ酸キラリティ生成機構の理論的研究&rdquo;, ALMA WorkShop 「宇宙と生命」, 国立天文台三鷹キャンパス, 2012年1月21日
+14.    佐藤皓允, 庄司光男, 神谷克政, 梅村雅之, 矢花一浩, 白石賢二: &ldquo;星間空間における光誘起L型アミノ酸過剰の理論的研究&rdquo;, 日本天文学会2012年春季年会, P224a, 龍谷大学深草キャンパス, 2012年3月19日?22日 
+15.    <招待講演>K. Kamiya, M. Y. Yang, S.-G. Park, B. Magyari-K&ouml;pe, Y. Nishi, M. Niwa, and K. Shiraishi, &ldquo;Universal Theory of ON-OFF Switching Mechanism of RRAM via VO Based Conducting Channels -Guiding Principle for Oxide Based High Quality RRAM-&ldquo;, 1st International Workshop on RRAM, Leuven, Belgium, Oct. 20-21, (2011).
+16.    Y. Ebihara, K. Chokawa, K. Kato, K. Kamiya, and K. Shiraishi, &ldquo;Theoretical Approach of Effects of Wet Oxidation to Carbon Vacancy for 4H-SiC&rdquo;, 42nd IEEE Semiconductor Interface Specialists Conference, Arlington, VA, USA, Dec. 1-3, (2011).
+17.    Y. Takada, Y. T. Yoon, T. Shiokawa, S. Konabe M. Arikawa, M. Muraguchi, T. Endoh, Y. Hatsugai and K. Shiraishi, &ldquo;Electron Dynamics in the Nano scale Transistor&rdquo;, 2011 Asia_Pacific Workshop on Fundametals and Applications of advanced. semiconductor devices, Daejeon, Korea, . June 29- July 1, (2011).
+18.    M. Arikawa, Y. Hatsugai,  K. Shiraishi  and  T. Endoh, &ldquo;Electron dynamics in the ferromagnetic tunnel junction&rdquo;, 2011 Asia_Pacific Workshop on Fundametals and Applications of advanced. semiconductor devices, Daejeon, Korea, . June 29- July 1, (2011).
+19.    <招待講演>K. Shiraishi, K. Yamaguchi, K. Kamiya, A. Otake, and Y. Shigeta, &ldquo;Guiding Principle of Highly Scalable MONOS-Type Memory&rdquo;, 220th Electrochemical Society Meeting, Boston, MA, USA, Oct. 9-14 (2011)
+20.    W. Feng, R. Hettiarachchi, Y. Lee, S. Sato, K. Kakushima, M. Sato, K. Fukuda, M. Niwa, K. Yamabe, K. Shiraishi, H. Iwai, and K. Ohmori, &ldquo;Fundamental origin of excellent low-noise property in 3D Si-MOSFETs -Impact of charge-centroid in the channel due to quantum effect on 1/f noise-&ldquo;, International Electron Devices Meetings, Dec.5-7, Washington D.C. USA, (2011)
+21.    <招待講演> Kenji Shiraishi, &ldquo;Computational Sciences toward Developing Semiconductor Industry&rdquo;, 第21回日本MRS学術シンポジウム、(2011年12月19日～21日、横浜)
+22.    K. Yamaguchi, A. Otake, K. Kamiya, Y. Shigeta, and K. Shiraishi, &ldquo;First Principle Study of the Stability of H Atoms in SiN Layers on MONOS-Type Memories During Program/Erase Operations&rdquo;, 2011 International Conference on Simulation of Semiconductor Processes and Devices, Sept. 8-10, Osaka, Japan (2011).
+23.    M. Arikawa, M. Muraguchi, Y. Hatsugai, K. Shiraishi, and T. Endoh, "Role of Synthetic Ferrimagnets in MTJs from Wave Packet Dynamics", 2011 International Conference on Solid State Devices and Materials(SSDM 2011)September 28-30, Aichi, Japan, 2011
+24.    K. Kamiya, M. Kasu, and K. Shiraishi,  &ldquo;First-Principles Study of Electronic Structures of AlN/GaN Superlattices,&rdquo;, 2011 International Conference on Solid State Devices and Materials(SSDM 2011)September 28-30, Aichi, Japan, 2011
+25.    Y. Takada, Y. T. Yoon, T. Shiokawa, S. Konabe, M. Arikawa, M. Muraguchi, T. Endoh, Y. Hatsugai, and K. Shiraishi, "Multi Electron Wave Packet Dynamics in Applied Electric Fields", 2011 International Conference on Solid State Devices and Materials(SSDM 2011)September 28-30, 2011
+26.    <招待講演>白石賢二、「次世代LSI開発における計算科学の位置づけと利用方法」、日本物理学会 2011年秋季大会シンポジウム「ナノスケール量子輸送の計算科学的研究の現状・展望と次世代スパコンへの期待」、(2011年9月21日-24日、富山大学)
+27.    <IEEE Distinguished Lecture> K. Shiraishi, "Computational Science Studies toward Future Nano-Devices", WIMNACT Workshop and IEEE EDS Mini-colloquium on Nanometer CMOS Technology 31, Jan. 30th, Tokyo Institute of Technology, Yokohama, Japan, (2012)
+28.   <IEEE Distinguished Lecture> K. Shiraishi, "Interface Physics and Its Approach to Modern Devices -A Computational Physics Approach-", Nov. 27, Tohoku University, Sendai, Japan (2012).
+生命科学研究部門
+生命機能情報分野
+研究論文
+1.M. Shoji, K. Hanaoka, A. Sato, D. Kondo, M. Yang, K. Kamiya, K. Shiraishi, Calculation of the Electron Transfer Coupling Matrix Element in Diabatic Reactions, Int. J. Quantum Chem., accepted(2012). DOI: 10.1002/qua.24074
+2. K. Yamaguchi, H. Isobe, S. Yamanaka, T. Saito, K. Kanda, M. Shoji, Y. Umena, K. Kawakami, J.-R. Shen, N. Kamiya and M. Okumura, Full geometry optimizations of the mixed-valence CaMn4O4X(H2O)4 (X=OH or O) cluster in OEC of PS II: Degree of symmetry breaking of the labile Mn-X-Mn bond revealed by several hybrid DFT calculations, Int. J. Quantum Chem., 13 APR 2012, DOI: 10.1002/qua.24117
+3. T. Saito, M. Shoji, K. Kanda, H. Isobe, S. Yamanaka, Y. Kitagawa, S. Yamada, T. Kawakami, M. Okumura, K. Yamaguchi, Theory of chemical bonds in metalloenzymes. XVII. Symmetry breaking in manganese cluster structures and chameleonic mechanisms for the OO bond formation of water splitting reaction, Int. J. Quantum Chem., 112, 121-135 (2012).
+4. T. Saito, S. Yamanaka, K. Kanda, H. Isobe, Y. Takano, Y. Shigeta, Y. Umena, K. Kawakami, J.-R. Shen, N. Kamiya, M. Okumura, M. Shoji, Y. Yoshioka and K. Yamaguchi, Possible mechanisms of water splitting reaction based on proton and electron release pathways revealed for CaMn4O5 cluster of PSII refined to 1.9 A X-ray resolution, Int. J. Quantum Chem., 112, 253-276 (2012).
+<口頭発表>
+1. 佐藤皓允、庄司光男、神谷克政、梅村雅之、矢花一浩、白石賢二、星間空間におけるL型アミノ酸過剰の理論的研究, 天文学会春季年会、2012/03/22. 
+2. Mitsuo Shoji, Computational Bioscience Utilizing Supercomputers: Performance and Applications, LBNL and CCS-Tsukuba Joint Workshop, CCS, University of Tsukuba, 2012/3/19.
+3. Mitsuo Shoji, QM/MM Studies on the reaction mechanisms in metalloenzymes, Exascale Symposium, The University of Edinburgh, 2012/2/23.
+4. 佐藤 皓允, 庄司光男、神谷克政、梅村雅之、矢花一浩、白石賢二、星間空間におけるアミノ酸キラリティ生成機構の理論的研究,ALMAワークショップ, 2012/01/21.
+5. K. Hanaoka, D. Kondo, M. Yang, K. Kamiya, M. Shoji, K. Shiraishi, Theoretical investigation for mechanism of DNA religation by E.coli topoisomerase IA,第84回日本生化学会大会、国立京都国際会館, 2011/09/23.
+6. D. Kondo, K. Hanaoka, M. Yang, K. Kamiya, M. Shoji, S. Kawai-Noma, H. Taguchi, K. Shiraishi, Theoretical Investigation of Structural Stability of beta;-Helix Model for Amyloid Fibrils from Yeast Prion Sup35,The 49th Annual Meeting of the Biophysical Society of Japan, Hyogo, 2011/09/06.
+7. M. Shoji, D. Kondo, K. Hanaoka, M. Yang, H. Umeda, K. Kamiya, K. Shiraishi, Theoretical investigation on the substrate binding states of nitric oxide reductase, The 49th Annual Meeting of the Biophysical Society of Japan, Hyogo, 2011/9/18.
+<ポスター発表>
+1. K. Hanaoka, D. Kondo, M. Yang, K. Kamiya, M. Shoji, K. Shiraishi, Theoretical investigation for mechanism of DNA religation by E.coli topoisomerase IA,第84回日本生化学会大会、国立京都国際会館, 2011/09/23.
+2. 庄司光男、近藤大生、花岡恭平、梁 文榮、梅田宏明、神谷克政、白石賢二, 一酸化窒素還元酵素における基質結合状態についての理論的研究, 第84回日本生化学会大会、国立京都国際会館, 2011/09/23.
+3. K. Hanaoka, D. Kondo, M. Yang, K. Kamiya, M. Shoji, K. Shiraishi, Computational analysis for DNA religating reaction by E.coli topoisomerase IA, ISTCP-VII, Waseda, 2011/08/23.
+4. M. Shoji, K. Hanaoka, M. Yang, D. Kondo, K. Kamiya, K. Shiraishi, A new procedure for the calculation of electron transfer coupling matrix element, ISTCP-VII, Waseda, 2011/08/23.
+連携・国際活動・社会貢献、その他
+1. 庄司光男、花岡恭平、佐藤皓允、第1回つくば科学研究コンテスト、筑波大学大学会館、2012/3/17.
+2. 庄司光男、Poster展示、SC11, 2011/11/15.
+3. 花岡恭平、Gromacsでの分子動力学法(MD)の入門(基礎編)、公開講習会(生命科学WG),CCS, 2011/10/27.
+4. 庄司光男、生命科学研究分野研究紹介,物理チャレンジ(宮城県聖ウルスラ学院英智高等学校),CCS 2011/9/1
+5. 佐藤皓允、花岡恭平、庄司光男、大学説明会(物理学類),2011/8/27.
+6. 朴泰祐, 佐藤三久, 塙敏博, 児玉祐悦, 高橋大介, 建部修見, 多田野寛人, 藏増嘉伸, 吉川耕司, 庄司光男,「演算加速装置に基づく超並列クラスタ HA-PACS による大規模計算科学」,情報処理学会研究報告,2011-HPC-130(21), pp. 1-7, 2011年7月.                                                            
+分子進化分野
+研究論文
+1. Matsumoto T, Shinozaki F, Chikuni T, Yabuki A, Takishita K, Kawachi M, Nakayama T, Inouye I, Hashimoto T, Inagaki Y. Green-colored plastids in the dinoflagellate genus Lepidodinium are of core chlorophyte origin. 2011 Protist 162:286-276.
+2. Yabuki A, Nakayama T, Yubuki N, Hashimoto T, Ishida K, Inagaki Y. Tsukubamonas globosa n. g., n. sp., a novel excavate flagellate possibly holding a key for the early evolution in "Discoba." 2010 Journal of Eukaryotic Microbiology 58:319-331.
+3. Matsumoto T, Ishikawa SA, Hashimoto T, Inagaki Y. A deviant genetic code in the green alga-derived plastid in the dinoflagellate Lepidodinium chlorophorum. 2011 Molecular Phylogenetics and Evolution 60:68-72.
+4. Ishitani Y, Ishikawa SA, Inagaki Y, Tsuchiya M, Takahashi K, Takishita K. Multigene phylogenetic analyses including diverse radiolarian species support the "Retaria" hypothesis&mdash;the sister relationship of Radiolaria and Foraminifera. 2011 Marine Micropaleontology 162:268-276.
+5. Kamikawa R, Inagaki Y, Hashimoto T. A novel spliceosome-mediated trans-splicing can change our view on the genome complexity of the divergent eukaryote Giardia intestinalis. 2011 Biophysical Reviews 3:193-197.
+6. Kamikawa R, Inagaki Y, Roger AJ, Hashimoto T. Splintrons in Giardia intestinalis: Spliceosomal introns in a split form. 2011 Communicative & Integrative Biology 4:1-3.
+(A)招待講演
+1. Inagaki Y. Recent progress in placing newly-discovered lineages of protists in the deep tree of eukaryotes. 2011年8月6日, CGAB (Center for Comparative Genomics and Evolutionary Bioinformatics) meeting, Dalhousie University, Halifax, Canada.
+2. Yabuki A, Kamikawa R, Kolisko M, Ishikawa SA, Ishida K, Simpson AGB, Roger AJ, Inagaki Y. Tsukubamonas globosa is a deep-branching member in the Discoba clade: Morphology, phylogenomics, and mitochondrial genome. 2011年9月6-11日, IUMS2011 (International Union of Microbiological Societies 2011 Congress), 札幌コンベンションセンター, 札幌, 北海道.
+3. Kamikawa R, Inagaki Y, Roger AJ, Hashimoto T. Trans-splicing of split introns is required for the expressions of indispensable genes in Giardia intestinalis. 2011年9月6-11日, IUMS2011 (International Union of Microbiological Societies 2011 Congress), 札幌コンベンションセンター, 札幌, 北海道.
+4. 稲垣祐司、矢吹彬憲、神川龍馬. 新奇真核微生物からの大規模配列データで変貌し続ける、我々の真核生物大系統像. 2011年11月25日, 第31回微生物系統分類研究会, 理化学研究所, 和光, 埼玉.
+5. 稲垣祐司、中山卓郎、笠井文絵、大河内直彦. 珪藻細胞中の窒素固定に特化したオルガネラ「楕円体」:オルガネラ獲得過程理解にむけた新たなモデル. 2011年12月13-16日, 第34回日本分子生物学会年会 パシフィコ横浜, 横浜, 神奈川.
+(B)その他の学会発表
+1. 稲垣祐司. 真核生物ゲノムの可塑性:渦鞭毛藻類葉緑体関連遺伝子の起源を例に.(Oral)2011年5月22-27日, 日本地球惑星科学連合 2011年大会 千葉・幕張メッセ国際会議場.
+2. 中山卓郎、池上裕子、中山剛、井上勲、稲垣祐司、笠井文絵. Rhopalodia科珪藻に見られる細胞内共生シアノバクテリアの起源と分子進化.(Poster)2011年5月22-27日, 日本地球惑星科学連合 2011年大会 千葉・幕張メッセ国際会議場.
+3. 矢崎裕規、神川龍馬、松本拓也、橋本哲男、稲垣祐司. 渦鞭毛藻Lepidodinium「葉緑体型」GAPDH遺伝子の転写活性比較.(Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+4. 西村祐貴、神川龍馬、稲垣祐司、橋本哲男. ミトコンドリア7遺伝子に基づくカタブレファリス類Leucocryptos marinaの系統的位置.(Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+5. 矢吹彬憲、神川龍馬、Martin Kolisko、石田健一郎、田辺晶史、橋本哲男、稲垣祐司. 159遺伝子データに基づく従属栄養性真核微生物Palpitomonas bilixの系統的位置.(Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+6. 神川龍馬、矢吹彬憲、Martin Kolisko、西村祐貴、石川奏太、石田健一郎、橋本哲男、Andrew J Roger、Alastair GB Simpson、稲垣祐司. Tsukubamonas globosaのPhylogenomic解析と部分的ミトコンドリアゲノム配列. (Poster) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+7. 石谷佳之、石川奏太、稲垣祐司、土屋正史、瀧下清貴. 複数遺伝子解析により得られた放散虫と有孔虫の姉妹関係. (Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+8. 神川龍馬、稲垣祐司、Andrew J Roger、橋本哲男. 寄生性真核微生物Giardiaの縮退ゲノムにおける複雑な遺伝子発現. (Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+9. 神川龍馬、稲垣祐司. 真核生物における翻訳伸長因子EF-1alphaおよび翻訳伸長因子様タンパク質EFLの進化. (Poster) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+10. 松本拓也,神川龍馬,橋本哲男,稲垣祐司. 緑色渦鞭毛藻類Lepidodinium chlorophorumが持つ共生体退化核遺伝子について. (Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+11. 小松崎洋志、瀧下清貴、Marin Kolisko、矢吹彬憲、雪吹直史、稲垣祐司、橋本哲男、Andrew J Roger、Alastair GB Simpson. ミトコンドリアをもたないプロティスト分類群'Fornicata'の分子系統:複数遺伝子に基づく解析. (Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+12. 石川奏太、稲垣祐司、橋本哲男. Red vs. Green: Apicomplexa類における退化型葉緑体apicoplastの起源に関する分子系統学的研究. (Oral) 2011年7月11日, 第5回日本進化原生生物学研究会富山・富山・富山大.
+13. Kamikawa R, Inagaki Y, Roger AJ, Hashimoto T. Spliceosomal introns in a split form: Another aspect of intron evolution in eukaryotes. (Poster) 2011年7月26-30日, SMBE2011 京都・京都・京都大学.
+14. Nishimura Y, Kamikawa R, Inagaki Y, Hashimoto T. The phylogenetic position of the katablepharid Leucocryptos marina based on seven mitochondrial gene sequences. (Poster) 2011年7月26-30日, SMBE2011 京都・京都・京都大学.
+15. Yazaki Y, Kamikawa R, Matsumoto T, Hashimoto T, Inagaki Y. Difference in transcriptional regulation between two genes encoding plastid-targeted GAPDH in the dinoflagellate Karenia mikimotoi. (Poster) 2011年7月26-30日, SMBE2011 京都・京都・京都大学.
+16. Ishikawa S, Kamikawa R, Inagaki Y. Intragenomic gene conversion in the evolution of bacterial peptide-chain release factors. (Poster) 2011年7月26-30日, SMBE2011 京都・京都・京都大学.
+17. Tanabe AS, Inagaki Y, Hashimoto T, Tsuji M, Sato M. Effective bootstrapping: A new method for estimating accurate credibilities of splits on a phylogenetic tree. (Poster) 2011年7月26-30日, SMBE2011 京都・京都・京都大学.
+18. Komatsuzaki H, Takishita K, Kolisko M, Yabuki A, Roger AJ, Simpson AGB, Inagaki Y, Hashimoto T. Molecular phylogeny of the amitochondriate lineage, Fornicata, based on multi-gene analysis. (Poster) 2011年7月26-30日, SMBE2011 京都・京都・京都大学.
+19. 石谷佳之、石川奏太、稲垣祐司、土屋正史、瀧下清貴. (Oral) 複数遺伝子解析により明らかとなった放散虫と有孔虫の姉妹関係. 2011年10月29-30日,第11回放散虫研究集会 愛媛・松山・愛媛大学.
+20. 長安英治、石川奏太、竹谷茂、稲垣祐司、吉田彩子、丸山治彦. 糞線虫の持つ細菌様フェロケラターゼ遺伝子の同定. (Oral) 2012年3月23-24日,第81回日本寄生虫学会大会 兵庫・西宮・兵庫県立大学. 
+地球環境研究部門
+研究論文
+1. Kusaka, H., Y. Miya, and R. Ikeda, 2011 : Effects of Solar Radiation Amount and Synoptic-scale Wind on the Local Wind &ldquo;Karakkaze&rdquo; over the Kanto Plain in Japan. J. Meteor. Soc. Japan., 89, 327-340. (査読付)
+2. Takane, Y. and H. Kusaka, 2011 : Formation mechanism of the extreme high surface air temperature of 40.9&ordm;C observed in the Tokyo metropolitan area: considerations of dynamic foehn and foehn-like wind. J. Appl. Meteor. Climatol, 50, 1827-1841. (査読付)
+3. Kusaka, H., Chen, F., Tewari, M., Dudhia, J., Gill, D., Duda, M. G., Wang, W., Miya, Y., 2012: Simulating the Urban Heat Island Effect, and Diagnosing the Discomfort Index and Wet-Bulb Globe Temperature with a 4-km WRF Model: An Inter-Comparison Study between the Urban Canopy Model and Slab Model. J. Meteor. Soc. Japan., in press. (査読付)
+4. Kusaka, H., Hara, M., Takane, Y., 2012: Urban climate projection by the WRF model at 3-km horizontal grid incremet: Dynamical downscaling and predicting heat stress in the 2070&rsquo;s August for Tokyo, Osaka, and Nagoya metropolies. J. Meteor. Soc. Japan., in press. (査読付)
+5. Ishizaki, N. N., Takayabu, I., Oh'izumi, M., Sasaki, H., Dairaku, K., Iizuka, S., Kimura, F., Kusaka, H., Adachi, S. A., Kurihara, K., Murazaki, K., Tanaka, K., 2012: Improved performance of simulated Japanese climate with a multi-model ensemble. J. Meteor. Soc. Japan, in press. (査読付)
+6. Ishizaki, N. N., Shiogama, H., Takahashi, K., Emori, S., Dairaku, K., Kusaka, H., Nakaegawa, T., Takayabu, I., 2012: An Attempt to Estimate of Probabilistic Regional Climate Analogue in a Warmer Japan. J. Meteor. Soc. Japan., in press. (査読付)
+7. 井原智彦, 日下博幸, 原政之, 松橋隆治, 吉田好邦, 2011 : 問題比較型影響評価手法を用いた都市気温上昇に伴う軽度の健康影響の推定. 日本建築学会環境系論文集, 76, 459-467. (査読付)
+8. 飯塚悟, 金原和矢, 日下博幸, 原政之, 2011 : 2070年代夏季温熱環境の長期トレンド予測−領域気象モデルWRFによる名古屋都市圏の温熱環境シミュレーション(その2). 日本建築学会環境系論文集, 76, 425-430. (査読付)
+9. 中津留高広, 林陽生, 上野健一, 植田宏昭, 辻村真貴, 浅沼順, 日下博幸, 2011 :筑波山(男体山)の過去100年間における気温の長期変化. 天気, 58(12), 1055-1061.(査読付)
+10. 日下博幸, 2011 : 領域気象モデルWRFの都市気候研究への応用と課題. 地学雑誌, 120(2), 285-295.
+11. 日下博幸, 2011 : ヒートアイランド気象学事始め(第5回). 日本ヒートアイランド学会誌, 6, 42-45.
+12. 日下博幸, 2011 : 局地風の数値シミュレーション. 気候影響・利用研究会会報, 29, 5-11.
+13. 日下博幸, 2012 : 都市の熱汚染(Urban Thermal Environment and Disaster). 計算工学, 17(1), 3-6.
+14. 日下博幸, 2011 : 局地風の報告. 気候影響・利用研究会会報, 29, 3.
+15. Terasaki, K., H. L. Tanaka, and N. Zagar 2011: Energy spectra of Rossby and gravity waves. SOLA, 7, 45-48. (査読付)
+16. Hirata, Y., Y. Shimo, H. L. Tanaka, and K. Aihara 2011: Chaotic properties of the Arctic Oscillation index. SOLA, 7, 33-36. (査読付)
+17. Seki, S., H. L. Tanaka, and F. Fujiwara 2011: Modification of the baroclinic instability associated with positive and negative Arctic Oscillation index: A theoretical proof of the positive feedback. SOLA, 7, 53-56. (査読付)
+18. 田中博, 2011: 身近な気象の事典. 新田尚監修・ (分担執筆) 日本気象予報士会編, 279 pp.
+19. Zagar, N., K. Terasaki, and H. L. Tanaka 2011: A note on large-scale inertio-gravity energy estimated in the atmosphere. (Accepted in Mon. Wea. Rev.) (査読付)
+20. Sang-Min Lee, Hi-Ryong Byun, and Hiroshi L. Tanaka 2011: Tempo-spatial characteristics of drought occurrences over Japan. (Accepted in APJAS) (査読付)
+21. Nagato, Y. and H. L. Tanaka 2012: Estimation of global warming trend without the contributions form decadal variability of the arctic oscillation. (Accepted in Polar Science) (査読付)
+22. Aizawa, T. , H. L. Tanaka, and M. Satoh 2012: Rapid arctic cyclogenesis by the cloud resolving global model NICAM. (Submitted to Polar Science)
+23. Tanaka, H. L., A. Yamagami, and S. Takahashi 2012: The structure and behavior of the arctic cyclone in summer analyzed by the JRA-25 JCDAS data. (Accepted in Polar Sciences) (査読付)
+(A)招待講演
+1. Tanaka, H.L. 2012: Arctic Oscillation as a dynamical eigen-solution of the primitive equation of the atmosphere. 2011 Alaska Weather Symposium, Mar. 2012, University of Alaska, Fairbanks.
+(B)その他の学会発表
+2. Ninomiya, J., N. Mori, and H. Kusaka, 2011 : INFLUENCE OF SEA SURFACE TEMPERATURE ON COASTAL URBAN AREA &ndash;CASE STUDY IN OSAKA BAY, JAPAN-. Sixth International Conference on Asian and Pacific Coasts(APAC2011), 14-16 December, 2011 , Hong Kong, China.
+3. Aoyagi, T., S. A. Adachi, H. Kusaka, K. Tanaka, and N. Seino, 2011 : Near-term prediction of urban climate based on urban growth scenarios in the Tokyo metropolitan area. Fifth Korea-Japan-China Joint Conference on Meteorology, Busan, Korea.
+4. Kusaka, H., M. Hara, and Y. Takane, 2011 : Urban climate projection in summer in the 2070s by the WRF model with 3-km horizontal grid increment: Dynamical downscaling and impact assessment to heat stress. Third international workshop on down-scaling, Tsukuba, Japan.
+5. Kusaka, H., 2011 : Simple DDS schme in S-8 projects. Third international workshop on down-scaling, Tsukuba, Japan.
+6. Ishizaki, N., H. Shiogama, K. Takahashi, S. Emori, K. Dairaku, H. Kusaka, T. Nakaegawa, and I. Takayabu, 2011 : Probabilistic Regional Climate Analogue in the Warmer Japan. Third international workshop on down-scaling, Tsukuba, Japan.
+7. Kusaka, H., S. Adachi, M. Ueno, Y. Yamagata, I. Takayabu, M. G. Duda, Y. Akimoto, Y. Takane, M. Hara, and J. Dudhia, 2011 : Urban Climate Projection in 2050s and 2070s by the WRF model with 3-km Horizontal Resolution. International Workshop on Urban Weather and Climate:Observation and Modeling , 12-15 July, 2011 , Beijing, China
+8. Ikeda, R., H. Kusaka, S. Iizuka, and T. Boku, 2011 : Development of Local Meteorological Model based on LES Model. International Workshop on Urban Weather and Climate:Observation and Modeling , 12-15 July, 2011 , Beijing, China.
+9. Yoshikane, T., M. Tsugawa, F. Kimura, and H. Kusaka, 2011 : Impacts of the sea surface temperature of the inner bay on the local climate using a regional atmospheric model. IUGG(International Union of Geodesy and Geophysics Conference) 2011, 28 June – 7 July 2011 , Melbourne, Australia.
+10. 池田亮作, 日下博幸, 飯塚悟, 朴泰祐, 2011:一般曲線座標系による並列LESモデルの開発. 日本気象学会2011年度春季大会予稿集, 147-147. 東京.
+11. 大島一洋, 木村富士男, 日下博幸, 足立幸穂, 水田亮, 鬼頭昭雄, 2011:20km-AGCMにおける冬季日本周辺域の低気圧活動の再現性および将来変化. 日本気象学会2011年度春季大会予稿集, 394-394, 東京.
+12. 平田航, 日下博幸, 2011 : 二つ玉低気圧通過に伴う降雨・降雪の気候学的研究. 日本気象学会2011年度春季大会予稿集, 407-407, 東京.
+13. 阿部紫織 , 日下博幸, 高木美彩, 岡田牧, 高根雄也, 冨士友紀乃, 永井徹, 2011 : 多治見市における夏季の気温分布の実態調査(その1). 日本気象学会2011年度春季大会予稿集, 347-347, 東京.
+14. 池守春奈, 日下博幸, 岡田牧, 池田亮作, 2011 : 筑波大学学内におけるヒートアイランド観測. 日本気象学会2011年度春季大会予稿集, 348-348, 東京.
+15. 日下博幸, 小松美智, 中村美紀, 酒井敏, 2011 : つくば市における2010年冬季・夏季の気温分布の実態. 日本気象学会2011年度春季大会予稿集, 310-310, 東京.
+16. 髙根雄也, 大橋唯太, 日下博幸, 重田祥範, 亀卦川幸浩, 2011 : 日本で最も暑い京阪地域における夏季高温の実態調査と形成要因の解明. 日本気象学会2011年度春季大会予稿集, 182-182, 東京.
+17. 水成真由美, 日下博幸, 横山仁, 2010 : 東京都で発生する夏季の短時間強雨の気候学的研究. 日本気象学会2011年度春季大会予稿集, 293-293, 東京.
+18. 日下博幸, 縄田恵子, 2011 : 降水に対する都市効果の検証−アンサンブル気候実験−. 日本気象学会2011年度春季大会予稿集, 183-183, 東京.
+19. 上野正博, 日下博幸, 足立幸穂, 原政之, 2011 : 関東地方における過去30 年間の気候変化シミュレーション. 日本気象学会2011年度春季大会予稿集, 357-357, 東京.
+20. 石﨑紀子, 高藪出, 大楽浩司, 飯塚聡, 足立幸穂, 木村富士男, 日下博幸, 田中賢治, 2011 : 20km格子マルチRCMによる温暖化時の日本の地域気候変動. 日本気象学会2011年度春季大会予稿集, 359-359, 東京.
+21. 岡田牧, 木村富士男, 日下博幸, 2011 : 夏季日中における小規模緑地が近隣街区の気温に与える影響. 日本気象学会2011年度春季大会予稿集, 312-312, 東京.
+22. 髙根雄也, 日下博幸, 高木美彩, 岡田牧, 阿部紫織, 永井徹, 冨士友紀乃, 2011 : 岐阜県多治見市における夏季晴天日の暑熱環境の実態調査と領域気象モデルWRFを用いた予測実験−物理モデルと水平解像度に伴う不確実性の検討−. 日本ヒートアイランド学会第6回全国大会予稿集, 146-147, つくば.
+23. 岡田牧, 日下博幸, 木村富士男, 2011 : 夏季日中における小規模緑地が周囲街区の気温に与える影響. 日本ヒートアイランド学会第6回全国大会予稿集, 116-117, つくば.
+24. 阿部紫織 , 日下博幸, 高木美彩, 岡田牧, 高根雄也, 冨士友紀乃, 永井徹, 2011 : 多治見市における夏季の気温分布の実態調査(その1). 日本ヒートアイランド学会第6回全国大会予稿集, 144-144, つくば.
+25. 水成真由美, 日下博幸, 横山仁, 2011 : 東京都で発生する短時間強雨の統計解析−降水分布の特徴の把握−. 日本ヒートアイランド学会第6回全国大会予稿集, 58-58, つくば.
+26. 古橋奈々, 日下博幸, 横山仁, 2011 : 東京23区で真夏日の午後に観測された短時間強雨の実態調査−降水分布の特徴の把握−. 日本ヒートアイランド学会第6回全国大会予稿集, 59-59, つくば.
+27. 伊藤奨, 黒木美早衣, 日下博幸, 飯塚悟, 金原和矢, 2011 : 多治見猛暑の要因解明のための感度解析− WRFによる名古屋都市圏温熱環境・風環境シミュレーション(その6). 2011年度日本建築学会大会(関東)学術講演会建築デザイン発表会プログラム, 210-210, 東京.
+28. 伊藤奨, 黒木美早衣, 日下博幸, 飯塚悟, 金原和矢, 2011 : 多治見猛暑の要因解明のための感度解析−WRFによる名古屋都市圏温熱環境・風環境シミュレーション(その5). 2011年度日本建築学会大会(関東)学術講演会建築デザイン発表会プログラム, 139-139, 東京.
+29. 高橋佑輔, 飯塚悟, 伊藤奨, 原政之, 黒木美早衣, 金原和矢, 日下博幸, 2011 : 2030年代・2050年代・2070年代における将来予測の比較−WRFによる名古屋都市圏温熱環境・風環境シミュレーション(その4). 2011年度日本建築学会大会(関東)学術講演会建築デザイン発表会プログラム, 139-139, 東京.
+30. 池田亮作, 日下博幸, 飯塚悟, 朴泰祐, 2011 : 複雑地形・都市街区を対象にしたLES気象モデルの開発. 日本流体力学会年会2011予稿集, 246-246, 東京.
+31. 平野光, 多田野寛人, 櫻井鉄也, 池田亮作, 日下博幸, 2011 : 局地気象シミュレーションで現れる線形方程式に対する前処理の評価. 日本応用数理学会2011年度年会予稿集, 388-388, 京都.
+32. 髙根雄也, 大橋唯太, 日下博幸, 重田祥範, 亀卦川幸浩, 2011 : 日本で最も暑い京阪地域における夏季高温の実態調査と形成要因の解明. 日本地理学会2011年秋季学術大会予稿集, 219-219, 大分.
+33. 秋本祐子, 日下博幸, 2011 : 次世代の気象モデルを用いた境界層雲・霧の数値シミュレーション. 日本地理学会2011年秋季学術大会予稿集, 218-218, 大分.
+34. 二星義裕, 朴泰祐, 塙敏博, 池田亮作, 日下博幸, 飯塚悟, 2011 : 気象モデルの高解像度計算のGPU化. 研究報告ハイパフォーマンスコンピューティング(HPC), 1-6(巻:2011-HPC-131, 号:2), 京都.
+35. 加藤隆之, 日下博幸, 2011 : 湖盆地形における湖陸風循環モデルの開発. 第13回非静力学モデルに関するワークショップ予稿集, 86-86, 長岡.
+36. 二星義裕, 朴泰祐, 塙敏博, 池田亮作, 日下博幸, 2011 : 高解像度LES計算のGPUによる高速化と性能評価. 第13回非静力学モデルに関するワークショップ予稿集, 82-83, 長岡.
+37. 池田亮作, 日下博幸, 飯塚悟, 朴泰祐, 2011 : 都市街区を対象にした並列LES気象モデルの開発. 第13回非静力学モデルに関するワークショップ予稿集, 79-80, 長岡.
+38. 二星義裕, 池田亮作, 朴泰祐, 日下博幸, 2011 : 高解像度LES計算のGPUによる計算加速. 日本気象学会2011年度秋季大会講演予稿集, 329-329, 名古屋.
+39. 池田亮作, 日下博幸, 飯塚悟, 朴泰祐, 2011 : 都市街区を対象にした並列LES気象モデルの開発. 日本気象学会2011年度秋季大会講演予稿集, 44-44, 名古屋.
+40. 高藪出, 大楽浩司, 日下博幸, 田中賢治, 西森基貴, 鼎信次郎, 稲津將, 2011 : マルチモデルアンサンブルとダウンスケーリングの研究(S-5-3). 日本気象学会2011年度秋季大会講演予稿集, 330-330, 名古屋.
+41. 二星義裕, 朴泰祐, 池田亮作, 日下博幸, 2012 : 高解像度LES計算のGPUによる計算加速. ハイパフォーマンスコンピューティングと計算科学シンポジウム論文集, 2012, 73-73, 名古屋.
+42. 西暁史, 日下博幸, 2012 : 空っ風のメカニズム解明のための局地気象モデル開発. 日本地理学会2012年春季学術大会(予稿投稿済), 東京.
+43. 岡田牧, 岡田益己, 日下博幸, 2012 : WBGT算出のための黒球温度推定式の比較評価. 日本地理学会2012年春季学術大会(予稿投稿済), 東京.
+44. 日下博幸, 足立幸穂, 藤田惠子, 飯島奈津美, 井原智彦, 飯泉仁之直, 原政之, 山形与志樹, 2012 : 首都圏の夏季気候の将来予測と健康影響評価. 日本地理学会2012年春季学術大会(予稿投稿済), 東京.
+45. 髙根雄也, 日下博幸, 2012 : 過去22年間に関東平野内陸域で観測された極端な高温現象発生時のメソスケールの特徴. 日本地理学会2012年春季学術大会(予稿投稿済), 東京.
+46. 池田亮作, 日下博幸, 飯塚悟, 朴泰祐, 2012 : 都市街区を対象にした並列都市LES気象モデルの開発. 日本地理学会2012年春季学術大会(予稿投稿済), 東京.
+47. 加藤隆之, 日下博幸, 2012 : 夜間の二次元局地気流モデルの開発と陸風・斜面下降流への適用−洞爺湖を例として−. 日本地理学会2012年春季学術大会(予稿投稿済), 東京. 
+連携・国際活動・社会貢献、その他
+センター内連携: LES-GPUグループ
+大規模気象計算WG
+産学官連携: 岐阜県多治見市と連携協定
+国際活動: 米国大気研究センター訪問
+米国アラスカ大学訪問
+アラスカ大学との大学間協定
+北極環境研究コンソーシアム
+北極科学会議(IASC)副議長
+高性能計算システム研究部門
+研究論文
+1. 多田野寛人,櫻井鉄也.複数右辺ベクトルをもつ連立一次方程式の数値解法.応用数理,Vol. 21, No. 4, pp. 36—48, 2011.
+2. Y. Nakamura, K.-I. Ishikawa, Y. Kuramashi, T. Sakurai, and H. Tadano. Modified Block BiCGSTAB for Lattice QCD. Comput. Phys. Comm., Vol. 183, pp. 34—37, 2012.
+3. 木村浩希,建部修見,MPI-IO/Gfarm:分散ファイルシステムGfarmのためのMPI-IOの実装と評価,情報処理学会論文誌,No.52,Vol.12,pp.3239-3250,2011.
+4. 大辻弘貴,建部修見,アクセスパターンと回線遅延を考慮した遠隔ファイルアクセスの最適化,論文誌コンピューティングシステム(ACS),情報処理学会,No.4,Vol.4,pp.122-134,2011.
+5. Mark G. Beckett, Paul Coddington, B&aacute;lint Jo&oacute;, Chris M. Maynard, Dirk Pleiter, Osamu Tatebe, Tomoteru Yoshie, Building the International Lattice Data Grid, Computer Physics Communications, Elsevier, Vol.182, Issue 6, pp.1208-1214, doi: 10.1016/j.cpc.2011.01.027, 2011
+6. Yuetsu Kodama, Satoshi Itoh, Toshiyuki Shimizu, Satoshi Sekiguchi, Hiroshi Nakamura and Naohiko Mori, &ldquo;Imbalance of CPU temperatures in a blade system and its impact for power consumption of fans&rdquo;, CLUSTER COMPUTING, Springer, DOI: 10.1007/s10586-011-0174-7, published online, 2011.9.5.
+(A)招待講演
+1. M. Sato, &ldquo;The K Computer Project and Research on Parallel Programming Languages&rdquo;, PGAS2011 (Fifth Conference on Partitioned Global Address Space Programming Models), 2011.
+2. T. Boku, "Accelerated Computing: Promised Way for Power-Aware High Performance Computing", Dasan Conference, Jeju Island, 2011.
+3. T. Boku, "The K Computer and Japan's HPC Activity", Korea Supercomputing Conference, Seoul, 2011.
+4. 多田野寛人, &ldquo;超大規模並列環境における大規模疎行列に対する固有値解法と線形計算技術の開発&rdquo;, HPCS2012(2012年ハイパフォーマンスコンピューティングと性能評価に関するシンポジウム)
+5. 朴泰祐, "超並列演算加速クラスタHA-PACSが拓く計算科学", つくばWANシンポジウム2011, 2011.
+(B)その他の学会発表
+1. T. Hanawa, T. Boku, S. Miura, M. Sato, K. Arimoto, "PEARL and PEACH: A Novel PCI Express Direct Link and Its Implementation," HPPAC 2011.
+2. S. Otani, H. Kondo, K. Arimoto, T. Hanawa, S. Miura, H. Kaneko, T. Boku, M. Sato, "PEACH: a Multicore Communication SoC with PCI Express&rdquo;, ASPLOS2012 (Poster, to be published)
+3. T. Hanawa, T. Boku, S. Miura, M. Sato, K. Arimoto, "PEACH: A Communication SoC for PCI Express Direct Link," COOL Chips XIV (Poster, Best Feature Award)
+4. Takatoshi Nakayama and Daisuke Takahashi: Implementation of Multiple-Precision Floating-Point Arithmetic Library for GPU Computing, Proc. 23rd IASTED International Conference on Parallel and Distributed Computing and Systems (PDCS 2011), pp. 343-349 (2011).
+5. Yuji Kubota and Daisuke Takahashi: Optimization of Sparse Matrix-Vector Multiplication by Auto Selecting Storage Schemes on GPU, Proc. 11th International Conference on Computational Science and Its Applications (ICCSA 2011), Part II, Lecture Notes in Computer Science, No. 6783, pp. 547-561, Springer-Verlag (2011).
+6. Yukihiro Hasegawa, Jun-Ichi Iwata, Miwako Tsuji, Daisuke Takahashi, Atsushi Oshiyama, Kazuo Minami, Taisuke Boku, Fumiyoshi Shoji, Atsuya Uno, Motoyoshi Kurokawa, Hikaru Inoue, Ikuo Miyoshi and Mitsuo Yokokawa: First-principles calculations of electron states of a silicon nanowire with 100,000 atoms on the K computer, Proc. 2011 ACM/IEEE Conference on High Performance Computing Networking, Storage and Analysis (SC'11) (2011).
+7. S. Mikami, K. Ohta, O. Tatebe, Using the Gfarm File System as a POSIX compatible storage platform for Hadoop MapReduce applications, Proceedings of 12th IEEE/ACM International Conference on Grid Computing (Grid), 2011
+8. K. Kobayashi, S. Mikami, H. Kimura, O. Tatebe, The Gfarm File System on Compute Clouds, Proceedings of 1st International Workshop on Data Intensive Computing in the Clouds (DataCloud), 2011
+9. H. Kimura, O. Tatebe, MPI-IO/Gfarm: An Optimized Implementation of MPI-IO for the Gfarm File System, IEEE/ACM International Symposium on Cluster, Cloud and Grid Computing (CCGrid), Poster presentation, 2011
+10. 大辻弘貴,建部修見,アクセスパターンと回線遅延を考慮した遠隔ファイルアクセスの最適化,SACSIS2011論文集,pp.11-19,2011
+11. 三上俊輔,太田一樹,建部修見,POSIX準拠の広域分散ファイルシステムGfarm上でのHadoop MapReduceアプリケーション,SACSIS2011論文集,pp.181-188,2011
+12. J. Tucc, O. Tatebe, The Gfarm-iPhone Bridge: Seamless, Proceedings of SACSIS 2011, poster, pp.248-249, 2011.
+13. 佐藤佳州,高橋大介:特徴の生成を組み合わせた機械学習,第16回ゲームプログラミングワークショップ, pp. 135-142 (2011).
+14. 中山空星,高橋大介:GPU上における多倍長精度浮動小数点演算の実装,情報処理学会研究報告,2011-ARC-197,2011-HPC-132,No. 25 (2011).
+15. 椋木大地,高橋大介:GPUによる3倍精度浮動小数点演算の検討,情報処理学会研究報告,2011-ARC-197,2011-HPC-132,No. 23 (2011).
+16. 朴泰祐,佐藤三久,塙敏博,児玉祐悦,高橋大介,建部修見,多田野寛人,藏増嘉伸,吉川耕司,庄司光男:演算加速装置に基づく超並列クラスタHA-PACSによる大規模計算科学,情報処理学会研究報告,2011-HPC-130,No. 21 (2011).
+17. 斎藤華, 朴泰祐, 金谷和至, 塙敏博, 佐藤三久, "スクリプト言語Xcryptによる格子QCDシミュレーションのパラメータサーチ自動化", HPCS2012.
+18. 二星義裕, 朴泰祐, 池田亮作, 日下博幸, "高解像度LES計算のGPUによる計算加速", HPCS2012 (Poster).
+19. 二星義裕, 池田亮作, 朴泰祐, 日下博幸, "高解像度LES気象モデル計算のGPU化", 2011-HPC-131.
+20. 金子紘也, 塙敏博, 三浦信一, 朴泰祐, 佐藤三久, "PCI Express を用いた通信リンク PEARL におけるネットワーク管理機構", 2011-ARC-196.
+21. 朴泰祐, 佐藤三久, 塙敏博, 児玉祐悦, 高橋大介, 建部修見, 多田野寛人, 藏増嘉伸, 吉川耕司, 庄司光男, "演算加速装置に基づく超並列クラスタ HA-PACS による大規模計算科学", 2011-HPC-130.
+22. 中尾昌広, 李珍泌, 朴泰祐, 佐藤三久, "PGAS 言語 XcalableMP と Unified Parallel C の性能比較", 2011-HPC-130.
+23. Tran Minh Tuan, 李珍泌, 小田嶋哲哉, 朴泰祐, 佐藤三久, "PGAS 言語 XcalableMP の multi-node GPU 向け拡張仕様の実装と評価", 2011-HPC-130.
+24. 斎藤華, 朴泰祐, 金谷和至, 塙敏博, 佐藤三久, "スクリプト言語 Xcrypt による格子 QCD シミュレーションの最適化", 2011-HPC-130.
+25. 小田嶋哲哉,チャントゥァンミン,李珍泌,朴泰祐,佐藤三久, "並列言語XcalableMP のGPU 向け拡張", 2011-HPC-129.
+26. 多田野寛人, "高精度近似解を生成するBlock Krylov部分空間反復法とその安定化", 第1回計算力学シンポジウム, 日本学術会議, 2011年11月.
+27. S. Mikami, K. Ohta, O. Tatebe, Hadoop MapReduce on the Gfarm file system, Korea-Japan e-Science and Cloud Symposium, 2011
+28. M. Tanaka, O. Tatebe, Challenge of Pwrake, a workflow system for post-petascale data-intensive sciences, PRAGMA 21 Workshop, poster, 2011
+29. 大辻弘貴,建部修見,Non-blocking RPCを用いた遠隔ファイルアクセスの実装と性能評価,情報処理学会研究報告,2011-HPC-132(16),5 pages
+30. 實本英之,建部修見,佐藤仁,石川裕,広域分散環境を提供するHPCIシステムソフトウェア基盤の設計概要と共有ストレージ構築,情報処理学会研究報告, 2011-HPC-130(67),6 pages
+31. 田中昌宏,建部修見,ワークフロー実行中のデータ移動を最小化するタスク配置方式,情報処理学会研究報告, 2011-HPC-130(61),8 pages
+32. 平賀弘平,建部修見,分散ファイルシステムにおけるメタデータサーバの冗長化手法の検討,情報処理学会研究報告,2011-HPC-130(37),7 pages
+33. 石津晴崇,永岡孝,大西健司,高杉英利,建部修見,耐障害性を高めた分散ストレージシステムの開発とその評価,情報処理学会研究報告,2011-HPC-130(36),8 pages
+34. 永岡孝,石津晴崇,大西健司,高杉英利,建部修見,クラウドにおける大規模ストレージシステムの必要性とその検討?Gfarm v2.4を拡張したEB級システム?,情報処理学会研究報告,2011-HPC-130(34),8 pages
+35. 木村浩希,建部修見,MPI-IO/Gfarmにおけるデータ配置を考慮したプロセススケジューリングの検討,情報処理学会研究報告,2011-HPC-130(33),7 pages
+36. 大辻弘貴,建部修見,Non-blocking RPCを用いた遠隔ファイルアクセスの最適化,情報処理学会研究報告,2011-HPC-130(30),7 pages
+37. 朴泰祐,佐藤三久,塙敏博,児玉祐悦,高橋大介,建部修見,多田野寛人,藏増嘉伸,吉川耕司,庄司光男,演算加速装置に基づく超並列クラスタHA-PACSによる大規模計算科学,情報処理学会研究報告, 2011-HPC-130(21) ,7 pages
+38. 大西健太,建部修見,西谷明彦,大岸智彦,Cephのメタデータサーバの冗長性の調査,情報処理学会研究報告, 2011-HPC-129(8) ,7 pages
+39. 大岸智彦,西谷明彦,大辻弘貴,建部修見,分散ファイルシステムの性能監視とボトルネック特定,情報処理学会研究報告, 2011-HPC-129(5),8 pages
+40. J. Tucci, O. Tatebe, StableSearch: A Searchable File Content Metadata System for the Gfarm File System, IPSJ SIGHPC Report, 2011-HPC-129(7), 6 pages
+連携・国際活動・社会貢献、その他
+1. 戦略的国際科学技術協力推進事業(日仏共同研究)「ポストペタスケールコンピューティングのためのフレームワークとプログラミング」(佐藤)
+2. 多国間国際研究協力事業 G8 Research Councils Initiative &ldquo;Nuclear Fusion Simulation for Exascale&rdquo; 日本代表PI(朴)
+3. 多国間国際研究協力事業 G8 Research Councils Initiative &ldquo;Exascale Climate Simulation&rdquo; 日本代表PI(佐藤)
+計算情報学研究部門
+データ基盤分野
+学術雑誌論文
+J1. 三好健文,寺田裕太,川島英之,吉永努,&ldquo;ストリーム処理エンジン向け動的再構成可能プロセッサアーキテクチャの設計&rdquo;,情報処理学会論文誌:データベース,Vol. 4, No. 2 (TOD50),pp. 35 – 51, 2011.
+J2. Cui Zhu, Hiroyuki Kitagawa, Spiros Papadimitriou,and Christos Faloutsos, "Outlier Detection by Example", Journal of Intelligent Information Systems, Vol. 36, No. 2, pp. 217-247, 2011.
+J3. 三好健文,寺田裕太,川島英之,吉永努,&ldquo;ウィンドウ結合演算子のFPGAによる実現&rdquo;,電子情報通信学会論文誌通信ソサイエティスマートな社会を支えるインターネットアーキテクチャ特集号,J94-B(10), 1313-1322, 2011-10-01
+J4. 猿渡俊介,川島英之,高木潤一郎,倉田成人,森川博之,&ldquo;センサデータベースマネージャにおける問合せ処理とデータ圧縮の同時最適化&rdquo;,情報処理学会論文誌「新たな展開を迎えるITS、モバイル通信とユビキタスコンピューティング」特集号,53(1), 320-335, 2012-01-15
+J5. 山口祐人,天笠俊之,高橋翼,北川博之,&ldquo;情報伝搬を考慮したグラフ分析によるTwitterユーザランキング手法&rdquo;,情報処理学会論文誌データベース,Vol. 4, No. 2 (TOD50), pp. 142-157, 2011.
+国際会議論文
+C1. Eli Koffi Kouassi, Toshiyuki Amagasa, and Hiroyuki Kitagawa, "Efficient Probabilistic Latent Semantic Indexing using Graphics Processing Unit", Proc. International Conference on Computational Science (ICCS 2011), Singapore, pp. 382-391, June 1-3, 2011.
+C2. Yuto Yamaguchi, Toshiyuki Amagasa, and Hiroyuki Kitagawa, "Tag-based User Topic Discovery using Twitter Lists" Proc. International Conference on Advances in Social Network Analysis and Mining (ASONAM 2011), Kaohsiung City, Taiwan, pp.13-20, July 25-27, 2011.
+C3. Yusuke Kozawa, Toshiyuki Amagasa, and Hiroyuki Kitagawa, "Fast Frequent Itemset Mining from Uncertain Database Using GPGPU", Proc. Fifth International VLDB Workshop on Management of Uncertain Data (MUD 2011), Seattle, Washington, pp. 17-24, August 29, 2011.
+C4. Kazutaka Furuse, Hiroaki Ohmura, Hanxiong Chen, and Hiroyuki Kitagawa, "An Extended Method for Finding Related Web Pages with Focused Crawling Techniques", Proc. 15th International Conference on Knowledge-Based and Intelligent Information & Engineering Systems (KES 2011), Kaiserslautern, Germany, pp. 21-30, September 12-14, 2011.
+C5. Masafumi Oyamada, Hideyuki Kawashima, and Hiroyuki Kitagawa, "Efficient Invocation of Transaction Sequences Triggered by Data Streams", The 2nd International Workshop on Streaming Media Delivery and Management Systems (SMDMS 2011), Proceedings of 3PGCIC, Barcelona, Spain, October 26-28, 2011.
+C6. Tsubasa Takahashi, Hideyuki Kawashima, and Hiroyuki Kitagawa, "A Video Manager for Relational Stream Processing Systems", The 2nd International Workshop on Streaming Media Delivery and Management Systems (SMDMS 2011), Proceedings of 3PGCIC, Barcelona, Spain, October 26-28, 2011.
+C7. Yasin Oge, Takefumi Miyoshi, Hideyuki Kawashima and Tsutomu Yoshinaga, "An Implementation of Handshake Join on FPGA", Proc. Second International Conference on Networking and Computing (ICNC 2011), Osaka, Japan, pp. 95-104, December 2011.
+C8. Takahiro KOMAMIZU, Toshiyuki AMAGASA, and Hiroyuki KITAGAWA, "A Framework of Faceted Navigation for XML Data", Proc. 13th International Conference on Information Integration and Web-based Applications & Services (iiWAS2011), Ho Chi Minh City, Vietnam, pp. 28-35, December 5-7, 2011.
+C9. Jianquan Liu, Hanxiong Chen, Kazutaka Furuse, Hiroyuki Kitagawa, and Jeffrey Xu Yu, "On Efficient Distance-based Similarity Search", Proc. 11th IEEE International Conference on Data Mining (ICDM), PhD Forum, Vancouver, Canada, pp. 1199-1202, December 11-14, 2011.
+C10. Mariko Kamie, Takako Hashimoto, and Hiroyuki Kitagawa, "Effective Web Video Clustering using Playlist Information", Proc. 2012 ACM Symposium on Applied Computing (SAC). (to appear)
+C11. Taiga Abe, Hideyuki Kawashima and Hiroyuki Kitagawa, &ldquo;An E?cient Stream Archiving Method by Operator Merge and Write Control&rdquo;, Proc. 5th. International Workshop on Data Management for Wireless and Pervasive Communications. (to appear)
+P1. 小山田昌史,川島英之,北川博之,"ストリームに起因する連続的トランザクション呼び出しの効率化",信学技報, vol. 111, no. 76, DE2011-2, pp. 7-12, 2011年6月.
+P2. 小澤佑介,天笠俊之,北川博之,"GPGPUを用いた不確定データベースからの高速な頻出アイテム集合マイニング", 信学技報, vol. 111, no. 76, DE2011-9, pp. 49-54, 2011年6月.
+P3. 劉健全,陳漢雄,北川博之,"特化したR木空間索引を用いた効率的な逆最遠傍検索",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), D8-4, 2012年3月3日～3月5日.
+P4. 駒水 孝裕,天笠 俊之,北川 博之,"グラフデータに対するファセット探索のための頻出パターンを利用したオブジェクト抽出手法",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), D3-3, 2012年3月3日～3月5日.
+P5. Salman Ahmed Shaikh, Hiroyuki Kitagawa,"Outlier Detection on Uncertain Data of Gaussian Distribution",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), D3-1, 2012年3月3日～3月5日.
+P6. 大澤昇平,天笠俊之,北川博之,"RDFS Induction: URIの共通性を利用したLinked Dataに対するスキーマ推定手法",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), E11-6, 2012年3月3日～3月5日.
+P7. 上江まり子,橋本隆子,北川博之,"再生リストを利用したWeb動画クラスタリング手法の提案",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), F6-1, 2012年3月3日～3月5日.
+P8. 張帆,天笠俊之,北川博之,佐久間淳,"プライバシー保護オントロジーマッピングの提案",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), B7-6, 2012年3月3日～3月5日.
+P9. 王春永,川島英之,北川博之,"衛星データからのホットスポットの抽出",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), A7-4, 2012年3月3日～3月5日.
+P10. 清野真奈,天笠俊之,北川博之,&ldquo;XMLストリームに対する省電力を考慮した問合せ処理&rdquo;,第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), E11-4, 2012年3月3日～3月5日.
+P11. 山口祐人,天笠俊之,北川博之,"マイクロブログにおけるユーザ専門性を考慮したWebページ推薦",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), F3-5, 2012年3月3日～3月5日.
+P12. 小山田昌史,川島英之,北川博之,"ストリームデータ処理における状態一貫性の保証",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), B8-2, 2012年3月3日～3月5日.
+P13. 小澤佑介,天笠俊之,北川博之,"GPUによる不確実データベースからの確率的頻出アイテム集合マイニングの高速化",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), F6-5, 2012年3月3日～3月5日.
+P14. 高橋毅,天笠俊之,北川博之,"レビューデータにおける評価の時系列的変化に着目したイベント検出",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), F6-2, 2012年3月3日～3月5日.
+P15. 冨山克裕,川島英之,北川博之,"安全性を考慮したストリームデータ処理",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), B8-5, 2012年3月3日～3月5日.
+P16. Chongjie LI, Toshiyuki AMAGASA, Hiroyuki KITAGAWA,"Label-bag based Graph Anonymization by Edge Addition",第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), B7-3, 2012年3月3日～3月5日.
+P17. 井上寛之,天笠俊之,北川博之,"OLAPを利用したLinked Dataの分析処理",情報処理学会 第74回全国大会, 2N-2, 2012年3月6日～3月8日.
+P18. 坂倉悠太,天笠俊之,北川博之,"ソーシャルブックマークにおける複数のユーザアカウントを用いた集中的ブックマークの検出",情報処理学会 第74回全国大会, 3N-4, 2012年3月6日～3月8日.
+P19. 中村高士,早瀬康裕,北川博之,"プロジェクト横断的なオープンソースソフトウェア開発記録の分析手法",情報処理学会 第74回全国大会, 3L-9, 2012年3月6日～3月8日.
+P20. 西村和也,川島英之,北川博之,"メディアストリームとタプルストリームの統合的管理に関する研究",情報処理学会 第74回全国大会, 1N-7, 2012年3月6日～3月8日.
+P21. 林史尊,天笠俊之,北川博之,海老沢研,中平聡志,"動的タイムワーピング距離を用いたX線天文データの類似検索",情報処理学会 第74回全国大会, 4N-8, 2012年3月6日～3月8日.
+P22. 栗原 耕平,川島 英之,北川 博之,"分散ストリーム処理環境における高信頼化手法の適用とその評価",情報処理学会 第74回全国大会, 1N-4, 2012年3月6日～3月8日.
+受賞
+A1. 学生奨励賞,清野真奈,天笠俊之,北川博之,&ldquo;XMLストリームに対する省電力を考慮した問合せ処理&rdquo;,第4回データ工学と情報マネジメントに関するフォーラム(DEIM 2012), E11-4, 2012年3月3日～3月5日.
+その他成果デモ展示
+E1. イノベーションジャパン2011(主催:JST, NEDO):「リアルタイムデータ分析を支援するストリームクラウド基盤」
+計算メディア分野
+研究論文
+1. 岡本祐樹,北原格,大田友一
+遠隔協調型複合現実感における作業空間表現のための立体人物像提示
+電子情報通信学会論文誌 D,Vol.J94-D,No.5,pp.830-838,2011
+2. 佐藤 竜太, 亀田 能成, 大田 友一
+CHLAC特徴量の錐制約部分空間表現による動作分類
+電子情報通信学会論文誌D, vol.J95-D, no.3, pp.645-655, 2012
+3. 渡邊 哲哉, 北原 格, 亀田 能成, 大田 友一
+正確で直感的なカメラ操作を可能とする両手を用いた自由視点映像撮影インタフェース
+電子情報通信学会論文誌D, vol.J95-D, no.3, pp.687-696, 2012.
+4. 林 将之, 北原 格, 亀田 能成, 大田 友一
+広域屋外環境における複合現実型バーチャルジオラマインタフェースの評価
+日本バーチャルリアリティ学会論文誌, vol.16, no.2, pp.215-225, 2011.
+5.Masayuki Hayashi, Itaru Kitahara, Yoshinari Kameda, and Yuichi Ohta
+A User Study on Viewpoint Manipulation Methods for Diorama-Based Interface Utilizing Mobile Device Pose in Outdoor Environment
+Proceedings of 21st International Conference on Artificial Reality and Telexistence (ICAT2011), 6 pages, 2011.
+6. Senya Polikovsky, Yoshinari Kameda, and Yuichi Ohta
+Evaluation of Synchronization Accuracy Between High Speed Cameras in Infrared and Visible Spectrums
+Proceedings of IAPR Conference on Machine Vision Applications (MVA2011), pp.51-54, 2011.
+7. Takeshi Kurata, Masakatsu Kourogi, Tomoya Ishikawa, Yoshinari Kameda, Kyota Aoki, and Jun Ishikawa
+Indoor-Outdoor Navigation System for Visually-Impaired Pedestrians: Preliminary Evaluation of Position Measurement and Obstacle Display
+The Fifteenth International Symposium on Wearable Computing, 2 pages, 2011.
+論文・学会発表 | 筑波大学 計算科学研究センター

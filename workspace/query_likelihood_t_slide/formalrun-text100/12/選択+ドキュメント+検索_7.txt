@@ -1,0 +1,43 @@
+
+例
+タグの情報を配列で指定
+<%= select :page, :name, [["Railsの基礎", "rails_base"], ["Rubyの基礎", "ruby_base"]] %>
+# <select id="page_name" name="page[name]"><option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base">Rubyの基礎</option></select>
+タグの情報をハッシュで指定
+<%= select :page, :name, {"Railsの基礎" => "rails_base", "Rubyの基礎" => "ruby_base"} %>
+# <select id="page_name" name="page[name]"><option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base">Rubyの基礎</option></select>
+タグの情報をオブジェクトで指定
+# @categories = Category.all<%= select :page, :name, @categories.map{|t| [t.name, t.id]} %>
+# <select id="page_name" name="page[name]"><option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base">Rubyの基礎</option></select>
+空のオプションを先頭に追加
+<%= select :page, :name, [["Railsの基礎", "rails_base"], ["Rubyの基礎", "ruby_base"]],  :include_blank => true %>
+# <select id="page_name" name="page[name]"><option value=""></option>
+# <option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base">Rubyの基礎</option></select>
+指定したオプションを先頭に追加
+<%= select :page, :name, [["Railsの基礎", "rails_base"], ["Rubyの基礎", "ruby_base"]],  :prompt => "選択してください" %>
+# <select id="page_name" name="page[name]"><option value="">選択してください</option>
+# <option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base">Rubyの基礎</option></select>
+選択されたオプションを指定
+# @page.name = "ruby_base"
+<%= select :page, :name, [["Railsの基礎", "rails_base"], ["Rubyの基礎", "ruby_base"]] %>
+# <select id="page_name" name="page[name]"><option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base" selected="selected">Rubyの基礎</option></select>
+<%= select :page, :name, [["Railsの基礎", "rails_base"], ["Rubyの基礎", "ruby_base"]], :selected => "ruby_base" %>
+# <select id="page_name" name="page[name]"><option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base" selected="selected">Rubyの基礎</option></select>
+無効にするオプション
+<%= select :page, :name, [["Railsの基礎", "rails_base"], ["Rubyの基礎", "ruby_base"]], :disabled => "ruby_base" %>
+# <select id="page_name" name="page[name]"><option value="rails_base">Railsの基礎</option> 
+# <option value="ruby_base" disabled="disabled">Rubyの基礎</option></select>
+ソースコード
+ソースコードを見る
+# File actionview/lib/action_view/helpers/form_options_helper.rb, line 164
+def select(object, method, choices = nil, options = {}, html_options = {}, &block)
+Tags::Select.new(object, method, self, choices, options, html_options, &block).render
+end
+select - リファレンス - Railsドキュメント

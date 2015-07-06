@@ -1,0 +1,31 @@
+コロラド・ボルドーで開催されたNAACL/HLT 2009に行ってきました。
+NAACLは自分の中での分類では自然言語処理の学会で統計的な手法とかが多い学会に思える(それに対しヨーロッパではEACLでは文法とか言語理論とかが多い)。比較的自分にあう学会。
+開催地となったコロラド大ボルダー校はとてもきれいなキャンパスで(、「全米で最も美しいキャンパス」の4位にランキング)、宇宙飛行士をたくさん輩出してたり、ノーベル物理学賞を4名輩出するなど、研究レベルも高いそうです。
+で、学会は適当に休みながらまったり聞いていたのですが全体的に教師無学習に関する話が多かったような気がします。教師有学習による言語処理がある程度成熟してきているのに対し、教師無の方はまだまだ伸びしろが多いので研究がしやすいのでしょう。教師無に利用するモデルも、単純な混合分布から、様々な分布が入り乱れる複雑なグラフィカルモデルになって精緻なモデル化ができるようになって理論的にも面白いのだとおもいます。
+自分の発表(組み合わせ素性の自動抽出)は、素性設計をやったことがある人にはよく共感してもらえました。
+聞いた発表の中で面白かったものをいくつか挙げます
+* Shrinking Exponential Language Models, Stanley F. Chen. [pdf]
+* Performance Prediction for Exponential Language Models, Stanley F. Chen.  [pdf]
+(Technical Reportが手に入る pdf)
+指数分布族(いわゆる最大エントロピーモデルによる言語モデル)による言語モデルで、訓練データ上のパープレキシティとその時の重みの絶対値の和でテストデータ上のパープレキシティが恐ろしいほどの精度で予測できるということを示した。様々なデータ、パラメータで試したらなぜかうまくいく式を発見したらしい。テストデータ上での性能を予測する手法はMDLやらAIC、VC理論などがあるが、ここまでぴったり当てはまるのは初めて。本人もある程度の考察をしていたがここまであてはまるのは、正直困ったといっていた。
+二つ目の論文では予測できるということで、テスト上のパープレキシティが下がるような言語モデルをうまく設計できればいいのではということで実際に設計した。スムージングとかの効果が「異なるN-gram上の重みを共有している」ことで全体の重みの相和が減ってテスト上のパープレキシティが減るということが示されていた。
+普通のMEとかでもこの式は使えるのだろうかなぁ・・
+この人は元々Rosenfeldの元でExponential Language Modelをやっていて、Gaussian PriorをMEに使うことを最初に提唱したりした人。久々にでてきた気がする。
+* Improving Unsupervised Dependency Parsing with Richer Contexts and Smoothing, William P Headden III, Mark Johnson and David McClosky [pdf]
+教師無係り受け解析で最高精度を達成。実はこれと殆ど同じ手法を自分も昨年しばらくやっていて、精度でなくてあきらめていたので、その延長線上にいい世界があったのかとちょっとショック
+- 基本的には係り受けのモデルをsplit-headによるPCFGに変換
+- PCFGのモデルでは品詞と単語を線形補間でスムージング
+- 右側(左側)にかかるときに一回目にかかるものと二回目にかかるものを分けてモデル化
+- 基本的にEMで推定するが、分布に対してDirichelt Priorをかけて, 変分ベイズで推定
+- 初期化をものすごくたくさん試し、よさそうなものをさらに収束するまでずっと繰り返す
+上三つまでは自分やっていたが、下二つ(特に最後)が結構きくらしい。これで70%ぐらい達成
+* Online EM for Unsupervised Models, Percy Liang; Dan Klein [pdf]
+これは以前紹介したOnline EM(ohmmというオープンソースもだしました)の本発表。発表で面白かったのがOnline EMで学習した方が従来のEMよりも(尤度は同じだが)高精度を達成する場合が多いということだ。彼の説明ではOnline EMにはいい山を見つける能力が高いのではないかということ。学習の形からみれば焼きなまし法で温度をさげていくのに確かに似ている。
+* Unsupervised Morphological Segmentation with Log-Linear Models, Hoifung Poon; Colin Cherry; Kristina Toutanova pdf
+教師無での形態素分割について、線形対数モデルを使って自由に特徴を利用した場合に精度はすごくあがったという話。Semi-Markov MRFに近い。best paper(student best paper)
+ちなみにもう一つのbest paperは
+* 11,001 New Features for Statistical Machine Translation, David Chiang; Kevin Knight; Wei Wang [pdf]
+タイトルがなんか格好いいが、従来のblue scoreとモデルの調整でOchの最適化法を使うより、MIRAとかで学習すると特徴数が非常に多くても学習できるし、精度もいいよという話。
+* Joint Inference for Natural Language Processing, Andrew McCallum (CoNLL Invited Talk)
+非常に複雑なグラフィカルモデルで学習を行いたい場合はsample rank(彼の学生のCulottaのthesis)というのがお勧めだというのが印象にのこった。これはMetropolis-HastingsによるMCMC法で変数をいろいろ変えていく際にモデルのパラメータ変化と、実際の確率の変化が違う場合にパーセプトロンのように、変化が同じになるようにパラメータのアップデートを行うもの。実装が簡単なうえに学習の効率が高いらしい
+DO++: June 2009

@@ -1,0 +1,91 @@
+クリスタルレポートで帳票を出力するプログラムを作成していますが、
+データセットをレポートエンジンに渡す箇所で
+時間がかかっています。
+開発環境で作成した帳票出力プログラムを
+実行環境で実行するとデータセットをレポートエンジンに渡す箇所で時間がかかります。
+90秒ほど掛かっています。
+開発環境では0.5秒ほどかかります。
+ミニマムコードを作成して検証しましたが
+マシンの性能以外の原因が分かりません。
+なぜ時間がかかってしまうのかみなさんの意見をお聞かせください。
+開発環境
+Visual Studio 2008
+Crystal Reports Basic for Visual Studio 2008
+OS:XP pro sp2
+CPU:Core2Duo 2GHz
+Memory:3GB
+実行環境
+OS:Vista
+CPU:Celelon 1.8GHz
+Memory:1GB
+実行環境へはVisualStudio2008で作成したセットアップを使用しています。
+セットアップには必須コンポーネントとして
+.NET Framework3.5
+Crystal Report Basic for Visual Stuidio 2008
+Microsoft Visual Studio 2008 Report Viewer
+を含めています。
+以下が検証用に作成したミニマムコードです。
+コード:
+public partial class Form1 : Form
+{
+public Form1()
+{
+InitializeComponent();
+}
+private void btnPreview_Click(object sender, EventArgs e)
+{
+Stopwatch sw = Stopwatch.StartNew();
+// レポートに設定するデータ作成
+DataSet1 dataset = new DataSet1();
+DataRow row = dataset.DataTable1.NewRow();
+row["no1"] = "hogeNo1";
+row["no2"] = "hogeNo2";
+row["no3"] = "hogeNo3";
+dataset.DataTable1.Rows.Add(row);
+sw.Stop();
+OutLog4Debug("データセット作成", sw.ElapsedMilliseconds);
+sw = Stopwatch.StartNew();
+// レポートオブジェクト作成
+CrystalReport1 report = new CrystalReport1();
+sw.Stop();
+OutLog4Debug("レポートオブジェクト作成", sw.ElapsedMilliseconds);
+sw = Stopwatch.StartNew();
+report.SetDataSource(dataset);
+sw.Stop();
+OutLog4Debug("レポートオブジェクトにデータセット設定", sw.ElapsedMilliseconds);
+sw = Stopwatch.StartNew();
+// プレビュー
+using (Preview pre = new Preview())
+{
+pre.Report = report;
+sw.Stop();
+OutLog4Debug("プレビューにレポートオブジェクト設定", sw.ElapsedMilliseconds);
+pre.ShowDialog();
+}
+}
+private void OutLog4Debug(object target, long time)
+{
+using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"c:\TestReport\ReportTestLog.txt", true))
+{
+//sw.WriteLine("-------{0}{1}", DateTime.Now, "-------");
+sw.WriteLine("#############################################################################");
+sw.WriteLine(target + ":" + time);
+sw.WriteLine("#############################################################################");
+//sw.WriteLine("---------------------------------------------");
+}
+}
+}
+以下が実行環境(Vista)で実行した結果です。
+#############################################################################
+データセット作成:11
+#############################################################################
+#############################################################################
+レポートオブジェクト作成:466
+#############################################################################
+#############################################################################
+レポートオブジェクトにデータセット設定:91354
+#############################################################################
+#############################################################################
+プレビューにレポートオブジェクト設定:399
+#############################################################################
+クリスタルレポート データセットを渡す際の処理時間 − Insider.NET − @IT

@@ -1,0 +1,62 @@
+
+はじめに
+本投稿では、Android開発を行う中で、筆者が有益だと感じた情報やつまづきやすいポイントを、オフィシャルのソースへのリンクを中心にまとめています。これから開発を始めるチームや個人の方の参考にしていただければ幸いです。
+開発の心得
+Android Developers のドキュメントを読みましょう!英語が苦手な方は敬遠しがちかもしれませんが、参考になる情報がたくさんあります。ある程度開発経験を積むとスムーズに理解でき、新たな発見もあって読んでいて楽しいと思います。
+https://developer.android.com/index.html
+初めて開発をするという方は、Training のドキュメントを、コードを書きながら読み進めるとよいと思います。
+http://developer.android.com/training/index.html
+サポート対象のプラットフォーム
+最新のAndroidのPlatformの内訳は、下記リンクに公開されています。
+https://developer.android.com/about/dashboards/index.html?utm_source=ausdroid.net#Platform
+開発する上でどのプラットフォームを対象にするかは、アプリの機能、開発コスト、テストコスト、パフォーマンス等を考慮して決める必要があります。2014年5月現在 Ver 2.x の端末は全体の2割弱であること、今後も減少が続くこと、パフォーマンスにも大きな差があることを踏まえると、これから開発する人は'基本的に' Ver 4.x 以降をサポート対象とすればよいと思います。
+新規アプリの作成時に指定する Minimum Required SDK, TargetSDK, Compile With については以下を参考にしましょう。
+http://developer.android.com/training/basics/firstapp/creating-project.html#Eclipse
+コードスタイル
+Android Open Source Project の Contributors 向けのコードスタイルガイドライン、フォーマッタが公開されています。本家のものなので参考にしてはいかがでしょうか。
+https://source.android.com/source/code-style.html
+https://android.googlesource.com/platform/development.git/+/master/ide/eclipse/android-formatting.xml
+Square などの企業もGithub上でコードスタイルを公開しています。
+https://github.com/square/java-code-styles
+デザインガイドライン
+オフィシャルのデザインガイドラインには必ず全ページに目を通しましょう!
+各種ドキュメントの中でもこのドキュメントが一番重要だと思います。
+https://developer.android.com/design/index.html
+必ず読んでおきたいデザインガイドライン5選!
+ちょっと量が多い、、、という方向けに、重要度の高いと感じるページをピックアップしました。
+標準的な画面構成を紹介しています。独自の画面構成は極力避け、ユーザに馴染みやすく、バランスのよい画面を作りましょう。
+http://developer.android.com/design/style/metrics-grids.html
+画面遷移の標準パターンを紹介しています。独自の画面遷移は避け、今どこにいるかユーザが理解できるナビゲーションを行いましょう。
+http://developer.android.com/design/patterns/navigation.html
+アイコン作成時のポイントを紹介しています。独自のアイコンを使うときは、ルールに沿って作成しましょう。
+http://developer.android.com/design/style/iconography.html
+表示するメッセージのポイントを紹介しています。ユーザには簡潔にメッセージを伝えましょう。
+http://developer.android.com/design/style/writing.html
+確認ダイアログや通知のポイントを紹介しています。適切なタイミングで適切な情報をユーザにフィードバックしましょう。
+http://developer.android.com/design/patterns/confirming-acknowledging.html
+UXアンチパターン
+Android Developers の YouTube 公式アカウントで、低評価のアプリで見かける残念なUI/UXを紹介しています(日本語)。作成したアプリがここに挙げられているポイントを守っているか、チェックすることを強くおすすめします。
+https://www.youtube.com/watch?v=x_gxZd9kLv4
+個人的な感想として「スプラッシュスクリーンは、ユーザにとって邪魔でしかない」が印象的でした。ユーザ視点からすれば確かにそんなに頑張るとこじゃないかもしれないですね。タッチフィードバックについても触れていますが、きちんと実装できているアプリは少ないように感じます。
+各種素材
+Actionbar Icon
+https://developer.android.com/design/downloads/index.html#action-bar-icon-pack
+Google Play Budge
+http://developer.android.com/distribute/tools/promote/badges.html
+Android Asset Studio
+http://romannurik.github.io/AndroidAssetStudio/index.html
+ライブラリの選定
+Android で使用されているライブラリのランキングです。たくさん使われているライブラリは、情報も多く、比較的安定しているものが多いため安心して使えると思います。
+http://www.appbrain.com/stats/libraries/dev
+個人的にライブラリを選定する基準として、使いやすさのほか、githubのStar数、contributor数、直近のcommit日、企業アカウント/個人アカウント等を参考にしています。
+テスト関連
+アプリの品質ガイドライン(2013年1月の記事)が提供されています。テスト時などにチェックリストを確認することをおすすめします。
+http://googledevjp.blogspot.jp/2013/01/core.html
+最新情報(英語版)はこちら。
+http://developer.android.com/distribute/essentials/quality/core.html
+リリース準備
+アプリのリリース時に必要な Keystore、Key Alias に触れています。Keystore、Key Alias って何という人はまずここを参考にしましょう。
+http://developer.android.com/tools/publishing/app-signing.html#releasemode
+さいごに
+トピックの追加要望、フィードバックなどありましたらよろしくお願いいたします。
+Androidエンジニアが開発する上で知っておきたいこと - Qiita

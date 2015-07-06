@@ -1,0 +1,28 @@
+
+NetBeans IDE は、受賞歴のある統合開発環境で、Windows、Mac、Linux、および Solaris で使用可能です。NetBeans プロジェクトは、オープンソースの IDE とアプリケーションプラットフォームから構成されます。NetBeans を使用すると、開発者は Java プラットフォームや PHP、JavaScript と Ajax、Ruby と Ruby on Rails、Groovy、および C/C++ を使用して、Web アプリケーション、エンタープライズアプリケーション、デスクトップアプリケーション、およびモバイルアプリケーションを短時間で作成できます。活発な開発者コミュニティーによってサポートされ、さまざまなサードパーティーのプラグインを提供します。ソフトウェア開発者にとって NetBeans IDE はダウンロードが欠かせないツールです。
+リリース概要
+NetBeans IDE 6.5 は、すべての Java プラットフォーム (Java SE、Java EE、Java ME、JavaFX) が完全にサポートされているだけでなく、PHP、Ajax と JavaScript、Groovy と Grails、Ruby と Ruby on Rails、および C/C++ を使用するソフトウェア開発にも最適なツールです。NetBeans IDE 6.5 release にはいくつかの新機能と拡張機能があります。たとえば IDE 全体を高速検索できる新しいショートカット、さらに使いやすいインタフェース、そして保存時の自動コンパイル機能があります。6.5 release では、Web フレームワーク (Hibernate、Spring、JSF、JPA)、GlassFish アプリケーションサーバー、およびデータベースのサポートも強化されています。
+NetBeans IDE 6.5 の取得 
+ドキュメント
+NetBeans IDE 6.5 の使用方法については、次のドキュメントを参照してください。
+リリースノート
+インストールに関する説明
+主な新機能
+JavaScript と Ajax
+FireFox と Internet Explorer での JavaScript のデバッグ
+HTTP トランザクションの監視
+JavaScript と CSS エディタの改善
+JavaScript ライブラリマネージャー (Yahoo UI、Woodstock、jQuery、Dojo、Scriptaculous、Prototype のライブラリを含む)
+Java EE と Web の開発
+Spring、Hibernate、JSF、JSF CRUD ジェネレータ、JPA (Java Persistence API) のサポート強化 
+データベース表または JPA エンティティーからの RESTful Web サービスの作成
+PHP ファイルへの SaaS サービスのドラッグ&ドロップ
+SQL エディタの改善 (コード補完、クエリーの保存と再呼び出しなど) 
+Java Web プロジェクトでの Eclipse プロジェクトのインポートと同期の改善
+保存時の自動配備
+JavaFX
+JavaFX プロジェクトの作成、テスト、デバッグ、プロファイル、配備
+JavaFX エディタ (構文の強調表示、ソースナビゲーション、コード補完、コードの折り畳み、javadoc のポップアップ、エラー検出)
+視覚要素のライブプレビュー
+変換、効果、アニメーション用のコードスニペットパレット
+NetBeans IDE 6.5 情報

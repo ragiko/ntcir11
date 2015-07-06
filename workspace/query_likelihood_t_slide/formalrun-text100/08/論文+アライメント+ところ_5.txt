@@ -1,0 +1,3 @@
+本論文では複数方向から測定された距離画像を並列にアライメントする手法を提案する.大規模な距離画像群の同時アライメントは,計算時間及びメモリ使用量から考えてあまり現実的ではない.そこでアライメント計算を並列化し,データを分散する事によってこれまで難しかった大規模な距離画像の同時アライメントを可能にする手法を提案する.また並列処理をPCクラスタ上で行い,高い拡張性と,時間効率とメモリ使用効率という点に関して本手法の有効性を確かめる.
+This paper describes a parallel alignment method of multiple range images. It is difficult to align a large number of range images simultaneously. Therefore, we developed the parallel method to improve the time performance ana memory performance. The method was tested on 16 processor PC cluster and shown the high extendibility and the performance improvement in time and memory.
+

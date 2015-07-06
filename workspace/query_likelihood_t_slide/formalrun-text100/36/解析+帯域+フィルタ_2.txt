@@ -1,0 +1,88 @@
+という書き方をします。
+value = 変更する変数
+low1 = 変更前の範囲の最小値
+high1 = 変更前の範囲の最大値
+low2 = 変更後の範囲の最小値
+high2 = 変更後の範囲の最大値
+となり、要はvalueの値を変更前の範囲(low1〜high1)から変更後の範囲(low2〜high2)にしてくれる便利な関数です。
+実際に簡単な例題をやってみましょう。
+void setup(){
+size(400, 200);
+smooth();
+}
+void draw(){
+background(255);
+stroke(0);
+//基準のため、マウスが動く範囲に線を作る
+//線のx座標の範囲は100から200の間
+line(100, height/2, 300, height/2);
+//mouseXが0から横幅の間を動く時、xは100から300の範囲の値を取る
+float x = map(mouseX, 0, width, 100, 300);
+fill(255, 0, 0);
+ellipse(x, height/2, 10, 10);    //円を描く
+}
+どうでしょうか。理解してしまえばかなり便利ですね。マウスアクションに結構使えると思います。
+ローパスフィルタ、ハイパスフィルタ
+さて、ココからが本題です。まず、周波数を直接コントロールしてみます。まず、エフェクトの効果として代表的な、特定の周波数を通過(もしくはカット)させるフィルターを作成してみましょう。
+このフィルターには大きく分けて3種類あります。
+1. ローパスフィルタ(低域通過フィルタ)
+2. ハイパスフィルタ(高域通過フィルタ)
+3. バンドパスフィルタ(帯域通過フィルタ)
+今回はローパスフィルタとハイパスフィルタを作ってみます。バンドパスフィルタは、前述の2つのフィルタの組み合わせになるのでここでは触れません。
+まずは、ローパスフィルタです。
+//written by  by Damien Di Fede.
+//arranged by Yasushi Noguchi.
+import ddf.minim.*;
+import ddf.minim.effects.*;
+Minim minim; //Minim型変数であるminimの宣言
+AudioPlayer player;  //サウンドデータ格納用の変数
+LowPassSP lpf;  //ローパスフィルター用の変数
+float cutoff;    //削除する周波数のしきい値
+int waveH;    //波形の高さ
+void setup()
+{
+size(512, 200, P3D);
+minim = new Minim(this);  //初期化
+//groove.mp3をロードして、バッファを確保(1024k)
+player = minim.loadFile("groove.mp3", 1024);
+player.loop();  //ループ再生
+//5000Hzでローパスフィルターを設定する。
+//2つ目の引数は、サンプルレート。このサンプルレートは、正確な計算のため必要。
+lpf = new LowPassSP(5000, player.sampleRate());
+player.addEffect(lpf);    //エフェクトを設定
+waveH = 50;    //波形の高さを50に設定
+}
+void draw()
+{
+background(0);
+stroke(255);
+//波形を描く
+for ( int i = 0; i < player.bufferSize() - 1; i++ )
+{
+//左の音は上に、右の音は下に表示。
+//left.get()とright.get()は1から-1の間の値を取るので、見やすいようにwaveHを掛ける。
+point(i, 50 + player.left.get(i)*waveH);	//左の音声の波形を画面上に描く
+point(i, 150 + player.right.get(i)*waveH);	//右  〃
+}
+}
+//もしマウスが動いたら、
+void mouseMoved()
+{
+//mouseXが0~512(横幅)の時に、そのmouseXの範囲を20~5000に変更する。
+cutoff = map(mouseX, 0, width, 20, 5000);
+lpf.setFreq(cutoff);    //ローパスフィルターを設定し直す
+}
+void mousePressed()
+{
+println(cutoff);    //しきい値を表示
+}
+void stop()
+{
+// アプリケーションの終了前にAudioPlayerを終了する
+player.close();
+// minimを終了
+minim.stop();
+//ソフト全体を終了
+super.stop();
+}
+エフェクト、周波数解析 | Yasushi Noguchi Class

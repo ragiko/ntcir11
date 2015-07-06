@@ -1,0 +1,19 @@
+TextGrid の概要
+第一刷では、音声ラベルデータは、いわゆるXwaves形式で提供されていた。このラベル形式は、XwavesのほかにWavesurferなどの音声分析ソフトウェアでも利用できるが、その場合、必ずしも扱いが容易でなかった。そこで第二刷から、
+現在最も広く利用されている音声分析ソフトウェアのひとつであるPraatのTextGrid形式に変換した音声ラベルデータの提供を開始した。
+Xwaves形式では、単語層、分節音層、BI(Break Index)層、トーン層、プロミネンス層、注釈層のラベル情報がそれぞれ、 .word, .seg, .break, .tone, .prm, .misc という6つの拡張子で識別される6個のテキストファイルで別々に提供されていた。これに対して TextGrid形式ではすべての層のラベル情報が、.TextGrid という拡張子をもつ1個のファイルに集約される。また
+TextGrid形式ではラベルに interval tier と point tier の区別がある点もXwaves形式には無かった特徴である。前者は時間区分を表すラベルであり、開始時刻と終了時刻の情報をもつ。これに対して、後者はある特定の時刻に付与されるラベルであり、単一の時間情報だけをもつ(この分類にしたがえばXwaves形式のラベルは形式上はすべてpoint tierラベルである)。ここで提供する TextGrid ファイルにおいては、単語層、分節音層の情報をintervaltierとして、他の層はpoint tier として設定している(ラベルのタイプは変更可能である)。
+TextGrid の利用方法
+PraatでTextGridファイルを利用する方法は以下のとおりである。
+(1) Praatを起動する。
+(2) Praat Objectsウィンドウのメニューで「Open(あるいはRead)」>「Open long sound file」を選び、音声ファイルを開く。
+(3) 同じメニューで「Read from file」を選択して、その音声ファイル用のTextGridファイルを選択する。
+(4) 以上の操作を終えると、Praat Objectsウィンドウに、音声ファイル名とTextGridファイル名が表示されるので、マウスでこれらを全て選択する。
+(5) その状態で右側にある「View & Edit(あるいはEdit)」ボタンをクリックする。
+(6) TextGridウィンドウが開き、音声波形とスペクトログラムとX-JToBIによる音声ラベルが表示される。
+音声ラベルは上から、word, seg, break, tone, prm, misc, TRN の順番に表示される。
+* 転記テキスト(TRN)層が文字化けする場合は、Praat Objectsウィンドウのメニューで「Praat」>「Preferences」>「Text Reading Preferences」を選択し、文字コードをUTF-8に切り換える必要がある。
+* イントネーションラベリング時に実際に用いたF0値を合わせて表示する場合、Praat Objectsウィンドウのメニューで「Read from file」を選択してPraat用のPitchファイル(拡張子 .Pitch)を選択する。その上で、Praat Objectsウィンドウに表示されたPitchファイルを選択し、「View & Edit(あるいはEdit)」をクリックすると、F0情報のウィンドウが表示される。上記ウィンドウと同期させるには、ウィンドウ右下にあるGroupにチェックを入れる。
+Praat は以下の場所からダウンロードできる。
+Praat: doing phonetics by computer (外部サイト)
+日本語話し言葉コーパス - TextGridの利用方法

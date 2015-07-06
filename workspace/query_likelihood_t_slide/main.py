@@ -31,6 +31,46 @@ def select_tf_by_lecture_id(lecture_tf, lecture_id):
         return a[0]
     return null
 
+def web_str_normalize(str):
+    '''
+    webのコンテンツの不必要な文字を削除
+
+    TODO: ロシア語とかノイズで残る
+    :param str:
+    :return:
+    '''
+    # 改行の削除
+    s = str.replace("\n", '')
+    # 半角の連続を削除 (英文, プログラム)
+    s = re.sub(r'[!-~A-Z ]{15,}', '', s)
+    # 記号の連続を削除 (顔文字, その他)
+    s = re.sub(r'[ﾉ|ノ|v|U|o|O|q|p|T|x|X|ｰ|ﾟ|｡|、|。|，|．|･|・|：|；|？|！|゛|゜|｀|´|¨|＾|>丶|＿|￣|ヽ|ヾ|ゝ|ゞ|〃|仝|々|〆|〇|ー|―|‐|／|＼|～|∥|｜|…|‥|‘|’|“|”|（|）|〔|〕|［|］|｛|｝|〈|〉|《|》|「|」|『|』|【|】|＋|－|±|×|÷|＝|≠|＜|＞|≦|≧|∞|∴|♂|♀|°|′|″|℃|￥|＄|￠|￡|％|＃|>＆|＊|＠|§|☆|★|○|●|◎|◇|◆|□|■|△|▲|▽|▼|※|〒|→|←|↑|↓|〓|∈|∋|⊆|⊇|⊂|⊃|∪|∩|∧|∨|￢|⇒|⇔|∀|∃|∠|⊥|⌒|∂|∇|≡|≒|≪|≫|√|∽|∝|∵|∫|∬|Å|‰|♯|♭|♪|†|‡|¶|Γ|Δ|Θ|Λ|Ξ|Π|Σ|>Φ|Χ|Ψ|Ω|α|β|γ|δ|ε|ζ|η|θ|ι|κ|λ|μ|ν|ξ|ο|π|ρ|σ|τ|υ|φ|χ|ψ|ω|Б|Г|Д|Ё|Ж|З|И|Й|К|Л|П|Ф|Ц|Ч|Ш|Щ|Ъ|Ы|Э|Ю|Я|б|в|г|д|е|ё|ж|з|и|й|к|л|м|н|п|т|ф|ц|ч|ш|>щ|ъ|ы|ь|э|ю|я|q|x|l|k|j|m|t|w|u|v|n|q|x|l|k|j|m|t|w|u|v|n|t|w|u|v|n|t|w|u|v|n|丶|丿|亅|人|丁|二|入|八|卜|又|厂|匸|匚|勹|凵|几|冫|冖|冂|儿|亠|厶|乂|了|丁|卩|巾|山|士|己|>>凡|彳|彡|川|廾|广|巛|介|屮|尸|宀|口|囗|兀|于|个|干|爻|殳|戈|弖|夭|夬|卞|卅|从|廿|凸|凹|卍|豸|囲|因|囚|!|#|\$|%|&|\(|\)|=|\||\+|\*|\{|\}|<|>|\[|\]|\?|_|\/|\.|,|:|;|"|\'|`|~|\^|\@|\-|\\]{3,}', '', s)
+    # 空白の連続
+    s = re.sub(r' {2,}', '', s)
+    return s
+
+def web_tf_cache_load(web_path, output_path):
+    """
+    web文書のtfを取得する
+    キャッシュロード
+    :param doc_path:
+    :param output_path:
+    :return:
+    """
+    # web文書の読み込み
+    if (os.path.exists(output_path) == False):
+        web_tf_list = []
+        for web_dir in ht.dir_list(web_path):
+            web_str = ht.dir_read_join(web_dir, join_str=u"。")
+            web_str = web_str_normalize(web_str)
+            web_tc = ht.TextCollection([web_str])
+            # TODO: tf()は配列を返す仕様にしてあるので1つだけの場合は先頭返してほしい
+            web_tf_list.append(ht.TfIdf(web_tc).tf()[0])
+        ht.pickle_save(web_tf_list, output_path)
+    else:
+        web_tf_list = ht.pickle_load(output_path)
+    return web_tf_list
+
 if __name__ == '__main__':
     """
     main program
@@ -44,8 +84,9 @@ if __name__ == '__main__':
     # TODO: 講演の情報を利用したい時
     # DOC_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
     LECTURE_PATH = conf.WRITE_DOC_LECTURE_PATH
-
+    
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
+    WEB_PATH = conf.PROJECT_PATH + "/formalrun-text100"
 
     # キャッシュ用パス
     # TODO: データをキャッシュしているので、不要なときは消す
@@ -55,6 +96,7 @@ if __name__ == '__main__':
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
     LECTURE_TF_PATH = conf.TMP_PATH + "/lecture_tf"
+    WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
@@ -67,7 +109,10 @@ if __name__ == '__main__':
     texts_str = doc_tc.merge_texts()
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
-    
+
+    # webのtfの文書を読み込み
+    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+
     # クエリを読み込み
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
@@ -86,6 +131,9 @@ if __name__ == '__main__':
         query_text = q_tf_vsm.text
         query_tf = q_tf_vsm.vec
         query_result = []
+
+        # queryに関係するwebのtfを計算
+        tf_web = web_tf_list[i].vec
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
@@ -130,8 +178,8 @@ if __name__ == '__main__':
                 doc = (1-a) * select_lecture_tf.vec.get(word, not_word_val)
                 corpus = a * tf_corpus.get(word, not_word_val)
                 q_d_likelifood += log(doc + corpus)
-            
-            likelifood = q_s_likelifood + q_d_likelifood
+
+            likelifood = q_s_likelifood + q_d_likelifood + web_likelifood
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)

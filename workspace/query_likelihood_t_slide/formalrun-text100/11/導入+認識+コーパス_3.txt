@@ -1,0 +1,29 @@
+基本セット(バイナリ)+ディクテーション実行キット  &dagger;
+JULIUS/ディレクトリを作っておきます。
+mkdir julius-linux
+Julius 公式 からLinux版Juliusのバイナリファイルをダウンロードして解凍します。
+julius-4.1.3-linuxbin.tar.gz(2009年11月12日時点)をダウンロードしました。
+JULIUS/ディレクトリに、解凍した julius-4.1.3-linuxbin ディレクトリの中身を入れます。
+続いてディクテーション実行キットをダウンロードします。
+juliusトップ  ダウンロード  ディクテーションキット  Linux版 Juliusディクテーション実行キット v3.2(2009年11月12日時点)
+中身は最小限のモデル(不特定話者音響モデル + 汎用言語モデル)および Juliusの 実行バイナリ
+ダウンロードしたZIPファイルを解凍してできた dictation-kit-v3.2 のうち、以下のファイルとディレクトリを JULIUS/ディレクトリ以下に上書き
+model/         : 音響モデルと言語モデル
+fast.jconf     : 通常版設定ファイル
+HOWTO.txt      : 認識システムの起動と動作
+light.jconf    : 簡易版設定ファイル
+TROUBLE.txt    : うまく認識できないときは
+Julian(記述文法音声認識実行キット)+孤立単語認識キット  &dagger;
+juliusトップ  ダウンロード  文法認識キット  Linux版 Julian 記述文法音声認識キット v3.1
+ダウンロードしたZIPファイルを解凍してできた julian-kit-v3.1 のうち、以下のファイルとディレクトリを JULIUS/ディレクトリ以下に上書きします。
+bin/julian.exe : julian本体
+SampleGrammars : 認識用文法のサンプル
+sample.wav     : 音声データのサンプル
+hmm_mono.jconf : 動作設定ファイル(モノフォンモデル使用)
+hmm_ptm.jconf  : 動作設定ファイル(PTM音響モデル使用)
+testfile.jconf
+testmic.jconf
+HOWTO.txt      : 起動方法と使い方(リネームしてから上書き)
+続いてJulius 応用キットより、孤立単語認識キット  julian-isoword-kit-v2.0.tar.gz をダウンロードして解凍します。
+解凍してできたフォルダ julian-isoword-kit-v2.0 を JULIUS/ディレクトリに入れます。
+JuliusとJulian - Miyazawa’s Pukiwiki 公開版

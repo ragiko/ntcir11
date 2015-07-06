@@ -1,0 +1,5 @@
+【津波情報】 [%= update_time.year %]年[%= update_time.month %]月[%= update_time.day %]日 [%= update_time.hour %]時[%= update_time.minutes %]分 気象庁発表
+気象庁より[%= category %]が発表されています。
+[地域] [%= area %][% if(areaMoreFlg) { %]など[% } %] 今後の情報を警戒して下さい [[% if (tsunami_link_mebius.length == 0) { %][%= link_to('詳細', 'http://news.infoseek.co.jp/tsunami/') %][% } else { %][%= link_to('詳細', 'http://rd.rakuten.co.jp/c/?R2=http%3a%2f%2fnews%2einfoseek%2eco%2ejp%2ftsunami%2f&D2=' + tsunami_link_mebius) %][% } %]]
+[% var shareString = '【津波情報】気象庁より' + category + 'が発表されています( ' + update_time.year + '年' + update_time.month + '月' + update_time.day + '日' + update_time.hour + '時' + update_time.minutes + '分発表 )'; %]
+Infoseek ニュース - ニュース速報、芸能スクープなど満載

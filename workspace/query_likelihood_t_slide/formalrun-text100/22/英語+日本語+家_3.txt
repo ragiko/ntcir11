@@ -1,0 +1,9 @@
+みゃうさんの情報の追記です。
+Windows 7 英語版に日本語のソフトをインストールして日本語で表示したい場合は、「地域と言語」のダイアログボックスの[管理]タブで、[Unicode 対応ではないプログラムの言語] が、[日本語 (日本)] にすると良いようです。
+Windows 7 英語版の場合は、「Region and Language」の「Administrative」タブにある「Language for non-Unicode programs」で「Current language for non-Unicode programs:」が「Japanese (Japan)」となるように設定してみてください。
+その他、下記のページにもこうすると設定できたという情報があります。
+参考:特定のアプリケーション内の一部の2バイト文字が"?"マークで表示される。
+http://social.answers.microsoft.com/Forums/ja-JP/vistaassistantja/thread/00ba21ca-0ada-4c05-ba6f-6f8236d4fbbf
+Sakushima
+MS MVP Client Operating System Windows Desktop Experience
+英語版のWindows7の入ったコンピューターを日本語化する - マイクロソフト コミュニティ

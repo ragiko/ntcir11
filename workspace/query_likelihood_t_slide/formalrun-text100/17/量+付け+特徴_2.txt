@@ -1,0 +1,76 @@
+OpenCV2.2になって、C++インタフェースが随分整理されましたので、色々と触っていました。
+主に特徴点周りのクラスを見ていたのですが、画像から特徴点を検出し、画像間で対応付けるコードを簡単に書けるようになりました。
+以下に2画像間の特徴点の対応付けのコードを掲載します。
+#include <opencv2/opencv.hpp>
+//
+int main()
+{
+// 画像1の読み込み
+cv::Mat_<cv::Vec3b> img1 = cv::imread( "in1.jpg" );
+// 画像2の読み込み
+cv::Mat_<cv::Vec3b> img2 = cv::imread( "in2.jpg" );
+// SIFT用のデフォルトパラメータを設定
+double threshold = cv::SIFT::DetectorParams::GET_DEFAULT_THRESHOLD();
+double edge_threshold = cv::SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD();
+double magnification = cv::SIFT::DescriptorParams::GET_DEFAULT_MAGNIFICATION();
+// SIFTの特徴点検出・特徴量抽出器を用意
+cv::SiftFeatureDetector detector( threshold, edge_threshold );
+cv::SiftDescriptorExtractor extractor( magnification );
+/*
+// SURFの場合
+cv::SurfFeatureDetector detector();
+cv::SurfDescriptorExtractor extractor();
+*/
+// 画像1から特徴点を検出
+std::vector<cv::KeyPoint> keypoints1;
+detector.detect( img1, keypoints1 );
+// 画像2から特徴点を検出
+std::vector<cv::KeyPoint> keypoints2;
+detector.detect( img2, keypoints2 );
+// 画像1の特徴点における特徴量を抽出
+cv::Mat descriptor1;
+extractor.compute( img1, keypoints1, descriptor1 );
+// 画像2の特徴点における特徴量を抽出
+cv::Mat descriptor2;
+extractor.compute( img2, keypoints2, descriptor2 );
+// 対応点を求める
+std::vector<cv::DMatch> matches;
+// L2距離を用いた全探索対応付け
+cv::BruteForceMatcher< cv::L2 > matcher;
+// Flannベースの対応付け
+//	cv::FlannBasedMatcher matcher;
+// 特徴量比較による特徴点の対応付け
+matcher.match( descriptor1, descriptor2, matches );
+// 結果を描画
+cv::Mat_<cv::Vec3b> result;
+cv::drawMatches( img1, keypoints1, img2, keypoints2, matches, result );
+// 結果を出力
+cv::imwrite( "result.jpg", result );
+return 0;
+}
+といった感じで、簡単なコードだと思いませんか?
+簡単にやっていることを説明します。
+各画像から、SIFTにより特徴点を検出し、その特徴量を抽出します。
+特徴点の検出は、cv::FeatureDetectorを継承したcv::SiftFeatureDectetorを、特徴量の抽出は、cv::DescriptorExtractorを継承したcv::SiftDescriptorExtractorを用いることでそれぞれ行うことが出来ます。
+コード中のコメントを入れ替えれば、SIFTからSURFに簡単に切り替えることもできます。
+その他の特徴点検出・特徴量抽出手法についても同じです。
+そして、特徴量間の対応付けを行います。
+こちらも対応付けに用いる手法(cv::DescriptorMatcher)を、定義するクラスで簡単に切り替えることができます。
+今回は、L2距離基準を用いた全探索対応付けを行うcv::BruteForceMatcherを用いています。
+最後に、特徴点とその対応をcv::drawMatchesにより描画することで、結果を得ることができます。
+テスト画像
+テスト画像は、以下の2種類を用いています。
+左側が原画像で、右側は原画像を45度回転しています。
+これらの画像の特徴点対応付けを行います。
+特徴点対応付け結果
+下の画像がそれぞれの対応付け結果です。
+各画像中の円で表されるものが特徴点で、特徴点間に引かれている線分が特徴点の対応を示しています。
+1つ目の画像は、特徴点自体があまり出ておらず、対応付けもそれほど精度良くないようです。
+2つ目の画像は、特徴点が多く検出され、誤対応もありますが、大半は精度良く対応付いています。
+特徴点対応付けの確認
+特徴点の対応付けが正しく行われているか、同じ画像同士を対応付けることにより確認しております。
+下の画像を見れば、同じ特徴点が対応付いている(対応を表す線が平行である)ことが分かります。
+というわけで、随分簡単に特徴点対応付けができるようになりました。
+もちろん精度などの問題も残されているのでパラメータなどの調整が必要となってきます。
+分からないことや不明なことがあれば、コメントください。
+OpenCVを用いた特徴点対応付け | Miyabiarts.net

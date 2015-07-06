@@ -1,0 +1,3 @@
+CMPプロセスに伴うグローバル段差の低減のため、CMPモデルとそれに基づいた設計システムを開発した。このシステムの入力データは、LSI設計の標準フォーマット(GDS II)である。また、パターン密度計算、CMPシミュレーション、グラフ出力、ダミーパターン発生が設計システムからGUIを介して連携しているため、効率的なダミーパターン設計が可能となることが分かる。
+A dummy pattern design system based on a CMP model is developed to reduce the global thickness variation by CMP process. Input data are GDS II formatted which is standard of LSI design. It is found that effective design has become possible because this system cooperates pattern density calculations, CMP simulations, graphics, and dummy pattern design through GUI.
+

@@ -1,0 +1,637 @@
+
+[ PrevPage | Python | NextPage ]
+はじめに
+今回は「接尾辞配列 (suffix array : サフィックスアレイ) 」というデータ構造について取り上げます。suffix array は 1993 年に Manber と Myers により提案されたデータ構造で、主に大規模なテキストデータを高速に検索するために用いられます。
+同様なデータ構造に「接尾辞木 (suffix tree) 」がありますが、その構築アルゴリズムは大変難しくて、メモリも多く使用するという欠点があります。suffix array は単純な配列なので、suffix tree よりもコンパクトです。また、データ圧縮アルゴリズムのブロックソート法にも応用できるため、最近注目を集めているデータ構造の一つです。
+今回は suffix array の構築アルゴリズムについて説明します。
+suffix array とは?
+接尾辞 (suffix : サフィックス) とは、文字列のある位置から末尾までの文字列のことです。たとえば、文字列 "abcd" のサフィックスは abcd, bcd, cd, d の 4 つになります。suffix array はサフィックスを辞書順に並べた配列のことです。
+簡単な例を示しましょう。文字列 "aeadacab" の suffix array を作成します。次の図を見てください。
+Index  Suffix               Index  Suffix
+---------------             ---------------    
+0     aeadacab              6     ab      
+1     eadacab               4     acab    
+2     adacab                2     adacab  
+3     dacab    == Sort ==>  0     aeadacab
+4     acab                  7     b       
+5     cab                   5     cab     
+6     ab                    3     dacab   
+7     b                     1     eadacab 
+suffix array => [6, 4, 2, 0, 7, 5, 3, 1]
+図 : suffix array
+サフィックスは文字列のある位置から末尾までの文字列なので、サフィックスの開始位置で表すことができます。そして、開始位置を配列 Index に格納し、図のようにサフィックスでソートします。このときの Index が suffix array となります。
+このように、suffix array はサフィックスをソートした配列なので、文字列の検索は二分探索を使って高速に行うことができます。欠点は suffix array の作成に時間がかかることです。データ数が多くなると、「クイックソート」や「マージソート」を使っても時間がとてもかかるのです。
+そこで、マルチキークイックソート を使うことにしましょう。マルチキークイックソートは文字単位で比較を行うため、サフィックスのソートに適しています。ただし、同じ記号が長く続く文字列や繰り返しの多い文字列では、実行時間が極端に遅くなる場合があります。最初は、マルチキークイックソートを使って suffix array を作成してみましょう。
+suffix array の作成
+それではさっそくプログラムを作りましょう。suffix array は大きな配列になるので、Python のモジュール array を使うことにします。モジュール array は要素が数値の配列を効率的に扱うことができます。詳しい説明は Python のマニュアルをお読みください。プログラムは次のようになります。
+リスト : suffix array の作成
+def make_suffix_array(name):
+global buff, idx, data_size
+# 入力
+data_size = os.path.getsize(name)
+fin = open(name, 'rb')
+buff = array('B')
+buff.fromfile(fin, data_size)
+buff.append(0)
+idx = array('L')
+for _ in xrange(data_size): idx.append(0)
+# ソート
+suffix_sort()
+# 出力
+name1 = os.path.basename(name) + '.idx'
+fout = open(name1, 'wb')
+idx.tofile(fout)
+fin.close()
+fout.close()
+関数 make_suffix_array の引数 name は入力ファイル名です。グローバル変数 buff は入力データを、idx は suffix array を、data_size は入力データの大きさを格納します。buff はバイト単位の配列で array('B') で定義します。要素 (数値) の範囲は 0 - 255 になります。データの入力はメソッド fromfile を使うと簡単です。buff の最後に 0 を付加しているのは、マルチキークイックソートの前にサフィックスの先頭 2 文字で分布数えソートを行うためです。
+suffix array は整数値を格納するので、idx は array('L') で定義します。この場合、要素の大きさは 4 バイトになります。idx の大きさは入力データの大きさ data_size になります。そして、関数 suffix_sort で idx をソートします。最後に、その結果をファイルへ出力します。出力ファイル名は、入力ファイル名 name に '.idx' を付けて作成します。書き込みはメソッド tofile を使うと簡単です。出力ファイルの大きさは data_size * 4 になります。
+次はソートを行う関数 suffix_sort を作ります。
+リスト : サフィックスソート
+def suffix_sort():
+# 分布数えソート
+count = [0] * SIZE
+count_sum = [0] * (SIZE + 1)
+for x in xrange(data_size):
+count[(buff[x] << 8) + buff[x + 1]] += 1
+for x in xrange(1, SIZE + 1):
+count_sum[x] = count[x - 1] + count_sum[x - 1]
+for x in xrange(1, SIZE):
+count[x] += count[x - 1]
+for x in xrange(data_size - 1, -1, -1):
+c = (buff[x] << 8) + buff[x + 1]
+count[c] -= 1
+idx[count[c]] = x
+# 区間ごとにソート
+for x in xrange(SIZE):
+low = count_sum[x]
+high = count_sum[x + 1] - 1
+if high - low >= 1:
+mqsort(low, high, 2)
+まず最初に、先頭 2 文字で分布数えソートを行います。そのあとで各区間ごとにマルチキークイックソート (関数 mqsort) を呼び出して、個数が少なくなったら単純挿入ソートに切り替えます。単純挿入ソートで使用する比較関数は次のようになります。
+リスト : ソート用比較関数
+def compare(x, y, n):
+for i in xrange(n, data_size - max(x, y)):
+r = buff[x + i] - buff[y + i]
+if r != 0: return r
+return y - x
+引数 x, y は idx の要素 (buff の添字) です。引数 n はマルチキークイックソートでソートした個数です。したがって、挿入ソートでは buff[x + n] と buff[y + n] から順番に比較していけばいいわけです。比較するデータ数は、短い方のサフィックスの長さ - n になります。添字の大きい方が短いサフィックスになることに注意してください。
+for ループを終了した場合、短いサフィックスは長いサフィックスの接頭辞 (prefix) になっています。この場合、短いサフィックスの方が小さいと判定します。x の方が短いのであれば負の値を、そうでなければ正の値を返します。この処理は y - x を返すだけで OK です。
+あとは特に難しいところはないでしょう。詳細は プログラムリスト1をお読みください。
+評価結果
+それでは、実際に Canterbury Corpus で配布されているテストデータ The Canterbury Corpus で suffix array を作成してみましょう。結果は suffix_sort の時間で、ファイルの入出力処理は含んでいません。結果は次にようになりました。
+表 : suffix array の作成
+(suffix_sort の時間)
+ファイル名      サイズ   時間
+------------------------------
+alice29.txt    152,089   4.91
+asyoulik.txt   125,179   3.71
+cp.html         24,603   0.95
+fields.c        11,150   0.46
+grammar.lsp      3,721   0.18
+kennedy.xls  1,029,744  37.21
+lcet10.txt     426,754  16.44
+plrabn12.txt   481,861  16.01
+ptt5           513,216   ----
+sum             38,240   4.36
+xargs.1          4,227   0.17
+------------------------------
+合計         2,810,784   ----
+# 時間の単位 : 秒
+実行環境 : Windows XP, celeron 1.40 GHz, Python 2.4.2
+ptt5 は記号 0 が長く続くデータで、マルチキークイックソートとの相性は最悪です。Python ではあまりにも時間がかかるので、途中で計測をあきらめました。テキストファイルの場合、単純なマルチキークイックソートでもある程度の速度でソートすることができますが、バイナリファイルは苦手なようです。ブロックソート法に応用する場合は、バイナリファイルでも高速にソートできる方法が必要になります。
+次は Larsson Sadakane 法について説明します。
+Larsson Sadakane 法
+マルチキークイックソートは、もう一つ大きな弱点があります。それは、繰り返しの多いデータには極端に遅くなることです。繰り返しの多いデータとして、文字列 "abcdefghijklmnopqrstuvwxyz" が 100 回, 200 回と連続しているデータ (repeat1.txt, repeat2.txt) を作成します。このデータの suffix array をマルチキークイックソートで作成すると、次のようになりました。
+表 : suffix array の作成
+ファイル名   サイズ   時間
+---------------------------
+repeat1.txt   2,600   8.27
+repeat2.txt   5,200  31.20
+# 時間の単位 : 秒
+実行環境 : Windows XP, celeron 1.40 GHz, Python 2.4.2
+ファイルサイズは小さいのに、suffix array の作成にとても時間がかかっています。これがマルチキークイックソートの弱点です。このような場合、「Larsson Sadakane 法」を使うと高速にソートすることができます。Larsson Sadakane 法は、Jesper Larsson と定兼邦彦氏によって考案されたアルゴリズムです。今回は Larsson Sadakane 法について簡単に説明し、実際にプログラムを作って試してみましょう。
+Larsson Sadakane 法とは?
+Larsson Sadakane 法は、Manber, Myers が提案した suffix array の構築アルゴリズムに Bentley, Sedgewick のマルチキークイックソートを組み合わせた方法です。Manber, Myers の方法は doubling technique が重要なポイントになります。
+doubling techinque は文字列、木、配列の中の反復部分列を検出するための方法です。Karp, Miller, Rosenberg が提案した方法なので KMR アルゴリズムと呼ばれています。KMR アルゴリズムと Radix Sort を組み合わせたのが Manber, Myers の方法で、データ数を N とすると N * log2 N に比例する時間で suffix array を作成することができます。
+ところが、Manber, Myers の方法は Radix Sort に時間がかかるため、実際には遅いといわれています。Larsson Sadakane 法は、Radix Sort のかわりにマルチキークイックソートを使うことで、Manber, Myers よりも高速に suffix array を作成することができます。
+Larsson Sadakane 法の詳しい説明は、Jesper Larsson のページ Jesper Larsson's research で公開されている論文とプログラム (qsufsort.c) や、定兼邦彦氏のページ Sadakane's Homepage で公開されている論文をお読みくださいませ。
+doubling technique
+最初に doubling technique ついて簡単に説明します。doubling technique はサフィックスの部分文字列に番号を割り当て、部分文字列の長さを増やしていくことでソートを行います。たとえば、文字列 "abcdabcdefgabcd" のサフィックスを doubling technique でソートしてみましょう。次の図を見てください。
+2 文字で分布数えソートを行い、文字ごとにランクを設定
+index 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15
+a  b  c  d  a  b  c  d  e  f  g  a  b  c  d  $
+rank  2  5  8  10 2  5  8  11 12 13 14 2  5  8  9  -1
+図:doubling technique (1)
+最初に 2 文字で分布数えソートを行います。そして、文字ごとに番号 (rank : ランク) を割り当てます。文字列の長さは 15 なので、各文字には 0 から 14 までの番号を割り当てます。たとえば、ab は 3 つあるので 0 - 2 の番号を割り当てますが、いまは 2 文字でソートしただけなので、ab の先頭文字 a のランクは 2 を割り当てます。
+同様に、文字 b, c のランクに 5, 8 を割り当てます。文字 d は da, de, d$ がありますが、終端 $ が一番小さなデータなので、文字 d のランクは 10, 11, 9 となります。e, f, g は 1 つしかないので、ランクは 12, 13, 14 になります。これで位置 3, 7, 8, 9, 10, 14 のランクは確定しました。つまり、ソート済みというわけです。
+次に部分文字列の長さを 4 に増やします。ここでは部分文字列の長さ 2 でランクが設定されているので、ランクを比較することは 2 文字まとめて比較することと同じです。したがって、同じランクのデータで 2 文字先のランクを比較すれば、4 文字で比較したことと同じになります。これで、部分文字列の長さを 4 に増やすことができます。部分文字列の長さ 4 でランクを設定したら 4 文字まとめて比較できるので、4 文字先のランクを比較すれば部分文字列の長さは 8 に増やすことができます。
+ここが doubling technique を理解するポイントです。このように、部分文字列の長さを 1 つずつ増やすのではなく、2 倍ずつ増やしていくことができるのです。したがって、この処理はデータ数を N とすると最長でも log2 N 回の繰り返しですみます。データ数 N に比例する時間でランクを更新できれば、全体では N * log2 N に比例する時間でソートを完了することができます。
+たとえば、文字 a が 10,000 個あるデータを考えてみましょう。このデータをマルチキークイックソートでソートした場合、データは文字 a しかないので枢軸と等しいデータの区間しかありません。等しいデータを集めて次の文字へ進んでも、同じ文字の a しかありませんね。
+つまり、等しいデータを集める処理(区間の分割処理)を 10,000 回繰り返さないとソートは完了しないのです。データ数 N に比例する時間で区間を分割できたとしても、全体では N の 2 乗に比例する時間がかかります。これはとても遅いですね。ところが、Larsson Sadakane 法は log2 10000 (約 14 回) の繰り返しですむので、このようなデータでも高速にソートすることができます。
+それでは具体的に説明します。次の図を見てください。
+4 文字のランクを設定
+[文字 b]
+index  1  2  3  4  5  6  7       12 13 14       1  2  3  4  5  6  7       12 13 14
+b  c  d  a  b  c  d  ...  b  c  d   ==>  b  c  d  a  b  c  d  ...  b  c  d   
+rank   5     10    5     11      5     9        4     10    5     11      3     9
+[文字 c]
+index  2  3  4  5  6  7  8       13 14  15      2  3  4  5  6  7  8       13 14 15
+c  d  a  b  c  d  e  ...  c  d   $  ==>  c  d  a  b  c  d  e  ...  c  d  $
+rank   8     2     8     12      8      -1      7     2     8     12      6     -1
+[結果]
+index  0  1  2  3  4  5  6  7  8  9  10 11 12 13 14
+a  b  c  d  a  b  c  d  e  f  g  a  b  c  d
+rank   2  4  7  10 2  5  8  11 12 13 14 2  3  6  9
+図 : doubling technique (2)
+部分文字列の長さを 4 に増やす場合、2 文字先のランクを比較します。文字 a の場合、2 文字先のランクはすべて同じ値なので、ランクの更新は行いません。次に文字 b を調べます。文字 b は位置 1, 5, 12 にあり、すべて同じランクです。2 文字先のランクを比較すると 10, 11, 9 なので、位置 5 の b がいちばん大きいですね。位置 1, 5, 12 のランクを 4, 5, 3 に更新します。同様に、文字 c の場合も 2 文字先のランクを比較して、位置 2, 6, 13 のランクを 7, 8, 6 に更新します。
+次に、部分文字列の長さを 8 にします。次の図を見てください。
+8 文字のランクを設定
+[文字 a]
+index  0       4       8       11      15      0       4       8       11
+a  ...  a  ...  e  ...  a  ...  $  ==>  a  ...  a  ...  e  ...  a 
+rank   2       2       12      2       -1      1       2       12      0 
+[結果]
+index  0  1  2  3  4  5  6  7  8  9  10 11 12 13 14
+a  b  c  d  a  b  c  d  e  f  g  a  b  c  d
+rank   2  4  7  10 1  5  8  11 12 13 14 0  3  6  9 
+図 : doubling technique (3)
+部分文字列の長さを 8 に増やす場合、4 文字先のランクを比較します。文字 a は位置 0, 4, 11 にあり、すべて同じランクです。4 文字先のランクを比較すると 2, 12, -1 なので、位置 4 の a がいちばん大きいですね。位置 0, 4, 11 のランクを 1, 2, 0 に更新します。これですべてのランクを確定するこができました。あとは、ランクの順番でインデックスを並べれば、昇順にソートすることができます。
+このように、Larsson Sadakane 法は部分文字列の長さを 2 倍ずつ増やしながらランクを更新していきます。このランクの更新処理にマルチキークイックソートが適しているのです。マルチキークイックソートは枢軸と等しいデータをひとつの区間に集めます。通常のマルチキークイックソートの場合、この区間は次の文字を調べることでソートを続けますが、Larsson Sadakane 法はここでランクを更新します。マルチキークイックソートを使うことで、簡単にランクを更新することができるわけです。
+データ構造の工夫
+Larsson Sadakane 法は、ランクが確定した区間 (ソート済みの区間) とそうではない区間 (未ソートの区間) を区別する処理が必要になります。この処理に時間がかかる、あるいは、短時間で処理できてもメモリを大量に消費するようでは、巨大なデータを処理することはできません。ですが、心配は無用です。Larsson Sadakane 法は省メモリで高速な方法を実現しています。次の図を見てください。
+index  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
+a  b  c  d  a  b  c  d  e  f  g  a  b  c  d
+0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
+---------------------------------------------  
+index table [ 0  4 11  1  5 12  2  6 13 14  3  7  8  9 10 ]
+rank  table [ 2  5  8 10  2  5  8 11 12 13 14  2  5  8 11 ]
+区間 
+a : low = 0, high = rank_table[ index_table[low] ] = 2
+b : low = 3, high = rank_table[ index_table[low] ] = 5
+c : low = 6, high = rank_table[ index_table[low] ] = 8
+図 : 未ソート区間の検出
+Larsson Sadakane 法はサフィックスの開始位置 (インデックス) を格納する配列 (index table) と、ランクを格納する配列 (rank table) を用意するだけで実現できます。最初に 2 文字で分布数えソートを行い、index table にインデックスを、rank table にランクをセットします。このとき、ランクの値は区間の一番最後のインデックスにするところがポイントです。たとえば、文字 a は index table の 0 - 2 にセットされるので、ランクを 2 に設定します。このようにすると、index table と rank table からソートする区間を求めることができます。
+区間の下限値を low とします。最初、low は 0 に初期化します。区間を求める場合、index table の low の位置からインデックスを取り出して、そのランクを求めます。上図の場合、インデックスは 0 でランクは 2 ですね。このランクの値が区間の上限値 high になります。したがって、ソートする区間は 0 から 2 になります。次の区間の開始位置は high (2) を +1 した値 (3) になります。low を 3 に更新して、同じ処理を繰り返します。これでソートする区間を簡単に求めることができます。
+ソート済みの区間は index table に負の値をセットすることで区別します。次の図を見てください。
+index  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
+a  b  c  d  a  b  c  d  e  f  g  a  b  c  d
+0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
+---------------------------------------------  
+index table [ 0  4 11  1  5 12  2  6 13 -6 -1 -1 -1 -1 -1 ]
+rank  table [ 2  5  8 11  2  5  8 11 12 13 14  2  5  8 11 ]
+(1) ランクが確定した要素は index table に -1 をセット
+(2) -1 が続いている場合は区間の先頭要素に -個数 をセット
+図 : ソート済み区間のスキップ
+ランクが確定した場合、index table に -1 をセットして未ソート区間のデータと区別します。そして、-1 が連続する場合は、その個数をマイナスにした値をソート済み区間の先頭にセットします。上図では文字 d, e, f, g がソート済みですね。index table の 9 - 14 に -1 をセットしますが、-1 が 6 個連続しているので、index table の 10 に -6 をセットします。これでソート済みの区間を簡単にスキップすることができます。
+プログラムの作成
+それではプログラムを作りましょう。次のリストを見てください。
+リスト:Larsson Sadakane 法
+def suffix_sort():
+# 分布数えソート
+count = [0] * SIZE
+count_sum = [0] * (SIZE + 1)
+for x in xrange(data_size):
+count[(buff[x] << 8) + buff[x + 1]] += 1
+for x in xrange(1, SIZE + 1):
+count_sum[x] = count[x - 1] + count_sum[x - 1]
+for x in xrange(1, SIZE):
+count[x] += count[x - 1]
+for x in xrange(data_size - 1, -1, -1):
+c = (buff[x] << 8) + buff[x + 1]
+count[c] -= 1
+idx[count[c]] = x
+# ランクをセット
+rank[x] = count_sum[c + 1] - 1
+# ランクを使って段階的にソートする
+n = 2
+while n < data_size:
+low = 0
+flag = True
+while low < data_size:
+temp = low
+# ソート済みの区間をスキップ
+while temp < data_size and idx[temp] < 0: temp -= idx[temp]
+if low < temp:
+idx[low] = -(temp - low)
+low = temp
+# 区間のソート
+if low < data_size:
+high = rank[ idx[low] ]
+mqsort(low, high, n)
+low = high + 1
+flag = False
+if flag: break
+n *= 2
+# idx を復元
+for x in xrange(data_size): idx[rank[x]] = x
+グローバル変数 buff, idx, data_size はマルチキークイックソートと同じですが、idx は負の値も格納できるように array('l') で定義します。このほかに、ランクを格納する配列 rank を用意します。そして、先頭 2 文字で分布数えソートを行い、配列 idx にインデックスをセットするときに、配列 rank にランクをセットします。rank にセットする値はその区間の上限値になります。
+次に、部分文字列の長さを増やしながらランクを更新します。変数 n は現在のランクを設定したときの部分文字列の長さを表します。最初、先頭 2 文字で分布数えソートしているので n は 2 に初期化し、繰り返しのたびに 2 倍ずつ増やしていきます。あとは、ソート済みの区間をスキップして、未ソートの区間をマルチキークイックソートでランクを更新します。
+ソート済み区間のスキップは簡単です。インデックスは配列 idx に格納されているので、その値が負であればスキップします。このとき、スキップした個数をカウントしておいて、合計値をその区間の先頭 idx[low] にセットします。次に、未ソート区間のランクをマルチキークイックソート (mqsort) で更新します。
+mqsort を呼び出したら flag を False にセットします。flag は True に初期化しておいて、while ループの最後で flag をチェックします。もし、True のままであればソートしなかった、つまり、ソートが完了したので while ループから脱出します。最後に、rank から idx を復元します。
+次はマルチキークイックソートを説明します。次のリストを見てください。
+リスト : マルチキークイックソート
+def mqsort(low, high, n = 0):
+if high - low <= LIMIT:
+insert_sort(low, high, n)
+return
+# 枢軸
+p = select_pivot(low, high, n)
+# 4 分割
+i = m1 = low
+j = m2 = high
+while True:
+while i <= j:
+k = getrank(idx[i] + n) - p
+if k > 0: break
+if k == 0:
+idx[i], idx[m1] = idx[m1], idx[i]
+m1 += 1
+i += 1
+while i <= j:
+k = getrank(idx[j] + n) - p
+if k < 0: break
+if k == 0:
+idx[j], idx[m2] = idx[m2], idx[j]
+m2 -= 1
+j -= 1
+if i > j: break
+idx[i], idx[j] = idx[j], idx[i]
+i += 1
+j -= 1
+# 等しいデータを中央に集める
+for k in xrange(min(m1 - low, i - m1)):
+idx[low + k], idx[j - k] = idx[j - k], idx[low + k]
+m1 = low + (i - m1)
+for k in xrange(min(high - m2, m2 - j)):
+idx[i + k], idx[high - k] = idx[high - k], idx[i + k]
+m2 = high - (m2 - j) + 1
+# < の部分をソード
+if low <= m1 - 1: mqsort(low, m1 - 1, n)
+# 等しいデータのランクを更新
+if m2 > m1:
+if m2 - m1 == 1:
+# ソート完了
+rank[idx[m1]] = m1
+idx[m1] = -1
+else:
+r = m2 - 1
+for x in xrange(m1, m2): rank[idx[x]] = r
+# > の部分をソート
+if m2 <= high: mqsort(m2, high, n)
+Larsson Sadakane 法の場合、区間を 3 分割するところは通常のマルチキークイックソートと同じですが、文字ではなくランクを比較することと、枢軸と等しい区間はランクを更新するところが異なります。最初に区間の個数をチェックします。LIMIT (10) 以下であれば単純挿入ソートに切り替えて、この区間のソートを完了します。この処理はあとで説明します。
+次に、区間を 3 分割します。この処理は今までのマルチキークイックソートとほとんど同じですが、文字ではなくランクによって区間を 3 分割します。枢軸の選択は select_pivot で行います。ランクは関数 getrank で求めます。区間を 3 分割したら、最初に枢軸より小さいランクの区間をソートします。次に、枢軸と等しい区間のランクを更新します。最後に、枢軸より大きいランクの区間をソートします。このように、区間の前方から順番に処理しないと正常に動作しません。ご注意くださいませ。
+次は単純挿入ソートについて説明します。
+リスト : 単純挿入ソート
+# ソート用比較関数
+def compare(x, y, n):
+for i in xrange(n, data_size - max(x, y), n):
+r = rank[x + i] - rank[y + i]
+if r != 0: return r
+return y - x
+# 挿入ソート
+def insert_sort(low, high, n):
+for i in xrange(low + 1, high + 1):
+temp = idx[i]
+j = i - 1
+while j >= low and compare(temp, idx[j], n) < 0:
+idx[j + 1] = idx[j]
+j -= 1
+idx[j + 1] = temp
+# ランクの更新
+for x in xrange(low, high + 1):
+rank[idx[x]] = x
+idx[x] = -1
+関数 insert_sort はランクを比較して区間 (low - high) のソートを完了することに注意してください。ランクの比較は関数 compare で行います。ランクは引数 n の間隔で比較できるので、n が大きければ文字列の比較よりも高速です。最後にランクを更新します。
+あとはとくに難しいところはないと思います。説明は割愛いたしますので、詳細は プログラムリスト2 をお読みください。
+評価結果
+それでは、実際に Canterbury Corpus で配布されているテストデータ The Canterbury Corpus で suffix array を作成してみましょう。結果は suffix_sort の時間で、ファイルの入出力処理は含んでいません。結果は次にようになりました。
+表 : suffix array の作成
+(suffix_sort の時間)
+ファイル名      サイズ    MQ     LS
+-------------------------------------
+alice29.txt    152,089   4.91   4.10
+asyoulik.txt   125,179   3.71   3.25
+cp.html         24,603   0.95   0.56
+fields.c        11,150   0.46   0.28
+grammar.lsp      3,721   0.18   0.12
+kennedy.xls  1,029,744  37.21  31.14
+lcet10.txt     426,754  16.44  12.62
+plrabn12.txt   481,861  16.01  14.52
+ptt5           513,216   ----  24.33
+sum             38,240   4.36   0.89
+xargs.1          4,227   0.17   0.13
+-------------------------------------
+合計         2,810,784   ----  91.94
+ファイル名   サイズ    MQ    LS
+--------------------------------
+repeat1.txt   2,600   8.27  0.14
+repeat2.txt   5,200  31.20  0.25
+# 時間の単位 : 秒
+実行環境 : Windows XP, celeron 1.40 GHz, Python 2.4.2
+MQ は単純なマルチキークイックソート、LS が Larsson Sadakane 法の結果です。テキストファイルの場合、Larsson Sadakane 法はマルチキークイックソートよりも少し速くなりました。バイナリファイルは Larsson Sadakane 法の方が高速で、ptt5 や repeat1,txt, repeat2.txt でも高速にソートすることができます。Larsson Sadakane 法の効果は十分に出ていると思います。
+なお、これらの結果は M.Hiroi のコーディング、実行したマシン、コンパイラなどの環境に大きく依存しています。また、これらの環境だけではなく、データの種類によっても実行時間はかなり左右されます。興味のある方は、いろいろなデータをご自分の環境で試してみてください。
+ところで、一般的なテキストファイルの場合、Larsson Sadakane 法よりも高速なアルゴリズムがあります。次回は伊東秀夫氏が考案された「二段階ソート法 (two-stage sort)」を取り上げます。
+プログラムリスト1
+# coding: shift_jis
+#
+# mksa0.py : Suffix Array の構築 (マルチキークイックソート)
+#
+#            Copyright (C) 2007 Makoto Hiroi
+#
+import time, sys, os.path
+from array import *
+# 定数
+SIZE = 256 * 256
+LIMIT = 10
+# 記号の取得
+def getcode(x):
+if x < data_size: return buff[x]
+return -1
+# ソート用比較関数
+def compare(x, y, n):
+for i in xrange(n, data_size - max(x, y)):
+r = buff[x + i] - buff[y + i]
+if r != 0: return r
+return y - x
+# 挿入ソート
+def insert_sort(low, high, n):
+for i in xrange(low + 1, high + 1):
+temp = idx[i]
+j = i - 1
+while j >= low and compare(temp, idx[j], n) < 0:
+idx[j + 1] = idx[j]
+j -= 1
+idx[j + 1] = temp
+# 枢軸の選択
+def select_pivot(low, high, n):
+m = (high - low) / 4
+a = getcode(idx[low + m] + n)
+b = getcode(idx[low + m * 2] + n)
+c = getcode(idx[low + m * 3] + n)
+if a > b:
+tmp = a
+a = b
+b = tmp
+if b > c:
+b = c
+if a > b: b = a
+return b
+# マルチキークイックソート
+def mqsort(low, high, n = 0):
+while True:
+if high - low <= LIMIT:
+insert_sort(low, high, n)
+return
+# 枢軸
+#p = getcode(idx[(low + high) / 2] + n)
+p = select_pivot(low, high, n)
+# 4 分割
+i = m1 = low
+j = m2 = high
+while True:
+while i <= j:
+k = getcode(idx[i] + n) - p
+if k > 0: break
+if k == 0:
+idx[i], idx[m1] = idx[m1], idx[i]
+m1 += 1
+i += 1
+while i <= j:
+k = getcode(idx[j] + n) - p
+if k < 0: break
+if k == 0:
+idx[j], idx[m2] = idx[m2], idx[j]
+m2 -= 1
+j -= 1
+if i > j: break
+idx[i], idx[j] = idx[j], idx[i]
+i += 1
+j -= 1
+# 等しいデータを中央に集める
+for k in xrange(min(m1 - low, i - m1)):
+idx[low + k], idx[j - k] = idx[j - k], idx[low + k]
+m1 = low + (i - m1)
+for k in xrange(min(high - m2, m2 - j)):
+idx[i + k], idx[high - k] = idx[high - k], idx[i + k]
+m2 = high - (m2 - j) + 1
+# < の部分をソート
+if low < m1 - 1: mqsort(low, m1 - 1, n)
+# > の部分をソート
+if m2 < high: mqsort(m2, high, n)
+if m1 >= m2: break
+# = の部分をソート
+low = m1
+high = m2 - 1
+n += 1
+# サフィックスのソート
+def suffix_sort():
+# 分布数えソート
+count = [0] * SIZE
+count_sum = [0] * (SIZE + 1)
+for x in xrange(data_size):
+count[(buff[x] << 8) + buff[x + 1]] += 1
+for x in xrange(1, SIZE + 1):
+count_sum[x] = count[x - 1] + count_sum[x - 1]
+for x in xrange(1, SIZE):
+count[x] += count[x - 1]
+for x in xrange(data_size - 1, -1, -1):
+c = (buff[x] << 8) + buff[x + 1]
+count[c] -= 1
+idx[count[c]] = x
+# 区間ごとにソート
+for x in xrange(SIZE):
+low = count_sum[x]
+high = count_sum[x + 1] - 1
+if high - low >= 1:
+mqsort(low, high, 2)
+# Suffix Array の作成
+def make_suffix_array(name):
+global buff, idx, data_size
+# 入力
+data_size = os.path.getsize(name)
+fin = open(name, 'rb')
+buff = array('B')
+buff.fromfile(fin, data_size)
+buff.append(0)
+idx = array('L')
+for _ in xrange(data_size): idx.append(0)
+# ソート
+s = time.clock()
+suffix_sort()
+e = time.clock()
+print "%.3f" % (e - s)
+# 出力
+name1 = os.path.basename(name) + '.idx'
+fout = open(name1, 'wb')
+idx.tofile(fout)
+fin.close()
+fout.close()
+#
+make_suffix_array(sys.argv[1])
+プログラムリスト2
+# coding: shift_jis
+#
+# mksa2.py : Suffix Array の構築 (Larsson-Sadakane 法)
+#
+#            Copyright (C) 2007 Makoto Hiroi
+#
+import time, sys, os.path
+from array import *
+# 定数
+SIZE = 256 * 256
+LIMIT = 10
+# ランクの取得
+def getrank(x):
+if x < data_size: return rank[x]
+return -1
+# ソート用比較関数
+def compare(x, y, n):
+for i in xrange(n, data_size - max(x, y), n):
+r = rank[x + i] - rank[y + i]
+if r != 0: return r
+return y - x
+# 挿入ソート
+def insert_sort(low, high, n):
+for i in xrange(low + 1, high + 1):
+temp = idx[i]
+j = i - 1
+while j >= low and compare(temp, idx[j], n) < 0:
+idx[j + 1] = idx[j]
+j -= 1
+idx[j + 1] = temp
+# ランクの設定
+for x in xrange(low, high + 1):
+rank[idx[x]] = x
+idx[x] = -1
+# 枢軸の選択
+def select_pivot(low, high, n):
+m = (high - low) / 4
+a = getrank(idx[low + m] + n)
+b = getrank(idx[low + m * 2] + n)
+c = getrank(idx[low + m * 3] + n)
+if a > b:
+tmp = a
+a = b
+b = tmp
+if b > c:
+b = c
+if a > b: b = a
+return b
+# マルチキークイックソート
+def mqsort(low, high, n = 0):
+if high - low <= LIMIT:
+insert_sort(low, high, n)
+return
+# 枢軸
+# p = getrank(idx[(low + high)/2] + n)
+p = select_pivot(low, high, n)
+# 4 分割
+i = m1 = low
+j = m2 = high
+while True:
+while i <= j:
+k = getrank(idx[i] + n) - p
+if k > 0: break
+if k == 0:
+idx[i], idx[m1] = idx[m1], idx[i]
+m1 += 1
+i += 1
+while i <= j:
+k = getrank(idx[j] + n) - p
+if k < 0: break
+if k == 0:
+idx[j], idx[m2] = idx[m2], idx[j]
+m2 -= 1
+j -= 1
+if i > j: break
+idx[i], idx[j] = idx[j], idx[i]
+i += 1
+j -= 1
+# 等しいデータを中央に集める
+for k in xrange(min(m1 - low, i - m1)):
+idx[low + k], idx[j - k] = idx[j - k], idx[low + k]
+m1 = low + (i - m1)
+for k in xrange(min(high - m2, m2 - j)):
+idx[i + k], idx[high - k] = idx[high - k], idx[i + k]
+m2 = high - (m2 - j) + 1
+# < の部分をソード
+if low <= m1 - 1: mqsort(low, m1 - 1, n)
+# 等しいデータのランクを更新
+if m2 > m1:
+if m2 - m1 == 1:
+# ソート完了
+rank[idx[m1]] = m1
+idx[m1] = -1
+else:
+r = m2 - 1
+for x in xrange(m1, m2): rank[idx[x]] = r
+# > の部分をソート
+if m2 <= high: mqsort(m2, high, n)
+# サフィックスのソート
+def suffix_sort():
+# 分布数えソート
+count = [0] * SIZE
+count_sum = [0] * (SIZE + 1)
+for x in xrange(data_size):
+count[(buff[x] << 8) + buff[x + 1]] += 1
+for x in xrange(1, SIZE + 1):
+count_sum[x] = count[x - 1] + count_sum[x - 1]
+for x in xrange(1, SIZE):
+count[x] += count[x - 1]
+for x in xrange(data_size - 1, -1, -1):
+c = (buff[x] << 8) + buff[x + 1]
+count[c] -= 1
+idx[count[c]] = x
+rank[x] = count_sum[c + 1] - 1
+# ランクを使って段階的にソートする
+n = 2
+while n < data_size:
+low = 0
+flag = True
+while low < data_size:
+temp = low
+# ソート済みの区間をスキップ
+while temp < data_size and idx[temp] < 0: temp -= idx[temp]
+if low < temp:
+idx[low] = -(temp - low)
+low = temp
+# 区間のソート
+if low < data_size:
+high = rank[ idx[low] ]
+mqsort(low, high, n)
+low = high + 1
+flag = False
+if flag: break
+n *= 2
+# idx を復元
+for x in xrange(data_size): idx[rank[x]] = x
+# Suffix Array の作成
+def make_suffix_array(name):
+global buff, idx, rank, data_size
+# 入力
+data_size = os.path.getsize(name)
+fin = open(name, 'rb')
+buff = array('B')
+buff.fromfile(fin, data_size)
+buff.append(0)
+idx = array('l')
+rank = array('l')
+for _ in xrange(data_size):
+idx.append(0)
+rank.append(0)
+# ソート
+s = time.clock()
+suffix_sort()
+e = time.clock()
+print "%.3f" % (e - s)
+# 出力
+name1 = os.path.basename(name) + '.idx'
+fout = open(name1, 'wb')
+idx.tofile(fout)
+fin.close()
+fout.close()
+#
+make_suffix_array(sys.argv[1])
+Copyright (C) 2007 Makoto HiroiAll rights reserved.
+[ PrevPage | Python | NextPage ]
+Algorithms with Python / 接尾辞配列 (suffix array)

@@ -1,0 +1,33 @@
+次のサンプルを見てください。
+複数のセル範囲のアドレスを取得すると、それぞれのアドレスがカンマ(,)で区切られることを利用して、個々のアドレスを配列に格納しています。
+サンプル
+Sub SplitSamp1()
+Dim myAddress As String
+Dim myArray() As String
+Dim i As Long
+Dim myMsg As String
+'---複数のセル範囲のアドレスを取得
+myAddress = Application.InputBox( _
+Prompt:="複数範囲を選択してください" & vbCr & _
+"( [Ctrl]キー + 範囲選択 )" _
+, Type:=8).Address
+Range(myAddress).Select
+'---個々のアドレスを「,」で区切って配列に代入
+myArray = Split(myAddress, ",")  '---(1)
+'---UBound関数で配列のインデックスの最大値を取得
+For i = 0 To UBound(myArray)
+myMsg = myMsg & i & "番目の要素 : " & myArray(i) & vbCr
+Next i
+MsgBox myMsg
+End Sub
+InputBoxメソッドを使用し、ユーザーに複数のセル範囲を選択させています。
+実行結果のように、複数のセル範囲のアドレスはカンマで区切られた文字列として取得されます。
+(1)では、Split関数の引数Expressionにその文字列を指定し、カンマ(,)を区切り文字として個々のセル範囲のアドレスを分割して、配列に格納しています。
+ポイント
+Split関数はインデックス番号が0から始まる配列を返します。
+Option Baseステートメントの影響を受けません。
+補足
+Split関数はExcel 2000 より追加された関数です。
+Excel 97以前のVBAで同等の処理を実現するには、InStr関数で区切り文字の位置を検索し、Mid関数で区切り文字にはさまれた文字列を取得する処理を、区切り文字の数だけ繰り返します。
+また、引数Compareで指定できる値について、ヘルプにはOption Compare ステートメントの設定を使用して比較する「VbUseCompareOption(-1)」の記載がありますが、実際は指定できません。Option Compareステートメントの記述に従うには引数Compareを省略してください。
+文字列を分割し1次元配列として返す(Split関数):Excel VBA｜即効テクニック｜Excel VBAを学ぶならmoug

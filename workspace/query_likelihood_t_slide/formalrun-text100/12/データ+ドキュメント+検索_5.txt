@@ -1,0 +1,42 @@
+説明
+モデルオブジェクトを生成する。
+保存はまだされていないため、saveメソッドなどを使って保存する。
+生成と同時に保存したい場合は、createメソッドを使用する。
+使い方 
+モデル.new([属性])
+例 
+モデルオブジェクトを生成
+user = User.new
+属性を設定してモデルオブジェクトを生成(Ruby1.8 & 1.9)
+user = User.new(:name => "tarou")
+属性を設定してモデルオブジェクトを生成(Ruby1.9)
+user = User.new(name: "tarou")
+ソースコード
+ソースコードを見る
+# File activerecord/lib/active_record/associations/collection_proxy.rb, line 253
+def build(attributes = {}, &block)
+@association.build(attributes, &block)
+end
+説明
+newメソッドのAlias
+モデルオブジェクトを生成する。
+保存はまだされていないため、saveメソッドなどを使って保存する。
+生成と同時に保存したい場合は、createメソッドを使用する。
+使い方
+モデル.build([属性])
+例
+引数なし
+person.pets.build
+# => #<Pet id: nil, name: nil, person_id: 1>
+属性
+person.pets.build(name: 'Fancy-Fancy')
+# => #<Pet id: nil, name: "Fancy-Fancy", person_id: 1>
+ブロック
+person.pets.build([{name: 'Spook'}, {name: 'Choo-Choo'}, {name: 'Brain'}])
+# => [
+#      #<Pet id: nil, name: "Spook", person_id: 1>,
+#      #<Pet id: nil, name: "Choo-Choo", person_id: 1>,
+#      #<Pet id: nil, name: "Brain", person_id: 1>
+#    ]
+ソースコード
+モデル(model) - Railsドキュメント

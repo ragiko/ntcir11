@@ -1,0 +1,4 @@
+規制値を超えた場合は、原子力委員会の暫定基準に基づき対処。When the value over the standard value is detected, deal the problem based on the temporary standard of the Atomic Energy Commission. - 経済産業省
+そして、経路情報生成広告装置100は生成した暫定対処経路の経路情報を自身に接続されるルータ10へ広告し、このルータ10は暫定対処経路の経路情報を他のルータに広告する。Then the route information generating and advertising device 10 advertises the generated route information on the tentative countermeasure route to a router 10 connected thereto and the router 10 advertises the route information on the tentative countermeasure route to other routers. - 特許庁
+ここで生成する暫定対処経路の経路情報には、当該暫定対処経路へ接続するルータ10のIPアドレスをネクストホップの情報として書き込む。To the route information on the tentative countermeasure route which is generated here, an IP address of the router 10 connected to the tentative countermeasure route is written as information on a next hop. - 特許庁
+暫定対処の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

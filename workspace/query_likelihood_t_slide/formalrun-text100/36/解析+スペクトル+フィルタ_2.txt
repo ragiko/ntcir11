@@ -1,0 +1,28 @@
+高域強調(プリエンファシス)  &dagger;
+音声信号は低周波数成分が大きく、周波数が大きくなるにつれて次第に振幅スペクトルが小さくなっていくという特徴がある。この周波数の偏りの修正処理をプリエンファシスという。*1
+声帯の基本振動、空気中の伝搬の影響を除き、口腔内の形状による周波数特性を強調する処理である(法政大伊藤先生 ケプストラムを用いた母音の分析)
+プリエンファシスを行うことで、第二・第三フォルマントのような高次周波数成分の抽出性能が向上する。雑音下においては、雑音除去の処理を行った後でプリエンファシスを行うことが一般的。*2
+具体的には、ハイパスフィルタを使い、高周波数成分の振幅を強調する処理を行う。
+式は以下のとおり。
+x(n)はサンプル数nを変数とするデジタルサウンドデータ(音声波形)
+pはプリエンファシス係数。音声認識では0.97を使うことが多い。
+1サンプル前の値に対して、大きく値が変化した場合(高周波数成分)、その値は保存される。値の変化が小さかった場合(低周波数成分)、その値は減じられる。
+MATLAB では以下のようにする。
+load mtlb;
+data = mtlb;
+pre_emphasis = 0.97;    %プリエンファシス係数
+newData = [];
+for countData = 2 : 1 : length(data)
+%プリエンファシス
+thisData = data(countData) - ( pre_emphasis * data(countData - 1) );
+newData = [newData ; thisData ];
+end
+subplot(2,2,1); plot(data); xlim([0,4500]); title('元のサウンドデータ');
+subplot(2,2,2); spectrogram(data, hamming(64), 32, 256, Fs, 'yaxis'); 
+subplot(2,2,3); plot(newData); xlim([0,4500]); title('プリエンファシス後');
+subplot(2,2,4); spectrogram(newData, hamming(64), 32, 256, Fs, 'yaxis'); 
+wavwrite(newData, Fs, 'newmtlb.wav');
+以下の関数でも同じ処理ができる。
+newData = filter([1 -0.97],1,data);
+プリエンファシスの結果は以下のようになる。
+MATLAB Note/音声の分析 - Miyazawa’s Pukiwiki 公開版

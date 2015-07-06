@@ -1,0 +1,47 @@
+(pixabay.comより)
+1.背景とか
+Random Forest[1]とは、ランダムさがもつ利点を活用し、大量に作った決定木を効率よく学習させるという機械学習手法の一種です。SVMなどの既存の手法に比べて、特徴量の重要度が学習とともに計算できること、学習が早いこと、過学習が起きにくいこと(追記注釈1)などの利点が挙げられます。Kinectの姿勢推定に使われているらしいです。
+最近、Random Forestをカジュアルに使う例が多く(特にうちの研究室)、一部パラメータやら出力やらがわからない人も多いと思います。使い方はTJOさんの資料[2]を読んでもらえれば理解できると思うし、詳細は波部先生の資料[3]をよんでもらえればわかると思います。それで、いろいろな日本語の資料をいくら読んでも、Random Forestがもつ特徴の1つである、特徴量の重要度の詳細に関してはほとんどノータッチです。そこで、この記事では特徴量の重要度について深堀りしていこうと思います。
+2.特徴量の重要度の概要
+オリジナルの実装やRでのRandom Forestにおける特徴量の重要度は計算方法は主に2種類あります。(scikit-learnはちょっと違うみたいなので需要があれば書きます。i) 特徴量加工による重要度(MeanDecreaseAccuracy)ii)ジニ係数による重要度(MeanDecreaseGini)Rだと以下のように書くと計算できます。
+How to use the variable important of Random forest ...
+試しに実行すると以下のような結果が得られます。
+Sample of variable importance.
+基本的に値が高ければ高いほど、その変数は識別に役立つと考えられます。
+なお、scikit-learnではジニ係数による重要度をデフォルトでは利用しているようです。[11]
+3.Random Forestの豆知識
+特徴量の重要度の説明に入る前に、まず、重要度に関係するRandom Forestの性質について説明します。
+Random Forestでは、各決定木で異なるサンプルを使って学習します。
+これを実現するために、学習データをそのデータ数だけ重複サンプリング(ブートストラップ法)し、それを学習サンプルとして決定木を学習させます。このとき、学習データのうち、平均で1/3ぐらいは学習に使われないそうです。この使われなかったデータをout-of-bag(OOB)といいます。その後、決定木の性能を調べるために、OOBを学習した決定木で分類させ、誤認識率を見ます。これをOOBエラーといいます。
+図 決定木の学習(各決定木でサンプリングと学習を繰り返す)
+4.特徴量加工による重要度
+さて、先ほどの学習の過程で得られたOOBを特徴量の重要度に用いることを考えます。基本的なアイデアはOOBの各サンプルの値をグチャグチャにし、そのグチャグチャなサンプルで推定したら、どれ位精度が下がってしまうのかということです。
+具体的な説明をするために、まず、ある学習済みの決定木について考えます。その決定木のOOBを決定木で分類してあげます。すると、OOBの各サンプルのうち、間違って分類されてしまったサンプルが現れます。この間違って分類されてしまった率を、ここではOOBにおける誤り率と呼ぶことにします。図にすると以下のようになります。ちなみにRandom Forestに詳しい人に断っておきますが、OOB error estimateとかOOBエラーとかOOB誤り率とは別です。
+図 OOBにおける誤り率の定義
+このOOBにおける誤り率を使い、特徴量の重要度を計算します。特徴量の中のある変数を指定し、その変数の値をOOBの各サンプル間でランダムに入れ替えます。図にすると以下のようになります。
+図 特徴量加工による重要度の計算方法
+その後、OOBエラー OOBにおける誤り率を計算し、どの程度精度が下がったかを指標とします。
+追記:これを各決定木で行い、木あたりの平均を求めるのだそうです[10]。この値が特徴量の重要度となります。
+ただし、Rの出力値はそのままの値ではなさそうです。(原文は付録参照)
+5.ジニ係数による重要度
+Random Forestでは識別する前に、大量の決定木にパターンを学習させます。この決定木を作成するとき、ランダムに説明変数(特徴量の変数)を選択した後、本来はエントロピーが最大最小となるようにサンプルを分割できるよう閾値を決めます。ただし、この手法にが特許があり(c.f. See 5.0など)、このままでは公開できません。そこで、その代替として一般にジニ係数を用います。(c.f. CART)
+ジニ係数I_Gはエントロピーに似ており、以下の式のように定義されます[5]。
+(f_iは領域iの中にあるサンプルに付けられたラベルの数。領域の中のサンプルがすべて同じラベルだった場合、0)
+エントロピーよろしく、ジニ係数が大きいほど分割結果がばらついており、小さいほど分割結果がまとまっていることになります。ここから、どの変数を分割したことで、どれだけジニ係数が下がったかが識別に重要となってきます。そこで、ジニ係数の減少量(MeanDecreaseGini)を特徴量の重要度と近似的に表現できます。
+CARTとジニ係数に関しては以下のサイトも参考にしてください。
+追記:http://tjo.hatenablog.com/entry/2013/11/21/194654
+http://www.teradata-j.com/library/ma/ins_1314a.html
+6.既存手法と比較してみた(かった)
+せっかくなのでRの{FSelector}パッケージを使って、特徴選択具合を見てみることにしました。
+と思ったのですが、FSelectorを読み込む際に、謎のエラーが発生したので、また今度にします。なお、FSelectorのrandom.forest.importanceでRandom Forestによる特徴選択ができます。
+7.おわりに
+クラスタで学習できる(c.f. Mahout)のでこれからも需要があると思いますが、特徴量の重要度を使うときは、その意味を知った上で使うと、議論しやすいと思います。ぜひご参考ください。あと、気軽にコメントください。参考文献[1] http://oz.berkeley.edu/~breiman/randomforest2001.pdf[2]http://tjo.hatenablog.com/entry/2013/12/24/190000[3] http://www.habe-lab.org/habe/RFtutorial/CVIM_RFtutorial.pdf[4] http://penglab.janelia.org/proj/mRMR/[5] http://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity[10]http://www.stat.berkeley.edu/~breiman/RandomForests/ENAR.htm
+[11] scikit-learnのソースtree.pyにおけるDecisionTreeClassifierクラスのコメントより, https://github.com/scikit-learn/scikit-learn/blob/fed4692e4014ef056a63abed67748813b6da8a8a/sklearn/tree/tree.py
+(追記注釈1)木の数を増やせば、過学習は起きないとRF作者が主張しているみたいです[10]。木の数が多いとブートストラップ回数も増えるので、外れ値をサンプリングする確率が減ります。このため、外れ値の影響を受けにくくなるのでしょう。RANSACと似てますね。また、木の深さを調整することで過学習を防ぐこともできます。
+余談
+OOBエラーはこの記事に出てこないので関係無いですが、Random Forestを2年ぐらい使ってるんですけど、OOBエラーとleave one out cross varidationと比べたら、OOBエラーのほうが10%ぐらい認識精度が良くなったケースがあったからあんまりあてにならないような気もする。。。
+付録
+元論文中からのMeanDecreaseAccuracyに関する引用[1] (作者の人は図にしてほしかった)
+"Suppose there are M input variables. After each tree is constructed, the values ofthe mth variable in the out-of-bag examples are randomly permuted and theout-of-bag data is run down the corresponding tree. The classification given foreach xn that is out of bag is saved. This is repeated for m=1,2, ... , M. At the endof the run, the plurality of out-of-bag class votesfor xn with the mth variable noised up is compared with the true class label of xnto give a misclassification rate."
+"The output is the percent increase in misclassification rate as compared to theout-of-bag rate (with all variables intact)."
+Random Forestで計算できる特徴量の重要度 - なにメモ(なにかしらのメモ帳)

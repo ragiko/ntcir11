@@ -1,0 +1,39 @@
+OracleDatabase10gR2
+Oracleが分析したSQL実行計画が、実際は遅い場合、インデックスの利用を指定する事ができます。
+たとえばこのSQLをEXPLAINすると
+select * from TABLE_A
+where NAME ='0'
+and ADDRES = 0 
+and CODE = 1 
+and TELL = 0 
+EXPLAIN実行結果>
+SELECT STATEMENT    Cost=4024
+2.1 TABLE ACCESS FULL TABLE_A TABLE 
+where句と全く同じインデックスがあるのですが、フルスキャンの計画を立てられてしまいました。。。
+実際に実行してみると、
+SQLを実行中です...
+SQL応答時間 : 45.546000秒
+取得データ出力時間 : 0.200000秒
+1行が選択されました。
+遅いです。
+インデックスを指定してみます。
+selectの後ろに /*+ */ で囲んで、ヒントを書きます。
+今回は、INDEX(テーブル名 インデックス名)です
+select /*+ INDEX(TABLE_A TABLE_A_INDEX06) */ * from TABLE_A
+where NAME ='0'
+and ADDRES = 0 
+and CODE = 1 
+and TELL = 0 
+EXPLAIN実行結果>
+SELECT STATEMENT    Cost=7454
+2.1 TABLE ACCESS BY INDEX ROWID TABLE_A TABLE 
+3.1 INDEX RANGE SCAN TABLE_A_INDEX06 INDEX 
+もちろん、こっちの方がコストが高いと、Oracleは判断しています。
+が、実行してみると
+SQLを実行中です...
+SQL応答時間 : 0.050000秒
+取得データ出力時間 : 0.010000秒
+1行が選択されました。
+断然早いです。
+Oracleが何故、判断を誤ったのかについては、統計情報が古かったり、サンプル数が少なかったりとか色々あると思います。
+Oracleで特定のインデックスを指定する - ヘタレSEの覚書

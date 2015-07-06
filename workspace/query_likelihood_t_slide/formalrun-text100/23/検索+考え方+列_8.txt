@@ -1,0 +1,78 @@
+
+Home / 別館 Home / Ruby / アルゴリズム / 文字列検索
+| 掲示板 | Mail |
+文字列検索
+最も単純な文字列検索
+KMP法
+BM法
+最も単純な文字列検索
+基本的な考え方
+先頭から順番に1つずつ調べていき、文字列パターンが一致するまで進めていく。単純だけれど、効率はあまりよくない。
+単純な文字列検索 (List9-1)
+def simpleSearch( text, pattern )
+n = 0
+while n 
+KMP法
+基本的な考え方
+比較に失敗したときに、再比較を開始する位置を把握しておく。
+理論上は非常に効率がいいが、現実的にはアルゴリズムが複雑な分、オーバヘッドが大きくなってしまい、あまり長くない文字列を検索する場合は、単純な文字列検索の方が良好なパフォーマンスを示すことが多い。
+KMP法による文字列検索 (List9-2)
+def kmpSearch( text, pattern )
+textIndex = 1
+patternIndex = 0
+cacheTable = Array.new(pattern.length + 1)
+cacheTable[0] = cacheTable[1] = 0
+# KMP 検索に必要な情報を予め計算し、配列にキャッシュする
+while pattern.length > textIndex
+if pattern[textIndex] == pattern[patternIndex]
+# 一致したら再比較は pattern_index 文字から始める
+textIndex += 1
+patternIndex += 1
+cacheTable[textIndex] = patternIndex
+elsif
+# パターン1文字目で不一致なら再検索は先頭から
+textIndex += 1
+cacheTable[textIndex] = 0
+else
+# パターン1文字目以外で不一致なら再検索の位置は cache_table から参照
+patternIndex = cacheTable[patternIndex]
+end
+end
+# ここから実際の検索
+i = 0
+n = 0
+while n 
+BM法
+基本的な考え方
+KMP 法では、文字列をパターンの前方から後方に向かって比較していたのに対して、BM法では、後方から前方に向かって比較する。
+パターンの末尾から前方に向かって文字の比較を行う
+不一致が生じたときに、本文側の文字がパターンに含まれていなければ、パターンの先頭をその次の位置に移動する
+不一致が生じたときに、本文側の文字がパターンに含まれていれば、パターンの中でその文字が最後に登場する位置が、不一致発生点に重なるようにパターンを移動する
+パターンが前に戻ってしまう場合は、1つだけ後ろにずらす
+パターン全体が一致したら「発見」。比較位置が本文の最後を超えてしまったら「検索失敗」
+BM法による文字列検索 (List9-3)
+def bmSearch( text, pattern )
+# 文字列で不一致が生じたときの比較点の移動量を予め計算してキャッシュするテーブル
+cacheTable = Array.new(256)
+# 不一致が生じた移動量を予め計算し、キャッシュする
+cacheTable.each_index do |i|
+cacheTable[i] = pattern.length
+end
+i = 0
+while i  pattern.length - patternIndex
+# その文字に応じて比較点を移動
+textIndex += cacheTable[text[textIndex]]
+else
+textIndex += pattern.length - patternIndex
+end
+end
+return false
+end
+p bmSearch("On a dark desert highway, cool wind in my hair", "wind")
+【参考書籍】
+紀平拓男、春日伸弥 『プログラミングの宝箱 アルゴリズムとデータ構造』(ソフトバンク パブリッシング 2003)
+参考URL:http://www.cmagazine.jp/books/takarabako/
+Home / 別館 Home / Ruby / アルゴリズム / 文字列検索
+| 掲示板 | Mail |
+とみくら まさや(vzx01036@nifty.ne.jp) $ Date: 2004/03/04 $
+アルゴリズム for Ruby

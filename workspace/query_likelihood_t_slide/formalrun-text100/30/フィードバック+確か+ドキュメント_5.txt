@@ -1,0 +1,8 @@
+F# 日本語ドキュメント
+17:08
+いつのまにかMSDNライブラリのF#に関するドキュメントが、機械翻訳から翻訳者による翻訳に切り替わっていた。
+http://msdn.microsoft.com/ja-jp/library/dd233154%28v=VS.100%29.aspx
+機械翻訳時代の「楽しいキーワード (fun keyword)」が見れなくなるのは少しだけ寂しい。
+いままでどう訳せば良いのかわからなかった、discriminated union や computation expression には、それぞれ、判別共有体、計算式という訳が割り当てられている。
+コード引用符 (code quotation)、詳細な構文 (verbose syntax)、letバインディング (let binding) とかは少しだけ違和感がある。でも、そのうち慣れると思う。
+F# 日本語ドキュメント - 趣味のOCaml

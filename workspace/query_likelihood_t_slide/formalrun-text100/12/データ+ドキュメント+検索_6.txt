@@ -1,0 +1,76 @@
+ 
+例
+rails4
+IDで検索 
+Page.find(1)
+# SELECT "pages".* FROM "pages" WHERE "pages"."id" = 1 LIMIT 1
+複数の項目をIDで検索 
+Page.find([1, 2])
+# SELECT "pages".* FROM "pages" WHERE "pages"."id" IN (1, 2)
+rails3
+IDで検索 
+Page.find(1)
+# SELECT "pages".* FROM "pages" WHERE "pages"."id" = 1 LIMIT 1
+複数の項目をIDで検索 
+Page.find([1, 2])
+# SELECT "pages".* FROM "pages" WHERE "pages"."id" IN (1, 2)
+すべての項目を取得 
+Page.find(:all)
+# SELECT "pages".* FROM "page"
+はじめにヒットした項目を取得 
+Page.find(:first)
+# SELECT "pages".* FROM "pages" LIMIT 1
+最後にヒットした項目を取得
+Page.find(:last)
+# SELECT "pages".* FROM "pages" ORDER BY pages.id DESC LIMIT 1
+特定のカラムのみロード 
+Page.find(:first, :select => "name, content")
+# SELECT name, content FROM "pages" LIMIT 1
+category_idが1のすべてのレコードを取得 
+Page.find(:all, :conditions => { :category_id => 1 })
+# SELECT "pages".* FROM "pages" WHERE "pages"."category_id" = 1
+category_idが1でurl_idが1のすべてのレコードを取得 
+Page.find(:all, :conditions => ["category_id = ? and url_id = ?", 1, 1])
+# SELECT "pages".* FROM "pages" WHERE (category_id = 1 and url_id = 1)
+titleがnilでないすべてのレコードを取得 
+Page.find(:all, :conditions => ["category_id NOT ?", nil])
+# SELECT "pages".* FROM "pages" WHERE (title NOT NULL)
+category_idが1のはじめのレコードを取得 
+Page.find(:first, :conditions => {:category_id => 1})
+# SELECT "pages".* FROM "pages" WHERE "pages"."category_id" = 1 LIMIT 1
+検索結果の並び順を変更 
+Page.find(:all, :order => "created_at DESC")
+# SELECT "pages".* FROM "pages" ORDER BY created_at DESC
+検索結果の取得件数を指定 
+Page.find(:all, :limit => 3)
+# SELECT "pages".* FROM "pages" LIMIT 3
+読み飛ばし件数を指定
+Page.find(:all, :offset => 20, :limit => 10)
+# SELECT "pages".* FROM "pages" LIMIT 10 OFFSET 20
+SQLのJOIN句の文字列を指定 
+Page.find(:first, :joins => :category)
+# SELECT "pages".* FROM "pages" INNER JOIN "categories" ON "categories"."id" = "pages"."category_id" LIMIT 1
+SQLのGROUP BY句の文字列を指定 
+Page.find(:all, :group => "category_id")
+# SELECT "pages".* FROM "pages" GROUP BY category_id
+テーブルを結合して、情報をロード 
+Page.find(:all, :include => "category")
+# SELECT "pages".* FROM "pages"
+# SELECT "categories".* FROM "categories" WHERE ("categories"."id" IN (1,2,3) 
+その他 
+SQLインジェクション対策 
+外部から渡される値は、エスケープしてデータベースに渡す 
+使い方 
+["カラム名 = ?", 検索する値] 
+例 
+外部から入力された値を使う場合 
+params[:user]user = User.find(:all, :conditions => ["name = ?", name])
+検索条件としてハッシュのキーとバリューを使う場合 
+User.find(:all, :conditions => params[:user]]
+ワイルドカードでデータベースを検索 
+使い方 
+like 
+例 
+User.find(:all, :conditions => ["name like ?", params[:name]+"%"])
+ソースコード
+find - リファレンス - Railsドキュメント

@@ -1,0 +1,184 @@
+
+※ 上で "リスト" と書いている箇所は numpy.array, pd.Series, slice なんかのリスト - like でもよい。
+11/15追記: 元データと同じ次元の DataFrame が渡せることの記載漏れ、またDataFrame へ slice を渡した場合の挙動が間違っていたので修正。
+s[0]
+# 1
+s['I1']
+# 1
+df['C1']
+# I1    11
+# I2    21
+# I3    31
+# Name: C1, dtype: int64
+# 番号を数値として渡すとNG!
+df[1]
+# KeyError: 1
+# 番号のリストならOK (columns からの選択)
+df[[1]] 
+#     C2
+# I1  12
+# I2  22
+# I3  32
+# 番号のスライスもOK (index からの選択)
+df[1:2]
+#     C1  C2  C3
+# I2  21  22  23
+# NG!
+df['I1']
+# KeyError: 'I1'
+s[[True, False, True]]
+# I1    1
+# I3    3
+# dtype: int64
+df[[True, False, True]]
+#     C1  C2  C3
+# I1  11  12  13
+# I3  31  32  33
+# bool の DataFrame を作る
+df > 21
+#        C1     C2     C3
+# I1  False  False  False
+# I2  False   True   True
+# I3   True   True   True
+# bool の DataFrame で選択
+df[df > 21] 
+#     C1  C2  C3
+# I1 NaN NaN NaN
+# I2 NaN  22  23
+# I3  31  32  33
+引数による 返り値の違い
+引数を値だけ (ラベル, 数値)で渡すと次元が縮約され、Series では単一の値, DataFrame では Series が返ってくる。元のデータと同じ型の返り値がほしい場合は 引数をリスト型にして渡せばいい。
+# 返り値は 値
+s['I1']
+# 1
+# 返り値は Series
+s[['I1']]
+# I1    1
+# dtype: int64
+# 返り値は Series
+df['C1']
+# I1    11
+# I2    21
+# I3    31
+# Name: C1, dtype: int64
+# 返り値は DataFrame
+df[['C1']]
+#     C1
+# I1  11
+# I2  21
+# I3  31
+index, columns を元にした選択 ( ix, loc, iloc )
+ix プロパティを使うと DataFrame で index, columns 両方を指定してデータ選択を行うことができる ( Series の挙動は __getitem__ と同じ)。
+引数として使える形式は __getitem__ と同じだが、ix では DataFrame も以下すべての形式を使うことができる。
+名前 (もしくは名前のリスト)
+順序 (番号) (もしくは番号のリスト)
+index, もしくは columns と同じ長さの bool のリスト
+ix はメソッドではなくプロパティなので、呼び出しは以下のようになる。
+Series.ix[?] : ? にはindex を特定できるものを指定
+DataFrame.ix[?, ?] : ? にはそれぞれ index, columns の順に特定できるものを指定
+# 名前による指定
+s.ix['I2']
+# 2
+df.ix['I2', 'C2']
+# 22
+# 順序による指定
+s.ix[1]
+# 2
+df.ix[1, 1]
+# 22
+# 名前のリストによる指定
+s.ix[['I1', 'I3']]
+# I1    1
+# I3    3
+# dtype: int64
+df.ix[['I1', 'I3'], ['C1', 'C3']]
+#     C1  C3
+# I1  11  13
+# I3  31  33
+# bool のリストによる指定
+s.ix[[True, False, True]]
+# I1    1
+# I3    3
+# dtype: int64
+df.ix[[True, False, True], [True, False, True]]
+#     C1  C3
+# I1  11  13
+# I3  31  33
+# 第一引数, 第二引数で別々の形式を使うこともできる
+df.ix[1:, "C1"]
+# I2    21
+# I3    31
+# Name: C1, dtype: int64
+DataFrame.ix の補足
+DataFrameで第二引数を省略した場合は index への操作になる。
+df.ix[1]
+# C1    21
+# C2    22
+# C3    23
+# Name: I2, dtype: int64
+DataFrame で columns に対して操作したい場合、以下のように第一引数を空にするとエラーになる ( R に慣れているとやりがち、、 )。第一引数には : を渡す必要がある (もしくは ixを使わず 直接 __getitem__ する )。
+df.ix[, 'C3']
+# SyntaxError: invalid syntax
+df.ix[:, 'C3']
+I1    13
+I2    23
+I3    33
+Name: C3, dtype: int64
+引数による 返り値の違い
+引数の型による返り値の違いは __getitem__ の動きと同じ。Series については挙動もまったく同じなので、ここでは DataFrame の場合だけ例示。
+# 返り値は 値
+df.ix[1, 1]
+# 22
+# 返り値は Series
+df.ix[[1], 1]
+# I2    22
+# Name: C2, dtype: int64
+# 返り値は DataFrame
+df.ix[[1], [1]]
+#     C2
+# I2  22
+ということで、だいたいの場合は ix を使えばよしなにやってくれる。
+とはいえ
+ラベル名 もしくは 番号 どちらかだけを指定してデータ選択したい場合もある。例えば、
+index, columns が int 型である
+index, columns に重複がある
+df2 = pd.DataFrame({1: [11, 21, 31],
+2: [12, 22, 32],
+3: [13, 23, 33]},
+index = [2, 2, 2])
+df2
+#     1   2   3
+# 2  11  12  13
+# 2  21  22  23
+# 2  31  32  33
+内部的には ix は ラベルを優先して処理を行うため、上記のデータについては以下のような動作をする。
+indexに 2 を指定すると、3行目ではなく indexのラベルが 2 の行を選択
+columns に [1, 2] を指定すると、2, 3列目ではなく columns のラベルが 1, 2 の列を選択
+df2.ix[2, [1, 2]]
+1   2
+2  11  12
+2  21  22
+2  31  32
+つまり 上記のようなデータ、(特にデータによって index, columns の値が変わるとか、、) では ix を使うと意図しない挙動をする可能性がある。明示的に index, columns を番号で指定したい!というときには iloc を使う。
+df2.iloc[2, [1, 2]]
+2    32
+3    33
+Name: 2, dtype: int64
+# 3列目は存在しないので NG! 
+df2.iloc[2, 3]
+# IndexError: index out of bounds
+同様に、明示的にラベルのみで選択したい場合は loc。
+df2.loc[2, [1, 2]]
+1   2
+2  11  12
+2  21  22
+2  31  32
+# ラベルが 1 の index は存在しないので NG! 
+df.loc[1, 2]
+# KeyError: 'the label [1] is not in the [index]'
+ix, iloc, loc については文法 / 挙動は基本的に一緒で、使える引数の形式のみが異なる。整理すると、
+使える引数の形式 
+ix 
+iloc 
+loc 
+Python pandas データ選択処理をちょっと詳しく <前編> - StatsFragments

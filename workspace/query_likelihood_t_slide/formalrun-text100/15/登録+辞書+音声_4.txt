@@ -1,0 +1,9 @@
+
+Windows XP / Vista / 7 には、OSに日本語の音声合成エンジンがついてきませんが、Microsoftから無料で提供されている音声エンジン「Microsoft Speech Platform HARUKA」を使うことができます。Windows 8 には、最初からSAPI5対応の音声エンジン「HARUKA Desktop」 が付属してきます。しかし、「HARUKA」の辞書はあまり精度が高くないので、NVDAでよく使われる単語さえも読み間違えてしまいます。それを改善するための辞書を作成してみました。
+この辞書は[読み上げ辞書] [音声]で登録したものと同じですので、[読み上げ辞書] [デフォルト] で登録したものとは共存できます。
+2つの Microsoft Speech Platform
+NVDA日本語版には、
+Microsoft Speech Platform
+Haruka (nvdajp)
+の2つのエンジンが用意されていて、後者は「NVDA日本語チーム」により改良(カーソル移動時の文字の読み上げや文字単位の説明が行われない不具合への対応など)が加えらています。
+NVDA 2013.1jp インストール2(HARUKA辞書)::まほろば

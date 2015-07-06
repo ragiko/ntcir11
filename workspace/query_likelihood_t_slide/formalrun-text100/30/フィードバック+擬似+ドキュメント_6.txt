@@ -1,0 +1,120 @@
+
+目次
+擬似ワイヤ エミュレーション エッジ ツー エッジ
+テクノロジーの説明
+PWE3
+TDM PW
+ATM PW
+PW to TE Tunnel Mapping
+インベントリおよび情報モデル オブジェクト(IMO)
+PTP Layer 2 MPLS トンネル インターフェイス
+ベンダー固有のインベントリおよび IMO
+ネットワーク トポロジ
+サービス アラーム
+擬似ワイヤ エミュレーション エッジ ツー エッジ
+この章では、Pseudowire Emulation Edge to Edge (PWE3; 擬似ワイヤ エミュレーション エッジ ツー エッジ)について、Cisco ANA が提供するサポートのレベルを説明します。この章は次の項で構成されます。
+•	「テクノロジーの説明」
+•	「インベントリおよび情報モデル オブジェクト(IMO)」
+•	「ベンダー固有のインベントリおよび IMO」
+•	「ネットワーク トポロジ」
+•	「サービス アラーム」
+テクノロジーの説明
+PWE3
+PWE3 は、Packet Switched Network(PSN; パケット交換ネットワーク)経由でネットワーク サービス(ATM、イーサネット、TDM、および SONET/SDH)を提供するための方式です。概要については、RFC 3985 で規定されています。この方式は、2 つの Provider Edge(PE; プロバイダー エッジ)ルータ間のポイントツーポイント接続です。PE は、データを一般的な MPLS 形式にカプセル化し、基盤のコア MPLS ネットワーク経由でイーサネットなどのサービスをエミュレートするので、通信事業者は、サービスを MPLS に収束させることができます。
+TDM PW
+TDM Pseudowire(TDM PW; TDM 擬似ワイヤ)は、公衆交換回線網(PSN)を介し、時分割多重の E1、T1、E3、または T3 回線を提供する場合に広く使用される方式です。この方式の特長は、次のとおりです。
+•	企業は、PSN 経由で音声、画像、およびレガシー データを伝送できます。
+•	サービス プロバイダーは、従来からの音声とデータ サービスを PSN 経由で提供できます。
+•	データ通信事業者は、PSN を使用した専用回線を提供できます。
+ATM PW
+ATM Pseudowire(ATM PW; ATM 擬似ワイヤ、RFC 4816)は、透過的なセル転送サービスです。ATM 加入者エッジまたはカスタマー エッジ(CE)デバイスを導入せずに、ATM サービスを PSN に移行できます。ATM CE は、Time Division Multiplexer(TDM; 時分割多重化装置)を使用した専用回線経由で直接接続されている場合と同様に、ATM の透過的なセル転送サービスを処理します。このサービスは、ATM サービス プロバイダーのネットワークの内部機能として、高速の PSN 経由で既存の ATM スイッチを接続するために、またリモート アクセスのための ATM バックホール サーバを既存の ATM ネットワークに提供するために使用されます。
+PW to TE Tunnel Mapping
+PW to TE Tunnel Mapping(RFC 5602)を使用すると、MPLS-TE トンネルに擬似ワイヤをマッピングして、MPLS PSN 経由で擬似ワイヤサービスを提供できます。
+インベントリおよび情報モデル オブジェクト(IMO)
+この項では、次の IMO について説明します。
+•	
+PTP Layer 2 MPLS トンネル インターフェイス(IPTPLayer2MplsTunnel)
+PTP Layer 2 MPLS トンネル インターフェイス
+ネットワーク/データリンク層の PTP Layer 2 MPLS トンネル インターフェイス オブジェクトは、Containing Termination Points アトリビュートによって、データリンク層のインターフェイス オブジェクトに結合されます。これは主に、 ラベル スイッチング エンティティからアクセスされます。
+表 9-1	PTP Layer 2 MPLS トンネル インターフェイス(IPTPLayer2MplsTunnel) 
+アトリビュート名
+アトリビュートの説明
+スキーム
+ポーリング間隔
+Local and Remote Router Addresses
+ローカルおよびリモートのルータ IP アドレス
+IPCore
+Configuration
+Local and Remote Virtual Connection Labels
+ローカルおよびリモートのバーチャル コネクション ラベル
+IPCore
+Configuration
+Tunnel Identification
+トンネル ID
+IPCore
+Configuration
+Tunnel Status
+トンネル ステータス(
+Unknown、Up、Down
+)
+IPCore
+Configuration
+Local and Remote Tunnel Interface
+ローカルおよびリモートのトンネル インターフェイス オブジェクト ID 
+IPCore
+Configuration
+IANA Type
+サブレイヤの Internet Assigned Numbers Authority(IANA; インターネットアドレス管理機構)タイプ
+N/A
+N/A
+Containing Termination Points
+基盤となる終端地点(接続上または物理的)
+IPCore
+N/A
+Contained Connection Termination Points
+結合された接続の終端地点( トンネル コンテナ)
+IPCore
+N/A
+Pseudowire Type
+MPLS 擬似ワイヤ タイプ(
+Ethernet
+、
+SAToP
+など)
+IPCore
+Configuration
+Preferred Path Tunnel
+優先パスのオブジェクト ID
+IPCore
+Configuration
+Local MTU
+ローカル MTU
+IPCore
+Configuration
+Remote MTU
+リモート MTU
+IPCore
+Configuration
+Peer Status
+シグナリング ピアのステータス
+IPCore
+Configuration
+Signaling Protocol
+シグナリング プロトコル
+IPCore
+Configuration
+VFI Name
+VFI 名
+IPCore
+Configuration
+ベンダー固有のインベントリおよび IMO
+このテクノロジーには、ベンダー固有のインベントリや IMO は存在しません。
+ネットワーク トポロジ
+Cisco ANA は、ワンホップの距離にあるすべてのリモート側の PTP Layer 2 MPLS トンネル インターフェイスで、ローカル ルータの IP アドレスと一致するリモート ルータの IP アドレスを検索することによって、PWE3 ネットワーク層トポロジを検出します。具体的には、ローカル ルータとリモート ルータの IP アドレスとトンネル ID が比較されます。
+サービス アラーム
+このテクノロジーでは、次のアラームがサポートされています。
+•	Layer 2 Tunnel Down/Layer 2 Tunnel Up
+アラームと関連付けの詳細については、『
+Cisco Active Network Abstraction User Guide, 3.6.7
+』を参照してください。
+Cisco Active Network Abstraction 3.6.7 テクノロ ジー サポートおよび情報モデル リファレンス マニュ アル - 擬似ワイヤ エミュレーション エッジ ツー  エッジ - Cisco Systems

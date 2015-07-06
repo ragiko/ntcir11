@@ -1,0 +1,290 @@
+はじめに
+これは僕が英語論文を書く上で気がついたことや、
+英文校正に出して指摘されたことをまとめた、英語論文を
+書く上での基礎事項である。日本人が英語論文を書くのは難しい。
+欧米の論文誌に出す場合は、できるだけNative speakerによるチェックを
+受けることが望ましい。
+とはいえ、完全に規則として理解できることは
+校正に出す前に直しておくべきであろう。
+以下は、英語のニュアンスや
+英語らしさといった高度なことの前に、完全に規則として
+理解できることをまとめてあるので参考にしてほしい。
+僕は英語論文を書くのが今でも苦手だが、これを読んだ
+人が英語を書く上で同じ間違いを繰り返さず、時間と労力の
+節約になれば幸いである。
+参考文献
+英語論文を書く上で、参考になる文献がいくつかある。
+「LONGMAN Dictionary of Contemporary English」
+英語論文を書くのに、英英辞典は必須。たとえば、neglectとignoreの
+ニュアンスの違いが分からないなら、絶対に買うべきである。
+この英英辞典は英語初学者向けに、見出し語を平易な英文で説明してある。
+初学者向けといっても、科学論文を書くには十分である。
+CDもついてきてこの値段は安い。インターネットの無料辞書を使うくらいなら
+こちらを使った方が英語力もつく。
+「科学英語論文のすべて」 日本物理学会編
+日本人が間違いやすい表現や、基礎事項からはじまり、
+論文そのものの書き方などが書いてあり、読んで損はない。
+「前置詞マスター教本」石井隆之著 ベレ出版
+世に前置詞3年冠詞8年という格言があるという。
+前置詞のマスターには3年、冠詞のマスターには8年はかかるという意味だ。
+我々は動詞+前置詞という熟語の形で覚えている事が多く、それ以外では
+どんな前置詞を入れてよいか分かりにくい。また、文法的には正しい前置詞を
+使っても、意味がまるで異なってしまうこともある。
+この本は前置詞のコアの意味とそこからの意味の派生をきちんと説明して
+くれているのでありがたい。前置詞それぞれについて例文が豊富に
+載っているので、辞書的に使うこともできる。
+「例文詳解 技術英語の冠詞活用入門」原田豊太郎著 日刊工業新聞社
+冠詞のつけかたは間違いやすく、かつ間違いに気づきにくい。
+本書は例文が豊富に載っているので、これを読めば
+かなりの冠詞の間違いを改善できるだろう。
+「基礎からわかる 数・数式と図形の英語」銀林浩 銀林純著 日興企画
+(3)式の右辺を展開し、(1)式に代入して因数分解すると・・・といった
+文章を英語に直すのは結構大変だ。この本は、数式と図形で良く使われる
+英文が豊富に載っているので重宝する。
+基礎事項
+名詞
+単語はすべて数えられる名詞(Countable、以下C)と
+数えられない名詞(Uncountable、以下UC)である。
+数えられる名詞の単数系には必ず冠詞がつく。
+どちらか微妙な単語もたくさんあるので、必ず辞書で
+確認すること。
+数えられる名詞
+形や境界のはっきりしたものは、だいたい数えられる名詞。
+また、centimeter、Pascalなどの単位も複数形となる。
+数えられない名詞
+数えられない名詞は複数形にせず、またa/anはつかない。
+代表的な数えられない名詞は、waterやgasなどの
+不定形のもの、さらに人名などの固有名詞などだ。
+科学技術論文に良く出てくる数えられない名詞は、
+advice, equipment, evidence, hardware, information
+など、抽象名詞、集合名詞が多い。
+behaviorやknowledgeなども基本的には数えられない名詞として扱うが、
+最近は数えられる名詞としても扱うようだ。
+とりあえず文章中で用法を統一しておけば良い。
+文脈によってC/UCが変わる名詞
+ability, analysis, detection, existence, explanation, observation,
+theory,pressure,temperatureなど、
+科学技術論文で良く使われる名詞は、文脈(意味)によって
+数えられる名詞であったり、数えられない名詞であったりする。
+一般的に、漠然とした範囲をさす名詞は数えられない名詞、
+個別の値を指す場合は数えられる名詞となる。
+たとえば、いくつかの温度で物理量を観測した場合、
+This behavior is observed at high temperatures.
+となるが、一般論として高温を指す場合、
+At high temperature, solid becomes fluid.
+などとなる。
+定冠詞「the」のつけ方
+よく「初出の単語には不定冠詞、既出の単語には定冠詞」と覚えられているが、
+正しくは「限定されない単語には不定冠詞、限定されたら定冠詞」である。
+初出の単語でも限定されれば定冠詞をつける。一般的なルールは無いが、
+「読者と書き手で対象物が共有されている場合」には定冠詞がつき、
+「書き手は知ってるが読者はまだ知らないもの」や、
+「特に限定せず一般的に何かを持ち出す場合」は不定冠詞がつく。
+規則としてtheがつく場合
+意味が限定されている名詞には、初出でも定冠詞がつく。
+規則として覚えることができるのは、次のような場合である。
+固有名詞でなく、かつ一つに決まるもの。
+たとえば、常用対数 (Decimal logarithm)は一つに決まるものであるので、
+theをつける。自然対数 (Natural logarithm)も同様。
+両軸は常用対数で表示している。
+誤:Decimal logarithm is taken for both axes.
+正:The decimal logarithm is taken for both axes.
+他にも格子の形 (the square latticeやthe face-centered cubic)なども
+固有名詞でなくかつ一意に決まるのでtheが付く。
+意味を限定する形容詞がついた場合
+最上級の形容詞(highest,largest)などで形容された名詞はtheをつける。
+また、main, usual, original, properなどで形容された名詞は、まずtheをつけると思ってよい。
+意味を限定するof句で修飾された場合
+既出の単語の一部を指定する場合、意味が限定されるのでtheがつく。
+The correlation length of the system is denoted by $xi.
+上記の例では、correlation lengthは初出の単語だが、
+of句によって意味が限定されているのでtheがつく。
+規則として覚えられないが一般的にtheがつく場合
+図の中で説明されているものにはtheがつく。
+また図の中に実線(solid line)が一本しかなければ、
+その線は特定されるので、the solid lineとなる。
+一般的に、theがつくと「唯一の」「すばらしい」といった雰囲気が加わる。
+「なんとか理論」というときに「The Hogehoge theory」といきなり使ったら、
+「あなたも知っているあの理論」というイメージになるし、
+「HogeHoge's theory」と書いたら、「(合ってるかどうかわからないけれど)Hogehogeさんの理論」というイメージとなる。
+動詞
+動詞は目的語を取らない自動詞(vi)と、目的語を取る他動詞(vt)に分けられる。
+また、自動詞と他動詞で意味が変わる動詞などもあり注意が必要だ。
+ちょっとでも怪しいと思ったら辞書で調べるのが良い。
+以下は、動詞の規則について。
+自動詞は受身形にならない
+基本的なことだが良く忘れてしまう。
+他動詞に前置詞を入れない
+たとえばdiscuss(議論する)は他動詞であるので、直接目的語を取る。
+しかし、「Aについて議論する」という日本語につられ、
+「discuss about A」などとやってしまいがちだ。
+受身形の時も気をつけたい。「それはBと呼ばれている」も
+「It is called as B」としてしまいがちなので気をつける。
+記号などの規則
+・カンマの後は空白を入れる
+誤 Instead of this method,new method was proposed.
+正 Instead of this method, new method was proposed.
+・列挙の時、andの前にもカンマを入れる。
+誤 The systems of \sigma = 0.02, 0.04 and 0.06 are studied.
+正 The systems of \sigma = 0.02, 0.04, and 0.06 are studied.
+・()の前は空白を入れる
+誤 Kosterlitz-Thouless(KT) transition
+正 Kosterlitz-Thouless (KT) transition
+・リファレンスの()の前にも空白をいれる。
+誤 D. C. Rapaport, Phys. Rev. A, 46, 1971(1992)
+正 D. C. Rapaport, Phys. Rev. A, 46, 1971 (1992)
+・Fig.3(a)などとしたい場合は空白は入れない。
+誤 Time evolution is shown in Fig. 3 (a).
+正 Time evolution is shown in Fig. 3(a).
+・注釈はカンマの後。
+誤 Hiroshi Watanabe\footnote{E-mail: ....},
+正 Hiroshi Watanabe,\footnote{E-mail: ....}
+・Fig. の前にはtheをつけない (Fig. 5は固有名詞だから)
+誤 The data are shown in the Fig. 5.
+正 The data are shown in Fig. 5.
+・et al.はet alia (and others)の略であり、etは略語でないからピリオドをつけない。
+誤 Watanabe et. al. studied ...
+正 Watanabe et al. studied...
+・略語が文末に来た場合、ピリオドはつけない(重ねない)。
+Texだと {\it et al.}とやるので、つい {\it et al.}.とつけてしまうので気をつける。
+誤 Another theory was proposed by Watanabe et al..
+正 Another theory was proposed by Watanabe et al.
+・略語の直後にカンマが来る場合、空白は入れない。
+たとえば、「i.e.(つまり)」を使う時、、
+「i.e.,」とピリオドとカンマが続いて気持ち悪いが、その間に空白を入れてはいけない。
+"et alia"と"et al."が等価であることが理解できれば、カンマが直後に
+来ることが理解できよう。
+誤 ...perfect hexagonal packing configuration, {\it i.e.} , $(\phi_6(0) = 1)$.
+正 ...perfect hexagonal packing configuration, {\it i.e.}, $(\phi_6(0) = 1)$.
+・\tau \phiといった変数には直接 theをつけない。
+誤 Time evolution of the \phi_6 is ...
+正 Time evolution of \phi_6 is ...
+・数字を三桁ごとに区切らない(スペースやカンマを入れない)
+誤 A number of particles is 12 345.
+正 A number of particles is 12345.
+・Thus、Howeverが文頭にきたらカンマをつける
+誤 Thus this method is not suitable for the purpose.
+正 Thus, this method is not suitable for the purpose.
+・Although のあとはカンマをつけない
+誤 Although, the quadratic packing configuration is...
+正 Although the quadratic packing configuration is
+・Letterで Acknoledgementの直前は一行あける
+その他前置詞や文法など
+・「〜と理解される」、は is understood as ではなく to beを使う
+誤 This behavior is understood as the result of the finite-size effect.
+正 This behavior is understood to be the result of the finite-size effect.
+・他動詞(vt)の受身系に前置詞をつけない。
+たとえば、called asとしない。
+誤 This method is called as EDMD.
+正 This method is called EDMD.
+・〜という手法で調べた、はwithではなくbyを使う
+誤 This behavior can be studied with new method.
+正 This behavior can be studied by new method.
+・\tau \phiといった変数が文頭に来るのは避ける。
+誤 \xi denotes the correlation length of the system.
+正 The correlation length of the system is denoted by \xi.
+・ガウス分布のGaussianは固有名詞なので最初は大文字。
+誤 ... and gaussian distributed dispsersion system.
+正 ... and Gaussian distributed dispsersion system.
+・everyの後は単数形
+誤 We have to search neighboring particles at every time steps.
+正 We have to search neighboring particles at every time step.
+以下は、英語の文法と言う意味では正しいが、英語として
+好ましくない文章の例とその修正例(あまり自信なし)。
+・scalingは UC(?)
+誤 using a dynamic KT scaling
+正 using dynamic KT scaling
+・必要のない関係代名詞はなるべく省略する
+「N=870の系で、」
+誤 The system with number of particles whichs is $N=870$
+正 The system with number of particles $N=870$
+「〜を予測する理論」
+誤 There are other scenarios which predict ....
+正 There are other scenarios for predicting ....
+一般的に、関係代名詞よりも現在分詞、過去分詞を使った形容が
+好まれるようだ。
+・one can... one wouldなどはなるべく避け、受身にする。
+・「is done」などは名詞化した動詞を受身にすることで避ける。
+誤 The strict definition of neighbors is done with ....
+正 The neighbors is strictly defined with ...
+・「〜理論(仮説)に基づいて」はfrom ではなく on the basisを使う
+誤 From the dynamical scaling hypothesis
+正 On the basis of the dynamical scaling hypothesis
+・関係式などが期待される(be expected)、表現できる(be expressed)は
+asではなくto beを使う
+誤 The relaxation time is expected as ...
+正 The relaxation time is expected to be ...
+・否定文を避け、否定の形容詞や副詞を使う
+誤 The resolution was not sufficient.
+正 The resolution was insufficient.
+・「十分な」はenoughではなくsufficientを使う。(enoughは口語的?)
+誤 This resolution would be enough to ...
+正 This resolution would be sufficient to...
+・Taking, Usingを使ったら、次のセンテンスの主語は人(we, one等)にする。
+(人にしない場合はWith)
+誤 Using the saddle-point approximation, the probability becomes... 
+正 Using the saddle-point approximation, we have ... 
+正 With the saddle-point approximation, the probability becomes...
+・なるべくformalな単語を使う。
+たとえば、
+But より However、So より Therefore、Thusを使う。
+便利、よく使う表現
+involve
+英作文をする上で便利な動詞のひとつが「involve(伴う; 巻き込む)」
+である。
+これを使うと文章がすっきりすることが良くある。
+たとえば、
+「二次転移を起こす系では、相関長さの発散が見られる」
+は
+We can observe the divergence of the correlation length
+in the system which shows continuous transition.
+と書くより、
+The divergence of the correlation length is observed 
+in the system involving a continuous transition.
+と書いたほうがすっきりする。
+また、
+「MDは最初に粒子に初期位置と速度を与え、
+古典的な運動方程式を数値的に解くことである。」
+というのも、
+MD simulations involve first setting up the initial geometry 
+and velocities of the particles, and then the numerical
+integration of the classical equations of motion.
+と書くと良い。一般的に、受身系にすることでwe や oneを省き、
+動名詞を使うことでthatやwhichを省くことが好まれるようだ。
+as
+「as」は、「〜すると〜する」といった論文でよく使う表現に
+使いやすい。
+たとえば、
+The system shows a phase transition from solid to liquid 
+as the density was decreased.
+「密度を下げていくと、固体から液体へ相転移する」
+など、whenを使うよりすっきりかける。
+imply
+「imply」は「意味する、暗示する」といった意味で、
+concludeやshowなどの強い意味は無いが、さりとてmayなどは
+弱すぎる、といったような結果に使える。
+This implies that the quadratic solid can be exsist 
+with high density and high dispersity.
+「これは、高密度、高分散で正方格子が安定に存在できることを意味する。」
+while
+論文では「Aではこうだが、Bではこうなる」という言い回しを
+良く使う。「高温では普通だが、低温では特異的な振る舞いをする」など、
+だいたい後半を強調するのが普通だ。こういうとき、whenとhoweverを使うより、
+whileを使うと文章がすっきりすることが多い。少し長いが以下の例文を見ると、
+While the closest packing density of the hexagonal structure
+is a simply decreasing function,
+the closest density of the quadratic packing 
+becomes larger with a larger dispersity.
+「六方格子の最密充填密度が分散に対して単調減少関数であるのに対し、
+正方格子の場合は分散を増やすと増加していく。」
+同じことを、whenやhoweverを使うと、どうももったりする印象がある(あくまで私見であるが)。
+このように、while A, BはAに「普通のこと、これまでの結果、困ること」などを
+書いて、Bに「異常なこと、新しい結果、解決策」などを持ってくると
+論文が綺麗に書けたりする。
+allow
+新しい計算テクニック、新しい理論を作ったとき、その有効性を述べる必要がある。
+日本語では「この議論により、低温領域における振る舞いを説明できる」などに対応する
+英文を書くとき、allowを使うと自然にかける。
+「This argument allows us to explain the behavior in low temperature.」などと書く。
+トップページへ戻る
+英語論文執筆メモ

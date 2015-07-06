@@ -1,0 +1,2 @@
+最初の count 個だけ value にマッチする要素を key に対応するリストから削除する。 count が負数の場合は最後から count 個だけ削除する。
+コマンドリファレンス &mdash; redis 2.0.3 documentation

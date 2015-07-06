@@ -1,0 +1,3 @@
+Representation Learning:A Review and New Perspectives       Yoshua Bengio, Aaron Courville, and Pascal VincentDepartment of computer science and operations research, U. Montreal                                              12/14 2012                                            D1 大知 正直                                                                      1
+Abstract• 機械学習アルゴリズムの性能 - データ表現に依存  •   データの背後にある真の説明因子が複雑で,隠      されてしまっている  •   ドメイン依存の知識や,一般的な前提知識を      データ表現の設計に利用することができる  •   こうした前提知識をもっと強力に学習する表現      学習アルゴリズムがAI分野で求められている                              7
+Deep learning勉強会20121214ochi - SSSSLIDE

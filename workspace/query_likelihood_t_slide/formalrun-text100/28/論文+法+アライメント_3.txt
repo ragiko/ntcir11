@@ -1,0 +1,3 @@
+現在の生命情報学では, 遺伝子の機能を明確にするといったポストゲノム研究が盛んになってきている. マルチプルアラインメントは, 進化的関連性の明確化や機能部位の推定に有用であり, 生命情報学の重要な基本問題として捉えられている. 本論文では, ツリーベース法で得られるマルチプルアラインメントの解を良質な解とするために, ツリーベース法に遺伝的アルゴリズムを適用した進化ツリーベース法を提案し, その有効性を示す.
+In the recent bio-science, the post genome research, to investigate the functions of genomes, has been focused. The multiple-alignment is useful to determine the evolutionary relation of multiple organisms and presume the function of genomes. This paper proposes a new multiple-aliginment algorithm which is based on tree-base method and incorporates with genetic algorithms. Experimental evaluation shows the effectiveness of our proposed algorithm.
+

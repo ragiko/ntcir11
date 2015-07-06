@@ -1,0 +1,19 @@
+引数StringCheckで指定した文字列の中からStringMatchで指定した文字列を後方から検索し、検索文字列が最初に見つかった場所を返します。InStr関数との違いは、検索を後方から行なう点です。引数Compareで使用する定数、結果の戻り値もInStr関数と同じです。
+構文 InStrRev(StringCheck, StringMatch, Start, Compare)
+InStrRevB(StringCheck, StringMatch, Start, Compare)
+設定項目        内容
+StringCheck   検索対象の文字列を指定 [省略不可]
+StringMatch   検索文字列を指定 [省略不可]
+Start      検索開始位置を指定。省略時は1 [省略可能]
+Compare     文字列比較のモード指定 [省略可能]
+次のサンプルは、パス付きのファイル名からファイル名だけを取り出すものです。
+サンプル
+Sub InStrRevSamp1()
+Dim myStr As String
+myStr = Application.GetOpenFilename(Title:="ファイルを選んでください")
+If myStr 
+解説
+一番最後のセパレータ(\)の位置をInStrRev関数で取得し、それ以降の文字列をファイル名としてMid関数で取り出しています。
+ポイント
+InStrRev関数はExcel2000の新機能です。InStr関数でInStrRev関数と同等の機能を実現するには、最後の検索文字列になるまで、ループ処理を行なう必要がありました。
+

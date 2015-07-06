@@ -1,0 +1,17 @@
+<body> タグで指定する背景色(bgcolor)、テキストの色(text)、リンクテキストの色(link)、クリック中のリンクの色(alink)、参照済みのリンクの色(vlink)に対応する色を示す文字列です。値を代入することで、ダイナミックに色を変更することも可能です。
+<form action="#">
+<input type="button" value="red" onclick="document.bgColor='red'">
+</form>
+ドキュメントを開いて書込み可能にします。window.open() とは別物です。
+top.main.document.open();
+top.main.document.write("<html>\n");
+top.main.document.write("<head><title>テスト</title></head>\n");
+top.main.document.write("<body>へへへ</body>\n");
+top.main.document.write("</html>\n");
+top.main.document.close();
+指定したドキュメントに文字列や値を書込みます。書き込みの最後は document.close() でクローズしないと、最後の行が表示されないことがあります。writeln() は write() とほぼ同様ですが、最後に改行コードが送り出される点が異なります。通常の HTML では改行は一文字のスペースになりますが、<pre>〜</pre> などの間で用いると違いが分かります。
+document.writeln("<pre>");
+document.writeln("AAA");
+document.writeln("BBB");
+document.writeln("</pre>");
+ドキュメント(Document)

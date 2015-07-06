@@ -1,0 +1,3 @@
+ここ十数年の間に,カオス時系列の予測手法はずいぶん進展した.しかし,指数平滑法のような実務的に有用な簡便法で,カオス時系列を扱えるものは少ないようである.そこで本研究では,線形自己回帰モデルにダミー変数を加えた簡便的なカオス時系列の予測手法を考える.
+Forecasting method of chaos time series have been proceeded for this ten years. But, there is a few convenient methods for chaos time series like exponential smoothing. In this study, we examine convenient forecasting method for chaos time series that is liner autoregressive model adding dummy variables.
+

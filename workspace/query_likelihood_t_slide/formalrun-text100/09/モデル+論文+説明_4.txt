@@ -1,0 +1,3 @@
+生理学などでは数学的理論を使わずに生体の系について説明する場合, 定性的・因果的に説明することが多い. 定性推論ではモデルが与えられれば, 挙動や機能についての定性的・因果的説明が自動的に生成される. そこで, この機能を利用して学習を支援することが考えられる. 本論文では, 生理学での学習支援を目的として構成した体液調節系の定性モデルとそれからの説明生成について報告する. なお, 挙動の説明は因果解析により, 機能の説明は目的論的解析により生成した.
+We generated explanations about the dynamic system appearing in physiology without mathematics such as an automatic control theory. It generates the explanations for behaber and function of the system by the method of qualitative reasoning. At the first, we constructed a qualitative model of a body fluids control system, then genarated the explanations for behaber by causal reasoning and the explanations for function by teleological reasoning.
+

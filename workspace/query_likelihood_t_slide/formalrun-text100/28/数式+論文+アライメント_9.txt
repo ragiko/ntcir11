@@ -1,0 +1,3 @@
+アミノ酸配列の解析において, 各タンパク質のドメインやモジュール間の構造上の類似性を示すための相同性解析は非常に重要なものである。タンパク質の相同性解析においてまず最初に行われる操作がアミノ酸配列のアライメントである. 本論文では, 複数のアミノ酸配列をアライメントするマルチプルアライメントの方法にタンパク質の立体構造を考慮した新たなアルゴリズムを提案し, その結果とアライメントの速度について述べる.
+In analysis of amino acid sequences, the homology analysis measuring the similarity structure of proteins is important. The alignments of the sequences should be first done for such a study. In this paper, I propose a new algorithm by taking the structure of protein into account of the alignment, and we discuss the speed of alignment.
+
