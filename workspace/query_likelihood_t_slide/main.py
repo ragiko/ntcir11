@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../config')
 import helper
 import config
 from math import log
+import re
 
 def in_stopword(char):
     """
@@ -23,6 +24,12 @@ def in_stopword(char):
 def dd(s):
     ht.pp(s)
     exit()
+    
+def select_tf_by_lecture_id(lecture_tf, lecture_id):
+    a = [l for l in lecture_tf if re.search(lecture_id, l.text.path)]
+    if (len(a) == 1):
+        return a[0]
+    return null
 
 if __name__ == '__main__':
     """
@@ -47,7 +54,6 @@ if __name__ == '__main__':
     DOC_TF_FREQ_PATH = conf.TMP_PATH + "/doc_tf_freq"
     DOC_IDF_PATH = conf.TMP_PATH + "/doc_idf"
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
-    LECTURE_PATH = conf.TMP_PATH + "/lecture"
     LECTURE_TF_PATH = conf.TMP_PATH + "/lecture_tf"
 
     # 検索文書を読み込み
@@ -56,14 +62,12 @@ if __name__ == '__main__':
     doc_tf_freq = helper.doc_tf_cache_load(DOC_PATH, DOC_TF_FREQ_PATH, False)
     doc_idf = helper.doc_idf_cache_load(DOC_PATH, DOC_IDF_PATH)
     lecture_tf = helper.doc_tf_cache_load(LECTURE_PATH, LECTURE_TF_PATH)
-    
-    dd(lecture_tf)
 
     # コーパスのtfを読み込み
     texts_str = doc_tc.merge_texts()
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
-
+    
     # クエリを読み込み
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
@@ -73,7 +77,7 @@ if __name__ == '__main__':
     
     u = 920 # ドキュメントコレクションの重み 920
 
-    # 平均文書長 (hara: 47くらいか?) 121.046669042
+    # 平均文書長
     avg_length = 47.0
 
     result = []
@@ -87,24 +91,50 @@ if __name__ == '__main__':
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
+            
             doc_text = doc_tf_vsm.text
+            # スライドに文字が無い時
+            if (len(doc_text.words()) == 0):
+                continue
+
             tf_doc = doc_tf_vsm.vec
             tf_freq_doc = doc_tf_freq_vsm.vec
-            d = len(doc_text.words())
-            frac =  1.0 / float(d + u)
-            likelifood = 0.0
 
-            # query word loop
+            m = re.search(".*(\d{2}-\d{2}).*$" , doc_text.path)
+            lecture_id = m.group(1)
+            select_lecture_tf = select_tf_by_lecture_id(lecture_tf, lecture_id)
+            
+            # s = ドキュメント  => 講演
+            # d = 部分ドキュメント => スライド
+            
+            # p(s|d)
+            s_d_likelifood = 0.0
+            for word in doc_text.words():
+               doc = select_lecture_tf.vec.get(word, not_word_val)
+               s_d_likelifood += log(doc)
+
+            # p(q|s)
+            q_s_likelifood = 0.0
             for word in query_text.words():
 
                 if (in_stopword(word)):
                     continue
+                    
                 # smooth for query
-                doc = d * frac * tf_doc.get(word, not_word_val)
-                # smooth for doc
-                corpus = u * frac * tf_corpus.get(word, not_word_val)
+                doc = tf_doc.get(word, not_word_val)
+                q_s_likelifood += log(doc)
 
-                likelifood += log(doc + corpus)
+            # p(q|d)
+            q_d_likelifood = 0.0
+            for word in query_text.words():
+
+                if (in_stopword(word)):
+                    continue
+
+                doc = select_lecture_tf.vec.get(word, not_word_val)
+                q_d_likelifood += log(doc)
+            
+            likelifood = s_d_likelifood + q_s_likelifood + q_d_likelifood
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
