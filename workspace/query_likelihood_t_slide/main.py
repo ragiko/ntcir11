@@ -123,6 +123,9 @@ if __name__ == '__main__':
     # ドキュメントコレクションの重み
     a = 0.5
 
+    # 講演の重み 
+    b = 0.5
+
     result = []
     # query loop
     for i, q_tf_vsm in enumerate(q_tf_list):
@@ -179,7 +182,7 @@ if __name__ == '__main__':
                 corpus = a * tf_corpus.get(word, not_word_val)
                 q_d_likelifood += log(doc + corpus)
 
-            likelifood = q_s_likelifood + q_d_likelifood + web_likelifood
+            likelifood = (1-b) * q_s_likelifood + b * q_d_likelifood
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
