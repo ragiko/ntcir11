@@ -97,6 +97,14 @@ if __name__ == '__main__':
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
     LECTURE_TF_PATH = conf.TMP_PATH + "/lecture_tf"
     WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
+    
+    # webのtfの文書を読み込み
+    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+    # dd(sorted(web_tf_list[16].vec.items(), key=lambda x: x[1]))
+
+    
+    # クエリを読み込み
+    q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
@@ -110,20 +118,42 @@ if __name__ == '__main__':
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
 
-    # webのtfの文書を読み込み
-    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
 
-    # クエリを読み込み
-    q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
+    c_w = corpus_doc_tf.text.words()
+    for i, q_tf_vsm in enumerate(q_tf_list):
+
+        t_w = web_tf_list[i].text.words()
+
+        print "###############"
+        print "query " + str(i+1)
+        print "###############"
+        query_text = q_tf_vsm.text
+
+        for w in query_text.words():
+            s = w.encode('utf8')
+            if (w in c_w):
+                s += " in corpus, "
+            else:
+                s += " out corpus, "
+
+            if (w in t_w):
+                s += "in web, "
+            else:
+                s += "out web, "
+            print s
+
+
+    dd("")
+    
     # params
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
-    
-    # ドキュメントコレクションの重み
-    a = 0.5
 
-    # 講演の重み 
+    # ドキュメントコレクションの重み
+    a = 0.0
+
+    # 講演の重み
     b = 0.5
 
     result = []
@@ -169,7 +199,8 @@ if __name__ == '__main__':
                     
                 doc = (1-a) * tf_doc.get(word, not_word_val)
                 corpus = a * tf_corpus.get(word, not_word_val)
-                q_s_likelifood += log(doc + corpus)
+                # w = 0.5 * tf_web.get(word, not_word_val)
+                q_s_likelifood += log(doc + corpus)# + w)
 
             # p(q=クエリ|d=講演)
             q_d_likelifood = 0.0
@@ -182,7 +213,8 @@ if __name__ == '__main__':
                 corpus = a * tf_corpus.get(word, not_word_val)
                 q_d_likelifood += log(doc + corpus)
 
-            likelifood = (1-b) * q_s_likelifood + b * q_d_likelifood
+            # likelifood = (1-b) * q_s_likelifood + b * q_d_likelifood
+            likelifood = q_s_likelifood
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
