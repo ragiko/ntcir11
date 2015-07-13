@@ -79,10 +79,11 @@ if __name__ == '__main__':
     conf = config.Config("query_likelihood_t_slide")
     QUERY_PATH = conf.WRITE_QUERY_PATH
     # QUERY_PATH = conf.SPOKEN_QUERY_PATH
+    
     DOC_PATH = conf.WRITE_DOC_PATH
     
     # TODO: 講演の情報を利用したい時
-    # DOC_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
+    # LECTURE_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
     LECTURE_PATH = conf.WRITE_DOC_LECTURE_PATH
     
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
@@ -118,34 +119,6 @@ if __name__ == '__main__':
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
 
-
-
-    c_w = corpus_doc_tf.text.words()
-    for i, q_tf_vsm in enumerate(q_tf_list):
-
-        t_w = web_tf_list[i].text.words()
-
-        print "###############"
-        print "query " + str(i+1)
-        print "###############"
-        query_text = q_tf_vsm.text
-
-        for w in query_text.words():
-            s = w.encode('utf8')
-            if (w in c_w):
-                s += " in corpus, "
-            else:
-                s += " out corpus, "
-
-            if (w in t_w):
-                s += "in web, "
-            else:
-                s += "out web, "
-            print s
-
-
-    dd("")
-    
     # params
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
@@ -199,8 +172,12 @@ if __name__ == '__main__':
                     
                 doc = (1-a) * tf_doc.get(word, not_word_val)
                 corpus = a * tf_corpus.get(word, not_word_val)
-                # w = 0.5 * tf_web.get(word, not_word_val)
-                q_s_likelifood += log(doc + corpus)# + w)
+                if (word not in tf_doc and word not in tf_corpus):
+                    w = 0.5 * tf_web.get(word, not_word_val)
+                    q_s_likelifood += log(doc + corpus + w)
+                else:
+                    q_s_likelifood += log(doc + corpus)
+
 
             # p(q=クエリ|d=講演)
             q_d_likelifood = 0.0
