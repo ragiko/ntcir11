@@ -11,6 +11,8 @@ import config
 from math import log
 import re
 
+import numpy
+
 def in_stopword(char):
     """
     ストップワードが含まれているかどうか
@@ -77,17 +79,19 @@ if __name__ == '__main__':
     """
     # データの設定
     conf = config.Config("query_likelihood_t_slide")
+    
+    
     QUERY_PATH = conf.WRITE_QUERY_PATH
-    # QUERY_PATH = conf.SPOKEN_QUERY_PATH
-    
     DOC_PATH = conf.WRITE_DOC_PATH
-    
-    # TODO: 講演の情報を利用したい時
-    # LECTURE_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
     LECTURE_PATH = conf.WRITE_DOC_LECTURE_PATH
-    
     DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
     WEB_PATH = conf.PROJECT_PATH + "/formalrun-text100"
+
+    # QUERY_PATH = conf.SPOKEN_QUERY_PATH
+    # DOC_PATH = conf.SPOKEN_DOC_PATH
+    # LECTURE_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
+    # DOC_CORPUS_PATH = conf.SPOKEN_DOC_PATH
+    # WEB_PATH = conf.PROJECT_PATH + "/formalrun-check100"
 
     # キャッシュ用パス
     # TODO: データをキャッシュしているので、不要なときは消す
@@ -98,14 +102,23 @@ if __name__ == '__main__':
     QUERY_TF_PATH = conf.TMP_PATH + "/query_tf"
     LECTURE_TF_PATH = conf.TMP_PATH + "/lecture_tf"
     WEB_TF_PATH = conf.TMP_PATH + "/web_tf"
-    
-    # webのtfの文書を読み込み
-    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
-    # dd(sorted(web_tf_list[16].vec.items(), key=lambda x: x[1]))
 
-    
     # クエリを読み込み
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
+    # dd(q_tf_list[16].text.text())
+
+    # クエリの文字数などの確認
+    # import math
+    # from collections import Counter
+    # li = {i+1: len(q.text.words()) for i, q in enumerate(q_tf_list)}
+    # for k, v in sorted(li.items(), key=lambda x:x[1]):
+    #     print k, v
+    # dd(li)
+    # q_w_ave = numpy.average([len(q.text.words()) for q in q_tf_list])
+
+    # webのtfの文書を読み込み
+    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+    # ht.pp(sorted(web_tf_list[16].vec.items(), key=lambda x: x[1]))
 
     # 検索文書を読み込み
     doc_tc = helper.doc_text_cache_load(DOC_PATH, DOC_TEXT_PATH)
@@ -124,10 +137,14 @@ if __name__ == '__main__':
     not_word_val = 1e-250 # 極小値
 
     # ドキュメントコレクションの重み
-    a = 0.0
+
+    a = 0.5
+    u = 0.3
+    v = 0.2
+    frac = a + u + v
 
     # 講演の重み
-    b = 0.5
+    b = 1.0
 
     result = []
     # query loop
@@ -170,14 +187,16 @@ if __name__ == '__main__':
                 if (in_stopword(word)):
                     continue
                     
-                doc = (1-a) * tf_doc.get(word, not_word_val)
-                corpus = a * tf_corpus.get(word, not_word_val)
-                if (word not in tf_doc and word not in tf_corpus):
-                    w = 0.5 * tf_web.get(word, not_word_val)
-                    q_s_likelifood += log(doc + corpus + w)
+                doc = a / frac * tf_doc.get(word, not_word_val)
+                corpus = u / frac * tf_corpus.get(word, not_word_val)
+
+                if (5 <= len(query_text.words()) and len(query_text.words()) <= 14):
+                    web = v / frac * tf_web.get(word, not_word_val)
+                    q_s_likelifood += log(doc + corpus + web)
                 else:
                     q_s_likelifood += log(doc + corpus)
 
+                # q_s_likelifood += log(doc + corpus)
 
             # p(q=クエリ|d=講演)
             q_d_likelifood = 0.0
@@ -191,6 +210,7 @@ if __name__ == '__main__':
                 q_d_likelifood += log(doc + corpus)
 
             # likelifood = (1-b) * q_s_likelifood + b * q_d_likelifood
+            # likelifood = q_s_likelifood + q_d_likelifood
             likelifood = q_s_likelifood
 
             query_result.append((doc_text, likelifood))
