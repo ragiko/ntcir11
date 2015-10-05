@@ -1,0 +1,91 @@
+みなさん、こんにちは。毎月気が付くと、この連載記事の締め切りがやってきている感じがする、&ldquo;しばちょう&rdquo;こと柴田長(しばた つかさ)です。こんなときは大抵、休日の朝からファミレスで優雅(?)に執筆する時間を楽しんでいます。
+さて、まだまだ連続でオプティマイザ統計についてご紹介していきます。これまではコストベース・オプティマイザが適切な実行計画を選択する為には、精度の高いオプティマイザ統計情報が必要不可欠です。とお伝えしてきましたが、今回はその基本的なオプティマイザ統計だけでは不十分なケースがあり得る状況を体験して頂き、「ヒストグラム」と呼ばれる追加で取得する統計情報の必要性を理解して頂きたいと思います。そのようなケースを体験しておくことで、実際の性能トラブルに遭遇した際に発揮されるDBAの底力を養うことの手助けになればと思っています。また、オプティマイザ統計を収集する際にDBAが気付かないうちに、これらも追加で自動的に取得されることがあります。その自動判断に使用される情報とその格納場所についても、少しだけご紹介したいと思います。
+以下の演習をこれまでの演習で使用したOracle Database 11g Release 2 Enterprise Editionのデータベースで試してみてください。
+0.	次のSQLで今回の演習で使用するTBL11表をTRYスキーマ内に作成して下さい。
+sqlplus TRY/TRY
+SQL>
+-- TBL11表の作成
+create table TBL11 (COL1 number NOT NULL, COL2 number, COL3 char(100)) ;
+-- TBL11表へレコード100万件を挿入
+declare
+intNum_COL1 number := 0 ;
+intInterval number := 10000 ;
+begin
+for i in 1..100 loop
+insert into TBL11 select LEVEL + intNum_COL1, i , rpad('A',100,i)
+from DUAL connect by LEVEL <= intInterval ;
+commit ;
+intNum_COL1 := intNum_COL1 + intInterval ;
+end loop ;
+end ;
+/
+-- TBL11表のCOL1列にユニーク索引を作成
+create unique index IDX_TBL11_COL1 on TBL11(COL1) ;
+-- TBL11表に主キー(COL1列)を定義。その際、COL1列のユニーク索引を利用
+alter table TBL11 add primary key (COL1) using index ;
+-- TBL11表のCOL2列にBツリー索引を作成
+create index IDX_TBL11_COL2 on TBL11(COL2);
+-- TBL11表のオプティマイザ統計情報を収集
+exec DBMS_STATS.GATHER_TABLE_STATS(ownname => 'TRY',   -
+tabname => 'TBL11', -
+cascade => FALSE,   -
+method_opt => 'FOR ALL COLUMNS SIZE 1');
+いつもの演習通り、今回の体験で使用して頂くベースの表を作成して頂きます。ここでは2点補足説明させて頂きますね。
+1点目はTBL11表へレコード100万件を挿入するPL/SQL文のforループ処理です。一般的に他人が書いたPL/SQLは意図が汲み取れないので理解が難しいものです。
+ステップに分けて解説すると、まずはループの条件。ここでは変数「i」に対して初期値「1」から最大値「100」まで増分「1」で合計「100」回ループすることが理解できます。
+次に、TBL11表に実際にレコードを挿入しているINSERT文に注目します。INSERT文全体をみると複雑ですが、これまでもご紹介してきたINSERT + SELECT文ですね。SELECT文ではLEVEL疑似列を使用した連続値を変数「intInterval」の数「10000」だけ作成しています。
+つまり、この時点で一回のINSERTで1万件のレコードが挿入され、そのINSERTがforループにより100回繰り返されるので、最終的にTBL11表に挿入されるレコード数は100万件と理解できます。
+最後に各カラムに格納される値を見てみます。COL1列にはLEVEL疑似列(1～10000)と変数「intNum_COL1」を加算した値がセットされています。変数「intNum_COL1」はforループに入る直前に「0」で初期化され、forループ内の最後で(次の繰り返しの前に)変数「intInterval(=10000)」が加算されます。つまり、COL1列には1回目のループでは「1~10000」、2回目のループでは「10001~20000」、3回目のループでは「20001~30000」の値がセットされることになります。ちなみに、COL2列は、変数「i」なのでforループを繰り返した回数がセットされますね。
+実際にPL/SQL処理でレコードを挿入したTBL11表を次のSELECT文で確認してみると、COL1列が1~100万の一意の値、COL2列が1~100へ1万レコード毎に1つずつ増加していっていることが確認できます。ちなみに、COL3列はオマケですが、このような検証作業では意外と重要だったりします。
+ちょっと解説が長くなってしまいましたが、もう少しお付き合い下さい。2点目の補足説明はGAGHER_TABLESTATSのパラメータです。初めて使用するパラメータ「method_opt」が設定されています。これは今回の演習を通して体験して頂く「ヒストグラム」の取得を制御するパラメータであり、上記の設定「method_opt => 'FOR ALL COLUMNS SIZE 1'」はヒストグラムを明示的に取得しないように指定しています。デフォルトの設定は「method_opt => 'FOR ALL COLUMNS SIZE AUTO'」であり、この場合はOracle Databaseがヒストグラムを取得するか否かを自動判断する仕組みが適用されます。
+さて、準備が整いましたね。では、いよいよ演習の本番に入っていきましょう。
+1.	TBL11表において、COL2列が100以下のレコード数をカウントして下さい。
+sqlplus / as sysdba
+SQL> -- バッファ・キャッシュと共有プールにキャッシュされている情報をクリア(フラッシュ)
+alter system flush buffer_cache ;
+alter system flush shared_pool ;
+-- SELECTの実行
+connect TRY/TRY
+set timing on
+select count(COL1),sum(mod(ora_hash(COL3),2)) from TBL11 where COL2 <= 100 ;
+COUNT(COL1) SUM(MOD(ORA_HASH(COL3),2))
+----------- --------------------------
+1000000                     530000
+経過: 00:00:07.36
+-- SELECT文の実行計画を確認
+select * from table(dbms_xplan.display_cursor()) ;
+PLAN_TABLE_OUTPUT
+-----------------------------------------------------------------------------
+SQL_ID  72fq5cqt9753g, child number 0
+-------------------------------------
+select count(COL1),sum(mod(ora_hash(COL3),2)) from TBL11 where COL2 <= 100
+Plan hash value: 694736540
+----------------------------------------------------------------------------
+| Id  | Operation          | Name  | Rows  | Bytes | Cost (%CPU)| Time     |
+----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT   |       |       |       |  4414 (100)|          |
+|   1 |  SORT AGGREGATE    |       |     1 |   104 |            |          |
+|*  2 |   TABLE ACCESS FULL| TBL11 |  1000K|    99M|  4414   (1)| 00:00:01 |
+----------------------------------------------------------------------------
+Predicate Information (identified by operation id):
+---------------------------------------------------
+2 - filter("COL2"<=100)
+演習問題を読んで「おや?」と疑問に持たれた方は、TBL11表に格納されている「レコードの特徴」が頭の中に入っている方で、私のPL/SQLを完全にご理解されているでしょう。何故かと言えば、SELECT文の条件に指定された「COL2列が100以下」とは、結局、全てのレコードにヒットする条件ですよね。よって、全レコードにアクセスすることになるので、実行計画を確認してみるとTBL11表へアクセスするOperationとしては「TABLE ACCESS FULL」が選択されています。
+しかし、この部分で索引「IDX_TBL11_COL2」に対する「INDEX  FAST FULL SCAN」が選択された方もいらっしゃるかと思います。それが一番正しいです。と言うのは、COL2列には索引「IDX_TBL11_COL2」が作成されているので、この索引だけを読み取ることで条件「COL2列が100以下」と演習の目的である「カウント」は済んでしまうからですね。今回の場合、3つのレコードが格納されているTBL11表にアクセスするよりも、TBL11表のCOL2列だけの値が格納されている索引「IDX_TBL11_COL2」へアクセスする方が、CPU使用量もI/O量も少なくて済みますから、いくらSELECT文で「COUNT(*)」つまり「全列」=「*」を指定しても、コストベース・オプティマイザは不必要な処理を省く賢い挙動をする為、実際は「COUNT(*)」を「COUNT(COL2)」に内部的に置き換えて実行計画を選択するのです。ちょっと難しかったかも知れませんが、体験して理解しておくことで次に遭遇した際には「当たり前」として扱うことができると思います。
+なので、私の回答例では、敢えて「TABLE ACCESS FULL」が選択されるようにCOL3列使用する「sum(mod(ora_hash(COL3),2))」をSELECT文に含めています。これは、文字列であるCOL3列をora_hash関数で数字に変換し、その値をmod関数を使用して2で割り算した際の余りをsumで集計する処理です。
+ちなみに、上記の回答例の「TABLE ACCESS FULL」でアクセスする行数「Rows」の値が「1000K」と表示されていますが、これは表の行数の100万件と一致しますが、どの値を元にどのように計算された値なのでしょうか?
+sqlplus TRY/TRY
+SQL>
+select TABLE_NAME, NUM_ROWS 
+from USER_TAB_STATISTICS 
+where TABLE_NAME = 'TBL11' ;
+TABLE_NAME                       NUM_ROWS
+------------------------------ ----------
+TBL11                             1000000
+select TABLE_NAME, COLUMN_NAME, NUM_DISTINCT, HISTOGRAM
+from USER_TAB_COL_STATISTICS
+where TABLE_NAME = 'TBL11' and COLUMN_NAME = 'COL2' ;
+TABLE_NAME                     COLUMN_NAME                    NUM_DISTINCT HISTOGRAM
+------------------------------ ------------------------------ ------------ ---------------
+TBL11                          COL2                                    100 NONE
+しばちょう先生の試して納得!DBAへの道

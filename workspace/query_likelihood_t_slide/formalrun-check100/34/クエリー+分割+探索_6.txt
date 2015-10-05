@@ -1,0 +1,74 @@
+MySQL にて以下のテーブル t1 に対して
+「ある行の id と value を入力とし、その行から上に向かって value を順に見ていき、入力された value 以下の value を持つ最初の id を見つけ、見つかった id と入力された id の間に挟まれている行の value をすべて +1 する」
+という処理を行おうとしています。
+なお、id=1 はターミネータであり、入力の id は 2 以上を仮定して構いません。id はユニーク、value は非負整数です。
+テーブル t1
+id, value
+1, 0
+2, 1
+3, 1 以下の例で見つけたい行(value が 2 以下の最初の行)
+4, 4 以下の例で更新したい行
+5, 3 以下の例で更新したい行
+6, 2 以下の例での入力行 (この行から上に向かって探索)
+7, 3
+8, 2
+9, 1
+例えば入力が id=6, value=2 の場合、見つける id は 3 で、value を更新するのは id=4 と id=5 です。
+最初に考えたクエリは
+UPDATE t1
+SET value=value+1
+WHERE (id > (SELECT MAX(id)
+FROM t1
+WHERE (id < 6) AND (value <= 2)))
+AND (id < 6);
+です。
+しかし、これだと
+ERROR 1093 (HY000): You can't specify target table 't1' for update in FROM claus
+というエラーになってしまいます。
+http://dev.mysql.com/doc/refman/4.1/ja/subquery-errors.html
+の一番下によるとサブクエリの FROM に更新対象の t1 は指定できないとのことです。
+とりあえずユーザー変数を使って
+SET @start_value = (SELECT MAX(id) FROM t1 WHERE (id < 6) AND (value <= 2));
+UPDATE t1 SET value=value+1 WHERE (id > @start_value) AND (id < 6);
+の 2 文に分割すれば実現できるのですが、クエリを分割せずに解決することは可能でしょうか?
+追記
+MySQL のバージョンは 5.0.67 です。[ メッセージ編集済み 編集者: asahi 編集日時 2009-01-10 17:06 ]
+そこで、結合を使うupdate文ですよ 
+コード:
+create table t1(
+id    int,
+value int);
+delete from t1;
+insert into t1 values
+(1, 0),
+(2, 1),
+(3, 1),
+(4, 4),
+(5, 3),
+(6, 2),
+(7, 3),
+(8, 2),
+(9, 1);
+update t1,(SELECT MAX(a.id) as tid
+FROM t1 a
+WHERE id < 6 AND value <= 2) as b
+set value = value+1
+where tid < id
+and id < 6;
+ご回答ありがとうございます。
+サブクエリの結果をテーブル b として用意しておくわけですね。
+私はまだ結合をうまく使いこなせないので、もっと勉強してみます。
+ちなみに、例では (6, 2) を入力としましたが、value は id から得られるので最終的に以下のクエリになりました。
+コード:UPDATE t1, (SELECT MAX(id) as tid
+FROM t1
+WHERE (id < 6)
+AND (value <= (SELECT value
+FROM t1
+WHERE id = 6))) as t2
+SET value = value + 1
+WHERE (tid < id)
+AND (id < 6);
+とりあえず当初の目的は達したのでクローズとしますが、
+もし他にこうした方がいいという代案がありましたら追加返信も歓迎です。
+ありがとうございました!
+MySQL でクエリを分割せずに Error 1093 を回避するには? − Database Expert − @IT

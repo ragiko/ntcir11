@@ -1,0 +1,55 @@
+明瞭度(めいりょうど、articulation)は通信などでの音声品質を示す尺度の1つである。単音あるいは音節がどれだけ正確に相手に伝わるかを表す値で、正しく発音された単音や音節に対し、受話者が完全に了解できた数と送話した数との比をパーセントで表す。単音を用いたものを単音明瞭度(sound articulation)、音節の場合は音節明瞭度(sylable articulation)と呼ぶ。
+明瞭度とそれに関連するさまざまな評価方法は、電話に代表される音声通信分野での評価、一定の音声品質が要求される駅やホールなどの建築物の設計や評価、補聴器の評価や難聴者の聴取能力の評価など、音声を扱う多くの分野で使われている。
+概要[編集]
+電話などでの音声信号の品質を定量的に表す通話品質として多くの尺度が提案されている。音質の主観評価の代表的なものは、音の自然さを含めた総合的な品質を評価する平均オピニオン評点(MOS)などと、内容の分かりやすさを評価する明瞭度や了解度(intelligibility)などがある。
+明瞭度は「あ」や「か」など無意味な単音や音節を用いて聞き取れた割合の評価を行い、了解度は意味のある単語や文章を用いて同様の評価を行うものである [1]。明瞭度と了解度は独立したものではなく、明瞭度が高くなるほど了解度も良くなる。一般に、単語や文章中に不明な音節があってもある程度の推定ができるため、明瞭度が多少低下しても了解度は変わらない。
+明瞭度は以下のように分類できる。
+音節明瞭度(sylable articulation): 音節が対象
+単音明瞭度(sound articulation): 単音が対象
+母音明瞭度(vowel articulation): 母音のみが対象
+子音明瞭度(consonant articulation): 子音のみが対象
+明瞭度の評価は、一般にランダムに配置した1音(単音/音節)、あるいは意味の無い2または3音節の組み合わせを評価者に聞かせ、聞こえたと思われる音を答えさせることで行う。
+雑音を含む音での明瞭度試験は困難な作業のため、明瞭度試験は一般に被験者の訓練を必要とし、評価値の安定性があまり良くない [2]。また、評価に時間がかかり、試験環境の違いにより評価がばらつく欠点がある。 そのため明瞭度や了解度を推定できる何らかの指数を物理的な測定より求める客観評価法が研究されてきた。
+客観評価法[編集]
+良く知られている明瞭度に関係した指数として以下のものがある。
+Articulation Index(明瞭度指数、AI)
+Speech Intelligibility Index(SII)
+Speech Transmission Index(音声伝達指標、STI)
+Room Acoustical Speech Transmission Index(RASTI)
+明瞭度指数[編集]
+明瞭度指数(Articulation Index、AI)は、明瞭度に関係する指標として1947年にフレンチ(N.R. French)とスタインバーグ(J.C. Steinberg)が基本となる手法を [3]、 1950年にフレッチャー(H. Fletcher)らが改良版を発表し[4]、その後1969年に ANSI により ANSI S3.5-1969 として標準化された [5]。音声情報が周波数の異なる独立したチャネルを通して別々に送られた情報の総和からなるという考え方をベースにしている。
+この考え方をもとに、別々の周波数帯での信号対雑音比と周波数別の係数(周波数別の明瞭度への寄与率)から周波数別の明瞭度指数を求め、それらの総和により全体の明瞭度指数を求める。 この方法はアナログ電話回線のような単純なシステムで有効な手法で、電話回線の評価方法として長い間使われてきた。
+AI は 0 から 1 までの値をとり大きくなるほど明瞭度は高い。0.3以下は「悪い」、0.3から0.5は「普通」、0.5から0.7は「良い」、0.7より大きい場合は「非常に良い」と見なされる。
+Speech Intelligibility Index[編集]
+Speech Intelligibility Index(SII)は、明瞭度指数の改良版として1997年に ANSI により ANSI S3.5-1997 として標準化された [6]。基本となる考え方は明瞭度指数と同様だが、Speech Transmission Index(音声伝達指標)など他の指標の考え方を取り入れ、雑音だけでなく残響や歪みの影響を考慮に入れたものとなっている。SII は 0 から 1 までの値をとり大きくなるほど明瞭度は高い。
+分割する周波数帯の数も以下の中から選択することができ、正確さと簡便さのバランスが考慮されている。上のものほど精度が高い。
+Critical band (臨界帯域、21 bands)
+1/3 octave band (1/3オクターブ帯域、18 bands)
+Equally-contributing critical band (17 bands)
+Octave band (オクターブ帯域、6 bands)
+Speech Transmission Index[編集]
+Speech Transmission Index(音声伝達指標、STI)は、残響や雑音による音声波形の変化を表す指数で、建物の音響設計・評価や通信での評価などによく用いられる。STI はステーネケン(H.J.M. Steeneken)とハウトガスト(T. Houtgast)により1973年に発表され [7]、その後 ISO 9921 や IEC 60268-16 で規格化されている。STI は 0 から 1 までの値をとり大きくなるほど明瞭度は高い。
+STI は、レンズの性能評価など光学の分野でよく使われている変調伝達関数(modulation transfer function、MTF)を明瞭度に応用したものである。MTFが小さいほど出力での振幅の大小が入力のものより小さくなる。音声の場合も、振幅の時間的な変動により情報が伝えられると考えると、残響や雑音により MTF が小さくなるほど情報が伝わりにくくなると予想される。 STI はこのような考えに基づいて、建物や通信路などの MTF を計測することにより明瞭度に結び付く指標を求める方法である。
+具体的には、建物などの中で変調をかけた信号を放射し、聞き手の場所でどの程度変調度が低下したかを調べ数値化する。 明瞭度指数(AI)の場合と同様、別々の周波数帯での MTF の測定値と周波数別の係数(周波数別の明瞭度への寄与率)から周波数別の音声伝達指標を求め、それらの総和により全体の音声伝達指標を求める。 通常の測定方法では、周波数帯は125Hz～8kHzまでの7つ(オクターブごと)を使用し、各周波数帯での MTF は14の変調周波数(0.63Hz～12.5Hz、1/3オクターブごと)の値の平均より求める。通常の測定方法は STI-14 と呼ばれるが、これ以外の測定法として STI-3、STITEL、STIPA、RASTI がある [8]。
+RASTI[編集]
+RASTI(Room Acoustical Speech Transmission Index)は STI を簡略化したもので、建物の音響評価に特化した手法である[8]。通信やPAシステムなどで発生する時間領域での歪みは考慮していない[8]。RASTI は IEC 268-16 で規格化されている。
+RASTI は 500Hz と 2kHz の2つの周波数帯のみを測定し変調周波数の数も減らしているため、短時間(15秒程度)[8]で測定ができる。建物の音響特性の簡易測定法として、携帯型の音響測定器などでよく使われている。
+歴史[編集]
+明瞭度の研究の歴史は古く、1910年にはキャンベル(G.A. Campbell)が子音+母音(CV)の音節を電話回線の性能測定のために使っている[9]。 その後電話の発達と並行して、電話の設計や評価のためのさまざまな測定方法や人間の聴覚の研究が1920年代以降ベル研究所を中心として精力的に行われた。 1929年にベル研究所のフレッチャー(H. Fletcher)とスタインバーグ(J.C. Steinberg)は音声品質の試験方法と結果について報告しており、子音+母音+子音(CVC)からなる無意味音節、多音節の発声、英単語や文章を用いたものが含まれていた[10]。
+また、客観評価法もかなり古くから研究されており、フレッチャー(H. Fletcher)は1921年に明瞭度指数(AI)の基本的なアイデアを考案していたと言われている[11]。
+初期の頃の明瞭度の測定方法は信頼性が低く、1960年に ANSI が発表した単音節の試験標準(ANSI S3.2-1960)では、異なったシステムや条件、別の研究所の間での結果の正確な比較はできない、との記述がある[12]。
+そのため、その後測定方法の研究・標準化が行われ、また様々な客観評価法の研究が行われた。
+脚注[編集]
+^ 板橋 秀一 (ed). 音声工学. 森北出版, pp.51-52. 2005. ISBN 978-4627828117
+^ 近藤 和弘, 泉 良, 藤森 雅也, 加賀 類, 中川 清司. 二者択一型日本語音声了解度試験方法の検討. 日本音響学会誌, 63巻4号, pp.196-204. 2005.
+^ N.R. French, J.C. Steinberg: Factors governing the intelligibility of speech sounds, J. Acoust. Soc. Am. 19, pp.90–119. 1947.
+^ H. Fletcher, R.H. Galt: The perception of speech and its relation to telephony, J. Acoust. Soc. Am. 22, pp.89-151. 1950.
+^ ANSI: Methods for the calculation of the articulation index, ANSI S3.5-1969, 1969.
+^ ANSI: Methods for calculation of the speech intelligibility index, ANSI S3.5-1997. 1997.
+^ H.J.M. Steeneken, T. Houtgast. Predicting speech intelligibility in rooms from the modulation transfer function. I. General room acoustics. Acustica 46, pp.60-72. 1973.
+^ a b c d H.J.M. Steeneken, T. Houtgast. Basics of the STI-measuring method. "Past, Present, and Future of the Speech Transmission Index", Int. Sympo. on STI, The Netherlands, pp.13-44, 2002.
+^ G.A. Campbell, Telephonic Intelligibility, Philosophical Magazine, Jan. 1910, pp.152-159. 1910.
+^ H. Fletcher, J.C. Steinberg. Articulation Testing Methods. Bell System Technical Journal vol 8, pp.806-854, 1929.
+^ J. B. Allen. Articulation and Intelligibility. pp.29-34. Morgan & Claypool Publishers, 2005. ISBN 978-1598290080.
+^ A. Schmidt-Nielsen. Intelligibility and Acceptability Testing for Speech Technology. AD-A252 015, Naval Research Laboratory. 1992.
+明瞭度 - Wikipedia

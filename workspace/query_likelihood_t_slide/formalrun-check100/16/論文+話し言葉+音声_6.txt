@@ -1,0 +1,3 @@
+話し言葉音声認識の認識性能は十分ではなく, また話し言葉の音声認識における単語正解精度低下の要因はあまり分かっていない.そこで, 日本語話し言葉コーパスの多数の話者を対象に音声認識実験を行い, 話者間での単語正解精度変動の分布の解析を行った.個人差の主たる要因が発話速度, 未知語率および言い直し頻度であることを明らかにした.また, 教師無し話者適応化は単語正解精度の向上に効果的に働くが, 適応化を行った後も発話速度の影響は減少しないことを示した.
+This paper reports results of various investigations on recognizing spontaneous presentation speech. Individual differences in the speech recognition performances are analyzed. A restricted set of the speaker attributes comprising the speaking rate, the out of vocabulary rate and the repair rate is found to be most significant to yield individual differences in the word accuracy. It is shown that unsupervised MLLR speaker adaptation works well for improving the word accuracy but does not compensate for the effect of the speaking rate.
+

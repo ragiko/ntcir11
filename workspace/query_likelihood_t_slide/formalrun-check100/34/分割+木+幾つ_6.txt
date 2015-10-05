@@ -1,0 +1,240 @@
+
+ホーム<ゲームつくろー!<衝突判定編
+2D衝突編
+その9 4分木空間分割を最適化する!(実装編)
+前章で4分木空間分割の最適化法を紹介しました。本章ではその実装に目を向けてみたいと思います。
+① 実装ポイントをおさらい
+まず先に、実装のポイントをおさらいしておきましょう。
+登録作業
+衝突対象となるオブジェクトを4分木(線形4分木)に直接登録すると、更新時にそれをツリーから検索する非常な手数がかかるため、前章ではオブジェクトと登録空間を一緒にしたOBJECT_FOR_TREE構造体を登録するスタイルにしました。オブジェクトはその境界図形の大きさから適切な空間に置かれる必要があります。これは最下位空間にモートン順序を振り、境界図形範囲モートン番号線形4分木要素番号という連鎖的な変換関数を用いると、o(1)レベルで空間へ登録する事ができます。
+空間は登録専門、オブジェクトは自主的にリストから離脱
+空間の振る舞いは空間クラス(CCellクラス)に担当させることにします。CCellクラスの役目は「オブジェクトを登録保持する」事ですが、前章で思案した最適化のために単純なコンテナにはなりません。登録される側であるOBJECT_FOR_TREE構造体はリンクリストとしての能力を付けるために前後の構造体へのポインタを保持することにします。CCellクラスはそのオブジェクトを登録(push)します。ここまでは通常のリストと何も変わりません。
+違うのはここからです。境界図形の位置や大きさが変わるなどでOBJECT_FOR_TREE構造体を空間から取り除きたいと思った時は、構造体自らが持つRemoveメソッドを使います。これにより、OBJECT_FOR_TREE構造体は自分を登録している空間のリンクリストから勝手に手を離し独立します。空間へはその旨をちらっと伝えるのみです(保持数の変更やリストの調節などをするため)。空間自らが構造体を検索するというプロセスが無くなる為、離脱作業もo(1)になります。
+ここまでを作りこむと、(擬似的に)ツリー上の空間への登録・離脱・再登録のすべてがo(1)で出来るようになるんです!
+衝突対応リストの作成
+登録(再登録)後の衝突判定は、線形4分木を1回通るだけで済むように最適化します。方法は前章で説明したとおりです。前章では衝突関数(メソッド)を4分木内で呼び出していたのですが、衝突判定は多種多様であることから、本章の実装では「衝突対応リスト」を作るだけにしておきます。これは衝突の可能性のあるペアをすべて列挙したリストで、このリストを取得した後にリストをたどって実際の衝突判定を行うようにすれば、より柔軟になります。
+以上の実装ポイントを踏まえて、早速実装を見ていくことにしましょう。
+② OBJECT_FOR_TREE構造体
+4分木に登録するOBJECT_FOR_TREE構造体は、1つのオブジェクト、1つの登録先空間へのポインタを保持します。また双方向リンクとしての機能も持ち合わせる必要から自分の前後の構造体へのポインタも持ちます。ただし、構造体は勝手にいなくなる可能性がありますので、スマートポインタに包んだポインタを扱うようにします。
+構造体のメンバ変数の宣言は次の通りです:
+OBJECT_FOR_TREE構造体
+template <class T>
+class CCell;
+template< class T>
+class OBJECT_FOR_TREE
+{
+public:
+CCell<T> *m_pCell;          
+// 登録空間
+T *m_pObject;             
+// 判定対象オブジェクト
+sp<OBJECT_FOR_TREE<T> > m_spPre;  // 前のOBJECT_FOR_TREE構造体
+sp<OBJECT_FOR_TREE<T> > m_spNext; // 次のOBJECT_FOR_TREE構造体
+};
+構造体とは言っていますが、後々で操作メソッドが入りますので、実質クラス化されてしまいます。今更ですがこのクラス名はちょっと冗長なので、この章内では以後「OFTクラス」と略記することにします。ごめんなさい(^-^;
+③ CCellクラスへの登録
+オブジェクトはCCell::Pushメソッドで登録されるとしましょう。CCellクラスはOFTクラスが持つ双方向リストの機能を利用して、OFTオブジェクトを自身のリストにどんどんスタック(push)して行きます。スタックなのでCCellオブジェクトは一番最新にスタックされたOFTスマートポインタのみを唯一知っています。このスタックの実装自体には難しい部分は何もありませんが、「2重登録」のチェックを厳重にしなければなりません。
+例えば、ある空間にA,B,C,D,Eという5つのOFTオブジェクトが登録されていたとしましょう。この並びで手を結んでいるわけです。ここにDを再登録(push)するとDとAが手を結び、Dの次がAとなります。しかしDはすでにC-Dというリンクを結んでいるため、結果DABCDABCDABC・・・とリンクの終端が無い「環状リンク構造」になってしまいます。これは無限に長いリストを保持したのと同じで、衝突判定の永久ループを招く事になります。
+2重登録をは実は簡単に防げます。OFTオブジェクトには自身を登録している空間へのポインタ(OBJECT_FOR_TREE::m_pCell)」があります。ここには登録が成功した場合、必ず有効な空間へのポインタ値が代入されます。よって、登録しようとする空間のアドレスを比較すれば、2重登録をo(1)で未然に防ぐ事ができます:
+CCell::Pushメソッド
+// OFTをプッシュ
+bool CCell::Push( sp<OBJECT_FOR_TREE<T> > &spOFT )
+{
+if(spOFT.GetPtr()==NULL) return false; // 無効オブジェクトは登録しない
+if(spOFT->m_pCell==this) return false; // 2重登録チェック
+if(m_spLatest.GetPtr()==NULL)
+{
+m_spLatest = spOFT; // 空間に新規登録
+}
+else
+{
+// 最新OFTオブジェクトを更新
+spOFT->m_spNext = m_spLatest;
+m_spLatest->m_spPre = spOFT;
+m_spLatest = spOFT;
+}
+spOFT->RegistCell( this ); // 空間を登録
+return true;
+}
+④ CCellクラスからのOFTオブジェクトの逸脱
+OFTオブジェクトいつでも好きなタイミングで自主的に空間のリストから逸脱できるようにします。自分自ら双方向リンクを外すわけです。この作業自体は手を離すだけですからo(1)で行えます。ただ、この作業の中でちょっとだけ煩わしい部分が出現します。下の図をご覧下さい:
+左の空間にはOFTオブジェクトがA,B,C,Dの順でスタックされ、最新のDへのポインタが保持されています。今Dが別の空間に移動するため自主的に逸脱しました(真ん中)。自主的なので、CCell空間オブジェクトはこの逸脱行為に気付く事ができません。もしD以外であれば気付かなくても特に問題はないのですが、共有しているDの場合にのみCCellオブジェクトはDをCに変更する必要があります。これは、抜ける時に連絡が必要であることを示しています。
+そこで、OFTオブジェクトは逸脱する前に自分を登録してくれていた空間にその旨を通知します。空間はそれが自分が持っている最新OFTであった時にのみ、保持しているスマートポインタを次の候補に変更します:
+OBJECT_FOR_TREE:Removeメソッド
+// 自らリストから外れる
+bool Remove(){
+// すでに逸脱している時は処理終了
+if(!m_pCell)
+return false;
+// 自分を登録している空間に自身を通知
+if(!m_pCell->OnRemove( this ))
+return false;
+// 逸脱処理
+// 前後のオブジェクトを結びつける
+if(m_spPre.GetPtr() != NULL)
+{
+m_spPre->m_spNext = m_spNext;
+}
+if(m_spNext.GetPtr() != NULL )
+{
+m_spNext->m_spPre = m_spPre;
+}
+m_spPre.SetPtr(NULL);
+m_spNext.SetPtr(NULL);
+m_pCell = NULL;
+return true;
+}
+これで逸脱作業も高速に整合性を保って行えます。
+④ 線形4分木管理クラス
+②と③で1つの空間にオブジェクトを登録する機構を作りました。後は空間を線形にずらっと並べれば線形4分木のベースが出来上がります。
+線形4分木は線形4分木管理クラス(CLiner4TreeManagerクラス)に管理担当させることにします。このクラスはルート空間から必要レベルまで空間を線形配列に並べメモリに保持します。ただし、全ての空間を最初から完全に作ってしまうと膨大なメモリを消費してしまいます。そこで、配列は空間へのポインタを格納するようにします。ポインタであれば4バイトなので、最初から確保してもそれほどメモリを占有しません(10000空間あっても40KB程度です)。
+分木の作成はInitメソッドで行います:
+CLiner4TreeManager::Initメソッド
+// 線形4分木配列を構築する
+bool Init( unsigned int Level, float left, float top, float right, float bottom )
+{
+// 設定最高レベル以上の空間は作れない
+if(Level>CLINER4TREEMANAGER_MAXLEVEL+1)
+return false;
+// 各レベルでの空間数を算出
+int i;
+m_iPow[0] = 1;
+for(i=1;i<CLINER4TREEMANAGER_MAXLEVEL+1;i++)
+m_iPow[i] = m_iPow[i-1]*4;
+// Levelレベル(0基点)の配列作成
+m_dwCellNum = (m_iPow[Level+1]-1)/3;
+ppCellAry = new CCell<T>*[m_dwCellNum];
+ZeroMemory( ppCellAry, sizeof(CCell<T>*)*m_dwCellNum
+);
+// 有効領域を登録
+m_fLeft = left;
+m_fTop = top;
+m_fW = right - left;
+m_fH = bottom - top;
+m_fUnit_W = m_fW/(1<<Level);
+m_fUnit_H = m_fH/(1<<Level);
+m_uiLevel = Level;
+return true;
+}
+Init関数は引数Levelに渡された分割レベルからその空間数を算出し、配列をメモリに用意します。
+オブジェクトを線形4分木に登録(再登録)する時は、CLiner4TreeManager::Registメソッドを用います。登録時に境界図形の左上端と右下端の座標を引数に渡しています。OBJECT_FOR_TREE構造体に境界図形を含めればいいじゃないかと思うかもしれませんが、そうすると構造体が平面境界図形限定になってしまいます。
+Registメソッドの内部では境界図形の範囲からそれを含む空間の要素番号を算出し、該当する空間に登録します:
+CLiner4TreeManager::Registメソッド
+// オブジェクトを登録する
+bool Regist( float left, float top, float right, float bottom, sp<OBJECT_FOR_TREE<T> > &spOFT )
+{
+// オブジェクトの境界範囲から登録モートン番号を算出
+DWORD Elem = GetMortonNumber( left, top, right, bottom );
+if(Elem < m_dwCellNum ){
+// 空間が無い場合は新規作成
+if( !ppCellAry[Elem] )
+CreateNewCell(Elem);
+return ppCellAry[Elem]->Push(spOFT);
+}
+return false; // 登録失敗
+}
+GetMortonNumber関数で指定の範囲に該当する要素番号を取り出します。もしその空間がまだ作られていないのであれば、その空間と親空間をCreateNewCelメソッドで全て生成します。後はオブジェクトを空間にpushして登録終了です。
+線形4分木の子空間番号から親空間の番号を割り出すルールはとても簡単です。例えば5番の親空間は21,22,23,24番の子空間を持ちます。6番の親が持つ子空間の要素番号は25,26,27,28番です。この親子には、
+という関係があります(右辺はint型にキャスト)。試しに子空間27番を入れると(int)((27-1)/4)=6番と親空間番号が出てきます。24番だと1引かれるので割り算の結果は6に満たず、5番となります。CreateNewCellメソッド内では指定の子空間番号からこの式を使ってどんどんさかのぼり、無い空間は積極的に作っていきます:
+CLiner4TreeManager::CreateNewCellメソッド
+// 空間を生成
+bool CreateNewCell( DWORD Elem )
+{
+// 引数の要素番号
+while( !ppCellAry[Elem] )
+{
+// 指定の要素番号に空間を新規作成
+ppCellAry[Elem] = new CCell<T>;
+// 親空間にジャンプ
+Elem = (Elem-1)>>2;
+if(Elem>=m_dwCellNum) break;
+}
+return true;
+}
+一度作成された空間は基本的に消しません。もしメモリが不足気味になってきたなどギチギチの状態であれば、オブジェクトが空になった空間を消すという作業を入れても構いませんが、その場合は空間の作成と消去による速度低下は避けられません。
+⑤ 衝突対応リストの作成
+ここまでの段階で、もう線形4分木にオブジェクトを登録し、オブジェクトが自主的に逸脱し、別の空間に再登録するというプロセスが出来上がっています。後は衝突判定をさせるだけです。①でも述べましたが、衝突判定の方法は実装により本当に様々なので、分木の外でしてもらう事にします。そのため、分木の中では何と何が衝突するのかを書き記した「衝突対応リスト」を作成するにとどめます。衝突対応リストの形式ですが、これは「衝突ペア」を線形に列挙するだけにとどめます。
+衝突判定リストは必ずルート空間から作り始めます。木の巡り方は前章で見て来た通りで、
+①:自身の空間内のオブジェクトと全衝突判定
+②:衝突スタック(リスト)につまれているオブジェクトと判定
+③:子空間があれば自身の空間内のオブジェクトをスタックに積んで子空間へ移動
+④:下がる子空間がもう無くなった時には、スタックから自身の登録オブジェクトをポップして親空間に戻る
+⑤:ルート空間まで戻ったらおしまい
+というプロセスを辿ります。前章では再帰関数を使わない場合を挙げたのですが、実装してみるとやけにメンドクサイ状態ことになりましたので、ここでは素直に再帰関数を使う事にします:
+CLiner4TreeManager::GetAllCollisionListメソッド
+// 衝突判定リストを作成する
+DWORD CLiner4TreeManager::GetAllCollisionList( vector<T*> &ColVect
+)
+{
+// リスト(配列)は必ず初期化します
+ColVect.clear();
+// ルート空間の存在をチェック
+if(ppCellAry[0]==NULL)
+return 0; // 空間が存在していない
+// ルート空間から衝突チェック開始
+list<T*> ColStac;
+GetCollisionList( 0, ColVect, ColStac );
+return (DWORD)ColVect.size();
+}
+// 空間内で衝突リストを作成する
+bool CLiner4TreeManager::GetCollisionList( DWORD Elem, vector<T*>
+&ColVect, list<T*> &ColStac )
+{
+list<T*>::iterator it;
+// ① 空間内のオブジェクト同士の衝突リスト作成
+sp<OBJECT_FOR_TREE<T> > spOFT1 = ppCellAry[Elem]->GetFirstObj();
+while( spOFT1.GetPtr()!=NULL)
+{
+sp<OBJECT_FOR_TREE<T> > spOFT2 =
+spOFT1->m_spNext;
+while(spOFT2!=NULL){
+// 衝突リスト作成
+ColVect.push_back(spOFT1->m_pObject);
+ColVect.push_back(spOFT2->m_pObject);
+spOFT2 = spOFT2->m_spNext;
+}
+// ② 衝突スタックとの衝突リスト作成
+for(it=ColStac.begin(); it!=ColStac.end(); it++){
+ColVect.push_back(spOFT1->m_pObject);
+ColVect.push_back(*it);
+}
+spOFT1 = spOFT1->m_spNext;
+}
+bool ChildFlag = false;
+// ③ 子空間に移動
+DWORD ObjNum = 0;
+DWORD i, NextElem;
+for(i=0; i<4; i++){ 
+NextElem = Elem*4+1+i;
+if( NextElem<m_dwCellNum && ppCellAry[Elem*4+1+i]
+){
+if(!ChildFlag){
+// ④ 登録オブジェクトをスタックに追加
+spOFT1 = ppCellAry[Elem]->GetFirstObj();
+while( spOFT1.GetPtr()
+){
+ColStac.push_back(
+spOFT1->m_pObject );
+ObjNum++;
+spOFT1
+= spOFT1->m_spNext;
+}
+}
+ChildFlag = true;
+GetCollisionList( Elem*4+1+i, ColVect,
+ColStac ); // 子空間へ
+}
+}
+// ⑤ スタックからオブジェクトを外す
+if( ChildFlag ){
+for(i=0; i<ObjNum; i++)
+ColStac.pop_back();
+}
+return true;
+}
+少し長いソースですが、木を巡って忠実に衝突対応リストを作っています。ただこの再帰メソッドはまだ最適化が可能かもしれません。配列を毎回初期化するのに非常な時間がかかる場合は、初期化せずに要素を使いまわす工夫をしても良いかもしれません。
+(2009. 2. 7追記)
+⑥ スマートポインタやめました!
+4分木のサンプルについていくつかご質問を受けまして、内容を見直していた所、大変まずい状態が起こりうる事がわかりました。スマートポインタ同士の双方向リンクがあると、循環参照によるメモリリークが起こってしまいます。この事態を避けるために、サンプルでは機構内からスマートポインタを排除しました。
+これらのクラスを用いたサンプルプログラムをこちらにアップ致しました。クラスはオープン致しますのでご自由にお使い下さい。
+その9 4分木空間分割を最適化する!(実装編)

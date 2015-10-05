@@ -1,0 +1,703 @@
+ナビゲーション:前へ   上へ   次へ
+19 
+Fortran Tip集
+19.1 実数及び複素数の型記述方法について
+19.2 改行しない方法
+19.3 1行読み飛ばす方法
+19.4 1行すべてを読み込む方法
+19.5 数値と文字の変換を行う方法
+19.6 連番ファイル名の生成方法
+19.7 関数を安全に引数として渡す方法
+19.8 移植性のある時間計測の方法
+19.9 多次元配列のアクセス順序に注意する
+19.10 include行の活用について
+19.11 乱数発生の組込み手続random_number
+19.12 CSVファイルを読む方法
+19.13 CSVファイルを書き出す方法
+19.14 プログラムを一時停止する方法
+19.15 Gnuplot (for Windows) の利用例
+19.1 
+実数及び複素数の型記述方法について
+19.1.1 
+一般的なコードにおいての記述方法
+本テキストに示された方法以外にも、良く見られる型の記述方法があります。
+それぞれの記述方法について、なぜ推奨されていないのか、理由を述べたいと思います。
+型  推奨  記述  説明
+単精度実数  〇  real  単精度はこの記述方法が推奨されます
+単精度実数  ×  real(4)  種別番号4の意味がコンパイラによって異なります(4バイトを意味するとは限らない)
+単精度実数  ×  real*4  Fortran標準に準拠していません
+倍精度実数  〇  double precision  倍精度はこの記述方法が推奨されます
+倍精度実数  ×  real(8)  種別番号8の意味がコンパイラによって異なります(8バイトを意味するとは限らない)
+倍精度実数  ×  real*8  Fortran標準に準拠していません
+単精度複素数  〇  complex  単精度複素数はこの記述方法が推奨されます
+単精度複素数  ×  complex(4)  コンパイラにより種別番号4の意味が異なります
+単精度複素数  ×  complex*8  Fortran標準に準拠していません
+倍精度複素数  〇  complex(kind(0d0))  倍精度複素数はこの記述方法が推奨されます
+倍精度複素数  ×  complex(8)  種別番号8の意味がコンパイラによって異なります
+倍精度複素数  ×  complex*16  Fortran標準に準拠していません
+倍精度複素数  ×  double complex  Fortran標準に準拠していません
+19.1.2 
+より本格的なコードにおいての記述方法
+より本格的な記述方法としてはselected_real_kind組込み関数を用いて
+必要な有効桁数を持つ型のkind番号を取得する方法があります。
+例えば以下の例のようなモジュールを利用すると便利です。
+[
+precision.f90
+] - 汎用性のある型記述のサンプル
+module my_precision
+implicit none
+! 有効桁数から種別番号を求めるためにselected_real_kindを用いる
+integer,parameter :: wp = selected_real_kind(p=6)  ! p=12等とすると倍精度となる
+end module my_precision
+program precision
+use my_precision
+implicit none
+real(wp) x    ! wpには指定された有効桁数を持つ型の種別番号が格納されています
+complex(wp) c ! realとcomplexで種別番号は対応しています
+x = 0.1_wp   ! このようすることで、指定種別の定数表現が可能です
+c = 0.5_wp, 1.2_wp
+print *, x
+end program
+出力例:(p=6の場合)
+0.1000000
+(0.5000000,1.2000000)
+出力例:(p=12の場合)
+0.1000000000000000
+(0.5000000000000000,1.2000000000000000)
+このような記述により汎用性の高いプログラムの作成が可能です。
+19.2 
+改行しない方法
+通常write文もしくはprint文は改行を伴いますが、場合によっては
+改行を行いたくないケースもあります。そのような場合には
+write文においてadvance='no'という指定を行います。
+以下に例を示します。
+[
+advance.f90
+] - 改行をしないサンプル
+program advance
+implicit none
+integer age
+write (*,fmt='(a)', advance='no') "Enter your age: "  !改行なし!
+read *, age
+print *, "Your age is:", age
+end program advance
+出力例:
+Enter your age: 20
+Your age is: 20
+[
+advance-number.f90
+] - 改行をしないサンプル2(数字を出す例)
+program advance_number
+implicit none
+integer,parameter :: n = 7
+integer i
+do i = 1, n
+write (*, fmt='(I4)', advance='no') i   ! 改行しない
+end do
+end program advance_number
+出力例:
+1   2   3   4   5   6   7
+19.3 
+1行読み飛ばす方法
+ファイルからの読み込み時に読み込む必要のない行を読み飛ばしたい場合があります。
+このような場合以下の例のようにread文に空の書式を指定して実現可能です。
+[
+skip-a-line.f90
+] - 1行読み飛ばすサンプル
+program skip_a_line
+implicit none
+integer i
+open(99, file='mydata.dat' )
+read (99,'()')    ! 1行スキップする
+read (99,*) i
+close(99)
+end
+19.4 
+1行すべてを読み込む方法
+ファイルからの読み込みにおいて行内の空白などもふくめ1行すべてを読み込みたい場合があります。
+このような場合には以下の例のように書式の指定で '(a)' を用いて実現可能です。
+'(a)'を指定した場合空白なども含めて行の最初から最後までを読み込む事が可能です。
+[
+read-whole-line.f90
+] - 1行すべてを読み込むサンプル
+program read_whole_line
+implicit none
+integer,parameter :: max_line_len = 4000
+character(max_line_len) linebuf
+open(99, file='mydata.dat', recl=max_line_len )
+read (99,'(a)') linebuf
+close(99)
+print *, trim(linebuf)
+end
+19.5 
+数値と文字の変換を行う方法
+内部ファイルとの入出力を使うことで
+数値から文字への変換、もしくはその反対に
+文字から数値への変換が簡単に行えます。
+ここで言う内部ファイルとは文字変数を示します。
+write文で装置番号の代わりに文字変数を指定すると
+その文字変数に対しての出力が行われます。
+同様にread文で装置番号の代わりに文字変数を指定すると
+その文字変数からの入力が行われます。
+例えば以下のようにすると、簡単に数値を指定の形式の
+文字列に置き換えることができます。
+character(20) a
+integer :: i = 123
+write (a,*) i
+また逆に、以下のようにすることで、文字"123"を数値の123に変換することが可能です。
+character(3) a
+integer i
+a = "123"
+read (a,*) i
+以下にプログラム例を示します。
+[
+internal-file.f90
+] - 文字と数値の変換を行うサンプル
+program internal_file
+implicit none
+real a, b
+character(5) s
+a = 1.234
+write (s,'(f0.3)') a     ! 実数から文字列への変換
+print *, 's = "', s, '"'
+read (s,*) b             ! 文字列から実数への変換
+print *, "b =", b
+end program internal_file
+出力例:
+s = "1.234"
+b =   1.2340000
+19.6 
+連番ファイル名の生成方法
+mydata001.csv ... mydata999.csv 等の連番ファイル名を生成する方法を以下に示します。
+(内部ファイルを用いた数字から文字への変換の応用です)
+例えば以下のようにすると、簡単に連番ファイル名を生成することができます。
+program iterate_filename
+implicit none
+character filename*128
+integer i
+do i = 1, 5
+write (filename, '("mydata", i3.3, ".txt")') i ! ここでファイル名を生成している
+print *, trim(filename)
+end do
+end program iterate_filename
+出力例:
+mydata001.txt
+mydata002.txt
+mydata003.txt
+mydata004.txt
+mydata005.txt
+以下に実際に連番ファイルを書きだすプログラム例を示します。
+[
+write-numbered-file.f90
+] - 連番ファイルを書きだすサンプル
+program write_numbered_files
+implicit none
+character filename*128
+integer i, j
+do i = 1, 5
+write (filename, '("xyz", i4.4, ".csv")') i
+open (17, file=filename, status='replace')
+do j = 1, 10
+write (17, '(i0,",",i0)') j, j*2
+end do
+close (17)
+end do
+end program write_numbered_files
+出力ファイルの例:
+xyz0001.csv
+xyz0002.csv
+xyz0003.csv
+xyz0004.csv
+xyz0005.csv
+それぞれのファイルの中身:
+1,2
+2,4
+3,6
+4,8
+5,10
+6,12
+7,14
+8,16
+9,18
+10,20
+19.7 
+関数を安全に引数として渡す方法
+関数を引数として渡したい場合があります。
+例えば積分を行うサブルーチンや関数に被積分関数を渡したい場合などです。
+そのような場合、引用仕様宣言(interface)を用いることで、これを安全に行うことができます。
+以下の例では、引数として渡されてくる関数 f (仮引数)の引用仕様宣言を行っています。
+[
+func-arg.f90
+] - 安全に関数を引数として渡すサンプル
+module functions_module
+implicit none
+contains
+!
+! 被積分関数
+!
+double precision function myfunc(x)
+double precision, intent(in) :: x
+myfunc = sin(x) ** 2
+end function
+end module
+program func_arg
+use functions_module
+implicit none
+print *, sekibun(myfunc, 0d0, 3.14159265358979d0)
+contains
+double precision function sekibun(f, a, b)
+!
+! 仮引数である関数 f の型を宣言する
+!
+interface
+double precision function f(x)
+double precision, intent(in) :: x
+end function
+end interface
+double precision, intent(in) :: a, b
+double precision x1, step, x2
+integer i
+integer, parameter :: n = 100
+step = (b - a) / n
+sekibun = 0d0
+x1 = a
+do i = 1, n
+x2 = a + step * i
+sekibun = sekibun + (f(x1) + f(x2)) * (x2 - x1) / 2d0
+x1 = x2
+end do
+end function
+end program
+出力例:
+1.5707963267948963
+19.8 
+移植性のある時間計測の方法
+計算プログラムにおいては、処理にどれだけ時間がかかったのかを測りたい場合があります。
+ここではFortranの標準に準拠した形での時間計測の方法を説明します。
+経過時間を測定するには、組込み手続system_clockが利用可能です。
+[
+sys-clock.f90
+] - 経過時間計測のサンプル
+program sys_clock
+implicit none
+integer t1, t2, t_rate, t_max, diff
+call system_clock(t1)   ! 開始時を記録
+!
+! 計算コード
+!
+call system_clock(t2, t_rate, t_max)   ! 終了時を記録
+if ( t2 < t1 ) then
+diff = t_max - t1 + t2
+else
+diff = t2 - t1
+endif
+print "(A, F10.3)", "time it took was:", diff/dble(t_rate)
+end program sys_clock
+出力例:
+time it took was:     1.576
+CPU時間を計測するには組込み手続cpu_timeが利用可能です。
+(cpu_timeはFortran95で新たに追加された関数です)
+[
+cpu-time.f90
+] - CPU時間計測のサンプル
+program cputime
+implicit none
+real :: t1, t2
+call cpu_time( t1 )
+!
+! 計算コード
+!
+call cpu_time( t2 )
+print *, "cpu time:", t2-t1, "seconds."
+end program cputime
+出力例:
+cpu time:   0.7800050 seconds.
+19.9 
+多次元配列のアクセス順序に注意する
+計算プログラムの作成において、結果の正しさの次に
+パフォーマンスが重要となってきます。以下に多次元配列の
+アクセス順序で気をつけると良い点を述べます。
+多次元配列の各成分をループ内でアクセスする場合に、
+左側の添字から順番に変更されるようにすると、
+一般的にパフォーマンスが良くなります。(キャッシュに関連しています)
+例えば以下の例でa(i1,i2,i3)とするよりもa(i3,i2,i1)とする方が
+一般的にパフォーマンスが良くなります。
+real a(100,100,100)
+do i1=1,100
+do i2=1,100
+do i3=1,100
+! の書き方よりも
+!a(i1,i2,i3) = a(i1,i2,i3)+1.0
+! の書き方が優れています
+a(i3,i2,i1) = a(i3,i2,i1)+1.0
+end do
+end do
+end do
+以下のサンプルをあるPC上で(最適化なし)で走らせた場合に、
+13行目をa(k,j,i)とした場合には15.92秒かかり、a(i,j,k)では1.11秒かかりました。
+このように配列のアクセス順序に気をつけるメリットは十分にあります。
+[
+array-access.f90
+] - 配列成分アクセス順序のサンプル
+program array_access
+implicit none
+integer,parameter :: n = 512
+integer a(n,n,n)
+integer val, i, j, k
+real t1, t2
+print *, "Enter a value:"
+read *, val
+call cpu_time(t1)
+do k=1, n
+do j=1, n
+do i=1, n
+a(i,j,k) = val
+end do
+end do
+end do
+call cpu_time(t2)
+print *, "Time was:", t2-t1
+end program array_access
+出力例:
+Enter a value:
+55
+Time was:   1.1388073
+19.10 
+include行の活用について
+他のファイルの内容をソースファイルの特定の位置に含めたい場合に
+include行が利用可能です。 include行は下記の形式を持ちます。
+include 文字定数表現
+ここで通常は文字定数表現の部分にファイル名を指定します。
+例)
+...
+...
+include "sortImpl.f90"
+...
+...
+include行で含まれる側のファイルも更にinclude行を含むことが許されています。(include行のネスト)
+include行は過去のプログラムにおいてすべての共通ブロックの宣言を合わせるために多く利用されています。
+現在では同等な機能をモジュールでより安全に実装することができますので、このような利用方法は推奨されません。
+現在でもinclude行が役立つ場面として同じアルゴリズムを異なるいくつかの型向けに実装したいといったケースがあげられます。例えば並べ替えを行うサブルーチンの宣言部分以外をincludeすることによりコードの保守性を高めるといった利用が考えられます。
+例)
+! 整数型のソートルーチン
+subroutine sortInt(data)
+integer data(:), tmp
+include "sortImpl.f90"
+end subroutine sortInt
+! 実数型のソートルーチン
+subroutine sortReal(data)
+real data(:), tmp
+include "sortImpl.f90"
+end subroutine sortReal
+[sortImpl.f90の内容]
+integer i, j
+do i=1, size(data)-1
+do j=i+1, size(data)
+if ( data(i) > data(j) ) then
+tmp = data(i)
+data(i) = data(j)
+data(j) = tmp
+end if
+end do
+end do
+19.11 
+乱数発生の組込み手続random_number
+Fortranで乱数発生を行うための組込み手続に random_number があります。
+ここではその利用例を示します。
+【書式】
+call random_number(harvest)
+※harvestは実数(単精度、倍精度、等)のスカラもしくは配列を指定します。
+※harvestはintent(out)属性を持ち、ここに乱数が格納されます。
+random_numberの引数は上記の通り配列でもスカラでもかまいません。
+また実数であれば単精度、倍精度等何でも指定可能です。
+random_numberは与えられた引数に乱数を与えて復帰します。以下にサンプルコードを示します。
+[
+random.f90
+] - 乱数発生のサンプル
+program random
+implicit none
+integer,parameter :: n = 4
+real :: x(n)
+call random_number(x)
+print *, x
+end program random
+出力例:
+0.1431407   0.7660621   0.2057434   0.9288544
+19.11.1 
+random_seedの使い方
+乱数のシードを設定するにはrandom_seed組込み手続を利用しますが、
+若干シンプルでない部分がありますので以下にrandom_seedの利用方法を説明します。
+シードの格納領域の大きさは環境(コンパイラ)依存ですので、
+必ず領域の大きさを取得してから利用する必要があります。
+以下にポータブルなコードを作成する手順を示します。
+利用の流れ
+シード格納領域の配列サイズを取得
+配列領域を確保
+シードを取得
+取得されたシードを再利用(同じ乱数シーケンスを得る)
+以下にrandom_seedの仕様を示します。
+【書式】
+random_seed( [size] [put] [get] )
+size (intent(out)) : シードを格納するのに必要な配列サイズを取得します。
+put (intent(in)) : シードを設定します。
+get (intent(out)) : 現在のシードを取得します。
+以下に上記の手順に基づいたサンプルコードを示します。
+[
+random-seed.f90
+] - random_seedの利用方法のサンプル
+program random_seed_example
+implicit none
+integer,parameter :: n = 5
+real :: x
+integer i, seedsize
+integer,allocatable:: seed(:)
+call random_seed(size=seedsize)  ! シードの格納に必要なサイズを取得する
+allocate(seed(seedsize))         ! シード格納領域を確保
+call random_seed(get=seed)       ! 次回同じ乱数を発生できるように
+print *, "Size of seed array is", seedsize
+print *, "1st try..."
+do i = 1, n
+call random_number(x)
+print *, i, x
+end do
+call random_seed(put=seed)       ! 前回と同じシードを設定
+print *, "2nd try..."
+do i = 1, n
+call random_number(x)
+print *, i, x
+end do
+end program random_seed_example
+実行例:
+Size of seed array is 630
+1st try...
+1   0.7090818
+2   0.5373439
+3   0.1391851
+4   0.2833014
+5   0.4468124
+2nd try...
+1   0.7090818
+2   0.5373439
+3   0.1391851
+4   0.2833014
+5   0.4468124
+19.12 
+CSVファイルを読む方法
+ここではFortranでCSVファイルを読む方法を説明します。
+19.12.1 
+最もシンプルなCSVファイルの場合
+シンプルなCSVファイルであれば比較的簡単に読み込むことができます。
+特にあらかじめレコード数(行数)がわかっていて且つ数値だけで構成される以下の例のようなCSVファイルは簡単に読み込むことが可能です。
+X,Y,Z
+1.2,3.4,5.0
+2.2,3.3,6.2
+0.3,2.1,5.98
+4.2,3.6,1.25
+5.03,2.3,3.44
+上記CSVデータを読み込むプログラム例を以下に示します。
+[
+read-simple-csv.f90
+] - シンプルなCSVファイルを読み込むサンプル
+program readSimpleCSV
+implicit none
+integer, parameter :: n = 5
+real x, y, z
+integer i
+open (17, file='mydata.csv', status='old')
+read (17, '()')       ! ヘッダ行の読み飛ばし
+do i = 1, n
+read (17, *) x, y, z
+print *, x, y, z
+end do
+close (17)
+end program readSimpleCSV
+実行例:
+1.2000000   3.4000001   5.0000000
+2.2000000   3.3000000   6.1999998
+0.3000000   2.0999999   5.9800000
+4.1999998   3.5999999   1.2500000
+5.0300002   2.3000000   3.4400001
+ここでのポイントはread文の書式に * を指定している事です。
+これにより CSV 形式のデータを簡単に読み込む事ができています。
+ヘッダ行の読み飛ばしは以下のように行う事ができます。
+read(装置番号,'()')
+19.12.2 
+レコード数があらかじめわかっていないCSVファイルの場合
+前述の例ではあらかじめCSVファイルのレコード数(行数)がわかっている事が前提でしたが、
+場合によってはファイルを読み込むまでレコード数がわかっていない場合もあります。
+ここで示すプログラムは以下のデータ(前述と同じデータ)を読み込みますが、
+あらかじめレコード数(行数)がわかっていない場合に対応したものです。
+X,Y,Z
+1.2,3.4,5.0
+2.2,3.3,6.2
+0.3,2.1,5.98
+4.2,3.6,1.25
+5.03,2.3,3.44
+上記のようなデータのレコード数がわかっていない場合でも下記のコードで読み込みが可能です。
+[
+read-unknown-csv.f90
+] - レコード数がわかっていないCSVファイルを読み込むサンプル
+program readCSV
+implicit none
+integer n
+real x, y, z
+integer i
+open (17, file='mydata.csv', status='old')
+! === レコード数を調べる ===
+n = 0
+read (17, '()')
+do
+read (17, *, end=100) x, y, z  ! ファイル終端ならば999に飛ぶ
+n = n + 1
+end do
+100 continue
+rewind (17)  ! ファイルの最初に戻る
+print *, 'NumRec =', n
+! === 読み込む ===
+read (17, '()')
+do i = 1, n
+read (17, *) x, y, z
+print *, x, y, z
+end do
+close (17)
+end program readCSV
+実行例:
+NumRec = 5
+1.2000000   3.4000001   5.0000000
+2.2000000   3.3000000   6.1999998
+0.3000000   2.0999999   5.9800000
+4.1999998   3.5999999   1.2500000
+5.0300002   2.3000000   3.4400001
+このコードではまず最初にレコード数を調べます。ここでのポイントはread文のend=指示子です。
+read(17,*,end=999) x, y, z
+この記述によりファイルの終端を検出し、もうこれ以上データがない場合に文番号 999 へジャンプします。
+レコード数がわかった時点でファイルを最初から再度読みなおすためにrewind文を用い、
+その後実際の読み込み処理を行なっています。
+19.13 
+CSVファイルを書き出す方法
+ここではFortranでCSV形式のファイルを出力する方法を説明します。
+19.13.1 
+手っ取り早い方法
+最も手っ取り早い方法を以下に示します。
+以下のサンプルプログラムはそれぞれ5つの成分を持つ配列xとyの値をCSV形式で書きだすものです。
+[
+write-simple-csv.f90
+] - 手っ取り早くCSVファイルを書きだすサンプル
+program writeSimpleCSV
+implicit none
+integer, parameter :: n = 5
+integer i
+real :: x(n) = (/ 1.2, 0.02, 0.0003, 4.2, 5.99 /)
+real :: y(n) = (/ 9.0, 0.0008, 0.37, 100000.6, 500.2 /)
+open (18, file='mydata.csv', status='replace')
+do i = 1, n
+write (18, *) x(i), ',', y(i)
+end do
+close (18)
+end program writeSimpleCSV
+このプログラムを実行するとmydata.csvというファイルに以下の内容が出力されます。
+1.2000000 ,   9.0000000
+2.0000000E-02 ,   7.9999998E-04
+3.0000001E-04 ,   0.3700000
+4.1999998 ,   1.0000060E+05
+5.9899998 ,   5.0020001E+02
+この出力はExcel等で読み込む事が可能です。
+この方法は手っ取り早く出力する場合には十分ですが、
+もしも余分な空白が気になるようであれば次セクションに示す方法で空白を除いた出力も可能です。
+19.13.2 
+余分な空白を含まない方法
+以下に余分な空白を出力したくない場合に利用可能なサンプルプログラムを示します。
+[
+write-nospace-csv.f90
+] - 余分な空白を含まないCSVファイルを書きだすサンプル
+program writeCSV
+implicit none
+integer, parameter :: n = 5
+integer i
+character linebuf*256
+real :: x(n) = (/ 1.2, 0.02, 0.0003, 4.2, 5.99 /)
+real :: y(n) = (/ 9.0, 0.0008, 0.37, 100000.6, 500.2 /)
+open (18, file='mydata.csv', status='replace')
+do i = 1, n
+write (linebuf, *) x(i), ',', y(i) ! 一旦内部ファイルへ書き出す
+call del_spaces(linebuf)           ! 余分な空白を削除する
+write (18, '(a)') trim(linebuf)    ! 出力する
+end do
+close (18)
+contains
+subroutine del_spaces(s)
+character (*), intent (inout) :: s
+character (len=len(s)) tmp
+integer i, j
+j = 1
+do i = 1, len(s)
+if (s(i:i)==' ') cycle
+tmp(j:j) = s(i:i)
+j = j + 1
+end do
+s = tmp(1:j-1)
+end subroutine del_spaces
+end program writeCSV
+このプログラムは一旦内部ファイル(文字変数)に書き出しを行い、そこで余分な空白を取り除いた上で出力を行うと言う事を行なっています。
+このプログラムを実行するとmydata.csvに以下のように余分な空白を除いた出力がなされます。
+1.2000000,9.0000000
+2.0000000E-02,7.9999998E-04
+3.0000001E-04,0.3700000
+4.1999998,1.0000060E+05
+5.9899998,5.0020001E+02
+19.14 
+プログラムを一時停止する方法
+read 文に * を指定することで、プログラムを一時停止する(Enter 待ちにする)ことができます。
+[
+wait-enter.f90
+] - プログラムを一時停止するサンプル
+program wait_enter
+implicit none
+print *, 'Please press Enter:'
+read *
+print *, 'Hello World'
+end program
+19.15 
+Gnuplot (for Windows) の利用例
+幅広い分野で利用されているグラフ作成ソフト Gnuplot の Windows 環境における利用例を以下に示します。
+ここでのポイントは、Fortran 2008 から導入された組込み手続 execute_command_line を用いて Gnuplot を起動していることです。
+※ Gnuplot (for Windows) のインストールと初期設定はユーザーご自身で行ってください。
+Gnuplot ホームページ http://www.gnuplot.info/
+以下のプログラム例は,実行ファイル wgnuplot.exe の場所(パス)が環境変数 PATH に設定されていることを前提としています。
+[
+gnuplot-demo.f90
+] - Gnuplot (for Windows) の利用例
+program gnuplot_demo
+implicit none
+real x
+integer i
+!
+! 数値データファイルを作成する.
+!
+open (10, file = 'mygnuplot.dat', status = 'replace')
+do i = -50, 50
+x = i / 10.0
+write (10, *) x, myfunc(x)
+end do
+close (10)
+!
+! スクリプトファイルを作成する.
+!
+open (10, file = 'mygnuplot.plt', status = 'replace')
+write (10, '(a)') 'plot "mygnuplot.dat"'
+write (10, '(a)') 'pause -1'
+close (10)
+!
+! Gnuplot を起動する.
+!
+call execute_command_line('wgnuplot "mygnuplot.plt"')
+contains
+function myfunc(x)
+real myfunc
+real, intent(in) :: x
+myfunc = (1 / cosh(x)) ** 2
+end function
+end program
+実行例:
+ナビゲーション:前へ   上へ   次へ
+Fortran入門: Fortran Tip集

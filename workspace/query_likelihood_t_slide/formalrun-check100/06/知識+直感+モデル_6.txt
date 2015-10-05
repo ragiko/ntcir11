@@ -1,0 +1,6 @@
+設計情報に関する理工学部授業において、力学モデルの直観的理解を促す対話型アプリケーションを提示し、クイズ形式で獲得知識の定量化を試みた.受講者全体の統計情報によって、モデルの種類により有意差のあることがわかった.さらに、専門用語の理解や、設計計算を含む総合的な設計情報知識との関係を調査した.具体的な力学モデルとしては、静定・不静定はりの支持条件、荷重条件を入力条件として、せん断力、曲げモーメント、たわみ角、たわみを出力とするものを与えた.これらの組み合わせは、線形微分方程式の組み合わせによって数学モデルが表現可能であるが、組み合わせの全てを事前に知識として獲得することが難しいため、直感的な推定が必要になる. 
+In the field of design information, the interactive application to which the intuitive understanding of a dynamic model is urged was shown, and quantification of acquisition knowledge was tried in quiz form. 
+The whole participant's statistical information showed that there was a significant difference according to the kind of model. 
+Furthermore, an understanding of a technical term and a relation with synthetic design information knowledge including design calculation were investigated. As a concrete dynamic model, shearing force, the bending moment, the degree of angle of deflection, and deflection the thing that considers bending as an output were given by making the support condition of statically determinate and indeterminate beam, and a loading condition into an input condition. 
+Although such combination can express a mathematical model with the combination of an alignment differential equation, since it is difficult to acquire all the combination as knowledge in advance, intuitive presumption is needed.
+研究会 - 力学モデルの直観的理解と設計知識の相関

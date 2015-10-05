@@ -1,0 +1,205 @@
+2011年8月のkazeburoさんのエントリに対する解説記事です。結論から言うとkazeburoさんの案に賛成なのですが、本日はどうしてそうなったのかというところを確認していきたいと思います。本記事はMySQL Casual Advent Calendar 2011の17日目のエントリです。16日目はakira1908jpさんでした。
+当時の内容を覚えていない方は、先にkazeburoさんのエントリをご一読ください。また、テストケースがGitHubに公開されていますのでカジュアルに再現試験をすることも可能です。
+Covering Index と self-join と MySQL - blog.nomadscafe.jp
+kazeburo's gist: 1150842 - Gist
+問題のSQLをチューニングするには、MySQLがインデックスに対してどのようにアクセスするかという点についての知識が必要です。まずはインデックスに対するアクセス方式が一つだけではないということを、Oracle DatabaseとMySQLを対比させながら見ていきます。
+Bツリーインデックスの構造
+以下はentriesテーブルに付与されたセカンダリインデックスを図示したものです。entriesテーブルには主キー(id)に加えてセカンダリインデックス(user_id, status, created_at)が付与されていますが、以降の説明では一部スペースの関係でセカンダリインデックスのstatusカラムを省略しています。このセカンダリインデックスは、複数のカラムが指定された複合インデックス(Composite Index)になっているところがポイントです。リーフブロックの各インデックスエントリには、Oracle Databaseの場合はレコードの物理格納位置を指し示す10バイトの拡張ROWID、MySQL(InnoDB)の場合は主キーの値が格納されています。
+インデックスアクセスの方式は大きく分けてOracle Databaseで5種類、MySQLで3種類あります。順に説明していきます。
+Bツリーをたどり、特定のリーフブロックにアクセスする
+Bツリーをたどり、さらにリーフブロックのリスト構造をたどる
+リーフブロックのリスト構造を、最初から最後までたどる
+リーフブロックのリスト構造を、スキップしながら最初から最後までたどる (Oracle Databaseのみ)
+リーフブロックを、リスト構造を無視してディスク格納順に読み取る (Oracle Databaseのみ)
+1. Bツリーをたどり、特定のリーフブロックにアクセスする
+WHERE user_id = 2 AND created_at = '2011-09-14'
+Bツリーをたどり、リーフブロックに格納されたインデックスエントリを一つ読み取ります。ユニークインデックスに対して等価検索を行ったときのアクセス方式です。Oracle DatabaseではINDEX UNIQUE SCAN、MySQLではtype = constと呼ばれています。もっとも効率的です。
+2. Bツリーをたどり、さらにリーフブロックのリスト構造をたどる
+WHERE user_id = 2 AND created_at BETWEEN '2011-09-01' AND '2011-09-15'
+Bツリーをたどり、リーフブロックに格納されたインデックスエントリを一つあるいは複数読み取ります。必要なインデックスエントリが複数のリーフブロックにまたがっている場合は、リーフブロック同士を連結しているリスト構造をたどって隣のリーフブロックへとアクセスしていきます。非ユニークインデックスに対して等価検索を行ったとき、あるいはインデックスに対して範囲検索を行ったときのアクセス方式です。Oracle DatabaseではINDEX RANGE SCAN、MySQLではtype = refあるいはtype = rangeと呼ばれています。二番目に効率的です。
+3. リーフブロックのリスト構造を、最初から最後までたどる
+WHERE created_at = '2011-09-10'
+リーフブロックのリスト構造を最初から最後までたどり、すべてのインデックスエントリを読み取って検索条件に合致するものを返します。Oracle DatabaseではINDEX FULL SCAN、MySQLではtype = indexと呼ばれるアクセス方式です。図を見ると分かるように、本来アクセス不要なリーフブロックにも大量にアクセスすることになるため非効率であり、性能は良くありません。テーブルをフルスキャンするよりはまだ良いというレベルです。
+このアクセス方式はインデックスに格納された順にデータを読み取っていくことで、ソート済みの状態で結果を取得できるところが特長です。Oracle Databaseではインデックスに対する有効な絞り込み条件がなく、かつ、結果をソートされた状態で返す必要があるときにこのアクセス方式が選ばれることがあります。有効な絞り込み条件がないというのは、複合インデックスのいくつかのカラムに対する検索条件が抜けている、NOT条件で検索している、検索条件のカラムに対して関数が適用されている、といったケースが考えられます。実際にこのアクセス方式を選ぶかどうかは統計情報を元にSQLオプティマイザが決めることであり、経験的にはこのアクセス方式が選ばれることはあまり多くありません。
+MySQLについては後述します。
+4. リーフブロックのリスト構造を、スキップしながら最初から最後までたどる (Oracle Databaseのみ)
+※ 図がカジュアル
+WHERE created_at = '2011-09-10'
+リーフブロックのリスト構造を最初から最後までたどるのですが、このとき不要なブロックをスキップしながらインデックスエントリを読み取っていきます。Oracle Databaseでインデックスの前方カラムに対する有効な絞り込み条件がないものの、後方カラムに対する絞り込み条件がある場合に選ばれることのあるアクセス方式です。これはOracle 9iから導入された機能で、INDEX SKIP SCANと呼ばれています。
+このアクセス方式が効率的であるかどうかは、スキップされる前方カラムのカーディナリティに依存します。例えば複合インデックスの第1カラムが性別である場合は、INDEX SKIP SCANの処理量はINDEX RANGE SCANを男性と女性で2回行う程度で済み、十分効率的と言えるでしょう。一方、前方カラムのカーディナリティが大きい場合は、処理量がINDEX FULL SCANに近いレベルにまで悪化することになります。
+INDEX SKIP SCANは「FULL」という単語がついていないので問題視されないことが多いのですが、実際にはかなり遅いですので何らかの対策を打つべきです。INDEX SKIP SCANはINDEX FULL SCANを少しでも速くするための救済措置と理解する方が適切です。
+MySQLにはこのような機能はありません。
+5. リーフブロックを、リスト構造を無視してディスク格納順に読み取る (Oracle Databaseのみ)
+※ 図がカジュアル
+WHERE created_at = '2011-09-10'
+リーフブロックをリスト構造を無視してディスク格納順に最初から最後までたどり、すべてのインデックスエントリを読み取ります。Oracle DatabaseでINDEX FAST FULL SCANと呼ばれるアクセス方式です。
+インデックスのリーフブロックはディスク上に順番に並んでいるとは限りませんので、INDEX FULL SCANの場合は通常ディスクに対するランダムアクセスが行われます。一方このINDEX FAST FULL SCANでは、ランダムではなくシーケンシャルアクセスとなります。一般的にランダムアクセスはSSDを使わない限り極めて遅いですので、INDEX FAST FULL SCANの方に性能面での優位性があります。ただし、結果はソートされていない状態で返されます。
+経験上INDEX FULL SCANはあまり見たことがないのですが、INDEX FAST FULL SCANは時々見かけます。テーブルをフルスキャンせざるを得ないようなSQLにおいて、いずれかのインデックスがカバーリングインデックスになっていれば、余計なカラムにディスク容量を取られていない分だけテーブルフルスキャンよりもINDEX FAST FULL SCANの方が有利となります。
+MySQLにはこのような機能はありません。
+entriesテーブルの定義を再度確認します。
+CREATE TABLE `entries` (
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`user_id` int(10) unsigned NOT NULL,
+`is_mobile` tinyint(3) unsigned NOT NULL,
+`title` varchar(512) NOT NULL,
+`body` text NOT NULL,
+`created_at` datetime NOT NULL,
+`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+`status` tinyint(3) unsigned NOT NULL,
+PRIMARY KEY (`id`),
+KEY `user_id` (`user_id`,`status`,`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=100001 DEFAULT CHARSET=utf8mb4
+チューニングしたいSQLを以下に示します。
+SELECT COUNT(*)
+FROM entries 
+WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'
+AND is_mobile = 1;
+念のためですが、このSQLをチューニングするための最適解は、kazeburoさんも述べていらっしゃるように(is_mobile, created_at)という複合インデックスを追加作成することです。綺麗なINDEX RANGE SCANにするため等価条件で検索されるカラムを前に、範囲条件で検索されるカラムを後ろに定義するところがポイントですが、あとは特に難しいところはないと思います。今回は諸事情によりインデックスの追加作成ができないという制約があって、それでもテーブルフルスキャンより効率的な方式があれば採用したい、という話題です。
+先にOracle Databaseの挙動を確認しておきたいと思います。本記事の前半で5種類のインデックスアクセス方式を説明しましたが、Oracle DatabaseのSQLオプティマイザはその中からINDEX SKIP SCANを選択します。
+SQL> r
+1  SELECT COUNT(*)
+2    FROM entries
+3   WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'
+4*    AND is_mobile = 1
+COUNT(*)
+----------
+337
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 2621163538
+--------------------------------------------------------------------------------------------
+| Id  | Operation                    | Name        | Rows  | Bytes | Cost (%CPU)| Time     |
+--------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT             |             |     1 |    14 |  3833   (1)| 00:00:46 |
+|   1 |  SORT AGGREGATE              |             |     1 |    14 |            |          |
+|*  2 |   TABLE ACCESS BY INDEX ROWID| ENTRIES     |  1668 | 23352 |  3833   (1)| 00:00:46 |
+|*  3 |    INDEX SKIP SCAN           | ENTRIES_IX1 |  3335 |       |   496   (0)| 00:00:06 |
+--------------------------------------------------------------------------------------------
+Predicate Information (identified by operation id):
+---------------------------------------------------
+2 - filter("IS_MOBILE"=1)
+3 - access("CREATED_AT">=TO_TIMESTAMP('2011-12-10 00:00:00') AND
+"CREATED_AT"<=TO_TIMESTAMP('2011-12-10 23:59:59'))
+filter("CREATED_AT">=TO_TIMESTAMP('2011-12-10 00:00:00') AND
+"CREATED_AT"<=TO_TIMESTAMP('2011-12-10 23:59:59'))
+Statistics
+----------------------------------------------------------
+0  recursive calls
+0  db block gets
+3861  consistent gets
+0  physical reads
+0  redo size
+527  bytes sent via SQL*Net to client
+519  bytes received via SQL*Net from client
+2  SQL*Net roundtrips to/from client
+0  sorts (memory)
+0  sorts (disk)
+1  rows processed
+セカンダリインデックス(user_id, status, created_at)のうち検索条件に指定されているのは第3カラムのcreated_atのみですが、Oracle DatabaseではINDEX SKIP SCANによってこのインデックスを有効に活用することができます。テーブルフルスキャンをした場合と比較すると、アクセスデータブロック数を示すconsistent getsがテーブルフルスキャンの24,135に対しINDEX SKIP SCANでは3,861と減少しており、6倍程度効率的になっていることが分かります。レポーティングなど実行頻度の少ないSQLであれば、これ以上のチューニングは特に必要ないのではないかと思います。
+SQL> r
+1  SELECT /*+ FULL(entries) */ COUNT(*)
+2    FROM entries
+3   WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'
+4*    AND is_mobile = 1
+…
+Statistics
+----------------------------------------------------------
+0  recursive calls
+0  db block gets
+24135  consistent gets
+MySQLの場合はどうすれば良いでしょうか。集計処理なのでINDEX UNIQUE SCAN(type = const)では意味がありませんし、INDEX RANGE SCAN(type = range)は複合インデックスの第1カラムから順番に検索条件に含まれていないと使えません。INDEX SKIP SCANやINDEX FAST FULL SCANはそもそも機能がありませんので、消去法でINDEX FULL SCAN(type = index)を狙うということになります。
+MySQLでカジュアルにINDEX FULL SCANを狙ってみると、そう簡単には意図したSQL実行計画にならないことが分かります。元エントリのブックマークコメントで私とid:kazuhookuさんがしばらくハマっていました。
+何もしないとテーブルフルスキャンになる
+mysql> EXPLAIN
+-> SELECT COUNT(*)
+->   FROM entries
+->  WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'
+->    AND is_mobile = 1;
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+| id | select_type | table   | type | possible_keys | key  | key_len | ref  | rows   | Extra       |
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+|  1 | SIMPLE      | entries | ALL  | NULL          | NULL | NULL    | NULL | 102106 | Using where |
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+FORCE INDEXは効かない
+mysql> EXPLAIN
+-> SELECT COUNT(*)
+->   FROM entries FORCE INDEX (user_id)
+->  WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'
+->    AND is_mobile = 1;
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+| id | select_type | table   | type | possible_keys | key  | key_len | ref  | rows   | Extra       |
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+|  1 | SIMPLE      | entries | ALL  | NULL          | NULL | NULL    | NULL | 102106 | Using where |
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+サブクエリに追い出してみても効かない
+mysql> EXPLAIN
+-> SELECT COUNT(*)
+->   FROM (
+->         SELECT is_mobile
+->         FROM entries FORCE INDEX (user_id)
+->         WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'
+->        ) e
+->  WHERE is_mobile = 1;
++----+-------------+------------+------+---------------+------+---------+------+--------+-------------+
+| id | select_type | table      | type | possible_keys | key  | key_len | ref  | rows   | Extra       |
++----+-------------+------------+------+---------------+------+---------+------+--------+-------------+
+|  1 | PRIMARY     | <derived2> | ALL  | NULL          | NULL | NULL    | NULL |   3388 | Using where |
+|  2 | DERIVED     | entries    | ALL  | NULL          | NULL | NULL    | NULL | 102106 | Using where |
++----+-------------+------------+------+---------------+------+---------+------+--------+-------------+
+実はMySQLのINDEX FULL SCANには一つ罠があります。MySQLでINDEX FULL SCANが選択されるには、「SQLがそのインデックスに定義されたカラムにしかアクセスしないこと」という制約条件を満たす必要があるのです。言い方を換えると「カバーリングインデックスになるときにしかINDEX FULL SCANはアクセス方式の候補にならない」ということになります。マニュアルにも明記されているのですが、寡聞にして知りませんでした。
+This join type is the same as ALL, except that only the index tree is scanned. This usually is faster than ALL because the index file usually is smaller than the data file. MySQL can use this join type when the query uses only columns that are part of a single index. 
+実際の挙動を確認してみると、以下のようになります。
+インデックスに定義されたカラムのみにアクセスすれば、INDEX FULL SCANになる
+mysql> EXPLAIN
+-> SELECT status
+->   FROM entries
+->  WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59';
++----+-------------+---------+-------+---------------+---------+---------+------+--------+--------------------------+
+| id | select_type | table   | type  | possible_keys | key     | key_len | ref  | rows   | Extra                    |
++----+-------------+---------+-------+---------------+---------+---------+------+--------+--------------------------+
+|  1 | SIMPLE      | entries | index | NULL          | user_id | 13      | NULL | 102106 | Using where; Using index |
++----+-------------+---------+-------+---------------+---------+---------+------+--------+--------------------------+
+is_mobileはこのインデックスに定義されたカラムではないので、テーブルフルスキャンになる
+mysql> EXPLAIN
+-> SELECT is_mobile
+->   FROM entries
+->  WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59';
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+| id | select_type | table   | type | possible_keys | key  | key_len | ref  | rows   | Extra       |
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+|  1 | SIMPLE      | entries | ALL  | NULL          | NULL | NULL    | NULL | 102106 | Using where |
++----+-------------+---------+------+---------------+------+---------+------+--------+-------------+
+idはこのインデックスに定義されたカラムではないが、INDEX FULL SCANになる
+mysql> EXPLAIN
+-> SELECT id
+->   FROM entries
+->  WHERE created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59';
++----+-------------+---------+-------+---------------+---------+---------+------+--------+--------------------------+
+| id | select_type | table   | type  | possible_keys | key     | key_len | ref  | rows   | Extra                    |
++----+-------------+---------+-------+---------------+---------+---------+------+--------+--------------------------+
+|  1 | SIMPLE      | entries | index | NULL          | user_id | 13      | NULL | 102106 | Using where; Using index |
++----+-------------+---------+-------+---------------+---------+---------+------+--------+--------------------------+
+さらに、上記の3番目の例がポイントです。idカラムはこのインデックスには定義されていないのですが、MySQL(InnoDB)のセカンダリインデックスでは主キーの値がリーフブロックの各インデックスエントリに格納されています。そのため「SQLがそのインデックスに定義されたカラムにしかアクセスしないこと」という制約条件が満たされ、INDEX FULL SCANが選択できるのです。
+ここまで理解すれば、問題のSQLをどのように書き換えれば良いのかが分かると思います。
+「created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'」という検索条件をインデックスで解決したい。
+しかし、使えそうなインデックスは今のところ(user_id, status, created_at)しかなく、検索条件として利用したいカラムが複合インデックスの後方に定義されてしまっている。
+このインデックスを活用できるアクセス方式は、MySQLの場合INDEX FULL SCAN(type = index)のみである。
+INDEX FULL SCANが選択されるには、SQLがそのインデックスに定義されたカラムにしかアクセスしないという制約条件を満たす必要がある。
+制約条件を満たすために、is_mobileカラムをSQLから除外する必要がある。しかしis_mobileカラムは最終的には必要である。
+これらの条件をすべて満たすには、同じテーブルを2回SELECTして結果をJOINすればよい。JOINに用いるカラムはidである。
+idカラムは主キーであり、MySQL(InnoDB)のすべてのインデックスに暗黙的に含まれている。そのためINDEX FULL SCANの制約条件は満たされる。
+mysql> EXPLAIN
+-> SELECT COUNT(*)
+->   FROM entries e1 INNER JOIN entries e2 ON e1.id = e2.id
+->  WHERE e1.created_at BETWEEN '2011-12-10 00:00:00' AND '2011-12-10 23:59:59'
+->    AND e2.is_mobile = 1;
++----+-------------+-------+--------+---------------+---------+---------+-------------+--------+--------------------------+
+| id | select_type | table | type   | possible_keys | key     | key_len | ref         | rows   | Extra                    |
++----+-------------+-------+--------+---------------+---------+---------+-------------+--------+--------------------------+
+|  1 | SIMPLE      | e1    | index  | PRIMARY       | user_id | 13      | NULL        | 102106 | Using where; Using index |
+|  1 | SIMPLE      | e2    | eq_ref | PRIMARY       | PRIMARY | 4       | scott.e1.id |      1 | Using where              |
++----+-------------+-------+--------+---------------+---------+---------+-------------+--------+--------------------------+
+というわけで、ようやくkazeburoさんと同じ結論にたどり着きました。お疲れさまでした。
+余談ですが、MySQL 5.6ではIndex Condition Pushdownという新機能によって、Oracle DatabaseにおけるINDEX SKIP SCANに近いアクセス方式が取れるようになるかもしれません。漢の奥野さんがEnterpriseZineに解説記事を寄稿していらっしゃいますので、ご一読ください。
+しゅしゅミクモデルはしゅしゅPさま、たこルカモデルMk-IIは6666AAPさまの制作です。この場を借りて御礼申し上げます。MySQL Casual Advent Calendar 2011、18日目はsfujiwaraさんです。それではまた。
+INDEX FULL SCANを狙う - MySQL Casual Advent Calendar 2011 - SH2の日記

@@ -82,15 +82,15 @@ if __name__ == '__main__':
     
     
     QUERY_PATH = conf.WRITE_QUERY_PATH
-    DOC_PATH = conf.WRITE_DOC_PATH
-    LECTURE_PATH = conf.WRITE_DOC_LECTURE_PATH
-    DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
+    # DOC_PATH = conf.WRITE_DOC_PATH
+    # LECTURE_PATH = conf.WRITE_DOC_LECTURE_PATH
+    # DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
     WEB_PATH = conf.PROJECT_PATH + "/formalrun-text100"
 
     # QUERY_PATH = conf.SPOKEN_QUERY_PATH
-    # DOC_PATH = conf.SPOKEN_DOC_PATH
-    # LECTURE_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
-    # DOC_CORPUS_PATH = conf.SPOKEN_DOC_PATH
+    DOC_PATH = conf.SPOKEN_DOC_PATH
+    LECTURE_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
+    DOC_CORPUS_PATH = conf.SPOKEN_DOC_PATH
     # WEB_PATH = conf.PROJECT_PATH + "/formalrun-check100"
 
     # キャッシュ用パス
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     # q_w_ave = numpy.average([len(q.text.words()) for q in q_tf_list])
 
     # webのtfの文書を読み込み
-    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+    # web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
     # ht.pp(sorted(web_tf_list[16].vec.items(), key=lambda x: x[1]))
 
     # 検索文書を読み込み
@@ -139,12 +139,12 @@ if __name__ == '__main__':
     # ドキュメントコレクションの重み
 
     a = 0.5
-    u = 0.3
-    v = 0.2
+    u = 0.5
+    v = 0.0
     frac = a + u + v
 
     # 講演の重み
-    b = 1.0
+    b = 0.0
 
     result = []
     # query loop
@@ -156,7 +156,7 @@ if __name__ == '__main__':
         query_result = []
 
         # queryに関係するwebのtfを計算
-        tf_web = web_tf_list[i].vec
+        # tf_web = web_tf_list[i].vec
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
@@ -190,13 +190,13 @@ if __name__ == '__main__':
                 doc = a / frac * tf_doc.get(word, not_word_val)
                 corpus = u / frac * tf_corpus.get(word, not_word_val)
 
-                if (5 <= len(query_text.words()) and len(query_text.words()) <= 14):
-                    web = v / frac * tf_web.get(word, not_word_val)
-                    q_s_likelifood += log(doc + corpus + web)
-                else:
-                    q_s_likelifood += log(doc + corpus)
+                # if (5 <= len(query_text.words()) and len(query_text.words()) <= 14):
+                #     web = v / frac * tf_web.get(word, not_word_val)
+                #     q_s_likelifood += log(doc + corpus + web)
+                # else:
+                #     q_s_likelifood += log(doc + corpus)
 
-                # q_s_likelifood += log(doc + corpus)
+                q_s_likelifood += log(doc + corpus)
 
             # p(q=クエリ|d=講演)
             q_d_likelifood = 0.0
@@ -209,9 +209,9 @@ if __name__ == '__main__':
                 corpus = a * tf_corpus.get(word, not_word_val)
                 q_d_likelifood += log(doc + corpus)
 
-            # likelifood = (1-b) * q_s_likelifood + b * q_d_likelifood
+            likelifood = (1-b) * q_s_likelifood + b * q_d_likelifood
             # likelifood = q_s_likelifood + q_d_likelifood
-            likelifood = q_s_likelifood
+            # likelifood = q_s_likelifood
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)

@@ -1,0 +1,4 @@
+例p = bandpower(x,fs,freqrange) では、2 要素ベクトルで指定される周波数範囲 freqrange の平均パワーが返されます。指定された周波数範囲内のパワーを返すには、サンプリング周波数 fs を入力しなければなりません。bandpower は修正ピリオドグラムを使用して freqrange 内の平均パワーを求めます。
+例p = bandpower(pxx,f,psdflag) では、パワー スペクトル密度 (PSD) 推定を積分して計算された平均パワー pxx が返されます。積分値は長方形近似法によって近似されます。入力値 f は、pxx の PSD 推定に対応する周波数のベクトルです。psdflag は、入力が PSD 推定であり、時系列データではないことを示す文字列 'psd' です。
+例p = bandpower(pxx,f,freqrange,psdflag) では、周波数範囲 freqrange に含まれる平均パワーが返されます。freqrange の周波数が f の値と一致しない場合は、最も近い値が使用されます。平均パワーは、パワー スペクトル密度 (PSD) 推定 pxx を積分することで計算されます。積分値は長方形近似法によって近似されます。
+帯域パワー - MATLAB bandpower - MathWorks 日本

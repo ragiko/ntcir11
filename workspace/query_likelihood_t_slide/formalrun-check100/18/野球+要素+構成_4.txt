@@ -1,0 +1,9 @@
+野球投手に利得のある有効戦術は複雑系のため決定論的因果構造が見出せず,戦術決定のモデル化は困難である. 本稿では,ベイジアンネットにより試合構成要素群間の確率的因果構造をMLB詳細スコアデータから学習することで,投球戦術を決定するモデルを提案する. 学習データ数を増加させるために選手特徴量を定義し,選手間の距離を計算した. そして類似選手距離を変化させ,投球戦術推定を行い推定結果を比較し最適な学習データ数を決定した. 構築した投球戦術決定モデル上で実際の試合状況に対して推定を行い,推定結果について考察した. さらに様々な状況を入力し投球戦術推定を行うことで投球戦術についての知識発見を行う. 
+Deterministic causal structure can not be found because of that effective tactics for baseball pitcher is a complex system.
+Therefore, tactical decision modeling is difficult.
+We propose a model of tactical decisions for pitching by learning probabilistic causal structure of the element group making up the game from a MLB scores detailed data using Bayesian Network.
+We have defined a characteristic and calculated the distance amount players in order to increase the number of training data.
+We decided the similar players distance by change the distance and perform pitching tactics estimation.
+Moreover, we discuss the estimation results using this model. 
+In addition, we perform the strategy estimation using these models on various situations and show the emerging pitching strategies using this method.
+研究会 - MLB詳細スコアデータから学習した試合構成要素群間の確率的因果構造に基づく野球投手の投球戦術推定

@@ -1,0 +1,3 @@
+自然言語処理用の構文解析アルゴリズムとして最も効率の良い手法の一つとして知られるLR構文解析法について、音声認識の言語モデルとして利用する立場から検討を行い、新たな確率言語モデルを提案する。また本モデルの応用として、任意の文脈自由文法のパープレキシティを近似計算する手法を示す。
+The LR parsing algorithm is known as one of the most efficient method for syntactic analysis for natural language processing. In this paper, we investigate the algorithm from the viewpoint of using it as a language model for speech recognition, propose a new statistical language model based on it, and also show one of its applicatio for CFG perplexity estimation.
+

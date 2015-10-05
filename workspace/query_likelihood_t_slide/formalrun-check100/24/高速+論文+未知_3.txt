@@ -1,0 +1,3 @@
+
+This paper describes a fast algorithm for the recursive computation of linear least squares estimates of unknown parameters in the pulse transfer function. It is shown that the fast calculation method for the Kalman gains by Ljung et al. and Robins et al. can be thought of as a new type of recursive algorithm for parameter estimation. Time comparison of the fast algorithm and the conventional Kalman type recursive algorithm is carried out on the PET 2001 microcomputer.
+

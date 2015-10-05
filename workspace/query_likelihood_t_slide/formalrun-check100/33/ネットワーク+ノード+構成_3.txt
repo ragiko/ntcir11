@@ -1,0 +1,4 @@
+
+ネットワークノードの構成
+ネットワークノードの構成では、Elastic Virtual Switch (EVS) と Neutron DHCP エージェントの両方を構成する必要があります。オプションで Neutron Layer (L3) エージェントを構成できます。
+

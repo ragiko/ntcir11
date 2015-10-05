@@ -1,0 +1,139 @@
+ is01に限らずandroidスマートフォン端末はバッテリーの持ちが悪いと言われる。その主な原因は次の3つ。
+電波の使用状況に応じてバッテリーが減る
+画面の明るさに応じてバッテリーが減る
+cpuの使用量に応じてバッテリーが減る
+逆に言えば、画面を暗くして、電波を使わない、低cpuのアプリやサービスを使えばバッテリーが持つという訳だ。
+他方、高速化するためには
+cpuのクロック数を上げる
+使用中アプリへのメモリの割り当て量を増やす
+の2つに尽きると思う。また、
+端末の空き容量を増やす
+ことも効果的かもしれない。
+いずれにせよ物理的なcpuやメモリが少ないと苦しいのは確か。
+バッテリー対策
+実際に自分がis01でやっていることを列挙。
+電波の使用状況に応じてバッテリーが減る
+Airplane Mode Wi-Fi Tool を使い、電波OFFモードで運用
+WifiはON。ただし画面オフ時に切る設定
+GPSは普段切っておき、必要なときON
+バッテリーの使用状況を見るとセルスタンバイの占める割合がメチャメチャ多い。少し調べてみると、3G回線が関係するらしい。3Gは使わない設定にしているが、なぜか電波を拾いにいこうとするみたい。
+そこで、Airplane Mode Wi-Fi Tool を入れて、Preferencesの「Keep Wi-Fi On」にチェックを入れ、電波OFFモードにする。すると、電話回線、3G、Bluetoothが完全に遮断されるが、wifiだけが接続可能状態になる。is01では 電話を使うことがないので無問題。
+Airplane Mode Wi-Fi Tool
+http://m.jp.androlib.com/android.application.net-geekherd-airplanemode-qqiq.aspx 
+これだけではwifiをうまく拾えなかったときなど、wifi設定画面を開くことができなくて困るので、WiFi Manager をインストールする。使い方は簡単。候補の中から接続先をタップしてconnectするだけ。また、「Live networks」を「Known networks」にすると、設定済みの接続先だけが表示されるからスッキリ。
+WiFi Manager
+http://m.jp.androlib.com/android.application.org-kman-wifimanager-Citx.aspx
+なお、電波OFFモードでは電話が使えなくなるので、時刻の自動同期がされなくなる。そこで ClockSync をインストールして時刻を定期的に同期させる。要rootだが操作はとても簡単。
+ClockSync
+http://m.jp.androlib.com/android.application.ru-org-amip-clocksync-Fnmp.aspx
+余談だが、電波OFFモードにすると、FMトランスミッターが使えなくなるので、地味に困ったりする(車での音楽はis01が一手に担っているので)。仕方ないので sl4a で簡単なプログラム(FMトランスミッターと音楽アプリを呼び出すと同時に電波ONモードに切り替えるスクリプト)を書いて対応している。
+sl4a
+http://code.google.com/p/android-scripting/
+(追記)2011-03-11
+sl4a で電波ONモードに切り替えてFMトランスミッターを使えるようにするコードは以下のような感じ。
+load("/sdcard/com.googlecode.rhinoforandroid/extras/rhino/android.js"); 
+var droid = new Android(); 
+if(droid.checkAirplaneMode()==true) {
+droid.toggleAirplaneMode();
+}
+droid.launch("jp.co.sharp.android.playlist.PlaylistActivity"); 
+droid.launch("jp.co.sharp.android.FMtransmitter.FMtransmitter");
+droid.setMediaVolume(15); 
+quit(); 
+FMトランスミッターをやめて、電波OFFモードに戻す場合は、以下のような感じ。
+load("/sdcard/com.googlecode.rhinoforandroid/extras/rhino/android.js"); 
+var droid = new Android(); 
+droid.setMediaVolume(3); 
+if(droid.checkAirplaneMode()==false) {
+droid.toggleAirplaneMode();
+}
+quit(); 
+画面の明るさに応じてバッテリーが減る
+バックライトは1分でスリープに入る設定にしている。また、こまめに調整するのが面倒なので、バックライトの明るさは自動調整している。
+cpuの使用量に応じてバッテリーが減る
+プリインストールされたアプリやサービスを、常駐するものを中心に、片っ端からリネームして起動させないようにした(要root)。電波OFFモードだから電話を起動してなくても大丈夫だろうと、Phone*をリネームしたらエラー画面は出るはandroidマーケットを利用できないはと散々な目に遭って断念。
+/system/build.prop をいじれば、cpuをダウンクロックし、消費電力を抑えることはできるが、動作スピードを犠牲にしたくないので実行せず(要root)。逆に「persist.maxcpukhz=1152600」と書いてみたが、やはりというかクロックアップはせず。
+再起動や新しいアプリのダウンロード時を中心に、android.prosess.media(ダウンロードマネージャー)が暴走してcpuを使いまくることがあるので、Android System Info で時々確認している。Task Manager で、スリープ時にandroid.prosess.mediaを殺す設定をした方が手間がないとは思うが、常駐アプリを増やしたくないから悩むところ。試験的にTask Manager を入れて、スリープ時にandroid.prosess.mediaだけを自動的に殺すことにした。
+Android System Info  
+http://m.jp.androlib.com/android.application.com-electricsheep-asi-xqFA.aspx
+Task Manager
+http://m.jp.androlib.com/android.application.com-rhythm-hexise-task-wnpw.aspx
+高速化対策
+次は快適さの追求について。なお、いずれもrootを取っている必要があります。
+cpuのクロック数を上げる
+今のところできていない。/system/build.prop の書き換えやオーバークロックが可能になるアプリ(OverclockWidget等)では、残念ながらis01では変わらなかった。
+使用中アプリへのメモリの割り当て量を増やす
+AutoKiller Memory Optimizer で使用中アプリへのメモリ割り当てを増やす
+メモリを浪費する常駐サービスやアプリなどを起動させない
+仮想メモリなどを利用する
+まずは、AutoKiller Memory Optimizer をインストールする。rootを取った後に、Optimum (40,50,60)や、Strict (60,70,80)あたりに設定して様子を見る。これらの数値を大きくすればするほど、使ってないアプリは素早く消え、結果的に使っているアプリへのメモリ割り当てが増えるという仕組みらしい。ちなみにis01の初期値は「20,22,24」。これだけでも物凄く快適になる。
+AutoKiller Memory Optimizer
+http://m.jp.androlib.com/android.application.com-rs-autokiller-wEwp.aspx
+次に、使わない常駐サービスやアプリをリネームして起動させないようにする。GScript Lite というコマンド保存実行アプリに「stop_home」として以下のスクリプトを記述。また、名前を元に戻す「start_home」というスクリプトも作成済。ワンセグについては時々使うので、同様のスクリプトを「stop_oneseg」「start_oneseg」として別途作成している。
+GScript Lite
+http://m.jp.androlib.com/android.application.nl-rogro-gscriptlite-qCm.aspx
+#!/system/bin/sh
+/sqlite_journals/is01root/busybox mkdir /system.rw
+/sqlite_journals/is01root/busybox umount -l /system
+/sqlite_journals/is01root/busybox mv /system /system.ro
+/sqlite_journals/is01root/busybox mount -o rw -t yaffs2 /dev/block/mtdblock10 /system.rw
+/sqlite_journals/is01root/busybox ln -s /system.rw /system
+mv /system/app/Launcher.apk /system/app/Launcher.apk.org
+mv /system/app/Launcher.odex /system/app/Launcher.odex.org
+mv /system/app/FotaApp.apk /system/app/FotaApp.apk.org
+mv /system/app/FotaApp.odex /system/app/FotaApp.odex.org
+mv /system/app/MajorUpdate.apk /system/app/MajorUpdate.apk.org
+mv /system/app/MajorUpdate.odex /system/app/MajorUpdate.odex.org
+mv /system/app/PVMtpServiceStart.apk /system/app/PVMtpServiceStart.apk.org
+mv /system/app/PVMtpServiceStart.odex /system/app/PVMtpServiceStart.odex.org
+mv /system/app/PVWmdrmService.apk /system/app/PVWmdrmService.apk.org
+mv /system/app/PVWmdrmService.odex /system/app/PVWmdrmService.odex.org
+mv /system/app/MessageReceive.apk /system/app/MessageReceive.apk.org
+mv /system/app/MessageReceive.odex /system/app/MessageReceive.odex.org
+mv /system/app/SendCmailService.apk /system/app/SendCmailService.apk.org
+mv /system/app/SendCmailService.odex /system/app/SendCmailService.odex.org
+mv /system/app/WISPr.apk /system/app/WISPr.apk.org
+mv /system/app/WISPr.odex /system/app/WISPr.odex.org
+mv /system/app/Talk.apk /system/app/Talk.apk.org
+mv /system/app/Talk.odex /system/app/Talk.odex.org
+mv /system/app/Droidget2.apk /system/app/Droidget2.apk.org
+mv /system/app/Droidget2.odex /system/app/Droidget2.odex.org
+mv /system/app/Mail.apk /system/app/Mail.apk.org
+mv /system/app/Mail.odex /system/app/Mail.odex.org
+mv /system/app/MailProvi.apk /system/app/MailProvi.apk.org
+mv /system/app/MailProvi.odex /system/app/MailProvi.odex.org
+mv /system/app/Rss.apk /system/app/Rss.apk.org
+mv /system/app/Rss.odex /system/app/Rss.odex.org
+mv /system/app/NetDictionary.apk /system/app/NetDictionary.apk.org
+mv /system/app/NetDictionary.odex /system/app/NetDictionary.odex.org
+mv /system/app/Twitter.apk /system/app/Twitter.apk.org
+mv /system/app/Twitter.odex /system/app/Twitter.odex.org
+mv /system/app/mixiAppManager.apk /system/app/mixiAppManager.apk.org
+mv /system/app/mixiAppManager.odex /system/app/mixiAppManager.odex.org
+mv /system/app/SoundMemo.apk /system/app/SoundMemo.apk.org
+mv /system/app/SoundMemo.odex /system/app/SoundMemo.odex.org
+mv /system/app/SoundMemoProvider.apk /system/app/SoundMemoProvider.apk.org
+mv /system/app/SoundMemoProvider.odex /system/app/SoundMemoProvider.odex.org
+mv /system/app/AuoneidSetting.apk /system/app/AuoneidSetting.apk.org
+mv /system/app/AuoneidSetting.odex /system/app/AuoneidSetting.odex.org
+mv /system/app/BlogUp.apk /system/app/BlogUp.apk.org
+mv /system/app/BlogUp.odex /system/app/BlogUp.odex.org
+reboot
+仮想メモリなどについては、カーネルを変更する必要があるので、さすがに怖くて試していない。
+端末の空き容量を増やす
+PCと同様、空き容量が少ないとスピードが出なくなると思われるので不要なファイルを削除することを検討する。
+is01の場合、Ghost Commander というファイル操作アプリがお勧め。使い方に癖はあるが、常時2画面を使って効率的に作業できるし、rootに対応してるし(chmodで権限変更して削除やリネームが可能)、表示領域が広いしと言うことなし。
+ただ、今のところ自分のis01の空き容量には余裕があるので、端末から不要なファイルをSDカードに退避させていない。
+Ghost Commander
+http://m.jp.androlib.com/android.application.com-ghostsq-commander-zniE.aspx   
+(追記)2011-02-09
+高速化の効果のほどは不明だが Spare Parts の設定をいじってみた。「Window animations」と「Toransition animations」を OFF に、
+「Activity/Process Management」を aggressive にした。rootをとる必要がないお手軽なもの。
+「Activity/Process Management」を aggressive にすると、確かに高速化はするが、一部使えないアプリ(ShootMeのhiddenモード)が出てきたので元に戻す。 
+Spare Parts
+http://m.jp.androlib.com/android.application.com-androidapps-spare_parts-qtm.aspx
+まとめ
+現状、is01は、バッテリーの持ちも悪くないし、サクサク動いている。au、sharp、そしてroot化を可能にしてくれたハッカーの方々に感謝。
+is01とht03aを所有しているが、快適さやハードの性能は段違いにis01が上。ht03aは、オーバークロックしたり、メモリスワップしたり、定評のあるカスタムromを入れたりしているが、残念ながらモッサリ感を解消するには至らない。画面の大きさもあるが、最近is01しか使わなくなっている。
+ツイートする
+android端末のバッテリーと高速化に関する考察 - is01next@blog

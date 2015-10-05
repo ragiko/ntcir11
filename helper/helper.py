@@ -14,7 +14,8 @@ def output_result(res, result_path):
     # fileのアウトプット
     for i in range(len(res)):
         query_res = res[i]
-        query_res = sorted(query_res, key=lambda x: x[1], reverse=True)[0:1000]
+        # query_res = sorted(query_res, key=lambda x: x[1], reverse=True)[0:1000]
+        query_res = sorted(query_res, key=lambda x: x[1], reverse=True)
 
         f = open(result_path + "/" + str(i+1).zfill(2) + ".txt", "w")
         s = ""

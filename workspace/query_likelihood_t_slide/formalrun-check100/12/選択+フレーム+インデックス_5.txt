@@ -1,0 +1,6 @@
+説明メソッド。指定したフレームインデックスに空白のキーフレームを挿入します。インデックスが指定されていない場合は、再生ヘッドまたは選択位置を使用して空白のキーフレームを挿入します。 timeline.insertKeyframe() も参照してください。
+例次の例では、空白のキーフレームをフレーム 20 に挿入します(インデックス値はフレーム番号値とは異なることに注意してください)。
+fl.getDocumentDOM().getTimeline().insertBlankKeyframe(19);
+次の例では、空白のキーフレームを現在選択されているフレーム(またはフレームが選択されていない場合は再生ヘッドの位置)に挿入します。
+fl.getDocumentDOM().getTimeline().insertBlankKeyframe();
+Adobe Flash Professional * timeline.insertBlankKeyframe()

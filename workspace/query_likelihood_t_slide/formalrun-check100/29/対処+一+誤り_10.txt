@@ -1,0 +1,23 @@
+
+Q:コンパイルエラー:Sub,Functionが定義されていません。
+A1:標準モジュールがPrivate Subになっていた。
+A2:モジュールが作られていない。
+A3:モジュール名がパンチミス
+A4:モジュールを注釈にしたが、呼ぶ方を注釈にしていなかった。
+Q:コンパイルエラー:変数が定義されていません。
+A1:名前が違っていた。
+DataGrid2.Refresh  ではなく DataGrid明細.Refresh だった。
+A2:項目名パンチミス。
+:cn2−−>cn1に変更 パンチミス
+A3:変数の通用範囲外だった。
+モジュール内宣言でDim WABC AS STRING
+を別モジュールで使用していた。
+別モジュールで使用する時は、Private WABC AS STRINGと記入する。
+A4:項目名がフォームに無かった。
+dtp出荷日 = Format(Date,"Date,"yyyy/mm/dd")
+dtp出荷日がFormに無かった。dtp出荷日の作成忘れ。
+A5:項目名がフォームに無かった。
+dtp発注日開始は別フォームのためabc310.がもれていた。
+誤:wx発注日開始 = Format(dtp発注日開始.Value, "yyyy/mm/dd")
+正:wx発注日開始 = Format(shap310.dtp発注日開始.Value, "yyyy/mm/dd")
+VBエラーとその対処方法

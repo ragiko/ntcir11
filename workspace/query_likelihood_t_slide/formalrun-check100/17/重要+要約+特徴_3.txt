@@ -1,0 +1,3 @@
+
+There are so many resources of electronical documents. However, we cannot access the all documents and we cannot examine each documents precisely. Therefore summaries are available for the selections of the documents. A system for making summary is Panoramic View System(PVS)which extracts key sentences from a document by the original method. PVS extracts keywords from the top of the term-frequency mountain. Many ordinary systems extract keywords by high frequency. However, PVS also extracts low frequency keywords based on the co-occurence of the keywords in sentences. Such keywords feature each sentence and are useful for extractions of key sentences.
+

@@ -1,0 +1,3 @@
+スコア算出部31は、イベントデータ系列と基準パターン系列との間の類似度が最も高くなる最適アラインメントに対応するマッチングスコアを、動的計画法に基づいて算出する。A score calculation part 31 calculates a matching score corresponding to an optimal alignment where similarity between the event data series and the standard pattern series becomes largest on the basis of dynamic programming. - 特許庁
+この内積の計算において、ラベル付き順序木の終端でないノードに対し、各ノードの順序が保存されている対応関係に基づいて動的計画法を適用し、子孫のノードに関するマッチングの和を取る。A dynamic planning method is applied to a node that is not the terminal end of the labelled order tree on the basis of the corresponding relation in which the order of each node is stored, and the sum of matching related to offspring nodes is calculated. - 特許庁
+動的計画法マッチング法の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

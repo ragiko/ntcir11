@@ -1,0 +1,18 @@
+エラーメッセージ   
+ORA-12514: TNS: リスナーは接続記述子にあるSERVICE_NAMEを解決できませんでした。
+ORA-12514: TNS: リスナーは接続記述子で要求されたサービスを現在認識していません
+ORA-12514: TNS: listener could not resolve SERVICE_NAME given in connect descriptor
+ORA-12514: TNS:listener does not currently know of service requested in connect descriptor
+確認事項および対応   
+クライアント側 tnsnames.oraファイルのネットサービス名の接続情報に含まれるSERVICE_NAMEの値を確認します。
+DBサーバ側でlsnrctl servicesコマンドを使用し、SERVICE_NAMEに一致するデータベース・サービス登録されていることを確認してください。
+lsnrctl services コマンドでデータベース・サービスがクライアント側SERVICE_NAMEと異なる場合、まずDBサーバ側listener.oraファイルのGLOBAL_DBNAMEを確認します。GLOBAL_DBNAMEが設定されている場合は、クライアント側のSERVICE_NAMEをGLOBAL_DBNAMEに変更し、再接続します。または、リスナー側GLOBAL_DBNAMEをクライアント側のSERVICE_NAMEと同じ値に設定し、リスナーを再起動します(この場合、他のクライアントマシンのtnsnames.oraも変更する必要があります)。
+DBサーバ側listener.oraファイルのGLOBAL_DBNAMEが設定されていない場合は、データベースの初期化パラメータファイルのSERVICE_NAMESがデータベース・サービス名としてリスナーに登録されるため、SERVICE_NAMESパラメータを確認します。
+どうしてもこのエラーが回避できない場合は、tnsnames.oraファイルのSERVICE_NAME=<db_service_name> で定義している部分を SID=<db_sid> に変更して回避することもご検討ください。
+詳細   
+クライアント側 tnsnames.oraファイルのネット・サービス名の接続情報でSERVICE_NAMEが設定されている場合、クライアントはリスナーに登録されているデータベース・サービスの中からSERVICE_NAMEと一致したデータベースに接続します。
+リスナーに登録されるデータベース・サービスは以下のタイミングで登録されます。
+DBサーバ側リスナー起動時に、リスナーがlistener.oraファイルのGLOBAL_DBNAMEを読み込んで登録する
+DBサーバ起動時にDBサーバ側がデータベースの初期化パラメータファイルのSERVICE_NAMESをデータベースサービスとしてリスナーに登録する。この時登録対象となるリスナーは初期化パラメータ LOCAL_LISTENERで設定されたものとなる。LOCAL_LISTENERが設定されていない場合はデフォルトでPort 1521のリスナーに登録を行う。
+DBサーバ起動時にリスナーが起動していない場合、ある一定の間隔でDBサーバがリスナーに登録の再試行を行う。
+ORA-12514 - 解決!ORACLE!

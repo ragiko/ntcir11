@@ -1,0 +1,3 @@
+重要文抽出と文圧縮を同時に行う新しい抽出的要約モデルを提案する.本手法は,重要文抽出に比べて表現能力が高いため,重要文抽出より適切な要約を出力することが期待できる.定式化には整数計画法を用いる.重要文抽出における過去の最も良い要約システムを,ROUGE-1において大きく上回ることを確認した.
+We propose a novel extractive summarization model which performs sentence selection and compression at the same time. Because of its high expression ability, our model is expected to generate more appropriate summaries. Our model uses integer linear programming. Our model outperforms the previous best system on the ROUGE-1 metric.
+

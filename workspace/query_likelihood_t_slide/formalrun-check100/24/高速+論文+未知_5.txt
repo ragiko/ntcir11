@@ -1,0 +1,3 @@
+
+We develop a composite sensor for capturing color range images that are used for recognizing and modeling the 3D shape of unknown objects. To achieve fast modeling of these objects, we propose a novel method of matching 3D point cloud templates using color histograms. Given raw 3D measurements coming from this sensor, our algorithm can discover and model new objects like chairs and tables, which is vital for navigation among movable obstacles. Furthermore, we utilize this method for computing a dynamic map of the environment by estimating the 6D pose of the sensor at every sample. We show experimental results on the HRP-2 humanoid robot walking around the environment while dynamically building a map and segmenting out movable objects.
+

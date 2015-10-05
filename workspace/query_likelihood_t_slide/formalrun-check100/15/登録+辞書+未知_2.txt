@@ -1,0 +1,4 @@
+未知語抽出部40が未知語と未知語を含む文とを抽出する。An unknown word extraction section 40 extracts an unknown word and a sentence including the unknown word. - 特許庁
+専門家抽出装置は専門語辞書に登録されていない未知語を抽出し(S101)、当該未知語を含む文や文節を切り出して未知語とともに未知語データとして辞書サーバへ送る(S102)。This specialist extraction device extracts the unknown term not registered in the technical term dictionary (S101), cuts out a sentence or a clause including the unknown term, and sends it to a dictionary server as unknown term data together with the unknown term (S102). - 特許庁
+抽出した未知語が含まれる合成対象テキストから当該未知語に関連性を有する周辺テキストを抽出する。A peripheral text relative to the unknown word is extracted from the synthesizing target text in which the extracted unknown word is included. - 特許庁
+未知語抽出の英語・英訳 - 英和辞典・和英辞典 Weblio辞書

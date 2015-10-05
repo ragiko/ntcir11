@@ -1,0 +1,167 @@
+
+さらにそのアラインメントに対してスコアを
+ミスマッチ(x):0点
+ギャップ挿入(-):0点
+マッチ(o):1点
+と決めたとき、「最大のスコアをもつアラインメントのスコア」であると考えることができます。
+で、これを一般化したのが、グローバルアラインメント問題で、一般化するのはスコアの与え方。
+「与えられたスコアscore()のもとで、二つのパターン間の最適なアラインメントを求めよ。」
+ってのがグローバルアラインメント問題。たとえばさっきのスコアの与え方を
+ミスマッチ(x):-0.5点
+ギャップ挿入(-):-1.0点
+マッチ(o):2点
+とかに変えたりする。
+まあ、解き方はLCSとほぼ同じで、「パターン1のi文字目までとパターン2のj文字目までの最適なアラインメントのスコア」は、
+・「パターン1のi-1文字目までとパターン2のj-1文字目までの最適なアラインメントのスコア」+マッチorミスマッチスコア(パターン1のi-1文字目とパターン2のj-1文字目が一致しているかを見る)
+・「パターン1のi文字目までとパターン2のj-1文字目までの最適なアラインメントのスコア」+ギャップスコア
+・「パターン1のi-1文字目までとパターン2のj文字目までの最適なアラインメントのスコア」+ギャップスコア
+のうち、最大のものであるということ(部分問題最適性)を利用して動的計画法で計算する。
+スコアは文字a,bに対し
+score(a,b)=
+if(a==b)2.0
+else if(a  or  bがギャップ)-0.5
+else -1.0
+のように関数で定義しておけばOK。
+コード(C++)は以下の通り。
+2/27追記)誤りがあります!後日訂正する予定なので、以下のコードは無視してください。すいませんでした!
+#include<iostream>
+#include<string>
+#define VERTICAL 0
+#define HORIZONTAL 1
+#define DIAGONAL 2
+#define END 3
+using namespace std;
+void printAlignment1(string str1,string str2,char **trace,int n,int m){
+switch(trace[n][m]){
+case END:
+return;
+case HORIZONTAL:
+printAlignment1(str1,str2,trace,n-1,m);
+cout<<str1[n-1];
+break;
+case VERTICAL:
+printAlignment1(str1,str2,trace,n,m-1);
+cout<<"-";
+break;
+case DIAGONAL:
+printAlignment1(str1,str2,trace,n-1,m-1);
+cout<<str1[n-1];
+break;
+};
+return;
+}
+void printRelation(string str1,string str2,char **trace,int n,int m){
+switch(trace[n][m]){
+case END:
+return;
+case HORIZONTAL:
+printRelation(str1,str2,trace,n-1,m);
+cout<<" ";
+break;
+case VERTICAL:
+printRelation(str1,str2,trace,n,m-1);
+cout<<" ";
+break;
+case DIAGONAL:
+printRelation(str1,str2,trace,n-1,m-1);
+if(str1[n-1]==str2[m-1])cout<<"|";
+else cout<<"x";
+break;
+};
+return;
+}
+void printAlignment2(string str1,string str2,char **trace,int n,int m){
+switch(trace[n][m]){
+case END:
+return;
+case HORIZONTAL:
+printAlignment2(str1,str2,trace,n-1,m);
+cout<<"-";
+break;
+case VERTICAL:
+printAlignment2(str1,str2,trace,n,m-1);
+cout<<str2[m-1];
+break;
+case DIAGONAL:
+printAlignment2(str1,str2,trace,n-1,m-1);
+cout<<str2[m-1];
+break;
+};
+return;
+}
+double score(char p,char q){
+if(p==q)return 1;
+else if(p=='_' || q=='_')return -1;
+else return -1;
+}
+int main(){
+double **sc;
+char **trace;
+string str1,str2;
+cin>>str1>>str2;
+int n=str1.length(),m=str2.length();
+sc = new double*[n+1];
+for(int i=0;i<=n;i++){
+sc[i] = new double[m+1];
+}
+trace = new char*[n+1];
+for(int i=0;i<=n;i++){
+trace[i] = new char[m+1];
+}
+trace[0][0]=END;
+sc[0][0]=0;
+for(int i=1;i<=n;i++){
+sc[i][0]=0;
+trace[i][0]=HORIZONTAL;
+}
+for(int j=1;j<=m;j++){
+sc[0][j]=0;
+trace[0][j]=VERTICAL;
+}
+for(int i=1;i<=n;i++){
+for(int j=1;j<=m;j++){
+if((sc[i-1][j-1]+score(str1[i-1],str2[j-1]))>sc[i-1][j]+score(str1[i-1],'_') 
+&& (sc[i-1][j-1]+score(str1[i-1],str2[j-1]))>sc[i][j-1]+score('_',str2[j-1])){
+sc[i][j] = sc[i-1][j-1]+score(str1[i-1],str2[j-1]);
+trace[i][j] = DIAGONAL;
+}else if(sc[i][j-1]>sc[i-1][j]){
+sc[i][j] = sc[i][j-1]+score(str1[i-1],'_');
+trace[i][j] = VERTICAL;
+}else{
+sc[i][j] = sc[i-1][j]+score('_',str2[j-1]);
+trace[i][j] = HORIZONTAL;
+}
+}
+}
+cout<<"Global Alignment between "<<str1<<" and "<<str2<<" is "<<endl;
+printAlignment1(str1,str2,trace,n,m);
+cout<<endl;
+printRelation(str1,str2,trace,n,m);
+cout<<endl;
+printAlignment2(str1,str2,trace,n,m);
+cout<<endl;
+cout<<"Score :"<<sc[n][m]<<endl;
+for(int i=0;i<n;i++){
+delete [] sc[i];
+}
+delete [] sc;
+for(int i=0;i<=n;i++){
+delete [] trace[i];
+}
+delete [] trace;
+return 0;
+}
+例えば
+CAGTGACCGTGGTACGTACCATGAGTACCATGC
+と
+GGTAACGTAAGTTGTGTCGCGTTAGTCAATGAT
+のグローバルアラインメントは
+CAGTGACCGTGGTACGTAC-CATGAGTACCATGC-
+| ||x|  ||x||  || | |x|x||| |x|||x
+C-GTAA--GTTGT--GT-CGCGTTAGT-CAATGAT
+Score :5
+となる。
+さて、前回から思いっきりDNA解析関連の話題ですね。
+諸事情あってここらへんのアルゴリズムをもーちょい書く。
+今日はこれでおわりー(・ω・)ノシ
+グローバルアラインメント - 似非学問的な手記

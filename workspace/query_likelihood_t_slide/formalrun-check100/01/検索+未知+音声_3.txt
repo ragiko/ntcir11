@@ -1,0 +1,3 @@
+本稿では,大語彙連続音声認識システムにおける未知語認識および音声ドキュメント検索における未知語検索の問題について述べる.前者に対しては,認識辞書の語彙を増加させることが有効であること,および,いくら増加させても未知語の出現は避けられないので,未知語の認識辞書への登録とその言語モデルの構築法について述べる.後者に対しては,大語彙連続音声認識とサブワード単位系列の併用が有効であること,およびその併用法について述べる.
+In this paper, we point out some problems for out-of-vocabulary words on large vocabulary continuous speech recognition (LVCSR) and spoken term detection. For the former problem, we had better increase the vocabulary size as many as possible but we can not register all unknown words, therefore we describe a registration method and language modeling of unknown words. For the latter problem, we point out the effectiveness of the combination method of LVCSR and sub-word recognition, and describe an effective combination method.
+

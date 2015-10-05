@@ -1,0 +1,72 @@
+PHPで簡易データベースを作っています。
+CSVで、本のタイトルがずらっと並んでいて、そのタイトルを検索させるとい
+うものです。
+ところが、なぜか検索に引っかかるものと引っかからないものがあり、困ってい
+ます。
+文字コード:CSVファイル含め、すべてSHIFT_JIS
+(サーバの問題で、SHIFT−JIS以外だと化ける)
+使用エディタ:terapad(ファイルの文字コード確認済み)
+---起きる現象
+漢字で検索した場合、きちんと検索可能
+カタカナが含まれるとき、不具合が出る
+(例)「マーケット事例集」
+事例集で検索  ヒット
+集で検索  ヒット
+マーケットで検索  ×
+マで検索  ヒット
+マーで検索  ×
+マ−ケットで検索  ヒット (長音(ー)を全角マイナス(−)にし
+たらヒットした)
+マ−で検索  × (長音を全角マイナスに)
+マ−けっと  ヒット (長音を全角マイナスに、ケットをひらがなに)
+こんな感じです。なお、いずれも、表示されるCSVから抜き出したタイトルは
+きちんと「マーケット事例集」で表示されています。
+ということは、検索文字をPOSTする際に、何か変なことになっているのでしょうか?
+文字コード関係を色々調べたのですが、どうしても分かりませんでした。
+何か、ヒントをいただければ大変助かります。
+コードは、初心者向けに作られたサイトを参考に作りました。
+よろしくお願いします。
+---A.htm(検索ページ)
+<form action="search.php" method="GET" target="contents">
+<input type="text" name="key" size="25">
+<input type="submit" name="submit" value="検索">
+</form>
+---title.csv
+本のタイトル、ID、リンク先、頭文字などを並べたcsvファイル
+---search.php
+if($_GET["key"]==""){
+print"キーワードを入力してください";
+}else{
+$KeyWord=$_GET["key"];
+$KeyWord=htmlspecialchars($KeyWord,ENT_QUOTES,"SHIFT-JIS");
+$KeyWord=mb_convert_encoding($KeyWord,"SHIFT-JIS","auto");
+$ArrKeyword=explode(",",$KeyWord);
+$Result=array();
+$Data=file("title.csv");
+for($i=0;$i<sizeof($Data);$i++){
+$lines=strip_tags($Data[$i]);
+$line=explode(",",$Data[$i]);
+$Match=true;
+for($n=0;$n<sizeof($ArrKeyword);$n++){
+if(!eregi($ArrKeyword[$n],$line[1])){
+$Match=false;
+break;
+}
+}
+if($Match==true){
+array_push($Result,$Data[$i]);
+}
+}
+?>
+<ul>
+<?php
+for($i=0;$i<sizeof($Result);$i++){
+$line=explode(",",$Result[$i]);
+?>
+<li><a href="<?=$line[8]?>" target="_blank"><?=$line[1]?></a></li>
+<?php
+}
+}
+}
+?>
+csv検索の不具合/長音が含まれるカタカナを検索しない。 - PHPプロ!Q&A掲示板

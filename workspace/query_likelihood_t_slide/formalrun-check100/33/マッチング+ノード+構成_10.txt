@@ -1,0 +1,56 @@
+
+ユーザ定義データ構造にはレコードとバリアントがあり、ともに type 宣言で定義できます。ここでは有理数を表すレコード型を宣言してみます。
+#type ratio = {num: int; denum: int};;
+type ratio = { num : int; denum : int; } 
+#let add_ratio r1 r2 =
+{num = r1.num * r2.denum + r2.num * r1.denum;
+denum = r1.denum * r2.denum};;
+val add_ratio : ratio -> ratio -> ratio = <fun>
+#add_ratio {num=1; denum=3} {num=2; denum=5};;
+- : ratio = {num = 11; denum = 15}
+バリアント型の宣言には、その型の値が取りうる形を全て並べます。
+それぞれのケースは構成子と呼ばれる名前で識別されます。構成子は、そのバリアント型の値を構成するためと、パターンマッチングのために使われます。構成子の名前は変数名と区別するため大文字で書きます(変数名は小文字で始まります)。以下に(整数と浮動小数点数の)数値を混ぜて計算するためのバリアント型を示します。 
+#type number = Int of int | Float of float | Error;;
+type number = Int of int | Float of float | Error
+この宣言は number 型が、整数か浮動小数点数か(0 除算などの)不正な演算を表す定数 Error の 3 つしか取りえないことを意味します。
+列挙型はバリアントの特殊な場合で、すべての選択肢が定数の場合です。
+#type sign = Positive | Negative;;
+type sign = Positive | Negative
+#let sign_int n = if n >= 0 then Positive else Negative;;
+val sign_int : int -> sign = <fun>
+number 型の算術演算を定義するには、2 つの number 型値に対してパターンマッチングを用います。 
+#let add_num n1 n2 =
+match (n1, n2) with
+(Int i1, Int i2) ->
+(* Check for overflow of integer addition *)
+if sign_int i1 = sign_int i2 && sign_int(i1 + i2) <> sign_int i1
+then Float(float i1 +. float i2)
+else Int(i1 + i2)
+| (Int i1, Float f2) -> Float(float i1 +. f2)
+| (Float f1, Int i2) -> Float(f1 +. float i2)
+| (Float f1, Float f2) -> Float(f1 +. f2)
+| (Error, _) -> Error
+| (_, Error) -> Error;;
+val add_num : number -> number -> number = <fun>
+#add_num (Int 123) (Float 3.14159);;
+- : number = Float 126.14159
+バリアント型の主な用途は再帰的なデータ構造の記述です。例として二分木を考えてみましょう。
+#type 'a btree = Empty | Node of 'a * 'a btree * 'a btree;;
+type 'a btree = Empty | Node of 'a * 'a btree * 'a btree
+これは、'a 型(任意の型)の値を持つ二分木は、空(Empty)か、 'a 型の値と 2 つの部分木を持つ節(Node)で構成されるという意味です。部分木もまた 'a 型の値を格納する 'a btree 型なります。
+二分木の処理は、データ構造の型定義に従うような再帰関数で自然に表現出来ます。例として、ソートされた二分木に探索と挿入を行う関数を示します(右の部分木の要素が左の部分木の要素より大きいものとします)
+#let rec member x btree =
+match btree with
+Empty -> false
+| Node(y, left, right) ->
+if x = y then true else
+if x < y then member x left else member x right;;
+val member : 'a -> 'a btree -> bool = <fun>
+#let rec insert x btree =
+match btree with
+Empty -> Node(x, Empty, Empty)
+| Node(y, left, right) ->
+if x <= y then Node(y, insert x left, right)
+else Node(y, left, insert x right);;
+val insert : 'a -> 'a btree -> 'a btree = <fun>
+1.4 レコードとバリアント

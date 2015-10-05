@@ -1,0 +1,134 @@
+Ensembl はゲノムプロジェクトが行われている生物のデータだけに特化して,ゲノムアノテーションを詳細に行ったデータベースです.私の印象では,NCBI は遺伝子配列の蓄積に力を入れている一方で,Ensembl はゲノム情報の質向上を目指しているようです.実際,NCBI では cDNA 配列に対応するアミノ酸配列が登録されていない場合がよくありますが,Ensembl では完全に対応した配列が公開されています.
+種の系統解析研究に対する Ensembl 最大の売りの一つは,アライメントデータを作成する際に,配列間でオーソロガスな比較が行えるような検討がなされている点です.こちらをご覧下さい (以前このように書きましたが,Ensembl のオーソログ判定に疑問を持つ人もいるようです [2011 年 11 月]).ここ数年で急激に数が増えると思っていましたが,予想に反して最近は種数が増加しません.
+2014 年 1 月 (Ensembl 74) の時点では,動物では以下の種でゲノムデータが公開されています.
+この図は Species tree (Requires Java) を参考に作りました.おそらく Safari では動かないので,FireFox で試してください.この系統樹には実際にはまだ Ensembl からデータが公開されていない種もいくつか入っていました.
+ゲノムや種の詳細は,こちらをご覧下さい.こちらに Ensembl ID をまとめました.
+なお,ある種の一般的な名前や分類を調べる際は,NCBI が提供している分類のサイト (こちら) を使うと便利です.いくつかの種が含まれる分類群名を調べる場合は,こちらです.
+Ensembl で公開されている配列が NCBI の Blast search で引っかかって来ないことがよくあります.Ensembl の担当者にきいたところ,以下のような返事が帰ってきました.
+The Ensembl gene set is based on mRNA and protein sequences from NCBI RefSeq (only the known protein, NP, and known mRNAs, NM) along with UniProt and EMBL-Bank. For a more detailed description, see this page:
+http://www.ensembl.org/info/docs/genebuild/genome_annotation.html
+Thus, the Ensembl geneset contains some NCBI RefSeq records (those that can be aligned to the genome). However, not all RefSeq records. And RefSeq does not have all Ensembl transcripts.											  
+(以下のように書きましたが,あまり有効な手段ではありません.最近は古い配列をクエリとして最新のデータベースを Blast 検索しています.それ以外方法はないように思えます [2011 年 11 月].)
+古い ID から最新の ID を得る
+BioMart を使います.
+1. 古い ID が得られた version の BioMart から Entrez の ID を得ます.
+例えば BioMart v36 に入ります.ポップアップタグを「Ensembl38」「Homo sapiens genes (NCBI36)」にします.
+Next をおして,GENE -> ID list limit をチェックし,以下の例題をボックスにペーストして,ポップアップタグを Ensembl Peptide ID(s) にします (ID をリストアップしたファイルを選ぶやり方は,うまくいきませんでした).Next を押します.
+ENSP00000277994
+ENSP00000252073
+ENSP00000354686
+ENSP00000354852						  
+FILTER 画面になります.External Referece: から EntrezGene ID をチェックし,Select the output format: の Text, tab separated,File compression: の gzip (.gz) をチェックして export を押します.結果がテキストファイルとしてダウンロードされます.
+2. 
+これを最新の BioMart で新しい ID に変換します.
+以下の EntrezGeneID が得られているはずです.
+22834
+63916
+4288
+6263
+ヒトデータ指定した最新の BioMart を開きます.こちらです.Filter -> GENE から ID list limit をチェックします.ボックスに上記の EntrezGeneID をペースとしてポップアップタグを EntrezGene ID(s) にします.Attributes -> EXTERNAL: -> External References から EntrezGene ID を選びます.
+あとはいつも通り,Count を押して ID 数を確認し,Results を押して,Unique results only をチェックし,Go を押すことで,結果をテキストファイルとしてダウンロードできます.
+History を調べる
+ID の変更履歴を調べることができます.ただし,通常の作業ではあまり必要ないと思います.
+こちらから名前のかわった ID (新旧) について調べることができます.
+Manage your data というタブをこちらから押してください.
+その後,ID History Converter を押します.
+ただこの方法だと,一度に 30 件までしか調べられないようです.
+それと,実際に website で一つずつ調べた結果に比べて,得られる結果の精度と使いやすさが落ちるようです.
+遺伝子によっては Variant がある場合があります.例えば,PSMB8 遺伝子は Human では 1 コピーしかなく 6 番染色体にコードされているはずですが,Location が HSCHR6 になっている Variation が示されます.こちらです.
+これについてヘルプで救い問い合わせたところ,Biomart から Variation table を得る必要がある,という解答を得ました.
+Depending on the number of genes you're looking at, you can identify the variants in a few different ways. If you're only looking at one or two, you may find it easier to search for the genes within the browser, then open the variation tables. Another way to access variants in genes may be through BioMart. This allows you to download tables of data. There's a video tutorial on using BioMart here. You will need the human variation database. For genes on different haplotypes, you will need to search by all the associated Ensembl IDs. 
+Alternatively, you can extract the data using our Perl API, particularly if you are looking at a large number of genes. Use these links to install the API, and find tutorials on its use:
+http://www.ensembl.org/info/docs/api/api_installation.html
+http://www.ensembl.org/info/docs/api/core/core_tutorial.html
+http://www.ensembl.org/info/docs/api/variation/variation_tutorial.html 
+There is a list of the different haplotype names at the MHC region at:
+http://www.ensembl.org/Help/Faq?id=291
+Ensembl の最も大きな特徴の一つとして,種間で遺伝子配列を比較する場合に,その遺伝子が orthologous な関係にあるのか,paralogous な関係にあるのかを,orthology information として提供している点です.Ensembl から得られた核遺伝子配列に基づいて種の系統樹を構築する場合,この情報を用いる必要があります.私は BioMart を使って orthology information を得ています.下にあるコラムを参照してください.
+Ensembl では,orthology information を得るために,遺伝子ごとに系統樹を推定して,これを種の系統樹 (これまでの形態や分子などの情報から広く受け入れられている系統関係) と比較しています.比較する遺伝子が種の分岐に起源していれば orthologous,遺伝子重複によって分岐していれば paralogous としています.遺伝子の系統樹は,それぞれの遺伝子にコードされている最長のアミノ酸配列を系統解析して得ています.
+近縁種の場合は PAML も使っているようです.
+リンク1,リンク2
+Vilella, AJ, J Severin, A Ureta-Vidal, L Heng, R Durbin, E Birney. 2009. EnsemblCompara GeneTrees: Complete, duplication-aware phylogenetic trees in vertebrates. Genetical Research 19:327&ndash;335.
+Gene tree
+Ensembl にコンタクトして得た情報です.Orthology information を得るのに用いられた gene tree はこちらから得ることができます.この ftp サイトは FTP Download というページにある table の上からリンクが張られています.Multi-species data の table にある Comparative genomics の行にある EMF をクリックしてください.
+Compara.65.protein_trees.nhx.emf.gz に NHX フォーマットの tree が保存されています.ただし tree は巨大なので,tree を見るには工夫が必要です.NHX フォーマットの tree は Notung で見ることができます.詳細は README ファイルを見てください [2011 年 12 月].
+ブラウザを用いたダウンロード
+ゲノムデータのダウンロードはこちらです.私は毎回ゲストとして入っています.
+ftp://ftp.ensembl.org/pub/current_fasta/
+cDNA 配列だけを得ることもできます.
+例えば,homo_sapiens では,
+cdna/Homo_sapiens.GRCh37.57.cdna.all.fa.gz
+の DNA 配列を翻訳すると
+pep/Homo_sapiens.GRCh37.57.pep.all.fa
+にあるアミノ酸配列が得られます.系統解析を行う場合は,アミノ酸のアライメントをまず作成し,これに従って塩基配列をアライメントします.PAL2NAL を用いることで,塩基配列のアライメントが行えます.PAL2NAL は,開始コドンより前にある余分な塩基配列 (UTRs: Untranslated Regions) を削除して,塩基配列のアライメントを作成します.こちらをご覧下さい.
+なお,Gene-Protein-Transcript ID はこちらを参照してください.
+コマンドラインを用いたダウンロード
+ftp を使ってダウンロードすることも可能です (2013 年 6 月).
+[Napoli:RawDataEns72]$ ftp
+ftp> open ftp.ensembl.org
+Connected to ftpservice1.sanger.ac.uk.
+220-ftp.ensembl.org NcFTPd Server (free educational license) ready.
+220-Ensembl Project FTP server
+...
+220-
+220 
+Name (ftp.ensembl.org:Napoli): anonymous [anonymous で入ります]
+331 Guest login ok, send your complete e-mail address as password.
+Password: [メールアドレスを入れるか,単にリターンでも大丈夫です]
+230-You are user #92 of 250 simultaneous users allowed.
+...
+Using binary mode to transfer files.
+ftp> cd pub [あとは通常の unix コマンドです]
+250 "/pub" is new cwd.
+ftp> ls
+227 Entering Passive Mode (193,62,203,113,139,113)
+150 Data connection accepted from 203.181.243.17:51599; transfer starting.
+drwxrwxr-x   2 ftpuser  ftpusers      4096 Mar 12  2002 IPI
+-rw-rw-r--   1 ftpuser  ftpusers         0 May  1  2002 PLEASE_CHECK_THE...
+-rw-rw-r--   1 ftpuser  ftpusers      1877 Oct 22  2007 README.32-46
+drwxrwxr-x   5 ftpuser  ftpusers        44 May 24  2007 assembly
+...
+lrwxrwxrwx   1 ftpuser  ftpusers        15 Jun 18 12:11 release-72 -> mnt2/release-72
+drwxrwxr-x   9 ftpuser  ftpusers       109 Dec  4  2002 repository
+...
+ftp> cd cdna
+250 "/pub/mnt2/release-72/fasta/gallus_gallus/cdna" is new cwd.
+ftp> ls
+227 Entering Passive Mode (193,62,203,113,209,61)
+150 Data connection accepted from 203.181.243.17:51607; transfer starting.
+-rwxrwxr-x   1 ftpuser  ftpusers       128 May 31 04:29 CHECKSUMS
+-rwxrwxr-x   1 ftpuser  ftpusers  16674832 May 30 23:48 Gallus_gallus.Galgal4.72.cdna.abinitio.fa.gz
+-rwxrwxr-x   1 ftpuser  ftpusers  13326053 May 30 23:37 Gallus_gallus...
+-rwxrwxr-x   1 ftpuser  ftpusers      3035 May 30 23:48 README
+226 Listing completed.
+ftp> get Gallus_gallus.Galgal4.72.cdna.all.fa.gz
+local: Gallus_gallus.Galgal4.72.cdna.all.fa.gz remote: Gallus_gallus...
+227 Entering Passive Mode (193,62,203,113,146,150)
+150 Data connec.....
+40% |**********************************							  
+ダウンロードできる全タンパク質遺伝子の配列は,以下の二種類があります (homo_sapiens/ pep ディレクトリ).
+ftp://ftp.ensembl.org/pub/current_fasta/
+Homo_sapiens.GRCh38.pep.all.fa
+Homo_sapiens.GRCh38.pep.abinitio.fa
+all.fa ファイルには,転写産物 (mRNA とタンパク質配列) から得られる配列のみが含まれているため,発現量がごく微量であったり発現されないタンパク質遺伝子の配列は含まれていません.一方 pep ab initio ファイルにはゲノム配列からタンパク質遺伝子の配列を推定しているようですが,README を読む限り,他の情報と照らし合わせて確認はしていないようです.フグ (ver76) で両者のレコード数を比較すると,pep all が 23118 とおよそ全タンパク質遺伝子数 20,000 であるのに対し,pep ab initio は 48390 となっているので未整理な情報がかなり含まれているようです.
+標記の件に付いては,Ensembl に問い合わせて確認しました.
+###### メール 1
+See an example here:
+ftp://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/pep/
+a) pep all: resulting from Ensembl known or novel gene models which are based on transcriptome and proteome data
+b) pep ab initio: resulting from 'ab initio' gene prediction algorithms solely based on the genomic sequence with no other experimental evidence.
+More information on these files can be found in the README
+ftp://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/pep/README
+The same applies to cdna all versus cdna ab inition:
+ftp://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/cdna/README
+cdna.all.fa and pep.all.fa should not contain ab initio predictions.
+Kind regards,
+###### メール 2
+The &ldquo;pep all" file includes ONLY the peptide sequences derived from transcriptome (mRNAs) and proteome data.
+It does NOT include sequences predicted from ab initio methods.
+There must be proteins that cant be annotated to their low level of expression.
+&ldquo;pep all&rdquo; might be a misnomer and we are aware of that. I will bring this to my colleagues and see if this name can be changed.
+Regards,
+######
+(2014 年 8 月)
+Ensembl - 井上 潤

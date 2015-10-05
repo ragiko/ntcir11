@@ -1,0 +1,3 @@
+NTTコミュニケーション科学基礎研究所では実環境での自然な話し言葉を対象とした音声認識の研究を進めている.本報告では,そのテストベッドとして開発中の音声認識ソフトウェア'SOLON'の,日本語話し言葉コーパス(CSJ: Corpus of Spontaneous Japanese)を用いたベンチマーク評価結果を報告する.音声区間の事前検出,発話速度依存音声分析,言語モデルの誤り訂正学習,全共分散型モデルの識別学習,教師なし話者適応,及びそれらの組み合わせによる効果を実験により示す.
+This article describes results from the latest benchmark tests of our speech recognition system 'SOLON' using the Corpus of Spontaneous Japanese (CSJ). The improvement in recognition accuracy using several techniques, including prior voice-activity detection, speaking-rate dependent analysis, corrective language modeling, discriminative training of full-covariance parameters, unsupervised model adaptation, and their combinations, are reported.
+
