@@ -16,8 +16,9 @@ rake p=query_likelihood_t_slide all
 ```
 
 ## 導入テスト補足
-- export PYTHONPATH=(自分のcloneしたntcir11のpath)/lib:$PYTHONPATH
-  - 例) export PYTHONPATH=~/programing/ntcir11/lib:$PYTHONPATH
+- ~/.bashrcとかにPYTHONPATHを設定 (hymlabモジュールを呼び出すため)
+  - export PYTHONPATH=(自分のcloneしたntcir11のpath)/lib:$PYTHONPATH
+    - 例) export PYTHONPATH=~/programing/ntcir11/lib:$PYTHONPATH
 - 依存モジュール
   - sudo pip install nkf
   - sudo gem install systemu
