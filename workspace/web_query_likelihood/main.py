@@ -10,13 +10,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../config')
 import helper
 import config
 
-import unittest
 from math import log
-from math import fabs
 import re
-
-from collections import Counter
-from collections import defaultdict
 
 def web_str_normalize(str):
     '''
@@ -314,19 +309,9 @@ if __name__ == '__main__':
     QUERY_PATH = conf.WRITE_QUERY_PATH
     # QUERY_PATH = conf.SPOKEN_QUERY_PATH
     DOC_PATH = conf.WRITE_DOC_PATH
-    
-    # TODO: 講演の情報を利用したい時
-    # DOC_PATH = conf.SPOKEN_DOC_LECTURE_PATH # 講演の会話データ
-    # DOC_PATH = conf.WRITE_DOC_LECTURE_PATH
-    
-    DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
-    WEB_PATH = conf.PROJECT_PATH + "/data/slide-text100-extract"
-    # WEB_PATH = "/Volumes/HD-PEU3/slide-check100"
 
-    # res = ht.pickle_load('/home/taguchi/ntcir11/workspace/web_query_likelihood/tmp/web_slide/07-01_004').vec
-    # for k, v in sorted(res.items(), key=lambda x:x[1]):
-    #     print k, v
-    # exit()
+    DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
+    WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-text100"
 
     # キャッシュ用パス
     # TODO: データをキャッシュしているので、不要なときは消す
@@ -349,40 +334,11 @@ if __name__ == '__main__':
     corpus_doc_tc = ht.TextCollection([texts_str])
     corpus_doc_tf = ht.TfIdf(corpus_doc_tc).tf()[0]
 
-
     # クエリを読み込み
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
-    web_slide_tf_dump(WEB_PATH, WEB_TF_PATH)
-    web_all_slide_tf = web_all_slide_tf_load(WEB_TF_PATH)
-
-
-
-    output_path = DOC_WEB_SIM_PATH
-
-    if (os.path.exists(output_path) == False):
-        # web文書と検索文書全体の類似度の計算
-        h = {}
-        
-        for i, doc_tf_vsm  in enumerate(doc_tf):
-            doc_path = slide_path_format(doc_tf_vsm.text.path)
-            try:
-                tf_web_vsm = web_all_slide_tf[doc_path]
-            except:
-                continue
-            h[doc_path] = sim_bitween_web_and_docs(tf_web_vsm, doc_tf)
-            
-
-            ht.pp(i)
-            ht.pp(doc_path)
-            ht.pp(h[doc_path])
-
-        ht.pickle_save(h, output_path)
-    else:
-        h = ht.pickle_load(output_path)
-    
-    exit()
+    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
 
     print "########################################\n"
     print "# web slide loaded %s\n"
@@ -405,6 +361,9 @@ if __name__ == '__main__':
         query_tf = q_tf_vsm.vec
         query_result = []
 
+        # queryに関係するwebのtfを計算
+        tf_web = web_tf_list[i].vec
+
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
 
@@ -418,19 +377,6 @@ if __name__ == '__main__':
             d = len(doc_text.words())
             frac = 1.0 / float(d + u + v)
             likelifood = 0.0
-            
-            try:
-                # スライドに関係するwebのtfを計算
-                tf_web = web_all_slide_tf[doc_path].vec
-                ht.pp(doc_path)
-                # tf_web_vsm = web_all_slide_tf[doc_path]
-            except:
-                print "### ERROR ###"
-                tf_web = {}
-                ht.pp(doc_path)
-
-            # 類似度計算 (too heavy)
-            # ht.pp(sim_bitween_web_and_docs(tf_web_vsm, doc_tf))
 
             # query word loop
             for word in query_text.words():
@@ -446,7 +392,6 @@ if __name__ == '__main__':
                 web = v * frac * tf_web.get(word, not_word_val)
 
                 likelifood += log(doc + corpus + web)
-                
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
@@ -455,23 +400,4 @@ if __name__ == '__main__':
     print "########################################"
     print "# 出力完了 " + conf.RESULT_PATH
     print "########################################"
-    
-    
-    # res = web_all_slide_tf['07-01_000'].vec
-    # for k, v in sorted(res.items(), key=lambda x:x[1]):
-    # print k, v
-
-    """
-    test case
-    """
-    # class ATestCase(unittest.TestCase):
-    #     def setUp(self):
-    #         pass
-    #    
-    #     def tearDown(self):
-    #         pass
-    #
-    #     def test_a(self):
-    #         pass
-    # unittest.main()
 
