@@ -96,6 +96,7 @@ def getResultFormat(result_file_arr)
         file_path = result_file_arr[i]
         p file_path
 
+
         file = File::open(file_path)\
                     .read\
                     .split("\n")
@@ -125,12 +126,19 @@ end
 # ========== $B@_DjItJ,(B ==========
 
 # 引数: projectのresult path
-if ARGV[0] == nil
+if ARGV[0] == nil and ARGV[1] == nil
   abort "args error (NOTE: result path set to args)"
 end
 
 sdr_result_dir = ARGV[0]
-out_name = File.expand_path('../result.txt', __FILE__)
+run_id = ARGV[1]
+
+require 'fileutils'
+if !FileTest.exist?(File.expand_path( "../#{run_id}", __FILE__))
+    FileUtils.mkdir(File.expand_path( "../#{run_id}", __FILE__))
+end
+
+out_name = File.expand_path("../#{run_id}/result.txt", __FILE__)
 
 priority = 1
 doc_transcription= "MANUAL"

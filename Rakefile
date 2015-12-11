@@ -3,6 +3,7 @@ require 'systemu'
 WORKSPACE_PATH = './workspace'
 WORKSPACE_RESULT_PATH = './workspace/result'
 WORKSPACE_TMP_PATH = './workspace/tmp'
+EVALUAION_PATH = './NTCIR11/evaluation'
 FORMAT_RESULT_PATH = './NTCIR11/evaluation/result.txt'
 MAP_RESULT_PATH = './NTCIR11/evaluation/map_result.txt'
 MAP_JAR_PATH = './NTCIR11/evaluation/evalsqscr.jar'
@@ -20,6 +21,14 @@ end
 def project_param_abort
   if !ENV['p'] 
       abort "paramater not found :: rake p=project_name task"
+  end
+end
+
+def run_id
+  if !!ENV['id']
+    return ENV['id']
+  else
+    return "default"
   end
 end
 
@@ -60,32 +69,38 @@ end
 task :main do |t|
   # 実行
   project_param_abort()
-  exe = "python #{WORKSPACE_PATH}/#{ENV['p']}/main.py"
+  exe = "python #{WORKSPACE_PATH}/#{ENV['p']}/main.py " + run_id
   puts systemu_msg(exe)[:msg]
 end
 
 task :format do |t|
   # 中間ファイル作成
   project_param_abort()
-  if Dir.glob(WORKSPACE_PATH+"/"+ENV['p']+'/result/*').size == 0
+  if Dir.glob(WORKSPACE_PATH+"/"+ENV['p']+'/result/'+run_id+'/*').size == 0
     puts "ERROR: workspace results is not exist"
     exit
   end
-  project_path = File.expand_path("../#{WORKSPACE_PATH}/#{ENV['p']}/result", __FILE__) 
-  format = "ruby ./NTCIR11/evaluation/formatter.rb #{project_path}"
+  project_path = File.expand_path("../#{WORKSPACE_PATH}/#{ENV['p']}/result/"+run_id, __FILE__)
+  format = "ruby ./NTCIR11/evaluation/formatter.rb #{project_path} #{run_id}"
   puts systemu_msg(format)[:msg]
 end
 
 task :map do
   # 結果の表示
-  if !FileTest.exist?(FORMAT_RESULT_PATH)
+  if !FileTest.exist?("#{EVALUAION_PATH}/#{run_id}/result.txt")
     puts "ERROR: format result file is not found"
     exit
   end
+  
+  # 結果ファイルの保管フォルダ
+  if !FileTest.exist?("./NTCIR11/evaluation/#{run_id}")
+    FileUtils.mkdir("./NTCIR11/evaluation/#{run_id}")
+  end
+
   Dir.chdir("./NTCIR11/evaluation/") do
-    map = "java -jar ./evalsqscr.jar ./result.txt"
+    map = "java -jar ./evalsqscr.jar ./#{run_id}/result.txt"
     m = systemu_msg(map)
-    File.write("./map_result.txt", m[:out])
+    File.write("./#{run_id}/map_result.txt", m[:out])
     puts m[:msg]
     puts m[:out]
   end
@@ -107,12 +122,12 @@ end
 task :clean_result do |t|
   # main.pyの実行結果を削除
   project_param_abort()
-  FileUtils.rm(Dir.glob(WORKSPACE_PATH+"/"+ENV['p']+'/result/*'))
+  FileUtils.rm(Dir.glob(WORKSPACE_PATH+"/"+ENV['p']+'/result/'+run_id+'/*'))
 end
 
 task :clean_format do 
-  if FileTest.exist?(FORMAT_RESULT_PATH)
-    FileUtils.rm(FORMAT_RESULT_PATH) 
+  if FileTest.exist?("#{EVALUAION_PATH}/#{run_id}/result.txt")
+    FileUtils.rm("#{EVALUAION_PATH}/#{run_id}/result.txt")
   end
 end
 

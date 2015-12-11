@@ -338,7 +338,7 @@ if __name__ == '__main__':
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
-    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+    # web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
 
     print "########################################\n"
     print "# web slide loaded %s\n"
@@ -346,8 +346,8 @@ if __name__ == '__main__':
     
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
-    u = 920 # ドキュメントコレクションの重み 920
-    v = 0.1 # web文書用パラメータ (10)
+    u = 320 # ドキュメントコレクションの重み 920
+    v = 0.0 # web文書用パラメータ (10)
 
     result = []
     # query loop
@@ -362,7 +362,7 @@ if __name__ == '__main__':
         query_result = []
 
         # queryに関係するwebのtfを計算
-        tf_web = web_tf_list[i].vec
+        # tf_web = web_tf_list[i].vec
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
@@ -389,14 +389,20 @@ if __name__ == '__main__':
                 # smooth for doc
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
                 # smooth for web doc
-                web = v * frac * tf_web.get(word, not_word_val)
+                # web = v * frac * tf_web.get(word, not_word_val)
 
-                likelifood += log(doc + corpus + web)
+                likelifood += log(doc + corpus)
+                # likelifood += log(doc + corpus + web)
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
 
-    helper.output_result(result, conf.RESULT_PATH)
+    if (len(sys.argv) >= 2 and sys.argv[1]):
+        helper.output_result_by_id(result, conf.RESULT_PATH, sys.argv[1])
+    else:
+        helper.output_result_by_id(result, conf.RESULT_PATH, "default")
+
+    # helper.output_result(result, conf.RESULT_PATH)
     print "########################################"
     print "# 出力完了 " + conf.RESULT_PATH
     print "########################################"
