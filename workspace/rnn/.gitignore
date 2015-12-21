@@ -1,0 +1,11 @@
+# data
+data/formal-run-revised/
+data/formalrun-text100
+data/presentation.pptx
+data/slide-check/
+
+# source treeの隠れファイル
+.hg
+
+# backupfile
+backup
