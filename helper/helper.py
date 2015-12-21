@@ -128,3 +128,21 @@ def query_tf_cache_load(query_path, output_path, normalize=True):
     else:
         q_tf_list = ht.pickle_load(output_path)
     return q_tf_list
+
+def merge_dict(d1, d2, func=lambda x, y: y):
+    """
+    ディクショナリの演算
+    merge_dict(d1, d1, lambda x, y: x + y) #=> {'a': 2, 'c': 6, 'b': 4} 
+    http://tell-k.hatenablog.com/entry/2012/01/23/012104
+    
+    :param d1: 
+    :param d2: 
+    :param func: 
+    :return:
+    """
+    d1 = d1.copy()
+    d2 = d2.copy()
+    for k, v in d2.iteritems():
+        d1[k] = func(d1[k], v) if k in d1 else v
+    d2.update(d1)
+    return d2
