@@ -23,6 +23,9 @@ class Config:
         # /tmp and /result
         self.TMP_PATH = self.PROJECT_PATH + "/tmp" 
         self.RESULT_PATH = self.PROJECT_PATH + "/result" 
+        
+        # kaldi spoken data
+        self.SPOKEN_KALDI_DOC_PATH = self.WORKSPACE_PATH + "/../NTCIR11/Data/kaldi_slide"
 
 if __name__ == '__main__':
     conf = Config("bm25")

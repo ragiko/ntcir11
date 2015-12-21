@@ -306,11 +306,10 @@ if __name__ == '__main__':
     """
     # データの設定
     conf = config.Config("web_query_likelihood")
-    QUERY_PATH = conf.WRITE_QUERY_PATH
-    # QUERY_PATH = conf.SPOKEN_QUERY_PATH
-    DOC_PATH = conf.WRITE_DOC_PATH
-
-    DOC_CORPUS_PATH = conf.WRITE_DOC_PATH
+    # QUERY_PATH = conf.WRITE_QUERY_PATH
+    QUERY_PATH = conf.SPOKEN_QUERY_PATH
+    DOC_PATH = conf.SPOKEN_DOC_PATH
+    DOC_CORPUS_PATH = conf.SPOKEN_DOC_PATH
     WEB_PATH = conf.PROJECT_PATH + "/data/formalrun-text100"
 
     # キャッシュ用パス
@@ -338,7 +337,7 @@ if __name__ == '__main__':
     q_tf_list = helper.query_tf_cache_load(QUERY_PATH, QUERY_TF_PATH)
 
     # webのtfの文書を読み込み
-    # web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
+    web_tf_list = web_tf_cache_load(WEB_PATH, WEB_TF_PATH)
 
     print "########################################\n"
     print "# web slide loaded %s\n"
@@ -346,7 +345,8 @@ if __name__ == '__main__':
     
     tf_corpus = corpus_doc_tf.vec
     not_word_val = 1e-250 # 極小値
-    u = 320 # ドキュメントコレクションの重み 920
+    # ドキュメントコレクションの重み 920
+    u = 320
     v = 0.0 # web文書用パラメータ (10)
 
     result = []
@@ -362,7 +362,7 @@ if __name__ == '__main__':
         query_result = []
 
         # queryに関係するwebのtfを計算
-        # tf_web = web_tf_list[i].vec
+        tf_web = web_tf_list[i].vec
 
         # doc loop
         for (doc_tf_vsm, doc_tf_freq_vsm) in zip(doc_tf, doc_tf_freq):
@@ -389,10 +389,10 @@ if __name__ == '__main__':
                 # smooth for doc
                 corpus = u * frac * tf_corpus.get(word, not_word_val)
                 # smooth for web doc
-                # web = v * frac * tf_web.get(word, not_word_val)
+                web = v * frac * tf_web.get(word, not_word_val)
 
-                likelifood += log(doc + corpus)
-                # likelifood += log(doc + corpus + web)
+                # likelifood += log(doc + corpus)
+                likelifood += log(doc + corpus + web)
 
             query_result.append((doc_text, likelifood))
         result.append(query_result)
