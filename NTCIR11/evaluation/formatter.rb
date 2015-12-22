@@ -103,7 +103,13 @@ def getResultFormat(result_file_arr)
 
 
         format_str += sprintf(format_start, i+1)
-        for rank in 0..(file.size-1) #999
+        
+        max_rank = 1000
+        if (file.size < max_rank)
+            max_rank = file.size
+        end
+        
+        for rank in 0..(max_rank-1) #999
             file_name = file[rank].match(/(\d+\-\d+_\d+)/)[1]
             # matchdata型から文字列に
             lecture = file_name.match(/^\d+\-\d+/).to_s
