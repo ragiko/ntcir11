@@ -146,7 +146,7 @@ if __name__ == '__main__':
     v = 10
     
     h_words = []
-    history_max = 80
+    history_max = 100
     old_doc_path = "07-01_000"
     h_cnt = 0
 
